@@ -1,0 +1,28 @@
+2DA V2.0
+
+      Corner1         Edge      Corner2         Height    Model       
+0     SwampWater      ****      SwampWater      0         ZKW01_Z01_01
+1     SwampWater      ****      SwampGround     0         ZKW01_Z02_01
+2     SwampGround     ****      SwampGround     0         ZKW01_Z03_01
+3     SwampWater      ****      ****            0         ZKW01_Z01_01
+4     SwampGround     ****      ****            0         ZKW01_Z03_01
+5     SwampWater      Bridge    SwampWater      0         ZKW01_Z04_01
+6     SwampPit        ****      SwampWater      0         ZKW01_Z06_01
+7     SwampPit        ****      SwampPit        0         ZKW01_Z05_01
+8     SwampPit        ****      ****            0         ZKW01_Z05_01
+9     SwampGround     Wall      SwampGround     0         ZKW01_Z07_01
+10    SwampPit        Bridge    SwampPit        0         ZKW01_Z08_01
+11    JungleGround    ****      JungleGround    0         ZKW01_Z21_01
+12    JungleGround    Stream    JungleGround    0         ZKW01_Z22_01
+13    JungleGround    Wall      JungleGround    0         ZKW01_Z23_01
+14    JunglePit       Bridge    JunglePit       0         ZKW01_Z24_01
+15    JungleGround    Road      JungleGround    0         ZKW01_Z25_01
+16    JungleGround    ****      JunglePit       0         ZKW01_Z26_01
+17    JungleCliff     ****      JunglePit       0         ZKW01_Z28_01
+18    JungleCliff     ****      JungleGround    0         ZKW01_Z30_01
+19    JungleCliff     ****      JungleCliff     0         ZKW01_Z32_01
+20    JunglePit       ****      JunglePit       0         ZKW01_Z33_01
+21    JungleGround    ****      ****            0         ZKW01_Z21_01
+22    JunglePit       ****      ****            0         ZKW01_Z33_01
+23    JungleCliff     ****      ****            0         ZKW01_Z31_01
+24    SwampWater      ****      JungleGround    0         ZKW01_Z02_01

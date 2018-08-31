@@ -1,0 +1,28 @@
+2DA V2.0
+
+       Corner1     Edge     Corner2     Height     Model            
+0      Foyer_U     ****     Foyer_U     0          gi_z01_07
+1      Foyer_U     ****     Wall        0          gi_z02_07
+2      Foyer_L     ****     Foyer_L     0          gi_z01_06
+3      Foyer_L     ****     Wall        0          gi_z02_06
+4      Wall        Hallway1 Wall        0          gi_z01_08
+5      Wall        Hallway2 Wall        0          gi_z01_09
+6      Wall        ****     Wall        0          gi_z03_01
+7      Service     ****     Service     0          gi_z01_01
+8      Service     ****     Wall        0          gi_z02_01
+9      Tiled       ****     Tiled     0          gi_z01_02
+10      Tiled      ****     Wall        0          gi_z02_02
+11      Office_Vinyl     ****     Office_Vinyl     0          gi_z01_03
+12      Office_Vinyl     ****     Wall        0          gi_z02_03
+13      Office_Wood      ****     Office_Wood     0          gi_z01_04
+14      Office_Wood      ****     Wall        0          gi_z02_04
+15      Study       ****     Study       0          gi_z01_05
+16      Study       ****     Wall        0          gi_z02_05
+17      Foyer_U     ****     ****        0          gi_z01_07
+18      Foyer_L     ****     ****        0          gi_z01_06
+19      Wall        ****     ****        0          gi_z03_01
+20      Service     ****     ****        0          gi_z01_01
+21      Tiled     ****     ****        0          gi_z01_02
+22      Office_Vinyl     ****     ****        0          gi_z01_03
+23      Office_Wood     ****     ****        0          gi_z01_04
+24      Study       ****     ****        0          gi_z01_05

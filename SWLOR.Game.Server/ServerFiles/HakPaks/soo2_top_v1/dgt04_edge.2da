@@ -1,0 +1,158 @@
+2DA V2.0
+
+       Corner1               Edge               Corner2               Height               Model            
+0      Concrete              ****               Concrete              0                    dgt04_c01_01     
+1      Concrete              ****               ****                  0                    dgt04_c01_01
+2      Concrete              Wall02             Concrete              0                    dgw02_z01_01
+3      Concrete+             Wall02             Concrete+             1                    dgw02_z01_01     
+4      Concrete              Wall01             Concrete              0                    rdt02_z02_01
+5      Concrete+             Wall01             Concrete+             1                    rdt02_z02_01     
+6      Concrete              Wood_Fence         Concrete              0                    dgt05_z03_01     
+7      Concrete+             Wood_Fence         Concrete+             0                    dgt05_z03_01
+8      Concrete              Chain_Fence        Concrete              0                    dgt04_z05_01 
+9      Concrete+             Chain_Fence        Concrete+             1                    dgt04_z05_01
+10     Concrete              Chain_Fence2       Concrete              0                    dgt04_z18_01
+11     Concrete+             Chain_Fence2       Concrete+             1                    dgt04_z18_01          
+12     Concrete              Street             Concrete              0                    dgt05_z15_01     
+13     Concrete              ****               Water                 0                    dgt05_z21_01
+14     Concrete              Railing            Water                 0                    dgt05_z90_10
+15     Concrete              Street_Edge_L      Concrete              0                    dgt04_z00_24     
+16     Concrete              Street_Edge_R      Concrete              0                    dgt04_z00_23
+17     Concrete+             ****               Concrete              0                    dgt05_z14_01              
+
+18     Water                 ****               Water                 0                    dgt04_w05_02    
+19     Water                 Docks              Water                 0                    dgt05_z90_11      
+20     Water                 ****               ****                  0                    dgt04_z12_01
+21     Water                 Green_Bridge       Water                 0                    dgt04_z14_01     
+
+22     Aqueduct              ****               Aqueduct              0                    dgt04_l17_01     
+23     Aqueduct              ****               Water                 0                    TCN01_Z17_01     
+24     Aqueduct              ****               ****                  0                    dgt04_l17_01     
+25     Aqueduct              ****               Concrete              0                    dgt05_z01_01     
+
+26     Apartments            ****               Apartments            0                    rdt02_a03_01     
+27     Apartments            ****               Water                 0                    TCN01_Z17_01     
+28     Apartments            ****               ****                  0                    rdt02_a03_01     
+29     Apartments            ****               Concrete              0                    rdt02_z01_01  
+30     Apartments            Passageway         Apartments            0                    rdt02_z90_01 
+
+31     Green_Bridge          ****               Water                 0                    dgt05_z02_01     
+32     Green_Bridge          ****               Water                 0                    dgt05_z02_01     
+33     Green_Bridge          ****               ****                  0                    rdt02_a14_01     
+34     Green_Bridge          ****               Water                 0                    dgt05_z02_01   
+
+35     Highrise_01           ****               Highrise_01           0                    dgt04_e04_01     
+36     Highrise_01           ****               Water                 0                    TCN01_Z17_01     
+37     Highrise_01           ****               ****                  0                    dgt04_e04_01     
+38     Highrise_01           ****               Concrete              0                    dgt05_z05_01     
+
+39     Highrise_02           ****               Highrise_02           0                    dgt04_e07_01     
+40     Highrise_02           ****               Water                 0                    TCN01_Z17_01     
+41     Highrise_02           ****               ****                  0                    dgt04_e07_01     
+42     Highrise_02           ****               Concrete              0                    dgt05_z06_01     
+
+43     Highrise_03           ****               Highrise_03           0                    dgt04_h23_01     
+44     Highrise_03           ****               Water                 0                    TCN01_Z17_01     
+45     Highrise_03           ****               ****                  0                    dgt04_h23_01     
+46     Highrise_03           ****               Concrete              0                    dgt05_z07_01     
+
+47     Highrise_04           ****               Highrise_04           0                    dgt04_f01_01     
+48     Highrise_04           ****               Water                 0                    TCN01_Z17_01     
+49     Highrise_04           ****               ****                  0                    dgt04_f01_01     
+50     Highrise_04           ****               Concrete              0                    dgt04_f01_01     
+
+51     Highrise_05           ****               Highrise_05           0                    dgt04_e12_07    
+52     Highrise_05           ****               Water                 0                    TCN01_Z17_01     
+53     Highrise_05           ****               ****                  0                    dgt04_e12_07     
+54     Highrise_05           ****               Concrete              0                    dgt05_z08_01     
+
+55     Highrise_06           ****               Highrise_06           0                    dgt04_e12_08     
+56     Highrise_06           ****               Water                 0                    TCN01_Z17_01     
+57     Highrise_06           ****               ****                  0                    dgt04_e12_08     
+58     Highrise_06           ****               Concrete              0                    dgt05_z09_01     
+
+59     Highrise_07           ****               Highrise_07           0                    dgt04_e12_09     
+60     Highrise_07           ****               Water                 0                    TCN01_Z17_01     
+61     Highrise_07           ****               ****                  0                    dgt04_e12_09     
+62     Highrise_07           ****               Concrete              0                    dgt05_z10_01     
+
+63     Slums1                ****               Slums1                0                    dgt04_e12_01     
+64     Slums1                ****               Water                 0                    TCN01_Z17_01     
+65     Slums1                ****               ****                  0                    dgt04_e12_01     
+66     Slums1                ****               Concrete              0                    dgt05_z16_01     
+67     Slums1                Alley_01           Slums1                0                    dgt04_z06_01
+
+68     Slums2                ****               Slums2                0                    TCN01_Z03_01     
+69     Slums2                ****               Water                 0                    TCN01_Z17_01     
+70     Slums2                ****               ****                  0                    TCN01_Z03_01     
+71     Slums2                ****               Concrete              0                    dgt05_z17_01
+72     Slums2                Alley_02           Slums2                0                    dgt04_z07_01     
+
+73     Slums3                ****               Slums3                0                    TCN01_Z03_01     
+74     Slums3                ****               Water                 0                    TCN01_Z17_01     
+75     Slums3                ****               ****                  0                    TCN01_Z03_01     
+76     Slums3                ****               Concrete              0                    dgt05_z18_01
+77     Slums3                Alley_03           Slums3                0                    dgt04_z08_01     
+
+78     Police_Station        ****               Police_Station        0                    dgt04_e12_04     
+79     Police_Station        ****               Water                 0                    TCN01_Z17_01     
+80     Police_Station        ****               ****                  0                    dgt04_e12_04     
+81     Police_Station        ****               Concrete              0                    dgt05_z13_01     
+
+82     Hospital              ****               Hospital              0                    dgt04_e12_05     
+83     Hospital              ****               Water                 0                    TCN01_Z17_01     
+84     Hospital              ****               ****                  0                    dgt04_e12_05     
+85     Hospital              ****               Concrete              0                    dgt05_z11_01     
+
+86     Lab                   ****               Lab                   0                    dgt04_e12_06     
+87     Lab                   ****               Water                 0                    TCN01_Z17_01     
+88     Lab                   ****               ****                  0                    dgt04_e12_06     
+89     Lab                   ****               Concrete              0                    dgt05_z12_01     
+
+90     Freeway               ****               Freeway               0                    TCN01_Z03_01     
+91     Freeway               ****               Water                 0                    TCN01_Z17_01     
+92     Freeway               ****               ****                  0                    TCN01_Z03_01     
+93     Freeway               ****               Concrete              0                    dgt05_z04_01     
+
+94     Warehouse_01          ****               Warehouse_01          0                    dgt04_e12_10     
+95     Warehouse_01          ****               Water                 0                    TCN01_Z17_01     
+96     Warehouse_01          ****               ****                  0                    dgt04_e12_10     
+97     Warehouse_01          ****               Concrete              0                    dgt05_z19_01 
+
+98     Warehouse_02          ****               Warehouse_02          0                    dgt04_e12_11     
+99     Warehouse_02          ****               Water                 0                    TCN01_Z17_01     
+100    Warehouse_02          ****               ****                  0                    dgt04_e12_11     
+101    Warehouse_02          ****               Concrete              0                    dgt05_z20_01     
+
+102    Concrete+             ****               Concrete+             1                    dgt04_c01_01
+103    Concrete+             ****               ****                  1                    dgt04_c01_01             
+104    Concrete+             Green_Bridge       Concrete+             1                    dgt04_z14_01        
+105    Concrete+             Alley_01           Concrete+             1                    dgt04_z06_01     
+106    Concrete+             Alley_02           Concrete+             1                    dgt04_z07_01     
+107    Concrete+             Alley_03           Concrete+             1                    dgt04_z08_01     
+108    Concrete+             Street             Concrete+             1                    dgt04_z09_01     
+
+109    Concrete+             ****               Concrete              0                    dgt04_z00_03     
+110    Concrete+             ****               Water                 0                    dgt04_z00_04     
+111    Concrete+             ****               Aqueduct              0                    TCN01_Z15_01     
+112    Concrete+             ****               Apartments            0                    TCN01_Z15_01     
+113    Concrete+             ****               Highrise_01           0                    TCN01_Z15_01     
+114    Concrete+             ****               Highrise_02           0                    TCN01_Z15_01     
+115    Concrete+             ****               Highrise_03           0                    TCN01_Z15_01     
+116    Concrete+             ****               Highrise_04           0                    TCN01_Z15_01     
+117    Concrete+             ****               Highrise_05           0                    TCN01_Z15_01     
+118    Concrete+             ****               Highrise_06           0                    TCN01_Z15_01     
+119    Concrete+             ****               Highrise_07           0                    TCN01_Z15_01     
+120    Concrete+             ****               Slums1                0                    dgt04_z06_01     
+121    Concrete+             ****               Slums2                0                    dgt04_z07_01     
+122    Concrete+             ****               Slums3                0                    dgt04_z08_01     
+123    Concrete+             ****               Police_Station        0                    TCN01_Z15_01     
+124    Concrete+             ****               Hospital              0                    TCN01_Z15_01     
+125    Concrete+             ****               Lab                   0                    TCN01_Z15_01     
+126    Concrete+             ****               Freeway               0                    TCN01_Z15_01     
+127    Concrete+             ****               Warehouse_01          0                    TCN01_Z15_01     
+128    Concrete+             ****               Building              0                    TCN01_Z15_01               
+
+
+
+

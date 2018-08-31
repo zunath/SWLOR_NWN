@@ -1,11 +1,13 @@
 # Star Wars: Legends of the Old Republic
-Server-side C# code used in the Neverwinter Nights Solar Odyssey Online 2 module.
+Server-side C# code used in the Neverwinter Nights Star Wars: Legends of the Old Republic module.
 
 Game: Neverwinter Nights: Enhanced Edition
 
 Website: TBA
 
 Discord: https://discord.gg/MyQAM6m
+
+Trello: https://trello.com/b/ZaHbq0M3/development
 
 # Project Description
 
@@ -15,7 +17,7 @@ It serves as a replacement for NWScript and handles most server features and fun
 
 Refer to the quick start guide below and be sure to post any issues on our forums. The link to the forums is above.
 
-# Quick-start guide for Solar Odyssey Online 2 server developers
+# Quick-start guide for SWLOR server developers
 
 1.) Install Git from here: https://git-scm.com/downloads
 

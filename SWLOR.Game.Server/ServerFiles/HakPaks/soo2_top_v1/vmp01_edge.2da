@@ -1,0 +1,28 @@
+2DA V2.0
+
+      Corner1         Edge      Corner2         Height    Model       
+0     Rock            ****      Rock            0         vmp01_z01_01
+1     Rock            Trench    Rock            0         vmp01_z02_01
+2     Rock            Wall      Rock            0         vmp01_z03_01
+3     Chasm           Bridge    Chasm           0         vmp01_z04_01
+4     Rock            Road      Rock            0         vmp01_z05_01
+5     Rock            ****      Chasm           0         vmp01_z06_01
+6     Cliff           ****      Chasm           0         vmp01_z08_01
+7     Cliff           ****      Rock            0         vmp01_z10_01
+8     Cliff           ****      Cliff           0         vmp01_z12_01
+9     Chasm           ****      Chasm           0         vmp01_z13_01
+10    Rock            ****      ****            0         vmp01_z01_01
+11    Chasm           ****      ****            0         vmp01_z13_01
+12    Cliff           ****      ****            0         vmp01_z12_01
+13    Rock+           ****      Rock+           1         vmp01_z01_01
+14    Rock+           ****      Rock            0         vmp01_z07_01
+15    Rock            Slope     Rock+           0         vmp01_z09_01
+16    Rock+           ****      ****            1         vmp01_z01_01
+17    Rock+           Road      Rock+           1         vmp01_z05_01
+18    Rock+           Wall      Rock+           1         vmp01_z03_01
+19    Rock+           Trench    Rock+           1         vmp01_z02_01
+20    Rock            Fence     Rock            0         vmp01_z11_01
+21    Rock+           Fence     Rock+           1         vmp01_z11_01
+22    Plaza           ****      Plaza           0         vmp01_z14_01
+23    Rock            ****      Plaza           0         vmp01_z15_01
+24    Plaza           ****      ****            0         vmp01_z14_01

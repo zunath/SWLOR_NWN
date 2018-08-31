@@ -1,0 +1,17 @@
+2DA V2.0
+
+       Corner1     Edge     Corner2     Height     Model            
+0      Cobble      ****     Cobble      0          FCX01_I01_01     
+1      holes       ****     holes       0          fcx01_l20_02     
+2      Cobble2     ****     Cobble2     0          fcx01_k05_01  
+3      holes       pont     holes       0          fcx01_j04_01     
+4      Cobble2     ****     Cobble      0          fcx01_k05_01     
+5      holes       ****     Cobble      0          fcx01_l05_01     
+6      holes       ****     Cobble2     0          fcx01_l05_02     
+7      Cobble      ****     ****        0          FCX01_I01_01     
+8      holes       ****     ****        0          fcx01_l20_02     
+9      Cobble2     ****     ****        0          fcx01_k05_01
+10     Cobble      routes   Cobble      0          fcx01_x04_01
+11     Cobble2     routes   Cobble2     0          fcx01_x04_02
+10     Cobble      murs     Cobble      0          fcx01_y06_01
+11     Cobble2     murs     Cobble2     0          fcx01_y06_02

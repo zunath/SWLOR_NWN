@@ -1,0 +1,87 @@
+2DA V2.0                                          
+                                                  
+           Label               InventorySound     
+0          soft_plate          it_softplate       
+1          hard_material       it_materialhard    
+2          soft_material       it_materialsoft    
+3          cloth               it_materialcloth   
+4          leather_armour      it_armorleather    
+5          chain_armour        it_armorchain      
+6          plate_armour        it_armorplate      
+7          small_blade         it_bladesmall      
+8          med_blade           it_blademedium     
+9          large_blade         it_bladelarge      
+10         huge_blade          it_bladehuge       
+11         med_chain           it_chainmedium     
+12         large_chain         it_chainlarge      
+13         med_metal_blunt     it_metalbluntmed   
+14         large_metal_blunt   it_metalbluntlrg   
+15         large_pole          it_polelarge       
+16         small_wood          it_woodsmall       
+17         med_wood            it_woodmedium      
+18         arrow&bolt          it_arrow_bolt      
+19         med_wood_twang      it_bow_xbow_med    
+20         large_wood_twang    it_bow_xbows_lrg   
+21         gem_ping            it_gem             
+22         key_ping            it_key             
+23         ring_ping           it_ring            
+24         potion_ping         it_potion          
+25         amulet_jingle       it_jewelry         
+26         coin_jingle         it_coins           
+27         paper_rustle        it_paper           
+28         misc_tiny           it_generictiny     
+29         misc_small          it_genericsmall    
+30         misc_med            it_genericmedium   
+31         misc_big            it_genericlarge    
+32         whip                it_whip
+33         lightsaber          it_lightsaber            
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  
+                                                  

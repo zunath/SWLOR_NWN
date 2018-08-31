@@ -1,0 +1,20 @@
+2DA V2.0                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                              
+    LABEL              STRING_REF  CYCLICAL    DAWN            DAY             DUSK            NIGHT
+
+0   None               ****        ****        ****            ****            ****            ****
+1   Grass_Clear        ****        1           Skyda_001       Sky_001         Skyd_001        Skyn_001
+2   Grass_Storm	       ****        1           SSkyda_001      SSky_001        SSkyd_001       SSkyn_001
+3   Desert_Clear       ****        1           DSkyda_001      DSky_001        DSkyd_001       DSkyn_001
+4   Winter_Clear       ****        1           WSkyda_001      WSky_001        WSkyd_001       WSkyn_001 
+5   Icy    	       ****        0           ISky_001        ISky_001        ISky_001        ISky_001
+6   Black              ****        0           Skybl_001       Skybl_001       Skybl_001       Skybl_001
+7   Wildspace          ****        0           wildspace       wildspace       wildspace       wildspace    
+8   Red_Clouds         ****        1           sky_knat01      sky_knat01      sky_knat01      sky_knat02
+9   Moon_Scape         ****        1           CCS_10          CCS_10          CCS_10          CCS_10
+10  Volcanic_Planet    ****        1           Ashend_001      Ashen_001       Ashend_001      Ashenn_001
+11  Mountain_Peaks     ****        1           Mountd_001      Mount_001       Mountd_001      Mountn_001
+12  Desert_Spire       ****        1           Outlands_001    Outlands_001    Outlands_001    Outlandsn_001
+13  City_Skyline       ****        1           cityscapeDa_001 cityscapeD_001  cityscapeDu_001 cityscapeN_001
+14  DeepSpace          ****        0           deepspace       deepspace       deepspace       deepspace
+15  Asteroid_Belt      ****        0           asteroids       asteroids       asteroids       asteroids       

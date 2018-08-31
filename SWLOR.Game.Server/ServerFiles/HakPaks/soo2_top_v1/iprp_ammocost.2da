@@ -1,0 +1,19 @@
+2DA V2.0
+
+           Name     Label        Cost Arrow         Bolt          Bullet        
+0          ****     Random       0    ****          ****          ****          
+1          1631     Basic        2    NW_WAMAR001   NW_WAMBO001   NW_WAMBU001   
+2          1632     1d6Fire      4    NW_WAMMAR002  NW_WAMMBO005  NW_WAMMBU005  
+3          1633     1d6Cold      4    NW_WAMMAR005  NW_WAMMBO001  NW_WAMMBU006  
+4          1634     1d6Lightning 4    NW_WAMMAR006  NW_WAMMBO002  NW_WAMMBU007  
+5          16967955 1d6Acid      4    ZEP_WAMMAR001 ZEP_WAMMBO001 ZEP_WAMMBU001 
+6          16967956 1d6Sonic     4    ZEP_WAMMAR002 ZEP_WAMMBO002 ZEP_WAMMBU002 
+7          16967957 1d6Divine    10   ZEP_WAMMAR003 ZEP_WAMMBO003 ZEP_WAMMBU003 
+8          16967958 1d6Magical   10   ZEP_WAMMAR004 ZEP_WAMMBO004 ZEP_WAMMBU004 
+9          16967959 1d6Negative  10   ZEP_WAMMAR005 ZEP_WAMMBO005 ZEP_WAMMBU005 
+10         16967960 1d6Positive  10   ZEP_WAMMAR006 ZEP_WAMMBO006 ZEP_WAMMBU006 
+11         1641     1            5    NW_WAMMAR009  NW_WAMMBO008  NW_WAMMBU008  
+12         1642     2            6    NW_WAMMAR010  NW_WAMMBO009  NW_WAMMBU009  
+13         1643     3            7    NW_WAMMAR011  NW_WAMMBO010  NW_WAMMBU010  
+14         1644     4            8    X2_WAMMAR012  X2_WAMMBO011  X2_WAMMBU009  
+15         1645     5            9    X2_WAMMAR013  X2_WAMMBO012  X2_WAMMBU010  

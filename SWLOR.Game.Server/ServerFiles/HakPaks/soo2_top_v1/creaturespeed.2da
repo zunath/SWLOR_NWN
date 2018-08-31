@@ -1,0 +1,12 @@
+2DA V2.0
+     Label       Name   2DAName  WALKRATE RUNRATE
+0    PC_Movement ****   PLAYER     2.00      4.00
+1    Immobile    2319   NOMOVE     0.00      0.00
+2    Very_Slow   2320   VSLOW      0.75      1.50
+3    Slow        2321   SLOW       1.25      2.50
+4    Normal      2322   NORM       1.75      3.50
+5    Fast        2323   FAST       2.25      4.50
+6    Very_Fast   2324   VFAST      2.75      5.50
+7    Default     6614   DEFAULT    0.00      0.00
+8    DM_Fast     6893   DFAST      5.50     11.00
+9    Aircraft1   "AIR1"   DFAST      10.00    20.00

@@ -1,10 +1,9 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using NWN;
 using SWLOR.Game.Server.Service.Contracts;
 
-namespace SWLOR.Game.Server.Perk.Evocation
+namespace SWLOR.Game.Server.Perk.DarkSide
 {
     public class GraspingIce : IPerk
     {
@@ -54,33 +53,33 @@ namespace SWLOR.Game.Server.Perk.Evocation
             int level = _perk.GetPCPerkLevel(oPC, PerkType.GraspingIce);
             int damage;
             float slowLength = 0.0f;
-            int evocationBonus = oPC.EffectiveEvocationBonus;
+            int darkAbilityBonus = oPC.EffectiveDarkAbilityBonus;
 
             switch (level)
             {
                 case 1:
-                    damage = _random.Random(6 + evocationBonus) + 1;
+                    damage = _random.Random(6 + darkAbilityBonus) + 1;
                     break;
                 case 2:
-                    damage = _random.Random(6 + evocationBonus) + 1;
+                    damage = _random.Random(6 + darkAbilityBonus) + 1;
                     slowLength = 3.0f;
                     break;
                 case 3:
-                    damage = _random.Random(6 + evocationBonus) + 1;
-                    damage += _random.Random(6 + evocationBonus) + 1;
+                    damage = _random.Random(6 + darkAbilityBonus) + 1;
+                    damage += _random.Random(6 + darkAbilityBonus) + 1;
                     slowLength = 3.0f;
                     break;
                 case 4:
-                    damage = _random.Random(4 + evocationBonus) + 1;
-                    damage += _random.Random(4 + evocationBonus) + 1;
-                    damage += _random.Random(4 + evocationBonus) + 1;
-                    damage += _random.Random(4 + evocationBonus) + 1;
+                    damage = _random.Random(4 + darkAbilityBonus) + 1;
+                    damage += _random.Random(4 + darkAbilityBonus) + 1;
+                    damage += _random.Random(4 + darkAbilityBonus) + 1;
+                    damage += _random.Random(4 + darkAbilityBonus) + 1;
                     slowLength = 3.0f;
                     break;
                 case 5:
-                    damage = _random.Random(8 + evocationBonus) + 1;
-                    damage += _random.Random(8 + evocationBonus) + 1;
-                    damage += _random.Random(8 + evocationBonus) + 1;
+                    damage = _random.Random(8 + darkAbilityBonus) + 1;
+                    damage += _random.Random(8 + darkAbilityBonus) + 1;
+                    damage += _random.Random(8 + darkAbilityBonus) + 1;
                     slowLength = 3.0f;
                     break;
                 default:
@@ -100,7 +99,7 @@ namespace SWLOR.Game.Server.Perk.Evocation
                 _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, _.EffectSlow(), oTarget.Object, slowLength + 0.1f);
             }
 
-            _skill.RegisterPCToNPCForSkill(oPC, (NWCreature)oTarget, SkillType.EvocationMagic);
+            _skill.RegisterPCToNPCForSkill(oPC, (NWCreature)oTarget, SkillType.DarkSideAbilities);
 
             oPC.AssignCommand(() =>
             {

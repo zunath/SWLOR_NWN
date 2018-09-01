@@ -1,10 +1,9 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using NWN;
 using SWLOR.Game.Server.Service.Contracts;
 
-namespace SWLOR.Game.Server.Perk.Alteration
+namespace SWLOR.Game.Server.Perk.LightSide
 {
     public class Recover: IPerk
     {
@@ -52,7 +51,7 @@ namespace SWLOR.Game.Server.Perk.Alteration
         public void OnImpact(NWPlayer oPC, NWObject oTarget)
         {
             int level = _perk.GetPCPerkLevel(oPC, PerkType.Recover);
-            int alterationBonus = oPC.EffectiveAlterationBonus;
+            int lightBonus = oPC.EffectiveLightAbilityBonus;
             int amountMin;
             int amountMax;
             float length;
@@ -99,10 +98,10 @@ namespace SWLOR.Game.Server.Perk.Alteration
                 default: return;
             }
 
-            amountMin += alterationBonus * 2;
-            amountMax += alterationBonus * 3;
-            length += alterationBonus;
-            regenAmount += alterationBonus / 3;
+            amountMin += lightBonus * 2;
+            amountMax += lightBonus * 3;
+            length += lightBonus;
+            regenAmount += lightBonus / 3;
 
             int healAmount = _random.Random(amountMin, amountMax) + 1;
 
@@ -121,7 +120,7 @@ namespace SWLOR.Game.Server.Perk.Alteration
             _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, regen, oTarget.Object, length + 0.1f);
             _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, heal, oTarget.Object);
 
-            _skill.RegisterPCToAllCombatTargetsForSkill(oPC, SkillType.AlterationMagic);
+            _skill.RegisterPCToAllCombatTargetsForSkill(oPC, SkillType.LightSideAbilities);
 
             Effect vfx = _.EffectVisualEffect(NWScript.VFX_IMP_HEALING_M);
             _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, vfx, oTarget.Object);

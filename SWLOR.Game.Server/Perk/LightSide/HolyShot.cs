@@ -1,26 +1,26 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using NWN;
 using SWLOR.Game.Server.Service.Contracts;
 
-namespace SWLOR.Game.Server.Perk.Evocation
+namespace SWLOR.Game.Server.Perk.LightSide
 {
-    public class LightningShock : IPerk
+    public class HolyShot: IPerk
     {
         private readonly INWScript _;
-        private readonly IRandomService _random;
         private readonly IPerkService _perk;
+        private readonly IRandomService _random;
         private readonly ISkillService _skill;
 
-        public LightningShock(INWScript script,
-            IRandomService random,
+        public HolyShot(
+            INWScript script,
             IPerkService perk,
+            IRandomService random,
             ISkillService skill)
         {
             _ = script;
-            _random = random;
             _perk = perk;
+            _random = random;
             _skill = skill;
         }
 
@@ -51,35 +51,35 @@ namespace SWLOR.Game.Server.Perk.Evocation
 
         public void OnImpact(NWPlayer oPC, NWObject oTarget)
         {
-            int level = _perk.GetPCPerkLevel(oPC, PerkType.LightningShock);
+            int level = _perk.GetPCPerkLevel(oPC, PerkType.HolyShot);
             int damage;
-            int evocationBonus = oPC.EffectiveEvocationBonus;
+            int lightAbilityBonus = oPC.EffectiveLightAbilityBonus;
 
             switch (level)
             {
                 case 1:
-                    damage = _random.Random(8 + evocationBonus) + 1;
+                    damage = _random.Random(8 + lightAbilityBonus) + 1;
                     break;
                 case 2:
-                    damage = _random.Random(6 + evocationBonus) + 1;
-                    damage += _random.Random(6 + evocationBonus) + 1;
+                    damage = _random.Random(6 + lightAbilityBonus) + 1;
+                    damage += _random.Random(6 + lightAbilityBonus) + 1;
                     break;
                 case 3:
-                    damage = _random.Random(6 + evocationBonus) + 1;
-                    damage += _random.Random(6 + evocationBonus) + 1;
+                    damage = _random.Random(6 + lightAbilityBonus) + 1;
+                    damage += _random.Random(6 + lightAbilityBonus) + 1;
                     break;
                 case 4:
-                    damage = _random.Random(4 + evocationBonus) + 1;
-                    damage += _random.Random(4 + evocationBonus) + 1;
-                    damage += _random.Random(4 + evocationBonus) + 1;
-                    damage += _random.Random(4 + evocationBonus) + 1;
+                    damage = _random.Random(4 + lightAbilityBonus) + 1;
+                    damage += _random.Random(4 + lightAbilityBonus) + 1;
+                    damage += _random.Random(4 + lightAbilityBonus) + 1;
+                    damage += _random.Random(4 + lightAbilityBonus) + 1;
                     break;
                 case 5:
-                    damage = _random.Random(4 + evocationBonus) + 1;
-                    damage += _random.Random(4 + evocationBonus) + 1;
-                    damage += _random.Random(4 + evocationBonus) + 1;
-                    damage += _random.Random(4 + evocationBonus) + 1;
-                    damage += _random.Random(4 + evocationBonus) + 1;
+                    damage = _random.Random(4 + lightAbilityBonus) + 1;
+                    damage += _random.Random(4 + lightAbilityBonus) + 1;
+                    damage += _random.Random(4 + lightAbilityBonus) + 1;
+                    damage += _random.Random(4 + lightAbilityBonus) + 1;
+                    damage += _random.Random(4 + lightAbilityBonus) + 1;
                     break;
                 default:
                     return;
@@ -88,11 +88,13 @@ namespace SWLOR.Game.Server.Perk.Evocation
             int wisdom = oPC.WisdomModifier;
             int intelligence = oPC.IntelligenceModifier;
 
-            float damageMultiplier = 1.0f + (intelligence * 0.2f) + (wisdom * 0.1f);
+            float damageMultiplier = 1.0f + (intelligence * 0.4f) + (wisdom * 0.2f);
             damage = (int)(damage * damageMultiplier);
 
-            _skill.RegisterPCToNPCForSkill(oPC, (NWCreature)oTarget, SkillType.EvocationMagic);
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, _.EffectVisualEffect(NWScript.VFX_IMP_DOOM), oTarget.Object);
+            Effect vfx = _.EffectBeam(NWScript.VFX_BEAM_SILENT_HOLY, oPC.Object, NWScript.BODY_NODE_CHEST);
+            _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, vfx, oTarget.Object, 1.5f);
+
+            _skill.RegisterPCToNPCForSkill(oPC, NWCreature.Wrap(oTarget.Object), SkillType.LightSideAbilities);
 
             oPC.AssignCommand(() =>
             {

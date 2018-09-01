@@ -1,10 +1,9 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using NWN;
 using SWLOR.Game.Server.Service.Contracts;
 
-namespace SWLOR.Game.Server.Perk.Alteration
+namespace SWLOR.Game.Server.Perk.LightSide
 {
     public class Aegis: IPerk
     {
@@ -83,12 +82,12 @@ namespace SWLOR.Game.Server.Perk.Alteration
 
             int wisdom = oPC.WisdomModifier;
             int intelligence = oPC.IntelligenceModifier;
-            int alterationBonus = oPC.EffectiveAlterationBonus / 2;
-            ticks = ticks + intelligence + (wisdom * 2) + alterationBonus;
+            int lightAbilityBonus = oPC.EffectiveLightAbilityBonus / 2;
+            ticks = ticks + intelligence + (wisdom * 2) + lightAbilityBonus;
 
             _customEffect.ApplyCustomEffect(oPC, (NWPlayer)oTarget, CustomEffectType.Aegis, ticks, level);
             _skill.ApplyStatChanges((NWPlayer)oTarget, null);
-            _skill.RegisterPCToAllCombatTargetsForSkill(oPC, SkillType.AlterationMagic);
+            _skill.RegisterPCToAllCombatTargetsForSkill(oPC, SkillType.LightSideAbilities);
 
             Effect vfx = _.EffectVisualEffect(NWScript.VFX_IMP_AC_BONUS);
             _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, vfx, oTarget.Object);

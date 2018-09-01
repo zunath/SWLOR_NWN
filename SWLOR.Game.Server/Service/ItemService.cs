@@ -200,13 +200,13 @@ namespace SWLOR.Game.Server.Service
             {
                 description += _color.Orange("Enmity: ") + examinedItem.EnmityRate +  "%\n";
             }
-            if (examinedItem.EvocationBonus > 0)
+            if (examinedItem.DarkAbilityBonus > 0)
             {
-                description += _color.Orange("Evocation Bonus: ") + examinedItem.EvocationBonus + "\n";
+                description += _color.Orange("Dark Ability Bonus: ") + examinedItem.DarkAbilityBonus + "\n";
             }
-            if (examinedItem.AlterationBonus > 0)
+            if (examinedItem.LightAbilityBonus > 0)
             {
-                description += _color.Orange("Alteration Bonus: ") + examinedItem.AlterationBonus + "\n";
+                description += _color.Orange("Light Ability Bonus: ") + examinedItem.LightAbilityBonus + "\n";
             }
             if (examinedItem.SummoningBonus > 0)
             {

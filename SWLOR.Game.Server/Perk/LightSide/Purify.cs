@@ -1,10 +1,9 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using NWN;
 using SWLOR.Game.Server.Service.Contracts;
 
-namespace SWLOR.Game.Server.Perk.Alteration
+namespace SWLOR.Game.Server.Perk.LightSide
 {
     public class Purify: IPerk
     {
@@ -46,8 +45,8 @@ namespace SWLOR.Game.Server.Perk.Alteration
         {
             int wisdom = oPC.WisdomModifier;
             int intelligence = oPC.IntelligenceModifier;
-            int alterationBonus = oPC.EffectiveAlterationBonus;
-            float castingTime = baseCastingTime - (wisdom * 1.5f + intelligence + alterationBonus);
+            int lightBonus = oPC.EffectiveLightAbilityBonus;
+            float castingTime = baseCastingTime - (wisdom * 1.5f + intelligence + lightBonus);
 
             if (castingTime < 1.0f) castingTime = 1.0f;
 
@@ -91,7 +90,7 @@ namespace SWLOR.Game.Server.Perk.Alteration
                 }
             }
 
-            _skill.RegisterPCToAllCombatTargetsForSkill(oPC, SkillType.AlterationMagic);
+            _skill.RegisterPCToAllCombatTargetsForSkill(oPC, SkillType.LightSideAbilities);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

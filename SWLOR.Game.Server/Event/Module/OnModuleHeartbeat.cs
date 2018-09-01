@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Event.Module
                     }
                     amount += oPC.EffectiveFPRegenBonus;
 
-                    if (oPC.Chest.CustomItemType == CustomItemType.MysticArmor)
+                    if (oPC.Chest.CustomItemType == CustomItemType.ForceArmor)
                     {
                         int clarityLevel = _perk.GetPCPerkLevel(oPC, PerkType.Clarity);
                         if (clarityLevel > 0)

@@ -336,27 +336,27 @@ namespace SWLOR.Game.Server.GameObject
             set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_ENMITY_RATE", value);
         }
 
-        public virtual int EvocationBonus
+        public virtual int DarkAbilityBonus
         {
             get
             {
-                int evocationBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.EvocationBonus);
-                if(evocationBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_EVOCATION_BONUS");
-                EvocationBonus = evocationBonus;
-                return evocationBonus;
+                int darkAbilityBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.DarkAbilityBonus);
+                if(darkAbilityBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_DARK_ABILITY_BONUS");
+                DarkAbilityBonus = darkAbilityBonus;
+                return darkAbilityBonus;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_EVOCATION_BONUS", value);
+            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_DARK_ABILITY_BONUS", value);
         }
-        public virtual int AlterationBonus
+        public virtual int LightAbilityBonus
         {
             get
             {
-                int alterationBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.AlterationBonus);
-                if(alterationBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_ALTERATION_BONUS");
-                AlterationBonus = alterationBonus;
-                return alterationBonus;
+                int lightAbilityBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.LightAbilityBonus);
+                if(lightAbilityBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_LIGHT_ABILITY_BONUS");
+                LightAbilityBonus = lightAbilityBonus;
+                return lightAbilityBonus;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_ALTERATION_BONUS", value);
+            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_LIGHT_ABILITY_BONUS", value);
         }
         public virtual int SummoningBonus
         {

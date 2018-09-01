@@ -29,9 +29,9 @@ namespace SWLOR.Game.Server.Perk.Armor
             return "You must be equipped with light armor to use that combat ability.";
         }
 
-        public int ManaCost(NWPlayer oPC, int baseManaCost)
+        public int FPCost(NWPlayer oPC, int baseFPCost)
         {
-            return baseManaCost;
+            return baseFPCost;
         }
 
         public float CastingTime(NWPlayer oPC, float baseCastingTime)

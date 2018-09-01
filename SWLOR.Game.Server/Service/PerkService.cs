@@ -328,9 +328,9 @@ namespace SWLOR.Game.Server.Service
                     break;
             }
 
-            if (perk.BaseManaCost > 0)
+            if (perk.BaseFPCost > 0)
             {
-                description += _color.Orange("Base Mana Cost: ") + perk.BaseManaCost + "\n";
+                description += _color.Orange("Base FP Cost: ") + perk.BaseFPCost + "\n";
             }
             if (perk.CooldownCategory.BaseCooldownTime > 0.0f)
             {

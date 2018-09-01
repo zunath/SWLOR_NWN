@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Service
 
 
             int equippedItemHPBonus = 0;
-            int equippedItemManaBonus = 0;
+            int equippedItemFPBonus = 0;
 
             for (int slot = 0; slot < NWScript.NUM_INVENTORY_SLOTS; slot++)
             {
@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.Service
                 if (item.Equals(ignoreItem)) continue;
 
                 equippedItemHPBonus += item.HPBonus;
-                equippedItemManaBonus += item.ManaBonus;
+                equippedItemFPBonus += item.FPBonus;
             }
 
             // Apply HP
@@ -184,19 +184,19 @@ namespace SWLOR.Game.Server.Service
                 _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, damage, player.Object);
             }
 
-            // Apply Mana
-            int mana = 20;
-            mana += (player.IntelligenceModifier + player.WisdomModifier + player.CharismaModifier) * 5;
-            mana += _perk.GetPCPerkLevel(player, PerkType.Mana) * 5;
-            mana += equippedItemManaBonus;
+            // Apply FP
+            int fp = 20;
+            fp += (player.IntelligenceModifier + player.WisdomModifier + player.CharismaModifier) * 5;
+            fp += _perk.GetPCPerkLevel(player, PerkType.FP) * 5;
+            fp += equippedItemFPBonus;
             if (pcEntity.BackgroundID == (int)BackgroundType.Wizard || pcEntity.BackgroundID == (int)BackgroundType.Cleric)
-                mana += 10;
+                fp += 10;
 
-            if (mana < 0) mana = 0;
-            pcEntity.MaxMana = mana;
+            if (fp < 0) fp = 0;
+            pcEntity.MaxFP = fp;
 
             if (isInitialization)
-                pcEntity.CurrentMana = pcEntity.MaxMana;
+                pcEntity.CurrentFP = pcEntity.MaxFP;
 
             _db.SaveChanges();
         }

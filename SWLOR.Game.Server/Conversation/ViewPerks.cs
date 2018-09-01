@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.Conversation
                     _color.Green("Category: ") + perk.PerkCategory.Name + "\n" +
                     _color.Green("Rank: ") + rank + " / " + maxRank + "\n" +
                     _color.Green("Price: ") + price + "\n" +
-                    (perk.BaseManaCost > 0 ? _color.Green("Mana: ") + perk.BaseManaCost : "") + "\n" +
+                    (perk.BaseFPCost > 0 ? _color.Green("FP: ") + perk.BaseFPCost : "") + "\n" +
                     (perk.CooldownCategory != null && perk.CooldownCategory.BaseCooldownTime > 0 ? _color.Green("Cooldown: ") + perk.CooldownCategory.BaseCooldownTime + "s" : "") + "\n" +
                     _color.Green("Description: ") + perk.Description + "\n" +
                     _color.Green("Current Bonus: ") + currentBonus + "\n" +

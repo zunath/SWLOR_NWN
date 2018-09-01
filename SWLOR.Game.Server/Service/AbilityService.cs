@@ -107,10 +107,10 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            int manaCost = perkAction.ManaCost(pc, perkAction.ManaCost(pc, perk.BaseManaCost));
-            if (playerEntity.CurrentMana < manaCost)
+            int fpCost = perkAction.FPCost(pc, perkAction.FPCost(pc, perk.BaseFPCost));
+            if (playerEntity.CurrentFP < fpCost)
             {
-                pc.SendMessage("You do not have enough mana. (Required: " + manaCost + ". You have: " + playerEntity.CurrentMana + ")");
+                pc.SendMessage("You do not have enough FP. (Required: " + fpCost + ". You have: " + playerEntity.CurrentFP + ")");
                 return;
             }
 
@@ -156,9 +156,9 @@ namespace SWLOR.Game.Server.Service
                 perkAction.OnImpact(pc, target);
                 ApplyEnmity(pc, target, perk);
 
-                if (manaCost > 0)
+                if (fpCost > 0)
                 {
-                    playerEntity.CurrentMana = playerEntity.CurrentMana - manaCost;
+                    playerEntity.CurrentFP = playerEntity.CurrentFP - fpCost;
                     _db.SaveChanges();
                 }
                 ApplyCooldown(pc, perk.CooldownCategory, perkAction);
@@ -269,13 +269,13 @@ namespace SWLOR.Game.Server.Service
                 }
 
 
-                // Adjust mana only if spell cost > 0
+                // Adjust FP only if spell cost > 0
                 PlayerCharacter pcEntity = _db.PlayerCharacters.Single(x => x.PlayerID == pc.GlobalID);
-                if (perk.ManaCost(pc, entity.BaseManaCost) > 0)
+                if (perk.FPCost(pc, entity.BaseFPCost) > 0)
                 {
-                    pcEntity.CurrentMana = pcEntity.CurrentMana - perk.ManaCost(pc, entity.BaseManaCost);
+                    pcEntity.CurrentFP = pcEntity.CurrentFP - perk.FPCost(pc, entity.BaseFPCost);
                     _db.SaveChanges();
-                    pc.SendMessage(_color.Custom("Mana: " + pcEntity.CurrentMana + " / " + pcEntity.MaxMana, 32, 223, 219));
+                    pc.SendMessage(_color.Custom("FP: " + pcEntity.CurrentFP + " / " + pcEntity.MaxFP, 32, 223, 219));
 
                 }
 
@@ -343,22 +343,22 @@ namespace SWLOR.Game.Server.Service
             }, 30.0f);
         }
 
-        public PlayerCharacter RestoreMana(NWPlayer oPC, int amount, PlayerCharacter entity)
+        public PlayerCharacter RestoreFP(NWPlayer oPC, int amount, PlayerCharacter entity)
         {
-            entity.CurrentMana = entity.CurrentMana + amount;
-            if (entity.CurrentMana > entity.MaxMana)
-                entity.CurrentMana = entity.MaxMana;
+            entity.CurrentFP = entity.CurrentFP + amount;
+            if (entity.CurrentFP > entity.MaxFP)
+                entity.CurrentFP = entity.MaxFP;
 
-            oPC.SendMessage(_color.Custom("Mana: " + entity.CurrentMana + " / " + entity.MaxMana, 32, 223, 219));
+            oPC.SendMessage(_color.Custom("FP: " + entity.CurrentFP + " / " + entity.MaxFP, 32, 223, 219));
 
             return entity;
         }
 
-        public void RestoreMana(NWPlayer oPC, int amount)
+        public void RestoreFP(NWPlayer oPC, int amount)
         {
             PlayerCharacter entity = _db.PlayerCharacters.Single(x => x.PlayerID == oPC.GlobalID);
             ((IObjectContextAdapter)_db).ObjectContext.Refresh(RefreshMode.StoreWins, entity);
-            RestoreMana(oPC, amount, entity);
+            RestoreFP(oPC, amount, entity);
             _db.SaveChanges();
         }
 
@@ -435,7 +435,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             if(restoreAmount > 0)
-                RestoreMana(player, restoreAmount);
+                RestoreFP(player, restoreAmount);
         }
 
         private void HandleApplySneakAttackDamage(DamageData data)

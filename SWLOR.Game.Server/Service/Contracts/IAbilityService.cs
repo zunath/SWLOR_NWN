@@ -7,8 +7,8 @@ namespace SWLOR.Game.Server.Service.Contracts
     {
         void OnHitCastSpell(NWPlayer oPC);
         void OnModuleUseFeat();
-        void RestoreMana(NWPlayer oPC, int amount);
-        PlayerCharacter RestoreMana(NWPlayer oPC, int amount, PlayerCharacter entity);
+        void RestoreFP(NWPlayer oPC, int amount);
+        PlayerCharacter RestoreFP(NWPlayer oPC, int amount, PlayerCharacter entity);
         void OnModuleApplyDamage();
     }
 }

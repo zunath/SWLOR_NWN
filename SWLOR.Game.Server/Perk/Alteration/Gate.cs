@@ -45,9 +45,9 @@ namespace SWLOR.Game.Server.Perk.Alteration
             return "Only party members may be targeted with that ability.";
         }
 
-        public int ManaCost(NWPlayer oPC, int baseManaCost)
+        public int FPCost(NWPlayer oPC, int baseFPCost)
         {
-            return baseManaCost;
+            return baseFPCost;
         }
 
         public float CastingTime(NWPlayer oPC, float baseCastingTime)

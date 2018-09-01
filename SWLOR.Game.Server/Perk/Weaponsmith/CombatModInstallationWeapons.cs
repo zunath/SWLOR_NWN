@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Perk.Weaponsmith
             return null;
         }
 
-        public int ManaCost(NWPlayer oPC, int baseManaCost)
+        public int FPCost(NWPlayer oPC, int baseFPCost)
         {
             return 0;
         }

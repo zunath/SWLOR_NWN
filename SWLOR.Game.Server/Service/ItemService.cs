@@ -159,9 +159,9 @@ namespace SWLOR.Game.Server.Service
             {
                 description += _color.Orange("HP Bonus: ") + examinedItem.HPBonus + "\n";
             }
-            if (examinedItem.ManaBonus > 0)
+            if (examinedItem.FPBonus > 0)
             {
-                description += _color.Orange("Mana Bonus: ") + examinedItem.ManaBonus + "\n";
+                description += _color.Orange("FP Bonus: ") + examinedItem.FPBonus + "\n";
             }
             if (examinedItem.CastingSpeed > 0)
             {
@@ -228,9 +228,9 @@ namespace SWLOR.Game.Server.Service
             {
                 description += _color.Orange("HP Regen Bonus: ") + examinedItem.HPRegenBonus + "\n";
             }
-            if (examinedItem.ManaRegenBonus > 0)
+            if (examinedItem.FPRegenBonus > 0)
             {
-                description += _color.Orange("Mana Regen Bonus: ") + examinedItem.ManaRegenBonus + "\n";
+                description += _color.Orange("FP Regen Bonus: ") + examinedItem.FPRegenBonus + "\n";
             }
             if (examinedItem.BaseAttackBonus > 0)
             {

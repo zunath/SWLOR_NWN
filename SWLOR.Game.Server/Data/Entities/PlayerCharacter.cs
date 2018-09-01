@@ -78,11 +78,11 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public int VersionNumber { get; set; }
 
-        public int MaxMana { get; set; }
+        public int MaxFP { get; set; }
 
-        public int CurrentMana { get; set; }
+        public int CurrentFP { get; set; }
 
-        public int CurrentManaTick { get; set; }
+        public int CurrentFPTick { get; set; }
 
         public int RevivalStoneCount { get; set; }
         

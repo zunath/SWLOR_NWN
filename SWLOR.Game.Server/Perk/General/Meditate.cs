@@ -32,9 +32,9 @@ namespace SWLOR.Game.Server.Perk.General
             return "You cannot meditate while you or a party member are in combat.";
         }
 
-        public int ManaCost(NWPlayer oPC, int baseManaCost)
+        public int FPCost(NWPlayer oPC, int baseFPCost)
         {
-            return baseManaCost;
+            return baseFPCost;
         }
 
         public float CastingTime(NWPlayer oPC, float baseCastingTime)
@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Perk.General
                 return;
             }
 
-            _ability.RestoreMana(oPC, amount);
+            _ability.RestoreFP(oPC, amount);
             Effect vfx = _.EffectVisualEffect(NWScript.VFX_IMP_HEAD_MIND);
             _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, vfx, oPC.Object);
             oPC.AssignCommand(() =>

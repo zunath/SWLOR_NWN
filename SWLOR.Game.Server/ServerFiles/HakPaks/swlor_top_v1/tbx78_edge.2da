@@ -1,0 +1,14 @@
+2DA V2.0
+
+       Corner1     Edge     Corner2     Height     Model            
+0      Facility    ****     Facility    0          tbx78_z03_01     
+1      Wall        ****     Facility    0          tbx78_z02_01     
+2      Wall        Raised   Facility    0          tbx78_z05_01     
+3      Wall        Cell     Facility    0          tbx78_z04_01     
+4      Wall        Corridor Wall        0          tbx78_z01_01     
+5      Wall        ****     Wall        0          TIN01_Z10_01     
+6      Wall        ****     ****        0          TIN01_Z10_01     
+7      Facility    ****     ****        0          tbx78_z03_01     
+8      Wall        Doorway1 Wall        0          tbx78_z01_01     
+9      Wall        Doorway2 Wall        0          tbx78_z06_01     
+10     Wall        Doorway3 Wall        0          tbx78_z07_01     

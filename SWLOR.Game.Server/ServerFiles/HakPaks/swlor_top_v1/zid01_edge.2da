@@ -1,0 +1,15 @@
+2DA V2.0
+
+      Corner1    Edge          Corner2    Height    Model       
+0     Floor      ****          Floor      0         TID01_Z07_01
+1     Floor2     ****          Floor2     0         TID01_Z06_01
+2     Wall       ****          Wall       0         TID01_Z05_01
+3     Wall       ****          ****       0         TID01_Z05_01
+4     Floor      ****          ****       0         TID01_Z07_01
+5     Floor2     ****          ****       0         TID01_Z06_01
+6     Wall       ****          Floor      0         TID01_Z03_01
+7     Wall       ****          Floor2     0         TID01_Z04_01
+8     Wall       Corridor      Wall       0         TID01_Z02_01
+9     Wall       Doorway       Wall       0         TID01_Z08_01
+10    Wall       ****          2x2        0         TID01_Z09_01
+11    Wall       MazeMosaic    Wall       0         ZIC01_A51_01

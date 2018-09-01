@@ -1,0 +1,20 @@
+2DA V2.0                               
+                                       
+           Name     Label         Cost   
+0          1031     Bludgeoning   1.25   
+1          1032     Piercing      1.25   
+2          1033     Slashing      1.25   
+3          ****     Subdual       ****   
+4          ****     Physical      ****   
+5          62487    Magical       0.35   
+6          1027     Acid          0.35   
+7          1029     Cold          0.4    
+8          5155     Divine        0.4   
+9          1030     Electrical    0.45   
+10         1028     Fire          0.5    
+11         5158     Negative      0.5   
+12         5159     Positive      0.5   
+13         2202     Sonic         0.5    
+14	   16777592 Ballistic	  1.25
+15	   16777593 Energy	  0.5
+16         16777595 Bullet        0.01

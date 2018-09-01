@@ -1,0 +1,53 @@
+2DA V2.0                                                                                   
+                                                                                           
+           label              Model           ShotSound         ImpactSound                
+0          arrow              wamar_001       cb_sh_ahandgun    ****             
+1          bolt               wambo_001       cb_sh_alongarm    ****             
+2          bullet             wambu_001       cb_sh_ahandgun    ****              
+3          dart               wthdt_001       ****              cb_ht_dart1                
+4          shuriken           wthsh_001       ****              cb_ht_dart1                
+5          throwingaxe        wthax_001       ****              cb_ht_throwaxe1            
+6          acidarrow          WAmAr_fxacid    ****              cb_ht_arrow1
+7          acidbolt           WAmBo_fxacid    ****              cb_ht_arrow1               
+8          acidbullet         WAmBu_fxacid    ****              cb_ht_arrow1               
+9          aciddart           WThDt_fxacid    cb_sh_prjtlacid   scm_hitacid                
+10         acidshuriken       WThSh_fxacid    cb_sh_prjtlacid   scm_hitacid                
+11         acidthrowingaxe    WThAx_fxacid    cb_sh_prjtlacid   scm_hitacid                
+12         coldarrow          WAmAr_fxfrost   cb_sh_prjtlcold   ****
+13         coldbolt           WAmBo_fxfrost   cb_sh_prjtlcold   ****
+14         coldbullet         WAmBu_fxfrost   cb_sh_prjtlcold   ****
+15         colddart           WThDt_fxfrost   cb_sh_prjtlcold   scm_hitcold                
+16         coldshuriken       WThSh_fxfrost   cb_sh_prjtlcold   scm_hitcold                
+17         coldthrowingaxe    WThAx_fxfrost   cb_sh_prjtlcold   scm_hitcold                
+18         elecarrow          WAmAr_fxelect   cb_sh_photon      ****
+19         elecbolt           WAmBo_fxelect   cb_sh_plascannon  ****       
+20         elecbullet         WAmBu_fxelect   cb_sh_photon      ****
+21         elecdart           WThDt_fxelect   cb_sh_prjtlelec   scm_elec                   
+22         elecshuriken       WThSh_fxelect   cb_sh_prjtlelec   scm_elec                   
+23         electhrowingaxe    WThAx_fxelect   cb_sh_prjtlelec   scm_elec                   
+24         firearrow          WAmAr_fxfire    cb_sh_laser_hvy   ****       
+25         firebolt           WAmBo_fxfire    cb_sh_pulserifle  ****       
+26         firebullet         WAmBu_fxfire    cb_sh_laser_hvy   ****
+27         firedart           WThDt_fxfire    cb_sh_prjtlfire   scm_fire                   
+28         fireshuriken       WThSh_fxfire    cb_sh_prjtlfire   scm_fire                   
+29         firethrowingaxe    WThAx_fxfire    cb_sh_prjtlfire   scm_fire                   
+30         sonicarrow         WAmAr_fxsonic   fw_blaster        ****       
+31         sonicbolt          WAmBo_fxsonic   fw_blaster        ****
+32         sonicbullet        WAmBu_fxsonic   fw_blaster        ****
+33         sonicdart          WThDt_fxsonic   cb_sh_prjtlsonc   scm_sonc                   
+34         sonicshuriken      WThSh_fxsonic   cb_sh_prjtlsonc   scm_sonc                   
+35         sonicthrowingaxe   WThAx_fxsonic   cb_sh_prjtlsonc   scm_sonc                   
+                                                                                           
+                                                                                           
+                                                                                           
+                                                                                           
+                                                                                           
+                                                                                           
+                                                                                           
+                                                                                           
+                                                                                           
+                                                                                           
+                                                                                           
+                                                                           
+                                                                                           
+                                                                                           

@@ -1,0 +1,14 @@
+2da v2.0
+
+       corner1     edge         corner2     height     model            
+0      floor       ****         floor       0          zsf01_z07_01     
+1      floor2      ****         floor2      0          zsf01_z06_01     
+2      wall        ****         wall        0          zsf01_z05_01     
+3      wall        ****         ****        0          zsf01_z05_01     
+4      floor       ****         ****        0          zsf01_z07_01     
+5      floor2      ****         ****        0          zsf01_z06_01     
+6      wall        ****         floor       0          zsf01_z03_01     
+7      wall        ****         floor2      0          zsf01_z04_01     
+8      wall        corridor     wall        0          zsf01_z02_01     
+9      wall        doorway      wall        0          zsf01_z08_01     
+10     wall        ****         2x2         0          zsf01_z09_01     

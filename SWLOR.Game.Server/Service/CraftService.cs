@@ -25,8 +25,9 @@ namespace SWLOR.Game.Server.Service
         private readonly INWNXPlayer _nwnxPlayer;
         private readonly IRandomService _random;
         private readonly IErrorService _error;
-        private readonly IItemService _item;
+        private readonly IComponentBonusService _componentBonus;
         private readonly IBiowareXP2 _biowareXP2;
+        private readonly IItemService _item;
 
         public CraftService(
             INWScript script,
@@ -37,8 +38,9 @@ namespace SWLOR.Game.Server.Service
             INWNXPlayer nwnxPlayer,
             IRandomService random,
             IErrorService error,
-            IItemService item,
-            IBiowareXP2 biowareXP2)
+            IComponentBonusService componentBonus,
+            IBiowareXP2 biowareXP2,
+            IItemService item)
         {
             _ = script;
             _db = db;
@@ -48,8 +50,9 @@ namespace SWLOR.Game.Server.Service
             _nwnxPlayer = nwnxPlayer;
             _random = random;
             _error = error;
-            _item = item;
+            _componentBonus = componentBonus;
             _biowareXP2 = biowareXP2;
+            _item = item;
         }
 
         private const float BaseCraftDelay = 18.0f;
@@ -203,7 +206,8 @@ namespace SWLOR.Game.Server.Service
             PCSkill pcSkill = _db.PCSkills.Single(x => x.PlayerID == oPC.GlobalID && x.SkillID == blueprint.SkillID);
 
             int pcEffectiveLevel = CalculatePCEffectiveLevel(oPC, device, pcSkill.Rank);
-            float chance = CalculateBaseChanceToAddProperty(pcEffectiveLevel, model.AdjustedLevel);
+            int itemLevel = model.AdjustedLevel;
+            float chance = CalculateBaseChanceToAddProperty(pcEffectiveLevel, itemLevel);
             float equipmentBonus = CalculateEquipmentBonus(oPC, (SkillType)blueprint.SkillID);
             
             var craftedItems = new List<NWItem>();
@@ -226,20 +230,26 @@ namespace SWLOR.Game.Server.Service
             {
                 foreach (var ip in component.ItemProperties)
                 {
-                    if (_.GetItemPropertyType(ip) == (int)CustomItemPropertyType.ComponentBonus)
+                    int ipType = _.GetItemPropertyType(ip);
+                    if (ipType == (int)CustomItemPropertyType.ComponentBonus)
                     {
-                        ComponentBonusType bonusType = (ComponentBonusType)_.GetItemPropertySubType(ip);
-                        int amount = _.GetItemPropertyCostTableValue(ip);
                         if (_random.RandomFloat() * 100.0f + equipmentBonus <= chance)
                         {
                             foreach (var item in craftedItems)
                             {
-                                ApplyComponentBonus(item, bonusType, amount);
+                                _componentBonus.ApplyComponentBonus(item, ip);
                             }
                         }
                     }
                 }
+            }
 
+            // Recommended level gets set regardless if all item properties make it on the final product.
+            // Also mark who crafted the item. This is later used for display on the item's examination event.
+            foreach (var item in craftedItems)
+            {
+                item.RecommendedLevel = itemLevel;
+                item.SetLocalString("CRAFTER_PLAYER_ID", oPC.GlobalID);
             }
             
             oPC.SendMessage("You created " + blueprint.Quantity + "x " + blueprint.ItemName + "!");
@@ -247,36 +257,7 @@ namespace SWLOR.Game.Server.Service
             _skill.GiveSkillXP(oPC, blueprint.SkillID, (int)xp);
             ClearPlayerCraftingData(oPC);
         }
-
-        private void ApplyComponentBonus(NWItem product, ComponentBonusType bonusType, int amount)
-        {
-            ItemProperty prop = null;
-            string sourceTag = string.Empty;
-
-            for(int x = 1; x <= amount; x++)
-            {
-                switch (bonusType)
-                {
-                    case ComponentBonusType.ModSocketRed: sourceTag = "rslot_red"; break;
-                    case ComponentBonusType.ModSocketBlue: sourceTag = "rslot_blue"; break;
-                    case ComponentBonusType.ModSocketGreen: sourceTag = "rslot_green"; break;
-                    case ComponentBonusType.ModSocketYellow: sourceTag = "rslot_yellow"; break;
-                    case ComponentBonusType.ModSocketPrismatic: sourceTag = "rslot_prismatic"; break;
-                    case ComponentBonusType.Durability: break;
-                }
-
-                if (!string.IsNullOrWhiteSpace(sourceTag))
-                {
-                    prop = _item.GetCustomItemPropertyByItemTag(sourceTag);
-                }
-
-                if (prop == null) return;
-
-                _biowareXP2.IPSafeAddItemProperty(product, prop, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
-            }
-            
-        }
-
+        
         private string CalculateDifficulty(int pcLevel, int blueprintLevel)
         {
             int delta = pcLevel - blueprintLevel;

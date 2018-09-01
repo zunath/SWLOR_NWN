@@ -133,7 +133,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             int heavyRank = _skill.GetPCSkill(this, SkillType.HeavyArmor).Rank;
             int lightRank = _skill.GetPCSkill(this, SkillType.LightArmor).Rank;
-            int mysticRank = _skill.GetPCSkill(this, SkillType.MysticArmor).Rank;
+            int forceRank = _skill.GetPCSkill(this, SkillType.ForceArmor).Rank;
 
             int ac = 0;
             for (int slot = 0; slot < NWScript.NUM_INVENTORY_SLOTS; slot++)
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.GameObject
 
                 if (oItem.CustomItemType != CustomItemType.HeavyArmor &&
                     oItem.CustomItemType != CustomItemType.LightArmor &&
-                    oItem.CustomItemType != CustomItemType.MysticArmor)
+                    oItem.CustomItemType != CustomItemType.ForceArmor)
                     continue;
                 
                 int skillRankToUse = 0;
@@ -163,10 +163,10 @@ namespace SWLOR.Game.Server.GameObject
                 {
                     skillRankToUse = lightRank;
                 }
-                else if (oItem.CustomItemType == CustomItemType.MysticArmor &&
-                         oItem.RecommendedLevel > mysticRank)
+                else if (oItem.CustomItemType == CustomItemType.ForceArmor &&
+                         oItem.RecommendedLevel > forceRank)
                 {
-                    skillRankToUse = mysticRank;
+                    skillRankToUse = forceRank;
                 }
                 
                 int itemAC = oItem.AC + oItem.CustomAC;
@@ -233,43 +233,43 @@ namespace SWLOR.Game.Server.GameObject
             }
         }
 
-        public virtual int EffectiveEvocationBonus
+        public virtual int EffectiveDarkAbilityBonus
         {
             get
             {
-                int evocationBonus = 0;
+                int darkBonus = 0;
                 for (int itemSlot = 0; itemSlot < NWScript.NUM_INVENTORY_SLOTS; itemSlot++)
                 {
                     NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
                     if (!item.IsValid) continue;
                     SkillType skill = _skill.GetSkillTypeForItem(item);
                     int rank = _skill.GetPCSkill(this, skill).Rank;
-                    int itemEvocationBonus = CalculateAdjustedValue(item.EvocationBonus, item.RecommendedLevel, rank, 0);
+                    int itemDarkBonus = CalculateAdjustedValue(item.DarkAbilityBonus, item.RecommendedLevel, rank, 0);
                     
-                    evocationBonus += itemEvocationBonus;
+                    darkBonus += itemDarkBonus;
                 }
 
-                return evocationBonus;
+                return darkBonus;
             }
         }
 
-        public virtual int EffectiveAlterationBonus
+        public virtual int EffectiveLightAbilityBonus
         {
             get
             {
-                int alterationBonus = 0;
+                int lightBonus = 0;
                 for (int itemSlot = 0; itemSlot < NWScript.NUM_INVENTORY_SLOTS; itemSlot++)
                 {
                     NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
                     if (!item.IsValid) continue;
                     SkillType skill = _skill.GetSkillTypeForItem(item);
                     int rank = _skill.GetPCSkill(this, skill).Rank;
-                    int itemAlterationBonus = CalculateAdjustedValue(item.AlterationBonus, item.RecommendedLevel, rank, 0);
+                    int itemLightBonus = CalculateAdjustedValue(item.LightAbilityBonus, item.RecommendedLevel, rank, 0);
 
-                    alterationBonus += itemAlterationBonus;
+                    lightBonus += itemLightBonus;
                 }
 
-                return alterationBonus;
+                return lightBonus;
             }
         }
 

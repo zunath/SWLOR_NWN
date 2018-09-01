@@ -413,7 +413,7 @@ namespace SWLOR.Game.Server.Service
                 float armorXP = baseXP * 0.20f;
                 int lightArmorPoints = 0;
                 int heavyArmorPoints = 0;
-                int mysticArmorPoints = 0;
+                int forceArmorPoints = 0;
 
                 for (int slot = 0; slot < NWScript.NUM_INVENTORY_SLOTS; slot++)
                 {
@@ -426,12 +426,12 @@ namespace SWLOR.Game.Server.Service
                     {
                         heavyArmorPoints++;
                     }
-                    else if (item.CustomItemType == CustomItemType.MysticArmor)
+                    else if (item.CustomItemType == CustomItemType.ForceArmor)
                     {
-                        mysticArmorPoints++;
+                        forceArmorPoints++;
                     }
                 }
-                totalPoints = lightArmorPoints + heavyArmorPoints + mysticArmorPoints;
+                totalPoints = lightArmorPoints + heavyArmorPoints + forceArmorPoints;
                 if (totalPoints <= 0) continue;
 
                 int armorRank = GetPCSkillByID(preg.Player.GlobalID, (int)SkillType.LightArmor).Rank;
@@ -446,11 +446,11 @@ namespace SWLOR.Game.Server.Service
 
                 GiveSkillXP(preg.Player, SkillType.HeavyArmor, (int)(armorXP * percent * armorLDP));
                 
-                armorRank = GetPCSkillByID(preg.Player.GlobalID, (int)SkillType.MysticArmor).Rank;
+                armorRank = GetPCSkillByID(preg.Player.GlobalID, (int)SkillType.ForceArmor).Rank;
                 armorLDP = CalculatePartyLevelDifferencePenalty(partyLevel, armorRank);
-                percent = mysticArmorPoints / (float)totalPoints;
+                percent = forceArmorPoints / (float)totalPoints;
 
-                GiveSkillXP(preg.Player, SkillType.MysticArmor, (int)(armorXP * percent * armorLDP));
+                GiveSkillXP(preg.Player, SkillType.ForceArmor, (int)(armorXP * percent * armorLDP));
 
 
             }
@@ -782,7 +782,7 @@ namespace SWLOR.Game.Server.Service
             else if (throwingTypes.Contains(type)) skillType = SkillType.Throwing;
             else if (item.CustomItemType == CustomItemType.HeavyArmor) skillType = SkillType.HeavyArmor;
             else if (item.CustomItemType == CustomItemType.LightArmor) skillType = SkillType.LightArmor;
-            else if (item.CustomItemType == CustomItemType.MysticArmor) skillType = SkillType.MysticArmor;
+            else if (item.CustomItemType == CustomItemType.ForceArmor) skillType = SkillType.ForceArmor;
             else if (shieldTypes.Contains(type)) skillType = SkillType.Shields;
 
             return skillType;
@@ -815,7 +815,7 @@ namespace SWLOR.Game.Server.Service
             if (skillType == SkillType.Unknown ||
                 skillType == SkillType.LightArmor ||
                 skillType == SkillType.HeavyArmor ||
-                skillType == SkillType.MysticArmor ||
+                skillType == SkillType.ForceArmor ||
                 skillType == SkillType.Shields) return;
             if (oTarget.IsPlayer || oTarget.IsDM) return;
             if (oTarget.ObjectType != NWScript.OBJECT_TYPE_CREATURE) return;
@@ -931,7 +931,7 @@ namespace SWLOR.Game.Server.Service
             if (itemSkill == SkillType.Unknown ||
                 itemSkill == SkillType.LightArmor ||
                 itemSkill == SkillType.HeavyArmor ||
-                itemSkill == SkillType.MysticArmor ||
+                itemSkill == SkillType.ForceArmor ||
                 itemSkill == SkillType.Shields) return 0;
 
             int weaponSkillID = (int)itemSkill;
@@ -1026,7 +1026,7 @@ namespace SWLOR.Game.Server.Service
             if (skillType == SkillType.Unknown ||
                 skillType == SkillType.HeavyArmor ||
                 skillType == SkillType.LightArmor ||
-                skillType == SkillType.MysticArmor ||
+                skillType == SkillType.ForceArmor ||
                 skillType == SkillType.Shields) return;
 
             int skillID = (int)skillType;
@@ -1098,7 +1098,7 @@ namespace SWLOR.Game.Server.Service
             if (skillType == SkillType.Unknown ||
                 skillType == SkillType.HeavyArmor ||
                 skillType == SkillType.LightArmor ||
-                skillType == SkillType.MysticArmor ||
+                skillType == SkillType.ForceArmor ||
                 skillType == SkillType.Shields) return;
 
             foreach (ItemProperty ip in oItem.ItemProperties)

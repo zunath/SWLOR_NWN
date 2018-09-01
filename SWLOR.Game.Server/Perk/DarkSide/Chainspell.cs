@@ -1,10 +1,9 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using NWN;
 using SWLOR.Game.Server.Service.Contracts;
 
-namespace SWLOR.Game.Server.Perk.Evocation
+namespace SWLOR.Game.Server.Perk.DarkSide
 {
     public class Chainspell: IPerk
     {
@@ -23,12 +22,12 @@ namespace SWLOR.Game.Server.Perk.Evocation
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
-            return oPC.Chest.CustomItemType == CustomItemType.MysticArmor;
+            return oPC.Chest.CustomItemType == CustomItemType.ForceArmor;
         }
 
         public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
         {
-            return "You must be equipped with mystic armor to activate that ability.";
+            return "You must be equipped with force armor to activate that ability.";
         }
 
         public int FPCost(NWPlayer oPC, int baseFPCost)

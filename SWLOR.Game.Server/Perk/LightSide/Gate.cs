@@ -1,11 +1,10 @@
-﻿using SWLOR.Game.Server.Bioware.Contracts;
+﻿using NWN;
+using SWLOR.Game.Server.Bioware.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using NWN;
 using SWLOR.Game.Server.Service.Contracts;
 
-namespace SWLOR.Game.Server.Perk.Alteration
+namespace SWLOR.Game.Server.Perk.LightSide
 {
     public class Gate: IPerk
     {
@@ -54,8 +53,8 @@ namespace SWLOR.Game.Server.Perk.Alteration
         {
             int wisdom = oPC.WisdomModifier;
             int intelligence = oPC.IntelligenceModifier;
-            int alterationBonus = oPC.EffectiveAlterationBonus / 3;
-            float castingTime = baseCastingTime - (wisdom * 1.5f + intelligence + alterationBonus);
+            int lightAbilityBonus = oPC.EffectiveLightAbilityBonus / 3;
+            float castingTime = baseCastingTime - (wisdom * 1.5f + intelligence + lightAbilityBonus);
 
             if (castingTime <= 2.0f) castingTime = 2.0f;
             return castingTime;
@@ -74,7 +73,7 @@ namespace SWLOR.Game.Server.Perk.Alteration
             _death.TeleportPlayerToBindPoint((NWPlayer)oTarget);
             _.ApplyEffectAtLocation(NWScript.DURATION_TYPE_INSTANT, effect, location);
 
-            _skill.GiveSkillXP(oPC, SkillType.AlterationMagic, 100);
+            _skill.GiveSkillXP(oPC, SkillType.LightSideAbilities, 100);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

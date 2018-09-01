@@ -1,27 +1,25 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using NWN;
 using SWLOR.Game.Server.Service.Contracts;
 
-namespace SWLOR.Game.Server.Perk.Alteration
+namespace SWLOR.Game.Server.Perk.DarkSide
 {
-    public class HolyShot: IPerk
+    public class CrushingEarth: IPerk
     {
         private readonly INWScript _;
-        private readonly IPerkService _perk;
         private readonly IRandomService _random;
+        private readonly IPerkService _perk;
         private readonly ISkillService _skill;
 
-        public HolyShot(
-            INWScript script,
-            IPerkService perk,
+        public CrushingEarth(INWScript script,
             IRandomService random,
+            IPerkService perk,
             ISkillService skill)
         {
             _ = script;
-            _perk = perk;
             _random = random;
+            _perk = perk;
             _skill = skill;
         }
 
@@ -52,35 +50,37 @@ namespace SWLOR.Game.Server.Perk.Alteration
 
         public void OnImpact(NWPlayer oPC, NWObject oTarget)
         {
-            int level = _perk.GetPCPerkLevel(oPC, PerkType.HolyShot);
+            int level = _perk.GetPCPerkLevel(oPC, PerkType.CrushingEarth);
             int damage;
-            int alterationBonus = oPC.EffectiveAlterationBonus;
+            float stunLength = 0.0f;
+            int darkAbilityBonus = oPC.EffectiveDarkAbilityBonus;
 
             switch (level)
             {
                 case 1:
-                    damage = _random.Random(8 + alterationBonus) + 1;
+                    damage = _random.Random(6 + darkAbilityBonus) + 1;
                     break;
                 case 2:
-                    damage = _random.Random(6 + alterationBonus) + 1;
-                    damage += _random.Random(6 + alterationBonus) + 1;
+                    damage = _random.Random(6 + darkAbilityBonus) + 1;
+                    stunLength = 3.0f;
                     break;
                 case 3:
-                    damage = _random.Random(6 + alterationBonus) + 1;
-                    damage += _random.Random(6 + alterationBonus) + 1;
+                    damage = _random.Random(6 + darkAbilityBonus) + 1;
+                    damage += _random.Random(6 + darkAbilityBonus) + 1;
+                    stunLength = 3.0f;
                     break;
                 case 4:
-                    damage = _random.Random(4 + alterationBonus) + 1;
-                    damage += _random.Random(4 + alterationBonus) + 1;
-                    damage += _random.Random(4 + alterationBonus) + 1;
-                    damage += _random.Random(4 + alterationBonus) + 1;
+                    damage = _random.Random(4 + darkAbilityBonus) + 1;
+                    damage += _random.Random(4 + darkAbilityBonus) + 1;
+                    damage += _random.Random(4 + darkAbilityBonus) + 1;
+                    damage += _random.Random(4 + darkAbilityBonus) + 1;
+                    stunLength = 3.0f;
                     break;
                 case 5:
-                    damage = _random.Random(4 + alterationBonus) + 1;
-                    damage += _random.Random(4 + alterationBonus) + 1;
-                    damage += _random.Random(4 + alterationBonus) + 1;
-                    damage += _random.Random(4 + alterationBonus) + 1;
-                    damage += _random.Random(4 + alterationBonus) + 1;
+                    damage = _random.Random(8 + darkAbilityBonus) + 1;
+                    damage += _random.Random(8 + darkAbilityBonus) + 1;
+                    damage += _random.Random(8 + darkAbilityBonus) + 1;
+                    stunLength = 3.0f;
                     break;
                 default:
                     return;
@@ -89,13 +89,17 @@ namespace SWLOR.Game.Server.Perk.Alteration
             int wisdom = oPC.WisdomModifier;
             int intelligence = oPC.IntelligenceModifier;
 
-            float damageMultiplier = 1.0f + (intelligence * 0.4f) + (wisdom * 0.2f);
+            float damageMultiplier = 1.0f + (intelligence * 0.2f) + (wisdom * 0.1f);
             damage = (int)(damage * damageMultiplier);
+            
+            _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, _.EffectVisualEffect(NWScript.VFX_COM_CHUNK_STONE_SMALL), oTarget.Object);
 
-            Effect vfx = _.EffectBeam(NWScript.VFX_BEAM_SILENT_HOLY, oPC.Object, NWScript.BODY_NODE_CHEST);
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, vfx, oTarget.Object, 1.5f);
+            if (stunLength > 0.0f)
+            {
+                _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, _.EffectStunned(), oTarget.Object, stunLength + 0.1f);
+            }
 
-            _skill.RegisterPCToNPCForSkill(oPC, NWCreature.Wrap(oTarget.Object), SkillType.AlterationMagic);
+            _skill.RegisterPCToNPCForSkill(oPC, (NWCreature)oTarget, SkillType.DarkSideAbilities);
 
             oPC.AssignCommand(() =>
             {

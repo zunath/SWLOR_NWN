@@ -257,10 +257,10 @@
     <Compile Include="NWN\Events\Module\mod_on_nwnxchat.cs" />
     <Compile Include="NWN\Events\Module\mod_on_usefeat.cs" />
     <Compile Include="NWN\Events\Player\pc_on_damaged.cs" />
-    <Compile Include="Perk\Alteration\Gate.cs" />
-    <Compile Include="Perk\Alteration\HolyShot.cs" />
-    <Compile Include="Perk\Alteration\Purify.cs" />
-    <Compile Include="Perk\Alteration\Recover.cs" />
+    <Compile Include="Perk\LightSide\Gate.cs" />
+    <Compile Include="Perk\LightSide\HolyShot.cs" />
+    <Compile Include="Perk\LightSide\Purify.cs" />
+    <Compile Include="Perk\LightSide\Recover.cs" />
     <Compile Include="Perk\Armorsmith\CombatModInstallationArmors.cs" />
     <Compile Include="Perk\Armorsmith\CraftingModInstallationArmors.cs" />
     <Compile Include="Perk\Armorsmith\MagicModInstallationArmors.cs" />
@@ -269,7 +269,7 @@
     <Compile Include="Perk\Armor\Clarity.cs" />
     <Compile Include="Perk\Armor\Provoke.cs" />
     <Compile Include="Perk\Armor\Sturdiness.cs" />
-    <Compile Include="Perk\Evocation\Chainspell.cs" />
+    <Compile Include="Perk\DarkSide\Chainspell.cs" />
     <Compile Include="Perk\Firearms\BlasterProficiency.cs" />
     <Compile Include="Perk\Firearms\PointBlankShot.cs" />
     <Compile Include="Perk\Firearms\RapidReload.cs" />
@@ -294,10 +294,10 @@
     <Compile Include="Perk\Construction\VanityBlueprints.cs" />
     <Compile Include="Perk\Cooking\FoodRecipes.cs" />
     <Compile Include="Perk\Cooking\SpeedyCooking.cs" />
-    <Compile Include="Perk\Evocation\CrushingEarth.cs" />
-    <Compile Include="Perk\Evocation\FireBlast.cs" />
-    <Compile Include="Perk\Evocation\GraspingIce.cs" />
-    <Compile Include="Perk\Evocation\LightningShock.cs" />
+    <Compile Include="Perk\DarkSide\CrushingEarth.cs" />
+    <Compile Include="Perk\DarkSide\FireBlast.cs" />
+    <Compile Include="Perk\DarkSide\GraspingIce.cs" />
+    <Compile Include="Perk\DarkSide\LightningShock.cs" />
     <Compile Include="Perk\FirstAid\FrugalMedic.cs" />
     <Compile Include="Perk\FirstAid\HealingKitExpert.cs" />
     <Compile Include="Perk\FirstAid\ImmediateImprovement.cs" />
@@ -477,7 +477,7 @@
     <Compile Include="NWN\Events\Legacy\jvm_script_1.cs" />
     <Compile Include="NWN\Events\Module\mod_on_examine.cs" />
     <Compile Include="NWN\Events\Player\pc_on_heartbeat.cs" />
-    <Compile Include="Perk\Alteration\Aegis.cs" />
+    <Compile Include="Perk\LightSide\Aegis.cs" />
     <Compile Include="Perk\IPerk.cs" />
     <Compile Include="Placeable\CraftingForge\OnDisturbed.cs" />
     <Compile Include="Placeable\CraftingForge\OnHeartbeat.cs" />
@@ -524,7 +524,7 @@
     <Compile Include="Placeable\TrashCan\OnOpened.cs" />
     <Compile Include="Placeable\TutorialPortal\OnUsed.cs" />
     <Compile Include="Placeable\WarpDevice\OnUsed.cs" />
-    <Compile Include="Mod\AlterationMagicMod.cs" />
+    <Compile Include="Mod\LightAbilityMod.cs" />
     <Compile Include="Mod\ArmorClassMod.cs" />
     <Compile Include="Mod\ArmorsmithMod.cs" />
     <Compile Include="Mod\AttackBonusMod.cs" />
@@ -538,7 +538,7 @@
     <Compile Include="Mod\EngineeringMod.cs" />
     <Compile Include="Mod\EnhancementBonusMod.cs" />
     <Compile Include="Mod\EnmityMod.cs" />
-    <Compile Include="Mod\EvocationMagicMod.cs" />
+    <Compile Include="Mod\DarkAbilityMod.cs" />
     <Compile Include="Mod\FirstAidMod.cs" />
     <Compile Include="Mod\HPRegenMod.cs" />
     <Compile Include="Mod\HPMod.cs" />
@@ -560,6 +560,7 @@
     <Compile Include="Service\BehaviourService.cs" />
     <Compile Include="Service\ChatCommandService.cs" />
     <Compile Include="Service\ColorTokenService.cs" />
+    <Compile Include="Service\ComponentBonusService.cs" />
     <Compile Include="Service\Contracts\IAbilityService.cs" />
     <Compile Include="Service\Contracts\IActivityLoggingService.cs" />
     <Compile Include="Service\Contracts\IChatCommandService.cs" />
@@ -660,6 +661,7 @@
     <Compile Include="Service\Contracts\IMapService.cs" />
     <Compile Include="Service\Contracts\IAppStateService.cs" />
     <Compile Include="Service\Contracts\IModService.cs" />
+    <Compile Include="Service\Contracts\IComponentBonusService.cs" />
     <Compile Include="Service\ItemService.cs" />
     <Compile Include="Service\Contracts\ITimeService.cs" />
     <Compile Include="Service\KeyItemService.cs" />

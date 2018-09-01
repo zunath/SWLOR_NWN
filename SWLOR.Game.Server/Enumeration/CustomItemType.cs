@@ -22,6 +22,6 @@
         CraftingTool = 17,
         Component = 18,
         Jewelry = 19,
-        MysticArmor = 20
+        ForceArmor = 20
     }
 }

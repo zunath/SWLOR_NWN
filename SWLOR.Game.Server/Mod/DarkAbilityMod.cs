@@ -4,12 +4,12 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class EvocationMagicMod : IMod
+    public class DarkAbilityMod : IMod
     {
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            if (target.EvocationBonus >= 50)
-                return "You cannot improve that item's evocation magic bonus any further.";
+            if (target.DarkAbilityBonus >= 50)
+                return "You cannot improve that item's dark ability bonus any further.";
 
             return null;
         }
@@ -17,15 +17,15 @@ namespace SWLOR.Game.Server.Mod
         public void Apply(NWPlayer player, NWItem target, params string[] args)
         {
             int value = Convert.ToInt32(args[0]);
-            int newValue = target.EvocationBonus + value;
+            int newValue = target.DarkAbilityBonus + value;
             if (newValue > 50) newValue = 50;
-            target.EvocationBonus = newValue;
+            target.DarkAbilityBonus = newValue;
         }
 
         public string Description(NWPlayer player, NWItem target, params string[] args)
         {
             int value = Convert.ToInt32(args[0]);
-            return "Evocation Magic +" + value;
+            return "Dark Ability +" + value;
         }
     }
 }

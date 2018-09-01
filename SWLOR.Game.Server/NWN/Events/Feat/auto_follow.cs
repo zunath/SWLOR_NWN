@@ -1,7 +1,8 @@
-﻿using SWLOR.Game.Server.Event.Feat;
+﻿using SWLOR.Game.Server;
+using SWLOR.Game.Server.Event.Feat;
 
 // ReSharper disable once CheckNamespace
-namespace SWLOR.Game.Server.NWN.Events.Feat
+namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
     internal class auto_follow

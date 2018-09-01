@@ -1,7 +1,8 @@
-﻿using SWLOR.Game.Server.Event.Dialog;
+﻿using SWLOR.Game.Server;
+using SWLOR.Game.Server.Event.Dialog;
 
 // ReSharper disable once CheckNamespace
-namespace SWLOR.Game.Server.NWN.Events.Dialog
+namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
     internal class dialog_appears_3

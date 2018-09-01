@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Service
                         break;
                     case ComponentBonusType.DurabilityUp:
                         product.MaxDurability += amount;
-                        product.Durability += amount;
+                        product.Durability = product.MaxDurability;
                         break;
                     case ComponentBonusType.ChargesUp:
                         product.Charges += amount;
@@ -128,6 +128,12 @@ namespace SWLOR.Game.Server.Service
                         break;
                     case ComponentBonusType.DamageUp:
                         product.DamageBonus += amount;
+                        break;
+                    case ComponentBonusType.DarkAbilityDown:
+                        product.DarkAbilityBonus -= amount;
+                        break;
+                    case ComponentBonusType.LightAbilityDown:
+                        product.LightAbilityBonus -= amount;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

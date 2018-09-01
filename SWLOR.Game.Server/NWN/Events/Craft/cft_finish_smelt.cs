@@ -1,7 +1,8 @@
-﻿using SWLOR.Game.Server.Placeable.CraftingForge;
+﻿using SWLOR.Game.Server;
+using SWLOR.Game.Server.Placeable.CraftingForge;
 
 // ReSharper disable once CheckNamespace
-namespace SWLOR.Game.Server.NWN.Events.Craft
+namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
     internal class cft_finish_smelt

@@ -1,7 +1,8 @@
-﻿using SWLOR.Game.Server.Event.Legacy;
+﻿using SWLOR.Game.Server;
+using SWLOR.Game.Server.Event.Legacy;
 
 // ReSharper disable once CheckNamespace
-namespace SWLOR.Game.Server.NWN.Events.Legacy
+namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
     internal class jvm_script_1

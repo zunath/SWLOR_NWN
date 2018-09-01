@@ -48,6 +48,20 @@ namespace SWLOR.Game.Server.Service
             item.Destroy();
             return name;
         }
+
+        public CustomItemType GetCustomItemTypeByResref(string resref)
+        {
+            NWPlaceable tempStorage = NWPlaceable.Wrap(_.GetObjectByTag("TEMP_ITEM_STORAGE"));
+            if (!tempStorage.IsValid)
+            {
+                Console.WriteLine("Could not locate temp item storage object. Create a placeable container in a non-accessible area with the tag TEMP_ITEM_STORAGE.");
+                return CustomItemType.None;
+            }
+            NWItem item = NWItem.Wrap(_.CreateItemOnObject(resref, tempStorage.Object));
+            var itemType = item.CustomItemType;
+            item.Destroy();
+            return itemType;
+        }
         
         public void OnModuleActivatedItem()
         {

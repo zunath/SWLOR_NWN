@@ -40,6 +40,7 @@
         GreenMod = 134,
         YellowMod = 135,
         LevelIncrease = 136,
-        ComponentBonus = 137
+        ComponentBonus = 137,
+        ComponentItemTypeRestriction = 138
     }
 }

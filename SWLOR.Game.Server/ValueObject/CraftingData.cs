@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.ValueObject
         public bool CanBuildItem => MainComponents.Count >= Blueprint.MainMinimum
                                     && SecondaryComponents.Count >= Blueprint.SecondaryMinimum
                                     && TertiaryComponents.Count >= Blueprint.TertiaryMinimum;
-
+        
         public CraftingData()
         {
             MainComponents = new List<NWItem>();

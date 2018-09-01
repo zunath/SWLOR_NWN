@@ -1,7 +1,8 @@
-﻿using SWLOR.Game.Server.Event.Player;
+﻿using SWLOR.Game.Server;
+using SWLOR.Game.Server.Event.Player;
 
 // ReSharper disable once CheckNamespace
-namespace SWLOR.Game.Server.NWN.Events.Player
+namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
     internal class pc_on_damaged

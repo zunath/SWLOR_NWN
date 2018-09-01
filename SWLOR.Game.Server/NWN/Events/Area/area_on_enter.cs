@@ -1,7 +1,8 @@
-﻿using SWLOR.Game.Server.Event.Area;
+﻿using SWLOR.Game.Server;
+using SWLOR.Game.Server.Event.Area;
 
 // ReSharper disable once CheckNamespace
-namespace SWLOR.Game.Server.NWN.Events.Area
+namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
     internal class area_on_enter

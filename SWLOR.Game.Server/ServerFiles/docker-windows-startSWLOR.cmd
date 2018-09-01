@@ -3,8 +3,8 @@ docker run --rm -it ^
 -e NWN_PORT=5121 ^
 -v c:/NeverwinterNights/NWN:/nwn/home ^
 -v /opt/nwn/logs.0:/nwn/run/logs.0 ^
--e NWN_SERVERNAME="Mono testing" ^
--e NWN_MODULE="Solar Odyssey Online 2" ^
+-e NWN_SERVERNAME="SWLOR Testing" ^
+-e NWN_MODULE="Star Wars LOR" ^
 -e NWN_PUBLICSERVER=1 ^
 -e NWN_MAXCLIENTS=96 ^
 -e NWN_MINLEVEL=1 ^
@@ -44,14 +44,14 @@ docker run --rm -it ^
 -e NWNX_THREADWATCHDOG_SKIP=y ^
 -e NWNX_TRACKING_SKIP=y ^
 -e NWNX_TWEAKS_SKIP=n ^
--e NWNX_MONO_ASSEMBLY=/nwn/home/mono/SOO2.Game.Server.dll ^
+-e NWNX_MONO_ASSEMBLY=/nwn/home/mono/SWLOR.Game.Server.dll ^
 -e NWNX_MONO_BASE_DIRECTORY=/nwn/home/mono ^
--e NWNX_MONO_APP_CONFIG=/nwn/home/mono/SOO2.Game.Server.dll.config ^
+-e NWNX_MONO_APP_CONFIG=/nwn/home/mono/SWLOR.Game.Server.dll.config ^
 -e NWNX_TWEAKS_HIDE_CLASSES_ON_CHAR_LIST=true ^
 -e NWNX_TWEAKS_DISABLE_PAUSE=true ^
 -e NWNX_TWEAKS_COMPARE_VARIABLES_WHEN_MERGING=true ^
 -e SQL_SERVER_IP_ADDRESS=127.0.0.1 ^
 -e SQL_SERVER_USERNAME=yourUsername ^
 -e SQL_SERVER_PASSWORD=yourPassword ^
--e SQL_SERVER_DATABASE=soo2 ^
+-e SQL_SERVER_DATABASE=swlor ^
 nwnxee/unified:latest-full

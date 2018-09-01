@@ -1,0 +1,35 @@
+2DA V2.0                                                        
+                                                                
+           Corner1   Edge     Corner2   Height   Model          
+0          Grass     ****     Asphalt   0        udp1_z01_00   
+1          Grass     Sidewalk Asphalt   0        udp1_z01_01   
+2          Grass     ****     Grass     0        udp1_z01_02   
+3          Grass     Sidewalk Grass     0        udp1_z01_03   
+4          Grass     Fence_Wood Grass     0        udp1_z01_04  
+5          Water     ****     Water     0        udp1_z01_05  
+6          Grass     ****     Water     0        udp1_z01_06   
+7          Grass     Driveway Grass     0        udp1_z01_07
+8          Asphalt   ****     Asphalt   0        udp1_z01_08    
+9          Asphalt   Road     Asphalt   0        udp1_z01_09
+10         Grass     Fence_Wood Asphalt   0        udp1_z01_10
+11         Grass     ****     ****      0        udp1_z01_15   
+12         Water     ****     ****      0        udp1_z01_16   
+13         Asphalt   ****     ****      0        udp1_z01_17   
+14         Grass     ****     Forest    0        udp1_z01_11
+15         Forest    ****     Forest    0        udp1_z01_12
+16         Forest    Sidewalk Forest    0        udp1_z01_13
+17         Forest    ****     ****      0        udp1_z01_14
+18         Grass     ****     Mall_Type_2  0        udp1_z02_00
+19         Grass     ****     Mall_Type_1  0        udp1_z02_01
+20         Grass     ****     Strip_Mall   0        udp1_z02_02
+21         Grass     Strip_Mall_Canopy  Strip_Mall   0        udp1_z02_03
+22         Strip_Mall   ****     Strip_Mall   0        udp1_z02_04
+23         Mall_Type_1  ****     Mall_Type_1  0        udp1_z02_05
+24         Mall_Type_2  ****     Mall_Type_2  0        udp1_z02_06
+25         Strip_Mall   ****     ****      0        udp1_z02_07
+26         Mall_Type_2  ****     ****      0        udp1_z02_08
+27         Mall_Type_1  ****     ****      0        udp1_z02_09
+28         Forest_Clearing    ****     Forest_Clearing    0        udp1_z01_33
+29         Forest_Clearing    ****     Forest    0        udp1_z01_34
+30         Forest_Clearing    ****     ****      0        udp1_z01_35
+

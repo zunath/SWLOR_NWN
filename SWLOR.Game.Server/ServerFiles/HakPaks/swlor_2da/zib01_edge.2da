@@ -1,0 +1,23 @@
+2DA V2.0
+
+      Corner1    Edge             Corner2    Height    Model       
+0     Wall       ****             Wall       0         TIB01_Z02_01
+1     Wall       ****             ****       0         TIB01_Z02_01
+2     Wall       Door             Wall       0         TIB01_Z03_01
+3     Wall       Corridor         Wall       0         TIB01_Z01_01
+4     Wall       DoorBlood        Wall       0         ZIB01_Z03_01
+5     Wall       CorridorBlood    Wall       0         ZIB01_Z01_01
+6     Wall       DoorMagic        Wall       0         ZIB01_Z03_11
+7     Wall       CorridorMagic    Wall       0         ZIB01_Z01_11
+8     Wall       DoorSewer        Wall       0         ZIB01_Z03_21
+9     Wall       CorridorSewer    Wall       0         ZIB01_Z01_21
+10    Wall       DoorUrine        Wall       0         ZIB01_Z03_31
+11    Wall       CorridorUrine    Wall       0         ZIB01_Z01_31
+12    Wall       DoorWater        Wall       0         ZIB01_Z03_41
+13    Wall       CorridorWater    Wall       0         ZIB01_Z01_41
+14    Wall       DoorIce          Wall       0         ZIB01_Z03_51
+15    Wall       CorridorIce      Wall       0         ZIB01_Z01_51
+16    Wall       DoorBlack        Wall       0         ZIB01_Z03_61
+17    Wall       CorridorBlack    Wall       0         ZIB01_Z01_61
+18    Wall       ChultDoorway     Wall       0         ZDC04_Z01_01
+19    Wall       ChultCorridor    Wall       0         ZDC04_Z06_01

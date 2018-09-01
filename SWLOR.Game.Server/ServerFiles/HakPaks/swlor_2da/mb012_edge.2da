@@ -1,0 +1,12 @@
+2DA V2.0
+
+      Corner1        Edge   Corner2   Height   Model          
+0     Forest         ****   Forest    0        mb012_c01_01   
+1     Chasm          ****   Chasm     0        mb012_d20_02   
+2     Forest         ****   Chasm     0        mb012_z02_01   
+3     Forest         ****   Forest+   0        mb012_z01_01   
+4     Forest+        ****   Forest+   1        mb012_c01_01   
+5     Forest         ****   ****      0        mb012_c01_01   
+6     Chasm          ****   ****      0        mb012_d20_02   
+7     Forest+        ****   ****      1        mb012_c01_01   
+8     Forest         ****   Forest    0        mb012_c01_02   

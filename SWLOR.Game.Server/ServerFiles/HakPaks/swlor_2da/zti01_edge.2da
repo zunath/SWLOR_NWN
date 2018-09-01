@@ -1,0 +1,14 @@
+2DA V2.0
+
+      Corner1       Edge    Corner2    Height    Model       
+0     Floor         ****    Floor      0         TTI01_Z05_01
+1     Floor+        ****    Floor+     1         TTI01_Z05_01
+2     Floor+        ****    Floor      0         TTI01_Z01_01
+3     EvilCastle    ****    ****       0         TTI01_Z06_01
+4     EvilCastle    ****    Floor      0         TTI01_Z02_01
+5     Floor         ****    Pit        0         TTI01_Z03_01
+6     Floor+        ****    Pit        0         TTI01_Z04_01
+7     Pit           ****    Pit        0         TTI01_Z07_01
+8     Pit           ****    ****       0         TTI01_Z07_01
+9     Floor         ****    ****       0         TTI01_Z05_01
+10    Floor+        ****    ****       1         TTI01_Z05_01

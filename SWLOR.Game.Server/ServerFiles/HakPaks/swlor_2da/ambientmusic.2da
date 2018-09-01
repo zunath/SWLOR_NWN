@@ -1,0 +1,342 @@
+2DA V2.0                                                                                           
+                                                                                                   
+           Description   Resource           Stinger1           Stinger2   Stinger3   DisplayName   
+0          61901         ****               ****               ****       ****       ****          
+1          61842         mus_ruralday1      ****               ****       ****       ****          
+2          61843         mus_ruralday2      ****               ****       ****       ****          
+3          61844         mus_ruralnite      ****               ****       ****       ****          
+4          61845         mus_forestday1     ****               ****       ****       ****          
+5          61846         mus_forestday2     ****               ****       ****       ****          
+6          61847         mus_forestnite     ****               ****       ****       ****          
+7          61848         mus_gendungeon1    ****               ****       ****       ****          
+8          61849         mus_sewer          ****               ****       ****       ****          
+9          61850         mus_mines1         ****               ****       ****       ****          
+10         61851         mus_mines2         ****               ****       ****       ****          
+11         61852         mus_crypt1         ****               ****       ****       ****          
+12         61853         mus_crypt2         ****               ****       ****       ****          
+13         61854         mus_evildungeon1   ****               ****       ****       ****          
+14         61855         mus_evildungeon2   ****               ****       ****       ****          
+15         61856         mus_cityslumday    ****               ****       ****       ****          
+16         61857         mus_cityslumnite   ****               ****       ****       ****          
+17         61858         mus_citydockday    ****               ****       ****       ****          
+18         61859         mus_citydocknite   ****               ****       ****       ****          
+19         61860         mus_citywealthy    ****               ****       ****       ****          
+20         61861         mus_citymarket     ****               ****       ****       ****          
+21         61862         mus_citynite       ****               ****       ****       ****          
+22         61863         mus_tavern1        ****               ****       ****       ****          
+23         61864         mus_tavern2        ****               ****       ****       ****          
+24         61865         mus_tavern3        ****               ****       ****       ****          
+25         61866         mus_richhouse      ****               ****       ****       ****          
+26         61867         mus_store          ****               ****       ****       ****          
+27         61868         mus_templegood     ****               ****       ****       ****          
+28         61869         mus_templeevil     ****               ****       ****       ****          
+29         61870         mus_theme_nwn      ****               ****       ****       ****          
+30         61871         mus_theme_chap1    ****               ****       ****       ****          
+31         61872         mus_theme_chap2    ****               ****       ****       ****          
+32         61873         mus_theme_chap3    ****               ****       ****       ****          
+33         61874         mus_theme_chap4    ****               ****       ****       ****          
+34         61875         mus_bat_rural1     mus_sbat_rural1    ****       ****       ****          
+35         61876         mus_bat_forest1    mus_sbat_forest1   ****       ****       ****          
+36         61877         mus_bat_forest2    mus_sbat_forest2   ****       ****       ****          
+37         61878         mus_bat_dung1      mus_sbat_dung1     ****       ****       ****          
+38         61879         mus_bat_dung2      mus_sbat_dung2     ****       ****       ****          
+39         61880         mus_bat_dung3      mus_sbat_dung3     ****       ****       ****          
+40         61881         mus_bat_city1      mus_sbat_city1     ****       ****       ****          
+41         61882         mus_bat_city2      mus_sbat_city2     ****       ****       ****          
+42         61883         mus_bat_city3      mus_sbat_city3     ****       ****       ****          
+43         61884         mus_bat_citboss    mus_sbat_citboss   ****       ****       ****          
+44         61885         mus_bat_forboss    mus_sbat_forboss   ****       ****       ****          
+45         61886         mus_bat_lizboss    mus_sbat_lizboss   ****       ****       ****          
+46         61887         mus_bat_dragon     mus_sbat_dragon    ****       ****       ****          
+47         61888         mus_bat_aribeth    mus_sbat_aribeth   ****       ****       ****          
+48         61889         mus_bat_endboss    mus_sbat_endboss   ****       ****       ****          
+49         66833         mus_templegood2    ****               ****       ****       ****          
+50         66883         mus_castle         ****               ****       ****       ****          
+51         66878         mus_theme_aribgd   ****               ****       ****       ****          
+52         66879         mus_theme_aribev   ****               ****       ****       ****          
+53         66880         mus_theme_argend   ****               ****       ****       ****          
+54         66881         mus_theme_maugrm   ****               ****       ****       ****          
+55         66882         mus_theme_morag    ****               ****       ****       ****          
+56         67545         mus_tavern4        ****               ****       ****       ****          
+57         8807          mus_bat_x0desert   ****               ****       ****       ****          
+58         8806          mus_x0desertday    ****               ****       ****       ****          
+59         8805          mus_x0winterday    ****               ****       ****       ****          
+60         52827         mus_bat_x0winter   ****               ****       ****       ****          
+61         40050         mus_x0desertngt    ****               ****       ****       ****          
+62         86656         mus_x2theme        ****               ****       ****       ****          
+63         86657         mus_x2waterdeep    ****               ****       ****       ****          
+64         86658         mus_x2undermtn     ****               ****       ****       ****          
+65         86659         mus_x2rebelcamp    ****               ****       ****       ****          
+66         86660         mus_x2fireplane    ****               ****       ****       ****          
+67         86661         mus_x2queen        ****               ****       ****       ****          
+68         86662         mus_x2frozenhell   ****               ****       ****       ****          
+69         86663         mus_x2draco        ****               ****       ****       ****          
+70         86664         mus_bat_x2small    mus_sbat_x2small   ****       ****       ****          
+71         86665         mus_bat_x2med      mus_sbat_x2med     ****       ****       ****          
+72         86666         mus_bat_x2large    mus_sbat_x2large   ****       ****       ****          
+73         86667         mus_bat_x2hell     mus_sbat_x2hell    ****       ****       ****          
+74         86668         mus_bat_x2boss1    mus_sbat_x2boss1   ****       ****       ****          
+75         86669         mus_bat_x2boss2    mus_sbat_x2boss2   ****       ****       ****          
+76        110653         mus_dd_kingmaker   ****               ****       ****       ****          
+77        110654         mus_dd_shadowgua   ****               ****       ****       ****          
+78        110655         mus_dd_witchwake   ****               ****       ****       ****          
+79        110725         mus_dd_islands     ****               ****       ****       ****          
+80        110726         mus_dd_pirates     ****               ****       ****       ****          
+81        111903         mus_dd_infdun      ****               ****       ****       ****
+82        111906         mus_wc_ogma        ****               ****       ****       ****          
+83        111911         mus_wc_openroad    ****               ****       ****       ****     
+84        111914         mus_wc_smokeash    ****               ****       ****       ****   
+85        111912         mus_wc_rural       ****               ****       ****       ****         
+86        111913         mus_wc_ruralg      ****               ****       ****       ****  
+87        111916         mus_wc_tears       ****               ****       ****       ****         
+88        111908         mus_bat_wcchase    mus_sbat_wcchase   ****       ****       ****         
+89        111917         mus_wc_theme       ****               ****       ****       ****         
+90        111904         mus_wc_armchair    ****               ****       ****       ****      
+91        111907         mus_bat_wcbattle   mus_sbat_wcbattle  ****       ****       ****
+92        111915         mus_wc_solace      ****               ****       ****       ****
+93        111905         mus_wc_knighted    ****               ****       ****       ****
+94        111910         mus_wc_opening     ****               ****       ****       ****
+95        111909         mus_wc_morfen      ****               ****       ****       ****
+96         ****          ****               ****               ****       ****       ****          
+97         ****          ****               ****               ****       ****       ****          
+98         ****          ****               ****               ****       ****       ****          
+99         ****          ****               ****               ****       ****       ****          
+100        ****          ****               ****               ****       ****       ****          
+101        ****          ****               ****               ****       ****       ****          
+102        ****          ****               ****               ****       ****       ****          
+103        ****          ****               ****               ****       ****       ****          
+104        ****          ****               ****               ****       ****       ****          
+105        ****          ****               ****               ****       ****       ****          
+106        ****          ****               ****               ****       ****       ****          
+107        ****          ****               ****               ****       ****       ****          
+108        ****          ****               ****               ****       ****       ****          
+109        ****          ****               ****               ****       ****       ****          
+110        ****          ****               ****               ****       ****       ****          
+111        ****          ****               ****               ****       ****       ****          
+112        ****          ****               ****               ****       ****       ****          
+113        ****          ****               ****               ****       ****       ****          
+114        ****          ****               ****               ****       ****       ****          
+115        ****          ****               ****               ****       ****       ****          
+116        ****          ****               ****               ****       ****       ****          
+117        ****          ****               ****               ****       ****       ****          
+118        ****          ****               ****               ****       ****       ****          
+119        ****          ****               ****               ****       ****       ****          
+120        ****          ****               ****               ****       ****       ****          
+121        ****          ****               ****               ****       ****       ****          
+122        ****          ****               ****               ****       ****       ****          
+123        ****          ****               ****               ****       ****       ****          
+124        ****          ****               ****               ****       ****       ****          
+125        ****          ****               ****               ****       ****       ****          
+126        ****          ****               ****               ****       ****       ****          
+127        ****          ****               ****               ****       ****       ****          
+128        ****          ****               ****               ****       ****       ****          
+129        ****          ****               ****               ****       ****       ****          
+130        ****          ****               ****               ****       ****       ****          
+131        ****          ****               ****               ****       ****       ****          
+132        ****          ****               ****               ****       ****       ****          
+133        ****          ****               ****               ****       ****       ****          
+134        ****          ****               ****               ****       ****       ****          
+135        ****          ****               ****               ****       ****       ****          
+136        ****          ****               ****               ****       ****       ****          
+137        ****          ****               ****               ****       ****       ****          
+138        ****          ****               ****               ****       ****       ****          
+139        ****          ****               ****               ****       ****       ****          
+140        ****          ****               ****               ****       ****       ****          
+141        ****          ****               ****               ****       ****       ****          
+142        ****          ****               ****               ****       ****       ****          
+143        ****          ****               ****               ****       ****       ****          
+144        ****          ****               ****               ****       ****       ****          
+145        ****          ****               ****               ****       ****       ****          
+146        ****          ****               ****               ****       ****       ****          
+147        ****          ****               ****               ****       ****       ****          
+148        ****          ****               ****               ****       ****       ****          
+149        ****          ****               ****               ****       ****       ****          
+150        ****          ****               ****               ****       ****       ****          
+151        ****          ****               ****               ****       ****       ****          
+152        ****          ****               ****               ****       ****       ****          
+153        ****          ****               ****               ****       ****       ****          
+154        ****          ****               ****               ****       ****       ****          
+155        ****          ****               ****               ****       ****       ****          
+156        ****          ****               ****               ****       ****       ****          
+157        ****          ****               ****               ****       ****       ****          
+158        ****          ****               ****               ****       ****       ****          
+159        ****          ****               ****               ****       ****       ****          
+160        ****          ****               ****               ****       ****       ****          
+161        ****          ****               ****               ****       ****       ****          
+162        ****          ****               ****               ****       ****       ****          
+163        ****          ****               ****               ****       ****       ****          
+164        ****          ****               ****               ****       ****       ****          
+165        ****          ****               ****               ****       ****       ****          
+166        ****          ****               ****               ****       ****       ****          
+167        ****          ****               ****               ****       ****       ****          
+168        ****          ****               ****               ****       ****       ****          
+169        ****          ****               ****               ****       ****       ****          
+170        ****          ****               ****               ****       ****       ****          
+171        ****          ****               ****               ****       ****       ****          
+172        ****          ****               ****               ****       ****       ****          
+173        ****          ****               ****               ****       ****       ****          
+174        ****          ****               ****               ****       ****       ****          
+175        ****          ****               ****               ****       ****       ****          
+176        ****          ****               ****               ****       ****       ****          
+177        ****          ****               ****               ****       ****       ****          
+178        ****          ****               ****               ****       ****       ****          
+179        ****          ****               ****               ****       ****       ****          
+180        ****          ****               ****               ****       ****       ****          
+181        ****          ****               ****               ****       ****       ****          
+182        ****          ****               ****               ****       ****       ****          
+183        ****          ****               ****               ****       ****       ****          
+184        ****          ****               ****               ****       ****       ****          
+185        ****          ****               ****               ****       ****       ****          
+186        ****          ****               ****               ****       ****       ****          
+187        ****          ****               ****               ****       ****       ****          
+188        ****          ****               ****               ****       ****       ****          
+189        ****          ****               ****               ****       ****       ****          
+190        ****          mus_Caves          ****               ****       ****       "d20 Caves, DJohn (1:27)"
+191        ****          mus_bat_Contact    mus_bat_Contact    ****       ****       "d20 Batl Contact, DJohn (0:51)"
+192        ****          mus_HonorBound     ****               ****       ****       "d20 Honor Bound, DJohn (2:14)"
+193        ****          mus_moondepths     ****               ****       ****       "d20 MoonseaDepths, DJohn (1:39)"
+194        ****          mus_ponr           ****               ****       ****       "d20 PointOfNoReturn, DJohn (2:05)"
+195        ****          ****               ****               ****       ****       ****          
+196        ****          ****               ****               ****       ****       ****          
+197        ****          ****               ****               ****       ****       ****          
+198        ****          ****               ****               ****       ****       ****          
+199        ****          ****               ****               ****       ****       ****          
+200        ****          ****               ****               ****       ****       ****          
+201        ****          mus_bat_d20_1      mus_bat_d20_1      ****       ****       "d20 Batl 1 (1:01)" 
+202        ****          mus_bat_d20_2      mus_bat_d20_2      ****       ****       "d20 Batl 2 (0:03)" 
+203        ****          mus_bat_d20_3      mus_bat_d20_3      ****       ****       "d20 Batl 3 (0:13)" 
+204        ****          mus_bat_d20_4      mus_bat_d20_4      ****       ****       "d20 Batl 4 (0:03)" 
+205        ****          mus_bat_d20_5      mus_bat_d20_5      ****       ****       "d20 Batl 5 (2:00)" 
+206        ****          mus_bat_f_rave     mus_sbat_f_rave    ****       ****       "d20 Batl Oakenfold (4:48)" 
+207        ****          mus_bat_f_st_3     mus_sbat_f_st_3    ****       ****       "d20 Batl ST Kirk (1:48)"
+208        ****          mus_bat_f_tech1    mus_sbat_f_tech1   ****       ****       "d20 Batl Techno 1 (0:13)" 
+209        ****          mus_bat_f_tech2    mus_sbat_f_tech2   ****       ****       "d20 Batl Techno 2 (0:17)" 
+210        ****          mus_bat_f_tense    mus_sbat_f_tense   ****       ****       "d20 Batl FF Fight (0:25)" 
+211        ****          mus_bat_fot_grov   mus_bat_fot_grov   ****       ****       "d20 Batl FOT Groove (2:46)" 
+212        ****          mus_d20_drums01    ****               ****       ****       "d20 Drums 1 (0:19)" 
+213        ****          mus_d20_drums02    ****               ****       ****       "d20 Drums 2 (0:24)" 
+214        ****          mus_d20_drums03    ****               ****       ****       "d20 Drums 3 (0:28)" 
+215        ****          mus_d20_drums04    ****               ****       ****       "d20 Drums 4 (2:05)" 
+216        ****          mus_d20_hvykey01   ****               ****       ****       "d20 Hvy Keys 1 (1:53)" 
+217        ****          mus_d20_hvykey02   ****               ****       ****       "d20 Hvy Keys 2 (0:43)" 
+218        ****          mus_d20_hvykey03   ****               ****       ****       "d20 Hvy Keys 3 (0:41)" 
+219        ****          mus_d20_indust01   ****               ****       ****       "d20 Industrial 1 (0:43)" 
+220        ****          mus_d20_indust02   ****               ****       ****       "d20 Industrial 2 (0:13)" 
+221        ****          mus_d20_indust03   ****               ****       ****       "d20 Industrial 3 (0:08)" 
+222        ****          mus_d20_piano01    ****               ****       ****       "d20 Piano (0:26)" 
+223        ****          mus_d20_sofkey01   ****               ****       ****       "d20 Soft Keys 1 (1:09)" 
+224        ****          mus_d20_sofkey02   ****               ****       ****       "d20 Soft Keys 2 (1:36)" 
+225        ****          mus_d20_sofkey03   ****               ****       ****       "d20 Soft Keys 3 (0:27)" 
+226        ****          mus_d20_sofkey04   ****               ****       ****       "d20 Soft Keys 4 (0:27)" 
+227        ****          mus_d20_sofkey05   ****               ****       ****       "d20 Soft Keys 5 (0:15)" 
+228        ****          mus_fot_moanlady   ****               ****       ****       "d20 FOT Moan Lady (2:16)" 
+229        ****          mus_fot_mystry01   ****               ****       ****       "d20 FOT Mystery 1 (1:33)" 
+230        ****          mus_fot_mystry02   ****               ****       ****       "d20 FOT Mystery 2 (0:24)" 
+231        ****          mus_fot_olcity01   ****               ****       ****       "d20 FOT Old City 1 (1:59)" 
+232        ****          mus_fot_olcity02   ****               ****       ****       "d20 FOT Old City 2 (1:12)" 
+233        ****          mus_fot_olcity03   ****               ****       ****       "d20 FOT Old City 3 (1:22)" 
+234        ****          mus_fot_olcity04   ****               ****       ****       "d20 FOT Old City 4 (1:31)" 
+235        ****          mus_fot_olcity05   ****               ****       ****       "d20 FOT Old City 5 (1:28)" 
+236        ****          mus_fot_olcity06   ****               ****       ****       "d20 FOT Old City 6 (1:22)" 
+237        ****          mus_fot_sht_bnyd   ****               ****       ****       "d20 FOT Boneyard (0:20)" 
+238        ****          mus_fot_sht_cave   ****               ****       ****       "d20 FOT Cave (0:22)" 
+239        ****          mus_fot_sht_dung   ****               ****       ****       "d20 FOT Dungeon (0:23)" 
+240        ****          mus_fot_sht_milt   ****               ****       ****       "d20 FOT Military (0:46)" 
+241        ****          mus_fot_sht_susp   ****               ****       ****       "d20 FOT Suspense (0:49)" 
+242        ****          mus_fot_susp01     ****               ****       ****       "d20 FOT Suspense 1 (2:06)" 
+243        ****          mus_fot_susp02     ****               ****       ****       "d20 FOT Suspense 2 (2:03)" 
+244        ****          mus_fot_susp03     ****               ****       ****       "d20 FOT Suspense 3 (0:24)" 
+245        ****          mus_fot_travel01   ****               ****       ****       "d20 FOT Travel 1 (0:49)" 
+246        ****          mus_fot_travel02   ****               ****       ****       "d20 FOT Travel 2 (0:49)" 
+247        ****          mus_fot_tribal01   ****               ****       ****       "d20 FOT Tribal 1 (1:39)" 
+248        ****          mus_fot_tribal02   ****               ****       ****       "d20 FOT Tribal 2 (1:37)" 
+249        ****          mus_fot_ugbase01   ****               ****       ****       "d20 FOT UG Base 1 (1:21)" 
+250        ****          mus_fot_ugbase02   ****               ****       ****       "d20 FOT UG Base 2 (1:18)" 
+251        ****          mus_fot_wastes01   ****               ****       ****       "d20 FOT Wastes 1 (1:22)" 
+252        ****          mus_fot_wastes02   ****               ****       ****       "d20 FOT Wastes 2 (1:25)" 
+253        ****          mus_fot_wastes03   ****               ****       ****       "d20 FOT Wastes 3 (1:30)" 
+254        ****          mus_fot_wastes04   ****               ****       ****       "d20 FOT Wastes 4 (1:21)" 
+255        ****          mus_fot_wastes05   ****               ****       ****       "d20 FOT Wastes 5 (1:25)" 
+256        ****          mus_fot_wastes06   ****               ****       ****       "d20 FOT Wastes 6 (1:22)" 
+257        ****          mus_f_fiddle       ****               ****       ****       "d20 FF Fiddle (2:26)" 
+258        ****          mus_f_ser_fables   ****               ****       ****       "d20 Space Fables (21:31)" 
+259        ****          mus_f_ser_muroc    ****               ****       ****       "d20 Space Muroc (6:31)" 
+260        ****          mus_f_ser_river    ****               ****       ****       "d20 Space River (10:02)" 
+261        ****          mus_f_st_doom      ****               ****       ****       "d20 ST Doom (1:36)" 
+262        ****          mus_f_st_sad       ****               ****       ****       "d20 ST Sad (1:13)" 
+263        ****          mus_f_st_susp_01   ****               ****       ****       "d20 ST Suspense 1 (4:19)" 
+264        ****          mus_f_st_susp_02   ****               ****       ****       "d20 ST Suspense 2 (0:57)" 
+265        ****          mus_f_susp_trap    ****               ****       ****       "d20 FF Suspense Trap (1:06)" 
+266        ****          mus_bat_f_st_1     mus_sbat_f_st_1    ****       ****       "d20 Batl ST Khan (5:08)"
+267        ****          mus_bat_f_st_2     mus_sbat_f_st_2    ****       ****       "d20 Batl ST Borg (3:57)"
+268        ****          mus_f_sw_trash     ****               ****       ****       "d20 SW Trash Mash (4:36)"
+269        ****          mus_bat_dob_keuf   mus_bat_dob_keuf   ****       ****       "d20 Batl Keufs (1:41)" 
+270        ****          mus_bat_dobcrusa   mus_bat_dobcrusa   ****       ****       "d20 Batl Crusader (1:31)" 
+271        ****          mus_bat_mongoose   mus_bat_mongoose   ****       ****       "d20 Batl Mongoose (1:16)" 
+272        ****          mus_ctrlfreak      ****               ****       ****       "d20 Control Freak (3:32)"
+273        ****          mus_dob_bang       ****               ****       ****       "d20 Tense Bang (1:33)"
+274        ****          mus_dob_bapteme    ****               ****       ****       "d20 Religious Choir (1:24)"
+275        ****          mus_dob_btbdead    ****               ****       ****       "d20 Better Be Dead (1:35)"
+276        ****          mus_dob_drunk      ****               ****       ****       "d20 Drunk (3:47)"
+277        ****          mus_dob_feel_hot   ****               ****       ****       "d20 Feel Hot Nightclub (5:07)"
+278        ****          mus_dob_higher     ****               ****       ****       "d20 Higher Mood (5:01)"
+279        ****          mus_dob_musikbox   ****               ****       ****       "d20 Musik Box Nightclub (4:55)"
+280        ****          mus_em_cheyenne    ****               ****       ****       "d20 Cheyenne (2:39)"
+281        ****          mus_fo1_birth      ****               ****       ****       "d20 FO1 Birth (3:24)"
+282        ****          mus_fo1_cavern     ****               ****       ****       "d20 FO1 Cavern (3:53)"
+283        ****          mus_fo1_children   ****               ****       ****       "d20 FO1 Children (3:17)"
+284        ****          mus_fo1_desert     ****               ****       ****       "d20 FO1 Desert (3:20)"
+285        ****          mus_fo1_follow     ****               ****       ****       "d20 FO1 Follow (2:59)"
+286        ****          mus_fo1_glow       ****               ****       ****       "d20 FO1 Glow (3:57)"
+287        ****          mus_fo1_junk       ****               ****       ****       "d20 FO1 Junk (3:24)"
+288        ****          mus_fo1_hub        ****               ****       ****       "d20 FO1 Hub (4:03)"
+289        ****          mus_fo1_labone     ****               ****       ****       "d20 FO1 LA Bone (3:46)"
+290        ****          mus_fo1_master     ****               ****       ****       "d20 FO1 Masters (3:07)"
+291        ****          mus_fo1_necro      ****               ****       ****       "d20 FO1 Necro (3:24)"
+292        ****          mus_fo1_raider     ****               ****       ****       "d20 FO1 Raiders (3:18)"
+293        ****          mus_fo1_shady      ****               ****       ****       "d20 FO1 Shady (4:04)"
+294        ****          mus_fo1_vats       ****               ****       ****       "d20 FO1 Vats (3:18)"
+295        ****          mus_fo1_vault      ****               ****       ****       "d20 FO1 Vault (4:01)"
+296        ****          mus_fo1_wind       ****               ****       ****       "d20 FO1 Wind sound (0:05)"
+297        ****          mus_fo1_wrldmap    ****               ****       ****       "d20 FO1 Worldmap (3:03)"
+298        ****          mus_d20_newworld   ****               ****       ****       "d20 A New World (1:47)"
+299        ****          mus_bat_d20_ccg1   mus_bat_d20_ccg1   ****       ****       "d20 Batl C&C Generals (1:31)"
+300        ****          mus_d20_ccg_usa4   ****               ****       ****       "d20 C&C Generals USA 4 (3:05)"
+301        ****          mus_d20_ccg_usa8   ****               ****       ****       "d20 C&C Generals USA 8 (3:13)"
+302        ****          mus_d20_destiny    ****               ****       ****       "d20 Call of Destiny (2:37)"
+303        ****          mus_d20_deserted   ****               ****       ****       "d20 Deserted TV Station (3:15)"
+304        ****          mus_bat_d20_frnq   mus_bat_d20_frnq   ****       ****       "d20 Batl Fr Quarter Chase (1:27)"
+305        ****          mus_d20_recon1     ****               ****       ****       "d20 Ghost Recon Anthem (2:24)"
+306        ****          mus_d20_recon2     ****               ****       ****       "d20 Ghost Recon Outro (1:10)"
+307        ****          mus_bat_d20_hlk1   mus_bat_d20_hlk1   ****       ****       "d20 Batl Hulk Crossroads (2:26)"
+308        ****          mus_bat_d20_hlk2   mus_bat_d20_hlk2   ****       ****       "d20 Batl Hulk Destruction (2:32)"
+309        ****          mus_bat_d20_hlk3   mus_bat_d20_hlk3   ****       ****       "d20 Batl Hulk Turning (2:32)"
+310        ****          mus_bat_d20_ldw    mus_bat_d20_ldw    ****       ****       "d20 Batl Lady Death War (2:45)"
+311        ****          mus_bat_d20_lin1   mus_bat_d20_lin1   ****       ****       "d20 Batl Lineage Conflict (2:06)"
+312        ****          mus_d20_lineage1   ****               ****       ****       "d20 Lineage Ominous Vis  (3:00)"
+313        ****          mus_d20_lineage2   ****               ****       ****       "d20 Lineage Trailer (3:17)"
+314        ****          mus_d20_nagasaki   ****               ****       ****       "d20 Nagasaki Dust (1:18)"
+315        ****          mus_d20_rsix1      ****               ****       ****       "d20 Rainbow Six Bank (0:46)"
+316        ****          mus_d20_rsix2      ****               ****       ****       "d20 Rainbow Six Intro (2:43)"
+317        ****          mus_d20_rsix3      ****               ****       ****       "d20 Rainbow Six Remix (2:49)"
+318        ****          mus_d20_rio        ****               ****       ****       "d20 Rio (2:03)"
+319        ****          mus_bat_d20_swmp   mus_bat_d20_swmp   ****       ****       "d20 Batl Swamp (1:48)"
+320        ****          mus_d20_temple     ****               ****       ****       "d20 Temple of the Moon (3:05)"
+321        ****          mus_d20_tlj_alas   ****               ****       ****       "d20 TLJ Alais (1:40)"
+322        ****          mus_bat_d20_tlj1   mus_bat_d20_tlj1   ****       ****       "d20 Batl TLJ Danger (1:32)"
+323        ****          mus_d20_tlj_drum   ****               ****       ****       "d20 TLJ Keys & Drums (2:03)"
+324        ****          mus_d20_tlj_eplg   ****               ****       ****       "d20 TLJ Epilogue (1:43)"
+325        ****          mus_d20_tlj_orgn   ****               ****       ****       "d20 TLJ Organ (4:30)"
+326        ****          mus_d20_tlj_pian   ****               ****       ****       "d20 TLJ Piano (0:41)"
+327        ****          mus_d20_tlj_prlg   ****               ****       ****       "d20 TLJ Prologue (1:35)"
+328        ****          mus_d20_tlj_subw   ****               ****       ****       "d20 TLJ Subway (0:49)"
+329        ****          mus_d20_tlj_dolp   ****               ****       ****       "d20 TLJ Techno Dolphin (6:36)"
+330        ****          mus_d20_tlj_drag   ****               ****       ****       "d20 TLJ Techno Dragon (5:06)"
+331        ****          mus_d20_tlj_eagl   ****               ****       ****       "d20 TLJ Techno Eagle (3:32)"
+332        ****          mus_d20_tlj_shrk   ****               ****       ****       "d20 TLJ Techno Shark (7:34)"
+333        ****          mus_d20_airvent    ****               ****       ****       "d20 Trapped Air Vent (3:48)"
+334        ****          mus_d20_mellow     ****               ****       ****       "d20 Win Melodious(1:31)"
+335        ****          mus_d20_wolfen1    ****               ****       ****       "d20 Wolfenstein Intro (2:53)"
+336        ****          mus_d20_wolfen2    ****               ****       ****       "d20 Wolfenstein Main (1:05)"
+337        ****          mus_bat_d20_zero   mus_bat_d20_zero   ****       ****       "d20 Batl Zero Hour Theme (3:10)"
+338        ****          mus_theme_main     ****               ****       ****       "NWN Main Theme (2:29)"

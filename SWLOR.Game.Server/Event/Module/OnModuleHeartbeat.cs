@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Event.Module
                     {
                         _food.RunHungerCycle(player, entity);
                         HandleRegenerationTick(player, entity);
-                        HandleManaRegenerationTick(player, entity);
+                        HandleFPRegenerationTick(player, entity);
 
                         _db.SaveChanges();
                     }
@@ -123,19 +123,19 @@ namespace SWLOR.Game.Server.Event.Module
             }
         }
 
-        private void HandleManaRegenerationTick(NWPlayer oPC, PlayerCharacter entity)
+        private void HandleFPRegenerationTick(NWPlayer oPC, PlayerCharacter entity)
         {
-            entity.CurrentManaTick = entity.CurrentManaTick - 1;
+            entity.CurrentFPTick = entity.CurrentFPTick - 1;
             int rate = 20;
             int amount = 1;
 
-            if (entity.CurrentManaTick <= 0)
+            if (entity.CurrentFPTick <= 0)
             {
                 if (entity.CurrentHunger <= 20)
                 {
-                    oPC.SendMessage("You are hungry and not recovering mana naturally. Eat food to start recovering again.");
+                    oPC.SendMessage("You are hungry and not recovering FP naturally. Eat food to start recovering again.");
                 }
-                else if (entity.CurrentMana < entity.MaxMana)
+                else if (entity.CurrentFP < entity.MaxFP)
                 {
                     // CHA bonus
                     int cha = oPC.CharismaModifier;
@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.Event.Module
                     {
                         amount += cha;
                     }
-                    amount += oPC.EffectiveManaRegenBonus;
+                    amount += oPC.EffectiveFPRegenBonus;
 
                     if (oPC.Chest.CustomItemType == CustomItemType.MysticArmor)
                     {
@@ -154,10 +154,10 @@ namespace SWLOR.Game.Server.Event.Module
                         }
                     }
 
-                    entity = _ability.RestoreMana(oPC, amount, entity);
+                    entity = _ability.RestoreFP(oPC, amount, entity);
                 }
 
-                entity.CurrentManaTick = rate;
+                entity.CurrentFPTick = rate;
             }
         }
 

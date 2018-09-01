@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Service
                     _color.Green("Respawn Area: ") + respawnAreaName + "\n" +
                     _color.Green("Skill Points: ") + playerEntity.TotalSPAcquired + " (Unallocated: " + playerEntity.UnallocatedSP + ")" + "\n" +
                     _color.Green("Nourishment: ") + playerEntity.CurrentHunger + " / " + playerEntity.MaxHunger + "\n" +
-                    _color.Green("Mana: ") + playerEntity.CurrentMana + " / " + playerEntity.MaxMana + "\n" +
+                    _color.Green("FP: ") + playerEntity.CurrentFP + " / " + playerEntity.MaxFP + "\n" +
                     _color.Green("Skill Levels: ") + "\n\n");
 
             List<PCSkill> pcSkills = _db.PCSkills.Where(x => x.PlayerID == target.GlobalID && x.Skill.IsActive).ToList();

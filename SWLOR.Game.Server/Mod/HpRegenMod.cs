@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class HpRegenMod: IMod
+    public class HPRegenMod: IMod
     {
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {

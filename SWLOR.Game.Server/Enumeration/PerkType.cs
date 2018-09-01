@@ -19,7 +19,7 @@
         LoggingAxeExpert = 14,
         Lucky = 15,
         Health = 16,
-        Mana = 17,
+        FP = 17,
         SpeedyMiner = 18,
         SpeedyLogger = 19,
         SpeedyMedic = 20,

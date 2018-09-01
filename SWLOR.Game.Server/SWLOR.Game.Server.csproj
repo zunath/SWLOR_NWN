@@ -307,7 +307,7 @@
     <Compile Include="Perk\Gathering\SeedPicker.cs" />
     <Compile Include="Perk\General\Health.cs" />
     <Compile Include="Perk\General\Lucky.cs" />
-    <Compile Include="Perk\General\Mana.cs" />
+    <Compile Include="Perk\General\FP.cs" />
     <Compile Include="Perk\General\Meditate.cs" />
     <Compile Include="Perk\Harvesting\LoggingAxeExpert.cs" />
     <Compile Include="Perk\Harvesting\Lumberjack.cs" />
@@ -540,13 +540,13 @@
     <Compile Include="Mod\EnmityMod.cs" />
     <Compile Include="Mod\EvocationMagicMod.cs" />
     <Compile Include="Mod\FirstAidMod.cs" />
-    <Compile Include="Mod\HpRegenMod.cs" />
-    <Compile Include="Mod\HpMod.cs" />
+    <Compile Include="Mod\HPRegenMod.cs" />
+    <Compile Include="Mod\HPMod.cs" />
     <Compile Include="Mod\LevelMod.cs" />
     <Compile Include="Mod\LoggingMod.cs" />
     <Compile Include="Mod\LuckMod.cs" />
-    <Compile Include="Mod\ManaRegenMod.cs" />
-    <Compile Include="Mod\ManaMod.cs" />
+    <Compile Include="Mod\FPRegenMod.cs" />
+    <Compile Include="Mod\FPMod.cs" />
     <Compile Include="Mod\MeditateMod.cs" />
     <Compile Include="Mod\MiningMod.cs" />
     <Compile Include="Mod\SneakAttackMod.cs" />

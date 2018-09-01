@@ -3,11 +3,11 @@ using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Perk.General
 {
-    public class Mana : IPerk
+    public class FP : IPerk
     {
         private readonly ISkillService _skill;
 
-        public Mana(ISkillService skill)
+        public FP(ISkillService skill)
         {
             _skill = skill;
         }
@@ -22,9 +22,9 @@ namespace SWLOR.Game.Server.Perk.General
             return null;
         }
 
-        public int ManaCost(NWPlayer oPC, int baseManaCost)
+        public int FPCost(NWPlayer oPC, int baseFPCost)
         {
-            return baseManaCost;
+            return baseFPCost;
         }
 
         public float CastingTime(NWPlayer oPC, float baseCastingTime)

@@ -83,9 +83,9 @@ namespace SWLOR.Game.Server.GameObject
                 RegenerationTick = 20,
                 RegenerationRate = 0,
                 VersionNumber = 1,
-                MaxMana = 0,
-                CurrentMana = 0,
-                CurrentManaTick = 20,
+                MaxFP = 0,
+                CurrentFP = 0,
+                CurrentFPTick = 20,
                 RevivalStoneCount = 3,
                 RespawnAreaTag = string.Empty,
                 RespawnLocationX = 0.0f,
@@ -372,23 +372,23 @@ namespace SWLOR.Game.Server.GameObject
             }
         }
 
-        public virtual int EffectiveManaRegenBonus
+        public virtual int EffectiveFPRegenBonus
         {
             get
             {
-                int manaRegenBonus = 0;
+                int fpRegenBonus = 0;
                 for (int itemSlot = 0; itemSlot < NWScript.NUM_INVENTORY_SLOTS; itemSlot++)
                 {
                     NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
                     if (!item.IsValid) continue;
                     SkillType skill = _skill.GetSkillTypeForItem(item);
                     int rank = _skill.GetPCSkill(this, skill).Rank;
-                    int itemManaRegenBonus = CalculateAdjustedValue(item.ManaRegenBonus, item.RecommendedLevel, rank, 0);
+                    int itemFPRegenBonus = CalculateAdjustedValue(item.FPRegenBonus, item.RecommendedLevel, rank, 0);
 
-                    manaRegenBonus += itemManaRegenBonus;
+                    fpRegenBonus += itemFPRegenBonus;
                 }
 
-                return manaRegenBonus;
+                return fpRegenBonus;
             }
         }
 

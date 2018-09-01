@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Perk
     {
         bool CanCastSpell(NWPlayer oPC, NWObject oTarget);
         string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget);
-        int ManaCost(NWPlayer oPC, int baseManaCost);
+        int FPCost(NWPlayer oPC, int baseFPCost);
         float CastingTime(NWPlayer oPC, float baseCastingTime);
         float CooldownTime(NWPlayer oPC, float baseCooldownTime);
         void OnImpact(NWPlayer oPC, NWObject oTarget);

@@ -32,9 +32,9 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             return null;
         }
 
-        public int ManaCost(NWPlayer oPC, int baseManaCost)
+        public int FPCost(NWPlayer oPC, int baseFPCost)
         {
-            return baseManaCost;
+            return baseFPCost;
         }
 
         public float CastingTime(NWPlayer oPC, float baseCastingTime)

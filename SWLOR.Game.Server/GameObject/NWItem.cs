@@ -309,16 +309,16 @@ namespace SWLOR.Game.Server.GameObject
             }
             set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_HP_BONUS", value);
         }
-        public virtual int ManaBonus
+        public virtual int FPBonus
         {
             get
             {
-                int manaBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.ManaBonus);
-                if(manaBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_MANA_BONUS");
-                ManaBonus = manaBonus;
-                return manaBonus;
+                int fpBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.FPBonus);
+                if(fpBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_FP_BONUS");
+                FPBonus = fpBonus;
+                return fpBonus;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_MANA_BONUS", value);
+            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_FP_BONUS", value);
         }
 
         public virtual int EnmityRate
@@ -413,16 +413,16 @@ namespace SWLOR.Game.Server.GameObject
             }
             set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_HP_REGEN_BONUS", value);
         }
-        public virtual int ManaRegenBonus
+        public virtual int FPRegenBonus
         {
             get
             {
-                int manaRegenBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.ManaRegenBonus);
-                if(manaRegenBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_MANA_REGEN_BONUS");
-                ManaRegenBonus = manaRegenBonus;
-                return manaRegenBonus;
+                int fpRegenBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.FPRegenBonus);
+                if(fpRegenBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_FP_REGEN_BONUS");
+                FPRegenBonus = fpRegenBonus;
+                return fpRegenBonus;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_MANA_REGEN_BONUS", value);
+            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_FP_REGEN_BONUS", value);
         }
         public virtual int BaseAttackBonus
         {

@@ -31,9 +31,9 @@ namespace SWLOR.Game.Server.Perk.Evocation
             return "You must be equipped with mystic armor to activate that ability.";
         }
 
-        public int ManaCost(NWPlayer oPC, int baseManaCost)
+        public int FPCost(NWPlayer oPC, int baseFPCost)
         {
-            return baseManaCost;
+            return baseFPCost;
         }
 
         public float CastingTime(NWPlayer oPC, float baseCastingTime)

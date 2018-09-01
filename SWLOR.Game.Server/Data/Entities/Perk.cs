@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Data.Entities
         [StringLength(64)]
         public string JavaScriptName { get; set; }
 
-        public int BaseManaCost { get; set; }
+        public int BaseFPCost { get; set; }
 
         public double BaseCastingTime { get; set; }
 

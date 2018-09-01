@@ -48,6 +48,13 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
             NWPlayer oPC = NWPlayer.Wrap(_.GetLastDisturbed());
             NWItem oItem = NWItem.Wrap(_.GetInventoryDisturbItem());
             if (oItem.Resref == "cft_confirm") return;
+            if (oPC.IsBusy)
+            {
+                _item.ReturnItem(oPC, oItem);
+                oPC.SendMessage("You are too busy right now.");
+                return;
+            }
+
             var model = _craft.GetPlayerCraftingData(oPC);
             NWPlaceable storage = NWPlaceable.Wrap(_.GetObjectByTag("craft_temp_store"));
 
@@ -97,7 +104,30 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
                 return;
             }
 
-            foreach (var ip in oItem.ItemProperties)
+            var props = oItem.ItemProperties;
+            var allowedItemTypes = new List<CustomItemType>();
+            CustomItemType finishedItemType = _item.GetCustomItemTypeByResref(model.Blueprint.ItemResref);
+
+            foreach (var ip in props)
+            {
+                if (_.GetItemPropertyType(ip) == (int) CustomItemPropertyType.ComponentItemTypeRestriction)
+                {
+                    int restrictionType = _.GetItemPropertyCostTableValue(ip);
+                    allowedItemTypes.Add((CustomItemType)restrictionType);
+                }
+            }
+
+            if (allowedItemTypes.Count > 0)
+            {
+                if (!allowedItemTypes.Contains(finishedItemType))
+                {
+                    oPC.FloatingText("This component cannot be used with this type of blueprint.");
+                    _item.ReturnItem(oPC, oItem);
+                    return;
+                }
+            }
+
+            foreach (var ip in props)
             {
                 if (_.GetItemPropertyType(ip) == (int) CustomItemPropertyType.ComponentType)
                 {
@@ -122,7 +152,13 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
             NWPlaceable device = NWPlaceable.Wrap(Object.OBJECT_SELF);
             NWPlaceable storage = NWPlaceable.Wrap(_.GetObjectByTag("craft_temp_store"));
             var model = _craft.GetPlayerCraftingData(oPC);
-            
+            if (oPC.IsBusy)
+            {
+                _item.ReturnItem(device, oItem);
+                oPC.SendMessage("You are too busy right now.");
+                return;
+            }
+
             if (oItem.Resref == "cft_confirm")
             {
                 oItem.Destroy();

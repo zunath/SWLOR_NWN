@@ -12,6 +12,7 @@ using NWN;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -137,15 +138,15 @@ namespace SWLOR.Game.Server.Service
 
             float modifiedCraftDelay = CalculateCraftingDelay(oPC, blueprint.SkillID);
 
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, _.EffectCutsceneImmobilize(), oPC.Object, modifiedCraftDelay + 0.1f);
+            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectCutsceneImmobilize(), oPC.Object, modifiedCraftDelay + 0.1f);
             oPC.AssignCommand(() =>
             {
                 _.ClearAllActions();
-                _.ActionPlayAnimation(NWScript.ANIMATION_LOOPING_GET_MID, 1.0f, modifiedCraftDelay);
+                _.ActionPlayAnimation(ANIMATION_LOOPING_GET_MID, 1.0f, modifiedCraftDelay);
             });
             device.DelayCommand(() =>
             {
-                _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, _.EffectVisualEffect(NWScript.VFX_COM_BLOOD_SPARK_MEDIUM), device.Object);
+                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_COM_BLOOD_SPARK_MEDIUM), device.Object);
             }, 1.0f * (modifiedCraftDelay / 2.0f));
 
             _nwnxPlayer.StartGuiTimingBar(oPC, modifiedCraftDelay, "");
@@ -209,7 +210,7 @@ namespace SWLOR.Game.Server.Service
             int itemLevel = model.AdjustedLevel;
             float chance = CalculateBaseChanceToAddProperty(pcEffectiveLevel, itemLevel);
             float equipmentBonus = CalculateEquipmentBonus(oPC, (SkillType)blueprint.SkillID);
-            
+
             var craftedItems = new List<NWItem>();
             NWItem craftedItem = NWItem.Wrap(_.CreateItemOnObject(blueprint.ItemResref, oPC.Object, blueprint.Quantity));
             craftedItem.IsIdentified = true;
@@ -226,24 +227,16 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            int successAmount = 0;
             foreach (var component in model.MainComponents)
-            {
-                foreach (var ip in component.ItemProperties)
-                {
-                    int ipType = _.GetItemPropertyType(ip);
-                    if (ipType == (int)CustomItemPropertyType.ComponentBonus)
-                    {
-                        if (_random.RandomFloat() * 100.0f + equipmentBonus <= chance)
-                        {
-                            foreach (var item in craftedItems)
-                            {
-                                _componentBonus.ApplyComponentBonus(item, ip);
-                            }
-                        }
-                    }
-                }
-            }
-
+                successAmount += RunComponentBonusAttempt(oPC, component, equipmentBonus, chance, craftedItems);
+            foreach (var component in model.SecondaryComponents)
+                successAmount += RunComponentBonusAttempt(oPC, component, equipmentBonus, chance, craftedItems);
+            foreach (var component in model.TertiaryComponents)
+                successAmount += RunComponentBonusAttempt(oPC, component, equipmentBonus, chance, craftedItems);
+            foreach (var component in model.EnhancementComponents)
+                successAmount += RunComponentBonusAttempt(oPC, component, equipmentBonus, chance, craftedItems);
+            
             // Recommended level gets set regardless if all item properties make it on the final product.
             // Also mark who crafted the item. This is later used for display on the item's examination event.
             foreach (var item in craftedItems)
@@ -251,13 +244,46 @@ namespace SWLOR.Game.Server.Service
                 item.RecommendedLevel = itemLevel;
                 item.SetLocalString("CRAFTER_PLAYER_ID", oPC.GlobalID);
             }
-            
+
             oPC.SendMessage("You created " + blueprint.Quantity + "x " + blueprint.ItemName + "!");
-            float xp = _skill.CalculateRegisteredSkillLevelAdjustedXP(250, model.AdjustedLevel, pcSkill.Rank);
+            int baseXP = 250 + successAmount * _random.Random(1, 50);
+            float xp = _skill.CalculateRegisteredSkillLevelAdjustedXP(baseXP, model.AdjustedLevel, pcSkill.Rank);
             _skill.GiveSkillXP(oPC, blueprint.SkillID, (int)xp);
-            ClearPlayerCraftingData(oPC);
+            ClearPlayerCraftingData(oPC, true);
         }
-        
+
+        private int RunComponentBonusAttempt(NWPlayer player, NWItem component, float equipmentBonus, float chance, List<NWItem> itemSet)
+        {
+            int successAmount = 0;
+            foreach (var ip in component.ItemProperties)
+            {
+                int ipType = _.GetItemPropertyType(ip);
+                if (ipType != (int) CustomItemPropertyType.ComponentBonus) continue;
+
+                int bonusTypeID = _.GetItemPropertySubType(ip);
+                int tlkID = Convert.ToInt32(_.Get2DAString("iprp_compbon", "Name", bonusTypeID));
+                int amount = _.GetItemPropertyCostTableValue(ip);
+                string bonusName = _.GetStringByStrRef(tlkID) + " " + amount;
+                float random = _random.RandomFloat() * 100.0f;
+                
+                if (random + equipmentBonus <= chance)
+                {
+                    foreach (var item in itemSet)
+                    {
+                        _componentBonus.ApplyComponentBonus(item, ip);
+                    }
+                    player.SendMessage(_color.Green("Successfully applied component property: " + bonusName));
+                    successAmount++;
+                }
+                else
+                {
+                    player.SendMessage(_color.Red("Failed to apply component property: " + bonusName));
+                }
+            }
+
+            return successAmount;
+        }
+
         private string CalculateDifficulty(int pcLevel, int blueprintLevel)
         {
             int delta = pcLevel - blueprintLevel;
@@ -332,35 +358,35 @@ namespace SWLOR.Game.Server.Service
             }
             else if (delta >= 4)
             {
-                percentage = 95.0f;
+                percentage = 90.0f;
             }
             else
             {
                 switch (delta)
                 {
                     case -4:
-                        percentage = 15.0f;
+                        percentage = 10.0f;
                         break;
                     case -3:
-                        percentage = 25.0f;
+                        percentage = 15.0f;
                         break;
                     case -2:
-                        percentage = 40.0f;
+                        percentage = 25.0f;
                         break;
                     case -1:
-                        percentage = 60.0f;
+                        percentage = 35.0f;
                         break;
                     case 0:
-                        percentage = 75.0f;
+                        percentage = 50.0f;
                         break;
                     case 1:
-                        percentage = 82.5f;
+                        percentage = 65.0f;
                         break;
                     case 2:
-                        percentage = 87.0f;
+                        percentage = 75.0f;
                         break;
                     case 3:
-                        percentage = 90.0f;
+                        percentage = 85.0f;
                         break;
                 }
             }
@@ -542,28 +568,32 @@ namespace SWLOR.Game.Server.Service
             return model;
         }
 
-        public void ClearPlayerCraftingData(NWPlayer player)
+        public void ClearPlayerCraftingData(NWPlayer player, bool destroyComponents = false)
         {
             var model = GetPlayerCraftingData(player);
 
             foreach (var item in model.MainComponents)
             {
-                _.CopyItem(item.Object, player.Object, NWScript.TRUE);
+                if(!destroyComponents)
+                    _.CopyItem(item.Object, player.Object, TRUE);
                 item.Destroy();
             }
             foreach (var item in model.SecondaryComponents)
             {
-                _.CopyItem(item.Object, player.Object, NWScript.TRUE);
+                if (!destroyComponents)
+                    _.CopyItem(item.Object, player.Object, TRUE);
                 item.Destroy();
             }
             foreach (var item in model.TertiaryComponents)
             {
-                _.CopyItem(item.Object, player.Object, NWScript.TRUE);
+                if (!destroyComponents)
+                    _.CopyItem(item.Object, player.Object, TRUE);
                 item.Destroy();
             }
             foreach (var item in model.EnhancementComponents)
             {
-                _.CopyItem(item.Object, player.Object, NWScript.TRUE);
+                if (!destroyComponents)
+                    _.CopyItem(item.Object, player.Object, TRUE);
                 item.Destroy();
             }
 

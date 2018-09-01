@@ -1,7 +1,8 @@
-﻿using SWLOR.Game.Server.Event.Module;
+﻿using SWLOR.Game.Server;
+using SWLOR.Game.Server.Event.Module;
 
 // ReSharper disable once CheckNamespace
-namespace SWLOR.Game.Server.NWN.Events.Module
+namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
     internal class mod_on_nwnxchat

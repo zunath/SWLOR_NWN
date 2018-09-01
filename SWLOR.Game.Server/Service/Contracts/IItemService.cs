@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         int[] WeaponBaseItemTypes { get; }
 
         string GetNameByResref(string resref);
+        CustomItemType GetCustomItemTypeByResref(string resref);
         void OnModuleActivatedItem();
         void OnModuleEquipItem();
         string OnModuleExamine(string existingDescription, NWPlayer examiner, NWObject examinedObject);

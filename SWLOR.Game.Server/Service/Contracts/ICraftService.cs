@@ -18,6 +18,6 @@ namespace SWLOR.Game.Server.Service.Contracts
         int GetIngotLevel(string oreResref);
         int GetIngotPerkLevel(string oreResref);
         CraftingData GetPlayerCraftingData(NWPlayer player);
-        void ClearPlayerCraftingData(NWPlayer player);
+        void ClearPlayerCraftingData(NWPlayer player, bool destroyComponents = false);
     }
 }

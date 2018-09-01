@@ -155,6 +155,7 @@ namespace SWLOR.Game.Server.Conversation
                     }
 
                     _craft.CraftItem(GetPC(), device);
+                    model.IsAccessingStorage = true;
                     EndConversation();
                     break;
                 case 2: // Select main components

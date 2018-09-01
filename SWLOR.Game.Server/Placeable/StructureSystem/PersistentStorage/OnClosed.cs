@@ -1,6 +1,6 @@
 ﻿using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.NWScript;
+using NWN;
 
 namespace SWLOR.Game.Server.Placeable.StructureSystem.PersistentStorage
 {

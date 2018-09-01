@@ -1,10 +1,7 @@
 ﻿// ReSharper disable once CheckNamespace
-
-using SWLOR.Game.Server.NWN.Contracts;
-
-namespace SWLOR.Game.Server.NWN.NWScript
+namespace NWN
 {
-    public partial class NWScript: INWScript
+    public partial class NWScript : INWScript
     {
         //  Constants
         public const int NUM_INVENTORY_SLOTS = 18;
@@ -5675,7 +5672,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Output sString to the log file.
-        public  void PrintString(string sString)
+        public void PrintString(string sString)
         {
             Internal.StackPushString(sString);
             Internal.CallBuiltIn(1);
@@ -5684,7 +5681,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Output a formatted float to the log file.
         //  - nWidth should be a value from 0 to 18 inclusive.
         //  - nDecimals should be a value from 0 to 9 inclusive.
-        public  void PrintFloat(float fFloat, int nWidth = 18, int nDecimals = 9)
+        public void PrintFloat(float fFloat, int nWidth = 18, int nDecimals = 9)
         {
             Internal.StackPushInteger(nDecimals);
             Internal.StackPushInteger(nWidth);
@@ -5695,7 +5692,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Convert fFloat into a string.
         //  - nWidth should be a value from 0 to 18 inclusive.
         //  - nDecimals should be a value from 0 to 9 inclusive.
-        public  string FloatToString(float fFloat, int nWidth = 18, int nDecimals = 9)
+        public string FloatToString(float fFloat, int nWidth = 18, int nDecimals = 9)
         {
             Internal.StackPushInteger(nDecimals);
             Internal.StackPushInteger(nWidth);
@@ -5705,14 +5702,14 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Output nInteger to the log file.
-        public  void PrintInteger(int nInteger)
+        public void PrintInteger(int nInteger)
         {
             Internal.StackPushInteger(nInteger);
             Internal.CallBuiltIn(4);
         }
 
         //  Output oObject's ID to the log file.
-        public  void PrintObject(Object oObject)
+        public void PrintObject(Object oObject)
         {
             Internal.StackPushObject(oObject, false);
             Internal.CallBuiltIn(5);
@@ -5732,7 +5729,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  DelayCommand(fDelay, ApplyEffectToObject(DURATION_TYPE_INSTANT, eDamage, oTarget);
         //  Make oTarget run sScript and then return execution to the calling script.
         //  If sScript does not specify a compiled script, nothing happens.
-        public  void ExecuteScript(string sScript, Object oTarget)
+        public void ExecuteScript(string sScript, Object oTarget)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.StackPushString(sScript);
@@ -5745,7 +5742,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nClearCombatState: if true, this will immediately clear the combat state
         //    on a creature, which will stop the combat music and allow them to rest,
         //    engage in dialog, or other actions that they would normally have to wait for.
-        public  void ClearAllActions(int nClearCombatState = FALSE)
+        public void ClearAllActions(int nClearCombatState = FALSE)
         {
             Internal.StackPushInteger(nClearCombatState);
             Internal.CallBuiltIn(9);
@@ -5755,7 +5752,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - fDirection is expressed as anticlockwise degrees from Due East.
         //    DIRECTION_EAST, DIRECTION_NORTH, DIRECTION_WEST and DIRECTION_SOUTH are
         //    predefined. (0.0f=East, 90.0f=North, 180.0f=West, 270.0f=South)
-        public  void SetFacing(float fDirection)
+        public void SetFacing(float fDirection)
         {
             Internal.StackPushFloat(fDirection);
             Internal.CallBuiltIn(10);
@@ -5771,7 +5768,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //     around and the overflow will be used to advance the next field.
         //     e.g. Specifying a year of 1350, month of 33 and day of 10 will result in
         //     the calender being set to a year of 1352, a month of 9 and a day of 10.
-        public  void SetCalendar(int nYear, int nMonth, int nDay)
+        public void SetCalendar(int nYear, int nMonth, int nDay)
         {
             Internal.StackPushInteger(nDay);
             Internal.StackPushInteger(nMonth);
@@ -5793,7 +5790,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //     advance the next field, e.g. specifying 62 hours, 250 minutes, 10 seconds
         //     and 10 milliseconds will result in the calendar day being advanced by 2
         //     and the time being set to 18 hours, 10 minutes, 10 milliseconds.
-        public  void SetTime(int nHour, int nMinute, int nSecond, int nMillisecond)
+        public void SetTime(int nHour, int nMinute, int nSecond, int nMillisecond)
         {
             Internal.StackPushInteger(nMillisecond);
             Internal.StackPushInteger(nSecond);
@@ -5803,49 +5800,49 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the current calendar year.
-        public  int GetCalendarYear()
+        public int GetCalendarYear()
         {
             Internal.CallBuiltIn(13);
             return Internal.StackPopInteger();
         }
 
         //  Get the current calendar month.
-        public  int GetCalendarMonth()
+        public int GetCalendarMonth()
         {
             Internal.CallBuiltIn(14);
             return Internal.StackPopInteger();
         }
 
         //  Get the current calendar day.
-        public  int GetCalendarDay()
+        public int GetCalendarDay()
         {
             Internal.CallBuiltIn(15);
             return Internal.StackPopInteger();
         }
 
         //  Get the current hour.
-        public  int GetTimeHour()
+        public int GetTimeHour()
         {
             Internal.CallBuiltIn(16);
             return Internal.StackPopInteger();
         }
 
         //  Get the current minute
-        public  int GetTimeMinute()
+        public int GetTimeMinute()
         {
             Internal.CallBuiltIn(17);
             return Internal.StackPopInteger();
         }
 
         //  Get the current second
-        public  int GetTimeSecond()
+        public int GetTimeSecond()
         {
             Internal.CallBuiltIn(18);
             return Internal.StackPopInteger();
         }
 
         //  Get the current millisecond
-        public  int GetTimeMillisecond()
+        public int GetTimeMillisecond()
         {
             Internal.CallBuiltIn(19);
             return Internal.StackPopInteger();
@@ -5857,7 +5854,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  once ActionRandomWalk has been called.
         //  * No return value, but if an error occurs the log file will contain
         //    "ActionRandomWalk failed."
-        public  void ActionRandomWalk()
+        public void ActionRandomWalk()
         {
             Internal.CallBuiltIn(20);
         }
@@ -5868,7 +5865,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - bRun: If this is TRUE, the action subject will run rather than walk
         //  * No return value, but if an error occurs the log file will contain
         //    "MoveToPoint failed."
-        public  void ActionMoveToLocation(Location lDestination, int bRun = FALSE)
+        public void ActionMoveToLocation(Location lDestination, int bRun = FALSE)
         {
             Internal.StackPushInteger(bRun);
             Internal.StackPushLocation(lDestination);
@@ -5882,7 +5879,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - fRange: This is the desired distance between the action subject and oMoveTo
         //  * No return value, but if an error occurs the log file will contain
         //    "ActionMoveToObject failed."
-        public  void ActionMoveToObject(Object oMoveTo, int bRun = FALSE, float fRange = 1.0f)
+        public void ActionMoveToObject(Object oMoveTo, int bRun = FALSE, float fRange = 1.0f)
         {
             Internal.StackPushFloat(fRange);
             Internal.StackPushInteger(bRun);
@@ -5899,7 +5896,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //    between themselves and oFleeFrom
         //  * No return value, but if an error occurs the log file will contain
         //    "ActionMoveAwayFromObject failed."
-        public  void ActionMoveAwayFromObject(Object oFleeFrom, int bRun = FALSE, float fMoveAwayRange = 40.0f)
+        public void ActionMoveAwayFromObject(Object oFleeFrom, int bRun = FALSE, float fMoveAwayRange = 40.0f)
         {
             Internal.StackPushFloat(fMoveAwayRange);
             Internal.StackPushInteger(bRun);
@@ -5909,7 +5906,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the area that oTarget is currently in
         //  * Return value on error: OBJECT_INVALID
-        public  Object GetArea(Object oTarget)
+        public Object GetArea(Object oTarget)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.CallBuiltIn(24);
@@ -5924,7 +5921,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  * Return value on error: OBJECT_INVALID
         //   When used for doors, this should only be called from the OnAreaTransitionClick
         //   event.  Otherwise, it should only be called in OnEnter scripts.
-        public  Object GetEnteringObject()
+        public Object GetEnteringObject()
         {
             Internal.CallBuiltIn(25);
             return Internal.StackPopObject();
@@ -5934,7 +5931,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  areas of effect, modules, areas and encounters.
         //  * Return value on error: OBJECT_INVALID
         //  Should only be called in OnExit scripts.
-        public  Object GetExitingObject()
+        public Object GetExitingObject()
         {
             Internal.CallBuiltIn(26);
             return Internal.StackPopObject();
@@ -5942,7 +5939,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the position of oTarget
         //  * Return value on error: vector (0.0f, 0.0f, 0.0f)
-        public  Vector GetPosition(Object oTarget)
+        public Vector GetPosition(Object oTarget)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.CallBuiltIn(27);
@@ -5952,7 +5949,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get the direction in which oTarget is facing, expressed as a float between
         //  0.0f and 360.0f
         //  * Return value on error: -1.0f
-        public  float GetFacing(Object oTarget)
+        public float GetFacing(Object oTarget)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.CallBuiltIn(28);
@@ -5961,7 +5958,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the possessor of oItem
         //  * Return value on error: OBJECT_INVALID
-        public  Object GetItemPossessor(Object oItem)
+        public Object GetItemPossessor(Object oItem)
         {
             Internal.StackPushObject(oItem, false);
             Internal.CallBuiltIn(29);
@@ -5970,7 +5967,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the object possessed by oCreature with the tag sItemTag
         //  * Return value on error: OBJECT_INVALID
-        public  Object GetItemPossessedBy(Object oCreature, string sItemTag)
+        public Object GetItemPossessedBy(Object oCreature, string sItemTag)
         {
             Internal.StackPushString(sItemTag);
             Internal.StackPushObject(oCreature, false);
@@ -5986,7 +5983,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  If the item created was merged into an existing stack of similar items,
         //  the function will return the merged stack object. If the merged stack
         //  overflowed, the function will return the overflowed stack that was created.
-        public  Object CreateItemOnObject(string sItemTemplate, Object oTarget = null, int nStackSize = 1, string sNewTag = "")
+        public Object CreateItemOnObject(string sItemTemplate, Object oTarget = null, int nStackSize = 1, string sNewTag = "")
         {
             Internal.StackPushString(sNewTag);
             Internal.StackPushInteger(nStackSize);
@@ -6011,7 +6008,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //        2) The item must already be identified (if magical). 
         //        3) The creature has the level required to equip the item (if magical and ILR is on).
         //        4) The creature possesses the required feats to equip the item (such as weapon proficiencies).
-        public  void ActionEquipItem(Object oItem, int nInventorySlot)
+        public void ActionEquipItem(Object oItem, int nInventorySlot)
         {
             Internal.StackPushInteger(nInventorySlot);
             Internal.StackPushObject(oItem, false);
@@ -6019,7 +6016,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Unequip oItem from whatever slot it is currently in.
-        public  void ActionUnequipItem(Object oItem)
+        public void ActionUnequipItem(Object oItem)
         {
             Internal.StackPushObject(oItem, false);
             Internal.CallBuiltIn(33);
@@ -6028,7 +6025,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Pick up oItem from the ground.
         //  * No return value, but if an error occurs the log file will contain
         //    "ActionPickUpItem failed."
-        public  void ActionPickUpItem(Object oItem)
+        public void ActionPickUpItem(Object oItem)
         {
             Internal.StackPushObject(oItem, false);
             Internal.CallBuiltIn(34);
@@ -6037,7 +6034,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Put down oItem on the ground.
         //  * No return value, but if an error occurs the log file will contain
         //    "ActionPutDownItem failed."
-        public  void ActionPutDownItem(Object oItem)
+        public void ActionPutDownItem(Object oItem)
         {
             Internal.StackPushObject(oItem, false);
             Internal.CallBuiltIn(35);
@@ -6046,7 +6043,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get the last attacker of oAttackee.  This should only be used ONLY in the
         //  OnAttacked events for creatures, placeables and doors.
         //  * Return value on error: OBJECT_INVALID
-        public  Object GetLastAttacker(Object oAttackee = null)
+        public Object GetLastAttacker(Object oAttackee = null)
         {
             Internal.StackPushObject(oAttackee, false);
             Internal.CallBuiltIn(36);
@@ -6055,7 +6052,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Attack oAttackee.
         //  - bPassive: If this is TRUE, attack is in passive mode.
-        public  void ActionAttack(Object oAttackee, int bPassive = FALSE)
+        public void ActionAttack(Object oAttackee, int bPassive = FALSE)
         {
             Internal.StackPushInteger(bPassive);
             Internal.StackPushObject(oAttackee, false);
@@ -6088,7 +6085,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nThirdCriteriaValue: This is used in the same way as nFirstCriteriaValue to
         //    further specify the type of creature that we are looking for.
         //  * Return value on error: OBJECT_INVALID
-        public  Object GetNearestCreature(int nFirstCriteriaType, int nFirstCriteriaValue, Object oTarget = null, int nNth = 1, int nSecondCriteriaType = -1, int nSecondCriteriaValue = -1, int nThirdCriteriaType = -1, int nThirdCriteriaValue = -1)
+        public Object GetNearestCreature(int nFirstCriteriaType, int nFirstCriteriaValue, Object oTarget = null, int nNth = 1, int nSecondCriteriaType = -1, int nSecondCriteriaValue = -1, int nThirdCriteriaType = -1, int nThirdCriteriaValue = -1)
         {
             Internal.StackPushInteger(nThirdCriteriaValue);
             Internal.StackPushInteger(nThirdCriteriaType);
@@ -6105,7 +6102,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Add a speak action to the action subject.
         //  - sStringToSpeak: String to be spoken
         //  - nTalkVolume: TALKVOLUME_*
-        public  void ActionSpeakString(string sStringToSpeak, int nTalkVolume = TALKVOLUME_TALK)
+        public void ActionSpeakString(string sStringToSpeak, int nTalkVolume = TALKVOLUME_TALK)
         {
             Internal.StackPushInteger(nTalkVolume);
             Internal.StackPushString(sStringToSpeak);
@@ -6117,7 +6114,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - fSpeed: Speed of the animation
         //  - fDurationSeconds: Duration of the animation (this is not used for Fire and
         //    Forget animations)
-        public  void ActionPlayAnimation(int nAnimation, float fSpeed = 1.0f, float fDurationSeconds = 0.0f)
+        public void ActionPlayAnimation(int nAnimation, float fSpeed = 1.0f, float fDurationSeconds = 0.0f)
         {
             Internal.StackPushFloat(fDurationSeconds);
             Internal.StackPushFloat(fSpeed);
@@ -6127,7 +6124,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the distance from the caller to oObject in metres.
         //  * Return value on error: -1.0f
-        public  float GetDistanceToObject(Object oObject)
+        public float GetDistanceToObject(Object oObject)
         {
             Internal.StackPushObject(oObject, false);
             Internal.CallBuiltIn(41);
@@ -6135,7 +6132,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  * Returns TRUE if oObject is a valid object.
-        public  int GetIsObjectValid(Object oObject)
+        public int GetIsObjectValid(Object oObject)
         {
             Internal.StackPushObject(oObject, false);
             Internal.CallBuiltIn(42);
@@ -6143,14 +6140,14 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Cause the action subject to open oDoor
-        public  void ActionOpenDoor(Object oDoor)
+        public void ActionOpenDoor(Object oDoor)
         {
             Internal.StackPushObject(oDoor, false);
             Internal.CallBuiltIn(43);
         }
 
         //  Cause the action subject to close oDoor
-        public  void ActionCloseDoor(Object oDoor)
+        public void ActionCloseDoor(Object oDoor)
         {
             Internal.StackPushObject(oDoor, false);
             Internal.CallBuiltIn(44);
@@ -6172,7 +6169,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  *** NOTE *** In NWN:Hordes of the Underdark the camera limits have been relaxed to the following:
         //  Distance 1-25
         //  Pitch 1-89
-        public  void SetCameraFacing(float fDirection, float fDistance = -1.0f, float fPitch = -1.0f, int nTransitionType = CAMERA_TRANSITION_TYPE_SNAP)
+        public void SetCameraFacing(float fDirection, float fDistance = -1.0f, float fPitch = -1.0f, int nTransitionType = CAMERA_TRANSITION_TYPE_SNAP)
         {
             Internal.StackPushInteger(nTransitionType);
             Internal.StackPushFloat(fPitch);
@@ -6184,7 +6181,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Play sSoundName
         //  - sSoundName: TBD - SS
         //  This will play a mono sound from the location of the object running the command.
-        public  void PlaySound(string sSoundName)
+        public void PlaySound(string sSoundName)
         {
             Internal.StackPushString(sSoundName);
             Internal.CallBuiltIn(46);
@@ -6192,7 +6189,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the object at which the caller last cast a spell
         //  * Return value on error: OBJECT_INVALID
-        public  Object GetSpellTargetObject()
+        public Object GetSpellTargetObject()
         {
             Internal.CallBuiltIn(47);
             return Internal.StackPopObject();
@@ -6209,7 +6206,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - bInstantSpell: If this is TRUE, the spell is cast immediately. This allows
         //    the end-user to simulate a high-level magic-user having lots of advance
         //    warning of impending trouble
-        public  void ActionCastSpellAtObject(int nSpell, Object oTarget, int nMetaMagic = METAMAGIC_ANY, int bCheat = FALSE, int nDomainLevel = 0, int nProjectilePathType = PROJECTILE_PATH_TYPE_DEFAULT, int bInstantSpell = FALSE)
+        public void ActionCastSpellAtObject(int nSpell, Object oTarget, int nMetaMagic = METAMAGIC_ANY, int bCheat = FALSE, int nDomainLevel = 0, int nProjectilePathType = PROJECTILE_PATH_TYPE_DEFAULT, int bInstantSpell = FALSE)
         {
             Internal.StackPushInteger(bInstantSpell);
             Internal.StackPushInteger(nProjectilePathType);
@@ -6223,7 +6220,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the current hitpoints of oObject
         //  * Return value on error: 0
-        public  int GetCurrentHitPoints(Object oObject = null)
+        public int GetCurrentHitPoints(Object oObject = null)
         {
             Internal.StackPushObject(oObject, false);
             Internal.CallBuiltIn(49);
@@ -6232,7 +6229,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the maximum hitpoints of oObject
         //  * Return value on error: 0
-        public  int GetMaxHitPoints(Object oObject = null)
+        public int GetMaxHitPoints(Object oObject = null)
         {
             Internal.StackPushObject(oObject, false);
             Internal.CallBuiltIn(50);
@@ -6241,7 +6238,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get oObject's local integer variable sVarName
         //  * Return value on error: 0
-        public  int GetLocalInt(Object oObject, string sVarName)
+        public int GetLocalInt(Object oObject, string sVarName)
         {
             Internal.StackPushString(sVarName);
             Internal.StackPushObject(oObject, false);
@@ -6251,7 +6248,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get oObject's local float variable sVarName
         //  * Return value on error: 0.0f
-        public  float GetLocalFloat(Object oObject, string sVarName)
+        public float GetLocalFloat(Object oObject, string sVarName)
         {
             Internal.StackPushString(sVarName);
             Internal.StackPushObject(oObject, false);
@@ -6261,7 +6258,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get oObject's local string variable sVarName
         //  * Return value on error: ""
-        public  string GetLocalString(Object oObject, string sVarName)
+        public string GetLocalString(Object oObject, string sVarName)
         {
             Internal.StackPushString(sVarName);
             Internal.StackPushObject(oObject, false);
@@ -6271,7 +6268,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get oObject's local object variable sVarName
         //  * Return value on error: OBJECT_INVALID
-        public  Object GetLocalObject(Object oObject, string sVarName)
+        public Object GetLocalObject(Object oObject, string sVarName)
         {
             Internal.StackPushString(sVarName);
             Internal.StackPushObject(oObject, false);
@@ -6280,7 +6277,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Set oObject's local integer variable sVarName to nValue
-        public  void SetLocalInt(Object oObject, string sVarName, int nValue)
+        public void SetLocalInt(Object oObject, string sVarName, int nValue)
         {
             Internal.StackPushInteger(nValue);
             Internal.StackPushString(sVarName);
@@ -6289,7 +6286,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Set oObject's local float variable sVarName to nValue
-        public  void SetLocalFloat(Object oObject, string sVarName, float fValue)
+        public void SetLocalFloat(Object oObject, string sVarName, float fValue)
         {
             Internal.StackPushFloat(fValue);
             Internal.StackPushString(sVarName);
@@ -6298,7 +6295,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Set oObject's local string variable sVarName to nValue
-        public  void SetLocalString(Object oObject, string sVarName, string sValue)
+        public void SetLocalString(Object oObject, string sVarName, string sValue)
         {
             Internal.StackPushString(sValue);
             Internal.StackPushString(sVarName);
@@ -6307,7 +6304,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Set oObject's local object variable sVarName to nValue
-        public  void SetLocalObject(Object oObject, string sVarName, Object oValue)
+        public void SetLocalObject(Object oObject, string sVarName, Object oValue)
         {
             Internal.StackPushObject(oValue, false);
             Internal.StackPushString(sVarName);
@@ -6317,7 +6314,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the length of sString
         //  * Return value on error: -1
-        public  int GetStringLength(string sString)
+        public int GetStringLength(string sString)
         {
             Internal.StackPushString(sString);
             Internal.CallBuiltIn(59);
@@ -6326,7 +6323,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Convert sString into upper case
         //  * Return value on error: ""
-        public  string GetStringUpperCase(string sString)
+        public string GetStringUpperCase(string sString)
         {
             Internal.StackPushString(sString);
             Internal.CallBuiltIn(60);
@@ -6335,7 +6332,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Convert sString into lower case
         //  * Return value on error: ""
-        public  string GetStringLowerCase(string sString)
+        public string GetStringLowerCase(string sString)
         {
             Internal.StackPushString(sString);
             Internal.CallBuiltIn(61);
@@ -6344,7 +6341,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get nCount characters from the right end of sString
         //  * Return value on error: ""
-        public  string GetStringRight(string sString, int nCount)
+        public string GetStringRight(string sString, int nCount)
         {
             Internal.StackPushInteger(nCount);
             Internal.StackPushString(sString);
@@ -6354,7 +6351,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get nCounter characters from the left end of sString
         //  * Return value on error: ""
-        public  string GetStringLeft(string sString, int nCount)
+        public string GetStringLeft(string sString, int nCount)
         {
             Internal.StackPushInteger(nCount);
             Internal.StackPushString(sString);
@@ -6364,7 +6361,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Insert sString into sDestination at nPosition
         //  * Return value on error: ""
-        public  string InsertString(string sDestination, string sString, int nPosition)
+        public string InsertString(string sDestination, string sString, int nPosition)
         {
             Internal.StackPushInteger(nPosition);
             Internal.StackPushString(sString);
@@ -6375,7 +6372,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get nCount characters from sString, starting at nStart
         //  * Return value on error: ""
-        public  string GetSubString(string sString, int nStart, int nCount)
+        public string GetSubString(string sString, int nStart, int nCount)
         {
             Internal.StackPushInteger(nCount);
             Internal.StackPushInteger(nStart);
@@ -6387,7 +6384,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Find the position of sSubstring inside sString
         //  - nStart: The character position to start searching at (from the left end of the string). 
         //  * Return value on error: -1
-        public  int FindSubString(string sString, string sSubString, int nStart = 0)
+        public int FindSubString(string sString, string sSubString, int nStart = 0)
         {
             Internal.StackPushInteger(nStart);
             Internal.StackPushString(sSubString);
@@ -6398,7 +6395,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  math operations
         //  Maths operation: absolute value of fValue
-        public  float fabs(float fValue)
+        public float fabs(float fValue)
         {
             Internal.StackPushFloat(fValue);
             Internal.CallBuiltIn(67);
@@ -6406,7 +6403,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Maths operation: cosine of fValue
-        public  float cos(float fValue)
+        public float cos(float fValue)
         {
             Internal.StackPushFloat(fValue);
             Internal.CallBuiltIn(68);
@@ -6414,7 +6411,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Maths operation: sine of fValue
-        public  float sin(float fValue)
+        public float sin(float fValue)
         {
             Internal.StackPushFloat(fValue);
             Internal.CallBuiltIn(69);
@@ -6422,7 +6419,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Maths operation: tan of fValue
-        public  float tan(float fValue)
+        public float tan(float fValue)
         {
             Internal.StackPushFloat(fValue);
             Internal.CallBuiltIn(70);
@@ -6431,7 +6428,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Maths operation: arccosine of fValue
         //  * Returns zero if fValue > 1 or fValue < -1
-        public  float acos(float fValue)
+        public float acos(float fValue)
         {
             Internal.StackPushFloat(fValue);
             Internal.CallBuiltIn(71);
@@ -6440,7 +6437,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Maths operation: arcsine of fValue
         //  * Returns zero if fValue >1 or fValue < -1
-        public  float asin(float fValue)
+        public float asin(float fValue)
         {
             Internal.StackPushFloat(fValue);
             Internal.CallBuiltIn(72);
@@ -6448,7 +6445,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Maths operation: arctan of fValue
-        public  float atan(float fValue)
+        public float atan(float fValue)
         {
             Internal.StackPushFloat(fValue);
             Internal.CallBuiltIn(73);
@@ -6457,7 +6454,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Maths operation: log of fValue
         //  * Returns zero if fValue <= zero
-        public  float log(float fValue)
+        public float log(float fValue)
         {
             Internal.StackPushFloat(fValue);
             Internal.CallBuiltIn(74);
@@ -6466,7 +6463,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Maths operation: fValue is raised to the power of fExponent
         //  * Returns zero if fValue ==0 and fExponent <0
-        public  float pow(float fValue, float fExponent)
+        public float pow(float fValue, float fExponent)
         {
             Internal.StackPushFloat(fExponent);
             Internal.StackPushFloat(fValue);
@@ -6476,7 +6473,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Maths operation: square root of fValue
         //  * Returns zero if fValue <0
-        public  float sqrt(float fValue)
+        public float sqrt(float fValue)
         {
             Internal.StackPushFloat(fValue);
             Internal.CallBuiltIn(76);
@@ -6485,7 +6482,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Maths operation: integer absolute value of nValue
         //  * Return value on error: 0
-        public  int abs(int nValue)
+        public int abs(int nValue)
         {
             Internal.StackPushInteger(nValue);
             Internal.CallBuiltIn(77);
@@ -6494,7 +6491,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Create a Heal effect. This should be applied as an instantaneous effect.
         //  * Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nDamageToHeal < 0.
-        public  Effect EffectHeal(int nDamageToHeal)
+        public Effect EffectHeal(int nDamageToHeal)
         {
             Internal.StackPushInteger(nDamageToHeal);
             Internal.CallBuiltIn(78);
@@ -6506,7 +6503,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //    instantaneous effect.
         //  - nDamageType: DAMAGE_TYPE_*
         //  - nDamagePower: DAMAGE_POWER_*
-        public  Effect EffectDamage(int nDamageAmount, int nDamageType = DAMAGE_TYPE_MAGICAL, int nDamagePower = DAMAGE_POWER_NORMAL)
+        public Effect EffectDamage(int nDamageAmount, int nDamageType = DAMAGE_TYPE_MAGICAL, int nDamagePower = DAMAGE_POWER_NORMAL)
         {
             Internal.StackPushInteger(nDamagePower);
             Internal.StackPushInteger(nDamageType);
@@ -6517,7 +6514,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Create an Ability Increase effect
         //  - bAbilityToIncrease: ABILITY_*
-        public  Effect EffectAbilityIncrease(int nAbilityToIncrease, int nModifyBy)
+        public Effect EffectAbilityIncrease(int nAbilityToIncrease, int nModifyBy)
         {
             Internal.StackPushInteger(nModifyBy);
             Internal.StackPushInteger(nAbilityToIncrease);
@@ -6530,7 +6527,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nDamageType: DAMAGE_TYPE_*
         //  - nAmount
         //  - nLimit
-        public  Effect EffectDamageResistance(int nDamageType, int nAmount, int nLimit = 0)
+        public Effect EffectDamageResistance(int nDamageType, int nAmount, int nLimit = 0)
         {
             Internal.StackPushInteger(nLimit);
             Internal.StackPushInteger(nAmount);
@@ -6540,7 +6537,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Create a Resurrection effect. This should be applied as an instantaneous effect.
-        public  Effect EffectResurrection()
+        public Effect EffectResurrection()
         {
             Internal.CallBuiltIn(82);
             return Internal.StackPopEffect();
@@ -6555,7 +6552,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nUseAppearAnimation: should this creature play it's "appear" animation when it is
         //    summoned. If zero, it will just fade in somewhere near the target.  If the value is 1
         //    it will use the appear animation, and if it's 2 it will use appear2 (which doesn't exist for most creatures)
-        public  Effect EffectSummonCreature(string sCreatureResref, int nVisualEffectId = VFX_NONE, float fDelaySeconds = 0.0f, int nUseAppearAnimation = 0)
+        public Effect EffectSummonCreature(string sCreatureResref, int nVisualEffectId = VFX_NONE, float fDelaySeconds = 0.0f, int nUseAppearAnimation = 0)
         {
             Internal.StackPushInteger(nUseAppearAnimation);
             Internal.StackPushFloat(fDelaySeconds);
@@ -6567,7 +6564,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the level at which this creature cast it's last spell (or spell-like ability)
         //  * Return value on error, or if oCreature has not yet cast a spell: 0;
-        public  int GetCasterLevel(Object oCreature)
+        public int GetCasterLevel(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(84);
@@ -6575,7 +6572,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the first in-game effect on oCreature.
-        public  Effect GetFirstEffect(Object oCreature)
+        public Effect GetFirstEffect(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(85);
@@ -6583,7 +6580,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the next in-game effect on oCreature.
-        public  Effect GetNextEffect(Object oCreature)
+        public Effect GetNextEffect(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(86);
@@ -6592,7 +6589,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Remove eEffect from oCreature.
         //  * No return value
-        public  void RemoveEffect(Object oCreature, Effect eEffect)
+        public void RemoveEffect(Object oCreature, Effect eEffect)
         {
             Internal.StackPushEffect(eEffect);
             Internal.StackPushObject(oCreature, false);
@@ -6601,7 +6598,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  * Returns TRUE if eEffect is a valid effect. The effect must have been applied to
         //  * an object or else it will return FALSE
-        public  int GetIsEffectValid(Effect eEffect)
+        public int GetIsEffectValid(Effect eEffect)
         {
             Internal.StackPushEffect(eEffect);
             Internal.CallBuiltIn(88);
@@ -6610,7 +6607,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the duration type (DURATION_TYPE_*) of eEffect.
         //  * Return value if eEffect is not valid: -1
-        public  int GetEffectDurationType(Effect eEffect)
+        public int GetEffectDurationType(Effect eEffect)
         {
             Internal.StackPushEffect(eEffect);
             Internal.CallBuiltIn(89);
@@ -6619,7 +6616,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the subtype (SUBTYPE_*) of eEffect.
         //  * Return value on error: 0
-        public  int GetEffectSubType(Effect eEffect)
+        public int GetEffectSubType(Effect eEffect)
         {
             Internal.StackPushEffect(eEffect);
             Internal.CallBuiltIn(90);
@@ -6628,7 +6625,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the object that created eEffect.
         //  * Returns OBJECT_INVALID if eEffect is not a valid effect.
-        public  Object GetEffectCreator(Effect eEffect)
+        public Object GetEffectCreator(Effect eEffect)
         {
             Internal.StackPushEffect(eEffect);
             Internal.CallBuiltIn(91);
@@ -6637,7 +6634,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Convert nInteger into a string.
         //  * Return value on error: ""
-        public  string IntToString(int nInteger)
+        public string IntToString(int nInteger)
         {
             Internal.StackPushInteger(nInteger);
             Internal.CallBuiltIn(92);
@@ -6647,7 +6644,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get the first object in oArea.
         //  If no valid area is specified, it will use the caller's area.
         //  * Return value on error: OBJECT_INVALID
-        public  Object GetFirstObjectInArea(Object oArea = null)
+        public Object GetFirstObjectInArea(Object oArea = null)
         {
             Internal.StackPushObject(oArea, false);
             Internal.CallBuiltIn(93);
@@ -6657,7 +6654,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get the next object in oArea.
         //  If no valid area is specified, it will use the caller's area.
         //  * Return value on error: OBJECT_INVALID
-        public  Object GetNextObjectInArea(Object oArea = null)
+        public Object GetNextObjectInArea(Object oArea = null)
         {
             Internal.StackPushObject(oArea, false);
             Internal.CallBuiltIn(94);
@@ -6666,7 +6663,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the total from rolling (nNumDice x d2 dice).
         //  - nNumDice: If this is less than 1, the value 1 will be used.
-        public  int d2(int nNumDice = 1)
+        public int d2(int nNumDice = 1)
         {
             Internal.StackPushInteger(nNumDice);
             Internal.CallBuiltIn(95);
@@ -6675,7 +6672,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the total from rolling (nNumDice x d3 dice).
         //  - nNumDice: If this is less than 1, the value 1 will be used.
-        public  int d3(int nNumDice = 1)
+        public int d3(int nNumDice = 1)
         {
             Internal.StackPushInteger(nNumDice);
             Internal.CallBuiltIn(96);
@@ -6684,7 +6681,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the total from rolling (nNumDice x d4 dice).
         //  - nNumDice: If this is less than 1, the value 1 will be used.
-        public  int d4(int nNumDice = 1)
+        public int d4(int nNumDice = 1)
         {
             Internal.StackPushInteger(nNumDice);
             Internal.CallBuiltIn(97);
@@ -6693,7 +6690,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the total from rolling (nNumDice x d6 dice).
         //  - nNumDice: If this is less than 1, the value 1 will be used.
-        public  int d6(int nNumDice = 1)
+        public int d6(int nNumDice = 1)
         {
             Internal.StackPushInteger(nNumDice);
             Internal.CallBuiltIn(98);
@@ -6702,7 +6699,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the total from rolling (nNumDice x d8 dice).
         //  - nNumDice: If this is less than 1, the value 1 will be used.
-        public  int d8(int nNumDice = 1)
+        public int d8(int nNumDice = 1)
         {
             Internal.StackPushInteger(nNumDice);
             Internal.CallBuiltIn(99);
@@ -6711,7 +6708,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the total from rolling (nNumDice x d10 dice).
         //  - nNumDice: If this is less than 1, the value 1 will be used.
-        public  int d10(int nNumDice = 1)
+        public int d10(int nNumDice = 1)
         {
             Internal.StackPushInteger(nNumDice);
             Internal.CallBuiltIn(100);
@@ -6720,7 +6717,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the total from rolling (nNumDice x d12 dice).
         //  - nNumDice: If this is less than 1, the value 1 will be used.
-        public  int d12(int nNumDice = 1)
+        public int d12(int nNumDice = 1)
         {
             Internal.StackPushInteger(nNumDice);
             Internal.CallBuiltIn(101);
@@ -6729,7 +6726,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the total from rolling (nNumDice x d20 dice).
         //  - nNumDice: If this is less than 1, the value 1 will be used.
-        public  int d20(int nNumDice = 1)
+        public int d20(int nNumDice = 1)
         {
             Internal.StackPushInteger(nNumDice);
             Internal.CallBuiltIn(102);
@@ -6738,7 +6735,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the total from rolling (nNumDice x d100 dice).
         //  - nNumDice: If this is less than 1, the value 1 will be used.
-        public  int d100(int nNumDice = 1)
+        public int d100(int nNumDice = 1)
         {
             Internal.StackPushInteger(nNumDice);
             Internal.CallBuiltIn(103);
@@ -6748,7 +6745,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get the magnitude of vVector; this can be used to determine the
         //  distance between two points.
         //  * Return value on error: 0.0f
-        public  float VectorMagnitude(Vector? vVector)
+        public float VectorMagnitude(Vector? vVector)
         {
             Internal.StackPushVector(vVector);
             Internal.CallBuiltIn(104);
@@ -6757,7 +6754,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the metamagic type (METAMAGIC_*) of the last spell cast by the caller
         //  * Return value if the caster is not a valid object: -1
-        public  int GetMetaMagicFeat()
+        public int GetMetaMagicFeat()
         {
             Internal.CallBuiltIn(105);
             return Internal.StackPopInteger();
@@ -6765,7 +6762,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the object type (OBJECT_TYPE_*) of oTarget
         //  * Return value if oTarget is not a valid object: -1
-        public  int GetObjectType(Object oTarget)
+        public int GetObjectType(Object oTarget)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.CallBuiltIn(106);
@@ -6774,7 +6771,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the racial type (RACIAL_TYPE_*) of oCreature
         //  * Return value if oCreature is not a valid creature: RACIAL_TYPE_INVALID
-        public  int GetRacialType(Object oCreature)
+        public int GetRacialType(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(107);
@@ -6791,7 +6788,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns: 2 if the target was immune to the save type specified
         //  Note: If used within an Area of Effect Object Script (On Enter, OnExit, OnHeartbeat), you MUST pass
         //  GetAreaOfEffectCreator() into oSaveVersus!!
-        public  int FortitudeSave(Object oCreature, int nDC, int nSaveType = SAVING_THROW_TYPE_NONE, Object oSaveVersus = null)
+        public int FortitudeSave(Object oCreature, int nDC, int nSaveType = SAVING_THROW_TYPE_NONE, Object oSaveVersus = null)
         {
             Internal.StackPushObject(oSaveVersus, false);
             Internal.StackPushInteger(nSaveType);
@@ -6811,7 +6808,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns: 2 if the target was immune to the save type specified
         //  Note: If used within an Area of Effect Object Script (On Enter, OnExit, OnHeartbeat), you MUST pass
         //  GetAreaOfEffectCreator() into oSaveVersus!!
-        public  int ReflexSave(Object oCreature, int nDC, int nSaveType = SAVING_THROW_TYPE_NONE, Object oSaveVersus = null)
+        public int ReflexSave(Object oCreature, int nDC, int nSaveType = SAVING_THROW_TYPE_NONE, Object oSaveVersus = null)
         {
             Internal.StackPushObject(oSaveVersus, false);
             Internal.StackPushInteger(nSaveType);
@@ -6831,7 +6828,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns: 2 if the target was immune to the save type specified
         //  Note: If used within an Area of Effect Object Script (On Enter, OnExit, OnHeartbeat), you MUST pass
         //  GetAreaOfEffectCreator() into oSaveVersus!!
-        public  int WillSave(Object oCreature, int nDC, int nSaveType = SAVING_THROW_TYPE_NONE, Object oSaveVersus = null)
+        public int WillSave(Object oCreature, int nDC, int nSaveType = SAVING_THROW_TYPE_NONE, Object oSaveVersus = null)
         {
             Internal.StackPushObject(oSaveVersus, false);
             Internal.StackPushInteger(nSaveType);
@@ -6843,7 +6840,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the DC to save against for a spell (10 + spell level + relevant ability
         //  bonus).  This can be called by a creature or by an Area of Effect object.
-        public  int GetSpellSaveDC()
+        public int GetSpellSaveDC()
         {
             Internal.CallBuiltIn(111);
             return Internal.StackPopInteger();
@@ -6852,7 +6849,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Set the subtype of eEffect to Magical and return eEffect.
         //  (Effects default to magical if the subtype is not set)
         //  Magical effects are removed by resting, and by dispel magic
-        public  Effect MagicalEffect(Effect eEffect)
+        public Effect MagicalEffect(Effect eEffect)
         {
             Internal.StackPushEffect(eEffect);
             Internal.CallBuiltIn(112);
@@ -6862,7 +6859,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Set the subtype of eEffect to Supernatural and return eEffect.
         //  (Effects default to magical if the subtype is not set)
         //  Permanent supernatural effects are not removed by resting
-        public  Effect SupernaturalEffect(Effect eEffect)
+        public Effect SupernaturalEffect(Effect eEffect)
         {
             Internal.StackPushEffect(eEffect);
             Internal.CallBuiltIn(113);
@@ -6872,7 +6869,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Set the subtype of eEffect to Extraordinary and return eEffect.
         //  (Effects default to magical if the subtype is not set)
         //  Extraordinary effects are removed by resting, but not by dispel magic
-        public  Effect ExtraordinaryEffect(Effect eEffect)
+        public Effect ExtraordinaryEffect(Effect eEffect)
         {
             Internal.StackPushEffect(eEffect);
             Internal.CallBuiltIn(114);
@@ -6884,7 +6881,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nModifyType: AC_*_BONUS
         //  - nDamageType: DAMAGE_TYPE_*
         //    * Default value for nDamageType should only ever be used in this function prototype.
-        public  Effect EffectACIncrease(int nValue, int nModifyType = AC_DODGE_BONUS, int nDamageType = AC_VS_DAMAGE_TYPE_ALL)
+        public Effect EffectACIncrease(int nValue, int nModifyType = AC_DODGE_BONUS, int nDamageType = AC_VS_DAMAGE_TYPE_ALL)
         {
             Internal.StackPushInteger(nDamageType);
             Internal.StackPushInteger(nModifyType);
@@ -6897,7 +6894,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  If oObject is an item, door or placeable, this will return zero.
         //  - nForFutureUse: this parameter is not currently used
         //  * Return value if oObject is not a creature, item, door or placeable: -1
-        public  int GetAC(Object oObject, int nForFutureUse = 0)
+        public int GetAC(Object oObject, int nForFutureUse = 0)
         {
             Internal.StackPushInteger(nForFutureUse);
             Internal.StackPushObject(oObject, false);
@@ -6913,7 +6910,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //           SAVING_THROW_WILL 
         //  - nValue: size of the Saving Throw increase
         //  - nSaveType: SAVING_THROW_TYPE_* (e.g. SAVING_THROW_TYPE_ACID )
-        public  Effect EffectSavingThrowIncrease(int nSave, int nValue, int nSaveType = SAVING_THROW_TYPE_ALL)
+        public Effect EffectSavingThrowIncrease(int nSave, int nValue, int nSaveType = SAVING_THROW_TYPE_ALL)
         {
             Internal.StackPushInteger(nSaveType);
             Internal.StackPushInteger(nValue);
@@ -6925,7 +6922,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Create an Attack Increase effect
         //  - nBonus: size of attack bonus
         //  - nModifierType: ATTACK_BONUS_*
-        public  Effect EffectAttackIncrease(int nBonus, int nModifierType = ATTACK_BONUS_MISC)
+        public Effect EffectAttackIncrease(int nBonus, int nModifierType = ATTACK_BONUS_MISC)
         {
             Internal.StackPushInteger(nModifierType);
             Internal.StackPushInteger(nBonus);
@@ -6938,7 +6935,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nDamagePower: DAMAGE_POWER_*
         //  - nLimit: How much damage the effect can absorb before disappearing.
         //    Set to zero for infinite
-        public  Effect EffectDamageReduction(int nAmount, int nDamagePower, int nLimit = 0)
+        public Effect EffectDamageReduction(int nAmount, int nDamagePower, int nLimit = 0)
         {
             Internal.StackPushInteger(nLimit);
             Internal.StackPushInteger(nDamagePower);
@@ -6952,7 +6949,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nDamageType: DAMAGE_TYPE_*
         //  NOTE! You *must* use the DAMAGE_BONUS_* constants! Using other values may
         //        result in odd behaviour.
-        public  Effect EffectDamageIncrease(int nBonus, int nDamageType = DAMAGE_TYPE_MAGICAL)
+        public Effect EffectDamageIncrease(int nBonus, int nDamageType = DAMAGE_TYPE_MAGICAL)
         {
             Internal.StackPushInteger(nDamageType);
             Internal.StackPushInteger(nBonus);
@@ -6962,7 +6959,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Convert nRounds into a number of seconds
         //  A round is always 6.0 seconds
-        public  float RoundsToSeconds(int nRounds)
+        public float RoundsToSeconds(int nRounds)
         {
             Internal.StackPushInteger(nRounds);
             Internal.CallBuiltIn(121);
@@ -6971,7 +6968,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Convert nHours into a number of seconds
         //  The result will depend on how many minutes there are per hour (game-time)
-        public  float HoursToSeconds(int nHours)
+        public float HoursToSeconds(int nHours)
         {
             Internal.StackPushInteger(nHours);
             Internal.CallBuiltIn(122);
@@ -6980,7 +6977,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Convert nTurns into a number of seconds
         //  A turn is always 60.0 seconds
-        public  float TurnsToSeconds(int nTurns)
+        public float TurnsToSeconds(int nTurns)
         {
             Internal.StackPushInteger(nTurns);
             Internal.CallBuiltIn(123);
@@ -6991,7 +6988,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Law/Chaos alignment
         //  (100=law, 0=chaos)
         //  * Return value if oCreature is not a valid creature: -1
-        public  int GetLawChaosValue(Object oCreature)
+        public int GetLawChaosValue(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(124);
@@ -7002,7 +6999,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Good/Evil alignment
         //  (100=good, 0=evil)
         //  * Return value if oCreature is not a valid creature: -1
-        public  int GetGoodEvilValue(Object oCreature)
+        public int GetGoodEvilValue(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(125);
@@ -7011,7 +7008,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Return an ALIGNMENT_* constant to represent oCreature's law/chaos alignment
         //  * Return value if oCreature is not a valid creature: -1
-        public  int GetAlignmentLawChaos(Object oCreature)
+        public int GetAlignmentLawChaos(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(126);
@@ -7020,7 +7017,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Return an ALIGNMENT_* constant to represent oCreature's good/evil alignment
         //  * Return value if oCreature is not a valid creature: -1
-        public  int GetAlignmentGoodEvil(Object oCreature)
+        public int GetAlignmentGoodEvil(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(127);
@@ -7052,7 +7049,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - vOrigin: This is only used for cylinders and cones, and specifies the
         //    origin of the effect(normally the spell-caster's position).
         //  Return value on error: OBJECT_INVALID
-        public  Object GetFirstObjectInShape(int nShape, float fSize, Location lTarget, int bLineOfSight = FALSE, int nObjectFilter = OBJECT_TYPE_CREATURE, Vector? vOrigin = null)
+        public Object GetFirstObjectInShape(int nShape, float fSize, Location lTarget, int bLineOfSight = FALSE, int nObjectFilter = OBJECT_TYPE_CREATURE, Vector? vOrigin = null)
         {
             Internal.StackPushVector(vOrigin);
             Internal.StackPushInteger(nObjectFilter);
@@ -7088,7 +7085,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - vOrigin: This is only used for cylinders and cones, and specifies the origin
         //    of the effect (normally the spell-caster's position).
         //  Return value on error: OBJECT_INVALID
-        public  Object GetNextObjectInShape(int nShape, float fSize, Location lTarget, int bLineOfSight = FALSE, int nObjectFilter = OBJECT_TYPE_CREATURE, Vector? vOrigin = null)
+        public Object GetNextObjectInShape(int nShape, float fSize, Location lTarget, int bLineOfSight = FALSE, int nObjectFilter = OBJECT_TYPE_CREATURE, Vector? vOrigin = null)
         {
             Internal.StackPushVector(vOrigin);
             Internal.StackPushInteger(nObjectFilter);
@@ -7103,7 +7100,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Create an Entangle effect
         //  When applied, this effect will restrict the creature's movement and apply a
         //  (-2) to all attacks and a -4 to AC.
-        public  Effect EffectEntangle()
+        public Effect EffectEntangle()
         {
             Internal.CallBuiltIn(130);
             return Internal.StackPopEffect();
@@ -7122,7 +7119,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //                           for the object.
         //     EventUserDefined()  - This creates on OnUserDefined event. The script for handling this event
         //                           can be set in the Scripts Tab of the Properties menu for the object/area/module.
-        public  void SignalEvent(Object oObject, Event evToRun)
+        public void SignalEvent(Object oObject, Event evToRun)
         {
             Internal.StackPushEvent(evToRun);
             Internal.StackPushObject(oObject, false);
@@ -7142,7 +7139,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  From inside the OnUserDefined script call:
         //     GetUserDefinedEventNumber() to retrieve the value of nUserDefinedEventNumber
         //     that was used when the event was signaled.
-        public  Event EventUserDefined(int nUserDefinedEventNumber)
+        public Event EventUserDefined(int nUserDefinedEventNumber)
         {
             Internal.StackPushInteger(nUserDefinedEventNumber);
             Internal.CallBuiltIn(132);
@@ -7153,7 +7150,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nSpectacularDeath: if this is TRUE, the creature to which this effect is
         //    applied will die in an extraordinary fashion
         //  - nDisplayFeedback
-        public  Effect EffectDeath(int nSpectacularDeath = FALSE, int nDisplayFeedback = TRUE)
+        public Effect EffectDeath(int nSpectacularDeath = FALSE, int nDisplayFeedback = TRUE)
         {
             Internal.StackPushInteger(nDisplayFeedback);
             Internal.StackPushInteger(nSpectacularDeath);
@@ -7165,7 +7162,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  This effect knocks creatures off their feet, they will sit until the effect
         //  is removed. This should be applied as a temporary effect with a 3 second
         //  duration minimum (1 second to fall, 1 second sitting, 1 second to get up).
-        public  Effect EffectKnockdown()
+        public Effect EffectKnockdown()
         {
             Internal.CallBuiltIn(134);
             return Internal.StackPopEffect();
@@ -7174,7 +7171,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Give oItem to oGiveTo
         //  If oItem is not a valid item, or oGiveTo is not a valid object, nothing will
         //  happen.
-        public  void ActionGiveItem(Object oItem, Object oGiveTo)
+        public void ActionGiveItem(Object oItem, Object oGiveTo)
         {
             Internal.StackPushObject(oGiveTo, false);
             Internal.StackPushObject(oItem, false);
@@ -7184,7 +7181,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Take oItem from oTakeFrom
         //  If oItem is not a valid item, or oTakeFrom is not a valid object, nothing
         //  will happen.
-        public  void ActionTakeItem(Object oItem, Object oTakeFrom)
+        public void ActionTakeItem(Object oItem, Object oTakeFrom)
         {
             Internal.StackPushObject(oTakeFrom, false);
             Internal.StackPushObject(oItem, false);
@@ -7192,7 +7189,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Normalize vVector
-        public  Vector VectorNormalize(Vector? vVector)
+        public Vector VectorNormalize(Vector? vVector)
         {
             Internal.StackPushVector(vVector);
             Internal.CallBuiltIn(137);
@@ -7206,7 +7203,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nIntMod: intelligence modifier
         //  - nWisMod: wisdom modifier
         //  - nChaMod: charisma modifier
-        public  Effect EffectCurse(int nStrMod = 1, int nDexMod = 1, int nConMod = 1, int nIntMod = 1, int nWisMod = 1, int nChaMod = 1)
+        public Effect EffectCurse(int nStrMod = 1, int nDexMod = 1, int nConMod = 1, int nIntMod = 1, int nWisMod = 1, int nChaMod = 1)
         {
             Internal.StackPushInteger(nChaMod);
             Internal.StackPushInteger(nWisMod);
@@ -7224,7 +7221,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nBaseAbilityScore: if set to true will return the base ability score without
         //                       bonuses (e.g. ability bonuses granted from equipped items).
         //  Return value on error: 0
-        public  int GetAbilityScore(Object oCreature, int nAbilityType, int nBaseAbilityScore = FALSE)
+        public int GetAbilityScore(Object oCreature, int nAbilityType, int nBaseAbilityScore = FALSE)
         {
             Internal.StackPushInteger(nBaseAbilityScore);
             Internal.StackPushInteger(nAbilityType);
@@ -7234,7 +7231,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  * Returns TRUE if oCreature is a dead NPC, dead PC or a dying PC.
-        public  int GetIsDead(Object oCreature)
+        public int GetIsDead(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(140);
@@ -7244,7 +7241,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Output vVector to the logfile.
         //  - vVector
         //  - bPrepend: if this is TRUE, the message will be prefixed with "PRINTVECTOR:"
-        public  void PrintVector(Vector? vVector, int bPrepend)
+        public void PrintVector(Vector? vVector, int bPrepend)
         {
             Internal.StackPushInteger(bPrepend);
             Internal.StackPushVector(vVector);
@@ -7252,7 +7249,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Create a vector with the specified values for x, y and z
-        public  Vector Vector(float x = 0.0f, float y = 0.0f, float z = 0.0f)
+        public Vector Vector(float x = 0.0f, float y = 0.0f, float z = 0.0f)
         {
             Internal.StackPushFloat(z);
             Internal.StackPushFloat(y);
@@ -7262,14 +7259,14 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Cause the caller to face vTarget
-        public  void SetFacingPoint(Vector? vTarget)
+        public void SetFacingPoint(Vector? vTarget)
         {
             Internal.StackPushVector(vTarget);
             Internal.CallBuiltIn(143);
         }
 
         //  Convert fAngle to a vector
-        public  Vector AngleToVector(float fAngle)
+        public Vector AngleToVector(float fAngle)
         {
             Internal.StackPushFloat(fAngle);
             Internal.CallBuiltIn(144);
@@ -7277,7 +7274,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Convert vVector to an angle
-        public  float VectorToAngle(Vector? vVector)
+        public float VectorToAngle(Vector? vVector)
         {
             Internal.StackPushVector(vVector);
             Internal.CallBuiltIn(145);
@@ -7288,7 +7285,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  This is not an action, and it assumes the caller is already within range of
         //  oTarget
         //  * Returns 0 on a miss, 1 on a hit and 2 on a critical hit
-        public  int TouchAttackMelee(Object oTarget, int bDisplayFeedback = TRUE)
+        public int TouchAttackMelee(Object oTarget, int bDisplayFeedback = TRUE)
         {
             Internal.StackPushInteger(bDisplayFeedback);
             Internal.StackPushObject(oTarget, false);
@@ -7298,7 +7295,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  The caller will perform a Ranged Touch Attack on oTarget
         //  * Returns 0 on a miss, 1 on a hit and 2 on a critical hit
-        public  int TouchAttackRanged(Object oTarget, int bDisplayFeedback = TRUE)
+        public int TouchAttackRanged(Object oTarget, int bDisplayFeedback = TRUE)
         {
             Internal.StackPushInteger(bDisplayFeedback);
             Internal.StackPushObject(oTarget, false);
@@ -7307,7 +7304,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Create a Paralyze effect
-        public  Effect EffectParalyze()
+        public Effect EffectParalyze()
         {
             Internal.CallBuiltIn(148);
             return Internal.StackPopEffect();
@@ -7320,7 +7317,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nImmunityToSpell: SPELL_*
         //  * Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nImmunityToSpell is
         //    invalid.
-        public  Effect EffectSpellImmunity(int nImmunityToSpell = SPELL_ALL_SPELLS)
+        public Effect EffectSpellImmunity(int nImmunityToSpell = SPELL_ALL_SPELLS)
         {
             Internal.StackPushInteger(nImmunityToSpell);
             Internal.CallBuiltIn(149);
@@ -7328,7 +7325,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Create a Deaf effect
-        public  Effect EffectDeaf()
+        public Effect EffectDeaf()
         {
             Internal.CallBuiltIn(150);
             return Internal.StackPopEffect();
@@ -7336,7 +7333,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the distance in metres between oObjectA and oObjectB.
         //  * Return value if either object is invalid: 0.0f
-        public  float GetDistanceBetween(Object oObjectA, Object oObjectB)
+        public float GetDistanceBetween(Object oObjectA, Object oObjectB)
         {
             Internal.StackPushObject(oObjectB, false);
             Internal.StackPushObject(oObjectA, false);
@@ -7345,7 +7342,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Set oObject's local location variable sVarname to lValue
-        public  void SetLocalLocation(Object oObject, string sVarName, Location lValue)
+        public void SetLocalLocation(Object oObject, string sVarName, Location lValue)
         {
             Internal.StackPushLocation(lValue);
             Internal.StackPushString(sVarName);
@@ -7354,7 +7351,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get oObject's local location variable sVarname
-        public  Location GetLocalLocation(Object oObject, string sVarName)
+        public Location GetLocalLocation(Object oObject, string sVarName)
         {
             Internal.StackPushString(sVarName);
             Internal.StackPushObject(oObject, false);
@@ -7363,7 +7360,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Create a Sleep effect
-        public  Effect EffectSleep()
+        public Effect EffectSleep()
         {
             Internal.CallBuiltIn(154);
             return Internal.StackPopEffect();
@@ -7374,7 +7371,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - oCreature
         //  * Returns OBJECT_INVALID if oCreature is not a valid creature or there is no
         //    item in nInventorySlot.
-        public  Object GetItemInSlot(int nInventorySlot, Object oCreature = null)
+        public Object GetItemInSlot(int nInventorySlot, Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.StackPushInteger(nInventorySlot);
@@ -7383,49 +7380,49 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Create a Charm effect
-        public  Effect EffectCharmed()
+        public Effect EffectCharmed()
         {
             Internal.CallBuiltIn(156);
             return Internal.StackPopEffect();
         }
 
         //  Create a Confuse effect
-        public  Effect EffectConfused()
+        public Effect EffectConfused()
         {
             Internal.CallBuiltIn(157);
             return Internal.StackPopEffect();
         }
 
         //  Create a Frighten effect
-        public  Effect EffectFrightened()
+        public Effect EffectFrightened()
         {
             Internal.CallBuiltIn(158);
             return Internal.StackPopEffect();
         }
 
         //  Create a Dominate effect
-        public  Effect EffectDominated()
+        public Effect EffectDominated()
         {
             Internal.CallBuiltIn(159);
             return Internal.StackPopEffect();
         }
 
         //  Create a Daze effect
-        public  Effect EffectDazed()
+        public Effect EffectDazed()
         {
             Internal.CallBuiltIn(160);
             return Internal.StackPopEffect();
         }
 
         //  Create a Stun effect
-        public  Effect EffectStunned()
+        public Effect EffectStunned()
         {
             Internal.CallBuiltIn(161);
             return Internal.StackPopEffect();
         }
 
         //  Set whether oTarget's action stack can be modified
-        public  void SetCommandable(int bCommandable, Object oTarget = null)
+        public void SetCommandable(int bCommandable, Object oTarget = null)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.StackPushInteger(bCommandable);
@@ -7433,7 +7430,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Determine whether oTarget's action stack can be modified.
-        public  int GetCommandable(Object oTarget = null)
+        public int GetCommandable(Object oTarget = null)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.CallBuiltIn(163);
@@ -7443,7 +7440,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Create a Regenerate effect.
         //  - nAmount: amount of damage to be regenerated per time interval
         //  - fIntervalSeconds: length of interval in seconds
-        public  Effect EffectRegenerate(int nAmount, float fIntervalSeconds)
+        public Effect EffectRegenerate(int nAmount, float fIntervalSeconds)
         {
             Internal.StackPushFloat(fIntervalSeconds);
             Internal.StackPushInteger(nAmount);
@@ -7457,7 +7454,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //     0 = no change in speed
         //    50 = 50% faster
         //    99 = almost twice as fast
-        public  Effect EffectMovementSpeedIncrease(int nPercentChange)
+        public Effect EffectMovementSpeedIncrease(int nPercentChange)
         {
             Internal.StackPushInteger(nPercentChange);
             Internal.CallBuiltIn(165);
@@ -7466,7 +7463,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the number of hitdice for oCreature.
         //  * Return value if oCreature is not a valid creature: 0
-        public  int GetHitDice(Object oCreature)
+        public int GetHitDice(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(166);
@@ -7477,7 +7474,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - oFollow: this is the object to be followed
         //  - fFollowDistance: follow distance in metres
         //  * No return value
-        public  void ActionForceFollowObject(Object oFollow, float fFollowDistance = 0.0f)
+        public void ActionForceFollowObject(Object oFollow, float fFollowDistance = 0.0f)
         {
             Internal.StackPushFloat(fFollowDistance);
             Internal.StackPushObject(oFollow, false);
@@ -7486,7 +7483,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the Tag of oObject
         //  * Return value if oObject is not a valid object: ""
-        public  string GetTag(Object oObject)
+        public string GetTag(Object oObject)
         {
             Internal.StackPushObject(oObject, false);
             Internal.CallBuiltIn(168);
@@ -7500,7 +7497,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  * Return value if spell resisted: 1
         //  * Return value if spell resisted via magic immunity: 2
         //  * Return value if spell resisted via spell absorption: 3
-        public  int ResistSpell(Object oCaster, Object oTarget)
+        public int ResistSpell(Object oCaster, Object oTarget)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.StackPushObject(oCaster, false);
@@ -7510,7 +7507,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the effect type (EFFECT_TYPE_*) of eEffect.
         //  * Return value if eEffect is invalid: EFFECT_INVALIDEFFECT
-        public  int GetEffectType(Effect eEffect)
+        public int GetEffectType(Effect eEffect)
         {
             Internal.StackPushEffect(eEffect);
             Internal.CallBuiltIn(170);
@@ -7519,7 +7516,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Create an Area Of Effect effect in the area of the creature it is applied to.
         //  If the scripts are not specified, default ones will be used.
-        public  Effect EffectAreaOfEffect(int nAreaEffectId, string sOnEnterScript = "", string sHeartbeatScript = "", string sOnExitScript = "")
+        public Effect EffectAreaOfEffect(int nAreaEffectId, string sOnEnterScript = "", string sHeartbeatScript = "", string sOnExitScript = "")
         {
             Internal.StackPushString(sOnExitScript);
             Internal.StackPushString(sHeartbeatScript);
@@ -7530,7 +7527,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  * Returns TRUE if the Faction Ids of the two objects are the same
-        public  int GetFactionEqual(Object oFirstObject, Object oSecondObject = null)
+        public int GetFactionEqual(Object oFirstObject, Object oSecondObject = null)
         {
             Internal.StackPushObject(oSecondObject, false);
             Internal.StackPushObject(oFirstObject, false);
@@ -7540,7 +7537,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Make oObjectToChangeFaction join the faction of oMemberOfFactionToJoin.
         //  NB. ** This will only work for two NPCs **
-        public  void ChangeFaction(Object oObjectToChangeFaction, Object oMemberOfFactionToJoin)
+        public void ChangeFaction(Object oObjectToChangeFaction, Object oMemberOfFactionToJoin)
         {
             Internal.StackPushObject(oMemberOfFactionToJoin, false);
             Internal.StackPushObject(oObjectToChangeFaction, false);
@@ -7548,7 +7545,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  * Returns TRUE if oObject is listening for something
-        public  int GetIsListening(Object oObject)
+        public int GetIsListening(Object oObject)
         {
             Internal.StackPushObject(oObject, false);
             Internal.CallBuiltIn(174);
@@ -7556,7 +7553,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Set whether oObject is listening.
-        public  void SetListening(Object oObject, int bValue)
+        public void SetListening(Object oObject, int bValue)
         {
             Internal.StackPushInteger(bValue);
             Internal.StackPushObject(oObject, false);
@@ -7565,7 +7562,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Set the string for oObject to listen for.
         //  Note: this does not set oObject to be listening.
-        public  void SetListenPattern(Object oObject, string sPattern, int nNumber = 0)
+        public void SetListenPattern(Object oObject, string sPattern, int nNumber = 0)
         {
             Internal.StackPushInteger(nNumber);
             Internal.StackPushString(sPattern);
@@ -7574,7 +7571,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  * Returns TRUE if sStringToTest matches sPattern.
-        public  int TestStringAgainstPattern(string sPattern, string sStringToTest)
+        public int TestStringAgainstPattern(string sPattern, string sStringToTest)
         {
             Internal.StackPushString(sStringToTest);
             Internal.StackPushString(sPattern);
@@ -7585,7 +7582,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get the appropriate matched string (this should only be used in
         //  OnConversation scripts).
         //  * Returns the appropriate matched string, otherwise returns ""
-        public  string GetMatchedSubstring(int nString)
+        public string GetMatchedSubstring(int nString)
         {
             Internal.StackPushInteger(nString);
             Internal.CallBuiltIn(178);
@@ -7594,7 +7591,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the number of string parameters available.
         //  * Returns -1 if no string matched (this could be because of a dialogue event)
-        public  int GetMatchedSubstringsCount()
+        public int GetMatchedSubstringsCount()
         {
             Internal.CallBuiltIn(179);
             return Internal.StackPopInteger();
@@ -7604,7 +7601,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nVisualEffectId
         //  - nMissEffect: if this is TRUE, a random vector near or past the target will
         //    be generated, on which to play the effect
-        public  Effect EffectVisualEffect(int nVisualEffectId, int nMissEffect = FALSE)
+        public Effect EffectVisualEffect(int nVisualEffectId, int nMissEffect = FALSE)
         {
             Internal.StackPushInteger(nMissEffect);
             Internal.StackPushInteger(nVisualEffectId);
@@ -7614,7 +7611,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the weakest member of oFactionMember's faction.
         //  * Returns OBJECT_INVALID if oFactionMember's faction is invalid.
-        public  Object GetFactionWeakestMember(Object oFactionMember = null, int bMustBeVisible = TRUE)
+        public Object GetFactionWeakestMember(Object oFactionMember = null, int bMustBeVisible = TRUE)
         {
             Internal.StackPushInteger(bMustBeVisible);
             Internal.StackPushObject(oFactionMember, false);
@@ -7624,7 +7621,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the strongest member of oFactionMember's faction.
         //  * Returns OBJECT_INVALID if oFactionMember's faction is invalid.
-        public  Object GetFactionStrongestMember(Object oFactionMember = null, int bMustBeVisible = TRUE)
+        public Object GetFactionStrongestMember(Object oFactionMember = null, int bMustBeVisible = TRUE)
         {
             Internal.StackPushInteger(bMustBeVisible);
             Internal.StackPushObject(oFactionMember, false);
@@ -7635,7 +7632,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get the member of oFactionMember's faction that has taken the most hit points
         //  of damage.
         //  * Returns OBJECT_INVALID if oFactionMember's faction is invalid.
-        public  Object GetFactionMostDamagedMember(Object oFactionMember = null, int bMustBeVisible = TRUE)
+        public Object GetFactionMostDamagedMember(Object oFactionMember = null, int bMustBeVisible = TRUE)
         {
             Internal.StackPushInteger(bMustBeVisible);
             Internal.StackPushObject(oFactionMember, false);
@@ -7646,7 +7643,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get the member of oFactionMember's faction that has taken the fewest hit
         //  points of damage.
         //  * Returns OBJECT_INVALID if oFactionMember's faction is invalid.
-        public  Object GetFactionLeastDamagedMember(Object oFactionMember = null, int bMustBeVisible = TRUE)
+        public Object GetFactionLeastDamagedMember(Object oFactionMember = null, int bMustBeVisible = TRUE)
         {
             Internal.StackPushInteger(bMustBeVisible);
             Internal.StackPushObject(oFactionMember, false);
@@ -7656,7 +7653,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the amount of gold held by oFactionMember's faction.
         //  * Returns -1 if oFactionMember's faction is invalid.
-        public  int GetFactionGold(Object oFactionMember)
+        public int GetFactionGold(Object oFactionMember)
         {
             Internal.StackPushObject(oFactionMember, false);
             Internal.CallBuiltIn(185);
@@ -7666,7 +7663,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get an integer between 0 and 100 (inclusive) that represents how
         //  oSourceFactionMember's faction feels about oTarget.
         //  * Return value on error: -1
-        public  int GetFactionAverageReputation(Object oSourceFactionMember, Object oTarget)
+        public int GetFactionAverageReputation(Object oSourceFactionMember, Object oTarget)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.StackPushObject(oSourceFactionMember, false);
@@ -7677,7 +7674,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get an integer between 0 and 100 (inclusive) that represents the average
         //  good/evil alignment of oFactionMember's faction.
         //  * Return value on error: -1
-        public  int GetFactionAverageGoodEvilAlignment(Object oFactionMember)
+        public int GetFactionAverageGoodEvilAlignment(Object oFactionMember)
         {
             Internal.StackPushObject(oFactionMember, false);
             Internal.CallBuiltIn(187);
@@ -7687,7 +7684,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get an integer between 0 and 100 (inclusive) that represents the average
         //  law/chaos alignment of oFactionMember's faction.
         //  * Return value on error: -1
-        public  int GetFactionAverageLawChaosAlignment(Object oFactionMember)
+        public int GetFactionAverageLawChaosAlignment(Object oFactionMember)
         {
             Internal.StackPushObject(oFactionMember, false);
             Internal.CallBuiltIn(188);
@@ -7696,7 +7693,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the average level of the members of the faction.
         //  * Return value on error: -1
-        public  int GetFactionAverageLevel(Object oFactionMember)
+        public int GetFactionAverageLevel(Object oFactionMember)
         {
             Internal.StackPushObject(oFactionMember, false);
             Internal.CallBuiltIn(189);
@@ -7705,7 +7702,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the average XP of the members of the faction.
         //  * Return value on error: -1
-        public  int GetFactionAverageXP(Object oFactionMember)
+        public int GetFactionAverageXP(Object oFactionMember)
         {
             Internal.StackPushObject(oFactionMember, false);
             Internal.CallBuiltIn(190);
@@ -7715,7 +7712,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get the most frequent class in the faction - this can be compared with the
         //  constants CLASS_TYPE_*.
         //  * Return value on error: -1
-        public  int GetFactionMostFrequentClass(Object oFactionMember)
+        public int GetFactionMostFrequentClass(Object oFactionMember)
         {
             Internal.StackPushObject(oFactionMember, false);
             Internal.CallBuiltIn(191);
@@ -7724,7 +7721,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the object faction member with the lowest armour class.
         //  * Returns OBJECT_INVALID if oFactionMember's faction is invalid.
-        public  Object GetFactionWorstAC(Object oFactionMember = null, int bMustBeVisible = TRUE)
+        public Object GetFactionWorstAC(Object oFactionMember = null, int bMustBeVisible = TRUE)
         {
             Internal.StackPushInteger(bMustBeVisible);
             Internal.StackPushObject(oFactionMember, false);
@@ -7734,7 +7731,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the object faction member with the highest armour class.
         //  * Returns OBJECT_INVALID if oFactionMember's faction is invalid.
-        public  Object GetFactionBestAC(Object oFactionMember = null, int bMustBeVisible = TRUE)
+        public Object GetFactionBestAC(Object oFactionMember = null, int bMustBeVisible = TRUE)
         {
             Internal.StackPushInteger(bMustBeVisible);
             Internal.StackPushObject(oFactionMember, false);
@@ -7754,7 +7751,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //     object oChair = OBJECT_SELF;
         //     AssignCommand(GetLastUsedBy(),ActionSit(oChair));
         //  }
-        public  void ActionSit(Object oChair)
+        public void ActionSit(Object oChair)
         {
             Internal.StackPushObject(oChair, false);
             Internal.CallBuiltIn(194);
@@ -7763,14 +7760,14 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  In an onConversation script this gets the number of the string pattern
         //  matched (the one that triggered the script).
         //  * Returns -1 if no string matched
-        public  int GetListenPatternNumber()
+        public int GetListenPatternNumber()
         {
             Internal.CallBuiltIn(195);
             return Internal.StackPopInteger();
         }
 
         //  Jump to an object ID, or as near to it as possible.
-        public  void ActionJumpToObject(Object oToJumpTo, int bWalkStraightLineToPoint = TRUE)
+        public void ActionJumpToObject(Object oToJumpTo, int bWalkStraightLineToPoint = TRUE)
         {
             Internal.StackPushInteger(bWalkStraightLineToPoint);
             Internal.StackPushObject(oToJumpTo, false);
@@ -7779,7 +7776,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the first waypoint with the specified tag.
         //  * Returns OBJECT_INVALID if the waypoint cannot be found.
-        public  Object GetWaypointByTag(string sWaypointTag)
+        public Object GetWaypointByTag(string sWaypointTag)
         {
             Internal.StackPushString(sWaypointTag);
             Internal.CallBuiltIn(197);
@@ -7794,7 +7791,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  your own scripted purposes.
         // 
         //  * Returns OBJECT_INVALID if oTransition does not hold a target.
-        public  Object GetTransitionTarget(Object oTransition)
+        public Object GetTransitionTarget(Object oTransition)
         {
             Internal.StackPushObject(oTransition, false);
             Internal.CallBuiltIn(198);
@@ -7810,7 +7807,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Visual Effects are not considered "valid" effects for the purposes of
         //  determining if an effect will be removed or not and as such should never be
         //  packaged *only* with other visual effects in a link.
-        public  Effect EffectLinkEffects(Effect eChildEffect, Effect eParentEffect)
+        public Effect EffectLinkEffects(Effect eChildEffect, Effect eParentEffect)
         {
             Internal.StackPushEffect(eParentEffect);
             Internal.StackPushEffect(eChildEffect);
@@ -7823,7 +7820,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nNth: the nth object with this tag may be requested
         //  * Returns OBJECT_INVALID if the object cannot be found.
         //  Note: The module cannot be retrieved by GetObjectByTag(), use GetModule() instead.
-        public  Object GetObjectByTag(string sTag, int nNth = 0)
+        public Object GetObjectByTag(string sTag, int nNth = 0)
         {
             Internal.StackPushInteger(nNth);
             Internal.StackPushString(sTag);
@@ -7854,7 +7851,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //                      diminished affect all members of oSubject's party (if oSubject is a Player).
         //                      When FALSE the shift only affects oSubject.
         //  * No return value
-        public  void AdjustAlignment(Object oSubject, int nAlignment, int nShift, int bAllPartyMembers = TRUE)
+        public void AdjustAlignment(Object oSubject, int nAlignment, int nShift, int bAllPartyMembers = TRUE)
         {
             Internal.StackPushInteger(bAllPartyMembers);
             Internal.StackPushInteger(nShift);
@@ -7864,7 +7861,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Do nothing for fSeconds seconds.
-        public  void ActionWait(float fSeconds)
+        public void ActionWait(float fSeconds)
         {
             Internal.StackPushFloat(fSeconds);
             Internal.CallBuiltIn(202);
@@ -7880,7 +7877,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //       parameter
         //  - sCustomAreaTransitionBMP: this is the filename of a custom, user-defined
         //    area transition bitmap
-        public  void SetAreaTransitionBMP(int nPredefinedAreaTransition, string sCustomAreaTransitionBMP = "")
+        public void SetAreaTransitionBMP(int nPredefinedAreaTransition, string sCustomAreaTransitionBMP = "")
         {
             Internal.StackPushString(sCustomAreaTransitionBMP);
             Internal.StackPushInteger(nPredefinedAreaTransition);
@@ -7893,7 +7890,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - sDialogResRef: If this is blank, the creature's own dialogue file will be used
         //  - bPrivateConversation
         //  Turn off bPlayHello if you don't want the initial greeting to play
-        public  void ActionStartConversation(Object oObjectToConverseWith, string sDialogResRef = "", int bPrivateConversation = FALSE, int bPlayHello = TRUE)
+        public void ActionStartConversation(Object oObjectToConverseWith, string sDialogResRef = "", int bPrivateConversation = FALSE, int bPlayHello = TRUE)
         {
             Internal.StackPushInteger(bPlayHello);
             Internal.StackPushInteger(bPrivateConversation);
@@ -7903,13 +7900,13 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Pause the current conversation.
-        public  void ActionPauseConversation()
+        public void ActionPauseConversation()
         {
             Internal.CallBuiltIn(205);
         }
 
         //  Resume a conversation after it has been paused.
-        public  void ActionResumeConversation()
+        public void ActionResumeConversation()
         {
             Internal.CallBuiltIn(206);
         }
@@ -7922,7 +7919,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //    past the target
         //  * Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nBeamVisualEffect is
         //    not valid.
-        public  Effect EffectBeam(int nBeamVisualEffect, Object oEffector, int nBodyPart, int bMissEffect = FALSE)
+        public Effect EffectBeam(int nBeamVisualEffect, Object oEffector, int nBodyPart, int bMissEffect = FALSE)
         {
             Internal.StackPushInteger(bMissEffect);
             Internal.StackPushInteger(nBodyPart);
@@ -7938,7 +7935,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  -> 11-89 means oSource is neutral to oTarget
         //  -> 90-100 means oSource is friendly to oTarget
         //  * Returns -1 if oSource or oTarget does not identify a valid object
-        public  int GetReputation(Object oSource, Object oTarget)
+        public int GetReputation(Object oSource, Object oTarget)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.StackPushObject(oSource, false);
@@ -7959,7 +7956,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //        parameter as in the following call which should succeed: 
         //        AdjustReputation(oPC,oNPC,-100);
         //  Note: Will fail if oSourceFactionMember is a plot object.
-        public  void AdjustReputation(Object oTarget, Object oSourceFactionMember, int nAdjustment)
+        public void AdjustReputation(Object oTarget, Object oSourceFactionMember, int nAdjustment)
         {
             Internal.StackPushInteger(nAdjustment);
             Internal.StackPushObject(oSourceFactionMember, false);
@@ -7970,7 +7967,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get the creature that is currently sitting on the specified object.
         //  - oChair
         //  * Returns OBJECT_INVALID if oChair is not a valid placeable.
-        public  Object GetSittingCreature(Object oChair)
+        public Object GetSittingCreature(Object oChair)
         {
             Internal.StackPushObject(oChair, false);
             Internal.CallBuiltIn(210);
@@ -7982,7 +7979,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  not be used in any case except when getting a "going to be attacked" shout
         //  from the master creature (and this creature is a henchman)
         //  * Returns OBJECT_INVALID if oTarget is not a valid creature.
-        public  Object GetGoingToBeAttackedBy(Object oTarget)
+        public Object GetGoingToBeAttackedBy(Object oTarget)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.CallBuiltIn(211);
@@ -7991,7 +7988,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Create a Spell Resistance Increase effect.
         //  - nValue: size of spell resistance increase
-        public  Effect EffectSpellResistanceIncrease(int nValue)
+        public Effect EffectSpellResistanceIncrease(int nValue)
         {
             Internal.StackPushInteger(nValue);
             Internal.CallBuiltIn(212);
@@ -7999,7 +7996,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the location of oObject.
-        public  Location GetLocation(Object oObject)
+        public Location GetLocation(Object oObject)
         {
             Internal.StackPushObject(oObject, false);
             Internal.CallBuiltIn(213);
@@ -8008,14 +8005,14 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  The subject will jump to lLocation instantly (even between areas).
         //  If lLocation is invalid, nothing will happen.
-        public  void ActionJumpToLocation(Location lLocation)
+        public void ActionJumpToLocation(Location lLocation)
         {
             Internal.StackPushLocation(lLocation);
             Internal.CallBuiltIn(214);
         }
 
         //  Create a location.
-        public  Location Location(Object oArea, Vector? vPosition, float fOrientation)
+        public Location Location(Object oArea, Vector? vPosition, float fOrientation)
         {
             Internal.StackPushFloat(fOrientation);
             Internal.StackPushVector(vPosition);
@@ -8025,7 +8022,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Apply eEffect at lLocation.
-        public  void ApplyEffectAtLocation(int nDurationType, Effect eEffect, Location lLocation, float fDuration = 0.0f)
+        public void ApplyEffectAtLocation(int nDurationType, Effect eEffect, Location lLocation, float fDuration = 0.0f)
         {
             Internal.StackPushFloat(fDuration);
             Internal.StackPushLocation(lLocation);
@@ -8035,7 +8032,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  * Returns TRUE if oCreature is a Player Controlled character.
-        public  int GetIsPC(Object oCreature)
+        public int GetIsPC(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(217);
@@ -8043,7 +8040,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Convert fFeet into a number of meters.
-        public  float FeetToMeters(float fFeet)
+        public float FeetToMeters(float fFeet)
         {
             Internal.StackPushFloat(fFeet);
             Internal.CallBuiltIn(218);
@@ -8051,7 +8048,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Convert fYards into a number of meters.
-        public  float YardsToMeters(float fYards)
+        public float YardsToMeters(float fYards)
         {
             Internal.StackPushFloat(fYards);
             Internal.CallBuiltIn(219);
@@ -8059,7 +8056,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Apply eEffect to oTarget.
-        public  void ApplyEffectToObject(int nDurationType, Effect eEffect, Object oTarget, float fDuration = 0.0f)
+        public void ApplyEffectToObject(int nDurationType, Effect eEffect, Object oTarget, float fDuration = 0.0f)
         {
             Internal.StackPushFloat(fDuration);
             Internal.StackPushObject(oTarget, false);
@@ -8072,7 +8069,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  ActionSpeakString)
         //  - sStringToSpeak
         //  - nTalkVolume: TALKVOLUME_*
-        public  void SpeakString(string sStringToSpeak, int nTalkVolume = TALKVOLUME_TALK)
+        public void SpeakString(string sStringToSpeak, int nTalkVolume = TALKVOLUME_TALK)
         {
             Internal.StackPushInteger(nTalkVolume);
             Internal.StackPushString(sStringToSpeak);
@@ -8080,14 +8077,14 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the location of the caller's last spell target.
-        public  Location GetSpellTargetLocation()
+        public Location GetSpellTargetLocation()
         {
             Internal.CallBuiltIn(222);
             return Internal.StackPopLocation();
         }
 
         //  Get the position vector from lLocation.
-        public  Vector GetPositionFromLocation(Location lLocation)
+        public Vector GetPositionFromLocation(Location lLocation)
         {
             Internal.StackPushLocation(lLocation);
             Internal.CallBuiltIn(223);
@@ -8095,7 +8092,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the area's object ID from lLocation.
-        public  Object GetAreaFromLocation(Location lLocation)
+        public Object GetAreaFromLocation(Location lLocation)
         {
             Internal.StackPushLocation(lLocation);
             Internal.CallBuiltIn(224);
@@ -8103,7 +8100,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the orientation value from lLocation.
-        public  float GetFacingFromLocation(Location lLocation)
+        public float GetFacingFromLocation(Location lLocation)
         {
             Internal.StackPushLocation(lLocation);
             Internal.CallBuiltIn(225);
@@ -8136,7 +8133,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nThirdCriteriaValue: This is used in the same way as nFirstCriteriaValue to
         //    further specify the type of creature that we are looking for.
         //  * Return value on error: OBJECT_INVALID
-        public  Object GetNearestCreatureToLocation(int nFirstCriteriaType, int nFirstCriteriaValue, Location lLocation, int nNth = 1, int nSecondCriteriaType = -1, int nSecondCriteriaValue = -1, int nThirdCriteriaType = -1, int nThirdCriteriaValue = -1)
+        public Object GetNearestCreatureToLocation(int nFirstCriteriaType, int nFirstCriteriaValue, Location lLocation, int nNth = 1, int nSecondCriteriaType = -1, int nSecondCriteriaValue = -1, int nThirdCriteriaType = -1, int nThirdCriteriaValue = -1)
         {
             Internal.StackPushInteger(nThirdCriteriaValue);
             Internal.StackPushInteger(nThirdCriteriaType);
@@ -8155,7 +8152,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - oTarget
         //  - nNth
         //  * Return value on error: OBJECT_INVALID
-        public  Object GetNearestObject(int nObjectType = OBJECT_TYPE_ALL, Object oTarget = null, int nNth = 1)
+        public Object GetNearestObject(int nObjectType = OBJECT_TYPE_ALL, Object oTarget = null, int nNth = 1)
         {
             Internal.StackPushInteger(nNth);
             Internal.StackPushObject(oTarget, false);
@@ -8169,7 +8166,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - lLocation
         //  - nNth
         //  * Return value on error: OBJECT_INVALID
-        public  Object GetNearestObjectToLocation(int nObjectType, Location lLocation, int nNth = 1)
+        public Object GetNearestObjectToLocation(int nObjectType, Location lLocation, int nNth = 1)
         {
             Internal.StackPushInteger(nNth);
             Internal.StackPushLocation(lLocation);
@@ -8180,7 +8177,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the nth Object nearest to oTarget that has sTag as its tag.
         //  * Return value on error: OBJECT_INVALID
-        public  Object GetNearestObjectByTag(string sTag, Object oTarget = null, int nNth = 1)
+        public Object GetNearestObjectByTag(string sTag, Object oTarget = null, int nNth = 1)
         {
             Internal.StackPushInteger(nNth);
             Internal.StackPushObject(oTarget, false);
@@ -8190,7 +8187,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Convert nInteger into a floating point number.
-        public  float IntToFloat(int nInteger)
+        public float IntToFloat(int nInteger)
         {
             Internal.StackPushInteger(nInteger);
             Internal.CallBuiltIn(230);
@@ -8198,7 +8195,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Convert fFloat into the nearest integer.
-        public  int FloatToInt(float fFloat)
+        public int FloatToInt(float fFloat)
         {
             Internal.StackPushFloat(fFloat);
             Internal.CallBuiltIn(231);
@@ -8206,7 +8203,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Convert sNumber into an integer.
-        public  int StringToInt(string sNumber)
+        public int StringToInt(string sNumber)
         {
             Internal.StackPushString(sNumber);
             Internal.CallBuiltIn(232);
@@ -8214,7 +8211,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Convert sNumber into a floating point number.
-        public  float StringToFloat(string sNumber)
+        public float StringToFloat(string sNumber)
         {
             Internal.StackPushString(sNumber);
             Internal.CallBuiltIn(233);
@@ -8231,7 +8228,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - bInstantSpell: If this is TRUE, the spell is cast immediately; this allows
         //    the end-user to simulate
         //    a high-level magic user having lots of advance warning of impending trouble.
-        public  void ActionCastSpellAtLocation(int nSpell, Location lTargetLocation, int nMetaMagic = METAMAGIC_ANY, int bCheat = FALSE, int nProjectilePathType = PROJECTILE_PATH_TYPE_DEFAULT, int bInstantSpell = FALSE)
+        public void ActionCastSpellAtLocation(int nSpell, Location lTargetLocation, int nMetaMagic = METAMAGIC_ANY, int bCheat = FALSE, int nProjectilePathType = PROJECTILE_PATH_TYPE_DEFAULT, int bInstantSpell = FALSE)
         {
             Internal.StackPushInteger(bInstantSpell);
             Internal.StackPushInteger(nProjectilePathType);
@@ -8243,7 +8240,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  * Returns TRUE if oSource considers oTarget as an enemy.
-        public  int GetIsEnemy(Object oTarget, Object oSource = null)
+        public int GetIsEnemy(Object oTarget, Object oSource = null)
         {
             Internal.StackPushObject(oSource, false);
             Internal.StackPushObject(oTarget, false);
@@ -8252,7 +8249,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  * Returns TRUE if oSource considers oTarget as a friend.
-        public  int GetIsFriend(Object oTarget, Object oSource = null)
+        public int GetIsFriend(Object oTarget, Object oSource = null)
         {
             Internal.StackPushObject(oSource, false);
             Internal.StackPushObject(oTarget, false);
@@ -8261,7 +8258,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  * Returns TRUE if oSource considers oTarget as neutral.
-        public  int GetIsNeutral(Object oTarget, Object oSource = null)
+        public int GetIsNeutral(Object oTarget, Object oSource = null)
         {
             Internal.StackPushObject(oSource, false);
             Internal.StackPushObject(oTarget, false);
@@ -8271,14 +8268,14 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the PC that is involved in the conversation.
         //  * Returns OBJECT_INVALID on error.
-        public  Object GetPCSpeaker()
+        public Object GetPCSpeaker()
         {
             Internal.CallBuiltIn(238);
             return Internal.StackPopObject();
         }
 
         //  Get a string from the talk table using nStrRef.
-        public  string GetStringByStrRef(int nStrRef, int nGender = GENDER_MALE)
+        public string GetStringByStrRef(int nStrRef, int nGender = GENDER_MALE)
         {
             Internal.StackPushInteger(nGender);
             Internal.StackPushInteger(nStrRef);
@@ -8289,7 +8286,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Causes the creature to speak a translated string.
         //  - nStrRef: Reference of the string in the talk table
         //  - nTalkVolume: TALKVOLUME_*
-        public  void ActionSpeakStringByStrRef(int nStrRef, int nTalkVolume = TALKVOLUME_TALK)
+        public void ActionSpeakStringByStrRef(int nStrRef, int nTalkVolume = TALKVOLUME_TALK)
         {
             Internal.StackPushInteger(nTalkVolume);
             Internal.StackPushInteger(nStrRef);
@@ -8298,7 +8295,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Destroy oObject (irrevocably).
         //  This will not work on modules and areas.
-        public  void DestroyObject(Object oDestroy, float fDelay = 0.0f)
+        public void DestroyObject(Object oDestroy, float fDelay = 0.0f)
         {
             Internal.StackPushFloat(fDelay);
             Internal.StackPushObject(oDestroy, false);
@@ -8307,7 +8304,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the module.
         //  * Return value on error: OBJECT_INVALID
-        public  Object GetModule()
+        public Object GetModule()
         {
             Internal.CallBuiltIn(242);
             return Internal.StackPopObject();
@@ -8320,7 +8317,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - lLocation
         //  - bUseAppearAnimation
         //  - sNewTag - if this string is not empty, it will replace the default tag from the template
-        public  Object CreateObject(int nObjectType, string sTemplate, Location lLocation, int bUseAppearAnimation = FALSE, string sNewTag = "")
+        public Object CreateObject(int nObjectType, string sTemplate, Location lLocation, int bUseAppearAnimation = FALSE, string sNewTag = "")
         {
             Internal.StackPushString(sNewTag);
             Internal.StackPushInteger(bUseAppearAnimation);
@@ -8346,7 +8343,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //      GetLastSpellCaster() to get the object that cast the spell (oCaster).
         //      GetLastSpell() to get the type of spell cast (nSpell)
         //      GetLastSpellHarmful() to determine if the spell cast at the object was harmful.
-        public  Event EventSpellCastAt(Object oCaster, int nSpell, int bHarmful = TRUE)
+        public Event EventSpellCastAt(Object oCaster, int nSpell, int bHarmful = TRUE)
         {
             Internal.StackPushInteger(bHarmful);
             Internal.StackPushInteger(nSpell);
@@ -8358,7 +8355,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  This is for use in a "Spell Cast" script, it gets who cast the spell.
         //  The spell could have been cast by a creature, placeable or door.
         //  * Returns OBJECT_INVALID if the caller is not a creature, placeable or door.
-        public  Object GetLastSpellCaster()
+        public Object GetLastSpellCaster()
         {
             Internal.CallBuiltIn(245);
             return Internal.StackPopObject();
@@ -8366,14 +8363,14 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  This is for use in a "Spell Cast" script, it gets the ID of the spell that
         //  was cast.
-        public  int GetLastSpell()
+        public int GetLastSpell()
         {
             Internal.CallBuiltIn(246);
             return Internal.StackPopInteger();
         }
 
         //  This is for use in a user-defined script, it gets the event number.
-        public  int GetUserDefinedEventNumber()
+        public int GetUserDefinedEventNumber()
         {
             Internal.CallBuiltIn(247);
             return Internal.StackPopInteger();
@@ -8381,7 +8378,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  This is for use in a Spell script, it gets the ID of the spell that is being
         //  cast (SPELL_*).
-        public  int GetSpellId()
+        public int GetSpellId()
         {
             Internal.CallBuiltIn(248);
             return Internal.StackPopInteger();
@@ -8389,7 +8386,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Generate a random name.
         //  nNameType: The type of random name to be generated (NAME_*)
-        public  string RandomName(int nNameType = NAME_FIRST_GENERIC_MALE)
+        public string RandomName(int nNameType = NAME_FIRST_GENERIC_MALE)
         {
             Internal.StackPushInteger(nNameType);
             Internal.CallBuiltIn(249);
@@ -8398,7 +8395,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Create a Poison effect.
         //  - nPoisonType: POISON_*
-        public  Effect EffectPoison(int nPoisonType)
+        public Effect EffectPoison(int nPoisonType)
         {
             Internal.StackPushInteger(nPoisonType);
             Internal.CallBuiltIn(250);
@@ -8407,7 +8404,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Create a Disease effect.
         //  - nDiseaseType: DISEASE_*
-        public  Effect EffectDisease(int nDiseaseType)
+        public Effect EffectDisease(int nDiseaseType)
         {
             Internal.StackPushInteger(nDiseaseType);
             Internal.CallBuiltIn(251);
@@ -8415,7 +8412,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Create a Silence effect.
-        public  Effect EffectSilence()
+        public Effect EffectSilence()
         {
             Internal.CallBuiltIn(252);
             return Internal.StackPopEffect();
@@ -8429,7 +8426,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //        Setting an object's name to "" will make the object
         //        revert to using the name it had originally before any
         //        SetName() calls were made on the object.
-        public  string GetName(Object oObject, int bOriginalName = FALSE)
+        public string GetName(Object oObject, int bOriginalName = FALSE)
         {
             Internal.StackPushInteger(bOriginalName);
             Internal.StackPushObject(oObject, false);
@@ -8439,7 +8436,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Use this in a conversation script to get the person with whom you are conversing.
         //  * Returns OBJECT_INVALID if the caller is not a valid creature.
-        public  Object GetLastSpeaker()
+        public Object GetLastSpeaker()
         {
             Internal.CallBuiltIn(254);
             return Internal.StackPopObject();
@@ -8449,7 +8446,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - sResRef: if this is not specified, the default dialog file will be used
         //  - oObjectToDialog: if this is not specified the person that triggered the
         //    event will be used
-        public  int BeginConversation(string sResRef = "", Object oObjectToDialog = null)
+        public int BeginConversation(string sResRef = "", Object oObjectToDialog = null)
         {
             Internal.StackPushObject(oObjectToDialog, false);
             Internal.StackPushString(sResRef);
@@ -8459,7 +8456,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Use this in an OnPerception script to get the object that was perceived.
         //  * Returns OBJECT_INVALID if the caller is not a valid creature.
-        public  Object GetLastPerceived()
+        public Object GetLastPerceived()
         {
             Internal.CallBuiltIn(256);
             return Internal.StackPopObject();
@@ -8467,7 +8464,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Use this in an OnPerception script to determine whether the object that was
         //  perceived was heard.
-        public  int GetLastPerceptionHeard()
+        public int GetLastPerceptionHeard()
         {
             Internal.CallBuiltIn(257);
             return Internal.StackPopInteger();
@@ -8475,7 +8472,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Use this in an OnPerception script to determine whether the object that was
         //  perceived has become inaudible.
-        public  int GetLastPerceptionInaudible()
+        public int GetLastPerceptionInaudible()
         {
             Internal.CallBuiltIn(258);
             return Internal.StackPopInteger();
@@ -8483,7 +8480,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Use this in an OnPerception script to determine whether the object that was
         //  perceived was seen.
-        public  int GetLastPerceptionSeen()
+        public int GetLastPerceptionSeen()
         {
             Internal.CallBuiltIn(259);
             return Internal.StackPopInteger();
@@ -8491,7 +8488,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Use this in an OnClosed script to get the object that closed the door or placeable.
         //  * Returns OBJECT_INVALID if the caller is not a valid door or placeable.
-        public  Object GetLastClosedBy()
+        public Object GetLastClosedBy()
         {
             Internal.CallBuiltIn(260);
             return Internal.StackPopObject();
@@ -8499,7 +8496,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Use this in an OnPerception script to determine whether the object that was
         //  perceived has vanished.
-        public  int GetLastPerceptionVanished()
+        public int GetLastPerceptionVanished()
         {
             Internal.CallBuiltIn(261);
             return Internal.StackPopInteger();
@@ -8511,7 +8508,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nPersistentZone: PERSISTENT_ZONE_ACTIVE. [This could also take the value
         //    PERSISTENT_ZONE_FOLLOW, but this is no longer used.]
         //  * Returns OBJECT_INVALID if no object is found.
-        public  Object GetFirstInPersistentObject(Object oPersistentObject = null, int nResidentObjectType = OBJECT_TYPE_CREATURE, int nPersistentZone = PERSISTENT_ZONE_ACTIVE)
+        public Object GetFirstInPersistentObject(Object oPersistentObject = null, int nResidentObjectType = OBJECT_TYPE_CREATURE, int nPersistentZone = PERSISTENT_ZONE_ACTIVE)
         {
             Internal.StackPushInteger(nPersistentZone);
             Internal.StackPushInteger(nResidentObjectType);
@@ -8526,7 +8523,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nPersistentZone: PERSISTENT_ZONE_ACTIVE. [This could also take the value
         //    PERSISTENT_ZONE_FOLLOW, but this is no longer used.]
         //  * Returns OBJECT_INVALID if no object is found.
-        public  Object GetNextInPersistentObject(Object oPersistentObject = null, int nResidentObjectType = OBJECT_TYPE_CREATURE, int nPersistentZone = PERSISTENT_ZONE_ACTIVE)
+        public Object GetNextInPersistentObject(Object oPersistentObject = null, int nResidentObjectType = OBJECT_TYPE_CREATURE, int nPersistentZone = PERSISTENT_ZONE_ACTIVE)
         {
             Internal.StackPushInteger(nPersistentZone);
             Internal.StackPushInteger(nResidentObjectType);
@@ -8537,7 +8534,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  This returns the creator of oAreaOfEffectObject.
         //  * Returns OBJECT_INVALID if oAreaOfEffectObject is not a valid Area of Effect object.
-        public  Object GetAreaOfEffectCreator(Object oAreaOfEffectObject = null)
+        public Object GetAreaOfEffectCreator(Object oAreaOfEffectObject = null)
         {
             Internal.StackPushObject(oAreaOfEffectObject, false);
             Internal.CallBuiltIn(264);
@@ -8545,7 +8542,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Delete oObject's local integer variable sVarName
-        public  void DeleteLocalInt(Object oObject, string sVarName)
+        public void DeleteLocalInt(Object oObject, string sVarName)
         {
             Internal.StackPushString(sVarName);
             Internal.StackPushObject(oObject, false);
@@ -8553,7 +8550,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Delete oObject's local float variable sVarName
-        public  void DeleteLocalFloat(Object oObject, string sVarName)
+        public void DeleteLocalFloat(Object oObject, string sVarName)
         {
             Internal.StackPushString(sVarName);
             Internal.StackPushObject(oObject, false);
@@ -8561,7 +8558,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Delete oObject's local string variable sVarName
-        public  void DeleteLocalString(Object oObject, string sVarName)
+        public void DeleteLocalString(Object oObject, string sVarName)
         {
             Internal.StackPushString(sVarName);
             Internal.StackPushObject(oObject, false);
@@ -8569,7 +8566,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Delete oObject's local object variable sVarName
-        public  void DeleteLocalObject(Object oObject, string sVarName)
+        public void DeleteLocalObject(Object oObject, string sVarName)
         {
             Internal.StackPushString(sVarName);
             Internal.StackPushObject(oObject, false);
@@ -8577,7 +8574,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Delete oObject's local location variable sVarName
-        public  void DeleteLocalLocation(Object oObject, string sVarName)
+        public void DeleteLocalLocation(Object oObject, string sVarName)
         {
             Internal.StackPushString(sVarName);
             Internal.StackPushObject(oObject, false);
@@ -8585,21 +8582,21 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Create a Haste effect.
-        public  Effect EffectHaste()
+        public Effect EffectHaste()
         {
             Internal.CallBuiltIn(270);
             return Internal.StackPopEffect();
         }
 
         //  Create a Slow effect.
-        public  Effect EffectSlow()
+        public Effect EffectSlow()
         {
             Internal.CallBuiltIn(271);
             return Internal.StackPopEffect();
         }
 
         //  Convert oObject into a hexadecimal string.
-        public  string ObjectToString(Object oObject)
+        public string ObjectToString(Object oObject)
         {
             Internal.StackPushObject(oObject, false);
             Internal.CallBuiltIn(272);
@@ -8608,7 +8605,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Create an Immunity effect.
         //  - nImmunityType: IMMUNITY_TYPE_*
-        public  Effect EffectImmunity(int nImmunityType)
+        public Effect EffectImmunity(int nImmunityType)
         {
             Internal.StackPushInteger(nImmunityType);
             Internal.CallBuiltIn(273);
@@ -8620,7 +8617,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - oVersus: if this is specified, then we also check for the race and
         //    alignment of oVersus
         //  * Returns TRUE if oCreature has immunity of type nImmunity versus oVersus.
-        public  int GetIsImmune(Object oCreature, int nImmunityType, Object oVersus = null)
+        public int GetIsImmune(Object oCreature, int nImmunityType, Object oVersus = null)
         {
             Internal.StackPushObject(oVersus, false);
             Internal.StackPushInteger(nImmunityType);
@@ -8632,7 +8629,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Creates a Damage Immunity Increase effect.
         //  - nDamageType: DAMAGE_TYPE_*
         //  - nPercentImmunity
-        public  Effect EffectDamageImmunityIncrease(int nDamageType, int nPercentImmunity)
+        public Effect EffectDamageImmunityIncrease(int nDamageType, int nPercentImmunity)
         {
             Internal.StackPushInteger(nPercentImmunity);
             Internal.StackPushInteger(nDamageType);
@@ -8641,7 +8638,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Determine whether oEncounter is active.
-        public  int GetEncounterActive(Object oEncounter = null)
+        public int GetEncounterActive(Object oEncounter = null)
         {
             Internal.StackPushObject(oEncounter, false);
             Internal.CallBuiltIn(276);
@@ -8651,7 +8648,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Set oEncounter's active state to nNewValue.
         //  - nNewValue: TRUE/FALSE
         //  - oEncounter
-        public  void SetEncounterActive(int nNewValue, Object oEncounter = null)
+        public void SetEncounterActive(int nNewValue, Object oEncounter = null)
         {
             Internal.StackPushObject(oEncounter, false);
             Internal.StackPushInteger(nNewValue);
@@ -8659,7 +8656,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the maximum number of times that oEncounter will spawn.
-        public  int GetEncounterSpawnsMax(Object oEncounter = null)
+        public int GetEncounterSpawnsMax(Object oEncounter = null)
         {
             Internal.StackPushObject(oEncounter, false);
             Internal.CallBuiltIn(278);
@@ -8667,7 +8664,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Set the maximum number of times that oEncounter can spawn
-        public  void SetEncounterSpawnsMax(int nNewValue, Object oEncounter = null)
+        public void SetEncounterSpawnsMax(int nNewValue, Object oEncounter = null)
         {
             Internal.StackPushObject(oEncounter, false);
             Internal.StackPushInteger(nNewValue);
@@ -8675,7 +8672,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the number of times that oEncounter has spawned so far
-        public  int GetEncounterSpawnsCurrent(Object oEncounter = null)
+        public int GetEncounterSpawnsCurrent(Object oEncounter = null)
         {
             Internal.StackPushObject(oEncounter, false);
             Internal.CallBuiltIn(280);
@@ -8683,7 +8680,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Set the number of times that oEncounter has spawned so far
-        public  void SetEncounterSpawnsCurrent(int nNewValue, Object oEncounter = null)
+        public void SetEncounterSpawnsCurrent(int nNewValue, Object oEncounter = null)
         {
             Internal.StackPushObject(oEncounter, false);
             Internal.StackPushInteger(nNewValue);
@@ -8692,7 +8689,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Use this in an OnItemAcquired script to get the item that was acquired.
         //  * Returns OBJECT_INVALID if the module is not valid.
-        public  Object GetModuleItemAcquired()
+        public Object GetModuleItemAcquired()
         {
             Internal.CallBuiltIn(282);
             return Internal.StackPopObject();
@@ -8701,14 +8698,14 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Use this in an OnItemAcquired script to get the creatre that previously
         //  possessed the item.
         //  * Returns OBJECT_INVALID if the item was picked up from the ground.
-        public  Object GetModuleItemAcquiredFrom()
+        public Object GetModuleItemAcquiredFrom()
         {
             Internal.CallBuiltIn(283);
             return Internal.StackPopObject();
         }
 
         //  Set the value for a custom token.
-        public  void SetCustomToken(int nCustomTokenNumber, string sTokenValue)
+        public void SetCustomToken(int nCustomTokenNumber, string sTokenValue)
         {
             Internal.StackPushString(sTokenValue);
             Internal.StackPushInteger(nCustomTokenNumber);
@@ -8718,7 +8715,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Determine whether oCreature has nFeat, and nFeat is useable.
         //  - nFeat: FEAT_*
         //  - oCreature
-        public  int GetHasFeat(int nFeat, Object oCreature = null)
+        public int GetHasFeat(int nFeat, Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.StackPushInteger(nFeat);
@@ -8729,7 +8726,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Determine whether oCreature has nSkill, and nSkill is useable.
         //  - nSkill: SKILL_*
         //  - oCreature
-        public  int GetHasSkill(int nSkill, Object oCreature = null)
+        public int GetHasSkill(int nSkill, Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.StackPushInteger(nSkill);
@@ -8740,7 +8737,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Use nFeat on oTarget.
         //  - nFeat: FEAT_*
         //  - oTarget
-        public  void ActionUseFeat(int nFeat, Object oTarget)
+        public void ActionUseFeat(int nFeat, Object oTarget)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.StackPushInteger(nFeat);
@@ -8753,7 +8750,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - oTarget
         //  - nSubSkill: SUBSKILL_*
         //  - oItemUsed: Item to use in conjunction with the skill
-        public  void ActionUseSkill(int nSkill, Object oTarget, int nSubSkill = 0, Object oItemUsed = null)
+        public void ActionUseSkill(int nSkill, Object oTarget, int nSubSkill = 0, Object oItemUsed = null)
         {
             Internal.StackPushObject(oItemUsed, false);
             Internal.StackPushInteger(nSubSkill);
@@ -8765,7 +8762,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Determine whether oSource sees oTarget.
         //  NOTE: This *only* works on creatures, as visibility lists are not
         //        maintained for non-creature objects.
-        public  int GetObjectSeen(Object oTarget, Object oSource = null)
+        public int GetObjectSeen(Object oTarget, Object oSource = null)
         {
             Internal.StackPushObject(oSource, false);
             Internal.StackPushObject(oTarget, false);
@@ -8776,7 +8773,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Determine whether oSource hears oTarget.
         //  NOTE: This *only* works on creatures, as visibility lists are not
         //        maintained for non-creature objects.
-        public  int GetObjectHeard(Object oTarget, Object oSource = null)
+        public int GetObjectHeard(Object oTarget, Object oSource = null)
         {
             Internal.StackPushObject(oSource, false);
             Internal.StackPushObject(oTarget, false);
@@ -8785,7 +8782,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Use this in an OnPlayerDeath module script to get the last player that died.
-        public  Object GetLastPlayerDied()
+        public Object GetLastPlayerDied()
         {
             Internal.CallBuiltIn(291);
             return Internal.StackPopObject();
@@ -8793,7 +8790,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Use this in an OnItemLost script to get the item that was lost/dropped.
         //  * Returns OBJECT_INVALID if the module is not valid.
-        public  Object GetModuleItemLost()
+        public Object GetModuleItemLost()
         {
             Internal.CallBuiltIn(292);
             return Internal.StackPopObject();
@@ -8801,7 +8798,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Use this in an OnItemLost script to get the creature that lost the item.
         //  * Returns OBJECT_INVALID if the module is not valid.
-        public  Object GetModuleItemLostBy()
+        public Object GetModuleItemLostBy()
         {
             Internal.CallBuiltIn(293);
             return Internal.StackPopObject();
@@ -8818,7 +8815,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         // 
         //  To specify the OnConversation script that should run, view the Creature Properties on
         //  the creature and click on the Scripts Tab. Then specify a script for the OnConversation event.
-        public  Event EventConversation()
+        public Event EventConversation()
         {
             Internal.CallBuiltIn(295);
             return Internal.StackPopEvent();
@@ -8827,7 +8824,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Set the difficulty level of oEncounter.
         //  - nEncounterDifficulty: ENCOUNTER_DIFFICULTY_*
         //  - oEncounter
-        public  void SetEncounterDifficulty(int nEncounterDifficulty, Object oEncounter = null)
+        public void SetEncounterDifficulty(int nEncounterDifficulty, Object oEncounter = null)
         {
             Internal.StackPushObject(oEncounter, false);
             Internal.StackPushInteger(nEncounterDifficulty);
@@ -8835,7 +8832,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the difficulty level of oEncounter.
-        public  int GetEncounterDifficulty(Object oEncounter = null)
+        public int GetEncounterDifficulty(Object oEncounter = null)
         {
             Internal.StackPushObject(oEncounter, false);
             Internal.CallBuiltIn(297);
@@ -8843,7 +8840,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the distance between lLocationA and lLocationB.
-        public  float GetDistanceBetweenLocations(Location lLocationA, Location lLocationB)
+        public float GetDistanceBetweenLocations(Location lLocationA, Location lLocationB)
         {
             Internal.StackPushLocation(lLocationB);
             Internal.StackPushLocation(lLocationA);
@@ -8858,7 +8855,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nDC: Difficulty check
         //  - nSaveType: SAVING_THROW_TYPE_*
         //  - oSaveVersus
-        public  int GetReflexAdjustedDamage(int nDamage, Object oTarget, int nDC, int nSaveType = SAVING_THROW_TYPE_NONE, Object oSaveVersus = null)
+        public int GetReflexAdjustedDamage(int nDamage, Object oTarget, int nDC, int nSaveType = SAVING_THROW_TYPE_NONE, Object oSaveVersus = null)
         {
             Internal.StackPushObject(oSaveVersus, false);
             Internal.StackPushInteger(nSaveType);
@@ -8873,7 +8870,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nAnimation: ANIMATION_*
         //  - fSpeed
         //  - fSeconds
-        public  void PlayAnimation(int nAnimation, float fSpeed = 1.0f, float fSeconds = 0.0f)
+        public void PlayAnimation(int nAnimation, float fSpeed = 1.0f, float fSeconds = 0.0f)
         {
             Internal.StackPushFloat(fSeconds);
             Internal.StackPushFloat(fSpeed);
@@ -8883,7 +8880,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Create a Spell Talent.
         //  - nSpell: SPELL_*
-        public  Talent TalentSpell(int nSpell)
+        public Talent TalentSpell(int nSpell)
         {
             Internal.StackPushInteger(nSpell);
             Internal.CallBuiltIn(301);
@@ -8892,7 +8889,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Create a Feat Talent.
         //  - nFeat: FEAT_*
-        public  Talent TalentFeat(int nFeat)
+        public Talent TalentFeat(int nFeat)
         {
             Internal.StackPushInteger(nFeat);
             Internal.CallBuiltIn(302);
@@ -8901,7 +8898,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Create a Skill Talent.
         //  - nSkill: SKILL_*
-        public  Talent TalentSkill(int nSkill)
+        public Talent TalentSkill(int nSkill)
         {
             Internal.StackPushInteger(nSkill);
             Internal.CallBuiltIn(303);
@@ -8914,7 +8911,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  * The spell id on effects is only valid if the effect is created
         //    when the spell script runs. If it is created in a delayed command
         //    then the spell id on the effect will be invalid.
-        public  int GetHasSpellEffect(int nSpell, Object oObject = null)
+        public int GetHasSpellEffect(int nSpell, Object oObject = null)
         {
             Internal.StackPushObject(oObject, false);
             Internal.StackPushInteger(nSpell);
@@ -8924,7 +8921,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the spell (SPELL_*) that applied eSpellEffect.
         //  * Returns -1 if eSpellEffect was applied outside a spell script.
-        public  int GetEffectSpellId(Effect eSpellEffect)
+        public int GetEffectSpellId(Effect eSpellEffect)
         {
             Internal.StackPushEffect(eSpellEffect);
             Internal.CallBuiltIn(305);
@@ -8932,7 +8929,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Determine whether oCreature has tTalent.
-        public  int GetCreatureHasTalent(Talent tTalent, Object oCreature = null)
+        public int GetCreatureHasTalent(Talent tTalent, Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.StackPushTalent(tTalent);
@@ -8943,7 +8940,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get a random talent of oCreature, within nCategory.
         //  - nCategory: TALENT_CATEGORY_*
         //  - oCreature
-        public  Talent GetCreatureTalentRandom(int nCategory, Object oCreature = null)
+        public Talent GetCreatureTalentRandom(int nCategory, Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.StackPushInteger(nCategory);
@@ -8956,7 +8953,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nCategory: TALENT_CATEGORY_*
         //  - nCRMax: Challenge Rating of the talent
         //  - oCreature
-        public  Talent GetCreatureTalentBest(int nCategory, int nCRMax, Object oCreature = null)
+        public Talent GetCreatureTalentBest(int nCategory, int nCRMax, Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.StackPushInteger(nCRMax);
@@ -8966,7 +8963,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Use tChosenTalent on oTarget.
-        public  void ActionUseTalentOnObject(Talent tChosenTalent, Object oTarget)
+        public void ActionUseTalentOnObject(Talent tChosenTalent, Object oTarget)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.StackPushTalent(tChosenTalent);
@@ -8974,7 +8971,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Use tChosenTalent at lTargetLocation.
-        public  void ActionUseTalentAtLocation(Talent tChosenTalent, Location lTargetLocation)
+        public void ActionUseTalentAtLocation(Talent tChosenTalent, Location lTargetLocation)
         {
             Internal.StackPushLocation(lTargetLocation);
             Internal.StackPushTalent(tChosenTalent);
@@ -8983,7 +8980,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the gold piece value of oItem.
         //  * Returns 0 if oItem is not a valid item.
-        public  int GetGoldPieceValue(Object oItem)
+        public int GetGoldPieceValue(Object oItem)
         {
             Internal.StackPushObject(oItem, false);
             Internal.CallBuiltIn(311);
@@ -8991,7 +8988,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  * Returns TRUE if oCreature is of a playable racial type.
-        public  int GetIsPlayableRacialType(Object oCreature)
+        public int GetIsPlayableRacialType(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(312);
@@ -8999,7 +8996,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Jump to lDestination.  The action is added to the TOP of the action queue.
-        public  void JumpToLocation(Location lDestination)
+        public void JumpToLocation(Location lDestination)
         {
             Internal.StackPushLocation(lDestination);
             Internal.CallBuiltIn(313);
@@ -9008,7 +9005,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Create a Temporary Hitpoints effect.
         //  - nHitPoints: a positive integer
         //  * Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nHitPoints < 0.
-        public  Effect EffectTemporaryHitpoints(int nHitPoints)
+        public Effect EffectTemporaryHitpoints(int nHitPoints)
         {
             Internal.StackPushInteger(nHitPoints);
             Internal.CallBuiltIn(314);
@@ -9022,7 +9019,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //                    has (i.e. not including any bonuses from ability scores, feats, etc).
         //  * Returns -1 if oTarget doesn't have nSkill.
         //  * Returns 0 if nSkill is untrained.
-        public  int GetSkillRank(int nSkill, Object oTarget = null, int nBaseSkillRank = FALSE)
+        public int GetSkillRank(int nSkill, Object oTarget = null, int nBaseSkillRank = FALSE)
         {
             Internal.StackPushInteger(nBaseSkillRank);
             Internal.StackPushObject(oTarget, false);
@@ -9033,7 +9030,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the attack target of oCreature.
         //  This only works when oCreature is in combat.
-        public  Object GetAttackTarget(Object oCreature = null)
+        public Object GetAttackTarget(Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(316);
@@ -9042,7 +9039,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the attack type (SPECIAL_ATTACK_*) of oCreature's last attack.
         //  This only works when oCreature is in combat.
-        public  int GetLastAttackType(Object oCreature = null)
+        public int GetLastAttackType(Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(317);
@@ -9051,7 +9048,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the attack mode (COMBAT_MODE_*) of oCreature's last attack.
         //  This only works when oCreature is in combat.
-        public  int GetLastAttackMode(Object oCreature = null)
+        public int GetLastAttackMode(Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(318);
@@ -9059,7 +9056,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the master of oAssociate.
-        public  Object GetMaster(Object oAssociate = null)
+        public Object GetMaster(Object oAssociate = null)
         {
             Internal.StackPushObject(oAssociate, false);
             Internal.CallBuiltIn(319);
@@ -9067,7 +9064,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  * Returns TRUE if oCreature is in combat.
-        public  int GetIsInCombat(Object oCreature = null)
+        public int GetIsInCombat(Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(320);
@@ -9075,7 +9072,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the last command (ASSOCIATE_COMMAND_*) issued to oAssociate.
-        public  int GetLastAssociateCommand(Object oAssociate = null)
+        public int GetLastAssociateCommand(Object oAssociate = null)
         {
             Internal.StackPushObject(oAssociate, false);
             Internal.CallBuiltIn(321);
@@ -9083,7 +9080,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Give nGP gold to oCreature.
-        public  void GiveGoldToCreature(Object oCreature, int nGP)
+        public void GiveGoldToCreature(Object oCreature, int nGP)
         {
             Internal.StackPushInteger(nGP);
             Internal.StackPushObject(oCreature, false);
@@ -9095,7 +9092,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //    sticks around as a corpse.
         //  - bRaiseable: If this is TRUE, the caller can be raised via resurrection.
         //  - bSelectableWhenDead: If this is TRUE, the caller is selectable after death.
-        public  void SetIsDestroyable(int bDestroyable, int bRaiseable = TRUE, int bSelectableWhenDead = FALSE)
+        public void SetIsDestroyable(int bDestroyable, int bRaiseable = TRUE, int bSelectableWhenDead = FALSE)
         {
             Internal.StackPushInteger(bSelectableWhenDead);
             Internal.StackPushInteger(bRaiseable);
@@ -9104,7 +9101,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Set the locked state of oTarget, which can be a door or a placeable object.
-        public  void SetLocked(Object oTarget, int bLocked)
+        public void SetLocked(Object oTarget, int bLocked)
         {
             Internal.StackPushInteger(bLocked);
             Internal.StackPushObject(oTarget, false);
@@ -9112,7 +9109,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the locked state of oTarget, which can be a door or a placeable object.
-        public  int GetLocked(Object oTarget)
+        public int GetLocked(Object oTarget)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.CallBuiltIn(325);
@@ -9124,14 +9121,14 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  This is identical to GetEnteringObject.
         //  GetClickingObject() should not be called from a placeable's OnClick event,
         //  instead use GetPlaceableLastClickedBy();
-        public  Object GetClickingObject()
+        public Object GetClickingObject()
         {
             Internal.CallBuiltIn(326);
             return Internal.StackPopObject();
         }
 
         //  Initialise oTarget to listen for the standard Associates commands.
-        public  void SetAssociateListenPatterns(Object oTarget = null)
+        public void SetAssociateListenPatterns(Object oTarget = null)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.CallBuiltIn(327);
@@ -9139,7 +9136,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the last weapon that oCreature used in an attack.
         //  * Returns OBJECT_INVALID if oCreature did not attack, or has no weapon equipped.
-        public  Object GetLastWeaponUsed(Object oCreature)
+        public Object GetLastWeaponUsed(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(328);
@@ -9147,7 +9144,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Use oPlaceable.
-        public  void ActionInteractObject(Object oPlaceable)
+        public void ActionInteractObject(Object oPlaceable)
         {
             Internal.StackPushObject(oPlaceable, false);
             Internal.CallBuiltIn(329);
@@ -9156,7 +9153,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get the last object that used the placeable object that is calling this function.
         //  * Returns OBJECT_INVALID if it is called by something other than a placeable or
         //    a door.
-        public  Object GetLastUsedBy()
+        public Object GetLastUsedBy()
         {
             Internal.CallBuiltIn(330);
             return Internal.StackPopObject();
@@ -9166,7 +9163,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get oCreature's ability modifier for nAbility.
         //  - nAbility: ABILITY_*
         //  - oCreature
-        public  int GetAbilityModifier(int nAbility, Object oCreature = null)
+        public int GetAbilityModifier(int nAbility, Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.StackPushInteger(nAbility);
@@ -9175,7 +9172,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Determined whether oItem has been identified.
-        public  int GetIdentified(Object oItem)
+        public int GetIdentified(Object oItem)
         {
             Internal.StackPushObject(oItem, false);
             Internal.CallBuiltIn(332);
@@ -9183,7 +9180,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Set whether oItem has been identified.
-        public  void SetIdentified(Object oItem, int bIdentified)
+        public void SetIdentified(Object oItem, int bIdentified)
         {
             Internal.StackPushInteger(bIdentified);
             Internal.StackPushObject(oItem, false);
@@ -9191,14 +9188,14 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Summon an Animal Companion
-        public  void SummonAnimalCompanion(Object oMaster = null)
+        public void SummonAnimalCompanion(Object oMaster = null)
         {
             Internal.StackPushObject(oMaster, false);
             Internal.CallBuiltIn(334);
         }
 
         //  Summon a Familiar
-        public  void SummonFamiliar(Object oMaster = null)
+        public void SummonFamiliar(Object oMaster = null)
         {
             Internal.StackPushObject(oMaster, false);
             Internal.CallBuiltIn(335);
@@ -9206,7 +9203,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the last blocking door encountered by the caller of this function.
         //  * Returns OBJECT_INVALID if the caller is not a valid creature.
-        public  Object GetBlockingDoor()
+        public Object GetBlockingDoor()
         {
             Internal.CallBuiltIn(336);
             return Internal.StackPopObject();
@@ -9215,7 +9212,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - oTargetDoor
         //  - nDoorAction: DOOR_ACTION_*
         //  * Returns TRUE if nDoorAction can be performed on oTargetDoor.
-        public  int GetIsDoorActionPossible(Object oTargetDoor, int nDoorAction)
+        public int GetIsDoorActionPossible(Object oTargetDoor, int nDoorAction)
         {
             Internal.StackPushInteger(nDoorAction);
             Internal.StackPushObject(oTargetDoor, false);
@@ -9224,7 +9221,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Perform nDoorAction on oTargetDoor.
-        public  void DoDoorAction(Object oTargetDoor, int nDoorAction)
+        public void DoDoorAction(Object oTargetDoor, int nDoorAction)
         {
             Internal.StackPushInteger(nDoorAction);
             Internal.StackPushObject(oTargetDoor, false);
@@ -9235,7 +9232,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  inventory).
         //  * Returns OBJECT_INVALID if the caller is not a creature, item, placeable or store,
         //    or if no item is found.
-        public  Object GetFirstItemInInventory(Object oTarget = null)
+        public Object GetFirstItemInInventory(Object oTarget = null)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.CallBuiltIn(339);
@@ -9246,7 +9243,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  inventory).
         //  * Returns OBJECT_INVALID if the caller is not a creature, item, placeable or store,
         //    or if no item is found.
-        public  Object GetNextItemInInventory(Object oTarget = null)
+        public Object GetNextItemInInventory(Object oTarget = null)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.CallBuiltIn(340);
@@ -9260,7 +9257,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  * Returns CLASS_TYPE_INVALID if the oCreature does not have a class in
         //    nClassPosition (i.e. a single-class creature will only have a value in
         //    nClassLocation=1) or if oCreature is not a valid creature.
-        public  int GetClassByPosition(int nClassPosition, Object oCreature = null)
+        public int GetClassByPosition(int nClassPosition, Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.StackPushInteger(nClassPosition);
@@ -9275,7 +9272,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  * Returns 0 if oCreature does not have a class in nClassPosition
         //    (i.e. a single-class creature will only have a value in nClassLocation=1)
         //    or if oCreature is not a valid creature.
-        public  int GetLevelByPosition(int nClassPosition, Object oCreature = null)
+        public int GetLevelByPosition(int nClassPosition, Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.StackPushInteger(nClassPosition);
@@ -9286,7 +9283,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Determine the levels that oCreature holds in nClassType.
         //  - nClassType: CLASS_TYPE_*
         //  - oCreature
-        public  int GetLevelByClass(int nClassType, Object oCreature = null)
+        public int GetLevelByClass(int nClassType, Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.StackPushInteger(nClassType);
@@ -9296,7 +9293,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the amount of damage of type nDamageType that has been dealt to the caller.
         //  - nDamageType: DAMAGE_TYPE_*
-        public  int GetDamageDealtByType(int nDamageType)
+        public int GetDamageDealtByType(int nDamageType)
         {
             Internal.StackPushInteger(nDamageType);
             Internal.CallBuiltIn(344);
@@ -9304,7 +9301,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the total amount of damage that has been dealt to the caller.
-        public  int GetTotalDamageDealt()
+        public int GetTotalDamageDealt()
         {
             Internal.CallBuiltIn(345);
             return Internal.StackPopInteger();
@@ -9312,7 +9309,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the last object that damaged oObject
         //  * Returns OBJECT_INVALID if the passed in object is not a valid object.
-        public  Object GetLastDamager(Object oObject = null)
+        public Object GetLastDamager(Object oObject = null)
         {
             Internal.StackPushObject(oObject, false);
             Internal.CallBuiltIn(346);
@@ -9322,7 +9319,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get the last object that disarmed the trap on the caller.
         //  * Returns OBJECT_INVALID if the caller is not a valid placeable, trigger or
         //    door.
-        public  Object GetLastDisarmed()
+        public Object GetLastDisarmed()
         {
             Internal.CallBuiltIn(347);
             return Internal.StackPopObject();
@@ -9330,7 +9327,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the last object that disturbed the inventory of the caller.
         //  * Returns OBJECT_INVALID if the caller is not a valid creature or placeable.
-        public  Object GetLastDisturbed()
+        public Object GetLastDisturbed()
         {
             Internal.CallBuiltIn(348);
             return Internal.StackPopObject();
@@ -9338,7 +9335,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the last object that locked the caller.
         //  * Returns OBJECT_INVALID if the caller is not a valid door or placeable.
-        public  Object GetLastLocked()
+        public Object GetLastLocked()
         {
             Internal.CallBuiltIn(349);
             return Internal.StackPopObject();
@@ -9346,7 +9343,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the last object that unlocked the caller.
         //  * Returns OBJECT_INVALID if the caller is not a valid door or placeable.
-        public  Object GetLastUnlocked()
+        public Object GetLastUnlocked()
         {
             Internal.CallBuiltIn(350);
             return Internal.StackPopObject();
@@ -9356,7 +9353,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nSkill: SKILL_*
         //  - nValue
         //  * Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nSkill is invalid.
-        public  Effect EffectSkillIncrease(int nSkill, int nValue)
+        public Effect EffectSkillIncrease(int nSkill, int nValue)
         {
             Internal.StackPushInteger(nValue);
             Internal.StackPushInteger(nSkill);
@@ -9367,7 +9364,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get the type of disturbance (INVENTORY_DISTURB_*) that caused the caller's
         //  OnInventoryDisturbed script to fire.  This will only work for creatures and
         //  placeables.
-        public  int GetInventoryDisturbType()
+        public int GetInventoryDisturbType()
         {
             Internal.CallBuiltIn(352);
             return Internal.StackPopInteger();
@@ -9375,7 +9372,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  get the item that caused the caller's OnInventoryDisturbed script to fire.
         //  * Returns OBJECT_INVALID if the caller is not a valid object.
-        public  Object GetInventoryDisturbItem()
+        public Object GetInventoryDisturbItem()
         {
             Internal.CallBuiltIn(353);
             return Internal.StackPopObject();
@@ -9384,7 +9381,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get the henchman belonging to oMaster.
         //  * Return OBJECT_INVALID if oMaster does not have a henchman.
         //  -nNth: Which henchman to return.
-        public  Object GetHenchman(Object oMaster = null, int nNth = 1)
+        public Object GetHenchman(Object oMaster = null, int nNth = 1)
         {
             Internal.StackPushInteger(nNth);
             Internal.StackPushObject(oMaster, false);
@@ -9396,7 +9393,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - eEffect
         //  - nLawChaos: ALIGNMENT_LAWFUL/ALIGNMENT_CHAOTIC/ALIGNMENT_ALL
         //  - nGoodEvil: ALIGNMENT_GOOD/ALIGNMENT_EVIL/ALIGNMENT_ALL
-        public  Effect VersusAlignmentEffect(Effect eEffect, int nLawChaos = ALIGNMENT_ALL, int nGoodEvil = ALIGNMENT_ALL)
+        public Effect VersusAlignmentEffect(Effect eEffect, int nLawChaos = ALIGNMENT_ALL, int nGoodEvil = ALIGNMENT_ALL)
         {
             Internal.StackPushInteger(nGoodEvil);
             Internal.StackPushInteger(nLawChaos);
@@ -9408,7 +9405,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Set eEffect to be versus nRacialType.
         //  - eEffect
         //  - nRacialType: RACIAL_TYPE_*
-        public  Effect VersusRacialTypeEffect(Effect eEffect, int nRacialType)
+        public Effect VersusRacialTypeEffect(Effect eEffect, int nRacialType)
         {
             Internal.StackPushInteger(nRacialType);
             Internal.StackPushEffect(eEffect);
@@ -9417,7 +9414,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Set eEffect to be versus traps.
-        public  Effect VersusTrapEffect(Effect eEffect)
+        public Effect VersusTrapEffect(Effect eEffect)
         {
             Internal.StackPushEffect(eEffect);
             Internal.CallBuiltIn(357);
@@ -9425,7 +9422,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the gender of oCreature.
-        public  int GetGender(Object oCreature)
+        public int GetGender(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(358);
@@ -9433,7 +9430,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  * Returns TRUE if tTalent is valid.
-        public  int GetIsTalentValid(Talent tTalent)
+        public int GetIsTalentValid(Talent tTalent)
         {
             Internal.StackPushTalent(tTalent);
             Internal.CallBuiltIn(359);
@@ -9441,7 +9438,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Causes the action subject to move away from lMoveAwayFrom.
-        public  void ActionMoveAwayFromLocation(Location lMoveAwayFrom, int bRun = FALSE, float fMoveAwayRange = 40.0f)
+        public void ActionMoveAwayFromLocation(Location lMoveAwayFrom, int bRun = FALSE, float fMoveAwayRange = 40.0f)
         {
             Internal.StackPushFloat(fMoveAwayRange);
             Internal.StackPushInteger(bRun);
@@ -9453,14 +9450,14 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  conjunction with GetAttackTarget(). This value is set every time an attack is
         //  made, and is reset at the end of combat.
         //  * Returns OBJECT_INVALID if the caller is not a valid creature.
-        public  Object GetAttemptedAttackTarget()
+        public Object GetAttemptedAttackTarget()
         {
             Internal.CallBuiltIn(361);
             return Internal.StackPopObject();
         }
 
         //  Get the type (TALENT_TYPE_*) of tTalent.
-        public  int GetTypeFromTalent(Talent tTalent)
+        public int GetTypeFromTalent(Talent tTalent)
         {
             Internal.StackPushTalent(tTalent);
             Internal.CallBuiltIn(362);
@@ -9468,7 +9465,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the ID of tTalent.  This could be a SPELL_*, FEAT_* or SKILL_*.
-        public  int GetIdFromTalent(Talent tTalent)
+        public int GetIdFromTalent(Talent tTalent)
         {
             Internal.StackPushTalent(tTalent);
             Internal.CallBuiltIn(363);
@@ -9480,7 +9477,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nMaster
         //  - nTh: Which associate of the specified type to return
         //  * Returns OBJECT_INVALID if no such associate exists.
-        public  Object GetAssociate(int nAssociateType, Object oMaster = null, int nTh = 1)
+        public Object GetAssociate(int nAssociateType, Object oMaster = null, int nTh = 1)
         {
             Internal.StackPushInteger(nTh);
             Internal.StackPushObject(oMaster, false);
@@ -9491,7 +9488,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Add oHenchman as a henchman to oMaster
         //  If oHenchman is either a DM or a player character, this will have no effect.
-        public  void AddHenchman(Object oMaster, Object oHenchman = null)
+        public void AddHenchman(Object oMaster, Object oHenchman = null)
         {
             Internal.StackPushObject(oHenchman, false);
             Internal.StackPushObject(oMaster, false);
@@ -9499,7 +9496,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Remove oHenchman from the service of oMaster, returning them to their original faction.
-        public  void RemoveHenchman(Object oMaster, Object oHenchman = null)
+        public void RemoveHenchman(Object oMaster, Object oHenchman = null)
         {
             Internal.StackPushObject(oHenchman, false);
             Internal.StackPushObject(oMaster, false);
@@ -9516,7 +9513,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //    everyone in the world
         //  - bAllowOverrideHigher: If this is TRUE, you can set the state to a lower
         //    number than the one it is currently on
-        public  void AddJournalQuestEntry(string szPlotID, int nState, Object oCreature, int bAllPartyMembers = TRUE, int bAllPlayers = FALSE, int bAllowOverrideHigher = FALSE)
+        public void AddJournalQuestEntry(string szPlotID, int nState, Object oCreature, int bAllPartyMembers = TRUE, int bAllPlayers = FALSE, int bAllowOverrideHigher = FALSE)
         {
             Internal.StackPushInteger(bAllowOverrideHigher);
             Internal.StackPushInteger(bAllPlayers);
@@ -9534,7 +9531,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //    journal of everyone in the party
         //  - bAllPlayers: If this is TRUE, the entry will be removed from the journal of
         //    everyone in the world
-        public  void RemoveJournalQuestEntry(string szPlotID, Object oCreature, int bAllPartyMembers = TRUE, int bAllPlayers = FALSE)
+        public void RemoveJournalQuestEntry(string szPlotID, Object oCreature, int bAllPartyMembers = TRUE, int bAllPlayers = FALSE)
         {
             Internal.StackPushInteger(bAllPlayers);
             Internal.StackPushInteger(bAllPartyMembers);
@@ -9547,7 +9544,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nSinglePlayerCDKey: If set to TRUE, the player's public CD Key will 
         //    be returned when the player is playing in single player mode 
         //    (otherwise returns an empty string in single player mode).
-        public  string GetPCPublicCDKey(Object oPlayer, int nSinglePlayerCDKey = FALSE)
+        public string GetPCPublicCDKey(Object oPlayer, int nSinglePlayerCDKey = FALSE)
         {
             Internal.StackPushInteger(nSinglePlayerCDKey);
             Internal.StackPushObject(oPlayer, false);
@@ -9556,7 +9553,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the IP address from which oPlayer has connected.
-        public  string GetPCIPAddress(Object oPlayer)
+        public string GetPCIPAddress(Object oPlayer)
         {
             Internal.StackPushObject(oPlayer, false);
             Internal.CallBuiltIn(370);
@@ -9564,7 +9561,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the name of oPlayer.
-        public  string GetPCPlayerName(Object oPlayer)
+        public string GetPCPlayerName(Object oPlayer)
         {
             Internal.StackPushObject(oPlayer, false);
             Internal.CallBuiltIn(371);
@@ -9572,7 +9569,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Sets oPlayer and oTarget to like each other.
-        public  void SetPCLike(Object oPlayer, Object oTarget)
+        public void SetPCLike(Object oPlayer, Object oTarget)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.StackPushObject(oPlayer, false);
@@ -9580,7 +9577,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Sets oPlayer and oTarget to dislike each other.
-        public  void SetPCDislike(Object oPlayer, Object oTarget)
+        public void SetPCDislike(Object oPlayer, Object oTarget)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.StackPushObject(oPlayer, false);
@@ -9588,7 +9585,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Send a server message (szMessage) to the oPlayer.
-        public  void SendMessageToPC(Object oPlayer, string szMessage)
+        public void SendMessageToPC(Object oPlayer, string szMessage)
         {
             Internal.StackPushString(szMessage);
             Internal.StackPushObject(oPlayer, false);
@@ -9599,7 +9596,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  This value is set every time a spell is cast and is reset at the end of
         //  combat.
         //  * Returns OBJECT_INVALID if the caller is not a valid creature.
-        public  Object GetAttemptedSpellTarget()
+        public Object GetAttemptedSpellTarget()
         {
             Internal.CallBuiltIn(375);
             return Internal.StackPopObject();
@@ -9607,7 +9604,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the last creature that opened the caller.
         //  * Returns OBJECT_INVALID if the caller is not a valid door, placeable or store.
-        public  Object GetLastOpenedBy()
+        public Object GetLastOpenedBy()
         {
             Internal.CallBuiltIn(376);
             return Internal.StackPopObject();
@@ -9616,7 +9613,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Determines the number of times that oCreature has nSpell memorised.
         //  - nSpell: SPELL_*
         //  - oCreature
-        public  int GetHasSpell(int nSpell, Object oCreature = null)
+        public int GetHasSpell(int nSpell, Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.StackPushInteger(nSpell);
@@ -9627,7 +9624,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Open oStore for oPC.
         //  - nBonusMarkUp is added to the stores default mark up percentage on items sold (-100 to 100)
         //  - nBonusMarkDown is added to the stores default mark down percentage on items bought (-100 to 100)
-        public  void OpenStore(Object oStore, Object oPC, int nBonusMarkUp = 0, int nBonusMarkDown = 0)
+        public void OpenStore(Object oStore, Object oPC, int nBonusMarkUp = 0, int nBonusMarkDown = 0)
         {
             Internal.StackPushInteger(nBonusMarkDown);
             Internal.StackPushInteger(nBonusMarkUp);
@@ -9638,7 +9635,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Create a Turned effect.
         //  Turned effects are supernatural by default.
-        public  Effect EffectTurned()
+        public Effect EffectTurned()
         {
             Internal.CallBuiltIn(379);
             return Internal.StackPopEffect();
@@ -9647,7 +9644,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get the first member of oMemberOfFaction's faction (start to cycle through
         //  oMemberOfFaction's faction).
         //  * Returns OBJECT_INVALID if oMemberOfFaction's faction is invalid.
-        public  Object GetFirstFactionMember(Object oMemberOfFaction, int bPCOnly = TRUE)
+        public Object GetFirstFactionMember(Object oMemberOfFaction, int bPCOnly = TRUE)
         {
             Internal.StackPushInteger(bPCOnly);
             Internal.StackPushObject(oMemberOfFaction, false);
@@ -9658,7 +9655,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get the next member of oMemberOfFaction's faction (continue to cycle through
         //  oMemberOfFaction's faction).
         //  * Returns OBJECT_INVALID if oMemberOfFaction's faction is invalid.
-        public  Object GetNextFactionMember(Object oMemberOfFaction, int bPCOnly = TRUE)
+        public Object GetNextFactionMember(Object oMemberOfFaction, int bPCOnly = TRUE)
         {
             Internal.StackPushInteger(bPCOnly);
             Internal.StackPushObject(oMemberOfFaction, false);
@@ -9667,7 +9664,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Force the action subject to move to lDestination.
-        public  void ActionForceMoveToLocation(Location lDestination, int bRun = FALSE, float fTimeout = 30.0f)
+        public void ActionForceMoveToLocation(Location lDestination, int bRun = FALSE, float fTimeout = 30.0f)
         {
             Internal.StackPushFloat(fTimeout);
             Internal.StackPushInteger(bRun);
@@ -9676,7 +9673,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Force the action subject to move to oMoveTo.
-        public  void ActionForceMoveToObject(Object oMoveTo, int bRun = FALSE, float fRange = 1.0f, float fTimeout = 30.0f)
+        public void ActionForceMoveToObject(Object oMoveTo, int bRun = FALSE, float fRange = 1.0f, float fTimeout = 30.0f)
         {
             Internal.StackPushFloat(fTimeout);
             Internal.StackPushFloat(fRange);
@@ -9686,7 +9683,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the experience assigned in the journal editor for szPlotID.
-        public  int GetJournalQuestExperience(string szPlotID)
+        public int GetJournalQuestExperience(string szPlotID)
         {
             Internal.StackPushString(szPlotID);
             Internal.CallBuiltIn(384);
@@ -9694,7 +9691,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Jump to oToJumpTo (the action is added to the top of the action queue).
-        public  void JumpToObject(Object oToJumpTo, int nWalkStraightLineToPoint = 1)
+        public void JumpToObject(Object oToJumpTo, int nWalkStraightLineToPoint = 1)
         {
             Internal.StackPushInteger(nWalkStraightLineToPoint);
             Internal.StackPushObject(oToJumpTo, false);
@@ -9704,7 +9701,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Set whether oMapPin is enabled.
         //  - oMapPin
         //  - nEnabled: 0=Off, 1=On
-        public  void SetMapPinEnabled(Object oMapPin, int nEnabled)
+        public void SetMapPinEnabled(Object oMapPin, int nEnabled)
         {
             Internal.StackPushInteger(nEnabled);
             Internal.StackPushObject(oMapPin, false);
@@ -9714,7 +9711,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Create a Hit Point Change When Dying effect.
         //  - fHitPointChangePerRound: this can be positive or negative, but not zero.
         //  * Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if fHitPointChangePerRound is 0.
-        public  Effect EffectHitPointChangeWhenDying(float fHitPointChangePerRound)
+        public Effect EffectHitPointChangeWhenDying(float fHitPointChangePerRound)
         {
             Internal.StackPushFloat(fHitPointChangePerRound);
             Internal.CallBuiltIn(387);
@@ -9726,7 +9723,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nGUIPanel: GUI_PANEL_*
         //  * Nothing happens if oPC is not a player character or if an invalid value is
         //    used for nGUIPanel.
-        public  void PopUpGUIPanel(Object oPC, int nGUIPanel)
+        public void PopUpGUIPanel(Object oPC, int nGUIPanel)
         {
             Internal.StackPushInteger(nGUIPanel);
             Internal.StackPushObject(oPC, false);
@@ -9734,7 +9731,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Clear all personal feelings that oSource has about oTarget.
-        public  void ClearPersonalReputation(Object oTarget, Object oSource = null)
+        public void ClearPersonalReputation(Object oTarget, Object oSource = null)
         {
             Internal.StackPushObject(oSource, false);
             Internal.StackPushObject(oTarget, false);
@@ -9754,7 +9751,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Note: If bDecays is TRUE, the personal reputation amount decreases in size
         //  over fDurationInSeconds. Friendship will only be in effect as long as
         //  (faction reputation + total personal reputation) >= REPUTATION_TYPE_FRIEND.
-        public  void SetIsTemporaryFriend(Object oTarget, Object oSource = null, int bDecays = FALSE, float fDurationInSeconds = 180.0f)
+        public void SetIsTemporaryFriend(Object oTarget, Object oSource = null, int bDecays = FALSE, float fDurationInSeconds = 180.0f)
         {
             Internal.StackPushFloat(fDurationInSeconds);
             Internal.StackPushInteger(bDecays);
@@ -9773,7 +9770,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Note: If bDecays is TRUE, the personal reputation amount decreases in size
         //  over fDurationInSeconds. Enmity will only be in effect as long as
         //  (faction reputation + total personal reputation) <= REPUTATION_TYPE_ENEMY.
-        public  void SetIsTemporaryEnemy(Object oTarget, Object oSource = null, int bDecays = FALSE, float fDurationInSeconds = 180.0f)
+        public void SetIsTemporaryEnemy(Object oTarget, Object oSource = null, int bDecays = FALSE, float fDurationInSeconds = 180.0f)
         {
             Internal.StackPushFloat(fDurationInSeconds);
             Internal.StackPushInteger(bDecays);
@@ -9793,7 +9790,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  over fDurationInSeconds. Neutrality will only be in effect as long as
         //  (faction reputation + total personal reputation) > REPUTATION_TYPE_ENEMY and
         //  (faction reputation + total personal reputation) < REPUTATION_TYPE_FRIEND.
-        public  void SetIsTemporaryNeutral(Object oTarget, Object oSource = null, int bDecays = FALSE, float fDurationInSeconds = 180.0f)
+        public void SetIsTemporaryNeutral(Object oTarget, Object oSource = null, int bDecays = FALSE, float fDurationInSeconds = 180.0f)
         {
             Internal.StackPushFloat(fDurationInSeconds);
             Internal.StackPushInteger(bDecays);
@@ -9803,7 +9800,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Gives nXpAmount to oCreature.
-        public  void GiveXPToCreature(Object oCreature, int nXpAmount)
+        public void GiveXPToCreature(Object oCreature, int nXpAmount)
         {
             Internal.StackPushInteger(nXpAmount);
             Internal.StackPushObject(oCreature, false);
@@ -9811,7 +9808,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Sets oCreature's experience to nXpAmount.
-        public  void SetXP(Object oCreature, int nXpAmount)
+        public void SetXP(Object oCreature, int nXpAmount)
         {
             Internal.StackPushInteger(nXpAmount);
             Internal.StackPushObject(oCreature, false);
@@ -9819,7 +9816,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get oCreature's experience.
-        public  int GetXP(Object oCreature)
+        public int GetXP(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(395);
@@ -9829,7 +9826,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Convert nInteger to hex, returning the hex value as a string.
         //  * Return value has the format "0x????????" where each ? will be a hex digit
         //    (8 digits in total).
-        public  string IntToHexString(int nInteger)
+        public string IntToHexString(int nInteger)
         {
             Internal.StackPushInteger(nInteger);
             Internal.CallBuiltIn(396);
@@ -9838,7 +9835,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the base item type (BASE_ITEM_*) of oItem.
         //  * Returns BASE_ITEM_INVALID if oItem is an invalid item.
-        public  int GetBaseItemType(Object oItem)
+        public int GetBaseItemType(Object oItem)
         {
             Internal.StackPushObject(oItem, false);
             Internal.CallBuiltIn(397);
@@ -9850,7 +9847,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nProperty: ITEM_PROPERTY_*
         //  * Returns FALSE if oItem is not a valid item, or if oItem does not have
         //    nProperty.
-        public  int GetItemHasItemProperty(Object oItem, int nProperty)
+        public int GetItemHasItemProperty(Object oItem, int nProperty)
         {
             Internal.StackPushInteger(nProperty);
             Internal.StackPushObject(oItem, false);
@@ -9865,7 +9862,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  round to run simulation.
         //  - oVersus: You can try to get the most damaging weapon against oVersus
         //  - bOffHand
-        public  void ActionEquipMostDamagingMelee(Object oVersus = null, int bOffHand = FALSE)
+        public void ActionEquipMostDamagingMelee(Object oVersus = null, int bOffHand = FALSE)
         {
             Internal.StackPushInteger(bOffHand);
             Internal.StackPushObject(oVersus, false);
@@ -9877,7 +9874,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  If no valid range weapon can be found, it will equip the most damaging melee
         //  weapon.
         //  - oVersus: You can try to get the most damaging weapon against oVersus
-        public  void ActionEquipMostDamagingRanged(Object oVersus = null)
+        public void ActionEquipMostDamagingRanged(Object oVersus = null)
         {
             Internal.StackPushObject(oVersus, false);
             Internal.CallBuiltIn(400);
@@ -9885,7 +9882,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the Armour Class of oItem.
         //  * Return 0 if the oItem is not a valid item, or if oItem has no armour value.
-        public  int GetItemACValue(Object oItem)
+        public int GetItemACValue(Object oItem)
         {
             Internal.StackPushObject(oItem, false);
             Internal.CallBuiltIn(401);
@@ -9899,7 +9896,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //                                      nearby regardless of whether or not the creature
         //                                      can see them, such as if an enemy is close by,
         //                                      but is in a different room behind a closed door.
-        public  void ActionRest(int bCreatureToEnemyLineOfSightCheck = FALSE)
+        public void ActionRest(int bCreatureToEnemyLineOfSightCheck = FALSE)
         {
             Internal.StackPushInteger(bCreatureToEnemyLineOfSightCheck);
             Internal.CallBuiltIn(402);
@@ -9909,7 +9906,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - oArea: The area that the map will be exposed/hidden for.
         //  - oPlayer: The player the map will be exposed/hidden for.
         //  - bExplored: TRUE/FALSE. Whether the map should be completely explored or hidden.
-        public  void ExploreAreaForPlayer(Object oArea, Object oPlayer, int bExplored = TRUE)
+        public void ExploreAreaForPlayer(Object oArea, Object oPlayer, int bExplored = TRUE)
         {
             Internal.StackPushInteger(bExplored);
             Internal.StackPushObject(oPlayer, false);
@@ -9919,41 +9916,41 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  The creature will equip the armour in its possession that has the highest
         //  armour class.
-        public  void ActionEquipMostEffectiveArmor()
+        public void ActionEquipMostEffectiveArmor()
         {
             Internal.CallBuiltIn(404);
         }
 
         //  * Returns TRUE if it is currently day.
-        public  int GetIsDay()
+        public int GetIsDay()
         {
             Internal.CallBuiltIn(405);
             return Internal.StackPopInteger();
         }
 
         //  * Returns TRUE if it is currently night.
-        public  int GetIsNight()
+        public int GetIsNight()
         {
             Internal.CallBuiltIn(406);
             return Internal.StackPopInteger();
         }
 
         //  * Returns TRUE if it is currently dawn.
-        public  int GetIsDawn()
+        public int GetIsDawn()
         {
             Internal.CallBuiltIn(407);
             return Internal.StackPopInteger();
         }
 
         //  * Returns TRUE if it is currently dusk.
-        public  int GetIsDusk()
+        public int GetIsDusk()
         {
             Internal.CallBuiltIn(408);
             return Internal.StackPopInteger();
         }
 
         //  * Returns TRUE if oCreature was spawned from an encounter.
-        public  int GetIsEncounterCreature(Object oCreature = null)
+        public int GetIsEncounterCreature(Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(409);
@@ -9961,14 +9958,14 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Use this in an OnPlayerDying module script to get the last player who is dying.
-        public  Object GetLastPlayerDying()
+        public Object GetLastPlayerDying()
         {
             Internal.CallBuiltIn(410);
             return Internal.StackPopObject();
         }
 
         //  Get the starting location of the module.
-        public  Location GetStartingLocation()
+        public Location GetStartingLocation()
         {
             Internal.CallBuiltIn(411);
             return Internal.StackPopLocation();
@@ -9977,7 +9974,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Make oCreatureToChange join one of the standard factions.
         //  ** This will only work on an NPC **
         //  - nStandardFaction: STANDARD_FACTION_*
-        public  void ChangeToStandardFaction(Object oCreatureToChange, int nStandardFaction)
+        public void ChangeToStandardFaction(Object oCreatureToChange, int nStandardFaction)
         {
             Internal.StackPushInteger(nStandardFaction);
             Internal.StackPushObject(oCreatureToChange, false);
@@ -9985,14 +9982,14 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Play oSound.
-        public  void SoundObjectPlay(Object oSound)
+        public void SoundObjectPlay(Object oSound)
         {
             Internal.StackPushObject(oSound, false);
             Internal.CallBuiltIn(413);
         }
 
         //  Stop playing oSound.
-        public  void SoundObjectStop(Object oSound)
+        public void SoundObjectStop(Object oSound)
         {
             Internal.StackPushObject(oSound, false);
             Internal.CallBuiltIn(414);
@@ -10001,7 +9998,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Set the volume of oSound.
         //  - oSound
         //  - nVolume: 0-127
-        public  void SoundObjectSetVolume(Object oSound, int nVolume)
+        public void SoundObjectSetVolume(Object oSound, int nVolume)
         {
             Internal.StackPushInteger(nVolume);
             Internal.StackPushObject(oSound, false);
@@ -10009,7 +10006,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Set the position of oSound.
-        public  void SoundObjectSetPosition(Object oSound, Vector? vPosition)
+        public void SoundObjectSetPosition(Object oSound, Vector? vPosition)
         {
             Internal.StackPushVector(vPosition);
             Internal.StackPushObject(oSound, false);
@@ -10020,7 +10017,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - sDialogResRef
         //  - oTokenTarget: This must be specified if there are creature-specific tokens
         //    in the string.
-        public  void SpeakOneLinerConversation(string sDialogResRef = "", Object oTokenTarget = null)
+        public void SpeakOneLinerConversation(string sDialogResRef = "", Object oTokenTarget = null)
         {
             Internal.StackPushObject(oTokenTarget, false);
             Internal.StackPushString(sDialogResRef);
@@ -10028,7 +10025,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the amount of gold possessed by oTarget.
-        public  int GetGold(Object oTarget = null)
+        public int GetGold(Object oTarget = null)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.CallBuiltIn(418);
@@ -10037,7 +10034,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Use this in an OnRespawnButtonPressed module script to get the object id of
         //  the player who last pressed the respawn button.
-        public  Object GetLastRespawnButtonPresser()
+        public Object GetLastRespawnButtonPresser()
         {
             Internal.CallBuiltIn(419);
             return Internal.StackPopObject();
@@ -10046,7 +10043,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  * Returns TRUE if oCreature is the Dungeon Master.
         //  Note: This will return FALSE if oCreature is a DM Possessed creature.
         //  To determine if oCreature is a DM Possessed creature, use GetIsDMPossessed()
-        public  int GetIsDM(Object oCreature)
+        public int GetIsDM(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(420);
@@ -10056,7 +10053,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Play a voice chat.
         //  - nVoiceChatID: VOICE_CHAT_*
         //  - oTarget
-        public  void PlayVoiceChat(int nVoiceChatID, Object oTarget = null)
+        public void PlayVoiceChat(int nVoiceChatID, Object oTarget = null)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.StackPushInteger(nVoiceChatID);
@@ -10064,7 +10061,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  * Returns TRUE if the weapon equipped is capable of damaging oVersus.
-        public  int GetIsWeaponEffective(Object oVersus = null, int bOffHand = FALSE)
+        public int GetIsWeaponEffective(Object oVersus = null, int bOffHand = FALSE)
         {
             Internal.StackPushInteger(bOffHand);
             Internal.StackPushObject(oVersus, false);
@@ -10075,14 +10072,14 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Use this in a SpellCast script to determine whether the spell was considered
         //  harmful.
         //  * Returns TRUE if the last spell cast was harmful.
-        public  int GetLastSpellHarmful()
+        public int GetLastSpellHarmful()
         {
             Internal.CallBuiltIn(423);
             return Internal.StackPopInteger();
         }
 
         //  Activate oItem.
-        public  Event EventActivateItem(Object oItem, Location lTarget, Object oTarget = null)
+        public Event EventActivateItem(Object oItem, Location lTarget, Object oTarget = null)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.StackPushLocation(lTarget);
@@ -10092,14 +10089,14 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Play the background music for oArea.
-        public  void MusicBackgroundPlay(Object oArea)
+        public void MusicBackgroundPlay(Object oArea)
         {
             Internal.StackPushObject(oArea, false);
             Internal.CallBuiltIn(425);
         }
 
         //  Stop the background music for oArea.
-        public  void MusicBackgroundStop(Object oArea)
+        public void MusicBackgroundStop(Object oArea)
         {
             Internal.StackPushObject(oArea, false);
             Internal.CallBuiltIn(426);
@@ -10108,7 +10105,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Set the delay for the background music for oArea.
         //  - oArea
         //  - nDelay: delay in milliseconds
-        public  void MusicBackgroundSetDelay(Object oArea, int nDelay)
+        public void MusicBackgroundSetDelay(Object oArea, int nDelay)
         {
             Internal.StackPushInteger(nDelay);
             Internal.StackPushObject(oArea, false);
@@ -10118,7 +10115,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Change the background day track for oArea to nTrack.
         //  - oArea
         //  - nTrack
-        public  void MusicBackgroundChangeDay(Object oArea, int nTrack)
+        public void MusicBackgroundChangeDay(Object oArea, int nTrack)
         {
             Internal.StackPushInteger(nTrack);
             Internal.StackPushObject(oArea, false);
@@ -10128,7 +10125,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Change the background night track for oArea to nTrack.
         //  - oArea
         //  - nTrack
-        public  void MusicBackgroundChangeNight(Object oArea, int nTrack)
+        public void MusicBackgroundChangeNight(Object oArea, int nTrack)
         {
             Internal.StackPushInteger(nTrack);
             Internal.StackPushObject(oArea, false);
@@ -10136,14 +10133,14 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Play the battle music for oArea.
-        public  void MusicBattlePlay(Object oArea)
+        public void MusicBattlePlay(Object oArea)
         {
             Internal.StackPushObject(oArea, false);
             Internal.CallBuiltIn(430);
         }
 
         //  Stop the battle music for oArea.
-        public  void MusicBattleStop(Object oArea)
+        public void MusicBattleStop(Object oArea)
         {
             Internal.StackPushObject(oArea, false);
             Internal.CallBuiltIn(431);
@@ -10152,7 +10149,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Change the battle track for oArea.
         //  - oArea
         //  - nTrack
-        public  void MusicBattleChange(Object oArea, int nTrack)
+        public void MusicBattleChange(Object oArea, int nTrack)
         {
             Internal.StackPushInteger(nTrack);
             Internal.StackPushObject(oArea, false);
@@ -10160,14 +10157,14 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Play the ambient sound for oArea.
-        public  void AmbientSoundPlay(Object oArea)
+        public void AmbientSoundPlay(Object oArea)
         {
             Internal.StackPushObject(oArea, false);
             Internal.CallBuiltIn(433);
         }
 
         //  Stop the ambient sound for oArea.
-        public  void AmbientSoundStop(Object oArea)
+        public void AmbientSoundStop(Object oArea)
         {
             Internal.StackPushObject(oArea, false);
             Internal.CallBuiltIn(434);
@@ -10176,7 +10173,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Change the ambient day track for oArea to nTrack.
         //  - oArea
         //  - nTrack
-        public  void AmbientSoundChangeDay(Object oArea, int nTrack)
+        public void AmbientSoundChangeDay(Object oArea, int nTrack)
         {
             Internal.StackPushInteger(nTrack);
             Internal.StackPushObject(oArea, false);
@@ -10186,7 +10183,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Change the ambient night track for oArea to nTrack.
         //  - oArea
         //  - nTrack
-        public  void AmbientSoundChangeNight(Object oArea, int nTrack)
+        public void AmbientSoundChangeNight(Object oArea, int nTrack)
         {
             Internal.StackPushInteger(nTrack);
             Internal.StackPushObject(oArea, false);
@@ -10194,21 +10191,21 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the object that killed the caller.
-        public  Object GetLastKiller()
+        public Object GetLastKiller()
         {
             Internal.CallBuiltIn(437);
             return Internal.StackPopObject();
         }
 
         //  Use this in a spell script to get the item used to cast the spell.
-        public  Object GetSpellCastItem()
+        public Object GetSpellCastItem()
         {
             Internal.CallBuiltIn(438);
             return Internal.StackPopObject();
         }
 
         //  Use this in an OnItemActivated module script to get the item that was activated.
-        public  Object GetItemActivated()
+        public Object GetItemActivated()
         {
             Internal.CallBuiltIn(439);
             return Internal.StackPopObject();
@@ -10216,7 +10213,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Use this in an OnItemActivated module script to get the creature that
         //  activated the item.
-        public  Object GetItemActivator()
+        public Object GetItemActivator()
         {
             Internal.CallBuiltIn(440);
             return Internal.StackPopObject();
@@ -10224,21 +10221,21 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Use this in an OnItemActivated module script to get the location of the item's
         //  target.
-        public  Location GetItemActivatedTargetLocation()
+        public Location GetItemActivatedTargetLocation()
         {
             Internal.CallBuiltIn(441);
             return Internal.StackPopLocation();
         }
 
         //  Use this in an OnItemActivated module script to get the item's target.
-        public  Object GetItemActivatedTarget()
+        public Object GetItemActivatedTarget()
         {
             Internal.CallBuiltIn(442);
             return Internal.StackPopObject();
         }
 
         //  * Returns TRUE if oObject (which is a placeable or a door) is currently open.
-        public  int GetIsOpen(Object oObject)
+        public int GetIsOpen(Object oObject)
         {
             Internal.StackPushObject(oObject, false);
             Internal.CallBuiltIn(443);
@@ -10250,7 +10247,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - oCreatureToTakeFrom: If this is not a valid creature, nothing will happen.
         //  - bDestroy: If this is TRUE, the caller will not get the gold.  Instead, the
         //    gold will be destroyed and will vanish from the game.
-        public  void TakeGoldFromCreature(int nAmount, Object oCreatureToTakeFrom, int bDestroy = FALSE)
+        public void TakeGoldFromCreature(int nAmount, Object oCreatureToTakeFrom, int bDestroy = FALSE)
         {
             Internal.StackPushInteger(bDestroy);
             Internal.StackPushObject(oCreatureToTakeFrom, false);
@@ -10259,7 +10256,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Determine whether oObject is in conversation.
-        public  int IsInConversation(Object oObject)
+        public int IsInConversation(Object oObject)
         {
             Internal.StackPushObject(oObject, false);
             Internal.CallBuiltIn(445);
@@ -10269,7 +10266,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Create an Ability Decrease effect.
         //  - nAbility: ABILITY_*
         //  - nModifyBy: This is the amount by which to decrement the ability
-        public  Effect EffectAbilityDecrease(int nAbility, int nModifyBy)
+        public Effect EffectAbilityDecrease(int nAbility, int nModifyBy)
         {
             Internal.StackPushInteger(nModifyBy);
             Internal.StackPushInteger(nAbility);
@@ -10280,7 +10277,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Create an Attack Decrease effect.
         //  - nPenalty
         //  - nModifierType: ATTACK_BONUS_*
-        public  Effect EffectAttackDecrease(int nPenalty, int nModifierType = ATTACK_BONUS_MISC)
+        public Effect EffectAttackDecrease(int nPenalty, int nModifierType = ATTACK_BONUS_MISC)
         {
             Internal.StackPushInteger(nModifierType);
             Internal.StackPushInteger(nPenalty);
@@ -10291,7 +10288,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Create a Damage Decrease effect.
         //  - nPenalty
         //  - nDamageType: DAMAGE_TYPE_*
-        public  Effect EffectDamageDecrease(int nPenalty, int nDamageType = DAMAGE_TYPE_MAGICAL)
+        public Effect EffectDamageDecrease(int nPenalty, int nDamageType = DAMAGE_TYPE_MAGICAL)
         {
             Internal.StackPushInteger(nDamageType);
             Internal.StackPushInteger(nPenalty);
@@ -10302,7 +10299,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Create a Damage Immunity Decrease effect.
         //  - nDamageType: DAMAGE_TYPE_*
         //  - nPercentImmunity
-        public  Effect EffectDamageImmunityDecrease(int nDamageType, int nPercentImmunity)
+        public Effect EffectDamageImmunityDecrease(int nDamageType, int nPercentImmunity)
         {
             Internal.StackPushInteger(nPercentImmunity);
             Internal.StackPushInteger(nDamageType);
@@ -10315,7 +10312,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nModifyType: AC_*
         //  - nDamageType: DAMAGE_TYPE_*
         //    * Default value for nDamageType should only ever be used in this function prototype.
-        public  Effect EffectACDecrease(int nValue, int nModifyType = AC_DODGE_BONUS, int nDamageType = AC_VS_DAMAGE_TYPE_ALL)
+        public Effect EffectACDecrease(int nValue, int nModifyType = AC_DODGE_BONUS, int nDamageType = AC_VS_DAMAGE_TYPE_ALL)
         {
             Internal.StackPushInteger(nDamageType);
             Internal.StackPushInteger(nModifyType);
@@ -10330,7 +10327,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //     0 = no change in speed
         //    50 = 50% slower
         //    99 = almost immobile
-        public  Effect EffectMovementSpeedDecrease(int nPercentChange)
+        public Effect EffectMovementSpeedDecrease(int nPercentChange)
         {
             Internal.StackPushInteger(nPercentChange);
             Internal.CallBuiltIn(451);
@@ -10345,7 +10342,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //           SAVING_THROW_WILL 
         //  - nValue: size of the Saving Throw decrease
         //  - nSaveType: SAVING_THROW_TYPE_* (e.g. SAVING_THROW_TYPE_ACID )
-        public  Effect EffectSavingThrowDecrease(int nSave, int nValue, int nSaveType = SAVING_THROW_TYPE_ALL)
+        public Effect EffectSavingThrowDecrease(int nSave, int nValue, int nSaveType = SAVING_THROW_TYPE_ALL)
         {
             Internal.StackPushInteger(nSaveType);
             Internal.StackPushInteger(nValue);
@@ -10356,7 +10353,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Create a Skill Decrease effect.
         //  * Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nSkill is invalid.
-        public  Effect EffectSkillDecrease(int nSkill, int nValue)
+        public Effect EffectSkillDecrease(int nSkill, int nValue)
         {
             Internal.StackPushInteger(nValue);
             Internal.StackPushInteger(nSkill);
@@ -10365,7 +10362,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Create a Spell Resistance Decrease effect.
-        public  Effect EffectSpellResistanceDecrease(int nValue)
+        public Effect EffectSpellResistanceDecrease(int nValue)
         {
             Internal.StackPushInteger(nValue);
             Internal.CallBuiltIn(454);
@@ -10373,7 +10370,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Determine whether oTarget is a plot object.
-        public  int GetPlotFlag(Object oTarget = null)
+        public int GetPlotFlag(Object oTarget = null)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.CallBuiltIn(455);
@@ -10381,7 +10378,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Set oTarget's plot object status.
-        public  void SetPlotFlag(Object oTarget, int nPlotFlag)
+        public void SetPlotFlag(Object oTarget, int nPlotFlag)
         {
             Internal.StackPushInteger(nPlotFlag);
             Internal.StackPushObject(oTarget, false);
@@ -10392,7 +10389,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nInvisibilityType: INVISIBILITY_TYPE_*
         //  * Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nInvisibilityType
         //    is invalid.
-        public  Effect EffectInvisibility(int nInvisibilityType)
+        public Effect EffectInvisibility(int nInvisibilityType)
         {
             Internal.StackPushInteger(nInvisibilityType);
             Internal.CallBuiltIn(457);
@@ -10404,7 +10401,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nMissChanceType: MISS_CHANCE_TYPE_*
         //  * Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nPercentage < 1 or
         //    nPercentage > 100.
-        public  Effect EffectConcealment(int nPercentage, int nMissType = MISS_CHANCE_TYPE_NORMAL)
+        public Effect EffectConcealment(int nPercentage, int nMissType = MISS_CHANCE_TYPE_NORMAL)
         {
             Internal.StackPushInteger(nMissType);
             Internal.StackPushInteger(nPercentage);
@@ -10413,7 +10410,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Create a Darkness effect.
-        public  Effect EffectDarkness()
+        public Effect EffectDarkness()
         {
             Internal.CallBuiltIn(459);
             return Internal.StackPopEffect();
@@ -10423,7 +10420,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  If no parameter is specified, USE_CREATURE_LEVEL will be used. This will
         //  cause the dispel effect to use the level of the creature that created the
         //  effect.
-        public  Effect EffectDispelMagicAll(int nCasterLevel = USE_CREATURE_LEVEL)
+        public Effect EffectDispelMagicAll(int nCasterLevel = USE_CREATURE_LEVEL)
         {
             Internal.StackPushInteger(nCasterLevel);
             Internal.CallBuiltIn(460);
@@ -10431,7 +10428,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Create an Ultravision effect.
-        public  Effect EffectUltravision()
+        public Effect EffectUltravision()
         {
             Internal.CallBuiltIn(461);
             return Internal.StackPopEffect();
@@ -10440,7 +10437,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Create a Negative Level effect.
         //  - nNumLevels: the number of negative levels to apply.
         //  * Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nNumLevels > 100.
-        public  Effect EffectNegativeLevel(int nNumLevels, int bHPBonus = FALSE)
+        public Effect EffectNegativeLevel(int nNumLevels, int bHPBonus = FALSE)
         {
             Internal.StackPushInteger(bHPBonus);
             Internal.StackPushInteger(nNumLevels);
@@ -10449,7 +10446,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Create a Polymorph effect.
-        public  Effect EffectPolymorph(int nPolymorphSelection, int nLocked = FALSE)
+        public Effect EffectPolymorph(int nPolymorphSelection, int nLocked = FALSE)
         {
             Internal.StackPushInteger(nLocked);
             Internal.StackPushInteger(nPolymorphSelection);
@@ -10460,7 +10457,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Create a Sanctuary effect.
         //  - nDifficultyClass: must be a non-zero, positive number
         //  * Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nDifficultyClass <= 0.
-        public  Effect EffectSanctuary(int nDifficultyClass)
+        public Effect EffectSanctuary(int nDifficultyClass)
         {
             Internal.StackPushInteger(nDifficultyClass);
             Internal.CallBuiltIn(464);
@@ -10468,28 +10465,28 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Create a True Seeing effect.
-        public  Effect EffectTrueSeeing()
+        public Effect EffectTrueSeeing()
         {
             Internal.CallBuiltIn(465);
             return Internal.StackPopEffect();
         }
 
         //  Create a See Invisible effect.
-        public  Effect EffectSeeInvisible()
+        public Effect EffectSeeInvisible()
         {
             Internal.CallBuiltIn(466);
             return Internal.StackPopEffect();
         }
 
         //  Create a Time Stop effect.
-        public  Effect EffectTimeStop()
+        public Effect EffectTimeStop()
         {
             Internal.CallBuiltIn(467);
             return Internal.StackPopEffect();
         }
 
         //  Create a Blindness effect.
-        public  Effect EffectBlindness()
+        public Effect EffectBlindness()
         {
             Internal.CallBuiltIn(468);
             return Internal.StackPopEffect();
@@ -10501,7 +10498,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Note: If you just want to know how two objects feel about each other in terms
         //  of faction and personal reputation, use GetIsFriend() instead.
         //  * Returns TRUE if oSource has a friendly reaction towards oTarget
-        public  int GetIsReactionTypeFriendly(Object oTarget, Object oSource = null)
+        public int GetIsReactionTypeFriendly(Object oTarget, Object oSource = null)
         {
             Internal.StackPushObject(oSource, false);
             Internal.StackPushObject(oTarget, false);
@@ -10515,7 +10512,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Note: If you just want to know how two objects feel about each other in terms
         //  of faction and personal reputation, use GetIsNeutral() instead.
         //  * Returns TRUE if oSource has a neutral reaction towards oTarget
-        public  int GetIsReactionTypeNeutral(Object oTarget, Object oSource = null)
+        public int GetIsReactionTypeNeutral(Object oTarget, Object oSource = null)
         {
             Internal.StackPushObject(oSource, false);
             Internal.StackPushObject(oTarget, false);
@@ -10529,7 +10526,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Note: If you just want to know how two objects feel about each other in terms
         //  of faction and personal reputation, use GetIsEnemy() instead.
         //  * Returns TRUE if oSource has a hostile reaction towards oTarget
-        public  int GetIsReactionTypeHostile(Object oTarget, Object oSource = null)
+        public int GetIsReactionTypeHostile(Object oTarget, Object oSource = null)
         {
             Internal.StackPushObject(oSource, false);
             Internal.StackPushObject(oTarget, false);
@@ -10546,7 +10543,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  * Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if:
         //    nMaxSpellLevelAbsorbed is not between -1 and 9 inclusive, or nSpellSchool
         //    is invalid.
-        public  Effect EffectSpellLevelAbsorption(int nMaxSpellLevelAbsorbed, int nTotalSpellLevelsAbsorbed = 0, int nSpellSchool = SPELL_SCHOOL_GENERAL)
+        public Effect EffectSpellLevelAbsorption(int nMaxSpellLevelAbsorbed, int nTotalSpellLevelsAbsorbed = 0, int nSpellSchool = SPELL_SCHOOL_GENERAL)
         {
             Internal.StackPushInteger(nSpellSchool);
             Internal.StackPushInteger(nTotalSpellLevelsAbsorbed);
@@ -10559,7 +10556,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  If no parameter is specified, USE_CREATURE_LEVEL will be used. This will
         //  cause the dispel effect to use the level of the creature that created the
         //  effect.
-        public  Effect EffectDispelMagicBest(int nCasterLevel = USE_CREATURE_LEVEL)
+        public Effect EffectDispelMagicBest(int nCasterLevel = USE_CREATURE_LEVEL)
         {
             Internal.StackPushInteger(nCasterLevel);
             Internal.CallBuiltIn(473);
@@ -10579,7 +10576,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //    information window telling them about the server, and they will not be
         //    allowed to save a copy of their character if they are using a local vault
         //    character.
-        public  void ActivatePortal(Object oTarget, string sIPaddress = "", string sPassword = "", string sWaypointTag = "", int bSeemless = FALSE)
+        public void ActivatePortal(Object oTarget, string sIPaddress = "", string sPassword = "", string sWaypointTag = "", int bSeemless = FALSE)
         {
             Internal.StackPushInteger(bSeemless);
             Internal.StackPushString(sWaypointTag);
@@ -10590,7 +10587,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the number of stacked items that oItem comprises.
-        public  int GetNumStackedItems(Object oItem)
+        public int GetNumStackedItems(Object oItem)
         {
             Internal.StackPushObject(oItem, false);
             Internal.CallBuiltIn(475);
@@ -10601,7 +10598,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  what they are doing and sets the NPC's enemies within this range to be
         //  neutral towards the NPC for roughly 3 minutes. If this command is run on a PC
         //  or an object that is not a creature, nothing will happen.
-        public  void SurrenderToEnemies()
+        public void SurrenderToEnemies()
         {
             Internal.CallBuiltIn(476);
         }
@@ -10611,7 +10608,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nMissChanceType: MISS_CHANCE_TYPE_*
         //  * Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nPercentage < 1 or
         //    nPercentage > 100.
-        public  Effect EffectMissChance(int nPercentage, int nMissChanceType = MISS_CHANCE_TYPE_NORMAL)
+        public Effect EffectMissChance(int nPercentage, int nMissChanceType = MISS_CHANCE_TYPE_NORMAL)
         {
             Internal.StackPushInteger(nMissChanceType);
             Internal.StackPushInteger(nPercentage);
@@ -10621,7 +10618,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the number of Hitdice worth of Turn Resistance that oUndead may have.
         //  This will only work on undead creatures.
-        public  int GetTurnResistanceHD(Object oUndead = null)
+        public int GetTurnResistanceHD(Object oUndead = null)
         {
             Internal.StackPushObject(oUndead, false);
             Internal.CallBuiltIn(478);
@@ -10629,7 +10626,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the size (CREATURE_SIZE_*) of oCreature.
-        public  int GetCreatureSize(Object oCreature)
+        public int GetCreatureSize(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(479);
@@ -10641,7 +10638,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  at lLocation.
         //  - nAnimation determines which appear and disappear animations to use. Most creatures
         //  only have animation 1, although a few have 2 (like beholders)
-        public  Effect EffectDisappearAppear(Location lLocation, int nAnimation = 1)
+        public Effect EffectDisappearAppear(Location lLocation, int nAnimation = 1)
         {
             Internal.StackPushInteger(nAnimation);
             Internal.StackPushLocation(lLocation);
@@ -10653,7 +10650,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  itself.
         //  - nAnimation determines which appear and disappear animations to use. Most creatures
         //  only have animation 1, although a few have 2 (like beholders)
-        public  Effect EffectDisappear(int nAnimation = 1)
+        public Effect EffectDisappear(int nAnimation = 1)
         {
             Internal.StackPushInteger(nAnimation);
             Internal.CallBuiltIn(481);
@@ -10663,7 +10660,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Create an Appear effect to make the object "fly in".
         //  - nAnimation determines which appear and disappear animations to use. Most creatures
         //  only have animation 1, although a few have 2 (like beholders)
-        public  Effect EffectAppear(int nAnimation = 1)
+        public Effect EffectAppear(int nAnimation = 1)
         {
             Internal.StackPushInteger(nAnimation);
             Internal.CallBuiltIn(482);
@@ -10672,7 +10669,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  The action subject will unlock oTarget, which can be a door or a placeable
         //  object.
-        public  void ActionUnlockObject(Object oTarget)
+        public void ActionUnlockObject(Object oTarget)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.CallBuiltIn(483);
@@ -10680,7 +10677,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  The action subject will lock oTarget, which can be a door or a placeable
         //  object.
-        public  void ActionLockObject(Object oTarget)
+        public void ActionLockObject(Object oTarget)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.CallBuiltIn(484);
@@ -10689,7 +10686,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Create a Modify Attacks effect to add attacks.
         //  - nAttacks: maximum is 5, even with the effect stacked
         //  * Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nAttacks > 5.
-        public  Effect EffectModifyAttacks(int nAttacks)
+        public Effect EffectModifyAttacks(int nAttacks)
         {
             Internal.StackPushInteger(nAttacks);
             Internal.CallBuiltIn(485);
@@ -10698,7 +10695,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the last trap detected by oTarget.
         //  * Return value on error: OBJECT_INVALID
-        public  Object GetLastTrapDetected(Object oTarget = null)
+        public Object GetLastTrapDetected(Object oTarget = null)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.CallBuiltIn(486);
@@ -10712,7 +10709,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nDamageType: DAMAGE_TYPE_*
         //  NOTE! You *must* use the DAMAGE_BONUS_* constants! Using other values may
         //        result in odd behaviour.
-        public  Effect EffectDamageShield(int nDamageAmount, int nRandomAmount, int nDamageType)
+        public Effect EffectDamageShield(int nDamageAmount, int nRandomAmount, int nDamageType)
         {
             Internal.StackPushInteger(nDamageType);
             Internal.StackPushInteger(nRandomAmount);
@@ -10727,7 +10724,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - oTarget
         //  - nTrapDetected: if this is TRUE, the trap returned has to have been detected
         //    by oTarget.
-        public  Object GetNearestTrapToObject(Object oTarget = null, int nTrapDetected = TRUE)
+        public Object GetNearestTrapToObject(Object oTarget = null, int nTrapDetected = TRUE)
         {
             Internal.StackPushInteger(nTrapDetected);
             Internal.StackPushObject(oTarget, false);
@@ -10738,7 +10735,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get the name of oCreature's deity.
         //  * Returns "" if oCreature is invalid (or if the deity name is blank for
         //    oCreature).
-        public  string GetDeity(Object oCreature)
+        public string GetDeity(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(489);
@@ -10747,7 +10744,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the name of oCreature's sub race.
         //  * Returns "" if oCreature is invalid (or if sub race is blank for oCreature).
-        public  string GetSubRace(Object oTarget)
+        public string GetSubRace(Object oTarget)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.CallBuiltIn(490);
@@ -10757,7 +10754,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get oTarget's base fortitude saving throw value (this will only work for
         //  creatures, doors, and placeables).
         //  * Returns 0 if oTarget is invalid.
-        public  int GetFortitudeSavingThrow(Object oTarget)
+        public int GetFortitudeSavingThrow(Object oTarget)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.CallBuiltIn(491);
@@ -10767,7 +10764,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get oTarget's base will saving throw value (this will only work for creatures,
         //  doors, and placeables).
         //  * Returns 0 if oTarget is invalid.
-        public  int GetWillSavingThrow(Object oTarget)
+        public int GetWillSavingThrow(Object oTarget)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.CallBuiltIn(492);
@@ -10777,7 +10774,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get oTarget's base reflex saving throw value (this will only work for
         //  creatures, doors, and placeables).
         //  * Returns 0 if oTarget is invalid.
-        public  int GetReflexSavingThrow(Object oTarget)
+        public int GetReflexSavingThrow(Object oTarget)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.CallBuiltIn(493);
@@ -10786,7 +10783,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get oCreature's challenge rating.
         //  * Returns 0.0 if oCreature is invalid.
-        public  float GetChallengeRating(Object oCreature)
+        public float GetChallengeRating(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(494);
@@ -10795,7 +10792,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get oCreature's age.
         //  * Returns 0 if oCreature is invalid.
-        public  int GetAge(Object oCreature)
+        public int GetAge(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(495);
@@ -10804,7 +10801,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get oCreature's movement rate.
         //  * Returns 0 if oCreature is invalid.
-        public  int GetMovementRate(Object oCreature)
+        public int GetMovementRate(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(496);
@@ -10814,7 +10811,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get oCreature's familiar creature type (FAMILIAR_CREATURE_TYPE_*).
         //  * Returns FAMILIAR_CREATURE_TYPE_NONE if oCreature is invalid or does not
         //    currently have a familiar.
-        public  int GetFamiliarCreatureType(Object oCreature)
+        public int GetFamiliarCreatureType(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(497);
@@ -10825,7 +10822,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  (ANIMAL_COMPANION_CREATURE_TYPE_*).
         //  * Returns ANIMAL_COMPANION_CREATURE_TYPE_NONE if oCreature is invalid or does
         //    not currently have an animal companion.
-        public  int GetAnimalCompanionCreatureType(Object oCreature)
+        public int GetAnimalCompanionCreatureType(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(498);
@@ -10835,7 +10832,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get oCreature's familiar's name.
         //  * Returns "" if oCreature is invalid, does not currently
         //  have a familiar or if the familiar's name is blank.
-        public  string GetFamiliarName(Object oCreature)
+        public string GetFamiliarName(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(499);
@@ -10845,7 +10842,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get oCreature's animal companion's name.
         //  * Returns "" if oCreature is invalid, does not currently
         //  have an animal companion or if the animal companion's name is blank.
-        public  string GetAnimalCompanionName(Object oTarget)
+        public string GetAnimalCompanionName(Object oTarget)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.CallBuiltIn(500);
@@ -10857,7 +10854,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nSpell
         //  - oTarget
         //  - nProjectilePathType: PROJECTILE_PATH_TYPE_*
-        public  void ActionCastFakeSpellAtObject(int nSpell, Object oTarget, int nProjectilePathType = PROJECTILE_PATH_TYPE_DEFAULT)
+        public void ActionCastFakeSpellAtObject(int nSpell, Object oTarget, int nProjectilePathType = PROJECTILE_PATH_TYPE_DEFAULT)
         {
             Internal.StackPushInteger(nProjectilePathType);
             Internal.StackPushObject(oTarget, false);
@@ -10870,7 +10867,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nSpell
         //  - lTarget
         //  - nProjectilePathType: PROJECTILE_PATH_TYPE_*
-        public  void ActionCastFakeSpellAtLocation(int nSpell, Location lTarget, int nProjectilePathType = PROJECTILE_PATH_TYPE_DEFAULT)
+        public void ActionCastFakeSpellAtLocation(int nSpell, Location lTarget, int nProjectilePathType = PROJECTILE_PATH_TYPE_DEFAULT)
         {
             Internal.StackPushInteger(nProjectilePathType);
             Internal.StackPushLocation(lTarget);
@@ -10880,7 +10877,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Removes oAssociate from the service of oMaster, returning them to their
         //  original faction.
-        public  void RemoveSummonedAssociate(Object oMaster, Object oAssociate = null)
+        public void RemoveSummonedAssociate(Object oMaster, Object oAssociate = null)
         {
             Internal.StackPushObject(oAssociate, false);
             Internal.StackPushObject(oMaster, false);
@@ -10892,7 +10889,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nCameraMode: CAMERA_MODE_*
         //  * If oPlayer is not player-controlled or nCameraMode is invalid, nothing
         //    happens.
-        public  void SetCameraMode(Object oPlayer, int nCameraMode)
+        public void SetCameraMode(Object oPlayer, int nCameraMode)
         {
             Internal.StackPushInteger(nCameraMode);
             Internal.StackPushObject(oPlayer, false);
@@ -10900,7 +10897,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  * Returns TRUE if oCreature is resting.
-        public  int GetIsResting(Object oCreature = null)
+        public int GetIsResting(Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(505);
@@ -10908,7 +10905,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the last PC that has rested in the module.
-        public  Object GetLastPCRested()
+        public Object GetLastPCRested()
         {
             Internal.CallBuiltIn(506);
             return Internal.StackPopObject();
@@ -10922,7 +10919,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //    -> WEATHER_USER_AREA_SETTINGS will set the area back to random weather.
         //    -> WEATHER_CLEAR, WEATHER_RAIN, WEATHER_SNOW will make the weather go to
         //       the appropriate precipitation *without stopping*.
-        public  void SetWeather(Object oTarget, int nWeather)
+        public void SetWeather(Object oTarget, int nWeather)
         {
             Internal.StackPushInteger(nWeather);
             Internal.StackPushObject(oTarget, false);
@@ -10931,7 +10928,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Determine the type (REST_EVENTTYPE_REST_*) of the last rest event (as
         //  returned from the OnPCRested module event).
-        public  int GetLastRestEventType()
+        public int GetLastRestEventType()
         {
             Internal.CallBuiltIn(508);
             return Internal.StackPopInteger();
@@ -10939,7 +10936,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Shut down the currently loaded module and start a new one (moving all
         //  currently-connected players to the starting point.
-        public  void StartNewModule(string sModuleName)
+        public void StartNewModule(string sModuleName)
         {
             Internal.StackPushString(sModuleName);
             Internal.CallBuiltIn(509);
@@ -10954,7 +10951,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - sCreatureTemplate2
         //  - sCreatureTemplate3
         //  - sCreatureTemplate4
-        public  Effect EffectSwarm(int nLooping, string sCreatureTemplate1, string sCreatureTemplate2 = "", string sCreatureTemplate3 = "", string sCreatureTemplate4 = "")
+        public Effect EffectSwarm(int nLooping, string sCreatureTemplate1, string sCreatureTemplate2 = "", string sCreatureTemplate3 = "", string sCreatureTemplate4 = "")
         {
             Internal.StackPushString(sCreatureTemplate4);
             Internal.StackPushString(sCreatureTemplate3);
@@ -10966,7 +10963,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  * Returns TRUE if oItem is a ranged weapon.
-        public  int GetWeaponRanged(Object oItem)
+        public int GetWeaponRanged(Object oItem)
         {
             Internal.StackPushObject(oItem, false);
             Internal.CallBuiltIn(511);
@@ -10974,13 +10971,13 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Only if we are in a single player game, AutoSave the game.
-        public  void DoSinglePlayerAutoSave()
+        public void DoSinglePlayerAutoSave()
         {
             Internal.CallBuiltIn(512);
         }
 
         //  Get the game difficulty (GAME_DIFFICULTY_*).
-        public  int GetGameDifficulty()
+        public int GetGameDifficulty()
         {
             Internal.CallBuiltIn(513);
             return Internal.StackPopInteger();
@@ -10991,7 +10988,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //    the tile.
         //  - nMainLight1Color: TILE_MAIN_LIGHT_COLOR_*
         //  - nMainLight2Color: TILE_MAIN_LIGHT_COLOR_*
-        public  void SetTileMainLightColor(Location lTileLocation, int nMainLight1Color, int nMainLight2Color)
+        public void SetTileMainLightColor(Location lTileLocation, int nMainLight1Color, int nMainLight2Color)
         {
             Internal.StackPushInteger(nMainLight2Color);
             Internal.StackPushInteger(nMainLight1Color);
@@ -11004,7 +11001,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //    the tile.
         //  - nSourceLight1Color: TILE_SOURCE_LIGHT_COLOR_*
         //  - nSourceLight2Color: TILE_SOURCE_LIGHT_COLOR_*
-        public  void SetTileSourceLightColor(Location lTileLocation, int nSourceLight1Color, int nSourceLight2Color)
+        public void SetTileSourceLightColor(Location lTileLocation, int nSourceLight1Color, int nSourceLight2Color)
         {
             Internal.StackPushInteger(nSourceLight2Color);
             Internal.StackPushInteger(nSourceLight1Color);
@@ -11015,7 +11012,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  All clients in oArea will recompute the  lighting.
         //  This can be used to update the lighting after changing any tile lights or if
         //  placeables with lights have been added/deleted.
-        public  void RecomputeLighting(Object oArea)
+        public void RecomputeLighting(Object oArea)
         {
             Internal.StackPushObject(oArea, false);
             Internal.CallBuiltIn(516);
@@ -11024,7 +11021,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get the color (TILE_MAIN_LIGHT_COLOR_*) for the main light 1 of the tile at
         //  lTile.
         //  - lTile: the vector part of this is the tile grid (x,y) coordinate of the tile.
-        public  int GetTileMainLight1Color(Location lTile)
+        public int GetTileMainLight1Color(Location lTile)
         {
             Internal.StackPushLocation(lTile);
             Internal.CallBuiltIn(517);
@@ -11035,7 +11032,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  lTile.
         //  - lTile: the vector part of this is the tile grid (x,y) coordinate of the
         //    tile.
-        public  int GetTileMainLight2Color(Location lTile)
+        public int GetTileMainLight2Color(Location lTile)
         {
             Internal.StackPushLocation(lTile);
             Internal.CallBuiltIn(518);
@@ -11046,7 +11043,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  at lTile.
         //  - lTile: the vector part of this is the tile grid (x,y) coordinate of the
         //    tile.
-        public  int GetTileSourceLight1Color(Location lTile)
+        public int GetTileSourceLight1Color(Location lTile)
         {
             Internal.StackPushLocation(lTile);
             Internal.CallBuiltIn(519);
@@ -11057,7 +11054,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  at lTile.
         //  - lTile: the vector part of this is the tile grid (x,y) coordinate of the
         //    tile.
-        public  int GetTileSourceLight2Color(Location lTile)
+        public int GetTileSourceLight2Color(Location lTile)
         {
             Internal.StackPushLocation(lTile);
             Internal.CallBuiltIn(520);
@@ -11070,7 +11067,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nButton: PANEL_BUTTON_*
         //  - nEnableFlash: if this is TRUE nButton will start flashing.  It if is FALSE,
         //    nButton will stop flashing.
-        public  void SetPanelButtonFlash(Object oPlayer, int nButton, int nEnableFlash)
+        public void SetPanelButtonFlash(Object oPlayer, int nButton, int nEnableFlash)
         {
             Internal.StackPushInteger(nEnableFlash);
             Internal.StackPushInteger(nButton);
@@ -11079,7 +11076,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the current action (ACTION_*) that oObject is executing.
-        public  int GetCurrentAction(Object oObject = null)
+        public int GetCurrentAction(Object oObject = null)
         {
             Internal.StackPushObject(oObject, false);
             Internal.CallBuiltIn(522);
@@ -11090,7 +11087,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nStandardFaction: STANDARD_FACTION_*
         //  - nNewReputation: 0-100 (inclusive)
         //  - oCreature
-        public  void SetStandardFactionReputation(int nStandardFaction, int nNewReputation, Object oCreature = null)
+        public void SetStandardFactionReputation(int nStandardFaction, int nNewReputation, Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.StackPushInteger(nNewReputation);
@@ -11106,7 +11103,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  0-10   :  Hostile.
         //  11-89  :  Neutral.
         //  90-100 :  Friendly.
-        public  int GetStandardFactionReputation(int nStandardFaction, Object oCreature = null)
+        public int GetStandardFactionReputation(int nStandardFaction, Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.StackPushInteger(nStandardFaction);
@@ -11122,7 +11119,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - bBroadcastToFaction: If this is TRUE then only creatures in the same faction
         //    as oCreatureToFloatAbove
         //    will see the floaty text, and only if they are within range (30 metres).
-        public  void FloatingTextStrRefOnCreature(int nStrRefToDisplay, Object oCreatureToFloatAbove, int bBroadcastToFaction = TRUE)
+        public void FloatingTextStrRefOnCreature(int nStrRefToDisplay, Object oCreatureToFloatAbove, int bBroadcastToFaction = TRUE)
         {
             Internal.StackPushInteger(bBroadcastToFaction);
             Internal.StackPushObject(oCreatureToFloatAbove, false);
@@ -11138,7 +11135,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - bBroadcastToFaction: If this is TRUE then only creatures in the same faction
         //    as oCreatureToFloatAbove
         //    will see the floaty text, and only if they are within range (30 metres).
-        public  void FloatingTextStringOnCreature(string sStringToDisplay, Object oCreatureToFloatAbove, int bBroadcastToFaction = TRUE)
+        public void FloatingTextStringOnCreature(string sStringToDisplay, Object oCreatureToFloatAbove, int bBroadcastToFaction = TRUE)
         {
             Internal.StackPushInteger(bBroadcastToFaction);
             Internal.StackPushObject(oCreatureToFloatAbove, false);
@@ -11148,7 +11145,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  - oTrapObject: a placeable, door or trigger
         //  * Returns TRUE if oTrapObject is disarmable.
-        public  int GetTrapDisarmable(Object oTrapObject)
+        public int GetTrapDisarmable(Object oTrapObject)
         {
             Internal.StackPushObject(oTrapObject, false);
             Internal.CallBuiltIn(527);
@@ -11157,7 +11154,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  - oTrapObject: a placeable, door or trigger
         //  * Returns TRUE if oTrapObject is detectable.
-        public  int GetTrapDetectable(Object oTrapObject)
+        public int GetTrapDetectable(Object oTrapObject)
         {
             Internal.StackPushObject(oTrapObject, false);
             Internal.CallBuiltIn(528);
@@ -11167,7 +11164,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - oTrapObject: a placeable, door or trigger
         //  - oCreature
         //  * Returns TRUE if oCreature has detected oTrapObject
-        public  int GetTrapDetectedBy(Object oTrapObject, Object oCreature)
+        public int GetTrapDetectedBy(Object oTrapObject, Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.StackPushObject(oTrapObject, false);
@@ -11177,7 +11174,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  - oTrapObject: a placeable, door or trigger
         //  * Returns TRUE if oTrapObject has been flagged as visible to all creatures.
-        public  int GetTrapFlagged(Object oTrapObject)
+        public int GetTrapFlagged(Object oTrapObject)
         {
             Internal.StackPushObject(oTrapObject, false);
             Internal.CallBuiltIn(530);
@@ -11186,7 +11183,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the trap base type (TRAP_BASE_TYPE_*) of oTrapObject.
         //  - oTrapObject: a placeable, door or trigger
-        public  int GetTrapBaseType(Object oTrapObject)
+        public int GetTrapBaseType(Object oTrapObject)
         {
             Internal.StackPushObject(oTrapObject, false);
             Internal.CallBuiltIn(531);
@@ -11196,7 +11193,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - oTrapObject: a placeable, door or trigger
         //  * Returns TRUE if oTrapObject is one-shot (i.e. it does not reset itself
         //    after firing.
-        public  int GetTrapOneShot(Object oTrapObject)
+        public int GetTrapOneShot(Object oTrapObject)
         {
             Internal.StackPushObject(oTrapObject, false);
             Internal.CallBuiltIn(532);
@@ -11206,7 +11203,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get the creator of oTrapObject, the creature that set the trap.
         //  - oTrapObject: a placeable, door or trigger
         //  * Returns OBJECT_INVALID if oTrapObject was created in the toolset.
-        public  Object GetTrapCreator(Object oTrapObject)
+        public Object GetTrapCreator(Object oTrapObject)
         {
             Internal.StackPushObject(oTrapObject, false);
             Internal.CallBuiltIn(533);
@@ -11215,7 +11212,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the tag of the key that will disarm oTrapObject.
         //  - oTrapObject: a placeable, door or trigger
-        public  string GetTrapKeyTag(Object oTrapObject)
+        public string GetTrapKeyTag(Object oTrapObject)
         {
             Internal.StackPushObject(oTrapObject, false);
             Internal.CallBuiltIn(534);
@@ -11224,7 +11221,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the DC for disarming oTrapObject.
         //  - oTrapObject: a placeable, door or trigger
-        public  int GetTrapDisarmDC(Object oTrapObject)
+        public int GetTrapDisarmDC(Object oTrapObject)
         {
             Internal.StackPushObject(oTrapObject, false);
             Internal.CallBuiltIn(535);
@@ -11233,7 +11230,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the DC for detecting oTrapObject.
         //  - oTrapObject: a placeable, door or trigger
-        public  int GetTrapDetectDC(Object oTrapObject)
+        public int GetTrapDetectDC(Object oTrapObject)
         {
             Internal.StackPushObject(oTrapObject, false);
             Internal.CallBuiltIn(536);
@@ -11241,7 +11238,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  * Returns TRUE if a specific key is required to open the lock on oObject.
-        public  int GetLockKeyRequired(Object oObject)
+        public int GetLockKeyRequired(Object oObject)
         {
             Internal.StackPushObject(oObject, false);
             Internal.CallBuiltIn(537);
@@ -11249,7 +11246,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the tag of the key that will open the lock on oObject.
-        public  string GetLockKeyTag(Object oObject)
+        public string GetLockKeyTag(Object oObject)
         {
             Internal.StackPushObject(oObject, false);
             Internal.CallBuiltIn(538);
@@ -11257,7 +11254,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  * Returns TRUE if the lock on oObject is lockable.
-        public  int GetLockLockable(Object oObject)
+        public int GetLockLockable(Object oObject)
         {
             Internal.StackPushObject(oObject, false);
             Internal.CallBuiltIn(539);
@@ -11265,7 +11262,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the DC for unlocking oObject.
-        public  int GetLockUnlockDC(Object oObject)
+        public int GetLockUnlockDC(Object oObject)
         {
             Internal.StackPushObject(oObject, false);
             Internal.CallBuiltIn(540);
@@ -11273,7 +11270,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the DC for locking oObject.
-        public  int GetLockLockDC(Object oObject)
+        public int GetLockLockDC(Object oObject)
         {
             Internal.StackPushObject(oObject, false);
             Internal.CallBuiltIn(541);
@@ -11281,7 +11278,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the last PC that levelled up.
-        public  Object GetPCLevellingUp()
+        public Object GetPCLevellingUp()
         {
             Internal.CallBuiltIn(542);
             return Internal.StackPopObject();
@@ -11290,7 +11287,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nFeat: FEAT_*
         //  - oObject
         //  * Returns TRUE if oObject has effects on it originating from nFeat.
-        public  int GetHasFeatEffect(int nFeat, Object oObject = null)
+        public int GetHasFeatEffect(int nFeat, Object oObject = null)
         {
             Internal.StackPushObject(oObject, false);
             Internal.StackPushInteger(nFeat);
@@ -11311,7 +11308,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  all the placeable illumination has been set.
         //  * If oPlaceable is not a placeable object, or oPlaceable is a placeable that
         //    doesn't have a light, nothing will happen.
-        public  void SetPlaceableIllumination(Object oPlaceable = null, int bIlluminate = TRUE)
+        public void SetPlaceableIllumination(Object oPlaceable = null, int bIlluminate = TRUE)
         {
             Internal.StackPushInteger(bIlluminate);
             Internal.StackPushObject(oPlaceable, false);
@@ -11319,7 +11316,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  * Returns TRUE if the illumination for oPlaceable is on
-        public  int GetPlaceableIllumination(Object oPlaceable = null)
+        public int GetPlaceableIllumination(Object oPlaceable = null)
         {
             Internal.StackPushObject(oPlaceable, false);
             Internal.CallBuiltIn(545);
@@ -11329,7 +11326,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - oPlaceable
         //  - nPlaceableAction: PLACEABLE_ACTION_*
         //  * Returns TRUE if nPlacebleAction is valid for oPlaceable.
-        public  int GetIsPlaceableObjectActionPossible(Object oPlaceable, int nPlaceableAction)
+        public int GetIsPlaceableObjectActionPossible(Object oPlaceable, int nPlaceableAction)
         {
             Internal.StackPushInteger(nPlaceableAction);
             Internal.StackPushObject(oPlaceable, false);
@@ -11340,7 +11337,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  The caller performs nPlaceableAction on oPlaceable.
         //  - oPlaceable
         //  - nPlaceableAction: PLACEABLE_ACTION_*
-        public  void DoPlaceableObjectAction(Object oPlaceable, int nPlaceableAction)
+        public void DoPlaceableObjectAction(Object oPlaceable, int nPlaceableAction)
         {
             Internal.StackPushInteger(nPlaceableAction);
             Internal.StackPushObject(oPlaceable, false);
@@ -11349,7 +11346,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the first PC in the player list.
         //  This resets the position in the player list for GetNextPC().
-        public  Object GetFirstPC()
+        public Object GetFirstPC()
         {
             Internal.CallBuiltIn(548);
             return Internal.StackPopObject();
@@ -11357,7 +11354,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the next PC in the player list.
         //  This picks up where the last GetFirstPC() or GetNextPC() left off.
-        public  Object GetNextPC()
+        public Object GetNextPC()
         {
             Internal.CallBuiltIn(549);
             return Internal.StackPopObject();
@@ -11367,7 +11364,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - oTrap: A trapped trigger, placeable or door object.
         //  - oDetector: This is the creature that the detected status of the trap is being adjusted for.
         //  - bDetected: A Boolean that sets whether the trapped object has been detected or not.
-        public  int SetTrapDetectedBy(Object oTrap, Object oDetector, int bDetected = TRUE)
+        public int SetTrapDetectedBy(Object oTrap, Object oDetector, int bDetected = TRUE)
         {
             Internal.StackPushInteger(bDetected);
             Internal.StackPushObject(oDetector, false);
@@ -11378,7 +11375,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Note: Only placeables, doors and triggers can be trapped.
         //  * Returns TRUE if oObject is trapped.
-        public  int GetIsTrapped(Object oObject)
+        public int GetIsTrapped(Object oObject)
         {
             Internal.StackPushObject(oObject, false);
             Internal.CallBuiltIn(551);
@@ -11388,7 +11385,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Create a Turn Resistance Decrease effect.
         //  - nHitDice: a positive number representing the number of hit dice for the
         // /  decrease
-        public  Effect EffectTurnResistanceDecrease(int nHitDice)
+        public Effect EffectTurnResistanceDecrease(int nHitDice)
         {
             Internal.StackPushInteger(nHitDice);
             Internal.CallBuiltIn(552);
@@ -11398,7 +11395,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Create a Turn Resistance Increase effect.
         //  - nHitDice: a positive number representing the number of hit dice for the
         //    increase
-        public  Effect EffectTurnResistanceIncrease(int nHitDice)
+        public Effect EffectTurnResistanceIncrease(int nHitDice)
         {
             Internal.StackPushInteger(nHitDice);
             Internal.CallBuiltIn(553);
@@ -11416,7 +11413,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //    be enabled on the Death GUI (Note: This button will not appear in single player games).
         //  - nHelpStringReference
         //  - sHelpString
-        public  void PopUpDeathGUIPanel(Object oPC, int bRespawnButtonEnabled = TRUE, int bWaitForHelpButtonEnabled = TRUE, int nHelpStringReference = 0, string sHelpString = "")
+        public void PopUpDeathGUIPanel(Object oPC, int bRespawnButtonEnabled = TRUE, int bWaitForHelpButtonEnabled = TRUE, int nHelpStringReference = 0, string sHelpString = "")
         {
             Internal.StackPushString(sHelpString);
             Internal.StackPushInteger(nHelpStringReference);
@@ -11428,7 +11425,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Disable oTrap.
         //  - oTrap: a placeable, door or trigger.
-        public  void SetTrapDisabled(Object oTrap)
+        public void SetTrapDisabled(Object oTrap)
         {
             Internal.StackPushObject(oTrap, false);
             Internal.CallBuiltIn(555);
@@ -11445,7 +11442,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  4) Traps will not return the creature that set the trap.
         //  5) This value will never be overwritten by another non-creature object.
         //  6) This value will never be a dead/destroyed creature
-        public  Object GetLastHostileActor(Object oVictim = null)
+        public Object GetLastHostileActor(Object oVictim = null)
         {
             Internal.StackPushObject(oVictim, false);
             Internal.CallBuiltIn(556);
@@ -11454,13 +11451,13 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Force all the characters of the players who are currently in the game to
         //  be exported to their respective directories i.e. LocalVault/ServerVault/ etc.
-        public  void ExportAllCharacters()
+        public void ExportAllCharacters()
         {
             Internal.CallBuiltIn(557);
         }
 
         //  Get the Day Track for oArea.
-        public  int MusicBackgroundGetDayTrack(Object oArea)
+        public int MusicBackgroundGetDayTrack(Object oArea)
         {
             Internal.StackPushObject(oArea, false);
             Internal.CallBuiltIn(558);
@@ -11468,7 +11465,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the Night Track for oArea.
-        public  int MusicBackgroundGetNightTrack(Object oArea)
+        public int MusicBackgroundGetNightTrack(Object oArea)
         {
             Internal.StackPushObject(oArea, false);
             Internal.CallBuiltIn(559);
@@ -11476,7 +11473,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Write sLogEntry as a timestamped entry into the log file
-        public  void WriteTimestampedLogEntry(string sLogEntry)
+        public void WriteTimestampedLogEntry(string sLogEntry)
         {
             Internal.StackPushString(sLogEntry);
             Internal.CallBuiltIn(560);
@@ -11485,7 +11482,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get the module's name in the language of the server that's running it.
         //  * If there is no entry for the language of the server, it will return an
         //    empty string
-        public  string GetModuleName()
+        public string GetModuleName()
         {
             Internal.CallBuiltIn(561);
             return Internal.StackPopString();
@@ -11494,7 +11491,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get the player leader of the faction of which oMemberOfFaction is a member.
         //  * Returns OBJECT_INVALID if oMemberOfFaction is not a valid creature,
         //    or oMemberOfFaction is a member of a NPC faction.
-        public  Object GetFactionLeader(Object oMemberOfFaction)
+        public Object GetFactionLeader(Object oMemberOfFaction)
         {
             Internal.StackPushObject(oMemberOfFaction, false);
             Internal.CallBuiltIn(562);
@@ -11502,7 +11499,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Sends szMessage to all the Dungeon Masters currently on the server.
-        public  void SendMessageToAllDMs(string szMessage)
+        public void SendMessageToAllDMs(string szMessage)
         {
             Internal.StackPushString(szMessage);
             Internal.CallBuiltIn(563);
@@ -11510,7 +11507,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  End the currently running game, play sEndMovie then return all players to the
         //  game's main menu.
-        public  void EndGame(string sEndMovie)
+        public void EndGame(string sEndMovie)
         {
             Internal.StackPushString(sEndMovie);
             Internal.CallBuiltIn(564);
@@ -11518,7 +11515,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Remove oPlayer from the server.
         //  You can optionally specify a reason to override the text shown to the player.
-        public  void BootPC(Object oPlayer, string sReason = "")
+        public void BootPC(Object oPlayer, string sReason = "")
         {
             Internal.StackPushString(sReason);
             Internal.StackPushObject(oPlayer, false);
@@ -11526,7 +11523,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Counterspell oCounterSpellTarget.
-        public  void ActionCounterSpell(Object oCounterSpellTarget)
+        public void ActionCounterSpell(Object oCounterSpellTarget)
         {
             Internal.StackPushObject(oCounterSpellTarget, false);
             Internal.CallBuiltIn(566);
@@ -11535,7 +11532,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Set the ambient day volume for oArea to nVolume.
         //  - oArea
         //  - nVolume: 0 - 100
-        public  void AmbientSoundSetDayVolume(Object oArea, int nVolume)
+        public void AmbientSoundSetDayVolume(Object oArea, int nVolume)
         {
             Internal.StackPushInteger(nVolume);
             Internal.StackPushObject(oArea, false);
@@ -11545,7 +11542,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Set the ambient night volume for oArea to nVolume.
         //  - oArea
         //  - nVolume: 0 - 100
-        public  void AmbientSoundSetNightVolume(Object oArea, int nVolume)
+        public void AmbientSoundSetNightVolume(Object oArea, int nVolume)
         {
             Internal.StackPushInteger(nVolume);
             Internal.StackPushObject(oArea, false);
@@ -11553,7 +11550,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the Battle Track for oArea.
-        public  int MusicBackgroundGetBattleTrack(Object oArea)
+        public int MusicBackgroundGetBattleTrack(Object oArea)
         {
             Internal.StackPushObject(oArea, false);
             Internal.CallBuiltIn(569);
@@ -11563,7 +11560,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Determine whether oObject has an inventory.
         //  * Returns TRUE for creatures and stores, and checks to see if an item or placeable object is a container.
         //  * Returns FALSE for all other object types.
-        public  int GetHasInventory(Object oObject)
+        public int GetHasInventory(Object oObject)
         {
             Internal.StackPushObject(oObject, false);
             Internal.CallBuiltIn(570);
@@ -11572,7 +11569,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get the duration (in seconds) of the sound attached to nStrRef
         //  * Returns 0.0f if no duration is stored or if no sound is attached
-        public  float GetStrRefSoundDuration(int nStrRef)
+        public float GetStrRefSoundDuration(int nStrRef)
         {
             Internal.StackPushInteger(nStrRef);
             Internal.CallBuiltIn(571);
@@ -11582,7 +11579,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Add oPC to oPartyLeader's party.  This will only work on two PCs.
         //  - oPC: player to add to a party
         //  - oPartyLeader: player already in the party
-        public  void AddToParty(Object oPC, Object oPartyLeader)
+        public void AddToParty(Object oPC, Object oPartyLeader)
         {
             Internal.StackPushObject(oPartyLeader, false);
             Internal.StackPushObject(oPC, false);
@@ -11591,7 +11588,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Remove oPC from their current party. This will only work on a PC.
         //  - oPC: removes this player from whatever party they're currently in.
-        public  void RemoveFromParty(Object oPC)
+        public void RemoveFromParty(Object oPC)
         {
             Internal.StackPushObject(oPC, false);
             Internal.CallBuiltIn(573);
@@ -11600,7 +11597,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns the stealth mode of the specified creature.
         //  - oCreature
         //  * Returns a constant STEALTH_MODE_*
-        public  int GetStealthMode(Object oCreature)
+        public int GetStealthMode(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(574);
@@ -11610,7 +11607,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns the detection mode of the specified creature.
         //  - oCreature
         //  * Returns a constant DETECT_MODE_*
-        public  int GetDetectMode(Object oCreature)
+        public int GetDetectMode(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(575);
@@ -11620,7 +11617,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns the defensive casting mode of the specified creature.
         //  - oCreature
         //  * Returns a constant DEFENSIVE_CASTING_MODE_*
-        public  int GetDefensiveCastingMode(Object oCreature)
+        public int GetDefensiveCastingMode(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(576);
@@ -11630,7 +11627,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  returns the appearance type of the specified creature.
         //  * returns a constant APPEARANCE_TYPE_* for valid creatures
         //  * returns APPEARANCE_TYPE_INVALID for non creatures/invalid creatures
-        public  int GetAppearanceType(Object oCreature)
+        public int GetAppearanceType(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(577);
@@ -11645,7 +11642,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  If the script file isn't compiled for debugging, this command will do nothing.
         //  Remove any SpawnScriptDebugger() calls once you have finished 
         //  debugging the script.
-        public  void SpawnScriptDebugger()
+        public void SpawnScriptDebugger()
         {
             Internal.CallBuiltIn(578);
         }
@@ -11653,7 +11650,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  in an onItemAcquired script, returns the size of the stack of the item
         //  that was just acquired.
         //  * returns the stack size of the item acquired
-        public  int GetModuleItemAcquiredStackSize()
+        public int GetModuleItemAcquiredStackSize()
         {
             Internal.CallBuiltIn(579);
             return Internal.StackPopInteger();
@@ -11662,7 +11659,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Decrement the remaining uses per day for this creature by one.
         //  - oCreature: creature to modify
         //  - nFeat: constant FEAT_*
-        public  void DecrementRemainingFeatUses(Object oCreature, int nFeat)
+        public void DecrementRemainingFeatUses(Object oCreature, int nFeat)
         {
             Internal.StackPushInteger(nFeat);
             Internal.StackPushObject(oCreature, false);
@@ -11672,7 +11669,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Decrement the remaining uses per day for this creature by one.
         //  - oCreature: creature to modify
         //  - nSpell: constant SPELL_*
-        public  void DecrementRemainingSpellUses(Object oCreature, int nSpell)
+        public void DecrementRemainingSpellUses(Object oCreature, int nSpell)
         {
             Internal.StackPushInteger(nSpell);
             Internal.StackPushObject(oCreature, false);
@@ -11681,7 +11678,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  returns the template used to create this object (if appropriate)
         //  * returns an empty string when no template found
-        public  string GetResRef(Object oObject)
+        public string GetResRef(Object oObject)
         {
             Internal.StackPushObject(oObject, false);
             Internal.CallBuiltIn(582);
@@ -11690,7 +11687,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  returns an effect that will petrify the target
         //  * currently applies EffectParalyze and the stoneskin visual effect.
-        public  Effect EffectPetrify()
+        public Effect EffectPetrify()
         {
             Internal.CallBuiltIn(583);
             return Internal.StackPopEffect();
@@ -11707,7 +11704,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //    other items.
         //  * if it is possible to merge this item with any others in the target location,
         //    then it will do so and return the merged object.
-        public  Object CopyItem(Object oItem, Object oTargetInventory = null, int bCopyVars = FALSE)
+        public Object CopyItem(Object oItem, Object oTargetInventory = null, int bCopyVars = FALSE)
         {
             Internal.StackPushInteger(bCopyVars);
             Internal.StackPushObject(oTargetInventory, false);
@@ -11718,7 +11715,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  returns an effect that is guaranteed to paralyze a creature.
         //  this effect is identical to EffectParalyze except that it cannot be resisted.
-        public  Effect EffectCutsceneParalyze()
+        public Effect EffectCutsceneParalyze()
         {
             Internal.CallBuiltIn(585);
             return Internal.StackPopEffect();
@@ -11726,7 +11723,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  returns TRUE if the item CAN be dropped
         //  Droppable items will appear on a creature's remains when the creature is killed.
-        public  int GetDroppableFlag(Object oItem)
+        public int GetDroppableFlag(Object oItem)
         {
             Internal.StackPushObject(oItem, false);
             Internal.CallBuiltIn(586);
@@ -11734,7 +11731,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  returns TRUE if the placeable object is usable
-        public  int GetUseableFlag(Object oObject = null)
+        public int GetUseableFlag(Object oObject = null)
         {
             Internal.StackPushObject(oObject, false);
             Internal.CallBuiltIn(587);
@@ -11742,7 +11739,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  returns TRUE if the item is stolen
-        public  int GetStolenFlag(Object oStolen)
+        public int GetStolenFlag(Object oStolen)
         {
             Internal.StackPushObject(oStolen, false);
             Internal.CallBuiltIn(588);
@@ -11753,7 +11750,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  The database name IS case sensitive and it must be the same for both set and get functions.
         //  The var name must be unique across the entire database, regardless of the variable type.
         //  If you want a variable to pertain to a specific player in the game, provide a player object.
-        public  void SetCampaignFloat(string sCampaignName, string sVarName, float flFloat, Object oPlayer = null)
+        public void SetCampaignFloat(string sCampaignName, string sVarName, float flFloat, Object oPlayer = null)
         {
             Internal.StackPushObject(oPlayer, false);
             Internal.StackPushFloat(flFloat);
@@ -11766,7 +11763,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  The database name IS case sensitive and it must be the same for both set and get functions.
         //  The var name must be unique across the entire database, regardless of the variable type.
         //  If you want a variable to pertain to a specific player in the game, provide a player object.
-        public  void SetCampaignInt(string sCampaignName, string sVarName, int nInt, Object oPlayer = null)
+        public void SetCampaignInt(string sCampaignName, string sVarName, int nInt, Object oPlayer = null)
         {
             Internal.StackPushObject(oPlayer, false);
             Internal.StackPushInteger(nInt);
@@ -11779,7 +11776,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  The database name IS case sensitive and it must be the same for both set and get functions.
         //  The var name must be unique across the entire database, regardless of the variable type.
         //  If you want a variable to pertain to a specific player in the game, provide a player object.
-        public  void SetCampaignVector(string sCampaignName, string sVarName, Vector? vVector, Object oPlayer = null)
+        public void SetCampaignVector(string sCampaignName, string sVarName, Vector? vVector, Object oPlayer = null)
         {
             Internal.StackPushObject(oPlayer, false);
             Internal.StackPushVector(vVector);
@@ -11792,7 +11789,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  The database name IS case sensitive and it must be the same for both set and get functions.
         //  The var name must be unique across the entire database, regardless of the variable type.
         //  If you want a variable to pertain to a specific player in the game, provide a player object.
-        public  void SetCampaignLocation(string sCampaignName, string sVarName, Location locLocation, Object oPlayer = null)
+        public void SetCampaignLocation(string sCampaignName, string sVarName, Location locLocation, Object oPlayer = null)
         {
             Internal.StackPushObject(oPlayer, false);
             Internal.StackPushLocation(locLocation);
@@ -11805,7 +11802,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  The database name IS case sensitive and it must be the same for both set and get functions.
         //  The var name must be unique across the entire database, regardless of the variable type.
         //  If you want a variable to pertain to a specific player in the game, provide a player object.
-        public  void SetCampaignString(string sCampaignName, string sVarName, string sString, Object oPlayer = null)
+        public void SetCampaignString(string sCampaignName, string sVarName, string sString, Object oPlayer = null)
         {
             Internal.StackPushObject(oPlayer, false);
             Internal.StackPushString(sString);
@@ -11815,7 +11812,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  This will delete the entire campaign database if it exists.
-        public  void DestroyCampaignDatabase(string sCampaignName)
+        public void DestroyCampaignDatabase(string sCampaignName)
         {
             Internal.StackPushString(sCampaignName);
             Internal.CallBuiltIn(594);
@@ -11825,7 +11822,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  The database name IS case sensitive and it must be the same for both set and get functions.
         //  The var name must be unique across the entire database, regardless of the variable type.
         //  If you want a variable to pertain to a specific player in the game, provide a player object.
-        public  float GetCampaignFloat(string sCampaignName, string sVarName, Object oPlayer = null)
+        public float GetCampaignFloat(string sCampaignName, string sVarName, Object oPlayer = null)
         {
             Internal.StackPushObject(oPlayer, false);
             Internal.StackPushString(sVarName);
@@ -11838,7 +11835,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  The database name IS case sensitive and it must be the same for both set and get functions.
         //  The var name must be unique across the entire database, regardless of the variable type.
         //  If you want a variable to pertain to a specific player in the game, provide a player object.
-        public  int GetCampaignInt(string sCampaignName, string sVarName, Object oPlayer = null)
+        public int GetCampaignInt(string sCampaignName, string sVarName, Object oPlayer = null)
         {
             Internal.StackPushObject(oPlayer, false);
             Internal.StackPushString(sVarName);
@@ -11851,7 +11848,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  The database name IS case sensitive and it must be the same for both set and get functions.
         //  The var name must be unique across the entire database, regardless of the variable type.
         //  If you want a variable to pertain to a specific player in the game, provide a player object.
-        public  Vector GetCampaignVector(string sCampaignName, string sVarName, Object oPlayer = null)
+        public Vector GetCampaignVector(string sCampaignName, string sVarName, Object oPlayer = null)
         {
             Internal.StackPushObject(oPlayer, false);
             Internal.StackPushString(sVarName);
@@ -11864,7 +11861,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  The database name IS case sensitive and it must be the same for both set and get functions.
         //  The var name must be unique across the entire database, regardless of the variable type.
         //  If you want a variable to pertain to a specific player in the game, provide a player object.
-        public  Location GetCampaignLocation(string sCampaignName, string sVarName, Object oPlayer = null)
+        public Location GetCampaignLocation(string sCampaignName, string sVarName, Object oPlayer = null)
         {
             Internal.StackPushObject(oPlayer, false);
             Internal.StackPushString(sVarName);
@@ -11877,7 +11874,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  The database name IS case sensitive and it must be the same for both set and get functions.
         //  The var name must be unique across the entire database, regardless of the variable type.
         //  If you want a variable to pertain to a specific player in the game, provide a player object.
-        public  string GetCampaignString(string sCampaignName, string sVarName, Object oPlayer = null)
+        public string GetCampaignString(string sCampaignName, string sVarName, Object oPlayer = null)
         {
             Internal.StackPushObject(oPlayer, false);
             Internal.StackPushString(sVarName);
@@ -11891,7 +11888,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  If an owner is specified and the object is an item, it will be put into their inventory
         //  If the object is a creature, they will be created at the location.
         //  If a new tag is specified, it will be assigned to the new object.
-        public  Object CopyObject(Object oSource, Location locLocation, Object oOwner = null, string sNewTag = "")
+        public Object CopyObject(Object oSource, Location locLocation, Object oOwner = null, string sNewTag = "")
         {
             Internal.StackPushString(sNewTag);
             Internal.StackPushObject(oOwner, false);
@@ -11906,7 +11903,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  the database, but flags it as deleted. Do not expect the database files to shrink in size
         //  from this command. If you want to 'pack' the database, you will have to do it externally
         //  from the game.
-        public  void DeleteCampaignVariable(string sCampaignName, string sVarName, Object oPlayer = null)
+        public void DeleteCampaignVariable(string sCampaignName, string sVarName, Object oPlayer = null)
         {
             Internal.StackPushObject(oPlayer, false);
             Internal.StackPushString(sVarName);
@@ -11917,7 +11914,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Stores an object with the given id.
         //  NOTE: this command can only be used for storing Creatures and Items.
         //  Returns 0 if it failled, 1 if it worked.
-        public  int StoreCampaignObject(string sCampaignName, string sVarName, Object oObject, Object oPlayer = null)
+        public int StoreCampaignObject(string sCampaignName, string sVarName, Object oObject, Object oPlayer = null)
         {
             Internal.StackPushObject(oPlayer, false);
             Internal.StackPushObject(oObject, false);
@@ -11930,7 +11927,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Use RetrieveCampaign with the given id to restore it.
         //  If you specify an owner, the object will try to be created in their repository
         //  If the owner can't handle the item (or if it's a creature) it will be created on the ground.
-        public  Object RetrieveCampaignObject(string sCampaignName, string sVarName, Location locLocation, Object oOwner = null, Object oPlayer = null)
+        public Object RetrieveCampaignObject(string sCampaignName, string sVarName, Location locLocation, Object oOwner = null, Object oPlayer = null)
         {
             Internal.StackPushObject(oPlayer, false);
             Internal.StackPushObject(oOwner, false);
@@ -11943,7 +11940,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns an effect that is guaranteed to dominate a creature
         //  Like EffectDominated but cannot be resisted
-        public  Effect EffectCutsceneDominated()
+        public Effect EffectCutsceneDominated()
         {
             Internal.CallBuiltIn(604);
             return Internal.StackPopEffect();
@@ -11951,7 +11948,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns stack size of an item
         //  - oItem: item to query
-        public  int GetItemStackSize(Object oItem)
+        public int GetItemStackSize(Object oItem)
         {
             Internal.StackPushObject(oItem, false);
             Internal.CallBuiltIn(605);
@@ -11964,7 +11961,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //    maximum stack size for the item type.  If a value less than 1 is passed it
         //    will set the stack to 1.  If a value greater than the max is passed
         //    then it will set the stack to the maximum size
-        public  void SetItemStackSize(Object oItem, int nSize)
+        public void SetItemStackSize(Object oItem, int nSize)
         {
             Internal.StackPushInteger(nSize);
             Internal.StackPushObject(oItem, false);
@@ -11973,7 +11970,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns charges left on an item
         //  - oItem: item to query
-        public  int GetItemCharges(Object oItem)
+        public int GetItemCharges(Object oItem)
         {
             Internal.StackPushObject(oItem, false);
             Internal.CallBuiltIn(607);
@@ -11986,7 +11983,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //    be set to 0.  If value greater than maximum is passed, # charges will
         //    be set to maximum.  If the # charges drops to 0 the item
         //    will be destroyed.
-        public  void SetItemCharges(Object oItem, int nCharges)
+        public void SetItemCharges(Object oItem, int nCharges)
         {
             Internal.StackPushInteger(nCharges);
             Internal.StackPushObject(oItem, false);
@@ -11996,7 +11993,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  ***********************  START OF ITEM PROPERTY FUNCTIONS  **********************
         //  adds an item property to the specified item
         //  Only temporary and permanent duration types are allowed.
-        public  void AddItemProperty(int nDurationType, ItemProperty ipProperty, Object oItem, float fDuration = 0.0f)
+        public void AddItemProperty(int nDurationType, ItemProperty ipProperty, Object oItem, float fDuration = 0.0f)
         {
             Internal.StackPushFloat(fDuration);
             Internal.StackPushObject(oItem, false);
@@ -12006,7 +12003,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  removes an item property from the specified item
-        public  void RemoveItemProperty(Object oItem, ItemProperty ipProperty)
+        public void RemoveItemProperty(Object oItem, ItemProperty ipProperty)
         {
             Internal.StackPushItemProperty(ipProperty);
             Internal.StackPushObject(oItem, false);
@@ -12014,7 +12011,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  if the item property is valid this will return true
-        public  int GetIsItemPropertyValid(ItemProperty ipProperty)
+        public int GetIsItemPropertyValid(ItemProperty ipProperty)
         {
             Internal.StackPushItemProperty(ipProperty);
             Internal.CallBuiltIn(611);
@@ -12022,7 +12019,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Gets the first item property on an item
-        public  ItemProperty GetFirstItemProperty(Object oItem)
+        public ItemProperty GetFirstItemProperty(Object oItem)
         {
             Internal.StackPushObject(oItem, false);
             Internal.CallBuiltIn(612);
@@ -12031,7 +12028,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Will keep retrieving the next and the next item property on an Item,
         //  will return an invalid item property when the list is empty.
-        public  ItemProperty GetNextItemProperty(Object oItem)
+        public ItemProperty GetNextItemProperty(Object oItem)
         {
             Internal.StackPushObject(oItem, false);
             Internal.CallBuiltIn(613);
@@ -12039,7 +12036,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  will return the item property type (ie. holy avenger)
-        public  int GetItemPropertyType(ItemProperty ip)
+        public int GetItemPropertyType(ItemProperty ip)
         {
             Internal.StackPushItemProperty(ip);
             Internal.CallBuiltIn(614);
@@ -12047,7 +12044,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  will return the duration type of the item property
-        public  int GetItemPropertyDurationType(ItemProperty ip)
+        public int GetItemPropertyDurationType(ItemProperty ip)
         {
             Internal.StackPushItemProperty(ip);
             Internal.CallBuiltIn(615);
@@ -12057,7 +12054,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns Item property ability bonus.  You need to specify an
         //  ability constant(IP_CONST_ABILITY_*) and the bonus.  The bonus should
         //  be a positive integer between 1 and 12.
-        public  ItemProperty ItemPropertyAbilityBonus(int nAbility, int nBonus)
+        public ItemProperty ItemPropertyAbilityBonus(int nAbility, int nBonus)
         {
             Internal.StackPushInteger(nBonus);
             Internal.StackPushInteger(nAbility);
@@ -12068,7 +12065,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns Item property AC bonus.  You need to specify the bonus.
         //  The bonus should be a positive integer between 1 and 20. The modifier
         //  type depends on the item it is being applied to.
-        public  ItemProperty ItemPropertyACBonus(int nBonus)
+        public ItemProperty ItemPropertyACBonus(int nBonus)
         {
             Internal.StackPushInteger(nBonus);
             Internal.CallBuiltIn(617);
@@ -12080,7 +12077,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  alignment group constant(IP_CONST_ALIGNMENTGROUP_*) and the AC bonus.
         //  The AC bonus should be an integer between 1 and 20.  The modifier
         //  type depends on the item it is being applied to.
-        public  ItemProperty ItemPropertyACBonusVsAlign(int nAlignGroup, int nACBonus)
+        public ItemProperty ItemPropertyACBonusVsAlign(int nAlignGroup, int nACBonus)
         {
             Internal.StackPushInteger(nACBonus);
             Internal.StackPushInteger(nAlignGroup);
@@ -12094,7 +12091,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  modifier type depends on the item it is being applied to.
         //  NOTE: Only the first 3 damage types may be used here, the 3 basic
         //        physical types.
-        public  ItemProperty ItemPropertyACBonusVsDmgType(int nDamageType, int nACBonus)
+        public ItemProperty ItemPropertyACBonusVsDmgType(int nDamageType, int nACBonus)
         {
             Internal.StackPushInteger(nACBonus);
             Internal.StackPushInteger(nDamageType);
@@ -12106,7 +12103,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  the racial group constant(IP_CONST_RACIALTYPE_*) and the AC bonus.  The AC
         //  bonus should be an integer between 1 and 20.  The modifier type depends
         //  on the item it is being applied to.
-        public  ItemProperty ItemPropertyACBonusVsRace(int nRace, int nACBonus)
+        public ItemProperty ItemPropertyACBonusVsRace(int nRace, int nACBonus)
         {
             Internal.StackPushInteger(nACBonus);
             Internal.StackPushInteger(nRace);
@@ -12118,7 +12115,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  specify the specific alignment constant(IP_CONST_ALIGNMENT_*) and the AC
         //  bonus.  The AC bonus should be an integer between 1 and 20.  The
         //  modifier type depends on the item it is being applied to.
-        public  ItemProperty ItemPropertyACBonusVsSAlign(int nAlign, int nACBonus)
+        public ItemProperty ItemPropertyACBonusVsSAlign(int nAlign, int nACBonus)
         {
             Internal.StackPushInteger(nACBonus);
             Internal.StackPushInteger(nAlign);
@@ -12129,7 +12126,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns Item property Enhancement bonus.  You need to specify the
         //  enhancement bonus.  The Enhancement bonus should be an integer between
         //  1 and 20.
-        public  ItemProperty ItemPropertyEnhancementBonus(int nEnhancementBonus)
+        public ItemProperty ItemPropertyEnhancementBonus(int nEnhancementBonus)
         {
             Internal.StackPushInteger(nEnhancementBonus);
             Internal.CallBuiltIn(622);
@@ -12140,7 +12137,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  need to specify the alignment group constant(IP_CONST_ALIGNMENTGROUP_*)
         //  and the enhancement bonus.  The Enhancement bonus should be an integer
         //  between 1 and 20.
-        public  ItemProperty ItemPropertyEnhancementBonusVsAlign(int nAlignGroup, int nBonus)
+        public ItemProperty ItemPropertyEnhancementBonusVsAlign(int nAlignGroup, int nBonus)
         {
             Internal.StackPushInteger(nBonus);
             Internal.StackPushInteger(nAlignGroup);
@@ -12152,7 +12149,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  to specify the racial group constant(IP_CONST_RACIALTYPE_*) and the
         //  enhancement bonus.  The enhancement bonus should be an integer between
         //  1 and 20.
-        public  ItemProperty ItemPropertyEnhancementBonusVsRace(int nRace, int nBonus)
+        public ItemProperty ItemPropertyEnhancementBonusVsRace(int nRace, int nBonus)
         {
             Internal.StackPushInteger(nBonus);
             Internal.StackPushInteger(nRace);
@@ -12164,7 +12161,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  need to specify the alignment constant(IP_CONST_ALIGNMENT_*) and the
         //  enhancement bonus.  The enhancement bonus should be an integer between
         //  1 and 20.
-        public  ItemProperty ItemPropertyEnhancementBonusVsSAlign(int nAlign, int nBonus)
+        public ItemProperty ItemPropertyEnhancementBonusVsSAlign(int nAlign, int nBonus)
         {
             Internal.StackPushInteger(nBonus);
             Internal.StackPushInteger(nAlign);
@@ -12175,7 +12172,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns Item property Enhancment penalty.  You need to specify the
         //  enhancement penalty.  The enhancement penalty should be a POSITIVE
         //  integer between 1 and 5 (ie. 1 = -1).
-        public  ItemProperty ItemPropertyEnhancementPenalty(int nPenalty)
+        public ItemProperty ItemPropertyEnhancementPenalty(int nPenalty)
         {
             Internal.StackPushInteger(nPenalty);
             Internal.CallBuiltIn(626);
@@ -12184,7 +12181,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns Item property weight reduction.  You need to specify the weight
         //  reduction constant(IP_CONST_REDUCEDWEIGHT_*).
-        public  ItemProperty ItemPropertyWeightReduction(int nReduction)
+        public ItemProperty ItemPropertyWeightReduction(int nReduction)
         {
             Internal.StackPushInteger(nReduction);
             Internal.CallBuiltIn(627);
@@ -12193,7 +12190,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns Item property Bonus Feat.  You need to specify the the feat
         //  constant(IP_CONST_FEAT_*).
-        public  ItemProperty ItemPropertyBonusFeat(int nFeat)
+        public ItemProperty ItemPropertyBonusFeat(int nFeat)
         {
             Internal.StackPushInteger(nFeat);
             Internal.CallBuiltIn(628);
@@ -12204,7 +12201,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  specify the class constant(IP_CONST_CLASS_*) of the bonus spell(MUST BE a
         //  spell casting class) and the level of the bonus spell.  The level of the
         //  bonus spell should be an integer between 0 and 9.
-        public  ItemProperty ItemPropertyBonusLevelSpell(int nClass, int nSpellLevel)
+        public ItemProperty ItemPropertyBonusLevelSpell(int nClass, int nSpellLevel)
         {
             Internal.StackPushInteger(nSpellLevel);
             Internal.StackPushInteger(nClass);
@@ -12599,7 +12596,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //           Special_Alcohol_Spirits
         //           Special_Alcohol_Wine
         // 
-        public  ItemProperty ItemPropertyCastSpell(int nSpell, int nNumUses)
+        public ItemProperty ItemPropertyCastSpell(int nSpell, int nNumUses)
         {
             Internal.StackPushInteger(nNumUses);
             Internal.StackPushInteger(nSpell);
@@ -12611,7 +12608,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  (IP_CONST_DAMAGETYPE_*) and the amount of damage constant(IP_CONST_DAMAGEBONUS_*).
         //  NOTE: not all the damage types will work, use only the following: Acid, Bludgeoning,
         //        Cold, Electrical, Fire, Piercing, Slashing, Sonic.
-        public  ItemProperty ItemPropertyDamageBonus(int nDamageType, int nDamage)
+        public ItemProperty ItemPropertyDamageBonus(int nDamageType, int nDamage)
         {
             Internal.StackPushInteger(nDamage);
             Internal.StackPushInteger(nDamageType);
@@ -12624,7 +12621,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  (IP_CONST_DAMAGETYPE_*) and the amount of damage constant(IP_CONST_DAMAGEBONUS_*).
         //  NOTE: not all the damage types will work, use only the following: Acid, Bludgeoning,
         //        Cold, Electrical, Fire, Piercing, Slashing, Sonic.
-        public  ItemProperty ItemPropertyDamageBonusVsAlign(int nAlignGroup, int nDamageType, int nDamage)
+        public ItemProperty ItemPropertyDamageBonusVsAlign(int nAlignGroup, int nDamageType, int nDamage)
         {
             Internal.StackPushInteger(nDamage);
             Internal.StackPushInteger(nDamageType);
@@ -12638,7 +12635,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  (IP_CONST_DAMAGETYPE_*) and the amount of damage constant(IP_CONST_DAMAGEBONUS_*).
         //  NOTE: not all the damage types will work, use only the following: Acid, Bludgeoning,
         //        Cold, Electrical, Fire, Piercing, Slashing, Sonic.
-        public  ItemProperty ItemPropertyDamageBonusVsRace(int nRace, int nDamageType, int nDamage)
+        public ItemProperty ItemPropertyDamageBonusVsRace(int nRace, int nDamageType, int nDamage)
         {
             Internal.StackPushInteger(nDamage);
             Internal.StackPushInteger(nDamageType);
@@ -12652,7 +12649,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  (IP_CONST_DAMAGETYPE_*) and the amount of damage constant(IP_CONST_DAMAGEBONUS_*).
         //  NOTE: not all the damage types will work, use only the following: Acid, Bludgeoning,
         //        Cold, Electrical, Fire, Piercing, Slashing, Sonic.
-        public  ItemProperty ItemPropertyDamageBonusVsSAlign(int nAlign, int nDamageType, int nDamage)
+        public ItemProperty ItemPropertyDamageBonusVsSAlign(int nAlign, int nDamageType, int nDamage)
         {
             Internal.StackPushInteger(nDamage);
             Internal.StackPushInteger(nDamageType);
@@ -12666,7 +12663,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  constant(IP_CONST_DAMAGEIMMUNITY_*).
         //  NOTE: not all the damage types will work, use only the following: Acid, Bludgeoning,
         //        Cold, Electrical, Fire, Piercing, Slashing, Sonic.
-        public  ItemProperty ItemPropertyDamageImmunity(int nDamageType, int nImmuneBonus)
+        public ItemProperty ItemPropertyDamageImmunity(int nDamageType, int nImmuneBonus)
         {
             Internal.StackPushInteger(nImmuneBonus);
             Internal.StackPushInteger(nDamageType);
@@ -12676,7 +12673,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns Item property damage penalty.  You must specify the damage penalty.
         //  The damage penalty should be a POSITIVE integer between 1 and 5 (ie. 1 = -1).
-        public  ItemProperty ItemPropertyDamagePenalty(int nPenalty)
+        public ItemProperty ItemPropertyDamagePenalty(int nPenalty)
         {
             Internal.StackPushInteger(nPenalty);
             Internal.CallBuiltIn(636);
@@ -12687,7 +12684,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  (IP_CONST_DAMAGEREDUCTION_*) that is required to get past the damage reduction
         //  and the amount of HP of damage constant(IP_CONST_DAMAGESOAK_*) will be soaked
         //  up if your weapon is not of high enough enhancement.
-        public  ItemProperty ItemPropertyDamageReduction(int nEnhancement, int nHPSoak)
+        public ItemProperty ItemPropertyDamageReduction(int nEnhancement, int nHPSoak)
         {
             Internal.StackPushInteger(nHPSoak);
             Internal.StackPushInteger(nEnhancement);
@@ -12698,7 +12695,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns Item property damage resistance.  You must specify the damage type
         //  constant(IP_CONST_DAMAGETYPE_*) and the amount of HP of damage constant
         //  (IP_CONST_DAMAGERESIST_*) that will be resisted against each round.
-        public  ItemProperty ItemPropertyDamageResistance(int nDamageType, int nHPResist)
+        public ItemProperty ItemPropertyDamageResistance(int nDamageType, int nHPResist)
         {
             Internal.StackPushInteger(nHPResist);
             Internal.StackPushInteger(nDamageType);
@@ -12709,7 +12706,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns Item property damage vulnerability.  You must specify the damage type
         //  constant(IP_CONST_DAMAGETYPE_*) that you want the user to be extra vulnerable to
         //  and the percentage vulnerability constant(IP_CONST_DAMAGEVULNERABILITY_*).
-        public  ItemProperty ItemPropertyDamageVulnerability(int nDamageType, int nVulnerability)
+        public ItemProperty ItemPropertyDamageVulnerability(int nDamageType, int nVulnerability)
         {
             Internal.StackPushInteger(nVulnerability);
             Internal.StackPushInteger(nDamageType);
@@ -12718,7 +12715,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Return Item property Darkvision.
-        public  ItemProperty ItemPropertyDarkvision()
+        public ItemProperty ItemPropertyDarkvision()
         {
             Internal.CallBuiltIn(640);
             return Internal.StackPopItemProperty();
@@ -12727,7 +12724,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Return Item property decrease ability score.  You must specify the ability
         //  constant(IP_CONST_ABILITY_*) and the modifier constant.  The modifier must be
         //  a POSITIVE integer between 1 and 10 (ie. 1 = -1).
-        public  ItemProperty ItemPropertyDecreaseAbility(int nAbility, int nModifier)
+        public ItemProperty ItemPropertyDecreaseAbility(int nAbility, int nModifier)
         {
             Internal.StackPushInteger(nModifier);
             Internal.StackPushInteger(nAbility);
@@ -12738,7 +12735,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns Item property decrease Armor Class.  You must specify the armor
         //  modifier type constant(IP_CONST_ACMODIFIERTYPE_*) and the armor class penalty.
         //  The penalty must be a POSITIVE integer between 1 and 5 (ie. 1 = -1).
-        public  ItemProperty ItemPropertyDecreaseAC(int nModifierType, int nPenalty)
+        public ItemProperty ItemPropertyDecreaseAC(int nModifierType, int nPenalty)
         {
             Internal.StackPushInteger(nPenalty);
             Internal.StackPushInteger(nModifierType);
@@ -12749,7 +12746,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns Item property decrease skill.  You must specify the constant for the
         //  skill to be decreased(SKILL_*) and the amount of the penalty.  The penalty
         //  must be a POSITIVE integer between 1 and 10 (ie. 1 = -1).
-        public  ItemProperty ItemPropertyDecreaseSkill(int nSkill, int nPenalty)
+        public ItemProperty ItemPropertyDecreaseSkill(int nSkill, int nPenalty)
         {
             Internal.StackPushInteger(nPenalty);
             Internal.StackPushInteger(nSkill);
@@ -12760,7 +12757,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns Item property container reduced weight.  This is used for special
         //  containers that reduce the weight of the objects inside them.  You must
         //  specify the container weight reduction type constant(IP_CONST_CONTAINERWEIGHTRED_*).
-        public  ItemProperty ItemPropertyContainerReducedWeight(int nContainerType)
+        public ItemProperty ItemPropertyContainerReducedWeight(int nContainerType)
         {
             Internal.StackPushInteger(nContainerType);
             Internal.CallBuiltIn(644);
@@ -12772,7 +12769,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  NOTE: only the first 3 base types (piercing, slashing, & bludgeoning are applicable
         //        here.
         //  NOTE: It is also only applicable to melee weapons.
-        public  ItemProperty ItemPropertyExtraMeleeDamageType(int nDamageType)
+        public ItemProperty ItemPropertyExtraMeleeDamageType(int nDamageType)
         {
             Internal.StackPushInteger(nDamageType);
             Internal.CallBuiltIn(645);
@@ -12784,7 +12781,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  NOTE: only the first 3 base types (piercing, slashing, & bludgeoning are applicable
         //        here.
         //  NOTE: It is also only applicable to ranged weapons.
-        public  ItemProperty ItemPropertyExtraRangeDamageType(int nDamageType)
+        public ItemProperty ItemPropertyExtraRangeDamageType(int nDamageType)
         {
             Internal.StackPushInteger(nDamageType);
             Internal.CallBuiltIn(646);
@@ -12792,14 +12789,14 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Returns Item property haste.
-        public  ItemProperty ItemPropertyHaste()
+        public ItemProperty ItemPropertyHaste()
         {
             Internal.CallBuiltIn(647);
             return Internal.StackPopItemProperty();
         }
 
         //  Returns Item property Holy Avenger.
-        public  ItemProperty ItemPropertyHolyAvenger()
+        public ItemProperty ItemPropertyHolyAvenger()
         {
             Internal.CallBuiltIn(648);
             return Internal.StackPopItemProperty();
@@ -12807,7 +12804,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns Item property immunity to miscellaneous effects.  You must specify the
         //  effect to which the user is immune, it is a constant(IP_CONST_IMMUNITYMISC_*).
-        public  ItemProperty ItemPropertyImmunityMisc(int nImmunityType)
+        public ItemProperty ItemPropertyImmunityMisc(int nImmunityType)
         {
             Internal.StackPushInteger(nImmunityType);
             Internal.CallBuiltIn(649);
@@ -12815,7 +12812,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Returns Item property improved evasion.
-        public  ItemProperty ItemPropertyImprovedEvasion()
+        public ItemProperty ItemPropertyImprovedEvasion()
         {
             Internal.CallBuiltIn(650);
             return Internal.StackPopItemProperty();
@@ -12823,7 +12820,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns Item property bonus spell resistance.  You must specify the bonus spell
         //  resistance constant(IP_CONST_SPELLRESISTANCEBONUS_*).
-        public  ItemProperty ItemPropertyBonusSpellResistance(int nBonus)
+        public ItemProperty ItemPropertyBonusSpellResistance(int nBonus)
         {
             Internal.StackPushInteger(nBonus);
             Internal.CallBuiltIn(651);
@@ -12834,7 +12831,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  You must specify the save type constant(IP_CONST_SAVEVS_*) that the bonus is
         //  applied to and the bonus that is be applied.  The bonus must be an integer
         //  between 1 and 20.
-        public  ItemProperty ItemPropertyBonusSavingThrowVsX(int nBonusType, int nBonus)
+        public ItemProperty ItemPropertyBonusSavingThrowVsX(int nBonusType, int nBonus)
         {
             Internal.StackPushInteger(nBonus);
             Internal.StackPushInteger(nBonusType);
@@ -12846,7 +12843,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  fortitude).  You must specify the base type constant(IP_CONST_SAVEBASETYPE_*)
         //  to which the user gets the bonus and the bonus that he/she will get.  The
         //  bonus must be an integer between 1 and 20.
-        public  ItemProperty ItemPropertyBonusSavingThrow(int nBaseSaveType, int nBonus)
+        public ItemProperty ItemPropertyBonusSavingThrow(int nBaseSaveType, int nBonus)
         {
             Internal.StackPushInteger(nBonus);
             Internal.StackPushInteger(nBaseSaveType);
@@ -12856,7 +12853,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns Item property keen.  This means a critical threat range of 19-20 on a
         //  weapon will be increased to 17-20 etc.
-        public  ItemProperty ItemPropertyKeen()
+        public ItemProperty ItemPropertyKeen()
         {
             Internal.CallBuiltIn(654);
             return Internal.StackPopItemProperty();
@@ -12865,7 +12862,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns Item property light.  You must specify the intesity constant of the
         //  light(IP_CONST_LIGHTBRIGHTNESS_*) and the color constant of the light
         //  (IP_CONST_LIGHTCOLOR_*).
-        public  ItemProperty ItemPropertyLight(int nBrightness, int nColor)
+        public ItemProperty ItemPropertyLight(int nBrightness, int nColor)
         {
             Internal.StackPushInteger(nColor);
             Internal.StackPushInteger(nBrightness);
@@ -12876,7 +12873,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns Item property Max range strength modification (ie. mighty).  You must
         //  specify the maximum modifier for strength that is allowed on a ranged weapon.
         //  The modifier must be a positive integer between 1 and 20.
-        public  ItemProperty ItemPropertyMaxRangeStrengthMod(int nModifier)
+        public ItemProperty ItemPropertyMaxRangeStrengthMod(int nModifier)
         {
             Internal.StackPushInteger(nModifier);
             Internal.CallBuiltIn(656);
@@ -12885,7 +12882,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns Item property no damage.  This means the weapon will do no damage in
         //  combat.
-        public  ItemProperty ItemPropertyNoDamage()
+        public ItemProperty ItemPropertyNoDamage()
         {
             Internal.CallBuiltIn(657);
             return Internal.StackPopItemProperty();
@@ -12930,7 +12927,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //                          constant(IP_CONST_ONHIT_DURATION_*)
         //       STUN              :nSpecial is the duration/percentage of effecting victim.
         //                          constant(IP_CONST_ONHIT_DURATION_*)
-        public  ItemProperty ItemPropertyOnHitProps(int nProperty, int nSaveDC, int nSpecial = 0)
+        public ItemProperty ItemPropertyOnHitProps(int nProperty, int nSaveDC, int nSpecial = 0)
         {
             Internal.StackPushInteger(nSpecial);
             Internal.StackPushInteger(nSaveDC);
@@ -12943,7 +12940,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  specify the constant to which the penalty applies(IP_CONST_SAVEVS_*) and the
         //  penalty to be applied.  The penalty must be a POSITIVE integer between 1 and 20
         //  (ie. 1 = -1).
-        public  ItemProperty ItemPropertyReducedSavingThrowVsX(int nBaseSaveType, int nPenalty)
+        public ItemProperty ItemPropertyReducedSavingThrowVsX(int nBaseSaveType, int nPenalty)
         {
             Internal.StackPushInteger(nPenalty);
             Internal.StackPushInteger(nBaseSaveType);
@@ -12955,7 +12952,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  type to which the penalty applies (ie. will, reflex, or fortitude) and the penalty
         //  to be applied.  The constant for the base type starts with (IP_CONST_SAVEBASETYPE_*).
         //  The penalty must be a POSITIVE integer between 1 and 20 (ie. 1 = -1).
-        public  ItemProperty ItemPropertyReducedSavingThrow(int nBonusType, int nPenalty)
+        public ItemProperty ItemPropertyReducedSavingThrow(int nBonusType, int nPenalty)
         {
             Internal.StackPushInteger(nPenalty);
             Internal.StackPushInteger(nBonusType);
@@ -12965,7 +12962,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns Item property regeneration.  You must specify the regeneration amount.
         //  The amount must be an integer between 1 and 20.
-        public  ItemProperty ItemPropertyRegeneration(int nRegenAmount)
+        public ItemProperty ItemPropertyRegeneration(int nRegenAmount)
         {
             Internal.StackPushInteger(nRegenAmount);
             Internal.CallBuiltIn(661);
@@ -12975,7 +12972,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns Item property skill bonus.  You must specify the skill to which the user
         //  will get a bonus(SKILL_*) and the amount of the bonus.  The bonus amount must
         //  be an integer between 1 and 50.
-        public  ItemProperty ItemPropertySkillBonus(int nSkill, int nBonus)
+        public ItemProperty ItemPropertySkillBonus(int nSkill, int nBonus)
         {
             Internal.StackPushInteger(nBonus);
             Internal.StackPushInteger(nSkill);
@@ -12985,7 +12982,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns Item property spell immunity vs. specific spell.  You must specify the
         //  spell to which the user will be immune(IP_CONST_IMMUNITYSPELL_*).
-        public  ItemProperty ItemPropertySpellImmunitySpecific(int nSpell)
+        public ItemProperty ItemPropertySpellImmunitySpecific(int nSpell)
         {
             Internal.StackPushInteger(nSpell);
             Internal.CallBuiltIn(663);
@@ -12994,7 +12991,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns Item property spell immunity vs. spell school.  You must specify the
         //  school to which the user will be immune(IP_CONST_SPELLSCHOOL_*).
-        public  ItemProperty ItemPropertySpellImmunitySchool(int nSchool)
+        public ItemProperty ItemPropertySpellImmunitySchool(int nSchool)
         {
             Internal.StackPushInteger(nSchool);
             Internal.CallBuiltIn(664);
@@ -13003,7 +13000,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns Item property Thieves tools.  You must specify the modifier you wish
         //  the tools to have.  The modifier must be an integer between 1 and 12.
-        public  ItemProperty ItemPropertyThievesTools(int nModifier)
+        public ItemProperty ItemPropertyThievesTools(int nModifier)
         {
             Internal.StackPushInteger(nModifier);
             Internal.CallBuiltIn(665);
@@ -13012,7 +13009,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns Item property Attack bonus.  You must specify an attack bonus.  The bonus
         //  must be an integer between 1 and 20.
-        public  ItemProperty ItemPropertyAttackBonus(int nBonus)
+        public ItemProperty ItemPropertyAttackBonus(int nBonus)
         {
             Internal.StackPushInteger(nBonus);
             Internal.CallBuiltIn(666);
@@ -13022,7 +13019,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns Item property Attack bonus vs. alignment group.  You must specify the
         //  alignment group constant(IP_CONST_ALIGNMENTGROUP_*) and the attack bonus.  The
         //  bonus must be an integer between 1 and 20.
-        public  ItemProperty ItemPropertyAttackBonusVsAlign(int nAlignGroup, int nBonus)
+        public ItemProperty ItemPropertyAttackBonusVsAlign(int nAlignGroup, int nBonus)
         {
             Internal.StackPushInteger(nBonus);
             Internal.StackPushInteger(nAlignGroup);
@@ -13033,7 +13030,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns Item property attack bonus vs. racial group.  You must specify the
         //  racial group constant(IP_CONST_RACIALTYPE_*) and the attack bonus.  The bonus
         //  must be an integer between 1 and 20.
-        public  ItemProperty ItemPropertyAttackBonusVsRace(int nRace, int nBonus)
+        public ItemProperty ItemPropertyAttackBonusVsRace(int nRace, int nBonus)
         {
             Internal.StackPushInteger(nBonus);
             Internal.StackPushInteger(nRace);
@@ -13044,7 +13041,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns Item property attack bonus vs. a specific alignment.  You must specify
         //  the alignment you want the bonus to work against(IP_CONST_ALIGNMENT_*) and the
         //  attack bonus.  The bonus must be an integer between 1 and 20.
-        public  ItemProperty ItemPropertyAttackBonusVsSAlign(int nAlignment, int nBonus)
+        public ItemProperty ItemPropertyAttackBonusVsSAlign(int nAlignment, int nBonus)
         {
             Internal.StackPushInteger(nBonus);
             Internal.StackPushInteger(nAlignment);
@@ -13054,7 +13051,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns Item property attack penalty.  You must specify the attack penalty.
         //  The penalty must be a POSITIVE integer between 1 and 5 (ie. 1 = -1).
-        public  ItemProperty ItemPropertyAttackPenalty(int nPenalty)
+        public ItemProperty ItemPropertyAttackPenalty(int nPenalty)
         {
             Internal.StackPushInteger(nPenalty);
             Internal.CallBuiltIn(670);
@@ -13066,7 +13063,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  you want the ammunition to do special damage (ie. +1d6 Fire, or +1 enhancement
         //  bonus).  For this parmeter you use the constants beginning with:
         //       (IP_CONST_UNLIMITEDAMMO_*).
-        public  ItemProperty ItemPropertyUnlimitedAmmo(int nAmmoDamage = IP_CONST_UNLIMITEDAMMO_BASIC)
+        public ItemProperty ItemPropertyUnlimitedAmmo(int nAmmoDamage = IP_CONST_UNLIMITEDAMMO_BASIC)
         {
             Internal.StackPushInteger(nAmmoDamage);
             Internal.CallBuiltIn(671);
@@ -13075,7 +13072,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns Item property limit use by alignment group.  You must specify the
         //  alignment group(s) that you want to be able to use this item(IP_CONST_ALIGNMENTGROUP_*).
-        public  ItemProperty ItemPropertyLimitUseByAlign(int nAlignGroup)
+        public ItemProperty ItemPropertyLimitUseByAlign(int nAlignGroup)
         {
             Internal.StackPushInteger(nAlignGroup);
             Internal.CallBuiltIn(672);
@@ -13084,7 +13081,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns Item property limit use by class.  You must specify the class(es) who
         //  are able to use this item(IP_CONST_CLASS_*).
-        public  ItemProperty ItemPropertyLimitUseByClass(int nClass)
+        public ItemProperty ItemPropertyLimitUseByClass(int nClass)
         {
             Internal.StackPushInteger(nClass);
             Internal.CallBuiltIn(673);
@@ -13093,7 +13090,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns Item property limit use by race.  You must specify the race(s) who are
         //  allowed to use this item(IP_CONST_RACIALTYPE_*).
-        public  ItemProperty ItemPropertyLimitUseByRace(int nRace)
+        public ItemProperty ItemPropertyLimitUseByRace(int nRace)
         {
             Internal.StackPushInteger(nRace);
             Internal.CallBuiltIn(674);
@@ -13102,7 +13099,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns Item property limit use by specific alignment.  You must specify the
         //  alignment(s) of those allowed to use the item(IP_CONST_ALIGNMENT_*).
-        public  ItemProperty ItemPropertyLimitUseBySAlign(int nAlignment)
+        public ItemProperty ItemPropertyLimitUseBySAlign(int nAlignment)
         {
             Internal.StackPushInteger(nAlignment);
             Internal.CallBuiltIn(675);
@@ -13110,7 +13107,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  replace this function it does nothing.
-        public  ItemProperty BadBadReplaceMeThisDoesNothing()
+        public ItemProperty BadBadReplaceMeThisDoesNothing()
         {
             Internal.CallBuiltIn(676);
             return Internal.StackPopItemProperty();
@@ -13118,7 +13115,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns Item property vampiric regeneration.  You must specify the amount of
         //  regeneration.  The regen amount must be an integer between 1 and 20.
-        public  ItemProperty ItemPropertyVampiricRegeneration(int nRegenAmount)
+        public ItemProperty ItemPropertyVampiricRegeneration(int nRegenAmount)
         {
             Internal.StackPushInteger(nRegenAmount);
             Internal.CallBuiltIn(677);
@@ -13127,7 +13124,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns Item property Trap.  You must specify the trap level constant
         //  (IP_CONST_TRAPSTRENGTH_*) and the trap type constant(IP_CONST_TRAPTYPE_*).
-        public  ItemProperty ItemPropertyTrap(int nTrapLevel, int nTrapType)
+        public ItemProperty ItemPropertyTrap(int nTrapLevel, int nTrapType)
         {
             Internal.StackPushInteger(nTrapType);
             Internal.StackPushInteger(nTrapLevel);
@@ -13136,7 +13133,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Returns Item property true seeing.
-        public  ItemProperty ItemPropertyTrueSeeing()
+        public ItemProperty ItemPropertyTrueSeeing()
         {
             Internal.CallBuiltIn(679);
             return Internal.StackPopItemProperty();
@@ -13161,7 +13158,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //        parameter.
         //  NOTE: These can only be applied to monster NATURAL weapons (ie. bite, claw,
         //        gore, and slam).  IT WILL NOT WORK ON NORMAL WEAPONS.
-        public  ItemProperty ItemPropertyOnMonsterHitProperties(int nProperty, int nSpecial = 0)
+        public ItemProperty ItemPropertyOnMonsterHitProperties(int nProperty, int nSpecial = 0)
         {
             Internal.StackPushInteger(nSpecial);
             Internal.StackPushInteger(nProperty);
@@ -13171,7 +13168,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns Item property turn resistance.  You must specify the resistance bonus.
         //  The bonus must be an integer between 1 and 50.
-        public  ItemProperty ItemPropertyTurnResistance(int nModifier)
+        public ItemProperty ItemPropertyTurnResistance(int nModifier)
         {
             Internal.StackPushInteger(nModifier);
             Internal.CallBuiltIn(681);
@@ -13180,7 +13177,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns Item property Massive Critical.  You must specify the extra damage
         //  constant(IP_CONST_DAMAGEBONUS_*) of the criticals.
-        public  ItemProperty ItemPropertyMassiveCritical(int nDamage)
+        public ItemProperty ItemPropertyMassiveCritical(int nDamage)
         {
             Internal.StackPushInteger(nDamage);
             Internal.CallBuiltIn(682);
@@ -13188,7 +13185,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Returns Item property free action.
-        public  ItemProperty ItemPropertyFreeAction()
+        public ItemProperty ItemPropertyFreeAction()
         {
             Internal.CallBuiltIn(683);
             return Internal.StackPopItemProperty();
@@ -13198,7 +13195,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  the monster's attack will do(IP_CONST_MONSTERDAMAGE_*).
         //  NOTE: These can only be applied to monster NATURAL weapons (ie. bite, claw,
         //        gore, and slam).  IT WILL NOT WORK ON NORMAL WEAPONS.
-        public  ItemProperty ItemPropertyMonsterDamage(int nDamage)
+        public ItemProperty ItemPropertyMonsterDamage(int nDamage)
         {
             Internal.StackPushInteger(nDamage);
             Internal.CallBuiltIn(684);
@@ -13209,7 +13206,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  which that and below the user will be immune.  The level must be an integer
         //  between 1 and 9.  By putting in a 3 it will mean the user is immune to all
         //  3rd level and lower spells.
-        public  ItemProperty ItemPropertyImmunityToSpellLevel(int nLevel)
+        public ItemProperty ItemPropertyImmunityToSpellLevel(int nLevel)
         {
             Internal.StackPushInteger(nLevel);
             Internal.CallBuiltIn(685);
@@ -13219,7 +13216,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns Item property special walk.  If no parameters are specified it will
         //  automatically use the zombie walk.  This will apply the special walk animation
         //  to the user.
-        public  ItemProperty ItemPropertySpecialWalk(int nWalkType = 0)
+        public ItemProperty ItemPropertySpecialWalk(int nWalkType = 0)
         {
             Internal.StackPushInteger(nWalkType);
             Internal.CallBuiltIn(686);
@@ -13228,7 +13225,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns Item property healers kit.  You must specify the level of the kit.
         //  The modifier must be an integer between 1 and 12.
-        public  ItemProperty ItemPropertyHealersKit(int nModifier)
+        public ItemProperty ItemPropertyHealersKit(int nModifier)
         {
             Internal.StackPushInteger(nModifier);
             Internal.CallBuiltIn(687);
@@ -13237,7 +13234,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns Item property weight increase.  You must specify the weight increase
         //  constant(IP_CONST_WEIGHTINCREASE_*).
-        public  ItemProperty ItemPropertyWeightIncrease(int nWeight)
+        public ItemProperty ItemPropertyWeightIncrease(int nWeight)
         {
             Internal.StackPushInteger(nWeight);
             Internal.CallBuiltIn(688);
@@ -13249,7 +13246,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - oTarget: the creature using the skill
         //  - nSkill: the skill being used
         //  - nDifficulty: Difficulty class of skill
-        public  int GetIsSkillSuccessful(Object oTarget, int nSkill, int nDifficulty)
+        public int GetIsSkillSuccessful(Object oTarget, int nSkill, int nDifficulty)
         {
             Internal.StackPushInteger(nDifficulty);
             Internal.StackPushInteger(nSkill);
@@ -13261,7 +13258,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Creates an effect that inhibits spells
         //  - nPercent - percentage of failure
         //  - nSpellSchool - the school of spells affected.
-        public  Effect EffectSpellFailure(int nPercent = 100, int nSpellSchool = SPELL_SCHOOL_GENERAL)
+        public Effect EffectSpellFailure(int nPercent = 100, int nSpellSchool = SPELL_SCHOOL_GENERAL)
         {
             Internal.StackPushInteger(nSpellSchool);
             Internal.StackPushInteger(nPercent);
@@ -13273,7 +13270,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  (not an action, not blocked when uncommandable)
         //  - nStrRef: Reference of the string in the talk table
         //  - nTalkVolume: TALKVOLUME_*
-        public  void SpeakStringByStrRef(int nStrRef, int nTalkVolume = TALKVOLUME_TALK)
+        public void SpeakStringByStrRef(int nStrRef, int nTalkVolume = TALKVOLUME_TALK)
         {
             Internal.StackPushInteger(nTalkVolume);
             Internal.StackPushInteger(nStrRef);
@@ -13289,7 +13286,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Note: SetCutsceneMode(oPlayer, TRUE) will also make the player 'plot' (unkillable).
         //  SetCutsceneMode(oPlayer, FALSE) will restore the player's plot flag to what it
         //  was when SetCutsceneMode(oPlayer, TRUE) was called.
-        public  void SetCutsceneMode(Object oCreature, int nInCutscene = TRUE, int nLeftClickingEnabled = FALSE)
+        public void SetCutsceneMode(Object oCreature, int nInCutscene = TRUE, int nLeftClickingEnabled = FALSE)
         {
             Internal.StackPushInteger(nLeftClickingEnabled);
             Internal.StackPushInteger(nInCutscene);
@@ -13298,7 +13295,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Gets the last player character to cancel from a cutscene.
-        public  Object GetLastPCToCancelCutscene()
+        public Object GetLastPCToCancelCutscene()
         {
             Internal.CallBuiltIn(693);
             return Internal.StackPopObject();
@@ -13306,7 +13303,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Gets the length of the specified wavefile, in seconds
         //  Only works for sounds used for dialog.
-        public  float GetDialogSoundLength(int nStrRef)
+        public float GetDialogSoundLength(int nStrRef)
         {
             Internal.StackPushInteger(nStrRef);
             Internal.CallBuiltIn(694);
@@ -13315,7 +13312,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Fades the screen for the given creature/player from black to regular screen
         //  - oCreature: creature controlled by player that should fade from black
-        public  void FadeFromBlack(Object oCreature, float fSpeed = FADE_SPEED_MEDIUM)
+        public void FadeFromBlack(Object oCreature, float fSpeed = FADE_SPEED_MEDIUM)
         {
             Internal.StackPushFloat(fSpeed);
             Internal.StackPushObject(oCreature, false);
@@ -13324,7 +13321,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Fades the screen for the given creature/player from regular screen to black
         //  - oCreature: creature controlled by player that should fade to black
-        public  void FadeToBlack(Object oCreature, float fSpeed = FADE_SPEED_MEDIUM)
+        public void FadeToBlack(Object oCreature, float fSpeed = FADE_SPEED_MEDIUM)
         {
             Internal.StackPushFloat(fSpeed);
             Internal.StackPushObject(oCreature, false);
@@ -13333,7 +13330,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Removes any fading or black screen.
         //  - oCreature: creature controlled by player that should be cleared
-        public  void StopFade(Object oCreature)
+        public void StopFade(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(697);
@@ -13342,14 +13339,14 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Sets the screen to black.  Can be used in preparation for a fade-in (FadeFromBlack)
         //  Can be cleared by either doing a FadeFromBlack, or by calling StopFade.
         //  - oCreature: creature controlled by player that should see black screen
-        public  void BlackScreen(Object oCreature)
+        public void BlackScreen(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(698);
         }
 
         //  Returns the base attach bonus for the given creature.
-        public  int GetBaseAttackBonus(Object oCreature)
+        public int GetBaseAttackBonus(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(699);
@@ -13361,7 +13358,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  -bImmortal: TRUE = creature is immortal and cannot be killed (but still takes damage)
         //              FALSE = creature is not immortal and is damaged normally.
         //  This scripting command only works on Creature objects.
-        public  void SetImmortal(Object oCreature, int bImmortal)
+        public void SetImmortal(Object oCreature, int bImmortal)
         {
             Internal.StackPushInteger(bImmortal);
             Internal.StackPushObject(oCreature, false);
@@ -13373,7 +13370,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - oPlayer: the owner of this creature will see the panel pop up
         //  * DM's can view any creature's inventory
         //  * Players can view their own inventory, or that of their henchman, familiar or animal companion
-        public  void OpenInventory(Object oCreature, Object oPlayer)
+        public void OpenInventory(Object oCreature, Object oPlayer)
         {
             Internal.StackPushObject(oPlayer, false);
             Internal.StackPushObject(oCreature, false);
@@ -13382,7 +13379,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Stores the current camera mode and position so that it can be restored (using
         //  RestoreCameraFacing())
-        public  void StoreCameraFacing()
+        public void StoreCameraFacing()
         {
             Internal.CallBuiltIn(702);
         }
@@ -13390,7 +13387,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Restores the camera mode and position to what they were last time StoreCameraFacing
         //  was called.  RestoreCameraFacing can only be called once, and must correspond to a
         //  previous call to StoreCameraFacing.
-        public  void RestoreCameraFacing()
+        public void RestoreCameraFacing()
         {
             Internal.CallBuiltIn(703);
         }
@@ -13404,7 +13401,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //    (ie: no Barbarian Savage/Wizard Divination combinations)
         //  If you turn on bReadyAllSpells, all memorized spells will be ready to cast without resting.
         //  if nPackage is PACKAGE_INVALID then it will use the starting package assigned to that class or just the class package
-        public  int LevelUpHenchman(Object oCreature, int nClass = CLASS_TYPE_INVALID, int bReadyAllSpells = FALSE, int nPackage = PACKAGE_INVALID)
+        public int LevelUpHenchman(Object oCreature, int nClass = CLASS_TYPE_INVALID, int bReadyAllSpells = FALSE, int nPackage = PACKAGE_INVALID)
         {
             Internal.StackPushInteger(nPackage);
             Internal.StackPushInteger(bReadyAllSpells);
@@ -13418,7 +13415,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - oItem: the item to change
         //  - bDroppable: TRUE or FALSE, whether the item should be droppable
         //  Droppable items will appear on a creature's remains when the creature is killed.
-        public  void SetDroppableFlag(Object oItem, int bDroppable)
+        public void SetDroppableFlag(Object oItem, int bDroppable)
         {
             Internal.StackPushInteger(bDroppable);
             Internal.StackPushObject(oItem, false);
@@ -13428,7 +13425,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Gets the weight of an item, or the total carried weight of a creature in tenths
         //  of pounds (as per the baseitems.2da).
         //  - oTarget: the item or creature for which the weight is needed
-        public  int GetWeight(Object oTarget = null)
+        public int GetWeight(Object oTarget = null)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.CallBuiltIn(706);
@@ -13436,14 +13433,14 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Gets the object that acquired the module item.  May be a creature, item, or placeable
-        public  Object GetModuleItemAcquiredBy()
+        public Object GetModuleItemAcquiredBy()
         {
             Internal.CallBuiltIn(707);
             return Internal.StackPopObject();
         }
 
         //  Get the immortal flag on a creature
-        public  int GetImmortal(Object oTarget = null)
+        public int GetImmortal(Object oTarget = null)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.CallBuiltIn(708);
@@ -13459,7 +13456,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - int bDisplayFeedback: TRUE or FALSE, whether or not feedback should be
         //    displayed
         //  - int bImproved: If TRUE, the improved version of whirlwind is used
-        public  void DoWhirlwindAttack(int bDisplayFeedback = TRUE, int bImproved = FALSE)
+        public void DoWhirlwindAttack(int bDisplayFeedback = TRUE, int bImproved = FALSE)
         {
             Internal.StackPushInteger(bImproved);
             Internal.StackPushInteger(bDisplayFeedback);
@@ -13472,7 +13469,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - sColumn: the name of the column in the 2da
         //  - nRow: the row in the 2da
         //  * returns an empty string if file, row, or column not found
-        public  string Get2DAString(string s2DA, string sColumn, int nRow)
+        public string Get2DAString(string s2DA, string sColumn, int nRow)
         {
             Internal.StackPushInteger(nRow);
             Internal.StackPushString(sColumn);
@@ -13483,7 +13480,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns an effect of type EFFECT_TYPE_ETHEREAL which works just like EffectSanctuary
         //  except that the observers get no saving throw
-        public  Effect EffectEthereal()
+        public Effect EffectEthereal()
         {
             Internal.CallBuiltIn(711);
             return Internal.StackPopEffect();
@@ -13492,7 +13489,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Gets the current AI Level that the creature is running at.
         //  Returns one of the following:
         //  AI_LEVEL_INVALID, AI_LEVEL_VERY_LOW, AI_LEVEL_LOW, AI_LEVEL_NORMAL, AI_LEVEL_HIGH, AI_LEVEL_VERY_HIGH
-        public  int GetAILevel(Object oTarget = null)
+        public int GetAILevel(Object oTarget = null)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.CallBuiltIn(712);
@@ -13509,7 +13506,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  AI_LEVEL_LOW      - Low priority, mildly stupid, but slightly more CPU usage for AI. Typically used when not in combat, but a player is in the area.
         //  AI_LEVEL_NORMAL   - Normal priority, average AI, but more CPU usage required for AI. Typically used when creature is in combat.
         //  AI_LEVEL_HIGH     - High priority, smartest AI, but extremely high CPU usage required for AI. Avoid using this. It is most likely only ever needed for cutscenes.
-        public  void SetAILevel(Object oTarget, int nAILevel)
+        public void SetAILevel(Object oTarget, int nAILevel)
         {
             Internal.StackPushInteger(nAILevel);
             Internal.StackPushObject(oTarget, false);
@@ -13519,7 +13516,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  This will return TRUE if the creature running the script is a familiar currently
         //  possessed by his master.
         //  returns FALSE if not or if the creature object is invalid
-        public  int GetIsPossessedFamiliar(Object oCreature)
+        public int GetIsPossessedFamiliar(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(714);
@@ -13529,14 +13526,14 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  This will cause a Player Creature to unpossess his/her familiar.  It will work if run
         //  on the player creature or the possessed familiar.  It does not work in conjunction with
         //  any DM possession.
-        public  void UnpossessFamiliar(Object oCreature)
+        public void UnpossessFamiliar(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(715);
         }
 
         //  This will return TRUE if the area is flagged as either interior or underground.
-        public  int GetIsAreaInterior(Object oArea = null)
+        public int GetIsAreaInterior(Object oArea = null)
         {
             Internal.StackPushObject(oArea, false);
             Internal.CallBuiltIn(716);
@@ -13544,7 +13541,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Send a server message (szMessage) to the oPlayer.
-        public  void SendMessageToPCByStrRef(Object oPlayer, int nStrRef)
+        public void SendMessageToPCByStrRef(Object oPlayer, int nStrRef)
         {
             Internal.StackPushInteger(nStrRef);
             Internal.StackPushObject(oPlayer, false);
@@ -13555,7 +13552,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Total number of feats per day can not exceed the maximum.
         //  - oCreature: creature to modify
         //  - nFeat: constant FEAT_*
-        public  void IncrementRemainingFeatUses(Object oCreature, int nFeat)
+        public void IncrementRemainingFeatUses(Object oCreature, int nFeat)
         {
             Internal.StackPushInteger(nFeat);
             Internal.StackPushObject(oCreature, false);
@@ -13564,7 +13561,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Force the character of the player specified to be exported to its respective directory
         //  i.e. LocalVault/ServerVault/ etc.
-        public  void ExportSingleCharacter(Object oPlayer)
+        public void ExportSingleCharacter(Object oPlayer)
         {
             Internal.StackPushObject(oPlayer, false);
             Internal.CallBuiltIn(719);
@@ -13572,7 +13569,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  This will play a sound that is associated with a stringRef, it will be a mono sound from the location of the object running the command.
         //  if nRunAsAction is off then the sound is forced to play intantly.
-        public  void PlaySoundByStrRef(int nStrRef, int nRunAsAction = TRUE)
+        public void PlaySoundByStrRef(int nStrRef, int nRunAsAction = TRUE)
         {
             Internal.StackPushInteger(nRunAsAction);
             Internal.StackPushInteger(nStrRef);
@@ -13580,7 +13577,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Set the name of oCreature's sub race to sSubRace.
-        public  void SetSubRace(Object oCreature, string sSubRace)
+        public void SetSubRace(Object oCreature, string sSubRace)
         {
             Internal.StackPushString(sSubRace);
             Internal.StackPushObject(oCreature, false);
@@ -13588,7 +13585,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Set the name of oCreature's Deity to sDeity.
-        public  void SetDeity(Object oCreature, string sDeity)
+        public void SetDeity(Object oCreature, string sDeity)
         {
             Internal.StackPushString(sDeity);
             Internal.StackPushObject(oCreature, false);
@@ -13599,7 +13596,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns FALSE otherwise.
         //  Note: GetIsDMPossessed() will return FALSE if oCreature is the DM character.
         //  To determine if oCreature is a DM character use GetIsDM()
-        public  int GetIsDMPossessed(Object oCreature)
+        public int GetIsDMPossessed(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(723);
@@ -13609,7 +13606,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Gets the current weather conditions for the area oArea.
         //    Returns: WEATHER_CLEAR, WEATHER_RAIN, WEATHER_SNOW, WEATHER_INVALID
         //    Note: If called on an Interior area, this will always return WEATHER_CLEAR.
-        public  int GetWeather(Object oArea)
+        public int GetWeather(Object oArea)
         {
             Internal.StackPushObject(oArea, false);
             Internal.CallBuiltIn(724);
@@ -13618,7 +13615,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns AREA_NATURAL if the area oArea is natural, AREA_ARTIFICIAL otherwise.
         //  Returns AREA_INVALID, on an error.
-        public  int GetIsAreaNatural(Object oArea)
+        public int GetIsAreaNatural(Object oArea)
         {
             Internal.StackPushObject(oArea, false);
             Internal.CallBuiltIn(725);
@@ -13627,7 +13624,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns AREA_ABOVEGROUND if the area oArea is above ground, AREA_UNDERGROUND otherwise.
         //  Returns AREA_INVALID, on an error.
-        public  int GetIsAreaAboveGround(Object oArea)
+        public int GetIsAreaAboveGround(Object oArea)
         {
             Internal.StackPushObject(oArea, false);
             Internal.CallBuiltIn(726);
@@ -13635,28 +13632,28 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Use this to get the item last equipped by a player character in OnPlayerEquipItem..
-        public  Object GetPCItemLastEquipped()
+        public Object GetPCItemLastEquipped()
         {
             Internal.CallBuiltIn(727);
             return Internal.StackPopObject();
         }
 
         //  Use this to get the player character who last equipped an item in OnPlayerEquipItem..
-        public  Object GetPCItemLastEquippedBy()
+        public Object GetPCItemLastEquippedBy()
         {
             Internal.CallBuiltIn(728);
             return Internal.StackPopObject();
         }
 
         //  Use this to get the item last unequipped by a player character in OnPlayerEquipItem..
-        public  Object GetPCItemLastUnequipped()
+        public Object GetPCItemLastUnequipped()
         {
             Internal.CallBuiltIn(729);
             return Internal.StackPopObject();
         }
 
         //  Use this to get the player character who last unequipped an item in OnPlayerUnEquipItem..
-        public  Object GetPCItemLastUnequippedBy()
+        public Object GetPCItemLastUnequippedBy()
         {
             Internal.CallBuiltIn(730);
             return Internal.StackPopObject();
@@ -13682,7 +13679,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         // 
         //  [1] When specifying per-part coloring, the value 255 is allowed and corresponds with the logical
         //  function 'clear colour override', which clears the per-part override for that part.
-        public  Object CopyItemAndModify(Object oItem, int nType, int nIndex, int nNewValue, int bCopyVars = FALSE)
+        public Object CopyItemAndModify(Object oItem, int nType, int nIndex, int nNewValue, int bCopyVars = FALSE)
         {
             Internal.StackPushInteger(bCopyVars);
             Internal.StackPushInteger(nNewValue);
@@ -13695,7 +13692,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Queries the current value of the appearance settings on an item. The parameters are
         //  identical to those of CopyItemAndModify().
-        public  int GetItemAppearance(Object oItem, int nType, int nIndex)
+        public int GetItemAppearance(Object oItem, int nType, int nIndex)
         {
             Internal.StackPushInteger(nIndex);
             Internal.StackPushInteger(nType);
@@ -13707,7 +13704,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Creates an item property that (when applied to a weapon item) causes a spell to be cast
         //  when a successful strike is made, or (when applied to armor) is struck by an opponent.
         //  - nSpell uses the IP_CONST_ONHIT_CASTSPELL_* constants
-        public  ItemProperty ItemPropertyOnHitCastSpell(int nSpell, int nLevel)
+        public ItemProperty ItemPropertyOnHitCastSpell(int nSpell, int nLevel)
         {
             Internal.StackPushInteger(nLevel);
             Internal.StackPushInteger(nSpell);
@@ -13716,7 +13713,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Returns the SubType number of the item property. See the 2DA files for value definitions.
-        public  int GetItemPropertySubType(ItemProperty iProperty)
+        public int GetItemPropertySubType(ItemProperty iProperty)
         {
             Internal.StackPushItemProperty(iProperty);
             Internal.CallBuiltIn(734);
@@ -13724,7 +13721,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Gets the status of ACTION_MODE_* modes on a creature.
-        public  int GetActionMode(Object oCreature, int nMode)
+        public int GetActionMode(Object oCreature, int nMode)
         {
             Internal.StackPushInteger(nMode);
             Internal.StackPushObject(oCreature, false);
@@ -13733,7 +13730,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Sets the status of modes ACTION_MODE_* on a creature.
-        public  void SetActionMode(Object oCreature, int nMode, int nStatus)
+        public void SetActionMode(Object oCreature, int nMode, int nStatus)
         {
             Internal.StackPushInteger(nStatus);
             Internal.StackPushInteger(nMode);
@@ -13742,7 +13739,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Returns the current arcane spell failure factor of a creature
-        public  int GetArcaneSpellFailure(Object oCreature)
+        public int GetArcaneSpellFailure(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(737);
@@ -13751,7 +13748,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Makes a player examine the object oExamine. This causes the examination
         //  pop-up box to appear for the object specified.
-        public  void ActionExamine(Object oExamine)
+        public void ActionExamine(Object oExamine)
         {
             Internal.StackPushObject(oExamine, false);
             Internal.CallBuiltIn(738);
@@ -13759,7 +13756,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Creates a visual effect (ITEM_VISUAL_*) that may be applied to
         //  melee weapons only.
-        public  ItemProperty ItemPropertyVisualEffect(int nEffect)
+        public ItemProperty ItemPropertyVisualEffect(int nEffect)
         {
             Internal.StackPushInteger(nEffect);
             Internal.CallBuiltIn(739);
@@ -13768,7 +13765,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Sets the lootable state of a *living* NPC creature.
         //  This function will *not* work on players or dead creatures.
-        public  void SetLootable(Object oCreature, int bLootable)
+        public void SetLootable(Object oCreature, int bLootable)
         {
             Internal.StackPushInteger(bLootable);
             Internal.StackPushObject(oCreature, false);
@@ -13776,7 +13773,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Returns the lootable state of a creature.
-        public  int GetLootable(Object oCreature)
+        public int GetLootable(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(741);
@@ -13786,7 +13783,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns the current movement rate factor
         //  of the cutscene 'camera man'.
         //  NOTE: This will be a value between 0.1, 2.0 (10%-200%)
-        public  float GetCutsceneCameraMoveRate(Object oCreature)
+        public float GetCutsceneCameraMoveRate(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(742);
@@ -13796,7 +13793,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Sets the current movement rate factor for the cutscene
         //  camera man.
         //  NOTE: You can only set values between 0.1, 2.0 (10%-200%)
-        public  void SetCutsceneCameraMoveRate(Object oCreature, float fRate)
+        public void SetCutsceneCameraMoveRate(Object oCreature, float fRate)
         {
             Internal.StackPushFloat(fRate);
             Internal.StackPushObject(oCreature, false);
@@ -13804,7 +13801,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Returns TRUE if the item is cursed and cannot be dropped
-        public  int GetItemCursedFlag(Object oItem)
+        public int GetItemCursedFlag(Object oItem)
         {
             Internal.StackPushObject(oItem, false);
             Internal.CallBuiltIn(744);
@@ -13812,7 +13809,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  When cursed, items cannot be dropped
-        public  void SetItemCursedFlag(Object oItem, int nCursed)
+        public void SetItemCursedFlag(Object oItem, int nCursed)
         {
             Internal.StackPushInteger(nCursed);
             Internal.StackPushObject(oItem, false);
@@ -13820,14 +13817,14 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Sets the maximum number of henchmen
-        public  void SetMaxHenchmen(int nNumHenchmen)
+        public void SetMaxHenchmen(int nNumHenchmen)
         {
             Internal.StackPushInteger(nNumHenchmen);
             Internal.CallBuiltIn(746);
         }
 
         //  Gets the maximum number of henchmen
-        public  int GetMaxHenchmen()
+        public int GetMaxHenchmen()
         {
             Internal.CallBuiltIn(747);
             return Internal.StackPopInteger();
@@ -13835,7 +13832,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns the associate type of the specified creature.
         //  - Returns ASSOCIATE_TYPE_NONE if the creature is not the associate of anyone.
-        public  int GetAssociateType(Object oAssociate)
+        public int GetAssociateType(Object oAssociate)
         {
             Internal.StackPushObject(oAssociate, false);
             Internal.CallBuiltIn(748);
@@ -13845,7 +13842,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns the spell resistance of the specified creature.
         //  - Returns 0 if the creature has no spell resistance or an invalid
         //    creature is passed in.
-        public  int GetSpellResistance(Object oCreature)
+        public int GetSpellResistance(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(749);
@@ -13855,7 +13852,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Changes the current Day/Night cycle for this player to night
         //  - oPlayer: which player to change the lighting for
         //  - fTransitionTime: how long the transition should take
-        public  void DayToNight(Object oPlayer, float fTransitionTime = 0.0f)
+        public void DayToNight(Object oPlayer, float fTransitionTime = 0.0f)
         {
             Internal.StackPushFloat(fTransitionTime);
             Internal.StackPushObject(oPlayer, false);
@@ -13865,7 +13862,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Changes the current Day/Night cycle for this player to daylight
         //  - oPlayer: which player to change the lighting for
         //  - fTransitionTime: how long the transition should take
-        public  void NightToDay(Object oPlayer, float fTransitionTime = 0.0f)
+        public void NightToDay(Object oPlayer, float fTransitionTime = 0.0f)
         {
             Internal.StackPushFloat(fTransitionTime);
             Internal.StackPushObject(oPlayer, false);
@@ -13877,7 +13874,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         // 
         //  PLEASE NOTE: This is an expensive function and may
         //               degrade performance if used frequently.
-        public  int LineOfSightObject(Object oSource, Object oTarget)
+        public int LineOfSightObject(Object oSource, Object oTarget)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.StackPushObject(oSource, false);
@@ -13893,7 +13890,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         // 
         //  PLEASE NOTE: This is an expensive function and may
         //               degrade performance if used frequently.
-        public  int LineOfSightVector(Vector? vSource, Vector? vTarget)
+        public int LineOfSightVector(Vector? vSource, Vector? vTarget)
         {
             Internal.StackPushVector(vTarget);
             Internal.StackPushVector(vSource);
@@ -13905,7 +13902,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  spell as.
         //  - Returns CLASS_TYPE_INVALID if the caster has
         //    no valid class (placeables, etc...)
-        public  int GetLastSpellCastClass()
+        public int GetLastSpellCastClass()
         {
             Internal.CallBuiltIn(754);
             return Internal.StackPopInteger();
@@ -13915,7 +13912,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  creatures. The range of values accepted are from
         //  1 to 6
         //  Note: This function does not work on Player Characters
-        public  void SetBaseAttackBonus(int nBaseAttackBonus, Object oCreature = null)
+        public void SetBaseAttackBonus(int nBaseAttackBonus, Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.StackPushInteger(nBaseAttackBonus);
@@ -13924,7 +13921,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Restores the number of base attacks back to it's
         //  original state.
-        public  void RestoreBaseAttackBonus(Object oCreature = null)
+        public void RestoreBaseAttackBonus(Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(756);
@@ -13933,7 +13930,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Creates a cutscene ghost effect, this will allow creatures
         //  to pathfind through other creatures without bumping into them
         //  for the duration of the effect.
-        public  Effect EffectCutsceneGhost()
+        public Effect EffectCutsceneGhost()
         {
             Internal.CallBuiltIn(757);
             return Internal.StackPopEffect();
@@ -13941,7 +13938,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Creates an item property that offsets the effect on arcane spell failure
         //  that a particular item has. Parameters come from the ITEM_PROP_ASF_* group.
-        public  ItemProperty ItemPropertyArcaneSpellFailure(int nModLevel)
+        public ItemProperty ItemPropertyArcaneSpellFailure(int nModLevel)
         {
             Internal.StackPushInteger(nModLevel);
             Internal.CallBuiltIn(758);
@@ -13950,7 +13947,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns the amount of gold a store currently has. -1 indicates it is not using gold.
         //  -2 indicates the store could not be located.
-        public  int GetStoreGold(Object oidStore)
+        public int GetStoreGold(Object oidStore)
         {
             Internal.StackPushObject(oidStore, false);
             Internal.CallBuiltIn(759);
@@ -13958,7 +13955,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Sets the amount of gold a store has. -1 means the store does not use gold.
-        public  void SetStoreGold(Object oidStore, int nGold)
+        public void SetStoreGold(Object oidStore, int nGold)
         {
             Internal.StackPushInteger(nGold);
             Internal.StackPushObject(oidStore, false);
@@ -13967,7 +13964,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Gets the maximum amount a store will pay for any item. -1 means price unlimited.
         //  -2 indicates the store could not be located.
-        public  int GetStoreMaxBuyPrice(Object oidStore)
+        public int GetStoreMaxBuyPrice(Object oidStore)
         {
             Internal.StackPushObject(oidStore, false);
             Internal.CallBuiltIn(761);
@@ -13975,7 +13972,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Sets the maximum amount a store will pay for any item. -1 means price unlimited.
-        public  void SetStoreMaxBuyPrice(Object oidStore, int nMaxBuy)
+        public void SetStoreMaxBuyPrice(Object oidStore, int nMaxBuy)
         {
             Internal.StackPushInteger(nMaxBuy);
             Internal.StackPushObject(oidStore, false);
@@ -13985,7 +13982,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Gets the amount a store charges for identifying an item. Default is 100. -1 means
         //  the store will not identify items.
         //  -2 indicates the store could not be located.
-        public  int GetStoreIdentifyCost(Object oidStore)
+        public int GetStoreIdentifyCost(Object oidStore)
         {
             Internal.StackPushObject(oidStore, false);
             Internal.CallBuiltIn(763);
@@ -13994,7 +13991,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Sets the amount a store charges for identifying an item. Default is 100. -1 means
         //  the store will not identify items.
-        public  void SetStoreIdentifyCost(Object oidStore, int nCost)
+        public void SetStoreIdentifyCost(Object oidStore, int nCost)
         {
             Internal.StackPushInteger(nCost);
             Internal.StackPushObject(oidStore, false);
@@ -14002,7 +13999,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Sets the creature's appearance type to the value specified (uses the APPEARANCE_TYPE_XXX constants)
-        public  void SetCreatureAppearanceType(Object oCreature, int nAppearanceType)
+        public void SetCreatureAppearanceType(Object oCreature, int nAppearanceType)
         {
             Internal.StackPushInteger(nAppearanceType);
             Internal.StackPushObject(oCreature, false);
@@ -14011,7 +14008,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns the default package selected for this creature to level up with
         //  - returns PACKAGE_INVALID if error occurs
-        public  int GetCreatureStartingPackage(Object oCreature)
+        public int GetCreatureStartingPackage(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(766);
@@ -14020,7 +14017,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns an effect that when applied will paralyze the target's legs, rendering
         //  them unable to walk but otherwise unpenalized. This effect cannot be resisted.
-        public  Effect EffectCutsceneImmobilize()
+        public Effect EffectCutsceneImmobilize()
         {
             Internal.CallBuiltIn(767);
             return Internal.StackPopEffect();
@@ -14029,7 +14026,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Is this creature in the given subarea? (trigger, area of effect object, etc..)
         //  This function will tell you if the creature has triggered an onEnter event,
         //  not if it is physically within the space of the subarea
-        public  int GetIsInSubArea(Object oCreature, Object oSubArea = null)
+        public int GetIsInSubArea(Object oCreature, Object oSubArea = null)
         {
             Internal.StackPushObject(oSubArea, false);
             Internal.StackPushObject(oCreature, false);
@@ -14038,7 +14035,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Returns the Cost Table number of the item property. See the 2DA files for value definitions.
-        public  int GetItemPropertyCostTable(ItemProperty iProp)
+        public int GetItemPropertyCostTable(ItemProperty iProp)
         {
             Internal.StackPushItemProperty(iProp);
             Internal.CallBuiltIn(769);
@@ -14047,7 +14044,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns the Cost Table value (index of the cost table) of the item property.
         //  See the 2DA files for value definitions.
-        public  int GetItemPropertyCostTableValue(ItemProperty iProp)
+        public int GetItemPropertyCostTableValue(ItemProperty iProp)
         {
             Internal.StackPushItemProperty(iProp);
             Internal.CallBuiltIn(770);
@@ -14055,7 +14052,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Returns the Param1 number of the item property. See the 2DA files for value definitions.
-        public  int GetItemPropertyParam1(ItemProperty iProp)
+        public int GetItemPropertyParam1(ItemProperty iProp)
         {
             Internal.StackPushItemProperty(iProp);
             Internal.CallBuiltIn(771);
@@ -14063,7 +14060,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Returns the Param1 value of the item property. See the 2DA files for value definitions.
-        public  int GetItemPropertyParam1Value(ItemProperty iProp)
+        public int GetItemPropertyParam1Value(ItemProperty iProp)
         {
             Internal.StackPushItemProperty(iProp);
             Internal.CallBuiltIn(772);
@@ -14072,7 +14069,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Is this creature able to be disarmed? (checks disarm flag on creature, and if
         //  the creature actually has a weapon equipped in their right hand that is droppable)
-        public  int GetIsCreatureDisarmable(Object oCreature)
+        public int GetIsCreatureDisarmable(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(773);
@@ -14080,7 +14077,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Sets whether this item is 'stolen' or not
-        public  void SetStolenFlag(Object oItem, int nStolenFlag)
+        public void SetStolenFlag(Object oItem, int nStolenFlag)
         {
             Internal.StackPushInteger(nStolenFlag);
             Internal.StackPushObject(oItem, false);
@@ -14088,7 +14085,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Instantly gives this creature the benefits of a rest (restored hitpoints, spells, feats, etc..)
-        public  void ForceRest(Object oCreature)
+        public void ForceRest(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(775);
@@ -14096,7 +14093,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Forces this player's camera to be set to this height. Setting this value to zero will
         //  restore the camera to the racial default height.
-        public  void SetCameraHeight(Object oPlayer, float fHeight = 0.0f)
+        public void SetCameraHeight(Object oPlayer, float fHeight = 0.0f)
         {
             Internal.StackPushFloat(fHeight);
             Internal.StackPushObject(oPlayer, false);
@@ -14107,7 +14104,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  nSkyBox = SKYBOX_* constants (associated with skyboxes.2da)
         //  If no valid area (or object) is specified, it uses the area of caller.
         //  If an object other than an area is specified, will use the area that the object is currently in.
-        public  void SetSkyBox(int nSkyBox, Object oArea = null)
+        public void SetSkyBox(int nSkyBox, Object oArea = null)
         {
             Internal.StackPushObject(oArea, false);
             Internal.StackPushInteger(nSkyBox);
@@ -14115,7 +14112,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Returns the creature's currently set PhenoType (body type).
-        public  int GetPhenoType(Object oCreature)
+        public int GetPhenoType(Object oCreature)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(778);
@@ -14131,7 +14128,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  custom PhenoType in your custom content.
         //  SetPhenoType will only work on part based creature (i.e. the starting
         //  default playable races).
-        public  void SetPhenoType(int nPhenoType, Object oCreature = null)
+        public void SetPhenoType(int nPhenoType, Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.StackPushInteger(nPhenoType);
@@ -14149,7 +14146,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  DD would represent the amount of blue in the color.
         //  If no valid area (or object) is specified, it uses the area of caller.
         //  If an object other than an area is specified, will use the area that the object is currently in.
-        public  void SetFogColor(int nFogType, int nFogColor, Object oArea = null)
+        public void SetFogColor(int nFogType, int nFogColor, Object oArea = null)
         {
             Internal.StackPushObject(oArea, false);
             Internal.StackPushInteger(nFogColor);
@@ -14161,7 +14158,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns TRUE if the player is in cutscene mode.
         //  Returns FALSE if the player is not in cutscene mode, or on an error
         //  (such as specifying a non creature object).
-        public  int GetCutsceneMode(Object oCreature = null)
+        public int GetCutsceneMode(Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(781);
@@ -14173,7 +14170,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //      SKYBOX_* constant
         //  If no valid area (or object) is specified, it uses the area of caller.
         //  If an object other than an area is specified, will use the area that the object is currently in.
-        public  int GetSkyBox(Object oArea = null)
+        public int GetSkyBox(Object oArea = null)
         {
             Internal.StackPushObject(oArea, false);
             Internal.CallBuiltIn(782);
@@ -14185,7 +14182,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //     Valid values for nFogType are FOG_TYPE_SUN or FOG_TYPE_MOON.
         //  If no valid area (or object) is specified, it uses the area of caller.
         //  If an object other than an area is specified, will use the area that the object is currently in.
-        public  int GetFogColor(int nFogType, Object oArea = null)
+        public int GetFogColor(int nFogType, Object oArea = null)
         {
             Internal.StackPushObject(oArea, false);
             Internal.StackPushInteger(nFogType);
@@ -14198,7 +14195,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  nFogAmount = specifies the density that the fog is being set to.
         //  If no valid area (or object) is specified, it uses the area of caller.
         //  If an object other than an area is specified, will use the area that the object is currently in.
-        public  void SetFogAmount(int nFogType, int nFogAmount, Object oArea = null)
+        public void SetFogAmount(int nFogType, int nFogAmount, Object oArea = null)
         {
             Internal.StackPushObject(oArea, false);
             Internal.StackPushInteger(nFogAmount);
@@ -14211,7 +14208,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //     Valid values for nFogType are FOG_TYPE_SUN or FOG_TYPE_MOON.
         //  If no valid area (or object) is specified, it uses the area of caller.
         //  If an object other than an area is specified, will use the area that the object is currently in.
-        public  int GetFogAmount(int nFogType, Object oArea = null)
+        public int GetFogAmount(int nFogType, Object oArea = null)
         {
             Internal.StackPushObject(oArea, false);
             Internal.StackPushInteger(nFogType);
@@ -14220,7 +14217,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  returns TRUE if the item CAN be pickpocketed
-        public  int GetPickpocketableFlag(Object oItem)
+        public int GetPickpocketableFlag(Object oItem)
         {
             Internal.StackPushObject(oItem, false);
             Internal.CallBuiltIn(786);
@@ -14230,7 +14227,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Sets the Pickpocketable flag on an item
         //  - oItem: the item to change
         //  - bPickpocketable: TRUE or FALSE, whether the item can be pickpocketed.
-        public  void SetPickpocketableFlag(Object oItem, int bPickpocketable)
+        public void SetPickpocketableFlag(Object oItem, int bPickpocketable)
         {
             Internal.StackPushInteger(bPickpocketable);
             Internal.StackPushObject(oItem, false);
@@ -14242,7 +14239,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  like when ever they take a step.
         //  returns FOOTSTEP_TYPE_INVALID if used on a non-creature object, or if
         //  used on creature that has no footstep sounds by default (e.g. Will-O'-Wisp).
-        public  int GetFootstepType(Object oCreature = null)
+        public int GetFootstepType(Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(788);
@@ -14271,7 +14268,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //       FOOTSTEP_TYPE_DEFAULT - Makes the creature use its original default footstep sounds.
         //       FOOTSTEP_TYPE_NONE
         //  - oCreature: the creature to change the footstep sound for.
-        public  void SetFootstepType(int nFootstepType, Object oCreature = null)
+        public void SetFootstepType(int nFootstepType, Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.StackPushInteger(nFootstepType);
@@ -14289,7 +14286,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  returns CREATURE_WING_TYPE_NONE if used on a non-creature object,
         //  if the creature has no wings, or if the creature can not have its
         //  wing type changed in the toolset.
-        public  int GetCreatureWingType(Object oCreature = null)
+        public int GetCreatureWingType(Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(790);
@@ -14309,7 +14306,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Note: Only two creature model types will support wings. 
         //  The MODELTYPE for the part based (playable races) 'P' 
         //  and MODELTYPE 'W'in the appearance.2da
-        public  void SetCreatureWingType(int nWingType, Object oCreature = null)
+        public void SetCreatureWingType(int nWingType, Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.StackPushInteger(nWingType);
@@ -14347,7 +14344,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //       CREATURE_PART_RIGHT_HAND
         //       CREATURE_PART_LEFT_HAND
         //       CREATURE_PART_HEAD
-        public  int GetCreatureBodyPart(int nPart, Object oCreature = null)
+        public int GetCreatureBodyPart(int nPart, Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.StackPushInteger(nPart);
@@ -14387,7 +14384,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - oCreature: the creature to change the body part for.
         //  Note: Only part based creature appearance types are supported. 
         //  i.e. The model types for the playable races ('P') in the appearance.2da
-        public  void SetCreatureBodyPart(int nPart, int nModelNumber, Object oCreature = null)
+        public void SetCreatureBodyPart(int nPart, int nModelNumber, Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.StackPushInteger(nModelNumber);
@@ -14403,7 +14400,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  returns CREATURE_TAIL_TYPE_NONE if used on a non-creature object,
         //  if the creature has no Tail, or if the creature can not have its
         //  Tail type changed in the toolset.
-        public  int GetCreatureTailType(Object oCreature = null)
+        public int GetCreatureTailType(Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.CallBuiltIn(794);
@@ -14420,7 +14417,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Note: Only two creature model types will support Tails. 
         //  The MODELTYPE for the part based (playable) races 'P' 
         //  and MODELTYPE 'T'in the appearance.2da
-        public  void SetCreatureTailType(int nTailType, Object oCreature = null)
+        public void SetCreatureTailType(int nTailType, Object oCreature = null)
         {
             Internal.StackPushObject(oCreature, false);
             Internal.StackPushInteger(nTailType);
@@ -14431,7 +14428,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - oObject: a door or placeable object.
         //  returns -1 on an error or if used on an object that is
         //  neither a door nor a placeable object.
-        public  int GetHardness(Object oObject = null)
+        public int GetHardness(Object oObject = null)
         {
             Internal.StackPushObject(oObject, false);
             Internal.CallBuiltIn(796);
@@ -14443,7 +14440,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - oObject: a door or placeable object.
         //  Does nothing if used on an object that is neither
         //  a door nor a placeable.
-        public  void SetHardness(int nHardness, Object oObject = null)
+        public void SetHardness(int nHardness, Object oObject = null)
         {
             Internal.StackPushObject(oObject, false);
             Internal.StackPushInteger(nHardness);
@@ -14456,7 +14453,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  the SetLockKeyTag() scripting command.
         //  - oObject: a door, or placeable.
         //  - nKeyRequired: TRUE/FALSE
-        public  void SetLockKeyRequired(Object oObject, int nKeyRequired = TRUE)
+        public void SetLockKeyRequired(Object oObject, int nKeyRequired = TRUE)
         {
             Internal.StackPushInteger(nKeyRequired);
             Internal.StackPushObject(oObject, false);
@@ -14469,7 +14466,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  or by using the scripting command SetLockKeyRequired().
         //  - oObject: a door, placeable or trigger.
         //  - sNewKeyTag: the key tag required to open the locked object.
-        public  void SetLockKeyTag(Object oObject, string sNewKeyTag)
+        public void SetLockKeyTag(Object oObject, string sNewKeyTag)
         {
             Internal.StackPushString(sNewKeyTag);
             Internal.StackPushObject(oObject, false);
@@ -14479,7 +14476,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Sets whether or not the object can be locked.
         //  - oObject: a door or placeable.
         //  - nLockable: TRUE/FALSE
-        public  void SetLockLockable(Object oObject, int nLockable = TRUE)
+        public void SetLockLockable(Object oObject, int nLockable = TRUE)
         {
             Internal.StackPushInteger(nLockable);
             Internal.StackPushObject(oObject, false);
@@ -14489,7 +14486,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Sets the DC for unlocking the object.
         //  - oObject: a door or placeable object.
         //  - nNewUnlockDC: must be between 0 and 250.
-        public  void SetLockUnlockDC(Object oObject, int nNewUnlockDC)
+        public void SetLockUnlockDC(Object oObject, int nNewUnlockDC)
         {
             Internal.StackPushInteger(nNewUnlockDC);
             Internal.StackPushObject(oObject, false);
@@ -14499,7 +14496,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Sets the DC for locking the object.
         //  - oObject: a door or placeable object.
         //  - nNewLockDC: must be between 0 and 250.
-        public  void SetLockLockDC(Object oObject, int nNewLockDC)
+        public void SetLockLockDC(Object oObject, int nNewLockDC)
         {
             Internal.StackPushInteger(nNewLockDC);
             Internal.StackPushObject(oObject, false);
@@ -14509,7 +14506,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Sets whether or not the trapped object can be disarmed.
         //  - oTrapObject: a placeable, door or trigger
         //  - nDisarmable: TRUE/FALSE
-        public  void SetTrapDisarmable(Object oTrapObject, int nDisarmable = TRUE)
+        public void SetTrapDisarmable(Object oTrapObject, int nDisarmable = TRUE)
         {
             Internal.StackPushInteger(nDisarmable);
             Internal.StackPushObject(oTrapObject, false);
@@ -14521,7 +14518,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nDetectable: TRUE/FALSE
         //  Note: Setting a trapped object to not be detectable will
         //  not make the trap disappear if it has already been detected.
-        public  void SetTrapDetectable(Object oTrapObject, int nDetectable = TRUE)
+        public void SetTrapDetectable(Object oTrapObject, int nDetectable = TRUE)
         {
             Internal.StackPushInteger(nDetectable);
             Internal.StackPushObject(oTrapObject, false);
@@ -14532,7 +14529,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  (i.e. whether or not the trap resets itself after firing).
         //  - oTrapObject: a placeable, door or trigger
         //  - nOneShot: TRUE/FALSE
-        public  void SetTrapOneShot(Object oTrapObject, int nOneShot = TRUE)
+        public void SetTrapOneShot(Object oTrapObject, int nOneShot = TRUE)
         {
             Internal.StackPushInteger(nOneShot);
             Internal.StackPushObject(oTrapObject, false);
@@ -14541,7 +14538,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Set the tag of the key that will disarm oTrapObject.
         //  - oTrapObject: a placeable, door or trigger
-        public  void SetTrapKeyTag(Object oTrapObject, string sKeyTag)
+        public void SetTrapKeyTag(Object oTrapObject, string sKeyTag)
         {
             Internal.StackPushString(sKeyTag);
             Internal.StackPushObject(oTrapObject, false);
@@ -14551,7 +14548,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Set the DC for disarming oTrapObject.
         //  - oTrapObject: a placeable, door or trigger
         //  - nDisarmDC: must be between 0 and 250.
-        public  void SetTrapDisarmDC(Object oTrapObject, int nDisarmDC)
+        public void SetTrapDisarmDC(Object oTrapObject, int nDisarmDC)
         {
             Internal.StackPushInteger(nDisarmDC);
             Internal.StackPushObject(oTrapObject, false);
@@ -14561,7 +14558,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Set the DC for detecting oTrapObject.
         //  - oTrapObject: a placeable, door or trigger
         //  - nDetectDC: must be between 0 and 250.
-        public  void SetTrapDetectDC(Object oTrapObject, int nDetectDC)
+        public void SetTrapDetectDC(Object oTrapObject, int nDetectDC)
         {
             Internal.StackPushInteger(nDetectDC);
             Internal.StackPushObject(oTrapObject, false);
@@ -14581,7 +14578,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //                            If "" the default OnTrapTriggered script for the trap
         //                            type specified will fire instead (as specified in the
         //                            traps.2da).
-        public  Object CreateTrapAtLocation(int nTrapType, Location lLocation, float fSize = 2.0f, string sTag = "", int nFaction = STANDARD_FACTION_HOSTILE, string sOnDisarmScript = "", string sOnTrapTriggeredScript = "")
+        public Object CreateTrapAtLocation(int nTrapType, Location lLocation, float fSize = 2.0f, string sTag = "", int nFaction = STANDARD_FACTION_HOSTILE, string sOnDisarmScript = "", string sOnTrapTriggeredScript = "")
         {
             Internal.StackPushString(sOnTrapTriggeredScript);
             Internal.StackPushString(sOnDisarmScript);
@@ -14608,7 +14605,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Note: After creating a trap on an object, you can change the trap's properties
         //        using the various SetTrap* scripting commands by passing in the object
         //        that the trap was created on (i.e. oObject) to any subsequent SetTrap* commands.
-        public  void CreateTrapOnObject(int nTrapType, Object oObject, int nFaction = STANDARD_FACTION_HOSTILE, string sOnDisarmScript = "", string sOnTrapTriggeredScript = "")
+        public void CreateTrapOnObject(int nTrapType, Object oObject, int nFaction = STANDARD_FACTION_HOSTILE, string sOnDisarmScript = "", string sOnTrapTriggeredScript = "")
         {
             Internal.StackPushString(sOnTrapTriggeredScript);
             Internal.StackPushString(sOnDisarmScript);
@@ -14621,7 +14618,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Set the Will saving throw value of the Door or Placeable object oObject.
         //  - oObject: a door or placeable object.
         //  - nWillSave: must be between 0 and 250.
-        public  void SetWillSavingThrow(Object oObject, int nWillSave)
+        public void SetWillSavingThrow(Object oObject, int nWillSave)
         {
             Internal.StackPushInteger(nWillSave);
             Internal.StackPushObject(oObject, false);
@@ -14631,7 +14628,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Set the Reflex saving throw value of the Door or Placeable object oObject.
         //  - oObject: a door or placeable object.
         //  - nReflexSave: must be between 0 and 250.
-        public  void SetReflexSavingThrow(Object oObject, int nReflexSave)
+        public void SetReflexSavingThrow(Object oObject, int nReflexSave)
         {
             Internal.StackPushInteger(nReflexSave);
             Internal.StackPushObject(oObject, false);
@@ -14641,7 +14638,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Set the Fortitude saving throw value of the Door or Placeable object oObject.
         //  - oObject: a door or placeable object.
         //  - nFortitudeSave: must be between 0 and 250.
-        public  void SetFortitudeSavingThrow(Object oObject, int nFortitudeSave)
+        public void SetFortitudeSavingThrow(Object oObject, int nFortitudeSave)
         {
             Internal.StackPushInteger(nFortitudeSave);
             Internal.StackPushObject(oObject, false);
@@ -14668,7 +14665,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //       TILESET_RESREF_SEWERS
         //       TILESET_RESREF_UNDERDARK
         //  * returns an empty string on an error.
-        public  string GetTilesetResRef(Object oArea)
+        public string GetTilesetResRef(Object oArea)
         {
             Internal.StackPushObject(oArea, false);
             Internal.CallBuiltIn(814);
@@ -14677,7 +14674,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  - oTrapObject: a placeable, door or trigger
         //  * Returns TRUE if oTrapObject can be recovered.
-        public  int GetTrapRecoverable(Object oTrapObject)
+        public int GetTrapRecoverable(Object oTrapObject)
         {
             Internal.StackPushObject(oTrapObject, false);
             Internal.CallBuiltIn(815);
@@ -14686,7 +14683,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Sets whether or not the trapped object can be recovered.
         //  - oTrapObject: a placeable, door or trigger
-        public  void SetTrapRecoverable(Object oTrapObject, int nRecoverable = TRUE)
+        public void SetTrapRecoverable(Object oTrapObject, int nRecoverable = TRUE)
         {
             Internal.StackPushInteger(nRecoverable);
             Internal.StackPushObject(oTrapObject, false);
@@ -14694,7 +14691,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Get the XP scale being used for the module.
-        public  int GetModuleXPScale()
+        public int GetModuleXPScale()
         {
             Internal.CallBuiltIn(817);
             return Internal.StackPopInteger();
@@ -14702,7 +14699,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Set the XP scale used by the module.
         //  - nXPScale: The XP scale to be used. Must be between 0 and 200.
-        public  void SetModuleXPScale(int nXPScale)
+        public void SetModuleXPScale(int nXPScale)
         {
             Internal.StackPushInteger(nXPScale);
             Internal.CallBuiltIn(818);
@@ -14711,7 +14708,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get the feedback message that will be displayed when trying to unlock the object oObject.
         //  - oObject: a door or placeable.
         //  Returns an empty string "" on an error or if the game's default feedback message is being used
-        public  string GetKeyRequiredFeedback(Object oObject)
+        public string GetKeyRequiredFeedback(Object oObject)
         {
             Internal.StackPushObject(oObject, false);
             Internal.CallBuiltIn(819);
@@ -14725,7 +14722,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - oObject: a door or placeable.
         //  - sFeedbackMessage: the string to be displayed in the player's text window.
         //                      to use the game's default message, set sFeedbackMessage to ""
-        public  void SetKeyRequiredFeedback(Object oObject, string sFeedbackMessage)
+        public void SetKeyRequiredFeedback(Object oObject, string sFeedbackMessage)
         {
             Internal.StackPushString(sFeedbackMessage);
             Internal.StackPushObject(oObject, false);
@@ -14734,7 +14731,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  - oTrapObject: a placeable, door or trigger
         //  * Returns TRUE if oTrapObject is active
-        public  int GetTrapActive(Object oTrapObject)
+        public int GetTrapActive(Object oTrapObject)
         {
             Internal.StackPushObject(oTrapObject, false);
             Internal.CallBuiltIn(821);
@@ -14749,7 +14746,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  trap disappear if it has already been detected.
         //  Call SetTrapDetectedBy() to make a detected trap disappear.
         //  To make an inactive trap not detectable call SetTrapDetectable()
-        public  void SetTrapActive(Object oTrapObject, int nActive = TRUE)
+        public void SetTrapActive(Object oTrapObject, int nActive = TRUE)
         {
             Internal.StackPushInteger(nActive);
             Internal.StackPushObject(oTrapObject, false);
@@ -14761,7 +14758,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Stops the player from tilting their camera angle. 
         //  - oPlayer: A player object.
         //  - bLocked: TRUE/FALSE.
-        public  void LockCameraPitch(Object oPlayer, int bLocked = TRUE)
+        public void LockCameraPitch(Object oPlayer, int bLocked = TRUE)
         {
             Internal.StackPushInteger(bLocked);
             Internal.StackPushObject(oPlayer, false);
@@ -14773,7 +14770,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Stops the player from being able to zoom in/out the camera.
         //  - oPlayer: A player object.
         //  - bLocked: TRUE/FALSE.
-        public  void LockCameraDistance(Object oPlayer, int bLocked = TRUE)
+        public void LockCameraDistance(Object oPlayer, int bLocked = TRUE)
         {
             Internal.StackPushInteger(bLocked);
             Internal.StackPushObject(oPlayer, false);
@@ -14786,7 +14783,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Stops the player from being able to rotate the camera direction.
         //  - oPlayer: A player object.
         //  - bLocked: TRUE/FALSE.
-        public  void LockCameraDirection(Object oPlayer, int bLocked = TRUE)
+        public void LockCameraDirection(Object oPlayer, int bLocked = TRUE)
         {
             Internal.StackPushInteger(bLocked);
             Internal.StackPushObject(oPlayer, false);
@@ -14797,7 +14794,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  that is calling this function.
         //  Should only be called from a placeables OnClick event.
         //  * Returns OBJECT_INVALID if it is called by something other than a placeable.
-        public  Object GetPlaceableLastClickedBy()
+        public Object GetPlaceableLastClickedBy()
         {
             Internal.CallBuiltIn(826);
             return Internal.StackPopObject();
@@ -14808,7 +14805,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  The infinite property affects the buying/selling behavior of the item in a store.
         //  An infinite item will still be available to purchase from a store after a player
         //  buys the item (non-infinite items will disappear from the store when purchased).
-        public  int GetInfiniteFlag(Object oItem)
+        public int GetInfiniteFlag(Object oItem)
         {
             Internal.StackPushObject(oItem, false);
             Internal.CallBuiltIn(827);
@@ -14821,7 +14818,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  The infinite property affects the buying/selling behavior of the item in a store.
         //  An infinite item will still be available to purchase from a store after a player
         //  buys the item (non-infinite items will disappear from the store when purchased).
-        public  void SetInfiniteFlag(Object oItem, int bInfinite = TRUE)
+        public void SetInfiniteFlag(Object oItem, int bInfinite = TRUE)
         {
             Internal.StackPushInteger(bInfinite);
             Internal.StackPushObject(oItem, false);
@@ -14836,7 +14833,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns: The number of tiles that the area is wide/high, or zero on an error.
         //  If no valid area (or object) is specified, it uses the area of the caller.
         //  If an object other than an area is specified, will use the area that the object is currently in.
-        public  int GetAreaSize(int nAreaDimension, Object oArea = null)
+        public int GetAreaSize(int nAreaDimension, Object oArea = null)
         {
             Internal.StackPushObject(oArea, false);
             Internal.StackPushInteger(nAreaDimension);
@@ -14851,7 +14848,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //        Setting an object's name to "" will make the object
         //        revert to using the name it had originally before any
         //        SetName() calls were made on the object.
-        public  void SetName(Object oObject, string sNewName = "")
+        public void SetName(Object oObject, string sNewName = "")
         {
             Internal.StackPushString(sNewName);
             Internal.StackPushObject(oObject, false);
@@ -14866,7 +14863,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //           If a custom portrait is being used, oTarget is a player object,
         //           or on an error returns PORTRAIT_INVALID. In these instances
         //           try using GetPortraitResRef() instead.
-        public  int GetPortraitId(Object oTarget = null)
+        public int GetPortraitId(Object oTarget = null)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.CallBuiltIn(831);
@@ -14880,7 +14877,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Note: Not all portrait Ids are suitable for use with all object types.
         //        Setting the portrait Id will also cause the portrait ResRef
         //        to be set to the appropriate portrait ResRef for the Id specified.
-        public  void SetPortraitId(Object oTarget, int nPortraitId)
+        public void SetPortraitId(Object oTarget, int nPortraitId)
         {
             Internal.StackPushInteger(nPortraitId);
             Internal.StackPushObject(oTarget, false);
@@ -14891,7 +14888,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - oTarget: the object for which you are getting the portrait ResRef.
         //  Returns: The Portrait ResRef being used for the object oTarget.
         //           The Portrait ResRef will not include a trailing size letter.
-        public  string GetPortraitResRef(Object oTarget = null)
+        public string GetPortraitResRef(Object oTarget = null)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.CallBuiltIn(833);
@@ -14905,7 +14902,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Note: Not all portrait ResRefs are suitable for use with all object types.
         //        Setting the portrait ResRef will also cause the portrait Id
         //        to be set to PORTRAIT_INVALID.
-        public  void SetPortraitResRef(Object oTarget, string sPortraitResRef)
+        public void SetPortraitResRef(Object oTarget, string sPortraitResRef)
         {
             Internal.StackPushString(sPortraitResRef);
             Internal.StackPushObject(oTarget, false);
@@ -14914,7 +14911,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Set oPlaceable's useable object status.
         //  Note: Only works on non- placeables.
-        public  void SetUseableFlag(Object oPlaceable, int nUseableFlag)
+        public void SetUseableFlag(Object oPlaceable, int nUseableFlag)
         {
             Internal.StackPushInteger(nUseableFlag);
             Internal.StackPushObject(oPlaceable, false);
@@ -14929,7 +14926,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - bIdentified: If oObject is an item, setting this to TRUE will return the identified description,
         //                 setting this to FALSE will return the unidentified description. This flag has no
         //                 effect on objects other than items.
-        public  string GetDescription(Object oObject, int bOriginalDescription = FALSE, int bIdentifiedDescription = TRUE)
+        public string GetDescription(Object oObject, int bOriginalDescription = FALSE, int bIdentifiedDescription = TRUE)
         {
             Internal.StackPushInteger(bIdentifiedDescription);
             Internal.StackPushInteger(bOriginalDescription);
@@ -14948,7 +14945,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Note: Setting an object's description to "" will make the object
         //        revert to using the description it originally had before any
         //        SetDescription() calls were made on the object.
-        public  void SetDescription(Object oObject, string sNewDescription = "", int bIdentifiedDescription = TRUE)
+        public void SetDescription(Object oObject, string sNewDescription = "", int bIdentifiedDescription = TRUE)
         {
             Internal.StackPushInteger(bIdentifiedDescription);
             Internal.StackPushString(sNewDescription);
@@ -14960,7 +14957,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Should only be called from a module's OnPlayerChat event script.
         //  * Returns OBJECT_INVALID on error.
         //  Note: Private tells do not trigger a OnPlayerChat event.
-        public  Object GetPCChatSpeaker()
+        public Object GetPCChatSpeaker()
         {
             Internal.CallBuiltIn(838);
             return Internal.StackPopObject();
@@ -14970,7 +14967,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Should only be called from a module's OnPlayerChat event script.
         //  * Returns empty string "" on error.
         //  Note: Private tells do not trigger a OnPlayerChat event.
-        public  string GetPCChatMessage()
+        public string GetPCChatMessage()
         {
             Internal.CallBuiltIn(839);
             return Internal.StackPopString();
@@ -14987,7 +14984,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Should only be called from a module's OnPlayerChat event script.
         //  * Returns -1 on error.
         //  Note: Private tells do not trigger a OnPlayerChat event.
-        public  int GetPCChatVolume()
+        public int GetPCChatVolume()
         {
             Internal.CallBuiltIn(840);
             return Internal.StackPopInteger();
@@ -14999,7 +14996,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //                     will cause the chat message to be discarded 
         //                     (i.e. it will not be sent to other players).
         //  Note: The new chat message gets sent after the OnPlayerChat script exits.
-        public  void SetPCChatMessage(string sNewChatMessage = "")
+        public void SetPCChatMessage(string sNewChatMessage = "")
         {
             Internal.StackPushString(sNewChatMessage);
             Internal.CallBuiltIn(841);
@@ -15014,7 +15011,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //                 TALKVOLUME_PARTY
         //                 TALKVOLUME_TELL (sends the chat message privately back to the original speaker)
         //  Note: The new chat message gets sent after the OnPlayerChat script exits.
-        public  void SetPCChatVolume(int nTalkVolume = TALKVOLUME_TALK)
+        public void SetPCChatVolume(int nTalkVolume = TALKVOLUME_TALK)
         {
             Internal.StackPushInteger(nTalkVolume);
             Internal.CallBuiltIn(842);
@@ -15029,7 +15026,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //                    COLOR_CHANNEL_TATTOO_1
         //                    COLOR_CHANNEL_TATTOO_2
         //  * Returns -1 on error.
-        public  int GetColor(Object oObject, int nColorChannel)
+        public int GetColor(Object oObject, int nColorChannel)
         {
             Internal.StackPushInteger(nColorChannel);
             Internal.StackPushObject(oObject, false);
@@ -15046,7 +15043,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //                    COLOR_CHANNEL_TATTOO_1
         //                    COLOR_CHANNEL_TATTOO_2
         //  - nColorValue: The color you want to set (0-175).
-        public  void SetColor(Object oObject, int nColorChannel, int nColorValue)
+        public void SetColor(Object oObject, int nColorChannel, int nColorValue)
         {
             Internal.StackPushInteger(nColorValue);
             Internal.StackPushInteger(nColorChannel);
@@ -15057,7 +15054,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns Item property Material.  You need to specify the Material Type.
         //  - nMasterialType: The Material Type should be a positive integer between 0 and 77 (see iprp_matcost.2da).
         //  Note: The Material Type property will only affect the cost of the item if you modify the cost in the iprp_matcost.2da.
-        public  ItemProperty ItemPropertyMaterial(int nMaterialType)
+        public ItemProperty ItemPropertyMaterial(int nMaterialType)
         {
             Internal.StackPushInteger(nMaterialType);
             Internal.CallBuiltIn(845);
@@ -15068,7 +15065,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nQuality:  The Quality of the item property to create (see iprp_qualcost.2da).
         //               IP_CONST_QUALITY_*
         //  Note: The quality property will only affect the cost of the item if you modify the cost in the iprp_qualcost.2da.
-        public  ItemProperty ItemPropertyQuality(int nQuality)
+        public ItemProperty ItemPropertyQuality(int nQuality)
         {
             Internal.StackPushInteger(nQuality);
             Internal.CallBuiltIn(846);
@@ -15079,7 +15076,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - nProperty: The item property to create (see iprp_addcost.2da).
         //               IP_CONST_ADDITIONAL_*
         //  Note: The additional property only affects the cost of the item if you modify the cost in the iprp_addcost.2da.
-        public  ItemProperty ItemPropertyAdditional(int nAdditionalProperty)
+        public ItemProperty ItemPropertyAdditional(int nAdditionalProperty)
         {
             Internal.StackPushInteger(nAdditionalProperty);
             Internal.CallBuiltIn(847);
@@ -15092,7 +15089,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Note: Care needs to be taken with this function.
         //        Changing the tag for creature with waypoints will make them stop walking them.
         //        Changing waypoint, door or trigger tags will break their area transitions.
-        public  void SetTag(Object oObject, string sNewTag)
+        public void SetTag(Object oObject, string sNewTag)
         {
             Internal.StackPushString(sNewTag);
             Internal.StackPushObject(oObject, false);
@@ -15101,7 +15098,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns the string tag set for the provided effect.
         //  - If no tag has been set, returns an empty string.
-        public  string GetEffectTag(Effect eEffect)
+        public string GetEffectTag(Effect eEffect)
         {
             Internal.StackPushEffect(eEffect);
             Internal.CallBuiltIn(849);
@@ -15110,7 +15107,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Tags the effect with the provided string.
         //  - Any other tags in the link will be overwritten.
-        public  Effect TagEffect(Effect eEffect, string sNewTag)
+        public Effect TagEffect(Effect eEffect, string sNewTag)
         {
             Internal.StackPushString(sNewTag);
             Internal.StackPushEffect(eEffect);
@@ -15121,7 +15118,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns the caster level of the creature who created the effect.
         //  - If not created by a creature, returns 0.
         //  - If created by a spell-like ability, returns 0.
-        public  int GetEffectCasterLevel(Effect eEffect)
+        public int GetEffectCasterLevel(Effect eEffect)
         {
             Internal.StackPushEffect(eEffect);
             Internal.CallBuiltIn(851);
@@ -15130,7 +15127,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns the total duration of the effect in seconds.
         //  - Returns 0 if the duration type of the effect is not DURATION_TYPE_TEMPORARY.
-        public  int GetEffectDuration(Effect eEffect)
+        public int GetEffectDuration(Effect eEffect)
         {
             Internal.StackPushEffect(eEffect);
             Internal.CallBuiltIn(852);
@@ -15139,7 +15136,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns the remaining duration of the effect in seconds.
         //  - Returns 0 if the duration type of the effect is not DURATION_TYPE_TEMPORARY.
-        public  int GetEffectDurationRemaining(Effect eEffect)
+        public int GetEffectDurationRemaining(Effect eEffect)
         {
             Internal.StackPushEffect(eEffect);
             Internal.CallBuiltIn(853);
@@ -15148,7 +15145,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns the string tag set for the provided item property.
         //  - If no tag has been set, returns an empty string.
-        public  string GetItemPropertyTag(ItemProperty nProperty)
+        public string GetItemPropertyTag(ItemProperty nProperty)
         {
             Internal.StackPushItemProperty(nProperty);
             Internal.CallBuiltIn(854);
@@ -15157,7 +15154,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Tags the item property with the provided string.
         //  - Any tags currently set on the item property will be overwritten.
-        public  ItemProperty TagItemProperty(ItemProperty nProperty, string sNewTag)
+        public ItemProperty TagItemProperty(ItemProperty nProperty, string sNewTag)
         {
             Internal.StackPushString(sNewTag);
             Internal.StackPushItemProperty(nProperty);
@@ -15167,7 +15164,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns the total duration of the item property in seconds.
         //  - Returns 0 if the duration type of the item property is not DURATION_TYPE_TEMPORARY.
-        public  int GetItemPropertyDuration(ItemProperty nProperty)
+        public int GetItemPropertyDuration(ItemProperty nProperty)
         {
             Internal.StackPushItemProperty(nProperty);
             Internal.CallBuiltIn(856);
@@ -15176,7 +15173,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns the remaining duration of the item property in seconds.
         //  - Returns 0 if the duration type of the item property is not DURATION_TYPE_TEMPORARY.
-        public  int GetItemPropertyDurationRemaining(ItemProperty nProperty)
+        public int GetItemPropertyDurationRemaining(ItemProperty nProperty)
         {
             Internal.StackPushItemProperty(nProperty);
             Internal.CallBuiltIn(857);
@@ -15193,7 +15190,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Note: When spawning a second instance of a existing area, you will have to manually
         //        adjust all transitions (doors, triggers) with the relevant script commands,
         //        or players might end up in the wrong area.
-        public  Object CreateArea(string sResRef, string sNewTag = "", string sNewName = "")
+        public Object CreateArea(string sResRef, string sNewTag = "", string sNewName = "")
         {
             Internal.StackPushString(sNewName);
             Internal.StackPushString(sNewTag);
@@ -15209,7 +15206,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //    -1: Area contains spawn location and removal would leave module without entrypoint.
         //    -2: Players in area.
         //     1: Area destroyed successfully.
-        public  int DestroyArea(Object oArea)
+        public int DestroyArea(Object oArea)
         {
             Internal.StackPushObject(oArea, false);
             Internal.CallBuiltIn(859);
@@ -15222,7 +15219,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         // 
         //  Note: You will have to manually adjust all transitions (doors, triggers) with the
         //        relevant script commands, or players might end up in the wrong area.
-        public  Object CopyArea(Object oArea)
+        public Object CopyArea(Object oArea)
         {
             Internal.StackPushObject(oArea, false);
             Internal.CallBuiltIn(860);
@@ -15230,7 +15227,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Returns the first area in the module.
-        public  Object GetFirstArea()
+        public Object GetFirstArea()
         {
             Internal.CallBuiltIn(861);
             return Internal.StackPopObject();
@@ -15238,7 +15235,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns the next area in the module (after GetFirstArea), or OBJECT_INVALID if no more
         //  areas are loaded.
-        public  Object GetNextArea()
+        public Object GetNextArea()
         {
             Internal.CallBuiltIn(862);
             return Internal.StackPopObject();
@@ -15257,7 +15254,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  - Transition target objects are cached: The toolset-configured destination tag is
         //    used for a lookup only once, at first use. Thus, attempting to use SetTag() to change the
         //    destination for a transition will not work in a predictable fashion.
-        public  void SetTransitionTarget(Object oTransition, Object oTarget)
+        public void SetTransitionTarget(Object oTransition, Object oTarget)
         {
             Internal.StackPushObject(oTarget, false);
             Internal.StackPushObject(oTransition, false);
@@ -15269,7 +15266,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //    can be used equally for any slot which has creature mesh visibility when equipped,
         //    e.g.: armour, helm, cloak, left hand, and right hand.
         //  - nValue should be TRUE or FALSE.
-        public  void SetHiddenWhenEquipped(Object oItem, int nValue)
+        public void SetHiddenWhenEquipped(Object oItem, int nValue)
         {
             Internal.StackPushInteger(nValue);
             Internal.StackPushObject(oItem, false);
@@ -15277,7 +15274,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         }
 
         //  Returns whether the provided item is hidden when equipped.
-        public  int GetHiddenWhenEquipped(Object oItem)
+        public int GetHiddenWhenEquipped(Object oItem)
         {
             Internal.StackPushObject(oItem, false);
             Internal.CallBuiltIn(865);
@@ -15294,7 +15291,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //   -1: Area or creature invalid.
         //    0: Tile was not explored before setting newState.
         //    1: Tile was explored before setting newState.
-        public  int SetTileExplored(Object creature, Object area, int x, int y, int newState)
+        public int SetTileExplored(Object creature, Object area, int x, int y, int newState)
         {
             Internal.StackPushInteger(newState);
             Internal.StackPushInteger(y);
@@ -15316,7 +15313,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //   -1: Area or creature invalid.
         //    0: Tile is not explored yet.
         //    1: Tile is explored.
-        public  int GetTileExplored(Object creature, Object area, int x, int y)
+        public int GetTileExplored(Object creature, Object area, int x, int y)
         {
             Internal.StackPushInteger(y);
             Internal.StackPushInteger(x);
@@ -15337,7 +15334,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Valid arguments: TRUE and FALSE.
         //  Does nothing for non-creatures.
         //  Returns the previous state (or -1 if non-creature).
-        public  int SetCreatureExploresMinimap(Object creature, int newState)
+        public int SetCreatureExploresMinimap(Object creature, int newState)
         {
             Internal.StackPushInteger(newState);
             Internal.StackPushObject(creature, false);
@@ -15347,7 +15344,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns TRUE if the creature is set to auto-explore the map as it walks around (on by default).
         //  Returns FALSE if creature is not actually a creature.
-        public  int GetCreatureExploresMinimap(Object creature)
+        public int GetCreatureExploresMinimap(Object creature)
         {
             Internal.StackPushObject(creature, false);
             Internal.CallBuiltIn(869);
@@ -15357,7 +15354,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Get the surface material at the given location. (This is
         //  equivalent to the walkmesh type).
         //  Returns 0 if the location is invalid or has no surface type.
-        public  int GetSurfaceMaterial(Location at)
+        public int GetSurfaceMaterial(Location at)
         {
             Internal.StackPushLocation(at);
             Internal.CallBuiltIn(870);
@@ -15366,7 +15363,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Returns the z-offset at which the walkmesh is at the given location.
         //  Returns -6.0 for invalid locations.
-        public  float GetGroundHeight(Location at)
+        public float GetGroundHeight(Location at)
         {
             Internal.StackPushLocation(at);
             Internal.CallBuiltIn(871);
@@ -15375,7 +15372,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Gets the attack bonus limit.
         //  - The default value is 20.
-        public  int GetAttackBonusLimit()
+        public int GetAttackBonusLimit()
         {
             Internal.CallBuiltIn(872);
             return Internal.StackPopInteger();
@@ -15383,7 +15380,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Gets the damage bonus limit.
         //  - The default value is 100.
-        public  int GetDamageBonusLimit()
+        public int GetDamageBonusLimit()
         {
             Internal.CallBuiltIn(873);
             return Internal.StackPopInteger();
@@ -15391,7 +15388,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Gets the saving throw bonus limit.
         //  - The default value is 20.
-        public  int GetSavingThrowBonusLimit()
+        public int GetSavingThrowBonusLimit()
         {
             Internal.CallBuiltIn(874);
             return Internal.StackPopInteger();
@@ -15399,7 +15396,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Gets the ability bonus limit.
         //  - The default value is 12.
-        public  int GetAbilityBonusLimit()
+        public int GetAbilityBonusLimit()
         {
             Internal.CallBuiltIn(875);
             return Internal.StackPopInteger();
@@ -15407,7 +15404,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Gets the ability penalty limit.
         //  - The default value is 30.
-        public  int GetAbilityPenaltyLimit()
+        public int GetAbilityPenaltyLimit()
         {
             Internal.CallBuiltIn(876);
             return Internal.StackPopInteger();
@@ -15415,7 +15412,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Gets the skill bonus limit.
         //  - The default value is 50.
-        public  int GetSkillBonusLimit()
+        public int GetSkillBonusLimit()
         {
             Internal.CallBuiltIn(877);
             return Internal.StackPopInteger();
@@ -15423,7 +15420,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Sets the attack bonus limit.
         //  - The minimum value is 0.
-        public  void SetAttackBonusLimit(int nNewLimit)
+        public void SetAttackBonusLimit(int nNewLimit)
         {
             Internal.StackPushInteger(nNewLimit);
             Internal.CallBuiltIn(878);
@@ -15431,7 +15428,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Sets the damage bonus limit.
         //  - The minimum value is 0.
-        public  void SetDamageBonusLimit(int nNewLimit)
+        public void SetDamageBonusLimit(int nNewLimit)
         {
             Internal.StackPushInteger(nNewLimit);
             Internal.CallBuiltIn(879);
@@ -15439,7 +15436,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Sets the saving throw bonus limit.
         //  - The minimum value is 0.
-        public  void SetSavingThrowBonusLimit(int nNewLimit)
+        public void SetSavingThrowBonusLimit(int nNewLimit)
         {
             Internal.StackPushInteger(nNewLimit);
             Internal.CallBuiltIn(880);
@@ -15447,7 +15444,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Sets the ability bonus limit.
         //  - The minimum value is 0.
-        public  void SetAbilityBonusLimit(int nNewLimit)
+        public void SetAbilityBonusLimit(int nNewLimit)
         {
             Internal.StackPushInteger(nNewLimit);
             Internal.CallBuiltIn(881);
@@ -15455,7 +15452,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Sets the ability penalty limit.
         //  - The minimum value is 0.
-        public  void SetAbilityPenaltyLimit(int nNewLimit)
+        public void SetAbilityPenaltyLimit(int nNewLimit)
         {
             Internal.StackPushInteger(nNewLimit);
             Internal.CallBuiltIn(882);
@@ -15463,7 +15460,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Sets the skill bonus limit.
         //  - The minimum value is 0.
-        public  void SetSkillBonusLimit(int nNewLimit)
+        public void SetSkillBonusLimit(int nNewLimit)
         {
             Internal.StackPushInteger(nNewLimit);
             Internal.CallBuiltIn(883);
@@ -15471,7 +15468,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
 
         //  Get if oPlayer is currently connected over a relay (instead of directly).
         //  Returns FALSE for any other object, including OBJECT_INVALID.
-        public  int GetIsPlayerConnectionRelayed(Object oPlayer)
+        public int GetIsPlayerConnectionRelayed(Object oPlayer)
         {
             Internal.StackPushObject(oPlayer, false);
             Internal.CallBuiltIn(884);
@@ -15481,7 +15478,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Returns the event script for the given object and handler.
         //  Will return "" if unset, the object is invalid, or the object cannot
         //  have the requested handler.
-        public  string GetEventScript(Object oObject, int nHandler)
+        public string GetEventScript(Object oObject, int nHandler)
         {
             Internal.StackPushInteger(nHandler);
             Internal.StackPushObject(oObject, false);
@@ -15492,7 +15489,7 @@ namespace SWLOR.Game.Server.NWN.NWScript
         //  Sets the given event script for the given object and handler.
         //  Returns 1 on success, 0 on failure.
         //  Will fail if oObject is invalid or does not have the requested handler.
-        public  int SetEventScript(Object oObject, int nHandler, string sScript)
+        public int SetEventScript(Object oObject, int nHandler, string sScript)
         {
             Internal.StackPushString(sScript);
             Internal.StackPushInteger(nHandler);

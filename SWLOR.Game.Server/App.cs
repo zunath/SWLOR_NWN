@@ -15,12 +15,12 @@ using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.GameObject.Contracts;
 using SWLOR.Game.Server.Item.Contracts;
-using SWLOR.Game.Server.NWN.Contracts;
-using SWLOR.Game.Server.NWN.NWScript;
+using SWLOR.Game.Server.Mod.Contracts;
+
+using NWN;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Perk;
-using SWLOR.Game.Server.Rune.Contracts;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 
@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server
             builder.RegisterType<PVPSanctuaryService>().As<IPVPSanctuaryService>();
             builder.RegisterType<QuestService>().As<IQuestService>();
             builder.RegisterType<RandomService>().As<IRandomService>();
-            builder.RegisterType<RuneService>().As<IRuneService>();
+            builder.RegisterType<ModService>().As<IModService>();
             builder.RegisterType<SearchService>().As<ISearchService>();
             builder.RegisterType<SerializationService>().As<ISerializationService>();
             builder.RegisterType<SkillService>().As<ISkillService>();
@@ -163,7 +163,7 @@ namespace SWLOR.Game.Server
             RegisterInterfaceImplementations<IPerk>(builder);
             RegisterInterfaceImplementations<IBehaviour>(builder);
             RegisterInterfaceImplementations<IAIComponent>(builder);
-            RegisterInterfaceImplementations<IRune>(builder);
+            RegisterInterfaceImplementations<IMod>(builder);
 
             // Third Party
             builder.RegisterType<BiowarePosition>().As<IBiowarePosition>();

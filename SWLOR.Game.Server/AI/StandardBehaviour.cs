@@ -2,8 +2,8 @@
 using SWLOR.Game.Server.AI.AIComponent;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Contracts;
-using SWLOR.Game.Server.NWN.NWScript;
+
+using NWN;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 

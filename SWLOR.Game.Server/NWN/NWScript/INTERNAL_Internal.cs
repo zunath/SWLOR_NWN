@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 // ReSharper disable once CheckNamespace
-namespace SWLOR.Game.Server.NWN.NWScript
+namespace NWN
 {
     public class Internal
     {

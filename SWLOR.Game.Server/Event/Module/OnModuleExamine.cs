@@ -1,9 +1,9 @@
 ﻿using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Contracts;
-using SWLOR.Game.Server.NWN.NWScript;
+
+using NWN;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
-using Object = SWLOR.Game.Server.NWN.NWScript.Object;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Event.Module
 {
@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IItemService _item;
         private readonly INWNXEvents _nwnxEvents;
         private readonly IExaminationService _examination;
-        private readonly IRuneService _rune;
+        private readonly IModService _mod;
 
         public OnModuleExamine(
             INWScript script,
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Event.Module
             IItemService item,
             INWNXEvents nwnxEvents,
             IExaminationService examination,
-            IRuneService rune)
+            IModService mod)
         {
             _ = script;
             _farming = farming;
@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Event.Module
             _item = item;
             _nwnxEvents = nwnxEvents;
             _examination = examination;
-            _rune = rune;
+            _mod = mod;
         }
 
         public bool Run(params object[] args)
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Event.Module
             if (_examination.OnModuleExamine(examiner, examinedObject)) return true;
 
             string description = _.GetDescription(examinedObject.Object, NWScript.TRUE) + "\n\n";
-            description = _rune.OnModuleExamine(description, examiner, examinedObject);
+            description = _mod.OnModuleExamine(description, examiner, examinedObject);
             description = _item.OnModuleExamine(description, examiner, examinedObject);
             description = _perk.OnModuleExamine(description, examiner, examinedObject);
             description = _durability.OnModuleExamine(description, examinedObject);

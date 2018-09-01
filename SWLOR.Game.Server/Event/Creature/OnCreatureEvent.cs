@@ -3,7 +3,7 @@ using SWLOR.Game.Server.AI.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using Object = SWLOR.Game.Server.NWN.NWScript.Object;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Event.Creature
 {

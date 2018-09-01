@@ -7,8 +7,8 @@ using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entities;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Contracts;
-using SWLOR.Game.Server.NWN.NWScript;
+
+using NWN;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
@@ -224,24 +224,22 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var component in model.MainComponents)
             {
-                ComponentBonusType bonus = ComponentBonusType.Unknown;
                 foreach (var ip in component.ItemProperties)
                 {
                     if (_.GetItemPropertyType(ip) == (int)CustomItemPropertyType.ComponentBonus)
                     {
-                        bonus = (ComponentBonusType) _.GetItemPropertyCostTableValue(ip);
+                        ComponentBonusType bonusType = (ComponentBonusType)_.GetItemPropertySubType(ip);
+                        int amount = _.GetItemPropertyCostTableValue(ip);
+                        if (_random.RandomFloat() * 100.0f + equipmentBonus <= chance)
+                        {
+                            foreach (var item in craftedItems)
+                            {
+                                ApplyComponentBonus(item, bonusType, amount);
+                            }
+                        }
                     }
                 }
 
-                if (bonus == ComponentBonusType.Unknown) continue;
-
-                if (_random.RandomFloat() * 100.0f + equipmentBonus <= chance)
-                {
-                    foreach (var item in craftedItems)
-                    {
-                        ApplyComponentBonus(item, bonus);
-                    }
-                }
             }
             
             oPC.SendMessage("You created " + blueprint.Quantity + "x " + blueprint.ItemName + "!");
@@ -250,28 +248,33 @@ namespace SWLOR.Game.Server.Service
             ClearPlayerCraftingData(oPC);
         }
 
-        private void ApplyComponentBonus(NWItem product, ComponentBonusType bonus)
+        private void ApplyComponentBonus(NWItem product, ComponentBonusType bonusType, int amount)
         {
             ItemProperty prop = null;
             string sourceTag = string.Empty;
 
-            switch (bonus)
+            for(int x = 1; x <= amount; x++)
             {
-                case ComponentBonusType.RunicSocketRed: sourceTag = "rslot_red"; break;
-                case ComponentBonusType.RunicSocketBlue: sourceTag = "rslot_blue"; break;
-                case ComponentBonusType.RunicSocketGreen: sourceTag = "rslot_green"; break;
-                case ComponentBonusType.RunicSocketYellow: sourceTag = "rslot_yellow"; break;
-                case ComponentBonusType.RunicSocketPrismatic: sourceTag = "rslot_prismatic"; break;
+                switch (bonusType)
+                {
+                    case ComponentBonusType.ModSocketRed: sourceTag = "rslot_red"; break;
+                    case ComponentBonusType.ModSocketBlue: sourceTag = "rslot_blue"; break;
+                    case ComponentBonusType.ModSocketGreen: sourceTag = "rslot_green"; break;
+                    case ComponentBonusType.ModSocketYellow: sourceTag = "rslot_yellow"; break;
+                    case ComponentBonusType.ModSocketPrismatic: sourceTag = "rslot_prismatic"; break;
+                    case ComponentBonusType.Durability: break;
+                }
+
+                if (!string.IsNullOrWhiteSpace(sourceTag))
+                {
+                    prop = _item.GetCustomItemPropertyByItemTag(sourceTag);
+                }
+
+                if (prop == null) return;
+
+                _biowareXP2.IPSafeAddItemProperty(product, prop, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
             }
-
-            if (!string.IsNullOrWhiteSpace(sourceTag))
-            {
-                prop = _item.GetCustomItemPropertyByItemTag(sourceTag);
-            }
-
-            if (prop == null) return;
-
-            _biowareXP2.IPSafeAddItemProperty(product, prop, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
+            
         }
 
         private string CalculateDifficulty(int pcLevel, int blueprintLevel)

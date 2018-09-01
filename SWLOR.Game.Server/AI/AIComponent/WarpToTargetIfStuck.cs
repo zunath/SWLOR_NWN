@@ -2,8 +2,8 @@
 using FluentBehaviourTree;
 using SWLOR.Game.Server.AI.Contracts;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Contracts;
-using SWLOR.Game.Server.NWN.NWScript;
+
+using NWN;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq;
+using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entities;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Contracts;
+
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Service

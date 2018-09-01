@@ -1,8 +1,8 @@
 ﻿using SWLOR.Game.Server.Bioware.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Contracts;
-using SWLOR.Game.Server.NWN.NWScript;
+
+using NWN;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Perk.Alteration

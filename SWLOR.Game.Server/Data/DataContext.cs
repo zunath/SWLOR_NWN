@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Data
         public virtual IDbSet<Quest> Quests { get; set; }
         public virtual IDbSet<QuestState> QuestStates { get; set; }
         public virtual IDbSet<QuestTypeDomain> QuestTypeDomains { get; set; }
-        public virtual IDbSet<Entities.Rune> Runes { get; set; }
+        public virtual IDbSet<Entities.Mod> Mods { get; set; }
         public virtual IDbSet<ServerConfiguration> ServerConfigurations { get; set; }
         public virtual IDbSet<SkillCategory> SkillCategories { get; set; }
         public virtual IDbSet<Skill> Skills { get; set; }

@@ -1,7 +1,7 @@
 ﻿using System;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Contracts;
-using SWLOR.Game.Server.NWN.NWScript;
+
+using NWN;
 using SWLOR.Game.Server.NWNX.Contracts;
 
 namespace SWLOR.Game.Server.NWNX

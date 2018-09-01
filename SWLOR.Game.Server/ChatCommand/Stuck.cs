@@ -4,8 +4,8 @@ using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entities;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Contracts;
-using SWLOR.Game.Server.NWN.NWScript;
+
+using NWN;
 
 namespace SWLOR.Game.Server.ChatCommand
 {

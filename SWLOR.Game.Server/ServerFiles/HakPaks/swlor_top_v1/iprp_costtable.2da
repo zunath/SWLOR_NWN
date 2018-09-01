@@ -63,4 +63,4 @@
 59    IPRP_BABBON        BABBonus               0            
 60    IPRP_LVLINC        LevelIncrease          0            
 61    IPRP_COMPTYPE      ComponentType          0            
-62    IPRP_COMPBON       ComponentBonus         0            
+62    IPRP_COMPBONCOS    ComponentBonusCost     0            

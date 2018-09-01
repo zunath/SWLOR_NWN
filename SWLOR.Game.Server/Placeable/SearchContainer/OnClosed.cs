@@ -1,6 +1,6 @@
 ﻿using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.NWScript;
+using NWN;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Placeable.SearchContainer

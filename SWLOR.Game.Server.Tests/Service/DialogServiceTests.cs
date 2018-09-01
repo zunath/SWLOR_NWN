@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using Autofac.Core.Registration;
 using NSubstitute;
 using NUnit.Framework;
+using NWN;
 using SWLOR.Game.Server.Conversation;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Contracts;
+
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;

@@ -1,7 +1,7 @@
 ﻿using System;
 
 // ReSharper disable once CheckNamespace
-namespace SWLOR.Game.Server.NWN.NWScript
+namespace NWN
 {
     public class Object
     {

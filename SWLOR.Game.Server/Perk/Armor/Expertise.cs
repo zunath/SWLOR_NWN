@@ -1,6 +1,6 @@
 ﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.NWScript;
+using NWN;
 using SWLOR.Game.Server.NWNX.Contracts;
 
 namespace SWLOR.Game.Server.Perk.Armor

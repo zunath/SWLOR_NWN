@@ -1,8 +1,5 @@
 ﻿// ReSharper disable once CheckNamespace
-
-using SWLOR.Game.Server.NWN.Contracts;
-
-namespace SWLOR.Game.Server.NWN.NWScript
+namespace NWN
 {
     public partial class NWScript : INWScript
     {

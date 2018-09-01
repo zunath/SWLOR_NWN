@@ -1,8 +1,8 @@
 ﻿using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Contracts;
-using SWLOR.Game.Server.NWN.NWScript;
-using Object = SWLOR.Game.Server.NWN.NWScript.Object;
+
+using NWN;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.Resource
 {

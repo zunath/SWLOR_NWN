@@ -2,7 +2,7 @@
 using SWLOR.Game.Server.Data.Entities;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.NWScript;
+using NWN;
 using SWLOR.Game.Server.ValueObject.Structure;
 
 namespace SWLOR.Game.Server.Service.Contracts

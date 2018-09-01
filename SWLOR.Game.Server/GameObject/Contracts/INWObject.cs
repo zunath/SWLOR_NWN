@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.NWN.NWScript;
+﻿using NWN;
 
 namespace SWLOR.Game.Server.GameObject.Contracts
 {

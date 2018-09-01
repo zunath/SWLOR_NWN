@@ -1,5 +1,6 @@
-﻿using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Contracts;
+﻿using NWN;
+using SWLOR.Game.Server.GameObject;
+
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Event.Module

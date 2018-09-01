@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
+using NWN;
 using SWLOR.Game.Server.Data.Entities;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Contracts;
+
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
 

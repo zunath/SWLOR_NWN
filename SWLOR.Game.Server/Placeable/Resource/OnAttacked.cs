@@ -1,10 +1,10 @@
 ﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Contracts;
-using SWLOR.Game.Server.NWN.NWScript;
+
+using NWN;
 using SWLOR.Game.Server.Service.Contracts;
-using Object = SWLOR.Game.Server.NWN.NWScript.Object;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.Resource
 {

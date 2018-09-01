@@ -1,6 +1,7 @@
-﻿using SWLOR.Game.Server.Event;
+﻿using NWN;
+using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Contracts;
+
 
 namespace SWLOR.Game.Server.Placeable.TrashCan
 {

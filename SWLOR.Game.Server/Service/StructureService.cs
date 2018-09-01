@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entities;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Contracts;
-using SWLOR.Game.Server.NWN.NWScript;
+using NWN;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Structure;
-using Object = SWLOR.Game.Server.NWN.NWScript.Object;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {

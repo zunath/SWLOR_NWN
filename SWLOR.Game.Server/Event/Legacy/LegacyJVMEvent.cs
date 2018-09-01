@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using SWLOR.Game.Server.GameObject;
-using Object = SWLOR.Game.Server.NWN.NWScript.Object;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Event.Legacy
 {

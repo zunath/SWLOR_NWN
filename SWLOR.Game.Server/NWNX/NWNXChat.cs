@@ -1,5 +1,6 @@
-﻿using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Contracts;
+﻿using NWN;
+using SWLOR.Game.Server.GameObject;
+
 using SWLOR.Game.Server.NWNX.Contracts;
 
 namespace SWLOR.Game.Server.NWNX

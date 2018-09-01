@@ -4,19 +4,19 @@ namespace SWLOR.Game.Server.Event.Module
 {
     public class OnModuleApplyDamage: IRegisteredEvent
     {
-        private readonly IRuneService _rune;
+        private readonly IModService _mod;
         private readonly IAbilityService _ability;
 
-        public OnModuleApplyDamage(IRuneService rune,
+        public OnModuleApplyDamage(IModService mod,
             IAbilityService ability)
         {
-            _rune = rune;
+            _mod = mod;
             _ability = ability;
         }
 
         public bool Run(params object[] args)
         {
-            _rune.OnModuleApplyDamage();
+            _mod.OnModuleApplyDamage();
             _ability.OnModuleApplyDamage();
             return true;
         }

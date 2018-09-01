@@ -1,0 +1,31 @@
+2DA V2.0
+
+      Label            Name       Description   Icon             Untrained   KeyAbility   ArmorCheckPenalty   AllClassesCanUse   Category   MaxCR   Constant                 HostileSkill   
+0     AnimalEmpathy    269        16939220      isk_aniemp       0           CHA          0                   0                  ****       1       SKILL_ANIMAL_EMPATHY     1              
+1     Concentration    16939230   16939231      isk_concen       1           CON          0                   1                  ****       ****    SKILL_CONCENTRATION      0              
+2     DisableTrap      271        16939233      isk_distrap      0           INT          0                   1                  ****       ****    SKILL_DISABLE_TRAP       0              
+3     Discipline       343        347           isk_discipline   1           STR          0                   1                  ****       ****    SKILL_DISCIPLINE         0              
+4     Heal             16939234   16939235      isk_heal         1           WIS          0                   1                  ****       1       SKILL_HEAL               0              
+5     Hide             274        350           isk_hide         1           DEX          1                   1                  ****       ****    SKILL_HIDE               0              
+6     Listen           275        16939237      isk_listen       1           WIS          0                   1                  ****       ****    SKILL_LISTEN             0              
+7     Lore             16939224   16939225      isk_lore         1           INT          0                   1                  ****       ****    SKILL_LORE               0              
+8     MoveSilently     277        353           isk_movsilent    1           DEX          1                   1                  ****       ****    SKILL_MOVE_SILENTLY      0              
+9     OpenLock         16939238   16939239      isk_olock        0           DEX          0                   1                  ****       ****    SKILL_OPEN_LOCK          0              
+10    Parry            279        355           isk_parry        1           DEX          1                   1                  ****       1       SKILL_PARRY              0              
+11    Perform          280        16939241      isk_perform      1           CHA          0                   0                  ****       ****    SKILL_PERFORM            0              
+12    Persuade         16939242   357           isk_persuade     1           CHA          0                   1                  ****       ****    SKILL_PERSUADE           0              
+13    PickPocket       282        358           isk_pocket       0           DEX          1                   1                  ****       ****    SKILL_PICK_POCKET        1              
+14    Search           16939244   16939245      isk_search       1           INT          0                   1                  ****       ****    SKILL_SEARCH             0              
+15    SetTrap          285        361           isk_demo         0           DEX          1                   1                  ****       ****    SKILL_SET_TRAP           0              
+16    Spellcraft       16939216   16939217      isk_spellcraft   0           INT          0                   1                  ****       ****    SKILL_SPELLCRAFT         0              
+17    Spot             287        16939247      isk_spot         1           WIS          0                   1                  ****       ****    SKILL_SPOT               0              
+18    Taunt            342        16939249      isk_taunt        1           CHA          0                   1                  ****       1       SKILL_TAUNT              1              
+19    UseMagicDevice   16939218   16939219      isk_craftelec    0           CHA          0                   0                  ****       ****    SKILL_USE_MAGIC_DEVICE   0              
+20    Appraise         2693       16939251      ife_X1App        1           INT          0                   1                  ****       ****    SKILL_APPRAISE           0              
+21    Tumble           2695       2696          ife_X1Tum        0           DEX          1                   1                  ****       ****    SKILL_TUMBLE             0              
+22    CraftTrap        16939216   16939217      ife_X1CrTrap     1           INT          0                   1                  ****       ****    SKILL_CRAFT_TRAP         0              
+23    Bluff            16939222   16939223      isk_X2bluff      1           CHA          0                   1                  ****       ****    SKILL_BLUFF              0              
+24    Intimidate       8756       8786          isk_X2Inti       1           CHA          0                   1                  ****       ****    SKILL_INTIMIDATE         0              
+25    CraftArmor       16939226   16939227      isk_craftmech    1           INT          0                   1                  ****       ****    SKILL_CRAFT_ARMOR        0              
+26    CraftWeapon      16939228   16939229      isk_compuse      1           INT          0                   1                  ****       ****    SKILL_CRAFT_WEAPON       0              
+27    Ride             16939216   16939217      isk_x3_ride      1           DEX          0                   1                  ****       ****    SKILL_RIDE               0              

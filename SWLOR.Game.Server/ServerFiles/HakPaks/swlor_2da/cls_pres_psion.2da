@@ -1,0 +1,7 @@
+2DA V2.0
+
+      LABEL           ReqType   ReqParam1       ReqParam2   
+0     IronWill        FEAT      22              ****        
+1     Concentration   SKILL     1               5           
+2     ScriptVar       VAR       X1_AllowPsion   0           
+3     FS              FEAT      4893            ****        

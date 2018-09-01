@@ -1,0 +1,33 @@
+2DA V2.0
+
+   Corner1   Edge      Corner2   Height Model     
+0  Woods     ****      Woods     0      ttw01_z01 
+1  Woods     ****      ****      0      ttw01_z01 
+2  Woods     Path      Woods     0      ttw01_z02
+3  Woods     ****      Chasm     0      ttw01_z03
+4  Chasm     ****      Chasm     0      ttw01_z04 
+5  Chasm     ****      ****      0      ttw01_z04 
+6  Woods     Stream    Woods     0      ttw01_z05
+7  Chasm     Stream    Chasm     0      ttw01_z06
+8  Woods     ****      Meadow    0      ttw01_z07
+9  Meadow    ****      Meadow    0      ttw01_z08 
+10 Meadow    Stream    Meadow    0      ttw01_z09
+11 Meadow    ****      ****      0      ttw01_z08
+12 Woods     ****      Cliffs    0      ttw01_z10
+13 Cliffs    ****      Cliffs    0      ttw01_z11
+14 Cliffs    ****      ****      0      ttw01_z11
+15 Chasm     ****      Cliffs    0      ttw01_z12
+16 Chasm     Bridge    Chasm     0      ttw01_z13
+17 Woods+    ****      Woods+    1      ttw01_z01 
+18 Woods+    ****      ****      1      ttw01_z01
+19 Woods+    Path      Woods+    1      ttw01_z02
+20 Woods+    Stream    Woods+    1      ttw01_z05
+21 Woods     Wall      Woods     0      ttw01_z14
+22 Woods+    Wall      Woods+    1      ttw01_z14
+23 Woods+    ****      Woods     0      ttw01_z15
+24 Woods     ****      Water     0      ttw01_z16
+25 Woods+    ****      Water     0      ttw01_z17
+26 Water     ****      ****      0      ttw01_z18
+27 Water     ****      Water     0      ttw01_z18
+27 Water     Bridge    Water     0      ttw01_z19
+27 Water     Path      Water     0      ttw01_z20

@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using System;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
@@ -11,16 +12,19 @@ namespace SWLOR.Game.Server.Conversation
     {
         private readonly ICraftService _craft;
         private readonly IColorTokenService _color;
+        private readonly IPerkService _perk;
 
         public CraftItem(
             INWScript script, 
             IDialogService dialog,
             ICraftService craft,
-            IColorTokenService color) 
+            IColorTokenService color,
+            IPerkService perk) 
             : base(script, dialog)
         {
             _craft = craft;
             _color = color;
+            _perk = perk;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -42,6 +46,23 @@ namespace SWLOR.Game.Server.Conversation
             {
                 model.BlueprintID = GetPC().GetLocalInt("CRAFT_BLUEPRINT_ID");
                 model.Blueprint = _craft.GetBlueprintByID(model.BlueprintID);
+
+                switch ((SkillType) model.Blueprint.SkillID)
+                {
+                    case SkillType.Armorsmith:
+                        model.PlayerPerkLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.ArmorBlueprints);
+                        break;
+                    case SkillType.Engineering:
+                        model.PlayerPerkLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.EngineeringBlueprints);
+                        break;
+                    case SkillType.Weaponsmith:
+                        model.PlayerPerkLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.WeaponBlueprints);
+                        break;
+                    default:
+                        model.PlayerPerkLevel = 0;
+                        break;
+
+                }
                 GetDevice().IsLocked = true;
             }
             // Otherwise returning from accessing the device's inventory.
@@ -87,20 +108,22 @@ namespace SWLOR.Game.Server.Conversation
         {
             var model = _craft.GetPlayerCraftingData(GetPC());
             var bp = model.Blueprint;
-            
+            string mainCounts = " (" + (bp.MainMinimum > 0 ? Convert.ToString(bp.MainMinimum) : "Optional") + "/" + bp.MainMaximum + ")";
+
             string header = _color.Green("Blueprint: ") + bp.Quantity + "x " + bp.ItemName + "\n";
-            header += _color.Green("Required Components: ") + "\n\n";
-            header += _color.Green("Main: ") + bp.MainMinimum + "x " + bp.MainComponentType.Name + "\n";
+            header += _color.Green("Required Components (Required/Maximum): ") + "\n\n";
+            header += _color.Green("Main: ") + bp.MainComponentType.Name + mainCounts + "\n";
 
             if (bp.SecondaryMinimum > 0 && bp.SecondaryComponentTypeID > 0)
             {
-                header += _color.Green("Secondary: ") + bp.SecondaryMinimum + "x " + bp.SecondaryComponentType.Name + "\n";
+                string secondaryCounts = " (" + (bp.SecondaryMinimum > 0 ? Convert.ToString(bp.SecondaryMinimum) : "Optional") + "/" + bp.SecondaryMaximum + ")";
+                header += _color.Green("Secondary: ") + bp.SecondaryComponentType.Name + secondaryCounts + "\n";
             }
             if (bp.TertiaryMinimum > 0 && bp.TertiaryComponentTypeID > 0)
             {
-                header += _color.Green("Tertiary: ") + bp.TertiaryMinimum + "x " + bp.TertiaryComponentType.Name + "\n";
+                string tertiaryCounts = " (" + (bp.TertiaryMinimum > 0 ? Convert.ToString(bp.TertiaryMinimum) : "Optional") + "/" + bp.TertiaryMaximum + ")";
+                header += _color.Green("Tertiary: ") + bp.TertiaryComponentType.Name + tertiaryCounts + "\n";
             }
-
             
             header += "\n" + _color.Green("Your components:") + "\n\n";
             if (!model.HasPlayerComponents) header += "No components selected yet!";
@@ -130,12 +153,14 @@ namespace SWLOR.Game.Server.Conversation
         private void BuildMainPageOptions()
         {
             var model = _craft.GetPlayerCraftingData(GetPC());
-
+            int maxEnhancements = model.PlayerPerkLevel / 2;
+            bool canAddEnhancements = model.Blueprint.EnhancementSlots > 0 && maxEnhancements > 0;
+            
             AddResponseToPage("MainPage", "Create Item", model.CanBuildItem);
             AddResponseToPage("MainPage", "Select Main Components");
             AddResponseToPage("MainPage", "Select Secondary Components", model.Blueprint.SecondaryMinimum > 0);
             AddResponseToPage("MainPage", "Select Tertiary Components", model.Blueprint.TertiaryMinimum > 0);
-            AddResponseToPage("MainPage", "Select Enhancement Components", model.Blueprint.EnhancementSlots > 0);
+            AddResponseToPage("MainPage", "Select Enhancement Components", canAddEnhancements);
 
             AddResponseToPage("MainPage", "Change Blueprint");
         }

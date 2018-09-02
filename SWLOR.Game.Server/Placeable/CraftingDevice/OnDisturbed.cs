@@ -3,7 +3,6 @@ using System.Linq;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-
 using NWN;
 using SWLOR.Game.Server.Service.Contracts;
 
@@ -61,30 +60,33 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
             List<NWItem> list = null;
             ComponentType allowedType = ComponentType.None;
             bool reachedCap = false;
+            bool reachedEnhancementLimit = false;
+
             string componentName = string.Empty;
             switch (model.Access)
             {
                 case CraftingAccessType.MainComponent:
                     allowedType = (ComponentType)model.Blueprint.MainComponentTypeID;
-                    reachedCap = model.Blueprint.MainMinimum * 2 < model.MainComponents.Count + 1;
+                    reachedCap = model.Blueprint.MainMaximum < model.MainComponents.Count + 1;
                     list = model.MainComponents;
                     componentName = model.Blueprint.MainComponentType.Name;
                     break;
                 case CraftingAccessType.SecondaryComponent:
                     allowedType = (ComponentType)model.Blueprint.SecondaryComponentTypeID;
-                    reachedCap = model.Blueprint.SecondaryMinimum * 2 < model.SecondaryComponents.Count + 1;
+                    reachedCap = model.Blueprint.SecondaryMaximum < model.SecondaryComponents.Count + 1;
                     list = model.SecondaryComponents;
                     componentName = model.Blueprint.SecondaryComponentType.Name;
                     break;
                 case CraftingAccessType.TertiaryComponent:
                     allowedType = (ComponentType)model.Blueprint.TertiaryComponentTypeID;
-                    reachedCap = model.Blueprint.TertiaryMinimum * 2 < model.TertiaryComponents.Count + 1;
+                    reachedCap = model.Blueprint.TertiaryMaximum < model.TertiaryComponents.Count + 1;
                     list = model.TertiaryComponents;
                     componentName = model.Blueprint.TertiaryComponentType.Name;
                     break;
                 case CraftingAccessType.Enhancement:
                     allowedType = ComponentType.Enhancement;
                     reachedCap = model.Blueprint.EnhancementSlots < model.EnhancementComponents.Count + 1;
+                    reachedEnhancementLimit = model.PlayerPerkLevel / 2 <= model.EnhancementComponents.Count + 1;
                     list = model.EnhancementComponents;
                     componentName = "Enhancement";
                     break;
@@ -92,8 +94,8 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
 
             if (list == null)
             {
-                oPC.FloatingText("There was an issue getting the item data. Notify an admin.");
                 _item.ReturnItem(oPC, oItem);
+                oPC.FloatingText("There was an issue getting the item data. Notify an admin.");
                 return;
             }
 
@@ -101,6 +103,13 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
             {
                 _item.ReturnItem(oPC, oItem);
                 oPC.FloatingText("You cannot add any more components of that type.");
+                return;
+            }
+
+            if (reachedEnhancementLimit)
+            {
+                _item.ReturnItem(oPC, oItem);
+                oPC.FloatingText("Your perk level does not allow you to attach any more enhancements to this item.");
                 return;
             }
 

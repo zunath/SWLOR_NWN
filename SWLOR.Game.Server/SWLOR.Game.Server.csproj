@@ -865,6 +865,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="ServerFiles\Database\scripts\AddWeaponCraftBlueprints.sql" />
     <Content Include="ServerFiles\Database\swlor-db.sql" />
     <Content Include="ServerFiles\Database\scripts\AddPerkLevels.sql" />
     <Content Include="ServerFiles\Database\scripts\WipePlayerData.sql" />

@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             NWItem equipped = oItem ?? oPC.RightHand;
             int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.BluntPowerAttack);
 
-            if (Equals(equipped, oItem) || equipped.CustomItemType != CustomItemType.Blunt)
+            if (Equals(equipped, oItem) || equipped.CustomItemType != CustomItemType.Baton)
             {
                 _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_POWER_ATTACK);
                 _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_IMPROVED_POWER_ATTACK);

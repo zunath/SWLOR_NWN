@@ -104,12 +104,12 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             }
 
             // Main or offhand is not acceptable item type.
-            if (mainEquipped.CustomItemType != CustomItemType.Blade ||
-                mainEquipped.CustomItemType != CustomItemType.Blunt ||
-                mainEquipped.CustomItemType != CustomItemType.FinesseBlade || 
-                offEquipped.CustomItemType != CustomItemType.Blade || 
-                offEquipped.CustomItemType != CustomItemType.Blunt || 
-                offEquipped.CustomItemType != CustomItemType.FinesseBlade)
+            if (mainEquipped.CustomItemType != CustomItemType.Vibroblade ||
+                mainEquipped.CustomItemType != CustomItemType.Baton ||
+                mainEquipped.CustomItemType != CustomItemType.FinesseVibroblade || 
+                offEquipped.CustomItemType != CustomItemType.Vibroblade || 
+                offEquipped.CustomItemType != CustomItemType.Baton || 
+                offEquipped.CustomItemType != CustomItemType.FinesseVibroblade)
             {
                 RemoveFeats(oPC);
                 return;

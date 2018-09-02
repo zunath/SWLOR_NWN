@@ -402,7 +402,7 @@ namespace SWLOR.Game.Server.Service
 
             NWPlayer player = NWPlayer.Wrap(data.Damager.Object);
             NWItem weapon = NWItem.Wrap(_.GetLastWeaponUsed(player.Object));
-            if (weapon.CustomItemType != CustomItemType.HeavyBlunt) return;
+            if (weapon.CustomItemType != CustomItemType.Saberstaff) return;
             if (player.Chest.CustomItemType != CustomItemType.ForceArmor) return;
 
             int perkRank = _perk.GetPCPerkLevel(player, PerkType.Battlemage);

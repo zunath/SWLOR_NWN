@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Perk.TwoHanded
         {
             NWItem equipped = oItem ?? oPC.RightHand;
 
-            if (Equals(equipped, oItem) || equipped.CustomItemType != CustomItemType.HeavyBlade)
+            if (Equals(equipped, oItem) || equipped.CustomItemType != CustomItemType.HeavyVibroblade)
             {
                 _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_CLEAVE);
                 return;

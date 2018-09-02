@@ -107,17 +107,18 @@ namespace SWLOR.Game.Server.Perk.Weapons
             PerkType perkType;
             switch (equipped.CustomItemType)
             {
-                case CustomItemType.Blade: perkType = PerkType.ImprovedCriticalBlades; break;
-                case CustomItemType.FinesseBlade: perkType = PerkType.ImprovedCriticalFinesseBlades; break;
-                case CustomItemType.Blunt: perkType = PerkType.ImprovedCriticalBlunts; break;
-                case CustomItemType.HeavyBlade: perkType = PerkType.ImprovedCriticalHeavyBlades; break;
-                case CustomItemType.HeavyBlunt: perkType = PerkType.ImprovedCriticalHeavyBlunts; break;
+                case CustomItemType.Vibroblade: perkType = PerkType.ImprovedCriticalVibroblades; break;
+                case CustomItemType.FinesseVibroblade: perkType = PerkType.ImprovedCriticalFinesseVibroblades; break;
+                case CustomItemType.Baton: perkType = PerkType.ImprovedCriticalBatons; break;
+                case CustomItemType.HeavyVibroblade: perkType = PerkType.ImprovedCriticalHeavyVibroblades; break;
+                case CustomItemType.Saberstaff: perkType = PerkType.ImprovedCriticalSaberstaffs; break;
                 case CustomItemType.Polearm: perkType = PerkType.ImprovedCriticalPolearms; break;
-                case CustomItemType.TwinBlade: perkType = PerkType.ImprovedCriticalTwinBlades; break;
+                case CustomItemType.TwinBlade: perkType = PerkType.ImprovedCriticalTwinVibroblades; break;
                 case CustomItemType.MartialArtWeapon: perkType = PerkType.ImprovedCriticalMartialArts; break;
-                case CustomItemType.Blaster: perkType = PerkType.ImprovedCriticalBows; break;
-                case CustomItemType.Rifle: perkType = PerkType.ImprovedCriticalCrossbows; break;
+                case CustomItemType.BlasterPistol: perkType = PerkType.ImprovedCriticalBlasterPistols; break;
+                case CustomItemType.BlasterRifle: perkType = PerkType.ImprovedCriticalBlasterRifles; break;
                 case CustomItemType.Throwing: perkType = PerkType.ImprovedCriticalThrowing; break;
+                case CustomItemType.Lightsaber: perkType = PerkType.ImprovedCriticalLightsabers; break;
                 default: return;
             }
             

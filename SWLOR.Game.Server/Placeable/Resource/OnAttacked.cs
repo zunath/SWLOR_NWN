@@ -49,22 +49,22 @@ namespace SWLOR.Game.Server.Placeable.Resource
             bool usingCorrectWeapon = true;
             if (activityID == 1) // 1 = Logging
             {
-                usingCorrectWeapon = oWeapon.CustomItemType == CustomItemType.Blade || 
+                usingCorrectWeapon = oWeapon.CustomItemType == CustomItemType.Vibroblade || 
                                      oWeapon.CustomItemType == CustomItemType.TwinBlade || 
-                                     oWeapon.CustomItemType == CustomItemType.HeavyBlade ||
-                                     oWeapon.CustomItemType == CustomItemType.FinesseBlade ||
+                                     oWeapon.CustomItemType == CustomItemType.HeavyVibroblade ||
+                                     oWeapon.CustomItemType == CustomItemType.FinesseVibroblade ||
                                      oWeapon.CustomItemType == CustomItemType.Polearm;
                 improperWeaponMessage = "You must be using a blade to harvest this object.";
             }
             else if (activityID == 2) // Mining
             {
-                usingCorrectWeapon = oWeapon.CustomItemType == CustomItemType.Blade ||
+                usingCorrectWeapon = oWeapon.CustomItemType == CustomItemType.Vibroblade ||
                                      oWeapon.CustomItemType == CustomItemType.TwinBlade ||
-                                     oWeapon.CustomItemType == CustomItemType.HeavyBlade ||
-                                     oWeapon.CustomItemType == CustomItemType.FinesseBlade ||
+                                     oWeapon.CustomItemType == CustomItemType.HeavyVibroblade ||
+                                     oWeapon.CustomItemType == CustomItemType.FinesseVibroblade ||
                                      oWeapon.CustomItemType == CustomItemType.Polearm ||
-                                     oWeapon.CustomItemType == CustomItemType.Blunt ||
-                                     oWeapon.CustomItemType == CustomItemType.HeavyBlunt;
+                                     oWeapon.CustomItemType == CustomItemType.Baton ||
+                                     oWeapon.CustomItemType == CustomItemType.Saberstaff;
                 improperWeaponMessage = "You must be using a blade or a blunt weapon to harvest this object.";
             }
 

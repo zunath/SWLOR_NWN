@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             NWItem weapon = oPC.RightHand;
             NWItem armor = oPC.Chest;
 
-            return weapon.CustomItemType == CustomItemType.FinesseBlade &&
+            return weapon.CustomItemType == CustomItemType.FinesseVibroblade &&
                    armor.CustomItemType == CustomItemType.LightArmor;
         }
 

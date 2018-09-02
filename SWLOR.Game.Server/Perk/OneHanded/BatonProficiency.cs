@@ -1,8 +1,8 @@
 ﻿using SWLOR.Game.Server.GameObject;
 
-namespace SWLOR.Game.Server.Perk.Firearms
+namespace SWLOR.Game.Server.Perk.OneHanded
 {
-    public class BlasterProficiency : IPerk
+    public class BatonProficiency : IPerk
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

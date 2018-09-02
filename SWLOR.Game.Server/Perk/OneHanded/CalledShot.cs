@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
         {
             NWItem equipped = oItem ?? oPC.RightHand;
             
-            if (Equals(equipped, oItem) || equipped.CustomItemType != CustomItemType.FinesseBlade)
+            if (Equals(equipped, oItem) || equipped.CustomItemType != CustomItemType.FinesseVibroblade)
             {
                 _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_CALLED_SHOT);
                 return;

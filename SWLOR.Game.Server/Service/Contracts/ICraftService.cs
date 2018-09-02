@@ -19,5 +19,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         int GetIngotPerkLevel(string oreResref);
         CraftingData GetPlayerCraftingData(NWPlayer player);
         void ClearPlayerCraftingData(NWPlayer player, bool destroyComponents = false);
+        string CalculateDifficultyDescription(int pcLevel, int blueprintLevel);
+        int CalculatePCEffectiveLevel(NWPlayer pcGO, NWPlaceable device, int skillRank);
     }
 }

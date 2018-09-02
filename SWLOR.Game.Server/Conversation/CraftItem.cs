@@ -13,18 +13,21 @@ namespace SWLOR.Game.Server.Conversation
         private readonly ICraftService _craft;
         private readonly IColorTokenService _color;
         private readonly IPerkService _perk;
+        private readonly ISkillService _skill;
 
         public CraftItem(
             INWScript script, 
             IDialogService dialog,
             ICraftService craft,
             IColorTokenService color,
-            IPerkService perk) 
+            IPerkService perk,
+            ISkillService skill) 
             : base(script, dialog)
         {
             _craft = craft;
             _color = color;
             _perk = perk;
+            _skill = skill;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -46,6 +49,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 model.BlueprintID = GetPC().GetLocalInt("CRAFT_BLUEPRINT_ID");
                 model.Blueprint = _craft.GetBlueprintByID(model.BlueprintID);
+                model.PlayerSkillRank = _skill.GetPCSkill(GetPC(), model.Blueprint.SkillID).Rank;
 
                 switch ((SkillType) model.Blueprint.SkillID)
                 {
@@ -108,10 +112,14 @@ namespace SWLOR.Game.Server.Conversation
         {
             var model = _craft.GetPlayerCraftingData(GetPC());
             var bp = model.Blueprint;
-            string mainCounts = " (" + (bp.MainMinimum > 0 ? Convert.ToString(bp.MainMinimum) : "Optional") + "/" + bp.MainMaximum + ")";
-
+            int playerEL = _craft.CalculatePCEffectiveLevel(GetPC(), GetDevice(), model.PlayerSkillRank);
+            
             string header = _color.Green("Blueprint: ") + bp.Quantity + "x " + bp.ItemName + "\n";
+            header += _color.Green("Level: ") + model.AdjustedLevel + " (Base: " + bp.BaseLevel + ")\n";
+            header += _color.Green("Difficulty: ") + _craft.CalculateDifficultyDescription(playerEL, model.AdjustedLevel) + "\n";
             header += _color.Green("Required Components (Required/Maximum): ") + "\n\n";
+
+            string mainCounts = " (" + (bp.MainMinimum > 0 ? Convert.ToString(bp.MainMinimum) : "Optional") + "/" + bp.MainMaximum + ")";
             header += _color.Green("Main: ") + bp.MainComponentType.Name + mainCounts + "\n";
 
             if (bp.SecondaryMinimum > 0 && bp.SecondaryComponentTypeID > 0)

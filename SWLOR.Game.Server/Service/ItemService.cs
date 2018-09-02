@@ -10,6 +10,7 @@ using NWN;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -136,7 +137,7 @@ namespace SWLOR.Game.Server.Service
             foreach (NWPlayer pc in module.Players)
             {
                 NWItem offHand = pc.LeftHand;
-                if (offHand.BaseItemType == NWScript.BASE_ITEM_TORCH)
+                if (offHand.BaseItemType == BASE_ITEM_TORCH)
                 {
                     int charges = offHand.ReduceCharges();
                     if (charges <= 0)
@@ -151,7 +152,7 @@ namespace SWLOR.Game.Server.Service
         public string OnModuleExamine(string existingDescription, NWPlayer examiner, NWObject examinedObject)
         {
             if (!examiner.IsPlayer) return existingDescription;
-            if (examinedObject.ObjectType != NWScript.OBJECT_TYPE_ITEM) return existingDescription;
+            if (examinedObject.ObjectType != OBJECT_TYPE_ITEM) return existingDescription;
 
             NWItem examinedItem = NWItem.Wrap(examinedObject.Object);
             string description = "";
@@ -264,14 +265,14 @@ namespace SWLOR.Game.Server.Service
             {
                 int[] armorTypes =
                 {
-                    NWScript.BASE_ITEM_AMULET,
-                    NWScript.BASE_ITEM_ARMOR,
-                    NWScript.BASE_ITEM_BELT,
-                    NWScript.BASE_ITEM_CLOAK,
-                    NWScript.BASE_ITEM_HELMET,
-                    NWScript.BASE_ITEM_LARGESHIELD,
-                    NWScript.BASE_ITEM_SMALLSHIELD,
-                    NWScript.BASE_ITEM_TOWERSHIELD
+                    BASE_ITEM_AMULET,
+                    BASE_ITEM_ARMOR,
+                    BASE_ITEM_BELT,
+                    BASE_ITEM_CLOAK,
+                    BASE_ITEM_HELMET,
+                    BASE_ITEM_LARGESHIELD,
+                    BASE_ITEM_SMALLSHIELD,
+                    BASE_ITEM_TOWERSHIELD
                 };
 
                 return armorTypes;
@@ -284,51 +285,51 @@ namespace SWLOR.Game.Server.Service
             {
                 int[] weaponTypes =
                 {
-                    NWScript.BASE_ITEM_ARROW,
-                    NWScript.BASE_ITEM_BASTARDSWORD,
-                    NWScript.BASE_ITEM_BATTLEAXE,
-                    NWScript.BASE_ITEM_BOLT,
-                    NWScript.BASE_ITEM_BRACER,
-                    NWScript.BASE_ITEM_BULLET,
-                    NWScript.BASE_ITEM_CLUB,
-                    NWScript.BASE_ITEM_DAGGER,
-                    NWScript.BASE_ITEM_DART,
-                    NWScript.BASE_ITEM_DIREMACE,
-                    NWScript.BASE_ITEM_DOUBLEAXE,
-                    NWScript.BASE_ITEM_DWARVENWARAXE,
-                    NWScript.BASE_ITEM_GLOVES,
-                    NWScript.BASE_ITEM_GREATAXE,
-                    NWScript.BASE_ITEM_GREATSWORD,
-                    NWScript.BASE_ITEM_GRENADE,
-                    NWScript.BASE_ITEM_HALBERD,
-                    NWScript.BASE_ITEM_HANDAXE,
-                    NWScript.BASE_ITEM_HEAVYCROSSBOW,
-                    NWScript.BASE_ITEM_HEAVYFLAIL,
-                    NWScript.BASE_ITEM_KAMA,
-                    NWScript.BASE_ITEM_KATANA,
-                    NWScript.BASE_ITEM_KUKRI,
-                    NWScript.BASE_ITEM_LIGHTCROSSBOW,
-                    NWScript.BASE_ITEM_LIGHTFLAIL,
-                    NWScript.BASE_ITEM_LIGHTHAMMER,
-                    NWScript.BASE_ITEM_LIGHTMACE,
-                    NWScript.BASE_ITEM_LONGBOW,
-                    NWScript.BASE_ITEM_LONGSWORD,
-                    NWScript.BASE_ITEM_MORNINGSTAR,
-                    NWScript.BASE_ITEM_QUARTERSTAFF,
-                    NWScript.BASE_ITEM_RAPIER,
-                    NWScript.BASE_ITEM_SCIMITAR,
-                    NWScript.BASE_ITEM_SCYTHE,
-                    NWScript.BASE_ITEM_SHORTBOW,
-                    NWScript.BASE_ITEM_SHORTSPEAR,
-                    NWScript.BASE_ITEM_SHORTSWORD,
-                    NWScript.BASE_ITEM_SHURIKEN,
-                    NWScript.BASE_ITEM_SICKLE,
-                    NWScript.BASE_ITEM_SLING,
-                    NWScript.BASE_ITEM_THROWINGAXE,
-                    NWScript.BASE_ITEM_TRIDENT,
-                    NWScript.BASE_ITEM_TWOBLADEDSWORD,
-                    NWScript.BASE_ITEM_WARHAMMER,
-                    NWScript.BASE_ITEM_WHIP
+                    BASE_ITEM_ARROW,
+                    BASE_ITEM_BASTARDSWORD,
+                    BASE_ITEM_BATTLEAXE,
+                    BASE_ITEM_BOLT,
+                    BASE_ITEM_BRACER,
+                    BASE_ITEM_BULLET,
+                    BASE_ITEM_CLUB,
+                    BASE_ITEM_DAGGER,
+                    BASE_ITEM_DART,
+                    BASE_ITEM_DIREMACE,
+                    BASE_ITEM_DOUBLEAXE,
+                    BASE_ITEM_DWARVENWARAXE,
+                    BASE_ITEM_GLOVES,
+                    BASE_ITEM_GREATAXE,
+                    BASE_ITEM_GREATSWORD,
+                    BASE_ITEM_GRENADE,
+                    BASE_ITEM_HALBERD,
+                    BASE_ITEM_HANDAXE,
+                    BASE_ITEM_HEAVYCROSSBOW,
+                    BASE_ITEM_HEAVYFLAIL,
+                    BASE_ITEM_KAMA,
+                    BASE_ITEM_KATANA,
+                    BASE_ITEM_KUKRI,
+                    BASE_ITEM_LIGHTCROSSBOW,
+                    BASE_ITEM_LIGHTFLAIL,
+                    BASE_ITEM_LIGHTHAMMER,
+                    BASE_ITEM_LIGHTMACE,
+                    BASE_ITEM_LONGBOW,
+                    BASE_ITEM_LONGSWORD,
+                    BASE_ITEM_MORNINGSTAR,
+                    BASE_ITEM_QUARTERSTAFF,
+                    BASE_ITEM_RAPIER,
+                    BASE_ITEM_SCIMITAR,
+                    BASE_ITEM_SCYTHE,
+                    BASE_ITEM_SHORTBOW,
+                    BASE_ITEM_SHORTSPEAR,
+                    BASE_ITEM_SHORTSWORD,
+                    BASE_ITEM_SHURIKEN,
+                    BASE_ITEM_SICKLE,
+                    BASE_ITEM_SLING,
+                    BASE_ITEM_THROWINGAXE,
+                    BASE_ITEM_TRIDENT,
+                    BASE_ITEM_TWOBLADEDSWORD,
+                    BASE_ITEM_WARHAMMER,
+                    BASE_ITEM_WHIP
                 };
 
                 return weaponTypes;
@@ -338,59 +339,59 @@ namespace SWLOR.Game.Server.Service
         public void OnModuleEquipItem()
         {
             int[] validItemTypes = {
-                NWScript.BASE_ITEM_ARMOR,
-                NWScript.BASE_ITEM_ARROW,
-                NWScript.BASE_ITEM_BASTARDSWORD,
-                NWScript.BASE_ITEM_BATTLEAXE,
-                NWScript.BASE_ITEM_BELT,
-                NWScript.BASE_ITEM_BOLT,
-                NWScript.BASE_ITEM_BOOTS,
-                NWScript.BASE_ITEM_BRACER,
-                NWScript.BASE_ITEM_BULLET,
-                NWScript.BASE_ITEM_CLOAK,
-                NWScript.BASE_ITEM_CLUB,
-                NWScript.BASE_ITEM_DAGGER,
-                NWScript.BASE_ITEM_DART,
-                NWScript.BASE_ITEM_DIREMACE,
-                NWScript.BASE_ITEM_DOUBLEAXE,
-                NWScript.BASE_ITEM_DWARVENWARAXE,
-                NWScript.BASE_ITEM_GLOVES,
-                NWScript.BASE_ITEM_GREATAXE,
-                NWScript.BASE_ITEM_GREATSWORD,
-                NWScript.BASE_ITEM_GRENADE,
-                NWScript.BASE_ITEM_HALBERD,
-                NWScript.BASE_ITEM_HANDAXE,
-                NWScript.BASE_ITEM_HEAVYCROSSBOW,
-                NWScript.BASE_ITEM_HEAVYFLAIL,
-                NWScript.BASE_ITEM_HELMET,
-                NWScript.BASE_ITEM_KAMA,
-                NWScript.BASE_ITEM_KATANA,
-                NWScript.BASE_ITEM_KUKRI,
-                NWScript.BASE_ITEM_LARGESHIELD,
-                NWScript.BASE_ITEM_LIGHTCROSSBOW,
-                NWScript.BASE_ITEM_LIGHTFLAIL,
-                NWScript.BASE_ITEM_LIGHTHAMMER,
-                NWScript.BASE_ITEM_LIGHTMACE,
-                NWScript.BASE_ITEM_LONGBOW,
-                NWScript.BASE_ITEM_LONGSWORD,
-                NWScript.BASE_ITEM_MORNINGSTAR,
-                NWScript.BASE_ITEM_QUARTERSTAFF,
-                NWScript.BASE_ITEM_RAPIER,
-                NWScript.BASE_ITEM_SCIMITAR,
-                NWScript.BASE_ITEM_SCYTHE,
-                NWScript.BASE_ITEM_SHORTBOW,
-                NWScript.BASE_ITEM_SHORTSPEAR,
-                NWScript.BASE_ITEM_SHORTSWORD,
-                NWScript.BASE_ITEM_SHURIKEN,
-                NWScript.BASE_ITEM_SICKLE,
-                NWScript.BASE_ITEM_SLING,
-                NWScript.BASE_ITEM_SMALLSHIELD,
-                NWScript.BASE_ITEM_THROWINGAXE,
-                NWScript.BASE_ITEM_TOWERSHIELD,
-                NWScript.BASE_ITEM_TRIDENT,
-                NWScript.BASE_ITEM_TWOBLADEDSWORD,
-                NWScript.BASE_ITEM_WARHAMMER,
-                NWScript.BASE_ITEM_WHIP
+                BASE_ITEM_ARMOR,
+                BASE_ITEM_ARROW,
+                BASE_ITEM_BASTARDSWORD,
+                BASE_ITEM_BATTLEAXE,
+                BASE_ITEM_BELT,
+                BASE_ITEM_BOLT,
+                BASE_ITEM_BOOTS,
+                BASE_ITEM_BRACER,
+                BASE_ITEM_BULLET,
+                BASE_ITEM_CLOAK,
+                BASE_ITEM_CLUB,
+                BASE_ITEM_DAGGER,
+                BASE_ITEM_DART,
+                BASE_ITEM_DIREMACE,
+                BASE_ITEM_DOUBLEAXE,
+                BASE_ITEM_DWARVENWARAXE,
+                BASE_ITEM_GLOVES,
+                BASE_ITEM_GREATAXE,
+                BASE_ITEM_GREATSWORD,
+                BASE_ITEM_GRENADE,
+                BASE_ITEM_HALBERD,
+                BASE_ITEM_HANDAXE,
+                BASE_ITEM_HEAVYCROSSBOW,
+                BASE_ITEM_HEAVYFLAIL,
+                BASE_ITEM_HELMET,
+                BASE_ITEM_KAMA,
+                BASE_ITEM_KATANA,
+                BASE_ITEM_KUKRI,
+                BASE_ITEM_LARGESHIELD,
+                BASE_ITEM_LIGHTCROSSBOW,
+                BASE_ITEM_LIGHTFLAIL,
+                BASE_ITEM_LIGHTHAMMER,
+                BASE_ITEM_LIGHTMACE,
+                BASE_ITEM_LONGBOW,
+                BASE_ITEM_LONGSWORD,
+                BASE_ITEM_MORNINGSTAR,
+                BASE_ITEM_QUARTERSTAFF,
+                BASE_ITEM_RAPIER,
+                BASE_ITEM_SCIMITAR,
+                BASE_ITEM_SCYTHE,
+                BASE_ITEM_SHORTBOW,
+                BASE_ITEM_SHORTSPEAR,
+                BASE_ITEM_SHORTSWORD,
+                BASE_ITEM_SHURIKEN,
+                BASE_ITEM_SICKLE,
+                BASE_ITEM_SLING,
+                BASE_ITEM_SMALLSHIELD,
+                BASE_ITEM_THROWINGAXE,
+                BASE_ITEM_TOWERSHIELD,
+                BASE_ITEM_TRIDENT,
+                BASE_ITEM_TWOBLADEDSWORD,
+                BASE_ITEM_WARHAMMER,
+                BASE_ITEM_WHIP
         };
 
             NWItem oItem = NWItem.Wrap(_.GetPCItemLastEquipped());
@@ -400,9 +401,9 @@ namespace SWLOR.Game.Server.Service
 
             foreach (ItemProperty ip in oItem.ItemProperties)
             {
-                if (_.GetItemPropertyType(ip) == NWScript.ITEM_PROPERTY_ONHITCASTSPELL)
+                if (_.GetItemPropertyType(ip) == ITEM_PROPERTY_ONHITCASTSPELL)
                 {
-                    if (_.GetItemPropertySubType(ip) == NWScript.IP_CONST_ONHIT_CASTSPELL_ONHIT_UNIQUEPOWER)
+                    if (_.GetItemPropertySubType(ip) == IP_CONST_ONHIT_CASTSPELL_ONHIT_UNIQUEPOWER)
                     {
                         return;
                     }
@@ -410,9 +411,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             // No item property found. Add it to the item.
-            _xp2.IPSafeAddItemProperty(oItem, _.ItemPropertyOnHitCastSpell(NWScript.IP_CONST_ONHIT_CASTSPELL_ONHIT_UNIQUEPOWER, 40), 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            _xp2.IPSafeAddItemProperty(oItem, _.ItemPropertyOnHitCastSpell(IP_CONST_ONHIT_CASTSPELL_ONHIT_UNIQUEPOWER, 40), 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
 
-            if (baseItemType == NWScript.BASE_ITEM_TORCH)
+            if (baseItemType == BASE_ITEM_TORCH)
             {
                 int charges = oItem.ReduceCharges();
                 if (charges <= 0)
@@ -424,7 +425,7 @@ namespace SWLOR.Game.Server.Service
 
         public void ReturnItem(NWObject target, NWItem item)
         {
-            _.CopyItem(item.Object, target.Object, NWScript.TRUE);
+            _.CopyItem(item.Object, target.Object, TRUE);
             item.Destroy();
         }
 
@@ -485,100 +486,100 @@ namespace SWLOR.Game.Server.Service
         {
             int[] blades =
             {
-                NWScript.BASE_ITEM_BASTARDSWORD,
-                NWScript.BASE_ITEM_LONGSWORD,
-                NWScript.BASE_ITEM_KATANA,
-                NWScript.BASE_ITEM_SCIMITAR,
-                NWScript.BASE_ITEM_BATTLEAXE
+                BASE_ITEM_BASTARDSWORD,
+                BASE_ITEM_LONGSWORD,
+                BASE_ITEM_KATANA,
+                BASE_ITEM_SCIMITAR,
+                BASE_ITEM_BATTLEAXE
             };
 
             int[] finesseBlades =
             {
-                NWScript.BASE_ITEM_DAGGER,
-                NWScript.BASE_ITEM_RAPIER,
-                NWScript.BASE_ITEM_SHORTSWORD,
-                NWScript.BASE_ITEM_KUKRI,
-                NWScript.BASE_ITEM_SICKLE,
-                NWScript.BASE_ITEM_WHIP,
-                NWScript.BASE_ITEM_HANDAXE
+                BASE_ITEM_DAGGER,
+                BASE_ITEM_RAPIER,
+                BASE_ITEM_SHORTSWORD,
+                BASE_ITEM_KUKRI,
+                BASE_ITEM_SICKLE,
+                BASE_ITEM_WHIP,
+                BASE_ITEM_HANDAXE
             };
 
             int[] blunts =
             {
-                NWScript.BASE_ITEM_CLUB,
-                NWScript.BASE_ITEM_LIGHTFLAIL,
-                NWScript.BASE_ITEM_LIGHTHAMMER,
-                NWScript.BASE_ITEM_LIGHTMACE,
-                NWScript.BASE_ITEM_MORNINGSTAR
+                BASE_ITEM_CLUB,
+                BASE_ITEM_LIGHTFLAIL,
+                BASE_ITEM_LIGHTHAMMER,
+                BASE_ITEM_LIGHTMACE,
+                BASE_ITEM_MORNINGSTAR
             };
 
             int[] heavyBlades =
             {
-                NWScript.BASE_ITEM_GREATAXE,
-                NWScript.BASE_ITEM_GREATSWORD,
-                NWScript.BASE_ITEM_DWARVENWARAXE
+                BASE_ITEM_GREATAXE,
+                BASE_ITEM_GREATSWORD,
+                BASE_ITEM_DWARVENWARAXE
             };
 
             int[] heavyBlunts =
             {
-                NWScript.BASE_ITEM_HEAVYFLAIL,
-                NWScript.BASE_ITEM_WARHAMMER,
-                NWScript.BASE_ITEM_DIREMACE,
-                NWScript.BASE_ITEM_QUARTERSTAFF
+                BASE_ITEM_HEAVYFLAIL,
+                BASE_ITEM_WARHAMMER,
+                BASE_ITEM_DIREMACE,
+                BASE_ITEM_QUARTERSTAFF
             };
 
             int[] polearms =
             {
-                NWScript.BASE_ITEM_HALBERD,
-                NWScript.BASE_ITEM_SCYTHE,
-                NWScript.BASE_ITEM_SHORTSPEAR,
-                NWScript.BASE_ITEM_TRIDENT
+                BASE_ITEM_HALBERD,
+                BASE_ITEM_SCYTHE,
+                BASE_ITEM_SHORTSPEAR,
+                BASE_ITEM_TRIDENT
             };
 
             int[] twinBlades =
             {
-                NWScript.BASE_ITEM_DOUBLEAXE,
-                NWScript.BASE_ITEM_TWOBLADEDSWORD
+                BASE_ITEM_DOUBLEAXE,
+                BASE_ITEM_TWOBLADEDSWORD
             };
 
             int[] martialArts =
             {
-                NWScript.BASE_ITEM_GLOVES,
-                NWScript.BASE_ITEM_BRACER,
-                NWScript.BASE_ITEM_KAMA
+                BASE_ITEM_GLOVES,
+                BASE_ITEM_BRACER,
+                BASE_ITEM_KAMA
             };
 
             int[] rifles =
             {
-                NWScript.BASE_ITEM_LIGHTCROSSBOW,
-                NWScript.BASE_ITEM_HEAVYCROSSBOW
+                BASE_ITEM_LIGHTCROSSBOW,
+                BASE_ITEM_HEAVYCROSSBOW
             };
 
             int[] blasters =
             {
-                NWScript.BASE_ITEM_SHORTBOW,
-                NWScript.BASE_ITEM_LONGBOW,
+                BASE_ITEM_SHORTBOW,
+                BASE_ITEM_LONGBOW,
             };
 
             int[] throwing =
             {
-                NWScript.BASE_ITEM_SLING,
-                NWScript.BASE_ITEM_DART,
-                NWScript.BASE_ITEM_SHURIKEN,
-                NWScript.BASE_ITEM_THROWINGAXE
+                BASE_ITEM_SLING,
+                BASE_ITEM_DART,
+                BASE_ITEM_SHURIKEN,
+                BASE_ITEM_THROWINGAXE
             };
 
 
-            if (blades.Contains(item.BaseItemType)) return CustomItemType.Blade;
-            if (finesseBlades.Contains(item.BaseItemType)) return CustomItemType.FinesseBlade;
-            if (blunts.Contains(item.BaseItemType)) return CustomItemType.Blunt;
-            if (heavyBlades.Contains(item.BaseItemType)) return CustomItemType.HeavyBlade;
-            if (heavyBlunts.Contains(item.BaseItemType)) return CustomItemType.HeavyBlunt;
+            if (blades.Contains(item.BaseItemType)) return CustomItemType.Vibroblade;
+            if (finesseBlades.Contains(item.BaseItemType)) return CustomItemType.FinesseVibroblade;
+            if (blunts.Contains(item.BaseItemType)) return CustomItemType.Baton;
+            if (heavyBlades.Contains(item.BaseItemType)) return CustomItemType.HeavyVibroblade;
+            if (heavyBlunts.Contains(item.BaseItemType)) return CustomItemType.Saberstaff;
             if (polearms.Contains(item.BaseItemType)) return CustomItemType.Polearm;
             if (twinBlades.Contains(item.BaseItemType)) return CustomItemType.TwinBlade;
             if (martialArts.Contains(item.BaseItemType)) return CustomItemType.MartialArtWeapon;
-            if (rifles.Contains(item.BaseItemType)) return CustomItemType.Rifle;
-            if (blasters.Contains(item.BaseItemType)) return CustomItemType.Blaster;
+            if (rifles.Contains(item.BaseItemType)) return CustomItemType.BlasterRifle;
+            if (blasters.Contains(item.BaseItemType)) return CustomItemType.BlasterPistol;
             if (throwing.Contains(item.BaseItemType)) return CustomItemType.Throwing;
             // Armor is deliberately left out here because we don't have a way to determine the type of armor it should be
             // based on base item type.

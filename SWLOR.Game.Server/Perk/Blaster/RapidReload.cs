@@ -1,17 +1,16 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using NWN;
 using SWLOR.Game.Server.NWNX.Contracts;
 
-namespace SWLOR.Game.Server.Perk.Firearms
+namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class ZenMarksmanship : IPerk
+    public class RapidReload : IPerk
     {
         private readonly INWScript _;
         private readonly INWNXCreature _nwnxCreature;
 
-        public ZenMarksmanship(INWScript script,
+        public RapidReload(INWScript script,
             INWNXCreature nwnxCreature)
         {
             _ = script;
@@ -54,7 +53,7 @@ namespace SWLOR.Game.Server.Perk.Firearms
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_ZEN_ARCHERY);
+            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_RAPID_RELOAD);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
@@ -73,17 +72,16 @@ namespace SWLOR.Game.Server.Perk.Firearms
 
         private void ApplyFeatChanges(NWPlayer oPC, NWItem oItem)
         {
-            NWItem equipped = oItem ?? oPC.RightHand;
+            NWItem armor = oItem ?? oPC.Chest;
+            if (armor.BaseItemType != NWScript.BASE_ITEM_ARMOR) return;
 
-            if (equipped.Equals(oItem) || 
-                    (equipped.CustomItemType != CustomItemType.Blaster && 
-                     equipped.CustomItemType != CustomItemType.Rifle))
+            if (Equals(armor, oItem) || armor.CustomItemType != CustomItemType.LightArmor)
             {
-                _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_ZEN_ARCHERY);
+                _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_RAPID_RELOAD);
                 return;
             }
 
-            _nwnxCreature.AddFeat(oPC, NWScript.FEAT_ZEN_ARCHERY);
+            _nwnxCreature.AddFeat(oPC, NWScript.FEAT_RAPID_RELOAD);
         }
 
         public bool IsHostile()

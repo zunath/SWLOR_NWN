@@ -24,12 +24,12 @@ namespace SWLOR.Game.Server.Perk.TwoHanded
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             NWItem weapon = oPC.RightHand;
-            return weapon.CustomItemType == CustomItemType.HeavyBlunt;
+            return weapon.CustomItemType == CustomItemType.Saberstaff;
         }
 
         public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
         {
-            return "You must be equipped with a heavy blunt weapon to use Knockdown.";
+            return "You must be equipped with a saberstaff weapon to use Knockdown.";
         }
 
         public int FPCost(NWPlayer oPC, int baseFPCost)

@@ -1,8 +1,8 @@
 ﻿using SWLOR.Game.Server.GameObject;
 
-namespace SWLOR.Game.Server.Perk.TwinBlade
+namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class TwinBladeProficiency : IPerk
+    public class BlasterPistolProficiency : IPerk
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

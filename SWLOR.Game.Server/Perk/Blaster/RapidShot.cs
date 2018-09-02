@@ -1,17 +1,16 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using NWN;
 using SWLOR.Game.Server.NWNX.Contracts;
 
-namespace SWLOR.Game.Server.Perk.Firearms
+namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class PointBlankShot: IPerk
+    public class RapidShot : IPerk
     {
         private readonly INWScript _;
         private readonly INWNXCreature _nwnxCreature;
 
-        public PointBlankShot(INWScript script,
+        public RapidShot(INWScript script,
             INWNXCreature nwnxCreature)
         {
             _ = script;
@@ -54,7 +53,7 @@ namespace SWLOR.Game.Server.Perk.Firearms
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_POINT_BLANK_SHOT);
+            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_RAPID_SHOT);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
@@ -73,16 +72,18 @@ namespace SWLOR.Game.Server.Perk.Firearms
 
         private void ApplyFeatChanges(NWPlayer oPC, NWItem oItem)
         {
-            NWItem armor = oItem ?? oPC.Chest;
-            if (armor.BaseItemType != NWScript.BASE_ITEM_ARMOR) return;
-            
-            if (Equals(armor, oItem) || armor.CustomItemType != CustomItemType.LightArmor)
+            NWItem equippedArmor = oItem ?? oPC.Chest;
+            NWItem equippedWeapon = oItem ?? oPC.RightHand;
+
+            if (equippedArmor.Equals(oItem) || equippedWeapon.Equals(oItem) || 
+                equippedArmor.CustomItemType != CustomItemType.LightArmor ||
+                equippedWeapon.CustomItemType != CustomItemType.BlasterPistol)
             {
-                _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_POINT_BLANK_SHOT);
+                _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_RAPID_RELOAD);
                 return;
             }
 
-            _nwnxCreature.AddFeat(oPC, NWScript.FEAT_POINT_BLANK_SHOT);
+            _nwnxCreature.AddFeat(oPC, NWScript.FEAT_RAPID_RELOAD);
         }
 
         public bool IsHostile()

@@ -1,25 +1,20 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using NWN;
 using SWLOR.Game.Server.NWNX.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
 
-namespace SWLOR.Game.Server.Perk.OneHanded
+namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class BladePowerAttack : IPerk
+    public class ZenMarksmanship : IPerk
     {
         private readonly INWScript _;
         private readonly INWNXCreature _nwnxCreature;
-        private readonly IPerkService _perk;
 
-        public BladePowerAttack(INWScript script,
-            INWNXCreature nwnxCreature,
-            IPerkService perk)
+        public ZenMarksmanship(INWScript script,
+            INWNXCreature nwnxCreature)
         {
             _ = script;
             _nwnxCreature = nwnxCreature;
-            _perk = perk;
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -58,8 +53,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_POWER_ATTACK);
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_IMPROVED_POWER_ATTACK);
+            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_ZEN_ARCHERY);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
@@ -79,21 +73,16 @@ namespace SWLOR.Game.Server.Perk.OneHanded
         private void ApplyFeatChanges(NWPlayer oPC, NWItem oItem)
         {
             NWItem equipped = oItem ?? oPC.RightHand;
-            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.BladePowerAttack);
 
-            if (Equals(equipped, oItem) || equipped.CustomItemType != CustomItemType.Vibroblade)
+            if (equipped.Equals(oItem) || 
+                    (equipped.CustomItemType != CustomItemType.BlasterPistol && 
+                     equipped.CustomItemType != CustomItemType.BlasterRifle))
             {
-                _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_POWER_ATTACK);
-                _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_IMPROVED_POWER_ATTACK);
+                _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_ZEN_ARCHERY);
                 return;
             }
-            
-            _nwnxCreature.AddFeat(oPC, NWScript.FEAT_POWER_ATTACK);
 
-            if (perkLevel >= 2)
-            {
-                _nwnxCreature.AddFeat(oPC, NWScript.FEAT_IMPROVED_POWER_ATTACK);
-            }
+            _nwnxCreature.AddFeat(oPC, NWScript.FEAT_ZEN_ARCHERY);
         }
 
         public bool IsHostile()

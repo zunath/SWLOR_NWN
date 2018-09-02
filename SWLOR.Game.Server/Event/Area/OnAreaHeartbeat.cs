@@ -1,5 +1,7 @@
 ﻿
+using System;
 using NWN;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Event.Area
 {

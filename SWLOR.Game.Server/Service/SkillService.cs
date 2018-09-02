@@ -905,16 +905,16 @@ namespace SWLOR.Game.Server.Service
                 weapon = null;
                 NWItem offHand = oPC.LeftHand;
 
-                if (offHand.CustomItemType == CustomItemType.Blade ||
-                   offHand.CustomItemType == CustomItemType.FinesseBlade ||
-                   offHand.CustomItemType == CustomItemType.Blunt ||
-                   offHand.CustomItemType == CustomItemType.HeavyBlade ||
-                   offHand.CustomItemType == CustomItemType.HeavyBlunt ||
+                if (offHand.CustomItemType == CustomItemType.Vibroblade ||
+                   offHand.CustomItemType == CustomItemType.FinesseVibroblade ||
+                   offHand.CustomItemType == CustomItemType.Baton ||
+                   offHand.CustomItemType == CustomItemType.HeavyVibroblade ||
+                   offHand.CustomItemType == CustomItemType.Saberstaff ||
                    offHand.CustomItemType == CustomItemType.Polearm ||
                    offHand.CustomItemType == CustomItemType.TwinBlade ||
                    offHand.CustomItemType == CustomItemType.MartialArtWeapon ||
-                   offHand.CustomItemType == CustomItemType.Blaster ||
-                   offHand.CustomItemType == CustomItemType.Rifle ||
+                   offHand.CustomItemType == CustomItemType.BlasterPistol ||
+                   offHand.CustomItemType == CustomItemType.BlasterRifle ||
                    offHand.CustomItemType == CustomItemType.Throwing)
                 {
                     weapon = offHand;
@@ -945,24 +945,24 @@ namespace SWLOR.Game.Server.Service
             SkillType proficiencySkill = SkillType.Unknown;
             switch (weapon.CustomItemType)
             {
-                case CustomItemType.Blade:
-                    proficiencyPerk = PerkType.BladeProficiency;
+                case CustomItemType.Vibroblade:
+                    proficiencyPerk = PerkType.VibrobladeProficiency;
                     proficiencySkill = SkillType.OneHanded;
                     break;
-                case CustomItemType.FinesseBlade:
-                    proficiencyPerk = PerkType.FinesseBladeProficiency;
+                case CustomItemType.FinesseVibroblade:
+                    proficiencyPerk = PerkType.FinesseVibrobladeProficiency;
                     proficiencySkill = SkillType.OneHanded;
                     break;
-                case CustomItemType.Blunt:
-                    proficiencyPerk = PerkType.BluntProficiency;
+                case CustomItemType.Baton:
+                    proficiencyPerk = PerkType.BatonProficiency;
                     proficiencySkill = SkillType.OneHanded;
                     break;
-                case CustomItemType.HeavyBlade:
-                    proficiencyPerk = PerkType.HeavyBladeProficiency;
+                case CustomItemType.HeavyVibroblade:
+                    proficiencyPerk = PerkType.HeavyVibrobladeProficiency;
                     proficiencySkill = SkillType.TwoHanded;
                     break;
-                case CustomItemType.HeavyBlunt:
-                    proficiencyPerk = PerkType.HeavyBluntProficiency;
+                case CustomItemType.Saberstaff:
+                    proficiencyPerk = PerkType.SaberstaffProficiency;
                     proficiencySkill = SkillType.TwoHanded;
                     break;
                 case CustomItemType.Polearm:
@@ -970,24 +970,28 @@ namespace SWLOR.Game.Server.Service
                     proficiencySkill = SkillType.TwoHanded;
                     break;
                 case CustomItemType.TwinBlade:
-                    proficiencyPerk = PerkType.TwinBladeProficiency;
+                    proficiencyPerk = PerkType.TwinVibrobladeProficiency;
                     proficiencySkill = SkillType.TwinBlades;
                     break;
                 case CustomItemType.MartialArtWeapon:
                     proficiencyPerk = PerkType.MartialArtsProficiency;
                     proficiencySkill = SkillType.MartialArts;
                     break;
-                case CustomItemType.Blaster:
-                    proficiencyPerk = PerkType.BlasterProficiency;
+                case CustomItemType.BlasterPistol:
+                    proficiencyPerk = PerkType.BlasterPistolProficiency;
                     proficiencySkill = SkillType.Firearms;
                     break;
-                case CustomItemType.Rifle:
-                    proficiencyPerk = PerkType.RifleProficiency;
+                case CustomItemType.BlasterRifle:
+                    proficiencyPerk = PerkType.BlasterRifleProficiency;
                     proficiencySkill = SkillType.Firearms;
                     break;
                 case CustomItemType.Throwing:
                     proficiencyPerk = PerkType.ThrowingProficiency;
                     proficiencySkill = SkillType.Throwing;
+                    break;
+                case CustomItemType.Lightsaber:
+                    proficiencyPerk = PerkType.LightsaberProficiency;
+                    proficiencySkill = SkillType.OneHanded;
                     break;
             }
 

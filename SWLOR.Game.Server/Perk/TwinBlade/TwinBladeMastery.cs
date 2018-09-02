@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
                 return;
             }
 
-            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.TwinBladeMastery);
+            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.TwinVibrobladeMastery);
             _nwnxCreature.AddFeat(oPC, NWScript.FEAT_TWO_WEAPON_FIGHTING);
 
             if (perkLevel >= 2)

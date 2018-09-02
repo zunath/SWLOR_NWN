@@ -64,5 +64,11 @@ namespace SWLOR.Game.Server.Data.Entities
         public int TertiaryMinimum { get; set; }
 
         public int EnhancementSlots { get; set; }
+
+        public int MainMaximum { get; set; }
+
+        public int SecondaryMaximum { get; set; }
+
+        public int TertiaryMaximum { get; set; }
     }
 }

@@ -14,6 +14,7 @@ using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Skill;
+using static NWN.NWScript;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
@@ -139,12 +140,12 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Apply attributes
-            _nwnxCreature.SetRawAbilityScore(player, NWScript.ABILITY_STRENGTH, (int)strBonus + pcEntity.STRBase);
-            _nwnxCreature.SetRawAbilityScore(player, NWScript.ABILITY_DEXTERITY, (int)dexBonus + pcEntity.DEXBase);
-            _nwnxCreature.SetRawAbilityScore(player, NWScript.ABILITY_CONSTITUTION, (int)conBonus + pcEntity.CONBase);
-            _nwnxCreature.SetRawAbilityScore(player, NWScript.ABILITY_INTELLIGENCE, (int)intBonus + pcEntity.INTBase);
-            _nwnxCreature.SetRawAbilityScore(player, NWScript.ABILITY_WISDOM, (int)wisBonus + pcEntity.WISBase);
-            _nwnxCreature.SetRawAbilityScore(player, NWScript.ABILITY_CHARISMA, (int)chaBonus + pcEntity.CHABase);
+            _nwnxCreature.SetRawAbilityScore(player, ABILITY_STRENGTH, (int)strBonus + pcEntity.STRBase);
+            _nwnxCreature.SetRawAbilityScore(player, ABILITY_DEXTERITY, (int)dexBonus + pcEntity.DEXBase);
+            _nwnxCreature.SetRawAbilityScore(player, ABILITY_CONSTITUTION, (int)conBonus + pcEntity.CONBase);
+            _nwnxCreature.SetRawAbilityScore(player, ABILITY_INTELLIGENCE, (int)intBonus + pcEntity.INTBase);
+            _nwnxCreature.SetRawAbilityScore(player, ABILITY_WISDOM, (int)wisBonus + pcEntity.WISBase);
+            _nwnxCreature.SetRawAbilityScore(player, ABILITY_CHARISMA, (int)chaBonus + pcEntity.CHABase);
 
             // Apply AC
             int ac = player.CalculateEffectiveArmorClass(ignoreItem);
@@ -158,7 +159,7 @@ namespace SWLOR.Game.Server.Service
             int equippedItemHPBonus = 0;
             int equippedItemFPBonus = 0;
 
-            for (int slot = 0; slot < NWScript.NUM_INVENTORY_SLOTS; slot++)
+            for (int slot = 0; slot < NUM_INVENTORY_SLOTS; slot++)
             {
                 NWItem item = NWItem.Wrap(_.GetItemInSlot(slot, player.Object));
                 if (item.Equals(ignoreItem)) continue;
@@ -181,7 +182,7 @@ namespace SWLOR.Game.Server.Service
             {
                 int amount = player.CurrentHP - player.MaxHP;
                 Effect damage = _.EffectDamage(amount);
-                _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, damage, player.Object);
+                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, damage, player.Object);
             }
 
             // Apply FP
@@ -210,7 +211,7 @@ namespace SWLOR.Game.Server.Service
             List<NWPlayer> members = player.GetPartyMembers();
 
             int nth = 1;
-            NWCreature creature = NWCreature.Wrap(_.GetNearestCreature(NWScript.CREATURE_TYPE_IS_ALIVE, 1, player.Object, nth, NWScript.CREATURE_TYPE_PLAYER_CHAR, 0));
+            NWCreature creature = NWCreature.Wrap(_.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, 1, player.Object, nth, CREATURE_TYPE_PLAYER_CHAR, 0));
             while (creature.IsValid)
             {
                 if (_.GetDistanceBetween(player.Object, creature.Object) > 20.0f) break;
@@ -227,7 +228,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 nth++;
-                creature = NWCreature.Wrap(_.GetNearestCreature(NWScript.CREATURE_TYPE_IS_ALIVE, 1, player.Object, nth, NWScript.CREATURE_TYPE_PLAYER_CHAR, 0));
+                creature = NWCreature.Wrap(_.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, 1, player.Object, nth, CREATURE_TYPE_PLAYER_CHAR, 0));
             }
         }
 
@@ -280,7 +281,7 @@ namespace SWLOR.Game.Server.Service
                 req = _db.SkillXPRequirements.Single(x => x.SkillID == skillID && x.Rank == skill.Rank);
 
                 // Reapply skill penalties on a skill level up.
-                for (int slot = 0; slot < NWScript.NUM_INVENTORY_SLOTS; slot++)
+                for (int slot = 0; slot < NUM_INVENTORY_SLOTS; slot++)
                 {
                     NWItem item = NWItem.Wrap(_.GetItemInSlot(slot, oPC.Object));
                     RemoveWeaponPenalties(item);
@@ -415,7 +416,7 @@ namespace SWLOR.Game.Server.Service
                 int heavyArmorPoints = 0;
                 int forceArmorPoints = 0;
 
-                for (int slot = 0; slot < NWScript.NUM_INVENTORY_SLOTS; slot++)
+                for (int slot = 0; slot < NUM_INVENTORY_SLOTS; slot++)
                 {
                     NWItem item = NWItem.Wrap(_.GetItemInSlot(slot, preg.Player.Object));
                     if (item.CustomItemType == CustomItemType.LightArmor)
@@ -551,7 +552,7 @@ namespace SWLOR.Game.Server.Service
                     NWItem glove = NWItem.Wrap(_.CreateItemOnObject("fist", oPC.Object));
                     glove.SetLocalInt("UNBREAKABLE", 1);
 
-                    oPC.AssignCommand(() => _.ActionEquipItem(glove.Object, NWScript.INVENTORY_SLOT_ARMS));
+                    oPC.AssignCommand(() => _.ActionEquipItem(glove.Object, INVENTORY_SLOT_ARMS));
                 }
             }, 1.0f);
         }
@@ -580,7 +581,7 @@ namespace SWLOR.Game.Server.Service
             int type = oItem.BaseItemType;
 
             if (!oPC.IsPlayer) return;
-            if (type != NWScript.BASE_ITEM_BRACER && type != NWScript.BASE_ITEM_GLOVES) return;
+            if (type != BASE_ITEM_BRACER && type != BASE_ITEM_GLOVES) return;
 
             // If fist was unequipped, destroy it.
             if (oItem.Resref == "fist")
@@ -700,78 +701,78 @@ namespace SWLOR.Game.Server.Service
             int type = item.BaseItemType;
             int[] oneHandedTypes = 
             {
-                NWScript.BASE_ITEM_BASTARDSWORD,
-                NWScript.BASE_ITEM_BATTLEAXE,
-                NWScript.BASE_ITEM_CLUB,
-                NWScript.BASE_ITEM_DAGGER,
-                NWScript.BASE_ITEM_HANDAXE,
-                NWScript.BASE_ITEM_KAMA,
-                NWScript.BASE_ITEM_KATANA,
-                NWScript.BASE_ITEM_KUKRI,
-                NWScript.BASE_ITEM_LIGHTFLAIL,
-                NWScript.BASE_ITEM_LIGHTHAMMER,
-                NWScript.BASE_ITEM_LIGHTMACE,
-                NWScript.BASE_ITEM_LONGSWORD,
-                NWScript.BASE_ITEM_RAPIER,
-                NWScript.BASE_ITEM_SCIMITAR,
-                NWScript.BASE_ITEM_SHORTSPEAR,
-                NWScript.BASE_ITEM_SHORTSWORD,
-                NWScript.BASE_ITEM_SICKLE,
-                NWScript.BASE_ITEM_WHIP
+                BASE_ITEM_BASTARDSWORD,
+                BASE_ITEM_BATTLEAXE,
+                BASE_ITEM_CLUB,
+                BASE_ITEM_DAGGER,
+                BASE_ITEM_HANDAXE,
+                BASE_ITEM_KAMA,
+                BASE_ITEM_KATANA,
+                BASE_ITEM_KUKRI,
+                BASE_ITEM_LIGHTFLAIL,
+                BASE_ITEM_LIGHTHAMMER,
+                BASE_ITEM_LIGHTMACE,
+                BASE_ITEM_LONGSWORD,
+                BASE_ITEM_RAPIER,
+                BASE_ITEM_SCIMITAR,
+                BASE_ITEM_SHORTSPEAR,
+                BASE_ITEM_SHORTSWORD,
+                BASE_ITEM_SICKLE,
+                BASE_ITEM_WHIP
             };
 
             int[] twoHandedTypes = 
             {
-                NWScript.BASE_ITEM_DIREMACE,
-                NWScript.BASE_ITEM_DWARVENWARAXE,
-                NWScript.BASE_ITEM_GREATAXE,
-                NWScript.BASE_ITEM_GREATSWORD,
-                NWScript.BASE_ITEM_HALBERD,
-                NWScript.BASE_ITEM_HEAVYFLAIL,
-                NWScript.BASE_ITEM_MORNINGSTAR,
-                NWScript.BASE_ITEM_QUARTERSTAFF,
-                NWScript.BASE_ITEM_SCYTHE,
-                NWScript.BASE_ITEM_TRIDENT,
-                NWScript.BASE_ITEM_WARHAMMER
+                BASE_ITEM_DIREMACE,
+                BASE_ITEM_DWARVENWARAXE,
+                BASE_ITEM_GREATAXE,
+                BASE_ITEM_GREATSWORD,
+                BASE_ITEM_HALBERD,
+                BASE_ITEM_HEAVYFLAIL,
+                BASE_ITEM_MORNINGSTAR,
+                BASE_ITEM_QUARTERSTAFF,
+                BASE_ITEM_SCYTHE,
+                BASE_ITEM_TRIDENT,
+                BASE_ITEM_WARHAMMER
             };
 
             int[] twinBladeTypes = 
             {
-                NWScript.BASE_ITEM_DOUBLEAXE,
-                NWScript.BASE_ITEM_TWOBLADEDSWORD
+                BASE_ITEM_DOUBLEAXE,
+                BASE_ITEM_TWOBLADEDSWORD
             };
 
             int[] martialArtsTypes = 
             {
-                NWScript.BASE_ITEM_BRACER,
-                NWScript.BASE_ITEM_GLOVES
+                BASE_ITEM_BRACER,
+                BASE_ITEM_GLOVES
             };
 
             int[] firearmTypes = 
             {
-                NWScript.BASE_ITEM_HEAVYCROSSBOW,
-                NWScript.BASE_ITEM_LIGHTCROSSBOW,
-                NWScript.BASE_ITEM_LONGBOW,
-                NWScript.BASE_ITEM_SHORTBOW,
-                NWScript.BASE_ITEM_ARROW,
-                NWScript.BASE_ITEM_BOLT
+                BASE_ITEM_HEAVYCROSSBOW,
+                BASE_ITEM_LIGHTCROSSBOW,
+                BASE_ITEM_LONGBOW,
+                BASE_ITEM_SHORTBOW,
+                BASE_ITEM_ARROW,
+                BASE_ITEM_BOLT
             };
 
             int[] throwingTypes =
             {
-                NWScript.BASE_ITEM_GRENADE,
-                NWScript.BASE_ITEM_SHURIKEN,
-                NWScript.BASE_ITEM_SLING,
-                NWScript.BASE_ITEM_THROWINGAXE,
-                NWScript.BASE_ITEM_BULLET,
-                NWScript.BASE_ITEM_DART
+                BASE_ITEM_GRENADE,
+                BASE_ITEM_SHURIKEN,
+                BASE_ITEM_SLING,
+                BASE_ITEM_THROWINGAXE,
+                BASE_ITEM_BULLET,
+                BASE_ITEM_DART
             };
 
             int[] shieldTypes =
             {
-                NWScript.BASE_ITEM_SMALLSHIELD,
-                NWScript.BASE_ITEM_LARGESHIELD,
-                NWScript.BASE_ITEM_TOWERSHIELD
+                BASE_ITEM_SMALLSHIELD,
+                BASE_ITEM_LARGESHIELD,
+                BASE_ITEM_TOWERSHIELD
             };
 
             if (oneHandedTypes.Contains(type)) skillType = SkillType.OneHanded;
@@ -818,7 +819,7 @@ namespace SWLOR.Game.Server.Service
                 skillType == SkillType.ForceArmor ||
                 skillType == SkillType.Shields) return;
             if (oTarget.IsPlayer || oTarget.IsDM) return;
-            if (oTarget.ObjectType != NWScript.OBJECT_TYPE_CREATURE) return;
+            if (oTarget.ObjectType != OBJECT_TYPE_CREATURE) return;
 
             int skillID = (int)skillType;
             CreatureSkillRegistration reg = GetCreatureSkillRegistration(oTarget.GlobalID);
@@ -828,9 +829,9 @@ namespace SWLOR.Game.Server.Service
             // Add a registration point if a shield is equipped. This is to prevent players from swapping out a weapon for a shield
             // just before they kill an enemy.
             NWItem oShield = oPC.LeftHand;
-            if (oShield.BaseItemType == NWScript.BASE_ITEM_SMALLSHIELD ||
-                oShield.BaseItemType == NWScript.BASE_ITEM_LARGESHIELD ||
-                oShield.BaseItemType == NWScript.BASE_ITEM_TOWERSHIELD)
+            if (oShield.BaseItemType == BASE_ITEM_SMALLSHIELD ||
+                oShield.BaseItemType == BASE_ITEM_LARGESHIELD ||
+                oShield.BaseItemType == BASE_ITEM_TOWERSHIELD)
             {
                 pcSkill = GetPCSkill(oPC, SkillType.Shields);
                 reg.AddSkillRegistrationPoint(oPC, (int)SkillType.Shields, oShield.RecommendedLevel, pcSkill.Rank);
@@ -867,14 +868,14 @@ namespace SWLOR.Game.Server.Service
             List<NWCreature> members = new List<NWCreature>();
 
             Object member = _.GetFirstFactionMember(pc.Object);
-            while (_.GetIsObjectValid(member) == NWScript.TRUE)
+            while (_.GetIsObjectValid(member) == TRUE)
             {
                 members.Add(NWCreature.Wrap(member));
                 member = _.GetNextFactionMember(pc.Object);
             }
 
             int nth = 1;
-            NWCreature creature = NWCreature.Wrap(_.GetNearestCreature(NWScript.CREATURE_TYPE_IS_ALIVE, 1, pc.Object, nth, NWScript.CREATURE_TYPE_PLAYER_CHAR, 0));
+            NWCreature creature = NWCreature.Wrap(_.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, 1, pc.Object, nth, CREATURE_TYPE_PLAYER_CHAR, 0));
             while (creature.IsValid)
             {
                 if (_.GetDistanceBetween(pc.Object, creature.Object) > 20.0f) break;
@@ -889,7 +890,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 nth++;
-                creature = NWCreature.Wrap(_.GetNearestCreature(NWScript.CREATURE_TYPE_IS_ALIVE, 1, pc.Object, nth, NWScript.CREATURE_TYPE_PLAYER_CHAR, 0));
+                creature = NWCreature.Wrap(_.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, 1, pc.Object, nth, CREATURE_TYPE_PLAYER_CHAR, 0));
             }
         }
 
@@ -1002,7 +1003,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             int equipmentBAB = 0;
-            for (int x = 0; x < NWScript.NUM_INVENTORY_SLOTS; x++)
+            for (int x = 0; x < NUM_INVENTORY_SLOTS; x++)
             {
                 NWItem equipped = NWItem.Wrap(_.GetItemInSlot(x, oPC.Object));
 
@@ -1135,46 +1136,46 @@ namespace SWLOR.Game.Server.Service
             {
                 int type = _.GetItemPropertyType(ip);
                 int value = _.GetItemPropertyCostTableValue(ip);
-                if (type == NWScript.ITEM_PROPERTY_ABILITY_BONUS)
+                if (type == ITEM_PROPERTY_ABILITY_BONUS)
                 {
                     int abilityType = _.GetItemPropertySubType(ip);
                     switch (abilityType)
                     {
-                        case NWScript.ABILITY_STRENGTH: str += value; break;
-                        case NWScript.ABILITY_CONSTITUTION: con += value; break;
-                        case NWScript.ABILITY_DEXTERITY: dex += value; break;
-                        case NWScript.ABILITY_WISDOM: wis += value; break;
-                        case NWScript.ABILITY_INTELLIGENCE: @int += value; break;
-                        case NWScript.ABILITY_CHARISMA: cha += value; break;
+                        case ABILITY_STRENGTH: str += value; break;
+                        case ABILITY_CONSTITUTION: con += value; break;
+                        case ABILITY_DEXTERITY: dex += value; break;
+                        case ABILITY_WISDOM: wis += value; break;
+                        case ABILITY_INTELLIGENCE: @int += value; break;
+                        case ABILITY_CHARISMA: cha += value; break;
                     }
                 }
-                else if (type == NWScript.ITEM_PROPERTY_DECREASED_ABILITY_SCORE)
+                else if (type == ITEM_PROPERTY_DECREASED_ABILITY_SCORE)
                 {
                     int abilityType = _.GetItemPropertySubType(ip);
                     switch (abilityType)
                     {
-                        case NWScript.ABILITY_STRENGTH: str -= value; break;
-                        case NWScript.ABILITY_CONSTITUTION: con -= value; break;
-                        case NWScript.ABILITY_DEXTERITY: dex -= value; break;
-                        case NWScript.ABILITY_WISDOM: wis -= value; break;
-                        case NWScript.ABILITY_INTELLIGENCE: @int -= value; break;
-                        case NWScript.ABILITY_CHARISMA: cha -= value; break;
+                        case ABILITY_STRENGTH: str -= value; break;
+                        case ABILITY_CONSTITUTION: con -= value; break;
+                        case ABILITY_DEXTERITY: dex -= value; break;
+                        case ABILITY_WISDOM: wis -= value; break;
+                        case ABILITY_INTELLIGENCE: @int -= value; break;
+                        case ABILITY_CHARISMA: cha -= value; break;
                     }
 
                 }
-                else if (type == NWScript.ITEM_PROPERTY_ATTACK_BONUS)
+                else if (type == ITEM_PROPERTY_ATTACK_BONUS)
                 {
                     ab += value;
                 }
-                else if (type == NWScript.ITEM_PROPERTY_DECREASED_ATTACK_MODIFIER)
+                else if (type == ITEM_PROPERTY_DECREASED_ATTACK_MODIFIER)
                 {
                     ab -= value;
                 }
-                else if (type == NWScript.ITEM_PROPERTY_ENHANCEMENT_BONUS)
+                else if (type == ITEM_PROPERTY_ENHANCEMENT_BONUS)
                 {
                     eb += value;
                 }
-                else if (type == NWScript.ITEM_PROPERTY_DECREASED_ENHANCEMENT_MODIFIER)
+                else if (type == ITEM_PROPERTY_DECREASED_ENHANCEMENT_MODIFIER)
                 {
                     eb -= value;
                 }
@@ -1186,7 +1187,7 @@ namespace SWLOR.Game.Server.Service
                 int newStr = 1 + delta / 5;
                 if (newStr > str) newStr = str;
                 
-                ItemProperty ip = _.ItemPropertyDecreaseAbility(NWScript.ABILITY_STRENGTH, newStr);
+                ItemProperty ip = _.ItemPropertyDecreaseAbility(ABILITY_STRENGTH, newStr);
                 ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
                 _biowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
@@ -1195,7 +1196,7 @@ namespace SWLOR.Game.Server.Service
                 int newDex = 1 + delta / 5;
                 if (newDex > dex) newDex = dex;
 
-                ItemProperty ip = _.ItemPropertyDecreaseAbility(NWScript.ABILITY_DEXTERITY, newDex);
+                ItemProperty ip = _.ItemPropertyDecreaseAbility(ABILITY_DEXTERITY, newDex);
                 ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
                 _biowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
@@ -1204,7 +1205,7 @@ namespace SWLOR.Game.Server.Service
                 int newCon = 1 + delta / 5;
                 if (newCon > con) newCon = con;
 
-                ItemProperty ip = _.ItemPropertyDecreaseAbility(NWScript.ABILITY_CONSTITUTION, newCon);
+                ItemProperty ip = _.ItemPropertyDecreaseAbility(ABILITY_CONSTITUTION, newCon);
                 ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
                 _biowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
@@ -1213,7 +1214,7 @@ namespace SWLOR.Game.Server.Service
                 int newInt = 1 + delta / 5;
                 if (newInt > @int) newInt = @int;
 
-                ItemProperty ip = _.ItemPropertyDecreaseAbility(NWScript.ABILITY_INTELLIGENCE, newInt);
+                ItemProperty ip = _.ItemPropertyDecreaseAbility(ABILITY_INTELLIGENCE, newInt);
                 ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
                 _biowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
@@ -1222,7 +1223,7 @@ namespace SWLOR.Game.Server.Service
                 int newWis = 1 + delta / 5;
                 if (newWis > wis) newWis = wis;
 
-                ItemProperty ip = _.ItemPropertyDecreaseAbility(NWScript.ABILITY_WISDOM, newWis);
+                ItemProperty ip = _.ItemPropertyDecreaseAbility(ABILITY_WISDOM, newWis);
                 ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
                 _biowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
@@ -1231,7 +1232,7 @@ namespace SWLOR.Game.Server.Service
                 int newCha = 1 + delta / 5;
                 if (newCha > cha) newCha = cha;
 
-                ItemProperty ip = _.ItemPropertyDecreaseAbility(NWScript.ABILITY_CHARISMA, newCha);
+                ItemProperty ip = _.ItemPropertyDecreaseAbility(ABILITY_CHARISMA, newCha);
                 ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
                 _biowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }

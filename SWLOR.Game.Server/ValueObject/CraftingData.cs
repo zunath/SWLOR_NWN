@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.ValueObject
         public List<NWItem> EnhancementComponents { get; set; }
         public bool IsAccessingStorage { get; set; }
         public CraftingAccessType Access { get; set; }
+        public int PlayerPerkLevel { get; set; }
 
         public int AdjustedLevel
         {
@@ -23,19 +24,19 @@ namespace SWLOR.Game.Server.ValueObject
                 int adjustedLevel = Blueprint.BaseLevel;
                 foreach (var comp in MainComponents)
                 {
-                    adjustedLevel += comp.RecommendedLevel;
+                    adjustedLevel += comp.LevelIncrease > 0 ? comp.LevelIncrease : comp.RecommendedLevel;
                 }
                 foreach (var comp in SecondaryComponents)
                 {
-                    adjustedLevel += comp.RecommendedLevel;
+                    adjustedLevel += comp.LevelIncrease > 0 ? comp.LevelIncrease : comp.RecommendedLevel;
                 }
                 foreach (var comp in TertiaryComponents)
                 {
-                    adjustedLevel += comp.RecommendedLevel;
+                    adjustedLevel += comp.LevelIncrease > 0 ? comp.LevelIncrease : comp.RecommendedLevel;
                 }
                 foreach (var comp in EnhancementComponents)
                 {
-                    adjustedLevel += comp.RecommendedLevel;
+                    adjustedLevel += comp.LevelIncrease > 0 ? comp.LevelIncrease : comp.RecommendedLevel;
                 }
 
                 return adjustedLevel;

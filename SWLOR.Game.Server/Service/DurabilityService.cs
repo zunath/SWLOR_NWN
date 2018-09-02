@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.Service
 
         public void RunItemDecay(NWPlayer oPC, NWItem oItem)
         {
-            RunItemDecay(oPC, oItem, 0.001f);
+            RunItemDecay(oPC, oItem, 0.01f);
         }
 
         public void RunItemDecay(NWPlayer oPC, NWItem oItem, float reduceAmount)

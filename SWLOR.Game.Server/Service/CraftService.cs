@@ -229,14 +229,30 @@ namespace SWLOR.Game.Server.Service
 
             int successAmount = 0;
             foreach (var component in model.MainComponents)
-                successAmount += RunComponentBonusAttempt(oPC, component, equipmentBonus, chance, craftedItems);
+            {
+                var result = RunComponentBonusAttempt(oPC, component, equipmentBonus, chance, craftedItems);
+                successAmount += result.Item1;
+                chance = result.Item2;
+            }
             foreach (var component in model.SecondaryComponents)
-                successAmount += RunComponentBonusAttempt(oPC, component, equipmentBonus, chance, craftedItems);
+            {
+                var result = RunComponentBonusAttempt(oPC, component, equipmentBonus, chance, craftedItems);
+                successAmount += result.Item1;
+                chance = result.Item2;
+            }
             foreach (var component in model.TertiaryComponents)
-                successAmount += RunComponentBonusAttempt(oPC, component, equipmentBonus, chance, craftedItems);
+            {
+                var result = RunComponentBonusAttempt(oPC, component, equipmentBonus, chance, craftedItems);
+                successAmount += result.Item1;
+                chance = result.Item2;
+            }
             foreach (var component in model.EnhancementComponents)
-                successAmount += RunComponentBonusAttempt(oPC, component, equipmentBonus, chance, craftedItems);
-            
+            {
+                var result = RunComponentBonusAttempt(oPC, component, equipmentBonus, chance, craftedItems);
+                successAmount += result.Item1;
+                chance = result.Item2;
+            }
+
             // Recommended level gets set regardless if all item properties make it on the final product.
             // Also mark who crafted the item. This is later used for display on the item's examination event.
             foreach (var item in craftedItems)
@@ -252,7 +268,7 @@ namespace SWLOR.Game.Server.Service
             ClearPlayerCraftingData(oPC, true);
         }
 
-        private int RunComponentBonusAttempt(NWPlayer player, NWItem component, float equipmentBonus, float chance, List<NWItem> itemSet)
+        private Tuple<int, float> RunComponentBonusAttempt(NWPlayer player, NWItem component, float equipmentBonus, float chance, List<NWItem> itemSet)
         {
             int successAmount = 0;
             foreach (var ip in component.ItemProperties)
@@ -270,9 +286,21 @@ namespace SWLOR.Game.Server.Service
                 {
                     foreach (var item in itemSet)
                     {
-                        _componentBonus.ApplyComponentBonus(item, ip);
+                        // If the target item is a component itself, we want to add the component bonuses instead of the
+                        // actual item property bonuses.
+                        // In other words, we want the custom item property "Component Bonus: AC UP" instead of the "AC Bonus" item property.
+                        var componentIP = item.ItemProperties.FirstOrDefault(x => _.GetItemPropertyType(x) == (int) CustomItemPropertyType.ComponentType);
+                        if(componentIP == null)
+                            _componentBonus.ApplyComponentBonus(item, ip);
+                        else 
+                            _biowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+
                     }
                     player.SendMessage(_color.Green("Successfully applied component property: " + bonusName));
+
+                    chance -= _random.Random(1, 5);
+                    if (chance < 1) chance = 1;
+
                     successAmount++;
                 }
                 else
@@ -281,7 +309,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            return successAmount;
+            return new Tuple<int, float>(successAmount, chance);
         }
 
         private string CalculateDifficulty(int pcLevel, int blueprintLevel)

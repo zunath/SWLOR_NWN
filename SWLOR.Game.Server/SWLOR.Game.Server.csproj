@@ -223,6 +223,7 @@
     <Compile Include="Enumeration\CustomFeatType.cs" />
     <Compile Include="Enumeration\CustomItemPropertyType.cs" />
     <Compile Include="Enumeration\CustomItemType.cs" />
+    <Compile Include="Enumeration\CustomPhenoType.cs" />
     <Compile Include="Enumeration\DMActionType.cs" />
     <Compile Include="Enumeration\EnmityAdjustmentRuleType.cs" />
     <Compile Include="Enumeration\EventType.cs" />

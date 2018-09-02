@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Service
             string header = _color.Green("Blueprint: ") + _color.White(blueprint.ItemName) + "\n\n";
             header += _color.Green("Skill: ") + _color.White(pcSkill.Skill.Name) + "\n";
 
-            header += _color.Green("Base Difficulty: ") + CalculateDifficulty(pcSkill.Rank, blueprint.BaseLevel) + "\n";
+            header += _color.Green("Base Difficulty: ") + CalculateDifficultyDescription(pcSkill.Rank, blueprint.BaseLevel) + "\n";
             header += _color.Green("Max Enhancement Slots: ") + blueprint.EnhancementSlots + "\n\n";
 
             header += _color.Green("Components: ") + "\n\n";
@@ -211,6 +211,13 @@ namespace SWLOR.Game.Server.Service
             float chance = CalculateBaseChanceToAddProperty(pcEffectiveLevel, itemLevel);
             float equipmentBonus = CalculateEquipmentBonus(oPC, (SkillType)blueprint.SkillID);
 
+            if (chance <= 1.0f)
+            {
+                oPC.FloatingText(_color.Red("Critical failure! You don't have enough skill to create that item. All components were lost."));
+                ClearPlayerCraftingData(oPC, true);
+                return;
+            }
+
             var craftedItems = new List<NWItem>();
             NWItem craftedItem = NWItem.Wrap(_.CreateItemOnObject(blueprint.ItemResref, oPC.Object, blueprint.Quantity));
             craftedItem.IsIdentified = true;
@@ -312,7 +319,7 @@ namespace SWLOR.Game.Server.Service
             return new Tuple<int, float>(successAmount, chance);
         }
 
-        private string CalculateDifficulty(int pcLevel, int blueprintLevel)
+        public string CalculateDifficultyDescription(int pcLevel, int blueprintLevel)
         {
             int delta = pcLevel - blueprintLevel;
             string difficulty = "";
@@ -423,7 +430,7 @@ namespace SWLOR.Game.Server.Service
             return percentage;
         }
 
-        private int CalculatePCEffectiveLevel(NWPlayer pcGO, NWPlaceable device, int skillRank)
+        public int CalculatePCEffectiveLevel(NWPlayer pcGO, NWPlaceable device, int skillRank)
         {
             int deviceID = device.GetLocalInt("CRAFT_DEVICE_ID");
             int effectiveLevel = skillRank;

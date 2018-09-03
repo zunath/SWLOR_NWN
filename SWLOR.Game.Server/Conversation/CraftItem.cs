@@ -203,7 +203,7 @@ namespace SWLOR.Game.Server.Conversation
                     model.Access = CraftingAccessType.TertiaryComponent;
                     OpenDeviceInventory();
                     break;
-                case 5:
+                case 5: // Select enhancement components
                     model.Access = CraftingAccessType.Enhancement;
                     OpenDeviceInventory();
                     break;

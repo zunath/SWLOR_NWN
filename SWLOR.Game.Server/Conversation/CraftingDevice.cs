@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Conversation
                 AddResponseToPage("BlueprintListPage", bp.ItemName, bp.IsActive, bp.CraftBlueprintID);
             }
 
-            AddResponseToPage("BlueprintListPage", "Back");
+            AddResponseToPage("BlueprintListPage", "Back", true, -1);
         }
 
         private void LoadBlueprintPage(int blueprintID)
@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Conversation
         private void HandleBlueprintListResponse(int responseID)
         {
             DialogResponse response = GetResponseByID("BlueprintListPage", responseID);
-            if (!response.HasCustomData)
+            if (response.CustomData[string.Empty] == -1)
             {
                 ChangePage("MainPage");
                 return;

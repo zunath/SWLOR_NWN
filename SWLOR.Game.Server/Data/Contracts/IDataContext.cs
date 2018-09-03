@@ -10,7 +10,10 @@ namespace SWLOR.Game.Server.Data.Contracts
 {
     public interface IDataContext
     {
+        IDbSet<Area> Areas { get; set; }
+        IDbSet<BaseStructure> BaseStructures { get; set; }
         IDbSet<Attribute> Attributes { get; set; }
+        IDbSet<BaseStructureType> BaseStructureTypes { get; set; }
         IDbSet<AuthorizedDM> AuthorizedDMs { get; set; }
         IDbSet<Background> Backgrounds { get; set; }
         IDbSet<BaseItemType> BaseItemTypes { get; set; }

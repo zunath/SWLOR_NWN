@@ -25,7 +25,10 @@ namespace SWLOR.Game.Server.Data
 
             return $"server={ipAddress};database={database};user id={username};password={password};Integrated Security=False;MultipleActiveResultSets=True;TrustServerCertificate=True;Encrypt=False";
         }
-        
+
+        public virtual IDbSet<Area> Areas { get; set; }
+        public virtual IDbSet<BaseStructure> BaseStructures { get; set; }
+        public virtual IDbSet<BaseStructureType> BaseStructureTypes { get; set; }
         public virtual IDbSet<Attribute> Attributes { get; set; }
         public virtual IDbSet<AuthorizedDM> AuthorizedDMs { get; set; }
         public virtual IDbSet<Background> Backgrounds { get; set; }
@@ -315,6 +318,26 @@ namespace SWLOR.Game.Server.Data
                 .HasPrecision(0);
 
             modelBuilder.Entity<PlayerCharacter>()
+                .HasMany(e => e.NortheastAreas)
+                .WithOptional(e => e.NortheastOwnerPlayer)
+                .HasForeignKey(e => e.NortheastOwner);
+
+            modelBuilder.Entity<PlayerCharacter>()
+                .HasMany(e => e.NorthwestAreas)
+                .WithOptional(e => e.NorthwestOwnerPlayer)
+                .HasForeignKey(e => e.NorthwestOwner);
+
+            modelBuilder.Entity<PlayerCharacter>()
+                .HasMany(e => e.SoutheastAreas)
+                .WithOptional(e => e.SoutheastOwnerPlayer)
+                .HasForeignKey(e => e.SoutheastOwner);
+
+            modelBuilder.Entity<PlayerCharacter>()
+                .HasMany(e => e.SouthwestAreas)
+                .WithOptional(e => e.SouthwestOwnerPlayer)
+                .HasForeignKey(e => e.SouthwestOwner);
+
+            modelBuilder.Entity<PlayerCharacter>()
                 .HasMany(e => e.ChatLogs)
                 .WithOptional(e => e.PlayerCharacter)
                 .HasForeignKey(e => e.ReceiverPlayerID);
@@ -498,7 +521,11 @@ namespace SWLOR.Game.Server.Data
                 .HasMany(e => e.StorageItems)
                 .WithRequired(e => e.StorageContainer)
                 .WillCascadeOnDelete(false);
-            
+
+            modelBuilder.Entity<BaseStructureType>()
+                .HasMany(e => e.BaseStructures)
+                .WithRequired(e => e.BaseStructureType)
+                .WillCascadeOnDelete(false);
         }
 
         private string BuildSQLQuery(string procedureName, params SqlParameter[] args)

@@ -39,5 +39,22 @@ namespace SWLOR.Game.Server.GameObject
             }
         }
 
+        public List<NWArea> Areas
+        {
+            get
+            {
+                List<NWArea> areas = new List<NWArea>();
+
+                NWArea area = NWArea.Wrap(_.GetFirstArea());
+                while (area.IsValid)
+                {
+                    areas.Add(area);
+                    area = NWArea.Wrap(_.GetNextArea());
+                }
+
+                return areas;
+            }
+        }
+
     }
 }

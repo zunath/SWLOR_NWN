@@ -10,6 +10,10 @@ namespace SWLOR.Game.Server.Data.Entities
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PlayerCharacter()
         {
+            NortheastAreas = new HashSet<Area>();
+            NorthwestAreas = new HashSet<Area>();
+            SoutheastAreas = new HashSet<Area>();
+            SouthwestAreas = new HashSet<Area>();
             ChatLogs = new HashSet<ChatLog>();
             ChatLogs1 = new HashSet<ChatLog>();
             ClientLogEvents = new HashSet<ClientLogEvent>();
@@ -119,6 +123,18 @@ namespace SWLOR.Game.Server.Data.Entities
         public bool DisplayHelmet { get; set; }
 
         public int BackgroundID { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Area> NortheastAreas { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Area> NorthwestAreas { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Area> SoutheastAreas { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Area> SouthwestAreas { get; set; }
 
         public virtual Background Background { get; set; }
 

@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Service
                 _nwnxCreature.AddFeatByLevel(player, NWScript.FEAT_WEAPON_PROFICIENCY_EXOTIC, 1);
                 _nwnxCreature.AddFeatByLevel(player, NWScript.FEAT_WEAPON_PROFICIENCY_MARTIAL, 1);
                 _nwnxCreature.AddFeatByLevel(player, NWScript.FEAT_WEAPON_PROFICIENCY_SIMPLE, 1);
-                _nwnxCreature.AddFeatByLevel(player, (int) CustomFeatType.StructureTool, 1);
+                _nwnxCreature.AddFeatByLevel(player, (int) CustomFeatType.BaseManagementTool, 1);
                 _nwnxCreature.AddFeatByLevel(player, (int) CustomFeatType.OpenRestMenu, 1);
 
                 for (int iCurSkill = 1; iCurSkill <= 27; iCurSkill++)
@@ -312,7 +312,7 @@ namespace SWLOR.Game.Server.Service
         private void InitializeHotBar(NWPlayer player)
         {
             var openRestMenu = _qbs.UseFeat((int)CustomFeatType.OpenRestMenu);
-            var structure = _qbs.UseFeat((int) CustomFeatType.StructureTool);
+            var structure = _qbs.UseFeat((int) CustomFeatType.BaseManagementTool);
             
             _player.SetQuickBarSlot(player, 0, openRestMenu);
             _player.SetQuickBarSlot(player, 1, structure);

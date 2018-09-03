@@ -1,6 +1,6 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject.Contracts;
-
+using static NWN.NWScript;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.GameObject
@@ -20,5 +20,9 @@ namespace SWLOR.Game.Server.GameObject
 
             return obj;
         }
+
+        public int Width => _.GetAreaSize(AREA_WIDTH, Object);
+
+        public int Height => _.GetAreaSize(AREA_HEIGHT, Object);
     }
 }

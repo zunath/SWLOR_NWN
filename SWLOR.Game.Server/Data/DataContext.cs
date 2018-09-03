@@ -30,16 +30,11 @@ namespace SWLOR.Game.Server.Data
         public virtual IDbSet<AuthorizedDM> AuthorizedDMs { get; set; }
         public virtual IDbSet<Background> Backgrounds { get; set; }
         public virtual IDbSet<BaseItemType> BaseItemTypes { get; set; }
-        public virtual IDbSet<BuildingCategory> BuildingCategories { get; set; }
-        public virtual IDbSet<BuildingInterior> BuildingInteriors { get; set; }
-        public virtual IDbSet<BuildPrivacyDomain> BuildPrivacyDomains { get; set; }
         public virtual IDbSet<ChatChannelsDomain> ChatChannelsDomains { get; set; }
         public virtual IDbSet<ChatLog> ChatLogs { get; set; }
         public virtual IDbSet<ClientLogEvent> ClientLogEvents { get; set; }
         public virtual IDbSet<ClientLogEventTypesDomain> ClientLogEventTypesDomains { get; set; }
         public virtual IDbSet<ComponentType> ComponentTypes { get; set; }
-        public virtual IDbSet<ConstructionSiteComponent> ConstructionSiteComponents { get; set; }
-        public virtual IDbSet<ConstructionSite> ConstructionSites { get; set; }
         public virtual IDbSet<CooldownCategory> CooldownCategories { get; set; }
         public virtual IDbSet<CraftBlueprintCategory> CraftBlueprintCategories { get; set; }
         public virtual IDbSet<CraftBlueprint> CraftBlueprints { get; set; }
@@ -75,10 +70,6 @@ namespace SWLOR.Game.Server.Data
         public virtual IDbSet<PCSearchSiteItem> PCSearchSiteItems { get; set; }
         public virtual IDbSet<PCSearchSite> PCSearchSites { get; set; }
         public virtual IDbSet<PCSkill> PCSkills { get; set; }
-        public virtual IDbSet<PCTerritoryFlag> PCTerritoryFlags { get; set; }
-        public virtual IDbSet<PCTerritoryFlagsPermission> PCTerritoryFlagsPermissions { get; set; }
-        public virtual IDbSet<PCTerritoryFlagsStructure> PCTerritoryFlagsStructures { get; set; }
-        public virtual IDbSet<PCTerritoryFlagsStructuresItem> PCTerritoryFlagsStructuresItems { get; set; }
         public virtual IDbSet<PerkCategory> PerkCategories { get; set; }
         public virtual IDbSet<PerkExecutionType> PerkExecutionTypes { get; set; }
         public virtual IDbSet<PerkLevel> PerkLevels { get; set; }
@@ -101,12 +92,6 @@ namespace SWLOR.Game.Server.Data
         public virtual IDbSet<SkillXPRequirement> SkillXPRequirements { get; set; }
         public virtual IDbSet<StorageContainer> StorageContainers { get; set; }
         public virtual IDbSet<StorageItem> StorageItems { get; set; }
-        public virtual IDbSet<StructureBlueprint> StructureBlueprints { get; set; }
-        public virtual IDbSet<StructureCategory> StructureCategories { get; set; }
-        public virtual IDbSet<StructureComponent> StructureComponents { get; set; }
-        public virtual IDbSet<StructureQuickBuildAudit> StructureQuickBuildAudits { get; set; }
-        public virtual IDbSet<sysdiagram> sysdiagrams { get; set; }
-        public virtual IDbSet<TerritoryFlagPermission> TerritoryFlagPermissions { get; set; }
         public virtual IDbSet<User> Users { get; set; }
         
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -138,18 +123,7 @@ namespace SWLOR.Game.Server.Data
                 .HasMany(e => e.PCMigrationItems)
                 .WithRequired(e => e.BaseItemType)
                 .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<BuildingCategory>()
-                .HasMany(e => e.BuildingInteriors)
-                .WithRequired(e => e.BuildingCategory)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<BuildPrivacyDomain>()
-                .HasMany(e => e.PCTerritoryFlags)
-                .WithRequired(e => e.BuildPrivacyDomain)
-                .HasForeignKey(e => e.BuildPrivacySettingID)
-                .WillCascadeOnDelete(false);
-
+            
             modelBuilder.Entity<ChatChannelsDomain>()
                 .HasMany(e => e.ChatLogs)
                 .WithRequired(e => e.ChatChannelsDomain)
@@ -159,12 +133,7 @@ namespace SWLOR.Game.Server.Data
                 .HasMany(e => e.ClientLogEvents)
                 .WithRequired(e => e.ClientLogEventTypesDomain)
                 .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<ConstructionSite>()
-                .HasMany(e => e.ConstructionSiteComponents)
-                .WithRequired(e => e.ConstructionSite)
-                .WillCascadeOnDelete(false);
-
+            
             modelBuilder.Entity<CooldownCategory>()
                 .HasMany(e => e.PCCooldowns)
                 .WithRequired(e => e.CooldownCategory)
@@ -293,33 +262,7 @@ namespace SWLOR.Game.Server.Data
                 .HasMany(e => e.PCQuestKillTargetProgresses)
                 .WithRequired(e => e.PcQuestStatus)
                 .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<PCTerritoryFlag>()
-                .HasMany(e => e.PCTerritoryFlagsPermissions)
-                .WithRequired(e => e.PCTerritoryFlag)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<PCTerritoryFlag>()
-                .HasMany(e => e.PCTerritoryFlagsStructures)
-                .WithRequired(e => e.PCTerritoryFlag)
-                .HasForeignKey(e => e.PCTerritoryFlagID)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<PCTerritoryFlagsStructure>()
-                .Property(e => e.CreateDate)
-                .HasPrecision(0);
-
-            modelBuilder.Entity<PCTerritoryFlagsStructure>()
-                .HasMany(e => e.PCTerritoryFlags)
-                .WithOptional(e => e.PCTerritoryFlagsStructure)
-                .HasForeignKey(e => e.BuildingPCStructureID);
-
-            modelBuilder.Entity<PCTerritoryFlagsStructure>()
-                .HasMany(e => e.PCTerritoryFlagsStructuresItems)
-                .WithRequired(e => e.PCTerritoryFlagsStructure)
-                .HasForeignKey(e => e.PCStructureID)
-                .WillCascadeOnDelete(false);
-
+            
             modelBuilder.Entity<PerkCategory>()
                 .HasMany(e => e.Perks)
                 .WithRequired(e => e.PerkCategory)
@@ -380,12 +323,7 @@ namespace SWLOR.Game.Server.Data
                 .HasMany(e => e.ChatLogs1)
                 .WithOptional(e => e.PlayerCharacter1)
                 .HasForeignKey(e => e.SenderPlayerID);
-
-            modelBuilder.Entity<PlayerCharacter>()
-                .HasMany(e => e.ConstructionSites)
-                .WithRequired(e => e.PlayerCharacter)
-                .WillCascadeOnDelete(false);
-
+            
             modelBuilder.Entity<PlayerCharacter>()
                 .HasMany(e => e.PCCooldowns)
                 .WithRequired(e => e.PlayerCharacter)
@@ -449,17 +387,7 @@ namespace SWLOR.Game.Server.Data
                 .HasMany(e => e.PCSkills)
                 .WithRequired(e => e.PlayerCharacter)
                 .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<PlayerCharacter>()
-                .HasMany(e => e.PCTerritoryFlags)
-                .WithRequired(e => e.PlayerCharacter)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<PlayerCharacter>()
-                .HasMany(e => e.PCTerritoryFlagsPermissions)
-                .WithRequired(e => e.PlayerCharacter)
-                .WillCascadeOnDelete(false);
-
+            
             modelBuilder.Entity<QuestRewardItem>()
                 .HasMany(e => e.PCQuestStatus)
                 .WithOptional(e => e.QuestRewardItem)
@@ -570,41 +498,7 @@ namespace SWLOR.Game.Server.Data
                 .HasMany(e => e.StorageItems)
                 .WithRequired(e => e.StorageContainer)
                 .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<StructureBlueprint>()
-                .HasMany(e => e.ConstructionSites)
-                .WithRequired(e => e.StructureBlueprint)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<StructureBlueprint>()
-                .HasMany(e => e.PCTerritoryFlags)
-                .WithRequired(e => e.StructureBlueprint)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<StructureBlueprint>()
-                .HasMany(e => e.PCTerritoryFlagsStructures)
-                .WithRequired(e => e.StructureBlueprint)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<StructureBlueprint>()
-                .HasMany(e => e.StructureComponents)
-                .WithRequired(e => e.StructureBlueprint)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<StructureCategory>()
-                .HasMany(e => e.StructureBlueprints)
-                .WithRequired(e => e.StructureCategory)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<StructureComponent>()
-                .HasMany(e => e.ConstructionSiteComponents)
-                .WithRequired(e => e.StructureComponent)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<TerritoryFlagPermission>()
-                .HasMany(e => e.PCTerritoryFlagsPermissions)
-                .WithRequired(e => e.TerritoryFlagPermission)
-                .WillCascadeOnDelete(false);
+            
         }
 
         private string BuildSQLQuery(string procedureName, params SqlParameter[] args)

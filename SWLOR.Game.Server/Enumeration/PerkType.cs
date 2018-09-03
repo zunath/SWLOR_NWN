@@ -3,14 +3,14 @@
     public enum PerkType
     {
         Unknown = -1,
-        SpeedyBuilder = 1,
-        MangleMaster = 2,
-        ConservativeConstruction = 3,
-        VanityBlueprints = 4,
-        TerritoryMarkerBlueprints = 5,
-        CraftingDeviceBlueprints = 6,
-        StorageContainerBlueprints = 7,
-        ResourceBundleBlueprints = 8,
+        // 1 is free
+        // 2 is free
+        // 3 is free
+        // 4 is free
+        // 5 is free
+        // 6 is free
+        // 7 is free
+        // 8 is free
         Miner = 9,
         Lumberjack = 10,
         PrecisionMining = 11,
@@ -97,7 +97,7 @@
         ExpertFarmer = 92,
         OreBagger = 93,
         WoodBagger = 94,
-        SpecialObjectBlueprints = 95,
+        // 95 is free
         EngineeringBlueprints = 96,
         SpecialModInstallationWeapons = 97,
         SpeedyWeaponsmith = 98,
@@ -110,7 +110,7 @@
         ImprovedCriticalLightsabers = 105,
         SeedPicker = 106,
         TwinVibrobladeMastery = 107,
-        BuildingBlueprints = 108,
+        // 108 is free
         CombatModInstallationArmors = 109,
         MagicModInstallationArmors = 110,
         CraftingModInstallationArmors = 111,

@@ -138,9 +138,6 @@ namespace SWLOR.Game.Server.Service
                     _perk.DoPerkUpgrade(oPC, PerkType.Lumberjack);
                     _perk.DoPerkUpgrade(oPC, PerkType.Lumberjack);
                     break;
-                case BackgroundType.ConstructionBuilder:
-                    _perk.DoPerkUpgrade(oPC, PerkType.VanityBlueprints);
-                    break;
                 case BackgroundType.Medic:
                     _perk.DoPerkUpgrade(oPC, PerkType.HealingKitExpert);
                     _perk.DoPerkUpgrade(oPC, PerkType.ImmediateImprovement);

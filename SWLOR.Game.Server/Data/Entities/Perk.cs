@@ -12,7 +12,6 @@ namespace SWLOR.Game.Server.Data.Entities
             CraftBlueprints = new HashSet<CraftBlueprint>();
             PCPerks = new HashSet<PCPerk>();
             PerkLevels = new HashSet<PerkLevel>();
-            StructureBlueprints = new HashSet<StructureBlueprint>();
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -67,10 +66,7 @@ namespace SWLOR.Game.Server.Data.Entities
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PerkLevel> PerkLevels { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<StructureBlueprint> StructureBlueprints { get; set; }
-
+        
         public virtual EnmityAdjustmentRule EnmityAdjustmentRule { get; set; }
     }
 }

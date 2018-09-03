@@ -14,16 +14,11 @@ namespace SWLOR.Game.Server.Data.Contracts
         IDbSet<AuthorizedDM> AuthorizedDMs { get; set; }
         IDbSet<Background> Backgrounds { get; set; }
         IDbSet<BaseItemType> BaseItemTypes { get; set; }
-        IDbSet<BuildingCategory> BuildingCategories { get; set; }
-        IDbSet<BuildingInterior> BuildingInteriors { get; set; }
-        IDbSet<BuildPrivacyDomain> BuildPrivacyDomains { get; set; }
         IDbSet<ChatChannelsDomain> ChatChannelsDomains { get; set; }
         IDbSet<ChatLog> ChatLogs { get; set; }
         IDbSet<ClientLogEvent> ClientLogEvents { get; set; }
         IDbSet<ClientLogEventTypesDomain> ClientLogEventTypesDomains { get; set; }
         IDbSet<ComponentType> ComponentTypes { get; set; }
-        IDbSet<ConstructionSiteComponent> ConstructionSiteComponents { get; set; }
-        IDbSet<ConstructionSite> ConstructionSites { get; set; }
         IDbSet<CooldownCategory> CooldownCategories { get; set; }
         IDbSet<CraftBlueprintCategory> CraftBlueprintCategories { get; set; }
         IDbSet<CraftBlueprint> CraftBlueprints { get; set; }
@@ -59,10 +54,6 @@ namespace SWLOR.Game.Server.Data.Contracts
         IDbSet<PCSearchSiteItem> PCSearchSiteItems { get; set; }
         IDbSet<PCSearchSite> PCSearchSites { get; set; }
         IDbSet<PCSkill> PCSkills { get; set; }
-        IDbSet<PCTerritoryFlag> PCTerritoryFlags { get; set; }
-        IDbSet<PCTerritoryFlagsPermission> PCTerritoryFlagsPermissions { get; set; }
-        IDbSet<PCTerritoryFlagsStructure> PCTerritoryFlagsStructures { get; set; }
-        IDbSet<PCTerritoryFlagsStructuresItem> PCTerritoryFlagsStructuresItems { get; set; }
         IDbSet<PerkCategory> PerkCategories { get; set; }
         IDbSet<PerkExecutionType> PerkExecutionTypes { get; set; }
         IDbSet<PerkLevel> PerkLevels { get; set; }
@@ -85,12 +76,6 @@ namespace SWLOR.Game.Server.Data.Contracts
         IDbSet<SkillXPRequirement> SkillXPRequirements { get; set; }
         IDbSet<StorageContainer> StorageContainers { get; set; }
         IDbSet<StorageItem> StorageItems { get; set; }
-        IDbSet<StructureBlueprint> StructureBlueprints { get; set; }
-        IDbSet<StructureCategory> StructureCategories { get; set; }
-        IDbSet<StructureComponent> StructureComponents { get; set; }
-        IDbSet<StructureQuickBuildAudit> StructureQuickBuildAudits { get; set; }
-        IDbSet<sysdiagram> sysdiagrams { get; set; }
-        IDbSet<TerritoryFlagPermission> TerritoryFlagPermissions { get; set; }
         IDbSet<User> Users { get; set; }
         int SaveChanges();
         Task<int> SaveChangesAsync();

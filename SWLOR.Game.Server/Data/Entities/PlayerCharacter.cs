@@ -13,7 +13,6 @@ namespace SWLOR.Game.Server.Data.Entities
             ChatLogs = new HashSet<ChatLog>();
             ChatLogs1 = new HashSet<ChatLog>();
             ClientLogEvents = new HashSet<ClientLogEvent>();
-            ConstructionSites = new HashSet<ConstructionSite>();
             PCCooldowns = new HashSet<PCCooldown>();
             PCCustomEffects = new HashSet<PCCustomEffect>();
             PCKeyItems = new HashSet<PCKeyItem>();
@@ -26,8 +25,6 @@ namespace SWLOR.Game.Server.Data.Entities
             PCSearchSiteItems = new HashSet<PCSearchSiteItem>();
             PCSearchSites = new HashSet<PCSearchSite>();
             PCSkills = new HashSet<PCSkill>();
-            PCTerritoryFlags = new HashSet<PCTerritoryFlag>();
-            PCTerritoryFlagsPermissions = new HashSet<PCTerritoryFlagsPermission>();
         }
 
         [Key]
@@ -133,10 +130,7 @@ namespace SWLOR.Game.Server.Data.Entities
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ClientLogEvent> ClientLogEvents { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ConstructionSite> ConstructionSites { get; set; }
-
+        
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PCCooldown> PCCooldowns { get; set; }
 
@@ -174,11 +168,5 @@ namespace SWLOR.Game.Server.Data.Entities
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PCSkill> PCSkills { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PCTerritoryFlag> PCTerritoryFlags { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PCTerritoryFlagsPermission> PCTerritoryFlagsPermissions { get; set; }
     }
 }

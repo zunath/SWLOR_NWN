@@ -17,7 +17,7 @@
         Weaponsmith = 12,
         Armorsmith = 13,
         Logging = 14,
-        Construction = 15,
+        Fabrication = 15,
         Cooking = 16,
         FirstAid = 17,
         ItemRepair = 18,

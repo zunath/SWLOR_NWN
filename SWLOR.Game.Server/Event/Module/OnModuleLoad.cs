@@ -13,7 +13,6 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly INWNXChat _nwnxChat;
         private readonly INWNXEvents _nwnxEvents;
         private readonly IDeathService _death;
-        private readonly IStructureService _structure;
         private readonly IObjectProcessingService _objectProcessing;
         private readonly IFarmingService _farming;
         private readonly IAppStateService _appStateService;
@@ -23,7 +22,6 @@ namespace SWLOR.Game.Server.Event.Module
             INWNXChat nwnxChat,
             INWNXEvents nwnxEvents,
             IDeathService death,
-            IStructureService structure,
             IObjectProcessingService objectProcessing,
             IFarmingService farming,
             IAppStateService appStateService,
@@ -33,7 +31,6 @@ namespace SWLOR.Game.Server.Event.Module
             _nwnxChat = nwnxChat;
             _nwnxEvents = nwnxEvents;
             _death = death;
-            _structure = structure;
             _objectProcessing = objectProcessing;
             _farming = farming;
             _appStateService = appStateService;
@@ -50,7 +47,6 @@ namespace SWLOR.Game.Server.Event.Module
             _.ExecuteScript("x2_mod_def_load", Object.OBJECT_SELF);
             
             _death.OnModuleLoad();
-            _structure.OnModuleLoad();
             _appStateService.OnModuleLoad();
             _objectProcessing.OnModuleLoad();
             _farming.OnModuleLoad();

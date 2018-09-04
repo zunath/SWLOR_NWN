@@ -448,6 +448,24 @@ namespace SWLOR.Game.Server.GameObject
                 return engineeringBonus;
             }
         }
+        public virtual int EffectiveFabricationBonus
+        {
+            get
+            {
+                int fabricationBonus = 0;
+                for (int itemSlot = 0; itemSlot < NWScript.NUM_INVENTORY_SLOTS; itemSlot++)
+                {
+                    NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
+                    SkillType skill = _skill.GetSkillTypeForItem(item);
+                    int rank = _skill.GetPCSkill(this, skill).Rank;
+                    int itemFabricationBonus = CalculateAdjustedValue(item.CraftBonusFabrication, item.RecommendedLevel, rank, 0);
+
+                    fabricationBonus += itemFabricationBonus;
+                }
+
+                return fabricationBonus;
+            }
+        }
         public virtual int EffectiveArmorsmithBonus
         {
             get

@@ -87,6 +87,9 @@ namespace SWLOR.Game.Server.Service
                     case ComponentBonusType.EngineeringUp:
                         product.CraftBonusEngineering += amount;
                         break;
+                    case ComponentBonusType.FabricationUp:
+                        product.CraftBonusFabrication += amount;
+                        break;
                     case ComponentBonusType.HPUp:
                         product.HPBonus += amount;
                         break;

@@ -270,11 +270,22 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int craftBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.CraftBonusEngineering);
-                if(craftBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CRAFT_BONUS_ENGINEERING");
+                if (craftBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CRAFT_BONUS_ENGINEERING");
                 CraftBonusEngineering = craftBonus;
                 return craftBonus;
             }
             set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CRAFT_BONUS_ENGINEERING", value);
+        }
+        public virtual int CraftBonusFabrication
+        {
+            get
+            {
+                int craftBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.CraftBonusFabrication);
+                if (craftBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CRAFT_BONUS_FABRICATION");
+                CraftBonusFabrication = craftBonus;
+                return craftBonus;
+            }
+            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CRAFT_BONUS_FABRICATION", value);
         }
         public virtual SkillType AssociatedSkillType
         {

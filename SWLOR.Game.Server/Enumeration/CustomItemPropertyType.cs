@@ -41,6 +41,7 @@
         YellowMod = 135,
         LevelIncrease = 136,
         ComponentBonus = 137,
-        ComponentItemTypeRestriction = 138
+        ComponentItemTypeRestriction = 138,
+        CraftBonusFabrication = 139
     }
 }

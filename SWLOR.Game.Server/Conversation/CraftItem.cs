@@ -62,6 +62,9 @@ namespace SWLOR.Game.Server.Conversation
                     case SkillType.Weaponsmith:
                         model.PlayerPerkLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.WeaponBlueprints);
                         break;
+                    case SkillType.Fabrication:
+                        model.PlayerPerkLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.FabricationBlueprints);
+                        break;
                     default:
                         model.PlayerPerkLevel = 0;
                         break;

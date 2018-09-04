@@ -86,6 +86,9 @@ namespace SWLOR.Game.Server.Service
                 case BackgroundType.Armorsmith:
                     _perk.DoPerkUpgrade(oPC, PerkType.ArmorBlueprints);
                     break;
+                case BackgroundType.Fabricator:
+                    _perk.DoPerkUpgrade(oPC, PerkType.FabricationBlueprints);
+                    break;
                 case BackgroundType.Knight:
                     item1Resref = "bkg_knightarmor";
                     break;

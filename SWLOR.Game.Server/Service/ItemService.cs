@@ -207,6 +207,10 @@ namespace SWLOR.Game.Server.Service
             {
                 description += _color.Orange("Armorsmith Bonus: ") + examinedItem.CraftBonusArmorsmith + "\n";
             }
+            if (examinedItem.CraftBonusFabrication > 0)
+            {
+                description += _color.Orange("Fabrication Bonus: ") + examinedItem.CraftBonusFabrication + "\n";
+            }
             if (examinedItem.CraftBonusWeaponsmith > 0)
             {
                 description += _color.Orange("Weaponsmith Bonus: ") + examinedItem.CraftBonusWeaponsmith + "\n";

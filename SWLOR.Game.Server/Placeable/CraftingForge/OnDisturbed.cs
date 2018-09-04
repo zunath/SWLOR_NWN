@@ -44,13 +44,13 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             NWItem item = NWItem.Wrap(_.GetInventoryDisturbItem());
             NWPlaceable forge = NWPlaceable.Wrap(Object.OBJECT_SELF);
 
-            if (!checkValidity(forge, pc, item)) return false;
-            startSmelt(forge, pc, item);
+            if (!CheckValidity(forge, pc, item)) return false;
+            StartSmelt(forge, pc, item);
             return true;
         }
 
 
-        private bool checkValidity(NWPlaceable forge, NWPlayer pc, NWItem item)
+        private bool CheckValidity(NWPlaceable forge, NWPlayer pc, NWItem item)
         {
             if (pc.IsBusy)
             {
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             return true;
         }
 
-        private void startSmelt(NWPlaceable forge, NWPlayer pc, NWItem item)
+        private void StartSmelt(NWPlaceable forge, NWPlayer pc, NWItem item)
         {
             int charges = forge.GetLocalInt("FORGE_CHARGES");
             if (item.Resref == "coal")

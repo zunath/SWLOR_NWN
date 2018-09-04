@@ -63,6 +63,7 @@ namespace SWLOR.Game.Server.Data
         public virtual IDbSet<PCCorpseItem> PCCorpseItems { get; set; }
         public virtual IDbSet<PCCorpse> PCCorpses { get; set; }
         public virtual IDbSet<PCCustomEffect> PCCustomEffects { get; set; }
+        public virtual IDbSet<PCImpoundedItem> PCImpoundedItems { get; set; }
         public virtual IDbSet<PCKeyItem> PCKeyItems { get; set; }
         public virtual IDbSet<PCMapPin> PCMapPins { get; set; }
         public virtual IDbSet<PCMigrationItem> PCMigrationItems { get; set; }

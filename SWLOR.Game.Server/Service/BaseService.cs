@@ -77,21 +77,32 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleLoad()
         {
-            var areas = NWModule.Get().Areas;
-
-            foreach (var @base in _db.PCBases.ToList())
+            foreach (var area in NWModule.Get().Areas)
             {
-                NWArea area = areas.Single(x => x.Resref == @base.AreaResref);
-
-                foreach (var structure in @base.PCBaseStructures)
+                List<AreaStructure> areaStructures = new List<AreaStructure>();
+                if (area.Data.ContainsKey("BASE_SERVICE_STRUCTURES"))
                 {
-                    Location location = _.Location(area.Object,
-                        _.Vector((float) structure.LocationX, (float) structure.LocationY, (float) structure.LocationZ),
-                        (float) structure.LocationOrientation);
-
-                    var plc = NWPlaceable.Wrap(_.CreateObject(OBJECT_TYPE_PLACEABLE, structure.BaseStructure.PlaceableResref, location));
-                    plc.SetLocalInt("PC_BASE_STRUCTURE_ID", structure.PCBaseStructureID);
+                    areaStructures = area.Data["BASE_SERVICE_STRUCTURES"];
                 }
+
+                var pcBases = _db.PCBases.Where(x => x.AreaResref == area.Resref).ToList();
+                foreach (var @base in pcBases)
+                {
+
+                    foreach (var structure in @base.PCBaseStructures)
+                    {
+                        Location location = _.Location(area.Object,
+                            _.Vector((float)structure.LocationX, (float)structure.LocationY, (float)structure.LocationZ),
+                            (float)structure.LocationOrientation);
+
+                        var plc = NWPlaceable.Wrap(_.CreateObject(OBJECT_TYPE_PLACEABLE, structure.BaseStructure.PlaceableResref, location));
+                        plc.SetLocalInt("PC_BASE_STRUCTURE_ID", structure.PCBaseStructureID);
+
+                        areaStructures.Add(new AreaStructure(@base.PCBaseID, structure.PCBaseStructureID, plc));
+                    }
+                }
+
+                area.Data["BASE_SERVICE_STRUCTURES"] = areaStructures;
             }
         }
 
@@ -166,21 +177,15 @@ namespace SWLOR.Game.Server.Service
                 foreach (var pcBase in pcBases)
                 {
                     Area dbArea = _db.Areas.Single(x => x.Resref == pcBase.AreaResref);
-
-                    if (pcBase.Sector == AreaSector.Northeast) dbArea.NortheastOwner = null;
-                    else if (pcBase.Sector == AreaSector.Northwest) dbArea.NorthwestOwner = null;
-                    else if (pcBase.Sector == AreaSector.Southeast) dbArea.SoutheastOwner = null;
-                    else if (pcBase.Sector == AreaSector.Southwest) dbArea.SouthwestOwner = null;
-
                     playerIDs.Add(new Tuple<string, string>(pcBase.PlayerID, dbArea.Name + " (" + pcBase.Sector + ")"));
-                    _db.PCBases.Remove(pcBase);
+                    ClearPCBaseByID(pcBase.PCBaseID, false);
                 }
 
                 var players = module.Players;
                 foreach(var removed in playerIDs)
                 {
                     var existing = players.FirstOrDefault(x => x.GlobalID == removed.Item1);
-                    existing?.FloatingText("Your lease on " + removed.Item2 + " has ended. All structures and items have been impounded by the planetary government. Speak with them to pay a fee and retrieve your goods.");
+                    existing?.FloatingText("Your lease on " + removed.Item2 + " has expired. All structures and items have been impounded by the planetary government. Speak with them to pay a fee and retrieve your goods.");
                 }
 
                 _db.SaveChanges();
@@ -254,7 +259,7 @@ namespace SWLOR.Game.Server.Service
             if (pcBase.PlayerID != user.GlobalID)
                 return "You do not have permission to place structures in this territory.";
 
-            int controlTowerTypeID = (int)Enumeration.BaseStructureType.ControlTower;
+            int controlTowerTypeID = (int)BaseStructureType.ControlTower;
             
             var structure = _db.BaseStructures.Single(x => x.BaseStructureID == structureID);
             int structureTypeID = structure.BaseStructureTypeID;
@@ -273,6 +278,44 @@ namespace SWLOR.Game.Server.Service
             }
 
             return null;
+        }
+
+        public void ClearPCBaseByID(int pcBaseID, bool doSave = true)
+        {
+            var pcBase = _db.PCBases.Single(x => x.PCBaseID == pcBaseID);
+            var area = NWModule.Get().Areas.Single(x => x.Resref == pcBase.AreaResref);
+            List<AreaStructure> areaStructures = area.Data["BASE_SERVICE_STRUCTURES"];
+            areaStructures = areaStructures.Where(x => x.PCBaseID == pcBaseID).ToList();
+            
+            foreach (var structure in areaStructures)
+            {
+                ((List<AreaStructure>) area.Data["BASE_SERVICE_STRUCTURES"]).Remove(structure);
+                structure.Structure.Destroy();
+            }
+            
+            for(int x = pcBase.PCBaseStructures.Count-1; x >= 0; x--)
+            {
+                var pcBaseStructure = pcBase.PCBaseStructures.ElementAt(x);
+                for (int i = pcBaseStructure.PCBaseStructureItems.Count - 1; i >= 0; i--)
+                {
+                    var item = pcBaseStructure.PCBaseStructureItems.ElementAt(x);
+                    _db.PCBaseStructureItems.Remove(item);
+                }
+
+                _db.PCBaseStructures.Remove(pcBaseStructure);
+            }
+            _db.PCBases.Remove(pcBase);
+
+            Area dbArea = _db.Areas.Single(x => x.Resref == pcBase.AreaResref);
+            if (pcBase.Sector == AreaSector.Northeast) dbArea.NortheastOwner = null;
+            else if (pcBase.Sector == AreaSector.Northwest) dbArea.NorthwestOwner = null;
+            else if (pcBase.Sector == AreaSector.Southeast) dbArea.SoutheastOwner = null;
+            else if (pcBase.Sector == AreaSector.Southwest) dbArea.SouthwestOwner = null;
+
+            if (doSave)
+            {
+                _db.SaveChanges();
+            }
         }
     }
 }

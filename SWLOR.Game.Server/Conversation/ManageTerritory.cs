@@ -212,20 +212,10 @@ namespace SWLOR.Game.Server.Conversation
 
             if (data.IsConfirming)
             {
-                PCBase pcBase = _db.PCBases.Single(x => x.PCBaseID == data.PCBaseID);
-                Area area = _db.Areas.Single(x => x.Resref == pcBase.AreaResref);
                 data.IsConfirming = false;
-
-                if (pcBase.Sector == AreaSector.Northeast) area.NortheastOwner = null;
-                else if (pcBase.Sector == AreaSector.Northwest) area.NorthwestOwner = null;
-                else if (pcBase.Sector == AreaSector.Southeast) area.SoutheastOwner = null;
-                else if (pcBase.Sector == AreaSector.Southwest) area.SouthwestOwner = null;
-
-                _db.PCBases.Remove(pcBase);
-                _db.SaveChanges();
-
+                _base.ClearPCBaseByID(data.PCBaseID);
                 GetPC().FloatingText("Your lease has been canceled. Any property left behind has been delivered to the planetary government. Speak with them to retrieve it.");
-
+                
                 BuildMainPage();
                 SetResponseText("CancelLeasePage", 1, "Confirm Cancel Lease");
                 ChangePage("MainPage");

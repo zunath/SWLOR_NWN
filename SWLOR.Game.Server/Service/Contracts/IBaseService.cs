@@ -16,5 +16,6 @@ namespace SWLOR.Game.Server.Service.Contracts
         PCBaseStructure GetBaseControlTower(int pcBaseID);
         string CanPlaceStructure(NWCreature player, NWItem structureItem, Location targetLocation, int structureID);
         string GetSectorOfLocation(Location targetLocation);
+        void ClearPCBaseByID(int pcBaseID, bool doSave = true);
     }
 }

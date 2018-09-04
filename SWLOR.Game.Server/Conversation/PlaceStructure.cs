@@ -1,9 +1,11 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entities;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static NWN.NWScript;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
@@ -278,9 +280,11 @@ namespace SWLOR.Game.Server.Conversation
 
             _db.PCBaseStructures.Add(structure);
             _db.SaveChanges();
-
+            
             var plc = NWPlaceable.Wrap(_.CreateObject(OBJECT_TYPE_PLACEABLE, dbStructure.PlaceableResref, data.TargetLocation));
             plc.SetLocalInt("PC_BASE_STRUCTURE_ID", structure.PCBaseStructureID);
+            List<AreaStructure> areaStructures = data.TargetArea.Data["BASE_SERVICE_STRUCTURES"];
+            areaStructures.Add(new AreaStructure(data.PCBaseID, structure.PCBaseStructureID, plc));
 
             data.StructureItem.Destroy();
             EndConversation();

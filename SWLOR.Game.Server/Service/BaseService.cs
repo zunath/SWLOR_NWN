@@ -21,16 +21,21 @@ namespace SWLOR.Game.Server.Service
         private readonly INWNXEvents _nwnxEvents;
         private readonly IDialogService _dialog;
         private readonly IDataContext _db;
+        private readonly ISerializationService _serialization;
 
         public BaseService(INWScript script,
             INWNXEvents nwnxEvents,
             IDialogService dialog,
-            IDataContext db)
+            IDataContext db,
+            ISerializationService serialization)
         {
             _ = script;
             _nwnxEvents = nwnxEvents;
             _dialog = dialog;
             _db = db;
+            _serialization = serialization;
+
+
         }
 
         public PCTempBaseData GetPlayerTempData(NWPlayer player)
@@ -299,9 +304,36 @@ namespace SWLOR.Game.Server.Service
                 for (int i = pcBaseStructure.PCBaseStructureItems.Count - 1; i >= 0; i--)
                 {
                     var item = pcBaseStructure.PCBaseStructureItems.ElementAt(x);
+                    var impoundItem = new PCImpoundedItem
+                    {
+                        DateImpounded = DateTime.UtcNow,
+                        ItemName = item.ItemName,
+                        ItemResref = item.ItemResref,
+                        ItemObject = item.ItemObject,
+                        ItemTag = item.ItemTag,
+                        PlayerID = pcBase.PlayerID
+                    };
+
+                    _db.PCImpoundedItems.Add(impoundItem);
                     _db.PCBaseStructureItems.Remove(item);
                 }
+                var tempStorage = NWPlaceable.Wrap(_.GetObjectByTag("TEMP_ITEM_STORAGE"));
+                NWItem copy = NWItem.Wrap(_.CreateItemOnObject(pcBaseStructure.BaseStructure.ItemResref, tempStorage.Object));
+                copy.SetLocalInt("BASE_STRUCTURE_ID", pcBaseStructure.BaseStructureID);
+                copy.Name = pcBaseStructure.BaseStructure.Name;
 
+                PCImpoundedItem structureImpoundedItem = new PCImpoundedItem
+                {
+                    DateImpounded = DateTime.UtcNow,
+                    PlayerID = pcBase.PlayerID,
+                    ItemObject = _serialization.Serialize(copy),
+                    ItemTag = copy.Tag,
+                    ItemResref = copy.Resref,
+                    ItemName = copy.Name
+                };
+
+                copy.Destroy();
+                _db.PCImpoundedItems.Add(structureImpoundedItem);
                 _db.PCBaseStructures.Remove(pcBaseStructure);
             }
             _db.PCBases.Remove(pcBase);
@@ -317,5 +349,6 @@ namespace SWLOR.Game.Server.Service
                 _db.SaveChanges();
             }
         }
+        
     }
 }

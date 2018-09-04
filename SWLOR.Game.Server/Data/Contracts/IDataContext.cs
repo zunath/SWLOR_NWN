@@ -47,6 +47,7 @@ namespace SWLOR.Game.Server.Data.Contracts
         IDbSet<PCCorpseItem> PCCorpseItems { get; set; }
         IDbSet<PCCorpse> PCCorpses { get; set; }
         IDbSet<PCCustomEffect> PCCustomEffects { get; set; }
+        IDbSet<PCImpoundedItem> PCImpoundedItems { get; set; }
         IDbSet<PCKeyItem> PCKeyItems { get; set; }
         IDbSet<PCMapPin> PCMapPins { get; set; }
         IDbSet<PCMigrationItem> PCMigrationItems { get; set; }

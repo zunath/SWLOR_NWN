@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Data.Entities
             ChatLogs = new HashSet<ChatLog>();
             ChatLogs1 = new HashSet<ChatLog>();
             ClientLogEvents = new HashSet<ClientLogEvent>();
+            PCImpoundedItems = new HashSet<PCImpoundedItem>();
             PCBases = new HashSet<PCBase>();
             PCCooldowns = new HashSet<PCCooldown>();
             PCCustomEffects = new HashSet<PCCustomEffect>();
@@ -147,7 +148,10 @@ namespace SWLOR.Game.Server.Data.Entities
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ClientLogEvent> ClientLogEvents { get; set; }
-        
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PCImpoundedItem> PCImpoundedItems { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PCCooldown> PCCooldowns { get; set; }
 

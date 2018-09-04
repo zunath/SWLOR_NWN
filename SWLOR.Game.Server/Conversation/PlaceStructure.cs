@@ -271,11 +271,16 @@ namespace SWLOR.Game.Server.Conversation
                 PCBaseID = data.PCBaseID
             };
 
+            var pcBase = _db.PCBases.Single(x => x.PCBaseID == data.PCBaseID);
             if (isPlacingTower)
             {
-                var pcBase = _db.PCBases.Single(x => x.PCBaseID == data.PCBaseID);
                 pcBase.Power = dbStructure.Power;
                 pcBase.CPU = dbStructure.CPU;
+            }
+            else
+            {
+                pcBase.Power -= dbStructure.Power;
+                pcBase.CPU -= dbStructure.CPU;
             }
 
             _db.PCBaseStructures.Add(structure);

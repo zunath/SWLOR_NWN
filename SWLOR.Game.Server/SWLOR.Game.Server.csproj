@@ -664,6 +664,7 @@
     <Compile Include="Service\StorageService.cs" />
     <Compile Include="Service\AreaService.cs" />
     <Compile Include="Service\TimeService.cs" />
+    <Compile Include="ValueObject\AreaStructure.cs" />
     <Compile Include="ValueObject\PCTempBaseData.cs" />
     <Compile Include="ValueObject\CraftingData.cs" />
     <Compile Include="ValueObject\CustomData.cs" />

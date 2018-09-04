@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using SWLOR.Game.Server.Data.Entities;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
-using SWLOR.Game.Server.Data.Entities;
 using Attribute = SWLOR.Game.Server.Data.Entities.Attribute;
 
 namespace SWLOR.Game.Server.Data.Contracts
@@ -12,8 +12,8 @@ namespace SWLOR.Game.Server.Data.Contracts
     {
         IDbSet<Area> Areas { get; set; }
         IDbSet<BaseStructure> BaseStructures { get; set; }
-        IDbSet<Attribute> Attributes { get; set; }
         IDbSet<BaseStructureType> BaseStructureTypes { get; set; }
+        IDbSet<Attribute> Attributes { get; set; }
         IDbSet<AuthorizedDM> AuthorizedDMs { get; set; }
         IDbSet<Background> Backgrounds { get; set; }
         IDbSet<BaseItemType> BaseItemTypes { get; set; }
@@ -41,6 +41,8 @@ namespace SWLOR.Game.Server.Data.Contracts
         IDbSet<LootTable> LootTables { get; set; }
         IDbSet<NPCGroup> NPCGroups { get; set; }
         IDbSet<PCBase> PCBases { get; set; }
+        IDbSet<PCBaseStructure> PCBaseStructures { get; set; }
+        IDbSet<PCBaseStructureItem> PCBaseStructureItems { get; set; }
         IDbSet<PCCooldown> PCCooldowns { get; set; }
         IDbSet<PCCorpseItem> PCCorpseItems { get; set; }
         IDbSet<PCCorpse> PCCorpses { get; set; }
@@ -81,6 +83,7 @@ namespace SWLOR.Game.Server.Data.Contracts
         IDbSet<StorageContainer> StorageContainers { get; set; }
         IDbSet<StorageItem> StorageItems { get; set; }
         IDbSet<User> Users { get; set; }
+
         int SaveChanges();
         Task<int> SaveChangesAsync();
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);

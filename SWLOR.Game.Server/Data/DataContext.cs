@@ -57,6 +57,8 @@ namespace SWLOR.Game.Server.Data
         public virtual IDbSet<LootTable> LootTables { get; set; }
         public virtual IDbSet<NPCGroup> NPCGroups { get; set; }
         public virtual IDbSet<PCBase> PCBases { get; set; }
+        public virtual IDbSet<PCBaseStructure> PCBaseStructures { get; set; }
+        public virtual IDbSet<PCBaseStructureItem> PCBaseStructureItems { get; set; }
         public virtual IDbSet<PCCooldown> PCCooldowns { get; set; }
         public virtual IDbSet<PCCorpseItem> PCCorpseItems { get; set; }
         public virtual IDbSet<PCCorpse> PCCorpses { get; set; }
@@ -127,7 +129,17 @@ namespace SWLOR.Game.Server.Data
                 .HasMany(e => e.PCMigrationItems)
                 .WithRequired(e => e.BaseItemType)
                 .WillCascadeOnDelete(false);
-            
+
+            modelBuilder.Entity<BaseStructure>()
+                .HasMany(e => e.PCBaseStructures)
+                .WithRequired(e => e.BaseStructure)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<BaseStructureType>()
+                .HasMany(e => e.BaseStructures)
+                .WithRequired(e => e.BaseStructureType)
+                .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<ChatChannelsDomain>()
                 .HasMany(e => e.ChatLogs)
                 .WithRequired(e => e.ChatChannelsDomain)
@@ -247,7 +259,21 @@ namespace SWLOR.Game.Server.Data
                 .HasMany(e => e.QuestKillTargetLists)
                 .WithRequired(e => e.NPCGroup)
                 .WillCascadeOnDelete(false);
-            
+
+            modelBuilder.Entity<PCBase>()
+                .HasMany(e => e.PCBaseStructures)
+                .WithRequired(e => e.PCBase)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PCBaseStructureItem>()
+                .Property(e => e.ItemObject)
+                .IsUnicode(false);
+
+            modelBuilder.Entity<PCBaseStructure>()
+                .HasMany(e => e.PCBaseStructureItems)
+                .WithRequired(e => e.PCBaseStructure)
+                .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<PCCorpse>()
                 .HasMany(e => e.PCCorpseItems)
                 .WithRequired(e => e.PcCorpse)

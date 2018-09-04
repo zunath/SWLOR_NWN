@@ -124,7 +124,7 @@ namespace SWLOR.Game.Server.Conversation
 
             bool showManage = _db.PCBases.Count(x => x.PlayerID == playerID) > 0;
 
-            AddResponseToPage("MainPage", "Manage My Territory", showManage);
+            AddResponseToPage("MainPage", "Manage My Leases", showManage);
             AddResponseToPage("MainPage", "Purchase Territory", hasUnclaimed && dbArea.IsBuildable);
         }
         
@@ -145,8 +145,8 @@ namespace SWLOR.Game.Server.Conversation
         {
             switch (responseID)
             {
-                case 1: // Manage my territory
-                    SwitchConversation("ManageTerritory");
+                case 1: // Manage my lease
+                    SwitchConversation("ManageLease");
                     break;
                 case 2: // Purchase territory
                     SetPageHeader("PurchaseTerritoryPage", BuildPurchaseTerritoryHeader());

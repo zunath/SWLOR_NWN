@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IEffectTrackerService _effectTracker;
         private readonly IAbilityService _ability;
         private readonly IPerkService _perk;
+        private readonly IBaseService _base;
         
         public OnModuleHeartbeat(INWScript script,
             IDataContext db,
@@ -27,7 +28,8 @@ namespace SWLOR.Game.Server.Event.Module
             IItemService item,
             IEffectTrackerService effectTracker,
             IAbilityService ability,
-            IPerkService perk)
+            IPerkService perk,
+            IBaseService @base)
         {
             _ = script;
             _db = db;
@@ -37,6 +39,7 @@ namespace SWLOR.Game.Server.Event.Module
             _effectTracker = effectTracker;
             _ability = ability;
             _perk = perk;
+            _base = @base;
         }
 
         public bool Run(params object[] args)
@@ -66,8 +69,8 @@ namespace SWLOR.Game.Server.Event.Module
 
             SaveCharacters();
             _customEffect.OnModuleHeartbeat();
-
             _item.OnModuleHeartbeat();
+            _base.OnModuleHeartbeat();
 
             return true;
         }

@@ -4,7 +4,6 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entities;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN.NWScript;
@@ -49,66 +48,19 @@ namespace SWLOR.Game.Server.Service
                 dbArea.Width = _.GetAreaSize(AREA_WIDTH, area.Object);
                 dbArea.Height = _.GetAreaSize(AREA_HEIGHT, area.Object);
                 dbArea.PurchasePrice = area.GetLocalInt("PURCHASE_PRICE");
-                dbArea.WeeklyUpkeep = area.GetLocalInt("WEEKLY_UPKEEP");
+                dbArea.DailyUpkeep = area.GetLocalInt("WEEKLY_UPKEEP");
                 dbArea.IsBuildable = 
                     area.GetLocalInt("IS_BUILDABLE") == 1 && 
                     dbArea.Width == 32 && 
                     dbArea.Height == 32 &&
                     dbArea.PurchasePrice > 0 &&
-                    dbArea.WeeklyUpkeep > 0;
+                    dbArea.DailyUpkeep > 0;
                 dbArea.IsActive = true;
                 
                 _db.Areas.AddOrUpdate(dbArea);
             }
 
             _db.SaveChanges();
-        }
-
-        public void PurchaseArea(NWPlayer player, NWArea area, string sector)
-        {
-            if(sector != AreaSector.Northwest && sector != AreaSector.Northeast &&
-                sector != AreaSector.Southwest && sector != AreaSector.Southeast)
-                throw new ArgumentException(nameof(sector) + " must match one of the valid sector values: NE, NW, SE, SW");
-
-            if (area.Width < 32) throw new Exception("Area must be at least 32 tiles wide.");
-            if (area.Height < 32) throw new Exception("Area must be at least 32 tiles high.");
-
-
-            var dbArea = _db.Areas.Single(x => x.Resref == area.Resref);
-            string existingOwner = string.Empty;
-            switch (sector)
-            {
-                case AreaSector.Northwest: existingOwner = dbArea.NorthwestOwner; break;
-                case AreaSector.Northeast: existingOwner = dbArea.NortheastOwner; break;
-                case AreaSector.Southwest: existingOwner = dbArea.SouthwestOwner; break;
-                case AreaSector.Southeast: existingOwner = dbArea.SoutheastOwner; break;
-            }
-
-            if (!string.IsNullOrWhiteSpace(existingOwner))
-            {
-                player.SendMessage("Another player already owns that sector.");
-                return;
-            }
-
-            if (player.Gold < dbArea.PurchasePrice)
-            {
-                player.SendMessage("You do not have enough credits to purchase that sector.");
-                return;
-            }
-
-            player.AssignCommand(() => _.TakeGoldFromCreature(dbArea.PurchasePrice, player.Object, TRUE));
-            
-            switch (sector)
-            {
-                case AreaSector.Northwest: dbArea.NorthwestOwner = player.GlobalID; break;
-                case AreaSector.Northeast: dbArea.NortheastOwner = player.GlobalID; break;
-                case AreaSector.Southwest: dbArea.SouthwestOwner = player.GlobalID; break;
-                case AreaSector.Southeast: dbArea.SoutheastOwner = player.GlobalID; break;
-            }
-            
-            _db.SaveChanges();
-
-            player.FloatingText("You purchase " + area.Name + " (" + sector + ") for " + dbArea.PurchasePrice + " credits.");
         }
 
     }

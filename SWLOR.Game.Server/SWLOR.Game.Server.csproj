@@ -97,6 +97,7 @@
     <Compile Include="Conversation\DestroySurvivalKnife.cs" />
     <Compile Include="Conversation\DestroyPlayerGuide.cs" />
     <Compile Include="Conversation\KeyItems.cs" />
+    <Compile Include="Conversation\ManageTerritory.cs" />
     <Compile Include="Conversation\NPCs\WariersDatson.cs" />
     <Compile Include="Conversation\NPCs\Znoda.cs" />
     <Compile Include="Conversation\Outfit.cs" />
@@ -191,6 +192,7 @@
     <Compile Include="Data\Entities\User.cs" />
     <Compile Include="Data\Contracts\IDataContext.cs" />
     <Compile Include="Data\SqlResults\TotalSkillXPResult.cs" />
+    <Compile Include="Data\Entities\PCBase.cs" />
     <Compile Include="Enumeration\AddItemPropertyPolicy.cs" />
     <Compile Include="Enumeration\AreaSector.cs" />
     <Compile Include="Enumeration\BackgroundType.cs" />
@@ -657,7 +659,7 @@
     <Compile Include="Service\StorageService.cs" />
     <Compile Include="Service\AreaService.cs" />
     <Compile Include="Service\TimeService.cs" />
-    <Compile Include="ValueObject\BaseData.cs" />
+    <Compile Include="ValueObject\PCTempBaseData.cs" />
     <Compile Include="ValueObject\CraftingData.cs" />
     <Compile Include="ValueObject\CustomData.cs" />
     <Compile Include="ValueObject\CasterSpellVO.cs" />

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace SWLOR.Game.Server.Data.Entities
@@ -43,7 +44,7 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public int PurchasePrice { get; set; }
 
-        public int WeeklyUpkeep { get; set; }
+        public int DailyUpkeep { get; set; }
 
 
         public virtual PlayerCharacter NortheastOwnerPlayer { get; set; }

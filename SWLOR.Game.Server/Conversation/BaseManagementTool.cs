@@ -15,21 +15,18 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IBaseService _base;
         private readonly IColorTokenService _color;
         private readonly IDataContext _db;
-        private readonly IAreaService _area;
 
         public BaseManagementTool(
             INWScript script, 
             IDialogService dialog,
             IBaseService @base,
             IColorTokenService color,
-            IDataContext db,
-            IAreaService area) 
+            IDataContext db)
             : base(script, dialog)
         {
             _base = @base;
             _color = color;
             _db = db;
-            _area = area;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -58,60 +55,77 @@ namespace SWLOR.Game.Server.Conversation
 
             Area dbArea = _db.Areas.Single(x => x.Resref == data.TargetArea.Resref);
             bool hasUnclaimed = false;
+            bool isDM = GetPC().IsDM;
+            string playerID = GetPC().GlobalID;
+
             string header = _color.Green("Base Management Menu\n\n");
             header += _color.Green("Area: ") + data.TargetArea.Name + " (" + cellX + ", " + cellY + ")\n\n";
 
-            if (dbArea.NortheastOwnerPlayer != null)
+            if (!dbArea.IsBuildable)
             {
-                header += _color.Green("Northeast Owner: ") + dbArea.NortheastOwnerPlayer.CharacterName + "\n";
+                header += "Land in this area cannot be claimed. However, you can still manage any leases you own from the list below.";
             }
             else
             {
-                header += _color.Green("Northeast Owner: ") + "Unclaimed\n";
-                hasUnclaimed = true;
-            }
+                if (dbArea.NortheastOwnerPlayer != null)
+                {
+                    header += _color.Green("Northeast Owner: ") + "Claimed";
+                    if (isDM || dbArea.NortheastOwner == playerID)
+                        header += " (" + dbArea.NortheastOwnerPlayer.CharacterName + ")";
+                    header += "\n";
+                }
+                else
+                {
+                    header += _color.Green("Northeast Owner: ") + "Unclaimed\n";
+                    hasUnclaimed = true;
+                }
 
-            if (dbArea.NorthwestOwnerPlayer != null)
-            {
-                header += _color.Green("Northwest Owner: ") + dbArea.NorthwestOwnerPlayer.CharacterName + "\n";
-            }
-            else
-            {
-                header += _color.Green("Northwest Owner: ") + "Unclaimed\n";
-                hasUnclaimed = true;
-            }
+                if (dbArea.NorthwestOwnerPlayer != null)
+                {
+                    header += _color.Green("Northwest Owner: ") + "Claimed";
+                    if (isDM || dbArea.NorthwestOwner == playerID)
+                        header += " (" + dbArea.NorthwestOwnerPlayer.CharacterName + ")";
+                    header += "\n";
+                }
+                else
+                {
+                    header += _color.Green("Northwest Owner: ") + "Unclaimed\n";
+                    hasUnclaimed = true;
+                }
 
-            if (dbArea.SoutheastOwnerPlayer != null)
-            {
-                header += _color.Green("Southeast Owner: ") + dbArea.SoutheastOwnerPlayer.CharacterName + "\n";
-            }
-            else
-            {
-                header += _color.Green("Southeast Owner: ") + "Unclaimed\n";
-                hasUnclaimed = true;
-            }
+                if (dbArea.SoutheastOwnerPlayer != null)
+                {
+                    header += _color.Green("Southeast Owner: ") + "Claimed";
+                    if (isDM || dbArea.SoutheastOwner == playerID)
+                        header += " (" + dbArea.SoutheastOwnerPlayer.CharacterName + ")";
+                    header += "\n";
+                }
+                else
+                {
+                    header += _color.Green("Southeast Owner: ") + "Unclaimed\n";
+                    hasUnclaimed = true;
+                }
 
-            if (dbArea.SouthwestOwnerPlayer != null)
-            {
-                header += _color.Green("Southwest Owner: ") + dbArea.SouthwestOwnerPlayer.CharacterName + "\n";
+                if (dbArea.SouthwestOwnerPlayer != null)
+                {
+                    header += _color.Green("Southwest Owner: ") + "Claimed";
+                    if (isDM || dbArea.SouthwestOwner == playerID)
+                        header += " (" + dbArea.SouthwestOwnerPlayer.CharacterName + ")";
+                    header += "\n";
+                }
+                else
+                {
+                    header += _color.Green("Southwest Owner: ") + "Unclaimed\n";
+                    hasUnclaimed = true;
+                }
             }
-            else
-            {
-                header += _color.Green("Southwest Owner: ") + "Unclaimed\n";
-                hasUnclaimed = true;
-            }
-
+            
             SetPageHeader("MainPage", header);
 
-            string playerID = GetPC().GlobalID;
-            bool showManage =
-                playerID == dbArea.NortheastOwner ||
-                playerID == dbArea.NorthwestOwner ||
-                playerID == dbArea.SoutheastOwner ||
-                playerID == dbArea.SouthwestOwner;
+            bool showManage = _db.PCBases.Count(x => x.PlayerID == playerID) > 0;
 
             AddResponseToPage("MainPage", "Manage My Territory", showManage);
-            AddResponseToPage("MainPage", "Purchase Territory", hasUnclaimed);
+            AddResponseToPage("MainPage", "Purchase Territory", hasUnclaimed && dbArea.IsBuildable);
         }
         
         public override void DoAction(NWPlayer player, string pageName, int responseID)
@@ -147,8 +161,8 @@ namespace SWLOR.Game.Server.Conversation
             var data = _base.GetPlayerTempData(GetPC());
             Area dbArea = _db.Areas.Single(x => x.Resref == data.TargetArea.Resref);
             string header = _color.Green("Purchase Territory Menu\n\n");
-            header += "Territory in this sector costs an initial price of " + dbArea.PurchasePrice + " credits.\n\n";
-            header += "You will also be billed " + dbArea.WeeklyUpkeep + " credits per week (real world time). Your initial payment covers the cost of the first week.\n\n";
+            header += "Land leases in this sector costs an initial price of " + dbArea.PurchasePrice + " credits.\n\n";
+            header += "You will also be billed " + dbArea.DailyUpkeep + " credits per day (real world time). Your initial payment covers the cost of the first week.\n\n";
             header += "Purchasing territory gives you the ability to place a control tower, drill for raw materials, construct buildings, build starships, and much more.\n\n";
             header += "You will have a chance to review your purchase before confirming.";
 
@@ -185,6 +199,9 @@ namespace SWLOR.Game.Server.Conversation
                     DoBuy(AreaSector.Southwest, responseID);
                     break;
                 case 5: // Back
+                    var data = _base.GetPlayerTempData(GetPC());
+                    data.IsConfirming = false;
+                    data.ConfirmingPurchaseResponseID = 0;
                     LoadMainPage();
                     ChangePage("MainPage");
                     break;
@@ -195,22 +212,22 @@ namespace SWLOR.Game.Server.Conversation
         {
             var data = _base.GetPlayerTempData(GetPC());
             
-            if (data.IsConfirmingPurchase && data.ConfirmingPurchaseResponseID == responseID)
+            if (data.IsConfirming && data.ConfirmingPurchaseResponseID == responseID)
             {
-                _area.PurchaseArea(GetPC(), data.TargetArea, sector);
-                data.IsConfirmingPurchase = false;
+                _base.PurchaseArea(GetPC(), data.TargetArea, sector);
+                data.IsConfirming = false;
                 RefreshPurchaseResponses();
                 LoadMainPage();
                 ChangePage("MainPage");
             }
-            else if (data.IsConfirmingPurchase && data.ConfirmingPurchaseResponseID != responseID)
+            else if (data.IsConfirming && data.ConfirmingPurchaseResponseID != responseID)
             {
                 data.ConfirmingPurchaseResponseID = responseID;
                 RefreshPurchaseResponses();
             }
             else
             {
-                data.IsConfirmingPurchase = true;
+                data.IsConfirming = true;
                 data.ConfirmingPurchaseResponseID = responseID;
                 RefreshPurchaseResponses();
             }

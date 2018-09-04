@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IAppStateService _appStateService;
         private readonly INWNXDamage _nwnxDamage;
         private readonly IAreaService _area;
+        private readonly IBaseService _base;
 
         public OnModuleLoad(INWScript script,
             INWNXChat nwnxChat,
@@ -27,7 +28,8 @@ namespace SWLOR.Game.Server.Event.Module
             IFarmingService farming,
             IAppStateService appStateService,
             INWNXDamage nwnxDamage,
-            IAreaService area)
+            IAreaService area,
+            IBaseService @base)
         {
             _ = script;
             _nwnxChat = nwnxChat;
@@ -38,6 +40,7 @@ namespace SWLOR.Game.Server.Event.Module
             _appStateService = appStateService;
             _nwnxDamage = nwnxDamage;
             _area = area;
+            _base = @base;
         }
 
         public bool Run(params object[] args)
@@ -54,6 +57,7 @@ namespace SWLOR.Game.Server.Event.Module
             _objectProcessing.OnModuleLoad();
             _farming.OnModuleLoad();
             _area.OnModuleLoad();
+            _base.OnModuleLoad();
             
             return true;
         }

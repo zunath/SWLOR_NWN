@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using static NWN.NWScript;
+using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
@@ -46,6 +47,12 @@ namespace SWLOR.Game.Server.Service
         {
             if (player.Data.ContainsKey("BASE_SERVICE_DATA"))
             {
+                PCTempBaseData data = player.Data["BASE_SERVICE_DATA"];
+                if (data.StructurePreview != null && data.StructurePreview.IsValid)
+                {
+                    data.StructurePreview.Destroy();
+                }
+
                 player.Data.Remove("BASE_SERVICE_DATA");
             }
         }
@@ -68,6 +75,25 @@ namespace SWLOR.Game.Server.Service
             _dialog.StartConversation(player, player, "BaseManagementTool");
         }
 
+        public void OnModuleLoad()
+        {
+            var areas = NWModule.Get().Areas;
+
+            foreach (var @base in _db.PCBases.ToList())
+            {
+                NWArea area = areas.Single(x => x.Resref == @base.AreaResref);
+
+                foreach (var structure in @base.PCBaseStructures)
+                {
+                    Location location = _.Location(area.Object,
+                        _.Vector((float) structure.LocationX, (float) structure.LocationY, (float) structure.LocationZ),
+                        (float) structure.LocationOrientation);
+
+                    var plc = NWPlaceable.Wrap(_.CreateObject(OBJECT_TYPE_PLACEABLE, structure.BaseStructure.PlaceableResref, location));
+                    plc.SetLocalInt("PC_BASE_STRUCTURE_ID", structure.PCBaseStructureID);
+                }
+            }
+        }
 
         public void PurchaseArea(NWPlayer player, NWArea area, string sector)
         {
@@ -154,10 +180,7 @@ namespace SWLOR.Game.Server.Service
                 foreach(var removed in playerIDs)
                 {
                     var existing = players.FirstOrDefault(x => x.GlobalID == removed.Item1);
-                    if(existing != null)
-                    {
-                        existing.FloatingText("Your lease on " + removed.Item2 + " has ended. All structures and items have been impounded by the planetary government. Speak with them to pay a fee and retrieve your goods.");
-                    }
+                    existing?.FloatingText("Your lease on " + removed.Item2 + " has ended. All structures and items have been impounded by the planetary government. Speak with them to pay a fee and retrieve your goods.");
                 }
 
                 _db.SaveChanges();
@@ -167,5 +190,89 @@ namespace SWLOR.Game.Server.Service
             module.SetLocalInt("BASE_SERVICE_TICKS", ticks);
         }
 
+        public PCBaseStructure GetBaseControlTower(int pcBaseID)
+        {
+            var pcBase = _db.PCBases.Single(x => x.PCBaseID == pcBaseID);
+            return pcBase.PCBaseStructures.SingleOrDefault(x =>
+                x.BaseStructure.BaseStructureTypeID == (int) BaseStructureType.ControlTower);
+        }
+
+        public string GetSectorOfLocation(Location targetLocation)
+        {
+            int cellX = (int)(_.GetPositionFromLocation(targetLocation).m_X / 10);
+            int cellY = (int)(_.GetPositionFromLocation(targetLocation).m_Y / 10);
+
+            string sector = "INVALID";
+            // NWN location positions start at the bottom left, not the top left.
+            if (cellX >= 0 && cellX <= 15 &&
+                cellY >= 0 && cellY <= 15)
+            {
+                sector = AreaSector.Southwest;
+            }
+            else if (cellX >= 16 && cellX <= 31 &&
+                     cellY >= 16 && cellY <= 31)
+            {
+                sector = AreaSector.Northeast;
+            }
+            else if (cellX >= 0 && cellX <= 15 &&
+                     cellY >= 16 && cellY <= 31)
+            {
+                sector = AreaSector.Northwest;
+            }
+            else if (cellX >= 16 && cellX <= 31 &&
+                     cellY >= 0 && cellY <= 15)
+            {
+                sector = AreaSector.Southeast;
+            }
+
+            return sector;
+        }
+
+        public string CanPlaceStructure(NWCreature user, NWItem structureItem, Location targetLocation, int structureID)
+        {
+            
+            string sector = GetSectorOfLocation(targetLocation);
+            if (sector == "INVALID")
+            {
+                return "Invalid location selected.";
+            }
+
+            if (structureItem == null || !structureItem.IsValid || !Equals(structureItem.Possessor, user))
+            {
+                return "Unable to locate structure item.";
+            }
+
+            NWArea area = NWArea.Wrap(_.GetAreaFromLocation(targetLocation));
+            Area dbArea = _db.Areas.SingleOrDefault(x => x.Resref == area.Resref);
+
+            if (dbArea == null || !dbArea.IsBuildable) return "Structures cannot be placed in this area.";
+            PCBase pcBase = _db.PCBases.SingleOrDefault(x => x.AreaResref == area.Resref && x.Sector == sector);
+
+            if (pcBase == null)
+                return "This area is unclaimed but not owned by you. You may purchase a lease on it from the planetary government by using your Base Management Tool (found under feats).";
+
+            if (pcBase.PlayerID != user.GlobalID)
+                return "You do not have permission to place structures in this territory.";
+
+            int controlTowerTypeID = (int)Enumeration.BaseStructureType.ControlTower;
+            
+            var structure = _db.BaseStructures.Single(x => x.BaseStructureID == structureID);
+            int structureTypeID = structure.BaseStructureTypeID;
+
+            bool hasControlTower = pcBase.PCBaseStructures
+                                       .SingleOrDefault(x => x.BaseStructure.BaseStructureTypeID == controlTowerTypeID) != null;
+
+            if (!hasControlTower && structureTypeID != controlTowerTypeID)
+            {
+                return "A control tower must be placed down in the sector first.";
+            }
+
+            if (hasControlTower && structureTypeID == controlTowerTypeID)
+            {
+                return "Only one control tower can be placed down per sector.";
+            }
+
+            return null;
+        }
     }
 }

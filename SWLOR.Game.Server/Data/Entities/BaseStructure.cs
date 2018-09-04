@@ -1,10 +1,19 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace SWLOR.Game.Server.Data.Entities
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
+
     public partial class BaseStructure
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public BaseStructure()
+        {
+            PCBaseStructures = new HashSet<PCBaseStructure>();
+        }
+
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int BaseStructureID { get; set; }
 
@@ -28,10 +37,11 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public double CPU { get; set; }
 
-        public int WeeklyUpkeepBase { get; set; }
-
         public int HitPoints { get; set; }
 
         public virtual BaseStructureType BaseStructureType { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PCBaseStructure> PCBaseStructures { get; set; }
     }
 }

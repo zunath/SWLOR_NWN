@@ -10,13 +10,13 @@ using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
 {
-    public class ManageTerritory: ConversationBase
+    public class ManageLease: ConversationBase
     {
         private readonly IBaseService _base;
         private readonly IColorTokenService _color;
         private readonly IDataContext _db;
 
-        public ManageTerritory(
+        public ManageLease(
             INWScript script, 
             IDialogService dialog,
             IBaseService @base,

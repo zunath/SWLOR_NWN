@@ -9,6 +9,12 @@ namespace SWLOR.Game.Server.Data.Entities
     [Table("PCBases")]
     public partial class PCBase
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public PCBase()
+        {
+            PCBaseStructures = new HashSet<PCBaseStructure>();
+        }
+
         [Key]
         public int PCBaseID { get; set; }
 
@@ -30,6 +36,13 @@ namespace SWLOR.Game.Server.Data.Entities
         [Column(TypeName = "datetime2")]
         public DateTime DateRentDue { get; set; }
 
+        public double Power { get; set; }
+
+        public double CPU { get; set; }
+
         public virtual PlayerCharacter PlayerCharacter { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PCBaseStructure> PCBaseStructures { get; set; }
     }
 }

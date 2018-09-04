@@ -66,9 +66,9 @@ namespace SWLOR.Game.Server.Service
         
         public void OnModuleActivatedItem()
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetItemActivator());
+            NWPlayer user = NWPlayer.Wrap(_.GetItemActivator());
             NWItem oItem = NWItem.Wrap(_.GetItemActivated());
-            NWObject oTarget = NWObject.Wrap(_.GetItemActivatedTarget());
+            NWObject target = NWObject.Wrap(_.GetItemActivatedTarget());
             Location targetLocation = _.GetItemActivatedTargetLocation();
             
             string className = oItem.GetLocalString("JAVA_SCRIPT");
@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("SCRIPT");
             if (string.IsNullOrWhiteSpace(className)) return;
 
-            oPC.ClearAllActions();
+            user.ClearAllActions();
 
             // Remove "Item." prefix if it exists.
             if (className.StartsWith("Item."))
@@ -85,48 +85,56 @@ namespace SWLOR.Game.Server.Service
 
             IActionItem item = App.ResolveByInterface<IActionItem>("Item." + className);
 
-            if (oPC.IsBusy)
+            if (user.IsBusy)
             {
-                oPC.SendMessage("You are busy.");
+                user.SendMessage("You are busy.");
                 return;
             }
 
-            string invalidTargetMessage = item.IsValidTarget(oPC, oItem, oTarget, targetLocation);
+            string invalidTargetMessage = item.IsValidTarget(user, oItem, target, targetLocation);
             if (!string.IsNullOrWhiteSpace(invalidTargetMessage))
             {
-                oPC.SendMessage(invalidTargetMessage);
+                user.SendMessage(invalidTargetMessage);
                 return;
             }
 
             if (item.MaxDistance() > 0.0f)
             {
-                if (_.GetDistanceBetween(oPC.Object, oTarget.Object) > item.MaxDistance() ||
-                    oPC.Area.Resref != oTarget.Area.Resref)
+                if (target.IsValid &&
+                    (_.GetDistanceBetween(user.Object, target.Object) > item.MaxDistance() ||
+                    user.Area.Resref != target.Area.Resref))
                 {
-                    oPC.SendMessage("Your target is too far away.");
+                    user.SendMessage("Your target is too far away.");
+                    return;
+                }
+                else if (!target.IsValid &&
+                         (_.GetDistanceBetweenLocations(user.Location, targetLocation) > item.MaxDistance() ||
+                         user.Area.Resref != NWArea.Wrap(_.GetAreaFromLocation(targetLocation)).Resref))
+                {
+                    user.SendMessage("That location is too far away.");
                     return;
                 }
             }
 
-            CustomData customData = item.StartUseItem(oPC, oItem, oTarget, targetLocation);
-            float delay = item.Seconds(oPC, oItem, oTarget, targetLocation, customData);
+            CustomData customData = item.StartUseItem(user, oItem, target, targetLocation);
+            float delay = item.Seconds(user, oItem, target, targetLocation, customData);
             int animationID = item.AnimationID();
             bool faceTarget = item.FaceTarget();
-            Vector userPosition = oPC.Position;
+            Vector userPosition = user.Position;
 
-            oPC.AssignCommand(() =>
+            user.AssignCommand(() =>
             {
-                oPC.IsBusy = true;
+                user.IsBusy = true;
                 if (faceTarget)
-                    _.SetFacingPoint(oTarget.Position);
+                    _.SetFacingPoint(target.Position);
                 if (animationID > 0)
                     _.ActionPlayAnimation(animationID, 1.0f, delay);
             });
             
-            _nwnxPlayer.StartGuiTimingBar(oPC, delay, string.Empty);
-            oPC.DelayCommand(() =>
+            _nwnxPlayer.StartGuiTimingBar(user, delay, string.Empty);
+            user.DelayCommand(() =>
             {
-                FinishActionItem(item, oPC, oItem, oTarget, targetLocation, userPosition, customData);
+                FinishActionItem(item, user, oItem, target, targetLocation, userPosition, customData);
             }, delay);
         }
 
@@ -452,10 +460,18 @@ namespace SWLOR.Game.Server.Service
 
             if (actionItem.MaxDistance() > 0.0f)
             {
-                if (_.GetDistanceBetween(user.Object, target.Object) > actionItem.MaxDistance() ||
-                    user.Area.Resref != target.Area.Resref)
+                if (target.IsValid &&
+                    (_.GetDistanceBetween(user.Object, target.Object) > actionItem.MaxDistance() ||
+                    user.Area.Resref != target.Area.Resref))
                 {
                     user.SendMessage("Your target is too far away.");
+                    return;
+                }
+                else if (!target.IsValid &&
+                         (_.GetDistanceBetweenLocations(user.Location, targetLocation) > actionItem.MaxDistance() ||
+                         user.Area.Resref != NWArea.Wrap(_.GetAreaFromLocation(targetLocation)).Resref))
+                {
+                    user.SendMessage("That location is too far away.");
                     return;
                 }
             }

@@ -11,5 +11,9 @@ namespace SWLOR.Game.Server.ValueObject
         public bool IsConfirming { get; set; }
         public int ConfirmingPurchaseResponseID { get; set; }
         public int PCBaseID { get; set; }
+        public int StructureID { get; set; }
+        public bool IsPreviewing { get; set; }
+        public NWPlaceable StructurePreview { get; set; }
+        public NWItem StructureItem { get; set; }
     }
 }

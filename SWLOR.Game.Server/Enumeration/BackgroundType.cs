@@ -11,7 +11,7 @@
         Gunslinger = 6,
         Rifleman = 7,
         Chef = 8,
-        // 9 is open
+        Fabricator = 9,
         Engineer = 10,
         Vagabond = 11,
         Guard = 12,

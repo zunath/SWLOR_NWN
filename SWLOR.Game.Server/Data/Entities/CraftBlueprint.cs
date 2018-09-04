@@ -70,5 +70,7 @@ namespace SWLOR.Game.Server.Data.Entities
         public int SecondaryMaximum { get; set; }
 
         public int TertiaryMaximum { get; set; }
+
+        public virtual BaseStructure BaseStructure { get; set; }
     }
 }

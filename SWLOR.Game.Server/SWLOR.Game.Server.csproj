@@ -241,6 +241,7 @@
     <Compile Include="Extension\BehaviourTreeBuilderExtensions.cs" />
     <Compile Include="Item\ModItem.cs" />
     <Compile Include="Item\StructureItem.cs" />
+    <Compile Include="Mod\FabricationMod.cs" />
     <Compile Include="NWNX\DamageData.cs" />
     <Compile Include="NWNX\Contracts\INWNXDamage.cs" />
     <Compile Include="NWNX\NWNXDamage.cs" />
@@ -249,6 +250,8 @@
     <Compile Include="NWN\Events\Module\mod_on_nwnxchat.cs" />
     <Compile Include="NWN\Events\Module\mod_on_usefeat.cs" />
     <Compile Include="NWN\Events\Player\pc_on_damaged.cs" />
+    <Compile Include="Perk\Fabrication\FabricationBlueprints.cs" />
+    <Compile Include="Perk\Fabrication\SpeedyFabrication.cs" />
     <Compile Include="Perk\LightSide\Gate.cs" />
     <Compile Include="Perk\LightSide\HolyShot.cs" />
     <Compile Include="Perk\LightSide\Purify.cs" />

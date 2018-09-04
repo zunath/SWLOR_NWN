@@ -33,7 +33,8 @@
         SneakAttackUp = 28,
         DamageUp = 29,
         DarkAbilityDown = 30,
-        LightAbilityDown = 31
+        LightAbilityDown = 31,
+        FabricationUp = 32
         
 
     }

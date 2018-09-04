@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Data.Entities
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public BaseStructure()
         {
+            CraftBlueprints = new HashSet<CraftBlueprint>();
             PCBaseStructures = new HashSet<PCBaseStructure>();
         }
 
@@ -38,6 +39,9 @@ namespace SWLOR.Game.Server.Data.Entities
         public double CPU { get; set; }
 
         public int HitPoints { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<CraftBlueprint> CraftBlueprints { get; set; }
 
         public virtual BaseStructureType BaseStructureType { get; set; }
 

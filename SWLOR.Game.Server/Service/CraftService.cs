@@ -177,6 +177,7 @@ namespace SWLOR.Game.Server.Service
             else if (skillType == SkillType.Armorsmith) perkType = PerkType.SpeedyArmorsmith;
             else if (skillType == SkillType.Cooking) perkType = PerkType.SpeedyCooking;
             else if (skillType == SkillType.Engineering) perkType = PerkType.SpeedyEngineering;
+            else if (skillType == SkillType.Fabrication) perkType = PerkType.SpeedyFabrication;
             else return BaseCraftDelay;
 
             int perkLevel = _perk.GetPCPerkLevel(oPC, perkType);
@@ -266,6 +267,14 @@ namespace SWLOR.Game.Server.Service
             {
                 item.RecommendedLevel = itemLevel;
                 item.SetLocalString("CRAFTER_PLAYER_ID", oPC.GlobalID);
+
+                // Structure items need an additional local variable and their name set on creation.
+                if (blueprint.BaseStructure != null)
+                {
+                    item.SetLocalInt("BASE_STRUCTURE_ID", blueprint.BaseStructure.BaseStructureID);
+                    item.Name = blueprint.BaseStructure.Name;
+                }
+
             }
 
             oPC.SendMessage("You created " + blueprint.Quantity + "x " + blueprint.ItemName + "!");
@@ -377,6 +386,7 @@ namespace SWLOR.Game.Server.Service
                 case SkillType.Weaponsmith: equipmentBonus = player.EffectiveWeaponsmithBonus; break;
                 case SkillType.Cooking: equipmentBonus = player.EffectiveCookingBonus; break;
                 case SkillType.Engineering: equipmentBonus = player.EffectiveEngineeringBonus; break;
+                case SkillType.Fabrication: equipmentBonus = player.EffectiveFabricationBonus; break;
             }
 
             return equipmentBonus * 0.5f; // +0.5% per equipment bonus
@@ -452,6 +462,10 @@ namespace SWLOR.Game.Server.Service
                     break;
                 case CraftDeviceType.EngineeringBench:
                     if (player.BackgroundID == (int)BackgroundType.Engineer)
+                        effectiveLevel++;
+                    break;
+                case CraftDeviceType.FabricationTerminal:
+                    if (player.BackgroundID == (int) BackgroundType.Fabricator)
                         effectiveLevel++;
                     break;
             }

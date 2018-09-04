@@ -3,8 +3,8 @@
     public enum PerkType
     {
         Unknown = -1,
-        // 1 is free
-        // 2 is free
+        SpeedyFabrication = 1, // new
+        FabricationBlueprints = 2, // new
         // 3 is free
         // 4 is free
         // 5 is free

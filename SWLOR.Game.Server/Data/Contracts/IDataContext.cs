@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Data.Contracts
         IDbSet<LootTableItem> LootTableItems { get; set; }
         IDbSet<LootTable> LootTables { get; set; }
         IDbSet<NPCGroup> NPCGroups { get; set; }
+        IDbSet<PCBase> PCBases { get; set; }
         IDbSet<PCCooldown> PCCooldowns { get; set; }
         IDbSet<PCCorpseItem> PCCorpseItems { get; set; }
         IDbSet<PCCorpse> PCCorpses { get; set; }

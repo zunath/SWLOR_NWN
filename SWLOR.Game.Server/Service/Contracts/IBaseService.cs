@@ -6,7 +6,9 @@ namespace SWLOR.Game.Server.Service.Contracts
     public interface IBaseService
     {
         void OnModuleUseFeat();
-        BaseData GetPlayerTempData(NWPlayer player);
+        PCTempBaseData GetPlayerTempData(NWPlayer player);
         void ClearPlayerTempData(NWPlayer player);
+        void PurchaseArea(NWPlayer player, NWArea area, string sector);
+        void OnModuleHeartbeat();
     }
 }

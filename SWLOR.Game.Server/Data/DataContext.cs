@@ -56,6 +56,7 @@ namespace SWLOR.Game.Server.Data
         public virtual IDbSet<LootTableItem> LootTableItems { get; set; }
         public virtual IDbSet<LootTable> LootTables { get; set; }
         public virtual IDbSet<NPCGroup> NPCGroups { get; set; }
+        public virtual IDbSet<PCBase> PCBases { get; set; }
         public virtual IDbSet<PCCooldown> PCCooldowns { get; set; }
         public virtual IDbSet<PCCorpseItem> PCCorpseItems { get; set; }
         public virtual IDbSet<PCCorpse> PCCorpses { get; set; }
@@ -246,7 +247,7 @@ namespace SWLOR.Game.Server.Data
                 .HasMany(e => e.QuestKillTargetLists)
                 .WithRequired(e => e.NPCGroup)
                 .WillCascadeOnDelete(false);
-
+            
             modelBuilder.Entity<PCCorpse>()
                 .HasMany(e => e.PCCorpseItems)
                 .WithRequired(e => e.PcCorpse)
@@ -316,6 +317,11 @@ namespace SWLOR.Game.Server.Data
             modelBuilder.Entity<PlayerCharacter>()
                 .Property(e => e.NextResetTokenReceiveDate)
                 .HasPrecision(0);
+
+            modelBuilder.Entity<PlayerCharacter>()
+                .HasMany(e => e.PCBases)
+                .WithRequired(e => e.PlayerCharacter)
+                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<PlayerCharacter>()
                 .HasMany(e => e.NortheastAreas)

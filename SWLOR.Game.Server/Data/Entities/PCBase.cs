@@ -35,11 +35,7 @@ namespace SWLOR.Game.Server.Data.Entities
 
         [Column(TypeName = "datetime2")]
         public DateTime DateRentDue { get; set; }
-
-        public double Power { get; set; }
-
-        public double CPU { get; set; }
-
+        
         public virtual PlayerCharacter PlayerCharacter { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

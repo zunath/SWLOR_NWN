@@ -100,7 +100,15 @@ namespace SWLOR.Game.Server.Service
                             _.Vector((float)structure.LocationX, (float)structure.LocationY, (float)structure.LocationZ),
                             (float)structure.LocationOrientation);
 
-                        var plc = NWPlaceable.Wrap(_.CreateObject(OBJECT_TYPE_PLACEABLE, structure.BaseStructure.PlaceableResref, location));
+                        string resref = structure.BaseStructure.PlaceableResref;
+                        
+                        if (string.IsNullOrWhiteSpace(resref) &&
+                            structure.BaseStructure.BaseStructureTypeID == (int)BaseStructureType.Building)
+                        {
+                            resref = structure.ExteriorStyle.Resref;
+                        }
+
+                        var plc = NWPlaceable.Wrap(_.CreateObject(OBJECT_TYPE_PLACEABLE, resref, location));
                         plc.SetLocalInt("PC_BASE_STRUCTURE_ID", structure.PCBaseStructureID);
 
                         areaStructures.Add(new AreaStructure(@base.PCBaseID, structure.PCBaseStructureID, plc));
@@ -205,6 +213,22 @@ namespace SWLOR.Game.Server.Service
             var pcBase = _db.PCBases.Single(x => x.PCBaseID == pcBaseID);
             return pcBase.PCBaseStructures.SingleOrDefault(x =>
                 x.BaseStructure.BaseStructureTypeID == (int) BaseStructureType.ControlTower);
+        }
+
+        public double GetPowerInUse(int pcBaseID)
+        {
+            int controlTowerID = (int)BaseStructureType.ControlTower;
+            return _db.PCBaseStructures
+                .Where(x => x.PCBaseID == pcBaseID && x.BaseStructure.BaseStructureTypeID != controlTowerID)
+                .Sum(s => s.BaseStructure.Power);
+        }
+
+        public double GetCPUInUse(int pcBaseID)
+        {
+            int controlTowerID = (int)BaseStructureType.ControlTower;
+            return _db.PCBaseStructures
+                .Where(x => x.PCBaseID == pcBaseID && x.BaseStructure.BaseStructureTypeID != controlTowerID)
+                .Sum(s => s.BaseStructure.CPU);
         }
 
         public string GetSectorOfLocation(Location targetLocation)
@@ -326,6 +350,13 @@ namespace SWLOR.Game.Server.Service
                 copy.MaxDurability = (float)pcBaseStructure.Durability;
                 copy.Durability = (float)pcBaseStructure.Durability;
 
+                if (pcBaseStructure.InteriorStyleID != null && pcBaseStructure.ExteriorStyleID != null)
+                {
+                    copy.SetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID", (int)pcBaseStructure.InteriorStyleID);
+                    copy.SetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID", (int)pcBaseStructure.ExteriorStyleID);
+                    copy.SetLocalInt("STRUCTURE_BUILDING_INITIALIZED", TRUE);
+                }
+
                 PCImpoundedItem structureImpoundedItem = new PCImpoundedItem
                 {
                     DateImpounded = DateTime.UtcNow,
@@ -353,6 +384,25 @@ namespace SWLOR.Game.Server.Service
                 _db.SaveChanges();
             }
         }
-        
+
+        public void ApplyCraftedItemLocalVariables(NWItem item, BaseStructure structure)
+        {
+            // Structure items need an additional local variable and their name set on creation.
+            if (structure != null)
+            {
+                item.SetLocalInt("BASE_STRUCTURE_ID", structure.BaseStructureID);
+                item.Name = structure.Name;
+
+                if (structure.BaseStructureTypeID == (int)BaseStructureType.Building)
+                {
+                    var defaultInterior = _db.BuildingStyles.Single(x => x.BaseStructureID == structure.BaseStructureID && x.IsDefault && x.IsInterior).BuildingStyleID;
+                    var defaultExterior = _db.BuildingStyles.Single(x => x.BaseStructureID == structure.BaseStructureID && x.IsDefault && !x.IsInterior).BuildingStyleID;
+
+                    item.SetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID", defaultInterior);
+                    item.SetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID", defaultExterior);
+                }
+
+            }
+        }
     }
 }

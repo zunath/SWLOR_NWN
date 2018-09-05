@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Data.Entities
         public BaseStructure()
         {
             CraftBlueprints = new HashSet<CraftBlueprint>();
+            BuildingStyles = new HashSet<BuildingStyle>();
             PCBaseStructures = new HashSet<PCBaseStructure>();
         }
 
@@ -44,6 +45,9 @@ namespace SWLOR.Game.Server.Data.Entities
         public virtual ICollection<CraftBlueprint> CraftBlueprints { get; set; }
 
         public virtual BaseStructureType BaseStructureType { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<BuildingStyle> BuildingStyles { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PCBaseStructure> PCBaseStructures { get; set; }

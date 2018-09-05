@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Data
         public virtual IDbSet<AuthorizedDM> AuthorizedDMs { get; set; }
         public virtual IDbSet<Background> Backgrounds { get; set; }
         public virtual IDbSet<BaseItemType> BaseItemTypes { get; set; }
+        public virtual IDbSet<BuildingStyle> BuildingStyles { get; set; }
         public virtual IDbSet<ChatChannelsDomain> ChatChannelsDomains { get; set; }
         public virtual IDbSet<ChatLog> ChatLogs { get; set; }
         public virtual IDbSet<ClientLogEvent> ClientLogEvents { get; set; }
@@ -132,6 +133,11 @@ namespace SWLOR.Game.Server.Data
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<BaseStructure>()
+                .HasMany(e => e.BuildingStyles)
+                .WithRequired(e => e.BaseStructure)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<BaseStructure>()
                 .HasMany(e => e.PCBaseStructures)
                 .WithRequired(e => e.BaseStructure)
                 .WillCascadeOnDelete(false);
@@ -140,6 +146,16 @@ namespace SWLOR.Game.Server.Data
                 .HasMany(e => e.BaseStructures)
                 .WithRequired(e => e.BaseStructureType)
                 .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<BuildingStyle>()
+                .HasMany(e => e.PCBaseExteriorStructures)
+                .WithOptional(e => e.ExteriorStyle)
+                .HasForeignKey(e => e.ExteriorStyleID);
+
+            modelBuilder.Entity<BuildingStyle>()
+                .HasMany(e => e.PCBaseInteriorStructures)
+                .WithOptional(e => e.InteriorStyle)
+                .HasForeignKey(e => e.InteriorStyleID);
 
             modelBuilder.Entity<ChatChannelsDomain>()
                 .HasMany(e => e.ChatLogs)

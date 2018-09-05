@@ -86,6 +86,7 @@
     <Compile Include="Conversation\BackgroundMenu.cs" />
     <Compile Include="Conversation\BaseManagementTool.cs" />
     <Compile Include="Conversation\BindSoul.cs" />
+    <Compile Include="Conversation\BuildingExit.cs" />
     <Compile Include="Conversation\ChangeDescription.cs" />
     <Compile Include="Conversation\ChangeHead.cs" />
     <Compile Include="Conversation\CharacterManagement.cs" />

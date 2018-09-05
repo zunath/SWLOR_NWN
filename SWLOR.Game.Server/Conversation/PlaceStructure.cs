@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
@@ -17,18 +18,24 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IDataContext _db;
         private readonly IBaseService _base;
         private readonly IColorTokenService _color;
+        private readonly IAreaService _area;
+        private readonly IPlayerService _player;
 
         public PlaceStructure(
             INWScript script,
             IDialogService dialog,
             IDataContext db,
             IBaseService @base,
-            IColorTokenService color)
+            IColorTokenService color,
+            IAreaService area,
+            IPlayerService player)
             : base(script, dialog)
         {
             _db = db;
             _base = @base;
             _color = color;
+            _area = area;
+            _player = player;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -71,7 +78,6 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadMainPage()
         {
             var data = _base.GetPlayerTempData(GetPC());
-            PCBase pcBase = _db.PCBases.Single(x => x.PCBaseID == data.PCBaseID);
             BaseStructure structure = _db.BaseStructures.Single(x => x.BaseStructureID == data.StructureID);
             var tower = _base.GetBaseControlTower(data.PCBaseID);
             bool canPlaceStructure = true;
@@ -86,6 +92,7 @@ namespace SWLOR.Game.Server.Conversation
             double towerCPU = tower?.BaseStructure.CPU ?? 0.0f;
             double newPower = powerInUse + structure.Power;
             double newCPU = cpuInUse + structure.CPU;
+
             string insufficientPower = newPower > towerPower && !isPlacingTower ? _color.Red(" (INSUFFICIENT POWER)") : string.Empty;
             string insufficientCPU = newCPU > towerCPU && !isPlacingTower ? _color.Red(" (INSUFFICIENT CPU)") : string.Empty;
 
@@ -122,7 +129,6 @@ namespace SWLOR.Game.Server.Conversation
             }
 
             SetPageHeader("MainPage", header);
-
             SetResponseVisible("MainPage", 1, canPlaceStructure);
             SetResponseVisible("MainPage", 2, canPlaceStructure);
             SetResponseVisible("MainPage", 3, canPlaceStructure);
@@ -358,6 +364,9 @@ namespace SWLOR.Game.Server.Conversation
             
             // Header
             int styleID = data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID");
+            if (data.IsInteriorStyle)
+                styleID = data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID");
+
             var currentStyle = _db.BuildingStyles.Single(x => x.BuildingStyleID == styleID);
             string header = _color.Green("Building Style: ") + currentStyle.Name + "\n\n";
             header += "Change the style by selecting from the list below.";
@@ -393,7 +402,8 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if (styleID == -2)
             {
-                // Todo: jump to interior instance
+                DoInteriorPreview();
+                EndConversation();
                 return;
             }
 
@@ -407,6 +417,57 @@ namespace SWLOR.Game.Server.Conversation
                 Preview();
             }
 
+        }
+
+        private void DoInteriorPreview()
+        {
+            var data = _base.GetPlayerTempData(GetPC());
+            int styleID = data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID");
+            var style = _db.BuildingStyles.Single(x => x.BuildingStyleID == styleID);
+            var area = _area.CreateAreaInstance(style.Resref, "BUILDING PREVIEW: " + style.Name);
+            area.SetLocalInt("IS_BUILDING_PREVIEW", TRUE);
+            NWPlayer player = GetPC();
+            
+            NWObject waypoint = null;
+            NWObject exit = null;
+
+            NWObject @object = NWObject.Wrap(_.GetFirstObjectInArea(area.Object));
+            while (@object.IsValid)
+            {
+                if (@object.Tag == "PLAYER_HOME_ENTRANCE")
+                {
+                    waypoint = @object;
+                }
+                else if (@object.Tag == "building_exit")
+                {
+                    exit = @object;
+                }
+
+                @object = NWObject.Wrap(_.GetNextObjectInArea(area.Object));
+            }
+
+            if (waypoint == null)
+            {
+                player.FloatingText("ERROR: Couldn't find the building interior's entrance. Inform an admin of this issue.");
+                return;
+            }
+
+            if (exit == null)
+            {
+                player.FloatingText("ERROR: Couldn't find the building interior's exit. Inform an admin of this issue.");
+                return;
+            }
+
+            _player.SaveLocation(player);
+
+            exit.SetLocalLocation("PLAYER_HOME_EXIT_LOCATION", player.Location);
+            exit.SetLocalInt("IS_BUILDING_DOOR", 1);
+
+            Location location = waypoint.Location;
+            player.AssignCommand(() =>
+            {
+                _.ActionJumpToLocation(location);
+            });
         }
     }
 }

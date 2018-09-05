@@ -220,15 +220,17 @@ namespace SWLOR.Game.Server.Service
             int controlTowerID = (int)BaseStructureType.ControlTower;
             return _db.PCBaseStructures
                 .Where(x => x.PCBaseID == pcBaseID && x.BaseStructure.BaseStructureTypeID != controlTowerID)
-                .Sum(s => s.BaseStructure.Power);
+                .DefaultIfEmpty()
+                .Sum(s => s == null || s.BaseStructure == null ? 0 : s.BaseStructure.Power);
         }
 
         public double GetCPUInUse(int pcBaseID)
         {
             int controlTowerID = (int)BaseStructureType.ControlTower;
             return _db.PCBaseStructures
-                .Where(x => x.PCBaseID == pcBaseID && x.BaseStructure.BaseStructureTypeID != controlTowerID)
-                .Sum(s => s.BaseStructure.CPU);
+                .Where(x => x.PCBaseID == pcBaseID && x != null && x.BaseStructure != null && x.BaseStructure.BaseStructureTypeID != controlTowerID)
+                .DefaultIfEmpty()
+                .Sum(s => s == null || s.BaseStructure == null ? 0 : s.BaseStructure.CPU);
         }
 
         public string GetSectorOfLocation(Location targetLocation)
@@ -305,7 +307,7 @@ namespace SWLOR.Game.Server.Service
             {
                 return "Only one control tower can be placed down per sector.";
             }
-
+            
             return null;
         }
 

@@ -30,9 +30,17 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public double Durability { get; set; }
 
+        public int? InteriorStyleID { get; set; }
+
+        public int? ExteriorStyleID { get; set; }
+
         public virtual BaseStructure BaseStructure { get; set; }
 
         public virtual PCBase PCBase { get; set; }
+
+        public virtual BuildingStyle InteriorStyle { get; set; }
+
+        public virtual BuildingStyle ExteriorStyle { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PCBaseStructureItem> PCBaseStructureItems { get; set; }

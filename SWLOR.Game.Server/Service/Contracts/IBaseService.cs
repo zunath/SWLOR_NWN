@@ -17,5 +17,8 @@ namespace SWLOR.Game.Server.Service.Contracts
         string CanPlaceStructure(NWCreature player, NWItem structureItem, Location targetLocation, int structureID);
         string GetSectorOfLocation(Location targetLocation);
         void ClearPCBaseByID(int pcBaseID, bool doSave = true);
+        void ApplyCraftedItemLocalVariables(NWItem item, BaseStructure structure);
+        double GetPowerInUse(int pcBaseID);
+        double GetCPUInUse(int pcBaseID);
     }
 }

@@ -13,6 +13,7 @@ using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN.NWScript;
+using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -28,7 +29,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IErrorService _error;
         private readonly IComponentBonusService _componentBonus;
         private readonly IBiowareXP2 _biowareXP2;
-        private readonly IItemService _item;
+        private readonly IBaseService _base;
 
         public CraftService(
             INWScript script,
@@ -41,7 +42,7 @@ namespace SWLOR.Game.Server.Service
             IErrorService error,
             IComponentBonusService componentBonus,
             IBiowareXP2 biowareXP2,
-            IItemService item)
+            IBaseService @base)
         {
             _ = script;
             _db = db;
@@ -53,7 +54,7 @@ namespace SWLOR.Game.Server.Service
             _error = error;
             _componentBonus = componentBonus;
             _biowareXP2 = biowareXP2;
-            _item = item;
+            _base = @base;
         }
 
         private const float BaseCraftDelay = 18.0f;
@@ -274,12 +275,7 @@ namespace SWLOR.Game.Server.Service
                 item.RecommendedLevel = itemLevel;
                 item.SetLocalString("CRAFTER_PLAYER_ID", oPC.GlobalID);
 
-                // Structure items need an additional local variable and their name set on creation.
-                if (blueprint.BaseStructure != null)
-                {
-                    item.SetLocalInt("BASE_STRUCTURE_ID", blueprint.BaseStructure.BaseStructureID);
-                    item.Name = blueprint.BaseStructure.Name;
-                }
+                _base.ApplyCraftedItemLocalVariables(item, blueprint.BaseStructure);
             }
 
             int successAmount = 0;

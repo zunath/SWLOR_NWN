@@ -211,9 +211,7 @@ namespace SWLOR.Game.Server.Service
             if (!player.IsPlayer) return;
 
             NWArea area = player.Area;
-            bool isPlayerHome = area.GetLocalInt("IS_PLAYER_HOME") == 1;
-
-            if (area.Tag != "ooc_area" && !isPlayerHome && area.Tag != "tutorial")
+            if (area.Tag != "ooc_area" && area.Tag != "tutorial" && !area.IsInstance)
             {
                 PlayerCharacter entity = GetPlayerEntity(player.GlobalID);
                 entity.LocationAreaTag = area.Tag;

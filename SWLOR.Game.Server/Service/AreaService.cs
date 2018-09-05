@@ -63,5 +63,14 @@ namespace SWLOR.Game.Server.Service
             _db.SaveChanges();
         }
 
+        public NWArea CreateAreaInstance(string areaResref, string areaName)
+        {
+            string tag = Guid.NewGuid().ToString("N");
+            var area = NWArea.Wrap(_.CreateArea(areaResref, tag, areaName));
+
+            area.SetLocalInt("IS_AREA_INSTANCE", TRUE);
+
+            return area;
+        }
     }
 }

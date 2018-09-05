@@ -24,5 +24,7 @@ namespace SWLOR.Game.Server.GameObject
         public int Width => _.GetAreaSize(AREA_WIDTH, Object);
 
         public int Height => _.GetAreaSize(AREA_HEIGHT, Object);
+
+        public bool IsInstance => _.GetLocalInt(Object, "IS_AREA_INSTANCE") == TRUE;
     }
 }

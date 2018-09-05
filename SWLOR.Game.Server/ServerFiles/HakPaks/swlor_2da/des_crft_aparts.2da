@@ -1,0 +1,23 @@
+2DA V2.0
+
+          Comment                             NumParts     CraftCost     CraftDC     
+0         ITEM_APPR_ARMOR_MODEL_RFOOT         13           2             2           
+1         ITEM_APPR_ARMOR_MODEL_LFOOT         13           2             2           
+2         ITEM_APPR_ARMOR_MODEL_RSHIN         18           5             3           
+3         ITEM_APPR_ARMOR_MODEL_LSHIN         18           5             3           
+4         ITEM_APPR_ARMOR_MODEL_LTHIGH        17           5             4           
+5         ITEM_APPR_ARMOR_MODEL_RTHIGH        17           5             4           
+6         ITEM_APPR_ARMOR_MODEL_PELVIS        38           5             5           
+7         ITEM_APPR_ARMOR_MODEL_TORSO         54           25            8           
+8         ITEM_APPR_ARMOR_MODEL_BELT          17           3             2           
+9         ITEM_APPR_ARMOR_MODEL_NECK          7            2             1           
+10        ITEM_APPR_ARMOR_MODEL_RFOREARM      24           5             2           
+11        ITEM_APPR_ARMOR_MODEL_LFOREARM      24           5             2           
+12        ITEM_APPR_ARMOR_MODEL_RBICEP        16           5             5           
+13        ITEM_APPR_ARMOR_MODEL_LBICEP        16           5             5           
+14        ITEM_APPR_ARMOR_MODEL_RSHOULDER     26           5             4           
+15        ITEM_APPR_ARMOR_MODEL_LSHOULDER     26           5             4           
+16        ITEM_APPR_ARMOR_MODEL_RHAND         9            2             2           
+17        ITEM_APPR_ARMOR_MODEL_LHAND         9            2             2           
+18        ITEM_APPR_ARMOR_MODEL_ROBE          7            10            10          
+                                                                                     

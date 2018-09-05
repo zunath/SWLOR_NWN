@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.Linq;
 using NWN;
@@ -6,6 +7,7 @@ using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entities;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.ValueObject;
 using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Service
@@ -48,13 +50,14 @@ namespace SWLOR.Game.Server.Service
                 dbArea.Width = _.GetAreaSize(AREA_WIDTH, area.Object);
                 dbArea.Height = _.GetAreaSize(AREA_HEIGHT, area.Object);
                 dbArea.PurchasePrice = area.GetLocalInt("PURCHASE_PRICE");
-                dbArea.DailyUpkeep = area.GetLocalInt("WEEKLY_UPKEEP");
+                dbArea.DailyUpkeep = area.GetLocalInt("DAILY_UPKEEP");
                 dbArea.IsBuildable = 
-                    area.GetLocalInt("IS_BUILDABLE") == 1 && 
+                    (area.GetLocalInt("IS_BUILDABLE") == TRUE && 
                     dbArea.Width == 32 && 
                     dbArea.Height == 32 &&
                     dbArea.PurchasePrice > 0 &&
-                    dbArea.DailyUpkeep > 0;
+                    dbArea.DailyUpkeep > 0) || 
+                    (area.GetLocalInt("IS_BUILDING") == TRUE);
                 dbArea.IsActive = true;
                 
                 _db.Areas.AddOrUpdate(dbArea);
@@ -69,7 +72,8 @@ namespace SWLOR.Game.Server.Service
             var area = NWArea.Wrap(_.CreateArea(areaResref, tag, areaName));
 
             area.SetLocalInt("IS_AREA_INSTANCE", TRUE);
-
+            area.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();
+            
             return area;
         }
     }

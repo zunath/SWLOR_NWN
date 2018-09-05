@@ -57,11 +57,12 @@ namespace SWLOR.Game.Server.Conversation
             bool hasUnclaimed = false;
             bool isDM = GetPC().IsDM;
             string playerID = GetPC().GlobalID;
+            bool isBuilding = data.TargetArea.GetLocalInt("PC_BASE_STRUCTURE_ID") > 0;
 
             string header = _color.Green("Base Management Menu\n\n");
             header += _color.Green("Area: ") + data.TargetArea.Name + " (" + cellX + ", " + cellY + ")\n\n";
 
-            if (!dbArea.IsBuildable)
+            if (!dbArea.IsBuildable || isBuilding)
             {
                 header += "Land in this area cannot be claimed. However, you can still manage any leases you own from the list below.";
             }

@@ -16,5 +16,6 @@ namespace SWLOR.Game.Server.ValueObject
         public NWPlaceable StructurePreview { get; set; }
         public NWItem StructureItem { get; set; }
         public bool IsInteriorStyle { get; set; }
+        public int? ParentStructureID { get; set; }
     }
 }

@@ -22,18 +22,21 @@ namespace SWLOR.Game.Server.Service
         private readonly IDialogService _dialog;
         private readonly IDataContext _db;
         private readonly ISerializationService _serialization;
+        private readonly IPlayerService _player;
 
         public BaseService(INWScript script,
             INWNXEvents nwnxEvents,
             IDialogService dialog,
             IDataContext db,
-            ISerializationService serialization)
+            ISerializationService serialization,
+            IPlayerService player)
         {
             _ = script;
             _nwnxEvents = nwnxEvents;
             _dialog = dialog;
             _db = db;
             _serialization = serialization;
+            _player = player;
 
 
         }
@@ -84,39 +87,69 @@ namespace SWLOR.Game.Server.Service
         {
             foreach (var area in NWModule.Get().Areas)
             {
-                List<AreaStructure> areaStructures = new List<AreaStructure>();
-                if (area.Data.ContainsKey("BASE_SERVICE_STRUCTURES"))
+                if (!area.Data.ContainsKey("BASE_SERVICE_STRUCTURES"))
                 {
-                    areaStructures = area.Data["BASE_SERVICE_STRUCTURES"];
+                    area.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();
                 }
 
                 var pcBases = _db.PCBases.Where(x => x.AreaResref == area.Resref).ToList();
                 foreach (var @base in pcBases)
                 {
-
                     foreach (var structure in @base.PCBaseStructures)
                     {
-                        Location location = _.Location(area.Object,
-                            _.Vector((float)structure.LocationX, (float)structure.LocationY, (float)structure.LocationZ),
-                            (float)structure.LocationOrientation);
-
-                        string resref = structure.BaseStructure.PlaceableResref;
-                        
-                        if (string.IsNullOrWhiteSpace(resref) &&
-                            structure.BaseStructure.BaseStructureTypeID == (int)BaseStructureType.Building)
-                        {
-                            resref = structure.ExteriorStyle.Resref;
-                        }
-
-                        var plc = NWPlaceable.Wrap(_.CreateObject(OBJECT_TYPE_PLACEABLE, resref, location));
-                        plc.SetLocalInt("PC_BASE_STRUCTURE_ID", structure.PCBaseStructureID);
-
-                        areaStructures.Add(new AreaStructure(@base.PCBaseID, structure.PCBaseStructureID, plc));
+                        if (structure.ParentPCBaseStructureID != null) continue; // Don't spawn any structures contained by buildings.
+                        SpawnStructure(area, structure.PCBaseStructureID);
                     }
                 }
 
-                area.Data["BASE_SERVICE_STRUCTURES"] = areaStructures;
             }
+        }
+
+        public NWPlaceable SpawnStructure(NWArea area, int pcBaseStructureID)
+        {
+            PCBaseStructure structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == pcBaseStructureID);
+
+            Location location = _.Location(area.Object,
+                _.Vector((float)structure.LocationX, (float)structure.LocationY, (float)structure.LocationZ),
+                (float)structure.LocationOrientation);
+
+            BaseStructureType structureType = (BaseStructureType)structure.BaseStructure.BaseStructureTypeID;
+            string resref = structure.BaseStructure.PlaceableResref;
+
+            List<AreaStructure> areaStructures = area.Data["BASE_SERVICE_STRUCTURES"];
+            NWPlaceable door = null;
+            if (string.IsNullOrWhiteSpace(resref) &&
+                structureType == BaseStructureType.Building)
+            {
+                resref = structure.ExteriorStyle.Resref;
+                
+                // Spawn a door for buildings.
+                Vector doorPosition = _.GetPositionFromLocation(location);
+                float fOrient = _.GetFacingFromLocation(location);
+
+                fOrient = fOrient + 146.31f;
+                if (fOrient > 360.0) fOrient = fOrient - 360.0f;
+
+                float fMod = _.sqrt(13.0f) * _.sin(fOrient);
+                doorPosition.m_X = doorPosition.m_X + fMod;
+
+                fMod = _.sqrt(13.0f) * _.cos(fOrient);
+                doorPosition.m_Y = doorPosition.m_Y - fMod;
+                Location doorLocation = _.Location(area.Object, doorPosition, _.GetFacingFromLocation(location));
+                door = NWPlaceable.Wrap(_.CreateObject(OBJECT_TYPE_PLACEABLE, "building_door", doorLocation));
+                door.SetLocalInt("PC_BASE_STRUCTURE_ID", structure.PCBaseStructureID);
+            }
+
+            var plc = NWPlaceable.Wrap(_.CreateObject(OBJECT_TYPE_PLACEABLE, resref, location));
+            plc.SetLocalInt("PC_BASE_STRUCTURE_ID", structure.PCBaseStructureID);
+
+            areaStructures.Add(new AreaStructure(structure.PCBaseID, structure.PCBaseStructureID, plc));
+
+            if (door != null)
+            {
+                areaStructures.Add(new AreaStructure(structure.PCBaseID, structure.PCBaseStructureID, door));
+            }
+            return plc;
         }
 
         public void PurchaseArea(NWPlayer player, NWArea area, string sector)
@@ -279,33 +312,67 @@ namespace SWLOR.Game.Server.Service
             }
 
             NWArea area = NWArea.Wrap(_.GetAreaFromLocation(targetLocation));
+            int buildingStructureID = area.GetLocalInt("PC_BASE_STRUCTURE_ID");
+            bool isOutside = buildingStructureID <= 0;
             Area dbArea = _db.Areas.SingleOrDefault(x => x.Resref == area.Resref);
 
-            if (dbArea == null || !dbArea.IsBuildable) return "Structures cannot be placed in this area.";
+            if (dbArea == null || !dbArea.IsBuildable ) return "Structures cannot be placed in this area.";
             PCBase pcBase = _db.PCBases.SingleOrDefault(x => x.AreaResref == area.Resref && x.Sector == sector);
+            if (pcBase == null && !isOutside)
+            {
+                var parentStructure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == buildingStructureID);
+                pcBase = parentStructure.PCBase;
+            }
 
             if (pcBase == null)
                 return "This area is unclaimed but not owned by you. You may purchase a lease on it from the planetary government by using your Base Management Tool (found under feats).";
 
             if (pcBase.PlayerID != user.GlobalID)
                 return "You do not have permission to place structures in this territory.";
-
-            int controlTowerTypeID = (int)BaseStructureType.ControlTower;
             
             var structure = _db.BaseStructures.Single(x => x.BaseStructureID == structureID);
-            int structureTypeID = structure.BaseStructureTypeID;
-
-            bool hasControlTower = pcBase.PCBaseStructures
-                                       .SingleOrDefault(x => x.BaseStructure.BaseStructureTypeID == controlTowerTypeID) != null;
-
-            if (!hasControlTower && structureTypeID != controlTowerTypeID)
+            BaseStructureType structureType = (BaseStructureType)structure.BaseStructureTypeID;
+            BaseStructureType[] allowedOutside =
             {
-                return "A control tower must be placed down in the sector first.";
+                BaseStructureType.ControlTower,
+                BaseStructureType.Drill,
+                BaseStructureType.Silo,
+                BaseStructureType.Turret,
+                BaseStructureType.Building,
+                BaseStructureType.MassProduction,
+                BaseStructureType.StarshipProduction
+            };
+
+            BaseStructureType[] allowedInside =
+            {
+                BaseStructureType.Furniture
+            };
+            
+            if (!allowedOutside.Contains(structureType) && isOutside)
+            {
+                return "That structure can only be placed inside buildings.";
             }
 
-            if (hasControlTower && structureTypeID == controlTowerTypeID)
+            if (!allowedInside.Contains(structureType) && !isOutside)
             {
-                return "Only one control tower can be placed down per sector.";
+                return "That structure can only be placed outside of buildings.";
+            }
+
+            if (isOutside)
+            {
+                bool hasControlTower = pcBase.PCBaseStructures
+                                           .SingleOrDefault(x => x.BaseStructure.BaseStructureTypeID == (int)BaseStructureType.ControlTower) != null;
+
+                if (!hasControlTower && structureType != BaseStructureType.ControlTower)
+                {
+                    return "A control tower must be placed down in the sector first.";
+                }
+
+                if (hasControlTower && structureType == BaseStructureType.ControlTower)
+                {
+                    return "Only one control tower can be placed down per sector.";
+                }
+
             }
             
             return null;
@@ -405,6 +472,51 @@ namespace SWLOR.Game.Server.Service
                 }
 
             }
+        }
+
+
+        public void JumpPCToBuildingInterior(NWPlayer player, NWArea area)
+        {
+            NWObject waypoint = null;
+            NWObject exit = null;
+
+            NWObject @object = NWObject.Wrap(_.GetFirstObjectInArea(area.Object));
+            while (@object.IsValid)
+            {
+                if (@object.Tag == "PLAYER_HOME_ENTRANCE")
+                {
+                    waypoint = @object;
+                }
+                else if (@object.Tag == "building_exit")
+                {
+                    exit = @object;
+                }
+
+                @object = NWObject.Wrap(_.GetNextObjectInArea(area.Object));
+            }
+
+            if (waypoint == null)
+            {
+                player.FloatingText("ERROR: Couldn't find the building interior's entrance. Inform an admin of this issue.");
+                return;
+            }
+
+            if (exit == null)
+            {
+                player.FloatingText("ERROR: Couldn't find the building interior's exit. Inform an admin of this issue.");
+                return;
+            }
+
+            _player.SaveLocation(player);
+
+            exit.SetLocalLocation("PLAYER_HOME_EXIT_LOCATION", player.Location);
+            exit.SetLocalInt("IS_BUILDING_DOOR", 1);
+
+            Location location = waypoint.Location;
+            player.AssignCommand(() =>
+            {
+                _.ActionJumpToLocation(location);
+            });
         }
     }
 }

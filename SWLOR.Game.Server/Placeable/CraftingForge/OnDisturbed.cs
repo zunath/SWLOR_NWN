@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
 
             if (!allowed.Contains(item.Resref))
             {
-                ReturnItemToPC(pc, item, "Only power units and raw materials may be placed inside.");
+                ReturnItemToPC(pc, item, "Only power cores and raw materials may be placed inside.");
                 return false;
             }
 

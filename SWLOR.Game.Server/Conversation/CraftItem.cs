@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Data.Entities;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
 
@@ -45,9 +46,9 @@ namespace SWLOR.Game.Server.Conversation
             var device = GetDevice();
 
             // Entering the conversation for the first time from the blueprint selection menu.
-            if (model.BlueprintID <= 0)
+            if (!model.IsInitialized)
             {
-                model.BlueprintID = GetPC().GetLocalInt("CRAFT_BLUEPRINT_ID");
+                model.IsInitialized = true;
                 model.Blueprint = _craft.GetBlueprintByID(model.BlueprintID);
                 model.PlayerSkillRank = _skill.GetPCSkill(GetPC(), model.Blueprint.SkillID).Rank;
 
@@ -83,7 +84,8 @@ namespace SWLOR.Game.Server.Conversation
                 _.SetEventScript(device.Object, NWScript.EVENT_SCRIPT_PLACEABLE_ON_INVENTORYDISTURBED, string.Empty);
             }
 
-            BuildMainPageHeader();
+
+            SetPageHeader("MainPage", _craft.BuildBlueprintHeader(GetPC(), model.BlueprintID, true));
             BuildMainPageOptions();
         }
 
@@ -110,56 +112,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             return NWPlaceable.Wrap(GetDialogTarget().Object);
         }
-
-        private void BuildMainPageHeader()
-        {
-            var model = _craft.GetPlayerCraftingData(GetPC());
-            var bp = model.Blueprint;
-            int playerEL = _craft.CalculatePCEffectiveLevel(GetPC(), GetDevice(), model.PlayerSkillRank);
-            
-            string header = _color.Green("Blueprint: ") + bp.Quantity + "x " + bp.ItemName + "\n";
-            header += _color.Green("Level: ") + model.AdjustedLevel + " (Base: " + bp.BaseLevel + ")\n";
-            header += _color.Green("Difficulty: ") + _craft.CalculateDifficultyDescription(playerEL, model.AdjustedLevel) + "\n";
-            header += _color.Green("Required Components (Required/Maximum): ") + "\n\n";
-
-            string mainCounts = " (" + (bp.MainMinimum > 0 ? Convert.ToString(bp.MainMinimum) : "Optional") + "/" + bp.MainMaximum + ")";
-            header += _color.Green("Main: ") + bp.MainComponentType.Name + mainCounts + "\n";
-
-            if (bp.SecondaryMinimum > 0 && bp.SecondaryComponentTypeID > 0)
-            {
-                string secondaryCounts = " (" + (bp.SecondaryMinimum > 0 ? Convert.ToString(bp.SecondaryMinimum) : "Optional") + "/" + bp.SecondaryMaximum + ")";
-                header += _color.Green("Secondary: ") + bp.SecondaryComponentType.Name + secondaryCounts + "\n";
-            }
-            if (bp.TertiaryMinimum > 0 && bp.TertiaryComponentTypeID > 0)
-            {
-                string tertiaryCounts = " (" + (bp.TertiaryMinimum > 0 ? Convert.ToString(bp.TertiaryMinimum) : "Optional") + "/" + bp.TertiaryMaximum + ")";
-                header += _color.Green("Tertiary: ") + bp.TertiaryComponentType.Name + tertiaryCounts + "\n";
-            }
-            
-            header += "\n" + _color.Green("Your components:") + "\n\n";
-            if (!model.HasPlayerComponents) header += "No components selected yet!";
-            else
-            {
-                foreach (var item in model.MainComponents)
-                {
-                    header += item.Name + "\n";
-                }
-                foreach (var item in model.SecondaryComponents)
-                {
-                    header += item.Name + "\n";
-                }
-                foreach (var item in model.TertiaryComponents)
-                {
-                    header += item.Name + "\n";
-                }
-                foreach (var item in model.EnhancementComponents)
-                {
-                    header += item.Name + "\n";
-                }
-            }
-
-            SetPageHeader("MainPage", header);
-        }
+        
 
         private void BuildMainPageOptions()
         {
@@ -167,6 +120,7 @@ namespace SWLOR.Game.Server.Conversation
             int maxEnhancements = model.PlayerPerkLevel / 2;
             bool canAddEnhancements = model.Blueprint.EnhancementSlots > 0 && maxEnhancements > 0;
             
+            AddResponseToPage("MainPage", "Examine Base Item");
             AddResponseToPage("MainPage", "Create Item", model.CanBuildItem);
             AddResponseToPage("MainPage", "Select Main Components");
             AddResponseToPage("MainPage", "Select Secondary Components", model.Blueprint.SecondaryMinimum > 0);
@@ -183,7 +137,14 @@ namespace SWLOR.Game.Server.Conversation
 
             switch(responseID)
             {
-                case 1: // Create item
+                case 1: // Examine Base Item
+                    CraftBlueprint entity = _craft.GetBlueprintByID(model.BlueprintID);
+                    NWPlaceable tempContainer = NWPlaceable.Wrap(_.GetObjectByTag("craft_temp_store"));
+                    NWItem examineItem = NWItem.Wrap(_.CreateItemOnObject(entity.ItemResref, tempContainer.Object));
+                    GetPC().AssignCommand(() => _.ActionExamine(examineItem.Object));
+                    examineItem.Destroy(0.1f);
+                    break;
+                case 2: // Create item
                     if(!model.CanBuildItem)
                     {
                         GetPC().FloatingText("You are missing some required components.");
@@ -194,23 +155,23 @@ namespace SWLOR.Game.Server.Conversation
                     model.IsAccessingStorage = true;
                     EndConversation();
                     break;
-                case 2: // Select main components
+                case 3: // Select main components
                     model.Access = CraftingAccessType.MainComponent;
                     OpenDeviceInventory();
                     break;
-                case 3: // Select secondary components
+                case 4: // Select secondary components
                     model.Access = CraftingAccessType.SecondaryComponent;
                     OpenDeviceInventory();
                     break;
-                case 4: // Select tertiary components
+                case 5: // Select tertiary components
                     model.Access = CraftingAccessType.TertiaryComponent;
                     OpenDeviceInventory();
                     break;
-                case 5: // Select enhancement components
+                case 6: // Select enhancement components
                     model.Access = CraftingAccessType.Enhancement;
                     OpenDeviceInventory();
                     break;
-                case 6: // Back (return to blueprint selection)
+                case 7: // Back (return to blueprint selection)
                     _craft.ClearPlayerCraftingData(GetPC());
                     SwitchConversation("CraftingDevice");
                     break;

@@ -73,26 +73,57 @@ namespace SWLOR.Game.Server.Service
                 new SqlParameter("PlayerID", playerID));
         }
 
-        public string BuildBlueprintHeader(NWPlayer player, int blueprintID)
+        public string BuildBlueprintHeader(NWPlayer player, int blueprintID, bool showAddedComponentList)
         {
-            CraftBlueprint blueprint = _db.CraftBlueprints.Single(x => x.CraftBlueprintID == blueprintID);
-            PCSkill pcSkill = _db.PCSkills.Single(x => x.PlayerID == player.GlobalID && x.SkillID == blueprint.SkillID);
+            var model = GetPlayerCraftingData(player);
+            var bp = model.Blueprint;
+            int deviceID = bp.CraftDeviceID;
+            int playerEL = CalculatePCEffectiveLevel(player, deviceID, model.PlayerSkillRank);
 
-            string header = _color.Green("Blueprint: ") + _color.White(blueprint.ItemName) + "\n\n";
-            header += _color.Green("Skill: ") + _color.White(pcSkill.Skill.Name) + "\n";
+            string header = _color.Green("Blueprint: ") + bp.Quantity + "x " + bp.ItemName + "\n";
+            header += _color.Green("Level: ") + model.AdjustedLevel + " (Base: " + bp.BaseLevel + ")\n";
+            header += _color.Green("Difficulty: ") + CalculateDifficultyDescription(playerEL, model.AdjustedLevel) + "\n";
+            header += _color.Green("Required Components (Required/Maximum): ") + "\n\n";
 
-            header += _color.Green("Base Difficulty: ") + CalculateDifficultyDescription(pcSkill.Rank, blueprint.BaseLevel) + "\n";
-            header += _color.Green("Max Enhancement Slots: ") + blueprint.EnhancementSlots + "\n\n";
+            string mainCounts = " (" + (bp.MainMinimum > 0 ? Convert.ToString(bp.MainMinimum) : "Optional") + "/" + bp.MainMaximum + ")";
+            header += _color.Green("Main: ") + bp.MainComponentType.Name + mainCounts + "\n";
 
-            header += _color.Green("Components: ") + "\n\n";
+            if (bp.SecondaryMinimum > 0 && bp.SecondaryComponentTypeID > 0)
+            {
+                string secondaryCounts = " (" + (bp.SecondaryMinimum > 0 ? Convert.ToString(bp.SecondaryMinimum) : "Optional") + "/" + bp.SecondaryMaximum + ")";
+                header += _color.Green("Secondary: ") + bp.SecondaryComponentType.Name + secondaryCounts + "\n";
+            }
+            if (bp.TertiaryMinimum > 0 && bp.TertiaryComponentTypeID > 0)
+            {
+                string tertiaryCounts = " (" + (bp.TertiaryMinimum > 0 ? Convert.ToString(bp.TertiaryMinimum) : "Optional") + "/" + bp.TertiaryMaximum + ")";
+                header += _color.Green("Tertiary: ") + bp.TertiaryComponentType.Name + tertiaryCounts + "\n";
+            }
 
-            header += _color.White(blueprint.MainMinimum + "x " + blueprint.MainComponentType.Name) + "\n";
+            if (showAddedComponentList)
+            {
+                header += "\n" + _color.Green("Your components:") + "\n\n";
+                if (!model.HasPlayerComponents) header += "No components selected yet!";
+                else
+                {
+                    foreach (var item in model.MainComponents)
+                    {
+                        header += item.Name + "\n";
+                    }
+                    foreach (var item in model.SecondaryComponents)
+                    {
+                        header += item.Name + "\n";
+                    }
+                    foreach (var item in model.TertiaryComponents)
+                    {
+                        header += item.Name + "\n";
+                    }
+                    foreach (var item in model.EnhancementComponents)
+                    {
+                        header += item.Name + "\n";
+                    }
+                }
 
-            if (blueprint.SecondaryComponentTypeID > 0)
-                header += _color.White(blueprint.SecondaryMinimum + "x " + blueprint.SecondaryComponentType.Name) + "\n";
-
-            if (blueprint.TertiaryComponentTypeID > 0)
-                header += _color.White(blueprint.TertiaryMinimum + "x " + blueprint.TertiaryComponentType.Name) + "\n";
+            }
 
             return header;
         }
@@ -155,7 +186,7 @@ namespace SWLOR.Game.Server.Service
             {
                 try
                 {
-                    RunCreateItem(oPC, device);
+                    RunCreateItem(oPC);
                     oPC.IsBusy = false;
                 }
                 catch (Exception ex)
@@ -200,14 +231,15 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        private void RunCreateItem(NWPlayer oPC, NWPlaceable device)
+        private void RunCreateItem(NWPlayer oPC)
         {
             var model = GetPlayerCraftingData(oPC);
 
             CraftBlueprint blueprint = _db.CraftBlueprints.Single(x => x.CraftBlueprintID == model.BlueprintID);
             PCSkill pcSkill = _db.PCSkills.Single(x => x.PlayerID == oPC.GlobalID && x.SkillID == blueprint.SkillID);
+            int deviceID = blueprint.CraftDeviceID;
 
-            int pcEffectiveLevel = CalculatePCEffectiveLevel(oPC, device, pcSkill.Rank);
+            int pcEffectiveLevel = CalculatePCEffectiveLevel(oPC, deviceID, pcSkill.Rank);
             int itemLevel = model.AdjustedLevel;
             float chance = CalculateBaseChanceToAddProperty(pcEffectiveLevel, itemLevel);
             float equipmentBonus = CalculateEquipmentBonus(oPC, (SkillType)blueprint.SkillID);
@@ -440,9 +472,8 @@ namespace SWLOR.Game.Server.Service
             return percentage;
         }
 
-        public int CalculatePCEffectiveLevel(NWPlayer pcGO, NWPlaceable device, int skillRank)
+        public int CalculatePCEffectiveLevel(NWPlayer pcGO, int deviceID, int skillRank)
         {
-            int deviceID = device.GetLocalInt("CRAFT_DEVICE_ID");
             int effectiveLevel = skillRank;
             PlayerCharacter player = _db.PlayerCharacters.Single(x => x.PlayerID == pcGO.GlobalID);
 
@@ -564,7 +595,7 @@ namespace SWLOR.Game.Server.Service
             switch (oreResref)
             {
                 case "raw_veldite":
-                case "power_unit":
+                case "power_core":
                     level = 1;
                     break;
                 case "raw_scordspar":

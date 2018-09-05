@@ -30,12 +30,6 @@ namespace SWLOR.Game.Server.Conversation
             DialogPage mainPage = new DialogPage(
                 "Please select a blueprint. Only blueprints you've learned will be displayed here. Learn more blueprints by purchasing crafting perks!"
             );
-            DialogPage blueprintPage = new DialogPage(
-                "<SET LATER>",
-                _color.Green("Examine Item"),
-                "Select Blueprint",
-                "Back"
-            );
             DialogPage blueprintListPage = new DialogPage(
                 "Please select a blueprint. Only blueprints you've learned will be displayed here. Learn more blueprints by purchasing crafting perks!",
                 "Back"
@@ -43,7 +37,6 @@ namespace SWLOR.Game.Server.Conversation
 
             dialog.AddPage("MainPage", mainPage);
             dialog.AddPage("BlueprintListPage", blueprintListPage);
-            dialog.AddPage("BlueprintPage", blueprintPage);
             return dialog;
         }
 
@@ -61,9 +54,6 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case "BlueprintListPage":
                     HandleBlueprintListResponse(responseID);
-                    break;
-                case "BlueprintPage":
-                    HandleBlueprintResponse(responseID);
                     break;
             }
         }
@@ -102,14 +92,7 @@ namespace SWLOR.Game.Server.Conversation
 
             AddResponseToPage("BlueprintListPage", "Back", true, -1);
         }
-
-        private void LoadBlueprintPage(int blueprintID)
-        {
-            SetPageHeader("BlueprintPage", _craft.BuildBlueprintHeader(GetPC(), blueprintID));
-            GetResponseByID("BlueprintPage", 1).CustomData[string.Empty] = blueprintID;
-            GetResponseByID("BlueprintPage", 2).CustomData[string.Empty] = blueprintID;
-        }
-
+        
         private void HandleCategoryResponse(int responseID)
         {
             DialogResponse response = GetResponseByID("MainPage", responseID);
@@ -128,34 +111,10 @@ namespace SWLOR.Game.Server.Conversation
             }
 
             int blueprintID = (int)response.CustomData[string.Empty];
-            LoadBlueprintPage(blueprintID);
-            ChangePage("BlueprintPage");
+            var model = _craft.GetPlayerCraftingData(GetPC());
+            model.BlueprintID = blueprintID;
+            SwitchConversation("CraftItem");
         }
-
-        private void HandleBlueprintResponse(int responseID)
-        {
-            DialogResponse response = GetResponseByID("BlueprintPage", responseID);
-            int blueprintID;
-
-            switch (responseID)
-            {
-                case 1: // Examine item
-                    blueprintID = (int)response.CustomData[string.Empty];
-                    CraftBlueprint entity = _craft.GetBlueprintByID(blueprintID);
-                    NWPlaceable tempContainer = NWPlaceable.Wrap(_.GetObjectByTag("craft_temp_store"));
-                    NWItem examineItem = NWItem.Wrap(_.CreateItemOnObject(entity.ItemResref, tempContainer.Object));
-                    GetPC().AssignCommand(() => _.ActionExamine(examineItem.Object));
-                    examineItem.Destroy(0.1f);
-                    break;
-                case 2: // Craft this item
-                    blueprintID = (int)response.CustomData[string.Empty];
-                    GetPC().SetLocalInt("CRAFT_BLUEPRINT_ID", blueprintID);
-                    SwitchConversation("CraftItem");
-                    break;
-                case 3: // Back
-                    ChangePage("BlueprintListPage");
-                    break;
-            }
-        }
+        
     }
 }

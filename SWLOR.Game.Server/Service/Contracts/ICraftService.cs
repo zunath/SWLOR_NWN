@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Service.Contracts
 {
     public interface ICraftService
     {
-        string BuildBlueprintHeader(NWPlayer player, int blueprintID);
+        string BuildBlueprintHeader(NWPlayer player, int blueprintID, bool showAddedComponentList);
         void CraftItem(NWPlayer oPC, NWPlaceable device);
         CraftBlueprint GetBlueprintByID(int craftBlueprintID);
         List<CraftBlueprintCategory> GetCategoriesAvailableToPC(string playerID);
@@ -20,6 +20,6 @@ namespace SWLOR.Game.Server.Service.Contracts
         CraftingData GetPlayerCraftingData(NWPlayer player);
         void ClearPlayerCraftingData(NWPlayer player, bool destroyComponents = false);
         string CalculateDifficultyDescription(int pcLevel, int blueprintLevel);
-        int CalculatePCEffectiveLevel(NWPlayer pcGO, NWPlaceable device, int skillRank);
+        int CalculatePCEffectiveLevel(NWPlayer pcGO, int deviceID, int skillRank);
     }
 }

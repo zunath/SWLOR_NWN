@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             }
 
             string[] allowed = {
-                "power_unit",
+                "power_core",
                 "raw_veldite",
                 "raw_scordspar",
                 "raw_plagionite",

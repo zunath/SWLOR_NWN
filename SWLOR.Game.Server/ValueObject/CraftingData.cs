@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.ValueObject
         public CraftingAccessType Access { get; set; }
         public int PlayerPerkLevel { get; set; }
         public int PlayerSkillRank { get; set; }
+        public bool IsInitialized { get; set; }
 
         public int AdjustedLevel
         {

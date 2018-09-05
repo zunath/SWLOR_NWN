@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using SWLOR.Game.Server.Bioware.Contracts;
 using SWLOR.Game.Server.Data.Entities;
 using SWLOR.Game.Server.Enumeration;
@@ -95,10 +96,10 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
                 return false;
             }
 
-            int pcPerklevel = _perk.GetPCPerkLevel(pc, PerkType.Refining);
+            int pcPerkLevel = _perk.GetPCPerkLevel(pc, PerkType.Refining);
             int orePerkLevel = _craft.GetIngotPerkLevel(item.Resref);
 
-            if (pcPerklevel < orePerkLevel)
+            if (pcPerkLevel < orePerkLevel)
             {
                 ReturnItemToPC(pc, item, "You do not have the perk necessary to refine this material.");
                 return false;
@@ -113,7 +114,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             if (item.Resref == "coal")
             {
                 item.Destroy();
-                charges += 10 + CalculatePerkCoalBonusCharges(pc);
+                charges += 10 + CalculatePerkCoalBonusCharges(pc) + GetPowerCoreDurability(item) * 2;
                 forge.SetLocalInt("FORGE_CHARGES", charges);
 
                 NWPlaceable flames = NWPlaceable.Wrap(forge.GetLocalObject("FORGE_FLAMES"));
@@ -146,6 +147,25 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
 
             _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, _.EffectCutsceneImmobilize(), pc.Object, baseCraftDelay);
             pc.AssignCommand(() => _.ActionPlayAnimation(NWScript.ANIMATION_LOOPING_GET_MID, 1.0f, baseCraftDelay));
+        }
+
+        private int GetPowerCoreDurability(NWItem item)
+        {
+            int durability = 0;
+            foreach (var ip in item.ItemProperties)
+            {
+                if (_.GetItemPropertyType(ip) == (int)CustomItemPropertyType.ComponentBonus)
+                {
+                    int bonusTypeID = _.GetItemPropertySubType(ip);
+                    if (bonusTypeID == (int) ComponentBonusType.DurabilityUp)
+                    {
+                        int amount = _.GetItemPropertyCostTableValue(ip);
+                        durability += amount;
+                    }
+                }
+            }
+
+            return durability;
         }
 
         private void ReturnItemToPC(NWPlayer pc, NWItem item, string message)

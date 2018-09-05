@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Item
 
         public bool FaceTarget()
         {
-            return true;
+            return false;
         }
 
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)

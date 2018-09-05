@@ -266,6 +266,21 @@ namespace SWLOR.Game.Server.Service
                     craftedItems.Add(craftedItem);
                 }
             }
+            
+            // Recommended level gets set regardless if all item properties make it on the final product.
+            // Also mark who crafted the item. This is later used for display on the item's examination event.
+            foreach (var item in craftedItems)
+            {
+                item.RecommendedLevel = itemLevel;
+                item.SetLocalString("CRAFTER_PLAYER_ID", oPC.GlobalID);
+
+                // Structure items need an additional local variable and their name set on creation.
+                if (blueprint.BaseStructure != null)
+                {
+                    item.SetLocalInt("BASE_STRUCTURE_ID", blueprint.BaseStructure.BaseStructureID);
+                    item.Name = blueprint.BaseStructure.Name;
+                }
+            }
 
             int successAmount = 0;
             foreach (var component in model.MainComponents)
@@ -293,21 +308,6 @@ namespace SWLOR.Game.Server.Service
                 chance = result.Item2;
             }
 
-            // Recommended level gets set regardless if all item properties make it on the final product.
-            // Also mark who crafted the item. This is later used for display on the item's examination event.
-            foreach (var item in craftedItems)
-            {
-                item.RecommendedLevel = itemLevel;
-                item.SetLocalString("CRAFTER_PLAYER_ID", oPC.GlobalID);
-
-                // Structure items need an additional local variable and their name set on creation.
-                if (blueprint.BaseStructure != null)
-                {
-                    item.SetLocalInt("BASE_STRUCTURE_ID", blueprint.BaseStructure.BaseStructureID);
-                    item.Name = blueprint.BaseStructure.Name;
-                }
-
-            }
 
             oPC.SendMessage("You created " + blueprint.Quantity + "x " + blueprint.ItemName + "!");
             int baseXP = 250 + successAmount * _random.Random(1, 50);

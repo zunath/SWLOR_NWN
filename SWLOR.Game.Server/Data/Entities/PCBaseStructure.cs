@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public double LocationOrientation { get; set; }
 
-        public int HitPoints { get; set; }
+        public double Durability { get; set; }
 
         public virtual BaseStructure BaseStructure { get; set; }
 

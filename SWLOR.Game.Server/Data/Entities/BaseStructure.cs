@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public double CPU { get; set; }
 
-        public int HitPoints { get; set; }
+        public double Durability { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CraftBlueprint> CraftBlueprints { get; set; }

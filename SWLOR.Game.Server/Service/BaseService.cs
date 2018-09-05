@@ -317,10 +317,14 @@ namespace SWLOR.Game.Server.Service
                     _db.PCImpoundedItems.Add(impoundItem);
                     _db.PCBaseStructureItems.Remove(item);
                 }
+
+                // Convert structure back to an item.
                 var tempStorage = NWPlaceable.Wrap(_.GetObjectByTag("TEMP_ITEM_STORAGE"));
                 NWItem copy = NWItem.Wrap(_.CreateItemOnObject(pcBaseStructure.BaseStructure.ItemResref, tempStorage.Object));
                 copy.SetLocalInt("BASE_STRUCTURE_ID", pcBaseStructure.BaseStructureID);
                 copy.Name = pcBaseStructure.BaseStructure.Name;
+                copy.MaxDurability = (float)pcBaseStructure.Durability;
+                copy.Durability = (float)pcBaseStructure.Durability;
 
                 PCImpoundedItem structureImpoundedItem = new PCImpoundedItem
                 {

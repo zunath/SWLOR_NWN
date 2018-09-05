@@ -20,5 +20,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         void ApplyCraftedItemLocalVariables(NWItem item, BaseStructure structure);
         double GetPowerInUse(int pcBaseID);
         double GetCPUInUse(int pcBaseID);
+        NWPlaceable SpawnStructure(NWArea area, int pcBaseStructureID);
+        void JumpPCToBuildingInterior(NWPlayer player, NWArea area);
     }
 }

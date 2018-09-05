@@ -291,6 +291,13 @@ namespace SWLOR.Game.Server.Data
                 .WithRequired(e => e.PCBaseStructure)
                 .WillCascadeOnDelete(false);
 
+            
+            modelBuilder.Entity<PCBaseStructure>()
+                .HasMany(e => e.ChildPCBaseStructures)
+                .WithOptional(e => e.ParentPCBaseStructure)
+                .HasForeignKey(e => e.ParentPCBaseStructureID);
+
+
             modelBuilder.Entity<PCCorpse>()
                 .HasMany(e => e.PCCorpseItems)
                 .WithRequired(e => e.PcCorpse)

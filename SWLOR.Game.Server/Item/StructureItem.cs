@@ -44,14 +44,29 @@ namespace SWLOR.Game.Server.Item
         {
             NWPlayer player = NWPlayer.Wrap(user.Object);
             NWArea area = NWArea.Wrap(_.GetAreaFromLocation(targetLocation));
-            string sector = _base.GetSectorOfLocation(targetLocation);
-            PCBase pcBase = _db.PCBases.Single(x => x.AreaResref == area.Resref && x.Sector == sector);
+            int parentStructureID = area.GetLocalInt("PC_BASE_STRUCTURE_ID");
             var data = _base.GetPlayerTempData(player);
             data.TargetLocation = targetLocation;
             data.TargetArea = area;
-            data.PCBaseID = pcBase.PCBaseID;
             data.StructureID = item.GetLocalInt("BASE_STRUCTURE_ID");
             data.StructureItem = item;
+            
+            // Structure is being placed inside a building.
+            if (parentStructureID > 0)
+            {
+                var parentStructure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == parentStructureID);
+                data.PCBaseID = parentStructure.PCBaseID;
+                data.ParentStructureID = parentStructureID;
+            }
+            // Structure is being placed outside of a building.
+            else
+            {
+                string sector = _base.GetSectorOfLocation(targetLocation);
+                PCBase pcBase = _db.PCBases.Single(x => x.AreaResref == area.Resref && x.Sector == sector);
+                data.PCBaseID = pcBase.PCBaseID;
+                data.ParentStructureID = null;
+            }
+
 
             _dialog.StartConversation(user, user, "PlaceStructure");
         }

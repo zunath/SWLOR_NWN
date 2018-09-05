@@ -336,19 +336,14 @@ namespace SWLOR.Game.Server.Conversation
                 LocationZ = position.m_Z,
                 PCBaseID = data.PCBaseID,
                 InteriorStyleID = interiorStyleID,
-                ExteriorStyleID = exteriorStyleID
-
+                ExteriorStyleID = exteriorStyleID,
+                CustomName = string.Empty,
+                ParentPCBaseStructureID = data.ParentStructureID
             };
             
             _db.PCBaseStructures.Add(structure);
             _db.SaveChanges();
-
-            string resref = GetPlaceableResref(dbStructure);
-            var plc = NWPlaceable.Wrap(_.CreateObject(OBJECT_TYPE_PLACEABLE, resref, data.TargetLocation));
-            plc.SetLocalInt("PC_BASE_STRUCTURE_ID", structure.PCBaseStructureID);
-            List<AreaStructure> areaStructures = data.TargetArea.Data["BASE_SERVICE_STRUCTURES"];
-            areaStructures.Add(new AreaStructure(data.PCBaseID, structure.PCBaseStructureID, plc));
-
+            _base.SpawnStructure(data.TargetArea, structure.PCBaseStructureID);
             data.StructureItem.Destroy();
             EndConversation();
         }
@@ -428,46 +423,7 @@ namespace SWLOR.Game.Server.Conversation
             area.SetLocalInt("IS_BUILDING_PREVIEW", TRUE);
             NWPlayer player = GetPC();
             
-            NWObject waypoint = null;
-            NWObject exit = null;
-
-            NWObject @object = NWObject.Wrap(_.GetFirstObjectInArea(area.Object));
-            while (@object.IsValid)
-            {
-                if (@object.Tag == "PLAYER_HOME_ENTRANCE")
-                {
-                    waypoint = @object;
-                }
-                else if (@object.Tag == "building_exit")
-                {
-                    exit = @object;
-                }
-
-                @object = NWObject.Wrap(_.GetNextObjectInArea(area.Object));
-            }
-
-            if (waypoint == null)
-            {
-                player.FloatingText("ERROR: Couldn't find the building interior's entrance. Inform an admin of this issue.");
-                return;
-            }
-
-            if (exit == null)
-            {
-                player.FloatingText("ERROR: Couldn't find the building interior's exit. Inform an admin of this issue.");
-                return;
-            }
-
-            _player.SaveLocation(player);
-
-            exit.SetLocalLocation("PLAYER_HOME_EXIT_LOCATION", player.Location);
-            exit.SetLocalInt("IS_BUILDING_DOOR", 1);
-
-            Location location = waypoint.Location;
-            player.AssignCommand(() =>
-            {
-                _.ActionJumpToLocation(location);
-            });
+            _base.JumpPCToBuildingInterior(player, area);
         }
     }
 }

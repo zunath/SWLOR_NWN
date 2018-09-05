@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Service
                 BASE_ITEM_WHIP
             };
 
-            return validTypes.Contains(item.BaseItemType);
+            return validTypes.Contains(item.BaseItemType) || item.GetLocalInt("BASE_STRUCTURE_ID") > 0;
         }
 
         private void InitializeDurability(NWItem item)

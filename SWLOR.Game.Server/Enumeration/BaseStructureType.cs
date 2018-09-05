@@ -8,6 +8,7 @@
         Turret = 4,
         Building = 5,
         MassProduction = 6,
-        StarshipProduction = 7
+        StarshipProduction = 7,
+        Furniture = 8
     }
 }

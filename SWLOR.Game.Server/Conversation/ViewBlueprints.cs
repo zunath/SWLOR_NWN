@@ -67,9 +67,9 @@ namespace SWLOR.Game.Server.Conversation
 
             foreach (CraftBlueprintCategory category in vm.CraftCategories)
             {
-                AddResponseToPage("CraftCategoriesPage", category.Name, true, new Tuple<string, dynamic>(string.Empty, category.CraftBlueprintCategoryID));
+                AddResponseToPage("CraftCategoriesPage", category.Name, true, category.CraftBlueprintCategoryID);
             }
-            AddResponseToPage("CraftCategoriesPage", "Back", true, new Tuple<string, dynamic>(string.Empty, -1));
+            AddResponseToPage("CraftCategoriesPage", "Back", true, -1);
 
             SetDialogCustomData(vm);
         }
@@ -124,9 +124,9 @@ namespace SWLOR.Game.Server.Conversation
 
             foreach (CraftBlueprint bp in vm.CraftBlueprints)
             {
-                AddResponseToPage("BlueprintListPage", bp.ItemName, true, new Tuple<string, dynamic>(string.Empty, bp.CraftBlueprintID));
+                AddResponseToPage("BlueprintListPage", bp.ItemName, true, bp.CraftBlueprintID);
             }
-            AddResponseToPage("BlueprintListPage", "Back", true, new Tuple<string, dynamic>(string.Empty, -1));
+            AddResponseToPage("BlueprintListPage", "Back", true, -1);
 
             ChangePage("BlueprintListPage");
         }
@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            string header = _craft.BuildBlueprintHeader(GetPC(), blueprintID);
+            string header = _craft.BuildBlueprintHeader(GetPC(), blueprintID, false);
 
             SetPageHeader("BlueprintDetailsPage", header);
             ChangePage("BlueprintDetailsPage");

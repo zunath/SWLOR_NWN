@@ -117,6 +117,7 @@ namespace SWLOR.Game.Server
             builder.RegisterType<AreaService>().As<IAreaService>();
             builder.RegisterType<AuthorizationService>().As<IAuthorizationService>();
             builder.RegisterType<BackgroundService>().As<IBackgroundService>();
+            builder.RegisterType<BasePermissionService>().As<IBasePermissionService>();
             builder.RegisterType<BaseService>().As<IBaseService>();
             builder.RegisterType<BehaviourService>().As<IBehaviourService>();
             builder.RegisterType<ChatCommandService>().As<IChatCommandService>();

@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Data.Entities
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PCBase()
         {
+            PCBasePermissions = new HashSet<PCBasePermission>();
             PCBaseStructures = new HashSet<PCBaseStructure>();
         }
 
@@ -35,7 +36,10 @@ namespace SWLOR.Game.Server.Data.Entities
 
         [Column(TypeName = "datetime2")]
         public DateTime DateRentDue { get; set; }
-        
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PCBasePermission> PCBasePermissions { get; set; }
+
         public virtual PlayerCharacter PlayerCharacter { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

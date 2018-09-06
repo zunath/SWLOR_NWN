@@ -2,6 +2,7 @@
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entities;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
@@ -14,6 +15,7 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IPlayerService _player;
         private readonly IDataContext _db;
         private readonly IAreaService _area;
+        private readonly IBasePermissionService _perm;
 
         public BuildingEntrance(
             INWScript script,
@@ -21,13 +23,15 @@ namespace SWLOR.Game.Server.Conversation
             IBaseService @base,
             IPlayerService player,
             IDataContext db,
-            IAreaService area)
+            IAreaService area,
+            IBasePermissionService perm)
             : base(script, dialog)
         {
             _base = @base;
             _player = player;
             _db = db;
             _area = area;
+            _perm = perm;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -44,6 +48,11 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
+            NWPlaceable door = (NWPlaceable)GetDialogTarget();
+            int structureID = door.GetLocalInt("PC_BASE_STRUCTURE_ID");
+            bool canEnterBuilding = _perm.HasStructurePermission(GetPC(), structureID, StructurePermission.CanEnterBuilding);
+
+            SetResponseVisible("MainPage", 1, canEnterBuilding);
         }
 
         public override void DoAction(NWPlayer player, string pageName, int responseID)
@@ -73,12 +82,19 @@ namespace SWLOR.Game.Server.Conversation
         {
             NWPlayer oPC = GetPC();
             NWPlaceable door = (NWPlaceable)GetDialogTarget();
-
             int structureID = door.GetLocalInt("PC_BASE_STRUCTURE_ID");
-
+            
             if (structureID <= 0)
             {
                 _.FloatingTextStringOnCreature("ERROR: Door doesn't have a structure ID assigned. Notify an admin about this issue.", oPC.Object, NWScript.FALSE);
+                return;
+            }
+
+            bool canEnterBuilding = _perm.HasStructurePermission(GetPC(), structureID, StructurePermission.CanEnterBuilding);
+
+            if (!canEnterBuilding)
+            {
+                oPC.FloatingText("You don't have permission to enter that building.");
                 return;
             }
 

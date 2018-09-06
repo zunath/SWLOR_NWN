@@ -18,6 +18,8 @@ namespace SWLOR.Game.Server.Data.Entities
             ChatLogs1 = new HashSet<ChatLog>();
             ClientLogEvents = new HashSet<ClientLogEvent>();
             PCImpoundedItems = new HashSet<PCImpoundedItem>();
+            PCBasePermissions = new HashSet<PCBasePermission>();
+            PCBaseStructurePermissions = new HashSet<PCBaseStructurePermission>();
             PCBases = new HashSet<PCBase>();
             PCCooldowns = new HashSet<PCCooldown>();
             PCCustomEffects = new HashSet<PCCustomEffect>();
@@ -192,6 +194,12 @@ namespace SWLOR.Game.Server.Data.Entities
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PCBase> PCBases { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PCBasePermission> PCBasePermissions { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PCBaseStructurePermission> PCBaseStructurePermissions { get; set; }
 
     }
 }

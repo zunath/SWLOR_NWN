@@ -60,6 +60,8 @@ namespace SWLOR.Game.Server.Data
         public virtual IDbSet<PCBase> PCBases { get; set; }
         public virtual IDbSet<PCBaseStructure> PCBaseStructures { get; set; }
         public virtual IDbSet<PCBaseStructureItem> PCBaseStructureItems { get; set; }
+        public virtual IDbSet<PCBasePermission> PCBasePermissions { get; set; }
+        public virtual IDbSet<PCBaseStructurePermission> PCBaseStructurePermissions { get; set; }
         public virtual IDbSet<PCCooldown> PCCooldowns { get; set; }
         public virtual IDbSet<PCCorpseItem> PCCorpseItems { get; set; }
         public virtual IDbSet<PCCorpse> PCCorpses { get; set; }
@@ -282,6 +284,11 @@ namespace SWLOR.Game.Server.Data
                 .WithRequired(e => e.PCBase)
                 .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<PCBase>()
+                .HasMany(e => e.PCBasePermissions)
+                .WithRequired(e => e.PCBase)
+                .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<PCBaseStructureItem>()
                 .Property(e => e.ItemObject)
                 .IsUnicode(false);
@@ -354,6 +361,16 @@ namespace SWLOR.Game.Server.Data
             modelBuilder.Entity<Plant>()
                 .HasMany(e => e.GrowingPlants)
                 .WithRequired(e => e.Plant)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PlayerCharacter>()
+                .HasMany(e => e.PCBasePermissions)
+                .WithRequired(e => e.PlayerCharacter)
+                .WillCascadeOnDelete(false);
+            
+            modelBuilder.Entity<PlayerCharacter>()
+                .HasMany(e => e.PCBaseStructurePermissions)
+                .WithRequired(e => e.PlayerCharacter)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<PlayerCharacter>()

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entities;
@@ -92,7 +93,12 @@ namespace SWLOR.Game.Server.Conversation
 
             string header = _color.Green("Structure: ") + structure.Name + "\n";
 
-            if (isPlacingTower)
+            if(data.ParentStructureID > 0) // Is a building
+            {
+                var buildingStructure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == data.ParentStructureID);
+                header += _color.Green("Structure Limit: ") + buildingStructure.ChildStructures.Count + " / " + buildingStructure.BaseStructure.Storage + "\n";
+            }
+            else if (isPlacingTower)
             {
                 header += _color.Green("Available Power: ") + structure.Power + "\n";
                 header += _color.Green("Available CPU: ") + structure.CPU + "\n";
@@ -323,7 +329,7 @@ namespace SWLOR.Game.Server.Conversation
             var structure = new PCBaseStructure
             {
                 BaseStructureID = data.StructureID,
-                Durability = dbStructure.Durability + data.StructureItem.Durability,
+                Durability = data.StructureItem.Durability,
                 LocationOrientation = _.GetFacingFromLocation(data.TargetLocation),
                 LocationX = position.m_X,
                 LocationY = position.m_Y,

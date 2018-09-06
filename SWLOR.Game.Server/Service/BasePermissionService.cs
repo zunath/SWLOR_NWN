@@ -20,6 +20,8 @@ namespace SWLOR.Game.Server.Service
 
         public bool HasBasePermission(NWPlayer player, int pcBaseID, BasePermission permission)
         {
+            if (player.IsDM) return true;
+
             var dbPermission = _db.PCBasePermissions.SingleOrDefault(x => x.PCBaseID == pcBaseID && x.PlayerID == player.GlobalID);
             if (dbPermission == null) return false;
 
@@ -37,6 +39,8 @@ namespace SWLOR.Game.Server.Service
 
         public bool HasStructurePermission(NWPlayer player, int pcBaseStructureID, StructurePermission permission)
         {
+            if (player.IsDM) return true;
+
             // Base permissions take priority over structure permissions. Check those first.
             var dbStructure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == pcBaseStructureID);
             var basePermission = dbStructure.PCBase.PCBasePermissions.SingleOrDefault(x => x.PlayerID == player.GlobalID);
@@ -47,6 +51,7 @@ namespace SWLOR.Game.Server.Service
                 if (permission == StructurePermission.CanPlaceEditStructures && basePermission.CanPlaceEditStructures) return true;
                 if (permission == StructurePermission.CanEnterBuilding && basePermission.CanEnterBuildings) return true;
                 if (permission == StructurePermission.CanRetrieveStructures && basePermission.CanRetrieveStructures) return true;
+                if (permission == StructurePermission.CanAdjustPermissions && basePermission.CanAdjustPermissions) return true;
             }
 
             // Didn't find a base permission. Check the structure permissions.
@@ -57,6 +62,7 @@ namespace SWLOR.Game.Server.Service
             if (permission == StructurePermission.CanPlaceEditStructures && structurePermission.CanPlaceEditStructures) return true;
             if (permission == StructurePermission.CanEnterBuilding && structurePermission.CanEnterBuilding) return true;
             if (permission == StructurePermission.CanRetrieveStructures && structurePermission.CanRetrieveStructures) return true;
+            if (permission == StructurePermission.CanAdjustPermissions && structurePermission.CanAdjustPermissions) return true;
 
             // Player doesn't have permission.
             return false;

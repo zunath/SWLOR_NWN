@@ -1,4 +1,5 @@
-﻿using NWN;
+﻿using System;
+using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entities;
 using SWLOR.Game.Server.Enumeration;
@@ -86,21 +87,26 @@ namespace SWLOR.Game.Server.Conversation
 
             Area dbArea = _db.Areas.Single(x => x.Resref == data.TargetArea.Resref);
             bool hasUnclaimed = false;
-            bool isDM = GetPC().IsDM;
             string playerID = GetPC().GlobalID;
             int pcBaseStructureID = data.TargetArea.GetLocalInt("PC_BASE_STRUCTURE_ID");
             bool isBuilding = pcBaseStructureID > 0;
-
+            bool canEditBasePermissions = false;
+            bool canEditBuildingPermissions = false;
             bool canEditStructures;
 
             if (isBuilding)
             {
                 canEditStructures = _perm.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanPlaceEditStructures);
+                canEditBuildingPermissions = _perm.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanAdjustPermissions);
+                data.StructureID = pcBaseStructureID;
             }
             else
             {
                 var pcBase = _db.PCBases.SingleOrDefault(x => x.AreaResref == data.TargetArea.Resref && x.Sector == sector);
                 canEditStructures = pcBase != null && _perm.HasBasePermission(GetPC(), pcBase.PCBaseID, BasePermission.CanPlaceEditStructures);
+                canEditBasePermissions = pcBase != null && _perm.HasBasePermission(GetPC(), pcBase.PCBaseID, BasePermission.CanAdjustPermissions);
+                if (pcBase != null)
+                    data.PCBaseID = pcBase.PCBaseID;
             }
 
             string header = _color.Green("Base Management Menu\n\n");
@@ -120,7 +126,7 @@ namespace SWLOR.Game.Server.Conversation
                 if (dbArea.NortheastOwnerPlayer != null)
                 {
                     header += _color.Green("Northeast Owner: ") + "Claimed";
-                    if (isDM || dbArea.NortheastOwner == playerID)
+                    if (dbArea.NortheastOwner == playerID)
                         header += " (" + dbArea.NortheastOwnerPlayer.CharacterName + ")";
                     header += "\n";
                 }
@@ -133,7 +139,7 @@ namespace SWLOR.Game.Server.Conversation
                 if (dbArea.NorthwestOwnerPlayer != null)
                 {
                     header += _color.Green("Northwest Owner: ") + "Claimed";
-                    if (isDM || dbArea.NorthwestOwner == playerID)
+                    if (dbArea.NorthwestOwner == playerID)
                         header += " (" + dbArea.NorthwestOwnerPlayer.CharacterName + ")";
                     header += "\n";
                 }
@@ -146,7 +152,7 @@ namespace SWLOR.Game.Server.Conversation
                 if (dbArea.SoutheastOwnerPlayer != null)
                 {
                     header += _color.Green("Southeast Owner: ") + "Claimed";
-                    if (isDM || dbArea.SoutheastOwner == playerID)
+                    if (dbArea.SoutheastOwner == playerID)
                         header += " (" + dbArea.SoutheastOwnerPlayer.CharacterName + ")";
                     header += "\n";
                 }
@@ -159,7 +165,7 @@ namespace SWLOR.Game.Server.Conversation
                 if (dbArea.SouthwestOwnerPlayer != null)
                 {
                     header += _color.Green("Southwest Owner: ") + "Claimed";
-                    if (isDM || dbArea.SouthwestOwner == playerID)
+                    if (dbArea.SouthwestOwner == playerID)
                         header += " (" + dbArea.SouthwestOwnerPlayer.CharacterName + ")";
                     header += "\n";
                 }
@@ -173,10 +179,13 @@ namespace SWLOR.Game.Server.Conversation
             SetPageHeader("MainPage", header);
 
             bool showManage = _db.PCBases.Count(x => x.PlayerID == playerID) > 0;
+            
 
             AddResponseToPage("MainPage", "Manage My Leases", showManage);
             AddResponseToPage("MainPage", "Purchase Territory", hasUnclaimed && dbArea.IsBuildable);
             AddResponseToPage("MainPage", "Edit Nearby Structures", canEditStructures);
+            AddResponseToPage("MainPage", "Edit Base Permissions", canEditBasePermissions);
+            AddResponseToPage("MainPage", "Edit Building Permissions", canEditBuildingPermissions);
         }
 
         public override void DoAction(NWPlayer player, string pageName, int responseID)
@@ -219,6 +228,12 @@ namespace SWLOR.Game.Server.Conversation
                 case 3: // Manage nearby structures
                     LoadManageStructuresPage();
                     ChangePage("StructureListPage");
+                    break;
+                case 4: // Edit base permissions
+                    SwitchConversation("EditBasePermissions");
+                    break;
+                case 5: // Edit building permissions
+                    SwitchConversation("EditBuildingPermissions");
                     break;
             }
         }

@@ -5,6 +5,7 @@
         CanPlaceEditStructures = 1,
         CanAccessStructureInventory = 2,
         CanEnterBuilding = 3,
-        CanRetrieveStructures = 4
+        CanRetrieveStructures = 4,
+        CanAdjustPermissions = 5
     }
 }

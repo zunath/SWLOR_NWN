@@ -85,6 +85,8 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Conversation\BackgroundMenu.cs" />
     <Compile Include="Conversation\BaseManagementTool.cs" />
+    <Compile Include="Conversation\EditBuildingPermissions.cs" />
+    <Compile Include="Conversation\EditBasePermissions.cs" />
     <Compile Include="Conversation\BindSoul.cs" />
     <Compile Include="Conversation\BuildingEntrance.cs" />
     <Compile Include="Conversation\BuildingExit.cs" />

@@ -106,9 +106,14 @@ namespace SWLOR.Game.Server.Conversation
             string header = _color.Green("Base Management Menu\n\n");
             header += _color.Green("Area: ") + data.TargetArea.Name + " (" + cellX + ", " + cellY + ")\n\n";
 
-            if (!dbArea.IsBuildable || isBuilding)
+            if (!dbArea.IsBuildable)
             {
                 header += "Land in this area cannot be claimed. However, you can still manage any leases you own from the list below.";
+            }
+            else if(isBuilding)
+            {
+                var structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == pcBaseStructureID);
+                header += _color.Green("Item Limit: ") + structure.ChildStructures.Count + " / " + structure.BaseStructure.Storage + "\n";
             }
             else
             {
@@ -380,8 +385,8 @@ namespace SWLOR.Game.Server.Conversation
             }
             else
             {
-                canRetrieveStructures = _perm.HasBasePermission(GetPC(), data.PCBaseID, BasePermission.CanRetrieveStructures);
-                canPlaceEditStructures = _perm.HasBasePermission(GetPC(), data.PCBaseID, BasePermission.CanPlaceEditStructures);
+                canRetrieveStructures = _perm.HasBasePermission(GetPC(), data.ManipulatingStructure.PCBaseID, BasePermission.CanRetrieveStructures);
+                canPlaceEditStructures = _perm.HasBasePermission(GetPC(), data.ManipulatingStructure.PCBaseID, BasePermission.CanPlaceEditStructures);
             }
 
 
@@ -490,7 +495,8 @@ namespace SWLOR.Game.Server.Conversation
 
             EndConversation();
 
-            GetPC().FloatingText(impoundedCount + " item(s) were sent to the planetary impound.");
+            if(impoundedCount > 0)
+                GetPC().FloatingText(impoundedCount + " item(s) were sent to the planetary impound.");
         }
 
         private void RotateResponses(int responseID)

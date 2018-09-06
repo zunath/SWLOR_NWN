@@ -117,39 +117,60 @@ namespace SWLOR.Game.Server.Service
             string resref = structure.BaseStructure.PlaceableResref;
 
             List<AreaStructure> areaStructures = area.Data["BASE_SERVICE_STRUCTURES"];
-            NWPlaceable door = null;
             if (string.IsNullOrWhiteSpace(resref) &&
                 structureType == BaseStructureType.Building)
             {
                 resref = structure.ExteriorStyle.Resref;
-                
-                // Spawn a door for buildings.
-                Vector doorPosition = _.GetPositionFromLocation(location);
-                float fOrient = _.GetFacingFromLocation(location);
-
-                fOrient = fOrient + 146.31f;
-                if (fOrient > 360.0) fOrient = fOrient - 360.0f;
-
-                float fMod = _.sqrt(13.0f) * _.sin(fOrient);
-                doorPosition.m_X = doorPosition.m_X + fMod;
-
-                fMod = _.sqrt(13.0f) * _.cos(fOrient);
-                doorPosition.m_Y = doorPosition.m_Y - fMod;
-                Location doorLocation = _.Location(area.Object, doorPosition, _.GetFacingFromLocation(location));
-                door = NWPlaceable.Wrap(_.CreateObject(OBJECT_TYPE_PLACEABLE, "building_door", doorLocation));
-                door.SetLocalInt("PC_BASE_STRUCTURE_ID", structure.PCBaseStructureID);
             }
 
             var plc = NWPlaceable.Wrap(_.CreateObject(OBJECT_TYPE_PLACEABLE, resref, location));
             plc.SetLocalInt("PC_BASE_STRUCTURE_ID", structure.PCBaseStructureID);
 
-            areaStructures.Add(new AreaStructure(structure.PCBaseID, structure.PCBaseStructureID, plc));
-
-            if (door != null)
+            NWPlaceable door = null;
+            if (structureType == BaseStructureType.Building)
             {
-                areaStructures.Add(new AreaStructure(structure.PCBaseID, structure.PCBaseStructureID, door));
+                door = SpawnBuildingDoor(structure.ExteriorStyle.DoorSpawnProcedure, plc);
+                areaStructures.Add(new AreaStructure(structure.PCBaseID, structure.PCBaseStructureID, door, false, null));
             }
+            areaStructures.Add(new AreaStructure(structure.PCBaseID, structure.PCBaseStructureID, plc, true, door));
+
             return plc;
+        }
+
+        public NWPlaceable SpawnBuildingDoor(int doorSpawnProcedure, NWPlaceable building, Location locationOverride = null)
+        {
+            NWArea area = building.Area;
+            Location location = locationOverride ?? building.Location;
+            Vector doorPosition = _.GetPositionFromLocation(location);
+            float fOrient = _.GetFacingFromLocation(location);
+            int pcBaseStructureID = building.GetLocalInt("PC_BASE_STRUCTURE_ID");
+            Location doorLocation = null;
+
+            switch (doorSpawnProcedure)
+            {
+                case 1: // House, 2 Story
+                    fOrient = fOrient + 146.31f;
+                    if (fOrient > 360.0) fOrient = fOrient - 360.0f;
+
+                    float fMod = _.sqrt(13.0f) * _.sin(fOrient);
+                    doorPosition.m_X = doorPosition.m_X + fMod;
+
+                    fMod = _.sqrt(13.0f) * _.cos(fOrient);
+                    doorPosition.m_Y = doorPosition.m_Y - fMod;
+                    doorLocation = _.Location(area.Object, doorPosition, _.GetFacingFromLocation(location));
+                    break;
+            }
+
+            if (doorLocation == null)
+            {
+                throw new Exception("Unable to find Door Spawn Procedure #" + doorSpawnProcedure + ". Door was not spawned.");
+            }
+           
+            var door = NWPlaceable.Wrap(_.CreateObject(OBJECT_TYPE_PLACEABLE, "building_door", doorLocation));
+            door.SetLocalInt("PC_BASE_STRUCTURE_ID", pcBaseStructureID);
+            door.SetLocalInt("IS_DOOR", TRUE);
+
+            return door;
         }
 
         public void PurchaseArea(NWPlayer player, NWArea area, string sector)
@@ -472,6 +493,19 @@ namespace SWLOR.Game.Server.Service
                 }
 
             }
+        }
+
+        public string GetPlayerIDOwnerOfSector(Area dbArea, string sector)
+        {
+            switch (sector)
+            {
+                case AreaSector.Northeast: return dbArea.NortheastOwner;
+                case AreaSector.Northwest: return dbArea.NorthwestOwner;
+                case AreaSector.Southeast: return dbArea.SoutheastOwner;
+                case AreaSector.Southwest: return dbArea.SouthwestOwner;
+            }
+
+            throw new Exception(nameof(GetPlayerIDOwnerOfSector) + ": invalid sector: " + sector);
         }
 
 

@@ -100,8 +100,6 @@
     <Compile Include="Conversation\DestroyPlayerGuide.cs" />
     <Compile Include="Conversation\KeyItems.cs" />
     <Compile Include="Conversation\ManageTerritory.cs" />
-    <Compile Include="Conversation\NPCs\WariersDatson.cs" />
-    <Compile Include="Conversation\NPCs\Znoda.cs" />
     <Compile Include="Conversation\Outfit.cs" />
     <Compile Include="Conversation\PlaceStructure.cs" />
     <Compile Include="Conversation\QuestRewardSelection.cs" />

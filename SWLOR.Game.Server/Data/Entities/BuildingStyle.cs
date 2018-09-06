@@ -32,6 +32,8 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public bool IsDefault { get; set; }
 
+        public int DoorSpawnProcedure { get; set; }
+
         public virtual BaseStructure BaseStructure { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

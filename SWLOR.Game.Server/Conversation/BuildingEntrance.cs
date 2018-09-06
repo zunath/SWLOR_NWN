@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Conversation
                 instance = _area.CreateAreaInstance(structure.InteriorStyle.Resref, name);
                 instance.SetLocalInt("PC_BASE_STRUCTURE_ID", structureID);
                 
-                foreach (var child in structure.ChildPCBaseStructures)
+                foreach (var child in structure.ChildStructures)
                 {
                     _base.SpawnStructure(instance, child.PCBaseStructureID);
                 }

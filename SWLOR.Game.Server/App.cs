@@ -134,6 +134,7 @@ namespace SWLOR.Game.Server
             builder.RegisterType<FarmingService>().As<IFarmingService>();
             builder.RegisterType<FoodService>().As<IFoodService>();
             builder.RegisterType<HelmetToggleService>().As<IHelmetToggleService>();
+            builder.RegisterType<ImpoundService>().As<IImpoundService>();
             builder.RegisterType<ItemService>().As<IItemService>();
             builder.RegisterType<KeyItemService>().As<IKeyItemService>();
             builder.RegisterType<LocalVariableService>().As<ILocalVariableService>();

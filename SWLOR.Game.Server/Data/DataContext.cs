@@ -293,7 +293,7 @@ namespace SWLOR.Game.Server.Data
 
             
             modelBuilder.Entity<PCBaseStructure>()
-                .HasMany(e => e.ChildPCBaseStructures)
+                .HasMany(e => e.ChildStructures)
                 .WithOptional(e => e.ParentPCBaseStructure)
                 .HasForeignKey(e => e.ParentPCBaseStructureID);
 

@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entities;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static NWN.NWScript;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
@@ -19,7 +16,6 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IBaseService _base;
         private readonly IColorTokenService _color;
         private readonly IAreaService _area;
-        private readonly IPlayerService _player;
 
         public PlaceStructure(
             INWScript script,
@@ -27,15 +23,13 @@ namespace SWLOR.Game.Server.Conversation
             IDataContext db,
             IBaseService @base,
             IColorTokenService color,
-            IAreaService area,
-            IPlayerService player)
+            IAreaService area)
             : base(script, dialog)
         {
             _db = db;
             _base = @base;
             _color = color;
             _area = area;
-            _player = player;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)

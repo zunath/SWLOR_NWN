@@ -157,6 +157,13 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        public void OnModuleItemAcquired()
+        {
+            NWItem item = NWItem.Wrap(_.GetModuleItemAcquired());
+            item.GetOrAssignGlobalID();
+        }
+
+
         public string OnModuleExamine(string existingDescription, NWPlayer examiner, NWObject examinedObject)
         {
             if (!examiner.IsPlayer) return existingDescription;

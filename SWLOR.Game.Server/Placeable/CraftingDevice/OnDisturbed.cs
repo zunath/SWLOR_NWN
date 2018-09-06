@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Service.Contracts;
+using static NWN.NWScript;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.CraftingDevice
 {
@@ -30,11 +33,11 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
         {
             int type = _.GetInventoryDisturbType();
             
-            if (type == NWScript.INVENTORY_DISTURB_TYPE_REMOVED)
+            if (type == INVENTORY_DISTURB_TYPE_REMOVED)
             {
                 HandleRemoveItem();
             }
-            else if (type == NWScript.INVENTORY_DISTURB_TYPE_ADDED)
+            else if (type == INVENTORY_DISTURB_TYPE_ADDED)
             {
                 HandleAddItem();
             }
@@ -143,7 +146,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
                     int compType = _.GetItemPropertyCostTableValue(ip);
                     if (compType == (int) allowedType)
                     {
-                        NWItem copy = NWItem.Wrap(_.CopyItem(oItem.Object, storage.Object, NWScript.TRUE));
+                        NWItem copy = NWItem.Wrap(_.CopyItem(oItem.Object, storage.Object, TRUE));
                         list.Add(copy);
                         return;
                     }

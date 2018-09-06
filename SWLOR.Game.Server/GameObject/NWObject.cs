@@ -48,35 +48,34 @@ namespace SWLOR.Game.Server.GameObject
             _.SetTag(Object, guid);
         }
 
-        public virtual string GlobalID
+        public virtual string GlobalID => GetOrAssignGlobalID();
+
+        public virtual string GetOrAssignGlobalID()
         {
-            get
+            if (Object == null || Object == NWScript.OBJECT_TYPE_INVALID)
+                throw new Exception("NWN object has not been set for this wrapper.");
+
+            string globalID;
+            if (IsPlayer)
             {
-                if (Object == null || Object == NWScript.OBJECT_TYPE_INVALID)
-                    throw new Exception("NWN object has not been set for this wrapper.");
-
-                string globalID;
-                if (IsPlayer)
+                if (!IsInitializedAsPlayer)
                 {
-                    if (!IsInitializedAsPlayer)
-                    {
-                        throw new Exception("Must call Initialize() before getting GlobalID");
-                    }
-
-                    globalID = _.GetTag(Object);
-                }
-                else
-                {
-                    globalID = _.GetLocalString(Object, "GLOBAL_ID");
-                    if (string.IsNullOrWhiteSpace(globalID))
-                    {
-                        globalID = Guid.NewGuid().ToString("N");
-                        _.SetLocalString(Object, "GLOBAL_ID", globalID);
-                    }
+                    throw new Exception("Must call Initialize() before getting GlobalID");
                 }
 
-                return globalID;
+                globalID = _.GetTag(Object);
             }
+            else
+            {
+                globalID = _.GetLocalString(Object, "GLOBAL_ID");
+                if (string.IsNullOrWhiteSpace(globalID))
+                {
+                    globalID = Guid.NewGuid().ToString("N");
+                    _.SetLocalString(Object, "GLOBAL_ID", globalID);
+                }
+            }
+
+            return globalID;
         }
 
         public virtual string Name

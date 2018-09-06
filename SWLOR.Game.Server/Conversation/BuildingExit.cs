@@ -69,22 +69,7 @@ namespace SWLOR.Game.Server.Conversation
         private void DoExitBuilding()
         {
             NWPlaceable door = (NWPlaceable)GetDialogTarget();
-            NWArea oArea = door.Area;
-            Location location = door.GetLocalLocation("PLAYER_HOME_EXIT_LOCATION");
-
-            GetPC().AssignCommand(() => _.ActionJumpToLocation(location));
-
-            GetPC().DelayCommand(() =>
-            {
-                NWPlayer player = NWPlayer.Wrap(_.GetFirstPC());
-                while (player.IsValid)
-                {
-                    if (Equals(player.Area, oArea)) return;
-                    player = NWPlayer.Wrap(_.GetNextPC());
-                }
-
-                _.DestroyArea(oArea.Object);
-            }, 1.0f);
+            _base.DoPlayerExitBuildingInstance(GetPC(), door);
         }
 
         private void DoPeekOutside()

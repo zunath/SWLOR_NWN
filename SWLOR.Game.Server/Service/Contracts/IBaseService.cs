@@ -24,5 +24,6 @@ namespace SWLOR.Game.Server.Service.Contracts
         NWPlaceable SpawnBuildingDoor(int doorSpawnProcedure, NWPlaceable building, Location locationOverride = null);
         void JumpPCToBuildingInterior(NWPlayer player, NWArea area);
         string GetPlayerIDOwnerOfSector(Area dbArea, string sector);
+        void DoPlayerExitBuildingInstance(NWPlayer player, NWPlaceable door = null);
     }
 }

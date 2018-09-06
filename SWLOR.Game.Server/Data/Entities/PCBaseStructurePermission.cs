@@ -20,6 +20,8 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public bool CanRetrieveStructures { get; set; }
 
+        public bool CanAdjustPermissions { get; set; }
+
         public virtual PCBaseStructure PCBaseStructure { get; set; }
 
         public virtual PlayerCharacter PlayerCharacter { get; set; }

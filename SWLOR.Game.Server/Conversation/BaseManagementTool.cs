@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using NWN;
+﻿using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entities;
 using SWLOR.Game.Server.Enumeration;
@@ -10,30 +6,35 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
+using System.Collections.Generic;
+using System.Linq;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 
 namespace SWLOR.Game.Server.Conversation
 {
-    public class BaseManagementTool: ConversationBase
+    public class BaseManagementTool : ConversationBase
     {
         private readonly IBaseService _base;
         private readonly IColorTokenService _color;
         private readonly IDataContext _db;
         private readonly IImpoundService _impound;
+        private readonly IBasePermissionService _perm;
 
         public BaseManagementTool(
-            INWScript script, 
+            INWScript script,
             IDialogService dialog,
             IBaseService @base,
             IColorTokenService color,
             IDataContext db,
-            IImpoundService impound)
+            IImpoundService impound,
+            IBasePermissionService perm)
             : base(script, dialog)
         {
             _base = @base;
             _color = color;
             _db = db;
             _impound = impound;
+            _perm = perm;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -43,7 +44,7 @@ namespace SWLOR.Game.Server.Conversation
             DialogPage mainPage = new DialogPage();
             DialogPage purchaseTerritoryPage = new DialogPage();
             DialogPage structureListPage = new DialogPage("Select a structure to edit it. List is ordered by nearest structure to the location you selected. A maximum of 30 structures will be displayed at a time.");
-            DialogPage manageStructureDetailsPage  = new DialogPage();
+            DialogPage manageStructureDetailsPage = new DialogPage();
             DialogPage retrievePage = new DialogPage("If this structure contains anything inside - such as items or furniture - they will be sent to the planetary government's impound. You will need to pay a fee to retrieve the items.\n\nAre you sure you want to retrieve this structure?",
                 "Confirm Retrieve Structure",
                 "Back");
@@ -94,13 +95,12 @@ namespace SWLOR.Game.Server.Conversation
 
             if (isBuilding)
             {
-                var buildingStructure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == pcBaseStructureID);
-                canEditStructures = buildingStructure.PCBase.PlayerID == playerID;
+                canEditStructures = _perm.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanPlaceEditStructures);
             }
             else
             {
-                string sectorOwner = _base.GetPlayerIDOwnerOfSector(dbArea, sector);
-                canEditStructures = sectorOwner == playerID;
+                var pcBase = _db.PCBases.SingleOrDefault(x => x.AreaResref == data.TargetArea.Resref && x.Sector == sector);
+                canEditStructures = pcBase != null && _perm.HasBasePermission(GetPC(), pcBase.PCBaseID, BasePermission.CanPlaceEditStructures);
             }
 
             string header = _color.Green("Base Management Menu\n\n");
@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.Conversation
                     hasUnclaimed = true;
                 }
             }
-            
+
             SetPageHeader("MainPage", header);
 
             bool showManage = _db.PCBases.Count(x => x.PlayerID == playerID) > 0;
@@ -173,7 +173,7 @@ namespace SWLOR.Game.Server.Conversation
             AddResponseToPage("MainPage", "Purchase Territory", hasUnclaimed && dbArea.IsBuildable);
             AddResponseToPage("MainPage", "Edit Nearby Structures", canEditStructures);
         }
-        
+
         public override void DoAction(NWPlayer player, string pageName, int responseID)
         {
             switch (pageName)
@@ -273,7 +273,7 @@ namespace SWLOR.Game.Server.Conversation
         private void DoBuy(string sector, int responseID)
         {
             var data = _base.GetPlayerTempData(GetPC());
-            
+
             if (data.IsConfirming && data.ConfirmingPurchaseResponseID == responseID)
             {
                 _base.PurchaseArea(GetPC(), data.TargetArea, sector);
@@ -300,9 +300,9 @@ namespace SWLOR.Game.Server.Conversation
         {
             var data = _base.GetPlayerTempData(GetPC());
 
-            SetResponseText("PurchaseTerritoryPage", 1, 
-                data.ConfirmingPurchaseResponseID == 1 ? 
-                    "CONFIRM PURCHASE NORTHEAST SECTOR" : 
+            SetResponseText("PurchaseTerritoryPage", 1,
+                data.ConfirmingPurchaseResponseID == 1 ?
+                    "CONFIRM PURCHASE NORTHEAST SECTOR" :
                     "Purchase Northeast Sector");
             SetResponseText("PurchaseTerritoryPage", 2,
                 data.ConfirmingPurchaseResponseID == 2 ?
@@ -338,7 +338,7 @@ namespace SWLOR.Game.Server.Conversation
                     .ToList();
 
             }
-            
+
             foreach (var structure in areaStructures)
             {
                 AddResponseToPage("StructureListPage", structure.Structure.Name, true, structure);
@@ -370,13 +370,28 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("ManageStructureDetailsPage");
             var data = _base.GetPlayerTempData(GetPC());
             var structure = data.ManipulatingStructure.Structure;
+            int structureID = data.ManipulatingStructure.Structure.Area.GetLocalInt("PC_BASE_STRUCTURE_ID");
+            bool canRetrieveStructures;
+            bool canPlaceEditStructures;
+            if (structureID > 0)
+            {
+                canRetrieveStructures = _perm.HasStructurePermission(GetPC(), structureID, StructurePermission.CanRetrieveStructures);
+                canPlaceEditStructures = _perm.HasStructurePermission(GetPC(), structureID, StructurePermission.CanPlaceEditStructures);
+            }
+            else
+            {
+                canRetrieveStructures = _perm.HasBasePermission(GetPC(), data.PCBaseID, BasePermission.CanRetrieveStructures);
+                canPlaceEditStructures = _perm.HasBasePermission(GetPC(), data.PCBaseID, BasePermission.CanPlaceEditStructures);
+            }
+
+
             string header = _color.Green("Structure: ") + structure.Name + "\n\n";
             header += "What would you like to do with this structure?";
 
             SetPageHeader("ManageStructureDetailsPage", header);
 
-            AddResponseToPage("ManageStructureDetailsPage", "Retrieve Structure");
-            AddResponseToPage("ManageStructureDetailsPage", "Rotate");
+            AddResponseToPage("ManageStructureDetailsPage", "Retrieve Structure", canRetrieveStructures);
+            AddResponseToPage("ManageStructureDetailsPage", "Rotate", canPlaceEditStructures);
             AddResponseToPage("ManageStructureDetailsPage", "Back");
         }
 
@@ -419,6 +434,19 @@ namespace SWLOR.Game.Server.Conversation
             var tempStorage = NWPlaceable.Wrap(_.GetObjectByTag("TEMP_ITEM_STORAGE"));
             int pcStructureID = structure.PCBaseStructureID;
             int impoundedCount = 0;
+            int structureID = data.ManipulatingStructure.Structure.Area.GetLocalInt("PC_BASE_STRUCTURE_ID");
+
+            var canRetrieveStructures =
+                structureID > 0 ?
+                    _perm.HasStructurePermission(GetPC(), structureID, StructurePermission.CanRetrieveStructures) :              // Buildings
+                    _perm.HasBasePermission(GetPC(), data.ManipulatingStructure.PCBaseID, BasePermission.CanRetrieveStructures); // Bases
+
+            if (!canRetrieveStructures)
+            {
+                GetPC().FloatingText("You don't have permission to retrieve structures.");
+                return;
+            }
+
 
             if (structureType == BaseStructureType.ControlTower)
             {
@@ -433,7 +461,7 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if (structureType == BaseStructureType.Building)
             {
-                for(int x = structure.ChildStructures.Count-1; x >= 0; x--)
+                for (int x = structure.ChildStructures.Count - 1; x >= 0; x--)
                 {
                     var furniture = structure.ChildStructures.ElementAt(x);
                     NWItem furnitureItem = _base.ConvertStructureToItem(furniture, tempStorage);
@@ -453,7 +481,7 @@ namespace SWLOR.Game.Server.Conversation
             // Update the cache
             List<AreaStructure> areaStructures = data.TargetArea.Data["BASE_SERVICE_STRUCTURES"];
             var records = areaStructures.Where(x => x.PCBaseStructureID == pcStructureID).ToList();
-            for(int x = records.Count()-1; x >= 0; x --)
+            for (int x = records.Count() - 1; x >= 0; x--)
             {
                 var record = records[x];
                 record.ChildStructure?.Destroy();
@@ -514,7 +542,7 @@ namespace SWLOR.Game.Server.Conversation
             var structure = data.ManipulatingStructure.Structure;
             float facing = structure.Facing;
             string header = _color.Green("Current Direction: ") + facing;
-            
+
             SetPageHeader("RotatePage", header);
         }
 
@@ -522,6 +550,20 @@ namespace SWLOR.Game.Server.Conversation
         {
             var data = _base.GetPlayerTempData(GetPC());
             var structure = data.ManipulatingStructure.Structure;
+            int structureID = data.ManipulatingStructure.Structure.Area.GetLocalInt("PC_BASE_STRUCTURE_ID");
+
+            var canPlaceEditStructures =
+                structureID > 0 ?
+                    _perm.HasStructurePermission(GetPC(), structureID, StructurePermission.CanPlaceEditStructures) :              // Buildings
+                    _perm.HasBasePermission(GetPC(), data.ManipulatingStructure.PCBaseID, BasePermission.CanPlaceEditStructures); // Bases
+
+            if (!canPlaceEditStructures)
+            {
+                GetPC().FloatingText("You don't have permission to edit structures.");
+                return;
+            }
+
+
             float facing = structure.Facing;
             if (isSet)
             {
@@ -536,14 +578,14 @@ namespace SWLOR.Game.Server.Conversation
             {
                 facing -= 360;
             }
-            
+
             structure.Facing = facing;
             LoadRotatePage();
-            
+
             var dbStructure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == data.ManipulatingStructure.PCBaseStructureID);
             dbStructure.LocationOrientation = facing;
 
-            if (dbStructure.BaseStructure.BaseStructureTypeID == (int) BaseStructureType.Building)
+            if (dbStructure.BaseStructure.BaseStructureTypeID == (int)BaseStructureType.Building)
             {
                 // The structure's facing isn't updated until after this code executes.
                 // Build a new location object for use with spawning the door.

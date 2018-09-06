@@ -402,13 +402,26 @@ namespace SWLOR.Game.Server.Service
         public void ClearPCBaseByID(int pcBaseID, bool doSave = true)
         {
             var pcBase = _db.PCBases.Single(x => x.PCBaseID == pcBaseID);
-            var area = NWModule.Get().Areas.Single(x => x.Resref == pcBase.AreaResref);
-            List<AreaStructure> areaStructures = area.Data["BASE_SERVICE_STRUCTURES"];
+            var areas = NWModule.Get().Areas;
+            var baseArea = areas.Single(x => x.Resref == pcBase.AreaResref);
+            List<AreaStructure> areaStructures = baseArea.Data["BASE_SERVICE_STRUCTURES"];
             areaStructures = areaStructures.Where(x => x.PCBaseID == pcBaseID).ToList();
             
             foreach (var structure in areaStructures)
             {
-                ((List<AreaStructure>) area.Data["BASE_SERVICE_STRUCTURES"]).Remove(structure);
+                var instance = areas.SingleOrDefault(x => x.IsInstance && x.GetLocalInt("PC_BASE_STRUCTURE_ID") == structure.PCBaseStructureID);
+                if (instance != null)
+                {
+                    foreach (var player in NWModule.Get().Players)
+                    {
+                        if (Equals(player.Area, instance))
+                        {
+                            DoPlayerExitBuildingInstance(player, null);
+                        }
+                    }
+                }
+
+                ((List<AreaStructure>) baseArea.Data["BASE_SERVICE_STRUCTURES"]).Remove(structure);
                 structure.Structure.Destroy();
             }
             
@@ -551,6 +564,47 @@ namespace SWLOR.Game.Server.Service
             {
                 _.ActionJumpToLocation(location);
             });
+        }
+
+        public void DoPlayerExitBuildingInstance(NWPlayer player, NWPlaceable door = null)
+        {
+            NWArea area = player.Area;
+            if (!area.IsInstance) return;
+
+            if (door == null)
+            {
+                NWObject obj = NWObject.Wrap(_.GetFirstObjectInArea(area.Object));
+                while (obj.IsValid)
+                {
+                    if (obj.Tag == "building_exit")
+                    {
+                        door = NWPlaceable.Wrap(obj.Object);
+                        break;
+                    }
+                    obj = NWObject.Wrap(_.GetNextObjectInArea(area.Object));
+                }
+            }
+
+            if (door == null)
+            {
+                return;
+            }
+
+            Location location = door.GetLocalLocation("PLAYER_HOME_EXIT_LOCATION");
+            player.AssignCommand(() => _.ActionJumpToLocation(location));
+
+            player.DelayCommand(() =>
+            {
+                player = NWPlayer.Wrap(_.GetFirstPC());
+                while (player.IsValid)
+                {
+                    if (Equals(player.Area, area)) return;
+                    player = NWPlayer.Wrap(_.GetNextPC());
+                }
+
+                _.DestroyArea(area.Object);
+            }, 1.0f);
+
         }
     }
 }

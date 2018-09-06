@@ -646,6 +646,8 @@
     <Compile Include="Service\Contracts\IComponentBonusService.cs" />
     <Compile Include="Service\Contracts\IAreaService.cs" />
     <Compile Include="Service\Contracts\IBaseService.cs" />
+    <Compile Include="Service\Contracts\IImpoundService.cs" />
+    <Compile Include="Service\ImpoundService.cs" />
     <Compile Include="Service\ItemService.cs" />
     <Compile Include="Service\Contracts\ITimeService.cs" />
     <Compile Include="Service\KeyItemService.cs" />

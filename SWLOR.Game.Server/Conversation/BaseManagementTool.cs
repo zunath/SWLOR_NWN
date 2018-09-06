@@ -19,18 +19,21 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IBaseService _base;
         private readonly IColorTokenService _color;
         private readonly IDataContext _db;
+        private readonly IImpoundService _impound;
 
         public BaseManagementTool(
             INWScript script, 
             IDialogService dialog,
             IBaseService @base,
             IColorTokenService color,
-            IDataContext db)
+            IDataContext db,
+            IImpoundService impound)
             : base(script, dialog)
         {
             _base = @base;
             _color = color;
             _db = db;
+            _impound = impound;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -400,11 +403,66 @@ namespace SWLOR.Game.Server.Conversation
             switch (responseID)
             {
                 case 1: // Confirm retrieve structure
+                    DoRetrieveStructure();
                     break;
                 case 2: // Back
                     ChangePage("ManageStructureDetailsPage");
                     break;
             }
+        }
+
+        private void DoRetrieveStructure()
+        {
+            var data = _base.GetPlayerTempData(GetPC());
+            PCBaseStructure structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == data.ManipulatingStructure.PCBaseStructureID);
+            BaseStructureType structureType = (BaseStructureType)structure.BaseStructure.BaseStructureTypeID;
+            var tempStorage = NWPlaceable.Wrap(_.GetObjectByTag("TEMP_ITEM_STORAGE"));
+            int pcStructureID = structure.PCBaseStructureID;
+            int impoundedCount = 0;
+
+            if (structureType == BaseStructureType.ControlTower)
+            {
+                var structureCount = _db.PCBaseStructures.Count(x => x.PCBaseID == structure.PCBaseID);
+
+                if (structureCount > 1)
+                {
+                    GetPC().FloatingText("You must remove all structures in this sector before picking up the control tower.");
+                    return;
+                }
+
+            }
+            else if (structureType == BaseStructureType.Building)
+            {
+                for(int x = structure.ChildStructures.Count-1; x >= 0; x--)
+                {
+                    var furniture = structure.ChildStructures.ElementAt(x);
+                    NWItem furnitureItem = _base.ConvertStructureToItem(furniture, tempStorage);
+                    _impound.Impound(GetPC().GlobalID, furnitureItem);
+                    furnitureItem.Destroy();
+
+                    _db.PCBaseStructures.Remove(furniture);
+                    impoundedCount++;
+                }
+            }
+
+            _base.ConvertStructureToItem(structure, GetPC());
+            _db.PCBaseStructures.Remove(structure);
+            data.ManipulatingStructure.Structure.Destroy();
+            _db.SaveChanges();
+
+            // Update the cache
+            List<AreaStructure> areaStructures = data.TargetArea.Data["BASE_SERVICE_STRUCTURES"];
+            var records = areaStructures.Where(x => x.PCBaseStructureID == pcStructureID).ToList();
+            for(int x = records.Count()-1; x >= 0; x --)
+            {
+                var record = records[x];
+                record.ChildStructure?.Destroy();
+                areaStructures.Remove(record);
+            }
+
+            EndConversation();
+
+            GetPC().FloatingText(impoundedCount + " item(s) were sent to the planetary impound.");
         }
 
         private void RotateResponses(int responseID)

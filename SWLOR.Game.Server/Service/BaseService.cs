@@ -23,13 +23,15 @@ namespace SWLOR.Game.Server.Service
         private readonly IDataContext _db;
         private readonly ISerializationService _serialization;
         private readonly IPlayerService _player;
+        private readonly IImpoundService _impound;
 
         public BaseService(INWScript script,
             INWNXEvents nwnxEvents,
             IDialogService dialog,
             IDataContext db,
             ISerializationService serialization,
-            IPlayerService player)
+            IPlayerService player,
+            IImpoundService impound)
         {
             _ = script;
             _nwnxEvents = nwnxEvents;
@@ -37,6 +39,7 @@ namespace SWLOR.Game.Server.Service
             _db = db;
             _serialization = serialization;
             _player = player;
+            _impound = impound;
 
 
         }
@@ -399,6 +402,26 @@ namespace SWLOR.Game.Server.Service
             return null;
         }
 
+        public NWItem ConvertStructureToItem(PCBaseStructure pcBaseStructure, NWObject target)
+        {
+            NWItem item = NWItem.Wrap(_.CreateItemOnObject(pcBaseStructure.BaseStructure.ItemResref, target.Object));
+            item.SetLocalInt("BASE_STRUCTURE_ID", pcBaseStructure.BaseStructureID);
+            item.Name = pcBaseStructure.BaseStructure.Name;
+            item.MaxDurability = (float)pcBaseStructure.Durability;
+            item.Durability = (float)pcBaseStructure.Durability;
+
+            if (pcBaseStructure.InteriorStyleID != null && pcBaseStructure.ExteriorStyleID != null)
+            {
+                item.SetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID", (int)pcBaseStructure.InteriorStyleID);
+                item.SetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID", (int)pcBaseStructure.ExteriorStyleID);
+                item.SetLocalInt("STRUCTURE_BUILDING_INITIALIZED", TRUE);
+            }
+
+            return item;
+        }
+        
+
+
         public void ClearPCBaseByID(int pcBaseID, bool doSave = true)
         {
             var pcBase = _db.PCBases.Single(x => x.PCBaseID == pcBaseID);
@@ -431,47 +454,15 @@ namespace SWLOR.Game.Server.Service
                 for (int i = pcBaseStructure.PCBaseStructureItems.Count - 1; i >= 0; i--)
                 {
                     var item = pcBaseStructure.PCBaseStructureItems.ElementAt(x);
-                    var impoundItem = new PCImpoundedItem
-                    {
-                        DateImpounded = DateTime.UtcNow,
-                        ItemName = item.ItemName,
-                        ItemResref = item.ItemResref,
-                        ItemObject = item.ItemObject,
-                        ItemTag = item.ItemTag,
-                        PlayerID = pcBase.PlayerID
-                    };
-
-                    _db.PCImpoundedItems.Add(impoundItem);
+                    _impound.Impound(item);
                     _db.PCBaseStructureItems.Remove(item);
                 }
-
-                // Convert structure back to an item.
+                
                 var tempStorage = NWPlaceable.Wrap(_.GetObjectByTag("TEMP_ITEM_STORAGE"));
-                NWItem copy = NWItem.Wrap(_.CreateItemOnObject(pcBaseStructure.BaseStructure.ItemResref, tempStorage.Object));
-                copy.SetLocalInt("BASE_STRUCTURE_ID", pcBaseStructure.BaseStructureID);
-                copy.Name = pcBaseStructure.BaseStructure.Name;
-                copy.MaxDurability = (float)pcBaseStructure.Durability;
-                copy.Durability = (float)pcBaseStructure.Durability;
-
-                if (pcBaseStructure.InteriorStyleID != null && pcBaseStructure.ExteriorStyleID != null)
-                {
-                    copy.SetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID", (int)pcBaseStructure.InteriorStyleID);
-                    copy.SetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID", (int)pcBaseStructure.ExteriorStyleID);
-                    copy.SetLocalInt("STRUCTURE_BUILDING_INITIALIZED", TRUE);
-                }
-
-                PCImpoundedItem structureImpoundedItem = new PCImpoundedItem
-                {
-                    DateImpounded = DateTime.UtcNow,
-                    PlayerID = pcBase.PlayerID,
-                    ItemObject = _serialization.Serialize(copy),
-                    ItemTag = copy.Tag,
-                    ItemResref = copy.Resref,
-                    ItemName = copy.Name
-                };
-
+                NWItem copy = ConvertStructureToItem(pcBaseStructure, tempStorage);
+                _impound.Impound(pcBase.PlayerID, copy);
                 copy.Destroy();
-                _db.PCImpoundedItems.Add(structureImpoundedItem);
+
                 _db.PCBaseStructures.Remove(pcBaseStructure);
             }
             _db.PCBases.Remove(pcBase);

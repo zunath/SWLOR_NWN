@@ -1,6 +1,7 @@
 ﻿using SWLOR.Game.Server.Data.Entities;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ namespace SWLOR.Game.Server.Data.Contracts
     public interface IDataContext
     {
         IDbSet<Area> Areas { get; set; }
+        IDbSet<AreaWalkmesh> AreaWalkmeshes { get; set; }
         IDbSet<BaseStructure> BaseStructures { get; set; }
         IDbSet<BaseStructureType> BaseStructureTypes { get; set; }
         IDbSet<PCBasePermission> PCBasePermissions { get; set; }
@@ -88,6 +90,9 @@ namespace SWLOR.Game.Server.Data.Contracts
         IDbSet<StorageItem> StorageItems { get; set; }
         IDbSet<User> Users { get; set; }
 
+        DbContextConfiguration Configuration { get; }
+        Database Database { get; }
+        void Dispose();
         int SaveChanges();
         Task<int> SaveChangesAsync();
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);

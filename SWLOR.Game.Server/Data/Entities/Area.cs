@@ -1,10 +1,18 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SWLOR.Game.Server.Data.Entities
 {
     public partial class Area
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Area()
+        {
+            AreaWalkmeshes = new HashSet<AreaWalkmesh>();
+        }
+
         [StringLength(60)]
         public string AreaID { get; set; }
 
@@ -46,6 +54,10 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public int DailyUpkeep { get; set; }
 
+        public string Walkmesh { get; set; }
+
+        [Column(TypeName = "datetime2")]
+        public DateTime DateLastBaked { get; set; }
 
         public virtual PlayerCharacter NortheastOwnerPlayer { get; set; }
 
@@ -54,5 +66,8 @@ namespace SWLOR.Game.Server.Data.Entities
         public virtual PlayerCharacter SoutheastOwnerPlayer { get; set; }
 
         public virtual PlayerCharacter SouthwestOwnerPlayer { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<AreaWalkmesh> AreaWalkmeshes { get; set; }
     }
 }

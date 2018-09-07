@@ -16,5 +16,7 @@ namespace SWLOR.Game.Server.Data.Entities
         [Required]
         [StringLength(1024)]
         public string MessageOfTheDay { get; set; }
+
+        public int AreaBakeStep { get; set; }
     }
 }

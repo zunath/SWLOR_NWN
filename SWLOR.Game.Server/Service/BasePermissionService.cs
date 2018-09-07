@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Service
             if (permission == BasePermission.CanEnterBuildings && dbPermission.CanEnterBuildings) return true;
             if (permission == BasePermission.CanRetrieveStructures && dbPermission.CanRetrieveStructures) return true;
             if (permission == BasePermission.CanCancelLease && dbPermission.CanCancelLease) return true;
+            if (permission == BasePermission.CanRenameStructures && dbPermission.CanRenameStructures) return true;
 
             return false;
         }
@@ -52,6 +53,7 @@ namespace SWLOR.Game.Server.Service
                 if (permission == StructurePermission.CanEnterBuilding && basePermission.CanEnterBuildings) return true;
                 if (permission == StructurePermission.CanRetrieveStructures && basePermission.CanRetrieveStructures) return true;
                 if (permission == StructurePermission.CanAdjustPermissions && basePermission.CanAdjustPermissions) return true;
+                if (permission == StructurePermission.CanRenameStructures && basePermission.CanRenameStructures) return true;
             }
 
             // Didn't find a base permission. Check the structure permissions.
@@ -63,6 +65,7 @@ namespace SWLOR.Game.Server.Service
             if (permission == StructurePermission.CanEnterBuilding && structurePermission.CanEnterBuilding) return true;
             if (permission == StructurePermission.CanRetrieveStructures && structurePermission.CanRetrieveStructures) return true;
             if (permission == StructurePermission.CanAdjustPermissions && structurePermission.CanAdjustPermissions) return true;
+            if (permission == StructurePermission.CanRenameStructures && structurePermission.CanRenameStructures) return true;
 
             // Player doesn't have permission.
             return false;
@@ -106,6 +109,12 @@ namespace SWLOR.Game.Server.Service
                     case BasePermission.CanRetrieveStructures:
                         dbPermission.CanRetrieveStructures = true;
                         break;
+                    case BasePermission.CanRenameStructures:
+                        dbPermission.CanRenameStructures = true;
+                        break;
+                    case BasePermission.CanCancelLease:
+                        dbPermission.CanCancelLease = true;
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -143,6 +152,12 @@ namespace SWLOR.Game.Server.Service
                         break;
                     case StructurePermission.CanRetrieveStructures:
                         dbPermission.CanRetrieveStructures = true;
+                        break;
+                    case StructurePermission.CanAdjustPermissions:
+                        dbPermission.CanAdjustPermissions = true;
+                        break;
+                    case StructurePermission.CanRenameStructures:
+                        dbPermission.CanRenameStructures = true;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

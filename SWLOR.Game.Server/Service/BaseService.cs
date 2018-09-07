@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity.Migrations;
 using System.Linq;
 using static NWN.NWScript;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
@@ -25,6 +24,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IPlayerService _player;
         private readonly IImpoundService _impound;
         private readonly IBasePermissionService _perm;
+        private readonly INWNXChat _nwnxChat;
 
         public BaseService(INWScript script,
             INWNXEvents nwnxEvents,
@@ -32,7 +32,8 @@ namespace SWLOR.Game.Server.Service
             IDataContext db,
             IPlayerService player,
             IImpoundService impound,
-            IBasePermissionService perm)
+            IBasePermissionService perm,
+            INWNXChat nwnxChat)
         {
             _ = script;
             _nwnxEvents = nwnxEvents;
@@ -41,6 +42,7 @@ namespace SWLOR.Game.Server.Service
             _player = player;
             _impound = impound;
             _perm = perm;
+            _nwnxChat = nwnxChat;
         }
 
         public PCTempBaseData GetPlayerTempData(NWPlayer player)
@@ -230,20 +232,14 @@ namespace SWLOR.Game.Server.Service
             PCBasePermission permission = new PCBasePermission
             {
                 PCBase = pcBase,
-                PlayerID = player.GlobalID,
-                CanAccessStructureInventory = true,
-                CanAdjustPermissions = true,
-                CanEnterBuildings = true,
-                CanManageBaseFuel = true,
-                CanExtendLease = true,
-                CanPlaceEditStructures = true,
-                CanRetrieveStructures = true,
-                CanCancelLease = true
+                PlayerID = player.GlobalID
             };
             _db.PCBasePermissions.Add(permission);
-
-
             _db.SaveChanges();
+
+            // Grant all base permissions to owner.
+            var allPermissions = Enum.GetValues(typeof(BasePermission)).Cast<BasePermission>().ToArray();
+            _perm.GrantBasePermissions(player, pcBase.PCBaseID, allPermissions);
 
             player.FloatingText("You purchase " + area.Name + " (" + sector + ") for " + dbArea.PurchasePrice + " credits.");
         }
@@ -473,8 +469,8 @@ namespace SWLOR.Game.Server.Service
                 ((List<AreaStructure>) baseArea.Data["BASE_SERVICE_STRUCTURES"]).Remove(structure);
                 structure.Structure.Destroy();
             }
-            
-            for(int x = pcBase.PCBaseStructures.Count-1; x >= 0; x--)
+
+            for (int x = pcBase.PCBaseStructures.Count-1; x >= 0; x--)
             {
                 // Impound item storage
                 var pcBaseStructure = pcBase.PCBaseStructures.ElementAt(x);
@@ -484,13 +480,14 @@ namespace SWLOR.Game.Server.Service
                     _impound.Impound(item);
                     _db.PCBaseStructureItems.Remove(item);
                 }
+
                 // Clear structure permissions
-                for (int p = pcBaseStructure.PCBaseStructurePermissions.Count - 1; x >= 0; x--)
+                for (int p = pcBaseStructure.PCBaseStructurePermissions.Count - 1; p >= 0; p--)
                 {
                     var permission = pcBaseStructure.PCBaseStructurePermissions.ElementAt(p);
                     _db.PCBaseStructurePermissions.Remove(permission);
                 }
-                
+
                 var tempStorage = NWPlaceable.Wrap(_.GetObjectByTag("TEMP_ITEM_STORAGE"));
                 NWItem copy = ConvertStructureToItem(pcBaseStructure, tempStorage);
                 _impound.Impound(pcBase.PlayerID, copy);
@@ -507,14 +504,13 @@ namespace SWLOR.Game.Server.Service
             }
 
             _db.PCBases.Remove(pcBase);
-
+            
             Area dbArea = _db.Areas.Single(x => x.Resref == pcBase.AreaResref);
             if (pcBase.Sector == AreaSector.Northeast) dbArea.NortheastOwner = null;
             else if (pcBase.Sector == AreaSector.Northwest) dbArea.NorthwestOwner = null;
             else if (pcBase.Sector == AreaSector.Southeast) dbArea.SoutheastOwner = null;
             else if (pcBase.Sector == AreaSector.Southwest) dbArea.SouthwestOwner = null;
-
-
+            
             if (doSave)
             {
                 _db.SaveChanges();
@@ -639,5 +635,21 @@ namespace SWLOR.Game.Server.Service
             }, 1.0f);
         }
 
+        public void OnModuleNWNXChat(NWPlayer sender)
+        {
+            if (sender.GetLocalInt("LISTENING_FOR_NEW_CONTAINER_NAME") != 1) return;
+            if (!sender.IsPlayer && !sender.IsDM) return;
+
+            _nwnxChat.SkipMessage();
+            string text = _nwnxChat.GetMessage().Trim();
+            if (text.Length > 32)
+            {
+                sender.FloatingText("Container names must be 32 characters or less.");
+                return;
+            }
+
+            sender.SetLocalString("NEW_CONTAINER_NAME", text);
+            sender.SendMessage("New container name received. Please press the 'Next' button in the conversation window.");
+        }
     }
 }

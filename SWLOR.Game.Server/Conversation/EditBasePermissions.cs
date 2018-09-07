@@ -135,6 +135,7 @@ namespace SWLOR.Game.Server.Conversation
             bool canExtendLease = permission?.CanExtendLease ?? false;
             bool canEnterBuildings = permission?.CanEnterBuildings ?? false;
             bool canRetrieveStructures = permission?.CanRetrieveStructures ?? false;
+            bool canRenameStructures = permission?.CanRenameStructures ?? false;
 
             string header = _color.Green("Name: ") + player.Name + "\n\n";
 
@@ -145,6 +146,7 @@ namespace SWLOR.Game.Server.Conversation
             header += "Can Extend Lease: " + (canExtendLease ? _color.Green("YES") : _color.Red("NO")) + "\n";
             header += "Can Enter Buildings: " + (canEnterBuildings ? _color.Green("YES") : _color.Red("NO")) + "\n";
             header += "Can Retrieve Structures: " + (canRetrieveStructures ? _color.Green("YES") : _color.Red("NO")) + "\n";
+            header += "Can Rename Structures: " + (canRenameStructures ? _color.Green("YES") : _color.Red("NO")) + "\n";
 
             SetPageHeader("PlayerDetailsPage", header);
 
@@ -154,6 +156,7 @@ namespace SWLOR.Game.Server.Conversation
             AddResponseToPage("PlayerDetailsPage", "Toggle: Can Extend Lease", true, player);
             AddResponseToPage("PlayerDetailsPage", "Toggle: Can Enter Buildings", true, player);
             AddResponseToPage("PlayerDetailsPage", "Toggle: Can Retrieve Structures", true, player);
+            AddResponseToPage("PlayerDetailsPage", "Toggle: Can Rename Structures", true, player);
             AddResponseToPage("PlayerDetailsPage", "Back");
         }
 
@@ -182,7 +185,10 @@ namespace SWLOR.Game.Server.Conversation
                 case 6: // Can Retrieve Structures
                     TogglePermission(player, BasePermission.CanRetrieveStructures);
                     break;
-                case 7: // Back
+                case 7: // Can Rename Structures
+                    TogglePermission(player, BasePermission.CanRenameStructures);
+                    break;
+                case 8: // Back
                     BuildPlayerListPage();
                     ChangePage("PlayerListPage");
                     break;
@@ -221,6 +227,9 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case BasePermission.CanRetrieveStructures:
                     dbPermission.CanRetrieveStructures = !dbPermission.CanRetrieveStructures;
+                    break;
+                case BasePermission.CanRenameStructures:
+                    dbPermission.CanRenameStructures = !dbPermission.CanRenameStructures;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(permission), permission, null);

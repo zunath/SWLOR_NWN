@@ -22,6 +22,8 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public bool CanAdjustPermissions { get; set; }
 
+        public bool CanRenameStructures { get; set; }
+
         public virtual PCBaseStructure PCBaseStructure { get; set; }
 
         public virtual PlayerCharacter PlayerCharacter { get; set; }

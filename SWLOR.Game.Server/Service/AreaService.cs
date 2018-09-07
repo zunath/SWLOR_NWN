@@ -22,14 +22,20 @@ namespace SWLOR.Game.Server.Service
     {
         private readonly INWScript _;
         private readonly IDataContext _db;
+        private readonly IDataContext _bakeDB;
 
         public AreaService(
             INWScript script,
-            IDataContext db)
+            IDataContext db,
+            IDataContext bakeDB)
         {
             _ = script;
             _db = db;
+            _bakeDB = bakeDB;
 
+            // Disable stuff that slows down bulk inserts.
+            _bakeDB.Configuration.AutoDetectChangesEnabled = false;
+            _bakeDB.Configuration.ValidateOnSaveEnabled = false;
         }
 
         public void OnModuleLoad()
@@ -87,16 +93,10 @@ namespace SWLOR.Game.Server.Service
         {
             var config = _db.ServerConfigurations.Single();
             int Step = config.AreaBakeStep;
+            const float MinDistance = 6.0f;
 
             foreach (var area in NWModule.Get().Areas)
             {
-                // Rebuild the database context for every area. This is because EF really chokes on large inserts.
-                IDataContext _bakeDB = App.Resolve<IDataContext>();
-
-                // Disable stuff that slows down bulk inserts.
-                _bakeDB.Configuration.AutoDetectChangesEnabled = false;
-                _bakeDB.Configuration.ValidateOnSaveEnabled = false;
-
                 var dbArea = _bakeDB.Areas.Single(x => x.Resref == area.Resref);
 
                 int arraySizeX = dbArea.Width * (10 / Step);
@@ -111,6 +111,16 @@ namespace SWLOR.Game.Server.Service
                         Location checkLocation = _.Location(area.Object, _.Vector(x * Step, y * Step), 0.0f);
                         int material = _.GetSurfaceMaterial(checkLocation);
                         bool isWalkable = Convert.ToInt32(_.Get2DAString("surfacemat", "Walk", material)) == 1;
+
+                        // Location is not walkable if another object exists nearby.
+                        NWObject nearest = NWObject.Wrap(_.GetNearestObjectToLocation(OBJECT_TYPE_CREATURE | OBJECT_TYPE_DOOR | OBJECT_TYPE_PLACEABLE, checkLocation));
+                        float distance = _.GetDistanceBetweenLocations(checkLocation, nearest.Location);
+                        if (nearest.IsValid && distance <= MinDistance)
+                        {
+                            isWalkable = false;
+                        }
+
+
                         locations[x, y] = new Tuple<bool, float>(isWalkable, _.GetGroundHeight(checkLocation));
 
                         walkmesh += isWalkable ? "1" : "0";
@@ -144,21 +154,11 @@ namespace SWLOR.Game.Server.Service
                             if (!isWalkable) continue;
 
                             float z = locations[x, y].Item2;
-
-                            AreaWalkmesh dbWalkmesh = new AreaWalkmesh
-                            {
-                                AreaID = dbArea.AreaID,
-                                LocationX = x,
-                                LocationY = y,
-                                LocationZ = z
-                            };
                             
-                            _bakeDB.AreaWalkmeshes.Add(dbWalkmesh);
-                            batchRecords++;
-
                             // Raw SQL inserts are quicker than using EF.
-                            sql += $@"INSERT INTO dbo.AreaWalkmesh(AreaID, LocationX, LocationY, LocationZ) VALUES('{dbArea.AreaID}', {x}, {y}, {z});";
-
+                            sql += $@"INSERT INTO dbo.AreaWalkmesh(AreaID, LocationX, LocationY, LocationZ) VALUES('{dbArea.AreaID}', {x * Step}, {y * Step}, {z});";
+                            
+                            batchRecords++;
                             if (batchRecords >= BatchSize)
                             {
                                 Console.WriteLine("Saving " + BatchSize + " records...");

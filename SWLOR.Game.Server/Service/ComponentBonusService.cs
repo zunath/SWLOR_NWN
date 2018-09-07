@@ -138,6 +138,9 @@ namespace SWLOR.Game.Server.Service
                     case ComponentBonusType.LightAbilityDown:
                         product.LightAbilityBonus -= amount;
                         break;
+                    case ComponentBonusType.StructureBonus:
+                        product.StructureBonus += amount;
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }

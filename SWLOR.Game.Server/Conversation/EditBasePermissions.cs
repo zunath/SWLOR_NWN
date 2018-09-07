@@ -136,6 +136,8 @@ namespace SWLOR.Game.Server.Conversation
             bool canEnterBuildings = permission?.CanEnterBuildings ?? false;
             bool canRetrieveStructures = permission?.CanRetrieveStructures ?? false;
             bool canRenameStructures = permission?.CanRenameStructures ?? false;
+            bool canEditPrimaryResidence = permission?.CanEditPrimaryResidence ?? false;
+            bool canRemovePrimaryResidence = permission?.CanRemovePrimaryResidence ?? false;
 
             string header = _color.Green("Name: ") + player.Name + "\n\n";
 
@@ -147,6 +149,8 @@ namespace SWLOR.Game.Server.Conversation
             header += "Can Enter Buildings: " + (canEnterBuildings ? _color.Green("YES") : _color.Red("NO")) + "\n";
             header += "Can Retrieve Structures: " + (canRetrieveStructures ? _color.Green("YES") : _color.Red("NO")) + "\n";
             header += "Can Rename Structures: " + (canRenameStructures ? _color.Green("YES") : _color.Red("NO")) + "\n";
+            header += "Can Edit Primary Residence: " + (canEditPrimaryResidence ? _color.Green("YES") : _color.Red("NO")) + "\n";
+            header += "Can Remove Primary Residence: " + (canRemovePrimaryResidence ? _color.Green("YES") : _color.Red("NO")) + "\n";
 
             SetPageHeader("PlayerDetailsPage", header);
 
@@ -157,6 +161,7 @@ namespace SWLOR.Game.Server.Conversation
             AddResponseToPage("PlayerDetailsPage", "Toggle: Can Enter Buildings", true, player);
             AddResponseToPage("PlayerDetailsPage", "Toggle: Can Retrieve Structures", true, player);
             AddResponseToPage("PlayerDetailsPage", "Toggle: Can Rename Structures", true, player);
+            AddResponseToPage("PlayerDetailsPage", "Toggle: Can Edit Primary Residence", true, player);
             AddResponseToPage("PlayerDetailsPage", "Back");
         }
 
@@ -188,7 +193,10 @@ namespace SWLOR.Game.Server.Conversation
                 case 7: // Can Rename Structures
                     TogglePermission(player, BasePermission.CanRenameStructures);
                     break;
-                case 8: // Back
+                case 8: // Can Edit Primary Residence
+                    TogglePermission(player, BasePermission.CanEditPrimaryResidence);
+                    break;
+                case 9: // Back
                     BuildPlayerListPage();
                     ChangePage("PlayerListPage");
                     break;
@@ -230,6 +238,12 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case BasePermission.CanRenameStructures:
                     dbPermission.CanRenameStructures = !dbPermission.CanRenameStructures;
+                    break;
+                case BasePermission.CanEditPrimaryResidence:
+                    dbPermission.CanEditPrimaryResidence = !dbPermission.CanEditPrimaryResidence;
+                    break;
+                case BasePermission.CanRemovePrimaryResidence:
+                    dbPermission.CanRemovePrimaryResidence = !dbPermission.CanRemovePrimaryResidence;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(permission), permission, null);

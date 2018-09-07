@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Data.Entities
             PCBaseStructureItems = new HashSet<PCBaseStructureItem>();
             PCBaseStructurePermissions = new HashSet<PCBaseStructurePermission>();
             ChildStructures = new HashSet<PCBaseStructure>();
+            PrimaryResidencePlayerCharacters = new HashSet<PlayerCharacter>();
         }
 
         public int PCBaseStructureID { get; set; }
@@ -38,6 +39,8 @@ namespace SWLOR.Game.Server.Data.Entities
         [StringLength(64)]
         public string CustomName { get; set; }
 
+        public int StructureBonus { get; set; }
+
         public virtual BaseStructure BaseStructure { get; set; }
 
         public virtual BuildingStyle InteriorStyle { get; set; }
@@ -56,5 +59,8 @@ namespace SWLOR.Game.Server.Data.Entities
         public virtual ICollection<PCBaseStructure> ChildStructures { get; set; }
 
         public virtual PCBaseStructure ParentPCBaseStructure { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PlayerCharacter> PrimaryResidencePlayerCharacters { get; set; }
     }
 }

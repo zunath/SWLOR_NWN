@@ -76,9 +76,6 @@ namespace SWLOR.Game.Server.GameObject
                 CurrentHunger = 150,
                 CurrentHungerTick = 300,
                 UnallocatedSP = 5,
-                NextSPResetDate = null,
-                ResetTokens = 3,
-                NextResetTokenReceiveDate = null,
                 HPRegenerationAmount = 1,
                 RegenerationTick = 20,
                 RegenerationRate = 0,
@@ -86,13 +83,11 @@ namespace SWLOR.Game.Server.GameObject
                 MaxFP = 0,
                 CurrentFP = 0,
                 CurrentFPTick = 20,
-                RevivalStoneCount = 3,
                 RespawnAreaTag = string.Empty,
                 RespawnLocationX = 0.0f,
                 RespawnLocationY = 0.0f,
                 RespawnLocationZ = 0.0f,
                 RespawnLocationOrientation = 0.0f,
-                DateLastForcedSPReset = null,
                 DateSanctuaryEnds = DateTime.UtcNow + TimeSpan.FromDays(3),
                 IsSanctuaryOverrideEnabled = false,
                 STRBase = RawStrength, 
@@ -102,7 +97,8 @@ namespace SWLOR.Game.Server.GameObject
                 WISBase = RawWisdom, 
                 CHABase = RawCharisma, 
                 TotalSPAcquired = 0,
-                DisplayHelmet = true
+                DisplayHelmet = true,
+                PrimaryResidencePCBaseStructureID = null
             };
             
             return entity;

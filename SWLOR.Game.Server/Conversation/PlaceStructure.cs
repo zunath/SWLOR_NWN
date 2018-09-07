@@ -83,8 +83,8 @@ namespace SWLOR.Game.Server.Conversation
             double powerInUse = _base.GetPowerInUse(data.PCBaseID);
             double cpuInUse = _base.GetCPUInUse(data.PCBaseID);
 
-            double towerPower = tower?.BaseStructure.Power ?? 0.0f;
-            double towerCPU = tower?.BaseStructure.CPU ?? 0.0f;
+            double towerPower = tower != null ? tower.BaseStructure.Power + (tower.StructureBonus * 3) : 0.0f;
+            double towerCPU = tower != null ? tower.BaseStructure.CPU + (tower.StructureBonus * 2) : 0.0f;
             double newPower = powerInUse + structure.Power;
             double newCPU = cpuInUse + structure.CPU;
 
@@ -100,8 +100,8 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if (isPlacingTower)
             {
-                header += _color.Green("Available Power: ") + structure.Power + "\n";
-                header += _color.Green("Available CPU: ") + structure.CPU + "\n";
+                header += _color.Green("Available Power: ") + structure.Power + (data.StructureItem.StructureBonus * 3) + "\n";
+                header += _color.Green("Available CPU: ") + structure.CPU + (data.StructureItem.StructureBonus * 2) + "\n";
             }
             else
             {
@@ -319,7 +319,6 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            var dbStructure = _db.BaseStructures.Single(x => x.BaseStructureID == data.StructureID);
             var position = _.GetPositionFromLocation(data.TargetLocation);
             int? interiorStyleID = data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID");
             int? exteriorStyleID = data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID");
@@ -338,7 +337,8 @@ namespace SWLOR.Game.Server.Conversation
                 InteriorStyleID = interiorStyleID,
                 ExteriorStyleID = exteriorStyleID,
                 CustomName = string.Empty,
-                ParentPCBaseStructureID = data.ParentStructureID
+                ParentPCBaseStructureID = data.ParentStructureID,
+                StructureBonus = data.StructureItem.StructureBonus
             };
             
             _db.PCBaseStructures.Add(structure);

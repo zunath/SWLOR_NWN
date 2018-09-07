@@ -65,3 +65,4 @@
 61    IPRP_COMPTYPE      ComponentType                  0            
 62    IPRP_COMPBONCOS    ComponentBonusCost             0            
 63    IPRP_ITMTYPE       ComponentItemTypeRestriction   0            
+64    IPRP_STRCBON       StructureBonus                 0            

@@ -10,6 +10,8 @@
         CanEnterBuildings = 6,
         CanRetrieveStructures = 7,
         CanCancelLease = 8,
-        CanRenameStructures = 9
+        CanRenameStructures = 9,
+        CanEditPrimaryResidence = 10,
+        CanRemovePrimaryResidence = 11
     }
 }

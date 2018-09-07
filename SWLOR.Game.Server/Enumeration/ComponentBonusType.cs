@@ -34,7 +34,8 @@
         DamageUp = 29,
         DarkAbilityDown = 30,
         LightAbilityDown = 31,
-        FabricationUp = 32
+        FabricationUp = 32,
+        StructureBonus = 33
         
 
     }

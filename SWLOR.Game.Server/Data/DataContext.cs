@@ -377,13 +377,10 @@ namespace SWLOR.Game.Server.Data
                 .Property(e => e.CreateTimestamp)
                 .HasPrecision(0);
 
-            modelBuilder.Entity<PlayerCharacter>()
-                .Property(e => e.NextSPResetDate)
-                .HasPrecision(0);
-
-            modelBuilder.Entity<PlayerCharacter>()
-                .Property(e => e.NextResetTokenReceiveDate)
-                .HasPrecision(0);
+            modelBuilder.Entity<PCBaseStructure>()
+                .HasMany(e => e.PrimaryResidencePlayerCharacters)
+                .WithOptional(e => e.PrimaryResidencePCBaseStructure)
+                .HasForeignKey(e => e.PrimaryResidencePCBaseStructureID);
 
             modelBuilder.Entity<PlayerCharacter>()
                 .HasMany(e => e.PCBases)

@@ -30,6 +30,10 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public bool CanRenameStructures { get; set; }
 
+        public bool CanEditPrimaryResidence { get; set; }
+
+        public bool CanRemovePrimaryResidence { get; set; }
+
         public virtual PCBase PCBase { get; set; }
 
         public virtual PlayerCharacter PlayerCharacter { get; set; }

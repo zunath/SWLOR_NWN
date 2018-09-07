@@ -440,11 +440,22 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int baseAttackBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.BaseAttackBonus);
-                if(baseAttackBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_BASE_ATTACK_BONUS");
+                if (baseAttackBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_BASE_ATTACK_BONUS");
                 BaseAttackBonus = baseAttackBonus;
                 return baseAttackBonus;
             }
             set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_BASE_ATTACK_BONUS", value);
+        }
+        public virtual int StructureBonus
+        {
+            get
+            {
+                int structureBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.StructureBonus);
+                if (structureBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_STRUCTURE_BONUS");
+                StructureBonus = structureBonus;
+                return structureBonus;
+            }
+            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_STRUCTURE_BONUS", value);
         }
 
         public virtual int SneakAttackBonus

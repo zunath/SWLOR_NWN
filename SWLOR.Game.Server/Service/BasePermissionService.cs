@@ -34,6 +34,8 @@ namespace SWLOR.Game.Server.Service
             if (permission == BasePermission.CanRetrieveStructures && dbPermission.CanRetrieveStructures) return true;
             if (permission == BasePermission.CanCancelLease && dbPermission.CanCancelLease) return true;
             if (permission == BasePermission.CanRenameStructures && dbPermission.CanRenameStructures) return true;
+            if (permission == BasePermission.CanEditPrimaryResidence && dbPermission.CanEditPrimaryResidence) return true;
+            if (permission == BasePermission.CanRemovePrimaryResidence && dbPermission.CanRemovePrimaryResidence) return true;
 
             return false;
         }
@@ -54,6 +56,8 @@ namespace SWLOR.Game.Server.Service
                 if (permission == StructurePermission.CanRetrieveStructures && basePermission.CanRetrieveStructures) return true;
                 if (permission == StructurePermission.CanAdjustPermissions && basePermission.CanAdjustPermissions) return true;
                 if (permission == StructurePermission.CanRenameStructures && basePermission.CanRenameStructures) return true;
+                if (permission == StructurePermission.CanEditPrimaryResidence && basePermission.CanEditPrimaryResidence) return true;
+                if (permission == StructurePermission.CanRemovePrimaryResidence && basePermission.CanRemovePrimaryResidence) return true;
             }
 
             // Didn't find a base permission. Check the structure permissions.
@@ -66,6 +70,8 @@ namespace SWLOR.Game.Server.Service
             if (permission == StructurePermission.CanRetrieveStructures && structurePermission.CanRetrieveStructures) return true;
             if (permission == StructurePermission.CanAdjustPermissions && structurePermission.CanAdjustPermissions) return true;
             if (permission == StructurePermission.CanRenameStructures && structurePermission.CanRenameStructures) return true;
+            if (permission == StructurePermission.CanEditPrimaryResidence && structurePermission.CanEditPrimaryResidence) return true;
+            if (permission == StructurePermission.CanRemovePrimaryResidence && structurePermission.CanRemovePrimaryResidence) return true;
 
             // Player doesn't have permission.
             return false;
@@ -115,6 +121,12 @@ namespace SWLOR.Game.Server.Service
                     case BasePermission.CanCancelLease:
                         dbPermission.CanCancelLease = true;
                         break;
+                    case BasePermission.CanEditPrimaryResidence:
+                        dbPermission.CanEditPrimaryResidence = true;
+                        break;
+                    case BasePermission.CanRemovePrimaryResidence:
+                        dbPermission.CanRemovePrimaryResidence = true;
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -158,6 +170,12 @@ namespace SWLOR.Game.Server.Service
                         break;
                     case StructurePermission.CanRenameStructures:
                         dbPermission.CanRenameStructures = true;
+                        break;
+                    case StructurePermission.CanEditPrimaryResidence:
+                        dbPermission.CanEditPrimaryResidence = true;
+                        break;
+                    case StructurePermission.CanRemovePrimaryResidence:
+                        dbPermission.CanRemovePrimaryResidence = true;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

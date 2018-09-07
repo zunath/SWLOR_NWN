@@ -38,13 +38,14 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
             int disturbType = _.GetInventoryDisturbType();
             int structureID = container.GetLocalInt("PC_BASE_STRUCTURE_ID");
             var structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
-            
+            int itemLimit = structure.BaseStructure.Storage + structure.StructureBonus;
+
             int itemCount = container.InventoryItems.Count;
             string itemResref = item.Resref;
 
             if (disturbType == INVENTORY_DISTURB_TYPE_ADDED)
             {
-                if (itemCount > structure.BaseStructure.Storage)
+                if (itemCount > itemLimit)
                 {
                     ReturnItem(oPC, item);
                     oPC.SendMessage(_color.Red("No more items can be placed inside."));
@@ -76,7 +77,7 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
             }
             _db.SaveChanges();
 
-            oPC.SendMessage(_color.White("Item Limit: " + itemCount + " / ") + _color.Red(structure.BaseStructure.Storage.ToString()));
+            oPC.SendMessage(_color.White("Item Limit: " + itemCount + " / ") + _color.Red(itemLimit.ToString()));
 
             return true;
         }

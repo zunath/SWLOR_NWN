@@ -64,17 +64,7 @@ namespace SWLOR.Game.Server.Data.Entities
         public int CurrentHungerTick { get; set; }
 
         public int UnallocatedSP { get; set; }
-
-        [Column(TypeName = "datetime2")]
-        public DateTime? NextSPResetDate { get; set; }
-
-        public int NumberOfSPResets { get; set; }
-
-        public int ResetTokens { get; set; }
-
-        [Column(TypeName = "datetime2")]
-        public DateTime? NextResetTokenReceiveDate { get; set; }
-
+        
         public int HPRegenerationAmount { get; set; }
 
         public int RegenerationTick { get; set; }
@@ -88,8 +78,6 @@ namespace SWLOR.Game.Server.Data.Entities
         public int CurrentFP { get; set; }
 
         public int CurrentFPTick { get; set; }
-
-        public int RevivalStoneCount { get; set; }
         
         [StringLength(64)]
         public string RespawnAreaTag { get; set; }
@@ -101,10 +89,7 @@ namespace SWLOR.Game.Server.Data.Entities
         public double RespawnLocationZ { get; set; }
 
         public double RespawnLocationOrientation { get; set; }
-
-        [Column(TypeName = "datetime2")]
-        public DateTime? DateLastForcedSPReset { get; set; }
-
+        
         [Column(TypeName = "datetime2")]
         public DateTime DateSanctuaryEnds { get; set; }
 
@@ -127,6 +112,8 @@ namespace SWLOR.Game.Server.Data.Entities
         public bool DisplayHelmet { get; set; }
 
         public int BackgroundID { get; set; }
+
+        public int? PrimaryResidencePCBaseStructureID { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Area> NortheastAreas { get; set; }
@@ -200,6 +187,8 @@ namespace SWLOR.Game.Server.Data.Entities
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PCBaseStructurePermission> PCBaseStructurePermissions { get; set; }
+
+        public virtual PCBaseStructure PrimaryResidencePCBaseStructure { get; set; }
 
     }
 }

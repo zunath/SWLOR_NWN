@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject.Contracts;
 
 using NWN;
+using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using Object = NWN.Object;
@@ -17,18 +18,21 @@ namespace SWLOR.Game.Server.GameObject
         private readonly ICustomEffectService _customEffect;
         private readonly ISkillService _skill;
         private readonly IItemService _item;
+        private readonly IDataContext _db;
 
         public NWPlayer(INWScript script, 
             INWNXCreature nwnxCreature,
             AppState state,
             ICustomEffectService customEffect,
             ISkillService skill,
-            IItemService item)
+            IItemService item,
+            IDataContext db)
             : base(script, nwnxCreature, state)
         {
             _customEffect = customEffect;
             _skill = skill;
             _item = item;
+            _db = db;
         }
 
         public new static NWPlayer Wrap(Object @object)
@@ -502,7 +506,22 @@ namespace SWLOR.Game.Server.GameObject
             }
         }
 
+        public virtual float ResidencyBonus
+        {
+            get
+            {
+                var dbPlayer = _db.PlayerCharacters.Single(x => x.PlayerID == GlobalID);
+                if (dbPlayer.PrimaryResidencePCBaseStructureID == null) return 0.0f;
+                var residence = dbPlayer.PrimaryResidencePCBaseStructure;
+                var atmoStructures = residence.ChildStructures.Where(x => x.BaseStructure.HasAtmosphere);
 
+                float bonus = atmoStructures.Sum(x => (x.StructureBonus * 0.02f) + 0.02f);
+
+                if (bonus >= 1f) bonus = 1f;
+
+                return bonus;
+            }
+        }
 
     }
 }

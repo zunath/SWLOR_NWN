@@ -107,6 +107,7 @@
     <Compile Include="Conversation\QuestRewardSelection.cs" />
     <Compile Include="Conversation\RestMenu.cs" />
     <Compile Include="Conversation\Shovel.cs" />
+    <Compile Include="Conversation\StructureStorage.cs" />
     <Compile Include="Conversation\ViewBlueprints.cs" />
     <Compile Include="Conversation\ViewPerks.cs" />
     <Compile Include="Conversation\ViewSkills.cs" />
@@ -507,6 +508,10 @@
     <Compile Include="Placeable\StorageContainer\OnDisturbed.cs" />
     <Compile Include="Placeable\StorageContainer\OnOpened.cs" />
     <Compile Include="Placeable\Stores\GenericStore.cs" />
+    <Compile Include="Placeable\StructureStorage\OnClosed.cs" />
+    <Compile Include="Placeable\StructureStorage\OnDisturbed.cs" />
+    <Compile Include="Placeable\StructureStorage\OnOpened.cs" />
+    <Compile Include="Placeable\StructureStorage\OnUsed.cs" />
     <Compile Include="Placeable\TrashCan\OnClosed.cs" />
     <Compile Include="Placeable\TrashCan\OnDisturbed.cs" />
     <Compile Include="Placeable\TrashCan\OnOpened.cs" />

@@ -6,6 +6,7 @@
         CanAccessStructureInventory = 2,
         CanEnterBuilding = 3,
         CanRetrieveStructures = 4,
-        CanAdjustPermissions = 5
+        CanAdjustPermissions = 5,
+        CanRenameStructures
     }
 }

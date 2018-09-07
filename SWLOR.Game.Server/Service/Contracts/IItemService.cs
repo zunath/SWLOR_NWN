@@ -20,5 +20,6 @@ namespace SWLOR.Game.Server.Service.Contracts
         CustomItemType GetCustomItemType(NWItem item);
         ItemProperty GetCustomItemPropertyByItemTag(string tag);
         void OnModuleItemAcquired();
+        void OnModuleItemUnacquired();
     }
 }

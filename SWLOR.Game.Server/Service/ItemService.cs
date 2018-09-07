@@ -163,6 +163,12 @@ namespace SWLOR.Game.Server.Service
             item.GetOrAssignGlobalID();
         }
 
+        public void OnModuleItemUnacquired()
+        {
+            NWItem item = NWItem.Wrap(_.GetModuleItemLost());
+            item.GetOrAssignGlobalID();
+        }
+
 
         public string OnModuleExamine(string existingDescription, NWPlayer examiner, NWObject examinedObject)
         {

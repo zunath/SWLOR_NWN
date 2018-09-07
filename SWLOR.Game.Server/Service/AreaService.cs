@@ -1,7 +1,13 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Migrations;
+using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entities;
@@ -23,6 +29,7 @@ namespace SWLOR.Game.Server.Service
         {
             _ = script;
             _db = db;
+
         }
 
         public void OnModuleLoad()
@@ -44,11 +51,14 @@ namespace SWLOR.Game.Server.Service
                     };
                 }
 
+                int width = _.GetAreaSize(AREA_WIDTH, area.Object);
+                int height = _.GetAreaSize(AREA_HEIGHT, area.Object);
+
                 dbArea.Name = area.Name;
                 dbArea.Tag = area.Tag;
                 dbArea.ResourceQuality = area.GetLocalInt("RESOURCE_QUALITY");
-                dbArea.Width = _.GetAreaSize(AREA_WIDTH, area.Object);
-                dbArea.Height = _.GetAreaSize(AREA_HEIGHT, area.Object);
+                dbArea.Width = width;
+                dbArea.Height = height;
                 dbArea.PurchasePrice = area.GetLocalInt("PURCHASE_PRICE");
                 dbArea.DailyUpkeep = area.GetLocalInt("DAILY_UPKEEP");
                 dbArea.IsBuildable = 
@@ -59,12 +69,115 @@ namespace SWLOR.Game.Server.Service
                     dbArea.DailyUpkeep > 0) || 
                     (area.GetLocalInt("IS_BUILDING") == TRUE);
                 dbArea.IsActive = true;
-                
+
                 _db.Areas.AddOrUpdate(dbArea);
             }
-
             _db.SaveChanges();
+
+            BakeAreas();
         }
+
+        // Area baking process
+        // Check if walkmesh matches what's in the database.
+        // If it doesn't, run through and look for valid locations for later use by the spawn system.
+        // Each tile is 10x10 meters. The "step" value in the config table determines how many meters we progress before checking for a valid location.
+        // If you adjust this to get finer precision your database may explode with a ton of records. I chose a value that got me the 
+        // accuracy I wanted, without too much overhead. Your mileage may vary.
+        private void BakeAreas()
+        {
+            var config = _db.ServerConfigurations.Single();
+            int Step = config.AreaBakeStep;
+
+            foreach (var area in NWModule.Get().Areas)
+            {
+                // Rebuild the database context for every area. This is because EF really chokes on large inserts.
+                IDataContext _bakeDB = App.Resolve<IDataContext>();
+
+                // Disable stuff that slows down bulk inserts.
+                _bakeDB.Configuration.AutoDetectChangesEnabled = false;
+                _bakeDB.Configuration.ValidateOnSaveEnabled = false;
+
+                var dbArea = _bakeDB.Areas.Single(x => x.Resref == area.Resref);
+
+                int arraySizeX = dbArea.Width * (10 / Step);
+                int arraySizeY = dbArea.Height * (10 / Step);
+                Tuple<bool, float>[,] locations = new Tuple<bool,float>[arraySizeX, arraySizeY];
+                string walkmesh = string.Empty;
+
+                for (int x = 0; x < arraySizeX; x++)
+                {
+                    for (int y = 0; y < arraySizeY; y++)
+                    {
+                        Location checkLocation = _.Location(area.Object, _.Vector(x * Step, y * Step), 0.0f);
+                        int material = _.GetSurfaceMaterial(checkLocation);
+                        bool isWalkable = Convert.ToInt32(_.Get2DAString("surfacemat", "Walk", material)) == 1;
+                        locations[x, y] = new Tuple<bool, float>(isWalkable, _.GetGroundHeight(checkLocation));
+
+                        walkmesh += isWalkable ? "1" : "0";
+                    }
+                }
+
+                if (dbArea.Walkmesh != walkmesh)
+                {
+                    dbArea.Walkmesh = walkmesh;
+                    dbArea.DateLastBaked = DateTime.UtcNow;
+                    ((DbContext) _bakeDB).Entry(dbArea).State = EntityState.Modified; // Manually mark as changed since AutoDetectChanges is disabled for this context
+                    _bakeDB.SaveChanges();
+
+                    Console.WriteLine("Baking area because its walkmesh has changed since last run: " + area.Name);
+
+                    _bakeDB.StoredProcedure("DeleteAreaWalkmeshes",
+                        new SqlParameter("AreaID", dbArea.AreaID));
+
+                    Console.WriteLine("Cleared old walkmesh. Adding new one now.");
+
+                    const int BatchSize = 5000;
+                    int batchRecords = 0;
+                    string sql = string.Empty;
+
+                    for (int x = 0; x < arraySizeX; x++)
+                    {
+                        for (int y = 0; y < arraySizeY; y++)
+                        {
+                            // Ignore any points in the area that aren't walkable.
+                            bool isWalkable = locations[x, y].Item1;
+                            if (!isWalkable) continue;
+
+                            float z = locations[x, y].Item2;
+
+                            AreaWalkmesh dbWalkmesh = new AreaWalkmesh
+                            {
+                                AreaID = dbArea.AreaID,
+                                LocationX = x,
+                                LocationY = y,
+                                LocationZ = z
+                            };
+                            
+                            _bakeDB.AreaWalkmeshes.Add(dbWalkmesh);
+                            batchRecords++;
+
+                            // Raw SQL inserts are quicker than using EF.
+                            sql += $@"INSERT INTO dbo.AreaWalkmesh(AreaID, LocationX, LocationY, LocationZ) VALUES('{dbArea.AreaID}', {x}, {y}, {z});";
+
+                            if (batchRecords >= BatchSize)
+                            {
+                                Console.WriteLine("Saving " + BatchSize + " records...");
+                                _bakeDB.Database.ExecuteSqlCommand(sql);
+                                sql = string.Empty;
+                                batchRecords = 0;
+                            }
+
+                        }
+                    }
+
+                    Console.WriteLine("Saving " + batchRecords + " records...");
+                    _bakeDB.Database.ExecuteSqlCommand(sql);
+                    Console.WriteLine("Finished baking area: " + area.Name);
+                }
+
+            }
+        }
+
 
         public NWArea CreateAreaInstance(string areaResref, string areaName)
         {

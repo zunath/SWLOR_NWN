@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
 using System.Linq;
 using SWLOR.Game.Server.Data.Contracts;
@@ -27,6 +28,7 @@ namespace SWLOR.Game.Server.Data
         }
 
         public virtual IDbSet<Area> Areas { get; set; }
+        public virtual IDbSet<AreaWalkmesh> AreaWalkmeshes { get; set; }
         public virtual IDbSet<BaseStructure> BaseStructures { get; set; }
         public virtual IDbSet<BaseStructureType> BaseStructureTypes { get; set; }
         public virtual IDbSet<Attribute> Attributes { get; set; }
@@ -106,6 +108,11 @@ namespace SWLOR.Game.Server.Data
         
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Area>()
+                .HasMany(e => e.AreaWalkmeshes)
+                .WithRequired(e => e.Area)
+                .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<Attribute>()
                 .HasMany(e => e.Skills)
                 .WithRequired(e => e.Attribute)

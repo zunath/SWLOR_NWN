@@ -51,14 +51,16 @@ namespace SWLOR.Game.Server.Event.Module
 
             // Bioware default
             _.ExecuteScript("x2_mod_def_load", Object.OBJECT_SELF);
-            
+            _area.OnModuleLoad();
             _death.OnModuleLoad();
             _appStateService.OnModuleLoad();
             _objectProcessing.OnModuleLoad();
             _farming.OnModuleLoad();
-            _area.OnModuleLoad();
+            
             _base.OnModuleLoad();
             
+            
+
             return true;
         }
 

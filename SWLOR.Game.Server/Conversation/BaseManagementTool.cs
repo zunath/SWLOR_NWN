@@ -62,6 +62,7 @@ namespace SWLOR.Game.Server.Conversation
                 "90 degrees",
                 "180 degrees",
                 "Back");
+            
 
             dialog.AddPage("MainPage", mainPage);
             dialog.AddPage("PurchaseTerritoryPage", purchaseTerritoryPage);
@@ -93,11 +94,15 @@ namespace SWLOR.Game.Server.Conversation
             bool canEditBasePermissions = false;
             bool canEditBuildingPermissions = false;
             bool canEditStructures;
+            bool canEditPrimaryResidence = false;
+            bool canRemovePrimaryResidence = false;
 
             if (isBuilding)
             {
                 canEditStructures = _perm.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanPlaceEditStructures);
                 canEditBuildingPermissions = _perm.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanAdjustPermissions);
+                canEditPrimaryResidence = _perm.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanEditPrimaryResidence);
+                canRemovePrimaryResidence = _perm.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanRemovePrimaryResidence);
                 data.StructureID = pcBaseStructureID;
             }
             else
@@ -119,7 +124,8 @@ namespace SWLOR.Game.Server.Conversation
             else if(isBuilding)
             {
                 var structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == pcBaseStructureID);
-                header += _color.Green("Item Limit: ") + structure.ChildStructures.Count + " / " + structure.BaseStructure.Storage + "\n";
+                int itemLimit = structure.BaseStructure.Storage + structure.StructureBonus;
+                header += _color.Green("Item Limit: ") + structure.ChildStructures.Count + " / " + itemLimit + "\n";
             }
             else
             {
@@ -186,6 +192,7 @@ namespace SWLOR.Game.Server.Conversation
             AddResponseToPage("MainPage", "Edit Nearby Structures", canEditStructures);
             AddResponseToPage("MainPage", "Edit Base Permissions", canEditBasePermissions);
             AddResponseToPage("MainPage", "Edit Building Permissions", canEditBuildingPermissions);
+            AddResponseToPage("MainPage", "Edit Primary Residence", canEditPrimaryResidence || canRemovePrimaryResidence);
         }
 
         public override void DoAction(NWPlayer player, string pageName, int responseID)
@@ -234,6 +241,9 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case 5: // Edit building permissions
                     SwitchConversation("EditBuildingPermissions");
+                    break;
+                case 6: // Edit primary residence
+                    SwitchConversation("EditPrimaryResidence");
                     break;
             }
         }

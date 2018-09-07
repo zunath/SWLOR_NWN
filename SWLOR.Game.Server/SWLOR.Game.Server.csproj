@@ -97,6 +97,7 @@
     <Compile Include="Conversation\ConversationBase.cs" />
     <Compile Include="Conversation\CraftingDevice.cs" />
     <Compile Include="Conversation\CraftItem.cs" />
+    <Compile Include="Conversation\EditPrimaryResidence.cs" />
     <Compile Include="Conversation\FarmHole.cs" />
     <Compile Include="Conversation\DestroySurvivalKnife.cs" />
     <Compile Include="Conversation\DestroyPlayerGuide.cs" />

@@ -431,6 +431,7 @@ namespace SWLOR.Game.Server.Service
             item.Name = pcBaseStructure.BaseStructure.Name;
             item.MaxDurability = (float)pcBaseStructure.Durability;
             item.Durability = (float)pcBaseStructure.Durability;
+            item.StructureBonus = pcBaseStructure.StructureBonus;
 
             if (pcBaseStructure.InteriorStyleID != null && pcBaseStructure.ExteriorStyleID != null)
             {

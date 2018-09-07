@@ -42,6 +42,7 @@
         LevelIncrease = 136,
         ComponentBonus = 137,
         ComponentItemTypeRestriction = 138,
-        CraftBonusFabrication = 139
+        CraftBonusFabrication = 139,
+        StructureBonus = 140
     }
 }

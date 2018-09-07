@@ -136,7 +136,7 @@ namespace SWLOR.Game.Server.Conversation
                 case 1: // Confirm Change Name
                     string name = GetPC().GetLocalString("NEW_CONTAINER_NAME");
                     int structureID = GetDialogTarget().GetLocalInt("PC_BASE_STRUCTURE_ID");
-                    var structure = _db.PCBaseStructures.Single(x => x.BaseStructureID == structureID);
+                    var structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
                     structure.CustomName = name;
                     GetDialogTarget().Name = name;
                     GetPC().DeleteLocalString("NEW_CONTAINER_NAME");

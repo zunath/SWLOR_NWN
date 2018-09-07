@@ -241,6 +241,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (skillID <= 0 || xp <= 0 || !oPC.IsPlayer) return;
 
+            xp = (int)(xp + xp * oPC.ResidencyBonus);
             PlayerCharacter player = _db.PlayerCharacters.Single(x => x.PlayerID == oPC.GlobalID);
             PCSkill skill = GetPCSkillByID(oPC.GlobalID, skillID);
             SkillXPRequirement req = _db.SkillXPRequirements.Single(x => x.SkillID == skillID && x.Rank == skill.Rank);
@@ -387,7 +388,7 @@ namespace SWLOR.Game.Server.Service
                 List<Tuple<int, PlayerSkillPointTracker>> skillRegs = preg.GetSkillRegistrationPoints();
                 int totalPoints = preg.GetTotalSkillRegistrationPoints();
                 bool receivesMartialArtsPenalty = CheckForMartialArtsPenalty(skillRegs);
-
+                
                 // Grant XP based on points acquired during combat.
                 foreach (Tuple<int, PlayerSkillPointTracker> skreg in skillRegs)
                 {

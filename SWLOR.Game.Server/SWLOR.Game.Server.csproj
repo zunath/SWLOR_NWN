@@ -361,7 +361,6 @@
     <Compile Include="Placeable\CraftingDevice\OnDisturbed.cs" />
     <Compile Include="Placeable\CraftingDevice\OnOpened.cs" />
     <Compile Include="Placeable\CraftingDevice\OnUsed.cs" />
-    <Compile Include="Placeable\CraftingForge\FinishSmelt.cs" />
     <Compile Include="Event\Dialog\ActionTaken.cs" />
     <Compile Include="Event\Dialog\AppearsWhen.cs" />
     <Compile Include="Event\Dialog\DialogEnd.cs" />
@@ -436,7 +435,6 @@
     <Compile Include="NWNX\NWNXPlayerQuickBarSlot.cs" />
     <Compile Include="NWNX\QuickBarSlot.cs" />
     <Compile Include="NWNX\SpecialAbilitySlot.cs" />
-    <Compile Include="NWN\Events\Craft\cft_finish_smelt.cs" />
     <Compile Include="NWN\Events\Creature\crea_on_attacked.cs" />
     <Compile Include="NWN\Events\Creature\crea_on_convo.cs" />
     <Compile Include="NWN\Events\Creature\crea_on_damaged.cs" />

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Bioware.Contracts;
 using SWLOR.Game.Server.Data.Entities;
@@ -21,13 +22,17 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
         private readonly ICraftService _craft;
         private readonly IBiowarePosition _biowarePosition;
         private readonly INWNXPlayer _nwnxPlayer;
+        private readonly IRandomService _random;
+        private readonly IBiowareXP2 _biowareXP2;
 
         public OnDisturbed(INWScript script,
             IPerkService perk,
             ISkillService skill,
             ICraftService craft,
             IBiowarePosition biowarePosition,
-            INWNXPlayer nwnxPlayer)
+            INWNXPlayer nwnxPlayer,
+            IRandomService random,
+            IBiowareXP2 biowareXP2)
         {
             _ = script;
             _perk = perk;
@@ -35,6 +40,8 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             _craft = craft;
             _biowarePosition = biowarePosition;
             _nwnxPlayer = nwnxPlayer;
+            _random = random;
+            _biowareXP2 = biowareXP2;
         }
 
         public bool Run(params object[] args)
@@ -111,7 +118,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
         private void StartSmelt(NWPlaceable forge, NWPlayer pc, NWItem item)
         {
             int charges = forge.GetLocalInt("FORGE_CHARGES");
-            if (item.Resref == "coal")
+            if (item.Resref == "power_core")
             {
                 item.Destroy();
                 charges += 10 + CalculatePerkCoalBonusCharges(pc) + GetPowerCoreDurability(item) * 2;
@@ -133,20 +140,27 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
                 ReturnItemToPC(pc, item, "You must power the refinery with a power unit before refining.");
                 return;
             }
-            item.Destroy();
 
             // Ready to smelt
             float baseCraftDelay = 18.0f - (18.0f * _perk.GetPCPerkLevel(pc, PerkType.SpeedyRefining) * 0.1f);
 
             pc.IsBusy = true;
-            forge.SetLocalObject("FORGE_USER", pc.Object);
-            pc.SetLocalObject("FORGE", forge.Object);
-            forge.SetLocalString("FORGE_ORE", item.Resref);
+            _nwnxPlayer.StartGuiTimingBar(pc, baseCraftDelay, string.Empty);
 
-            _nwnxPlayer.StartGuiTimingBar(pc, baseCraftDelay, "cft_finish_smelt");
+            // Any component bonuses on the ore get applied to the end product.
+            var itemProperties = item.ItemProperties.Where(x =>
+                _.GetItemPropertyType(x) == (int)CustomItemPropertyType.ComponentBonus ||
+                _.GetItemPropertyType(x) == (int) CustomItemPropertyType.RecommendedLevel).ToList();
+
+            string itemResref = item.Resref;
+            pc.DelayCommand(() =>
+            {
+                CompleteSmelt(pc, itemResref, itemProperties);
+            }, baseCraftDelay);
 
             _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, _.EffectCutsceneImmobilize(), pc.Object, baseCraftDelay);
             pc.AssignCommand(() => _.ActionPlayAnimation(NWScript.ANIMATION_LOOPING_GET_MID, 1.0f, baseCraftDelay));
+            item.Destroy();
         }
 
         private int GetPowerCoreDurability(NWItem item)
@@ -190,5 +204,44 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
                 default: return 0;
             }
         }
+
+        private void CompleteSmelt(NWPlayer player, string oreResref, List<ItemProperty> itemProperties)
+        {
+            player.IsBusy = false;
+
+            PCSkill pcSkill = _skill.GetPCSkill(player, SkillType.Engineering);
+            int level = _craft.GetIngotLevel(oreResref);
+            string ingotResref = _craft.GetIngotResref(oreResref);
+            if (pcSkill == null || level < 0 || string.IsNullOrWhiteSpace(ingotResref)) return;
+
+            int delta = pcSkill.Rank - level;
+            int count = 2;
+
+            if (delta > 2) count = delta;
+            if (count > 6) count = 6;
+
+            if (_random.Random(100) + 1 <= _perk.GetPCPerkLevel(player, PerkType.Lucky))
+            {
+                count++;
+            }
+
+            if (_random.Random(100) + 1 <= _perk.GetPCPerkLevel(player, PerkType.ProcessingEfficiency) * 10)
+            {
+                count++;
+            }
+
+            for (int x = 1; x <= count; x++)
+            {
+                var item = NWItem.Wrap(_.CreateItemOnObject(ingotResref, player.Object));
+                foreach (var ip in itemProperties)
+                {
+                    _biowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
+                }
+            }
+
+            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(100, level, pcSkill.Rank);
+            _skill.GiveSkillXP(player, SkillType.Engineering, xp);
+        }
+
     }
 }

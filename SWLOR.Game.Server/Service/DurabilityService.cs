@@ -22,69 +22,11 @@ namespace SWLOR.Game.Server.Service
             _color = color;
         }
         
-        public bool IsValidDurabilityType(NWItem item)
-        {
-            if (item == null) throw new ArgumentNullException(nameof(item));
-
-            int[] validTypes =
-            {
-                BASE_ITEM_ARMOR,
-                BASE_ITEM_BASTARDSWORD,
-                BASE_ITEM_BATTLEAXE,
-                BASE_ITEM_BELT,
-                BASE_ITEM_BOOTS,
-                BASE_ITEM_BRACER,
-                BASE_ITEM_CLOAK,
-                BASE_ITEM_CLUB,
-                BASE_ITEM_DAGGER,
-                BASE_ITEM_DIREMACE,
-                BASE_ITEM_DOUBLEAXE,
-                BASE_ITEM_DWARVENWARAXE,
-                BASE_ITEM_GLOVES,
-                BASE_ITEM_GREATAXE,
-                BASE_ITEM_GREATSWORD,
-                BASE_ITEM_HALBERD,
-                BASE_ITEM_HANDAXE,
-                BASE_ITEM_HEAVYCROSSBOW,
-                BASE_ITEM_HEAVYFLAIL,
-                BASE_ITEM_HELMET,
-                BASE_ITEM_KAMA,
-                BASE_ITEM_KATANA,
-                BASE_ITEM_KUKRI,
-                BASE_ITEM_LARGESHIELD,
-                BASE_ITEM_LIGHTCROSSBOW,
-                BASE_ITEM_LIGHTFLAIL,
-                BASE_ITEM_LIGHTHAMMER,
-                BASE_ITEM_LIGHTMACE,
-                BASE_ITEM_LONGBOW,
-                BASE_ITEM_LONGSWORD,
-                BASE_ITEM_MORNINGSTAR,
-                BASE_ITEM_QUARTERSTAFF,
-                BASE_ITEM_RAPIER,
-                BASE_ITEM_SCIMITAR,
-                BASE_ITEM_SCYTHE,
-                BASE_ITEM_SHORTBOW,
-                BASE_ITEM_SHORTSPEAR,
-                BASE_ITEM_SHORTSWORD,
-                BASE_ITEM_SICKLE,
-                BASE_ITEM_SLING,
-                BASE_ITEM_SMALLSHIELD,
-                BASE_ITEM_TOWERSHIELD,
-                BASE_ITEM_TRIDENT,
-                BASE_ITEM_TWOBLADEDSWORD,
-                BASE_ITEM_WARHAMMER,
-                BASE_ITEM_WHIP
-            };
-
-            return validTypes.Contains(item.BaseItemType) || item.GetLocalInt("BASE_STRUCTURE_ID") > 0 || item.GetLocalInt("DURABILITY_OVERRIDE") == TRUE;
-        }
-
         private void InitializeDurability(NWItem item)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
-            if (!IsValidDurabilityType(item)) return;
-
+            item.SetLocalInt("DURABILITY_OVERRIDE", TRUE);
             if (item.GetLocalInt("DURABILITY_INITIALIZE") <= 0 &&
                 item.GetLocalFloat("DURABILITY_CURRENT") <= 0.0f)
             {
@@ -97,16 +39,14 @@ namespace SWLOR.Game.Server.Service
         public float GetMaxDurability(NWItem item)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
-
-            if (!IsValidDurabilityType(item)) return -1.0f;
+            
             return item.GetLocalFloat("DURABILITY_MAX") <= 0 ? DefaultDurability : item.GetLocalFloat("DURABILITY_MAX");
         }
 
         public void SetMaxDurability(NWItem item, float value)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
-
-            if (!IsValidDurabilityType(item)) return;
+            
             if (value <= 0) value = DefaultDurability;
 
             item.SetLocalFloat("DURABILITY_MAX", value);
@@ -116,8 +56,7 @@ namespace SWLOR.Game.Server.Service
         public float GetDurability(NWItem item)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
-
-            if (!IsValidDurabilityType(item)) return -1.0f;
+            
             InitializeDurability(item);
             return item.GetLocalFloat("DURABILITY_CURRENT");
         }
@@ -126,8 +65,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
             if (value < 0.0f) value = 0.0f;
-
-            if (!IsValidDurabilityType(item)) return;
+            
             InitializeDurability(item);
             item.SetLocalFloat("DURABILITY_CURRENT", value);
         }
@@ -155,7 +93,7 @@ namespace SWLOR.Game.Server.Service
             if (examinedObject.ObjectType != OBJECT_TYPE_ITEM) return existingDescription;
 
             NWItem examinedItem = NWItem.Wrap(examinedObject.Object);
-            if (!IsValidDurabilityType(examinedItem)) return existingDescription;
+            if (examinedItem.GetLocalFloat("DURABILITY_MAX") <= 0f) return existingDescription;
 
             string description = _color.Orange("Durability: ");
             float durability = GetDurability(examinedItem);
@@ -175,12 +113,8 @@ namespace SWLOR.Game.Server.Service
         public void RunItemDecay(NWPlayer oPC, NWItem oItem, float reduceAmount)
         {
             if (reduceAmount <= 0) return;
-            // Item decay doesn't run for any items if Invincible is in effect
-            // Or if the item is unbreakable (e.g profession items)
-            // Or if the item is not part of the valid list of base item types
             if (oPC.IsPlot ||
-                oItem.GetLocalInt("UNBREAKABLE") == 1 ||
-                !IsValidDurabilityType(oItem))
+                oItem.GetLocalInt("UNBREAKABLE") == 1)
                 return;
 
             float durability = GetDurability(oItem);
@@ -233,11 +167,7 @@ namespace SWLOR.Game.Server.Service
         public void OnHitCastSpell(NWPlayer oTarget)
         {
             NWItem oSpellOrigin = NWItem.Wrap(_.GetSpellCastItem());
-            // Durability system
-            if (IsValidDurabilityType(oSpellOrigin))
-            {
-                RunItemDecay(oTarget, oSpellOrigin);
-            }
+            RunItemDecay(oTarget, oSpellOrigin);
         }
 
     }

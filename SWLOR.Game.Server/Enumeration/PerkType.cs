@@ -20,7 +20,7 @@
         Lucky = 15,
         Health = 16,
         FP = 17,
-        SpeedyMiner = 18,
+        SpeedyHarvester = 18,
         // 19 is free
         SpeedyMedic = 20,
         HealingKitExpert = 21,

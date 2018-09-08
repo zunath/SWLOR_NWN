@@ -16,19 +16,25 @@ namespace SWLOR.Game.Server.Item
         private readonly IRandomService _random;
         private readonly IPerkService _perk;
         private readonly IResourceService _resource;
+        private readonly ISkillService _skill;
+        private readonly IDurabilityService _durability;
 
         public ResourceScanner(
             INWScript script,
             ISpawnService spawn,
             IRandomService random,
             IPerkService perk,
-            IResourceService resource)
+            IResourceService resource,
+            ISkillService skill,
+            IDurabilityService durability)
         {
             _ = script;
             _spawn = spawn;
             _random = random;
             _perk = perk;
             _resource = resource;
+            _skill = skill;
+            _durability = durability;
         }
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
@@ -39,19 +45,19 @@ namespace SWLOR.Game.Server.Item
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
             Location effectLocation;
-
+            NWPlayer player = NWPlayer.Wrap(user.Object);
             // Targeted a location or self. Locate nearest resource.
             if (!target.IsValid || Equals(user, target))
             {
                 ScanArea(user, targetLocation);
-                item.Durability -= _random.RandomFloat(0.05f, 0.1f);
+                _durability.RunItemDecay(player, item, _random.RandomFloat(0.02f, 0.08f));
                 effectLocation = targetLocation;
 
             }
             else if(target.GetLocalInt("RESOURCE_TYPE") > 0)
             {
                 ScanResource(user, target);
-                item.Durability -= _random.RandomFloat(0.05f, 0.1f);
+                _durability.RunItemDecay(player, item, _random.RandomFloat(0.05f, 0.1f));
                 effectLocation = target.Location;
             }
             else
@@ -61,6 +67,12 @@ namespace SWLOR.Game.Server.Item
             }
 
             _.ApplyEffectAtLocation(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_FNF_SUMMON_MONSTER_3), effectLocation);
+
+            if (user.IsPlayer && user.GetLocalInt(target.GlobalID) == FALSE)
+            {
+                _skill.GiveSkillXP(player, SkillType.Harvesting, 150);
+                user.SetLocalInt(target.GlobalID, TRUE);
+            }
         }
 
         private void ScanArea(NWCreature user, Location targetLocation)

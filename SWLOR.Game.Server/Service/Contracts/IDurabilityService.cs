@@ -6,7 +6,6 @@ namespace SWLOR.Game.Server.Service.Contracts
     {
         float GetDurability(NWItem item);
         float GetMaxDurability(NWItem item);
-        bool IsValidDurabilityType(NWItem item);
         void OnHitCastSpell(NWPlayer oTarget);
         void OnModuleEquip();
         string OnModuleExamine(string existingDescription, NWObject examinedObject);

@@ -160,6 +160,10 @@ namespace SWLOR.Game.Server.Service
                 case -6: chance = 27; break;
             }
 
+            int itemBonus = player.EffectiveHarvestingBonus / 2;
+            if (itemBonus > 30) itemBonus = 30;
+            chance += itemBonus;
+
             return chance;
         }
 

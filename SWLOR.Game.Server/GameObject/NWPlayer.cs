@@ -485,6 +485,25 @@ namespace SWLOR.Game.Server.GameObject
                 return armorsmithBonus;
             }
         }
+        public virtual int EffectiveHarvestingBonus
+        {
+            get
+            {
+                int harvestingBonus = 0;
+                for (int itemSlot = 0; itemSlot < NWScript.NUM_INVENTORY_SLOTS; itemSlot++)
+                {
+                    NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
+                    if (!item.IsValid) continue;
+                    SkillType skill = _skill.GetSkillTypeForItem(item);
+                    int rank = _skill.GetPCSkill(this, skill).Rank;
+                    int itemHarvestingBonus = CalculateAdjustedValue(item.HarvestingBonus, item.RecommendedLevel, rank, 0);
+
+                    harvestingBonus += itemHarvestingBonus;
+                }
+
+                return harvestingBonus;
+            }
+        }
 
         public virtual int EffectiveSneakAttackBonus
         {

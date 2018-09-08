@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Service
             int playerEL = CalculatePCEffectiveLevel(player, deviceID, model.PlayerSkillRank);
 
             string header = _color.Green("Blueprint: ") + bp.Quantity + "x " + bp.ItemName + "\n";
-            header += _color.Green("Level: ") + model.AdjustedLevel + " (Base: " + bp.BaseLevel + ")\n";
+            header += _color.Green("Level: ") + (model.AdjustedLevel < 0 ? 0 : model.AdjustedLevel) + " (Base: " + bp.BaseLevel + ")\n";
             header += _color.Green("Difficulty: ") + CalculateDifficultyDescription(playerEL, model.AdjustedLevel) + "\n";
             header += _color.Green("Required Components (Required/Maximum): ") + "\n\n";
 

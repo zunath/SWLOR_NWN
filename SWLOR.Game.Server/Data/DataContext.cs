@@ -102,6 +102,9 @@ namespace SWLOR.Game.Server.Data
         public virtual IDbSet<SkillCategory> SkillCategories { get; set; }
         public virtual IDbSet<Skill> Skills { get; set; }
         public virtual IDbSet<SkillXPRequirement> SkillXPRequirements { get; set; }
+        public virtual IDbSet<SpawnObject> SpawnObjects { get; set; }
+        public virtual IDbSet<SpawnObjectType> SpawnObjectTypes { get; set; }
+        public virtual IDbSet<Spawn> Spawns { get; set; }
         public virtual IDbSet<StorageContainer> StorageContainers { get; set; }
         public virtual IDbSet<StorageItem> StorageItems { get; set; }
         public virtual IDbSet<User> Users { get; set; }
@@ -597,6 +600,16 @@ namespace SWLOR.Game.Server.Data
             modelBuilder.Entity<StorageContainer>()
                 .HasMany(e => e.StorageItems)
                 .WithRequired(e => e.StorageContainer)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<SpawnObjectType>()
+                .HasMany(e => e.Spawns)
+                .WithRequired(e => e.SpawnObjectType)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Spawn>()
+                .HasMany(e => e.SpawnObjects)
+                .WithRequired(e => e.Spawn)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<BaseStructureType>()

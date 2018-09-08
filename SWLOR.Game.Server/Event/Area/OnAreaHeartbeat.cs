@@ -16,8 +16,6 @@ namespace SWLOR.Game.Server.Event.Area
 
         public bool Run(params object[] args)
         {
-            _.ExecuteScript("spawn_sample_hb", Object.OBJECT_SELF);
-
             return true;
 
         }

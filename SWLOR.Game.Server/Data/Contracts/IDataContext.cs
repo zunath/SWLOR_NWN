@@ -88,6 +88,9 @@ namespace SWLOR.Game.Server.Data.Contracts
         IDbSet<SkillXPRequirement> SkillXPRequirements { get; set; }
         IDbSet<StorageContainer> StorageContainers { get; set; }
         IDbSet<StorageItem> StorageItems { get; set; }
+        IDbSet<SpawnObject> SpawnObjects { get; set; }
+        IDbSet<SpawnObjectType> SpawnObjectTypes { get; set; }
+        IDbSet<Spawn> Spawns { get; set; }
         IDbSet<User> Users { get; set; }
 
         DbContextConfiguration Configuration { get; }

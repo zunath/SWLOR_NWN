@@ -1,0 +1,27 @@
+﻿using NWN;
+using SWLOR.Game.Server.GameObject;
+
+namespace SWLOR.Game.Server.ValueObject
+{
+    public class ObjectSpawn
+    {
+        public NWObject Spawn { get; set; }
+        public float RespawnTime { get; set; }
+        public float Timer { get; set; }
+        public int SpawnTableID { get; set; }
+        public string Resref { get; set; }
+        public Location SpawnLocation { get; }
+        public bool IsStaticSpawnPoint { get; }
+
+        public NWPlaceable SpawnPlaceable => NWPlaceable.Wrap(Spawn.Object);
+        public NWCreature SpawnCreature => NWCreature.Wrap(Spawn.Object);
+
+        public ObjectSpawn(NWObject spawn, bool isStaticSpawnPoint, float respawnTime = 120.0f)
+        {
+            Spawn = spawn;
+            SpawnLocation = spawn.Location;
+            IsStaticSpawnPoint = isStaticSpawnPoint;
+            RespawnTime = respawnTime;
+        }
+    }
+}

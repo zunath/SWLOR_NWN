@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly INWNXDamage _nwnxDamage;
         private readonly IAreaService _area;
         private readonly IBaseService _base;
+        private readonly ISpawnService _spawn;
 
         public OnModuleLoad(INWScript script,
             INWNXChat nwnxChat,
@@ -29,7 +30,8 @@ namespace SWLOR.Game.Server.Event.Module
             IAppStateService appStateService,
             INWNXDamage nwnxDamage,
             IAreaService area,
-            IBaseService @base)
+            IBaseService @base,
+            ISpawnService spawn)
         {
             _ = script;
             _nwnxChat = nwnxChat;
@@ -41,6 +43,7 @@ namespace SWLOR.Game.Server.Event.Module
             _nwnxDamage = nwnxDamage;
             _area = area;
             _base = @base;
+            _spawn = spawn;
         }
 
         public bool Run(params object[] args)
@@ -51,15 +54,14 @@ namespace SWLOR.Game.Server.Event.Module
 
             // Bioware default
             _.ExecuteScript("x2_mod_def_load", Object.OBJECT_SELF);
-            _area.OnModuleLoad();
             _death.OnModuleLoad();
             _appStateService.OnModuleLoad();
             _objectProcessing.OnModuleLoad();
             _farming.OnModuleLoad();
             
             _base.OnModuleLoad();
-            
-            
+            _area.OnModuleLoad();
+            _spawn.OnModuleLoad();
 
             return true;
         }

@@ -76,6 +76,7 @@
     <Compile Include="ChatCommand\Contracts\IChatCommand.cs" />
     <Compile Include="ChatCommand\Help.cs" />
     <Compile Include="ChatCommand\Night.cs" />
+    <Compile Include="ChatCommand\Pos.cs" />
     <Compile Include="ChatCommand\Rez.cs" />
     <Compile Include="ChatCommand\Save.cs" />
     <Compile Include="ChatCommand\SpawnItem.cs" />
@@ -205,6 +206,9 @@
     <Compile Include="Data\Entities\PCBasePermission.cs" />
     <Compile Include="Data\Entities\PCBaseStructurePermission.cs" />
     <Compile Include="Data\Entities\AreaWalkmesh.cs" />
+    <Compile Include="Data\Entities\Spawn.cs" />
+    <Compile Include="Data\Entities\SpawnObject.cs" />
+    <Compile Include="Data\Entities\SpawnObjectType.cs" />
     <Compile Include="Enumeration\AddItemPropertyPolicy.cs" />
     <Compile Include="Enumeration\AreaSector.cs" />
     <Compile Include="Enumeration\BackgroundType.cs" />
@@ -663,6 +667,7 @@
     <Compile Include="Service\Contracts\IImpoundService.cs" />
     <Compile Include="Service\Contracts\IBasePermissionService.cs" />
     <Compile Include="Service\ImpoundService.cs" />
+    <Compile Include="Service\Contracts\ISpawnService.cs" />
     <Compile Include="Service\ItemService.cs" />
     <Compile Include="Service\Contracts\ITimeService.cs" />
     <Compile Include="Service\KeyItemService.cs" />
@@ -683,10 +688,13 @@
     <Compile Include="Service\SearchService.cs" />
     <Compile Include="Service\SerializationService.cs" />
     <Compile Include="Service\SkillService.cs" />
+    <Compile Include="Service\SpawnService.cs" />
     <Compile Include="Service\StorageService.cs" />
     <Compile Include="Service\AreaService.cs" />
     <Compile Include="Service\TimeService.cs" />
+    <Compile Include="ValueObject\AreaSpawn.cs" />
     <Compile Include="ValueObject\AreaStructure.cs" />
+    <Compile Include="ValueObject\ObjectSpawn.cs" />
     <Compile Include="ValueObject\PCTempBaseData.cs" />
     <Compile Include="ValueObject\CraftingData.cs" />
     <Compile Include="ValueObject\CustomData.cs" />
@@ -859,7 +867,6 @@
     <None Include="ServerFiles\HakPaks\swlor_2da\zts01_edge.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\ztu01_edge.2da" />
     <None Include="ServerFiles\HakPaks\swlor_tlk.tlk" />
-    <None Include="ServerFiles\Tools\NESS_Spawn_Waypoint_Generator.zip" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

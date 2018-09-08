@@ -199,9 +199,7 @@ namespace SWLOR.Game.Server.Service
 
             if (durability <= 0.00f)
             {
-                NWItem oCopy = NWItem.Wrap(_.CopyItem(oItem.Object, oPC.Object, TRUE));
                 oItem.Destroy();
-                SetDurability(oCopy, 0);
                 oPC.SendMessage(_color.Red("Your " + sItemName + " has broken!"));
             }
             else

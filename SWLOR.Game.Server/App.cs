@@ -150,7 +150,7 @@ namespace SWLOR.Game.Server
             builder.RegisterType<PlayerService>().As<IPlayerService>();
             builder.RegisterType<PVPSanctuaryService>().As<IPVPSanctuaryService>();
             builder.RegisterType<QuestService>().As<IQuestService>();
-            builder.RegisterType<RandomService>().As<IRandomService>();
+            builder.RegisterType<RandomService>().As<IRandomService>().SingleInstance(); // Must be single instance to avoid RNG issues
             builder.RegisterType<ResourceService>().As<IResourceService>();
             builder.RegisterType<ModService>().As<IModService>();
             builder.RegisterType<SearchService>().As<ISearchService>();

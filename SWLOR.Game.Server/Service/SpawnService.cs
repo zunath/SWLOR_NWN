@@ -196,7 +196,6 @@ namespace SWLOR.Game.Server.Service
             // 256  size = 16x16
             // 64   size = 8x8
             int size = area.Width * area.Height;
-            int lowQualityChance = 60;
             int normalQualityChance = 20;
             int highQualityChance = 10;
             int veryHighQualityChance = 2;
@@ -269,6 +268,7 @@ namespace SWLOR.Game.Server.Service
                 plc.SetLocalInt("RESOURCE_QUALITY", (int)quality);
                 plc.SetLocalInt("RESOURCE_TIER", tier);
                 plc.SetLocalInt("RESOURCE_TYPE", (int)resourceType);
+                plc.SetLocalInt("RESOURCE_COUNT", _random.Random(3, 10));
                 
                 ObjectSpawn spawn = new ObjectSpawn(plc, false, 600);
                 areaSpawn.Placeables.Add(spawn);

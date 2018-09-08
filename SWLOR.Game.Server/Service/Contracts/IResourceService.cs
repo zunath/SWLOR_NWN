@@ -1,4 +1,6 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using NWN;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Service.Contracts
 {
@@ -10,5 +12,8 @@ namespace SWLOR.Game.Server.Service.Contracts
         string GetResourceTypeName(ResourceType resourceType);
         string GetResourceName(ResourceType resourceType, int tier);
         string GetResourceDescription(ResourceType resourceType, ResourceQuality quality, int tier);
+        ItemProperty GetRandomComponentBonusIP(ResourceQuality quality);
+        int CalculateChanceForComponentBonus(NWPlayer player, int tier, ResourceQuality quality);
+        int GetDifficultyAdjustment(ResourceQuality quality);
     }
 }

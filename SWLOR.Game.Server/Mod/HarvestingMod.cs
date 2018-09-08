@@ -4,12 +4,12 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class MiningMod : IMod
+    public class HarvestingMod : IMod
     {
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            if (target.MiningBonus >= 30)
-                return "You cannot improve that item's mining bonus any further.";
+            if (target.HarvestingBonus >= 30)
+                return "You cannot improve that item's harvesting bonus any further.";
 
             return null;
         }
@@ -17,15 +17,15 @@ namespace SWLOR.Game.Server.Mod
         public void Apply(NWPlayer player, NWItem target, params string[] args)
         {
             int value = Convert.ToInt32(args[0]);
-            int newValue = target.MiningBonus + value;
+            int newValue = target.HarvestingBonus + value;
             if (newValue > 30) newValue = 30;
-            target.MiningBonus = newValue;
+            target.HarvestingBonus = newValue;
         }
 
         public string Description(NWPlayer player, NWItem target, params string[] args)
         {
             int value = Convert.ToInt32(args[0]);
-            return "Mining +" + value;
+            return "Harvesting +" + value;
         }
     }
 }

@@ -6,6 +6,7 @@
         int Random(int max);
         int Random(int min, int max);
         float RandomFloat();
+        float RandomFloat(float min, float max);
         int GetRandomWeightedIndex(int[] weights);
     }
 }

@@ -32,6 +32,11 @@ namespace SWLOR.Game.Server.Service
             return (float)_random.NextDouble();
         }
 
+        public float RandomFloat(float min, float max)
+        {
+            return (float)(_random.NextDouble() * (max - min) + min);
+        }
+
         public int GetRandomWeightedIndex(int[] weights)
         {
             int totalWeight = 0;

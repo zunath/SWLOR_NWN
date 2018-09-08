@@ -11,12 +11,12 @@
 7     16857724   "Light Armor"           
 8     16857725   "Heavy Armor"           
 9     16857726   Shields                 
-10    16857727   Mining                  
+10    16857727   Harvesting              
 11    16857308   "Force Armor"           
 12    16857729   Weaponsmith             
 13    16857730   Armorsmith              
-14    16857731   Logging                 
-15    16857732   Construction            
+14    16857731   Logging                    
+15    16857732   Fabrication             
 16    16857733   Cooking                 
 17    16857734   "First Aid"             
 18    16857735   "Item Repair"           
@@ -25,5 +25,5 @@
 21    ****       ****                    
 22    16857739   Engineering             
 23    16857740   Farming                 
-24    16857741   Forage                  
+24    16857741   Scavenging              
 25    ****       ****                    

@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Service
             {
                 user.IsBusy = true;
                 if (faceTarget)
-                    _.SetFacingPoint(target.Position);
+                    _.SetFacingPoint(!target.IsValid ? _.GetPositionFromLocation(targetLocation) : target.Position);
                 if (animationID > 0)
                     _.ActionPlayAnimation(animationID, 1.0f, delay);
             });
@@ -207,14 +207,9 @@ namespace SWLOR.Game.Server.Service
             {
                 description += _color.Orange("Casting Penalty: -") + examinedItem.CastingSpeed + "%\n";
             }
-
-            if (examinedItem.LoggingBonus > 0)
+            if (examinedItem.HarvestingBonus > 0)
             {
-                description += _color.Orange("Logging Bonus: ") + examinedItem.LoggingBonus + "\n";
-            }
-            if (examinedItem.MiningBonus > 0)
-            {
-                description += _color.Orange("Mining Bonus: ") + examinedItem.MiningBonus + "\n";
+                description += _color.Orange("Harvesting Bonus: ") + examinedItem.HarvestingBonus + "\n";
             }
             if (examinedItem.CraftBonusArmorsmith > 0)
             {

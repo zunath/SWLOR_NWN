@@ -4,8 +4,8 @@
     {
         Unknown = -1,
         RecommendedLevel = 100,
-        LoggingBonus = 101,
-        MiningBonus = 102,
+        // 101 is open
+        HarvestingBonus = 102,
         CastingSpeed = 103,
         ComponentType = 104,
         CraftBonusWeaponsmith = 105,

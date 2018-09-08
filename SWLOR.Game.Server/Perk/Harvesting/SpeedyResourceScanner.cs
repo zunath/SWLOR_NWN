@@ -1,8 +1,13 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.Harvesting
 {
-    public class WoodBagger : IPerk
+    public class SpeedyResourceScanner: IPerk
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

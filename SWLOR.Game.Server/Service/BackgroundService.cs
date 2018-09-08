@@ -133,14 +133,6 @@ namespace SWLOR.Game.Server.Service
                     item2Resref = "bkg_mtlshuriken";
                     item2Quantity = 50;
                     break;
-                case BackgroundType.Miner:
-                    _perk.DoPerkUpgrade(oPC, PerkType.Miner);
-                    _perk.DoPerkUpgrade(oPC, PerkType.Miner);
-                    break;
-                case BackgroundType.Lumberjack:
-                    _perk.DoPerkUpgrade(oPC, PerkType.Lumberjack);
-                    _perk.DoPerkUpgrade(oPC, PerkType.Lumberjack);
-                    break;
                 case BackgroundType.Medic:
                     _perk.DoPerkUpgrade(oPC, PerkType.HealingKitExpert);
                     _perk.DoPerkUpgrade(oPC, PerkType.ImmediateImprovement);

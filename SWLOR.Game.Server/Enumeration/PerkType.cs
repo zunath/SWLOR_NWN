@@ -3,25 +3,25 @@
     public enum PerkType
     {
         Unknown = -1,
-        SpeedyFabrication = 1, // new
-        FabricationBlueprints = 2, // new
+        SpeedyFabrication = 1, 
+        FabricationBlueprints = 2, 
         // 3 is free
         // 4 is free
         // 5 is free
         // 6 is free
         // 7 is free
         // 8 is free
-        Miner = 9,
-        Lumberjack = 10,
-        PrecisionMining = 11,
-        PrecisionLogging = 12,
-        PickaxeExpert = 13,
-        LoggingAxeExpert = 14,
+        // 9 is free
+        // 10 is free
+        // 11 is free
+        // 12 is free
+        // 13 is free
+        // 14 is free
         Lucky = 15,
         Health = 16,
         FP = 17,
         SpeedyMiner = 18,
-        SpeedyLogger = 19,
+        // 19 is free
         SpeedyMedic = 20,
         HealingKitExpert = 21,
         ImmediateImprovement = 22,
@@ -91,12 +91,12 @@
         MagicModInstallationWeapons = 86,
         WeaponFocusLightsaber = 87,
         CraftingModInstallationWeapons = 88,
-        SeedSearcher = 89,
+        // 89 is free
         CarefulForager = 90,
         FarmingEfficiency = 91,
         ExpertFarmer = 92,
-        OreBagger = 93,
-        WoodBagger = 94,
+        // 93 is free
+        // 94 is free
         // 95 is free
         EngineeringBlueprints = 96,
         SpecialModInstallationWeapons = 97,
@@ -131,7 +131,8 @@
         Chainspell = 126,
         Clarity = 127,
         Sturdiness = 128,
-        LightsaberProficiency = 129
+        LightsaberProficiency = 129,
+        SpeedyScanner = 130
     }
 
 }

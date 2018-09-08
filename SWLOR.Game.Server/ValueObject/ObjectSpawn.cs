@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.ValueObject
         public string Resref { get; set; }
         public Location SpawnLocation { get; }
         public bool IsStaticSpawnPoint { get; }
+        public ResourceDetails Resource { get; set; }
 
         public NWPlaceable SpawnPlaceable => NWPlaceable.Wrap(Spawn.Object);
         public NWCreature SpawnCreature => NWCreature.Wrap(Spawn.Object);

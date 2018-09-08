@@ -18,8 +18,8 @@
         Berserker = 13,
         TwinBladeSpecialist = 14,
         MartialArtist = 15,
-        Miner = 16,
-        Lumberjack = 17,
+        // 16 is open
+        // 17 is open
         // 18 is open
         Medic = 19,
         Farmer = 20

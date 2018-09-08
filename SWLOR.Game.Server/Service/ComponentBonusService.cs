@@ -66,11 +66,8 @@ namespace SWLOR.Game.Server.Service
                     case ComponentBonusType.ACUp:
                         product.CustomAC += amount;
                         break;
-                    case ComponentBonusType.LoggingUp:
-                        product.LoggingBonus += amount;
-                        break;
-                    case ComponentBonusType.MiningUp:
-                        product.MiningBonus += amount;
+                    case ComponentBonusType.HarvestingUp:
+                        product.HarvestingBonus += amount;
                         break;
                     case ComponentBonusType.CastingSpeedUp:
                         product.CastingSpeed += amount;

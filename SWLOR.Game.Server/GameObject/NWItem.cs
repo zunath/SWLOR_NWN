@@ -4,6 +4,7 @@ using SWLOR.Game.Server.GameObject.Contracts;
 
 using NWN;
 using SWLOR.Game.Server.Service.Contracts;
+using static NWN.NWScript;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.GameObject
@@ -87,7 +88,7 @@ namespace SWLOR.Game.Server.GameObject
             {
                 List<ItemProperty> ips = new List<ItemProperty>();
                 ItemProperty ip = _.GetFirstItemProperty(Object);
-                while (_.GetIsItemPropertyValid(ip) == NWScript.TRUE)
+                while (_.GetIsItemPropertyValid(ip) == TRUE)
                 {
                     ips.Add(ip);
                     ip = _.GetNextItemProperty(Object);
@@ -109,8 +110,12 @@ namespace SWLOR.Game.Server.GameObject
                 if (maxDurability <= -1) return _durability.GetMaxDurability(this);
                 MaxDurability = maxDurability;
                 return maxDurability;
-            } 
-            set => _durability.SetMaxDurability(this, value);
+            }
+            set
+            {
+                _.SetLocalInt(Object, "DURABILITY_OVERRIDE", TRUE);
+                _durability.SetMaxDurability(this, value);
+            }
         }
 
         public virtual float Durability
@@ -121,8 +126,12 @@ namespace SWLOR.Game.Server.GameObject
                 if(durability <= -1) return _durability.GetDurability(this);
                 Durability = durability;
                 return durability;
-            } 
-            set => _durability.SetDurability(this, value);
+            }
+            set
+            {
+                _.SetLocalInt(Object, "DURABILITY_OVERRIDE", TRUE); 
+                _durability.SetDurability(this, value);
+            }
         }
         
         public virtual int CustomAC
@@ -192,29 +201,17 @@ namespace SWLOR.Game.Server.GameObject
             }
             set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_TYPE_LEVEL_INCREASE", value);
         }
-
-        public virtual int LoggingBonus
+        
+        public virtual int HarvestingBonus
         {
             get
             {
-                int loggingBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.LoggingBonus);
-                if(loggingBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_LOGGING_BONUS");
-                LoggingBonus = loggingBonus;
-                return loggingBonus;
-            }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_LOGGING_BONUS", value);
-        }
-
-        public virtual int MiningBonus
-        {
-            get
-            {
-                int craftBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.MiningBonus);
-                if(craftBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_MINING_BONUS");
-                MiningBonus = craftBonus;
+                int craftBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.HarvestingBonus);
+                if(craftBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_HARVESTING_BONUS");
+                HarvestingBonus = craftBonus;
                 return craftBonus;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_MINING_BONUS", value);
+            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_HARVESTING_BONUS", value);
         }
 
         public virtual int CastingSpeed
@@ -489,7 +486,7 @@ namespace SWLOR.Game.Server.GameObject
         private int GetItemPropertyValueAndRemove(int itemPropertyID)
         {
             ItemProperty ip = _.GetFirstItemProperty(Object);
-            while (_.GetIsItemPropertyValid(ip) == NWScript.TRUE)
+            while (_.GetIsItemPropertyValid(ip) == TRUE)
             {
                 if (_.GetItemPropertyType(ip) == itemPropertyID)
                 {

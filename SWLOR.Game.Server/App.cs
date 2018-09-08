@@ -151,6 +151,7 @@ namespace SWLOR.Game.Server
             builder.RegisterType<PVPSanctuaryService>().As<IPVPSanctuaryService>();
             builder.RegisterType<QuestService>().As<IQuestService>();
             builder.RegisterType<RandomService>().As<IRandomService>();
+            builder.RegisterType<ResourceService>().As<IResourceService>();
             builder.RegisterType<ModService>().As<IModService>();
             builder.RegisterType<SearchService>().As<ISearchService>();
             builder.RegisterType<SerializationService>().As<ISerializationService>();

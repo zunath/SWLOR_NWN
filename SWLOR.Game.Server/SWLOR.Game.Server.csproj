@@ -240,6 +240,8 @@
     <Compile Include="Enumeration\QuestID.cs" />
     <Compile Include="Enumeration\QuestType.cs" />
     <Compile Include="Enumeration\QuickBarSlotType.cs" />
+    <Compile Include="Enumeration\ResourceQuality.cs" />
+    <Compile Include="Enumeration\ResourceType.cs" />
     <Compile Include="Enumeration\SkillType.cs" />
     <Compile Include="Enumeration\StructurePermission.cs" />
     <Compile Include="Event\Area\OnAreaUserDefined.cs" />
@@ -254,6 +256,7 @@
     <Compile Include="Event\Player\OnPlayerDamaged.cs" />
     <Compile Include="Extension\BehaviourTreeBuilderExtensions.cs" />
     <Compile Include="Item\ModItem.cs" />
+    <Compile Include="Item\ResourceScanner.cs" />
     <Compile Include="Item\StructureItem.cs" />
     <Compile Include="Mod\FabricationMod.cs" />
     <Compile Include="NWNX\DamageData.cs" />
@@ -266,6 +269,7 @@
     <Compile Include="NWN\Events\Player\pc_on_damaged.cs" />
     <Compile Include="Perk\Fabrication\FabricationBlueprints.cs" />
     <Compile Include="Perk\Fabrication\SpeedyFabrication.cs" />
+    <Compile Include="Perk\Harvesting\SpeedyResourceScanner.cs" />
     <Compile Include="Perk\LightSide\Gate.cs" />
     <Compile Include="Perk\LightSide\HolyShot.cs" />
     <Compile Include="Perk\LightSide\Purify.cs" />
@@ -308,17 +312,7 @@
     <Compile Include="Perk\General\Lucky.cs" />
     <Compile Include="Perk\General\FP.cs" />
     <Compile Include="Perk\General\Meditate.cs" />
-    <Compile Include="Perk\Harvesting\LoggingAxeExpert.cs" />
-    <Compile Include="Perk\Harvesting\Lumberjack.cs" />
-    <Compile Include="Perk\Harvesting\Miner.cs" />
-    <Compile Include="Perk\Harvesting\OreBagger.cs" />
-    <Compile Include="Perk\Harvesting\PickaxeExpert.cs" />
-    <Compile Include="Perk\Harvesting\PrecisionLogging.cs" />
-    <Compile Include="Perk\Harvesting\PrecisionMining.cs" />
-    <Compile Include="Perk\Harvesting\SeedSearcher.cs" />
-    <Compile Include="Perk\Harvesting\SpeedyLogger.cs" />
-    <Compile Include="Perk\Harvesting\SpeedyMiner.cs" />
-    <Compile Include="Perk\Harvesting\WoodBagger.cs" />
+    <Compile Include="Perk\Harvesting\SpeedyHarvester.cs" />
     <Compile Include="Perk\MartialArts\CircleKick.cs" />
     <Compile Include="Perk\MartialArts\DeflectArrows.cs" />
     <Compile Include="Perk\Engineering\RefineryManagement.cs" />
@@ -501,9 +495,6 @@
     <Compile Include="Placeable\QuestSystem\ItemCollector\OnDisturbed.cs" />
     <Compile Include="Placeable\QuestSystem\ItemCollector\OnOpened.cs" />
     <Compile Include="Placeable\QuestSystem\OnUsed.cs" />
-    <Compile Include="Placeable\Resource\OnAttacked.cs" />
-    <Compile Include="Placeable\Resource\OnDamaged.cs" />
-    <Compile Include="Placeable\Resource\OnDeath.cs" />
     <Compile Include="Placeable\Resource\OnHeartbeat.cs" />
     <Compile Include="Placeable\Resource\OnUsed.cs" />
     <Compile Include="Placeable\SearchContainer\OnClosed.cs" />
@@ -542,12 +533,11 @@
     <Compile Include="Mod\HPRegenMod.cs" />
     <Compile Include="Mod\HPMod.cs" />
     <Compile Include="Mod\LevelMod.cs" />
-    <Compile Include="Mod\LoggingMod.cs" />
     <Compile Include="Mod\LuckMod.cs" />
     <Compile Include="Mod\FPRegenMod.cs" />
     <Compile Include="Mod\FPMod.cs" />
     <Compile Include="Mod\MeditateMod.cs" />
-    <Compile Include="Mod\MiningMod.cs" />
+    <Compile Include="Mod\HarvestingMod.cs" />
     <Compile Include="Mod\SneakAttackMod.cs" />
     <Compile Include="Mod\SummoningMagicMod.cs" />
     <Compile Include="Mod\WeaponsmithMod.cs" />
@@ -668,6 +658,7 @@
     <Compile Include="Service\Contracts\IBasePermissionService.cs" />
     <Compile Include="Service\ImpoundService.cs" />
     <Compile Include="Service\Contracts\ISpawnService.cs" />
+    <Compile Include="Service\Contracts\IResourceService.cs" />
     <Compile Include="Service\ItemService.cs" />
     <Compile Include="Service\Contracts\ITimeService.cs" />
     <Compile Include="Service\KeyItemService.cs" />
@@ -685,6 +676,7 @@
     <Compile Include="Service\QuestService.cs" />
     <Compile Include="Service\RandomService.cs" />
     <Compile Include="Service\ModService.cs" />
+    <Compile Include="Service\ResourceService.cs" />
     <Compile Include="Service\SearchService.cs" />
     <Compile Include="Service\SerializationService.cs" />
     <Compile Include="Service\SkillService.cs" />
@@ -708,6 +700,7 @@
     <Compile Include="ValueObject\MapPin.cs" />
     <Compile Include="ValueObject\PCPerkHeader.cs" />
     <Compile Include="ValueObject\ModSlots.cs" />
+    <Compile Include="ValueObject\ResourceDetails.cs" />
     <Compile Include="ValueObject\Skill\CreatureSkillRegistration.cs" />
     <Compile Include="ValueObject\Skill\PlayerSkillPointTracker.cs" />
     <Compile Include="ValueObject\Skill\PlayerSkillRegistration.cs" />

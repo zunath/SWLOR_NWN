@@ -201,17 +201,29 @@ namespace SWLOR.Game.Server.GameObject
             }
             set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_TYPE_LEVEL_INCREASE", value);
         }
-        
+
         public virtual int HarvestingBonus
         {
             get
             {
                 int craftBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.HarvestingBonus);
-                if(craftBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_HARVESTING_BONUS");
+                if (craftBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_HARVESTING_BONUS");
                 HarvestingBonus = craftBonus;
                 return craftBonus;
             }
             set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_HARVESTING_BONUS", value);
+        }
+
+        public virtual int ScanningBonus
+        {
+            get
+            {
+                int craftBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.ScanningBonus);
+                if (craftBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_SCANNING_BONUS");
+                ScanningBonus = craftBonus;
+                return craftBonus;
+            }
+            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_SCANNING_BONUS", value);
         }
 
         public virtual int CastingSpeed

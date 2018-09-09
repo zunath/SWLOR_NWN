@@ -35,7 +35,8 @@
         DarkAbilityDown = 30,
         LightAbilityDown = 31,
         FabricationUp = 32,
-        StructureBonus = 33
+        StructureBonusUp = 33,
+        ScanningUp = 34
         
 
     }

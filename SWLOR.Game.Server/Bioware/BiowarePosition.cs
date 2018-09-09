@@ -14,11 +14,19 @@ namespace SWLOR.Game.Server.Bioware
             _ = script;
         }
 
-        public void TurnToFaceObject(NWObject oObjectToFace, NWObject oTarget)
+        public void TurnToFaceObject(NWObject objectToFace, NWObject facer)
         {
-            oTarget.AssignCommand(() =>
+            facer.AssignCommand(() =>
             {
-                _.SetFacingPoint(oObjectToFace.Position);
+                _.SetFacingPoint(objectToFace.Position);
+            });
+        }
+
+        public void TurnToFaceLocation(Location locationToFace, NWObject facer)
+        {
+            facer.AssignCommand(() =>
+            {
+                _.SetFacingPoint(_.GetPositionFromLocation(locationToFace));
             });
         }
 

@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using NWN;
+using SWLOR.Game.Server.Bioware.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
@@ -18,6 +19,7 @@ namespace SWLOR.Game.Server.Item
         private readonly IResourceService _resource;
         private readonly ISkillService _skill;
         private readonly IDurabilityService _durability;
+        private readonly IBiowarePosition _biowarePosition;
 
         public ResourceScanner(
             INWScript script,
@@ -26,7 +28,8 @@ namespace SWLOR.Game.Server.Item
             IPerkService perk,
             IResourceService resource,
             ISkillService skill,
-            IDurabilityService durability)
+            IDurabilityService durability,
+            IBiowarePosition biowarePosition)
         {
             _ = script;
             _spawn = spawn;
@@ -35,6 +38,7 @@ namespace SWLOR.Game.Server.Item
             _resource = resource;
             _skill = skill;
             _durability = durability;
+            _biowarePosition = biowarePosition;
         }
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
@@ -70,8 +74,9 @@ namespace SWLOR.Game.Server.Item
 
             if (user.IsPlayer && user.GetLocalInt(target.GlobalID) == FALSE)
             {
+                int scanningBonus = item.ScanningBonus;
                 _skill.GiveSkillXP(player, SkillType.Harvesting, 150);
-                user.SetLocalInt(target.GlobalID, 1); // todo: add item property bonus from scanner
+                user.SetLocalInt(target.GlobalID, 1 + scanningBonus); 
             }
         }
 
@@ -94,6 +99,8 @@ namespace SWLOR.Game.Server.Item
                 var position = _.GetPositionFromLocation(spawn.SpawnLocation);
                 int cellX = (int)(position.m_X / 10);
                 int cellY = (int)(position.m_Y / 10);
+
+                _biowarePosition.TurnToFaceLocation(spawn.SpawnLocation, user);
 
                 user.FloatingText("Nearest resource is located at coordinates (" + cellX + ", " + cellY + ")");
             }

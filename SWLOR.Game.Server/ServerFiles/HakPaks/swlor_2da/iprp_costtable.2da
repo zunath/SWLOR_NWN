@@ -66,3 +66,5 @@
 62    IPRP_COMPBONCOS    ComponentBonusCost             0            
 63    IPRP_ITMTYPE       ComponentItemTypeRestriction   0            
 64    IPRP_STRCBON       StructureBonus                 0            
+65    IPRP_SCANBON       ScanningBonus                  0            
+66    IPRP_FABBON        FabricationBonus               0            

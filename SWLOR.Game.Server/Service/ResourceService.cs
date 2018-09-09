@@ -136,6 +136,7 @@ namespace SWLOR.Game.Server.Service
                 "compbon_med1",
                 "compbon_faid1",
                 "compbon_fab1",
+                "compbon_scanup1"
             };
 
             string[] uncommonIP =
@@ -164,6 +165,7 @@ namespace SWLOR.Game.Server.Service
                 "compbon_fpregen1",
                 "compbon_snkatk1",
                 "compbon_fab2",
+                "compbon_scanup2"
 
             };
 
@@ -191,7 +193,7 @@ namespace SWLOR.Game.Server.Service
                 "compbon_fpregen2",
                 "compbon_snkatk2",
                 "compbon_fab3",
-
+                "compbon_scanup3"
             };
 
             string[] ultraRareIP =

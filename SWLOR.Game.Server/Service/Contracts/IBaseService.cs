@@ -28,5 +28,6 @@ namespace SWLOR.Game.Server.Service.Contracts
         string GetPlayerIDOwnerOfSector(Area dbArea, string sector);
         void DoPlayerExitBuildingInstance(NWPlayer player, NWPlaceable door = null);
         void OnModuleNWNXChat(NWPlayer sender);
+        int CalculateMaxShieldHP(PCBaseStructure controlTower);
     }
 }

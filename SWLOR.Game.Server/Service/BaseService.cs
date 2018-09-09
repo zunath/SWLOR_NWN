@@ -652,5 +652,10 @@ namespace SWLOR.Game.Server.Service
             sender.SetLocalString("NEW_CONTAINER_NAME", text);
             sender.SendMessage("New container name received. Please press the 'Next' button in the conversation window.");
         }
+
+        public int CalculateMaxShieldHP(PCBaseStructure controlTower)
+        {
+            return (int)(controlTower.Durability * 300);
+        }
     }
 }

@@ -358,6 +358,8 @@
     <Compile Include="Perk\Weapons\ImprovedCritical.cs" />
     <Compile Include="Perk\Engineering\SpeedyEngineering.cs" />
     <Compile Include="Perk\Engineering\EngineeringBlueprints.cs" />
+    <Compile Include="Placeable\ControlTower\OnDamaged.cs" />
+    <Compile Include="Placeable\ControlTower\OnHeartbeat.cs" />
     <Compile Include="Placeable\CraftingDevice\OnClosed.cs" />
     <Compile Include="Placeable\CraftingDevice\OnDisturbed.cs" />
     <Compile Include="Placeable\CraftingDevice\OnOpened.cs" />

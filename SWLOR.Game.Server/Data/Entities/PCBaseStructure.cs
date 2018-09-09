@@ -41,6 +41,12 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public int StructureBonus { get; set; }
 
+        public int ShieldHP { get; set; }
+
+        public bool IsInReinforcedMode { get; set; }
+
+        public int ReinforcedFuel { get; set; }
+
         public virtual BaseStructure BaseStructure { get; set; }
 
         public virtual BuildingStyle InteriorStyle { get; set; }

@@ -13,7 +13,6 @@ using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN.NWScript;
-using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -274,8 +273,6 @@ namespace SWLOR.Game.Server.Service
             {
                 item.RecommendedLevel = itemLevel;
                 item.SetLocalString("CRAFTER_PLAYER_ID", oPC.GlobalID);
-
-                _base.ApplyCraftedItemLocalVariables(item, blueprint.BaseStructure);
             }
 
             int successAmount = 0;
@@ -302,6 +299,16 @@ namespace SWLOR.Game.Server.Service
                 var result = RunComponentBonusAttempt(oPC, component, equipmentBonus, chance, craftedItems);
                 successAmount += result.Item1;
                 chance = result.Item2;
+            }
+
+            // Structures gain increased durability based on the blueprint
+            if (blueprint.BaseStructure != null)
+            {
+                foreach (var item in craftedItems)
+                {
+                    item.MaxDurability += (float)blueprint.BaseStructure.Durability;
+                    item.Durability = item.MaxDurability;
+                }
             }
 
 

@@ -43,6 +43,7 @@
         ComponentBonus = 137,
         ComponentItemTypeRestriction = 138,
         CraftBonusFabrication = 139,
-        StructureBonus = 140
+        StructureBonus = 140,
+        ScanningBonus = 141
     }
 }

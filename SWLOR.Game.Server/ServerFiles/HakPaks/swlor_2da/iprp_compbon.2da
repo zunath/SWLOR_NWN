@@ -10,7 +10,7 @@
 6     16857314   DurabilityUp         
 7     16857313   ChargesUp            
 8     16857315   ACUp                 
-9     16857981   LoggingUp            
+9     ****       ****                 
 10    16857982   HarvestingUp         
 11    16857983   CastingSpeedUp       
 12    16857984   ArmorsmithUp         
@@ -35,3 +35,4 @@
 31    16858003   LightAbilityDown     
 32    16858031   FabricationUp        
 33    16858040   StructureBonusUp     
+34    16858042   ScanningUp           

@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.Service
                     case ComponentBonusType.LightAbilityDown:
                         product.LightAbilityBonus -= amount;
                         break;
-                    case ComponentBonusType.StructureBonus:
+                    case ComponentBonusType.StructureBonusUp:
                         product.StructureBonus += amount;
                         break;
                     default:

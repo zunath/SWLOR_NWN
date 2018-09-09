@@ -18,6 +18,10 @@ namespace SWLOR.Game.Server.Data.Entities
         [StringLength(16)]
         public string Resref { get; set; }
 
+        public int Weight { get; set; }
+
+        public string SpawnRule { get; set; }
+
         public virtual Spawn Spawn { get; set; }
     }
 }

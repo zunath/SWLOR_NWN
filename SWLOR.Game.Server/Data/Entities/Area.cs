@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Data.Entities
         [StringLength(32)]
         public string Tag { get; set; }
 
-        public int ResourceQuality { get; set; }
+        public int ResourceSpawnTableID { get; set; }
 
         public int Width { get; set; }
 

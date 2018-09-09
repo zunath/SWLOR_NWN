@@ -74,6 +74,7 @@
     <Compile Include="Bioware\Contracts\IBiowareXP2.cs" />
     <Compile Include="ChatCommand\CommandDetailsAttribute.cs" />
     <Compile Include="ChatCommand\Contracts\IChatCommand.cs" />
+    <Compile Include="ChatCommand\Coord.cs" />
     <Compile Include="ChatCommand\Help.cs" />
     <Compile Include="ChatCommand\Night.cs" />
     <Compile Include="ChatCommand\Pos.cs" />
@@ -683,6 +684,8 @@
     <Compile Include="Service\StorageService.cs" />
     <Compile Include="Service\AreaService.cs" />
     <Compile Include="Service\TimeService.cs" />
+    <Compile Include="SpawnRule\Contracts\ISpawnRule.cs" />
+    <Compile Include="SpawnRule\OreAndTreeSpawnRule.cs" />
     <Compile Include="ValueObject\AreaSpawn.cs" />
     <Compile Include="ValueObject\AreaStructure.cs" />
     <Compile Include="ValueObject\ObjectSpawn.cs" />

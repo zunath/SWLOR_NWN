@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Data.Entities;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN.NWScript;
 
@@ -20,14 +21,12 @@ namespace SWLOR.Game.Server.Service
         private readonly IObjectProcessingService _processor;
         private readonly AppState _state;
         private readonly IRandomService _random;
-        private readonly IResourceService _resource;
 
         public SpawnService(
             INWScript script,
             IDataContext db,
             IRandomService random,
             IObjectProcessingService processor,
-            IResourceService resource,
             AppState state)
         {
             _ = script;
@@ -35,7 +34,6 @@ namespace SWLOR.Game.Server.Service
             _random = random;
             _processor = processor;
             _state = state;
-            _resource = resource;
         }
 
         public void OnModuleLoad()
@@ -190,22 +188,19 @@ namespace SWLOR.Game.Server.Service
         {
             var dbArea = _db.Areas.Single(x => x.Resref == area.Resref);
 
-            if (dbArea.ResourceQuality <= 0) return;
+            if (dbArea.ResourceSpawnTableID <= 0) return;
+            Spawn table = _db.Spawns.Single(x => x.SpawnID == dbArea.ResourceSpawnTableID);
+            var possibleSpawns = table.SpawnObjects;
 
             // 1024 size = 32x32
             // 256  size = 16x16
             // 64   size = 8x8
             int size = area.Width * area.Height;
-            int normalQualityChance = 20;
-            int highQualityChance = 10;
-            int veryHighQualityChance = 2;
 
             int maxSpawns = 0;
             if (size <= 12)
             {
                 maxSpawns = 2;
-                highQualityChance = 0;
-                veryHighQualityChance = 0;
             }
             else if (size <= 32)
             {
@@ -228,53 +223,30 @@ namespace SWLOR.Game.Server.Service
                 maxSpawns = 50;
             }
 
+            int[] weights = new int[possibleSpawns.Count];
+            for (int x = 0; x < possibleSpawns.Count; x++)
+            {
+                weights[x] = possibleSpawns.ElementAt(x).Weight;
+            }
+
             for (int x = 1; x <= maxSpawns; x++)
             {
-                int roll = _random.Random(0, 100);
-                ResourceQuality quality = ResourceQuality.Low;
-                ResourceType resourceType = ResourceType.Ore;
-                int tier = dbArea.ResourceQuality;
-
-                if (roll <= veryHighQualityChance)
-                {
-                    quality = ResourceQuality.VeryHigh;
-                }
-                else if (roll <= highQualityChance)
-                {
-                    quality = ResourceQuality.High;
-                }
-                else if (roll <= normalQualityChance)
-                {
-                    quality = ResourceQuality.Normal;
-                }
-
-                roll = _random.Random(0, 100);
-                if (roll <= 30)
-                {
-                    resourceType = ResourceType.Organic;
-                }
-
-                roll = _random.Random(0, 100);
-                if (roll <= 3)
-                {
-                    tier++;
-                }
-
-                if (tier > 10) tier = 10;
-
-                string resref = _resource.GetResourcePlaceableResref(resourceType);
+                int index = _random.GetRandomWeightedIndex(weights);
+                var dbSpawn = possibleSpawns.ElementAt(index);
                 Location location = GetRandomSpawnPoint(area.Resref);
-                NWPlaceable plc = NWPlaceable.Wrap(_.CreateObject(OBJECT_TYPE_PLACEABLE, resref, location));
-                plc.SetLocalInt("RESOURCE_QUALITY", (int)quality);
-                plc.SetLocalInt("RESOURCE_TIER", tier);
-                plc.SetLocalInt("RESOURCE_TYPE", (int)resourceType);
-                plc.SetLocalInt("RESOURCE_COUNT", _random.Random(3, 10));
+                NWPlaceable plc = NWPlaceable.Wrap(_.CreateObject(OBJECT_TYPE_PLACEABLE, dbSpawn.Resref, location));
                 
+                if (!string.IsNullOrWhiteSpace(dbSpawn.SpawnRule))
+                {
+                    ISpawnRule rule = App.ResolveByInterface<ISpawnRule>("SpawnRule." + dbSpawn.SpawnRule);
+                    rule.Run(plc);
+                }
+
                 ObjectSpawn spawn = new ObjectSpawn(plc, false, 600);
                 areaSpawn.Placeables.Add(spawn);
             }
         }
-
+        
         public IReadOnlyCollection<ObjectSpawn> GetAreaPlaceableSpawns(string areaResref)
         {
             var areaSpawn = _state.AreaSpawns[areaResref];

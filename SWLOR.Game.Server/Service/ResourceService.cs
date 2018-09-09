@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public string GetResourceTypeName(ResourceType resourceType)
+        private string GetResourceTypeName(ResourceType resourceType)
         {
             switch (resourceType)
             {
@@ -51,18 +51,7 @@ namespace SWLOR.Game.Server.Service
                     return "Unknown Resource";
             }
         }
-
-        public string GetResourcePlaceableResref(ResourceType resourceType)
-        {
-            switch (resourceType)
-            {
-                case ResourceType.Ore: return "ore_vein";
-                case ResourceType.Organic: return "tree";
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(resourceType), resourceType, null);
-            }
-        }
-
+        
         public string GetResourceItemResref(ResourceType resourceType, int tier)
         {
             // Raw Ore
@@ -105,7 +94,7 @@ namespace SWLOR.Game.Server.Service
             return string.Empty;
         }
 
-        public string GetResourceName(ResourceType resourceType, int tier)
+        private string GetResourceName(ResourceType resourceType, int tier)
         {
             string resref = GetResourceItemResref(resourceType, tier);
             return _item.GetNameByResref(resref);

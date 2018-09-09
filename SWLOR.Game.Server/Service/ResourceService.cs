@@ -8,103 +8,56 @@ namespace SWLOR.Game.Server.Service
 {
     public class ResourceService : IResourceService
     {
+        private readonly INWScript _;
         private readonly IItemService _item;
         private readonly IRandomService _random;
         private readonly ISkillService _skill;
 
         public ResourceService(
+            INWScript script,
             IItemService item,
             IRandomService random,
             ISkillService skill)
         {
+            _ = script;
             _item = item;
             _random = random;
             _skill = skill;
         }
-
-        public string GetOreQualityName(ResourceQuality quality)
-        {
-            switch (quality)
-            {
-                case ResourceQuality.Low:
-                    return "Low Quality";
-                case ResourceQuality.Normal:
-                    return "Normal Quality";
-                case ResourceQuality.High:
-                    return "High Quality";
-                case ResourceQuality.VeryHigh:
-                    return "Very High Quality";
-                default:
-                    return "Unknown Quality";
-            }
-        }
-
-        private string GetResourceTypeName(ResourceType resourceType)
-        {
-            switch (resourceType)
-            {
-                case ResourceType.Ore:
-                    return "Ore";
-                case ResourceType.Organic:
-                    return "Organic Material";
-                default:
-                    return "Unknown Resource";
-            }
-        }
         
-        public string GetResourceItemResref(ResourceType resourceType, int tier)
+        public string GetResourceDescription(NWPlaceable resource)
         {
-            // Raw Ore
-            if (resourceType == ResourceType.Ore)
+            NWPlaceable tempStorage = NWPlaceable.Wrap(_.GetObjectByTag("TEMP_ITEM_STORAGE"));
+            string resref = resource.GetLocalString("RESOURCE_RESREF");
+            string qualityName = resource.GetLocalString("RESOURCE_QUALITY_NAME");
+
+            NWItem tempItem = NWItem.Wrap(_.CreateItemOnObject(resref, tempStorage.Object));
+            string resourceName = tempItem.Name;
+            
+            int typeID = 0;
+
+            foreach (var ip in tempItem.ItemProperties)
             {
-                switch (tier)
+                if (_.GetItemPropertyType(ip) == (int)CustomItemPropertyType.ComponentType)
                 {
-                    case 1: return "raw_veldite";
-                    case 2: return "raw_scordspar";
-                    case 3: return "raw_plagionite";
-                    case 4: return "raw_keromber";
-                    case 5: return "raw_jasioclase";
-                    case 6: return "raw_hemorgite";
-                    case 7: return "raw_ochne";
-                    case 8: return "raw_croknor";
-                    case 9: return "raw_arkoxit";
-                    case 10: return "raw_bisteiss";
-                    default: return string.Empty;
-                }
-            }
-            // Organic Material
-            else if (resourceType == ResourceType.Organic)
-            {
-                switch (tier)
-                {
-                    case 1: return "elm_wood";
-                    case 2: return "ash_wood";
-                    case 3: return "walnut_wood";
-                    case 4: return "arrowwood_wood";
-                    case 5: return "rosewood_wood";
-                    case 6: return "mahogany_wood";
-                    case 7: return "maple_wood";
-                    case 8: return "willow_wood";
-                    case 9: return "lauan_wood";
-                    case 10: return "ebony_wood";
-                    default: return string.Empty;
+                    typeID = _.GetItemPropertyCostTableValue(ip);
+                    break;
                 }
             }
 
-            return string.Empty;
-        }
+            if (typeID <= 0)
+            {
+                return "Invalid component type";
+            }
 
-        private string GetResourceName(ResourceType resourceType, int tier)
-        {
-            string resref = GetResourceItemResref(resourceType, tier);
-            return _item.GetNameByResref(resref);
-        }
+            int tlkID = Convert.ToInt32(_.Get2DAString("iprp_comptype", "Name", typeID));
+            string componentName = _.GetStringByStrRef(tlkID);
 
-        public string GetResourceDescription(ResourceType resourceType, ResourceQuality quality, int tier)
-        {
-            string description = GetOreQualityName(quality) + " " +
-                                 GetResourceName(resourceType, tier) + " (" +
-                                 GetResourceTypeName(resourceType) + ")";
+            string description = qualityName + " " +
+                                 resourceName + " (" +
+                                 componentName + ")";
+
+            tempItem.Destroy();
 
             return description;
         }

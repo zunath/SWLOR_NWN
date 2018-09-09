@@ -3,6 +3,7 @@
     public enum ResourceType
     {
         Ore = 1,
-        Organic = 2
+        Organic = 2,
+        Crystal = 3
     }
 }

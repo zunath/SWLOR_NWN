@@ -6,11 +6,9 @@ namespace SWLOR.Game.Server.Service.Contracts
 {
     public interface IResourceService
     {
-        string GetOreQualityName(ResourceQuality quality);
-        string GetResourceItemResref(ResourceType resourceType, int tier);
-        string GetResourceDescription(ResourceType resourceType, ResourceQuality quality, int tier);
         ItemProperty GetRandomComponentBonusIP(ResourceQuality quality);
         int CalculateChanceForComponentBonus(NWPlayer player, int tier, ResourceQuality quality);
         int GetDifficultyAdjustment(ResourceQuality quality);
+        string GetResourceDescription(NWPlaceable resource);
     }
 }

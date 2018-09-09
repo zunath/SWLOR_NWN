@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Item
                 effectLocation = targetLocation;
 
             }
-            else if(target.GetLocalInt("RESOURCE_TYPE") > 0)
+            else if(!string.IsNullOrWhiteSpace(target.GetLocalString("RESOURCE_RESREF")))
             {
                 ScanResource(user, target);
                 _durability.RunItemDecay(player, item, _random.RandomFloat(0.05f, 0.1f));
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Item
             var area = NWArea.Wrap(_.GetAreaFromLocation(targetLocation));
             var spawns = _spawn.GetAreaPlaceableSpawns(area.Resref);
             var spawn = spawns
-                .Where(x => x.SpawnPlaceable.GetLocalInt("RESOURCE_TYPE") > 0 &&
+                .Where(x => !string.IsNullOrWhiteSpace(x.SpawnPlaceable.GetLocalString("RESOURCE_RESREF")) &&
                             x.SpawnPlaceable.IsValid)
                 .OrderBy(o => _.GetDistanceBetweenLocations(targetLocation, o.Spawn.Location))
                 .FirstOrDefault();
@@ -101,11 +101,8 @@ namespace SWLOR.Game.Server.Item
 
         private void ScanResource(NWCreature user, NWObject target)
         {
-            ResourceQuality quality = (ResourceQuality)target.GetLocalInt("RESOURCE_QUALITY");
-            ResourceType resourceType = (ResourceType)target.GetLocalInt("RESOURCE_TYPE");
-            int tier = target.GetLocalInt("RESOURCE_TIER");
-            
-            user.SendMessage("[Resource Details]: " + _resource.GetResourceDescription(resourceType, quality, tier));
+            NWPlaceable resource = NWPlaceable.Wrap(target.Object);
+            user.SendMessage("[Resource Details]: " + _resource.GetResourceDescription(resource));
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
@@ -144,7 +141,7 @@ namespace SWLOR.Game.Server.Item
 
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            if ((!target.IsValid && !Equals(user, target)) && target.GetLocalInt("RESOURCE_TYPE") <= 0) 
+            if ((!target.IsValid && !Equals(user, target)) && string.IsNullOrWhiteSpace(target.GetLocalString("RESOURCE_RESREF"))) 
                 return "You cannot scan that target with this type of scanner.";
             return null;
         }

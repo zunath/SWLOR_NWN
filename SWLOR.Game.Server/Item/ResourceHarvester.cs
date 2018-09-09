@@ -47,10 +47,9 @@ namespace SWLOR.Game.Server.Item
         {
             NWPlayer player = NWPlayer.Wrap(user.Object);
             ResourceQuality quality = (ResourceQuality)target.GetLocalInt("RESOURCE_QUALITY");
-            ResourceType resourceType = (ResourceType)target.GetLocalInt("RESOURCE_TYPE");
             int tier = target.GetLocalInt("RESOURCE_TIER");
             int remaining = target.GetLocalInt("RESOURCE_COUNT") - 1;
-            string itemResref = _resource.GetResourceItemResref(resourceType, tier);
+            string itemResref = target.GetLocalString("RESOURCE_RESREF");
             int ipBonusChance = _resource.CalculateChanceForComponentBonus(player, tier, quality);
             int roll = _random.Random(1, 100);
             int rank = _skill.GetPCSkill(player, SkillType.Harvesting).Rank;

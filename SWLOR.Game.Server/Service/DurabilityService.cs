@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN.NWScript;
 
@@ -32,6 +33,20 @@ namespace SWLOR.Game.Server.Service
             {
                 float durability = GetMaxDurability(item) <= 0 ? DefaultDurability : GetMaxDurability(item);
                 item.SetLocalFloat("DURABILITY_CURRENT", durability);
+                if (item.GetLocalFloat("DURABILITY_MAX") <= 0.0f)
+                {
+                    float maxDurability = DefaultDurability;
+                    foreach (var ip in item.ItemProperties)
+                    {
+                        if (_.GetItemPropertyType(ip) == (int) CustomItemPropertyType.MaxDurability)
+                        {
+                            maxDurability = _.GetItemPropertyCostTableValue(ip);
+                            break;
+                        }
+                    }
+
+                    item.SetLocalFloat("DURABILITY_MAX", maxDurability);
+                }
             }
             item.SetLocalInt("DURABILITY_INITIALIZED", 1);
         }
@@ -116,10 +131,10 @@ namespace SWLOR.Game.Server.Service
             if (oPC.IsPlot ||
                 oItem.GetLocalInt("UNBREAKABLE") == 1)
                 return;
-
+            
             float durability = GetDurability(oItem);
             string sItemName = oItem.Name;
-
+            
             // Reduce by 0.001 each time it's run. Player only receives notifications when it drops a full point.
             // I.E: Dropping from 29.001 to 29.
             // Note that players only see two decimal places in-game on purpose.
@@ -138,6 +153,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
+
                 SetDurability(oItem, durability);
             }
         }

@@ -68,9 +68,7 @@ namespace SWLOR.Game.Server.SpawnRule
                 roll = _random.Random(0, 3);
                 resref = coloredResrefs[roll];
             }
-
-            Console.WriteLine(resref);
-
+            
             target.SetLocalInt("RESOURCE_QUALITY", (int)quality);
             target.SetLocalInt("RESOURCE_TIER", tier);
             target.SetLocalInt("RESOURCE_COUNT", quantity);

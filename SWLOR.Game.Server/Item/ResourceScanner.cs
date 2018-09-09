@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Item
             if (user.IsPlayer && user.GetLocalInt(target.GlobalID) == FALSE)
             {
                 _skill.GiveSkillXP(player, SkillType.Harvesting, 150);
-                user.SetLocalInt(target.GlobalID, TRUE);
+                user.SetLocalInt(target.GlobalID, 1); // todo: add item property bonus from scanner
             }
         }
 

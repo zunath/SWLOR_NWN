@@ -84,14 +84,15 @@ namespace SWLOR.Game.Server.Service
                             _.DelayCommand(0.5f, () =>
                             {
                                 var creature = NWCreature.Wrap(_.CreateObject(objectType, spawnResref, location));
-                                var newSpawn = new ObjectSpawn(creature, true, respawnTime);
+                                
+                                ObjectSpawn newSpawn; 
                                 if (useResref)
                                 {
-                                    newSpawn.Resref = spawnResref;
+                                    newSpawn = new ObjectSpawn(creature, true, spawnResref, respawnTime);
                                 }
                                 else
                                 {
-                                    newSpawn.SpawnTableID = spawnTableID;
+                                    newSpawn = new ObjectSpawn(creature, true, spawnTableID, respawnTime);
                                 }
 
                                 if (objectType == OBJECT_TYPE_CREATURE)
@@ -242,7 +243,7 @@ namespace SWLOR.Game.Server.Service
                     rule.Run(plc);
                 }
 
-                ObjectSpawn spawn = new ObjectSpawn(plc, false, 600);
+                ObjectSpawn spawn = new ObjectSpawn(plc, false, dbArea.ResourceSpawnTableID, 600.0f);
                 areaSpawn.Placeables.Add(spawn);
             }
         }

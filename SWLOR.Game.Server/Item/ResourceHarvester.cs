@@ -55,6 +55,10 @@ namespace SWLOR.Game.Server.Item
             int rank = _skill.GetPCSkill(player, SkillType.Harvesting).Rank;
             int difficulty = (tier-1) * 10 + _resource.GetDifficultyAdjustment(quality);
             int delta = difficulty - rank;
+            int itemHarvestBonus = item.HarvestingBonus;
+            int scanningBonus = user.GetLocalInt(target.GlobalID);
+
+            ipBonusChance += (itemHarvestBonus * 2) + (scanningBonus * 2);
 
             NWItem resource = NWItem.Wrap(_.CreateItemOnObject(itemResref, player.Object));
 
@@ -65,19 +69,21 @@ namespace SWLOR.Game.Server.Item
             }
 
             user.SendMessage("You harvest " + resource.Name + ".");
-            _durability.RunItemDecay(player, item);
+            _durability.RunItemDecay(player, item, _random.RandomFloat(0.03f, 0.07f));
             int xp = 350 + (delta * 50);
             _skill.GiveSkillXP(player, SkillType.Harvesting, xp);
 
             if (remaining <= 0)
             {
                 target.Destroy();
+                user.DeleteLocalInt(target.GlobalID);
             }
             else
             {
                 target.SetLocalInt("RESOURCE_COUNT", remaining);
             }
 
+            _.ApplyEffectAtLocation(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_FNF_SUMMON_MONSTER_3), target.Location);
         }
         
 

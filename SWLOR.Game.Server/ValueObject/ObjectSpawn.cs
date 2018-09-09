@@ -17,12 +17,21 @@ namespace SWLOR.Game.Server.ValueObject
         public NWPlaceable SpawnPlaceable => NWPlaceable.Wrap(Spawn.Object);
         public NWCreature SpawnCreature => NWCreature.Wrap(Spawn.Object);
 
-        public ObjectSpawn(NWObject spawn, bool isStaticSpawnPoint, float respawnTime = 120.0f)
+        public ObjectSpawn(NWObject spawn, bool isStaticSpawnPoint, string resref, float respawnTime = 120.0f)
         {
             Spawn = spawn;
             SpawnLocation = spawn.Location;
             IsStaticSpawnPoint = isStaticSpawnPoint;
             RespawnTime = respawnTime;
+            Resref = resref;
+        }
+        public ObjectSpawn(NWObject spawn, bool isStaticSpawnPoint, int spawnTableID, float respawnTime = 120.0f)
+        {
+            Spawn = spawn;
+            SpawnLocation = spawn.Location;
+            IsStaticSpawnPoint = isStaticSpawnPoint;
+            RespawnTime = respawnTime;
+            SpawnTableID = spawnTableID;
         }
     }
 }

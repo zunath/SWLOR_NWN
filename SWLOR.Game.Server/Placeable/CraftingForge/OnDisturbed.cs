@@ -239,6 +239,9 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
                 }
             }
 
+            int stronidiumAmount = 2 + player.EffectiveHarvestingBonus;
+            _.CreateItemOnObject("stronidium", player.Object, stronidiumAmount);
+
             int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(100, level, pcSkill.Rank);
             _skill.GiveSkillXP(player, SkillType.Engineering, xp);
         }

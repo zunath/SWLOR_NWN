@@ -685,7 +685,10 @@
     <Compile Include="Service\AreaService.cs" />
     <Compile Include="Service\TimeService.cs" />
     <Compile Include="SpawnRule\Contracts\ISpawnRule.cs" />
-    <Compile Include="SpawnRule\OreAndTreeSpawnRule.cs" />
+    <Compile Include="SpawnRule\FiberplastSpawnRule.cs" />
+    <Compile Include="SpawnRule\CrystalClusterSpawnRule.cs" />
+    <Compile Include="SpawnRule\TreeSpawnRule.cs" />
+    <Compile Include="SpawnRule\OreSpawnRule.cs" />
     <Compile Include="ValueObject\AreaSpawn.cs" />
     <Compile Include="ValueObject\AreaStructure.cs" />
     <Compile Include="ValueObject\ObjectSpawn.cs" />

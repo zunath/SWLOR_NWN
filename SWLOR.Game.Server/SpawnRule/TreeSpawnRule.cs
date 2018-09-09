@@ -7,12 +7,12 @@ using SWLOR.Game.Server.SpawnRule.Contracts;
 
 namespace SWLOR.Game.Server.SpawnRule
 {
-    public class OreAndTreeSpawnRule: ISpawnRule
+    public class TreeSpawnRule : ISpawnRule
     {
         private readonly IRandomService _random;
         private readonly IDataContext _db;
 
-        public OreAndTreeSpawnRule(IRandomService random, IDataContext db)
+        public TreeSpawnRule(IRandomService random, IDataContext db)
         {
             _random = random;
             _db = db;
@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.SpawnRule
             int roll = _random.Random(0, 100);
             ResourceQuality quality = ResourceQuality.Low;
             ResourceType resourceType = ResourceType.Ore;
+            string qualityName = "Low Quality";
 
             const int NormalQualityChance = 20;
             const int HighQualityChance = 10;
@@ -34,24 +35,22 @@ namespace SWLOR.Game.Server.SpawnRule
             if (roll <= VeryHighQualityChance)
             {
                 quality = ResourceQuality.VeryHigh;
+                qualityName = "Very High Quality";
             }
             else if (roll <= HighQualityChance)
             {
                 quality = ResourceQuality.High;
+                qualityName = "High Quality";
             }
             else if (roll <= NormalQualityChance)
             {
                 quality = ResourceQuality.Normal;
+                qualityName = "Normal Quality";
             }
 
-            roll = _random.Random(0, 100);
-            if (roll <= 30)
-            {
-                resourceType = ResourceType.Organic;
-            }
 
             roll = _random.Random(0, 100);
-            if (roll <= 3)
+            if (roll <= 2)
             {
                 tier++;
             }
@@ -60,8 +59,28 @@ namespace SWLOR.Game.Server.SpawnRule
 
             target.SetLocalInt("RESOURCE_QUALITY", (int)quality);
             target.SetLocalInt("RESOURCE_TIER", tier);
-            target.SetLocalInt("RESOURCE_TYPE", (int)resourceType);
             target.SetLocalInt("RESOURCE_COUNT", _random.Random(3, 10));
+            target.SetLocalString("RESOURCE_RESREF", GetResourceResref(tier));
+            target.SetLocalString("RESOURCE_QUALITY_NAME", qualityName);
         }
+
+        private string GetResourceResref(int tier)
+        {
+            switch (tier)
+            {
+                case 1: return "elm_wood";
+                case 2: return "ash_wood";
+                case 3: return "walnut_wood";
+                case 4: return "arrowwood_wood";
+                case 5: return "rosewood_wood";
+                case 6: return "mahogany_wood";
+                case 7: return "maple_wood";
+                case 8: return "willow_wood";
+                case 9: return "lauan_wood";
+                case 10: return "ebony_wood";
+                default: return string.Empty;
+            }
+        }
+
     }
 }

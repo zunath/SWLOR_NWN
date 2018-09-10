@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Service
     /// </summary>
     public class ColorTokenService : IColorTokenService
     {
-        private static string ColorArray => UnicodeToAscii("     !##$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]]^_`abcdefghijklmnopqrstuvwxyz{|}~€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜™š›œžŸ ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþþ");
+        private static string ColorArray => "     !##$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]]^_`abcdefghijklmnopqrstuvwxyz{|}~€‚ƒ„…†‡ˆ‰Š‹ŒŽ‘’“”•–—˜™š›œžŸ ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþþ";
 
         public string TokenStart(byte red, byte green, byte blue)
         {
@@ -49,15 +49,7 @@ namespace SWLOR.Game.Server.Service
         {
             return "</c>";
         }
-
-        private static string UnicodeToAscii(string unicodeString)
-        {
-            byte[] bytes = Encoding.Unicode.GetBytes(unicodeString);
-            string ascii = Encoding.ASCII.GetString(Encoding.Convert(Encoding.Unicode, Encoding.ASCII, bytes));
-
-            return ascii;
-        }
-
+        
         public string Black(string text)
         {
             if (string.IsNullOrWhiteSpace(text)) throw new ArgumentException("Text must not be null, empty, or white space.", nameof(text));

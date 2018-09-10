@@ -45,19 +45,20 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             int structureID = tower.GetLocalInt("PC_BASE_STRUCTURE_ID");
             PCBaseStructure structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
             int maxShieldHP = _base.CalculateMaxShieldHP(structure);
-            structure.ShieldHP -= damage;
-            if (structure.ShieldHP <= 0) structure.ShieldHP = 0;
-            float hpPercentage = (float)structure.ShieldHP / (float)maxShieldHP * 100.0f;
+            PCBase pcBase = structure.PCBase;
+            pcBase.ShieldHP -= damage;
+            if (pcBase.ShieldHP <= 0) pcBase.ShieldHP = 0;
+            float hpPercentage = (float)pcBase.ShieldHP / (float)maxShieldHP * 100.0f;
 
-            if (hpPercentage <= 25.0f && structure.ReinforcedFuel > 0)
+            if (hpPercentage <= 25.0f && pcBase.ReinforcedFuel > 0)
             {
-                structure.IsInReinforcedMode = true;
-                structure.ShieldHP = (int)(maxShieldHP * 0.25f);
+                pcBase.IsInReinforcedMode = true;
+                pcBase.ShieldHP = (int)(maxShieldHP * 0.25f);
             }
 
             attacker.SendMessage("Tower Shields: " + hpPercentage.ToString("0.00") + "%");
 
-            if (structure.IsInReinforcedMode)
+            if (pcBase.IsInReinforcedMode)
             {
                 attacker.SendMessage("Control tower is in reinforced mode and cannot be damaged. Reinforced mode will be disabled when the tower runs out of fuel.");
             }
@@ -65,9 +66,9 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(9999), tower.Object);
             weapon.Durability -= _random.RandomFloat(0.01f, 0.03f);
 
-            if (structure.ShieldHP <= 0)
+            if (pcBase.ShieldHP <= 0)
             {
-                structure.ShieldHP = 0;
+                pcBase.ShieldHP = 0;
                 
                 structure.Durability -= _random.RandomFloat(0.5f, 2.0f);
                 if (structure.Durability < 0.0f) structure.Durability = 0.0f;

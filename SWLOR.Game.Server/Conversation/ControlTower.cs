@@ -72,36 +72,36 @@ namespace SWLOR.Game.Server.Conversation
 
         private void OpenFuelBay(bool isStronidium)
         {
-            NWPlaceable chest = (NWPlaceable)GetDialogTarget();
+            NWPlaceable tower = (NWPlaceable)GetDialogTarget();
             NWPlayer oPC = GetPC();
 
-            if (NWPlaceable.Wrap(chest.GetLocalObject("CONTROL_TOWER_FUEL_BAY_USER")).IsValid)
+            if (NWPlaceable.Wrap(tower.GetLocalObject("CONTROL_TOWER_FUEL_BAY")).IsValid)
             {
                 oPC.FloatingText("Someone else is already accessing that structure's inventory. Please wait.");
                 return;
             }
 
-            int structureID = chest.GetLocalInt("PC_BASE_STRUCTURE_ID");
+            int structureID = tower.GetLocalInt("PC_BASE_STRUCTURE_ID");
             var structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
             Location location = oPC.Location;
             NWPlaceable bay = NWPlaceable.Wrap(_.CreateObject(OBJECT_TYPE_PLACEABLE, "fuel_bay", location));
             bay.AssignCommand(() => _.SetFacingPoint(oPC.Position));
 
-            bay.SetLocalObject("CONTROL_TOWER_FUEL_BAY_USER", bay.Object);
-            bay.SetLocalObject("CONTROL_TOWER_PARENT", chest.Object);
+            tower.SetLocalObject("CONTROL_TOWER_FUEL_BAY", bay.Object);
+            bay.SetLocalObject("CONTROL_TOWER_PARENT", tower.Object);
             bay.SetLocalInt("PC_BASE_STRUCTURE_ID", structureID);
 
             if (isStronidium)
             {
-                if(structure.ReinforcedFuel > 0)
-                    _.CreateItemOnObject("stronidium", bay.Object, structure.ReinforcedFuel);
+                if(structure.PCBase.ReinforcedFuel > 0)
+                    _.CreateItemOnObject("stronidium", bay.Object, structure.PCBase.ReinforcedFuel);
 
                 bay.SetLocalInt("CONTROL_TOWER_FUEL_TYPE", 1);
             }
             else
             {
-                if (structure.Fuel > 0)
-                    _.CreateItemOnObject("fuel_cell", bay.Object, structure.Fuel);
+                if (structure.PCBase.Fuel > 0)
+                    _.CreateItemOnObject("fuel_cell", bay.Object, structure.PCBase.Fuel);
             }
 
             oPC.AssignCommand(() => _.ActionInteractObject(bay.Object));

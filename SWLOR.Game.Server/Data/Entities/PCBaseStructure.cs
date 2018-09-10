@@ -47,6 +47,8 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public int ReinforcedFuel { get; set; }
 
+        public int Fuel { get; set; }
+
         public virtual BaseStructure BaseStructure { get; set; }
 
         public virtual BuildingStyle InteriorStyle { get; set; }

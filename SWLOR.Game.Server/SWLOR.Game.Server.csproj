@@ -87,6 +87,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Conversation\BackgroundMenu.cs" />
     <Compile Include="Conversation\BaseManagementTool.cs" />
+    <Compile Include="Conversation\ControlTower.cs" />
     <Compile Include="Conversation\EditBuildingPermissions.cs" />
     <Compile Include="Conversation\EditBasePermissions.cs" />
     <Compile Include="Conversation\BindSoul.cs" />
@@ -358,6 +359,7 @@
     <Compile Include="Perk\Weapons\ImprovedCritical.cs" />
     <Compile Include="Perk\Engineering\SpeedyEngineering.cs" />
     <Compile Include="Perk\Engineering\EngineeringBlueprints.cs" />
+    <Compile Include="Placeable\ControlTower\OnClicked.cs" />
     <Compile Include="Placeable\ControlTower\OnDamaged.cs" />
     <Compile Include="Placeable\ControlTower\OnHeartbeat.cs" />
     <Compile Include="Placeable\CraftingDevice\OnClosed.cs" />
@@ -484,6 +486,9 @@
     <Compile Include="Placeable\ForagePoint\OnDisturbed.cs" />
     <Compile Include="Placeable\ForagePoint\OnHeartbeat.cs" />
     <Compile Include="Placeable\ForagePoint\OnOpened.cs" />
+    <Compile Include="Placeable\FuelBay\OnClosed.cs" />
+    <Compile Include="Placeable\FuelBay\OnDisturbed.cs" />
+    <Compile Include="Placeable\FuelBay\OnOpened.cs" />
     <Compile Include="Placeable\GenericConversation.cs" />
     <Compile Include="Placeable\GrowingPlant\OnHeartbeat.cs" />
     <Compile Include="Placeable\GrowingPlant\OnUsed.cs" />

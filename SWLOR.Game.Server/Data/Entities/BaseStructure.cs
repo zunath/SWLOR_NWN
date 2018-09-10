@@ -45,6 +45,8 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public bool HasAtmosphere { get; set; }
 
+        public int ReinforcedStorage { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CraftBlueprint> CraftBlueprints { get; set; }
 

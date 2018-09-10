@@ -382,7 +382,7 @@ namespace SWLOR.Game.Server.Service
             {
                 BaseStructureType.ControlTower,
                 BaseStructureType.Drill,
-                BaseStructureType.Silo,
+                BaseStructureType.ResourceSilo,
                 BaseStructureType.Turret,
                 BaseStructureType.Building,
                 BaseStructureType.MassProduction,

@@ -4,11 +4,13 @@
     {
         ControlTower = 1,
         Drill = 2,
-        Silo = 3,
+        ResourceSilo = 3,
         Turret = 4,
         Building = 5,
         MassProduction = 6,
         StarshipProduction = 7,
-        Furniture = 8
+        Furniture = 8,
+        StronidiumSilo = 9,
+        FuelSilo = 10
     }
 }

@@ -159,8 +159,6 @@
     <Compile Include="Data\Entities\LootTableItem.cs" />
     <Compile Include="Data\Entities\NPCGroup.cs" />
     <Compile Include="Data\Entities\PCCooldown.cs" />
-    <Compile Include="Data\Entities\PCCorpse.cs" />
-    <Compile Include="Data\Entities\PCCorpseItem.cs" />
     <Compile Include="Data\Entities\PCCustomEffect.cs" />
     <Compile Include="Data\Entities\PCKeyItem.cs" />
     <Compile Include="Data\Entities\PCMapPin.cs" />
@@ -480,8 +478,6 @@
     <Compile Include="Perk\IPerk.cs" />
     <Compile Include="Placeable\CraftingForge\OnDisturbed.cs" />
     <Compile Include="Placeable\CraftingForge\OnHeartbeat.cs" />
-    <Compile Include="Placeable\DeathCorpse\OnClosed.cs" />
-    <Compile Include="Placeable\DeathCorpse\OnDisturbed.cs" />
     <Compile Include="Placeable\DisabledStructure\OnUsed.cs" />
     <Compile Include="Placeable\ForagePoint\OnClosed.cs" />
     <Compile Include="Placeable\ForagePoint\OnDisturbed.cs" />

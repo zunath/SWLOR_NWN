@@ -29,5 +29,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         void DoPlayerExitBuildingInstance(NWPlayer player, NWPlaceable door = null);
         void OnModuleNWNXChat(NWPlayer sender);
         int CalculateMaxShieldHP(PCBaseStructure controlTower);
+        int CalculateMaxFuel(PCBase pcBase);
+        int CalculateMaxReinforcedFuel(PCBase pcBase);
     }
 }

@@ -13,19 +13,22 @@ namespace SWLOR.Game.Server.Extension
             while (e != null)
             {
                 s.AppendLine("Exception type: " + e.GetType().FullName);
-                s.AppendLine("Message       : " + e.Message);
+                s.AppendLine("Message       : " + (e.Message ?? string.Empty));
                 s.AppendLine("Stacktrace:");
                 s.AppendLine(e.StackTrace);
                 
                 if (e is DbEntityValidationException valEx)
                 {
                     s.AppendLine("Entity validation errors: ");
+                    
                     foreach (var error in valEx.EntityValidationErrors)
                     {
+                        if (error.ValidationErrors == null) continue;
                         foreach (var val in error.ValidationErrors)
                         {
                             s.AppendLine(val.PropertyName + ": " + val.ErrorMessage);
                         }
+
                     }
 
                     s.AppendLine();

@@ -125,7 +125,6 @@
     <Compile Include="CustomEffect\BurningEffect.cs" />
     <Compile Include="CustomEffect\ChainspellEffect.cs" />
     <Compile Include="CustomEffect\Contracts\ICustomEffect.cs" />
-    <Compile Include="CustomEffect\FoodDiseaseEffect.cs" />
     <Compile Include="CustomEffect\PoisonEffect.cs" />
     <Compile Include="Data\Entities\Area.cs" />
     <Compile Include="Data\Entities\BaseStructure.cs" />
@@ -412,7 +411,6 @@
     <Compile Include="Item\FirstAid\Bandages.cs" />
     <Compile Include="Item\FirstAid\HealingKit.cs" />
     <Compile Include="Item\FirstAid\TreatmentKit.cs" />
-    <Compile Include="Item\Food.cs" />
     <Compile Include="Item\GenericStartConversation.cs" />
     <Compile Include="Item\Contracts\IActionItem.cs" />
     <Compile Include="Item\Repair\RepairKit.cs" />
@@ -617,7 +615,6 @@
     <Compile Include="Service\Contracts\IErrorService.cs" />
     <Compile Include="Service\Contracts\IExaminationService.cs" />
     <Compile Include="Service\Contracts\IFarmingService.cs" />
-    <Compile Include="Service\Contracts\IFoodService.cs" />
     <Compile Include="Service\Contracts\IHelmetToggleService.cs" />
     <Compile Include="Service\Contracts\IItemService.cs" />
     <Compile Include="Service\Contracts\IKeyItemService.cs" />
@@ -647,7 +644,6 @@
     <Compile Include="Service\ErrorService.cs" />
     <Compile Include="Service\ExaminationService.cs" />
     <Compile Include="Service\FarmingService.cs" />
-    <Compile Include="Service\FoodService.cs" />
     <Compile Include="Service\HelmetToggleService.cs" />
     <Compile Include="Service\Contracts\IEffectTrackerService.cs" />
     <Compile Include="Service\Contracts\IObjectProcessingService.cs" />

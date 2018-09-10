@@ -29,7 +29,6 @@ namespace SWLOR.Game.Server.Service
         private readonly INWNXPlayer _nwnxPlayer;
         private readonly IColorTokenService _color;
         private readonly IRandomService _random;
-        private readonly IFoodService _food;
         private readonly IEnmityService _enmity;
         private readonly INWNXEvents _nwnxEvents;
         private readonly INWNXDamage _nwnxDamage;
@@ -44,7 +43,6 @@ namespace SWLOR.Game.Server.Service
             INWNXPlayer nwnxPlayer,
             IColorTokenService color,
             IRandomService random,
-            IFoodService food,
             IEnmityService enmity,
             INWNXEvents nwnxEvents,
             INWNXDamage nwnxDamage,
@@ -59,7 +57,6 @@ namespace SWLOR.Game.Server.Service
             _nwnxPlayer = nwnxPlayer;
             _color = color;
             _random = random;
-            _food = food;
             _enmity = enmity;
             _nwnxEvents = nwnxEvents;
             _nwnxDamage = nwnxDamage;
@@ -278,12 +275,7 @@ namespace SWLOR.Game.Server.Service
                     pc.SendMessage(_color.Custom("FP: " + pcEntity.CurrentFP + " / " + pcEntity.MaxFP, 32, 223, 219));
 
                 }
-
-                if (_random.Random(100) + 1 <= 3)
-                {
-                    _food.DecreaseHungerLevel(pc, 1);
-                }
-
+                
                 if (!_customEffect.DoesPCHaveCustomEffect(pc, CustomEffectType.Chainspell))
                 {
                     // Mark cooldown on category

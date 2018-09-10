@@ -32,7 +32,6 @@ namespace SWLOR.Game.Server.Service
         private readonly IDataContext _db;
         private readonly INWScript _;
         private readonly IRandomService _random;
-        private readonly IFoodService _food;
         private readonly INWNXCreature _nwnxCreature;
         private readonly IPerkService _perk;
         private readonly IBiowareXP2 _biowareXP2;
@@ -42,7 +41,6 @@ namespace SWLOR.Game.Server.Service
         public SkillService(IDataContext db,
             INWScript script,
             IRandomService random,
-            IFoodService food,
             INWNXCreature nwnxCreature,
             IPerkService perk,
             IBiowareXP2 biowareXP2,
@@ -52,7 +50,6 @@ namespace SWLOR.Game.Server.Service
             _db = db;
             _ = script;
             _random = random;
-            _food = food;
             _nwnxCreature = nwnxCreature;
             _perk = perk;
             _biowareXP2 = biowareXP2;
@@ -836,11 +833,6 @@ namespace SWLOR.Game.Server.Service
             {
                 pcSkill = GetPCSkill(oPC, SkillType.Shields);
                 reg.AddSkillRegistrationPoint(oPC, (int)SkillType.Shields, oShield.RecommendedLevel, pcSkill.Rank);
-            }
-
-            if (_random.Random(100) + 1 <= 3)
-            {
-                _food.DecreaseHungerLevel(oPC, 1);
             }
         }
 

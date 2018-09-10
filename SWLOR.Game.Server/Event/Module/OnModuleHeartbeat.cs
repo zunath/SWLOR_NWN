@@ -13,7 +13,6 @@ namespace SWLOR.Game.Server.Event.Module
     {
         private readonly INWScript _;
         private readonly IDataContext _db;
-        private readonly IFoodService _food;
         private readonly ICustomEffectService _customEffect;
         private readonly IItemService _item;
         private readonly IEffectTrackerService _effectTracker;
@@ -23,7 +22,6 @@ namespace SWLOR.Game.Server.Event.Module
         
         public OnModuleHeartbeat(INWScript script,
             IDataContext db,
-            IFoodService food,
             ICustomEffectService customEffect,
             IItemService item,
             IEffectTrackerService effectTracker,
@@ -33,7 +31,6 @@ namespace SWLOR.Game.Server.Event.Module
         {
             _ = script;
             _db = db;
-            _food = food;
             _customEffect = customEffect;
             _item = item;
             _effectTracker = effectTracker;
@@ -56,7 +53,6 @@ namespace SWLOR.Game.Server.Event.Module
 
                     if (entity != null)
                     {
-                        _food.RunHungerCycle(player, entity);
                         HandleRegenerationTick(player, entity);
                         HandleFPRegenerationTick(player, entity);
 
@@ -97,11 +93,7 @@ namespace SWLOR.Game.Server.Event.Module
 
             if (entity.RegenerationTick <= 0)
             {
-                if (entity.CurrentHunger <= 20)
-                {
-                    oPC.SendMessage("You are hungry and not recovering HP naturally. Eat food to start recovering again.");
-                }
-                else if (oPC.CurrentHP < oPC.MaxHP)
+                if (oPC.CurrentHP < oPC.MaxHP)
                 {
                     // CON bonus
                     int con = oPC.ConstitutionModifier;
@@ -134,11 +126,7 @@ namespace SWLOR.Game.Server.Event.Module
 
             if (entity.CurrentFPTick <= 0)
             {
-                if (entity.CurrentHunger <= 20)
-                {
-                    oPC.SendMessage("You are hungry and not recovering FP naturally. Eat food to start recovering again.");
-                }
-                else if (entity.CurrentFP < entity.MaxFP)
+                if (entity.CurrentFP < entity.MaxFP)
                 {
                     // CHA bonus
                     int cha = oPC.CharismaModifier;

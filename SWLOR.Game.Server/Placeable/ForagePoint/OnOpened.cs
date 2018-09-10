@@ -17,7 +17,6 @@ namespace SWLOR.Game.Server.Placeable.ForagePoint
         private readonly IRandomService _random;
         private readonly IColorTokenService _color;
         private readonly ILootService _loot;
-        private readonly IFoodService _food;
         private readonly IFarmingService _farming;
 
         public OnOpened(INWScript script,
@@ -26,7 +25,6 @@ namespace SWLOR.Game.Server.Placeable.ForagePoint
             IRandomService random,
             IColorTokenService color,
             ILootService loot,
-            IFoodService food,
             IFarmingService farming)
         {
             _ = script;
@@ -35,7 +33,6 @@ namespace SWLOR.Game.Server.Placeable.ForagePoint
             _random = random;
             _color = color;
             _loot = loot;
-            _food = food;
             _farming = farming;
         }
 
@@ -119,13 +116,7 @@ namespace SWLOR.Game.Server.Placeable.ForagePoint
                 }
                 dc += _random.Random(3) + 1;
             }
-
-            if (_random.Random(100) + 1 <= 3)
-            {
-                _food.DecreaseHungerLevel(oPC, 1);
-            }
-
-
+            
             // Chance to destroy the forage point.
             int chanceToFullyHarvest = baseChanceToFullyHarvest - (_perk.GetPCPerkLevel(oPC, PerkType.CarefulForager) * 5);
             int growingPlantID = point.GetLocalInt("GROWING_PLANT_ID");

@@ -56,13 +56,7 @@ namespace SWLOR.Game.Server.Data.Entities
 
         [Column(TypeName = "datetime2")]
         public DateTime CreateTimestamp { get; set; }
-
-        public int MaxHunger { get; set; }
-
-        public int CurrentHunger { get; set; }
-
-        public int CurrentHungerTick { get; set; }
-
+        
         public int UnallocatedSP { get; set; }
         
         public int HPRegenerationAmount { get; set; }

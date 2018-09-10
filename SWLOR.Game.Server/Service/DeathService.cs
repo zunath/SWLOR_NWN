@@ -99,9 +99,6 @@ namespace SWLOR.Game.Server.Service
 
         private void TeleportPlayerToBindPoint(NWObject pc, PlayerCharacter entity)
         {
-            if (entity.CurrentHunger < 50)
-                entity.CurrentHunger = 50;
-
             if (string.IsNullOrWhiteSpace(entity.RespawnAreaTag))
             {
                 NWObject defaultRespawn = NWObject.Wrap(_.GetWaypointByTag("DEFAULT_RESPAWN_POINT"));

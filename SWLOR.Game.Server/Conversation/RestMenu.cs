@@ -147,7 +147,6 @@ namespace SWLOR.Game.Server.Conversation
             string header = _color.Green("Name: ") + player.Name + "\n\n";
             header += _color.Green("Skill Points: ") + totalSkillCount + " / " + _skill.SkillCap + "\n";
             header += _color.Green("Unallocated SP: ") + playerEntity.UnallocatedSP + "\n";
-            header += _color.Green("Nourishment: ") + _menu.BuildBar(playerEntity.CurrentHunger, playerEntity.MaxHunger, 100) + "\n";
             header += _color.Green("FP: ") + _menu.BuildBar(playerEntity.CurrentFP, playerEntity.MaxFP, 100, _color.TokenStart(32, 223, 219)) + "\n";
 
             return header;

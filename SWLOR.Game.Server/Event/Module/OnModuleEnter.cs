@@ -71,6 +71,8 @@ namespace SWLOR.Game.Server.Event.Module
         
         private void ApplyScriptEvents(NWObject oPC)
         {
+            if (!oPC.IsPlayer) return;
+
             // As of 2018-03-28 only the OnDialogue, OnHeartbeat, and OnUserDefined events fire for PCs.
             // The rest are included here for completeness sake.
 

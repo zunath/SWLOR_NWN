@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Service
             oPC.SetLocalString("PC_ACCOUNT", account);
 
             Console.WriteLine(nowString + ": " + name + " (" + account + "/" + cdKey + ") connected to the server.");
-
+            
             ClientLogEvent entity = new ClientLogEvent
             {
                 AccountName = account,

@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         void ClearPlayerTempData(NWPlayer player);
         void PurchaseArea(NWPlayer player, NWArea area, string sector);
         void OnModuleHeartbeat();
+        void ToggleInstanceObjectPower(NWArea area, bool isPoweredOn);
         PCBaseStructure GetBaseControlTower(int pcBaseID);
         string CanPlaceStructure(NWCreature player, NWItem structureItem, Location targetLocation, int structureID);
         string GetSectorOfLocation(Location targetLocation);

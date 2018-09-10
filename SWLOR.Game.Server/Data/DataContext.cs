@@ -65,8 +65,6 @@ namespace SWLOR.Game.Server.Data
         public virtual IDbSet<PCBasePermission> PCBasePermissions { get; set; }
         public virtual IDbSet<PCBaseStructurePermission> PCBaseStructurePermissions { get; set; }
         public virtual IDbSet<PCCooldown> PCCooldowns { get; set; }
-        public virtual IDbSet<PCCorpseItem> PCCorpseItems { get; set; }
-        public virtual IDbSet<PCCorpse> PCCorpses { get; set; }
         public virtual IDbSet<PCCustomEffect> PCCustomEffects { get; set; }
         public virtual IDbSet<PCImpoundedItem> PCImpoundedItems { get; set; }
         public virtual IDbSet<PCKeyItem> PCKeyItems { get; set; }
@@ -313,13 +311,7 @@ namespace SWLOR.Game.Server.Data
                 .HasMany(e => e.ChildStructures)
                 .WithOptional(e => e.ParentPCBaseStructure)
                 .HasForeignKey(e => e.ParentPCBaseStructureID);
-
-
-            modelBuilder.Entity<PCCorpse>()
-                .HasMany(e => e.PCCorpseItems)
-                .WithRequired(e => e.PcCorpse)
-                .WillCascadeOnDelete(false);
-
+            
             modelBuilder.Entity<PCKeyItem>()
                 .Property(e => e.AcquiredDate)
                 .HasPrecision(0);

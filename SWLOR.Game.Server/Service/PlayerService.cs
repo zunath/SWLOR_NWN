@@ -224,7 +224,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (entity.RespawnAreaTag == "")
                 {
-                    _death.BindPlayerSoul(player, false);
+                    _death.SetRespawnLocation(player, false);
                 }
             }
         }

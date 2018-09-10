@@ -80,12 +80,11 @@ namespace SWLOR.Game.Server.Tests.Service
             int callCount = -1;
             INWScript script = Substitute.For<INWScript>();
             INWNXCreature nwnxCreature = Substitute.For<INWNXCreature>();
-            ISerializationService serialization = Substitute.For<ISerializationService>();
             IRandomService random = Substitute.For<IRandomService>();
-            IColorTokenService color = Substitute.For<IColorTokenService>();
+            IDurabilityService durability = Substitute.For<IDurabilityService>();
             script.When(x => x.FloatingTextStringOnCreature(Arg.Any<string>(), Arg.Any<Object>(), Arg.Any<int>())).Do(x => callCount++);
             
-            DeathService service = new DeathService(_db, script, serialization, random, color);
+            DeathService service = new DeathService(_db, script, random, durability);
             NWPlayer player = Substitute.For<NWPlayer>(script, nwnxCreature);
             player.Object.Returns(x => new Object());
             player.GlobalID.Returns("123");
@@ -95,7 +94,7 @@ namespace SWLOR.Game.Server.Tests.Service
             player.Area.Tag.Returns("a_fake_area_tag");
 
             // Act
-            service.BindPlayerSoul(player, false);
+            service.SetRespawnLocation(player, false);
             var result = _db.PlayerCharacters.Single(x => x.PlayerID == "123");
 
             // Assert
@@ -112,15 +111,14 @@ namespace SWLOR.Game.Server.Tests.Service
         {
             // Arrange
             int callCount = 0;
-            
+
             INWScript script = Substitute.For<INWScript>();
             INWNXCreature nwnxCreature = Substitute.For<INWNXCreature>();
-            ISerializationService serialization = Substitute.For<ISerializationService>();
             IRandomService random = Substitute.For<IRandomService>();
-            IColorTokenService color = Substitute.For<IColorTokenService>();
+            IDurabilityService durability = Substitute.For<IDurabilityService>();
             script.When(x => x.FloatingTextStringOnCreature(Arg.Any<string>(), Arg.Any<Object>(), Arg.Any<int>())).Do(x => callCount++);
 
-            DeathService service = new DeathService(_db, script, serialization, random, color);
+            DeathService service = new DeathService(_db, script, random, durability);
             NWPlayer player = Substitute.For<NWPlayer>(script, nwnxCreature);
             player.Object.Returns(x => new Object());
             player.GlobalID.Returns("123");
@@ -131,7 +129,7 @@ namespace SWLOR.Game.Server.Tests.Service
             
 
             // Act
-            service.BindPlayerSoul(player, true);
+            service.SetRespawnLocation(player, true);
             var result = _db.PlayerCharacters.Single(x => x.PlayerID == "123");
 
             // Assert
@@ -149,14 +147,14 @@ namespace SWLOR.Game.Server.Tests.Service
             // Arrange
             ISerializationService serialization = Substitute.For<ISerializationService>();
             IRandomService random = Substitute.For<IRandomService>();
-            IColorTokenService color = Substitute.For<IColorTokenService>();
-            DeathService service = new DeathService(_db, Substitute.For<INWScript>(), serialization, random, color);
+            IDurabilityService durability = Substitute.For<IDurabilityService>();
+            DeathService service = new DeathService(_db, Substitute.For<INWScript>(), random, durability);
 
             // Assert
             Assert.Throws(typeof(ArgumentNullException), () =>
             {
                 // Act
-                service.BindPlayerSoul(null, false);
+                service.SetRespawnLocation(null, false);
             });
         }
 
@@ -166,11 +164,10 @@ namespace SWLOR.Game.Server.Tests.Service
             // Arrange
             INWScript script = Substitute.For<INWScript>();
             INWNXCreature nwnxCreature = Substitute.For<INWNXCreature>();
-            ISerializationService serialization = Substitute.For<ISerializationService>();
             IRandomService random = Substitute.For<IRandomService>();
-            IColorTokenService color = Substitute.For<IColorTokenService>();
+            IDurabilityService durability = Substitute.For<IDurabilityService>();
 
-            DeathService service = new DeathService(_db, script, serialization, random, color);
+            DeathService service = new DeathService(_db, script, random, durability);
             NWPlayer player = Substitute.For<NWPlayer>(script, nwnxCreature);
             player.Object.Returns(x => null);
 
@@ -178,7 +175,7 @@ namespace SWLOR.Game.Server.Tests.Service
             Assert.Throws(typeof(ArgumentNullException), () =>
             {
                 // Act
-                service.BindPlayerSoul(player, false);
+                service.SetRespawnLocation(player, false);
             });
         }
 
@@ -188,17 +185,16 @@ namespace SWLOR.Game.Server.Tests.Service
             // Arrange
             INWScript script = Substitute.For<INWScript>();
             INWNXCreature nwnxCreature = Substitute.For<INWNXCreature>();
-            ISerializationService serialization = Substitute.For<ISerializationService>();
             IRandomService random = Substitute.For<IRandomService>();
-            IColorTokenService color = Substitute.For<IColorTokenService>();
-            DeathService service = new DeathService(_db, script, serialization, random, color);
+            IDurabilityService durability = Substitute.For<IDurabilityService>();
+            DeathService service = new DeathService(_db, script, random, durability);
             NWPlayer player = Substitute.For<NWPlayer>(script, nwnxCreature);
 
             // Assert
             Assert.Throws(typeof(InvalidOperationException), () =>
             {
                 // Act
-                service.BindPlayerSoul(player, false);
+                service.SetRespawnLocation(player, false);
             });
         }
     }

@@ -37,6 +37,17 @@ namespace SWLOR.Game.Server.Data.Entities
         [Column(TypeName = "datetime2")]
         public DateTime DateRentDue { get; set; }
 
+        public int ShieldHP { get; set; }
+
+        public bool IsInReinforcedMode { get; set; }
+        
+        public int Fuel { get; set; }
+
+        public int ReinforcedFuel { get; set; }
+
+        [Column(TypeName = "datetime2")]
+        public DateTime DateFuelEnds { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PCBasePermission> PCBasePermissions { get; set; }
 

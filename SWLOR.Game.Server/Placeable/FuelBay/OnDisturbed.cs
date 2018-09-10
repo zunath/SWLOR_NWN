@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
                 }
 
                 firstFuel.StackSize = fuelCount;
-                structure.ReinforcedFuel = fuelCount;
+                structure.PCBase.ReinforcedFuel = fuelCount;
             }
             else
             {
@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
                 }
 
                 firstFuel.StackSize = fuelCount;
-                structure.Fuel = fuelCount;
+                structure.PCBase.Fuel = fuelCount;
             }
 
             _db.SaveChanges();

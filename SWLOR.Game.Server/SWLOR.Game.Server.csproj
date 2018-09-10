@@ -507,6 +507,7 @@
     <Compile Include="Placeable\StorageContainer\OnDisturbed.cs" />
     <Compile Include="Placeable\StorageContainer\OnOpened.cs" />
     <Compile Include="Placeable\Stores\GenericStore.cs" />
+    <Compile Include="Placeable\StructureRubble\OnDisturbed.cs" />
     <Compile Include="Placeable\StructureStorage\OnClosed.cs" />
     <Compile Include="Placeable\StructureStorage\OnDisturbed.cs" />
     <Compile Include="Placeable\StructureStorage\OnOpened.cs" />

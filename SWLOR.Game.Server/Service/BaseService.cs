@@ -442,7 +442,22 @@ namespace SWLOR.Game.Server.Service
 
             return item;
         }
-        
+
+        public void BootPlayersOutOfInstance(int pcBaseStructureID)
+        {
+            var areas = NWModule.Get().Areas;
+            var instance = areas.SingleOrDefault(x => x.IsInstance && x.GetLocalInt("PC_BASE_STRUCTURE_ID") == pcBaseStructureID);
+            if (instance != null)
+            {
+                foreach (var player in NWModule.Get().Players)
+                {
+                    if (Equals(player.Area, instance))
+                    {
+                        DoPlayerExitBuildingInstance(player);
+                    }
+                }
+            }
+        }
 
 
         public void ClearPCBaseByID(int pcBaseID, bool doSave = true)
@@ -455,17 +470,7 @@ namespace SWLOR.Game.Server.Service
             
             foreach (var structure in areaStructures)
             {
-                var instance = areas.SingleOrDefault(x => x.IsInstance && x.GetLocalInt("PC_BASE_STRUCTURE_ID") == structure.PCBaseStructureID);
-                if (instance != null)
-                {
-                    foreach (var player in NWModule.Get().Players)
-                    {
-                        if (Equals(player.Area, instance))
-                        {
-                            DoPlayerExitBuildingInstance(player);
-                        }
-                    }
-                }
+                BootPlayersOutOfInstance(structure.PCBaseStructureID);
 
                 ((List<AreaStructure>) baseArea.Data["BASE_SERVICE_STRUCTURES"]).Remove(structure);
                 structure.Structure.Destroy();
@@ -477,7 +482,7 @@ namespace SWLOR.Game.Server.Service
                 var pcBaseStructure = pcBase.PCBaseStructures.ElementAt(x);
                 for (int i = pcBaseStructure.PCBaseStructureItems.Count - 1; i >= 0; i--)
                 {
-                    var item = pcBaseStructure.PCBaseStructureItems.ElementAt(x);
+                    var item = pcBaseStructure.PCBaseStructureItems.ElementAt(i);
                     _impound.Impound(item);
                     _db.PCBaseStructureItems.Remove(item);
                 }

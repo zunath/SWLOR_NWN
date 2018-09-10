@@ -1,6 +1,5 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Data.Entities;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.ValueObject;
 
@@ -18,6 +17,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         string CanPlaceStructure(NWCreature player, NWItem structureItem, Location targetLocation, int structureID);
         string GetSectorOfLocation(Location targetLocation);
         NWItem ConvertStructureToItem(PCBaseStructure pcBaseStructure, NWObject target);
+        void BootPlayersOutOfInstance(int pcBaseStructureID);
         void ClearPCBaseByID(int pcBaseID, bool doSave = true);
         void ApplyCraftedItemLocalVariables(NWItem item, BaseStructure structure);
         double GetPowerInUse(int pcBaseID);

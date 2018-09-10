@@ -24,8 +24,10 @@ namespace SWLOR.Game.Server.ChatCommand
         public void DoAction(NWPlayer user, params string[] args)
         {
             PlayerCharacter pc = _db.PlayerCharacters.Single(x => x.PlayerID == user.GlobalID);
+
+            var area = NWModule.Get().Areas.Single(x => x.Resref == pc.RespawnAreaResref);
             Location location = _.Location(
-                _.GetObjectByTag(pc.RespawnAreaTag),
+                area.Object,
                 _.Vector((float)pc.RespawnLocationX, (float)pc.RespawnLocationY, (float)pc.RespawnLocationZ),
                 (float)pc.RespawnLocationOrientation
             );

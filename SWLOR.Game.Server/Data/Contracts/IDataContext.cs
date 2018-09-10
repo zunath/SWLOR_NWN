@@ -95,8 +95,6 @@ namespace SWLOR.Game.Server.Data.Contracts
         Database Database { get; }
         void Dispose();
         int SaveChanges();
-        Task<int> SaveChangesAsync();
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken);
         void StoredProcedure(string procedureName, params SqlParameter[] args);
         List<T> StoredProcedure<T>(string procedureName, params SqlParameter[] args);
         T StoredProcedureSingle<T>(string procedureName, params SqlParameter[] args);

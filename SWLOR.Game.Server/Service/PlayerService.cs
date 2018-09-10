@@ -162,6 +162,8 @@ namespace SWLOR.Game.Server.Service
 
         public void LoadCharacter(NWPlayer player)
         {
+            if (!player.IsPlayer) return;
+
             PlayerCharacter entity = GetPlayerEntity(player.GlobalID);
 
             if (entity == null) return;

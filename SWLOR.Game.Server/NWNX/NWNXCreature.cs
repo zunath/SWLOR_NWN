@@ -704,5 +704,71 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Creature, sFunc);
         }
 
+        public void SetGold(NWCreature creature, int gold)
+        {
+            string sFunc = "SetGold";
+            NWNX_PushArgumentInt(NWNX_Creature, sFunc, gold);
+            NWNX_PushArgumentObject(NWNX_Creature, sFunc, creature.Object);
+
+            NWNX_CallFunction(NWNX_Creature, sFunc);
+        }
+
+        public void SetCorpseDecayTime(NWCreature creature, int nDecayTime)
+        {
+            string sFunc = "SetCorpseDecayTime";
+            NWNX_PushArgumentInt(NWNX_Creature, sFunc, nDecayTime);
+            NWNX_PushArgumentObject(NWNX_Creature, sFunc, creature.Object);
+
+            NWNX_CallFunction(NWNX_Creature, sFunc);
+        }
+
+        public int GetBaseSavingThrow(NWCreature creature, int which)
+        {
+            string sFunc = "GetBaseSavingThrow";
+            NWNX_PushArgumentInt(NWNX_Creature, sFunc, which);
+            NWNX_PushArgumentObject(NWNX_Creature, sFunc, creature.Object);
+
+            NWNX_CallFunction(NWNX_Creature, sFunc);
+            return NWNX_GetReturnValueInt(NWNX_Creature, sFunc);
+        }
+
+        public void SetBaseSavingThrow(NWCreature creature, int which, int value)
+        {
+            string sFunc = "SetBaseSavingThrow";
+            NWNX_PushArgumentInt(NWNX_Creature, sFunc, value);
+            NWNX_PushArgumentInt(NWNX_Creature, sFunc, which);
+            NWNX_PushArgumentObject(NWNX_Creature, sFunc, creature.Object);
+
+            NWNX_CallFunction(NWNX_Creature, sFunc);
+        }
+
+        public void LevelUp(NWCreature creature, int @class, int count = 1)
+        {
+            string sFunc = "LevelUp";
+
+            NWNX_PushArgumentInt(NWNX_Creature, sFunc, count);
+            NWNX_PushArgumentInt(NWNX_Creature, sFunc, @class);
+            NWNX_PushArgumentObject(NWNX_Creature, sFunc, creature.Object);
+
+            NWNX_CallFunction(NWNX_Creature, sFunc);
+        }
+
+        public void LevelDown(NWCreature creature, int count = 1)
+        {
+            string sFunc = "LevelDown";
+            NWNX_PushArgumentInt(NWNX_Creature, sFunc, count);
+            NWNX_PushArgumentObject(NWNX_Creature, sFunc, creature.Object);
+
+            NWNX_CallFunction(NWNX_Creature, sFunc);
+        }
+
+        public void SetChallengeRating(NWCreature creature, float fCR)
+        {
+            string sFunc = "SetChallengeRating";
+            NWNX_PushArgumentFloat(NWNX_Creature, sFunc, fCR);
+            NWNX_PushArgumentObject(NWNX_Creature, sFunc, creature.Object);
+
+            NWNX_CallFunction(NWNX_Creature, sFunc);
+        }
     }
 }

@@ -262,6 +262,7 @@
     <Compile Include="NWNX\DamageData.cs" />
     <Compile Include="NWNX\Contracts\INWNXDamage.cs" />
     <Compile Include="NWNX\NWNXDamage.cs" />
+    <Compile Include="NWNX\PlayerVisibilityType.cs" />
     <Compile Include="NWN\Events\Module\mod_on_applydmg.cs" />
     <Compile Include="NWN\Events\Module\mod_on_attack.cs" />
     <Compile Include="NWN\Events\Module\mod_on_nwnxchat.cs" />

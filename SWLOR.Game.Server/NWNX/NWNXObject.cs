@@ -148,6 +148,17 @@ namespace SWLOR.Game.Server.NWNX
             return NWNX_GetReturnValueString(NWNX_Object, sFunc);
         }
 
+
+        public void SetDialogResref(NWObject obj, string dialog)
+        {
+            string sFunc = "SetDialogResref";
+
+            NWNX_PushArgumentString(NWNX_Object, sFunc, dialog);
+            NWNX_PushArgumentObject(NWNX_Object, sFunc, obj.Object);
+
+            NWNX_CallFunction(NWNX_Object, sFunc);
+        }
+
         // Set obj's appearance. Will not update for PCs until they
         // re-enter the area.
         public void SetAppearance(NWObject obj, int app)

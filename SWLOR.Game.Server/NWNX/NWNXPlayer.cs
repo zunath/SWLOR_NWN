@@ -1,10 +1,9 @@
-﻿using System;
-using System.Reflection;
-using NWN;
+﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
 using SWLOR.Game.Server.NWNX.Contracts;
+using System;
+using System.Reflection;
 
 namespace SWLOR.Game.Server.NWNX
 {
@@ -155,5 +154,43 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Player, sFunc);
         }
 
+
+        // Get the name of the .bic file associated with the player's character.
+        public string GetBicFileName(NWPlayer player)
+        {
+            string sFunc = "GetBicFileName";
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player.Object);
+            NWNX_CallFunction(NWNX_Player, sFunc);
+            return NWNX_GetReturnValueString(NWNX_Player, sFunc);
+        }
+
+
+
+        // Overrides the default visibility rules about how player perceives the target object.
+        // NWNX_PLAYER_VISIBILITY_DEFAULT - Restore normal behavior
+        // NWNX_PLAYER_VISIBILITY_HIDDEN - Object is always hidden from the player
+        // NWNX_PLAYER_VISIBILITY_VISIBLE - Object is always shown to the player
+
+        public void SetVisibilityOverride(NWPlayer player, NWObject target, int @override)
+        {
+            string sFunc = "SetVisibilityOverride";
+            NWNX_PushArgumentInt(NWNX_Player, sFunc, @override);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, target.Object);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player.Object);
+
+            NWNX_CallFunction(NWNX_Player, sFunc);
+        }
+
+        // Queries the existing visibility override for given (player, object) pair
+        // Returns NWNX_PLAYER_VISIBILITY_DEFAULT if no override exists
+        public int GetVisibilityOverride(NWPlayer player, NWObject target)
+        {
+            string sFunc = "GetVisibilityOverride";
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, target.Object);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player.Object);
+
+            NWNX_CallFunction(NWNX_Player, sFunc);
+            return NWNX_GetReturnValueInt(NWNX_Player, sFunc);
+        }
     }
 }

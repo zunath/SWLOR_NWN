@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.NWNX
 {
     public class NWNXDamage : NWNXBase, INWNXDamage
     {
-        const string NWNX_Damage = "NWNX_Damage";
+        private const string NWNX_Damage = "NWNX_Damage";
 
         public NWNXDamage(INWScript script)
             : base(script)
@@ -15,10 +15,13 @@ namespace SWLOR.Game.Server.NWNX
 
         }
 
-        public void SetDamageEventScript(string script)
+        public void SetDamageEventScript(string script, NWObject oOwner = null)
         {
+            if(oOwner == null) oOwner = NWObject.Wrap(new Object());
+
             string sFunc = "SetDamageEventScript";
 
+            NWNX_PushArgumentObject(NWNX_Damage, sFunc, oOwner.Object);
             NWNX_PushArgumentString(NWNX_Damage, sFunc, script);
 
             NWNX_CallFunction(NWNX_Damage, sFunc);

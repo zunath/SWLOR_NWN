@@ -4,6 +4,7 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entities;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
@@ -169,9 +170,16 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
                 var permission = pcBase.PCBasePermissions.ElementAt(p);
                 _db.PCBasePermissions.Remove(permission);
             }
-
-
+            
             _db.PCBases.Remove(pcBase);
+
+
+            Area dbArea = _db.Areas.Single(x => x.Resref == pcBase.AreaResref);
+            if (pcBase.Sector == AreaSector.Northeast) dbArea.NortheastOwner = null;
+            else if (pcBase.Sector == AreaSector.Northwest) dbArea.NorthwestOwner = null;
+            else if (pcBase.Sector == AreaSector.Southeast) dbArea.SoutheastOwner = null;
+            else if (pcBase.Sector == AreaSector.Southwest) dbArea.SouthwestOwner = null;
+
         }
     }
 }

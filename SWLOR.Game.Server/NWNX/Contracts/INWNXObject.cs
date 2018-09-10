@@ -5,18 +5,19 @@ namespace SWLOR.Game.Server.NWNX.Contracts
 {
     public interface INWNXObject
     {
-        int GetLocalVariableCount(NWObject obj);
-        LocalVariable GetLocalVariable(NWObject obj, int index);
-        NWObject StringToObject(string id);
-        void SetPosition(NWObject obj, Vector pos);
-        void SetCurrentHitPoints(NWCreature creature, int hp);
-        void SetMaxHitPoints(NWObject creature, int hp);
-        string GetPortrait(NWObject creature);
-        void SetPortrait(NWObject creature, string portrait);
-        string Serialize(Object obj);
         Object Deserialize(string serialized);
-        string GetDialogResref(NWObject obj);
-        void SetAppearance(NWObject obj, int app);
         int GetAppearance(NWObject obj);
+        string GetDialogResref(NWObject obj);
+        LocalVariable GetLocalVariable(NWObject obj, int index);
+        int GetLocalVariableCount(NWObject obj);
+        string GetPortrait(NWObject creature);
+        string Serialize(Object obj);
+        void SetAppearance(NWObject obj, int app);
+        void SetCurrentHitPoints(NWCreature creature, int hp);
+        void SetDialogResref(NWObject obj, string dialog);
+        void SetMaxHitPoints(NWObject creature, int hp);
+        void SetPortrait(NWObject creature, string portrait);
+        void SetPosition(NWObject obj, Vector pos);
+        NWObject StringToObject(string id);
     }
 }

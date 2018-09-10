@@ -467,6 +467,15 @@ namespace SWLOR.Game.Server.Conversation
             int impoundedCount = 0;
             int structureID = data.ManipulatingStructure.Structure.Area.GetLocalInt("PC_BASE_STRUCTURE_ID");
 
+            var controlTower = _base.GetBaseControlTower(pcBase.PCBaseID);
+            int maxShields = _base.CalculateMaxShieldHP(controlTower);
+
+            if (pcBase.ShieldHP < maxShields)
+            {
+                GetPC().FloatingText("You cannot retrieve any structures because the control tower has less than 100% shields.");
+                return;
+            }
+
             var canRetrieveStructures =
                 structureID > 0 ?
                     _perm.HasStructurePermission(GetPC(), structureID, StructurePermission.CanRetrieveStructures) :              // Buildings

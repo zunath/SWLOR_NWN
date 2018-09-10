@@ -450,29 +450,14 @@ namespace SWLOR.Game.Server.Service
                 return "You do not have permission to place or edit structures in this territory.";
             
             var structure = _db.BaseStructures.Single(x => x.BaseStructureID == structureID);
-            BaseStructureType structureType = (BaseStructureType)structure.BaseStructureTypeID;
-            BaseStructureType[] allowedOutside =
-            {
-                BaseStructureType.ControlTower,
-                BaseStructureType.Drill,
-                BaseStructureType.ResourceSilo,
-                BaseStructureType.Turret,
-                BaseStructureType.Building,
-                BaseStructureType.MassProduction,
-                BaseStructureType.StarshipProduction
-            };
-
-            BaseStructureType[] allowedInside =
-            {
-                BaseStructureType.Furniture
-            };
+            var structureType = structure.BaseStructureType;
             
-            if (!allowedOutside.Contains(structureType) && isOutside)
+            if (!structureType.CanPlaceOutside && isOutside)
             {
                 return "That structure can only be placed inside buildings.";
             }
 
-            if (!allowedInside.Contains(structureType) && !isOutside)
+            if (!structureType.CanPlaceInside && !isOutside)
             {
                 return "That structure can only be placed outside of buildings.";
             }
@@ -482,12 +467,12 @@ namespace SWLOR.Game.Server.Service
                 bool hasControlTower = pcBase.PCBaseStructures
                                            .SingleOrDefault(x => x.BaseStructure.BaseStructureTypeID == (int)BaseStructureType.ControlTower) != null;
 
-                if (!hasControlTower && structureType != BaseStructureType.ControlTower)
+                if (!hasControlTower && structureType.BaseStructureTypeID != (int)BaseStructureType.ControlTower)
                 {
                     return "A control tower must be placed down in the sector first.";
                 }
 
-                if (hasControlTower && structureType == BaseStructureType.ControlTower)
+                if (hasControlTower && structureType.BaseStructureTypeID == (int)BaseStructureType.ControlTower)
                 {
                     return "Only one control tower can be placed down per sector.";
                 }

@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Service
             pc.RespawnLocationY = player.Position.m_Y;
             pc.RespawnLocationZ = player.Position.m_Z;
             pc.RespawnLocationOrientation = player.Facing;
-            pc.RespawnAreaTag = player.Area.Tag;
+            pc.RespawnAreaResref = player.Area.Resref;
 
             _db.SaveChanges();
 
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Service
 
         private void TeleportPlayerToBindPoint(NWObject pc, PlayerCharacter entity)
         {
-            if (string.IsNullOrWhiteSpace(entity.RespawnAreaTag))
+            if (string.IsNullOrWhiteSpace(entity.RespawnAreaResref))
             {
                 NWObject defaultRespawn = NWObject.Wrap(_.GetWaypointByTag("DEFAULT_RESPAWN_POINT"));
                 Location location = defaultRespawn.Location;
@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Service
             {
                 pc.AssignCommand(() =>
                 {
-                    NWArea area = NWArea.Wrap(_.GetObjectByTag(entity.RespawnAreaTag));
+                    NWArea area = NWModule.Get().Areas.Single(x => x.Resref == entity.RespawnAreaResref);
                     Vector position = _.Vector((float)entity.RespawnLocationX, (float)entity.RespawnLocationY, (float)entity.RespawnLocationZ);
                     Location location = _.Location(area.Object, position, (float)entity.RespawnLocationOrientation);
                     _.ActionJumpToLocation(location);

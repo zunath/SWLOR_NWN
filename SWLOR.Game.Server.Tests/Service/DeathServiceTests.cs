@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Tests.Service
                 RespawnLocationY = 0.0f,
                 RespawnLocationZ = 0.0f,
                 RespawnLocationOrientation = 0.0f,
-                RespawnAreaTag = string.Empty
+                RespawnAreaResref = string.Empty
             };
 
             PlayerCharacter dbPC2 = new PlayerCharacter
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Tests.Service
                 RespawnLocationY = 120.0f,
                 RespawnLocationZ = 3.0f,
                 RespawnLocationOrientation = 10.0f,
-                RespawnAreaTag = "myarea2"
+                RespawnAreaResref = "myarea2"
             };
 
             PlayerCharacter dbPC3 = new PlayerCharacter
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Tests.Service
                 RespawnLocationY = 1.64f,
                 RespawnLocationZ = 200.0f,
                 RespawnLocationOrientation = 140.34f,
-                RespawnAreaTag = "myarea3"
+                RespawnAreaResref = "myarea3"
             };
 
             IQueryable<PlayerCharacter> players =
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Tests.Service
             Assert.AreEqual(22.2f, result.RespawnLocationY);
             Assert.AreEqual(87.0f, result.RespawnLocationZ);
             Assert.AreEqual(320.666f, result.RespawnLocationOrientation);
-            Assert.AreEqual("a_fake_area_tag", result.RespawnAreaTag);
+            Assert.AreEqual("a_fake_area_tag", result.RespawnAreaResref);
             Assert.AreEqual(-1, callCount);
         }
 
@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Tests.Service
             Assert.AreEqual(22.2f, result.RespawnLocationY);
             Assert.AreEqual(87.0f, result.RespawnLocationZ);
             Assert.AreEqual(320.666f, result.RespawnLocationOrientation);
-            Assert.AreEqual("a_fake_area_tag", result.RespawnAreaTag);
+            Assert.AreEqual("a_fake_area_tag", result.RespawnAreaResref);
             Assert.AreEqual(1, callCount);
         }
 

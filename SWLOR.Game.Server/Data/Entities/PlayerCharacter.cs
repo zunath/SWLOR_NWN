@@ -43,8 +43,8 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public int HitPoints { get; set; }
         
-        [StringLength(64)]
-        public string LocationAreaTag { get; set; }
+        [StringLength(16)]
+        public string LocationAreaResref { get; set; }
 
         public double LocationX { get; set; }
 
@@ -73,8 +73,8 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public int CurrentFPTick { get; set; }
         
-        [StringLength(64)]
-        public string RespawnAreaTag { get; set; }
+        [StringLength(16)]
+        public string RespawnAreaResref { get; set; }
 
         public double RespawnLocationX { get; set; }
 

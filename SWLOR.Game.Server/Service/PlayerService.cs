@@ -214,7 +214,7 @@ namespace SWLOR.Game.Server.Service
             if (area.Tag != "ooc_area" && area.Tag != "tutorial" && !area.IsInstance)
             {
                 PlayerCharacter entity = GetPlayerEntity(player.GlobalID);
-                entity.LocationAreaTag = area.Tag;
+                entity.LocationAreaResref = area.Resref;
                 entity.LocationX = player.Position.m_X;
                 entity.LocationY = player.Position.m_Y;
                 entity.LocationZ = player.Position.m_Z;
@@ -222,7 +222,7 @@ namespace SWLOR.Game.Server.Service
 
                 _db.SaveChanges();
 
-                if (entity.RespawnAreaTag == "")
+                if (string.IsNullOrWhiteSpace(entity.RespawnAreaResref))
                 {
                     _death.SetRespawnLocation(player, false);
                 }
@@ -236,7 +236,7 @@ namespace SWLOR.Game.Server.Service
             if (player.Area.Tag == "ooc_area")
             {
                 PlayerCharacter entity = GetPlayerEntity(player.GlobalID);
-                NWArea area = NWArea.Wrap(_.GetObjectByTag(entity.LocationAreaTag));
+                NWArea area = NWArea.Wrap(_.GetObjectByTag(entity.LocationAreaResref));
                 Vector position = _.Vector((float)entity.LocationX, (float)entity.LocationY, (float)entity.LocationZ);
                 Location location = _.Location(area.Object,
                     position,

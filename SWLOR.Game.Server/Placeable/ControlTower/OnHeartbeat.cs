@@ -88,7 +88,8 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
                     pcBase.IsInReinforcedMode = false;
                 }
             }
-            else
+            // Tower regeneration only happens if fueled.
+            else if(pcBase.DateFuelEnds > DateTime.UtcNow)
             {
                 pcBase.ShieldHP += 12 + (4 * structure.StructureBonus);
             }

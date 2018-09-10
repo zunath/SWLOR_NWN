@@ -273,6 +273,8 @@ namespace SWLOR.Game.Server.Service
             {
                 item.RecommendedLevel = itemLevel;
                 item.SetLocalString("CRAFTER_PLAYER_ID", oPC.GlobalID);
+
+                _base.ApplyCraftedItemLocalVariables(item, blueprint.BaseStructure);
             }
 
             int successAmount = 0;

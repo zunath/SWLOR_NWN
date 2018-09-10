@@ -482,6 +482,7 @@
     <Compile Include="Placeable\CraftingForge\OnHeartbeat.cs" />
     <Compile Include="Placeable\DeathCorpse\OnClosed.cs" />
     <Compile Include="Placeable\DeathCorpse\OnDisturbed.cs" />
+    <Compile Include="Placeable\DisabledStructure\OnUsed.cs" />
     <Compile Include="Placeable\ForagePoint\OnClosed.cs" />
     <Compile Include="Placeable\ForagePoint\OnDisturbed.cs" />
     <Compile Include="Placeable\ForagePoint\OnHeartbeat.cs" />

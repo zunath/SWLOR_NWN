@@ -47,6 +47,8 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public int ReinforcedStorage { get; set; }
 
+        public bool RequiresBasePower { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CraftBlueprint> CraftBlueprints { get; set; }
 

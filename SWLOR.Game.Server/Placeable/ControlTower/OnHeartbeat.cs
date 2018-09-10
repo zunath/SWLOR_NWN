@@ -60,18 +60,49 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             // If completely out of power, show tower in red.
             if (pcBase.Fuel <= 0 && DateTime.UtcNow > pcBase.DateFuelEnds)
             {
-                Effect outOfPowerEffect = _.EffectVisualEffect(VFX_DUR_AURA_RED);
-                outOfPowerEffect = _.TagEffect(outOfPowerEffect, "CONTROL_TOWER_OUT_OF_POWER");
-                _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, outOfPowerEffect, tower.Object);
+                bool outOfPowerHasBeenApplied = false;
+                foreach (var effect in tower.Effects)
+                {
+                    if (_.GetEffectTag(effect) == "CONTROL_TOWER_OUT_OF_POWER")
+                    {
+                        outOfPowerHasBeenApplied = true;
+                        break;
+                    }
+                }
+
+                if (!outOfPowerHasBeenApplied)
+                {
+                    Effect outOfPowerEffect = _.EffectVisualEffect(VFX_DUR_AURA_RED);
+                    outOfPowerEffect = _.TagEffect(outOfPowerEffect, "CONTROL_TOWER_OUT_OF_POWER");
+                    _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, outOfPowerEffect, tower.Object);
+
+                    var instances = NWModule.Get().Areas.Where(x => x.GetLocalInt("PC_BASE_STRUCTURE_ID") == structureID);
+
+                    foreach (var instance in instances)
+                    {
+                        _base.ToggleInstanceObjectPower(instance, false);
+                    }
+                }
             }
             else
             {
+                bool outOfPowerWasRemoved = false;
                 foreach (var effect in tower.Effects)
                 {
                     if (_.GetEffectTag(effect) == "CONTROL_TOWER_OUT_OF_POWER")
                     {
                         _.RemoveEffect(tower.Object, effect);
+                        outOfPowerWasRemoved = true;
                         break;
+                    }
+                }
+
+                if (outOfPowerWasRemoved)
+                {
+                    var instances = NWModule.Get().Areas.Where(x => x.GetLocalInt("PC_BASE_STRUCTURE_ID") == structureID);
+                    foreach (var instance in instances)
+                    {
+                        _base.ToggleInstanceObjectPower(instance, true);
                     }
                 }
             }

@@ -18,19 +18,22 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
         private readonly IItemService _item;
         private readonly ITimeService _time;
         private readonly IColorTokenService _color;
+        private readonly IBaseService _base;
 
         public OnDisturbed(
             INWScript script,
             IDataContext db,
             IItemService item,
             ITimeService time,
-            IColorTokenService color)
+            IColorTokenService color,
+            IBaseService @base)
         {
             _ = script;
             _db = db;
             _item = item;
             _time = time;
             _color = color;
+            _base = @base;
         }
         public bool Run(params object[] args)
         {
@@ -75,9 +78,10 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
                 nextFuel = NWItem.Wrap(_.GetNextItemInInventory(bay.Object));
             }
 
-            int maxFuel = GetMaxFuel(structure, stronidiumOnly);
+            int maxFuel;
             if (stronidiumOnly)
             {
+                maxFuel = _base.CalculateMaxReinforcedFuel(structure.PCBase);
                 if (fuelCount > maxFuel)
                 {
                     int returnAmount = fuelCount - maxFuel;
@@ -91,6 +95,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             }
             else
             {
+                maxFuel = _base.CalculateMaxFuel(structure.PCBase);
                 if (fuelCount > maxFuel)
                 {
                     int returnAmount = fuelCount - maxFuel;
@@ -113,22 +118,6 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             return true;
         }
 
-        private int GetMaxFuel(PCBaseStructure structure, bool stronidiumOnly)
-        {
-            int siloType = stronidiumOnly ? (int)Enumeration.BaseStructureType.StronidiumSilo : (int)Enumeration.BaseStructureType.FuelSilo;
-
-            float siloBonus = _db.PCBaseStructures
-                .Where(x => x.PCBaseID == structure.PCBaseID &&
-                            x.BaseStructure.BaseStructureTypeID == siloType)
-                .DefaultIfEmpty()
-                .Sum(x => x == null ? 0 : x.BaseStructure.Storage + x.StructureBonus) * 0.01f;
-
-            var fuelMax = stronidiumOnly ? 
-                structure.BaseStructure.ReinforcedStorage : 
-                structure.BaseStructure.Storage;
-
-            return (int)(fuelMax + fuelMax * siloBonus);
-        }
 
     }
 }

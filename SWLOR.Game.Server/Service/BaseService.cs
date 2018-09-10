@@ -662,5 +662,35 @@ namespace SWLOR.Game.Server.Service
         {
             return (int)(controlTower.Durability * 300);
         }
+
+        public int CalculateMaxFuel(PCBase pcBase)
+        {
+            const int siloType = (int)BaseStructureType.FuelSilo;
+            PCBaseStructure tower = GetBaseControlTower(pcBase.PCBaseID);
+            float siloBonus = _db.PCBaseStructures
+                                  .Where(x => x.PCBaseID == pcBase.PCBaseID &&
+                                              x.BaseStructure.BaseStructureTypeID == siloType)
+                                  .DefaultIfEmpty()
+                                  .Sum(x => x == null ? 0 : x.BaseStructure.Storage + x.StructureBonus) * 0.01f;
+
+            var fuelMax = tower.BaseStructure.Storage;
+
+            return (int)(fuelMax + fuelMax * siloBonus);
+        }
+
+        public int CalculateMaxReinforcedFuel(PCBase pcBase)
+        {
+            const int siloType = (int) BaseStructureType.StronidiumSilo;
+            PCBaseStructure tower = GetBaseControlTower(pcBase.PCBaseID);
+            float siloBonus = _db.PCBaseStructures
+                                  .Where(x => x.PCBaseID == pcBase.PCBaseID &&
+                                              x.BaseStructure.BaseStructureTypeID == siloType)
+                                  .DefaultIfEmpty()
+                                  .Sum(x => x == null ? 0 : x.BaseStructure.Storage + x.StructureBonus) * 0.01f;
+
+            var fuelMax = tower.BaseStructure.ReinforcedStorage;
+
+            return (int)(fuelMax + fuelMax * siloBonus);
+        }
     }
 }

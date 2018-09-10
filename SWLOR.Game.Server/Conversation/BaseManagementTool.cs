@@ -460,6 +460,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var data = _base.GetPlayerTempData(GetPC());
             PCBaseStructure structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == data.ManipulatingStructure.PCBaseStructureID);
+            PCBase pcBase = structure.PCBase;
             BaseStructureType structureType = (BaseStructureType)structure.BaseStructure.BaseStructureTypeID;
             var tempStorage = NWPlaceable.Wrap(_.GetObjectByTag("TEMP_ITEM_STORAGE"));
             int pcStructureID = structure.PCBaseStructureID;
@@ -507,6 +508,35 @@ namespace SWLOR.Game.Server.Conversation
             _db.PCBaseStructures.Remove(structure);
             data.ManipulatingStructure.Structure.Destroy();
             _db.SaveChanges();
+
+            // Impound any fuel that's over the limit.
+            if (structureType == BaseStructureType.StronidiumSilo || structureType == BaseStructureType.FuelSilo)
+            {
+                int maxFuel = _base.CalculateMaxFuel(pcBase);
+                int maxReinforcedFuel = _base.CalculateMaxReinforcedFuel(pcBase);
+
+                if (pcBase.Fuel > maxFuel)
+                {
+                    int returnAmount = pcBase.Fuel - maxFuel;
+                    NWItem refund = NWItem.Wrap(_.CreateItemOnObject("fuel_cell", tempStorage.Object, returnAmount));
+                    pcBase.Fuel = maxFuel;
+                    _impound.Impound(pcBase.PlayerID, refund);
+                    GetPC().SendMessage("Excess fuel cells have been impounded by the planetary government. The owner of the base will need to retrieve it.");
+                    refund.Destroy();
+                }
+
+                if (pcBase.ReinforcedFuel > maxReinforcedFuel)
+                {
+                    int returnAmount = pcBase.ReinforcedFuel - maxReinforcedFuel;
+                    NWItem refund = NWItem.Wrap(_.CreateItemOnObject("stronidium", tempStorage.Object, returnAmount));
+                    pcBase.ReinforcedFuel = maxReinforcedFuel;
+                    _impound.Impound(pcBase.PlayerID, refund);
+                    GetPC().SendMessage("Excess stronidium units have been impounded by the planetary government. The owner of the base will need to retrieve it.");
+                    refund.Destroy();
+                }
+
+                _db.SaveChanges();
+            }
 
             // Update the cache
             List<AreaStructure> areaStructures = data.TargetArea.Data["BASE_SERVICE_STRUCTURES"];

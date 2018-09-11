@@ -1,0 +1,10 @@
+2DA V2.0
+
+      PROGRAM      LOCATION             TYPE     BLOCK                         
+0     Main         nwmain.exe           1        PrivateBuild      
+1     Server       nwserver.exe         1        PrivateBuild      
+2     Toolset      nwtoolset.exe        2        FileVersion       
+3     Updater      nwupdate.exe         1        ProductVersion    
+4     Config       nwconfig.exe         2        FileVersion       
+5     Launcher     nwn.exe              2        FileVersion       
+6     HakPak       utils\nwhak.exe      2        FileVersion       

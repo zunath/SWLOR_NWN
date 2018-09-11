@@ -1,0 +1,16 @@
+2DA V2.0                                                     
+                                                             
+           LABEL        ReqType   ReqParam1        ReqParam2      
+0          Persuade     SKILL     12               8              
+1          Search       SKILL     14               4              
+2          Lore         SKILL     7                6              
+3          Discipline   SKILL     3                4              
+4          Alertness    FEAT      0                ****           
+5          IronWill     FEAT      22               ****           
+6          ScriptVar    VAR       X1_AllowHarper   0           
+                                                             
+                                                             
+                                                             
+                                                             
+                                                             
+                                                             

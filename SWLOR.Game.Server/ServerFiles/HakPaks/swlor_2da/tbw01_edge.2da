@@ -1,0 +1,11 @@
+2DA V2.0
+
+       Corner1     Edge      Corner2     Height     Model 
+0      black       ****      ****        0          tbw01_z_1x10
+1      black       ****      black       0          tbw01_z_1x10
+2      barrow      ****      ****        0          tbw01_z_0x00
+3      barrow      ****      barrow      0          tbw01_z_0x00
+4      barrow      ****      black       0          tbw01_z_0x10
+5      black       corridor  black       0          tbw01_z_1010
+5      black       door_corridor  black  0          tbw01_z_1110
+6      black       door_barrow    black  0          tbw01_z_1210

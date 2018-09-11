@@ -1,0 +1,29 @@
+2DA V2.0                                                          
+                                                                  
+           Corner1   Edge       Corner2   Height   Model          
+0          Floor     ****       Floor     0        tdr01_Z01_01   
+1          Floor     Fence      Floor     0        tdr01_Z02_01   
+2          Chasm     Bridge     Chasm     0        tdr01_Z03_01   
+3          Wall      Corridor   Wall      0        tdr01_Z04_01   
+4          Floor     ****       Chasm     0        tdr01_Z05_01   
+5          Wall      ****       Chasm     0        tdr01_Z06_01   
+6          Wall      ****       Floor     0        tdr01_Z07_01   
+7          Wall      ****       ****      0        tdr01_Z09_01   
+8          Chasm     ****       ****      0        tdr01_Z08_01   
+9          Floor     ****       ****      0        tdr01_Z01_01   
+10         Chasm     ****       Chasm     0        tdr01_Z08_01   
+11         Wall      ****       Wall      0        tdr01_Z09_01   
+12         Wall      Doorway    Wall      0        tdr01_Z10_01   
+13         Plaza     ****       Plaza     0        tdr01_Z31_01   
+14         Plaza     Fence      Plaza     0        tdr01_Z32_01   
+15         Plaza     ****       Chasm     0        tdr01_Z35_01   
+16         Wall      ****       Plaza     0        tdr01_Z37_01   
+17         Plaza     ****       ****      0        tdr01_Z31_01   
+18         Wall      Alley      Wall      0        tdr01_Z34_01   
+                                                                  
+                                                                  
+                                                                  
+                                                                  
+                                                                  
+                                                                  
+                                                                  

@@ -1,0 +1,6 @@
+2DA V2.0
+
+      Comment           x2_it_cmat_leath   x2_it_cmat_elmw   x2_it_cmat_oakw   x2_it_cmat_ironw   x2_it_cmat_bone   x2_it_cmat_iron   x2_it_cmat_steel   x2_it_cmat_adam   x2_it_cmat_mith   x2_it_cmat_cloth   
+0     label             leatherhide        elm_wood          oak_wood          ironwood           bone              iron              steel              adamantine        mithral           cloth              
+1     weapon_recipeID   1                  2                 3                 4                  5                 6                 7                  8                 9                 ****               
+2     armor_receipeID   1                  ****              3                 4                  5                 6                 7                  8                 9                 10                 

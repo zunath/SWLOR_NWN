@@ -1,0 +1,8 @@
+2DA V2.0
+
+      Name     Label               Cost
+0     ****     Type:_Random        0
+1     5148     Type:_Dim_(5m)      0.2
+2     5149     Type:_Low_(10m)     0.3
+3     5150     Type:_Normal_(15m)  0.4 
+4     5151     Type:_Bright_(20m)  0.5

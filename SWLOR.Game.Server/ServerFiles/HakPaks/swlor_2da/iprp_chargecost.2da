@@ -1,0 +1,17 @@
+2DA V2.0                                                           
+                                                                   
+           Name   Label           Cost     PotionCost   WandCost   
+0          ****   Random          0        0            0          
+1          1755   Single_Use      0.1334   1            1          
+2          1743   5_Charges/Use   0.45     0            1          
+3          1744   4_Charges/Use   0.55     0            1          
+4          1745   3_Charges/Use   0.65     0            1          
+5          1746   2_Charges/Use   0.75     0            1          
+6          1747   1_Charge/Use    1        0            1          
+7          1748   0_Charges/Use   3        0            0          
+8          1749   1_Use/Day       0.6      0            0          
+9          1750   2_Uses/Day      0.9      0            0          
+10         1751   3_Uses/Day      1.15     0            0          
+11         1752   4_Uses/Day      1.3      0            0          
+12         1753   5_Uses/Day      1.45     0            0          
+13         1754   Unlimited_Use   3        0            0          

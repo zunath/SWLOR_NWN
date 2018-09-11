@@ -1,0 +1,14 @@
+2DA V2.0
+
+    Label       Reagent1         Reagent2            TemplateCreated
+0   Details     9                ****                ****
+1   Lantern     x1_wmgrenade005  nw_it_mmidmisc05    NW_S_CLANTERN    
+2   Mephit      nw_it_msmlmisc17 nw_it_mmidmisc05    NW_S_MEPSTEAM
+3   Zombie      nw_it_msmlmisc13 nw_it_mmidmisc05    NW_S_ZOMBTYRANT
+4   Avenger     x0_bearhide      x1_wmgrenade005     NW_S_CTRUMPET
+5   Direbear    x0_bearhide      nw_it_msmlmisc17    NW_S_beardire
+6   Skelchf     x0_bearhide      nw_it_msmlmisc13    NW_S_SKELCHIEF
+7   Archon      x0_wolfhide      x1_wmgrenade005     NW_S_CHOUND     
+8   Direwolf    x0_wolfhide      nw_it_msmlmisc17    NW_S_WOLFDIRE 
+9   Shadow      x0_wolfhide      nw_it_msmlmisc13    NW_S_SHADMASTIF 
+  

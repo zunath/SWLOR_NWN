@@ -1,0 +1,7 @@
+2DA V2.0
+      LABEL     HOSTILE    COMMONER   MERCHANT   DEFENDER   
+0     Player    0          50         50         50        
+1     Hostile   100        0          0          0        
+2     Commoner  0          100        50         100        
+3     Merchant  0          50         100        100        
+4     Defender  0          50         100        100        

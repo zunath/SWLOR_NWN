@@ -1,0 +1,10 @@
+2DA V2.0
+
+       Corner1     Edge      Corner2     Height     Model            
+0      Grass       ****      Grass       0          TTR01_Z01_01     
+1      Grass+      ****      Grass       0          TTR01_Z06_01     
+2      Grass+      ****      Grass+      1          TTR01_Z01_01     
+3      Grass       Wall      Grass       0          TTR01_Z13_01     
+4      Grass       ****      ****        0          TTR01_Z01_01     
+5      Grass+      ****      ****        1          TTR01_Z01_01     
+6      Grass+      Wall      Grass+      1          TTR01_Z13_01     

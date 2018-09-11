@@ -1,0 +1,25 @@
+2DA V2.0                                                                                                                                                       
+                                                                                                                                                               
+           Label                                    Priority   Volume   MaxPlaying   Interrupt   FadeTime   MaxVolumeDist   MinVolumeDist   PlaybackVariance   
+0          Unmaskable_Sound                         0          127      1            0           0          ****            ****            0                  
+1          Music_Stingers                           1          127      1            0           0          ****            ****            0                  
+2          Looping_AreaWide_Ambients                2          80       5            0           1000       ****            ****            0                  
+3          Looping_Positional_Ambients              3          127      8            0           1000       3               30              0                  
+4          Looping_Player                           4          127      1            0           0          4               40              0                  
+5          Looping_NonPlayer                        5          60       3            0           0          4               40              0                  
+6          Player_Chat                              7          127      1            1           0          10              80              0                  
+7          Non_Player_Chat                          7          100      4            0           0          10              70              0                  
+8          Scripted_PlaySound                       8          127      4            0           0          10              80              0                  
+9          GUI                                      9          90       1            1           0          ****            ****            0                  
+10         Area_Spell_Effects                       10         100      5            0           0          10              80              0                  
+11         Normal_Spell_Effects                     11         100      8            0           0          10              80              0                  
+12         Projectile                               12         127      2            0           0          10              80              0                  
+13         Combat                                   13         127      4            0           0          10              80              0.3                
+14         Large_Creature_Vocalizations             14         127      4            0           0          15              80              0.1                
+15         Medium_and_Small_Creature_Voclizations   15         127      4            0           0          10              80              0.05                
+16         Large_Creature_Footsteps                 16         60       4            1           0          5               50              0.3                
+17         Player_Footsteps                         17         30       4            1           0          2               20              0.3                
+18         Medium_and_Small_Creature_Footsteps      18         30       4            1           0          2               20              0.3                
+19         Single_Shot_Global                       19         80       5            0           0          ****            ****            0                  
+20         Single_Shot_Positional                   20         110      5            0           0          5               50              0                  
+21         Default                                  255        127      5            0           0          3               30              0                  

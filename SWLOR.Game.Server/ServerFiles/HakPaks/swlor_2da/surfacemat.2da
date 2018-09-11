@@ -1,0 +1,34 @@
+2DA V2.0                                                                     
+                                                                             
+           Label           Walk   WalkCheck   LineOfSight   Sound   Name        IsWater    Visual
+0          NotDefined      0      0           0             ****    ****        0          ****
+1          Dirt            1      1           1             DT      Dirt        0          fx_step_dust
+2          Obscuring       0      0           1             ****    ****        0          ****
+3          Grass           1      1           1             GR      Grass       0          ****
+4          Stone           1      1           1             ST      Stone       0          ****
+5          Wood            1      1           1             WD      Wood        0          ****
+6          Water           1      1           1             WT      Water       1          fx_step_splash
+7          Nonwalk         0      1           1             ****    ****        0          ****
+8          Transparent     0      1           0             ****    ****        0          ****
+9          Carpet          1      1           1             CP      Carpet      0          ****
+10         Metal           1      1           1             MT      Metal       0          ****
+11         Puddles         1      1           1             WT      Puddle      1          fx_step_splash
+12         Swamp           1      1           1             WT      ****        1          fx_step_splash
+13         Mud             1      1           1             WT      ****        1          fx_step_splash
+14         Leaves          1      1           1             LV      Leaves      0          ****
+15         Lava            0      1           1             ****    ****        0          ****
+16         BottomlessPit   0      1           1             ****    ****        0          ****
+17         DeepWater       0      1           1             ****    ****        1          ****
+18         Door            1      1           0             ****    ****        0          ****
+19         Snow            1      1           1             SW      Snow        0          ****
+20         Sand            1      1           1             SD      Sand        0          ****
+21         Barebones       1      1           1             ****    ****        0          ****
+22         StoneBridge     1      1           1             ST      Stone	0          fx_step_stbrdg
+23         Temp            0      0           0             ****    ****        0          ****
+24         Temp            0      0           0             ****    ****        0          ****
+25         Temp            0      0           0             ****    ****        0          ****
+26         Temp            0      0           0             ****    ****        0          ****
+27         Temp            0      0           0             ****    ****        0          ****
+28         Temp            0      0           0             ****    ****        0          ****
+29         Temp            0      0           0             ****    ****        0          ****
+30         Trigger         1      1           0             ****    ****        0          ****

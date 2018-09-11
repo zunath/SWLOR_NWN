@@ -1,0 +1,36 @@
+2DA V2.0                                                                       
+                                                                               
+           FeatIndex   Label                                                   
+0          6           Cleave                                                  
+1          391         GreatCleave                                             
+2          28          PowerAtk                                                
+3          68          ImpCritLSw                                              
+4          106         WeapFocLSw                                              
+5          413         DivineMight                                             
+6          414         DivineShield                                            
+7          23          KnockDown                                               
+8          13          ExtTurn                                                 
+9          40          Toughness                                               
+10         10          Dodge                                                   
+11         512         FEAT_EPIC_DEVASTATING_CRITICAL_LONGSWORD                
+12         636         FEAT_EPIC_WEAPON_FOCUS_LONGSWORD                        
+13         726         FEAT_EPIC_OVERWHELMING_CRITICAL_LONGSWORD               
+14         814         FEAT_EPIC_GREAT_STRENGTH_1                              
+15         815         FEAT_EPIC_GREAT_STRENGTH_2                              
+16         834         FEAT_EPIC_IMPROVED_SNEAK_ATTACK_1                       
+17         835         FEAT_EPIC_IMPROVED_SNEAK_ATTACK_2                       
+18         824         FEAT_EPIC_GREAT_SMITING_1                               
+19         16          ImpDis                                                  
+20         17          ImpKnock                                                
+21         19          ImpPower                                                
+22         20          ImpTwo                                                  
+23         754         FEAT_EPIC_TOUGHNESS_1                                   
+24         755         FEAT_EPIC_TOUGHNESS_2                                   
+25         756         FEAT_EPIC_TOUGHNESS_3                                   
+26         757         FEAT_EPIC_TOUGHNESS_4                                   
+27         758         FEAT_EPIC_TOUGHNESS_5                                   
+28         759         FEAT_EPIC_TOUGHNESS_6                                   
+29         760         FEAT_EPIC_TOUGHNESS_7                                   
+30         761         FEAT_EPIC_TOUGHNESS_8                                   
+31         762         FEAT_EPIC_TOUGHNESS_9                                   
+32         763         FEAT_EPIC_TOUGHNESS_10                                  

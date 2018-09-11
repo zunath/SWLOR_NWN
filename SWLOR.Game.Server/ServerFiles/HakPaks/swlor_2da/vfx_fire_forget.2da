@@ -1,0 +1,20 @@
+2DA V2.0
+
+           LABEL	       MODEL
+0          VFX_FNF_FIREBALL    vff_xplode                                        
+1          VFX_FNF_METEOR      vff_xplode                                        
+2          VFX_FNF_DISPEL      vff_xplode                                        
+3          VFX_FNF_GRDISPEL    vff_xplode                                        
+4          VFX_FNF_MORDDISJ    vff_xplode                                        
+5          VFX_FNF_BLINDDEAF   vff_xplode                                        
+6          VFX_FNF_MIND        vff_xplode                                        
+7          VFX_FNF_MASSHASTE   vff_xplode                                        
+8          VFX_FNF_MASSHEAL    vff_xplode                                        
+9          VFX_FNF_NATURE      vff_xplode                                        
+10         VFX_FNF_BREACH      vff_xplode                                        
+11         VFX_FNF_SUNBEAM     vff_xplode                                        
+12         VFX_FNF_WAIL        vff_xplode                                        
+13         VFX_FNF_WORD        vff_xplode                                        
+14         VFX_FNF_PWKILL      vff_xplode                                        
+15         VFX_FNF_PWSTUN      vff_xplode                                        
+16         VFX_FNF_FIRESTORM   vff_xplode                                        

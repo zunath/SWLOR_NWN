@@ -1,0 +1,14 @@
+2DA V2.0                                                       
+                                                               
+           NAME           BASERESREF    STRREF   DESCRIPTION   
+0          Bat            NW_FM_BAT     1995     5636          
+1          Panther        NW_FM_CRAG    5995     5996          
+2          Hellhound      NW_FM_HELL    5997     5998          
+3          Imp            NW_FM_IMP     5999     6000          
+4          Firemephit     NW_FM_FIRE    6001     6002          
+5          Icemephit      NW_FM_ICE     6003     6004          
+6          Pixie          NW_FM_PIXI    6005     6007          
+7          Raven          NW_FM_RAVE    6008     6009          
+8          FairyDragon    X0_FM_FDRG    9162     9159          
+9          PseudoDragon   X0_FM_PDRG0   9161     9160          
+10         Eyeball        X2_FM_EYE0    84490    84491      

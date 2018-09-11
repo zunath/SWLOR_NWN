@@ -1,0 +1,7 @@
+2DA V2.0                             
+                                     
+           label         value       strref       
+0          none          0           8020
+1          party         1           8018
+2          full          2           8019
+3          default       3           8027

@@ -1,0 +1,31 @@
+2DA V2.0                                 
+                                         
+           SkillIndex   Label            
+0          14           Search           
+1          5            Hide             
+2          8            MoveSilently     
+3          15           SetTrap          
+4          9            OpenLock         
+5          2            DisableTrap      
+6          21           Tumble           
+7          22           CraftTrap        
+8          19           UseMagicDevice   
+9          13           PickPocket     
+10         17           Spot             
+11         23           Bluff
+12         12           Persuade         
+13         24           Intimidate
+14         3            Discipline       
+15         7            Lore             
+16         20           Appraise         
+17         6            Listen           
+18         1            Concentration    
+19         10           Parry            
+20         18           Taunt            
+21         4            Heal             
+22         26           CraftWeapon
+23         25           CraftArmor
+                                         
+                                         
+                                         
+                                         

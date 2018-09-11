@@ -1,0 +1,15 @@
+2DA V2.0
+
+       Corner1     Edge     Corner2     Height     Model
+0      Floor       ****     Floor       0          TDT01_Z01_01
+1      Water       ****     Water       0          TDT01_Z08_01
+2      Wall        ****     Wall        0          TDT01_Z10_01
+3      Wall        ****     Water       0          TDT01_Z06_01
+4      Wall        ****     Floor       0          TDT01_Z02_01
+5      Floor       ****     Water       0          TDT01_Z04_01
+6      Wall        Doorway  Wall        0          TDT01_Z20_01
+7      Wall        Corridor Wall        0          TDT01_Z05_01
+8      Water       Bridge   Water       0          TDT01_Z09_01
+9      Floor       ****     ****        0          TDT01_Z01_01
+10     Water       ****     ****        0          TDT01_Z08_01
+11     Wall        ****     ****        0          TDT01_Z10_01

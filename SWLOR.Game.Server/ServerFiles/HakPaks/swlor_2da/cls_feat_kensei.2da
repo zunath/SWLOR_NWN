@@ -1,0 +1,43 @@
+2DA V2.0                                                                                       
+                                                                                               
+           FeatLabel                              FeatIndex   List   GrantedOnLevel   OnMenu   
+0          FEAT_WEAPON_OF_CHOICE_SICKLE           879         2      1                0        
+1          FEAT_WEAPON_OF_CHOICE_KAMA             880         2      1                0        
+2          FEAT_WEAPON_OF_CHOICE_KUKRI            881         2      1                0        
+3          FEAT_KI_DAMAGE                         882         3      1                1        
+4          FEAT_INCREASE_MULTIPLIER               883         3      5                0        
+5          FEAT_SUPERIOR_WEAPON_FOCUS             884         3      5                0        
+6          FEAT_KI_CRITICAL                       885         3      7                0        
+7          FEAT_WEAPON_OF_CHOICE_CLUB             919         2      1                0        
+8          FEAT_WEAPON_OF_CHOICE_DAGGER           920         2      1                0        
+9          FEAT_WEAPON_OF_CHOICE_LIGHTMACE        921         2      1                0        
+10         FEAT_WEAPON_OF_CHOICE_MORNINGSTAR      922         2      1                0        
+11         FEAT_WEAPON_OF_CHOICE_QUARTERSTAFF     923         2      1                0        
+12         FEAT_WEAPON_OF_CHOICE_SHORTSPEAR       924         2      1                0        
+13         FEAT_WEAPON_OF_CHOICE_SHORTSWORD       925         2      1                0        
+14         FEAT_WEAPON_OF_CHOICE_RAPIER           926         2      1                0        
+15         FEAT_WEAPON_OF_CHOICE_SCIMITAR         927         2      1                0        
+16         FEAT_WEAPON_OF_CHOICE_LONGSWORD        928         2      1                0        
+17         FEAT_WEAPON_OF_CHOICE_GREATSWORD       929         2      1                0        
+18         FEAT_WEAPON_OF_CHOICE_HANDAXE          930         2      1                0        
+19         FEAT_WEAPON_OF_CHOICE_BATTLEAXE        931         2      1                0        
+20         FEAT_WEAPON_OF_CHOICE_GREATAXE         932         2      1                0        
+21         FEAT_WEAPON_OF_CHOICE_HALBERD          933         2      1                0        
+22         FEAT_WEAPON_OF_CHOICE_LIGHTHAMMER      934         2      1                0        
+23         FEAT_WEAPON_OF_CHOICE_LIGHTFLAIL       935         2      1                0        
+24         FEAT_WEAPON_OF_CHOICE_WARHAMMER        936         2      1                0        
+25         FEAT_WEAPON_OF_CHOICE_HEAVYFLAIL       937         2      1                0        
+26         FEAT_WEAPON_OF_CHOICE_SCYTHE           938         2      1                0        
+27         FEAT_WEAPON_OF_CHOICE_KATANA           939         2      1                0        
+28         FEAT_WEAPON_OF_CHOICE_BASTARDSWORD     940         2      1                0        
+29         FEAT_WEAPON_OF_CHOICE_DIREMACE         941         2      1                0        
+30         FEAT_WEAPON_OF_CHOICE_DOUBLEAXE        942         2      1                0        
+31         FEAT_WEAPON_OF_CHOICE_TWOBLADEDSWORD   943         2      1                0        
+32         FEAT_WEAPON_OF_CHOICE_DWAXE            960         2      1                0                                                                                             
+                                                                                               
+                                                                                               
+                                                                                               
+                                                                                               
+                                                                                               
+                                                                                               
+                                                                                               

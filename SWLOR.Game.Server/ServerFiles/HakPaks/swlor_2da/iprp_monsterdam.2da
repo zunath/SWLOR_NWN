@@ -1,0 +1,18 @@
+2DA V2.0
+
+       Name          Label   
+0      1031          Bludgeoning
+1      1032          Piercing
+2      1033          Slashing
+3      ****          Subdual
+4      ****          Physical
+5      ****          Magical
+6      1027          Acid
+7      1029          Cold
+8      ****          Divine
+9      1030          Electrical
+10     1028          Fire
+11     ****          Negative
+12     ****          Positive
+13     2202          Sonic
+14     5061          Bite_Rend

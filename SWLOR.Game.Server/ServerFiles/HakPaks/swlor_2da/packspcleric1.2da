@@ -1,0 +1,67 @@
+2DA V2.0                                                               
+                                                                       
+           SpellIndex   Label                                          
+0          51           Energy_Drain                                   
+1          57           Fire_Storm                                     
+2          63           Gate                                           
+3          87           Implosion                                      
+4          426          Earthquake                                     
+5          173          Storm_of_Vengeance                             
+6          183          Sunbeam                                        
+7          366          Destruction                                    
+8          77           Harm                                           
+9          444          Undeaths_Eternal_Foe                           
+10         164          Slay_Living                                    
+11         76           Hammer_of_the_Gods                             
+12         5            Blade_Barrier                                  
+13         61           Flame_Strike                                   
+14         435          Inflict_Critical_Wounds                        
+15         434          Inflict_Serious_Wounds                         
+16         430          Banishment                                     
+17         19           Circle_of_Doom                                 
+18         28           Control_Undead                                 
+19         62           Freedom_of_Movement                            
+20         91           Invisibility_Purge                             
+21         168          Spell_Resistance                               
+22         186          True_Seeing                                    
+23         430          Banishment                                     
+24         70           Greater_Restoration                            
+25         114          Mass_Heal                                      
+26         79           Heal                                           
+27         80           Healing_Circle                                 
+28         31           Cure_Critical_Wounds                           
+29         35           Cure_Serious_Wounds                            
+30         34           Cure_Moderate_Wounds                           
+31         32           Cure_Light_Wounds                              
+32         145          Remove_Blindness_and_Deafness                  
+33         147          Remove_Disease                                 
+34         374          Regenerate                                     
+35         67           Greater_Dispelling                             
+36         41           Dispel_Magic                                   
+37         82           Hold_Monster                                   
+38         42           Divine_Power                                   
+39         178          Summon_Creature_IX                             
+40         182          Summon_Creature_VIII                           
+41         451          Planar_Ally                                    
+42         29           Create_Greater_Undead                          
+43         30           Create_Undead                                  
+44         2            Animate_Dead                                   
+45         194          Word_of_Faith                                  
+46         444          Undeaths_Eternal_Foe                           
+47         433          Inflict_Moderate_Wounds                        
+48         432          Inflict_Light_Wounds                           
+49         431          Inflict_Minor_Wounds                           
+50         443          Etherealness                                   
+51         22           Cloak_of_Chaos                                 
+52         6            Bless                                          
+53         4            Bestow_Curse                                   
+54         1            Aid                                            
+55         21           Clarity                                        
+56         40           Dismissal                                      
+                                                                       
+                                                                       
+                                                                       
+                                                                       
+                                                                       
+                                                                       
+                                                                       

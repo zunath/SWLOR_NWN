@@ -1,0 +1,7 @@
+2DA V2.0
+    Label               RadiusInner RadiusOuter RandomRngX  RandomRngY  Height
+
+0   AreaWide            1.0         10.0        0.0         0.0         1.0
+1   PositionalRandom    1.0         10.0        10.0        10.0        1.5
+2   Positional          1.0         10.0        0.0         0.0         1.5
+

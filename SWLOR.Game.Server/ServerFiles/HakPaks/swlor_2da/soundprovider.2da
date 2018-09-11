@@ -1,0 +1,16 @@
+2DA V2.0
+
+    Provider                                       PreferredEAX   PreferredHardware   PreferredSoftware    2D3DBias
+0   "Aureal A3D Interactive (TM)"                  ****           3                   ****                 1.5
+1   "Aureal A3D 2.0 (TM)"                          ****           1                   ****                 1.0
+2   "Dolby Surround"                               ****           ****                ****                 0.7
+3   "DirectSound3D Hardware Support"               ****           2                   ****                 1.5
+4   "DirectSound3D Software Emulation"             ****           ****                5                    1.3
+5   "DirectSound3D 7+ Software - Full HRTF"        ****           ****                2                    1.5
+6   "DirectSound3D 7+ Software - Light HRTF"       ****           ****                3                    1.2
+7   "DirectSound3D 7+ Software - Pan and Volume"   ****           ****                4                    1.4
+8   "Creative Labs EAX (TM)"                       3              ****                ****                 1.5
+9   "Creative Labs EAX 2 (TM)"                     2              ****                ****                 1.5
+10  "Creative Labs EAX 3 (TM)"                     1              ****                ****                 1.5
+11  "Miles Fast 2D Positional Audio"               ****           ****                6                    1.0 
+12  "RAD Game Tools RSX 3D Audio"                  ****           ****                1                    1.6

@@ -1,0 +1,23 @@
+2DA V2.0
+    Label                       Filter  StringRef
+
+0   Include_Files               nw_i0_  ****
+1   ConversationActions         nw_d1_  ****
+2   ConversationConditional     nw_d2_  ****
+3   Creature_AI                 nw_c    ****
+4   Henchmen                    nw_ch_  ****
+5   Door                        nw_od_  ****
+6   Placeable_Objects           nw_o2_  ****
+7   Module                      nw_o0_  ****
+8   Spells                      nw_s0_  ****
+9   Spells_Creature             nw_s1_  ****
+10  Spells_Class_Ability        nw_s2_  ****
+11  Spells_Misc                 nw_s3_  ****
+12  Traps                       nw_t1_  ****
+13  GeneralFeedbackDialog       nw_all_ ****
+14  General                     nw_g0_  ****
+15  XP2_Include_file            x2_inc_ ****
+16  XP2_Default_Module_Events   x2_mod_def ****
+17  XP2_Default_Creature_AI     x2_def_ ****
+18  XP2_Special_AI_SCRIPT       x2_ai_  ****
+19  XP2_DM_Console_Script       x2_dm_  ****

@@ -1,0 +1,23 @@
+2DA V2.0
+
+       Corner1     Edge         Corner2     Height     Model            
+0      Library     ****         Library     0          tni02_z01_01     
+1      Rich        ****         Rich        0          tni02_z02_01     
+2      Stone       ****         Stone       0          tni02_z03_01     
+3      Storage     ****         Storage     0          tni02_z04_01     
+4      Jail        ****         Jail        0          tni02_z05_01     
+5      Wall        ****         Stone       0          tni02_z06_01     
+6      Wall        ****         Jail        0          tni02_z07_01     
+7      Wall        ****         Library     0          tni02_z08_01     
+8      Wall        ****         Rich        0          tni02_z09_01     
+9      Wall        ****         Storage     0          tni02_Z10_01     
+10     Wall        Corridor     Wall        0          tni02_Z11_01     
+11     Library     ****         ****        0          tni02_z01_01     
+12     Rich        ****         ****        0          tni02_z02_01     
+13     Stone       ****         ****        0          tni02_z03_01     
+14     Storage     ****         ****        0          tni02_z04_01     
+15     Jail        ****         ****        0          tni02_z05_01     
+16     Wall        ****         ****        0          tni02_o20_01     
+17     Wall        ****         Wall        0          tni02_o20_01     
+18     Wall        Doorway      Wall        0          tni02_z12_01     
+19     round       ****         Wall        0          tni02_z21_01

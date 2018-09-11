@@ -1,0 +1,5 @@
+2DA V2.0
+
+      Module    BaseTreasureChance     StackVariation    MaxItems   Disp2DA           Ammo2DA          Gold2DA         Item2DA       
+0     DEFAULT   50                     50                2          des_treas_disp    des_treas_ammo   des_treas_gold  des_treas_items
+1     XP2Ch1    100                    25                3          des_treas_disp    des_treas_ammo   des_treas_gold  des_treas_items

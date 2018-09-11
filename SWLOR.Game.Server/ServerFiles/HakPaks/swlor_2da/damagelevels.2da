@@ -1,0 +1,10 @@
+2DA V2.0                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                              
+           LABEL             STRING_REF
+0          UNINJURED         6409       
+1          BARELY_INJURED    6410       
+2          INJURED           6411   
+3          HEAVILY_WOUNDED   6412            
+4          NEAR_DEATH        6413    
+5          DEAD              6414  
+    

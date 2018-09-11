@@ -1,0 +1,8 @@
+2DA V2.0
+
+          LABEL          STRREF      VALUE
+0         VeryEasy       5543        0
+1         Easy           5544        1
+2         Normal         5545        2
+3         Hard           5546        5
+4         Impossible     5547        9

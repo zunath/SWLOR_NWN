@@ -1,0 +1,15 @@
+2DA V2.0
+
+       Name   Lable             TableResRef
+0      966    Type              IPRP_DAMAGETYPE
+1      967    Duration          IPRP_ONHITDUR
+2      143    Abilities         IPRP_ABILITIES
+3      1503   AlignmentGroup    IPRP_ALIGNGRP
+4      142    Alignment         IPRP_ALIGNMENT
+5      1504   RacialType        racialtypes
+6      1006   Disease           disease
+7      968    Amount            IPRP_AMOUNT
+8      1005   PoisonType        poison
+9      4821   Color             IPRP_COLOR
+10     968    Amount            IPRP_POISON
+11     968    Weight            IPRP_WEIGHTINC

@@ -1,0 +1,11 @@
+2DA V2.0
+
+       Name         Label           Cost	Letter
+0      969          Abjuration      3		A
+1      970          Conjuration     2		C
+2      971          Divination      2		D
+3      972          Enchantment     3		E
+4      973          Evocation       3		V
+5      974          Illusion        3		I
+6      975          Necromancy      2		N
+7      976          Transmutation   3		T

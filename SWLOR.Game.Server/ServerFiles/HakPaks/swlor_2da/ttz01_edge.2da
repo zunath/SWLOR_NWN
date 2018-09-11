@@ -1,0 +1,32 @@
+2DA V2.0
+
+       Corner1     Edge     Corner2     Height     Model
+0      Grass       ****     Grass       0          TTZ01_Z01_01
+1      Water       ****     Water       0          TTZ01_Z02_01
+2      Trees       ****     Trees       0          TTZ01_Z03_01
+3      Sand        ****     Sand        0          TTZ01_Z21_01
+4      Grass       ****     Water       0          TTZ01_Z05_01
+5      Grass+      ****     Grass       0          TTZ01_Z06_01
+6      Grass+      ****     Water       0          TTZ01_Z07_01
+7      Trees       ****     Grass       0          TTZ01_Z08_01
+8      Grass       ****     Tree        0          TTZ01_Z09_01
+9      Trees       ****     Water       0          TTZ01_Z10_01
+10     Grass       Road     Grass       0          TTZ01_Z12_01
+11     Grass       Wall1    Grass       0          TTZ01_Z13_01
+12     Grass       Wall2    Grass       0          TTZ01_Z14_01
+13     Grass       Stream   Grass       0          TTZ01_Z15_01
+14     Water       Road     Water       0          TTZ01_Z16_01
+15     Trees       ****     Trees       0          TTZ01_Z17_01
+16     Grass       ****     Sand        0          TTZ01_Z22_01
+17     Sand        ****     Water       0          TTZ01_Z23_01
+18     Grass+      ****     Sand        0          TTZ01_Z24_01
+19     Sand        Stream   Sand        0          TTZ01_Z25_01
+20     Grass       ****     ****        0          TTZ01_Z01_01
+21     Water       ****     ****        0          TTZ01_Z02_01
+22     Trees       ****     ****        0          TTZ01_Z03_01
+23     Sand        ****     ****        0          TTZ01_Z21_01
+24     Grass+      ****     Grass+      1          TTZ01_Z01_01
+25     Grass+      ****     Trees       0          TTZ01_Z09_01
+26     Trees+      ****     Trees       0          TTZ01_Z17_01
+27     Grass+      ****     ****        1          TTZ01_Z01_01
+28     Trees+      ****     Grass+      1          TTZ01_Z08_01

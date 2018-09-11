@@ -1,0 +1,10 @@
+2DA V2.0
+
+      LABEL         TYPE        TITLESTRREF     IMAGE     PASSVAL                         PASSSTRREF     FAILVAL          FAILSTRREF     WARNVAL                         WARNSTRREF     SHORTWARNSTRREF     SKIPSTRREF     ERRORSTRREF     
+0     RAM           NUMBER      10722           0         255                             10722          63               10720          64                              10721          68473               68496          68502           
+1     CPU           NUMBER      52929           0         799                             52929          449              52927          450                             52928          68474               68497          68503           
+2     OS            CSV         52926           0         Win98,WinME,WinNT2000,WinXP     52926          -1               -1             Win98,WinME,WinNT2000,WinXP     52925          68475               68498          68504           
+3     FREESPACE     NUMBER      52939           0         859                             52939          519              52936          520                             52937          68476               ****           ****            
+4     DIRECTX       VERSION     52932           0         4.08.00.0000                    52932          4.04.00.0068     52930          4.04.00.0068                    52931          68477               68499          68506           
+5     OPENGL        BOOLEAN     52935           0         1                               52935          -1               -1             0                               52934          68478               58264          68505           
+6     VIDEORAM      NUMBER      10709           0         31                              0              15               0              16                              0              68479               68500          68501           

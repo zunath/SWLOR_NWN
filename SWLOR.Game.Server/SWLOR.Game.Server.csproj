@@ -874,6 +874,7 @@
     <Content Include="ServerFiles\Database\swlor-db.sql" />
     <Content Include="ServerFiles\Database\scripts\AddPerkLevels.sql" />
     <Content Include="ServerFiles\Database\scripts\WipePlayerData.sql" />
+    <Content Include="ServerFiles\Star Wars LOR - Builder Module.mod" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
   </ItemGroup>
   <ItemGroup>

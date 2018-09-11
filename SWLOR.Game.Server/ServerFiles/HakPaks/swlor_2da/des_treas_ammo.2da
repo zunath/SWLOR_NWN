@@ -1,0 +1,32 @@
+2DA V2.0                                                                                                                 
+                                                                                                                         
+           Comment   THigh            LabelHigh       TMed              LabelMed          TLow             LabelLow      
+0          ****      23               ****            28                ****              9                ****          
+1          ****      nw_wammar001:5   VampArrow       nw_wammar006:5    LightnigArrw      nw_wamar001:15   Normalx15     
+2          ****      NW_WAMMAR007:3   PoisonArrow     nw_wamar001:30    Normalx30         nw_wamar001:20   Normalx20     
+3          ****      NW_WAMMAR004:2   PiercingArrow   NW_WAMMAR003:5    AcidArrow         NW_WAMBO001:50   Boltx50       
+4          ****      NW_WAMMAR008:2   PoisonArrow2    NW_WAMMAR002:5    FireArrow         NW_WAMBO001:25   Boltx25       
+5          ****      NW_WAMMAR003:5   AcidArrow       NW_WAMMAR005:5    IceArrow          NW_WAMBU001:50   Bulletx50     
+6          ****      NW_WAMMAR002:5   FireArrow       NW_WAMBO001:50    Boltx50           NW_WAMBU001:10   Bulletx10     
+7          ****      NW_WAMMAR005:5   IceArrow        NW_WAMMBO002:5    BoltLightning     NW_WTHDT001:20   Dart          
+8          ****      NW_WAMMBO005:5   BoltFire        NW_WAMMBO001:5    BoltFrost         NW_WTHSH001:25   Shuriken      
+9          ****      NW_WAMMBO004:3   BoltPierce      NW_WAMMBO003:3    BoltParalyze      NW_WTHAX001:10   ThrowingAxe   
+10         ****      NW_WAMMBO006:2   BoltPoison      NW_WAMBU001:50    Bulletx50         ****             ****          
+11         ****      NW_WAMMBO007:1   BoltPoison2     NW_WAMMBU002:2    BulletScream      ****             ****          
+12         ****      NW_WAMMBO002:5   BoltLightning   NW_WAMMBU004:5    BulletSmite       ****             ****          
+13         ****      NW_WAMMBO001:5   BoltFrost       NW_WAMMBU005:3    BulletFire        ****             ****          
+14         ****      NW_WAMMBO003:3   BoltParalyze    NW_WAMMBU001:1    BulletGiant       ****             ****          
+15         ****      X0_WTHMDT001:4   Dart+4          NW_WAMMBU006:5    Bulletice         ****             ****          
+16         ****      X0_WTHMDT002:3   Dart+5          NW_WAMMBU007:5    BulletLightning   ****             ****          
+17         ****      X2_WTHMDT003:1   Dart+6          NW_WTHMDT002:25   Dart+1            ****             ****          
+18         ****      X0_WTHMSH001:4   Shuriken+4      NW_WTHMDT008:10   Dart+2            ****             ****          
+19         ****      X0_WTHMSH002:3   Shuriken+5      NW_WTHMDT009:5    Dart+3            ****             ****          
+20         ****      X2_WTHMSH003:1   Shuriken+6      NW_WTHDT001:20    Dart              ****             ****          
+21         ****      X0_WTHMAX001:2   ThrowingAxe4    NW_WTHSH001:25    Shuriken          ****             ****          
+22         ****      X0_WTHMAX002:1   ThrowingAxe5    NW_WTHMSH002:25   Shuriken+1        ****             ****          
+23         ****      X2_WTHMAX003:1   ThrowingAxe6    NW_WTHMSH008:10   Shuriken+2        ****             ****          
+24         ****      ****             ****            NW_WTHMSH009:5    Shuriken+3        ****             ****          
+25         ****      ****             ****            NW_WTHAX001:10    ThrowingAxe       ****             ****          
+26         ****      ****             ****            NW_WTHMAX002:5    ThrowingAxe1      ****             ****          
+27         ****      ****             ****            NW_WTHMAX008:3    ThrowingAxe2      ****             ****          
+28         ****      ****             ****            NW_WTHMAX009:2    ThrowingAxe3      ****             ****          

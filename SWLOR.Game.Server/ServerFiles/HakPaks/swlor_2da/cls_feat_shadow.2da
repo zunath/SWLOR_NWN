@@ -1,0 +1,84 @@
+2DA V2.0                                                                      
+                                                                              
+           FeatLabel             FeatIndex   List   GrantedOnLevel   OnMenu   
+1          DefArrow              8           0      -1               0        
+2          Quicken               29          0      -1               0        
+3          TwoWeap               41          0      -1               0        
+4          Ambidex               1           0      -1               0        
+5          HIDE_IN_PLAIN_SIGHT   433         3      1                0        
+6          SHADOW_DAZE           434         3      3                1        
+7          SUMMON_SHADOW         435         3      3                1        
+8          SHADOW_EVADE          436         3      4                1        
+9          Evasion               206         3      2                0        
+10         darkvision            228         3      2                0        
+11         UncannyDodge1         195         3      2                0        
+12         DefensiveRoll         223         3      5                0        
+13         UncannyDodge2         251         3      5                0        
+14         SlipperMind           259         3      7                0        
+15         ImprovedEvasion       212         3      10               0        
+16         UncannyDodge3         252         3      10               0        
+17         WeapProfEx            44          0      -1               0        
+18         Simpleweapons         46          3      1                0 
+19         lightarmor            3           3      1                0
+20         WeapProfMar           45          0      -1               0
+21    FEAT_EPIC_BLINDING_SPEED                             491          1      -1               1
+22    FEAT_EPIC_SKILL_FOCUS_APPRAISE                       588          1      -1               0
+23    FEAT_EPIC_SKILL_FOCUS_CONCENTRATION                  589          1      -1               0
+24    FEAT_EPIC_SKILL_FOCUS_CRAFT_TRAP                     590          1      -1               0
+25    FEAT_EPIC_SKILL_FOCUS_DISABLETRAP                    591          1      -1               0
+26    FEAT_EPIC_SKILL_FOCUS_DISCIPLINE                     592          1      -1               0
+27    FEAT_EPIC_SKILL_FOCUS_HEAL                           593          1      -1               0
+28    FEAT_EPIC_SKILL_FOCUS_HIDE                           594          1      -1               0
+29    FEAT_EPIC_SKILL_FOCUS_LISTEN                         595          1      -1               0
+30    FEAT_EPIC_SKILL_FOCUS_LORE                           596          1      -1               0
+31    FEAT_EPIC_SKILL_FOCUS_MOVESILENTLY                   597          1      -1               0
+32    FEAT_EPIC_SKILL_FOCUS_OPENLOCK                       598          1      -1               0
+33    FEAT_EPIC_SKILL_FOCUS_PARRY                          599          1      -1               0
+34    FEAT_EPIC_SKILL_FOCUS_PERSUADE                       601          1      -1               0
+35    FEAT_EPIC_SKILL_FOCUS_PICKPOCKET                     602          1      -1               0
+36    FEAT_EPIC_SKILL_FOCUS_SEARCH                         603          1      -1               0
+37    FEAT_EPIC_SKILL_FOCUS_SETTRAP                        604          1      -1               0
+38    FEAT_EPIC_SKILL_FOCUS_SPELLCRAFT                     605          1      -1               0
+39    FEAT_EPIC_SKILL_FOCUS_SPOT                           606          1      -1               0
+40    FEAT_EPIC_SKILL_FOCUS_TAUNT                          607          1      -1               0
+41    FEAT_EPIC_SKILL_FOCUS_TUMBLE                         608          1      -1               0
+42    FEAT_EPIC_SKILL_FOCUS_USEMAGICDEVICE                 609          1      -1               0
+43    FEAT_EPIC_SELF_CONCEALMENT_10                        748          1      -1               0
+44    FEAT_EPIC_SELF_CONCEALMENT_20                        749          1      -1               0
+45    FEAT_EPIC_SELF_CONCEALMENT_30                        750          1      -1               0
+46    FEAT_EPIC_SELF_CONCEALMENT_40                        751          1      -1               0
+47    FEAT_EPIC_SELF_CONCEALMENT_50                        752          1      -1               0
+48    FEAT_EPIC_SUPERIOR_INITIATIVE                        753          1      -1               0
+49    FEAT_EPIC_DODGE                                      856          1      -1               0
+50    FEAT_IMPROVED_WHIRLWIND                              868          1      -1               0
+51    FEAT_EPIC_SKILL_FOCUS_CRAFT_ARMOR                    913          1      -1               0
+52    FEAT_EPIC_SKILL_FOCUS_CRAFT_WEAPON                   914          1      -1               0
+53    FEAT_EPIC_SKILL_FOCUS_BLUFF                          917          1      -1               0
+54    FEAT_EPIC_SKILL_FOCUS_INTIMIDATE                     918          1      -1               0
+55    FEAT_EPIC_SHADOWDANCER                               980          3      11               0
+56    FEAT_EPIC_EPIC_SHADOWLORD                           1002          2      -1               0                                                                        
+57    FEAT_EPIC_REFLEXES                                   585          1      -1               0
+                                                                              
+                                                                              
+                                                                              
+                                                                              
+                                                                              
+                                                                              
+                                                                              
+                                                                              
+                                                                              
+                                                                              
+                                                                              
+                                                                              
+                                                                              
+                                                                              
+                                                                              
+                                                                              
+                                                                              
+                                                                              
+                                                                              
+                                                                              
+                                                                              
+                                                                              
+                                                                              
+                                                                              

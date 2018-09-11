@@ -1,0 +1,10 @@
+2DA V2.0
+
+       Corner1     Edge         Corner2     Height     Model            
+0      Floor       ****         Floor       0          TII01_Z03_01     
+1      wall        ****         wall        0          TII01_Z05_01     
+2      wall        ****         ****        0          TII01_Z05_01     
+3      floor       ****         ****        0          TII01_Z03_01     
+4      Wall        ****         floor       0          TII01_Z02_01     
+5      Wall        Corridor     wall        0          TII01_Z01_01     
+6      Wall        Doorway      Wall        0          TII01_Z04_01     

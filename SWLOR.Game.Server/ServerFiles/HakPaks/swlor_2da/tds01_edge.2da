@@ -1,0 +1,16 @@
+2DA V2.0
+
+       Corner1     Edge     Corner2     Height     Model            
+0      Floor       ****     Floor       0          TDS01_Z02_01     
+1      Floor       Fence    Floor       0          TDS01_Z04_01     
+2      Pit         Bridge   Pit         0          TDS01_Z05_01     
+3      Wall        Corridor Wall        0          TDS01_Z06_01     
+4      Floor       ****     Pit         0          TDS01_Z07_01     
+5      Wall        ****     Pit         0          TDS01_Z08_01     
+6      Wall        ****     Floor       0          TDS01_Z09_01     
+7      Wall        ****     ****        0          TDS01_Z01_01     
+8      Pit         ****     ****        0          TDS01_Z03_01     
+9      Floor       ****     ****        0          TDS01_Z02_01     
+10     Pit         ****     Pit         0          TDS01_Z03_01     
+11     Wall        ****     Wall        0          TDS01_Z01_01
+12	   Wall		   Door		Wall		0		   TDS01_Z10_01     

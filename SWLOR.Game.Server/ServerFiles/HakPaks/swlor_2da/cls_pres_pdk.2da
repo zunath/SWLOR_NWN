@@ -1,0 +1,11 @@
+2DA V2.0
+
+    LABEL        ReqType  ReqParam1     ReqParam2
+0   Base_Attack  BAB      4             ****
+1   Persuade     SKILL    12            1
+2   Listen       SKILL    6             2
+3   Spot         SKILL    17            2
+4   Intimidate   SKILL    24            1
+5   ScriptVar    VAR      DLA_AllowPDK  0
+6   MountedCom   FEAT     1087          ****
+7   Ride         SKILL    27            2

@@ -1,0 +1,21 @@
+2DA V2.0                                                         
+                                                                 
+           LABEL          ReqType   ReqParam1        ReqParam2   
+0          Alertness      FEAT      0                ****        
+1          WildShape      FEATOR    305              ****
+1          WildShape2     FEATOR    335              ****
+1          WildShape3     FEATOR    336              ****
+1          WildShape4     FEATOR    337              ****
+1          WildShape5     FEATOR    338              ****
+1          WildShape6     FEATOR    339              ****
+2          Spellcasting   SPELL     3                ****        
+3          ScriptVar      VAR       X2_AllowShiftr   0           
+                                                                 
+                                                                 
+                                                                 
+                                                                 
+                                                                 
+                                                                 
+                                                                 
+                                                                 
+                                                                 

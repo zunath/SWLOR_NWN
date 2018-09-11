@@ -1,0 +1,31 @@
+2DA V2.0                                                                                                                                                                                                                                                                                                                                             
+                                                                                                                                                                                                                                                                                                                                                     
+           Comment           PropertyType    Duration   Param1     Param2    Param3    Param4   SuccessText
+0          INVALID           ****            ****       ****       ****      ****      ****     83386
+1          LightBlueBright   44              0          4          0         ****      ****     84392
+2          LightYellowBright 44              0          4          1         ****      ****     84392
+3          LightPurpleBright 44              0          4          2         ****      ****     84392
+4          LightRedBright    44              0          4          3         ****      ****     84392
+5          LightGreenBright  44              0          4          4         ****      ****     84392
+6          LightOrangeBright 44              0          4          5         ****      ****     84392
+7          LightWhiteBright  44              0          4          6         ****      ****     84392
+8          LightWhiteDim     44              30         2          6         ****      ****     84392
+9          BIO_RESERVED      **              **         *          *         ****      ****     ****
+10         BIO_RESERVED      **              **         *          *         ****      ****     ****
+11         BIO_RESERVED      **              **         *          *         ****      ****     ****
+12         BIO_RESERVED      **              **         *          *         ****      ****     ****
+13         BIO_RESERVED      **              **         *          *         ****      ****     ****
+14         BIO_RESERVED      **              **         *          *         ****      ****     ****
+15         BIO_RESERVED      **              **         *          *         ****      ****     ****
+16         BIO_RESERVED      **              **         *          *         ****      ****     ****
+17         BIO_RESERVED      **              **         *          *         ****      ****     ****
+18         BIO_RESERVED      **              **         *          *         ****      ****     ****
+19         BIO_RESERVED      **              **         *          *         ****      ****     ****
+20         BIO_RESERVED      **              **         *          *         ****      ****     ****
+21         BIO_RESERVED      **              **         *          *         ****      ****     ****
+22         BIO_RESERVED      **              **         *          *         ****      ****     ****
+23         BIO_RESERVED      **              **         *          *         ****      ****     ****
+24         BIO_RESERVED      **              **         *          *         ****      ****     ****
+25         BIO_RESERVED      **              **         *          *         ****      ****     ****
+26        Demo_Keen            43              0          ****       ****      ****      ****     "The item is now keen!"
+

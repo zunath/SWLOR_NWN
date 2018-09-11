@@ -1,0 +1,22 @@
+2DA V2.0
+
+    NAME    MDLNAME    NODENAME
+0   0       FOOTR      rfoot_g
+1   0       FOOTL      lfoot_g
+2   0       SHINR      rshin_g
+3   0       SHINL      lshin_g
+4   0       LEGL       lthigh_g
+5   0       LEGR       rthigh_g
+6   0       PELVIS     pelvis_g
+7   0       CHEST      torso_g
+8   0       BELT       belt_g
+9   0       NECK       neck_g
+10  0       FORER      rforearm_g
+11  0       FOREL      lforearm_g
+12  0       BICEPR     rbicep_g
+13  0       BICEPL     lbicep_g
+14  0       SHOR       rshoulder_g
+15  0       SHOL       lshoulder_g
+16  0       HANDR      rhand_g
+17  0       HANDL      lhand_g
+18  0       ROBE       root

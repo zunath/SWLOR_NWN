@@ -1,0 +1,16 @@
+2DA V2.0
+
+       Corner1     Edge      Corner2     Height     Model 
+0      black       ****      ****        0          twc03_z_0x00
+1      black       ****      black       0          twc03_z_0x00
+2      floor       ****      ****        0          twc03_z_1x10
+3      floor       ****      floor       0          twc03_z_1x10
+4      floor       ****      black       0          twc03_z_1x00
+5      black       corridor  black       0          twc03_z_0000
+6      floor       wall      floor       0          twc03_z_1110
+7      water       ****      floor       0          twc03_z_2x10
+8      water       ****      water       0          twc03_z_2x20
+9      water       ****      ****        0          twc03_z_2x20
+10     water       bridge    water       0          twc03_z_2220
+11     water       ****      black       0          twc03_z_2x00
+12     black       doorway   black       0          twc03_z_0300

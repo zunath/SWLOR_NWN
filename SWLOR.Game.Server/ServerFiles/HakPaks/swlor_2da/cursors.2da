@@ -1,0 +1,14 @@
+2DA V2.0
+
+    Label       ResRef             CursorID
+0   None        ****               ****
+1   Transition  gui_mp_transu      21
+2   Use         gui_mp_useu        25
+3   Examine     gui_mp_examineu    17
+4   Talk        gui_mp_talku       11
+5   Walk        gui_mp_walku       3
+6   XWalk       gui_mp_nowalku     5
+7   Attack      gui_mp_attacku     7
+8   Magic       gui_mp_magicu      29
+9   NoUse       gui_mp_nouseu      27
+10  Trap        gui_mp_disarmu     33

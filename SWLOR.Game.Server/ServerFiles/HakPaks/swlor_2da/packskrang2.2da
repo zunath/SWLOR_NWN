@@ -1,0 +1,28 @@
+2DA V2.0                                         
+                                                 
+           SkillIndex   Label                    
+0          0            AnimalEmpathy            
+1          1            Concentration            
+2          4            Heal                     
+3          5            Hide                     
+4          6            Listen                   
+5          8            MoveSilently             
+6          3            Discipline               
+7          12           Persuade                 
+8          10           Parry                    
+9          17           Spot                     
+10         21           Tumble                   
+11         18           Taunt                    
+12         7            Lore                     
+13         20           Appraise                 
+14         22           CraftTrap                
+15         14           Search                   
+16         9            OpenLock                 
+17         2            DisableTrap              
+18         15           SetTrap                  
+19         26           CraftWeapon
+20         25           CraftArmor
+21         23           Bluff
+22         24           Intimidate     
+23         13           PickPocket               
+24         16           Spellcraft               

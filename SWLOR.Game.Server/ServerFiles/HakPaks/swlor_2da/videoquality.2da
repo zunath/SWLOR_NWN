@@ -1,0 +1,14 @@
+2DA V2.0                                                                                                                                                                                                                                                                                         
+                                                                                                                                                                                              
+			INILABEL					FAST		LOW			GOOD		BEST
+
+0			EnableEnvironmentShadows	0			0			1			1
+1			CreatureShadowDetail		0			1			1			2
+2			EnableGrass					0			0			1			1
+3			EnableFastGrass				1			1			1			0
+4			NumDynamicLights			3			8			8			8
+5			NumShadowCastingLights		1			1			1			3
+6			ShinyWater					0			0			0			1
+7			CreatureWindSetting			0			0			1			2
+8			EnableVisualEffectsHigh		0			1			1			1
+9			EnableSkyboxes				0			0			0			1

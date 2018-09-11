@@ -1,0 +1,10 @@
+2DA V2.0                                                                                                             
+                                                                                                                     
+           Label	    Name	Description	InvSlot		permanent
+0          None		    0		0		0		0
+1	   Regenerate	    0	        0               5               1
+2	   Haste	    0		0               6               1
+3          Ac_Bonus_5	    0           0 		0		1
+4	   Damage_Bludg     0           0               2               1
+5	   Fire_Protection  0           0               1               1
+6          Fire_Damage	    0		0		2		1

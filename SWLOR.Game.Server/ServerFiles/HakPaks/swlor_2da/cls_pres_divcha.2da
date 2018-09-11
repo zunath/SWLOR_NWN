@@ -1,0 +1,36 @@
+2DA V2.0                                                              
+                                                                      
+           LABEL               ReqType   ReqParam1        ReqParam2   
+0          Base_Attack         BAB       7                ****        
+1          WeapFocDagger       FEATOR    90               ****        
+2          WeapFocLgMace       FEATOR    94               ****        
+3          WeapFocMorn         FEATOR    95               ****        
+4          WeapFocStaff        FEATOR    96               ****        
+5          WeapFocSpear        FEATOR    97               ****        
+6          WeapFocSickle       FEATOR    98               ****        
+7          WeapFocShortSword   FEATOR    103              ****        
+8          WeapFocRapier       FEATOR    104              ****        
+9          WeapFocScim         FEATOR    105              ****        
+10         WeapFocLSw          FEATOR    106              ****        
+11         WeapFocGSw          FEATOR    107              ****        
+12         WeapFocHAxe         FEATOR    108              ****        
+13         WeapFocBAxe         FEATOR    110              ****        
+14         WeapFocGAxe         FEATOR    111              ****        
+15         WeapFocHalb         FEATOR    112              ****        
+16         WeapFocLgHam        FEATOR    113              ****        
+17         WeapFocLgFlail      FEATOR    114              ****        
+18         WeapFocWHam         FEATOR    115              ****        
+19         WeapFocHFlail       FEATOR    116              ****        
+20         WeapFocKama         FEATOR    117              ****        
+21         WeapFocKukri        FEATOR    118              ****        
+22         WeapFocScy          FEATOR    121              ****        
+23         WeapFocKatana       FEATOR    122              ****        
+24         WeapFocBSw          FEATOR    123              ****        
+25         WeapFocDMace        FEATOR    125              ****        
+26         WeapFocDAxe         FEATOR    126              ****        
+27         WeapFoc2Sw          FEATOR    127              ****        
+28         WeapFocClub         FEATOR    43               ****
+29         WeapFocDWAxe        FEATOR    952              ****
+30         WeapFocWhip         FEATOR    993              ****
+31         WeapFocTrident      FEATOR    1072             ****
+32         ScriptVar           VAR       X2_AllowDivcha   0

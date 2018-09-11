@@ -1,0 +1,6 @@
+2DA V2.0
+
+    LABEL           ID      SHAPE   RADIUS  WIDTH   LENGTH      ONENTER         HEARTBEAT       ONEXIT
+0   Blade_Barrier   0       C       2.0     ****    ****        s_BladeBar00    s_BladeBar01    s_BladeBar02
+1   Wall_Of_Fire    1       R       ****    1.0     10.0        s_WallFireEn    s_WallFireHB    s_WallFireEx
+2   CircleVSEvil    2       C       2.0     ****    ****        s_CircEvilEn    s_CircEvilHB    s_CircEvilEx

@@ -1,0 +1,8 @@
+2DA V2.0
+
+    NAME    GENDER GRAPHIC CONSTANT
+0   156     M      ****    GENDER_MALE
+1   157     F      ****    GENDER_FEMALE
+2   4771    B      ****    GENDER_BOTH
+3   201     O      ****    GENDER_OTHER
+4   202     N      ****    GENDER_NONE

@@ -1,0 +1,9 @@
+2DA V2.0
+    Label               Looping Continuous  Random  Interval    IntervalVar PitchVar    VolumeVar
+
+0   Looping             1       1           0       0           0           0.0         0.0
+1   Once_Sequential     0       0           0       1000        0           0.0         0.0
+2   Once_Random         0       0           1       0           0           0.1         0.0
+3   Repeat_Sequential   0       1           0       1000        0           0.0         0.0
+4   Repeat_Random       0       1           1       25000       5000        0.1         0.0
+

@@ -1,0 +1,19 @@
+2DA V2.0
+
+       Corner1     Edge     Corner2     Height     Model            
+0      Shop        ****     Shop        0          tni01_Z01_01     
+1      Inn         ****     Inn         0          tni01_Z02_01     
+2      Kitchen     ****     Kitchen     0          tni01_Z03_01     
+3      Livingroom  ****     Livingroom  0          tni01_Z04_01     
+4      Wall        ****     Shop        0          tni01_Z05_01     
+5      Wall        ****     Inn         0          tni01_Z06_01     
+6      Wall        ****     Kitchen     0          tni01_Z07_01     
+7      Wall        ****     Livingroom  0          tni01_Z08_01     
+8      Wall        Corridor Wall        0          tni01_Z09_01     
+9      Wall        ****     Wall        0          tni01_Z10_01     
+10     Wall        ****     ****        0          tni01_Z10_01     
+11     Shop        ****     ****        0          tni01_Z01_01     
+12     Inn         ****     ****        0          tni01_Z02_01     
+13     Kitchen     ****     ****        0          tni01_Z03_01     
+14     Livingroom  ****     ****        0          tni01_Z04_01
+15     Wall        Doorway  Wall        0          tni01_Z11_01     

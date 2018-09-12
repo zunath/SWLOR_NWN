@@ -33,7 +33,6 @@ namespace SWLOR.Game.Server.Data
         public virtual IDbSet<BaseStructureType> BaseStructureTypes { get; set; }
         public virtual IDbSet<Attribute> Attributes { get; set; }
         public virtual IDbSet<AuthorizedDM> AuthorizedDMs { get; set; }
-        public virtual IDbSet<Background> Backgrounds { get; set; }
         public virtual IDbSet<BaseItemType> BaseItemTypes { get; set; }
         public virtual IDbSet<BuildingStyle> BuildingStyles { get; set; }
         public virtual IDbSet<ChatChannelsDomain> ChatChannelsDomains { get; set; }
@@ -131,12 +130,7 @@ namespace SWLOR.Game.Server.Data
                 .WithRequired(e => e.Attribute2)
                 .HasForeignKey(e => e.Tertiary)
                 .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<Background>()
-                .HasMany(e => e.PlayerCharacters)
-                .WithRequired(e => e.Background)
-                .WillCascadeOnDelete(false);
-
+            
             modelBuilder.Entity<BaseItemType>()
                 .HasMany(e => e.PCMigrationItems)
                 .WithRequired(e => e.BaseItemType)

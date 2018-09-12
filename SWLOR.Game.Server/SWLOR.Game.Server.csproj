@@ -85,7 +85,6 @@
     <Compile Include="ChatCommand\Sit.cs" />
     <Compile Include="ChatCommand\Day.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="Conversation\BackgroundMenu.cs" />
     <Compile Include="Conversation\BaseManagementTool.cs" />
     <Compile Include="Conversation\ControlTower.cs" />
     <Compile Include="Conversation\EditBuildingPermissions.cs" />
@@ -131,7 +130,6 @@
     <Compile Include="Data\Entities\BaseStructureType.cs" />
     <Compile Include="Data\Entities\Attribute.cs" />
     <Compile Include="Data\Entities\AuthorizedDM.cs" />
-    <Compile Include="Data\Entities\Background.cs" />
     <Compile Include="Data\Entities\BaseItemType.cs" />
     <Compile Include="Data\Entities\ChatChannelsDomain.cs" />
     <Compile Include="Data\Entities\ChatLog.cs" />

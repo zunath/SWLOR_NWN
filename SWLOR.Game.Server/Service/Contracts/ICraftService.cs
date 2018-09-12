@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Data.Entities;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.ValueObject;
 
@@ -20,6 +21,6 @@ namespace SWLOR.Game.Server.Service.Contracts
         CraftingData GetPlayerCraftingData(NWPlayer player);
         void ClearPlayerCraftingData(NWPlayer player, bool destroyComponents = false);
         string CalculateDifficultyDescription(int pcLevel, int blueprintLevel);
-        int CalculatePCEffectiveLevel(NWPlayer pcGO, int deviceID, int skillRank);
+        int CalculatePCEffectiveLevel(NWPlayer player, int skillRank, SkillType skill);
     }
 }

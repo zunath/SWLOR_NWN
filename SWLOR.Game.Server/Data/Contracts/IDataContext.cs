@@ -20,7 +20,6 @@ namespace SWLOR.Game.Server.Data.Contracts
         IDbSet<BuildingStyle> BuildingStyles { get; set; }
         IDbSet<Attribute> Attributes { get; set; }
         IDbSet<AuthorizedDM> AuthorizedDMs { get; set; }
-        IDbSet<Background> Backgrounds { get; set; }
         IDbSet<BaseItemType> BaseItemTypes { get; set; }
         IDbSet<ChatChannelsDomain> ChatChannelsDomains { get; set; }
         IDbSet<ChatLog> ChatLogs { get; set; }

@@ -6,8 +6,6 @@ namespace SWLOR.Game.Server.Service.Contracts
 {
     public interface IBackgroundService
     {
-        IEnumerable<Background> GetActiveBackgrounds();
-        void SetPlayerBackground(NWPlayer player, Background background);
-        void OnModuleClientEnter();
+        void ApplyBackgroundBonuses(NWPlayer oPC);
     }
 }

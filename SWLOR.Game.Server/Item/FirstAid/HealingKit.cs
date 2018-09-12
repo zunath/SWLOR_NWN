@@ -97,10 +97,10 @@ namespace SWLOR.Game.Server.Item.FirstAid
 
         public bool ReducesItemCharge(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            PlayerCharacter pcEntity = _db.PlayerCharacters.Single(x => x.PlayerID == user.GlobalID);
             int consumeChance = _perk.GetPCPerkLevel((NWPlayer)user, PerkType.FrugalMedic) * 10;
+            BackgroundType background = (BackgroundType) user.Class1;
 
-            if (pcEntity.BackgroundID == (int)BackgroundType.Medic)
+            if (background == BackgroundType.Medic)
             {
                 consumeChance += 5;
             }

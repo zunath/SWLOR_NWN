@@ -112,30 +112,7 @@ namespace SWLOR.Game.Server.Service
             if (intBonus > MaxAttributeBonus) intBonus = MaxAttributeBonus;
             if (wisBonus > MaxAttributeBonus) wisBonus = MaxAttributeBonus;
             if (chaBonus > MaxAttributeBonus) chaBonus = MaxAttributeBonus;
-
-            if (pcEntity.BackgroundID == (int)BackgroundType.Gunslinger || pcEntity.BackgroundID == (int)BackgroundType.Rifleman)
-            {
-                dexBonus++;
-                wisBonus++;
-            }
-            if (pcEntity.BackgroundID == (int)BackgroundType.Guard || pcEntity.BackgroundID == (int)BackgroundType.Berserker)
-            {
-                strBonus++;
-                conBonus++;
-            }
-
-            if (pcEntity.BackgroundID == (int)BackgroundType.TwinBladeSpecialist)
-            {
-                dexBonus++;
-                conBonus++;
-            }
-
-            if (pcEntity.BackgroundID == (int)BackgroundType.MartialArtist)
-            {
-                strBonus++;
-                dexBonus++;
-            }
-
+            
             // Apply attributes
             _nwnxCreature.SetRawAbilityScore(player, ABILITY_STRENGTH, (int)strBonus + pcEntity.STRBase);
             _nwnxCreature.SetRawAbilityScore(player, ABILITY_DEXTERITY, (int)dexBonus + pcEntity.DEXBase);
@@ -169,8 +146,6 @@ namespace SWLOR.Game.Server.Service
             int hp = 30 + player.ConstitutionModifier * 5;
             hp += _perk.GetPCPerkLevel(player, PerkType.Health) * 5;
             hp += equippedItemHPBonus;
-            if (pcEntity.BackgroundID == (int)BackgroundType.Knight)
-                hp += 10;
 
             if (hp > 255) hp = 255;
             if (hp < 20) hp = 20;
@@ -187,8 +162,6 @@ namespace SWLOR.Game.Server.Service
             fp += (player.IntelligenceModifier + player.WisdomModifier + player.CharismaModifier) * 5;
             fp += _perk.GetPCPerkLevel(player, PerkType.FP) * 5;
             fp += equippedItemFPBonus;
-            if (pcEntity.BackgroundID == (int)BackgroundType.Wizard || pcEntity.BackgroundID == (int)BackgroundType.Cleric)
-                fp += 10;
 
             if (fp < 0) fp = 0;
             pcEntity.MaxFP = fp;
@@ -933,6 +906,9 @@ namespace SWLOR.Game.Server.Service
             if (skill == null) return 0;
             int skillBAB = skill.Rank / 10;
             int perkBAB = 0;
+            int backgroundBAB = 0;
+            BackgroundType background = (BackgroundType) oPC.Class1;
+            bool receivesBackgroundBonus = false;
 
             // Apply increased BAB if player is using a weapon for which they have a proficiency.
             PerkType proficiencyPerk = PerkType.Unknown;
@@ -946,18 +922,22 @@ namespace SWLOR.Game.Server.Service
                 case CustomItemType.FinesseVibroblade:
                     proficiencyPerk = PerkType.FinesseVibrobladeProficiency;
                     proficiencySkill = SkillType.OneHanded;
+                    receivesBackgroundBonus = background == BackgroundType.Duelist;
                     break;
                 case CustomItemType.Baton:
                     proficiencyPerk = PerkType.BatonProficiency;
                     proficiencySkill = SkillType.OneHanded;
+                    receivesBackgroundBonus = background == BackgroundType.SecurityOfficer;
                     break;
                 case CustomItemType.HeavyVibroblade:
                     proficiencyPerk = PerkType.HeavyVibrobladeProficiency;
                     proficiencySkill = SkillType.TwoHanded;
+                    receivesBackgroundBonus = background == BackgroundType.Soldier;
                     break;
                 case CustomItemType.Saberstaff:
                     proficiencyPerk = PerkType.SaberstaffProficiency;
                     proficiencySkill = SkillType.TwoHanded;
+                    receivesBackgroundBonus = background == BackgroundType.Sentinel || background == BackgroundType.Assassin;
                     break;
                 case CustomItemType.Polearm:
                     proficiencyPerk = PerkType.PolearmProficiency;
@@ -966,18 +946,22 @@ namespace SWLOR.Game.Server.Service
                 case CustomItemType.TwinBlade:
                     proficiencyPerk = PerkType.TwinVibrobladeProficiency;
                     proficiencySkill = SkillType.TwinBlades;
+                    receivesBackgroundBonus = background == BackgroundType.Berserker;
                     break;
                 case CustomItemType.MartialArtWeapon:
                     proficiencyPerk = PerkType.MartialArtsProficiency;
                     proficiencySkill = SkillType.MartialArts;
+                    receivesBackgroundBonus = background == BackgroundType.TerasKasi;
                     break;
                 case CustomItemType.BlasterPistol:
                     proficiencyPerk = PerkType.BlasterPistolProficiency;
                     proficiencySkill = SkillType.Firearms;
+                    receivesBackgroundBonus = background == BackgroundType.Smuggler;
                     break;
                 case CustomItemType.BlasterRifle:
                     proficiencyPerk = PerkType.BlasterRifleProficiency;
                     proficiencySkill = SkillType.Firearms;
+                    receivesBackgroundBonus = background == BackgroundType.Sharpshooter;
                     break;
                 case CustomItemType.Throwing:
                     proficiencyPerk = PerkType.ThrowingProficiency;
@@ -986,6 +970,7 @@ namespace SWLOR.Game.Server.Service
                 case CustomItemType.Lightsaber:
                     proficiencyPerk = PerkType.LightsaberProficiency;
                     proficiencySkill = SkillType.OneHanded;
+                    receivesBackgroundBonus = background == BackgroundType.Guardian || background == BackgroundType.Warrior;
                     break;
             }
 
@@ -993,6 +978,11 @@ namespace SWLOR.Game.Server.Service
                 proficiencySkill != SkillType.Unknown)
             {
                 perkBAB += _perk.GetPCPerkLevel(oPC, proficiencyPerk);
+            }
+
+            if (receivesBackgroundBonus)
+            {
+                backgroundBAB = 2;
             }
 
             int equipmentBAB = 0;
@@ -1014,7 +1004,7 @@ namespace SWLOR.Game.Server.Service
                 equipmentBAB += itemBAB;
             }
 
-            return 1 + skillBAB + perkBAB + equipmentBAB; // Note: Always add 1 to BAB. 0 will cause a crash in NWNX.
+            return 1 + skillBAB + perkBAB + equipmentBAB + backgroundBAB; // Note: Always add 1 to BAB. 0 will cause a crash in NWNX.
         }
 
         private void ApplyWeaponPenalties(NWPlayer oPC, NWItem oItem)

@@ -104,9 +104,7 @@ namespace SWLOR.Game.Server.Data.Entities
         public int TotalSPAcquired { get; set; }
 
         public bool DisplayHelmet { get; set; }
-
-        public int BackgroundID { get; set; }
-
+        
         public int? PrimaryResidencePCBaseStructureID { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
@@ -120,9 +118,7 @@ namespace SWLOR.Game.Server.Data.Entities
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Area> SouthwestAreas { get; set; }
-
-        public virtual Background Background { get; set; }
-
+        
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ChatLog> ChatLogs { get; set; }
 

@@ -97,16 +97,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void DigAHole()
         {
-            PlayerCharacter pcEntity = _player.GetPlayerEntity(GetPC());
-            NWItem shovel = NWItem.Wrap(GetPC().GetLocalObject("SHOVEL_ITEM"));
             Location targetLocation = GetPC().GetLocalLocation("SHOVEL_TARGET_LOCATION");
-
-            // Farmers get a 5% chance to not expend a charge.
-            Random random = new Random();
-            if (pcEntity.BackgroundID != (int)BackgroundType.Farmer || random.Next(0, 100) > 5)
-            {
-                shovel.ReduceCharges();
-            }
 
             _.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "farm_small_hole", targetLocation);
             _.FloatingTextStringOnCreature("You dig a hole.", GetPC().Object, NWScript.FALSE);

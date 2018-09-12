@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Service
         private readonly INWNXPlayerQuickBarSlot _qbs;
         private readonly IDialogService _dialog;
         private readonly INWNXEvents _nwnxEvents;
+        private readonly IBackgroundService _background;
 
         public PlayerService(
             INWScript script, 
@@ -36,7 +37,8 @@ namespace SWLOR.Game.Server.Service
             INWNXPlayer player,
             INWNXPlayerQuickBarSlot qbs,
             IDialogService dialog,
-            INWNXEvents nwnxEvents)
+            INWNXEvents nwnxEvents,
+            IBackgroundService background)
         {
             _ = script;
             _db = db;
@@ -48,6 +50,7 @@ namespace SWLOR.Game.Server.Service
             _qbs = qbs;
             _dialog = dialog;
             _nwnxEvents = nwnxEvents;
+            _background = background;
         }
 
         public void InitializePlayer(NWPlayer player)
@@ -91,7 +94,6 @@ namespace SWLOR.Game.Server.Service
                     _nwnxCreature.RemoveFeat(player, _nwnxCreature.GetFeatByIndex(player, currentFeat - 1));
                 }
 
-                _nwnxCreature.SetClassByPosition(player, 0, NWScript.CLASS_TYPE_FIGHTER);
                 _nwnxCreature.AddFeatByLevel(player, NWScript.FEAT_ARMOR_PROFICIENCY_LIGHT, 1);
                 _nwnxCreature.AddFeatByLevel(player, NWScript.FEAT_ARMOR_PROFICIENCY_MEDIUM, 1);
                 _nwnxCreature.AddFeatByLevel(player, NWScript.FEAT_ARMOR_PROFICIENCY_HEAVY, 1);
@@ -123,6 +125,8 @@ namespace SWLOR.Game.Server.Service
 
                 _db.StoredProcedure("InsertAllPCSkillsByID",
                     new SqlParameter("PlayerID", player.GlobalID));
+
+                _background.ApplyBackgroundBonuses(player);
 
                 _skill.ApplyStatChanges(player, null, true);
 

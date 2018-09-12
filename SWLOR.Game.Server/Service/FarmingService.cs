@@ -48,15 +48,7 @@ namespace SWLOR.Game.Server.Service
                 player.SendMessage("That plant cannot be harvested.");
                 return;
             }
-
-            PlayerCharacter pcEntity = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
-
-            // Farmers get a 5% chance to not expend a charge.
-            if (pcEntity.BackgroundID != (int)BackgroundType.Farmer || _random.Random(100) + 1 > 5 )
-            {
-                shovel.ReduceCharges();
-            }
-
+            
             growingPlant.IsActive = false;
             _db.SaveChanges();
 

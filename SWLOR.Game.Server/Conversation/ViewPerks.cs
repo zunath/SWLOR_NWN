@@ -294,18 +294,11 @@ namespace SWLOR.Game.Server.Conversation
         private void HandlePerkDetailsResponses(int responseID)
         {
             Model vm = GetDialogCustomData<Model>();
-            PlayerCharacter player = _player.GetPlayerEntity(GetPC());
-            bool hasBackground = player.BackgroundID > 0;
-
+            
             switch (responseID)
             {
                 case 1: // Purchase Upgrade / Confirm Purchase
-                    if (!hasBackground)
-                    {
-                        GetPC().FloatingText("You must select a background before purchasing perks. Use the Background Token in your inventory to select one.");
-                        return;
-                    }
-
+                    
                     if (vm.IsConfirmingPurchase)
                     {
                         SetResponseText("PerkDetailsPage", 1, "Purchase Upgrade");

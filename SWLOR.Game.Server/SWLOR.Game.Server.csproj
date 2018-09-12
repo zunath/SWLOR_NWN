@@ -866,6 +866,14 @@
     <None Include="ServerFiles\HakPaks\swlor_2da\zts01doors.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\zts01_edge.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\ztu01_edge.2da" />
+    <None Include="ServerFiles\HakPaks\swlor_gui\cg_alignment.gui" />
+    <None Include="ServerFiles\HakPaks\swlor_gui\cg_appearance.gui" />
+    <None Include="ServerFiles\HakPaks\swlor_gui\cg_attributes.gui" />
+    <None Include="ServerFiles\HakPaks\swlor_gui\cg_char_info.gui" />
+    <None Include="ServerFiles\HakPaks\swlor_gui\cg_class.gui" />
+    <None Include="ServerFiles\HakPaks\swlor_gui\cg_main.gui" />
+    <None Include="ServerFiles\HakPaks\swlor_gui\cg_package.gui" />
+    <None Include="ServerFiles\HakPaks\swlor_gui\cg_race.gui" />
     <None Include="ServerFiles\HakPaks\swlor_tlk.tlk" />
   </ItemGroup>
   <ItemGroup />

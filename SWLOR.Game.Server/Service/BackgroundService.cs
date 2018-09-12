@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.Service.Contracts;
-using Background = SWLOR.Game.Server.Data.Entities.Background;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -29,117 +28,90 @@ namespace SWLOR.Game.Server.Service
             _perk = perk;
             _skill = skill;
         }
-
-        public IEnumerable<Background> GetActiveBackgrounds()
+        
+        public void ApplyBackgroundBonuses(NWPlayer oPC)
         {
-            return _db.Backgrounds.Where(x => x.IsActive);
-        }
-
-        public void SetPlayerBackground(NWPlayer player, Background background)
-        {
-            if(player == null) throw new ArgumentNullException(nameof(player));
-            if(background == null) throw new ArgumentNullException(nameof(background));
-
-            PlayerCharacter pc = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
-            pc.BackgroundID = background.BackgroundID;
-            _db.SaveChanges();
-            ApplyBackgroundBonuses(player, background.BackgroundID);
-
-            NWItem token = NWItem.Wrap(_.GetItemPossessedBy(player.Object, "bkg_token"));
-            token.Destroy();
-
-            player.FloatingText("Background confirmed!");
-        }
-
-        public void OnModuleClientEnter()
-        {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetEnteringObject());
-            if (!oPC.IsPlayer || oPC.IsDM) return;
-            
-            NWObject token = NWObject.Wrap(_.GetItemPossessedBy(oPC.Object, "bkg_token"));
-            PlayerCharacter entity = _db.PlayerCharacters.Single(x => x.PlayerID == oPC.GlobalID);
-
-            if (entity.BackgroundID > 0) return;
-
-            if (!token.IsValid)
-            {
-                _.CreateItemOnObject("bkg_token", oPC.Object);
-            }
-        }
-
-
-        private void ApplyBackgroundBonuses(NWPlayer oPC, int backgroundID)
-        {
+            var dbPlayer = _db.PlayerCharacters.Single(x => x.PlayerID == oPC.GlobalID);
             string pcName = oPC.Name;
-            PlayerCharacter pcEntity = _db.PlayerCharacters.Single(x => x.PlayerID == oPC.GlobalID);
+            int classID = oPC.Class1;
 
             string item1Resref = "";
             int item1Quantity = 1;
             string item2Resref = "";
             int item2Quantity = 1;
 
-            switch ((BackgroundType)backgroundID)
+            switch ((BackgroundType)classID)
             {
-                case BackgroundType.Weaponsmith:
-                    _perk.DoPerkUpgrade(oPC, PerkType.WeaponBlueprints);
+                case BackgroundType.Freelancer:
+                    dbPlayer.UnallocatedSP = dbPlayer.UnallocatedSP + 3;
+                    _db.SaveChanges();
+                    break;
+                case BackgroundType.Guardian:
+                    item1Resref = "lightsaber_g";
+                    break;
+                case BackgroundType.Sentinel:
+                    item1Resref = "saberstaff_s";
+                    break;
+                case BackgroundType.Warrior:
+                    item1Resref = "lightsaber_w";
+                    break;
+                case BackgroundType.Assassin:
+                    item1Resref = "saberstaff_a";
+                    break;
+                case BackgroundType.Smuggler:
+                    item1Resref = "blaster_s";
+                    break;
+                case BackgroundType.Sharpshooter:
+                    item1Resref = "rifle_s";
+                    break;
+                case BackgroundType.TerasKasi:
+                    item1Resref = "powerglove_t";
+                    break;
+                case BackgroundType.SecurityOfficer:
+                    item1Resref = "baton_s";
+                    break;
+                case BackgroundType.Berserker:
+                    item1Resref = "doubleaxe_z";
+                    break;
+                case BackgroundType.Duelist:
+                    item1Resref = "kukri_d";
+                    break;
+                case BackgroundType.Soldier:
+                    item1Resref = "greatsword_s";
                     break;
                 case BackgroundType.Armorsmith:
                     _perk.DoPerkUpgrade(oPC, PerkType.ArmorBlueprints);
                     break;
-                case BackgroundType.Fabricator:
-                    _perk.DoPerkUpgrade(oPC, PerkType.FabricationBlueprints);
-                    break;
-                case BackgroundType.Knight:
-                    item1Resref = "bkg_knightarmor";
-                    break;
-                case BackgroundType.Wizard:
-                    _perk.DoPerkUpgrade(oPC, PerkType.FireBlast);
-                    break;
-                case BackgroundType.Cleric:
-                    _perk.DoPerkUpgrade(oPC, PerkType.Recover);
-                    break;
-                case BackgroundType.Gunslinger:
-                    item1Resref = "bkg_gunblaster";
-                    item2Resref = "blaster_bullets";
-                    item2Quantity = 99;
-                    break;
-                case BackgroundType.Rifleman:
-                    item1Resref = "bkg_rifleman";
-                    item2Resref = "rifle_bullets";
-                    item2Quantity = 99;
+                case BackgroundType.Weaponsmith:
+                    _perk.DoPerkUpgrade(oPC, PerkType.WeaponBlueprints);
                     break;
                 case BackgroundType.Chef:
-                    _perk.DoPerkUpgrade(oPC, PerkType.FoodRecipes);
+                    // todo add cooking blueprints
                     break;
                 case BackgroundType.Engineer:
                     _perk.DoPerkUpgrade(oPC, PerkType.EngineeringBlueprints);
                     break;
-                case BackgroundType.Vagabond:
-                    pcEntity.UnallocatedSP = pcEntity.UnallocatedSP + 3;
-                    _db.SaveChanges();
+                case BackgroundType.Fabricator:
+                    _perk.DoPerkUpgrade(oPC, PerkType.FabricationBlueprints);
                     break;
-                case BackgroundType.Guard:
-                    item1Resref = "bkg_guardlgswd";
-                    item2Resref = "bkg_guardshld";
+                case BackgroundType.Harvester:
+                    item1Resref = "scanner_r_h";
+                    item2Resref = "harvest_r_h";
                     break;
-                case BackgroundType.Berserker:
-                    item1Resref = "bkg_bersgswd";
-                    break;
-                case BackgroundType.TwinBladeSpecialist:
-                    item1Resref = "bkg_spectwinbld";
-                    break;
-                case BackgroundType.MartialArtist:
-                    item1Resref = "bkg_mrtlglove";
-                    item2Resref = "bkg_mtlshuriken";
-                    item2Quantity = 50;
+                case BackgroundType.Scavenger:
+                    _perk.DoPerkUpgrade(oPC, PerkType.ForageExpert);
                     break;
                 case BackgroundType.Medic:
-                    _perk.DoPerkUpgrade(oPC, PerkType.HealingKitExpert);
                     _perk.DoPerkUpgrade(oPC, PerkType.ImmediateImprovement);
                     break;
-                case BackgroundType.Farmer:
-                    _perk.DoPerkUpgrade(oPC, PerkType.ExpertFarmer);
+                case BackgroundType.Consular:
+                    // todo add force ability perk
                     break;
+                case BackgroundType.Sorcerer:
+                    // todo add force ability perk
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
 
             if (!string.IsNullOrWhiteSpace(item1Resref))

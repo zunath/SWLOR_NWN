@@ -1,27 +1,30 @@
 ﻿namespace SWLOR.Game.Server.Enumeration
 {
+    // These index into the Classes.2da file.
     public enum BackgroundType
     {
-        NotSelected = 0,
-        Weaponsmith = 1,
-        Armorsmith = 2,
-        Knight = 3,
-        Wizard = 4,
-        Cleric = 5,
-        Gunslinger = 6,
-        Rifleman = 7,
-        Chef = 8,
-        Fabricator = 9,
-        Engineer = 10,
-        Vagabond = 11,
-        Guard = 12,
-        Berserker = 13,
-        TwinBladeSpecialist = 14,
-        MartialArtist = 15,
-        // 16 is open
-        // 17 is open
-        // 18 is open
-        Medic = 19,
-        Farmer = 20
+        Invalid = 0,
+        Freelancer = 4,
+        Guardian = 42,
+        Sentinel = 43,
+        Warrior = 44,
+        Assassin = 45,
+        Smuggler = 46,
+        Sharpshooter = 47,
+        TerasKasi = 48,
+        SecurityOfficer = 49,
+        Berserker = 50,
+        Duelist = 51,
+        Soldier = 52,
+        Armorsmith = 53,
+        Weaponsmith = 54,
+        Chef = 55,
+        Engineer = 56,
+        Fabricator = 57,
+        Harvester = 58,
+        Scavenger = 59,
+        Medic = 60,
+        Consular = 61,
+        Sorcerer = 62,
     }
 }

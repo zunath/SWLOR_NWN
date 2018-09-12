@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Service
             var model = GetPlayerCraftingData(player);
             var bp = model.Blueprint;
             int deviceID = bp.CraftDeviceID;
-            int playerEL = CalculatePCEffectiveLevel(player, deviceID, model.PlayerSkillRank);
+            int playerEL = CalculatePCEffectiveLevel(player, model.PlayerSkillRank, (SkillType)bp.SkillID);
 
             string header = _color.Green("Blueprint: ") + bp.Quantity + "x " + bp.ItemName + "\n";
             header += _color.Green("Level: ") + (model.AdjustedLevel < 0 ? 0 : model.AdjustedLevel) + " (Base: " + bp.BaseLevel + ")\n";
@@ -237,13 +237,12 @@ namespace SWLOR.Game.Server.Service
 
             CraftBlueprint blueprint = _db.CraftBlueprints.Single(x => x.CraftBlueprintID == model.BlueprintID);
             PCSkill pcSkill = _db.PCSkills.Single(x => x.PlayerID == oPC.GlobalID && x.SkillID == blueprint.SkillID);
-            int deviceID = blueprint.CraftDeviceID;
 
-            int pcEffectiveLevel = CalculatePCEffectiveLevel(oPC, deviceID, pcSkill.Rank);
+            int pcEffectiveLevel = CalculatePCEffectiveLevel(oPC, pcSkill.Rank, (SkillType)blueprint.SkillID);
             int itemLevel = model.AdjustedLevel;
             float chance = CalculateBaseChanceToAddProperty(pcEffectiveLevel, itemLevel);
             float equipmentBonus = CalculateEquipmentBonus(oPC, (SkillType)blueprint.SkillID);
-
+            
             if (chance <= 1.0f)
             {
                 oPC.FloatingText(_color.Red("Critical failure! You don't have enough skill to create that item. All components were lost."));
@@ -477,31 +476,31 @@ namespace SWLOR.Game.Server.Service
             return percentage;
         }
 
-        public int CalculatePCEffectiveLevel(NWPlayer pcGO, int deviceID, int skillRank)
+        public int CalculatePCEffectiveLevel(NWPlayer player, int skillRank, SkillType skill)
         {
             int effectiveLevel = skillRank;
-            PlayerCharacter player = _db.PlayerCharacters.Single(x => x.PlayerID == pcGO.GlobalID);
-
-            switch ((CraftDeviceType)deviceID)
+            BackgroundType background = (BackgroundType)player.Class1;
+            
+            switch (skill)
             {
-                case CraftDeviceType.ArmorsmithBench:
-                    if (player.BackgroundID == (int)BackgroundType.Armorsmith)
+                case SkillType.Armorsmith:
+                    if (background == BackgroundType.Armorsmith)
                         effectiveLevel++;
                     break;
-                case CraftDeviceType.Cookpot:
-                    if (player.BackgroundID == (int)BackgroundType.Chef)
+                case SkillType.Cooking:
+                    if (background == BackgroundType.Chef)
                         effectiveLevel++;
                     break;
-                case CraftDeviceType.WeaponsmithBench:
-                    if (player.BackgroundID == (int)BackgroundType.Weaponsmith)
+                case SkillType.Weaponsmith:
+                    if (background == BackgroundType.Weaponsmith)
                         effectiveLevel++;
                     break;
-                case CraftDeviceType.EngineeringBench:
-                    if (player.BackgroundID == (int)BackgroundType.Engineer)
+                case SkillType.Engineering:
+                    if (background == BackgroundType.Engineer)
                         effectiveLevel++;
                     break;
-                case CraftDeviceType.FabricationTerminal:
-                    if (player.BackgroundID == (int) BackgroundType.Fabricator)
+                case SkillType.Fabrication:
+                    if (background ==  BackgroundType.Fabricator)
                         effectiveLevel++;
                     break;
             }

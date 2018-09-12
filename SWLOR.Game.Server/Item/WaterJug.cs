@@ -52,15 +52,7 @@ namespace SWLOR.Game.Server.Item
                 user.SendMessage("There's no water in that jug!");
                 return;
             }
-
-            PlayerCharacter pcEntity = _db.PlayerCharacters.Single(x => x.PlayerID == user.GlobalID);
-
-            // Farmers get a 5% chance to not expend a charge.
-            if (pcEntity.BackgroundID != (int)BackgroundType.Farmer || _random.Random(100) + 1 > 5)
-            {
-                item.Charges--;
-            }
-
+            
             int remainingTicks = growingPlant.RemainingTicks;
 
             if (growingPlant.WaterStatus > 1)

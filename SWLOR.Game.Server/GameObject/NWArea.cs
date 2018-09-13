@@ -1,4 +1,5 @@
-﻿using NWN;
+﻿using System;
+using NWN;
 using SWLOR.Game.Server.GameObject.Contracts;
 using static NWN.NWScript;
 using Object = NWN.Object;
@@ -26,5 +27,18 @@ namespace SWLOR.Game.Server.GameObject
         public int Height => _.GetAreaSize(AREA_HEIGHT, Object);
 
         public bool IsInstance => _.GetLocalInt(Object, "IS_AREA_INSTANCE") == TRUE;
+        
+        public static implicit operator Object(NWArea o)
+        {
+            return o.Object;
+        }
+        public static implicit operator NWArea(Object o)
+        {
+            INWScript _ = App.Resolve<INWScript>();
+
+            return (_.GetObjectType(o) == 0) ? // No constant defined for areas. Value returns 0 according to lexicon.
+                Wrap(o) :
+                throw new InvalidCastException();
+        }
     }
 }

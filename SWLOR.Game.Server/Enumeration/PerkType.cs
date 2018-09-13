@@ -5,10 +5,11 @@
         Unknown = -1,
         SpeedyFabrication = 1, 
         FabricationBlueprints = 2, 
-        // 3 is free
-        // 4 is free
-        // 5 is free
-        // 6 is free
+        ForceBreach = 3,
+        ForceLightning = 4,
+        ForceHeal = 5,
+        DarkHeal = 6,
+
         // 7 is free
         // 8 is free
         // 9 is free
@@ -72,15 +73,15 @@
         WeaponFocusBlasterPistols = 67,
         WeaponFocusBlasterRifles = 68,
         WeaponFocusThrowing = 69,
-        CrushingEarth = 70,
-        LightningShock = 71,
-        GraspingIce = 72,
-        FireBlast = 73,
-        Gate = 74,
-        Purify = 75,
-        Aegis = 76,
-        Recover = 77,
-        HolyShot = 78,
+        // 70 is free
+        // 71 is free
+        // 72 is free
+        // 73 is free
+        // 74 is free
+        // 75 is free
+        // 76 is free
+        // 77 is free
+        // 78 is free
         SpeedyRefining = 79,
         ProcessingEfficiency = 80,
         RefineryManagement = 81,

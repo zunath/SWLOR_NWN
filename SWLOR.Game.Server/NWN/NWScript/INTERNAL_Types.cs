@@ -3,7 +3,7 @@
 // ReSharper disable once CheckNamespace
 namespace NWN
 {
-    public class Object
+    public partial class Object
     {
         public static Object OBJECT_SELF { get { return Internal.OBJECT_SELF; } }
 

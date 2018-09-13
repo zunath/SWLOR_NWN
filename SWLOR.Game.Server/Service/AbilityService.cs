@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Spells w/ casting time
-            if (perk.PerkExecutionType.PerkExecutionTypeID == (int)PerkExecutionType.Spell)
+            if (perk.PerkExecutionType.PerkExecutionTypeID == (int)PerkExecutionType.ForceAbility)
             {
                 CastSpell(pc, target, perk, perkAction, perk.CooldownCategory);
             }
@@ -251,7 +251,7 @@ namespace SWLOR.Game.Server.Service
 
                 pc.DeleteLocalInt(spellUUID);
 
-                if ((PerkExecutionType)entity.ExecutionTypeID == PerkExecutionType.Spell ||
+                if ((PerkExecutionType)entity.ExecutionTypeID == PerkExecutionType.ForceAbility ||
                     (PerkExecutionType)entity.ExecutionTypeID == PerkExecutionType.CombatAbility)
                 {
                     perk.OnImpact(pc, target);

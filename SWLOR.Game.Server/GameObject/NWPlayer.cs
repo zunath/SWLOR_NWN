@@ -9,6 +9,7 @@ using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
+using static NWN.NWScript;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.GameObject
@@ -54,7 +55,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             List<NWPlayer> partyMembers = new List<NWPlayer>();
             Object member = _.GetFirstFactionMember(Object);
-            while (_.GetIsObjectValid(member) == NWScript.TRUE)
+            while (_.GetIsObjectValid(member) == TRUE)
             {
                 partyMembers.Add(Wrap(member));
                 member = _.GetNextFactionMember(Object);
@@ -133,7 +134,7 @@ namespace SWLOR.Game.Server.GameObject
             int forceRank = _skill.GetPCSkill(this, SkillType.ForceArmor).Rank;
 
             int ac = 0;
-            for (int slot = 0; slot < NWScript.NUM_INVENTORY_SLOTS; slot++)
+            for (int slot = 0; slot < NUM_INVENTORY_SLOTS; slot++)
             {
                 NWItem oItem = NWItem.Wrap(_.GetItemInSlot(slot, Object));
                 if (oItem.Equals(ignoreItem))
@@ -179,7 +180,7 @@ namespace SWLOR.Game.Server.GameObject
             {
                 int castingSpeed = 0;
 
-                for (int itemSlot = 0; itemSlot < NWScript.NUM_INVENTORY_SLOTS; itemSlot++)
+                for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
                     NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
                     if (!item.IsValid) continue;
@@ -211,7 +212,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 float rate = 1.0f;
-                for (int itemSlot = 0; itemSlot < NWScript.NUM_INVENTORY_SLOTS; itemSlot++)
+                for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
                     NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
                     if (!item.IsValid) continue;
@@ -235,7 +236,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int darkBonus = 0;
-                for (int itemSlot = 0; itemSlot < NWScript.NUM_INVENTORY_SLOTS; itemSlot++)
+                for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
                     NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
                     if (!item.IsValid) continue;
@@ -255,7 +256,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int lightBonus = 0;
-                for (int itemSlot = 0; itemSlot < NWScript.NUM_INVENTORY_SLOTS; itemSlot++)
+                for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
                     NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
                     if (!item.IsValid) continue;
@@ -275,7 +276,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int summoningBonus = 0;
-                for (int itemSlot = 0; itemSlot < NWScript.NUM_INVENTORY_SLOTS; itemSlot++)
+                for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
                     NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
                     if (!item.IsValid) continue;
@@ -295,7 +296,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int luckBonus = 0;
-                for (int itemSlot = 0; itemSlot < NWScript.NUM_INVENTORY_SLOTS; itemSlot++)
+                for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
                     NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
                     if (!item.IsValid) continue;
@@ -314,7 +315,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int meditateBonus = 0;
-                for (int itemSlot = 0; itemSlot < NWScript.NUM_INVENTORY_SLOTS; itemSlot++)
+                for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
                     NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
                     if (!item.IsValid) continue;
@@ -334,7 +335,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int firstAidBonus = 0;
-                for (int itemSlot = 0; itemSlot < NWScript.NUM_INVENTORY_SLOTS; itemSlot++)
+                for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
                     NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
                     if (!item.IsValid) continue;
@@ -354,7 +355,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int hpRegenBonus = 0;
-                for (int itemSlot = 0; itemSlot < NWScript.NUM_INVENTORY_SLOTS; itemSlot++)
+                for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
                     NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
                     if (!item.IsValid) continue;
@@ -374,7 +375,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int fpRegenBonus = 0;
-                for (int itemSlot = 0; itemSlot < NWScript.NUM_INVENTORY_SLOTS; itemSlot++)
+                for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
                     NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
                     if (!item.IsValid) continue;
@@ -394,7 +395,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int weaponsmithBonus = 0;
-                for (int itemSlot = 0; itemSlot < NWScript.NUM_INVENTORY_SLOTS; itemSlot++)
+                for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
                     NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
                     if (!item.IsValid) continue;
@@ -413,7 +414,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int cookingBonus = 0;
-                for (int itemSlot = 0; itemSlot < NWScript.NUM_INVENTORY_SLOTS; itemSlot++)
+                for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
                     NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
                     if (!item.IsValid) continue;
@@ -432,7 +433,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int engineeringBonus = 0;
-                for (int itemSlot = 0; itemSlot < NWScript.NUM_INVENTORY_SLOTS; itemSlot++)
+                for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
                     NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
                     SkillType skill = _skill.GetSkillTypeForItem(item);
@@ -450,7 +451,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int fabricationBonus = 0;
-                for (int itemSlot = 0; itemSlot < NWScript.NUM_INVENTORY_SLOTS; itemSlot++)
+                for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
                     NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
                     SkillType skill = _skill.GetSkillTypeForItem(item);
@@ -468,7 +469,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int armorsmithBonus = 0;
-                for (int itemSlot = 0; itemSlot < NWScript.NUM_INVENTORY_SLOTS; itemSlot++)
+                for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
                     NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
                     if (!item.IsValid) continue;
@@ -487,7 +488,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int harvestingBonus = 0;
-                for (int itemSlot = 0; itemSlot < NWScript.NUM_INVENTORY_SLOTS; itemSlot++)
+                for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
                     NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
                     if (!item.IsValid) continue;
@@ -507,7 +508,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int sneakAttackBonus = 0;
-                for (int itemSlot = 0; itemSlot < NWScript.NUM_INVENTORY_SLOTS; itemSlot++)
+                for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
                     NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
                     if (!item.IsValid) continue;
@@ -539,5 +540,19 @@ namespace SWLOR.Game.Server.GameObject
             }
         }
 
+
+        public static implicit operator Object(NWPlayer o)
+        {
+            return o.Object;
+        }
+
+        public static implicit operator NWPlayer(Object o)
+        {
+            INWScript _ = App.Resolve<INWScript>();
+
+            return (_.GetIsPC(o) == TRUE) ?
+                Wrap(o) :
+                throw new InvalidCastException();
+        }
     }
 }

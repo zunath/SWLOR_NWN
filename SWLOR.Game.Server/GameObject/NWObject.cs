@@ -350,5 +350,15 @@ namespace SWLOR.Game.Server.GameObject
         {
             return Object.GetHashCode();
         }
+
+        public static implicit operator Object(NWObject o)
+        {
+            return o.Object;
+        }
+
+        public static implicit operator NWObject(Object o)
+        {
+            return NWCreature.Wrap(o);
+        }
     }
 }

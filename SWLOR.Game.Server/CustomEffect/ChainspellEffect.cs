@@ -14,16 +14,17 @@ namespace SWLOR.Game.Server.CustomEffect
             _ = script;
         }
 
-        public void Apply(NWCreature oCaster, NWObject oTarget)
+        public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
+            return null;
         }
 
-        public void Tick(NWCreature oCaster, NWObject oTarget)
+        public void Tick(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)
         {
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(NWScript.VFX_IMP_EVIL_HELP), oTarget.Object, 6.1f);
+            _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(NWScript.VFX_IMP_EVIL_HELP), oTarget.Object, 1.0f);
         }
 
-        public void WearOff(NWCreature oCaster, NWObject oTarget)
+        public void WearOff(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)
         {
         }
     }

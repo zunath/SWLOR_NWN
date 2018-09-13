@@ -14,7 +14,6 @@ namespace SWLOR.Game.Server
         public Dictionary<string, int> EffectTicks { get; }
         public Dictionary<string, CreatureSkillRegistration> CreatureSkillRegistrations;
         public Dictionary<CasterSpellVO, int> NPCEffects { get; }
-        public List<CasterSpellVO> EffectsToRemove { get; }
         public Dictionary<string, Action> ProcessingEvents { get; set; }
         public Queue<string> UnregisterProcessingEvents { get; set; }
         public Dictionary<string, EnmityTable> NPCEnmityTables { get; set; }
@@ -29,7 +28,6 @@ namespace SWLOR.Game.Server
             EffectTicks = new Dictionary<string, int>();
             CreatureSkillRegistrations = new Dictionary<string, CreatureSkillRegistration>();
             NPCEffects = new Dictionary<CasterSpellVO, int>();
-            EffectsToRemove = new List<CasterSpellVO>();
             ProcessingEvents = new Dictionary<string, Action>();
             UnregisterProcessingEvents = new Queue<string>();
             NPCEnmityTables = new Dictionary<string, EnmityTable>();

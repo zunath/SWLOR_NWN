@@ -1,6 +1,8 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using System;
+using SWLOR.Game.Server.Enumeration;
 
 using NWN;
+using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN.NWScript;
@@ -20,6 +22,7 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IAreaService _area;
         private readonly IBaseService _base;
         private readonly ISpawnService _spawn;
+        private readonly ICustomEffectService _customEffect;
 
         public OnModuleLoad(INWScript script,
             INWNXChat nwnxChat,
@@ -30,7 +33,8 @@ namespace SWLOR.Game.Server.Event.Module
             INWNXDamage nwnxDamage,
             IAreaService area,
             IBaseService @base,
-            ISpawnService spawn)
+            ISpawnService spawn,
+            ICustomEffectService customEffect)
         {
             _ = script;
             _nwnxChat = nwnxChat;
@@ -42,6 +46,7 @@ namespace SWLOR.Game.Server.Event.Module
             _area = area;
             _base = @base;
             _spawn = spawn;
+            _customEffect = customEffect;
         }
 
         public bool Run(params object[] args)
@@ -59,6 +64,7 @@ namespace SWLOR.Game.Server.Event.Module
             _base.OnModuleLoad();
             _area.OnModuleLoad();
             _spawn.OnModuleLoad();
+            _customEffect.OnModuleLoad();
 
             return true;
         }

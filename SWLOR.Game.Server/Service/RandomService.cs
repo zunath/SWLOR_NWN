@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class RandomService: IRandomService
+    public class RandomService : IRandomService
     {
         private readonly Random _random;
 
@@ -60,5 +60,64 @@ namespace SWLOR.Game.Server.Service
             return randomIndex;
         }
 
+        private int RollDice(int numberOfDice, int min, int max)
+        {
+            if (numberOfDice < 1) numberOfDice = 1;
+            if (min < 1) min = 1;
+            if (min > max) min = max;
+
+            int result = 0;
+            for (int x = 1; x <= numberOfDice; x++)
+            {
+                result += _random.Next(min, max);
+            }
+
+            return result;
+        }
+
+        public int D2(int numberOfDice, int minimum = 1)
+        {
+            return RollDice(numberOfDice, minimum, 2);
+        }
+
+        public int D3(int numberOfDice, int minimum = 1)
+        {
+            return RollDice(numberOfDice, minimum, 3);
+        }
+
+        public int D4(int numberOfDice, int minimum = 1)
+        {
+            return RollDice(numberOfDice, minimum, 4);
+        }
+        
+        public int D6(int numberOfDice, int minimum = 1)
+        {
+            return RollDice(numberOfDice, minimum, 6);
+        }
+
+        public int D8(int numberOfDice, int minimum = 1)
+        {
+            return RollDice(numberOfDice, minimum, 8);
+        }
+
+        public int D10(int numberOfDice, int minimum = 1)
+        {
+            return RollDice(numberOfDice, minimum, 10);
+        }
+        
+        public int D12(int numberOfDice, int minimum = 1)
+        {
+            return RollDice(numberOfDice, minimum, 12);
+        }
+        
+        public int D20(int numberOfDice, int minimum = 1)
+        {
+            return RollDice(numberOfDice, minimum, 20);
+        }
+        
+        public int D100(int numberOfDice, int minimum = 1)
+        {
+            return RollDice(numberOfDice, minimum, 100);
+        }
     }
 }

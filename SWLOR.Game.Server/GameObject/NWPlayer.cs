@@ -548,11 +548,7 @@ namespace SWLOR.Game.Server.GameObject
 
         public static implicit operator NWPlayer(Object o)
         {
-            INWScript _ = App.Resolve<INWScript>();
-
-            return (_.GetIsPC(o) == TRUE) ?
-                Wrap(o) :
-                throw new InvalidCastException();
+            return Wrap(o);
         }
     }
 }

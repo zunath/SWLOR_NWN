@@ -41,11 +41,7 @@ namespace SWLOR.Game.Server.GameObject
         }
         public static implicit operator NWPlaceable(Object o)
         {
-            INWScript _ = App.Resolve<INWScript>();
-
-            return (_.GetObjectType(o) == OBJECT_TYPE_PLACEABLE) ?
-                Wrap(o) :
-                throw new InvalidCastException();
+            return Wrap(o);
         }
     }
 }

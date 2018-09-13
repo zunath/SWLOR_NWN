@@ -516,11 +516,7 @@ namespace SWLOR.Game.Server.GameObject
         }
         public static implicit operator NWItem(Object o)
         {
-            INWScript _ = App.Resolve<INWScript>();
-
-            return (_.GetObjectType(o) == OBJECT_TYPE_ITEM) ?
-                Wrap(o) :
-                throw new InvalidCastException();
+            return Wrap(o);
         }
     }
 }

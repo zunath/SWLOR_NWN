@@ -34,11 +34,7 @@ namespace SWLOR.Game.Server.GameObject
         }
         public static implicit operator NWArea(Object o)
         {
-            INWScript _ = App.Resolve<INWScript>();
-
-            return (_.GetObjectType(o) == 0) ? // No constant defined for areas. Value returns 0 according to lexicon.
-                Wrap(o) :
-                throw new InvalidCastException();
+            return Wrap(o);
         }
     }
 }

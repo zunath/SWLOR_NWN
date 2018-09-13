@@ -7,7 +7,7 @@ using NWN;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 
-namespace SWLOR.Game.Server.Placeable.ForagePoint
+namespace SWLOR.Game.Server.Placeable.ScavengePoint
 {
     public class OnOpened: IRegisteredEvent
     {
@@ -40,10 +40,10 @@ namespace SWLOR.Game.Server.Placeable.ForagePoint
         {
             NWPlaceable point = NWPlaceable.Wrap(Object.OBJECT_SELF);
             const int baseChanceToFullyHarvest = 50;
-            bool alwaysDestroys = point.GetLocalInt("FORAGE_POINT_ALWAYS_DESTROYS") == 1;
+            bool alwaysDestroys = point.GetLocalInt("SCAVENGE_POINT_ALWAYS_DESTROYS") == 1;
             
             NWPlayer oPC = NWPlayer.Wrap(_.GetLastOpenedBy());
-            bool hasBeenSearched = point.GetLocalInt("FORAGE_POINT_FULLY_HARVESTED") == 1;
+            bool hasBeenSearched = point.GetLocalInt("SCAVENGE_POINT_FULLY_HARVESTED") == 1;
             if (hasBeenSearched)
             {
                 oPC.SendMessage("There's nothing left to harvest here...");
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Placeable.ForagePoint
             }
 
             // Not fully harvested but the timer hasn't counted down yet.
-            int refillTick = point.GetLocalInt("FORAGE_POINT_REFILL_TICKS");
+            int refillTick = point.GetLocalInt("SCAVENGE_POINT_REFILL_TICKS");
             if (refillTick > 0)
             {
                 oPC.SendMessage("You couldn't find anything new here. Check back later...");
@@ -59,17 +59,17 @@ namespace SWLOR.Game.Server.Placeable.ForagePoint
             }
 
             if (!oPC.IsPlayer && !oPC.IsDM) return false;
-            PCSkill pcSkill = _skill.GetPCSkill(oPC, SkillType.Forage);
+            PCSkill pcSkill = _skill.GetPCSkill(oPC, SkillType.Scavenging);
             if (pcSkill == null) return false;
 
-            int lootTableID = point.GetLocalInt("FORAGE_POINT_LOOT_TABLE_ID");
-            int level = point.GetLocalInt("FORAGE_POINT_LEVEL");
+            int lootTableID = point.GetLocalInt("SCAVENGE_POINT_LOOT_TABLE_ID");
+            int level = point.GetLocalInt("SCAVENGE_POINT_LEVEL");
             int rank = pcSkill.Rank;
             int delta = level - rank;
 
             if (delta > 8)
             {
-                oPC.SendMessage("You aren't skilled enough to forage through this. (Required Level: " + (level - 8) + ")");
+                oPC.SendMessage("You aren't skilled enough to scavenge through this. (Required Level: " + (level - 8) + ")");
                 oPC.AssignCommand(() => _.ActionInteractObject(point.Object));
                 return true;
             }
@@ -105,20 +105,20 @@ namespace SWLOR.Game.Server.Placeable.ForagePoint
                     }
 
                     float xp = _skill.CalculateRegisteredSkillLevelAdjustedXP(50, level, rank);
-                    _skill.GiveSkillXP(oPC, SkillType.Forage, (int)xp);
+                    _skill.GiveSkillXP(oPC, SkillType.Scavenging, (int)xp);
                 }
                 else
                 {
                     oPC.FloatingText(_color.SkillCheck("Search: *failure*: (" + roll + " vs. DC: " + dc + ")"));
 
                     float xp = _skill.CalculateRegisteredSkillLevelAdjustedXP(10, level, rank);
-                    _skill.GiveSkillXP(oPC, SkillType.Forage, (int)xp);
+                    _skill.GiveSkillXP(oPC, SkillType.Scavenging, (int)xp);
                 }
                 dc += _random.Random(3) + 1;
             }
             
-            // Chance to destroy the forage point.
-            int chanceToFullyHarvest = baseChanceToFullyHarvest - (_perk.GetPCPerkLevel(oPC, PerkType.CarefulForager) * 5);
+            // Chance to destroy the scavenge point.
+            int chanceToFullyHarvest = baseChanceToFullyHarvest - (_perk.GetPCPerkLevel(oPC, PerkType.CarefulScavenger) * 5);
             int growingPlantID = point.GetLocalInt("GROWING_PLANT_ID");
             if (growingPlantID > 0)
             {
@@ -130,16 +130,16 @@ namespace SWLOR.Game.Server.Placeable.ForagePoint
 
             if (alwaysDestroys || _random.Random(100) + 1 <= chanceToFullyHarvest)
             {
-                point.SetLocalInt("FORAGE_POINT_FULLY_HARVESTED", 1);
+                point.SetLocalInt("SCAVENGE_POINT_FULLY_HARVESTED", 1);
                 oPC.SendMessage("This resource has been fully harvested...");
             }
-            // Otherwise the forage point will be refilled in 10-20 minutes.
+            // Otherwise the scavenge point will be refilled in 10-20 minutes.
             else
             {
-                point.SetLocalInt("FORAGE_POINT_REFILL_TICKS", 100 + _random.Random(100));
+                point.SetLocalInt("SCAVENGE_POINT_REFILL_TICKS", 100 + _random.Random(100));
             }
 
-            point.SetLocalInt("FORAGE_POINT_DESPAWN_TICKS", 30);
+            point.SetLocalInt("SCAVENGE_POINT_DESPAWN_TICKS", 30);
 
             return true;
         }
@@ -147,7 +147,7 @@ namespace SWLOR.Game.Server.Placeable.ForagePoint
 
         private int CalculateSearchAttempts(NWPlayer oPC)
         {
-            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.ForageExpert);
+            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.ScavengingExpert);
 
             int numberOfSearches = 0;
             int attempt1Chance = 0;

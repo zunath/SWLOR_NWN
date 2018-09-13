@@ -6,7 +6,7 @@ using NWN;
 using SWLOR.Game.Server.Service.Contracts;
 using Object = NWN.Object;
 
-namespace SWLOR.Game.Server.Placeable.ForagePoint
+namespace SWLOR.Game.Server.Placeable.ScavengePoint
 {
     public class OnClosed: IRegisteredEvent
     {
@@ -24,11 +24,11 @@ namespace SWLOR.Game.Server.Placeable.ForagePoint
         {
             NWPlaceable point = NWPlaceable.Wrap(Object.OBJECT_SELF);
 
-            bool isFullyHarvested = point.GetLocalInt("FORAGE_POINT_FULLY_HARVESTED") == 1;
+            bool isFullyHarvested = point.GetLocalInt("SCAVENGE_POINT_FULLY_HARVESTED") == 1;
 
             if (!point.InventoryItems.Any() && isFullyHarvested)
             {
-                string seed = point.GetLocalString("FORAGE_POINT_SEED");
+                string seed = point.GetLocalString("SCAVENGE_POINT_SEED");
                 if (!string.IsNullOrWhiteSpace(seed))
                 {
                     _.CreateObject(NWScript.OBJECT_TYPE_ITEM, seed, point.Location);

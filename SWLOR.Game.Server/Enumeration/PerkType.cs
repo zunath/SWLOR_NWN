@@ -88,12 +88,12 @@
         Refining = 82,
         CombatModInstallationWeapons = 83,
         WeaponBlueprints = 84,
-        ForageExpert = 85,
+        ScavengingExpert = 85,
         MagicModInstallationWeapons = 86,
         WeaponFocusLightsaber = 87,
         CraftingModInstallationWeapons = 88,
         // 89 is free
-        CarefulForager = 90,
+        CarefulScavenger = 90,
         FarmingEfficiency = 91,
         ExpertFarmer = 92,
         // 93 is free

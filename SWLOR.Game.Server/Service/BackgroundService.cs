@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Service
                     item2Resref = "harvest_r_h";
                     break;
                 case BackgroundType.Scavenger:
-                    _perk.DoPerkUpgrade(oPC, PerkType.ForageExpert);
+                    _perk.DoPerkUpgrade(oPC, PerkType.ScavengingExpert);
                     break;
                 case BackgroundType.Medic:
                     _perk.DoPerkUpgrade(oPC, PerkType.ImmediateImprovement);

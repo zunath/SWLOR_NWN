@@ -26,7 +26,7 @@
         // 21 is open
         Engineering = 22,
         Farming = 23,
-        Forage = 24,
+        Scavenging = 24,
         // 25 is open
     }
 }

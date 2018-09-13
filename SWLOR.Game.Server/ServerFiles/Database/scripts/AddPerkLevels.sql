@@ -3,9 +3,9 @@
 BEGIN TRANSACTION
 
 DECLARE @PerkID INT = (SELECT MAX(PerkID) + 1 FROM dbo.Perks)
-DECLARE @Name NVARCHAR(64) = 'Careful Forager'
+DECLARE @Name NVARCHAR(64) = 'Careful Scavenger'
 DECLARE @PerkDescription NVARCHAR(256) = N'Reduces the chance of exhausting a resource.'
-DECLARE @PerkJS NVARCHAR(64) = 'Gathering.CarefulForager'
+DECLARE @PerkJS NVARCHAR(64) = 'Gathering.CarefulScavenger'
 DECLARE @SkillID INT = 24
 DECLARE @PerkCategoryID INT = 3
 

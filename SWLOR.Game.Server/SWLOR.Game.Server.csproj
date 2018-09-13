@@ -300,8 +300,8 @@
     <Compile Include="Perk\FirstAid\HealingKitExpert.cs" />
     <Compile Include="Perk\FirstAid\ImmediateImprovement.cs" />
     <Compile Include="Perk\FirstAid\SpeedyMedic.cs" />
-    <Compile Include="Perk\Gathering\CarefulForager.cs" />
-    <Compile Include="Perk\Gathering\ForageExpert.cs" />
+    <Compile Include="Perk\Gathering\CarefulScavenger.cs" />
+    <Compile Include="Perk\Gathering\ScavengingExpert.cs" />
     <Compile Include="Perk\Gathering\SeedPicker.cs" />
     <Compile Include="Perk\General\Health.cs" />
     <Compile Include="Perk\General\Lucky.cs" />
@@ -473,10 +473,10 @@
     <Compile Include="Placeable\CraftingForge\OnDisturbed.cs" />
     <Compile Include="Placeable\CraftingForge\OnHeartbeat.cs" />
     <Compile Include="Placeable\DisabledStructure\OnUsed.cs" />
-    <Compile Include="Placeable\ForagePoint\OnClosed.cs" />
-    <Compile Include="Placeable\ForagePoint\OnDisturbed.cs" />
-    <Compile Include="Placeable\ForagePoint\OnHeartbeat.cs" />
-    <Compile Include="Placeable\ForagePoint\OnOpened.cs" />
+    <Compile Include="Placeable\ScavengePoint\OnClosed.cs" />
+    <Compile Include="Placeable\ScavengePoint\OnDisturbed.cs" />
+    <Compile Include="Placeable\ScavengePoint\OnHeartbeat.cs" />
+    <Compile Include="Placeable\ScavengePoint\OnOpened.cs" />
     <Compile Include="Placeable\FuelBay\OnClosed.cs" />
     <Compile Include="Placeable\FuelBay\OnDisturbed.cs" />
     <Compile Include="Placeable\FuelBay\OnOpened.cs" />

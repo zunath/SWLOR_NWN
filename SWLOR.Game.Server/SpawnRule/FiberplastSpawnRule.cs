@@ -22,8 +22,8 @@ namespace SWLOR.Game.Server.SpawnRule
             int difficulty = ((tier-1) * 5) + 1;
             int lootTable = tier;
             
-            target.SetLocalInt("FORAGE_POINT_LEVEL", difficulty);
-            target.SetLocalInt("FORAGE_POINT_LOOT_TABLE_ID", lootTable);
+            target.SetLocalInt("SCAVENGE_POINT_LEVEL", difficulty);
+            target.SetLocalInt("SCAVENGE_POINT_LOOT_TABLE_ID", lootTable);
         }
     }
 }

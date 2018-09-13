@@ -1,6 +1,9 @@
-﻿using SWLOR.Game.Server.GameObject.Contracts;
+﻿using System;
+using SWLOR.Game.Server.GameObject.Contracts;
 
 using NWN;
+using static NWN.NWScript;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.GameObject
 {
@@ -30,6 +33,19 @@ namespace SWLOR.Game.Server.GameObject
         {
             get => _.GetLocked(Object) == 1;
             set => _.SetLocked(Object, value ? 1 : 0);
+        }
+
+        public static implicit operator Object(NWPlaceable o)
+        {
+            return o.Object;
+        }
+        public static implicit operator NWPlaceable(Object o)
+        {
+            INWScript _ = App.Resolve<INWScript>();
+
+            return (_.GetObjectType(o) == OBJECT_TYPE_PLACEABLE) ?
+                Wrap(o) :
+                throw new InvalidCastException();
         }
     }
 }

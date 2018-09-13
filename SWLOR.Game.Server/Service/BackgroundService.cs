@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Service
                     _perk.DoPerkUpgrade(oPC, PerkType.WeaponBlueprints);
                     break;
                 case BackgroundType.Chef:
-                    // todo add cooking blueprints
+                    _perk.DoPerkUpgrade(oPC, PerkType.FoodRecipes);
                     break;
                 case BackgroundType.Engineer:
                     _perk.DoPerkUpgrade(oPC, PerkType.EngineeringBlueprints);
@@ -105,10 +105,16 @@ namespace SWLOR.Game.Server.Service
                     _perk.DoPerkUpgrade(oPC, PerkType.ImmediateImprovement);
                     break;
                 case BackgroundType.Consular:
-                    // todo add force ability perk
+                    _perk.DoPerkUpgrade(oPC, PerkType.ForceBreach);
                     break;
                 case BackgroundType.Sorcerer:
-                    // todo add force ability perk
+                    _perk.DoPerkUpgrade(oPC, PerkType.ForceLightning);
+                    break;
+                case BackgroundType.Sage:
+                    _perk.DoPerkUpgrade(oPC, PerkType.ForceHeal);
+                    break;
+                case BackgroundType.Corrupter:
+                    _perk.DoPerkUpgrade(oPC, PerkType.DarkHeal);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

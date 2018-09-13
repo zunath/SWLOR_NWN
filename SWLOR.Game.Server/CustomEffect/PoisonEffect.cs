@@ -15,11 +15,12 @@ namespace SWLOR.Game.Server.CustomEffect
             _ = script;
         }
 
-        public void Apply(NWCreature oCaster, NWObject oTarget)
+        public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
+            return null;
         }
 
-        public void Tick(NWCreature oCaster, NWObject oTarget)
+        public void Tick(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)
         {
             Random random = new Random();
             int amount = random.Next(3, 7);
@@ -33,13 +34,13 @@ namespace SWLOR.Game.Server.CustomEffect
             Effect decreaseAC = _.EffectACDecrease(2);
             oCaster.AssignCommand(() =>
             {
-                _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, decreaseAC, oTarget.Object, 6.1f);
+                _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, decreaseAC, oTarget.Object, 1.0f);
             });
             
             _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, _.EffectVisualEffect(NWScript.VFX_IMP_ACID_S), oTarget.Object);
         }
 
-        public void WearOff(NWCreature oCaster, NWObject oTarget)
+        public void WearOff(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)
         {
         }
     }

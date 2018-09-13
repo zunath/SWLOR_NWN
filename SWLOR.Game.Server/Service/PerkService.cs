@@ -317,7 +317,7 @@ namespace SWLOR.Game.Server.Service
                 case PerkExecutionType.CombatAbility:
                     description += _color.Orange("Type: ") + "Combat Ability\n";
                     break;
-                case PerkExecutionType.Spell:
+                case PerkExecutionType.ForceAbility:
                     description += _color.Orange("Type: ") + "Spell\n";
                     break;
                 case PerkExecutionType.ShieldOnHit:

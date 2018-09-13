@@ -124,6 +124,8 @@
     <Compile Include="CustomEffect\BurningEffect.cs" />
     <Compile Include="CustomEffect\ChainspellEffect.cs" />
     <Compile Include="CustomEffect\Contracts\ICustomEffect.cs" />
+    <Compile Include="CustomEffect\ForceBreachEffect.cs" />
+    <Compile Include="CustomEffect\ForceShockEffect.cs" />
     <Compile Include="CustomEffect\PoisonEffect.cs" />
     <Compile Include="Data\Entities\Area.cs" />
     <Compile Include="Data\Entities\BaseStructure.cs" />
@@ -266,13 +268,11 @@
     <Compile Include="NWN\Events\Module\mod_on_nwnxchat.cs" />
     <Compile Include="NWN\Events\Module\mod_on_usefeat.cs" />
     <Compile Include="NWN\Events\Player\pc_on_damaged.cs" />
+    <Compile Include="Perk\DarkSide\DarkHeal.cs" />
+    <Compile Include="Perk\DarkSide\ForceLightning.cs" />
     <Compile Include="Perk\Fabrication\FabricationBlueprints.cs" />
     <Compile Include="Perk\Fabrication\SpeedyFabrication.cs" />
     <Compile Include="Perk\Harvesting\SpeedyResourceScanner.cs" />
-    <Compile Include="Perk\LightSide\Gate.cs" />
-    <Compile Include="Perk\LightSide\HolyShot.cs" />
-    <Compile Include="Perk\LightSide\Purify.cs" />
-    <Compile Include="Perk\LightSide\Recover.cs" />
     <Compile Include="Perk\Armorsmith\CombatModInstallationArmors.cs" />
     <Compile Include="Perk\Armorsmith\CraftingModInstallationArmors.cs" />
     <Compile Include="Perk\Armorsmith\MagicModInstallationArmors.cs" />
@@ -281,7 +281,6 @@
     <Compile Include="Perk\Armor\Clarity.cs" />
     <Compile Include="Perk\Armor\Provoke.cs" />
     <Compile Include="Perk\Armor\Sturdiness.cs" />
-    <Compile Include="Perk\DarkSide\Chainspell.cs" />
     <Compile Include="Perk\Blaster\BlasterPistolProficiency.cs" />
     <Compile Include="Perk\Blaster\PointBlankShot.cs" />
     <Compile Include="Perk\Blaster\RapidReload.cs" />
@@ -296,10 +295,6 @@
     <Compile Include="Perk\Armor\Mobility.cs" />
     <Compile Include="Perk\Cooking\FoodRecipes.cs" />
     <Compile Include="Perk\Cooking\SpeedyCooking.cs" />
-    <Compile Include="Perk\DarkSide\CrushingEarth.cs" />
-    <Compile Include="Perk\DarkSide\FireBlast.cs" />
-    <Compile Include="Perk\DarkSide\GraspingIce.cs" />
-    <Compile Include="Perk\DarkSide\LightningShock.cs" />
     <Compile Include="Perk\FirstAid\FrugalMedic.cs" />
     <Compile Include="Perk\FirstAid\HealingKitExpert.cs" />
     <Compile Include="Perk\FirstAid\ImmediateImprovement.cs" />
@@ -312,6 +307,8 @@
     <Compile Include="Perk\General\FP.cs" />
     <Compile Include="Perk\General\Meditate.cs" />
     <Compile Include="Perk\Harvesting\SpeedyHarvester.cs" />
+    <Compile Include="Perk\LightSide\ForceBreach.cs" />
+    <Compile Include="Perk\LightSide\ForceHeal.cs" />
     <Compile Include="Perk\MartialArts\CircleKick.cs" />
     <Compile Include="Perk\MartialArts\DeflectArrows.cs" />
     <Compile Include="Perk\Engineering\RefineryManagement.cs" />
@@ -471,7 +468,6 @@
     <Compile Include="NWN\Events\Legacy\jvm_script_1.cs" />
     <Compile Include="NWN\Events\Module\mod_on_examine.cs" />
     <Compile Include="NWN\Events\Player\pc_on_heartbeat.cs" />
-    <Compile Include="Perk\LightSide\Aegis.cs" />
     <Compile Include="Perk\IPerk.cs" />
     <Compile Include="Placeable\CraftingForge\OnDisturbed.cs" />
     <Compile Include="Placeable\CraftingForge\OnHeartbeat.cs" />

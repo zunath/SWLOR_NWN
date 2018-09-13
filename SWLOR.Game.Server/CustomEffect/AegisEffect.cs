@@ -13,16 +13,18 @@ namespace SWLOR.Game.Server.CustomEffect
             _skill = skill;
         }
 
-        public void Apply(NWCreature oCaster, NWObject oTarget)
+        public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
             _skill.ApplyStatChanges((NWPlayer)oTarget, null);
+
+            return null;
         }
 
-        public void Tick(NWCreature oCaster, NWObject oTarget)
+        public void Tick(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)
         {
         }
 
-        public void WearOff(NWCreature oCaster, NWObject oTarget)
+        public void WearOff(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)
         {
             _skill.ApplyStatChanges((NWPlayer)oTarget, null);
         }

@@ -1,8 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using SWLOR.Game.Server.GameObject.Contracts;
 
 using NWN;
 using SWLOR.Game.Server.NWNX.Contracts;
+using static NWN.NWScript;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.GameObject
@@ -66,59 +68,59 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual float Weight => _.GetWeight(Object) * 0.1f;
 
-        public virtual int Strength => _.GetAbilityScore(Object, NWScript.ABILITY_STRENGTH);
+        public virtual int Strength => _.GetAbilityScore(Object, ABILITY_STRENGTH);
 
-        public virtual int Dexterity => _.GetAbilityScore(Object, NWScript.ABILITY_DEXTERITY);
+        public virtual int Dexterity => _.GetAbilityScore(Object, ABILITY_DEXTERITY);
 
-        public virtual int Constitution => _.GetAbilityScore(Object, NWScript.ABILITY_CONSTITUTION);
+        public virtual int Constitution => _.GetAbilityScore(Object, ABILITY_CONSTITUTION);
 
-        public virtual int Wisdom => _.GetAbilityScore(Object, NWScript.ABILITY_WISDOM);
-        public virtual int Intelligence => _.GetAbilityScore(Object, NWScript.ABILITY_INTELLIGENCE);
+        public virtual int Wisdom => _.GetAbilityScore(Object, ABILITY_WISDOM);
+        public virtual int Intelligence => _.GetAbilityScore(Object, ABILITY_INTELLIGENCE);
 
-        public virtual int Charisma => _.GetAbilityScore(Object, NWScript.ABILITY_CHARISMA);
+        public virtual int Charisma => _.GetAbilityScore(Object, ABILITY_CHARISMA);
 
         public virtual int RawStrength
         {
-            get => _nwnxCreature.GetRawAbilityScore(this, NWScript.ABILITY_STRENGTH);
-            set => _nwnxCreature.SetRawAbilityScore(this, NWScript.ABILITY_STRENGTH, value);
+            get => _nwnxCreature.GetRawAbilityScore(this, ABILITY_STRENGTH);
+            set => _nwnxCreature.SetRawAbilityScore(this, ABILITY_STRENGTH, value);
         }
 
         public virtual int RawDexterity
         {
-            get => _nwnxCreature.GetRawAbilityScore(this, NWScript.ABILITY_DEXTERITY);
-            set => _nwnxCreature.SetRawAbilityScore(this, NWScript.ABILITY_DEXTERITY, value);
+            get => _nwnxCreature.GetRawAbilityScore(this, ABILITY_DEXTERITY);
+            set => _nwnxCreature.SetRawAbilityScore(this, ABILITY_DEXTERITY, value);
         }
 
         public virtual int RawConstitution
         {
-            get => _nwnxCreature.GetRawAbilityScore(this, NWScript.ABILITY_CONSTITUTION);
-            set => _nwnxCreature.SetRawAbilityScore(this, NWScript.ABILITY_CONSTITUTION, value);
+            get => _nwnxCreature.GetRawAbilityScore(this, ABILITY_CONSTITUTION);
+            set => _nwnxCreature.SetRawAbilityScore(this, ABILITY_CONSTITUTION, value);
         }
 
         public virtual int RawWisdom
         {
-            get => _nwnxCreature.GetRawAbilityScore(this, NWScript.ABILITY_WISDOM);
-            set => _nwnxCreature.SetRawAbilityScore(this, NWScript.ABILITY_WISDOM, value);
+            get => _nwnxCreature.GetRawAbilityScore(this, ABILITY_WISDOM);
+            set => _nwnxCreature.SetRawAbilityScore(this, ABILITY_WISDOM, value);
         }
 
         public virtual int RawIntelligence
         {
-            get => _nwnxCreature.GetRawAbilityScore(this, NWScript.ABILITY_INTELLIGENCE);
-            set => _nwnxCreature.SetRawAbilityScore(this, NWScript.ABILITY_INTELLIGENCE, value);
+            get => _nwnxCreature.GetRawAbilityScore(this, ABILITY_INTELLIGENCE);
+            set => _nwnxCreature.SetRawAbilityScore(this, ABILITY_INTELLIGENCE, value);
         }
 
         public virtual int RawCharisma
         {
-            get => _nwnxCreature.GetRawAbilityScore(this, NWScript.ABILITY_CHARISMA);
-            set => _nwnxCreature.SetRawAbilityScore(this, NWScript.ABILITY_CHARISMA, value);
+            get => _nwnxCreature.GetRawAbilityScore(this, ABILITY_CHARISMA);
+            set => _nwnxCreature.SetRawAbilityScore(this, ABILITY_CHARISMA, value);
         }
 
-        public virtual int StrengthModifier => _.GetAbilityModifier(NWScript.ABILITY_STRENGTH, Object);
-        public virtual int DexterityModifier => _.GetAbilityModifier(NWScript.ABILITY_DEXTERITY, Object);
-        public virtual int ConstitutionModifier => _.GetAbilityModifier(NWScript.ABILITY_CONSTITUTION, Object);
-        public virtual int WisdomModifier => _.GetAbilityModifier(NWScript.ABILITY_WISDOM, Object);
-        public virtual int IntelligenceModifier => _.GetAbilityModifier(NWScript.ABILITY_INTELLIGENCE, Object);
-        public virtual int CharismaModifier => _.GetAbilityModifier(NWScript.ABILITY_CHARISMA, Object);
+        public virtual int StrengthModifier => _.GetAbilityModifier(ABILITY_STRENGTH, Object);
+        public virtual int DexterityModifier => _.GetAbilityModifier(ABILITY_DEXTERITY, Object);
+        public virtual int ConstitutionModifier => _.GetAbilityModifier(ABILITY_CONSTITUTION, Object);
+        public virtual int WisdomModifier => _.GetAbilityModifier(ABILITY_WISDOM, Object);
+        public virtual int IntelligenceModifier => _.GetAbilityModifier(ABILITY_INTELLIGENCE, Object);
+        public virtual int CharismaModifier => _.GetAbilityModifier(ABILITY_CHARISMA, Object);
 
         public virtual int XP
         {
@@ -132,28 +134,28 @@ namespace SWLOR.Game.Server.GameObject
         {
             AssignCommand(() =>
             {
-                _.ClearAllActions(clearCombatState ? NWScript.TRUE : NWScript.FALSE);
+                _.ClearAllActions(clearCombatState ? TRUE : FALSE);
             });
         }
 
-        public virtual NWItem Head => NWItem.Wrap(_.GetItemInSlot(NWScript.INVENTORY_SLOT_HEAD, Object));
-        public virtual NWItem Chest => NWItem.Wrap(_.GetItemInSlot(NWScript.INVENTORY_SLOT_CHEST, Object));
-        public virtual NWItem Boots => NWItem.Wrap(_.GetItemInSlot(NWScript.INVENTORY_SLOT_BOOTS, Object));
-        public virtual NWItem Arms => NWItem.Wrap(_.GetItemInSlot(NWScript.INVENTORY_SLOT_ARMS, Object));
-        public virtual NWItem RightHand => NWItem.Wrap(_.GetItemInSlot(NWScript.INVENTORY_SLOT_RIGHTHAND, Object));
-        public virtual NWItem LeftHand => NWItem.Wrap(_.GetItemInSlot(NWScript.INVENTORY_SLOT_LEFTHAND, Object));
-        public virtual NWItem Cloak => NWItem.Wrap(_.GetItemInSlot(NWScript.INVENTORY_SLOT_CLOAK, Object));
-        public virtual NWItem LeftRing => NWItem.Wrap(_.GetItemInSlot(NWScript.INVENTORY_SLOT_LEFTRING, Object));
-        public virtual NWItem RightRing => NWItem.Wrap(_.GetItemInSlot(NWScript.INVENTORY_SLOT_RIGHTRING, Object));
-        public virtual NWItem Neck => NWItem.Wrap(_.GetItemInSlot(NWScript.INVENTORY_SLOT_NECK, Object));
-        public virtual NWItem Belt => NWItem.Wrap(_.GetItemInSlot(NWScript.INVENTORY_SLOT_BELT, Object));
-        public virtual NWItem Arrows => NWItem.Wrap(_.GetItemInSlot(NWScript.INVENTORY_SLOT_ARROWS, Object));
-        public virtual NWItem Bullets => NWItem.Wrap(_.GetItemInSlot(NWScript.INVENTORY_SLOT_BULLETS, Object));
-        public virtual NWItem Bolts => NWItem.Wrap(_.GetItemInSlot(NWScript.INVENTORY_SLOT_BOLTS, Object));
-        public virtual NWItem CreatureWeaponLeft => NWItem.Wrap(_.GetItemInSlot(NWScript.INVENTORY_SLOT_CWEAPON_L, Object));
-        public virtual NWItem CreatureWeaponRight => NWItem.Wrap(_.GetItemInSlot(NWScript.INVENTORY_SLOT_CWEAPON_R, Object));
-        public virtual NWItem CreatureWeaponBite => NWItem.Wrap(_.GetItemInSlot(NWScript.INVENTORY_SLOT_CWEAPON_B, Object));
-        public virtual NWItem CreatureHide => NWItem.Wrap(_.GetItemInSlot(NWScript.INVENTORY_SLOT_CARMOUR, Object));
+        public virtual NWItem Head => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_HEAD, Object));
+        public virtual NWItem Chest => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_CHEST, Object));
+        public virtual NWItem Boots => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_BOOTS, Object));
+        public virtual NWItem Arms => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_ARMS, Object));
+        public virtual NWItem RightHand => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_RIGHTHAND, Object));
+        public virtual NWItem LeftHand => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_LEFTHAND, Object));
+        public virtual NWItem Cloak => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_CLOAK, Object));
+        public virtual NWItem LeftRing => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_LEFTRING, Object));
+        public virtual NWItem RightRing => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_RIGHTRING, Object));
+        public virtual NWItem Neck => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_NECK, Object));
+        public virtual NWItem Belt => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_BELT, Object));
+        public virtual NWItem Arrows => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_ARROWS, Object));
+        public virtual NWItem Bullets => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_BULLETS, Object));
+        public virtual NWItem Bolts => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_BOLTS, Object));
+        public virtual NWItem CreatureWeaponLeft => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_CWEAPON_L, Object));
+        public virtual NWItem CreatureWeaponRight => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_CWEAPON_R, Object));
+        public virtual NWItem CreatureWeaponBite => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_CWEAPON_B, Object));
+        public virtual NWItem CreatureHide => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_CARMOUR, Object));
 
         public virtual void FloatingText(string text, bool displayToFaction = false)
         {
@@ -171,7 +173,7 @@ namespace SWLOR.Game.Server.GameObject
         public bool HasAnyEffect(params int[] effectIDs)
         {
             Effect eff = _.GetFirstEffect(Object);
-            while (_.GetIsEffectValid(eff) == NWScript.TRUE)
+            while (_.GetIsEffectValid(eff) == TRUE)
             {
                 if (effectIDs.Contains(_.GetEffectType(eff)))
                 {
@@ -182,6 +184,20 @@ namespace SWLOR.Game.Server.GameObject
             }
 
             return false;
+        }
+
+
+        public static implicit operator Object(NWCreature o)
+        {
+            return o.Object;
+        }
+        public static implicit operator NWCreature(Object o)
+        {
+            INWScript _ = App.Resolve<INWScript>();
+
+            return (_.GetObjectType(o) == OBJECT_TYPE_CREATURE) ?
+                Wrap(o) :
+                throw new InvalidCastException();
         }
     }
 }

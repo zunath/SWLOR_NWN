@@ -61,7 +61,13 @@ namespace SWLOR.Game.Server.Item.FirstAid
                 _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, _.EffectHeal(blastHeal), target.Object);
             }
 
-            Effect regeneration = _.EffectRegenerate(restoreAmount, 6.0f);
+            float interval = 6.0f;
+            BackgroundType background = (BackgroundType) player.Class1;
+
+            if (background == BackgroundType.Medic)
+                interval *= 0.5f;
+
+            Effect regeneration = _.EffectRegenerate(restoreAmount, interval);
             _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, regeneration, target.Object, duration);
             player.SendMessage("You successfully treat " + target.Name + "'s wounds.");
 

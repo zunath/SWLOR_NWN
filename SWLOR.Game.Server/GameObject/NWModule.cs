@@ -56,5 +56,10 @@ namespace SWLOR.Game.Server.GameObject
             }
         }
 
+
+        public static implicit operator Object(NWModule o)
+        {
+            return o.Object;
+        }
     }
 }

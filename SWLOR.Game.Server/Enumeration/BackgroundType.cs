@@ -26,5 +26,7 @@
         Medic = 60,
         Consular = 61,
         Sorcerer = 62,
+        Sage = 63,
+        Corrupter = 64
     }
 }

@@ -14,11 +14,12 @@ namespace SWLOR.Game.Server.CustomEffect
             _ = script;
         }
 
-        public void Apply(NWCreature oCaster, NWObject oTarget)
+        public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
+            return null;
         }
 
-        public void Tick(NWCreature oCaster, NWObject oTarget)
+        public void Tick(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)
         {
             Location location = oTarget.Location;
             NWPlaceable oBlood = NWPlaceable.Wrap(_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "plc_bloodstain", location));
@@ -31,7 +32,7 @@ namespace SWLOR.Game.Server.CustomEffect
             });
         }
 
-        public void WearOff(NWCreature oCaster, NWObject oTarget)
+        public void WearOff(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)
         {
         }
     }

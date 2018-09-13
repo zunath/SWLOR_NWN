@@ -8,6 +8,8 @@ namespace SWLOR.Game.Server.ValueObject
         public NWObject Target { get; set; }
         public string EffectName { get; set; }
         public int CustomEffectID { get; set; }
+        public int EffectiveLevel { get; set; }
+        public string Data { get; set; }
     }
 
 }

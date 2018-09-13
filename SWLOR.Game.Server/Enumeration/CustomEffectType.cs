@@ -6,6 +6,8 @@
         Burning = 2,
         Poison = 3,
         Aegis = 4,
-        Chainspell = 6
+        ForceBreach = 5,
+        Chainspell = 6,
+        ForceShock = 7
     }
 }

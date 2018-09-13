@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject.Contracts;
 
@@ -513,5 +514,18 @@ namespace SWLOR.Game.Server.GameObject
             return -1;
         }
 
+
+        public static implicit operator Object(NWItem o)
+        {
+            return o.Object;
+        }
+        public static implicit operator NWItem(Object o)
+        {
+            INWScript _ = App.Resolve<INWScript>();
+
+            return (_.GetObjectType(o) == OBJECT_TYPE_ITEM) ?
+                Wrap(o) :
+                throw new InvalidCastException();
+        }
     }
 }

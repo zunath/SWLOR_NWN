@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using System.Linq;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 
@@ -42,7 +43,7 @@ namespace SWLOR.Game.Server.Placeable.ForagePoint
             }
             else
             {
-                if (point.InventoryItems.Count <= 0 && point.GetLocalInt("FORAGE_POINT_FULLY_HARVESTED") == 1)
+                if (!point.InventoryItems.Any() && point.GetLocalInt("FORAGE_POINT_FULLY_HARVESTED") == 1)
                 {
                     string seed = point.GetLocalString("FORAGE_POINT_SEED");
                     if (!string.IsNullOrWhiteSpace(seed))

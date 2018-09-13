@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Event;
+﻿using System.Linq;
+using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
@@ -25,7 +26,7 @@ namespace SWLOR.Game.Server.Placeable.ForagePoint
 
             bool isFullyHarvested = point.GetLocalInt("FORAGE_POINT_FULLY_HARVESTED") == 1;
 
-            if (point.InventoryItems.Count <= 0 && isFullyHarvested)
+            if (!point.InventoryItems.Any() && isFullyHarvested)
             {
                 string seed = point.GetLocalString("FORAGE_POINT_SEED");
                 if (!string.IsNullOrWhiteSpace(seed))

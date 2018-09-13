@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
             var structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
             int itemLimit = structure.BaseStructure.Storage + structure.StructureBonus;
 
-            int itemCount = container.InventoryItems.Count;
+            int itemCount = container.InventoryItems.Count();
             string itemResref = item.Resref;
 
             if (disturbType == INVENTORY_DISTURB_TYPE_ADDED)

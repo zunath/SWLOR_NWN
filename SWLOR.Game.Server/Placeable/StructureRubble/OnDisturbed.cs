@@ -1,4 +1,5 @@
-﻿using NWN;
+﻿using System.Linq;
+using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
@@ -32,7 +33,7 @@ namespace SWLOR.Game.Server.Placeable.StructureRubble
             }
             else if (disturbType == INVENTORY_DISTURB_TYPE_REMOVED)
             {
-                if (container.InventoryItems.Count <= 0)
+                if (!container.InventoryItems.Any())
                 {
                     container.Destroy();
                 }

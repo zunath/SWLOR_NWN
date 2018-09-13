@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.GameObject.Contracts;
+using static NWN.NWScript;
 
 
 namespace SWLOR.Game.Server.GameObject
@@ -22,37 +23,25 @@ namespace SWLOR.Game.Server.GameObject
             return module;
         }
 
-        public List<NWPlayer> Players
+        public IEnumerable<NWPlayer> Players
         {
             get
             {
-                List<NWPlayer> players = new List<NWPlayer>();
-
-                NWPlayer player = NWPlayer.Wrap(_.GetFirstPC());
-                while (player.IsValid)
+                for (NWPlayer pc = _.GetFirstPC(); _.GetIsObjectValid(pc) == TRUE; pc = _.GetNextPC())
                 {
-                    players.Add(player);
-                    player = NWPlayer.Wrap(_.GetNextPC());
+                    yield return pc;
                 }
-
-                return players;
             }
         }
 
-        public List<NWArea> Areas
+        public IEnumerable<NWArea> Areas
         {
             get
             {
-                List<NWArea> areas = new List<NWArea>();
-
-                NWArea area = NWArea.Wrap(_.GetFirstArea());
-                while (area.IsValid)
+                for (NWArea area = _.GetFirstArea(); _.GetIsObjectValid(area) == TRUE; area = _.GetNextArea())
                 {
-                    areas.Add(area);
-                    area = NWArea.Wrap(_.GetNextArea());
+                    yield return area;
                 }
-
-                return areas;
             }
         }
 

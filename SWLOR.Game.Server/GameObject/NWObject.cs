@@ -4,6 +4,7 @@ using SWLOR.Game.Server.GameObject.Contracts;
 
 using NWN;
 using SWLOR.Game.Server.ValueObject;
+using static NWN.NWScript;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.GameObject
@@ -52,7 +53,7 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual string GetOrAssignGlobalID()
         {
-            if (Object == null || Object == NWScript.OBJECT_TYPE_INVALID)
+            if (Object == null || Object == OBJECT_TYPE_INVALID)
                 throw new Exception("NWN object has not been set for this wrapper.");
 
             string globalID;
@@ -101,7 +102,7 @@ namespace SWLOR.Game.Server.GameObject
             }
         }
 
-        public virtual NWArea Area => NWArea.Wrap(_.GetArea(Object));
+        public virtual NWArea Area => _.GetArea(Object);
 
         public virtual Vector Position => _.GetPosition(Object);
 
@@ -133,8 +134,8 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual string UnidentifiedDescription
         {
-            get => _.GetDescription(Object, NWScript.FALSE, NWScript.FALSE);
-            set => _.SetDescription(Object, value, NWScript.FALSE);
+            get => _.GetDescription(Object, FALSE, FALSE);
+            set => _.SetDescription(Object, value, FALSE);
         }
 
         public virtual int Gold
@@ -144,7 +145,7 @@ namespace SWLOR.Game.Server.GameObject
             {
                 AssignCommand(() =>
                 {
-                    _.TakeGoldFromCreature(Gold, Object, NWScript.TRUE);
+                    _.TakeGoldFromCreature(Gold, Object, TRUE);
 
                     if (value > 0)
                     {
@@ -272,41 +273,30 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual bool IsNPC => !IsPlayer && !IsDM;
 
-        public virtual List<NWItem> InventoryItems
+        public virtual IEnumerable<NWItem> InventoryItems
         {
             get
             {
-                if (_.GetHasInventory(Object) == NWScript.FALSE)
+                if (_.GetHasInventory(Object) == FALSE)
                 {
                     throw new Exception("Object does not have an inventory.");
                 }
-
-                List<NWItem> items = new List<NWItem>();
-                Object item = _.GetFirstItemInInventory(Object);
-                while (_.GetIsObjectValid(item) == NWScript.TRUE)
+                
+                for (NWItem item = _.GetFirstItemInInventory(Object); _.GetIsObjectValid(item) == TRUE; item = _.GetNextItemInInventory(Object))
                 {
-                    items.Add(NWItem.Wrap(item));
-
-                    item = _.GetNextItemInInventory(Object);
+                    yield return item;
                 }
-
-                return items;
             }
         }
 
-        public virtual List<Effect> Effects
+        public virtual IEnumerable<Effect> Effects
         {
             get
             {
-                List<Effect> effects = new List<Effect>();
-                Effect effect = _.GetFirstEffect(Object);
-                while (_.GetIsEffectValid(effect) == NWScript.TRUE)
+                for (Effect effect = _.GetFirstEffect(Object); _.GetIsEffectValid(effect) == TRUE; effect = _.GetNextEffect(Object))
                 {
-                    effects.Add(effect);
-                    effect = _.GetNextEffect(Object);
+                    yield return effect;
                 }
-
-                return effects;
             }
         }
 
@@ -315,7 +305,7 @@ namespace SWLOR.Game.Server.GameObject
         public void RemoveEffect(int effectTypeID)
         {
             Effect effect = _.GetFirstEffect(Object);
-            while (_.GetIsEffectValid(effect) == NWScript.TRUE)
+            while (_.GetIsEffectValid(effect) == TRUE)
             {
                 if (_.GetEffectType(effect) == effectTypeID)
                 {

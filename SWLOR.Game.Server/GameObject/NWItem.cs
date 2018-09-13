@@ -83,19 +83,14 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual float Weight => _.GetWeight(Object) * 0.1f;
 
-        public virtual List<ItemProperty> ItemProperties
+        public virtual IEnumerable<ItemProperty> ItemProperties
         {
             get
             {
-                List<ItemProperty> ips = new List<ItemProperty>();
-                ItemProperty ip = _.GetFirstItemProperty(Object);
-                while (_.GetIsItemPropertyValid(ip) == TRUE)
+                for (ItemProperty ip = _.GetFirstItemProperty(Object); _.GetIsItemPropertyValid(ip) == TRUE; ip = _.GetNextItemProperty(Object))
                 {
-                    ips.Add(ip);
-                    ip = _.GetNextItemProperty(Object);
+                    yield return ip;
                 }
-
-                return ips;
             }
         }
 

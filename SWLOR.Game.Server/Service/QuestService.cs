@@ -563,8 +563,6 @@ namespace SWLOR.Game.Server.Service
 
             int questID = container.GetLocalInt("QUEST_ID");
             QuestState state = _db.PCQuestStatus.Single(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID).CurrentQuestState;
-            List<NWItem> submittedItems = container.InventoryItems;
-
             Dictionary<string, int> requiredItems = new Dictionary<string, int>();
 
             // Consolidate the number of items required. This is necessary in case there are two entries for the same
@@ -582,7 +580,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            foreach (NWItem item in submittedItems)
+            foreach (NWItem item in container.InventoryItems)
             {
                 resref = item.Resref;
                 if (resref == SubmitQuestItemResref)

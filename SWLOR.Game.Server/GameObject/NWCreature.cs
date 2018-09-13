@@ -193,11 +193,7 @@ namespace SWLOR.Game.Server.GameObject
         }
         public static implicit operator NWCreature(Object o)
         {
-            INWScript _ = App.Resolve<INWScript>();
-
-            return (_.GetObjectType(o) == OBJECT_TYPE_CREATURE) ?
-                Wrap(o) :
-                throw new InvalidCastException();
+            return Wrap(o);
         }
     }
 }

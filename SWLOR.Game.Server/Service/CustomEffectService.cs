@@ -86,8 +86,7 @@ namespace SWLOR.Game.Server.Service
 
         private void ProcessPCCustomEffects()
         {
-            var players = NWModule.Get().Players;
-            foreach (var player in players)
+            foreach (var player in NWModule.Get().Players)
             {
                 List<PCCustomEffect> effects = _db.PCCustomEffects.Where(x => x.PlayerID == player.GlobalID).ToList();
 

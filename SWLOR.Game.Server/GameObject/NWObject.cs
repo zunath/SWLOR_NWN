@@ -348,7 +348,7 @@ namespace SWLOR.Game.Server.GameObject
 
         public static implicit operator NWObject(Object o)
         {
-            return NWCreature.Wrap(o);
+            return Wrap(o);
         }
     }
 }

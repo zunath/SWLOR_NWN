@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.GameObject.Contracts;
 using static NWN.NWScript;
+using Object = NWN.Object;
 
 
 namespace SWLOR.Game.Server.GameObject
@@ -27,7 +29,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                for (NWPlayer pc = _.GetFirstPC(); _.GetIsObjectValid(pc) == TRUE; pc = _.GetNextPC())
+                for (NWPlayer pc = _.GetFirstPC(); pc.IsValid; pc = _.GetNextPC())
                 {
                     yield return pc;
                 }

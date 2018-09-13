@@ -4,6 +4,6 @@ namespace SWLOR.Game.Server.GameObject.Contracts
 {
     public interface INWModule
     {
-        List<NWPlayer> Players { get; }
+        IEnumerable<NWPlayer> Players { get; }
     }
 }

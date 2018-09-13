@@ -227,6 +227,7 @@
     <Compile Include="Enumeration\CustomItemPropertyType.cs" />
     <Compile Include="Enumeration\CustomItemType.cs" />
     <Compile Include="Enumeration\CustomPhenoType.cs" />
+    <Compile Include="Enumeration\CustomRaceType.cs" />
     <Compile Include="Enumeration\DMActionType.cs" />
     <Compile Include="Enumeration\EnmityAdjustmentRuleType.cs" />
     <Compile Include="Enumeration\EventType.cs" />
@@ -670,6 +671,7 @@
     <Compile Include="Service\PlayerService.cs" />
     <Compile Include="Service\PVPSanctuaryService.cs" />
     <Compile Include="Service\QuestService.cs" />
+    <Compile Include="Service\RaceService.cs" />
     <Compile Include="Service\RandomService.cs" />
     <Compile Include="Service\ModService.cs" />
     <Compile Include="Service\ResourceService.cs" />

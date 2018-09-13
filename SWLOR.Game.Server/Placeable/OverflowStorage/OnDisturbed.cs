@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Placeable.OverflowStorage
 
             oItem.DeleteLocalInt("TEMP_OVERFLOW_ITEM_ID");
 
-            if (container.InventoryItems.Count <= 0)
+            if (!container.InventoryItems.Any())
             {
                 container.Destroy();
             }

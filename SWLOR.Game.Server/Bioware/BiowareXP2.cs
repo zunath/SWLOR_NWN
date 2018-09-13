@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Bioware.Contracts;
+﻿using System.Linq;
+using SWLOR.Game.Server.Bioware.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
@@ -98,10 +99,8 @@ namespace SWLOR.Game.Server.Bioware
         {
             var props = oItem.ItemProperties;
 
-            for (int current = 0; current < props.Count; current++)
+            foreach (var prop in props)
             {
-                ItemProperty prop = props[current];
-
                 // same property type?
                 if (_.GetItemPropertyType(prop) == nItemPropertyType)
                 {
@@ -121,7 +120,6 @@ namespace SWLOR.Game.Server.Bioware
                         }
                     }
                 }
-
             }
         }
 
@@ -153,10 +151,8 @@ namespace SWLOR.Game.Server.Bioware
         public void IPRemoveAllItemProperties(NWItem oItem, int nItemPropertyDuration)
         {
             var props = oItem.ItemProperties;
-            for (int current = 0; current < props.Count; current++)
+            foreach (var prop in props)
             {
-                ItemProperty prop = props[current];
-
                 _.GetItemPropertyDurationType(prop);
                 if (_.GetItemPropertyDurationType(prop) == nItemPropertyDuration)
                 {

@@ -75,6 +75,7 @@
     <Compile Include="ChatCommand\CommandDetailsAttribute.cs" />
     <Compile Include="ChatCommand\Contracts\IChatCommand.cs" />
     <Compile Include="ChatCommand\Coord.cs" />
+    <Compile Include="ChatCommand\Customize.cs" />
     <Compile Include="ChatCommand\Help.cs" />
     <Compile Include="ChatCommand\Night.cs" />
     <Compile Include="ChatCommand\Pos.cs" />
@@ -86,6 +87,7 @@
     <Compile Include="ChatCommand\Day.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Conversation\BaseManagementTool.cs" />
+    <Compile Include="Conversation\CharacterCustomization.cs" />
     <Compile Include="Conversation\ControlTower.cs" />
     <Compile Include="Conversation\EditBuildingPermissions.cs" />
     <Compile Include="Conversation\EditBasePermissions.cs" />

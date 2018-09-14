@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Conversation
                 if (tempItem.Quantity > 1)
                     rewardName += " x" + tempItem.Quantity;
                 
-                AddResponseToPage("MainPage", rewardName, true, new Tuple<string, dynamic>(string.Empty, tempItem));
+                AddResponseToPage("MainPage", rewardName, true, tempItem);
             }
 
         }

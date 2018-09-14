@@ -59,6 +59,7 @@ namespace SWLOR.Game.Server.Service
                         int spawnType = obj.GetLocalInt("SPAWN_TYPE");
                         int objectType = spawnType == 0 || spawnType == OBJECT_TYPE_CREATURE ? OBJECT_TYPE_CREATURE : spawnType;
                         int spawnTableID = obj.GetLocalInt("SPAWN_TABLE_ID");
+                        int npcGroupID = obj.GetLocalInt("SPAWN_NPC_GROUP_ID");
                         string spawnResref = obj.GetLocalString("SPAWN_RESREF");
                         float respawnTime = obj.GetLocalFloat("SPAWN_RESPAWN_SECONDS");
                         bool useResref = true;
@@ -73,6 +74,10 @@ namespace SWLOR.Game.Server.Service
                             {
                                 spawnResref = dbSpawn.Resref;
                                 useResref = false;
+
+                                if (dbSpawn.NPCGroupID != null && dbSpawn.NPCGroupID > 0)
+                                    npcGroupID = Convert.ToInt32(dbSpawn.NPCGroupID);
+
                             }
                         }
 
@@ -85,6 +90,9 @@ namespace SWLOR.Game.Server.Service
                             {
                                 var creature = NWCreature.Wrap(_.CreateObject(objectType, spawnResref, location));
                                 
+                                if(npcGroupID > 0)
+                                    creature.SetLocalInt("NPC_GROUP", npcGroupID);
+
                                 ObjectSpawn newSpawn; 
                                 if (useResref)
                                 {
@@ -169,6 +177,9 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 spawn.Spawn = NWObject.Wrap(_.CreateObject(objectType, resref, location));
+                if(spawn.NPCGroupID > 0)
+                    spawn.Spawn.SetLocalInt("NPC_GROUP", spawn.NPCGroupID);
+
                 spawn.Timer = 0.0f;
             }
         }
@@ -237,6 +248,9 @@ namespace SWLOR.Game.Server.Service
                 Location location = GetRandomSpawnPoint(area.Resref);
                 NWPlaceable plc = NWPlaceable.Wrap(_.CreateObject(OBJECT_TYPE_PLACEABLE, dbSpawn.Resref, location));
                 
+                if(dbSpawn.NPCGroupID != null && dbSpawn.NPCGroupID > 0)
+                    plc.SetLocalInt("NPC_GROUP", Convert.ToInt32(dbSpawn.NPCGroupID));
+
                 if (!string.IsNullOrWhiteSpace(dbSpawn.SpawnRule))
                 {
                     ISpawnRule rule = App.ResolveByInterface<ISpawnRule>("SpawnRule." + dbSpawn.SpawnRule);

@@ -35,9 +35,7 @@ namespace SWLOR.Game.Server.Data.Entities
         public bool AllowRewardSelection { get; set; }
 
         public int RewardGold { get; set; }
-
-        public int RewardXP { get; set; }
-
+        
         public int? RewardKeyItemID { get; set; }
 
         public int RewardFame { get; set; }

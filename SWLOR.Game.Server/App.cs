@@ -144,15 +144,16 @@ namespace SWLOR.Game.Server
             builder.RegisterType<MapPinService>().As<IMapPinService>();
             builder.RegisterType<MenuService>().As<IMenuService>();
             builder.RegisterType<MigrationService>().As<IMigrationService>();
+            builder.RegisterType<ModService>().As<IModService>();
             builder.RegisterType<ObjectProcessingService>().As<IObjectProcessingService>();
             builder.RegisterType<PerkService>().As<IPerkService>();
             builder.RegisterType<PlayerDescriptionService>().As<IPlayerDescriptionService>();
             builder.RegisterType<PlayerService>().As<IPlayerService>();
             builder.RegisterType<PVPSanctuaryService>().As<IPVPSanctuaryService>();
             builder.RegisterType<QuestService>().As<IQuestService>();
+            builder.RegisterType<RaceService>().As<IRaceService>();
             builder.RegisterType<RandomService>().As<IRandomService>().SingleInstance(); // Must be single instance to avoid RNG issues
             builder.RegisterType<ResourceService>().As<IResourceService>();
-            builder.RegisterType<ModService>().As<IModService>();
             builder.RegisterType<SearchService>().As<ISearchService>();
             builder.RegisterType<SerializationService>().As<ISerializationService>();
             builder.RegisterType<SkillService>().As<ISkillService>();

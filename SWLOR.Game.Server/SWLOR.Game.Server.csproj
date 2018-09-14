@@ -93,7 +93,6 @@
     <Compile Include="Conversation\BuildingEntrance.cs" />
     <Compile Include="Conversation\BuildingExit.cs" />
     <Compile Include="Conversation\ChangeDescription.cs" />
-    <Compile Include="Conversation\ChangeHead.cs" />
     <Compile Include="Conversation\CharacterManagement.cs" />
     <Compile Include="Conversation\Contracts\IConversation.cs" />
     <Compile Include="Conversation\ConversationBase.cs" />
@@ -656,6 +655,7 @@
     <Compile Include="Service\ImpoundService.cs" />
     <Compile Include="Service\Contracts\ISpawnService.cs" />
     <Compile Include="Service\Contracts\IResourceService.cs" />
+    <Compile Include="Service\Contracts\IRaceService.cs" />
     <Compile Include="Service\ItemService.cs" />
     <Compile Include="Service\Contracts\ITimeService.cs" />
     <Compile Include="Service\KeyItemService.cs" />
@@ -878,6 +878,11 @@
     <Content Include="ServerFiles\Database\swlor-db.sql" />
     <Content Include="ServerFiles\Database\scripts\AddPerkLevels.sql" />
     <Content Include="ServerFiles\Database\scripts\WipePlayerData.sql" />
+    <Content Include="ServerFiles\Reference\ClothAndLeatherColors.jpg" />
+    <Content Include="ServerFiles\Reference\HairColors.jpg" />
+    <Content Include="ServerFiles\Reference\MetalColors.jpg" />
+    <Content Include="ServerFiles\Reference\SkinColors.jpg" />
+    <Content Include="ServerFiles\Reference\TattooColors.jpg" />
     <Content Include="ServerFiles\Star Wars LOR - Builder Module.mod" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
   </ItemGroup>

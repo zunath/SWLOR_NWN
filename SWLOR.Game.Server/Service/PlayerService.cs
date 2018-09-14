@@ -9,6 +9,7 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
+using static NWN.NWScript;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
@@ -26,6 +27,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IDialogService _dialog;
         private readonly INWNXEvents _nwnxEvents;
         private readonly IBackgroundService _background;
+        private readonly IRaceService _race;
 
         public PlayerService(
             INWScript script, 
@@ -38,7 +40,8 @@ namespace SWLOR.Game.Server.Service
             INWNXPlayerQuickBarSlot qbs,
             IDialogService dialog,
             INWNXEvents nwnxEvents,
-            IBackgroundService background)
+            IBackgroundService background,
+            IRaceService race)
         {
             _ = script;
             _db = db;
@@ -51,6 +54,7 @@ namespace SWLOR.Game.Server.Service
             _dialog = dialog;
             _nwnxEvents = nwnxEvents;
             _background = background;
+            _race = race;
         }
 
         public void InitializePlayer(NWPlayer player)
@@ -63,29 +67,29 @@ namespace SWLOR.Game.Server.Service
             {
                 player.DestroyAllInventoryItems();
                 player.InitializePlayer();
-                _.AssignCommand(player.Object, () => _.TakeGoldFromCreature(_.GetGold(player.Object), player.Object, 1));
+                _.AssignCommand(player, () => _.TakeGoldFromCreature(_.GetGold(player), player, 1));
 
                 player.DelayCommand(() =>
                 {
-                    _.GiveGoldToCreature(player.Object, 100);
+                    _.GiveGoldToCreature(player, 100);
                 }, 0.5f);
                 
 
-                NWItem knife = NWItem.Wrap(_.CreateItemOnObject("survival_knife", player.Object));
+                NWItem knife = NWItem.Wrap(_.CreateItemOnObject("survival_knife", player));
                 knife.Name = player.Name + "'s Survival Knife";
                 knife.IsCursed = true;
                 knife.MaxDurability = 5;
                 knife.Durability = 5;
 
-                NWItem darts = NWItem.Wrap(_.CreateItemOnObject("nw_wthdt001", player.Object, 50)); // 50x Dart
+                NWItem darts = NWItem.Wrap(_.CreateItemOnObject("nw_wthdt001", player, 50)); // 50x Dart
                 darts.Name = "Starting Darts";
                 darts.IsCursed = true;
 
-                NWItem book = NWItem.Wrap(_.CreateItemOnObject("player_guide", player.Object));
+                NWItem book = NWItem.Wrap(_.CreateItemOnObject("player_guide", player));
                 book.Name = player.Name + "'s Player Guide";
                 book.IsCursed = true;
 
-                NWItem dyeKit = NWItem.Wrap(_.CreateItemOnObject("tk_omnidye", player.Object));
+                NWItem dyeKit = NWItem.Wrap(_.CreateItemOnObject("tk_omnidye", player));
                 dyeKit.IsCursed = true;
                 
                 int numberOfFeats = _nwnxCreature.GetFeatCount(player);
@@ -94,13 +98,13 @@ namespace SWLOR.Game.Server.Service
                     _nwnxCreature.RemoveFeat(player, _nwnxCreature.GetFeatByIndex(player, currentFeat - 1));
                 }
 
-                _nwnxCreature.AddFeatByLevel(player, NWScript.FEAT_ARMOR_PROFICIENCY_LIGHT, 1);
-                _nwnxCreature.AddFeatByLevel(player, NWScript.FEAT_ARMOR_PROFICIENCY_MEDIUM, 1);
-                _nwnxCreature.AddFeatByLevel(player, NWScript.FEAT_ARMOR_PROFICIENCY_HEAVY, 1);
-                _nwnxCreature.AddFeatByLevel(player, NWScript.FEAT_SHIELD_PROFICIENCY, 1);
-                _nwnxCreature.AddFeatByLevel(player, NWScript.FEAT_WEAPON_PROFICIENCY_EXOTIC, 1);
-                _nwnxCreature.AddFeatByLevel(player, NWScript.FEAT_WEAPON_PROFICIENCY_MARTIAL, 1);
-                _nwnxCreature.AddFeatByLevel(player, NWScript.FEAT_WEAPON_PROFICIENCY_SIMPLE, 1);
+                _nwnxCreature.AddFeatByLevel(player, FEAT_ARMOR_PROFICIENCY_LIGHT, 1);
+                _nwnxCreature.AddFeatByLevel(player, FEAT_ARMOR_PROFICIENCY_MEDIUM, 1);
+                _nwnxCreature.AddFeatByLevel(player, FEAT_ARMOR_PROFICIENCY_HEAVY, 1);
+                _nwnxCreature.AddFeatByLevel(player, FEAT_SHIELD_PROFICIENCY, 1);
+                _nwnxCreature.AddFeatByLevel(player, FEAT_WEAPON_PROFICIENCY_EXOTIC, 1);
+                _nwnxCreature.AddFeatByLevel(player, FEAT_WEAPON_PROFICIENCY_MARTIAL, 1);
+                _nwnxCreature.AddFeatByLevel(player, FEAT_WEAPON_PROFICIENCY_SIMPLE, 1);
                 _nwnxCreature.AddFeatByLevel(player, (int) CustomFeatType.BaseManagementTool, 1);
                 _nwnxCreature.AddFeatByLevel(player, (int) CustomFeatType.OpenRestMenu, 1);
 
@@ -108,11 +112,11 @@ namespace SWLOR.Game.Server.Service
                 {
                     _nwnxCreature.SetSkillRank(player, iCurSkill - 1, 0);
                 }
-                _.SetFortitudeSavingThrow(player.Object, 0);
-                _.SetReflexSavingThrow(player.Object, 0);
-                _.SetWillSavingThrow(player.Object, 0);
+                _.SetFortitudeSavingThrow(player, 0);
+                _.SetReflexSavingThrow(player, 0);
+                _.SetWillSavingThrow(player, 0);
 
-                int classID = _.GetClassByPosition(1, player.Object);
+                int classID = _.GetClassByPosition(1, player);
 
                 for (int index = 0; index <= 255; index++)
                 {
@@ -126,11 +130,13 @@ namespace SWLOR.Game.Server.Service
                 _db.StoredProcedure("InsertAllPCSkillsByID",
                     new SqlParameter("PlayerID", player.GlobalID));
 
+                _race.ApplyDefaultAppearance(player);
+
                 _background.ApplyBackgroundBonuses(player);
 
                 _skill.ApplyStatChanges(player, null, true);
 
-                _.DelayCommand(1.0f, () => _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, _.EffectHeal(999), player.Object));
+                _.DelayCommand(1.0f, () => _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(999), player));
 
                 InitializeHotBar(player);
             }
@@ -161,7 +167,7 @@ namespace SWLOR.Game.Server.Service
             ApplySanctuaryEffects(player);
             AdjustCamera(player);
             if(player.IsPlayer)
-                _.ExportSingleCharacter(player.Object);
+                _.ExportSingleCharacter(player);
         }
 
         public void LoadCharacter(NWPlayer player)
@@ -185,7 +191,7 @@ namespace SWLOR.Game.Server.Service
 
             if (damage != 0)
             {
-                _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, _.EffectDamage(damage), player.Object);
+                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage), player);
             }
 
             player.IsBusy = false; // Just in case player logged out in the middle of an action.
@@ -269,7 +275,7 @@ namespace SWLOR.Game.Server.Service
                 foreach (Effect effect in oPC.Effects)
                 {
                     int type = _.GetEffectType(effect);
-                    if (type == NWScript.EFFECT_TYPE_DAMAGE_REDUCTION || type == NWScript.EFFECT_TYPE_SANCTUARY)
+                    if (type == EFFECT_TYPE_DAMAGE_REDUCTION || type == EFFECT_TYPE_SANCTUARY)
                     {
                         _.RemoveEffect(oPC.Object, effect);
                     }
@@ -290,12 +296,12 @@ namespace SWLOR.Game.Server.Service
             if (oPC.Area.Tag == "ooc_area") return;
 
             Effect sanctuary = _.EffectSanctuary(99);
-            Effect dr = _.EffectDamageReduction(50, NWScript.DAMAGE_POWER_PLUS_TWENTY);
+            Effect dr = _.EffectDamageReduction(50, DAMAGE_POWER_PLUS_TWENTY);
             sanctuary = _.TagEffect(sanctuary, "AREA_ENTRY_SANCTUARY");
             dr = _.TagEffect(dr, "AREA_ENTRY_DAMAGE_REDUCTION");
 
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_PERMANENT, sanctuary, oPC.Object);
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_PERMANENT, dr, oPC.Object);
+            _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, sanctuary, oPC.Object);
+            _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, dr, oPC.Object);
             Location location = oPC.Location;
 
             oPC.DelayCommand(() =>

@@ -6,6 +6,8 @@ namespace SWLOR.Game.Server.Service.Contracts
 {
     public interface IQuestService
     {
+        bool CanAcceptQuest(NWPlayer oPC, int questID, bool sendMessage);
+        bool CanAcceptQuest(NWPlayer oPC, Quest quest, bool sendMessage);
         void AcceptQuest(NWPlayer oPC, int questID);
         void AdvanceQuestState(NWPlayer oPC, int questID);
         void CompleteQuest(NWPlayer player, int questID, ItemVO selectedItem);
@@ -21,7 +23,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         void OnModuleItemAcquired();
         void OnQuestPlaceableUsed(NWObject oObject);
         void OnQuestTriggerEntered(NWObject oObject);
-        void RequestItemsFromPC(NWPlayer oPC, NWObject questOwner, int questID, int sequenceID);
+        void RequestItemsFromPC(NWPlayer oPC, NWObject questOwner, int questID);
         void SpawnQuestItems(NWPlaceable oChest, NWPlayer oPC);
     }
 }

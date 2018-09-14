@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
+﻿using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entities;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
-
-using NWN;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
+using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Linq;
 using Quest = SWLOR.Game.Server.Data.Entities.Quest;
 
 namespace SWLOR.Game.Server.Service
@@ -66,19 +65,11 @@ namespace SWLOR.Game.Server.Service
         public void CompleteQuest(NWPlayer player, int questID, ItemVO selectedItem)
         {
             if (!player.IsPlayer) return;
-            
+
             Quest quest = _db.Quests.Single(x => x.QuestID == questID);
             PCQuestStatus pcState = _db.PCQuestStatus.Single(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
 
-            QuestState finalState = null;
-            foreach (QuestState questState in quest.QuestStates)
-            {
-                if (questState.IsFinalState)
-                {
-                    finalState = questState;
-                    break;
-                }
-            }
+            QuestState finalState = quest.QuestStates.FirstOrDefault(x => x.IsFinalState);
 
             if (finalState == null)
             {
@@ -98,17 +89,12 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                _.CreateItemOnObject(selectedItem.Resref, player.Object, selectedItem.Quantity, "");
+                _.CreateItemOnObject(selectedItem.Resref, player.Object, selectedItem.Quantity);
             }
 
             if (quest.RewardGold > 0)
             {
                 _.GiveGoldToCreature(player.Object, quest.RewardGold);
-            }
-
-            if (quest.RewardXP > 0)
-            {
-                // TODO: Skill-related exp rewards??
             }
 
             if (quest.RewardKeyItemID != null)
@@ -163,66 +149,78 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-
-        public void AcceptQuest(NWPlayer oPC, int questID)
+        public bool CanAcceptQuest(NWPlayer oPC, int questID, bool sendMessage)
         {
-            if (!oPC.IsPlayer) return;
+            var quest = GetQuestByID(questID);
+            return CanAcceptQuest(oPC, quest, sendMessage);
+        }
 
-            PCQuestStatus status = _db.PCQuestStatus.Single(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID);
+        public bool CanAcceptQuest(NWPlayer oPC, Quest quest, bool sendMessage)
+        {
+            PCQuestStatus status = _db.PCQuestStatus.SingleOrDefault(x => x.PlayerID == oPC.GlobalID && x.QuestID == quest.QuestID);
 
             if (status != null)
             {
                 if (status.CompletionDate != null)
                 {
-                    oPC.SendMessage("You have already completed this quest.");
-                    return;
+                    if(sendMessage)
+                        oPC.SendMessage("You have already completed this quest.");
+                    return false;
                 }
                 else
                 {
-                    oPC.SendMessage("You have already accepted this quest.");
-                    return;
+                    if(sendMessage)
+                        oPC.SendMessage("You have already accepted this quest.");
+                    return false;
                 }
             }
 
-
-            Quest quest = _db.Quests.Single(x => x.QuestID == questID);
-
             if (!DoesPlayerMeetPrerequisites(oPC, quest.QuestPrerequisites))
             {
-                oPC.SendMessage("You do not meet the prerequisites necessary to accept this quest.");
-                return;
+                if (sendMessage)
+                    oPC.SendMessage("You do not meet the prerequisites necessary to accept this quest.");
+                return false;
             }
 
             if (!DoesPlayerHaveRequiredKeyItems(oPC, quest.QuestStates.ElementAt(0).QuestRequiredKeyItemLists))
             {
-                oPC.SendMessage("You do not have the required key items to accept this quest.");
-                return;
+                if (sendMessage)
+                    oPC.SendMessage("You do not have the required key items to accept this quest.");
+                return false;
             }
 
-            PCRegionalFame fame = _db.PCRegionalFames.Single(x => x.PlayerID == oPC.GlobalID && x.FameRegionID == quest.FameRegionID); 
+            PCRegionalFame fame = _db.PCRegionalFames.SingleOrDefault(x => x.PlayerID == oPC.GlobalID && x.FameRegionID == quest.FameRegionID);
 
-            if (fame.Amount < quest.RequiredFameAmount)
+            if (fame != null)
             {
-                oPC.SendMessage("You do not have enough fame to accept this quest.");
-                return;
-            }
-
-            status = new PCQuestStatus();
-            foreach (QuestState state in quest.QuestStates)
-            {
-                if (state.Sequence == 1)
+                if (fame.Amount < quest.RequiredFameAmount)
                 {
-                    status.CurrentQuestStateID = state.QuestStateID;
-                    break;
+                    if (sendMessage)
+                        oPC.SendMessage("You do not have enough fame to accept this quest.");
+                    return false;
                 }
             }
 
-            if (status.CurrentQuestState == null)
+            return true;
+        }
+
+
+        public void AcceptQuest(NWPlayer oPC, int questID)
+        {
+            if (!oPC.IsPlayer) return;
+
+            Quest quest = _db.Quests.Single(x => x.QuestID == questID);
+
+            if (!CanAcceptQuest(oPC, quest, true))
             {
-                oPC.SendMessage("There was an error accepting the quest '" + quest.Name + "'. Please inform an admin this quest is bugged. (QuestID: " + questID + ")");
                 return;
             }
 
+            var status = new PCQuestStatus
+            {
+                CurrentQuestStateID = quest.QuestStates.Single(x => x.QuestID == questID && x.Sequence == 1).Sequence
+            };
+            
             // Give temporary key item at start of quest.
             if (quest.StartKeyItemID != null)
             {
@@ -238,7 +236,7 @@ namespace SWLOR.Game.Server.Service
             status.PlayerID = oPC.GlobalID;
             _db.PCQuestStatus.Add(status);
             _db.SaveChanges();
-            
+
             CreateExtendedQuestDataEntries(status, questID, 1);
 
             _.AddJournalQuestEntry(quest.JournalTag, 1, oPC.Object, NWScript.FALSE);
@@ -260,7 +258,7 @@ namespace SWLOR.Game.Server.Service
             if (questStatus.CompletionDate != null) return;
 
             Quest quest = questStatus.Quest;
-            
+
             // Find the next quest state.
             foreach (QuestState nextState in quest.QuestStates)
             {
@@ -278,7 +276,7 @@ namespace SWLOR.Game.Server.Service
                         questStatus.CurrentQuestStateID = nextState.QuestStateID;
                         oPC.SendMessage("Objective for quest '" + quest.Name + "' complete! Check your journal for information on the next objective.");
                         _db.SaveChanges();
-                        
+
                         CreateExtendedQuestDataEntries(questStatus, questID, nextState.Sequence);
                         return;
                     }
@@ -307,8 +305,9 @@ namespace SWLOR.Game.Server.Service
                     PlayerID = status.PlayerID
                 };
                 _db.PCQuestKillTargetProgresses.Add(pcKT);
-                _db.SaveChanges();
             }
+
+            _db.SaveChanges();
         }
 
         private void RequestRewardSelectionFromPC(NWPlayer oPC, int questID)
@@ -344,7 +343,7 @@ namespace SWLOR.Game.Server.Service
             {
                 prereqIDs.Add(prereq.RequiredQuestID);
             }
-            
+
             return completedQuestIDs.ContainsAll(prereqIDs);
         }
 
@@ -390,7 +389,7 @@ namespace SWLOR.Game.Server.Service
 
         public void OnCreatureDeath(NWCreature creature)
         {
-            int npcGroupID = creature.GetLocalInt("NPC_GROUP"); 
+            int npcGroupID = creature.GetLocalInt("NPC_GROUP");
             if (npcGroupID <= 0) return;
 
             NWObject oKiller = NWObject.Wrap(_.GetLastKiller());
@@ -400,7 +399,7 @@ namespace SWLOR.Game.Server.Service
             string areaResref = creature.Area.Resref;
 
             NWPlayer oPC = NWPlayer.Wrap(_.GetFirstFactionMember(oKiller.Object));
-            while(oPC.IsValid)
+            while (oPC.IsValid)
             {
                 if (areaResref != oPC.Area.Resref) continue;
                 if (_.GetDistanceBetween(creature.Object, oPC.Object) == 0.0f || _.GetDistanceBetween(creature.Object, oPC.Object) > 20.0f) continue;
@@ -409,7 +408,7 @@ namespace SWLOR.Game.Server.Service
 
                 foreach (PCQuestKillTargetProgress kt in killTargets)
                 {
-                    kt.RemainingToKill--; 
+                    kt.RemainingToKill--;
                     string targetGroupName = kt.NPCGroup.Name;
                     string questName = kt.PcQuestStatus.Quest.Name;
                     string updateMessage = "[" + questName + "] " + targetGroupName + " remaining: " + kt.RemainingToKill;
@@ -448,7 +447,7 @@ namespace SWLOR.Game.Server.Service
 
             if (questID <= 0)
             {
-                oPC.SendMessage("QUEST_ID variable not set on object. Please inform admin this quest is bugged.");
+                oPC.SendMessage("QUEST_ID variable not set on object. Please inform admin this quest is bugged. (QuestID: " + questID + ")");
                 return;
             }
 
@@ -458,7 +457,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            PCQuestStatus pcQuestStatus = _db.PCQuestStatus.Single(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID);
+            PCQuestStatus pcQuestStatus = _db.PCQuestStatus.SingleOrDefault(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID);
             if (pcQuestStatus == null) return;
 
             QuestState questState = pcQuestStatus.CurrentQuestState;
@@ -504,7 +503,7 @@ namespace SWLOR.Game.Server.Service
             QuestState state = _db.PCQuestStatus.Single(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID).CurrentQuestState;
 
             oPC.FloatingText("Please place the items you would like to turn in for this quest into the container.");
-            
+
             string text = "Required Items: \n\n";
 
             foreach (QuestRequiredItemList item in state.QuestRequiredItemLists)
@@ -664,12 +663,12 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public void RequestItemsFromPC(NWPlayer oPC, NWObject questOwner, int questID, int sequenceID)
+        public void RequestItemsFromPC(NWPlayer oPC, NWObject questOwner, int questID)
         {
             if (!oPC.IsPlayer) return;
 
-            PCQuestStatus pcStatus = _db.PCQuestStatus.Single(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID);
-            
+            PCQuestStatus pcStatus = _db.PCQuestStatus.SingleOrDefault(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID);
+
             if (pcStatus == null)
             {
                 oPC.SendMessage("You have not accepted this quest yet.");
@@ -677,12 +676,6 @@ namespace SWLOR.Game.Server.Service
             }
 
             QuestState questState = pcStatus.CurrentQuestState;
-
-            if (questState.Sequence != sequenceID)
-            {
-                oPC.SendMessage("SequenceID mismatch. Please inform an admin there is a bug with this quest. (QuestID = " + questID + ")");
-                return;
-            }
 
             foreach (QuestRequiredKeyItemList ki in questState.QuestRequiredKeyItemLists)
             {
@@ -693,9 +686,15 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            if (questState.QuestTypeID != (int)QuestType.CollectItems)
+            {
+                oPC.SendMessage("The quest state you are currently on is not configured to collect items. Please inform an admin of this issue. (QuestID: " + questID + ")");
+                return;
+            }
+
             Location location = oPC.Location;
             NWPlaceable collector = NWPlaceable.Wrap(_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "qst_item_collect", location));
-            
+
             collector.AssignCommand(() =>
             {
                 _.SetFacingPoint(oPC.Position);

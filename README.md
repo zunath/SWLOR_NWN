@@ -3,7 +3,7 @@ Server-side C# code used in the Neverwinter Nights Star Wars: Legends of the Old
 
 Game: Neverwinter Nights: Enhanced Edition
 
-Website: TBA
+Website: http://starwarsnwn.com/
 
 Discord: https://discord.gg/MyQAM6m
 

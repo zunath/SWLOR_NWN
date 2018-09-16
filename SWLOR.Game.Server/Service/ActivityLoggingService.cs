@@ -157,7 +157,8 @@ namespace SWLOR.Game.Server.Service
                 ReceiverAccountName = receiverAccountName,
                 ReceiverPlayerID = receiverPlayerID,
                 ReceiverDMName = receiverDMName,
-                ChatChannelID = channelEntity.ChatChannelID
+                ChatChannelID = channelEntity.ChatChannelID,
+                DateSent = DateTime.UtcNow
             };
             
             _db.ChatLogs.Add(entity);

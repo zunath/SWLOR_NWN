@@ -7,12 +7,12 @@ using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Event.Conversation
 {
-    public class QuestCheck: IRegisteredEvent
+    public class QuestIsDone : IRegisteredEvent
     {
         private readonly INWScript _;
         private readonly IDataContext _db;
 
-        public QuestCheck(
+        public QuestIsDone(
             INWScript script,
             IDataContext db)
         {
@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Event.Conversation
 
         public bool Run(params object[] args)
         {
-            int index = (int) args[0];
+            int index = (int)args[0];
             NWPlayer player = _.GetPCSpeaker();
             NWObject talkingTo = Object.OBJECT_SELF;
             int questID = talkingTo.GetLocalInt("QUEST_ID_" + index);
@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Event.Conversation
             }
 
             var status = _db.PCQuestStatus.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
-            return status != null && status.CurrentQuestStateID > 0;
+            return status != null && status.CurrentQuestState.IsFinalState;
         }
     }
 }

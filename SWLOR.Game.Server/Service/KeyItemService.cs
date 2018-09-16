@@ -22,8 +22,14 @@ namespace SWLOR.Game.Server.Service
 
         public bool PlayerHasKeyItem(NWObject oPC, int keyItemID)
         {
-            PCKeyItem entity = _db.PCKeyItems.FirstOrDefault(x => x.PlayerID == oPC.GlobalID && x.KeyItemID == keyItemID);
+            var entity = _db.PCKeyItems.FirstOrDefault(x => x.PlayerID == oPC.GlobalID && x.KeyItemID == keyItemID);
             return entity != null;
+        }
+
+        public bool PlayerHasAllKeyItems(NWObject oPC, params int[] keyItemIDs)
+        {
+            var result = _db.PCKeyItems.Where(x => x.PlayerID == oPC.GlobalID && keyItemIDs.Contains(x.KeyItemID));
+            return result.Count() == keyItemIDs.Length;
         }
 
 

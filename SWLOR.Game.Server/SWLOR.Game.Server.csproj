@@ -167,6 +167,7 @@
     <Compile Include="Data\Entities\PCOutfit.cs" />
     <Compile Include="Data\Entities\PCOverflowItem.cs" />
     <Compile Include="Data\Entities\PCPerk.cs" />
+    <Compile Include="Data\Entities\PCQuestItemProgress.cs" />
     <Compile Include="Data\Entities\PCQuestKillTargetProgress.cs" />
     <Compile Include="Data\Entities\PCQuestStatus.cs" />
     <Compile Include="Data\Entities\PCRegionalFame.cs" />
@@ -249,6 +250,7 @@
     <Compile Include="Event\Area\OnAreaExit.cs" />
     <Compile Include="Event\Area\OnAreaEnter.cs" />
     <Compile Include="Event\Conversation\KeyItemCheck.cs" />
+    <Compile Include="Event\Conversation\OpenStore.cs" />
     <Compile Include="Event\Conversation\QuestAccept.cs" />
     <Compile Include="Event\Conversation\QuestAdvance.cs" />
     <Compile Include="Event\Conversation\QuestCanAccept.cs" />
@@ -283,6 +285,7 @@
     <Compile Include="NWN\Events\Conversation\KeyItem\HasKeyItems\has_keyitems_7.cs" />
     <Compile Include="NWN\Events\Conversation\KeyItem\HasKeyItems\has_keyitems_8.cs" />
     <Compile Include="NWN\Events\Conversation\KeyItem\HasKeyItems\has_keyitems_9.cs" />
+    <Compile Include="NWN\Events\Conversation\open_store.cs" />
     <Compile Include="NWN\Events\Conversation\Quest\AcceptQuest\accept_quest_10.cs" />
     <Compile Include="NWN\Events\Conversation\Quest\AcceptQuest\accept_quest_9.cs" />
     <Compile Include="NWN\Events\Conversation\Quest\AcceptQuest\accept_quest_8.cs" />
@@ -652,6 +655,7 @@
     <Compile Include="Placeable\CraftingForge\OnDisturbed.cs" />
     <Compile Include="Placeable\CraftingForge\OnHeartbeat.cs" />
     <Compile Include="Placeable\DisabledStructure\OnUsed.cs" />
+    <Compile Include="Placeable\QuestSystem\ItemCollector\OnClosed.cs" />
     <Compile Include="Placeable\ScavengePoint\OnClosed.cs" />
     <Compile Include="Placeable\ScavengePoint\OnDisturbed.cs" />
     <Compile Include="Placeable\ScavengePoint\OnHeartbeat.cs" />
@@ -668,7 +672,6 @@
     <Compile Include="Placeable\PlantSeed\OnClosed.cs" />
     <Compile Include="Placeable\PlantSeed\OnDisturbed.cs" />
     <Compile Include="Placeable\PlantSeed\OnOpened.cs" />
-    <Compile Include="Placeable\QuestSystem\ItemCollector\OnClosed.cs" />
     <Compile Include="Placeable\QuestSystem\ItemCollector\OnDisturbed.cs" />
     <Compile Include="Placeable\QuestSystem\ItemCollector\OnOpened.cs" />
     <Compile Include="Placeable\QuestSystem\OnUsed.cs" />

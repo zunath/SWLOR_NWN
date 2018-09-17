@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Data.Entities
         public PCQuestStatus()
         {
             PCQuestKillTargetProgresses = new HashSet<PCQuestKillTargetProgress>();
+            PCQuestItemProgresses = new HashSet<PCQuestItemProgress>();
         }
 
         [Key]
@@ -31,6 +32,9 @@ namespace SWLOR.Game.Server.Data.Entities
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PCQuestKillTargetProgress> PCQuestKillTargetProgresses { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PCQuestItemProgress> PCQuestItemProgresses { get; set; }
 
         public virtual QuestState CurrentQuestState { get; set; }
 

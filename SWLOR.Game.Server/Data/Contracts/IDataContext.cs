@@ -58,6 +58,7 @@ namespace SWLOR.Game.Server.Data.Contracts
         IDbSet<PCOverflowItem> PCOverflowItems { get; set; }
         IDbSet<PCPerk> PCPerks { get; set; }
         IDbSet<PCQuestKillTargetProgress> PCQuestKillTargetProgresses { get; set; }
+        IDbSet<PCQuestItemProgress> PCQuestItemProgresses { get; set; }
         IDbSet<PCQuestStatus> PCQuestStatus { get; set; }
         IDbSet<PCRegionalFame> PCRegionalFames { get; set; }
         IDbSet<PCSearchSiteItem> PCSearchSiteItems { get; set; }

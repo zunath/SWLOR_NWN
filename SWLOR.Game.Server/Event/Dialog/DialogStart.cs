@@ -2,6 +2,7 @@
 
 using NWN;
 using SWLOR.Game.Server.Service.Contracts;
+using static NWN.NWScript;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Event.Dialog
@@ -27,7 +28,7 @@ namespace SWLOR.Game.Server.Event.Dialog
             if (!string.IsNullOrWhiteSpace(conversation))
             {
                 int objectType = _.GetObjectType(Object.OBJECT_SELF);
-                if (objectType == NWScript.OBJECT_TYPE_PLACEABLE)
+                if (objectType == OBJECT_TYPE_PLACEABLE)
                 {
                     NWPlaceable talkTo = NWPlaceable.Wrap(Object.OBJECT_SELF);
                     _dialog.StartConversation(pc, talkTo, conversation);
@@ -40,7 +41,7 @@ namespace SWLOR.Game.Server.Event.Dialog
             }
             else
             {
-                _.ActionStartConversation(pc.Object, "", NWScript.TRUE, NWScript.FALSE);
+                _.ActionStartConversation(pc.Object, "", TRUE, FALSE);
             }
 
             return true;

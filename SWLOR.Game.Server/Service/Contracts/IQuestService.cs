@@ -17,9 +17,6 @@ namespace SWLOR.Game.Server.Service.Contracts
         bool HasPlayerCompletedQuest(NWObject oPC, int questID);
         void OnClientEnter();
         void OnCreatureDeath(NWCreature creature);
-        void OnItemCollectorClosed(NWObject container);
-        void OnItemCollectorDisturbed(NWPlaceable container);
-        void OnItemCollectorOpened(NWPlaceable container);
         void OnModuleItemAcquired();
         void OnQuestPlaceableUsed(NWObject oObject);
         void OnQuestTriggerEntered(NWObject oObject);

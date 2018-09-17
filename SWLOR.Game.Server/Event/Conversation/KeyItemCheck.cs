@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Event.Conversation
         public bool Run(params object[] args)
         {
             int index = (int)args[0];
+            int type = (int) args[1];
             NWPlayer player = _.GetPCSpeaker();
             NWObject talkingTo = Object.OBJECT_SELF;
 
@@ -41,7 +42,11 @@ namespace SWLOR.Game.Server.Event.Conversation
                 keyItemID = talkingTo.GetLocalInt($"KEY_ITEM_{index}_REQ_{count}");
             }
 
-            return _keyItem.PlayerHasAllKeyItems(player, requiredKeyItemIDs.ToArray());
+            // Type 1 = ALL
+            // Anything else = ANY
+            return type == 1 ? 
+                _keyItem.PlayerHasAllKeyItems(player, requiredKeyItemIDs.ToArray()) : 
+                _keyItem.PlayerHasAnyKeyItem(player, requiredKeyItemIDs.ToArray());
         }
     }
 }

@@ -6,12 +6,12 @@ using static NWN.NWScript;
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    internal class has_keyitems_10
+    internal class any_keyitems_8
 #pragma warning restore IDE1006 // Naming Styles
     {
         public static int Main()
         {
-            return App.RunEvent<KeyItemCheck>(10, 1) ? TRUE : FALSE;
+            return App.RunEvent<KeyItemCheck>(8, 2) ? TRUE : FALSE;
         }
     }
 }

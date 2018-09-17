@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
 
                     _db.SaveChanges();
 
-                    // Need to commit the above changed before advancing state.
+                    // Need to commit the above changes before advancing state.
                     if (progress.Remaining <= 0)
                     {
                         _quest.AdvanceQuestState(player, questID);

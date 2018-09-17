@@ -33,6 +33,11 @@ namespace SWLOR.Game.Server.Service
             return result.Count() == keyItemIDs.Length;
         }
 
+        public bool PlayerHasAnyKeyItem(NWObject oPC, params int[] keyItemIDs)
+        {
+            return _db.PCKeyItems.Any(x => x.PlayerID == oPC.GlobalID && keyItemIDs.Contains(x.KeyItemID));
+        }
+
 
         public void GivePlayerKeyItem(NWPlayer oPC, int keyItemID)
         {

@@ -275,6 +275,16 @@
     <Compile Include="NWNX\Contracts\INWNXDamage.cs" />
     <Compile Include="NWNX\NWNXDamage.cs" />
     <Compile Include="NWNX\PlayerVisibilityType.cs" />
+    <Compile Include="NWN\Events\Conversation\KeyItem\AnyKeyItems\any_keyitems_1.cs" />
+    <Compile Include="NWN\Events\Conversation\KeyItem\AnyKeyItems\any_keyitems_10.cs" />
+    <Compile Include="NWN\Events\Conversation\KeyItem\AnyKeyItems\any_keyitems_2.cs" />
+    <Compile Include="NWN\Events\Conversation\KeyItem\AnyKeyItems\any_keyitems_3.cs" />
+    <Compile Include="NWN\Events\Conversation\KeyItem\AnyKeyItems\any_keyitems_4.cs" />
+    <Compile Include="NWN\Events\Conversation\KeyItem\AnyKeyItems\any_keyitems_5.cs" />
+    <Compile Include="NWN\Events\Conversation\KeyItem\AnyKeyItems\any_keyitems_6.cs" />
+    <Compile Include="NWN\Events\Conversation\KeyItem\AnyKeyItems\any_keyitems_7.cs" />
+    <Compile Include="NWN\Events\Conversation\KeyItem\AnyKeyItems\any_keyitems_8.cs" />
+    <Compile Include="NWN\Events\Conversation\KeyItem\AnyKeyItems\any_keyitems_9.cs" />
     <Compile Include="NWN\Events\Conversation\KeyItem\HasKeyItems\has_keyitems_1.cs" />
     <Compile Include="NWN\Events\Conversation\KeyItem\HasKeyItems\has_keyitems_10.cs" />
     <Compile Include="NWN\Events\Conversation\KeyItem\HasKeyItems\has_keyitems_2.cs" />

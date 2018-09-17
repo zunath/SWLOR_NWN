@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         void OnModuleItemAcquired();
         bool PlayerHasKeyItem(NWObject oPC, int keyItemID);
         bool PlayerHasAllKeyItems(NWObject oPC, params int[] keyItemIDs);
+        bool PlayerHasAnyKeyItem(NWObject oPC, params int[] keyItemIDs);
         void RemovePlayerKeyItem(NWPlayer oPC, int keyItemID);
     }
 }

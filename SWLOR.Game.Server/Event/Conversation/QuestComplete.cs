@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Event.Conversation
                 return false;
             }
 
-            _quest.CompleteQuest(player, questID, null);
+            _quest.CompleteQuest(player, talkTo ,questID, null);
 
             return true;
         }

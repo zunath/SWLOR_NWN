@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Event.Conversation
                 _.SpeakString("ERROR: Quest #" + questID + " is improperly configured. Please notify an admin");
                 return false;
             }
-            _quest.AcceptQuest(player, questID);
+            _quest.AcceptQuest(player, talkTo, questID);
 
             return true;
         }

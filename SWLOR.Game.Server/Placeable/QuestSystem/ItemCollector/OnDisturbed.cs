@@ -38,6 +38,7 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
         public bool Run(params object[] args)
         {
             NWPlaceable container = Object.OBJECT_SELF;
+            NWObject owner = container.GetLocalObject("QUEST_OWNER");
 
             NWPlayer player = _.GetLastDisturbed();
             NWItem item = _.GetInventoryDisturbItem();
@@ -51,7 +52,7 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
 
                 if (progress == null)
                 {
-                    _.CopyItem(item.Object, player.Object, TRUE);
+                    _.CopyItem(item, player, TRUE);
                     player.SendMessage(_color.Red("That item is not required for this quest."));
                 }
                 else
@@ -69,7 +70,7 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
                     // Need to commit the above changes before advancing state.
                     if (progress.Remaining <= 0)
                     {
-                        _quest.AdvanceQuestState(player, questID);
+                        _quest.AdvanceQuestState(player, owner, questID);
                     }
 
                     player.SendMessage("You need " + progress.Remaining + " " + item.Name + " for this quest.");
@@ -79,8 +80,6 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
 
                 if (status.PCQuestItemProgresses.Count <= 0)
                 {
-                    NWObject owner = container.GetLocalObject("QUEST_OWNER");
-                    
                     string conversation = _.GetLocalString(owner, "CONVERSATION");
                     if (!string.IsNullOrWhiteSpace(conversation))
                     {

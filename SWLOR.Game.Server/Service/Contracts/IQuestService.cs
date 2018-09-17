@@ -8,9 +8,9 @@ namespace SWLOR.Game.Server.Service.Contracts
     {
         bool CanAcceptQuest(NWPlayer oPC, int questID, bool sendMessage);
         bool CanAcceptQuest(NWPlayer oPC, Quest quest, bool sendMessage);
-        void AcceptQuest(NWPlayer oPC, int questID);
-        void AdvanceQuestState(NWPlayer oPC, int questID);
-        void CompleteQuest(NWPlayer player, int questID, ItemVO selectedItem);
+        void AcceptQuest(NWPlayer player, NWObject questOwner, int questID);
+        void AdvanceQuestState(NWPlayer player, NWObject questOwner, int questID);
+        void CompleteQuest(NWPlayer player, NWObject questOwner, int questID, ItemVO selectedItem);
         int GetPlayerQuestJournalID(NWObject oPC, int questID);
         Quest GetQuestByID(int questID);
         ItemVO GetTempItemInformation(string resref, int quantity);

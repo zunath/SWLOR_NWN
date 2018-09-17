@@ -50,6 +50,18 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public bool RemoveStartKeyItemAfterCompletion { get; set; }
 
+        [StringLength(32)]
+        public string OnAcceptRule { get; set; }
+
+        [StringLength(32)]
+        public string OnAdvanceRule { get; set; }
+
+        [StringLength(32)]
+        public string OnCompleteRule { get; set; }
+
+        [StringLength(32)]
+        public string OnKillTargetRule { get; set; }
+
         public virtual FameRegion FameRegion { get; set; }
 
         public virtual KeyItem RewardKeyItem { get; set; }

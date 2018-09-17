@@ -74,6 +74,7 @@ namespace SWLOR.Game.Server.Data
         public virtual IDbSet<PCOverflowItem> PCOverflowItems { get; set; }
         public virtual IDbSet<PCPerk> PCPerks { get; set; }
         public virtual IDbSet<PCQuestKillTargetProgress> PCQuestKillTargetProgresses { get; set; }
+        public virtual IDbSet<PCQuestItemProgress> PCQuestItemProgresses { get; set; }
         public virtual IDbSet<PCQuestStatus> PCQuestStatus { get; set; }
         public virtual IDbSet<PCRegionalFame> PCRegionalFames { get; set; }
         public virtual IDbSet<PCSearchSiteItem> PCSearchSiteItems { get; set; }
@@ -319,7 +320,12 @@ namespace SWLOR.Game.Server.Data
                 .HasMany(e => e.PCQuestKillTargetProgresses)
                 .WithRequired(e => e.PcQuestStatus)
                 .WillCascadeOnDelete(false);
-            
+
+            modelBuilder.Entity<PCQuestStatus>()
+                .HasMany(e => e.PCQuestItemProgresses)
+                .WithRequired(e => e.PCQuestStatus)
+                .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<PerkCategory>()
                 .HasMany(e => e.Perks)
                 .WithRequired(e => e.PerkCategory)
@@ -444,6 +450,11 @@ namespace SWLOR.Game.Server.Data
 
             modelBuilder.Entity<PlayerCharacter>()
                 .HasMany(e => e.PCPerks)
+                .WithRequired(e => e.PlayerCharacter)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PlayerCharacter>()
+                .HasMany(e => e.PCQuestKillTargetProgresses)
                 .WithRequired(e => e.PlayerCharacter)
                 .WillCascadeOnDelete(false);
 

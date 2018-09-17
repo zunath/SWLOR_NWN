@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.GameObject;
@@ -26,7 +27,7 @@ namespace SWLOR.Game.Server.Event.Conversation
         public bool Run(params object[] args)
         {
             int index = (int) args[0];
-            int state = (int) args[0];
+            int state = (int) args[1];
             NWPlayer player = _.GetPCSpeaker();
             NWObject talkTo = Object.OBJECT_SELF;
             int questID = talkTo.GetLocalInt("QUEST_ID_" + index);
@@ -38,8 +39,11 @@ namespace SWLOR.Game.Server.Event.Conversation
                 return false;
             }
 
+
+
             var status = _db.PCQuestStatus.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
-            return status != null && status.CurrentQuestStateID == state;
+            bool has = status != null && status.CurrentQuestState.Sequence == state;
+            return has;
         }
     }
 }

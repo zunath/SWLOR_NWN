@@ -8,8 +8,8 @@ using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
+using static NWN.NWScript;
 using Quest = SWLOR.Game.Server.Data.Entities.Quest;
 
 namespace SWLOR.Game.Server.Service
@@ -17,7 +17,6 @@ namespace SWLOR.Game.Server.Service
     public class QuestService : IQuestService
     {
         private const string TempStoragePlaceableTag = "QUEST_BARREL";
-        private const string SubmitQuestItemResref = "qst_submit";
 
         private readonly INWScript _;
         private readonly IDataContext _db;
@@ -114,7 +113,19 @@ namespace SWLOR.Game.Server.Service
 
             if (quest.RewardFame > 0)
             {
-                PCRegionalFame fame = _db.PCRegionalFames.Single(x => x.PlayerID == player.GlobalID && x.FameRegionID == quest.FameRegionID);
+                PCRegionalFame fame = _db.PCRegionalFames.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.FameRegionID == quest.FameRegionID);
+                if (fame == null)
+                {
+                    fame = new PCRegionalFame
+                    {
+                        PlayerID = player.GlobalID,
+                        FameRegionID = quest.FameRegionID,
+                        Amount = 0
+                    };
+
+                    _db.PCRegionalFames.Add(fame);
+                }
+                
                 fame.Amount += quest.RewardFame;
             }
 
@@ -145,7 +156,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (PCQuestStatus quest in pcQuests)
             {
-                _.AddJournalQuestEntry(quest.Quest.JournalTag, quest.CurrentQuestState.JournalStateID, oPC.Object, NWScript.FALSE);
+                _.AddJournalQuestEntry(quest.Quest.JournalTag, quest.CurrentQuestState.JournalStateID, oPC.Object, FALSE);
             }
         }
 
@@ -218,7 +229,7 @@ namespace SWLOR.Game.Server.Service
 
             var status = new PCQuestStatus
             {
-                CurrentQuestStateID = quest.QuestStates.Single(x => x.QuestID == questID && x.Sequence == 1).Sequence
+                CurrentQuestStateID = quest.QuestStates.Single(x => x.QuestID == questID && x.Sequence == 1).QuestStateID
             };
             
             // Give temporary key item at start of quest.
@@ -237,9 +248,9 @@ namespace SWLOR.Game.Server.Service
             _db.PCQuestStatus.Add(status);
             _db.SaveChanges();
 
-            CreateExtendedQuestDataEntries(status, questID, 1);
+            CreateExtendedQuestDataEntries(status);
 
-            _.AddJournalQuestEntry(quest.JournalTag, 1, oPC.Object, NWScript.FALSE);
+            _.AddJournalQuestEntry(quest.JournalTag, 1, oPC.Object, FALSE);
             oPC.SendMessage("Quest '" + quest.Name + "' accepted. Refer to your journal for more information on this quest.");
         }
 
@@ -272,12 +283,12 @@ namespace SWLOR.Game.Server.Service
                     }
                     else
                     {
-                        _.AddJournalQuestEntry(quest.JournalTag, nextState.JournalStateID, oPC.Object, NWScript.FALSE);
+                        _.AddJournalQuestEntry(quest.JournalTag, nextState.JournalStateID, oPC.Object, FALSE);
                         questStatus.CurrentQuestStateID = nextState.QuestStateID;
                         oPC.SendMessage("Objective for quest '" + quest.Name + "' complete! Check your journal for information on the next objective.");
                         _db.SaveChanges();
 
-                        CreateExtendedQuestDataEntries(questStatus, questID, nextState.Sequence);
+                        CreateExtendedQuestDataEntries(questStatus);
                         return;
                     }
                 }
@@ -288,14 +299,10 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        private void CreateExtendedQuestDataEntries(PCQuestStatus status, int questID, int sequenceID)
+        private void CreateExtendedQuestDataEntries(PCQuestStatus status)
         {
             // Create entries for the PC kill targets.
-            List<QuestKillTargetList> killTargets = _db.StoredProcedure<QuestKillTargetList>("GetQuestKillTargetsByQuestSequenceID",
-                new SqlParameter("QuestID", questID),
-                new SqlParameter("SequenceID", sequenceID));
-
-            foreach (QuestKillTargetList kt in killTargets)
+            foreach (var kt in status.Quest.QuestKillTargetLists)
             {
                 PCQuestKillTargetProgress pcKT = new PCQuestKillTargetProgress
                 {
@@ -305,6 +312,19 @@ namespace SWLOR.Game.Server.Service
                     PlayerID = status.PlayerID
                 };
                 _db.PCQuestKillTargetProgresses.Add(pcKT);
+            }
+
+            // Create entries for PC items required.
+            foreach (var item in status.Quest.QuestRequiredItemLists)
+            {
+                PCQuestItemProgress itemProgress = new PCQuestItemProgress
+                {
+                    Resref = item.Resref,
+                    PlayerID = status.PlayerID,
+                    PCQuestStatusID = status.PCQuestStatusID,
+                    Remaining = item.Quantity
+                };
+                _db.PCQuestItemProgresses.Add(itemProgress);
             }
 
             _db.SaveChanges();
@@ -324,7 +344,7 @@ namespace SWLOR.Game.Server.Service
             else
             {
                 QuestState lastState = quest.QuestStates.ElementAt(quest.QuestStates.Count - 1);
-                _.AddJournalQuestEntry(quest.JournalTag, lastState.JournalStateID, oPC.Object, NWScript.FALSE);
+                _.AddJournalQuestEntry(quest.JournalTag, lastState.JournalStateID, oPC.Object, FALSE);
                 CompleteQuest(oPC, questID, null);
             }
 
@@ -377,7 +397,7 @@ namespace SWLOR.Game.Server.Service
             QuestState questState = status.CurrentQuestState;
 
             if (questStateSequence != questState.Sequence) return;
-            if (_.GetIsObjectValid(_.GetItemPossessedBy(oPC.Object, questItemResref)) == NWScript.FALSE) return;
+            if (_.GetIsObjectValid(_.GetItemPossessedBy(oPC.Object, questItemResref)) == FALSE) return;
 
             // PC is on the correct quest, correct state, the chest creates quest items, and the PC does not already have the quest item.
             // Spawn it.
@@ -394,7 +414,7 @@ namespace SWLOR.Game.Server.Service
 
             NWObject oKiller = NWObject.Wrap(_.GetLastKiller());
 
-            if (_.GetIsPC(oKiller.Object) == NWScript.FALSE || _.GetIsDM(oKiller.Object) == NWScript.TRUE) return;
+            if (_.GetIsPC(oKiller.Object) == FALSE || _.GetIsDM(oKiller.Object) == TRUE) return;
 
             string areaResref = creature.Area.Resref;
 
@@ -492,177 +512,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer oPC = NWPlayer.Wrap(_.GetEnteringObject());
             HandleTriggerAndPlaceableQuestLogic(oPC, oObject);
         }
-
-
-        public void OnItemCollectorOpened(NWPlaceable container)
-        {
-            container.IsUseable = false;
-
-            NWPlayer oPC = NWPlayer.Wrap(_.GetLastOpenedBy());
-            int questID = container.GetLocalInt("QUEST_ID");
-            QuestState state = _db.PCQuestStatus.Single(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID).CurrentQuestState;
-
-            oPC.FloatingText("Please place the items you would like to turn in for this quest into the container.");
-
-            string text = "Required Items: \n\n";
-
-            foreach (QuestRequiredItemList item in state.QuestRequiredItemLists)
-            {
-                ItemVO tempItemModel = GetTempItemInformation(item.Resref, item.Quantity);
-                text += tempItemModel.Quantity + "x " + tempItemModel.Name + "\n";
-            }
-
-            oPC.SendMessage(text);
-        }
-
-        public void OnItemCollectorClosed(NWObject container)
-        {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetLastClosedBy());
-            foreach (NWItem item in container.InventoryItems)
-            {
-                if (item.Resref != SubmitQuestItemResref)
-                {
-                    _.CopyItem(item.Object, oPC.Object, NWScript.TRUE);
-                }
-                item.Destroy();
-            }
-
-            container.Destroy();
-        }
-
-        private void HandleAddItemToItemCollector(NWPlayer oPC, NWPlaceable container, NWItem oItem)
-        {
-            string resref = oItem.Resref;
-            if (resref == SubmitQuestItemResref) return;
-
-            int questID = container.GetLocalInt("QUEST_ID");
-            QuestState state = _db.PCQuestStatus.Single(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID).CurrentQuestState;
-
-            foreach (QuestRequiredItemList reqItem in state.QuestRequiredItemLists)
-            {
-                if (reqItem.Resref == resref)
-                {
-                    return;
-                }
-            }
-
-            _.CopyItem(oItem.Object, oPC.Object, NWScript.TRUE);
-            oItem.Destroy();
-            oPC.SendMessage(_color.Red("That item is not required for this quest."));
-        }
-
-
-        private void HandleRemoveItemFromItemCollector(NWPlayer oPC, NWPlaceable container, NWItem oItem)
-        {
-            string resref = oItem.Resref;
-            if (resref != SubmitQuestItemResref) return;
-
-            oItem.Destroy();
-            _.CreateItemOnObject(SubmitQuestItemResref, container.Object);
-
-            int questID = container.GetLocalInt("QUEST_ID");
-            QuestState state = _db.PCQuestStatus.Single(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID).CurrentQuestState;
-            Dictionary<string, int> requiredItems = new Dictionary<string, int>();
-
-            // Consolidate the number of items required. This is necessary in case there are two entries for the same
-            // item in the database. We simply sum those up to get one result in the hash map.
-            foreach (QuestRequiredItemList ri in state.QuestRequiredItemLists)
-            {
-                if (requiredItems.ContainsKey(ri.Resref))
-                {
-                    int count = requiredItems[ri.Resref] + ri.Quantity;
-                    requiredItems[ri.Resref] = count;
-                }
-                else
-                {
-                    requiredItems[ri.Resref] = ri.Quantity;
-                }
-            }
-
-            foreach (NWItem item in container.InventoryItems)
-            {
-                resref = item.Resref;
-                if (resref == SubmitQuestItemResref)
-                    continue;
-
-                int stackSize = item.StackSize;
-
-                if (requiredItems.ContainsKey(resref))
-                {
-                    int amountRequired = requiredItems[resref];
-
-                    // Same amount - destroy and remove.
-                    if (stackSize == amountRequired)
-                    {
-                        item.Destroy();
-                        requiredItems.Remove(resref);
-                    }
-                    // Stack > amount - change stack size and remove.
-                    else if (stackSize > amountRequired)
-                    {
-                        stackSize = stackSize - amountRequired;
-                        item.StackSize = stackSize;
-                        requiredItems.Remove(resref);
-                        _.CopyItem(item.Object, oPC.Object, NWScript.TRUE);
-                    }
-                    // Stack < amount - destroy and update required remaining.
-                    else if (stackSize < amountRequired)
-                    {
-                        item.Destroy();
-                        amountRequired = amountRequired - stackSize;
-                        requiredItems[resref] = amountRequired;
-                    }
-                }
-                // No more items needed.
-                else
-                {
-                    _.CopyItem(item.Object, oPC.Object, NWScript.TRUE);
-                    item.Destroy();
-                }
-            }
-
-            // Still missing items. Return everything to player and give error message.
-            if (requiredItems.Count > 0)
-            {
-                foreach (NWItem item in container.InventoryItems)
-                {
-                    if (item.Resref != SubmitQuestItemResref)
-                        _.CopyItem(item.Object, oPC.Object, NWScript.TRUE);
-                    item.Destroy();
-                }
-
-                oPC.SendMessage(_color.Red("You are missing some required items..."));
-            }
-            // Succeeded. Take everything and advance the quest state.
-            else
-            {
-                foreach (NWItem item in container.InventoryItems)
-                {
-                    item.Destroy();
-                }
-
-                AdvanceQuestState(oPC, questID);
-            }
-
-            container.Destroy();
-        }
-
-        public void OnItemCollectorDisturbed(NWPlaceable container)
-        {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetLastDisturbed());
-            NWItem oItem = NWItem.Wrap(_.GetInventoryDisturbItem());
-            int disturbType = _.GetInventoryDisturbType();
-
-            if (disturbType == NWScript.INVENTORY_DISTURB_TYPE_ADDED)
-            {
-                HandleAddItemToItemCollector(oPC, container, oItem);
-            }
-            else if (disturbType == NWScript.INVENTORY_DISTURB_TYPE_REMOVED)
-            {
-                HandleRemoveItemFromItemCollector(oPC, container, oItem);
-            }
-        }
-
+        
         public void RequestItemsFromPC(NWPlayer oPC, NWObject questOwner, int questID)
         {
             if (!oPC.IsPlayer) return;
@@ -693,14 +543,14 @@ namespace SWLOR.Game.Server.Service
             }
 
             Location location = oPC.Location;
-            NWPlaceable collector = NWPlaceable.Wrap(_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "qst_item_collect", location));
+            NWPlaceable collector = NWPlaceable.Wrap(_.CreateObject(OBJECT_TYPE_PLACEABLE, "qst_item_collect", location));
+            collector.SetLocalObject("QUEST_OWNER", questOwner);
 
             collector.AssignCommand(() =>
             {
                 _.SetFacingPoint(oPC.Position);
             });
             collector.SetLocalInt("QUEST_ID", questID);
-            _.CreateItemOnObject(SubmitQuestItemResref, collector.Object);
 
             oPC.AssignCommand(() =>
             {

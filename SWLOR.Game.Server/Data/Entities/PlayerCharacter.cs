@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Data.Entities
             PCOverflowItems = new HashSet<PCOverflowItem>();
             PCPerks = new HashSet<PCPerk>();
             PCQuestKillTargetProgresses = new HashSet<PCQuestKillTargetProgress>();
+            PCQuestItemProgresses = new HashSet<PCQuestItemProgress>();
             PCQuestStatus = new HashSet<PCQuestStatus>();
             PCRegionalFames = new HashSet<PCRegionalFame>();
             PCSearchSiteItems = new HashSet<PCSearchSiteItem>();
@@ -153,6 +154,9 @@ namespace SWLOR.Game.Server.Data.Entities
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PCQuestKillTargetProgress> PCQuestKillTargetProgresses { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PCQuestItemProgress> PCQuestItemProgresses { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PCQuestStatus> PCQuestStatus { get; set; }

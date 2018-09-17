@@ -93,17 +93,18 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("KeyItemsListPage");
             foreach (PCKeyItem item in items)
             {
-                AddResponseToPage("KeyItemsListPage", item.KeyItem.Name, true,
-                    new Tuple<string, dynamic>(string.Empty, item.KeyItemID));
+                AddResponseToPage("KeyItemsListPage", item.KeyItem.Name, true, item.KeyItemID);
             }
-            AddResponseToPage("KeyItemsListPage", "Back");
+            AddResponseToPage("KeyItemsListPage", "Back", true, -1);
             ChangePage("KeyItemsListPage");
         }
 
         private void HandleKeyItemSelection(int responseID)
         {
             DialogResponse response = GetResponseByID(GetCurrentPageName(), responseID);
-            if (!response.HasCustomData)
+            int keyItemID = response.CustomData[string.Empty];
+
+            if (keyItemID <= 0)
             {
                 ClearTempVariables();
                 ChangePage("MainPage");

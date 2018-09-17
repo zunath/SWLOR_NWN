@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
@@ -40,7 +41,8 @@ namespace SWLOR.Game.Server.Service
                 PCKeyItem entity = new PCKeyItem
                 {
                     PlayerID = oPC.GlobalID,
-                    KeyItemID = keyItemID
+                    KeyItemID = keyItemID,
+                    AcquiredDate = DateTime.UtcNow
                 };
                 _db.PCKeyItems.Add(entity);
                 _db.SaveChanges();

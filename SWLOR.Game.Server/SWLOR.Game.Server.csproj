@@ -224,6 +224,7 @@
     <Compile Include="Enumeration\CraftingAccessType.cs" />
     <Compile Include="Enumeration\CreatureEventType.cs" />
     <Compile Include="Enumeration\CustomAttribute.cs" />
+    <Compile Include="Enumeration\CustomBaseItemType.cs" />
     <Compile Include="Enumeration\CustomEffectType.cs" />
     <Compile Include="Enumeration\CustomFeatType.cs" />
     <Compile Include="Enumeration\CustomItemPropertyType.cs" />

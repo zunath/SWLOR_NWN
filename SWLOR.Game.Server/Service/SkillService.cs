@@ -321,7 +321,10 @@ namespace SWLOR.Game.Server.Service
         {
             CreatureSkillRegistration reg = GetCreatureSkillRegistration(creature.GlobalID);
             List<PlayerSkillRegistration> playerRegs = reg.GetAllRegistrations();
-            int partyLevel = reg.Registrations.OrderByDescending(o => o.Value.HighestRank).First().Value.HighestRank;
+            var registration = reg.Registrations.OrderByDescending(o => o.Value.HighestRank).FirstOrDefault();
+            if (registration.Value == null) return;
+
+            int partyLevel = registration.Value.HighestRank;
 
             // Identify base XP using delta between party level and enemy level.
             float cr = creature.ChallengeRating;

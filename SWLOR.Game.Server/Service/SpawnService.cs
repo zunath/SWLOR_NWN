@@ -60,6 +60,7 @@ namespace SWLOR.Game.Server.Service
                         int objectType = spawnType == 0 || spawnType == OBJECT_TYPE_CREATURE ? OBJECT_TYPE_CREATURE : spawnType;
                         int spawnTableID = obj.GetLocalInt("SPAWN_TABLE_ID");
                         int npcGroupID = obj.GetLocalInt("SPAWN_NPC_GROUP_ID");
+                        string behaviourScript = obj.GetLocalString("SPAWN_BEHAVIOUR_SCRIPT");
                         string spawnResref = obj.GetLocalString("SPAWN_RESREF");
                         float respawnTime = obj.GetLocalFloat("SPAWN_RESPAWN_SECONDS");
                         bool useResref = true;
@@ -78,6 +79,9 @@ namespace SWLOR.Game.Server.Service
                                 if (dbSpawn.NPCGroupID != null && dbSpawn.NPCGroupID > 0)
                                     npcGroupID = Convert.ToInt32(dbSpawn.NPCGroupID);
 
+                                if (!string.IsNullOrWhiteSpace(dbSpawn.BehaviourScript))
+                                    behaviourScript = dbSpawn.BehaviourScript;
+
                             }
                         }
 
@@ -92,6 +96,10 @@ namespace SWLOR.Game.Server.Service
                                 
                                 if(npcGroupID > 0)
                                     creature.SetLocalInt("NPC_GROUP", npcGroupID);
+
+                                if(!string.IsNullOrWhiteSpace(behaviourScript) &&
+                                   string.IsNullOrWhiteSpace(creature.GetLocalString("BEHAVIOUR")))
+                                    creature.SetLocalString("BEHAVIOUR", behaviourScript);
 
                                 ObjectSpawn newSpawn; 
                                 if (useResref)
@@ -180,6 +188,10 @@ namespace SWLOR.Game.Server.Service
                 if(spawn.NPCGroupID > 0)
                     spawn.Spawn.SetLocalInt("NPC_GROUP", spawn.NPCGroupID);
 
+                if(!string.IsNullOrWhiteSpace(spawn.BehaviourScript) &&
+                   string.IsNullOrWhiteSpace(spawn.Spawn.GetLocalString("BEHAVIOUR")))
+                    spawn.Spawn.SetLocalString("BEHAVIOUR", spawn.BehaviourScript);
+
                 spawn.Timer = 0.0f;
             }
         }
@@ -250,6 +262,10 @@ namespace SWLOR.Game.Server.Service
                 
                 if(dbSpawn.NPCGroupID != null && dbSpawn.NPCGroupID > 0)
                     plc.SetLocalInt("NPC_GROUP", Convert.ToInt32(dbSpawn.NPCGroupID));
+                
+                if(!string.IsNullOrWhiteSpace(dbSpawn.BehaviourScript) &&
+                   string.IsNullOrWhiteSpace(plc.GetLocalString("BEHAVIOUR")))
+                    plc.SetLocalString("BEHAVIOUR", dbSpawn.BehaviourScript);
 
                 if (!string.IsNullOrWhiteSpace(dbSpawn.SpawnRule))
                 {

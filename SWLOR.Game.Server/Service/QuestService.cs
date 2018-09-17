@@ -9,6 +9,7 @@ using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.QuestRule.Contracts;
 using static NWN.NWScript;
 using Quest = SWLOR.Game.Server.Data.Entities.Quest;
 
@@ -61,7 +62,7 @@ namespace SWLOR.Game.Server.Service
             return model;
         }
 
-        public void CompleteQuest(NWPlayer player, int questID, ItemVO selectedItem)
+        public void CompleteQuest(NWPlayer player, NWObject questOwner, int questID, ItemVO selectedItem)
         {
             if (!player.IsPlayer) return;
 
@@ -131,6 +132,13 @@ namespace SWLOR.Game.Server.Service
 
             player.SendMessage("Quest '" + quest.Name + "' complete!");
             _db.SaveChanges();
+
+            if (!string.IsNullOrWhiteSpace(quest.OnCompleteRule) && questOwner != null)
+            {
+                var rule = App.ResolveByInterface<IQuestRule>("QuestRule." + quest.OnCompleteRule);
+                rule.Run(player, questOwner, questID);
+            }
+
         }
 
         public void OnModuleItemAcquired()
@@ -216,13 +224,13 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        public void AcceptQuest(NWPlayer oPC, int questID)
+        public void AcceptQuest(NWPlayer player, NWObject questOwner, int questID)
         {
-            if (!oPC.IsPlayer) return;
+            if (!player.IsPlayer) return;
 
             Quest quest = _db.Quests.Single(x => x.QuestID == questID);
 
-            if (!CanAcceptQuest(oPC, quest, true))
+            if (!CanAcceptQuest(player, quest, true))
             {
                 return;
             }
@@ -235,34 +243,41 @@ namespace SWLOR.Game.Server.Service
             // Give temporary key item at start of quest.
             if (quest.StartKeyItemID != null)
             {
-                _keyItem.GivePlayerKeyItem(oPC, (int)quest.StartKeyItemID);
+                _keyItem.GivePlayerKeyItem(player, (int)quest.StartKeyItemID);
             }
 
             if (!string.IsNullOrWhiteSpace(quest.MapNoteTag))
             {
-                _mapPin.AddWaypointMapPin(oPC, quest.MapNoteTag, quest.Name, "QST_MAP_NOTE_" + questID);
+                _mapPin.AddWaypointMapPin(player, quest.MapNoteTag, quest.Name, "QST_MAP_NOTE_" + questID);
             }
 
             status.QuestID = quest.QuestID;
-            status.PlayerID = oPC.GlobalID;
+            status.PlayerID = player.GlobalID;
             _db.PCQuestStatus.Add(status);
             _db.SaveChanges();
 
             CreateExtendedQuestDataEntries(status);
 
-            _.AddJournalQuestEntry(quest.JournalTag, 1, oPC.Object, FALSE);
-            oPC.SendMessage("Quest '" + quest.Name + "' accepted. Refer to your journal for more information on this quest.");
+            _.AddJournalQuestEntry(quest.JournalTag, 1, player.Object, FALSE);
+            player.SendMessage("Quest '" + quest.Name + "' accepted. Refer to your journal for more information on this quest.");
+
+
+            if (!string.IsNullOrWhiteSpace(quest.OnAcceptRule) && questOwner != null)
+            {
+                var rule = App.ResolveByInterface<IQuestRule>("QuestRule." + quest.OnAcceptRule);
+                rule.Run(player, questOwner, questID);
+            }
         }
 
-        public void AdvanceQuestState(NWPlayer oPC, int questID)
+        public void AdvanceQuestState(NWPlayer player, NWObject questOwner, int questID)
         {
-            if (!oPC.IsPlayer) return;
+            if (!player.IsPlayer) return;
 
-            PCQuestStatus questStatus = _db.PCQuestStatus.Single(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID);
+            PCQuestStatus questStatus = _db.PCQuestStatus.Single(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
 
             if (questStatus == null)
             {
-                oPC.SendMessage("You have not accepted this quest yet.");
+                player.SendMessage("You have not accepted this quest yet.");
                 return;
             }
 
@@ -278,14 +293,14 @@ namespace SWLOR.Game.Server.Service
                     // Either complete the quest or move to the new state.
                     if (nextState.IsFinalState)
                     {
-                        RequestRewardSelectionFromPC(oPC, questID);
+                        RequestRewardSelectionFromPC(player, questOwner, questID);
                         return;
                     }
                     else
                     {
-                        _.AddJournalQuestEntry(quest.JournalTag, nextState.JournalStateID, oPC.Object, FALSE);
+                        _.AddJournalQuestEntry(quest.JournalTag, nextState.JournalStateID, player, FALSE);
                         questStatus.CurrentQuestStateID = nextState.QuestStateID;
-                        oPC.SendMessage("Objective for quest '" + quest.Name + "' complete! Check your journal for information on the next objective.");
+                        player.SendMessage("Objective for quest '" + quest.Name + "' complete! Check your journal for information on the next objective.");
                         _db.SaveChanges();
 
                         CreateExtendedQuestDataEntries(questStatus);
@@ -295,7 +310,13 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Shouldn't reach this point unless configuration for the quest is broken.
-            oPC.SendMessage("There was an error advancing you to the next objective for quest '" + quest.Name + "'. Please inform an admin this quest is bugged. (QuestID = " + questID + ")");
+            player.SendMessage("There was an error advancing you to the next objective for quest '" + quest.Name + "'. Please inform an admin this quest is bugged. (QuestID = " + questID + ")");
+            
+            if (!string.IsNullOrWhiteSpace(quest.OnAdvanceRule) && questOwner != null)
+            {
+                var rule = App.ResolveByInterface<IQuestRule>("QuestRule." + quest.OnAdvanceRule);
+                rule.Run(player, questOwner, questID);
+            }
         }
 
 
@@ -330,7 +351,7 @@ namespace SWLOR.Game.Server.Service
             _db.SaveChanges();
         }
 
-        private void RequestRewardSelectionFromPC(NWPlayer oPC, int questID)
+        private void RequestRewardSelectionFromPC(NWPlayer oPC, NWObject questOwner, int questID)
         {
             if (!oPC.IsPlayer) return;
 
@@ -345,7 +366,7 @@ namespace SWLOR.Game.Server.Service
             {
                 QuestState lastState = quest.QuestStates.ElementAt(quest.QuestStates.Count - 1);
                 _.AddJournalQuestEntry(quest.JournalTag, lastState.JournalStateID, oPC.Object, FALSE);
-                CompleteQuest(oPC, questID, null);
+                CompleteQuest(oPC, questOwner, questID, null);
             }
 
         }
@@ -440,7 +461,7 @@ namespace SWLOR.Game.Server.Service
 
                         if (kt.PcQuestStatus.PCQuestKillTargetProgresses.Count - 1 <= 0)
                         {
-                            AdvanceQuestState(oPC, kt.PcQuestStatus.QuestID);
+                            AdvanceQuestState(oPC, null, kt.PcQuestStatus.QuestID);
                         }
                     }
 
@@ -451,6 +472,15 @@ namespace SWLOR.Game.Server.Service
                     {
                         pc.SendMessage(finalMessage);
                     }, 1.0f);
+
+                    var quest = kt.PcQuestStatus.Quest;
+                    string ruleName = quest.OnKillTargetRule;
+                    if (!string.IsNullOrWhiteSpace(ruleName))
+                    {
+                        var rule = App.ResolveByInterface<IQuestRule>("QuestRule." + ruleName);
+                        rule.Run(oPC, creature, kt.PcQuestStatus.Quest.QuestID);
+                    }
+
                 }
 
                 oPC = NWPlayer.Wrap(_.GetNextFactionMember(oKiller.Object));
@@ -498,7 +528,7 @@ namespace SWLOR.Game.Server.Service
                 }, 1.0f);
             }
 
-            AdvanceQuestState(oPC, questID);
+            AdvanceQuestState(oPC, oObject, questID);
         }
 
         public void OnQuestPlaceableUsed(NWObject oObject)

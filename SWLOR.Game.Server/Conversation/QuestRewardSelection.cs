@@ -7,6 +7,7 @@ using NWN;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -81,8 +82,8 @@ namespace SWLOR.Game.Server.Conversation
             Quest quest = _quest.GetQuestByID(model.QuestID);
 
             QuestState lastState = quest.QuestStates.Last();
-            _.AddJournalQuestEntry(quest.JournalTag, lastState.JournalStateID, GetPC().Object, NWScript.FALSE);
-            _quest.CompleteQuest(GetPC(), model.QuestID, tempItem);
+            _.AddJournalQuestEntry(quest.JournalTag, lastState.JournalStateID, GetPC(), FALSE);
+            _quest.CompleteQuest(GetPC(), null, model.QuestID, tempItem);
             model.IsItemSelected = true;
 
             EndConversation();
@@ -90,13 +91,6 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void EndDialog()
         {
-            Model model = GetDialogCustomData<Model>();
-            Quest quest = _quest.GetQuestByID(model.QuestID);
-
-            if (!model.IsItemSelected)
-            {
-                // TODO: Return submitted items.
-            }
         }
     }
 }

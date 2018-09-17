@@ -21,6 +21,7 @@ using NWN;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Perk;
+using SWLOR.Game.Server.QuestRule.Contracts;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.SpawnRule.Contracts;
@@ -172,6 +173,7 @@ namespace SWLOR.Game.Server
             RegisterInterfaceImplementations<IAIComponent>(builder);
             RegisterInterfaceImplementations<IMod>(builder);
             RegisterInterfaceImplementations<ISpawnRule>(builder);
+            RegisterInterfaceImplementations<IQuestRule>(builder);
 
             // Third Party
             builder.RegisterType<BiowarePosition>().As<IBiowarePosition>();

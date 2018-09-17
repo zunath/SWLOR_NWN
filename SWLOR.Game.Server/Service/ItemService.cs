@@ -349,7 +349,9 @@ namespace SWLOR.Game.Server.Service
                     BASE_ITEM_TRIDENT,
                     BASE_ITEM_TWOBLADEDSWORD,
                     BASE_ITEM_WARHAMMER,
-                    BASE_ITEM_WHIP
+                    BASE_ITEM_WHIP,
+                    CustomBaseItemType.Saberstaff, 
+                    CustomBaseItemType.Lightsaber
                 };
 
                 return weaponTypes;
@@ -411,7 +413,10 @@ namespace SWLOR.Game.Server.Service
                 BASE_ITEM_TRIDENT,
                 BASE_ITEM_TWOBLADEDSWORD,
                 BASE_ITEM_WARHAMMER,
-                BASE_ITEM_WHIP
+                BASE_ITEM_WHIP,
+                CustomBaseItemType.Saberstaff,
+                CustomBaseItemType.Lightsaber
+
         };
 
             NWItem oItem = NWItem.Wrap(_.GetPCItemLastEquipped());
@@ -512,7 +517,7 @@ namespace SWLOR.Game.Server.Service
 
         public CustomItemType GetCustomItemType(NWItem item)
         {
-            int[] blades =
+            int[] vibroblades =
             {
                 BASE_ITEM_BASTARDSWORD,
                 BASE_ITEM_LONGSWORD,
@@ -521,7 +526,7 @@ namespace SWLOR.Game.Server.Service
                 BASE_ITEM_BATTLEAXE
             };
 
-            int[] finesseBlades =
+            int[] finesseVibroblades =
             {
                 BASE_ITEM_DAGGER,
                 BASE_ITEM_RAPIER,
@@ -532,7 +537,7 @@ namespace SWLOR.Game.Server.Service
                 BASE_ITEM_HANDAXE
             };
 
-            int[] blunts =
+            int[] batons =
             {
                 BASE_ITEM_CLUB,
                 BASE_ITEM_LIGHTFLAIL,
@@ -541,20 +546,18 @@ namespace SWLOR.Game.Server.Service
                 BASE_ITEM_MORNINGSTAR
             };
 
-            int[] heavyBlades =
+            int[] lightsabers =
+            {
+                CustomBaseItemType.Lightsaber 
+            };
+
+            int[] heavyVibroblades =
             {
                 BASE_ITEM_GREATAXE,
                 BASE_ITEM_GREATSWORD,
                 BASE_ITEM_DWARVENWARAXE
             };
 
-            int[] heavyBlunts =
-            {
-                BASE_ITEM_HEAVYFLAIL,
-                BASE_ITEM_WARHAMMER,
-                BASE_ITEM_DIREMACE,
-                BASE_ITEM_QUARTERSTAFF
-            };
 
             int[] polearms =
             {
@@ -564,26 +567,32 @@ namespace SWLOR.Game.Server.Service
                 BASE_ITEM_TRIDENT
             };
 
-            int[] twinBlades =
+            int[] twinVibroblades =
             {
                 BASE_ITEM_DOUBLEAXE,
                 BASE_ITEM_TWOBLADEDSWORD
+            };
+
+            int[] saberstaffs =
+            {
+                CustomBaseItemType.Saberstaff
             };
 
             int[] martialArts =
             {
                 BASE_ITEM_GLOVES,
                 BASE_ITEM_BRACER,
-                BASE_ITEM_KAMA
+                BASE_ITEM_KAMA,
+                BASE_ITEM_QUARTERSTAFF
             };
 
-            int[] rifles =
+            int[] blasterRifles =
             {
                 BASE_ITEM_LIGHTCROSSBOW,
                 BASE_ITEM_HEAVYCROSSBOW
             };
 
-            int[] blasters =
+            int[] blasterPistol =
             {
                 BASE_ITEM_SHORTBOW,
                 BASE_ITEM_LONGBOW,
@@ -598,17 +607,19 @@ namespace SWLOR.Game.Server.Service
             };
 
 
-            if (blades.Contains(item.BaseItemType)) return CustomItemType.Vibroblade;
-            if (finesseBlades.Contains(item.BaseItemType)) return CustomItemType.FinesseVibroblade;
-            if (blunts.Contains(item.BaseItemType)) return CustomItemType.Baton;
-            if (heavyBlades.Contains(item.BaseItemType)) return CustomItemType.HeavyVibroblade;
-            if (heavyBlunts.Contains(item.BaseItemType)) return CustomItemType.Saberstaff;
+
+            if (vibroblades.Contains(item.BaseItemType)) return CustomItemType.Vibroblade;
+            if (finesseVibroblades.Contains(item.BaseItemType)) return CustomItemType.FinesseVibroblade;
+            if (batons.Contains(item.BaseItemType)) return CustomItemType.Baton;
+            if (heavyVibroblades.Contains(item.BaseItemType)) return CustomItemType.HeavyVibroblade;
+            if (saberstaffs.Contains(item.BaseItemType)) return CustomItemType.Saberstaff;
             if (polearms.Contains(item.BaseItemType)) return CustomItemType.Polearm;
-            if (twinBlades.Contains(item.BaseItemType)) return CustomItemType.TwinBlade;
+            if (twinVibroblades.Contains(item.BaseItemType)) return CustomItemType.TwinBlade;
             if (martialArts.Contains(item.BaseItemType)) return CustomItemType.MartialArtWeapon;
-            if (rifles.Contains(item.BaseItemType)) return CustomItemType.BlasterRifle;
-            if (blasters.Contains(item.BaseItemType)) return CustomItemType.BlasterPistol;
+            if (blasterRifles.Contains(item.BaseItemType)) return CustomItemType.BlasterRifle;
+            if (blasterPistol.Contains(item.BaseItemType)) return CustomItemType.BlasterPistol;
             if (throwing.Contains(item.BaseItemType)) return CustomItemType.Throwing;
+            if (lightsabers.Contains(item.BaseItemType)) return CustomItemType.Lightsaber;
             // Armor is deliberately left out here because we don't have a way to determine the type of armor it should be
             // based on base item type.
 

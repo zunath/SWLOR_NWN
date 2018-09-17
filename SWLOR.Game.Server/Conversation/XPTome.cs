@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Conversation
 
             foreach (SkillCategory category in categories)
             {
-                AddResponseToPage("CategoryPage", category.Name, true, new Tuple<string, dynamic>(string.Empty, category.SkillCategoryID));
+                AddResponseToPage("CategoryPage", category.Name, true, category.SkillCategoryID);
             }
 
             Model vm = GetDialogCustomData<Model>();
@@ -93,9 +93,9 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("SkillListPage");
             foreach (PCSkill pcSkill in pcSkills)
             {
-                AddResponseToPage("SkillListPage", pcSkill.Skill.Name, true, new Tuple<string, dynamic>(string.Empty, pcSkill.SkillID));
+                AddResponseToPage("SkillListPage", pcSkill.Skill.Name, true, pcSkill.SkillID);
             }
-            AddResponseToPage("SkillListPage", "Back", true, new Tuple<string, dynamic>(string.Empty, -1));
+            AddResponseToPage("SkillListPage", "Back", true, -1);
 
             ChangePage("SkillListPage");
         }

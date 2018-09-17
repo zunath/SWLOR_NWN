@@ -18,6 +18,9 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public int? NPCGroupID { get; set; }
 
+        [StringLength(64)]
+        public string BehaviourScript { get; set; }
+
         public virtual Spawn Spawn { get; set; }
     }
 }

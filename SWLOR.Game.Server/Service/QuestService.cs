@@ -304,6 +304,12 @@ namespace SWLOR.Game.Server.Service
                         _db.SaveChanges();
 
                         CreateExtendedQuestDataEntries(questStatus);
+
+                        if (!string.IsNullOrWhiteSpace(quest.OnAdvanceRule) && questOwner != null)
+                        {
+                            var rule = App.ResolveByInterface<IQuestRule>("QuestRule." + quest.OnAdvanceRule);
+                            rule.Run(player, questOwner, questID);
+                        }
                         return;
                     }
                 }
@@ -311,12 +317,6 @@ namespace SWLOR.Game.Server.Service
 
             // Shouldn't reach this point unless configuration for the quest is broken.
             player.SendMessage("There was an error advancing you to the next objective for quest '" + quest.Name + "'. Please inform an admin this quest is bugged. (QuestID = " + questID + ")");
-            
-            if (!string.IsNullOrWhiteSpace(quest.OnAdvanceRule) && questOwner != null)
-            {
-                var rule = App.ResolveByInterface<IQuestRule>("QuestRule." + quest.OnAdvanceRule);
-                rule.Run(player, questOwner, questID);
-            }
         }
 
 
@@ -433,58 +433,60 @@ namespace SWLOR.Game.Server.Service
             int npcGroupID = creature.GetLocalInt("NPC_GROUP");
             if (npcGroupID <= 0) return;
 
-            NWObject oKiller = NWObject.Wrap(_.GetLastKiller());
+            NWObject oKiller = _.GetLastKiller();
 
-            if (_.GetIsPC(oKiller.Object) == FALSE || _.GetIsDM(oKiller.Object) == TRUE) return;
+            if (!oKiller.IsPlayer) return;
 
             string areaResref = creature.Area.Resref;
 
-            NWPlayer oPC = NWPlayer.Wrap(_.GetFirstFactionMember(oKiller.Object));
+            List<KeyValuePair<NWPlayer, int>> playersToAdvance = new List<KeyValuePair<NWPlayer, int>>();
+            NWPlayer oPC = _.GetFirstFactionMember(oKiller);
             while (oPC.IsValid)
             {
                 if (areaResref != oPC.Area.Resref) continue;
-                if (_.GetDistanceBetween(creature.Object, oPC.Object) == 0.0f || _.GetDistanceBetween(creature.Object, oPC.Object) > 20.0f) continue;
-
-                List<PCQuestKillTargetProgress> killTargets = _db.PCQuestKillTargetProgresses.Where(x => x.PlayerID == oPC.GlobalID && x.NPCGroupID == npcGroupID).ToList();
-
-                foreach (PCQuestKillTargetProgress kt in killTargets)
+                if (_.GetDistanceBetween(creature, oPC) == 0.0f || _.GetDistanceBetween(creature, oPC) > 20.0f) continue;
+                
+                foreach (var kt in _db.PCQuestKillTargetProgresses.Where(x => x.PlayerID == oPC.GlobalID && x.NPCGroupID == npcGroupID))
                 {
+                    var quest = kt.PcQuestStatus.Quest;
                     kt.RemainingToKill--;
                     string targetGroupName = kt.NPCGroup.Name;
+
                     string questName = kt.PcQuestStatus.Quest.Name;
                     string updateMessage = "[" + questName + "] " + targetGroupName + " remaining: " + kt.RemainingToKill;
 
                     if (kt.RemainingToKill <= 0)
                     {
-                        _db.PCQuestKillTargetProgresses.Remove(kt);
                         updateMessage += " " + _color.Green(" {COMPLETE}");
-
-                        if (kt.PcQuestStatus.PCQuestKillTargetProgresses.Count - 1 <= 0)
-                        {
-                            AdvanceQuestState(oPC, null, kt.PcQuestStatus.QuestID);
-                        }
+                        playersToAdvance.Add(new KeyValuePair<NWPlayer, int>(oPC, kt.PcQuestStatus.QuestID));
+                        _db.PCQuestKillTargetProgresses.Remove(kt);
                     }
 
-                    _db.SaveChanges();
-                    string finalMessage = updateMessage;
                     var pc = oPC;
                     oPC.DelayCommand(() =>
                     {
-                        pc.SendMessage(finalMessage);
+                        pc.SendMessage(updateMessage);
                     }, 1.0f);
 
-                    var quest = kt.PcQuestStatus.Quest;
                     string ruleName = quest.OnKillTargetRule;
                     if (!string.IsNullOrWhiteSpace(ruleName))
                     {
                         var rule = App.ResolveByInterface<IQuestRule>("QuestRule." + ruleName);
-                        rule.Run(oPC, creature, kt.PcQuestStatus.Quest.QuestID);
+                        rule.Run(oPC, creature, quest.QuestID);
                     }
 
                 }
 
-                oPC = NWPlayer.Wrap(_.GetNextFactionMember(oKiller.Object));
+                oPC = _.GetNextFactionMember(oKiller.Object);
             }
+
+            _db.SaveChanges();
+            
+            foreach (var player in playersToAdvance)
+            {
+                AdvanceQuestState(player.Key, null, player.Value);
+            }
+
         }
 
 

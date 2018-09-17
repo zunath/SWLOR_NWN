@@ -13,17 +13,20 @@ namespace SWLOR.Game.Server.Event.Creature
         private readonly ISkillService _skill;
         private readonly ILootService _loot;
         private readonly IBehaviourService _behaviour;
+        private readonly IQuestService _quest;
         private readonly AppState _state;
 
         public OnCreatureEvent(ISkillService skill,
             ILootService loot,
             IBehaviourService behaviour,
+            IQuestService quest,
             AppState state)
         {
             Self = NWCreature.Wrap(Object.OBJECT_SELF);
             _skill = skill;
             _loot = loot;
             _behaviour = behaviour;
+            _quest = quest;
             _state = state;
         }
 
@@ -73,6 +76,7 @@ namespace SWLOR.Game.Server.Event.Creature
                 case CreatureEventType.OnDeath:
                     _skill.OnCreatureDeath(Self);
                     _loot.OnCreatureDeath(Self);
+                    _quest.OnCreatureDeath(Self);
                     
                     if (_state.CustomObjectData.ContainsKey(Self.GlobalID))
                     {

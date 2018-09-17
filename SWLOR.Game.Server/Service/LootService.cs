@@ -59,7 +59,8 @@ namespace SWLOR.Game.Server.Service
             while (lootTableID > 0)
             {
                 int chance = creature.GetLocalInt("LOOT_TABLE_CHANCE_" + lootTableNumber);
-                if (chance <= 0 || chance > 100) chance = 100;
+                if (chance <= 0) chance = 75;
+                else if (chance > 100) chance = 100;
 
                 int attempts = creature.GetLocalInt("LOOT_TABLE_ATTEMPTS_" + lootTableNumber);
                 if (attempts <= 0) attempts = 1;

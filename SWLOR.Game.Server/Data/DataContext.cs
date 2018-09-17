@@ -459,7 +459,7 @@ namespace SWLOR.Game.Server.Data
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<PlayerCharacter>()
-                .HasMany(e => e.PCQuestKillTargetProgresses)
+                .HasMany(e => e.PCQuestItemProgresses)
                 .WithRequired(e => e.PlayerCharacter)
                 .WillCascadeOnDelete(false);
 

@@ -47,12 +47,12 @@ namespace SWLOR.Game.Server.Service
             for (int index = 0; index < NUM_INVENTORY_SLOTS; index++)
             {
                 NWItem equipped = NWItem.Wrap(_.GetItemInSlot(index, player.Object));
-                _durability.RunItemDecay(player, equipped, _random.RandomFloat(0.05f, 0.15f));
+                _durability.RunItemDecay(player, equipped, _random.RandomFloat(0.02f, 0.07f));
             }
 
             foreach (var item in player.InventoryItems)
             {
-                _durability.RunItemDecay(player, item, _random.RandomFloat(0.05f, 0.15f));
+                _durability.RunItemDecay(player, item, _random.RandomFloat(0.02f, 0.07f));
             }
 
             _.PopUpDeathGUIPanel(player.Object, TRUE, TRUE, 0, RespawnMessage);

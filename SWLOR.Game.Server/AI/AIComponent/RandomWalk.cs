@@ -7,6 +7,9 @@ using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.AI.AIComponent
 {
+    /// <summary>
+    /// Causes creature to walk randomly every second, with a percent chance of it happening.
+    /// </summary>
     public class RandomWalk: IAIComponent
     {
         private readonly INWScript _;

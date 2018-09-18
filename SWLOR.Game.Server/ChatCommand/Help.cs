@@ -21,6 +21,11 @@ namespace SWLOR.Game.Server.ChatCommand
             _auth = auth;
         }
         
+        /// <summary>
+        /// Displays all the chat commands available to a user
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="args"></param>
         public void DoAction(NWPlayer user, params string[] args)
         {
             bool isDM = user.IsDM || _auth.IsPCRegisteredAsDM(user);

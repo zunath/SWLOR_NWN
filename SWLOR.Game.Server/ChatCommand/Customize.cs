@@ -15,8 +15,15 @@ namespace SWLOR.Game.Server.ChatCommand
             _dialog = dialog;
         }
 
+        /// <summary>
+        /// Opens the character customization menu.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="args"></param>
         public void DoAction(NWPlayer user, params string[] args)
         {
+            // todo: must be in OOC area to use.
+
             _dialog.StartConversation(user, user, "CharacterCustomization");
         }
     }

@@ -5,9 +5,13 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Service.Contracts;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.AI.AIComponent
 {
+    /// <summary>
+    /// This component causes the creature to target a player by sight.
+    /// </summary>
     public class AggroTargetBySight: IAIComponent
     {
         private readonly INWScript _;
@@ -38,18 +42,18 @@ namespace SWLOR.Game.Server.AI.AIComponent
                     _biowarePos.GetChangedPosition(self.Position, aggroRange, self.Facing),
                     self.Facing + 180.0f);
                 
-                NWCreature creature = NWCreature.Wrap(_.GetFirstObjectInShape(NWScript.SHAPE_SPELLCYLINDER, aggroRange, targetLocation, NWScript.TRUE, NWScript.OBJECT_TYPE_CREATURE, self.Position));
+                NWCreature creature = NWCreature.Wrap(_.GetFirstObjectInShape(SHAPE_SPELLCYLINDER, aggroRange, targetLocation, TRUE, OBJECT_TYPE_CREATURE, self.Position));
                 while (creature.IsValid)
                 {
-                    if (_.GetIsEnemy(creature.Object, self.Object) == NWScript.TRUE &&
+                    if (_.GetIsEnemy(creature.Object, self.Object) == TRUE &&
                         !_enmity.IsOnEnmityTable(self, creature) &&
                         _.GetDistanceBetween(self.Object, creature.Object) <= aggroRange &&
-                        !creature.HasAnyEffect(NWScript.EFFECT_TYPE_INVISIBILITY, NWScript.EFFECT_TYPE_SANCTUARY))
+                        !creature.HasAnyEffect(EFFECT_TYPE_INVISIBILITY, EFFECT_TYPE_SANCTUARY))
                     {
                         _enmity.AdjustEnmity(self, creature, 0, 1);
                     }
                     
-                    creature = NWCreature.Wrap(_.GetNextObjectInShape(NWScript.SHAPE_SPELLCYLINDER, aggroRange, targetLocation, NWScript.TRUE, NWScript.OBJECT_TYPE_CREATURE, self.Position));
+                    creature = NWCreature.Wrap(_.GetNextObjectInShape(SHAPE_SPELLCYLINDER, aggroRange, targetLocation, TRUE, OBJECT_TYPE_CREATURE, self.Position));
                 }
 
                 return BehaviourTreeStatus.Running;

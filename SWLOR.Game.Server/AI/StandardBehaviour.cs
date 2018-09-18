@@ -9,6 +9,9 @@ using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.AI
 {
+    /// <summary>
+    /// Standard behaviour which executes for all derived behaviours
+    /// </summary>
     public class StandardBehaviour : BehaviourBase
     {
         private readonly INWScript _;

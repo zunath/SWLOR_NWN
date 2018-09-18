@@ -16,6 +16,11 @@ namespace SWLOR.Game.Server.ChatCommand
             _ = script;
         }
 
+        /// <summary>
+        /// Causes user to play sitting animation.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="args"></param>
         public void DoAction(NWPlayer user, params string[] args)
         {
             user.AssignCommand(() => _.ActionPlayAnimation(NWScript.ANIMATION_LOOPING_SIT_CROSS, 1.0f, 9999));

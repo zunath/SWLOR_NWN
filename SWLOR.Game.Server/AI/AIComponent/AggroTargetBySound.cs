@@ -7,6 +7,9 @@ using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.AI.AIComponent
 {
+    /// <summary>
+    /// This component causes a creature to target by sound (i.e: what's near them)
+    /// </summary>
     public class AggroTargetBySound : IAIComponent
     {
         private readonly INWScript _;

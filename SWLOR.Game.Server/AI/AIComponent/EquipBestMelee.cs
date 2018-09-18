@@ -6,6 +6,9 @@ using NWN;
 
 namespace SWLOR.Game.Server.AI.AIComponent
 {
+    /// <summary>
+    /// Forces creature to equip the best melee item.
+    /// </summary>
     public class EquipBestMelee: IAIComponent
     {
         private readonly INWScript _;

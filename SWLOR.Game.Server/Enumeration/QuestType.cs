@@ -2,7 +2,7 @@
 {
     public enum QuestType
     {
-        None = 0,
+        Custom = 0,
         KillEnemies = 1,
         TalkToNPCs = 2,
         UseObject = 3,

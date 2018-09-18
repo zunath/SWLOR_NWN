@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Event.Conversation
 
             if (!_db.Quests.Any(x => x.QuestID == questID))
             {
-                _.SpeakString("ERROR: Quest #" + questID + " is improperly configured. Please notify an admin");
+                _.SpeakString("ERROR: Quest #" + index + " is improperly configured. Please notify an admin");
                 return false;
             }
 

@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Service
             Quest quest = _db.Quests.Single(x => x.QuestID == questID);
             PCQuestStatus pcState = _db.PCQuestStatus.Single(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
 
-            QuestState finalState = quest.QuestStates.FirstOrDefault(x => x.IsFinalState);
+            QuestState finalState = quest.QuestStates.OrderBy(o => o.Sequence).Last();
 
             if (finalState == null)
             {
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Service
 
             if (!oPC.IsPlayer) return;
 
-            List<PCQuestStatus> pcQuests = _db.PCQuestStatus.Where(x => x.PlayerID == oPC.GlobalID).ToList();
+            List<PCQuestStatus> pcQuests = _db.PCQuestStatus.Where(x => x.PlayerID == oPC.GlobalID && x.CompletionDate == null).ToList();
 
             foreach (PCQuestStatus quest in pcQuests)
             {
@@ -284,15 +284,9 @@ namespace SWLOR.Game.Server.Service
 
             Quest quest = questStatus.Quest;
             QuestState nextState = quest.QuestStates.SingleOrDefault(x => x.Sequence == questStatus.CurrentQuestState.Sequence + 1);
-
-            if (nextState == null)
-            {
-                player.SendMessage("There was an error advancing you to the next objective for quest '" + quest.Name + "'. Please inform an admin this quest is bugged. (QuestID = " + questID + ")");
-                return;
-            }
-
+            
             // Either complete the quest or move to the new state.
-            if (nextState.IsFinalState)
+            if (nextState == null) // We assume this is the last state in the quest, so it must be time to complete it.
             {
                 RequestRewardSelectionFromPC(player, questOwner, questID);
             }
@@ -358,8 +352,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                QuestState lastState = quest.QuestStates.ElementAt(quest.QuestStates.Count - 1);
-                _.AddJournalQuestEntry(quest.JournalTag, lastState.JournalStateID, oPC.Object, FALSE);
+                _.RemoveJournalQuestEntry(quest.JournalTag, oPC, FALSE);
                 CompleteQuest(oPC, questOwner, questID, null);
             }
 

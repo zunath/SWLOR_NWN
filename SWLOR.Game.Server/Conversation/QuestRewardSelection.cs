@@ -81,8 +81,7 @@ namespace SWLOR.Game.Server.Conversation
             ItemVO tempItem = (ItemVO)GetResponseByID("MainPage", responseID).CustomData[string.Empty];
             Quest quest = _quest.GetQuestByID(model.QuestID);
 
-            QuestState lastState = quest.QuestStates.Last();
-            _.AddJournalQuestEntry(quest.JournalTag, lastState.JournalStateID, GetPC(), FALSE);
+            _.RemoveJournalQuestEntry(quest.JournalTag, GetPC(), FALSE);
             _quest.CompleteQuest(GetPC(), null, model.QuestID, tempItem);
             model.IsItemSelected = true;
 

@@ -22,9 +22,7 @@ namespace SWLOR.Game.Server.Data.Entities
         public int QuestTypeID { get; set; }
 
         public int JournalStateID { get; set; }
-
-        public bool IsFinalState { get; set; }
-
+        
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PCQuestStatus> PCQuestStatus { get; set; }
 

@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Service
 
             for (int index = 0; index < NUM_INVENTORY_SLOTS; index++)
             {
-                NWItem equipped = NWItem.Wrap(_.GetItemInSlot(index, player.Object));
+                NWItem equipped = _.GetItemInSlot(index, player);
                 _durability.RunItemDecay(player, equipped, _random.RandomFloat(0.02f, 0.07f));
             }
 

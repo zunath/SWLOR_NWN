@@ -120,20 +120,26 @@ namespace SWLOR.Game.Server.Service
             return existingDescription + "\n\n" + description;
         }
 
-        public void RunItemDecay(NWPlayer oPC, NWItem oItem)
+        public void RunItemDecay(NWPlayer player, NWItem item)
         {
-            RunItemDecay(oPC, oItem, 0.01f);
+            RunItemDecay(player, item, 0.01f);
         }
 
-        public void RunItemDecay(NWPlayer oPC, NWItem oItem, float reduceAmount)
+        public void RunItemDecay(NWPlayer player, NWItem item, float reduceAmount)
         {
             if (reduceAmount <= 0) return;
-            if (oPC.IsPlot ||
-                oItem.GetLocalInt("UNBREAKABLE") == 1)
+            if (player.IsPlot ||
+                item.GetLocalInt("UNBREAKABLE") == 1 ||
+                !item.IsValid ||
+                item.BaseItemType == BASE_ITEM_CREATUREITEM ||  // Creature skin
+                item.BaseItemType == BASE_ITEM_CBLUDGWEAPON ||  // Creature bludgeoning weapon
+                item.BaseItemType == BASE_ITEM_CPIERCWEAPON ||  // Creature piercing weapon
+                item.BaseItemType == BASE_ITEM_CSLASHWEAPON ||  // Creature slashing weapon
+                item.BaseItemType == BASE_ITEM_CSLSHPRCWEAP)    // Creature slashing/piercing weapon
                 return;
             
-            float durability = GetDurability(oItem);
-            string sItemName = oItem.Name;
+            float durability = GetDurability(item);
+            string sItemName = item.Name;
             
             // Reduce by 0.001 each time it's run. Player only receives notifications when it drops a full point.
             // I.E: Dropping from 29.001 to 29.
@@ -143,18 +149,18 @@ namespace SWLOR.Game.Server.Service
 
             if (displayMessage)
             {
-                oPC.SendMessage(_color.Red("Your " + sItemName + " has been damaged. (" + FormatDurability(durability) + " / " + GetMaxDurability(oItem)));
+                player.SendMessage(_color.Red("Your " + sItemName + " has been damaged. (" + FormatDurability(durability) + " / " + GetMaxDurability(item)));
             }
 
             if (durability <= 0.00f)
             {
-                oItem.Destroy();
-                oPC.SendMessage(_color.Red("Your " + sItemName + " has broken!"));
+                item.Destroy();
+                player.SendMessage(_color.Red("Your " + sItemName + " has broken!"));
             }
             else
             {
 
-                SetDurability(oItem, durability);
+                SetDurability(item, durability);
             }
         }
 

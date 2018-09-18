@@ -59,6 +59,8 @@ namespace SWLOR.Game.Server.Data.Entities
         [Column(TypeName = "datetime2")]
         public DateTime DateLastBaked { get; set; }
 
+        public bool AutoSpawnResources { get; set; }
+
         public virtual PlayerCharacter NortheastOwnerPlayer { get; set; }
 
         public virtual PlayerCharacter NorthwestOwnerPlayer { get; set; }

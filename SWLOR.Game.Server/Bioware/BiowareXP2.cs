@@ -7,6 +7,9 @@ using NWN;
 
 namespace SWLOR.Game.Server.Bioware
 {
+    /// <summary>
+    /// Code from Bioware's XP2 include files, converted to C#.
+    /// </summary>
     public class BiowareXP2 : IBiowareXP2
     {
         private readonly INWScript _;
@@ -16,23 +19,30 @@ namespace SWLOR.Game.Server.Bioware
             _ = script;
         }
 
-        // ----------------------------------------------------------------------------
-        // Add an item property in a safe fashion, preventing unwanted stacking
-        // Parameters:
-        //   oItem     - the item to add the property to
-        //   ip        - the itemproperty to add
-        //   fDuration - set 0.0f to add the property permanent, anything else is temporary
-        //   nAddItemPropertyPolicy - How to handle existing properties. Valid values are:
-        //	     X2_IP_ADDPROP_POLICY_REPLACE_EXISTING - remove any property of the same type, subtype, durationtype before adding;
-        //	     X2_IP_ADDPROP_POLICY_KEEP_EXISTING - do not add if any property with same type, subtype and durationtype already exists;
-        //	     X2_IP_ADDPROP_POLICY_IGNORE_EXISTING - add itemproperty in any case - Do not Use with OnHit or OnHitSpellCast props!
-        //   bIgnoreDurationType  - If set to TRUE, an item property will be considered identical even if the DurationType is different. Be careful when using this
-        //	                          with X2_IP_ADDPROP_POLICY_REPLACE_EXISTING, as this could lead to a temporary item property removing a permanent one
-        //   bIgnoreSubType       - If set to TRUE an item property will be considered identical even if the SubType is different.
-        //
-        // * WARNING: This function is used all over the game. Touch it and break it and the wrath
-        //	            of the gods will come down on you faster than you can saz "I didn't do it"
-        // ----------------------------------------------------------------------------
+        /// <summary>
+        /// 
+        /// ----------------------------------------------------------------------------
+        /// Add an item property in a safe fashion, preventing unwanted stacking
+        /// Parameters:
+        ///   oItem     - the item to add the property to
+        ///   ip        - the itemproperty to add
+        ///   fDuration - set 0.0f to add the property permanent, anything else is temporary
+        ///   nAddItemPropertyPolicy - How to handle existing properties. Valid values are:
+        ///	     X2_IP_ADDPROP_POLICY_REPLACE_EXISTING - remove any property of the same type, subtype, durationtype before adding;
+        ///	     X2_IP_ADDPROP_POLICY_KEEP_EXISTING - do not add if any property with same type, subtype and durationtype already exists;
+        ///	     X2_IP_ADDPROP_POLICY_IGNORE_EXISTING - add itemproperty in any case - Do not Use with OnHit or OnHitSpellCast props!
+        ///   bIgnoreDurationType  - If set to TRUE, an item property will be considered identical even if the DurationType is different. Be careful when using this
+        ///	                          with X2_IP_ADDPROP_POLICY_REPLACE_EXISTING, as this could lead to a temporary item property removing a permanent one
+        ///   bIgnoreSubType       - If set to TRUE an item property will be considered identical even if the SubType is different.
+        ///
+        /// ----------------------------------------------------------------------------
+        /// </summary>
+        /// <param name="oItem"></param>
+        /// <param name="ip"></param>
+        /// <param name="fDuration"></param>
+        /// <param name="nAddItemPropertyPolicy"></param>
+        /// <param name="bIgnoreDurationType"></param>
+        /// <param name="bIgnoreSubType"></param>
         public void IPSafeAddItemProperty(NWItem oItem, ItemProperty ip, float fDuration, AddItemPropertyPolicy nAddItemPropertyPolicy, bool bIgnoreDurationType, bool bIgnoreSubType)
         {
             int nType = _.GetItemPropertyType(ip);
@@ -91,10 +101,16 @@ namespace SWLOR.Game.Server.Bioware
 
 
 
-        // ----------------------------------------------------------------------------
-        // Removes all itemproperties with matching nItemPropertyType and
-        // nItemPropertyDuration (a DURATION_TYPE_* constant)
-        // ----------------------------------------------------------------------------
+        /// <summary>
+        /// // ----------------------------------------------------------------------------
+        /// Removes all itemproperties with matching nItemPropertyType and
+        /// nItemPropertyDuration (a DURATION_TYPE_* constant)
+        /// ----------------------------------------------------------------------------
+        /// </summary>
+        /// <param name="oItem"></param>
+        /// <param name="nItemPropertyType"></param>
+        /// <param name="nItemPropertyDuration"></param>
+        /// <param name="nItemPropertySubType"></param>
         public void IPRemoveMatchingItemProperties(NWItem oItem, int nItemPropertyType, int nItemPropertyDuration, int nItemPropertySubType)
         {
             var props = oItem.ItemProperties;
@@ -124,6 +140,14 @@ namespace SWLOR.Game.Server.Bioware
         }
 
 
+        /// <summary>
+        /// Returns true if item has given item property. False otherwise.
+        /// </summary>
+        /// <param name="oItem"></param>
+        /// <param name="ipCompareTo"></param>
+        /// <param name="nDurationCompare"></param>
+        /// <param name="bIgnoreSubType"></param>
+        /// <returns></returns>
         public bool IPGetItemHasProperty(NWItem oItem, ItemProperty ipCompareTo, int nDurationCompare, bool bIgnoreSubType)
         {
             var props = oItem.ItemProperties;
@@ -132,13 +156,10 @@ namespace SWLOR.Game.Server.Bioware
             {
                 if ((_.GetItemPropertyType(ip) == _.GetItemPropertyType(ipCompareTo)))
                 {
-                    //PrintString ("**Testing - S: " + IntToString(GetItemPropertySubType(ip)));
                     if (_.GetItemPropertySubType(ip) == _.GetItemPropertySubType(ipCompareTo) || bIgnoreSubType)
                     {
-                        // PrintString ("***Testing - d: " + IntToString(GetItemPropertyDurationType(ip)));
                         if (_.GetItemPropertyDurationType(ip) == nDurationCompare || nDurationCompare == -1)
                         {
-                            //PrintString ("***FOUND");
                             return true; // if duration is not ignored and durationtypes are equal, true
                         }
                     }
@@ -148,6 +169,11 @@ namespace SWLOR.Game.Server.Bioware
             return false;
         }
 
+        /// <summary>
+        /// Removes all item properties of a given type from an item.
+        /// </summary>
+        /// <param name="oItem"></param>
+        /// <param name="nItemPropertyDuration"></param>
         public void IPRemoveAllItemProperties(NWItem oItem, int nItemPropertyDuration)
         {
             var props = oItem.ItemProperties;

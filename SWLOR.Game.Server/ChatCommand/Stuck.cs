@@ -21,6 +21,11 @@ namespace SWLOR.Game.Server.ChatCommand
             _db = db;
         }
         
+        /// <summary>
+        /// Sends user back to his/her respawn point.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="args"></param>
         public void DoAction(NWPlayer user, params string[] args)
         {
             PlayerCharacter pc = _db.PlayerCharacters.Single(x => x.PlayerID == user.GlobalID);

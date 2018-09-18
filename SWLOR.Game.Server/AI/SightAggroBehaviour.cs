@@ -8,6 +8,9 @@ using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.AI
 {
+    /// <summary>
+    /// Generic behaviour for creatures who aggro by sight.
+    /// </summary>
     public class SightAggroBehaviour: StandardBehaviour
     {
         public SightAggroBehaviour(

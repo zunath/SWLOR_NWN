@@ -8,6 +8,9 @@ using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.AI.AIComponent
 {
+    /// <summary>
+    /// This cleans up enmity, removing dead objects from the enmity table.
+    /// </summary>
     public class CleanUpEnmity: IAIComponent
     {
         private readonly INWScript _;

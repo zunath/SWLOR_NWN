@@ -16,6 +16,11 @@ namespace SWLOR.Game.Server.ChatCommand
             _ = script;
         }
 
+        /// <summary>
+        /// Exports user's character bic file.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="args"></param>
         public void DoAction(NWPlayer user, params string[] args)
         {
             _.ExportSingleCharacter(user.Object);

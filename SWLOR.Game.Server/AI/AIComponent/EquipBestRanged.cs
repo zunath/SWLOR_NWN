@@ -6,6 +6,9 @@ using NWN;
 
 namespace SWLOR.Game.Server.AI.AIComponent
 {
+    /// <summary>
+    /// Forces creature to equip the best ranged weapon they have.
+    /// </summary>
     public class EquipBestRanged : IAIComponent
     {
         private readonly INWScript _;

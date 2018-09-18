@@ -16,6 +16,11 @@ namespace SWLOR.Game.Server.ChatCommand
             _ = script;
         }
 
+        /// <summary>
+        /// Revives and heals user completely.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="args"></param>
         public void DoAction(NWPlayer user, params string[] args)
         {
             if (user.IsDead)

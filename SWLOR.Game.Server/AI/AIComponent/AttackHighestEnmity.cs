@@ -8,6 +8,9 @@ using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.AI.AIComponent
 {
+    /// <summary>
+    /// This causes a creature to attack the creature with the highest enmity.
+    /// </summary>
     public class AttackHighestEnmity: IAIComponent
     {
         private readonly IEnmityService _enmity;

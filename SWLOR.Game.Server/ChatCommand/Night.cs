@@ -16,6 +16,11 @@ namespace SWLOR.Game.Server.ChatCommand
             _ = script;
         }
         
+        /// <summary>
+        /// Sets the world time to 8 PM.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="args"></param>
         public void DoAction(NWPlayer user, params string[] args)
         {
             _.SetTime(20, 0, 0, 0);

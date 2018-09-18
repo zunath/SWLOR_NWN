@@ -9,6 +9,10 @@ using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.AI.AIComponent
 {
+    /// <summary>
+    /// If creature gets stuck in the same location for an extended period of time, it will teleport to the location of its target.
+    /// Only happens if creature has a valid creature on its enmity table.
+    /// </summary>
     public class WarpToTargetIfStuck: IAIComponent
     {
         private readonly INWScript _;

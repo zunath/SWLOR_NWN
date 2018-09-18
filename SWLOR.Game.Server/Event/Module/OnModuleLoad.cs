@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IBaseService _base;
         private readonly ISpawnService _spawn;
         private readonly ICustomEffectService _customEffect;
+        private readonly IObjectVisibilityService _objectVisibility;
 
         public OnModuleLoad(INWScript script,
             INWNXChat nwnxChat,
@@ -34,7 +35,8 @@ namespace SWLOR.Game.Server.Event.Module
             IAreaService area,
             IBaseService @base,
             ISpawnService spawn,
-            ICustomEffectService customEffect)
+            ICustomEffectService customEffect,
+            IObjectVisibilityService objectVisibility)
         {
             _ = script;
             _nwnxChat = nwnxChat;
@@ -47,6 +49,7 @@ namespace SWLOR.Game.Server.Event.Module
             _base = @base;
             _spawn = spawn;
             _customEffect = customEffect;
+            _objectVisibility = objectVisibility;
         }
 
         public bool Run(params object[] args)
@@ -65,6 +68,7 @@ namespace SWLOR.Game.Server.Event.Module
             _area.OnModuleLoad();
             _spawn.OnModuleLoad();
             _customEffect.OnModuleLoad();
+            _objectVisibility.OnModuleLoad();
 
             return true;
         }

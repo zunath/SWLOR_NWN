@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Item.FirstAid
             _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, regeneration, target.Object, duration);
             player.SendMessage("You successfully treat " + target.Name + "'s wounds.");
 
-            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(100, item.RecommendedLevel, skill.Rank);
+            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, skill.Rank);
             _skill.GiveSkillXP(player, SkillType.FirstAid, xp);
         }
 

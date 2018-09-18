@@ -75,6 +75,7 @@ namespace SWLOR.Game.Server.Service
                     dbArea.DailyUpkeep > 0) || 
                     (area.GetLocalInt("IS_BUILDING") == TRUE);
                 dbArea.IsActive = true;
+                dbArea.AutoSpawnResources = area.GetLocalInt("AUTO_SPAWN_RESOURCES") == TRUE;
 
                 _db.Areas.AddOrUpdate(dbArea);
             }

@@ -212,7 +212,8 @@ namespace SWLOR.Game.Server.Service
         {
             var dbArea = _db.Areas.Single(x => x.Resref == area.Resref);
 
-            if (dbArea.ResourceSpawnTableID <= 0) return;
+            if (dbArea.ResourceSpawnTableID <= 0 ||
+                !dbArea.AutoSpawnResources) return;
             Spawn table = _db.Spawns.Single(x => x.SpawnID == dbArea.ResourceSpawnTableID);
             var possibleSpawns = table.SpawnObjects;
 

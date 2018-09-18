@@ -30,12 +30,14 @@ namespace SWLOR.Game.Server.Event.Conversation
 
             if (!_db.Quests.Any(x => x.QuestID == questID))
             {
-                _.SpeakString("ERROR: Quest #" + questID + " is improperly configured. Please notify an admin");
+                _.SpeakString("ERROR: Quest #" + index + " is improperly configured. Please notify an admin");
                 return false;
             }
 
             var status = _db.PCQuestStatus.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
-            return status != null && status.CurrentQuestState.IsFinalState;
+            return status != null && 
+                   status.CurrentQuestState.QuestStateID == status.CurrentQuestState.Quest.QuestStates.OrderBy(o => o.Sequence).Last().QuestStateID &&
+                   status.CompletionDate != null;
         }
     }
 }

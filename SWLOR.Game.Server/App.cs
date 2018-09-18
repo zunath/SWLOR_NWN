@@ -147,6 +147,7 @@ namespace SWLOR.Game.Server
             builder.RegisterType<MigrationService>().As<IMigrationService>();
             builder.RegisterType<ModService>().As<IModService>();
             builder.RegisterType<ObjectProcessingService>().As<IObjectProcessingService>();
+            builder.RegisterType<ObjectVisibilityService>().As<IObjectVisibilityService>();
             builder.RegisterType<PerkService>().As<IPerkService>();
             builder.RegisterType<PlayerDescriptionService>().As<IPlayerDescriptionService>();
             builder.RegisterType<PlayerService>().As<IPlayerService>();

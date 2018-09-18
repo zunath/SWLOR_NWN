@@ -55,6 +55,7 @@ namespace SWLOR.Game.Server.Data.Contracts
         IDbSet<PCMigrationItem> PCMigrationItems { get; set; }
         IDbSet<PCMigration> PCMigrations { get; set; }
         IDbSet<PCOutfit> PCOutfits { get; set; }
+        IDbSet<PCObjectVisibility> PCObjectVisibilities { get; set; }
         IDbSet<PCOverflowItem> PCOverflowItems { get; set; }
         IDbSet<PCPerk> PCPerks { get; set; }
         IDbSet<PCQuestKillTargetProgress> PCQuestKillTargetProgresses { get; set; }

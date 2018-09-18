@@ -210,6 +210,7 @@
     <Compile Include="Data\Entities\Spawn.cs" />
     <Compile Include="Data\Entities\SpawnObject.cs" />
     <Compile Include="Data\Entities\SpawnObjectType.cs" />
+    <Compile Include="Data\Entities\PCObjectVisibility.cs" />
     <Compile Include="Enumeration\AddItemPropertyPolicy.cs" />
     <Compile Include="Enumeration\AreaSector.cs" />
     <Compile Include="Enumeration\BackgroundType.cs" />
@@ -852,6 +853,7 @@
     <Compile Include="Service\Contracts\ISpawnService.cs" />
     <Compile Include="Service\Contracts\IResourceService.cs" />
     <Compile Include="Service\Contracts\IRaceService.cs" />
+    <Compile Include="Service\Contracts\IObjectVisibilityService.cs" />
     <Compile Include="Service\ItemService.cs" />
     <Compile Include="Service\Contracts\ITimeService.cs" />
     <Compile Include="Service\KeyItemService.cs" />
@@ -862,6 +864,7 @@
     <Compile Include="Service\MenuService.cs" />
     <Compile Include="Service\MigrationService.cs" />
     <Compile Include="Service\ObjectProcessingService.cs" />
+    <Compile Include="Service\ObjectVisibilityService.cs" />
     <Compile Include="Service\PerkService.cs" />
     <Compile Include="Service\PlayerDescriptionService.cs" />
     <Compile Include="Service\PlayerService.cs" />

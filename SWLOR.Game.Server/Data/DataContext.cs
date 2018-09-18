@@ -70,6 +70,7 @@ namespace SWLOR.Game.Server.Data
         public virtual IDbSet<PCMapPin> PCMapPins { get; set; }
         public virtual IDbSet<PCMigrationItem> PCMigrationItems { get; set; }
         public virtual IDbSet<PCMigration> PCMigrations { get; set; }
+        public virtual IDbSet<PCObjectVisibility> PCObjectVisibilities { get; set; }
         public virtual IDbSet<PCOutfit> PCOutfits { get; set; }
         public virtual IDbSet<PCOverflowItem> PCOverflowItems { get; set; }
         public virtual IDbSet<PCPerk> PCPerks { get; set; }
@@ -436,6 +437,11 @@ namespace SWLOR.Game.Server.Data
 
             modelBuilder.Entity<PlayerCharacter>()
                 .HasMany(e => e.PCMapPins)
+                .WithRequired(e => e.PlayerCharacter)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PlayerCharacter>()
+                .HasMany(e => e.PCObjectVisibilities)
                 .WithRequired(e => e.PlayerCharacter)
                 .WillCascadeOnDelete(false);
 

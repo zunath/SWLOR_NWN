@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server
         public Dictionary<string, CustomData> CustomObjectData { get; set; } 
         public Dictionary<string, NWCreature> NPCBehaviours { get; set; }
         public Dictionary<string, AreaSpawn> AreaSpawns { get; set; }
+        public Dictionary<string, NWObject> VisibilityObjects { get; set; }
 
         public AppState()
         {
@@ -34,6 +35,7 @@ namespace SWLOR.Game.Server
             CustomObjectData = new Dictionary<string, CustomData>();
             NPCBehaviours = new Dictionary<string, NWCreature>();
             AreaSpawns = new Dictionary<string, AreaSpawn>();
+            VisibilityObjects = new Dictionary<string, NWObject>();
 
             for (int x = 1; x <= Constants.NumberOfDialogs; x++)
             {

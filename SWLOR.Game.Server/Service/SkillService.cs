@@ -692,7 +692,8 @@ namespace SWLOR.Game.Server.Service
                 BASE_ITEM_SHORTSPEAR,
                 BASE_ITEM_SHORTSWORD,
                 BASE_ITEM_SICKLE,
-                BASE_ITEM_WHIP
+                BASE_ITEM_WHIP,
+                CustomBaseItemType.Lightsaber
             };
 
             int[] twoHandedTypes = 
@@ -713,7 +714,8 @@ namespace SWLOR.Game.Server.Service
             int[] twinBladeTypes = 
             {
                 BASE_ITEM_DOUBLEAXE,
-                BASE_ITEM_TWOBLADEDSWORD
+                BASE_ITEM_TWOBLADEDSWORD,
+                CustomBaseItemType.Saberstaff
             };
 
             int[] martialArtsTypes = 

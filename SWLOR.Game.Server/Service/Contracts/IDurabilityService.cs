@@ -9,8 +9,8 @@ namespace SWLOR.Game.Server.Service.Contracts
         void OnHitCastSpell(NWPlayer oTarget);
         void OnModuleEquip();
         string OnModuleExamine(string existingDescription, NWObject examinedObject);
-        void RunItemDecay(NWPlayer oPC, NWItem oItem);
-        void RunItemDecay(NWPlayer oPC, NWItem oItem, float reduceAmount);
+        void RunItemDecay(NWPlayer player, NWItem item);
+        void RunItemDecay(NWPlayer player, NWItem item, float reduceAmount);
         void RunItemRepair(NWPlayer oPC, NWItem oItem, float amount);
         void SetDurability(NWItem item, float value);
         void SetMaxDurability(NWItem item, float value);

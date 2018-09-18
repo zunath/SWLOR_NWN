@@ -735,6 +735,7 @@
     <Compile Include="Mod\SummoningMagicMod.cs" />
     <Compile Include="Mod\WeaponsmithMod.cs" />
     <Compile Include="QuestRule\Contracts\IQuestRule.cs" />
+    <Compile Include="QuestRule\HideQuestGiverRule.cs" />
     <Compile Include="QuestRule\RemoveKeyItemsRule.cs" />
     <Compile Include="Service\AbilityService.cs" />
     <Compile Include="Service\ActivityLoggingService.cs" />

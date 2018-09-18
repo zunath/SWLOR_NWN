@@ -3,6 +3,7 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Service.Contracts;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Placeable
 {
@@ -26,7 +27,15 @@ namespace SWLOR.Game.Server.Placeable
             if (!user.IsPlayer && !user.IsDM) return false;
 
             string conversation = placeable.GetLocalString("CONVERSATION");
-            _dialog.StartConversation(user, placeable, conversation);
+
+            if (!string.IsNullOrWhiteSpace(conversation))
+            {
+                _dialog.StartConversation(user, placeable, conversation);
+            }
+            else
+            {
+                user.AssignCommand(() => _.ActionStartConversation(placeable, string.Empty, TRUE, FALSE));
+            }
 
             return true;
         }

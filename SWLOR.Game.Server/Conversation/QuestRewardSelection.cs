@@ -16,7 +16,6 @@ namespace SWLOR.Game.Server.Conversation
         private class Model
         {
             public int QuestID { get; set; }
-            public bool IsItemSelected { get; set; }
         }
         
         private readonly IQuestService _quest;
@@ -48,7 +47,6 @@ namespace SWLOR.Game.Server.Conversation
             Quest quest = _quest.GetQuestByID(questID);
             
             Model model = GetDialogCustomData<Model>();
-            model.IsItemSelected = false;
             model.QuestID = questID;
             
             foreach (QuestRewardItem reward in quest.QuestRewardItems)
@@ -83,7 +81,6 @@ namespace SWLOR.Game.Server.Conversation
 
             _.RemoveJournalQuestEntry(quest.JournalTag, GetPC(), FALSE);
             _quest.CompleteQuest(GetPC(), null, model.QuestID, tempItem);
-            model.IsItemSelected = true;
 
             EndConversation();
         }

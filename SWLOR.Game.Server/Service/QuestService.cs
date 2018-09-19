@@ -136,7 +136,10 @@ namespace SWLOR.Game.Server.Service
             if (!string.IsNullOrWhiteSpace(quest.OnCompleteRule) && questOwner != null)
             {
                 var rule = App.ResolveByInterface<IQuestRule>("QuestRule." + quest.OnCompleteRule);
-                rule.Run(player, questOwner, questID);
+                string[] args = null; 
+                if(!string.IsNullOrWhiteSpace(quest.OnCompleteArgs))
+                    args = quest.OnCompleteArgs.Split(',');
+                rule.Run(player, questOwner, questID, args);
             }
 
         }
@@ -264,7 +267,10 @@ namespace SWLOR.Game.Server.Service
             if (!string.IsNullOrWhiteSpace(quest.OnAcceptRule) && questOwner != null)
             {
                 var rule = App.ResolveByInterface<IQuestRule>("QuestRule." + quest.OnAcceptRule);
-                rule.Run(player, questOwner, questID);
+                string[] args = null;
+                if (!string.IsNullOrWhiteSpace(quest.OnAcceptArgs))
+                    args = quest.OnAcceptArgs.Split(',');
+                rule.Run(player, questOwner, questID, args);
             }
         }
 
@@ -302,7 +308,10 @@ namespace SWLOR.Game.Server.Service
                 if (!string.IsNullOrWhiteSpace(quest.OnAdvanceRule) && questOwner != null)
                 {
                     var rule = App.ResolveByInterface<IQuestRule>("QuestRule." + quest.OnAdvanceRule);
-                    rule.Run(player, questOwner, questID);
+                    string[] args = null;
+                    if (!string.IsNullOrWhiteSpace(quest.OnAdvanceArgs))
+                        args = quest.OnAdvanceArgs.Split(',');
+                    rule.Run(player, questOwner, questID, args);
                 }
             }
         }
@@ -341,6 +350,7 @@ namespace SWLOR.Game.Server.Service
 
         private void RequestRewardSelectionFromPC(NWPlayer oPC, NWObject questOwner, int questID)
         {
+            Console.WriteLine("asking for reward selection");
             if (!oPC.IsPlayer) return;
 
             Quest quest = _db.Quests.Single(x => x.QuestID == questID);
@@ -460,7 +470,10 @@ namespace SWLOR.Game.Server.Service
                     if (!string.IsNullOrWhiteSpace(ruleName))
                     {
                         var rule = App.ResolveByInterface<IQuestRule>("QuestRule." + ruleName);
-                        rule.Run(oPC, creature, quest.QuestID);
+                        string[] args = null;
+                        if (!string.IsNullOrWhiteSpace(quest.OnKillTargetArgs))
+                            args = quest.OnKillTargetArgs.Split(',');
+                        rule.Run(oPC, creature, quest.QuestID, args);
                     }
 
                 }

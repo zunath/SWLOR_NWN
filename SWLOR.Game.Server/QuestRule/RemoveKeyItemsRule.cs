@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.QuestRule
             _keyItem = keyItem;
         }
 
-        public void Run(NWPlayer player, NWObject questSource, int questID)
+        public void Run(NWPlayer player, NWObject questSource, int questID, string[] args)
         {
             string prefix = "QUEST_REMOVE_KEY_ITEM_";
             int keyItemID = questSource.GetLocalInt(prefix + "1");

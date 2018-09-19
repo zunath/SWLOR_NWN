@@ -22,7 +22,13 @@ namespace SWLOR.Game.Server.ChatCommand
         /// <param name="args"></param>
         public void DoAction(NWPlayer user, params string[] args)
         {
-            // todo: must be in OOC area to use.
+            string areaResref = user.Area.Resref;
+
+            if (areaResref != "ooc_area")
+            {
+                user.SendMessage("Customization can only occur in the starting area. You can't use this command any more.");
+                return;
+            }
 
             _dialog.StartConversation(user, user, "CharacterCustomization");
         }

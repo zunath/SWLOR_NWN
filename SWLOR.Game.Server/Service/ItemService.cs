@@ -246,9 +246,9 @@ namespace SWLOR.Game.Server.Service
             {
                 description += _color.Orange("Rest Bonus: ") + examinedItem.RestBonus + "\n";
             }
-            if (examinedItem.FirstAidBonus > 0)
+            if (examinedItem.MedicineBonus > 0)
             {
-                description += _color.Orange("First Aid Bonus: ") + examinedItem.FirstAidBonus + "\n";
+                description += _color.Orange("Medicine Bonus: ") + examinedItem.MedicineBonus + "\n";
             }
             if (examinedItem.HPRegenBonus > 0)
             {

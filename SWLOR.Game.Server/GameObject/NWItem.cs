@@ -418,16 +418,16 @@ namespace SWLOR.Game.Server.GameObject
             }
             set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_REST_BONUS", value);
         }
-        public virtual int FirstAidBonus
+        public virtual int MedicineBonus
         {
             get
             {
-                int firstAidBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.FirstAidBonus);
-                if(firstAidBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_FIRST_AID_BONUS");
-                FirstAidBonus = firstAidBonus;
-                return firstAidBonus;
+                int medicineBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.MedicineBonus);
+                if(medicineBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_MEDICINE_BONUS");
+                MedicineBonus = medicineBonus;
+                return medicineBonus;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_FIRST_AID_BONUS", value);
+            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_MEDICINE_BONUS", value);
         }
         public virtual int HPRegenBonus
         {

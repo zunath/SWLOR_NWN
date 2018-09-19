@@ -26,7 +26,7 @@
         LightAbilityUp = 21,
         LuckUp = 22,
         MeditateUp = 23,
-        FirstAidUp = 24,
+        MedicineUp = 24,
         HPRegenUp = 25,
         FPRegenUp = 26,
         BaseAttackBonusUp = 27,

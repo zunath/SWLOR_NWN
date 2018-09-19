@@ -5,7 +5,7 @@
         None = 0,
         LightArmor = 1,
         HeavyArmor = 2,
-        FirstAidSupplies = 3,
+        MedicineSupplies = 3,
         Vibroblade = 4,
         FinesseVibroblade = 5,
         Baton = 6,

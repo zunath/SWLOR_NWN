@@ -26,7 +26,7 @@
         SummoningBonus = 120,
         LuckBonus = 121,
         MeditateBonus = 122,
-        FirstAidBonus = 123,
+        MedicineBonus = 123,
         HPRegenBonus = 124,
         FPRegenBonus = 125,
         BaseAttackBonus = 126,

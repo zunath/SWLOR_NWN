@@ -4,12 +4,12 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class FirstAidMod : IMod
+    public class MedicineMod : IMod
     {
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            if (target.FirstAidBonus >= 50)
-                return "You cannot improve that item's first aid bonus any further.";
+            if (target.MedicineBonus >= 50)
+                return "You cannot improve that item's medicine bonus any further.";
 
             return null;
         }
@@ -17,15 +17,15 @@ namespace SWLOR.Game.Server.Mod
         public void Apply(NWPlayer player, NWItem target, params string[] args)
         {
             int value = Convert.ToInt32(args[0]);
-            int newValue = target.FirstAidBonus + value;
+            int newValue = target.MedicineBonus + value;
             if (newValue > 50) newValue = 50;
-            target.FirstAidBonus = newValue;
+            target.MedicineBonus = newValue;
         }
 
         public string Description(NWPlayer player, NWItem target, params string[] args)
         {
             int value = Convert.ToInt32(args[0]);
-            return "First Aid +" + value;
+            return "Medicine +" + value;
         }
     }
 }

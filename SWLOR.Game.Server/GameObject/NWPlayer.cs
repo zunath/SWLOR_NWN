@@ -349,23 +349,23 @@ namespace SWLOR.Game.Server.GameObject
             }
         }
 
-        public virtual int EffectiveFirstAidBonus
+        public virtual int EffectiveMedicineBonus
         {
             get
             {
-                int firstAidBonus = 0;
+                int medicineBonus = 0;
                 for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
                     NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
                     if (!item.IsValid) continue;
                     SkillType skill = _skill.GetSkillTypeForItem(item);
                     int rank = _skill.GetPCSkill(this, skill).Rank;
-                    int itemFirstAidBonus = CalculateAdjustedValue(item.FirstAidBonus, item.RecommendedLevel, rank, 0);
+                    int itemMedicineBonus = CalculateAdjustedValue(item.MedicineBonus, item.RecommendedLevel, rank, 0);
 
-                    firstAidBonus += itemFirstAidBonus;
+                    medicineBonus += itemMedicineBonus;
                 }
 
-                return firstAidBonus;
+                return medicineBonus;
             }
         }
 

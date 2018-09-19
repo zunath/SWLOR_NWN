@@ -1,15 +1,14 @@
-﻿using SWLOR.Game.Server.Data.Entities;
+﻿using NWN;
+using SWLOR.Game.Server.Data.Entities;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
-
-using NWN;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 
-namespace SWLOR.Game.Server.Item.FirstAid
+namespace SWLOR.Game.Server.Item.Medicine
 {
-    public class Bandages: IActionItem
+    public class TreatmentKit: IActionItem
     {
         private readonly INWScript _;
         private readonly ISkillService _skill;
@@ -17,7 +16,7 @@ namespace SWLOR.Game.Server.Item.FirstAid
         private readonly IRandomService _random;
         private readonly IPerkService _perk;
 
-        public Bandages(INWScript script,
+        public TreatmentKit(INWScript script,
             ISkillService skill,
             ICustomEffectService customEffect,
             IRandomService random,
@@ -38,28 +37,38 @@ namespace SWLOR.Game.Server.Item.FirstAid
 
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            NWPlayer player = NWPlayer.Wrap(user.Object);
+            _customEffect.RemovePCCustomEffect((NWPlayer)target, CustomEffectType.Poison);
 
-            _customEffect.RemovePCCustomEffect((NWPlayer)target, CustomEffectType.Bleeding);
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, _.EffectHeal(2 + player.EffectiveFirstAidBonus/2), target.Object);
-            player.SendMessage("You finish bandaging " + target.Name + "'s wounds.");
+            foreach (Effect effect in target.Effects)
+            {
+                if (_.GetIsEffectValid(effect) == NWScript.TRUE)
+                {
+                    int effectType = _.GetEffectType(effect);
+                    if (effectType == NWScript.EFFECT_TYPE_POISON || effectType == NWScript.EFFECT_TYPE_DISEASE)
+                    {
+                        _.RemoveEffect(target.Object, effect);
+                    }
+                }
+            }
 
-            PCSkill skill = _skill.GetPCSkill(player, SkillType.FirstAid);
+            user.SendMessage("You successfully treat " + target.Name + "'s infection.");
+
+            PCSkill skill = _skill.GetPCSkill((NWPlayer)user, SkillType.Medicine);
             int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(100, item.RecommendedLevel, skill.Rank);
-            _skill.GiveSkillXP(player, SkillType.FirstAid, xp);
+            _skill.GiveSkillXP((NWPlayer)user, SkillType.Medicine, xp);
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            if (_random.Random(100) + 1 <= _perk.GetPCPerkLevel((NWPlayer)user, PerkType.SpeedyMedic) * 10)
+            NWPlayer player = NWPlayer.Wrap(user.Object);
+
+            if (_random.Random(100) + 1 <= _perk.GetPCPerkLevel(player, PerkType.SpeedyMedic) * 10)
             {
                 return 0.1f;
             }
 
-            PCSkill skill = _skill.GetPCSkill((NWPlayer)user, SkillType.FirstAid);
-            float seconds = 6.0f - (skill.Rank * 0.2f);
-            if (seconds < 1.0f) seconds = 1.0f;
-            return seconds;
+            PCSkill skill = _skill.GetPCSkill(player, SkillType.Medicine);
+            return 12.0f - (skill.Rank + player.EffectiveMedicineBonus / 2) * 0.1f;
         }
 
         public bool FaceTarget()
@@ -79,7 +88,8 @@ namespace SWLOR.Game.Server.Item.FirstAid
 
         public bool ReducesItemCharge(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            return true;
+            int consumeChance = _perk.GetPCPerkLevel((NWPlayer)user, PerkType.FrugalMedic) * 10;
+            return _random.Random(100) + 1 > consumeChance;
         }
 
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
@@ -89,9 +99,27 @@ namespace SWLOR.Game.Server.Item.FirstAid
                 return "Only players may be targeted with this item.";
             }
 
-            if (!_customEffect.DoesPCHaveCustomEffect((NWPlayer)target, CustomEffectType.Bleeding))
+            bool hasEffect = false;
+            foreach (Effect effect in target.Effects)
             {
-                return "Your target is not bleeding.";
+                if (_.GetIsEffectValid(effect) == NWScript.TRUE)
+                {
+                    int effectType = _.GetEffectType(effect);
+                    if (effectType == NWScript.EFFECT_TYPE_POISON || effectType == NWScript.EFFECT_TYPE_DISEASE)
+                    {
+                        hasEffect = true;
+                    }
+                }
+            }
+
+            if (_customEffect.DoesPCHaveCustomEffect((NWPlayer)target, CustomEffectType.Poison))
+            {
+                hasEffect = true;
+            }
+
+            if (!hasEffect)
+            {
+                return "This player is not diseased or poisoned.";
             }
 
             return null;

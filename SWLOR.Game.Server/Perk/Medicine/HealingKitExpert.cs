@@ -1,8 +1,8 @@
 ﻿using SWLOR.Game.Server.GameObject;
 
-namespace SWLOR.Game.Server.Perk.FirstAid
+namespace SWLOR.Game.Server.Perk.Medicine
 {
-    public class FrugalMedic : IPerk
+    public class HealingKitExpert : IPerk
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

@@ -68,6 +68,7 @@ namespace SWLOR.Game.Server.Service
                 if (!container.IsValid) return;
 
                 NWObject body = container.GetLocalObject("CORPSE_BODY");
+                body.AssignCommand(() => _.SetIsDestroyable(TRUE));
                 body.DestroyAllInventoryItems();
                 body.Destroy();
 

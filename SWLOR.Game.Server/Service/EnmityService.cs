@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using NWN;
+﻿using NWN;
 using SWLOR.Game.Server.GameObject;
-
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
+using System;
+using System.Collections.Generic;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
@@ -51,7 +50,7 @@ namespace SWLOR.Game.Server.Service
 
             return npcTables;
         }
-        
+
         public void AdjustEnmity(NWCreature npc, NWCreature attacker, int volatileAdjust, int cumulativeAdjust = 0)
         {
             if (!npc.IsNPC) return;
@@ -67,20 +66,33 @@ namespace SWLOR.Game.Server.Service
             }
 
             volatileAdjust = (int)(effectiveEnmityRate * volatileAdjust);
-            cumulativeAdjust = (int) (effectiveEnmityRate * cumulativeAdjust);
+            cumulativeAdjust = (int)(effectiveEnmityRate * cumulativeAdjust);
 
-            var table = GetEnmity(npc, attacker);
+            var table = GetEnmityTable(npc);
+            
+            // If this is the first creature to go on the enmity table, immediately attack them so they aren't
+            // waiting around to do something the next time their AI runs.
+            if (table.Count <= 0)
+            {
+                npc.AssignCommand(() =>
+                {
+                    _.ActionAttack(attacker);
+                });
+            }
+
+            var enmity = GetEnmity(npc, attacker);
 
             if (adjustVolatile)
             {
-                table.VolatileAmount += volatileAdjust;
+                enmity.VolatileAmount += volatileAdjust;
             }
             if (adjustCumulative)
             {
-                table.CumulativeAmount += cumulativeAdjust;
+                enmity.CumulativeAmount += cumulativeAdjust;
             }
+
         }
-        
+
         public void AdjustEnmityOnAllTaggedCreatures(NWCreature attacker, int volatileAdjust, int cumulativeAdjust = 0)
         {
             var tables = GetAllNPCEnmityTablesForCreature(attacker);
@@ -103,7 +115,7 @@ namespace SWLOR.Game.Server.Service
             NWCreature damager = NWCreature.Wrap(_.GetLastDamager(Object.OBJECT_SELF));
             int enmityAmount = _.GetTotalDamageDealt();
             if (enmityAmount <= 0) enmityAmount = 1;
-            
+
             AdjustEnmity(self, damager, 0, enmityAmount);
         }
 
@@ -122,7 +134,7 @@ namespace SWLOR.Game.Server.Service
         public EnmityTable GetEnmityTable(NWCreature npc)
         {
             if (!npc.IsNPC) throw new Exception("Only NPCs have enmity tables.");
-            
+
             if (!_state.NPCEnmityTables.ContainsKey(npc.GlobalID))
             {
                 _state.NPCEnmityTables.Add(npc.GlobalID, new EnmityTable(npc));

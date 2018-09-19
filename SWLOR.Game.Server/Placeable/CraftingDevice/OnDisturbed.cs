@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
                 return;
             }
 
-            var props = oItem.ItemProperties;
+            var props = oItem.ItemProperties.ToList();
             var allowedItemTypes = new List<CustomItemType>();
             CustomItemType finishedItemType = _item.GetCustomItemTypeByResref(model.Blueprint.ItemResref);
 
@@ -146,6 +146,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
                     int compType = _.GetItemPropertyCostTableValue(ip);
                     if (compType == (int) allowedType)
                     {
+                        oItem.GetOrAssignGlobalID();
                         NWItem copy = NWItem.Wrap(_.CopyItem(oItem.Object, storage.Object, TRUE));
                         list.Add(copy);
                         return;

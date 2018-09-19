@@ -643,6 +643,8 @@
     <Compile Include="Placeable\ControlTower\OnClicked.cs" />
     <Compile Include="Placeable\ControlTower\OnDamaged.cs" />
     <Compile Include="Placeable\ControlTower\OnHeartbeat.cs" />
+    <Compile Include="Placeable\Corpse\OnClosed.cs" />
+    <Compile Include="Placeable\Corpse\OnDisturbed.cs" />
     <Compile Include="Placeable\CraftingDevice\OnClosed.cs" />
     <Compile Include="Placeable\CraftingDevice\OnDisturbed.cs" />
     <Compile Include="Placeable\CraftingDevice\OnOpened.cs" />
@@ -922,6 +924,7 @@
     <Compile Include="Service\Contracts\ISkillService.cs" />
     <Compile Include="Service\Contracts\IStorageService.cs" />
     <Compile Include="Service\CraftService.cs" />
+    <Compile Include="Service\CreatureCorpseService.cs" />
     <Compile Include="Service\CustomEffectService.cs" />
     <Compile Include="Service\DeathService.cs" />
     <Compile Include="Service\DialogService.cs" />
@@ -945,6 +948,7 @@
     <Compile Include="Service\Contracts\IBaseService.cs" />
     <Compile Include="Service\Contracts\IImpoundService.cs" />
     <Compile Include="Service\Contracts\IBasePermissionService.cs" />
+    <Compile Include="Service\Contracts\ICreatureCorpseService.cs" />
     <Compile Include="Service\ImpoundService.cs" />
     <Compile Include="Service\Contracts\ISpawnService.cs" />
     <Compile Include="Service\Contracts\IResourceService.cs" />

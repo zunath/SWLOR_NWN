@@ -19,7 +19,7 @@
         // 14 is free
         Fabrication = 15,
         Cooking = 16,
-        FirstAid = 17,
+        Medicine = 17,
         ItemRepair = 18,
         DarkSideAbilities = 19,
         LightSideAbilities = 20,

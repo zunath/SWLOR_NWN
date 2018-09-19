@@ -5,9 +5,8 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
-using static NWN.NWScript;
 
-namespace SWLOR.Game.Server.Item.FirstAid
+namespace SWLOR.Game.Server.Item.Medicine
 {
     public class StimPack: IActionItem
     {
@@ -33,8 +32,8 @@ namespace SWLOR.Game.Server.Item.FirstAid
         {
             NWPlayer player = NWPlayer.Wrap(user);
             int ability = item.GetLocalInt("ABILITY_TYPE");
-            int amount = item.GetLocalInt("AMOUNT") + item.FirstAidBonus;
-            int rank = player.IsPlayer ? _skill.GetPCSkill(player, SkillType.FirstAid).Rank : 0;
+            int amount = item.GetLocalInt("AMOUNT") + item.MedicineBonus;
+            int rank = player.IsPlayer ? _skill.GetPCSkill(player, SkillType.Medicine).Rank : 0;
             int recommendedLevel = item.RecommendedLevel;
             int delta = recommendedLevel - rank;
             int penalty = delta / 2;
@@ -50,7 +49,7 @@ namespace SWLOR.Game.Server.Item.FirstAid
             Effect effect = _.EffectAbilityIncrease(ability, amount);
             effect = _.TagEffect(effect, "STIM_PACK_EFFECT");
 
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, effect, target, duration);
+            _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, effect, target, duration);
 
             user.SendMessage("You inject " + target.Name + " with a stim pack.");
 
@@ -61,7 +60,7 @@ namespace SWLOR.Game.Server.Item.FirstAid
             }
 
             int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, rank);
-            _skill.GiveSkillXP(player, SkillType.FirstAid, xp);
+            _skill.GiveSkillXP(player, SkillType.Medicine, xp);
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
@@ -76,7 +75,7 @@ namespace SWLOR.Game.Server.Item.FirstAid
 
         public int AnimationID()
         {
-            return ANIMATION_LOOPING_GET_MID;
+            return NWScript.ANIMATION_LOOPING_GET_MID;
         }
 
         public float MaxDistance()
@@ -93,7 +92,7 @@ namespace SWLOR.Game.Server.Item.FirstAid
         {
             var existing = target.Effects.SingleOrDefault(x => _.GetEffectTag(x) == "STIM_PACK_EFFECT");
 
-            if (existing != null && _.GetIsEffectValid(existing) == TRUE)
+            if (existing != null && _.GetIsEffectValid(existing) == NWScript.TRUE)
             {
                 return "Your target is already under the effects of another stimulant.";
             }

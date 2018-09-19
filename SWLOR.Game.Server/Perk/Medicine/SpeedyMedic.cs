@@ -1,6 +1,6 @@
 ﻿using SWLOR.Game.Server.GameObject;
 
-namespace SWLOR.Game.Server.Perk.FirstAid
+namespace SWLOR.Game.Server.Perk.Medicine
 {
     public class SpeedyMedic : IPerk
     {

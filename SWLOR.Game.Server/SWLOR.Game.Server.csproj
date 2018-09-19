@@ -269,7 +269,7 @@
     <Compile Include="Event\Module\OnModuleUseFeat.cs" />
     <Compile Include="Event\Player\OnPlayerDamaged.cs" />
     <Compile Include="Extension\BehaviourTreeBuilderExtensions.cs" />
-    <Compile Include="Item\FirstAid\StimPack.cs" />
+    <Compile Include="Item\Medicine\StimPack.cs" />
     <Compile Include="Item\ModItem.cs" />
     <Compile Include="Item\ResourceHarvester.cs" />
     <Compile Include="Item\ResourceScanner.cs" />
@@ -560,7 +560,7 @@
     <Compile Include="Perk\DarkSide\ForceLightning.cs" />
     <Compile Include="Perk\Fabrication\FabricationBlueprints.cs" />
     <Compile Include="Perk\Fabrication\SpeedyFabrication.cs" />
-    <Compile Include="Perk\FirstAid\StimFiend.cs" />
+    <Compile Include="Perk\Medicine\StimFiend.cs" />
     <Compile Include="Perk\General\Rest.cs" />
     <Compile Include="Perk\Harvesting\SpeedyResourceScanner.cs" />
     <Compile Include="Perk\Armorsmith\CombatModInstallationArmors.cs" />
@@ -585,10 +585,10 @@
     <Compile Include="Perk\Armor\Mobility.cs" />
     <Compile Include="Perk\Cooking\FoodRecipes.cs" />
     <Compile Include="Perk\Cooking\SpeedyCooking.cs" />
-    <Compile Include="Perk\FirstAid\FrugalMedic.cs" />
-    <Compile Include="Perk\FirstAid\HealingKitExpert.cs" />
-    <Compile Include="Perk\FirstAid\ImmediateImprovement.cs" />
-    <Compile Include="Perk\FirstAid\SpeedyMedic.cs" />
+    <Compile Include="Perk\Medicine\FrugalMedic.cs" />
+    <Compile Include="Perk\Medicine\HealingKitExpert.cs" />
+    <Compile Include="Perk\Medicine\ImmediateImprovement.cs" />
+    <Compile Include="Perk\Medicine\SpeedyMedic.cs" />
     <Compile Include="Perk\Gathering\CarefulScavenger.cs" />
     <Compile Include="Perk\Gathering\ScavengingExpert.cs" />
     <Compile Include="Perk\Gathering\SeedPicker.cs" />
@@ -696,9 +696,9 @@
     <Compile Include="GameObject\NWObject.cs" />
     <Compile Include="GameObject\NWPlaceable.cs" />
     <Compile Include="GameObject\NWPlayer.cs" />
-    <Compile Include="Item\FirstAid\Bandages.cs" />
-    <Compile Include="Item\FirstAid\HealingKit.cs" />
-    <Compile Include="Item\FirstAid\TreatmentKit.cs" />
+    <Compile Include="Item\Medicine\Bandages.cs" />
+    <Compile Include="Item\Medicine\HealingKit.cs" />
+    <Compile Include="Item\Medicine\TreatmentKit.cs" />
     <Compile Include="Item\GenericStartConversation.cs" />
     <Compile Include="Item\Contracts\IActionItem.cs" />
     <Compile Include="Item\Repair\RepairKit.cs" />
@@ -819,7 +819,7 @@
     <Compile Include="Mod\EnhancementBonusMod.cs" />
     <Compile Include="Mod\EnmityMod.cs" />
     <Compile Include="Mod\DarkAbilityMod.cs" />
-    <Compile Include="Mod\FirstAidMod.cs" />
+    <Compile Include="Mod\MedicineMod.cs" />
     <Compile Include="Mod\HPRegenMod.cs" />
     <Compile Include="Mod\HPMod.cs" />
     <Compile Include="Mod\LevelMod.cs" />

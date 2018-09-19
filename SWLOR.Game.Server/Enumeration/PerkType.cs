@@ -10,7 +10,7 @@
         ForceHeal = 5,
         DarkHeal = 6,
         Rest = 7,
-        // 8 is free
+        StimFiend = 8,
         // 9 is free
         // 10 is free
         // 11 is free

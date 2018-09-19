@@ -329,6 +329,25 @@ namespace SWLOR.Game.Server.GameObject
                 return meditateBonus;
             }
         }
+        public virtual int EffectiveRestBonus
+        {
+            get
+            {
+                int restBonus = 0;
+                for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
+                {
+                    NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
+                    if (!item.IsValid) continue;
+                    SkillType skill = _skill.GetSkillTypeForItem(item);
+                    int rank = _skill.GetPCSkill(this, skill).Rank;
+                    int itemRestBonus = CalculateAdjustedValue(item.RestBonus, item.RecommendedLevel, rank, 0);
+
+                    restBonus += itemRestBonus;
+                }
+
+                return restBonus;
+            }
+        }
 
         public virtual int EffectiveFirstAidBonus
         {

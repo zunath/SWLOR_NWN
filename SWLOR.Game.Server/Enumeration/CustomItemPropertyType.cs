@@ -4,7 +4,7 @@
     {
         Unknown = -1,
         RecommendedLevel = 100,
-        // 101 is open
+        RestBonus = 101,
         HarvestingBonus = 102,
         CastingSpeed = 103,
         ComponentType = 104,

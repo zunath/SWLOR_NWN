@@ -111,6 +111,9 @@ namespace SWLOR.Game.Server.Service
                     case ComponentBonusType.MeditateUp:
                         product.MeditateBonus += amount;
                         break;
+                    case ComponentBonusType.RestUp:
+                        product.RestBonus += amount;
+                        break;
                     case ComponentBonusType.FirstAidUp:
                         product.FirstAidBonus += amount;
                         break;

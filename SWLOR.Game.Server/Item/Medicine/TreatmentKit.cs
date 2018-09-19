@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Item.Medicine
         {
             NWPlayer player = NWPlayer.Wrap(user.Object);
 
-            if (_random.Random(100) + 1 <= _perk.GetPCPerkLevel(player, PerkType.SpeedyMedic) * 10)
+            if (_random.Random(100) + 1 <= _perk.GetPCPerkLevel(player, PerkType.SpeedyFirstAid) * 10)
             {
                 return 0.1f;
             }

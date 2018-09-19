@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            if (_random.Random(100) + 1 <= _perk.GetPCPerkLevel((NWPlayer)user, PerkType.SpeedyMedic) * 10)
+            if (_random.Random(100) + 1 <= _perk.GetPCPerkLevel((NWPlayer)user, PerkType.SpeedyFirstAid) * 10)
             {
                 return 0.1f;
             }

@@ -1,8 +1,13 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.Medicine
 {
-    public class SpeedyMedic : IPerk
+    public class MedicalBlueprints: IPerk
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

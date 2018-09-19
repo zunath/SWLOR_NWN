@@ -11,8 +11,8 @@
         DarkHeal = 6,
         Rest = 7,
         StimFiend = 8,
-        // 9 is free
-        // 10 is free
+        MedicalBlueprints = 9,
+        SpeedyMedicine = 10,
         // 11 is free
         // 12 is free
         // 13 is free
@@ -22,7 +22,7 @@
         FP = 17,
         SpeedyHarvester = 18,
         // 19 is free
-        SpeedyMedic = 20,
+        SpeedyFirstAid = 20,
         HealingKitExpert = 21,
         ImmediateImprovement = 22,
         FrugalMedic = 23,

@@ -209,6 +209,7 @@ namespace SWLOR.Game.Server.Service
             else if (skillType == SkillType.Cooking) perkType = PerkType.SpeedyCooking;
             else if (skillType == SkillType.Engineering) perkType = PerkType.SpeedyEngineering;
             else if (skillType == SkillType.Fabrication) perkType = PerkType.SpeedyFabrication;
+            else if (skillType == SkillType.Medicine) perkType = PerkType.SpeedyMedicine;
             else return BaseCraftDelay;
 
             int perkLevel = _perk.GetPCPerkLevel(oPC, perkType);
@@ -423,6 +424,7 @@ namespace SWLOR.Game.Server.Service
                 case SkillType.Cooking: equipmentBonus = player.EffectiveCookingBonus; break;
                 case SkillType.Engineering: equipmentBonus = player.EffectiveEngineeringBonus; break;
                 case SkillType.Fabrication: equipmentBonus = player.EffectiveFabricationBonus; break;
+                case SkillType.Medicine: equipmentBonus = player.EffectiveMedicineBonus; break;
             }
 
             return equipmentBonus * 0.5f; // +0.5% per equipment bonus

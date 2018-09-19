@@ -560,6 +560,8 @@
     <Compile Include="Perk\DarkSide\ForceLightning.cs" />
     <Compile Include="Perk\Fabrication\FabricationBlueprints.cs" />
     <Compile Include="Perk\Fabrication\SpeedyFabrication.cs" />
+    <Compile Include="Perk\Medicine\MedicalBlueprints.cs" />
+    <Compile Include="Perk\Medicine\SpeedyMedicine.cs" />
     <Compile Include="Perk\Medicine\StimFiend.cs" />
     <Compile Include="Perk\General\Rest.cs" />
     <Compile Include="Perk\Harvesting\SpeedyResourceScanner.cs" />
@@ -588,7 +590,7 @@
     <Compile Include="Perk\Medicine\FrugalMedic.cs" />
     <Compile Include="Perk\Medicine\HealingKitExpert.cs" />
     <Compile Include="Perk\Medicine\ImmediateImprovement.cs" />
-    <Compile Include="Perk\Medicine\SpeedyMedic.cs" />
+    <Compile Include="Perk\Medicine\SpeedyFirstAid.cs" />
     <Compile Include="Perk\Gathering\CarefulScavenger.cs" />
     <Compile Include="Perk\Gathering\ScavengingExpert.cs" />
     <Compile Include="Perk\Gathering\SeedPicker.cs" />

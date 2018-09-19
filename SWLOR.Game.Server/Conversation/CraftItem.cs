@@ -66,6 +66,9 @@ namespace SWLOR.Game.Server.Conversation
                     case SkillType.Fabrication:
                         model.PlayerPerkLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.FabricationBlueprints);
                         break;
+                    case SkillType.Medicine:
+                        model.PlayerPerkLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.MedicalBlueprints);
+                        break;
                     default:
                         model.PlayerPerkLevel = 0;
                         break;

@@ -274,6 +274,7 @@
     <Compile Include="Item\ResourceScanner.cs" />
     <Compile Include="Item\StructureItem.cs" />
     <Compile Include="Mod\FabricationMod.cs" />
+    <Compile Include="Mod\RestMod.cs" />
     <Compile Include="NWNX\DamageData.cs" />
     <Compile Include="NWNX\Contracts\INWNXDamage.cs" />
     <Compile Include="NWNX\NWNXDamage.cs" />
@@ -558,6 +559,7 @@
     <Compile Include="Perk\DarkSide\ForceLightning.cs" />
     <Compile Include="Perk\Fabrication\FabricationBlueprints.cs" />
     <Compile Include="Perk\Fabrication\SpeedyFabrication.cs" />
+    <Compile Include="Perk\General\Rest.cs" />
     <Compile Include="Perk\Harvesting\SpeedyResourceScanner.cs" />
     <Compile Include="Perk\Armorsmith\CombatModInstallationArmors.cs" />
     <Compile Include="Perk\Armorsmith\CraftingModInstallationArmors.cs" />

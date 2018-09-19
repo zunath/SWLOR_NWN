@@ -407,6 +407,17 @@ namespace SWLOR.Game.Server.GameObject
             }
             set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_MEDITATE_BONUS", value);
         }
+        public virtual int RestBonus
+        {
+            get
+            {
+                int restBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.RestBonus);
+                if (restBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_REST_BONUS");
+                RestBonus = restBonus;
+                return restBonus;
+            }
+            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_REST_BONUS", value);
+        }
         public virtual int FirstAidBonus
         {
             get

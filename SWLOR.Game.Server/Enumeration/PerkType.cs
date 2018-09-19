@@ -9,8 +9,7 @@
         ForceLightning = 4,
         ForceHeal = 5,
         DarkHeal = 6,
-
-        // 7 is free
+        Rest = 7,
         // 8 is free
         // 9 is free
         // 10 is free

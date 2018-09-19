@@ -11,7 +11,7 @@
         DurabilityUp = 6,
         ChargesUp = 7,
         ACUp = 8,
-        // 9 is open
+        RestUp = 9,
         HarvestingUp = 10,
         CastingSpeedUp = 11,
         ArmorsmithUp = 12,

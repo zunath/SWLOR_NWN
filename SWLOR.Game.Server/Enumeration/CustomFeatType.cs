@@ -19,6 +19,12 @@
         BaseManagementTool = 1130,
         OpenRestMenu = 1131,
         SneakAttack = 1132,
-        Battlemage = 1133
+        Battlemage = 1133,
+        Chainspell = 1134,
+        ForceBreach = 1135,
+        ForceLightning = 1136,
+        ForceHeal = 1137,
+        DarkHeal = 1138,
+        Rest = 1139
     }
 }

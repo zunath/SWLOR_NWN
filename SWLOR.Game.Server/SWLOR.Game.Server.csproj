@@ -269,6 +269,7 @@
     <Compile Include="Event\Module\OnModuleUseFeat.cs" />
     <Compile Include="Event\Player\OnPlayerDamaged.cs" />
     <Compile Include="Extension\BehaviourTreeBuilderExtensions.cs" />
+    <Compile Include="Item\FirstAid\StimPack.cs" />
     <Compile Include="Item\ModItem.cs" />
     <Compile Include="Item\ResourceHarvester.cs" />
     <Compile Include="Item\ResourceScanner.cs" />
@@ -559,6 +560,7 @@
     <Compile Include="Perk\DarkSide\ForceLightning.cs" />
     <Compile Include="Perk\Fabrication\FabricationBlueprints.cs" />
     <Compile Include="Perk\Fabrication\SpeedyFabrication.cs" />
+    <Compile Include="Perk\FirstAid\StimFiend.cs" />
     <Compile Include="Perk\General\Rest.cs" />
     <Compile Include="Perk\Harvesting\SpeedyResourceScanner.cs" />
     <Compile Include="Perk\Armorsmith\CombatModInstallationArmors.cs" />

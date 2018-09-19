@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Item.Contracts;
 using NWN;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Item.FirstAid
 {
@@ -43,7 +44,7 @@ namespace SWLOR.Game.Server.Item.FirstAid
         {
             NWPlayer player = NWPlayer.Wrap(user.Object);
 
-            target.RemoveEffect(NWScript.EFFECT_TYPE_REGENERATE);
+            target.RemoveEffect(EFFECT_TYPE_REGENERATE);
             PCSkill skill = _skill.GetPCSkill(player, SkillType.FirstAid);
             int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky);
             int perkDurationBonus = _perk.GetPCPerkLevel(player, PerkType.HealingKitExpert) * 6 + (luck * 2);
@@ -58,7 +59,7 @@ namespace SWLOR.Game.Server.Item.FirstAid
                 {
                     blastHeal *= 2;
                 }
-                _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, _.EffectHeal(blastHeal), target.Object);
+                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(blastHeal), target.Object);
             }
 
             float interval = 6.0f;
@@ -68,7 +69,7 @@ namespace SWLOR.Game.Server.Item.FirstAid
                 interval *= 0.5f;
 
             Effect regeneration = _.EffectRegenerate(restoreAmount, interval);
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, regeneration, target.Object, duration);
+            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, regeneration, target.Object, duration);
             player.SendMessage("You successfully treat " + target.Name + "'s wounds.");
 
             int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, skill.Rank);
@@ -93,7 +94,7 @@ namespace SWLOR.Game.Server.Item.FirstAid
 
         public int AnimationID()
         {
-            return NWScript.ANIMATION_LOOPING_GET_MID;
+            return ANIMATION_LOOPING_GET_MID;
         }
 
         public float MaxDistance()
@@ -117,7 +118,7 @@ namespace SWLOR.Game.Server.Item.FirstAid
 
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            if (_.GetIsPC(target.Object) == NWScript.FALSE || _.GetIsDM(target.Object) == NWScript.TRUE)
+            if (_.GetIsPC(target.Object) == FALSE || _.GetIsDM(target.Object) == TRUE)
             {
                 return "Only players may be targeted with this item.";
             }

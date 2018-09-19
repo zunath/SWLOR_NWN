@@ -62,6 +62,18 @@ namespace SWLOR.Game.Server.Data.Entities
         [StringLength(32)]
         public string OnKillTargetRule { get; set; }
 
+        [StringLength(32)]
+        public string OnAcceptArgs { get; set; }
+
+        [StringLength(32)]
+        public string OnAdvanceArgs { get; set; }
+
+        [StringLength(32)]
+        public string OnCompleteArgs { get; set; }
+
+        [StringLength(32)]
+        public string OnKillTargetArgs { get; set; }
+
         public virtual FameRegion FameRegion { get; set; }
 
         public virtual KeyItem RewardKeyItem { get; set; }

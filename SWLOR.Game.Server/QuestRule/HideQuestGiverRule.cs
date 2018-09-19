@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.QuestRule
             _visibility = visibility;
         }
 
-        public void Run(NWPlayer player, NWObject questSource, int questID)
+        public void Run(NWPlayer player, NWObject questSource, int questID, string[] args)
         {
             _visibility.AdjustVisibility(player, questSource, false);
         }

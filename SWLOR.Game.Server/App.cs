@@ -126,6 +126,7 @@ namespace SWLOR.Game.Server
             builder.RegisterType<ColorTokenService>().As<IColorTokenService>();
             builder.RegisterType<ComponentBonusService>().As<IComponentBonusService>();
             builder.RegisterType<CraftService>().As<ICraftService>();
+            builder.RegisterType<CreatureCorpseService>().As<ICreatureCorpseService>();
             builder.RegisterType<CustomEffectService>().As<ICustomEffectService>();
             builder.RegisterType<DeathService>().As<IDeathService>();
             builder.RegisterType<DialogService>().As<IDialogService>();

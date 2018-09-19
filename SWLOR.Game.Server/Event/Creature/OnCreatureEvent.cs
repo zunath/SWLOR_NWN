@@ -14,12 +14,14 @@ namespace SWLOR.Game.Server.Event.Creature
         private readonly ILootService _loot;
         private readonly IBehaviourService _behaviour;
         private readonly IQuestService _quest;
+        private readonly ICreatureCorpseService _creatureCorpse;
         private readonly AppState _state;
 
         public OnCreatureEvent(ISkillService skill,
             ILootService loot,
             IBehaviourService behaviour,
             IQuestService quest,
+            ICreatureCorpseService creatureCorpse,
             AppState state)
         {
             Self = NWCreature.Wrap(Object.OBJECT_SELF);
@@ -27,6 +29,7 @@ namespace SWLOR.Game.Server.Event.Creature
             _loot = loot;
             _behaviour = behaviour;
             _quest = quest;
+            _creatureCorpse = creatureCorpse;
             _state = state;
         }
 
@@ -84,6 +87,7 @@ namespace SWLOR.Game.Server.Event.Creature
                     }
 
                     behaviour?.OnDeath();
+                    _creatureCorpse.OnCreatureDeath();
                     break;
                 case CreatureEventType.OnDisturbed:
                     behaviour?.OnDisturbed();

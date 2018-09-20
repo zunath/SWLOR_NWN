@@ -248,7 +248,9 @@ namespace SWLOR.Game.Server.Service
             if (player.Area.Tag == "ooc_area")
             {
                 PlayerCharacter entity = GetPlayerEntity(player.GlobalID);
-                NWArea area = NWArea.Wrap(_.GetObjectByTag(entity.LocationAreaResref));
+                NWArea area = NWModule.Get().Areas.SingleOrDefault(x => x.Resref == entity.LocationAreaResref);
+                if (area == null) return;
+
                 Vector position = _.Vector((float)entity.LocationX, (float)entity.LocationY, (float)entity.LocationZ);
                 Location location = _.Location(area.Object,
                     position,

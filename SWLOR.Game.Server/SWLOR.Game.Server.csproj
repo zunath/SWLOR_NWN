@@ -628,6 +628,7 @@
     <Compile Include="Perk\Throwing\RapidToss.cs" />
     <Compile Include="Perk\Throwing\ThrowingProficiency.cs" />
     <Compile Include="Perk\Throwing\ZenTossing.cs" />
+    <Compile Include="Perk\TwinBlade\CrossCut.cs" />
     <Compile Include="Perk\TwinBlade\TwinBladeMastery.cs" />
     <Compile Include="Perk\TwinBlade\TwinVibrobladeProficiency.cs" />
     <Compile Include="Perk\TwoHanded\Battlemage.cs" />

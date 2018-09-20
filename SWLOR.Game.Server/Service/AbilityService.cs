@@ -138,7 +138,7 @@ namespace SWLOR.Game.Server.Service
             if (unlockDateTime > now)
             {
                 string timeToWait = _time.GetTimeToWaitLongIntervals(now, unlockDateTime, false);
-                pc.SendMessage("That ability can be used again in " + timeToWait + ".");
+                pc.SendMessage("That ability can be used in " + timeToWait + ".");
                 return;
             }
 

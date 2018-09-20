@@ -132,7 +132,8 @@
         Clarity = 127,
         Sturdiness = 128,
         LightsaberProficiency = 129,
-        SpeedyScanner = 130
+        SpeedyScanner = 130,
+        CrossCut = 131
     }
 
 }

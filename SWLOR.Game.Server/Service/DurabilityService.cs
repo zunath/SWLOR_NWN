@@ -129,6 +129,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (reduceAmount <= 0) return;
             if (player.IsPlot ||
+                item.IsPlot ||
                 item.GetLocalInt("UNBREAKABLE") == 1 ||
                 !item.IsValid ||
                 item.BaseItemType == BASE_ITEM_CREATUREITEM ||  // Creature skin

@@ -384,6 +384,7 @@ namespace SWLOR.Game.Server.Service
             DamageData data = _nwnxDamage.GetDamageEventData();
             HandleApplySneakAttackDamage(data);
             HandleBattlemagePerk(data);
+            HandleAbsorptionFieldEffect(data);
         }
 
         private void HandleBattlemagePerk(DamageData data)
@@ -467,6 +468,29 @@ namespace SWLOR.Game.Server.Service
             }
 
             damager.DeleteLocalInt("SNEAK_ATTACK_ACTIVE");
+        }
+
+        private void HandleAbsorptionFieldEffect(DamageData data)
+        {
+            NWObject target = Object.OBJECT_SELF;
+            if (!target.IsPlayer) return;
+
+            NWPlayer player = NWPlayer.Wrap(target);
+            int effectLevel = _customEffect.GetEffectiveLevelOfPCCustomEffect(player, CustomEffectType.AbsorptionField);
+            if (effectLevel <= 0) return;
+
+            // Remove effect if player activates ability and removes the armor.
+            if (player.Chest.CustomItemType != CustomItemType.ForceArmor)
+            {
+                _customEffect.RemovePCCustomEffect(player, CustomEffectType.AbsorptionField);
+            }
+
+            float absorptionRate = effectLevel * 0.1f;
+            int absorbed = (int)(data.Total * absorptionRate);
+
+            if (absorbed < 1) absorbed = 1;
+
+            RestoreFP(player, absorbed);
         }
 
     }

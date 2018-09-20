@@ -13,7 +13,7 @@
         StimFiend = 8,
         MedicalBlueprints = 9,
         SpeedyMedicine = 10,
-        // 11 is free
+        AbsorptionField = 11,
         // 12 is free
         // 13 is free
         // 14 is free

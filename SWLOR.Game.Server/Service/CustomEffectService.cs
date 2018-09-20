@@ -294,6 +294,14 @@ namespace SWLOR.Game.Server.Service
         {
             RemovePCCustomEffect(oPC, (long) customEffectType);
         }
-        
+
+        public int GetEffectiveLevelOfPCCustomEffect(NWPlayer player, CustomEffectType customEffectType)
+        {
+            if (!player.IsPlayer) return 0;
+            PCCustomEffect effect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID);
+
+            return effect?.EffectiveLevel ?? 0;
+        }
+
     }
 }

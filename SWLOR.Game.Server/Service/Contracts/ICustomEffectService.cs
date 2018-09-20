@@ -13,5 +13,6 @@ namespace SWLOR.Game.Server.Service.Contracts
         void OnModuleLoad();
         void RemovePCCustomEffect(NWPlayer oPC, CustomEffectType customEffectType);
         void RemovePCCustomEffect(NWPlayer oPC, long customEffectID);
+        int GetEffectiveLevelOfPCCustomEffect(NWPlayer player, CustomEffectType customEffectType);
     }
 }

@@ -102,6 +102,28 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        public void AdjustPercentEnmityOnAllTaggedCreatures(NWCreature attacker, int volatilePercentAdjust, int cumulativePercentAdjust = 0)
+        {
+            var tables = GetAllNPCEnmityTablesForCreature(attacker);
+            foreach (var table in tables)
+            {
+                var enmity = GetEnmity(table.Value.NPCObject, attacker);
+                float volatileAdjust = volatilePercentAdjust * 0.01f;
+                float cumulativeAdjust = cumulativePercentAdjust * 0.01f;
+
+                if (volatilePercentAdjust != 0)
+                {
+                    enmity.VolatileAmount = (int)(enmity.VolatileAmount + (enmity.VolatileAmount * volatileAdjust));
+                }
+
+                if (cumulativePercentAdjust != 0)
+                {
+                    enmity.CumulativeAmount = (int)(enmity.CumulativeAmount + (enmity.CumulativeAmount * cumulativeAdjust));
+                }
+
+            }
+        }
+
         public void OnNPCPhysicallyAttacked()
         {
             NWCreature self = NWCreature.Wrap(Object.OBJECT_SELF);

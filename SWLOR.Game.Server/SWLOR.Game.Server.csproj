@@ -558,6 +558,7 @@
     <Compile Include="NWN\Events\Module\mod_on_usefeat.cs" />
     <Compile Include="NWN\Events\Player\pc_on_damaged.cs" />
     <Compile Include="Perk\Armor\AbsorptionField.cs" />
+    <Compile Include="Perk\Armor\Hide.cs" />
     <Compile Include="Perk\DarkSide\DarkHeal.cs" />
     <Compile Include="Perk\DarkSide\ForceLightning.cs" />
     <Compile Include="Perk\Fabrication\FabricationBlueprints.cs" />

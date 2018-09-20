@@ -14,7 +14,7 @@
         MedicalBlueprints = 9,
         SpeedyMedicine = 10,
         AbsorptionField = 11,
-        // 12 is free
+        Hide = 12,
         // 13 is free
         // 14 is free
         Lucky = 15,

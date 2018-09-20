@@ -7,6 +7,7 @@ namespace SWLOR.Game.Server.Service.Contracts
     {
         void AdjustEnmity(NWCreature npc, NWCreature attacker, int volatileAdjust, int cumulativeAdjust = 0);
         void AdjustEnmityOnAllTaggedCreatures(NWCreature attacker, int volatileAdjust, int cumulativeAdjust = 0);
+        void AdjustPercentEnmityOnAllTaggedCreatures(NWCreature attacker, int volatilePercentAdjust, int cumulativePercentAdjust = 0);
         EnmityTable GetEnmityTable(NWCreature npc);
         void OnNPCDamaged();
         void OnNPCPhysicallyAttacked();

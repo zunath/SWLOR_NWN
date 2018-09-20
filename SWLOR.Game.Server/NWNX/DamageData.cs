@@ -18,5 +18,20 @@ namespace SWLOR.Game.Server.NWNX
         public int Positive { get; set; }
         public int Sonic { get; set; }
         public int Base { get; set; }
+
+
+        public int Total => Bludgeoning +
+                            Pierce +
+                            Slash +
+                            Magical +
+                            Acid +
+                            Cold +
+                            Divine +
+                            Electrical +
+                            Fire +
+                            Negative +
+                            Positive +
+                            Sonic +
+                            Base;
     }
 }

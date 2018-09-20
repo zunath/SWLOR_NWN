@@ -8,6 +8,7 @@
         Aegis = 4,
         ForceBreach = 5,
         Chainspell = 6,
-        ForceShock = 7
+        ForceShock = 7,
+        AbsorptionField = 8
     }
 }

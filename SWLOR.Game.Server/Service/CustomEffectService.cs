@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Service
 
         public int CalculateEffectAC(NWCreature creature)
         {
-            int effectLevel = GetCustomEffectLevel(creature, CustomEffectType.Aegis);
+            int effectLevel = GetCustomEffectLevel(creature, CustomEffectType.ForceAura);
             
             int aegisAC = 0;
 

@@ -367,6 +367,7 @@ namespace SWLOR.Game.Server.Service
         public void OnHitCastSpell(NWPlayer oPC)
         {
             NWObject oTarget = NWObject.Wrap(_.GetSpellTargetObject());
+            HandleGrenadeProficiency(oPC, oTarget);
             int activeWeaponSkillID = oPC.GetLocalInt("ACTIVE_WEAPON_SKILL");
             if (activeWeaponSkillID <= 0) return;
 
@@ -387,6 +388,41 @@ namespace SWLOR.Game.Server.Service
 
             oPC.DeleteLocalString("ACTIVE_WEAPON_SKILL_UUID");
             oPC.DeleteLocalInt("ACTIVE_WEAPON_SKILL");
+        }
+
+        private void HandleGrenadeProficiency(NWPlayer oPC, NWObject target)
+        {
+            NWItem weapon = _.GetSpellCastItem();
+            if (weapon.BaseItemType != BASE_ITEM_GRENADE) return;
+
+            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.GrenadeProficiency);
+            int chance = 10 * perkLevel;
+            float duration;
+
+            switch (perkLevel)
+            {
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                    duration = 6;
+                    break;
+                case 5:
+                case 6:
+                case 7:
+                case 8:
+                case 9:
+                    duration = 9;
+                    break;
+                default: return;
+            }
+
+
+            if (_random.D100(1) <= chance)
+            {
+                _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectKnockdown(), target, duration);
+            }
+
         }
 
         public void OnModuleApplyDamage()

@@ -13,6 +13,7 @@ using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Perk;
 using SWLOR.Game.Server.Service.Contracts;
+using static NWN.NWScript;
 using Object = NWN.Object;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
 
@@ -220,18 +221,18 @@ namespace SWLOR.Game.Server.Service
                 castingTime = baseCastingTime * 2;
             }
 
-            if (_.GetActionMode(pc.Object, NWScript.ACTION_MODE_STEALTH) == 1)
-                _.SetActionMode(pc.Object, NWScript.ACTION_MODE_STEALTH, 0);
+            if (_.GetActionMode(pc.Object, ACTION_MODE_STEALTH) == 1)
+                _.SetActionMode(pc.Object, ACTION_MODE_STEALTH, 0);
 
             _.ClearAllActions();
             _biowarePosition.TurnToFaceObject(target, pc);
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY,
-                    _.EffectVisualEffect(NWScript.VFX_DUR_ELEMENTAL_SHIELD),
+            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY,
+                    _.EffectVisualEffect(VFX_DUR_ELEMENTAL_SHIELD),
                     pc.Object,
                     castingTime + 0.2f);
 
             float animationTime = castingTime;
-            pc.AssignCommand(() => _.ActionPlayAnimation(NWScript.ANIMATION_LOOPING_CONJURE1, 1.0f, animationTime - 0.1f));
+            pc.AssignCommand(() => _.ActionPlayAnimation(ANIMATION_LOOPING_CONJURE1, 1.0f, animationTime - 0.1f));
 
             pc.IsBusy = true;
             CheckForSpellInterruption(pc, spellUUID, pc.Position);
@@ -400,11 +401,11 @@ namespace SWLOR.Game.Server.Service
         {
             NWObject target = NWObject.Wrap(Object.OBJECT_SELF);
             if (!data.Damager.IsPlayer || !target.IsNPC) return;
-            if (_.GetHasFeat((int)CustomFeatType.Battlemage, data.Damager.Object) == NWScript.FALSE) return;
+            if (_.GetHasFeat((int)CustomFeatType.Battlemage, data.Damager.Object) == FALSE) return;
 
             NWPlayer player = NWPlayer.Wrap(data.Damager.Object);
             NWItem weapon = NWItem.Wrap(_.GetLastWeaponUsed(player.Object));
-            if (weapon.CustomItemType != CustomItemType.Saberstaff) return;
+            if (weapon.CustomItemType != CustomItemType.Baton) return;
             if (player.Chest.CustomItemType != CustomItemType.ForceArmor) return;
 
             int perkRank = _perk.GetPCPerkLevel(player, PerkType.Battlemage);

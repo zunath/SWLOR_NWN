@@ -255,6 +255,15 @@ namespace SWLOR.Game.Server.Service
                     (PerkExecutionType)entity.ExecutionTypeID == PerkExecutionType.CombatAbility)
                 {
                     perk.OnImpact(pc, target);
+
+                    if (entity.CastAnimationID != null && entity.CastAnimationID > 0)
+                    {
+                        pc.AssignCommand(() =>
+                        {
+                            _.ActionPlayAnimation((int)entity.CastAnimationID, 1f, 1f);
+                        });
+                    }
+
                     if (target.IsNPC)
                     {
                         ApplyEnmity(pc, NWCreature.Wrap(target.Object), entity);

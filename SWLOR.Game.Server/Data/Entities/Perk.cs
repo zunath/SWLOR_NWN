@@ -52,6 +52,8 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public int EnmityAdjustmentRuleID { get; set; }
 
+        public int? CastAnimationID { get; set; }
+
         public virtual CooldownCategory CooldownCategory { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

@@ -21,7 +21,7 @@
         Health = 16,
         FP = 17,
         SpeedyHarvester = 18,
-        // 19 is free
+        ForcePush = 19,
         SpeedyFirstAid = 20,
         HealingKitExpert = 21,
         ImmediateImprovement = 22,

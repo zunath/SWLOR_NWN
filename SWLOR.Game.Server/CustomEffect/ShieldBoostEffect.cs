@@ -39,23 +39,20 @@ namespace SWLOR.Game.Server.CustomEffect
 
         public void Tick(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)
         {
+            NWPlayer targetPlayer = oTarget.Object;
 
-            // TODO: This is currently disabled because it causes data context sync issues. Will address this when I figure out what to do with that piece.
+            if (targetPlayer.Chest.CustomItemType != CustomItemType.HeavyArmor)
+            {
+                _customEffect.RemovePCCustomEffect(targetPlayer, CustomEffectType.ShieldBoost);
+                _skill.ApplyStatChanges(targetPlayer, null);
 
-            //NWPlayer targetPlayer = oTarget.Object;
+                var vfx = targetPlayer.Effects.SingleOrDefault(x => _.GetEffectTag(x) == "SHIELD_BOOST_VFX");
 
-            //if (targetPlayer.Chest.CustomItemType != CustomItemType.HeavyArmor)
-            //{
-            //    _customEffect.RemovePCCustomEffect(targetPlayer, CustomEffectType.ShieldBoost);
-            //    _skill.ApplyStatChanges(targetPlayer, null);
-
-            //    var vfx = targetPlayer.Effects.SingleOrDefault(x => _.GetEffectTag(x) == "SHIELD_BOOST_VFX");
-
-            //    if (vfx != null)
-            //    {
-            //        _.RemoveEffect(targetPlayer, vfx);
-            //    }
-            //}
+                if (vfx != null)
+                {
+                    _.RemoveEffect(targetPlayer, vfx);
+                }
+            }
         }
 
         public void WearOff(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)

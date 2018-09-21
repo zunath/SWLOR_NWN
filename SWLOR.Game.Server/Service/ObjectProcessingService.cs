@@ -1,8 +1,8 @@
 ﻿using System;
-using SWLOR.Game.Server.GameObject;
-
 using NWN;
+using SWLOR.Game.Server.Processor.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -23,20 +23,6 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleLoad()
         {
-            NWArea area = NWArea.Wrap(_.GetFirstArea());
-            while (area.IsValid)
-            {
-                NWObject @object = NWObject.Wrap(_.GetFirstObjectInArea(area.Object));
-                while (@object.IsValid)
-                {
-                    HandleSpawnWaypointRename(@object);
-
-                    @object = NWObject.Wrap(_.GetNextObjectInArea(area.Object));
-                }
-
-                area = NWArea.Wrap(_.GetNextArea());
-            }
-
             RunProcessor();
         }
 
@@ -54,7 +40,8 @@ namespace SWLOR.Game.Server.Service
             {
                 try
                 {
-                    @event.Value.Invoke();
+                    var processor = App.ResolveByInterface<IEventProcessor>(@event.Value.ProcessorType.ToString());
+                    processor.Run(@event.Value.Args);
                 }
                 catch (Exception ex)
                 {
@@ -66,10 +53,12 @@ namespace SWLOR.Game.Server.Service
             _.DelayCommand(ProcessingTickInterval, RunProcessor);
         }
 
-        public string RegisterProcessingEvent(Action action)
+        public string RegisterProcessingEvent<T>(params object[] args)
+            where T: IEventProcessor
         {
             string globalID = Guid.NewGuid().ToString("N");
-            _state.ProcessingEvents.Add(globalID, action);
+            ProcessingEvent @event = new ProcessingEvent(typeof(T), args);
+            _state.ProcessingEvents.Add(globalID, @event);
             return globalID;
         }
 
@@ -79,25 +68,6 @@ namespace SWLOR.Game.Server.Service
             {
                 _state.UnregisterProcessingEvents.Enqueue(globalID);
             }
-        }
-
-        // It's difficult to see what waypoint represents what in the toolset.
-        // To fix this, we rename the waypoints on module load so that they function in-game.
-        private void HandleSpawnWaypointRename(NWObject obj)
-        {
-            if (obj.ObjectType != NWScript.OBJECT_TYPE_WAYPOINT) return;
-
-            string name = obj.Name;
-            
-            
-            string[] split = name.Split(new[] {"SP_"}, StringSplitOptions.None);
-            
-            if (split.Length <= 1) return;
-
-            name = "SP_" + split[split.Length - 1];
-            name = name.Trim();
-            
-            obj.Name = name;
         }
     }
 }

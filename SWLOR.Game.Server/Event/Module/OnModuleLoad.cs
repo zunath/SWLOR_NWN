@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Enumeration;
 using NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.Processor;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN.NWScript;
 using Object = NWN.Object;
@@ -17,7 +18,6 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly INWNXEvents _nwnxEvents;
         private readonly IObjectProcessingService _objectProcessing;
         private readonly IFarmingService _farming;
-        private readonly IAppStateService _appStateService;
         private readonly INWNXDamage _nwnxDamage;
         private readonly IAreaService _area;
         private readonly IBaseService _base;
@@ -30,7 +30,6 @@ namespace SWLOR.Game.Server.Event.Module
             INWNXEvents nwnxEvents,
             IObjectProcessingService objectProcessing,
             IFarmingService farming,
-            IAppStateService appStateService,
             INWNXDamage nwnxDamage,
             IAreaService area,
             IBaseService @base,
@@ -43,7 +42,6 @@ namespace SWLOR.Game.Server.Event.Module
             _nwnxEvents = nwnxEvents;
             _objectProcessing = objectProcessing;
             _farming = farming;
-            _appStateService = appStateService;
             _nwnxDamage = nwnxDamage;
             _area = area;
             _base = @base;
@@ -60,7 +58,7 @@ namespace SWLOR.Game.Server.Event.Module
 
             // Bioware default
             _.ExecuteScript("x2_mod_def_load", Object.OBJECT_SELF);
-            _appStateService.OnModuleLoad();
+            _objectProcessing.RegisterProcessingEvent<AppStateProcessor>();
             _objectProcessing.OnModuleLoad();
             _farming.OnModuleLoad();
             

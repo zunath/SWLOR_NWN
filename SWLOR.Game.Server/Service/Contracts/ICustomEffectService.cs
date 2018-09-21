@@ -5,8 +5,8 @@ namespace SWLOR.Game.Server.Service.Contracts
 {
     public interface ICustomEffectService
     {
-        void ApplyCustomEffect(NWCreature caster, NWCreature target, CustomEffectType effectType, int ticks, int level);
-        void ApplyCustomEffect(NWCreature caster, NWCreature target, int customEffectID, int ticks, int effectiveLevel);
+        void ApplyCustomEffect(NWCreature caster, NWCreature target, CustomEffectType effectType, int ticks, int level, string data);
+        void ApplyCustomEffect(NWCreature caster, NWCreature target, int customEffectID, int ticks, int effectiveLevel, string data);
         int CalculateEffectAC(NWCreature creature);
         bool DoesPCHaveCustomEffect(NWPlayer oPC, CustomEffectType customEffectType);
         bool DoesPCHaveCustomEffect(NWPlayer oPC, int customEffectID);

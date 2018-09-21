@@ -37,9 +37,9 @@ namespace SWLOR.Game.Server.Service
             _nwnxObject = nwnxObject;
         }
         
-        public void ApplyCustomEffect(NWCreature caster, NWCreature target, CustomEffectType effectType, int ticks, int level)
+        public void ApplyCustomEffect(NWCreature caster, NWCreature target, CustomEffectType effectType, int ticks, int level, string data)
         {
-            ApplyCustomEffect(caster, target, (int) effectType, ticks, level);
+            ApplyCustomEffect(caster, target, (int) effectType, ticks, level, data);
         }
 
         public int CalculateEffectAC(NWCreature creature)
@@ -186,21 +186,21 @@ namespace SWLOR.Game.Server.Service
             return effect;
         }
 
-        public void ApplyCustomEffect(NWCreature caster, NWCreature target, int customEffectID, int ticks, int effectiveLevel)
+        public void ApplyCustomEffect(NWCreature caster, NWCreature target, int customEffectID, int ticks, int effectiveLevel, string data)
         {   
             // PC custom effects are tracked in the database.
             if (target.IsPlayer)
             {
-                ApplyPCEffect(caster, target, customEffectID, ticks, effectiveLevel);
+                ApplyPCEffect(caster, target, customEffectID, ticks, effectiveLevel, data);
             }
             // NPCs custom effects are tracked in server memory.
             else
             {
-                ApplyNPCEffect(caster, target, customEffectID, ticks, effectiveLevel);
+                ApplyNPCEffect(caster, target, customEffectID, ticks, effectiveLevel, data);
             }
         }
 
-        private void ApplyPCEffect(NWCreature caster, NWCreature target, int customEffectID, int ticks, int effectiveLevel)
+        private void ApplyPCEffect(NWCreature caster, NWCreature target, int customEffectID, int ticks, int effectiveLevel, string data)
         {
             Data.Entities.CustomEffect effectEntity = _db.CustomEffects.Single(x => x.CustomEffectID == customEffectID);
             PCCustomEffect entity = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == target.GlobalID && x.CustomEffectID == customEffectID);
@@ -226,13 +226,15 @@ namespace SWLOR.Game.Server.Service
             target.SendMessage(effectEntity.StartMessage);
 
             ICustomEffect handler = App.ResolveByInterface<ICustomEffect>("CustomEffect." + effectEntity.ScriptHandler);
-            string data = handler?.Apply(caster, target, effectiveLevel);
+            
+            if(string.IsNullOrWhiteSpace(data))
+                data = handler?.Apply(caster, target, effectiveLevel);
             if (string.IsNullOrWhiteSpace(data)) data = string.Empty;
             entity.Data = data;
             _db.SaveChanges();
         }
 
-        private void ApplyNPCEffect(NWCreature caster, NWCreature target, int customEffectID, int ticks, int effectiveLevel)
+        private void ApplyNPCEffect(NWCreature caster, NWCreature target, int customEffectID, int ticks, int effectiveLevel, string data)
         {
             Data.Entities.CustomEffect effectEntity = _db.CustomEffects.Single(x => x.CustomEffectID == customEffectID);
             // Look for existing effect.
@@ -260,7 +262,9 @@ namespace SWLOR.Game.Server.Service
             }
             
             ICustomEffect handler = App.ResolveByInterface<ICustomEffect>("CustomEffect." + effectEntity.ScriptHandler);
-            string data = handler?.Apply(caster, target, effectiveLevel);
+            
+            if(string.IsNullOrWhiteSpace(data))
+                data = handler?.Apply(caster, target, effectiveLevel);
             if (string.IsNullOrWhiteSpace(data)) data = string.Empty;
             spellModel.Data = data;
 
@@ -285,9 +289,10 @@ namespace SWLOR.Game.Server.Service
             oPC.DeleteLocalInt("CUSTOM_EFFECT_ACTIVE_" + customEffectID);
 
             if (effect == null) return;
-
-            _db.PCCustomEffects.Remove(effect);
+            
             oPC.SendMessage(effect.CustomEffect.WornOffMessage);
+            _db.PCCustomEffects.Remove(effect);
+            _db.SaveChanges();
         }
 
         public void RemovePCCustomEffect(NWPlayer oPC, CustomEffectType customEffectType)
@@ -298,7 +303,7 @@ namespace SWLOR.Game.Server.Service
         public int GetEffectiveLevelOfPCCustomEffect(NWPlayer player, CustomEffectType customEffectType)
         {
             if (!player.IsPlayer) return 0;
-            PCCustomEffect effect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID);
+            PCCustomEffect effect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CustomEffectID == (int)customEffectType);
 
             return effect?.EffectiveLevel ?? 0;
         }

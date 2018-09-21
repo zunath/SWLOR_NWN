@@ -9,6 +9,8 @@
         ForceBreach = 5,
         Chainspell = 6,
         ForceShock = 7,
-        AbsorptionField = 8
+        AbsorptionField = 8,
+        ForceSpread = 9,
+        DarkSpread = 10
     }
 }

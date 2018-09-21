@@ -75,7 +75,7 @@
         ShieldBoost = 70,
         RecoveryBlast = 71,
         LegShot = 72,
-        // 73 is free
+        GrenadeProficiency = 73,
         // 74 is free
         // 75 is free
         // 76 is free

@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Service
             foreach (PCPerk pcPerk in perks)
             {
                 pcPerk.Perk = _db.Perks.Single(x => x.PerkID == pcPerk.PerkID);
-                string jsName = pcPerk.Perk.JavaScriptName;
+                string jsName = pcPerk.Perk.ScriptName;
                 if (string.IsNullOrWhiteSpace(jsName)) continue;
 
                 IPerk perkAction = App.ResolveByInterface<IPerk>("Perk." + jsName);
@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Service
             foreach (PCPerk pcPerk in perks)
             {
                 pcPerk.Perk = _db.Perks.Single(x => x.PerkID == pcPerk.PerkID);
-                string jsName = pcPerk.Perk.JavaScriptName;
+                string jsName = pcPerk.Perk.ScriptName;
                 if (string.IsNullOrWhiteSpace(jsName)) continue;
                 
                 IPerk perkAction = App.ResolveByInterface<IPerk>("Perk." + jsName);
@@ -112,9 +112,9 @@ namespace SWLOR.Game.Server.Service
             foreach (PCPerk pcPerk in pcPerks)
             {
                 pcPerk.Perk = GetPerkByID(pcPerk.PerkID);
-                if (string.IsNullOrWhiteSpace(pcPerk.Perk.JavaScriptName) || pcPerk.Perk.ExecutionTypeID == (int)PerkExecutionType.None) continue;
+                if (string.IsNullOrWhiteSpace(pcPerk.Perk.ScriptName) || pcPerk.Perk.ExecutionTypeID == (int)PerkExecutionType.None) continue;
 
-                IPerk perkAction = App.ResolveByInterface<IPerk>("Perk." +pcPerk.Perk.JavaScriptName);
+                IPerk perkAction = App.ResolveByInterface<IPerk>("Perk." +pcPerk.Perk.ScriptName);
                 if (perkAction == null) continue;
                 
                 if (pcPerk.Perk.ExecutionTypeID == (int)PerkExecutionType.ShieldOnHit)
@@ -283,7 +283,7 @@ namespace SWLOR.Game.Server.Service
 
                 oPC.SendMessage(_color.Green("Perk Purchased: " + perk.Name + " (Lvl. " + pcPerk.PerkLevel + ")"));
 
-                IPerk perkScript = App.ResolveByInterface<IPerk>("Perk." + perk.JavaScriptName);
+                IPerk perkScript = App.ResolveByInterface<IPerk>("Perk." + perk.ScriptName);
 
                 if (perkScript == null) return;
                 perkScript.OnPurchased(oPC, pcPerk.PerkLevel);

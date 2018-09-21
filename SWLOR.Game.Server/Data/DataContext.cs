@@ -348,7 +348,7 @@ namespace SWLOR.Game.Server.Data
                 .IsUnicode(false);
 
             modelBuilder.Entity<Entities.Perk>()
-                .Property(e => e.JavaScriptName)
+                .Property(e => e.ScriptName)
                 .IsUnicode(false);
 
             modelBuilder.Entity<Entities.Perk>()

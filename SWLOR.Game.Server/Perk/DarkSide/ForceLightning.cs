@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.Perk.DarkSide
 
             if (length > 0.0f && dotAmount > 0)
             {
-                _customEffect.ApplyCustomEffect(oPC, oTarget.Object, CustomEffectType.ForceShock, length, level);
+                _customEffect.ApplyCustomEffect(oPC, oTarget.Object, CustomEffectType.ForceShock, length, level, null);
             }
 
             _skill.RegisterPCToAllCombatTargetsForSkill(oPC, SkillType.DarkSideAbilities);

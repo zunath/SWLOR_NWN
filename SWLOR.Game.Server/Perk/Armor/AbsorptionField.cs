@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Perk.Armor
         public void OnImpact(NWPlayer oPC, NWObject oTarget)
         {
             int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.AbsorptionField);
-            _customEffect.ApplyCustomEffect(oPC, oPC, CustomEffectType.AbsorptionField, 20, perkLevel);
+            _customEffect.ApplyCustomEffect(oPC, oPC, CustomEffectType.AbsorptionField, 20, perkLevel, null);
 
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_GLOBE_USE), oTarget);
         }

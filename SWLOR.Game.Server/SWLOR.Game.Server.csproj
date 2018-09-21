@@ -129,6 +129,8 @@
     <Compile Include="CustomEffect\Contracts\ICustomEffect.cs" />
     <Compile Include="CustomEffect\ForceBreachEffect.cs" />
     <Compile Include="CustomEffect\ForceShockEffect.cs" />
+    <Compile Include="CustomEffect\DarkSpreadEffect.cs" />
+    <Compile Include="CustomEffect\ForceSpreadEffect.cs" />
     <Compile Include="CustomEffect\PoisonEffect.cs" />
     <Compile Include="Data\Entities\Area.cs" />
     <Compile Include="Data\Entities\BaseStructure.cs" />
@@ -560,9 +562,11 @@
     <Compile Include="Perk\Armor\AbsorptionField.cs" />
     <Compile Include="Perk\Armor\Hide.cs" />
     <Compile Include="Perk\DarkSide\DarkHeal.cs" />
+    <Compile Include="Perk\DarkSide\DarkSpread.cs" />
     <Compile Include="Perk\DarkSide\ForceLightning.cs" />
     <Compile Include="Perk\Fabrication\FabricationBlueprints.cs" />
     <Compile Include="Perk\Fabrication\SpeedyFabrication.cs" />
+    <Compile Include="Perk\LightSide\ForceSpread.cs" />
     <Compile Include="Perk\Medicine\MedicalBlueprints.cs" />
     <Compile Include="Perk\Medicine\SpeedyMedicine.cs" />
     <Compile Include="Perk\Medicine\StimFiend.cs" />

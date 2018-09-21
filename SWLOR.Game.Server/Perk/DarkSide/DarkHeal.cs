@@ -1,7 +1,12 @@
-﻿using NWN;
+﻿using System;
+using System.Linq;
+using NWN;
+using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Data.Entities;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Perk.DarkSide
 {
@@ -11,16 +16,22 @@ namespace SWLOR.Game.Server.Perk.DarkSide
         private readonly IPerkService _perk;
         private readonly IRandomService _random;
         private readonly ISkillService _skill;
+        private readonly IDataContext _db;
+        private readonly ICustomEffectService _customEffect;
 
         public DarkHeal(INWScript script,
             IPerkService perk,
             IRandomService random,
-            ISkillService skill)
+            ISkillService skill,
+            IDataContext db,
+            ICustomEffectService customEffect)
         {
             _ = script;
             _perk = perk;
             _random = random;
             _skill = skill;
+            _db = db;
+            _customEffect = customEffect;
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -52,10 +63,13 @@ namespace SWLOR.Game.Server.Perk.DarkSide
         {
             int level = _perk.GetPCPerkLevel(oPC, PerkType.DarkHeal);
             int darkBonus = oPC.EffectiveDarkAbilityBonus;
-            int amount;
-            float length;
-            int regenAmount;
-            int min = 1;
+            
+            PCCustomEffect spreadEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == oPC.GlobalID && x.CustomEffectID == (int) CustomEffectType.DarkSpread);
+            string spreadData = spreadEffect?.Data ?? string.Empty;
+            int spreadLevel = spreadEffect?.EffectiveLevel ?? 0;
+            int spreadUses = spreadEffect == null ? 0 : Convert.ToInt32(spreadData.Split(',')[0]);
+            float spreadRange = spreadEffect == null ? 0 : Convert.ToSingle(spreadData.Split(',')[1]);
+
             BackgroundType background = (BackgroundType) oPC.Class1;
 
             if (background == BackgroundType.Sorcerer ||
@@ -63,6 +77,44 @@ namespace SWLOR.Game.Server.Perk.DarkSide
             {
                 level++;
             }
+
+            if (spreadLevel <= 0)
+                HealTarget(oPC, oTarget, darkBonus, level);
+            else
+            {
+                var members = oPC.GetPartyMembers().Where(x => _.GetDistanceBetween(x, oTarget) <= spreadRange || 
+                                                               Equals(x, oTarget)).ToList();
+                
+                spreadUses--;
+
+                foreach (var member in members)
+                {
+                    HealTarget(oPC, member, darkBonus, level);
+                }
+
+                if (spreadUses <= 0)
+                {
+                    _customEffect.RemovePCCustomEffect(oPC, CustomEffectType.DarkSpread);
+                }
+                else
+                {
+                    // ReSharper disable once PossibleNullReferenceException
+                    spreadEffect.Data = spreadUses + "," + spreadRange;
+                    _db.SaveChanges();
+                    oPC.SendMessage("Dark Spread uses remaining: " + spreadUses);
+                }
+
+            }
+            _skill.RegisterPCToAllCombatTargetsForSkill(oPC, SkillType.DarkSideAbilities);
+        }
+
+
+        private void HealTarget(NWPlayer oPC, NWObject oTarget, int darkBonus, int level)
+        {
+            int amount;
+            float length;
+            int regenAmount;
+            int min = 1;
 
             int wisdom = oPC.WisdomModifier;
             int intelligence = oPC.IntelligenceModifier;
@@ -127,27 +179,25 @@ namespace SWLOR.Game.Server.Perk.DarkSide
                     break;
                 default: return;
             }
-            
+
             int luck = _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + oPC.EffectiveLuckBonus;
             if (_random.Random(100) + 1 <= luck)
             {
                 length = length * 2;
                 oPC.SendMessage("Lucky heal!");
             }
-            
+
             Effect heal = _.EffectHeal(amount);
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, heal, oTarget.Object);
+            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, heal, oTarget.Object);
 
             if (length > 0.0f && regenAmount > 0)
             {
                 Effect regen = _.EffectRegenerate(regenAmount, 1.0f);
-                _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, regen, oTarget.Object, length + 0.1f);
+                _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, regen, oTarget.Object, length + 0.1f);
             }
 
-            _skill.RegisterPCToAllCombatTargetsForSkill(oPC, SkillType.DarkSideAbilities);
-
-            Effect vfx = _.EffectVisualEffect(NWScript.VFX_IMP_HEALING_M);
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, vfx, oTarget.Object);
+            Effect vfx = _.EffectVisualEffect(VFX_IMP_HEALING_M);
+            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, oTarget.Object);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.Perk.LightSide
 
             if (length > 0.0f && dotAmount > 0)
             {
-                _customEffect.ApplyCustomEffect(oPC, (NWCreature)oTarget, CustomEffectType.ForceBreach, length, level);
+                _customEffect.ApplyCustomEffect(oPC, (NWCreature)oTarget, CustomEffectType.ForceBreach, length, level, null);
             }
 
             _skill.RegisterPCToAllCombatTargetsForSkill(oPC, SkillType.LightSideAbilities);

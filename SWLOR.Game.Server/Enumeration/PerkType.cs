@@ -15,8 +15,8 @@
         SpeedyMedicine = 10,
         AbsorptionField = 11,
         Hide = 12,
-        // 13 is free
-        // 14 is free
+        ForceSpread = 13,
+        DarkSpread = 14,
         Lucky = 15,
         Health = 16,
         FP = 17,

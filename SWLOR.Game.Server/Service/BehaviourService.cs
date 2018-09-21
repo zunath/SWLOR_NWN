@@ -1,5 +1,6 @@
 ﻿using FluentBehaviourTree;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Processor;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Service
@@ -18,14 +19,7 @@ namespace SWLOR.Game.Server.Service
         
         public void RegisterBehaviour(IBehaviourTreeNode node, NWCreature creature)
         {
-            TimeData time = new TimeData(_objProc.ProcessingTickInterval);
-            string behaviourID = _objProc.RegisterProcessingEvent(() =>
-            {
-                if (creature.IsValid)
-                {
-                    node.Tick(time);
-                }
-            });
+            string behaviourID = _objProc.RegisterProcessingEvent<BehaviourProcessor>(node, creature);
             _state.NPCBehaviours.Add(behaviourID, creature);
         }
         

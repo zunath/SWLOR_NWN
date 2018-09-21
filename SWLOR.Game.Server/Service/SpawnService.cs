@@ -5,8 +5,8 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entities;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Processor;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Service
         public void OnModuleLoad()
         {
             InitializeSpawns();
-            _processor.RegisterProcessingEvent(Process);
+            _processor.RegisterProcessingEvent<SpawnProcessor>();
         }
 
         private void InitializeSpawns()
@@ -138,65 +138,8 @@ namespace SWLOR.Game.Server.Service
                 });
             }
         }
-
-        private void Process()
-        {
-            var spawns = _state.AreaSpawns;
-            
-            foreach (var spawn in spawns)
-            {
-                string areaResref = spawn.Key;
-                AreaSpawn areaSpawn = spawn.Value;
-
-                foreach (var plc in areaSpawn.Placeables)
-                {
-                    ProcessSpawn(plc, OBJECT_TYPE_PLACEABLE, areaResref);
-                }
-
-                foreach (var creature in areaSpawn.Creatures)
-                {
-                    ProcessSpawn(creature, OBJECT_TYPE_CREATURE, areaResref);
-                }
-            }
-        }
-
-        private void ProcessSpawn(ObjectSpawn spawn, int objectType, string areaResref)
-        {
-            // Don't process anything that's valid.
-            if (spawn.Spawn.IsValid) return;
-            spawn.Timer += _processor.ProcessingTickInterval;
-
-            // Time to respawn!
-            if (spawn.Timer >= spawn.RespawnTime)
-            {
-                string resref = spawn.Resref;
-                Location location = spawn.IsStaticSpawnPoint ? spawn.SpawnLocation : null;
-
-                if (string.IsNullOrWhiteSpace(resref))
-                {
-                    var dbSpawn = _db.SpawnObjects.Where(x => x.SpawnID == spawn.SpawnTableID)
-                        .OrderBy(o => Guid.NewGuid()).First();
-                    resref = dbSpawn.Resref;
-                }
-
-                if (location == null)
-                {
-                    location = GetRandomSpawnPoint(areaResref);
-                }
-
-                spawn.Spawn = NWObject.Wrap(_.CreateObject(objectType, resref, location));
-                if(spawn.NPCGroupID > 0)
-                    spawn.Spawn.SetLocalInt("NPC_GROUP", spawn.NPCGroupID);
-
-                if(!string.IsNullOrWhiteSpace(spawn.BehaviourScript) &&
-                   string.IsNullOrWhiteSpace(spawn.Spawn.GetLocalString("BEHAVIOUR")))
-                    spawn.Spawn.SetLocalString("BEHAVIOUR", spawn.BehaviourScript);
-
-                spawn.Timer = 0.0f;
-            }
-        }
-
-        private Location GetRandomSpawnPoint(string areaResref)
+        
+        public Location GetRandomSpawnPoint(string areaResref)
         {
             var area = NWModule.Get().Areas.Single(x => x.Resref == areaResref);
             var spawnPoint = _db.AreaWalkmeshes

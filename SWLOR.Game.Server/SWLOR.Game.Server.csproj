@@ -55,6 +55,9 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="Z.EntityFramework.Plus.EF6, Version=1.8.10.0, Culture=neutral, PublicKeyToken=59b66d028979105b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Z.EntityFramework.Plus.EF6.1.8.10\lib\net45\Z.EntityFramework.Plus.EF6.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AI\AIComponent\WarpToTargetIfStuck.cs" />
@@ -844,6 +847,11 @@
     <Compile Include="Mod\SneakAttackMod.cs" />
     <Compile Include="Mod\SummoningMagicMod.cs" />
     <Compile Include="Mod\WeaponsmithMod.cs" />
+    <Compile Include="Processor\AppStateProcessor.cs" />
+    <Compile Include="Processor\BehaviourProcessor.cs" />
+    <Compile Include="Processor\Contracts\IEventProcessor.cs" />
+    <Compile Include="Processor\CustomEffectProcessor.cs" />
+    <Compile Include="Processor\SpawnProcessor.cs" />
     <Compile Include="QuestRule\Contracts\IQuestRule.cs" />
     <Compile Include="QuestRule\CreditBonusRule.cs" />
     <Compile Include="QuestRule\HideQuestGiverRule.cs" />
@@ -851,7 +859,6 @@
     <Compile Include="QuestRule\RemoveKeyItemsRule.cs" />
     <Compile Include="Service\AbilityService.cs" />
     <Compile Include="Service\ActivityLoggingService.cs" />
-    <Compile Include="Service\AppStateService.cs" />
     <Compile Include="Service\AuthorizationService.cs" />
     <Compile Include="Service\BackgroundService.cs" />
     <Compile Include="Service\BasePermissionService.cs" />
@@ -956,7 +963,6 @@
     <Compile Include="Service\Contracts\IBehaviourService.cs" />
     <Compile Include="Service\Contracts\IEnmityService.cs" />
     <Compile Include="Service\Contracts\IMapService.cs" />
-    <Compile Include="Service\Contracts\IAppStateService.cs" />
     <Compile Include="Service\Contracts\IModService.cs" />
     <Compile Include="Service\Contracts\IComponentBonusService.cs" />
     <Compile Include="Service\Contracts\IAreaService.cs" />
@@ -1017,6 +1023,7 @@
     <Compile Include="ValueObject\MapPin.cs" />
     <Compile Include="ValueObject\PCPerkHeader.cs" />
     <Compile Include="ValueObject\ModSlots.cs" />
+    <Compile Include="ValueObject\ProcessingEvent.cs" />
     <Compile Include="ValueObject\ResourceDetails.cs" />
     <Compile Include="ValueObject\Skill\CreatureSkillRegistration.cs" />
     <Compile Include="ValueObject\Skill\PlayerSkillPointTracker.cs" />

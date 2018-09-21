@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Service
             Data.Entities.Perk perk = _db.Perks.SingleOrDefault(x => x.FeatID == featID);
             if (perk == null) return;
 
-            IPerk perkAction = App.ResolveByInterface<IPerk>("Perk." + perk.JavaScriptName);
+            IPerk perkAction = App.ResolveByInterface<IPerk>("Perk." + perk.ScriptName);
             if (perkAction == null) return;
 
             PlayerCharacter playerEntity = _db.PlayerCharacters.Single(x => x.PlayerID == pc.GlobalID);
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Service
                     }
                     break;
                 case EnmityAdjustmentRuleType.Custom:
-                    IPerk perkAction = App.ResolveByInterface<IPerk>("Perk." + perk.JavaScriptName);
+                    IPerk perkAction = App.ResolveByInterface<IPerk>("Perk." + perk.ScriptName);
                     perkAction?.OnCustomEnmityRule(pc, perk.Enmity);
                     break;
             }
@@ -371,7 +371,7 @@ namespace SWLOR.Game.Server.Service
 
             Data.Entities.Perk entity = _db.Perks.Single(x => x.PerkID == activeWeaponSkillID);
 
-            IPerk perk = App.ResolveByInterface<IPerk>("Perk." + entity.JavaScriptName);
+            IPerk perk = App.ResolveByInterface<IPerk>("Perk." + entity.ScriptName);
 
             if (perk.CanCastSpell(oPC, oTarget))
             {

@@ -13,7 +13,7 @@ INSERT INTO dbo.Perks ( PerkID ,
                         Name ,
                         FeatID ,
                         IsActive ,
-                        JavaScriptName ,
+                        ScriptName ,
                         BaseFPCost ,
                         BaseCastingTime ,
                         Description ,
@@ -26,7 +26,7 @@ VALUES ( @PerkID ,    -- PerkID - int
          @Name ,   -- Name - varchar(64)
          NULL ,    -- FeatID - int
          1 , -- IsActive - bit
-         @PerkJS ,   -- JavaScriptName - varchar(64)
+         @PerkJS ,   -- ScriptName - varchar(64)
          0 ,    -- BaseFPCost - int
          0 ,  -- BaseCastingTime - float
          @PerkDescription,

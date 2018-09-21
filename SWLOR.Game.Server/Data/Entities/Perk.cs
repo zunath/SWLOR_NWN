@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Data.Entities
 
         [Required]
         [StringLength(64)]
-        public string JavaScriptName { get; set; }
+        public string ScriptName { get; set; }
 
         public int BaseFPCost { get; set; }
 

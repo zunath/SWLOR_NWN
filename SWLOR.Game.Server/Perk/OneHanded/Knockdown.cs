@@ -1,10 +1,10 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using NWN;
 using SWLOR.Game.Server.Service.Contracts;
+using static NWN.NWScript;
 
-namespace SWLOR.Game.Server.Perk.TwoHanded
+namespace SWLOR.Game.Server.Perk.OneHanded
 {
     public class Knockdown: IPerk
     {
@@ -24,12 +24,12 @@ namespace SWLOR.Game.Server.Perk.TwoHanded
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             NWItem weapon = oPC.RightHand;
-            return weapon.CustomItemType == CustomItemType.Saberstaff;
+            return weapon.CustomItemType == CustomItemType.Baton;
         }
 
         public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
         {
-            return "You must be equipped with a saberstaff weapon to use Knockdown.";
+            return "You must be equipped with a baton weapon to use Knockdown.";
         }
 
         public int FPCost(NWPlayer oPC, int baseFPCost)
@@ -50,42 +50,40 @@ namespace SWLOR.Game.Server.Perk.TwoHanded
         public void OnImpact(NWPlayer oPC, NWObject oTarget)
         {
             int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.Knockdown);
-            int chance;
+            int damage;
             float length;
 
             switch (perkLevel)
             {
                 case 1:
-                    chance = 10;
-                    length = 3.0f;
+                    damage = _random.D4(1);
+                    length = 6.0f;
                     break;
                 case 2:
-                    chance = 20;
-                    length = 3.0f;
+                    damage = _random.D4(2);
+                    length = 6.0f;
                     break;
                 case 3:
-                    chance = 20;
+                    damage = _random.D6(2);
                     length = 6.0f;
                     break;
                 case 4:
-                    chance = 30;
-                    length = 6.0f;
+                    damage = _random.D6(2);
+                    length = 9.0f;
                     break;
                 case 5:
-                    chance = 40;
-                    length = 6.0f;
+                    damage = _random.D6(3);
+                    length = 9.0f;
                     break;
                 case 6:
-                    chance = 50;
-                    length = 6.0f;
+                    damage = _random.D8(3);
+                    length = 9.0f;
                     break;
                 default: return;
             }
 
-            if (_random.Random(100) + 1 <= chance)
-            {
-                _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, _.EffectKnockdown(), oTarget.Object, length);
-            }
+            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectKnockdown(), oTarget.Object, length);
+            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_BLUDGEONING), oTarget);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

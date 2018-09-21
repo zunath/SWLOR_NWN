@@ -73,7 +73,7 @@
         WeaponFocusBlasterRifles = 68,
         WeaponFocusThrowing = 69,
         ShieldBoost = 70,
-        // 71 is free
+        RecoveryBlast = 71,
         // 72 is free
         // 73 is free
         // 74 is free

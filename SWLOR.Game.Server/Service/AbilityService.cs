@@ -395,6 +395,7 @@ namespace SWLOR.Game.Server.Service
             HandleApplySneakAttackDamage(data);
             HandleBattlemagePerk(data);
             HandleAbsorptionFieldEffect(data);
+            HandleRecoveryBlast(data);
         }
 
         private void HandleBattlemagePerk(DamageData data)
@@ -501,6 +502,29 @@ namespace SWLOR.Game.Server.Service
             if (absorbed < 1) absorbed = 1;
 
             RestoreFP(player, absorbed);
+        }
+
+        private void HandleRecoveryBlast(DamageData data)
+        {
+            NWObject damager = data.Damager;
+            bool isActive = damager.GetLocalInt("RECOVERY_BLAST_ACTIVE") == TRUE;
+            if (!isActive) return;
+
+            data.Bludgeoning = 0;
+            data.Pierce = 0;
+            data.Slash = 0;
+            data.Magical = 0;
+            data.Acid = 0;
+            data.Cold = 0;
+            data.Divine = 0;
+            data.Electrical = 0;
+            data.Fire = 0;
+            data.Negative = 0;
+            data.Positive = 0;
+            data.Sonic = 0;
+            data.Base = 0;
+
+            _nwnxDamage.SetDamageEventData(data);
         }
 
     }

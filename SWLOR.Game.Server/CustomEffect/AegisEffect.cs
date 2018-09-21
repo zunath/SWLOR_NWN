@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.CustomEffect
 
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
-            _skill.ApplyStatChanges((NWPlayer)oTarget, null);
+            _skill.ApplyStatChanges(oTarget.Object, null);
 
             return null;
         }
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.CustomEffect
 
         public void WearOff(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)
         {
-            _skill.ApplyStatChanges((NWPlayer)oTarget, null);
+            _skill.ApplyStatChanges(oTarget.Object, null);
         }
     }
 }

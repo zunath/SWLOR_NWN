@@ -11,6 +11,7 @@
         ForceShock = 7,
         AbsorptionField = 8,
         ForceSpread = 9,
-        DarkSpread = 10
+        DarkSpread = 10,
+        ShieldBoost = 11
     }
 }

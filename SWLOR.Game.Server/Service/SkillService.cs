@@ -122,33 +122,15 @@ namespace SWLOR.Game.Server.Service
             _nwnxCreature.SetRawAbilityScore(player, ABILITY_CHARISMA, (int)chaBonus + pcEntity.CHABase);
 
             // Apply AC
-            int ac = player.CalculateEffectiveArmorClass(ignoreItem);
+            int ac = player.EffectiveArmorClass(ignoreItem);
             _nwnxCreature.SetBaseAC(player, ac);
 
             // Apply BAB
             int bab = CalculateBAB(player, ignoreItem);
             _nwnxCreature.SetBaseAttackBonus(player, bab);
-
-
-            int equippedItemHPBonus = 0;
-            int equippedItemFPBonus = 0;
-
-            for (int slot = 0; slot < NUM_INVENTORY_SLOTS; slot++)
-            {
-                NWItem item = NWItem.Wrap(_.GetItemInSlot(slot, player.Object));
-                if (item.Equals(ignoreItem)) continue;
-
-                equippedItemHPBonus += item.HPBonus;
-                equippedItemFPBonus += item.FPBonus;
-            }
-
+            
             // Apply HP
-            int hp = 30 + player.ConstitutionModifier * 5;
-            hp += _perk.GetPCPerkLevel(player, PerkType.Health) * 5;
-            hp += equippedItemHPBonus;
-
-            if (hp > 255) hp = 255;
-            if (hp < 20) hp = 20;
+            int hp = player.EffectiveMaxHitPoints(ignoreItem);
             _nwnxCreature.SetMaxHitPointsByLevel(player, 1, hp);
             if (player.CurrentHP > player.MaxHP)
             {
@@ -158,15 +140,11 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Apply FP
-            int fp = 20;
-            fp += (player.IntelligenceModifier + player.WisdomModifier + player.CharismaModifier) * 5;
-            fp += _perk.GetPCPerkLevel(player, PerkType.FP) * 5;
-            fp += equippedItemFPBonus;
-
-            if (fp < 0) fp = 0;
-            pcEntity.MaxFP = fp;
+            pcEntity.MaxFP = player.EffectiveMaxFP(ignoreItem);
 
             if (isInitialization)
+                pcEntity.CurrentFP = pcEntity.MaxFP;
+            if (pcEntity.CurrentFP < pcEntity.MaxFP)
                 pcEntity.CurrentFP = pcEntity.MaxFP;
 
             _db.SaveChanges();

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.CustomEffect.Contracts;
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.Service
 {
     public class CustomEffectService : ICustomEffectService
     {
-        private readonly IDataContext _db;
+        private IDataContext _db;
         private readonly IErrorService _error;
         private readonly INWScript _;
         private readonly AppState _state;
@@ -44,10 +45,7 @@ namespace SWLOR.Game.Server.Service
 
         public int CalculateEffectAC(NWCreature creature)
         {
-            var effect = _state.NPCEffects.SingleOrDefault(x => x.Key.Target.Equals(creature) && x.Key.CustomEffectID == (int)CustomEffectType.Aegis);
-            int effectLevel = 0;
-            if (effect.Key != null)
-                effectLevel = effect.Key.EffectiveLevel;
+            int effectLevel = GetCustomEffectLevel(creature, CustomEffectType.Aegis);
 
             int aegisAC = 0;
 
@@ -73,6 +71,12 @@ namespace SWLOR.Game.Server.Service
             }
 
             return aegisAC;
+        }
+
+        public float CalculateEffectHPBonusPercent(NWCreature creature)
+        {
+            int effectLevel = GetCustomEffectLevel(creature, CustomEffectType.ShieldBoost);
+            return effectLevel * 0.05f;
         }
 
         public void OnModuleLoad()
@@ -300,12 +304,26 @@ namespace SWLOR.Game.Server.Service
             RemovePCCustomEffect(oPC, (long) customEffectType);
         }
 
-        public int GetEffectiveLevelOfPCCustomEffect(NWPlayer player, CustomEffectType customEffectType)
+        public int GetCustomEffectLevel(NWCreature creature, CustomEffectType customEffectType)
         {
-            if (!player.IsPlayer) return 0;
-            PCCustomEffect effect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CustomEffectID == (int)customEffectType);
+            int effectLevel = 0;
+            if (creature.IsNPC)
+            {
+                var effect = _state.NPCEffects.SingleOrDefault(x => x.Key.Target.Equals(creature) && x.Key.CustomEffectID == (int)customEffectType);
 
-            return effect?.EffectiveLevel ?? 0;
+                if (effect.Key != null)
+                    effectLevel = effect.Key.EffectiveLevel;
+            }
+            else if (creature.IsPlayer)
+            {
+                PCCustomEffect dbEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == creature.GlobalID && x.CustomEffectID == (int)customEffectType);
+                if (dbEffect != null)
+                {
+                    effectLevel = dbEffect.EffectiveLevel;
+                }
+            }
+            else return 0;
+            return effectLevel;
         }
 
     }

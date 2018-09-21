@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.GameObject
         private readonly ISkillService _skill;
         private readonly IItemService _item;
         private readonly IDataContext _db;
+        private readonly IPerkService _perk;
 
         public NWPlayer(INWScript script, 
             INWNXCreature nwnxCreature,
@@ -27,13 +28,15 @@ namespace SWLOR.Game.Server.GameObject
             ICustomEffectService customEffect,
             ISkillService skill,
             IItemService item,
-            IDataContext db)
+            IDataContext db,
+            IPerkService perk)
             : base(script, nwnxCreature, state)
         {
             _customEffect = customEffect;
             _skill = skill;
             _item = item;
             _db = db;
+            _perk = perk;
         }
 
         public new static NWPlayer Wrap(Object @object)
@@ -127,7 +130,70 @@ namespace SWLOR.Game.Server.GameObject
             return adjustedValue;
         }
 
-        public virtual int CalculateEffectiveArmorClass(NWItem ignoreItem)
+        public virtual int EffectiveMaxHitPoints(NWItem ignoreItem)
+        {
+            int hp = 30 + ConstitutionModifier * 5;
+            int equippedItemHPBonus = 0;
+            var skills = _db.PCSkills.Where(x => x.PlayerID == GlobalID)
+                .Select(x => new
+                {
+                    x.SkillID,
+                    x.Rank
+                }).ToDictionary(x => x.SkillID, x => x.Rank);
+            float effectPercentBonus = _customEffect.CalculateEffectHPBonusPercent(this);
+
+            for (int slot = 0; slot < NUM_INVENTORY_SLOTS; slot++)
+            {
+                NWItem item = NWItem.Wrap(_.GetItemInSlot(slot, Object));
+                if (item.Equals(ignoreItem)) continue;
+
+                var skillType = _skill.GetSkillTypeForItem(item);
+                int rank = skills[(int) skillType];
+                equippedItemHPBonus += CalculateAdjustedValue(item.HPBonus, item.RecommendedLevel, rank, 0);
+            }
+
+            hp += _perk.GetPCPerkLevel(this, PerkType.Health) * 5;
+            hp += equippedItemHPBonus;
+            hp = hp + (int)(hp * effectPercentBonus);
+
+            if (hp > 255) hp = 255;
+            if (hp < 20) hp = 20;
+
+            return hp;
+        }
+
+        public virtual int EffectiveMaxFP(NWItem ignoreItem)
+        {
+            int equippedItemFPBonus = 0;
+            var skills = _db.PCSkills.Where(x => x.PlayerID == GlobalID)
+                .Select(x => new
+                {
+                    x.SkillID,
+                    x.Rank
+                }).ToDictionary(x => x.SkillID, x => x.Rank);
+
+
+            for (int slot = 0; slot < NUM_INVENTORY_SLOTS; slot++)
+            {
+                NWItem item = NWItem.Wrap(_.GetItemInSlot(slot, Object));
+                if (item.Equals(ignoreItem)) continue;
+
+                var skillType = _skill.GetSkillTypeForItem(item);
+                int rank = skills[(int) skillType];
+                equippedItemFPBonus += CalculateAdjustedValue(item.FPBonus, item.RecommendedLevel, rank, 0);
+            }
+
+            int fp = 20;
+            fp += (IntelligenceModifier + WisdomModifier + CharismaModifier) * 5;
+            fp += _perk.GetPCPerkLevel(this, PerkType.FP) * 5;
+            fp += equippedItemFPBonus;
+
+            if (fp < 0) fp = 0;
+
+            return fp;
+        }
+
+        public virtual int EffectiveArmorClass(NWItem ignoreItem)
         {
             int heavyRank = _skill.GetPCSkill(this, SkillType.HeavyArmor).Rank;
             int lightRank = _skill.GetPCSkill(this, SkillType.LightArmor).Rank;

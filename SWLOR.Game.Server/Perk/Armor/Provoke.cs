@@ -78,15 +78,6 @@ namespace SWLOR.Game.Server.Perk.Armor
             });
 
             _enmity.AdjustEnmity(npc, oPC, 120);
-
-            // todo debugging
-            EnmityTable table = _enmity.GetEnmityTable(npc);
-
-            foreach (var x in table.Values)
-            {
-                Console.WriteLine(npc.Name + ", " + x.TargetObject.Name + ": Volatile = " + x.VolatileAmount + ", Cumulative: " + x.CumulativeAmount);
-            }
-            // todo end debugging
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

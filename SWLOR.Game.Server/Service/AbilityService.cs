@@ -485,7 +485,7 @@ namespace SWLOR.Game.Server.Service
             if (!target.IsPlayer) return;
 
             NWPlayer player = NWPlayer.Wrap(target);
-            int effectLevel = _customEffect.GetEffectiveLevelOfPCCustomEffect(player, CustomEffectType.AbsorptionField);
+            int effectLevel = _customEffect.GetCustomEffectLevel(player, CustomEffectType.AbsorptionField);
             if (effectLevel <= 0) return;
 
             // Remove effect if player activates ability and removes the armor.

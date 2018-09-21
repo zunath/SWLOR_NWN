@@ -132,6 +132,7 @@
     <Compile Include="CustomEffect\DarkSpreadEffect.cs" />
     <Compile Include="CustomEffect\ForceSpreadEffect.cs" />
     <Compile Include="CustomEffect\PoisonEffect.cs" />
+    <Compile Include="CustomEffect\ShieldBoostEffect.cs" />
     <Compile Include="Data\Entities\Area.cs" />
     <Compile Include="Data\Entities\BaseStructure.cs" />
     <Compile Include="Data\Entities\BaseStructureType.cs" />
@@ -561,6 +562,7 @@
     <Compile Include="NWN\Events\Player\pc_on_damaged.cs" />
     <Compile Include="Perk\Armor\AbsorptionField.cs" />
     <Compile Include="Perk\Armor\Hide.cs" />
+    <Compile Include="Perk\Armor\ShieldBoost.cs" />
     <Compile Include="Perk\DarkSide\DarkHeal.cs" />
     <Compile Include="Perk\DarkSide\DarkSpread.cs" />
     <Compile Include="Perk\DarkSide\ForceLightning.cs" />

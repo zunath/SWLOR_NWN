@@ -78,7 +78,7 @@
         GrenadeProficiency = 73,
         // 74 is free
         // 75 is free
-        // 76 is free
+        ForceAura = 76,
         // 77 is free
         // 78 is free
         SpeedyRefining = 79,

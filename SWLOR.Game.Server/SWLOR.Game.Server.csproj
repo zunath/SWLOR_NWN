@@ -566,6 +566,7 @@
     <Compile Include="Perk\DarkSide\ForceLightning.cs" />
     <Compile Include="Perk\Fabrication\FabricationBlueprints.cs" />
     <Compile Include="Perk\Fabrication\SpeedyFabrication.cs" />
+    <Compile Include="Perk\LightSide\ForcePush.cs" />
     <Compile Include="Perk\LightSide\ForceSpread.cs" />
     <Compile Include="Perk\Medicine\MedicalBlueprints.cs" />
     <Compile Include="Perk\Medicine\SpeedyMedicine.cs" />

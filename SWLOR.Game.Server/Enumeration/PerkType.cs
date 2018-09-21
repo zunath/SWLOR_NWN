@@ -74,7 +74,7 @@
         WeaponFocusThrowing = 69,
         ShieldBoost = 70,
         RecoveryBlast = 71,
-        // 72 is free
+        LegShot = 72,
         // 73 is free
         // 74 is free
         // 75 is free

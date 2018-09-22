@@ -427,15 +427,17 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleApplyDamage()
         {
-            DamageData data = _nwnxDamage.GetDamageEventData();
-            HandleApplySneakAttackDamage(data);
-            HandleBattlemagePerk(data);
-            HandleAbsorptionFieldEffect(data);
-            HandleRecoveryBlast(data);
+            Console.WriteLine("Firing on damage");
+            HandleApplySneakAttackDamage();
+            HandleBattlemagePerk();
+            HandleAbsorptionFieldEffect();
+            HandleRecoveryBlast();
+            HandleTranquilizerEffect();
         }
 
-        private void HandleBattlemagePerk(DamageData data)
+        private void HandleBattlemagePerk()
         {
+            DamageData data = _nwnxDamage.GetDamageEventData();
             NWObject target = NWObject.Wrap(Object.OBJECT_SELF);
             if (!data.Damager.IsPlayer || !target.IsNPC) return;
             if (_.GetHasFeat((int)CustomFeatType.Battlemage, data.Damager.Object) == FALSE) return;
@@ -478,8 +480,9 @@ namespace SWLOR.Game.Server.Service
                 RestoreFP(player, restoreAmount);
         }
 
-        private void HandleApplySneakAttackDamage(DamageData data)
+        private void HandleApplySneakAttackDamage()
         {
+            DamageData data = _nwnxDamage.GetDamageEventData();
             NWObject damager = data.Damager;
             int sneakAttackType = damager.GetLocalInt("SNEAK_ATTACK_ACTIVE");
 
@@ -517,8 +520,9 @@ namespace SWLOR.Game.Server.Service
             damager.DeleteLocalInt("SNEAK_ATTACK_ACTIVE");
         }
 
-        private void HandleAbsorptionFieldEffect(DamageData data)
+        private void HandleAbsorptionFieldEffect()
         {
+            DamageData data = _nwnxDamage.GetDamageEventData();
             NWObject target = Object.OBJECT_SELF;
             if (!target.IsPlayer) return;
 
@@ -540,8 +544,9 @@ namespace SWLOR.Game.Server.Service
             RestoreFP(player, absorbed);
         }
 
-        private void HandleRecoveryBlast(DamageData data)
+        private void HandleRecoveryBlast()
         {
+            DamageData data = _nwnxDamage.GetDamageEventData();
             NWObject damager = data.Damager;
             bool isActive = damager.GetLocalInt("RECOVERY_BLAST_ACTIVE") == TRUE;
             if (!isActive) return;
@@ -561,6 +566,29 @@ namespace SWLOR.Game.Server.Service
             data.Base = 0;
 
             _nwnxDamage.SetDamageEventData(data);
+        }
+
+        private void HandleTranquilizerEffect()
+        {
+            DamageData data = _nwnxDamage.GetDamageEventData();
+            if (data.Total <= 0) return;
+            NWObject self = Object.OBJECT_SELF;
+
+            // Ignore the first damage because it occurred during the application of the effect.
+            if (self.GetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN") > 0)
+            {
+                self.DeleteLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN");
+                return;
+            }
+            
+            for (Effect effect = _.GetFirstEffect(self.Object); _.GetIsEffectValid(effect) == TRUE; effect = _.GetNextEffect(self.Object))
+            {
+                if (_.GetEffectTag(effect) == "TRANQUILIZER_EFFECT")
+                {
+                    _.RemoveEffect(self, effect);
+                }
+            }
+
         }
 
     }

@@ -20,18 +20,18 @@ namespace SWLOR.Game.Server.NWNX
         public int Base { get; set; }
 
 
-        public int Total => Bludgeoning +
-                            Pierce +
-                            Slash +
-                            Magical +
-                            Acid +
-                            Cold +
-                            Divine +
-                            Electrical +
-                            Fire +
-                            Negative +
-                            Positive +
-                            Sonic +
-                            Base;
+        public int Total => (Bludgeoning < 0 ? 0 : Bludgeoning) +
+                            (Pierce < 0 ? 0: Pierce) +
+                            (Slash < 0 ? 0: Slash) +
+                            (Magical < 0 ? 0 : Magical) +
+                            (Acid < 0 ? 0 : Acid) +
+                            (Cold < 0 ? 0 : Cold) +
+                            (Divine < 0 ? 0 : Divine) +
+                            (Electrical < 0 ? 0 : Electrical) +
+                            (Fire < 0 ? 0 : Fire) +
+                            (Negative < 0 ? 0 : Negative) +
+                            (Positive < 0 ? 0 : Positive) +
+                            (Sonic < 0 ? 0 : Sonic) +
+                            (Base < 0 ? 0 : Base);
     }
 }

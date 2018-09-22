@@ -6,6 +6,7 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.AI.AIComponent
 {
@@ -31,7 +32,8 @@ namespace SWLOR.Game.Server.AI.AIComponent
             return builder.Do("WarpToTargetIfStuck", t =>
             {
                 if (_enmity.IsEnmityTableEmpty(self) ||
-                    _.GetMovementRate(self.Object) == 1) // 1 = Immobile
+                    _.GetMovementRate(self.Object) == 1 || // 1 = Immobile
+                    self.HasAnyEffect(EFFECT_TYPE_DAZED))  // Dazed
                 {
                     if (self.Data.ContainsKey("WarpToTargetIfStuck_Position"))
                         self.Data.Remove("WarpToTargetIfStuck_Position");

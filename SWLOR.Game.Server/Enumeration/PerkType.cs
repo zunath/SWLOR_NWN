@@ -76,8 +76,8 @@
         RecoveryBlast = 71,
         LegShot = 72,
         GrenadeProficiency = 73,
-        // 74 is free
-        // 75 is free
+        Tranquilizer = 74,
+        MassTranquilizer = 75,
         ForceAura = 76,
         // 77 is free
         // 78 is free

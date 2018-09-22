@@ -14,7 +14,6 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly INWScript _;
         private readonly IDataContext _db;
         private readonly IItemService _item;
-        private readonly IEffectTrackerService _effectTracker;
         private readonly IAbilityService _ability;
         private readonly IPerkService _perk;
         private readonly IBaseService _base;
@@ -22,7 +21,6 @@ namespace SWLOR.Game.Server.Event.Module
         public OnModuleHeartbeat(INWScript script,
             IDataContext db,
             IItemService item,
-            IEffectTrackerService effectTracker,
             IAbilityService ability,
             IPerkService perk,
             IBaseService @base)
@@ -30,7 +28,6 @@ namespace SWLOR.Game.Server.Event.Module
             _ = script;
             _db = db;
             _item = item;
-            _effectTracker = effectTracker;
             _ability = ability;
             _perk = perk;
             _base = @base;
@@ -44,8 +41,6 @@ namespace SWLOR.Game.Server.Event.Module
             {
                 if (!player.IsDM)
                 {
-                    _effectTracker.ProcessPCEffects(player);
-
                     PlayerCharacter entity = _db.PlayerCharacters.SingleOrDefault(x => x.PlayerID == player.GlobalID);
 
                     if (entity != null)

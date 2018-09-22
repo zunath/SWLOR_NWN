@@ -857,6 +857,7 @@
     <Compile Include="Processor\BehaviourProcessor.cs" />
     <Compile Include="Processor\Contracts\IEventProcessor.cs" />
     <Compile Include="Processor\CustomEffectProcessor.cs" />
+    <Compile Include="Processor\GarbageCollectorProcessor.cs" />
     <Compile Include="Processor\SpawnProcessor.cs" />
     <Compile Include="QuestRule\Contracts\IQuestRule.cs" />
     <Compile Include="QuestRule\CreditBonusRule.cs" />

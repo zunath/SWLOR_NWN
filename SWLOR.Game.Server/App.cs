@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server
             builder.RegisterInstance(new AppState());
 
             // Types
-            builder.RegisterType<DataContext>().As<IDataContext>();
+            builder.RegisterType<DataContext>().As<IDataContext>().InstancePerLifetimeScope();
 
             // Game Objects
             builder.RegisterType<NWObject>().As<INWObject>();

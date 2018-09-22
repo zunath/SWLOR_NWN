@@ -959,13 +959,11 @@
     <Compile Include="Service\DialogService.cs" />
     <Compile Include="Service\Contracts\IDialogService.cs" />
     <Compile Include="Service\DurabilityService.cs" />
-    <Compile Include="Service\EffectTrackerService.cs" />
     <Compile Include="Service\EnmityService.cs" />
     <Compile Include="Service\ErrorService.cs" />
     <Compile Include="Service\ExaminationService.cs" />
     <Compile Include="Service\FarmingService.cs" />
     <Compile Include="Service\HelmetToggleService.cs" />
-    <Compile Include="Service\Contracts\IEffectTrackerService.cs" />
     <Compile Include="Service\Contracts\IObjectProcessingService.cs" />
     <Compile Include="Service\Contracts\IBehaviourService.cs" />
     <Compile Include="Service\Contracts\IEnmityService.cs" />

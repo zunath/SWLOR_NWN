@@ -40,7 +40,6 @@ namespace SWLOR.Game.Server.Conversation
                 "View Perks",
                 "View Blueprints",
                 "Dice Bag",
-                "Emote Menu",
                 "View Key Items",
                 "Modify Clothes",
                 "Character Management",
@@ -98,31 +97,20 @@ namespace SWLOR.Game.Server.Conversation
                                 _.ActionStartConversation(player.Object, "dmfi_universal", 1, 0);
                             });
                             break;
-                        // Emote Menu
-                        case 6:
-                            player.SetLocalObject("dmfi_univ_target", player.Object);
-                            player.SetLocalLocation("dmfi_univ_location", player.Location);
-                            player.SetLocalString("dmfi_univ_conv", "pc_emote");
-                            player.AssignCommand(() =>
-                            {
-                                _.ClearAllActions();
-                                _.ActionStartConversation(player.Object, "dmfi_universal", 1, 0);
-                            });
-                            break;
                         // Key Item Categories Page
-                        case 7:
+                        case 6:
                             SwitchConversation("KeyItems");
                             break;
                         // Modify Clothes
-                        case 8:
+                        case 7:
                             player.AssignCommand(() => _.ActionStartConversation(player.Object, "x0_skill_ctrap", 1, 0));
                             break;
                         // Character Management
-                        case 9:
+                        case 8:
                             SwitchConversation("CharacterManagement");
                             break;
                         // Open Trash Can (Destroy Items)
-                        case 10:
+                        case 9:
                             EndConversation();
                             NWPlaceable trashCan = NWPlaceable.Wrap(_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "reo_trash_can", player.Location));
 

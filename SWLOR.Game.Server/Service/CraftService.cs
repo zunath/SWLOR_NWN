@@ -77,7 +77,6 @@ namespace SWLOR.Game.Server.Service
         {
             var model = GetPlayerCraftingData(player);
             var bp = model.Blueprint;
-            int deviceID = bp.CraftDeviceID;
             int playerEL = CalculatePCEffectiveLevel(player, model.PlayerSkillRank, (SkillType)bp.SkillID);
 
             string header = _color.Green("Blueprint: ") + bp.Quantity + "x " + bp.ItemName + "\n";

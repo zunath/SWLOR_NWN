@@ -18,14 +18,17 @@ namespace SWLOR.Game.Server.Conversation
         }
 
         private readonly ICraftService _craft;
+        private readonly ISkillService _skill;
 
         public ViewBlueprints(
             INWScript script,
             IDialogService dialog,
-            ICraftService craft)
+            ICraftService craft,
+            ISkillService skill)
             : base(script, dialog)
         {
             _craft = craft;
+            _skill = skill;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -143,6 +146,11 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
+            var model = _craft.GetPlayerCraftingData(GetPC());
+            model.Blueprint = _craft.GetBlueprintByID(blueprintID);
+            model.BlueprintID = blueprintID;
+            model.PlayerSkillRank = _skill.GetPCSkill(GetPC(), model.Blueprint.SkillID).Rank;
+            
             string header = _craft.BuildBlueprintHeader(GetPC(), blueprintID, false);
 
             SetPageHeader("BlueprintDetailsPage", header);
@@ -158,6 +166,7 @@ namespace SWLOR.Game.Server.Conversation
         }
         public override void EndDialog()
         {
+            _craft.ClearPlayerCraftingData(GetPC());
         }
     }
 }

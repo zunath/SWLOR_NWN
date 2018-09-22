@@ -440,8 +440,17 @@ namespace SWLOR.Game.Server.Service
             NWPlayer oPC = _.GetFirstFactionMember(oKiller);
             while (oPC.IsValid)
             {
-                if (areaResref != oPC.Area.Resref) continue;
-                if (_.GetDistanceBetween(creature, oPC) == 0.0f || _.GetDistanceBetween(creature, oPC) > 20.0f) continue;
+                if (areaResref != oPC.Area.Resref)
+                {
+                    oPC = _.GetNextFactionMember(oKiller);
+                    continue;
+                }
+
+                if (_.GetDistanceBetween(creature, oPC) == 0.0f || _.GetDistanceBetween(creature, oPC) > 20.0f)
+                {
+                    oPC = _.GetNextFactionMember(oKiller);
+                    continue;
+                }
 
                 foreach (var kt in _db.PCQuestKillTargetProgresses.Where(x => x.PlayerID == oPC.GlobalID && x.NPCGroupID == npcGroupID))
                 {
@@ -478,7 +487,7 @@ namespace SWLOR.Game.Server.Service
 
                 }
 
-                oPC = _.GetNextFactionMember(oKiller.Object);
+                oPC = _.GetNextFactionMember(oKiller);
             }
 
             _db.SaveChanges();

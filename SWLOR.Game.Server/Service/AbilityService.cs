@@ -427,7 +427,6 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleApplyDamage()
         {
-            Console.WriteLine("Firing on damage");
             HandleApplySneakAttackDamage();
             HandleBattlemagePerk();
             HandleAbsorptionFieldEffect();

@@ -241,7 +241,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             _db.SaveChanges();
-
+            
             // Update player and apply stat changes only if a level up occurred.
             if (originalRank != skill.Rank)
             {

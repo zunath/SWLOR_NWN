@@ -567,7 +567,9 @@
     <Compile Include="Perk\Armor\Hide.cs" />
     <Compile Include="Perk\Armor\ShieldBoost.cs" />
     <Compile Include="Perk\Blaster\LegShot.cs" />
+    <Compile Include="Perk\Blaster\MassTranquilizer.cs" />
     <Compile Include="Perk\Blaster\RecoveryBlast.cs" />
+    <Compile Include="Perk\Blaster\Tranquilizer.cs" />
     <Compile Include="Perk\DarkSide\DarkHeal.cs" />
     <Compile Include="Perk\DarkSide\DarkSpread.cs" />
     <Compile Include="Perk\DarkSide\ForceLightning.cs" />

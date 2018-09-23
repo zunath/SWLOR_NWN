@@ -14,16 +14,19 @@ namespace SWLOR.Game.Server.Service
         private readonly IColorTokenService _color;
         private readonly INWNXDamage _nwnxDamage;
         private readonly ISkillService _skill;
+        private readonly IItemService _item;
 
         public ModService(INWScript script,
             IColorTokenService color,
             INWNXDamage nwnxDamage,
-            ISkillService skill)
+            ISkillService skill,
+            IItemService item)
         {
             _ = script;
             _color = color;
             _nwnxDamage = nwnxDamage;
             _skill = skill;
+            _item = item;
         }
 
         public CustomItemPropertyType GetModType(NWItem item)
@@ -158,7 +161,7 @@ namespace SWLOR.Game.Server.Service
             {
                 NWPlayer player = (damager.Object);
                 int itemLevel = weapon.RecommendedLevel;
-                SkillType skill = _skill.GetSkillTypeForItem(weapon);
+                SkillType skill = _item.GetSkillTypeForItem(weapon);
                 int rank = _skill.GetPCSkill(player, skill).Rank;
                 int delta = itemLevel - rank;
                 if (delta >= 1) damageBonus--;

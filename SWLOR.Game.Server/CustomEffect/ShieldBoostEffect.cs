@@ -13,20 +13,23 @@ namespace SWLOR.Game.Server.CustomEffect
         private readonly INWScript _;
         private readonly ISkillService _skill;
         private readonly ICustomEffectService _customEffect;
+        private readonly IPlayerStatService _stat;
 
         public ShieldBoostEffect(
             INWScript script,
             ISkillService skill,
-            ICustomEffectService customEffect)
+            ICustomEffectService customEffect,
+            IPlayerStatService stat)
         {
             _ = script;
             _skill = skill;
             _customEffect = customEffect;
+            _stat = stat;
         }
 
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
-            _skill.ApplyStatChanges(oTarget.Object, null);
+            _stat.ApplyStatChanges(oTarget.Object, null);
             int healAmount = (int)(_customEffect.CalculateEffectHPBonusPercent(oTarget.Object) * oTarget.MaxHP);
 
             if (healAmount > 0)
@@ -44,7 +47,7 @@ namespace SWLOR.Game.Server.CustomEffect
             if (targetPlayer.Chest.CustomItemType != CustomItemType.HeavyArmor)
             {
                 _customEffect.RemovePCCustomEffect(targetPlayer, CustomEffectType.ShieldBoost);
-                _skill.ApplyStatChanges(targetPlayer, null);
+                _stat.ApplyStatChanges(targetPlayer, null);
 
                 var vfx = targetPlayer.Effects.SingleOrDefault(x => _.GetEffectTag(x) == "SHIELD_BOOST_VFX");
 
@@ -57,7 +60,7 @@ namespace SWLOR.Game.Server.CustomEffect
 
         public void WearOff(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)
         {
-            _skill.ApplyStatChanges(oTarget.Object, null);
+            _stat.ApplyStatChanges(oTarget.Object, null);
         }
     }
 }

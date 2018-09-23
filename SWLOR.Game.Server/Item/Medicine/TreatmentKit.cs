@@ -15,18 +15,21 @@ namespace SWLOR.Game.Server.Item.Medicine
         private readonly ICustomEffectService _customEffect;
         private readonly IRandomService _random;
         private readonly IPerkService _perk;
+        private readonly IPlayerStatService _playerStat;
 
         public TreatmentKit(INWScript script,
             ISkillService skill,
             ICustomEffectService customEffect,
             IRandomService random,
-            IPerkService perk)
+            IPerkService perk,
+            IPlayerStatService playerStat)
         {
             _ = script;
             _skill = skill;
             _customEffect = customEffect;
             _random = random;
             _perk = perk;
+            _playerStat = playerStat;
         }
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
@@ -68,7 +71,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             }
 
             PCSkill skill = _skill.GetPCSkill(player, SkillType.Medicine);
-            return 12.0f - (skill.Rank + player.EffectiveMedicineBonus / 2) * 0.1f;
+            return 12.0f - (skill.Rank + _playerStat.EffectiveMedicineBonus(player) / 2) * 0.1f;
         }
 
         public bool FaceTarget()

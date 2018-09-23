@@ -7,6 +7,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 
 using NWN;
+using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Event.Delayed;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
@@ -19,22 +20,22 @@ namespace SWLOR.Game.Server.Service
     {
         private readonly INWScript _;
         private readonly IBiowareXP2 _xp2;
-        private readonly ISkillService _skill;
         private readonly IColorTokenService _color;
         private readonly INWNXPlayer _nwnxPlayer;
+        private readonly IDataContext _db;
 
         public ItemService(
             INWScript script,
             IBiowareXP2 xp2,
-            ISkillService skill,
             IColorTokenService color,
-            INWNXPlayer nwnxPlayer)
+            INWNXPlayer nwnxPlayer,
+            IDataContext db)
         {
             _ = script;
             _xp2 = xp2;
-            _skill = skill;
             _color = color;
             _nwnxPlayer = nwnxPlayer;
+            _db = db;
         }
 
         public string GetNameByResref(string resref)
@@ -179,7 +180,7 @@ namespace SWLOR.Game.Server.Service
             }
             if (examinedItem.AssociatedSkillType > 0)
             {
-                PCSkill pcSkill = _skill.GetPCSkillByID(examiner.GlobalID, (int)examinedItem.AssociatedSkillType);
+                PCSkill pcSkill = _db.PCSkills.Single(x => x.PlayerID == examiner.GlobalID && x.SkillID == (int) examinedItem.AssociatedSkillType);
                 description += _color.Orange("Associated Skill: ") + pcSkill.Skill.Name + "\n";
             }
             if (examinedItem.CustomAC > 0)
@@ -513,118 +514,7 @@ namespace SWLOR.Game.Server.Service
                 else item.Destroy();
             }
         }
-
-        public CustomItemType GetCustomItemType(NWItem item)
-        {
-            int[] vibroblades =
-            {
-                BASE_ITEM_BASTARDSWORD,
-                BASE_ITEM_LONGSWORD,
-                BASE_ITEM_KATANA,
-                BASE_ITEM_SCIMITAR,
-                BASE_ITEM_BATTLEAXE
-            };
-
-            int[] finesseVibroblades =
-            {
-                BASE_ITEM_DAGGER,
-                BASE_ITEM_RAPIER,
-                BASE_ITEM_SHORTSWORD,
-                BASE_ITEM_KUKRI,
-                BASE_ITEM_SICKLE,
-                BASE_ITEM_WHIP,
-                BASE_ITEM_HANDAXE
-            };
-
-            int[] batons =
-            {
-                BASE_ITEM_CLUB,
-                BASE_ITEM_LIGHTFLAIL,
-                BASE_ITEM_LIGHTHAMMER,
-                BASE_ITEM_LIGHTMACE,
-                BASE_ITEM_MORNINGSTAR
-            };
-
-            int[] lightsabers =
-            {
-                CustomBaseItemType.Lightsaber 
-            };
-
-            int[] heavyVibroblades =
-            {
-                BASE_ITEM_GREATAXE,
-                BASE_ITEM_GREATSWORD,
-                BASE_ITEM_DWARVENWARAXE
-            };
-
-
-            int[] polearms =
-            {
-                BASE_ITEM_HALBERD,
-                BASE_ITEM_SCYTHE,
-                BASE_ITEM_SHORTSPEAR,
-                BASE_ITEM_TRIDENT
-            };
-
-            int[] twinVibroblades =
-            {
-                BASE_ITEM_DOUBLEAXE,
-                BASE_ITEM_TWOBLADEDSWORD
-            };
-
-            int[] saberstaffs =
-            {
-                CustomBaseItemType.Saberstaff
-            };
-
-            int[] martialArts =
-            {
-                BASE_ITEM_GLOVES,
-                BASE_ITEM_BRACER,
-                BASE_ITEM_KAMA,
-                BASE_ITEM_QUARTERSTAFF
-            };
-
-            int[] blasterRifles =
-            {
-                BASE_ITEM_LIGHTCROSSBOW,
-                BASE_ITEM_HEAVYCROSSBOW
-            };
-
-            int[] blasterPistol =
-            {
-                BASE_ITEM_SHORTBOW,
-                BASE_ITEM_LONGBOW,
-            };
-
-            int[] throwing =
-            {
-                BASE_ITEM_SLING,
-                BASE_ITEM_DART,
-                BASE_ITEM_SHURIKEN,
-                BASE_ITEM_THROWINGAXE
-            };
-
-
-
-            if (vibroblades.Contains(item.BaseItemType)) return CustomItemType.Vibroblade;
-            if (finesseVibroblades.Contains(item.BaseItemType)) return CustomItemType.FinesseVibroblade;
-            if (batons.Contains(item.BaseItemType)) return CustomItemType.Baton;
-            if (heavyVibroblades.Contains(item.BaseItemType)) return CustomItemType.HeavyVibroblade;
-            if (saberstaffs.Contains(item.BaseItemType)) return CustomItemType.Saberstaff;
-            if (polearms.Contains(item.BaseItemType)) return CustomItemType.Polearm;
-            if (twinVibroblades.Contains(item.BaseItemType)) return CustomItemType.TwinBlade;
-            if (martialArts.Contains(item.BaseItemType)) return CustomItemType.MartialArtWeapon;
-            if (blasterRifles.Contains(item.BaseItemType)) return CustomItemType.BlasterRifle;
-            if (blasterPistol.Contains(item.BaseItemType)) return CustomItemType.BlasterPistol;
-            if (throwing.Contains(item.BaseItemType)) return CustomItemType.Throwing;
-            if (lightsabers.Contains(item.BaseItemType)) return CustomItemType.Lightsaber;
-            // Armor is deliberately left out here because we don't have a way to determine the type of armor it should be
-            // based on base item type.
-
-            return CustomItemType.None;
-        }
-
+        
         public ItemProperty GetCustomItemPropertyByItemTag(string tag)
         {
             NWPlaceable container = (_.GetObjectByTag("item_props"));
@@ -642,5 +532,105 @@ namespace SWLOR.Game.Server.Service
 
             return prop;
         }
+
+
+
+        public SkillType GetSkillTypeForItem(NWItem item)
+        {
+            SkillType skillType = SkillType.Unknown;
+            int type = item.BaseItemType;
+            int[] oneHandedTypes =
+            {
+                BASE_ITEM_BASTARDSWORD,
+                BASE_ITEM_BATTLEAXE,
+                BASE_ITEM_CLUB,
+                BASE_ITEM_DAGGER,
+                BASE_ITEM_HANDAXE,
+                BASE_ITEM_KAMA,
+                BASE_ITEM_KATANA,
+                BASE_ITEM_KUKRI,
+                BASE_ITEM_LIGHTFLAIL,
+                BASE_ITEM_LIGHTHAMMER,
+                BASE_ITEM_LIGHTMACE,
+                BASE_ITEM_LONGSWORD,
+                BASE_ITEM_RAPIER,
+                BASE_ITEM_SCIMITAR,
+                BASE_ITEM_SHORTSPEAR,
+                BASE_ITEM_SHORTSWORD,
+                BASE_ITEM_SICKLE,
+                BASE_ITEM_WHIP,
+                CustomBaseItemType.Lightsaber
+            };
+
+            int[] twoHandedTypes =
+            {
+                BASE_ITEM_DIREMACE,
+                BASE_ITEM_DWARVENWARAXE,
+                BASE_ITEM_GREATAXE,
+                BASE_ITEM_GREATSWORD,
+                BASE_ITEM_HALBERD,
+                BASE_ITEM_HEAVYFLAIL,
+                BASE_ITEM_MORNINGSTAR,
+                BASE_ITEM_QUARTERSTAFF,
+                BASE_ITEM_SCYTHE,
+                BASE_ITEM_TRIDENT,
+                BASE_ITEM_WARHAMMER
+            };
+
+            int[] twinBladeTypes =
+            {
+                BASE_ITEM_DOUBLEAXE,
+                BASE_ITEM_TWOBLADEDSWORD,
+                CustomBaseItemType.Saberstaff
+            };
+
+            int[] martialArtsTypes =
+            {
+                BASE_ITEM_BRACER,
+                BASE_ITEM_GLOVES
+            };
+
+            int[] firearmTypes =
+            {
+                BASE_ITEM_HEAVYCROSSBOW,
+                BASE_ITEM_LIGHTCROSSBOW,
+                BASE_ITEM_LONGBOW,
+                BASE_ITEM_SHORTBOW,
+                BASE_ITEM_ARROW,
+                BASE_ITEM_BOLT
+            };
+
+            int[] throwingTypes =
+            {
+                BASE_ITEM_GRENADE,
+                BASE_ITEM_SHURIKEN,
+                BASE_ITEM_SLING,
+                BASE_ITEM_THROWINGAXE,
+                BASE_ITEM_BULLET,
+                BASE_ITEM_DART
+            };
+
+            int[] shieldTypes =
+            {
+                BASE_ITEM_SMALLSHIELD,
+                BASE_ITEM_LARGESHIELD,
+                BASE_ITEM_TOWERSHIELD
+            };
+
+            if (oneHandedTypes.Contains(type)) skillType = SkillType.OneHanded;
+            else if (twoHandedTypes.Contains(type)) skillType = SkillType.TwoHanded;
+            else if (twinBladeTypes.Contains(type)) skillType = SkillType.TwinBlades;
+            else if (martialArtsTypes.Contains(type)) skillType = SkillType.MartialArts;
+            else if (firearmTypes.Contains(type)) skillType = SkillType.Firearms;
+            else if (throwingTypes.Contains(type)) skillType = SkillType.Throwing;
+            else if (item.CustomItemType == CustomItemType.HeavyArmor) skillType = SkillType.HeavyArmor;
+            else if (item.CustomItemType == CustomItemType.LightArmor) skillType = SkillType.LightArmor;
+            else if (item.CustomItemType == CustomItemType.ForceArmor) skillType = SkillType.ForceArmor;
+            else if (shieldTypes.Contains(type)) skillType = SkillType.Shields;
+
+            return skillType;
+        }
+
+
     }
 }

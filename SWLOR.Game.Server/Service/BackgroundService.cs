@@ -17,16 +17,20 @@ namespace SWLOR.Game.Server.Service
         private readonly INWScript _;
         private readonly IPerkService _perk;
         private readonly ISkillService _skill;
+        private readonly IPlayerStatService _stat;
 
-        public BackgroundService(IDataContext db, 
+        public BackgroundService(
+            IDataContext db, 
             INWScript script, 
             IPerkService perk,
-            ISkillService skill)
+            ISkillService skill,
+            IPlayerStatService stat)
         {
             _db = db;
             _ = script;
             _perk = perk;
             _skill = skill;
+            _stat = stat;
         }
         
         public void ApplyBackgroundBonuses(NWPlayer oPC)
@@ -133,7 +137,7 @@ namespace SWLOR.Game.Server.Service
                 oItem2.Name = pcName + "'s " + oItem2.Name;
             }
 
-            _skill.ApplyStatChanges(oPC, null);
+            _stat.ApplyStatChanges(oPC, null);
         }
 
     }

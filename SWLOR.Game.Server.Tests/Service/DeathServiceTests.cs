@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Tests.Service
             player.GlobalID.Returns("123");
             player.Position.Returns(x => new Vector(43.2f, 22.2f, 87.0f));
             player.Facing.Returns(x => 320.666f);
-            player.Area.Returns(x => new NWArea(script, new AppState()));
+            player.Area.Returns(x => new NWArea(new Object()));
             player.Area.Tag.Returns("a_fake_area_tag");
 
             // Act
@@ -124,7 +124,7 @@ namespace SWLOR.Game.Server.Tests.Service
             player.GlobalID.Returns("123");
             player.Position.Returns(x => new Vector(43.2f, 22.2f, 87.0f));
             player.Facing.Returns(x => 320.666f);
-            player.Area.Returns(x => new NWArea(script, new AppState()));
+            player.Area.Returns(x => new NWArea(new Object()));
             player.Area.Tag.Returns("a_fake_area_tag");
             
 

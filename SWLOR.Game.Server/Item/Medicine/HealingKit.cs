@@ -16,16 +16,19 @@ namespace SWLOR.Game.Server.Item.Medicine
         private readonly ISkillService _skill;
         private readonly IRandomService _random;
         private readonly IPerkService _perk;
+        private readonly IPlayerStatService _playerStat;
 
         public HealingKit(INWScript script,
             ISkillService skill,
             IRandomService random,
-            IPerkService perk)
+            IPerkService perk,
+            IPlayerStatService playerStat)
         {
             _ = script;
             _skill = skill;
             _random = random;
             _perk = perk;
+            _playerStat = playerStat;
         }
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
@@ -43,7 +46,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky);
             int perkDurationBonus = _perk.GetPCPerkLevel(player, PerkType.HealingKitExpert) * 6 + (luck * 2);
             float duration = 30.0f + (skill.Rank * 0.4f) + perkDurationBonus;
-            int restoreAmount = 1 + item.GetLocalInt("HEALING_BONUS") + player.EffectiveMedicineBonus;
+            int restoreAmount = 1 + item.GetLocalInt("HEALING_BONUS") + _playerStat.EffectiveMedicineBonus(player);
 
             int perkBlastBonus = _perk.GetPCPerkLevel(player, PerkType.ImmediateImprovement);
             if (perkBlastBonus > 0)

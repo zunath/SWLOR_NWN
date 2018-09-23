@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
             oPC.SetLocalInt("RECOVERY_BLAST_ACTIVE", 1);
 
             int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.RecoveryBlast);
-            var members = oPC.GetPartyMembers().Where(x => _.GetDistanceBetween(x, oTarget) <= 10.0f);
+            var members = oPC.PartyMembers.Where(x => _.GetDistanceBetween(x, oTarget) <= 10.0f);
             int luck = _perk.GetPCPerkLevel(oPC, PerkType.Lucky);
 
             foreach (var member in members)

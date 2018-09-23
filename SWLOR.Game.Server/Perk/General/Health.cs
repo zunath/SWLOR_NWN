@@ -5,11 +5,11 @@ namespace SWLOR.Game.Server.Perk.General
 {
     public class Health: IPerk
     {
-        private readonly ISkillService _skill;
+        private readonly IPlayerStatService _stat;
 
-        public Health(ISkillService skill)
+        public Health(IPlayerStatService stat)
         {
-            _skill = skill;
+            _stat = stat;
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -43,12 +43,12 @@ namespace SWLOR.Game.Server.Perk.General
 
         public void OnPurchased(NWPlayer oPC, int newLevel)
         {
-            _skill.ApplyStatChanges(oPC, null);
+            _stat.ApplyStatChanges(oPC, null);
         }
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _skill.ApplyStatChanges(oPC, null);
+            _stat.ApplyStatChanges(oPC, null);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)

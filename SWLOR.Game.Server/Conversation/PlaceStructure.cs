@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IBaseService _base;
         private readonly IColorTokenService _color;
         private readonly IAreaService _area;
+        private readonly IDurabilityService _durability;
 
         public PlaceStructure(
             INWScript script,
@@ -24,13 +25,15 @@ namespace SWLOR.Game.Server.Conversation
             IDataContext db,
             IBaseService @base,
             IColorTokenService color,
-            IAreaService area)
+            IAreaService area,
+            IDurabilityService durability)
             : base(script, dialog)
         {
             _db = db;
             _base = @base;
             _color = color;
             _area = area;
+            _durability = durability;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -328,7 +331,7 @@ namespace SWLOR.Game.Server.Conversation
             var structure = new PCBaseStructure
             {
                 BaseStructureID = data.StructureID,
-                Durability = data.StructureItem.Durability,
+                Durability = _durability.GetDurability(data.StructureItem),
                 LocationOrientation = _.GetFacingFromLocation(data.TargetLocation),
                 LocationX = position.m_X,
                 LocationY = position.m_Y,

@@ -21,19 +21,22 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
         private readonly IRandomService _random;
         private readonly IBaseService _base;
         private readonly ISerializationService _serialization;
+        private readonly IDurabilityService _durability;
 
         public OnDamaged(
             INWScript script,
             IDataContext db,
             IRandomService random,
             IBaseService @base,
-            ISerializationService serialization)
+            ISerializationService serialization,
+            IDurabilityService durability)
         {
             _ = script;
             _db = db;
             _random = random;
             _base = @base;
             _serialization = serialization;
+            _durability = durability;
         }
 
         public bool Run(params object[] args)
@@ -64,7 +67,9 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             }
 
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(9999), tower.Object);
-            weapon.Durability -= _random.RandomFloat(0.01f, 0.03f);
+
+            var durability = _durability.GetDurability(weapon) - _random.RandomFloat(0.01f, 0.03f);
+            _durability.SetDurability(weapon, durability);
 
             if (pcBase.ShieldHP <= 0)
             {

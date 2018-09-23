@@ -12,15 +12,18 @@ namespace SWLOR.Game.Server.Service
         private readonly INWScript _;
         private readonly IItemService _item;
         private readonly IBiowareXP2 _biowareXP2;
+        private readonly IDurabilityService _durability;
 
         public ComponentBonusService(
             INWScript script,
             IItemService item,
-            IBiowareXP2 biowareXP2)
+            IBiowareXP2 biowareXP2,
+            IDurabilityService durability)
         {
             _ = script;
             _item = item;
             _biowareXP2 = biowareXP2;
+            _durability = durability;
         }
 
         public void ApplyComponentBonus(NWItem product, ItemProperty sourceIP)
@@ -57,8 +60,9 @@ namespace SWLOR.Game.Server.Service
                         sourceTag = "rslot_prismatic"; 
                         break;
                     case ComponentBonusType.DurabilityUp:
-                        product.MaxDurability += amount;
-                        product.Durability = product.MaxDurability;
+                        var maxDur = _durability.GetMaxDurability(product) + amount;
+                        _durability.SetMaxDurability(product, maxDur);
+                        _durability.SetDurability(product, maxDur);
                         break;
                     case ComponentBonusType.ChargesUp:
                         product.Charges += amount;

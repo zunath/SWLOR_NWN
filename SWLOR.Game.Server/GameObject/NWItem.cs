@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
-
-using NWN;
 using SWLOR.Game.Server.Service.Contracts;
+using System.Collections.Generic;
+using System.Linq;
 using static NWN.NWScript;
 using Object = NWN.Object;
 
@@ -11,19 +10,11 @@ namespace SWLOR.Game.Server.GameObject
 {
     public class NWItem : NWObject
     {
-        private readonly IDurabilityService _durability;
-        private readonly IItemService _item;
-
-        public NWItem(INWScript script,
-            IDurabilityService durability,
-            IItemService item,
-            AppState state)
-            : base(script, state)
+        public NWItem(Object o)
+            : base(o)
         {
-            _durability = durability;
-            _item = item;
         }
-        
+
         public virtual NWCreature Possessor => _.GetItemPossessor(Object);
 
         public virtual int BaseItemType => _.GetBaseItemType(Object);
@@ -45,7 +36,7 @@ namespace SWLOR.Game.Server.GameObject
             get => _.GetStolenFlag(Object) == 1;
             set => _.SetStolenFlag(Object, value ? 1 : 0);
         }
-        
+
         public virtual bool IsIdentified
         {
             get => _.GetIdentified(Object) == 1;
@@ -88,39 +79,8 @@ namespace SWLOR.Game.Server.GameObject
         // For the custom item properties:
         // If a toolset-placed item property exists, mark the value and remove the item property.
         // Otherwise, return the local variable stored on the item.
-
-        public virtual float MaxDurability
-        {
-            get
-            {
-                int maxDurability = GetItemPropertyValueAndRemove((int) CustomItemPropertyType.MaxDurability);
-                if (maxDurability <= -1) return _durability.GetMaxDurability(this);
-                MaxDurability = maxDurability;
-                return maxDurability;
-            }
-            set
-            {
-                _.SetLocalInt(Object, "DURABILITY_OVERRIDE", TRUE);
-                _durability.SetMaxDurability(this, value);
-            }
-        }
-
-        public virtual float Durability
-        {
-            get
-            {
-                int durability = GetItemPropertyValueAndRemove((int) CustomItemPropertyType.Durability);
-                if(durability <= -1) return _durability.GetDurability(this);
-                Durability = durability;
-                return durability;
-            }
-            set
-            {
-                _.SetLocalInt(Object, "DURABILITY_OVERRIDE", TRUE); 
-                _durability.SetDurability(this, value);
-            }
-        }
         
+
         public virtual int CustomAC
         {
             get
@@ -157,12 +117,124 @@ namespace SWLOR.Game.Server.GameObject
                 // Attempt to get the item type by base item type.
                 // Will fail for armor as there's no determining factor for light versus heavy.
                 // Need to assign the local variable or give the armor the item property in order to mark it.
-                CustomItemType type = _item.GetCustomItemType(this);
+                CustomItemType type = GetCustomItemType(this);
                 CustomItemType = type;
-                
+
                 return type;
             }
             set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_TYPE", (int)value);
+        }
+
+
+        private CustomItemType GetCustomItemType(NWItem item)
+        {
+            int[] vibroblades =
+            {
+                BASE_ITEM_BASTARDSWORD,
+                BASE_ITEM_LONGSWORD,
+                BASE_ITEM_KATANA,
+                BASE_ITEM_SCIMITAR,
+                BASE_ITEM_BATTLEAXE
+            };
+
+            int[] finesseVibroblades =
+            {
+                BASE_ITEM_DAGGER,
+                BASE_ITEM_RAPIER,
+                BASE_ITEM_SHORTSWORD,
+                BASE_ITEM_KUKRI,
+                BASE_ITEM_SICKLE,
+                BASE_ITEM_WHIP,
+                BASE_ITEM_HANDAXE
+            };
+
+            int[] batons =
+            {
+                BASE_ITEM_CLUB,
+                BASE_ITEM_LIGHTFLAIL,
+                BASE_ITEM_LIGHTHAMMER,
+                BASE_ITEM_LIGHTMACE,
+                BASE_ITEM_MORNINGSTAR
+            };
+
+            int[] lightsabers =
+            {
+                CustomBaseItemType.Lightsaber
+            };
+
+            int[] heavyVibroblades =
+            {
+                BASE_ITEM_GREATAXE,
+                BASE_ITEM_GREATSWORD,
+                BASE_ITEM_DWARVENWARAXE
+            };
+
+
+            int[] polearms =
+            {
+                BASE_ITEM_HALBERD,
+                BASE_ITEM_SCYTHE,
+                BASE_ITEM_SHORTSPEAR,
+                BASE_ITEM_TRIDENT
+            };
+
+            int[] twinVibroblades =
+            {
+                BASE_ITEM_DOUBLEAXE,
+                BASE_ITEM_TWOBLADEDSWORD
+            };
+
+            int[] saberstaffs =
+            {
+                CustomBaseItemType.Saberstaff
+            };
+
+            int[] martialArts =
+            {
+                BASE_ITEM_GLOVES,
+                BASE_ITEM_BRACER,
+                BASE_ITEM_KAMA,
+                BASE_ITEM_QUARTERSTAFF
+            };
+
+            int[] blasterRifles =
+            {
+                BASE_ITEM_LIGHTCROSSBOW,
+                BASE_ITEM_HEAVYCROSSBOW
+            };
+
+            int[] blasterPistol =
+            {
+                BASE_ITEM_SHORTBOW,
+                BASE_ITEM_LONGBOW,
+            };
+
+            int[] throwing =
+            {
+                BASE_ITEM_SLING,
+                BASE_ITEM_DART,
+                BASE_ITEM_SHURIKEN,
+                BASE_ITEM_THROWINGAXE
+            };
+
+
+
+            if (vibroblades.Contains(item.BaseItemType)) return CustomItemType.Vibroblade;
+            if (finesseVibroblades.Contains(item.BaseItemType)) return CustomItemType.FinesseVibroblade;
+            if (batons.Contains(item.BaseItemType)) return CustomItemType.Baton;
+            if (heavyVibroblades.Contains(item.BaseItemType)) return CustomItemType.HeavyVibroblade;
+            if (saberstaffs.Contains(item.BaseItemType)) return CustomItemType.Saberstaff;
+            if (polearms.Contains(item.BaseItemType)) return CustomItemType.Polearm;
+            if (twinVibroblades.Contains(item.BaseItemType)) return CustomItemType.TwinBlade;
+            if (martialArts.Contains(item.BaseItemType)) return CustomItemType.MartialArtWeapon;
+            if (blasterRifles.Contains(item.BaseItemType)) return CustomItemType.BlasterRifle;
+            if (blasterPistol.Contains(item.BaseItemType)) return CustomItemType.BlasterPistol;
+            if (throwing.Contains(item.BaseItemType)) return CustomItemType.Throwing;
+            if (lightsabers.Contains(item.BaseItemType)) return CustomItemType.Lightsaber;
+            // Armor is deliberately left out here because we don't have a way to determine the type of armor it should be
+            // based on base item type.
+
+            return CustomItemType.None;
         }
 
         public virtual int RecommendedLevel
@@ -170,7 +242,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int recommendedLevel = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.RecommendedLevel);
-                if(recommendedLevel <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_TYPE_RECOMMENDED_LEVEL");
+                if (recommendedLevel <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_TYPE_RECOMMENDED_LEVEL");
                 RecommendedLevel = recommendedLevel;
                 return recommendedLevel;
             }
@@ -219,7 +291,7 @@ namespace SWLOR.Game.Server.GameObject
             {
                 int castingSpeed = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.CastingSpeed);
                 if (castingSpeed <= 0) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CASTING_SPEED");
-                
+
                 if (castingSpeed <= 99) castingSpeed = -castingSpeed;
                 else castingSpeed = castingSpeed - 99;
                 CastingSpeed = castingSpeed;
@@ -227,13 +299,13 @@ namespace SWLOR.Game.Server.GameObject
             }
             set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CASTING_SPEED", value);
         }
-        
+
         public virtual int CraftBonusArmorsmith
         {
             get
             {
                 int craftBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.CraftBonusArmorsmith);
-                if(craftBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CRAFT_BONUS_ARMORSMITH");
+                if (craftBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CRAFT_BONUS_ARMORSMITH");
                 CraftBonusArmorsmith = craftBonus;
                 return craftBonus;
             }
@@ -244,7 +316,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int craftBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.CraftBonusWeaponsmith);
-                if(craftBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CRAFT_BONUS_WEAPONSMITH");
+                if (craftBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CRAFT_BONUS_WEAPONSMITH");
                 CraftBonusWeaponsmith = craftBonus;
                 return craftBonus;
             }
@@ -255,7 +327,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int craftBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.CraftBonusCooking);
-                if(craftBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CRAFT_BONUS_COOKING");
+                if (craftBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CRAFT_BONUS_COOKING");
                 CraftBonusCooking = craftBonus;
                 return craftBonus;
             }
@@ -288,7 +360,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int skillType = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.AssociatedSkill);
-                if(skillType <= -1) return (SkillType)_.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_ASSOCIATED_SKILL_ID");
+                if (skillType <= -1) return (SkillType)_.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_ASSOCIATED_SKILL_ID");
                 AssociatedSkillType = (SkillType)skillType;
                 return (SkillType)skillType;
             }
@@ -299,7 +371,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int craftTier = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.CraftTierLevel);
-                if(craftTier <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CRAFT_TIER_LEVEL");
+                if (craftTier <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CRAFT_TIER_LEVEL");
                 CraftTierLevel = craftTier;
                 return craftTier;
             }
@@ -309,8 +381,8 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                int hpBonus = GetItemPropertyValueAndRemove((int) CustomItemPropertyType.HPBonus);
-                if(hpBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_HP_BONUS");
+                int hpBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.HPBonus);
+                if (hpBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_HP_BONUS");
                 HPBonus = hpBonus;
                 return hpBonus;
             }
@@ -321,7 +393,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int fpBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.FPBonus);
-                if(fpBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_FP_BONUS");
+                if (fpBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_FP_BONUS");
                 FPBonus = fpBonus;
                 return fpBonus;
             }
@@ -348,7 +420,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int darkAbilityBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.DarkAbilityBonus);
-                if(darkAbilityBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_DARK_ABILITY_BONUS");
+                if (darkAbilityBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_DARK_ABILITY_BONUS");
                 DarkAbilityBonus = darkAbilityBonus;
                 return darkAbilityBonus;
             }
@@ -359,7 +431,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int lightAbilityBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.LightAbilityBonus);
-                if(lightAbilityBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_LIGHT_ABILITY_BONUS");
+                if (lightAbilityBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_LIGHT_ABILITY_BONUS");
                 LightAbilityBonus = lightAbilityBonus;
                 return lightAbilityBonus;
             }
@@ -370,7 +442,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int summoningBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.SummoningBonus);
-                if(summoningBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_SUMMONING_BONUS");
+                if (summoningBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_SUMMONING_BONUS");
                 SummoningBonus = summoningBonus;
                 return summoningBonus;
             }
@@ -381,7 +453,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int luckBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.LuckBonus);
-                if(luckBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_LUCK_BONUS");
+                if (luckBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_LUCK_BONUS");
                 LuckBonus = luckBonus;
                 return luckBonus;
             }
@@ -392,7 +464,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int meditateBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.MeditateBonus);
-                if(meditateBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_MEDITATE_BONUS");
+                if (meditateBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_MEDITATE_BONUS");
                 MeditateBonus = meditateBonus;
                 return meditateBonus;
             }
@@ -414,7 +486,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int medicineBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.MedicineBonus);
-                if(medicineBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_MEDICINE_BONUS");
+                if (medicineBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_MEDICINE_BONUS");
                 MedicineBonus = medicineBonus;
                 return medicineBonus;
             }
@@ -425,7 +497,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int hpRegenBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.HPRegenBonus);
-                if(hpRegenBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_HP_REGEN_BONUS");
+                if (hpRegenBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_HP_REGEN_BONUS");
                 HPRegenBonus = hpRegenBonus;
                 return hpRegenBonus;
             }
@@ -436,7 +508,7 @@ namespace SWLOR.Game.Server.GameObject
             get
             {
                 int fpRegenBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.FPRegenBonus);
-                if(fpRegenBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_FP_REGEN_BONUS");
+                if (fpRegenBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_FP_REGEN_BONUS");
                 FPRegenBonus = fpRegenBonus;
                 return fpRegenBonus;
             }
@@ -493,7 +565,7 @@ namespace SWLOR.Game.Server.GameObject
         public virtual bool IsRanged => _.GetWeaponRanged(Object) == 1;
 
 
-        private int GetItemPropertyValueAndRemove(int itemPropertyID)
+        public int GetItemPropertyValueAndRemove(int itemPropertyID)
         {
             ItemProperty ip = _.GetFirstItemProperty(Object);
             while (_.GetIsItemPropertyValid(ip) == TRUE)
@@ -518,7 +590,7 @@ namespace SWLOR.Game.Server.GameObject
         }
         public static implicit operator NWItem(Object o)
         {
-            return NWObjectFactory.Build<NWItem>(o);
+            return new NWItem(o);
         }
     }
 }

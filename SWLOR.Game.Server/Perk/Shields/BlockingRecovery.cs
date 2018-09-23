@@ -11,14 +11,17 @@ namespace SWLOR.Game.Server.Perk.Shields
         private readonly INWScript _;
         private readonly IPerkService _perk;
         private readonly IRandomService _random;
+        private readonly IPlayerStatService _playerStat;
 
         public BlockingRecovery(INWScript script,
             IPerkService perk,
-            IRandomService random)
+            IRandomService random,
+            IPlayerStatService playerStat)
         {
             _ = script;
             _perk = perk;
             _random = random;
+            _playerStat = playerStat;
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -78,7 +81,7 @@ namespace SWLOR.Game.Server.Perk.Shields
                     return;
             }
 
-            int luck = _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + oPC.EffectiveLuckBonus;
+            int luck = _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + _playerStat.EffectiveLuckBonus(oPC);
             chance += luck;
 
             if (_random.Random(100) + 1 <= chance)

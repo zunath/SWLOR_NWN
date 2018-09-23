@@ -23,6 +23,8 @@ namespace SWLOR.Game.Server.Event.Delayed
         private readonly IBaseService _base;
         private readonly ISkillService _skill;
         private readonly IRandomService _random;
+        private readonly IPlayerStatService _playerStat;
+        private readonly IDurabilityService _durability;
 
         public CraftCreateItem(
             INWScript script,
@@ -34,7 +36,9 @@ namespace SWLOR.Game.Server.Event.Delayed
             IColorTokenService color,
             IBaseService @base,
             ISkillService skill,
-            IRandomService random)
+            IRandomService random,
+            IPlayerStatService playerStat,
+            IDurabilityService durability)
         {
             _ = script;
             _db = db;
@@ -46,6 +50,8 @@ namespace SWLOR.Game.Server.Event.Delayed
             _base = @base;
             _skill = skill;
             _random = random;
+            _playerStat = playerStat;
+            _durability = durability;
         }
 
         public bool Run(params object[] args)
@@ -143,8 +149,10 @@ namespace SWLOR.Game.Server.Event.Delayed
             {
                 foreach (var item in craftedItems)
                 {
-                    item.MaxDurability += (float)blueprint.BaseStructure.Durability;
-                    item.Durability = item.MaxDurability;
+                    var maxDur = _durability.GetMaxDurability(item);
+                    maxDur += (float)blueprint.BaseStructure.Durability;
+                    _durability.SetMaxDurability(item, maxDur);
+                    _durability.SetDurability(item, maxDur);
                 }
             }
 
@@ -208,12 +216,12 @@ namespace SWLOR.Game.Server.Event.Delayed
 
             switch (skillType)
             {
-                case SkillType.Armorsmith: equipmentBonus = player.EffectiveArmorsmithBonus; break;
-                case SkillType.Weaponsmith: equipmentBonus = player.EffectiveWeaponsmithBonus; break;
-                case SkillType.Cooking: equipmentBonus = player.EffectiveCookingBonus; break;
-                case SkillType.Engineering: equipmentBonus = player.EffectiveEngineeringBonus; break;
-                case SkillType.Fabrication: equipmentBonus = player.EffectiveFabricationBonus; break;
-                case SkillType.Medicine: equipmentBonus = player.EffectiveMedicineBonus; break;
+                case SkillType.Armorsmith: equipmentBonus = _playerStat.EffectiveArmorsmithBonus(player); break;
+                case SkillType.Weaponsmith: equipmentBonus = _playerStat.EffectiveWeaponsmithBonus(player); break;
+                case SkillType.Cooking: equipmentBonus = _playerStat.EffectiveCookingBonus(player); break;
+                case SkillType.Engineering: equipmentBonus = _playerStat.EffectiveEngineeringBonus(player); break;
+                case SkillType.Fabrication: equipmentBonus = _playerStat.EffectiveFabricationBonus(player); break;
+                case SkillType.Medicine: equipmentBonus = _playerStat.EffectiveMedicineBonus(player); break;
             }
 
             return equipmentBonus * 0.5f; // +0.5% per equipment bonus

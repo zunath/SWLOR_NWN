@@ -293,7 +293,6 @@
     <Compile Include="Event\Module\OnModuleUseFeat.cs" />
     <Compile Include="Event\Player\OnPlayerDamaged.cs" />
     <Compile Include="Extension\BehaviourTreeBuilderExtensions.cs" />
-    <Compile Include="GameObject\NWObjectFactory.cs" />
     <Compile Include="Item\Medicine\StimPack.cs" />
     <Compile Include="Item\ModItem.cs" />
     <Compile Include="Item\ResourceHarvester.cs" />
@@ -870,7 +869,6 @@
     <Compile Include="Processor\Contracts\IEventProcessor.cs" />
     <Compile Include="Processor\CustomEffectProcessor.cs" />
     <Compile Include="Processor\GarbageCollectorProcessor.cs" />
-    <Compile Include="Processor\ObjectFactoryProcessor.cs" />
     <Compile Include="Processor\SpawnProcessor.cs" />
     <Compile Include="QuestRule\Contracts\IQuestRule.cs" />
     <Compile Include="QuestRule\CreditBonusRule.cs" />
@@ -972,6 +970,7 @@
     <Compile Include="Service\DialogService.cs" />
     <Compile Include="Service\Contracts\IDialogService.cs" />
     <Compile Include="Service\DurabilityService.cs" />
+    <Compile Include="Service\PlayerStatService.cs" />
     <Compile Include="Service\EnmityService.cs" />
     <Compile Include="Service\ErrorService.cs" />
     <Compile Include="Service\ExaminationService.cs" />
@@ -988,6 +987,7 @@
     <Compile Include="Service\Contracts\IImpoundService.cs" />
     <Compile Include="Service\Contracts\IBasePermissionService.cs" />
     <Compile Include="Service\Contracts\ICreatureCorpseService.cs" />
+    <Compile Include="Service\Contracts\IPlayerStatService.cs" />
     <Compile Include="Service\ImpoundService.cs" />
     <Compile Include="Service\Contracts\ISpawnService.cs" />
     <Compile Include="Service\Contracts\IResourceService.cs" />

@@ -12,17 +12,20 @@ namespace SWLOR.Game.Server.Service
         private readonly IItemService _item;
         private readonly IRandomService _random;
         private readonly ISkillService _skill;
+        private readonly IPlayerStatService _playerStat;
 
         public ResourceService(
             INWScript script,
             IItemService item,
             IRandomService random,
-            ISkillService skill)
+            ISkillService skill,
+            IPlayerStatService playerStat)
         {
             _ = script;
             _item = item;
             _random = random;
             _skill = skill;
+            _playerStat = playerStat;
         }
         
         public string GetResourceDescription(NWPlaceable resource)
@@ -102,7 +105,7 @@ namespace SWLOR.Game.Server.Service
                 case -6: chance = 27; break;
             }
 
-            int itemBonus = player.EffectiveHarvestingBonus / 2;
+            int itemBonus = _playerStat.EffectiveHarvestingBonus(player) / 2;
             if (itemBonus > 30) itemBonus = 30;
             chance += itemBonus;
 

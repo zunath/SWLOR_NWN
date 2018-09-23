@@ -18,43 +18,43 @@ namespace SWLOR.Game.Server.Service
     {
         private readonly INWScript _;
         private readonly IDataContext _db;
-        private readonly IDeathService _death;
         private readonly IColorTokenService _color;
         private readonly INWNXCreature _nwnxCreature;
-        private readonly ISkillService _skill;
         private readonly INWNXPlayer _player;
         private readonly INWNXPlayerQuickBarSlot _qbs;
         private readonly IDialogService _dialog;
         private readonly INWNXEvents _nwnxEvents;
         private readonly IBackgroundService _background;
         private readonly IRaceService _race;
+        private readonly IDurabilityService _durability;
+        private readonly IPlayerStatService _stat;
 
         public PlayerService(
             INWScript script, 
             IDataContext db, 
-            IDeathService death, 
             IColorTokenService color,
             INWNXCreature nwnxCreature,
-            ISkillService skill,
             INWNXPlayer player,
             INWNXPlayerQuickBarSlot qbs,
             IDialogService dialog,
             INWNXEvents nwnxEvents,
             IBackgroundService background,
-            IRaceService race)
+            IRaceService race,
+            IDurabilityService durability,
+            IPlayerStatService stat)
         {
             _ = script;
             _db = db;
-            _death = death;
             _color = color;
             _nwnxCreature = nwnxCreature;
-            _skill = skill;
             _player = player;
             _qbs = qbs;
             _dialog = dialog;
             _nwnxEvents = nwnxEvents;
             _background = background;
             _race = race;
+            _durability = durability;
+            _stat = stat;
         }
 
         public void InitializePlayer(NWPlayer player)
@@ -78,9 +78,9 @@ namespace SWLOR.Game.Server.Service
                 NWItem knife = (_.CreateItemOnObject("survival_knife", player));
                 knife.Name = player.Name + "'s Survival Knife";
                 knife.IsCursed = true;
-                knife.MaxDurability = 5;
-                knife.Durability = 5;
-
+                _durability.SetMaxDurability(knife, 5);
+                _durability.SetDurability(knife, 5);
+                
                 NWItem darts = (_.CreateItemOnObject("nw_wthdt001", player, 50)); // 50x Dart
                 darts.Name = "Starting Darts";
                 darts.IsCursed = true;
@@ -122,8 +122,8 @@ namespace SWLOR.Game.Server.Service
                 {
                     _nwnxCreature.RemoveKnownSpell(player, classID, 0, index);
                 }
-                
-                PlayerCharacter entity = player.ToEntity();
+
+                PlayerCharacter entity = CreateDBPCEntity(player);
                 _db.PlayerCharacters.Add(entity);
                 _db.SaveChanges();
 
@@ -134,13 +134,55 @@ namespace SWLOR.Game.Server.Service
 
                 _background.ApplyBackgroundBonuses(player);
 
-                _skill.ApplyStatChanges(player, null, true);
+                _stat.ApplyStatChanges(player, null, true);
 
                 _.DelayCommand(1.0f, () => _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(999), player));
 
                 InitializeHotBar(player);
             }
 
+        }
+
+        private PlayerCharacter CreateDBPCEntity(NWPlayer player)
+        {
+            PlayerCharacter entity = new PlayerCharacter
+            {
+                PlayerID = player.GlobalID,
+                CharacterName = player.Name,
+                HitPoints = player.CurrentHP,
+                LocationAreaResref = _.GetResRef(_.GetAreaFromLocation(player.Location)),
+                LocationX = player.Position.m_X,
+                LocationY = player.Position.m_Y,
+                LocationZ = player.Position.m_Z,
+                LocationOrientation = player.Facing,
+                CreateTimestamp = DateTime.UtcNow,
+                UnallocatedSP = 5,
+                HPRegenerationAmount = 1,
+                RegenerationTick = 20,
+                RegenerationRate = 0,
+                VersionNumber = 1,
+                MaxFP = 0,
+                CurrentFP = 0,
+                CurrentFPTick = 20,
+                RespawnAreaResref = string.Empty,
+                RespawnLocationX = 0.0f,
+                RespawnLocationY = 0.0f,
+                RespawnLocationZ = 0.0f,
+                RespawnLocationOrientation = 0.0f,
+                DateSanctuaryEnds = DateTime.UtcNow + TimeSpan.FromDays(3),
+                IsSanctuaryOverrideEnabled = false,
+                STRBase = _nwnxCreature.GetRawAbilityScore(player, ABILITY_STRENGTH),
+                DEXBase = _nwnxCreature.GetRawAbilityScore(player, ABILITY_DEXTERITY),
+                CONBase = _nwnxCreature.GetRawAbilityScore(player, ABILITY_CONSTITUTION),
+                INTBase = _nwnxCreature.GetRawAbilityScore(player, ABILITY_INTELLIGENCE),
+                WISBase = _nwnxCreature.GetRawAbilityScore(player, ABILITY_WISDOM),
+                CHABase = _nwnxCreature.GetRawAbilityScore(player, ABILITY_CHARISMA),
+                TotalSPAcquired = 0,
+                DisplayHelmet = true,
+                PrimaryResidencePCBaseStructureID = null
+            };
+
+            return entity;
         }
 
         public PlayerCharacter GetPlayerEntity(NWPlayer player)

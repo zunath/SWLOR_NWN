@@ -119,7 +119,17 @@ namespace SWLOR.Game.Server
             }
 
         }
-        
+
+        public static INWScript GetNWScript()
+        {
+            return _container.Resolve<INWScript>();
+        }
+
+        public static AppState GetAppState()
+        {
+            return _container.Resolve<AppState>();
+        }
+
         public static void Resolve<T>(AppResolveDelegate<T> action)
         {
             if (action == null)
@@ -148,9 +158,9 @@ namespace SWLOR.Game.Server
             }
         }
 
-        public static T ResolveUnmanaged<T>()
+        public static ILifetimeScope BeginContainerScope()
         {
-            return _container.Resolve<T>();
+            return _container.BeginLifetimeScope();
         }
         
         public static bool IsKeyRegistered<T>(string key)
@@ -199,6 +209,7 @@ namespace SWLOR.Game.Server
             builder.RegisterType<DeathService>().As<IDeathService>();
             builder.RegisterType<DialogService>().As<IDialogService>();
             builder.RegisterType<DurabilityService>().As<IDurabilityService>();
+            builder.RegisterType<PlayerStatService>().As<IPlayerStatService>();
             builder.RegisterType<EnmityService>().As<IEnmityService>();
             builder.RegisterType<ErrorService>().As<IErrorService>();
             builder.RegisterType<ExaminationService>().As<IExaminationService>();
@@ -226,7 +237,7 @@ namespace SWLOR.Game.Server
             builder.RegisterType<ResourceService>().As<IResourceService>();
             builder.RegisterType<SearchService>().As<ISearchService>();
             builder.RegisterType<SerializationService>().As<ISerializationService>();
-            builder.RegisterType<SkillService>().As<ISkillService>();
+            builder.RegisterType<SkillService>().As<ISkillService>().SingleInstance();
             builder.RegisterType<SpawnService>().As<ISpawnService>();
             builder.RegisterType<StorageService>().As<IStorageService>();
             builder.RegisterType<TimeService>().As<ITimeService>();

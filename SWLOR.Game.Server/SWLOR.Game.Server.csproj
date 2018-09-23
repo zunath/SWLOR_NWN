@@ -67,7 +67,6 @@
     <Compile Include="AI\AIComponent\AggroTargetBySound.cs" />
     <Compile Include="AI\AIComponent\AttackHighestEnmity.cs" />
     <Compile Include="AI\AIComponent\CleanUpEnmity.cs" />
-    <Compile Include="AI\Contracts\IAIComponent.cs" />
     <Compile Include="AI\AIComponent\EquipBestMelee.cs" />
     <Compile Include="AI\AIComponent\EquipBestRanged.cs" />
     <Compile Include="AI\AIComponent\RandomWalk.cs" />

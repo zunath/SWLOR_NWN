@@ -52,6 +52,8 @@ namespace SWLOR.Game.Server.Event.Module
 
         public bool Run(params object[] args)
         {
+            string nowString = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
+            Console.WriteLine(nowString + ": Module OnLoad executing...");
             _nwnxChat.RegisterChatScript("mod_on_nwnxchat");
             SetModuleEventScripts();
             SetAreaEventScripts();
@@ -68,6 +70,8 @@ namespace SWLOR.Game.Server.Event.Module
             _customEffect.OnModuleLoad();
             _objectVisibility.OnModuleLoad();
 
+            nowString = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
+            Console.WriteLine(nowString + ": Module OnLoad finished!");
             return true;
         }
 

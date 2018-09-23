@@ -250,7 +250,6 @@ namespace SWLOR.Game.Server
             RegisterInterfaceImplementations<IActionItem>(builder);
             RegisterInterfaceImplementations<IPerk>(builder);
             RegisterInterfaceImplementations<IBehaviour>(builder);
-            RegisterInterfaceImplementations<IAIComponent>(builder);
             RegisterInterfaceImplementations<IMod>(builder);
             RegisterInterfaceImplementations<ISpawnRule>(builder);
             RegisterInterfaceImplementations<IQuestRule>(builder);

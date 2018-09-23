@@ -1,8 +1,7 @@
 ﻿using FluentBehaviourTree;
-using SWLOR.Game.Server.AI.Contracts;
-using SWLOR.Game.Server.GameObject;
-
 using NWN;
+using SWLOR.Game.Server.Event;
+using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.AI.AIComponent
@@ -10,7 +9,7 @@ namespace SWLOR.Game.Server.AI.AIComponent
     /// <summary>
     /// Causes creature to walk randomly every second, with a percent chance of it happening.
     /// </summary>
-    public class RandomWalk: IAIComponent
+    public class RandomWalk : IRegisteredEvent
     {
         private readonly INWScript _;
         private readonly IEnmityService _enmity;
@@ -25,31 +24,29 @@ namespace SWLOR.Game.Server.AI.AIComponent
             _random = random;
         }
 
-        public BehaviourTreeBuilder Build(BehaviourTreeBuilder builder, params object[] args)
+        public bool Run(object[] args)
         {
-            NWCreature self = (NWCreature) args[0];
+            NWCreature self = (NWCreature)args[0];
 
-            return builder.Do("RandomWalk", t =>
+            if (self.IsInCombat || !_enmity.IsEnmityTableEmpty(self))
             {
-                if (self.IsInCombat || !_enmity.IsEnmityTableEmpty(self))
+                if (_.GetCurrentAction(self.Object) == NWScript.ACTION_RANDOMWALK)
                 {
-                    if (_.GetCurrentAction(self.Object) == NWScript.ACTION_RANDOMWALK)
-                    {
-                        self.ClearAllActions();
-                    }
+                    self.ClearAllActions();
+                }
 
-                    return BehaviourTreeStatus.Failure;
-                }
-                
-                if (_.GetCurrentAction(self.Object) == NWScript.ACTION_INVALID &&
-                    _.IsInConversation(self.Object) == NWScript.FALSE &&
-                    _.GetCurrentAction(self.Object) != NWScript.ACTION_RANDOMWALK &&
-                    _random.Random(100) <= 25)
-                {
-                    self.AssignCommand(() => _.ActionRandomWalk());
-                }
-                return BehaviourTreeStatus.Running;
-            });
+                return false;
+            }
+
+            if (_.GetCurrentAction(self.Object) == NWScript.ACTION_INVALID &&
+                _.IsInConversation(self.Object) == NWScript.FALSE &&
+                _.GetCurrentAction(self.Object) != NWScript.ACTION_RANDOMWALK &&
+                _random.Random(100) <= 25)
+            {
+                self.AssignCommand(() => _.ActionRandomWalk());
+            }
+            return true;
         }
+
     }
 }

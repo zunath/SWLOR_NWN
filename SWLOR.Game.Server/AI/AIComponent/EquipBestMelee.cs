@@ -1,15 +1,14 @@
 ﻿using FluentBehaviourTree;
-using SWLOR.Game.Server.AI.Contracts;
-using SWLOR.Game.Server.GameObject;
-
 using NWN;
+using SWLOR.Game.Server.Event;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.AI.AIComponent
 {
     /// <summary>
     /// Forces creature to equip the best melee item.
     /// </summary>
-    public class EquipBestMelee: IAIComponent
+    public class EquipBestMelee : IRegisteredEvent
     {
         private readonly INWScript _;
 
@@ -18,22 +17,20 @@ namespace SWLOR.Game.Server.AI.AIComponent
             _ = script;
         }
 
-        public BehaviourTreeBuilder Build(BehaviourTreeBuilder builder, params object[] args)
+        public bool Run(object[] args)
         {
-            return builder.Do("EquipBestMelee", t =>
-            {
-                NWCreature self = (NWCreature)args[0];
-                if (!self.IsInCombat ||
-                     self.RightHand.IsRanged)
-                    return BehaviourTreeStatus.Failure;
+            NWCreature self = (NWCreature)args[0];
+            if (!self.IsInCombat ||
+                 self.RightHand.IsRanged)
+                return false;
 
-                self.AssignCommand(() =>
-                {
-                    _.ActionEquipMostDamagingMelee(new Object());
-                });
-                
-                return BehaviourTreeStatus.Running;
+            self.AssignCommand(() =>
+            {
+                _.ActionEquipMostDamagingMelee(new Object());
             });
+
+            return true;
         }
+
     }
 }

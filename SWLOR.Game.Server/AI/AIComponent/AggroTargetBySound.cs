@@ -1,8 +1,7 @@
 ﻿using FluentBehaviourTree;
-using SWLOR.Game.Server.AI.Contracts;
-using SWLOR.Game.Server.GameObject;
-
 using NWN;
+using SWLOR.Game.Server.Event;
+using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.AI.AIComponent
@@ -10,7 +9,7 @@ namespace SWLOR.Game.Server.AI.AIComponent
     /// <summary>
     /// This component causes a creature to target by sound (i.e: what's near them)
     /// </summary>
-    public class AggroTargetBySound : IAIComponent
+    public class AggroTargetBySound : IRegisteredEvent
     {
         private readonly INWScript _;
         private readonly IEnmityService _enmity;
@@ -22,37 +21,35 @@ namespace SWLOR.Game.Server.AI.AIComponent
             _enmity = enmity;
         }
 
-        public BehaviourTreeBuilder Build(BehaviourTreeBuilder builder, params object[] args)
+        public bool Run(object[] args)
         {
-            return builder.Do("AggroTargetBySound", t =>
+            NWCreature self = (NWCreature)args[0];
+
+            if (self.IsInCombat) return false;
+
+            float aggroRange = self.GetLocalFloat("AGGRO_RANGE");
+            if (aggroRange <= 0.0f) aggroRange = 5.0f;
+
+            int nth = 1;
+            NWCreature creature = _.GetNearestObject(NWScript.OBJECT_TYPE_CREATURE, self.Object, nth);
+            while (creature.IsValid)
             {
-                NWCreature self = (NWCreature)args[0];
-
-                if (self.IsInCombat) return BehaviourTreeStatus.Failure;
-
-                float aggroRange = self.GetLocalFloat("AGGRO_RANGE");
-                if (aggroRange <= 0.0f) aggroRange = 5.0f;
-
-                int nth = 1;
-                NWCreature creature = _.GetNearestObject(NWScript.OBJECT_TYPE_CREATURE, self.Object, nth);
-                while (creature.IsValid)
+                if (_.GetIsEnemy(creature.Object, self.Object) == NWScript.TRUE &&
+                    !_enmity.IsOnEnmityTable(self, creature) &&
+                    !creature.HasAnyEffect(NWScript.EFFECT_TYPE_SANCTUARY) &&
+                    _.GetDistanceBetween(self.Object, creature.Object) <= aggroRange &&
+                    _.LineOfSightObject(self.Object, creature.Object) == NWScript.TRUE)
                 {
-                    if (_.GetIsEnemy(creature.Object, self.Object) == NWScript.TRUE &&
-                        !_enmity.IsOnEnmityTable(self, creature) &&
-                        !creature.HasAnyEffect(NWScript.EFFECT_TYPE_SANCTUARY) &&
-                        _.GetDistanceBetween(self.Object, creature.Object) <= aggroRange && 
-                        _.LineOfSightObject(self.Object, creature.Object) == NWScript.TRUE)
-                    {
-                        _enmity.AdjustEnmity(self, creature, 0, 1);
-                    }
-
-                    nth++;
-                    creature = _.GetNearestObject(NWScript.OBJECT_TYPE_CREATURE, self.Object, nth);
+                    _enmity.AdjustEnmity(self, creature, 0, 1);
                 }
 
+                nth++;
+                creature = _.GetNearestObject(NWScript.OBJECT_TYPE_CREATURE, self.Object, nth);
+            }
 
-                return BehaviourTreeStatus.Running;
-            });
+
+            return true;
+
         }
     }
 }

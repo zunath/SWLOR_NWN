@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             if (responseID == 1)
             {
-                _death.SetRespawnLocation(player, true);
+                _death.SetRespawnLocation(player);
                 EndConversation();
             }
         }

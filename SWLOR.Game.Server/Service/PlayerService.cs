@@ -164,8 +164,6 @@ namespace SWLOR.Game.Server.Service
 
             LoadLocation(player);
             SaveLocation(player);
-            ApplySanctuaryEffects(player);
-            AdjustCamera(player);
             if(player.IsPlayer)
                 _.ExportSingleCharacter(player);
         }
@@ -232,12 +230,17 @@ namespace SWLOR.Game.Server.Service
                 entity.LocationZ = player.Position.m_Z;
                 entity.LocationOrientation = (player.Facing);
 
-                _db.SaveChanges();
-
                 if (string.IsNullOrWhiteSpace(entity.RespawnAreaResref))
                 {
-                    _death.SetRespawnLocation(player, false);
+                    NWObject waypoint = _.GetWaypointByTag("DTH_DEFAULT_RESPAWN_POINT");
+                    entity.RespawnAreaResref = waypoint.Resref;
+                    entity.RespawnLocationOrientation = waypoint.Facing;
+                    entity.RespawnLocationX = waypoint.Position.m_X;
+                    entity.RespawnLocationY = waypoint.Position.m_Y;
+                    entity.RespawnLocationZ = waypoint.Position.m_Z;
                 }
+
+                _db.SaveChanges();
             }
         }
 
@@ -290,37 +293,7 @@ namespace SWLOR.Game.Server.Service
                 CheckForMovement(oPC, location);
             }, 1.0f);
         }
-
-        private void ApplySanctuaryEffects(NWPlayer oPC)
-        {
-            if (!oPC.IsPlayer) return;
-            if (oPC.CurrentHP <= 0) return;
-            if (oPC.Area.Tag == "ooc_area") return;
-
-            Effect sanctuary = _.EffectSanctuary(99);
-            Effect dr = _.EffectDamageReduction(50, DAMAGE_POWER_PLUS_TWENTY);
-            sanctuary = _.TagEffect(sanctuary, "AREA_ENTRY_SANCTUARY");
-            dr = _.TagEffect(dr, "AREA_ENTRY_DAMAGE_REDUCTION");
-
-            _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, sanctuary, oPC.Object);
-            _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, dr, oPC.Object);
-            Location location = oPC.Location;
-
-            oPC.DelayCommand(() =>
-            {
-                CheckForMovement(oPC, location);
-            }, 3.5f);
-        }
         
-        private void AdjustCamera(NWPlayer oPC)
-        {
-            if (!oPC.IsPlayer) return;
-
-            float facing = oPC.Facing - 180;
-            _.SetCameraFacing(facing, 1.0f, 1.0f);
-        }
-
-
         private void InitializeHotBar(NWPlayer player)
         {
             var openRestMenu = _qbs.UseFeat((int)CustomFeatType.OpenRestMenu);

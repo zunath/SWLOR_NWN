@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Tests.Service
             player.Area.Tag.Returns("a_fake_area_tag");
 
             // Act
-            service.SetRespawnLocation(player, false);
+            service.SetRespawnLocation(player);
             var result = _db.PlayerCharacters.Single(x => x.PlayerID == "123");
 
             // Assert
@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Tests.Service
             
 
             // Act
-            service.SetRespawnLocation(player, true);
+            service.SetRespawnLocation(player);
             var result = _db.PlayerCharacters.Single(x => x.PlayerID == "123");
 
             // Assert
@@ -154,7 +154,7 @@ namespace SWLOR.Game.Server.Tests.Service
             Assert.Throws(typeof(ArgumentNullException), () =>
             {
                 // Act
-                service.SetRespawnLocation(null, false);
+                service.SetRespawnLocation(null);
             });
         }
 
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Tests.Service
             Assert.Throws(typeof(ArgumentNullException), () =>
             {
                 // Act
-                service.SetRespawnLocation(player, false);
+                service.SetRespawnLocation(player);
             });
         }
 
@@ -194,7 +194,7 @@ namespace SWLOR.Game.Server.Tests.Service
             Assert.Throws(typeof(InvalidOperationException), () =>
             {
                 // Act
-                service.SetRespawnLocation(player, false);
+                service.SetRespawnLocation(player);
             });
         }
     }

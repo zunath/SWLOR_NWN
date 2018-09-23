@@ -4,7 +4,7 @@ namespace SWLOR.Game.Server.Service.Contracts
 {
     public interface IDeathService
     {
-        void SetRespawnLocation(NWPlayer player, bool showMessage);
+        void SetRespawnLocation(NWPlayer player);
         void OnPlayerDeath();
         void OnPlayerRespawn();
         void TeleportPlayerToBindPoint(NWPlayer pc);

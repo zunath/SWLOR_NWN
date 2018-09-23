@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IImpoundService _impound;
         private readonly IBasePermissionService _perm;
         private readonly INWNXChat _nwnxChat;
+        private readonly IDurabilityService _durability;
 
         public BaseService(INWScript script,
             INWNXEvents nwnxEvents,
@@ -33,7 +34,8 @@ namespace SWLOR.Game.Server.Service
             IPlayerService player,
             IImpoundService impound,
             IBasePermissionService perm,
-            INWNXChat nwnxChat)
+            INWNXChat nwnxChat,
+            IDurabilityService durability)
         {
             _ = script;
             _nwnxEvents = nwnxEvents;
@@ -43,6 +45,7 @@ namespace SWLOR.Game.Server.Service
             _impound = impound;
             _perm = perm;
             _nwnxChat = nwnxChat;
+            _durability = durability;
         }
 
         public PCTempBaseData GetPlayerTempData(NWPlayer player)
@@ -487,8 +490,9 @@ namespace SWLOR.Game.Server.Service
             NWItem item = (_.CreateItemOnObject(pcBaseStructure.BaseStructure.ItemResref, target.Object));
             item.SetLocalInt("BASE_STRUCTURE_ID", pcBaseStructure.BaseStructureID);
             item.Name = pcBaseStructure.BaseStructure.Name;
-            item.MaxDurability = (float)pcBaseStructure.Durability;
-            item.Durability = (float)pcBaseStructure.Durability;
+            
+            _durability.SetMaxDurability(item, (float)pcBaseStructure.Durability);
+            _durability.SetDurability(item, (float)pcBaseStructure.Durability);
             item.StructureBonus = pcBaseStructure.StructureBonus;
 
             if (pcBaseStructure.InteriorStyleID != null && pcBaseStructure.ExteriorStyleID != null)

@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
         private readonly IRandomService _random;
         private readonly IPerkService _perk;
         private readonly IBiowareXP2 _biowareXP2;
+        private readonly IPlayerStatService _playerStat;
 
         public CompleteSmelt(
             INWScript script,
@@ -24,7 +25,8 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             ICraftService craft,
             IRandomService random,
             IPerkService perk,
-            IBiowareXP2 biowareXP2)
+            IBiowareXP2 biowareXP2,
+            IPlayerStatService playerStat)
         {
             _ = script;
             _skill = skill;
@@ -32,6 +34,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             _random = random;
             _perk = perk;
             _biowareXP2 = biowareXP2;
+            _playerStat = playerStat;
         }
 
         public bool Run(params object[] args)
@@ -72,7 +75,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
                 }
             }
 
-            int stronidiumAmount = 2 + player.EffectiveHarvestingBonus;
+            int stronidiumAmount = 2 + _playerStat.EffectiveHarvestingBonus(player);
             _.CreateItemOnObject("stronidium", player.Object, stronidiumAmount);
 
             int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(100, level, pcSkill.Rank);

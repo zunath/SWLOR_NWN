@@ -13,15 +13,18 @@ namespace SWLOR.Game.Server.CustomEffect
         private readonly INWScript _;
         private readonly IPerkService _perk;
         private readonly ICustomEffectService _customEffect;
+        private readonly IPlayerStatService _playerStat;
 
         public RestEffect(
             INWScript script,
             IPerkService perk,
-            ICustomEffectService customEffect)
+            ICustomEffectService customEffect,
+            IPlayerStatService playerStat)
         {
             _ = script;
             _customEffect = customEffect;
             _perk = perk;
+            _playerStat = playerStat;
         }
 
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
@@ -89,7 +92,7 @@ namespace SWLOR.Game.Server.CustomEffect
                     amount = 3;
                     break;
             }
-            amount += player.EffectiveRestBonus;
+            amount += _playerStat.EffectiveRestBonus(player);
 
             return amount;
         }
@@ -124,7 +127,7 @@ namespace SWLOR.Game.Server.CustomEffect
             bool canRest = !oPC.IsInCombat;
 
             NWArea pcArea = oPC.Area;
-            foreach (NWPlayer member in oPC.GetPartyMembers())
+            foreach (NWPlayer member in oPC.PartyMembers)
             {
                 if (!member.Area.Equals(pcArea)) continue;
 

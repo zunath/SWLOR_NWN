@@ -6,16 +6,16 @@ namespace SWLOR.Game.Server.CustomEffect
 {
     public class AegisEffect: ICustomEffect
     {
-        private readonly ISkillService _skill;
+        private readonly IPlayerStatService _stat;
 
-        public AegisEffect(ISkillService skill)
+        public AegisEffect(IPlayerStatService stat)
         {
-            _skill = skill;
+            _stat = stat;
         }
 
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
-            _skill.ApplyStatChanges(oTarget.Object, null);
+            _stat.ApplyStatChanges(oTarget.Object, null);
 
             return null;
         }
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.CustomEffect
 
         public void WearOff(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)
         {
-            _skill.ApplyStatChanges(oTarget.Object, null);
+            _stat.ApplyStatChanges(oTarget.Object, null);
         }
     }
 }

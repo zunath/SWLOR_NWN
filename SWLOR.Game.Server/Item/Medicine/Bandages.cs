@@ -15,18 +15,21 @@ namespace SWLOR.Game.Server.Item.Medicine
         private readonly ICustomEffectService _customEffect;
         private readonly IRandomService _random;
         private readonly IPerkService _perk;
+        private readonly IPlayerStatService _playerStat;
 
         public Bandages(INWScript script,
             ISkillService skill,
             ICustomEffectService customEffect,
             IRandomService random,
-            IPerkService perk)
+            IPerkService perk,
+            IPlayerStatService playerStat)
         {
             _ = script;
             _skill = skill;
             _customEffect = customEffect;
             _random = random;
             _perk = perk;
+            _playerStat = playerStat;
         }
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
@@ -40,7 +43,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             NWPlayer player = (user.Object);
 
             _customEffect.RemovePCCustomEffect((NWPlayer)target, CustomEffectType.Bleeding);
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, _.EffectHeal(2 + player.EffectiveMedicineBonus/2), target.Object);
+            _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, _.EffectHeal(2 + _playerStat.EffectiveMedicineBonus(player)/2), target.Object);
             player.SendMessage("You finish bandaging " + target.Name + "'s wounds.");
 
             PCSkill skill = _skill.GetPCSkill(player, SkillType.Medicine);

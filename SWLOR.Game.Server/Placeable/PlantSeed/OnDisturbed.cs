@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
         private readonly ISkillService _skill;
         private readonly IPerkService _perk;
         private readonly IFarmingService _farming;
+        private readonly IPlayerStatService _playerStat;
 
         public OnDisturbed(INWScript script,
             IItemService item,
@@ -27,7 +28,8 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
             IRandomService random,
             ISkillService skill,
             IPerkService perk,
-            IFarmingService farming)
+            IFarmingService farming,
+            IPlayerStatService playerStat)
         {
             _ = script;
             _item = item;
@@ -36,6 +38,7 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
             _skill = skill;
             _perk = perk;
             _farming = farming;
+            _playerStat = playerStat;
         }
 
         public bool Run(params object[] args)
@@ -109,7 +112,7 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
 
             int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(200, plant.Level, rank);
 
-            if (_random.Random(100) + 1 <= _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + oPC.EffectiveLuckBonus)
+            if (_random.Random(100) + 1 <= _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + _playerStat.EffectiveLuckBonus(oPC))
             {
                 xp *= 2;
             }

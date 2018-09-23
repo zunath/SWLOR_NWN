@@ -19,8 +19,8 @@ namespace SWLOR.Game.Server.Service.Contracts
         void OnModuleHeartbeat();
         void ReturnItem(NWObject target, NWItem item);
         void StripAllItemProperties(NWItem item);
-        CustomItemType GetCustomItemType(NWItem item);
         ItemProperty GetCustomItemPropertyByItemTag(string tag);
         void FinishActionItem(IActionItem actionItem, NWPlayer user, NWItem item, NWObject target, Location targetLocation, Vector userStartPosition, CustomData customData);
+        SkillType GetSkillTypeForItem(NWItem item);
     }
 }

@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
         private readonly IColorTokenService _color;
         private readonly ILootService _loot;
         private readonly IFarmingService _farming;
+        private readonly IPlayerStatService _playerStat;
 
         public OnOpened(INWScript script,
             ISkillService skill,
@@ -25,7 +26,8 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
             IRandomService random,
             IColorTokenService color,
             ILootService loot,
-            IFarmingService farming)
+            IFarmingService farming,
+            IPlayerStatService playerStat)
         {
             _ = script;
             _skill = skill;
@@ -34,6 +36,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
             _color = color;
             _loot = loot;
             _farming = farming;
+            _playerStat = playerStat;
         }
 
         public bool Run(params object[] args)
@@ -78,7 +81,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
             if (dc <= 4) dc = 4;
             int searchAttempts = 1 + CalculateSearchAttempts(oPC);
 
-            int luck = _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + oPC.EffectiveLuckBonus;
+            int luck = _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + _playerStat.EffectiveLuckBonus(oPC);
             if (_random.Random(100) + 1 <= luck / 2)
             {
                 dc--;

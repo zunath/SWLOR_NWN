@@ -16,7 +16,8 @@ namespace SWLOR.Game.Server.Service
         private readonly INWScript _;
         private readonly IColorTokenService _color;
 
-        public DurabilityService(INWScript script,
+        public DurabilityService(
+            INWScript script,
             IColorTokenService color)
         {
             _ = script;
@@ -55,13 +56,17 @@ namespace SWLOR.Game.Server.Service
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
             
-            return item.GetLocalFloat("DURABILITY_MAX") <= 0 ? DefaultDurability : item.GetLocalFloat("DURABILITY_MAX");
+            int maxDurability = item.GetItemPropertyValueAndRemove((int)CustomItemPropertyType.MaxDurability);
+            if (maxDurability <= -1) return item.GetLocalFloat("DURABILITY_MAX") <= 0 ? DefaultDurability : item.GetLocalFloat("DURABILITY_MAX");
+            SetMaxDurability(item, maxDurability);
+            return maxDurability;
         }
 
         public void SetMaxDurability(NWItem item, float value)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
-            
+
+            item.SetLocalInt("DURABILITY_OVERRIDE", TRUE);
             if (value <= 0) value = DefaultDurability;
 
             item.SetLocalFloat("DURABILITY_MAX", value);
@@ -71,16 +76,25 @@ namespace SWLOR.Game.Server.Service
         public float GetDurability(NWItem item)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
-            
-            InitializeDurability(item);
-            return item.GetLocalFloat("DURABILITY_CURRENT");
+
+            int durability = item.GetItemPropertyValueAndRemove((int)CustomItemPropertyType.Durability);
+
+            if (durability <= -1)
+            {
+                InitializeDurability(item);
+                return item.GetLocalFloat("DURABILITY_CURRENT");
+            }
+
+            SetDurability(item, durability);
+            return durability;
         }
 
         public void SetDurability(NWItem item, float value)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
             if (value < 0.0f) value = 0.0f;
-            
+
+            item.SetLocalInt("DURABILITY_OVERRIDE", TRUE);
             InitializeDurability(item);
             item.SetLocalFloat("DURABILITY_CURRENT", value);
         }

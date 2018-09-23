@@ -9,7 +9,6 @@ namespace SWLOR.Game.Server.Service.Contracts
     {
         int SkillCap { get; }
 
-        void ApplyStatChanges(NWPlayer player, NWItem ignoreItem, bool isInitialization = false);
         float CalculateRegisteredSkillLevelAdjustedXP(float xp, int registeredLevel, int skillRank);
         List<SkillCategory> GetActiveCategories();
         PCSkill GetPCSkill(NWPlayer player, int skillID);
@@ -32,6 +31,5 @@ namespace SWLOR.Game.Server.Service.Contracts
         void RegisterPCToNPCForSkill(NWPlayer pc, NWCreature npc, int skillID);
         void RegisterPCToNPCForSkill(NWPlayer pc, NWCreature npc, SkillType skillType);
         void ToggleSkillLock(string playerID, int skillID);
-        SkillType GetSkillTypeForItem(NWItem item);
     }
 }

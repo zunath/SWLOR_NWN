@@ -17,13 +17,15 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IAbilityService _ability;
         private readonly IPerkService _perk;
         private readonly IBaseService _base;
+        private readonly IPlayerStatService _playerStat;
         
         public OnModuleHeartbeat(INWScript script,
             IDataContext db,
             IItemService item,
             IAbilityService ability,
             IPerkService perk,
-            IBaseService @base)
+            IBaseService @base,
+            IPlayerStatService playerStat)
         {
             _ = script;
             _db = db;
@@ -31,6 +33,7 @@ namespace SWLOR.Game.Server.Event.Module
             _ability = ability;
             _perk = perk;
             _base = @base;
+            _playerStat = playerStat;
         }
 
         public bool Run(params object[] args)
@@ -92,7 +95,7 @@ namespace SWLOR.Game.Server.Event.Module
                     {
                         amount += con;
                     }
-                    amount += oPC.EffectiveHPRegenBonus;
+                    amount += _playerStat.EffectiveHPRegenBonus(oPC);
                     
                     if (oPC.Chest.CustomItemType == CustomItemType.HeavyArmor)
                     {
@@ -125,7 +128,7 @@ namespace SWLOR.Game.Server.Event.Module
                     {
                         amount += cha;
                     }
-                    amount += oPC.EffectiveFPRegenBonus;
+                    amount += _playerStat.EffectiveFPRegenBonus(oPC);
 
                     if (oPC.Chest.CustomItemType == CustomItemType.ForceArmor)
                     {

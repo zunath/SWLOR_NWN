@@ -11,15 +11,15 @@ namespace SWLOR.Game.Server.GameObject
 {
     public class NWObject
     {
-        public virtual Object Object { get; set; }
+        public virtual Object Object { get; }
         protected readonly INWScript _;
         private readonly AppState _state;
 
-        public NWObject(INWScript script,
-            AppState state)
+        public NWObject(Object nwnObject)
         {
-            _ = script;
-            _state = state;
+            Object = nwnObject;
+            _ = App.GetNWScript();
+            _state = App.GetAppState();
         }
         
         public virtual bool IsInitializedAsPlayer
@@ -344,7 +344,7 @@ namespace SWLOR.Game.Server.GameObject
 
         public static implicit operator NWObject(Object o)
         {
-            return NWObjectFactory.Build<NWObject>(o);
+            return new NWObject(o);
         }
 
         public void Dispose()

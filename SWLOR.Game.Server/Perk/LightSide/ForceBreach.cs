@@ -13,18 +13,21 @@ namespace SWLOR.Game.Server.Perk.LightSide
         private readonly IRandomService _random;
         private readonly ISkillService _skill;
         private readonly ICustomEffectService _customEffect;
+        private readonly IPlayerStatService _playerStat;
 
         public ForceBreach(INWScript script,
             IPerkService perk,
             IRandomService random,
             ISkillService skill,
-            ICustomEffectService customEffect)
+            ICustomEffectService customEffect,
+            IPlayerStatService playerStat)
         {
             _ = script;
             _perk = perk;
             _random = random;
             _skill = skill;
             _customEffect = customEffect;
+            _playerStat = playerStat;
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -55,7 +58,7 @@ namespace SWLOR.Game.Server.Perk.LightSide
         public void OnImpact(NWPlayer oPC, NWObject oTarget)
         {
             int level = _perk.GetPCPerkLevel(oPC, PerkType.ForceBreach);
-            int lightBonus = oPC.EffectiveLightAbilityBonus;
+            int lightBonus = _playerStat.EffectiveLightAbilityBonus(oPC);
             int amount;
             int length;
             int dotAmount;
@@ -132,7 +135,7 @@ namespace SWLOR.Game.Server.Perk.LightSide
                 default: return;
             }
 
-            int luck = _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + oPC.EffectiveLuckBonus;
+            int luck = _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + _playerStat.EffectiveLuckBonus(oPC);
             if (_random.Random(100) + 1 <= luck)
             {
                 length = length * 2;

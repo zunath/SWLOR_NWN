@@ -2,7 +2,6 @@
 using System.Linq;
 
 using NWN;
-using SWLOR.Game.Server.NWNX.Contracts;
 using static NWN.NWScript;
 using Object = NWN.Object;
 
@@ -10,16 +9,12 @@ namespace SWLOR.Game.Server.GameObject
 {
     public class NWCreature : NWObject
     {
-        private readonly INWNXCreature _nwnxCreature;
-        
-        public NWCreature(INWScript script,
-            INWNXCreature creature,
-            AppState state)
-            : base(script, state)
+        public NWCreature(Object o)
+            : base(o)
         {
-            _nwnxCreature = creature;
+
         }
-        
+
         public virtual int Age => _.GetAge(Object);
 
         public virtual float ChallengeRating => _.GetChallengeRating(Object);
@@ -68,43 +63,7 @@ namespace SWLOR.Game.Server.GameObject
         public virtual int Intelligence => _.GetAbilityScore(Object, ABILITY_INTELLIGENCE);
 
         public virtual int Charisma => _.GetAbilityScore(Object, ABILITY_CHARISMA);
-
-        public virtual int RawStrength
-        {
-            get => _nwnxCreature.GetRawAbilityScore(this, ABILITY_STRENGTH);
-            set => _nwnxCreature.SetRawAbilityScore(this, ABILITY_STRENGTH, value);
-        }
-
-        public virtual int RawDexterity
-        {
-            get => _nwnxCreature.GetRawAbilityScore(this, ABILITY_DEXTERITY);
-            set => _nwnxCreature.SetRawAbilityScore(this, ABILITY_DEXTERITY, value);
-        }
-
-        public virtual int RawConstitution
-        {
-            get => _nwnxCreature.GetRawAbilityScore(this, ABILITY_CONSTITUTION);
-            set => _nwnxCreature.SetRawAbilityScore(this, ABILITY_CONSTITUTION, value);
-        }
-
-        public virtual int RawWisdom
-        {
-            get => _nwnxCreature.GetRawAbilityScore(this, ABILITY_WISDOM);
-            set => _nwnxCreature.SetRawAbilityScore(this, ABILITY_WISDOM, value);
-        }
-
-        public virtual int RawIntelligence
-        {
-            get => _nwnxCreature.GetRawAbilityScore(this, ABILITY_INTELLIGENCE);
-            set => _nwnxCreature.SetRawAbilityScore(this, ABILITY_INTELLIGENCE, value);
-        }
-
-        public virtual int RawCharisma
-        {
-            get => _nwnxCreature.GetRawAbilityScore(this, ABILITY_CHARISMA);
-            set => _nwnxCreature.SetRawAbilityScore(this, ABILITY_CHARISMA, value);
-        }
-
+        
         public virtual int StrengthModifier => _.GetAbilityModifier(ABILITY_STRENGTH, Object);
         public virtual int DexterityModifier => _.GetAbilityModifier(ABILITY_DEXTERITY, Object);
         public virtual int ConstitutionModifier => _.GetAbilityModifier(ABILITY_CONSTITUTION, Object);
@@ -183,7 +142,7 @@ namespace SWLOR.Game.Server.GameObject
         }
         public static implicit operator NWCreature(Object o)
         {
-            return NWObjectFactory.Build<NWCreature>(o);
+            return new NWCreature(o);
         }
     }
 }

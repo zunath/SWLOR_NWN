@@ -14,17 +14,20 @@ namespace SWLOR.Game.Server.CustomEffect
         private readonly IAbilityService _ability;
         private readonly IPerkService _perk;
         private readonly ICustomEffectService _customEffect;
+        private readonly IPlayerStatService _playerStat;
 
         public MeditateEffect(
             INWScript script,
             IAbilityService ability,
             IPerkService perk,
-            ICustomEffectService customEffect)
+            ICustomEffectService customEffect,
+            IPlayerStatService playerStat)
         {
             _ = script;
             _ability = ability;
             _perk = perk;
             _customEffect = customEffect;
+            _playerStat = playerStat;
         }
 
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
@@ -92,7 +95,7 @@ namespace SWLOR.Game.Server.CustomEffect
                     amount = 3;
                     break;
             }
-            amount += player.EffectiveMeditateBonus;
+            amount += _playerStat.EffectiveMeditateBonus(player);
 
             return amount;
         }
@@ -126,7 +129,7 @@ namespace SWLOR.Game.Server.CustomEffect
             bool canMeditate = !oPC.IsInCombat;
 
             NWArea pcArea = oPC.Area;
-            foreach (NWPlayer member in oPC.GetPartyMembers())
+            foreach (NWPlayer member in oPC.PartyMembers)
             {
                 if (!member.Area.Equals(pcArea)) continue;
 

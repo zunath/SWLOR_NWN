@@ -18,13 +18,15 @@ namespace SWLOR.Game.Server.Perk.LightSide
         private readonly ISkillService _skill;
         private readonly IDataContext _db;
         private readonly ICustomEffectService _customEffect;
+        private readonly IPlayerStatService _playerStat;
 
         public ForceHeal(INWScript script,
             IPerkService perk,
             IRandomService random,
             ISkillService skill,
             IDataContext db,
-            ICustomEffectService customEffect)
+            ICustomEffectService customEffect,
+            IPlayerStatService playerStat)
         {
             _ = script;
             _perk = perk;
@@ -32,6 +34,7 @@ namespace SWLOR.Game.Server.Perk.LightSide
             _skill = skill;
             _db = db;
             _customEffect = customEffect;
+            _playerStat = playerStat;
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -62,7 +65,7 @@ namespace SWLOR.Game.Server.Perk.LightSide
         public void OnImpact(NWPlayer oPC, NWObject oTarget)
         {
             int level = _perk.GetPCPerkLevel(oPC, PerkType.ForceHeal);
-            int lightBonus = oPC.EffectiveLightAbilityBonus;
+            int lightBonus = _playerStat.EffectiveLightAbilityBonus(oPC);
 
             PCCustomEffect spreadEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == oPC.GlobalID && x.CustomEffectID == (int)CustomEffectType.ForceSpread);
             string spreadData = spreadEffect?.Data ?? string.Empty;
@@ -82,7 +85,7 @@ namespace SWLOR.Game.Server.Perk.LightSide
                 HealTarget(oPC, oTarget, lightBonus, level);
             else
             {
-                var members = oPC.GetPartyMembers().Where(x => _.GetDistanceBetween(x, oTarget) <= spreadRange ||
+                var members = oPC.PartyMembers.Where(x => _.GetDistanceBetween(x, oTarget) <= spreadRange ||
                                                                Equals(x, oTarget));
                 spreadUses--;
 
@@ -180,7 +183,7 @@ namespace SWLOR.Game.Server.Perk.LightSide
                 default: return;
             }
 
-            int luck = _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + oPC.EffectiveLuckBonus;
+            int luck = _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + _playerStat.EffectiveLuckBonus(oPC);
             if (_random.Random(100) + 1 <= luck)
             {
                 length = length * 2;

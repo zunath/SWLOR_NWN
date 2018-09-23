@@ -21,10 +21,6 @@ namespace SWLOR.Game.Server.Service
 {
     public class SkillService : ISkillService
     {
-        private const float PrimaryIncrease = 0.2f;
-        private const float SecondaryIncrease = 0.1f;
-        private const float TertiaryIncrease = 0.05f;
-        private const int MaxAttributeBonus = 70;
         private const string IPWeaponPenaltyTag = "SKILL_PENALTY_WEAPON_ITEM_PROPERTY";
         private const string IPEquipmentPenaltyTag = "SKILL_PENALTY_EQUIPMENT_ITEM_PROPERTY";
 
@@ -32,123 +28,33 @@ namespace SWLOR.Game.Server.Service
         private readonly IDataContext _db;
         private readonly INWScript _;
         private readonly IRandomService _random;
-        private readonly INWNXCreature _nwnxCreature;
-        private readonly IPerkService _perk;
         private readonly IBiowareXP2 _biowareXP2;
         private readonly IEnmityService _enmity;
+        private readonly IPlayerStatService _playerStat;
+        private readonly IItemService _item;
         private readonly AppState _state;
 
         public SkillService(IDataContext db,
             INWScript script,
             IRandomService random,
-            INWNXCreature nwnxCreature,
-            IPerkService perk,
             IBiowareXP2 biowareXP2,
             IEnmityService enmity,
+            IPlayerStatService playerStat,
+            IItemService item,
             AppState state)
         {
             _db = db;
             _ = script;
             _random = random;
-            _nwnxCreature = nwnxCreature;
-            _perk = perk;
             _biowareXP2 = biowareXP2;
             _enmity = enmity;
+            _playerStat = playerStat;
+            _item = item;
             _state = state;
         }
 
         public int SkillCap => 500;
 
-        public void ApplyStatChanges(NWPlayer player, NWItem ignoreItem, bool isInitialization = false)
-        {
-            if (!player.IsPlayer) return;
-            if (!player.IsInitializedAsPlayer) return;
-
-            PlayerCharacter pcEntity = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
-            List<PCSkill> skills = _db.PCSkills.Where(x => x.PlayerID == player.GlobalID && x.Skill.IsActive).ToList();
-            float strBonus = 0.0f;
-            float dexBonus = 0.0f;
-            float conBonus = 0.0f;
-            float intBonus = 0.0f;
-            float wisBonus = 0.0f;
-            float chaBonus = 0.0f;
-
-            foreach (PCSkill pcSkill in skills)
-            {
-                Skill skill = pcSkill.Skill;
-                CustomAttribute primary = (CustomAttribute)skill.Primary;
-                CustomAttribute secondary = (CustomAttribute)skill.Secondary;
-                CustomAttribute tertiary = (CustomAttribute)skill.Tertiary;
-
-                // Primary Bonuses
-                if (primary == CustomAttribute.STR) strBonus += PrimaryIncrease * pcSkill.Rank;
-                else if (primary == CustomAttribute.DEX) dexBonus += PrimaryIncrease * pcSkill.Rank;
-                else if (primary == CustomAttribute.CON) conBonus += PrimaryIncrease * pcSkill.Rank;
-                else if (primary == CustomAttribute.INT) intBonus += PrimaryIncrease * pcSkill.Rank;
-                else if (primary == CustomAttribute.WIS) wisBonus += PrimaryIncrease * pcSkill.Rank;
-                else if (primary == CustomAttribute.CHA) chaBonus += PrimaryIncrease * pcSkill.Rank;
-
-                // Secondary Bonuses
-                if (secondary == CustomAttribute.STR) strBonus += SecondaryIncrease * pcSkill.Rank;
-                else if (secondary == CustomAttribute.DEX) dexBonus += SecondaryIncrease * pcSkill.Rank;
-                else if (secondary == CustomAttribute.CON) conBonus += SecondaryIncrease * pcSkill.Rank;
-                else if (secondary == CustomAttribute.INT) intBonus += SecondaryIncrease * pcSkill.Rank;
-                else if (secondary == CustomAttribute.WIS) wisBonus += SecondaryIncrease * pcSkill.Rank;
-                else if (secondary == CustomAttribute.CHA) chaBonus += SecondaryIncrease * pcSkill.Rank;
-
-                // Tertiary Bonuses
-                if (tertiary == CustomAttribute.STR) strBonus += TertiaryIncrease * pcSkill.Rank;
-                else if (tertiary == CustomAttribute.DEX) dexBonus += TertiaryIncrease * pcSkill.Rank;
-                else if (tertiary == CustomAttribute.CON) conBonus += TertiaryIncrease * pcSkill.Rank;
-                else if (tertiary == CustomAttribute.INT) intBonus += TertiaryIncrease * pcSkill.Rank;
-                else if (tertiary == CustomAttribute.WIS) wisBonus += TertiaryIncrease * pcSkill.Rank;
-                else if (tertiary == CustomAttribute.CHA) chaBonus += TertiaryIncrease * pcSkill.Rank;
-            }
-
-            // Check caps.
-            if (strBonus > MaxAttributeBonus) strBonus = MaxAttributeBonus;
-            if (dexBonus > MaxAttributeBonus) dexBonus = MaxAttributeBonus;
-            if (conBonus > MaxAttributeBonus) conBonus = MaxAttributeBonus;
-            if (intBonus > MaxAttributeBonus) intBonus = MaxAttributeBonus;
-            if (wisBonus > MaxAttributeBonus) wisBonus = MaxAttributeBonus;
-            if (chaBonus > MaxAttributeBonus) chaBonus = MaxAttributeBonus;
-            
-            // Apply attributes
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_STRENGTH, (int)strBonus + pcEntity.STRBase);
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_DEXTERITY, (int)dexBonus + pcEntity.DEXBase);
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_CONSTITUTION, (int)conBonus + pcEntity.CONBase);
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_INTELLIGENCE, (int)intBonus + pcEntity.INTBase);
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_WISDOM, (int)wisBonus + pcEntity.WISBase);
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_CHARISMA, (int)chaBonus + pcEntity.CHABase);
-
-            // Apply AC
-            int ac = player.EffectiveArmorClass(ignoreItem);
-            _nwnxCreature.SetBaseAC(player, ac);
-
-            // Apply BAB
-            int bab = CalculateBAB(player, ignoreItem);
-            _nwnxCreature.SetBaseAttackBonus(player, bab);
-            
-            // Apply HP
-            int hp = player.EffectiveMaxHitPoints(ignoreItem);
-            _nwnxCreature.SetMaxHitPointsByLevel(player, 1, hp);
-            if (player.CurrentHP > player.MaxHP)
-            {
-                int amount = player.CurrentHP - player.MaxHP;
-                Effect damage = _.EffectDamage(amount);
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, damage, player.Object);
-            }
-
-            // Apply FP
-            pcEntity.MaxFP = player.EffectiveMaxFP(ignoreItem);
-
-            if (isInitialization)
-                pcEntity.CurrentFP = pcEntity.MaxFP;
-            if (pcEntity.CurrentFP < pcEntity.MaxFP)
-                pcEntity.CurrentFP = pcEntity.MaxFP;
-
-            _db.SaveChanges();
-        }
 
         public void RegisterPCToAllCombatTargetsForSkill(NWPlayer player, SkillType skillType)
         {
@@ -156,7 +62,7 @@ namespace SWLOR.Game.Server.Service
             if (!player.IsPlayer) return;
             if (skillID <= 0) return;
 
-            List<NWPlayer> members = player.GetPartyMembers();
+            List<NWPlayer> members = player.PartyMembers.ToList();
 
             int nth = 1;
             NWCreature creature = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, 1, player.Object, nth, CREATURE_TYPE_PLAYER_CHAR, 0);
@@ -189,7 +95,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (skillID <= 0 || xp <= 0 || !oPC.IsPlayer) return;
 
-            xp = (int)(xp + xp * oPC.ResidencyBonus);
+            xp = (int) (xp + xp * _playerStat.EffectiveResidencyBonus(oPC));
             PlayerCharacter player = _db.PlayerCharacters.Single(x => x.PlayerID == oPC.GlobalID);
             PCSkill skill = GetPCSkillByID(oPC.GlobalID, skillID);
             SkillXPRequirement req = _db.SkillXPRequirements.Single(x => x.SkillID == skillID && x.Rank == skill.Rank);
@@ -245,7 +151,7 @@ namespace SWLOR.Game.Server.Service
             // Update player and apply stat changes only if a level up occurred.
             if (originalRank != skill.Rank)
             {
-                ApplyStatChanges(oPC, null);
+                _playerStat.ApplyStatChanges(oPC, null);
             }
 
 
@@ -467,7 +373,7 @@ namespace SWLOR.Game.Server.Service
             if (!oPC.IsInitializedAsPlayer) return; // Players who log in for the first time don't have an ID yet.
 
             NWItem oItem = _.GetPCItemLastEquipped();
-            ApplyStatChanges(oPC, null);
+            _playerStat.ApplyStatChanges(oPC, null);
             ApplyWeaponPenalties(oPC, oItem);
             ApplyEquipmentPenalties(oPC, oItem);
         }
@@ -477,7 +383,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer oPC = _.GetPCItemLastUnequippedBy();
             NWItem oItem = _.GetPCItemLastUnequipped();
             HandleGlovesUnequipEvent();
-            ApplyStatChanges(oPC, oItem);
+            _playerStat.ApplyStatChanges(oPC, oItem);
             RemoveWeaponPenalties(oItem);
             RemoveEquipmentPenalties(oItem);
         }
@@ -643,104 +549,8 @@ namespace SWLOR.Game.Server.Service
                 _db.SaveChanges();
             }
 
-            ApplyStatChanges(oPC, null);
+            _playerStat.ApplyStatChanges(oPC, null);
             return true;
-        }
-
-        public SkillType GetSkillTypeForItem(NWItem item)
-        {
-            SkillType skillType = SkillType.Unknown;
-            int type = item.BaseItemType;
-            int[] oneHandedTypes = 
-            {
-                BASE_ITEM_BASTARDSWORD,
-                BASE_ITEM_BATTLEAXE,
-                BASE_ITEM_CLUB,
-                BASE_ITEM_DAGGER,
-                BASE_ITEM_HANDAXE,
-                BASE_ITEM_KAMA,
-                BASE_ITEM_KATANA,
-                BASE_ITEM_KUKRI,
-                BASE_ITEM_LIGHTFLAIL,
-                BASE_ITEM_LIGHTHAMMER,
-                BASE_ITEM_LIGHTMACE,
-                BASE_ITEM_LONGSWORD,
-                BASE_ITEM_RAPIER,
-                BASE_ITEM_SCIMITAR,
-                BASE_ITEM_SHORTSPEAR,
-                BASE_ITEM_SHORTSWORD,
-                BASE_ITEM_SICKLE,
-                BASE_ITEM_WHIP,
-                CustomBaseItemType.Lightsaber
-            };
-
-            int[] twoHandedTypes = 
-            {
-                BASE_ITEM_DIREMACE,
-                BASE_ITEM_DWARVENWARAXE,
-                BASE_ITEM_GREATAXE,
-                BASE_ITEM_GREATSWORD,
-                BASE_ITEM_HALBERD,
-                BASE_ITEM_HEAVYFLAIL,
-                BASE_ITEM_MORNINGSTAR,
-                BASE_ITEM_QUARTERSTAFF,
-                BASE_ITEM_SCYTHE,
-                BASE_ITEM_TRIDENT,
-                BASE_ITEM_WARHAMMER
-            };
-
-            int[] twinBladeTypes = 
-            {
-                BASE_ITEM_DOUBLEAXE,
-                BASE_ITEM_TWOBLADEDSWORD,
-                CustomBaseItemType.Saberstaff
-            };
-
-            int[] martialArtsTypes = 
-            {
-                BASE_ITEM_BRACER,
-                BASE_ITEM_GLOVES
-            };
-
-            int[] firearmTypes = 
-            {
-                BASE_ITEM_HEAVYCROSSBOW,
-                BASE_ITEM_LIGHTCROSSBOW,
-                BASE_ITEM_LONGBOW,
-                BASE_ITEM_SHORTBOW,
-                BASE_ITEM_ARROW,
-                BASE_ITEM_BOLT
-            };
-
-            int[] throwingTypes =
-            {
-                BASE_ITEM_GRENADE,
-                BASE_ITEM_SHURIKEN,
-                BASE_ITEM_SLING,
-                BASE_ITEM_THROWINGAXE,
-                BASE_ITEM_BULLET,
-                BASE_ITEM_DART
-            };
-
-            int[] shieldTypes =
-            {
-                BASE_ITEM_SMALLSHIELD,
-                BASE_ITEM_LARGESHIELD,
-                BASE_ITEM_TOWERSHIELD
-            };
-
-            if (oneHandedTypes.Contains(type)) skillType = SkillType.OneHanded;
-            else if (twoHandedTypes.Contains(type)) skillType = SkillType.TwoHanded;
-            else if (twinBladeTypes.Contains(type)) skillType = SkillType.TwinBlades;
-            else if (martialArtsTypes.Contains(type)) skillType = SkillType.MartialArts;
-            else if (firearmTypes.Contains(type)) skillType = SkillType.Firearms;
-            else if (throwingTypes.Contains(type)) skillType = SkillType.Throwing;
-            else if (item.CustomItemType == CustomItemType.HeavyArmor) skillType = SkillType.HeavyArmor;
-            else if (item.CustomItemType == CustomItemType.LightArmor) skillType = SkillType.LightArmor;
-            else if (item.CustomItemType == CustomItemType.ForceArmor) skillType = SkillType.ForceArmor;
-            else if (shieldTypes.Contains(type)) skillType = SkillType.Shields;
-
-            return skillType;
         }
 
 
@@ -765,7 +575,7 @@ namespace SWLOR.Game.Server.Service
             NWItem oSpellOrigin = (_.GetSpellCastItem());
             NWCreature oTarget = (_.GetSpellTargetObject());
 
-            SkillType skillType = GetSkillTypeForItem(oSpellOrigin);
+            SkillType skillType = _item.GetSkillTypeForItem(oSpellOrigin);
 
             if (skillType == SkillType.Unknown ||
                 skillType == SkillType.LightArmor ||
@@ -843,156 +653,10 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private int CalculateBAB(NWPlayer oPC, NWItem ignoreItem)
-        {
-            NWItem weapon = oPC.RightHand;
-
-            // The unequip event fires before the item is actually unequipped, so we need
-            // to have additional checks to make sure we're not getting the weapon that's about to be
-            // unequipped.
-            if (weapon.Equals(ignoreItem))
-            {
-                weapon = null;
-                NWItem offHand = oPC.LeftHand;
-
-                if (offHand.CustomItemType == CustomItemType.Vibroblade ||
-                   offHand.CustomItemType == CustomItemType.FinesseVibroblade ||
-                   offHand.CustomItemType == CustomItemType.Baton ||
-                   offHand.CustomItemType == CustomItemType.HeavyVibroblade ||
-                   offHand.CustomItemType == CustomItemType.Saberstaff ||
-                   offHand.CustomItemType == CustomItemType.Polearm ||
-                   offHand.CustomItemType == CustomItemType.TwinBlade ||
-                   offHand.CustomItemType == CustomItemType.MartialArtWeapon ||
-                   offHand.CustomItemType == CustomItemType.BlasterPistol ||
-                   offHand.CustomItemType == CustomItemType.BlasterRifle ||
-                   offHand.CustomItemType == CustomItemType.Throwing)
-                {
-                    weapon = offHand;
-                }
-            }
-
-            if (weapon == null || !weapon.IsValid)
-            {
-                weapon = oPC.Arms;
-            }
-            if (!weapon.IsValid) return 0;
-
-            SkillType itemSkill = GetSkillTypeForItem(weapon);
-            if (itemSkill == SkillType.Unknown ||
-                itemSkill == SkillType.LightArmor ||
-                itemSkill == SkillType.HeavyArmor ||
-                itemSkill == SkillType.ForceArmor ||
-                itemSkill == SkillType.Shields) return 0;
-
-            int weaponSkillID = (int)itemSkill;
-            PCSkill skill = GetPCSkill(oPC, weaponSkillID);
-            if (skill == null) return 0;
-            int skillBAB = skill.Rank / 10;
-            int perkBAB = 0;
-            int backgroundBAB = 0;
-            BackgroundType background = (BackgroundType) oPC.Class1;
-            bool receivesBackgroundBonus = false;
-
-            // Apply increased BAB if player is using a weapon for which they have a proficiency.
-            PerkType proficiencyPerk = PerkType.Unknown;
-            SkillType proficiencySkill = SkillType.Unknown;
-            switch (weapon.CustomItemType)
-            {
-                case CustomItemType.Vibroblade:
-                    proficiencyPerk = PerkType.VibrobladeProficiency;
-                    proficiencySkill = SkillType.OneHanded;
-                    break;
-                case CustomItemType.FinesseVibroblade:
-                    proficiencyPerk = PerkType.FinesseVibrobladeProficiency;
-                    proficiencySkill = SkillType.OneHanded;
-                    receivesBackgroundBonus = background == BackgroundType.Duelist;
-                    break;
-                case CustomItemType.Baton:
-                    proficiencyPerk = PerkType.BatonProficiency;
-                    proficiencySkill = SkillType.OneHanded;
-                    receivesBackgroundBonus = background == BackgroundType.SecurityOfficer;
-                    break;
-                case CustomItemType.HeavyVibroblade:
-                    proficiencyPerk = PerkType.HeavyVibrobladeProficiency;
-                    proficiencySkill = SkillType.TwoHanded;
-                    receivesBackgroundBonus = background == BackgroundType.Soldier;
-                    break;
-                case CustomItemType.Saberstaff:
-                    proficiencyPerk = PerkType.SaberstaffProficiency;
-                    proficiencySkill = SkillType.TwoHanded;
-                    receivesBackgroundBonus = background == BackgroundType.Sentinel || background == BackgroundType.Assassin;
-                    break;
-                case CustomItemType.Polearm:
-                    proficiencyPerk = PerkType.PolearmProficiency;
-                    proficiencySkill = SkillType.TwoHanded;
-                    break;
-                case CustomItemType.TwinBlade:
-                    proficiencyPerk = PerkType.TwinVibrobladeProficiency;
-                    proficiencySkill = SkillType.TwinBlades;
-                    receivesBackgroundBonus = background == BackgroundType.Berserker;
-                    break;
-                case CustomItemType.MartialArtWeapon:
-                    proficiencyPerk = PerkType.MartialArtsProficiency;
-                    proficiencySkill = SkillType.MartialArts;
-                    receivesBackgroundBonus = background == BackgroundType.TerasKasi;
-                    break;
-                case CustomItemType.BlasterPistol:
-                    proficiencyPerk = PerkType.BlasterPistolProficiency;
-                    proficiencySkill = SkillType.Firearms;
-                    receivesBackgroundBonus = background == BackgroundType.Smuggler;
-                    break;
-                case CustomItemType.BlasterRifle:
-                    proficiencyPerk = PerkType.BlasterRifleProficiency;
-                    proficiencySkill = SkillType.Firearms;
-                    receivesBackgroundBonus = background == BackgroundType.Sharpshooter;
-                    break;
-                case CustomItemType.Throwing:
-                    proficiencyPerk = PerkType.ThrowingProficiency;
-                    proficiencySkill = SkillType.Throwing;
-                    break;
-                case CustomItemType.Lightsaber:
-                    proficiencyPerk = PerkType.LightsaberProficiency;
-                    proficiencySkill = SkillType.OneHanded;
-                    receivesBackgroundBonus = background == BackgroundType.Guardian || background == BackgroundType.Warrior;
-                    break;
-            }
-
-            if (proficiencyPerk != PerkType.Unknown &&
-                proficiencySkill != SkillType.Unknown)
-            {
-                perkBAB += _perk.GetPCPerkLevel(oPC, proficiencyPerk);
-            }
-
-            if (receivesBackgroundBonus)
-            {
-                backgroundBAB = 2;
-            }
-
-            int equipmentBAB = 0;
-            for (int x = 0; x < NUM_INVENTORY_SLOTS; x++)
-            {
-                NWItem equipped = (_.GetItemInSlot(x, oPC.Object));
-
-                int itemLevel = equipped.RecommendedLevel;
-                SkillType equippedSkill = GetSkillTypeForItem(equipped);
-                int rank = GetPCSkill(oPC, equippedSkill).Rank;
-                int delta = itemLevel - rank; // -20
-                int itemBAB = equipped.BaseAttackBonus;
-
-                if (delta >= 1) itemBAB--;
-                if(delta > 0) itemBAB = itemBAB - delta / 5;
-
-                if (itemBAB <= 0) itemBAB = 0;
-
-                equipmentBAB += itemBAB;
-            }
-
-            return 1 + skillBAB + perkBAB + equipmentBAB + backgroundBAB; // Note: Always add 1 to BAB. 0 will cause a crash in NWNX.
-        }
 
         private void ApplyWeaponPenalties(NWPlayer oPC, NWItem oItem)
         {
-            SkillType skillType = GetSkillTypeForItem(oItem);
+            SkillType skillType = _item.GetSkillTypeForItem(oItem);
 
             if (skillType == SkillType.Unknown ||
                 skillType == SkillType.HeavyArmor ||
@@ -1065,7 +729,7 @@ namespace SWLOR.Game.Server.Service
 
         private void RemoveWeaponPenalties(NWItem oItem)
         {
-            SkillType skillType = GetSkillTypeForItem(oItem);
+            SkillType skillType = _item.GetSkillTypeForItem(oItem);
             if (skillType == SkillType.Unknown ||
                 skillType == SkillType.HeavyArmor ||
                 skillType == SkillType.LightArmor ||
@@ -1084,7 +748,7 @@ namespace SWLOR.Game.Server.Service
 
         private void ApplyEquipmentPenalties(NWPlayer oPC, NWItem oItem)
         {
-            SkillType skill = GetSkillTypeForItem(oItem);
+            SkillType skill = _item.GetSkillTypeForItem(oItem);
             int rank = GetPCSkill(oPC, skill).Rank;
             int delta = oItem.RecommendedLevel - rank;
             if (delta <= 0) return;

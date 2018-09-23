@@ -7,12 +7,12 @@ namespace SWLOR.Game.Server.GameObject
 {
     public class NWArea : NWObject
     {
-        public NWArea(INWScript script,
-            AppState state) 
-            : base(script, state)
+        public NWArea(Object o) 
+            : base(o)
         {
+            
         }
-        
+
         public int Width => _.GetAreaSize(AREA_WIDTH, Object);
 
         public int Height => _.GetAreaSize(AREA_HEIGHT, Object);
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.GameObject
 
         public static implicit operator NWArea(Object o)
         {
-            return NWObjectFactory.Build<NWArea>(o);
+            return new NWArea(o);
         }
     }
 }

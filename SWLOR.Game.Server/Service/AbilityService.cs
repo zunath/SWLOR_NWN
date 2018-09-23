@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Service
         private readonly INWNXEvents _nwnxEvents;
         private readonly INWNXDamage _nwnxDamage;
         private readonly ICustomEffectService _customEffect;
+        private readonly IPlayerStatService _playerStat;
 
         public AbilityService(INWScript script, 
             IDataContext db,
@@ -49,7 +50,8 @@ namespace SWLOR.Game.Server.Service
             IEnmityService enmity,
             INWNXEvents nwnxEvents,
             INWNXDamage nwnxDamage,
-            ICustomEffectService customEffect)
+            ICustomEffectService customEffect,
+            IPlayerStatService playerStat)
         {
             _ = script;
             _db = db;
@@ -64,6 +66,7 @@ namespace SWLOR.Game.Server.Service
             _nwnxEvents = nwnxEvents;
             _nwnxDamage = nwnxDamage;
             _customEffect = customEffect;
+            _playerStat = playerStat;
         }
         
         public void OnModuleUseFeat()
@@ -197,7 +200,7 @@ namespace SWLOR.Game.Server.Service
                                IPerk perk)
         {
             string spellUUID = Guid.NewGuid().ToString("N");
-            int itemBonus = pc.EffectiveCastingSpeed;
+            int itemBonus = _playerStat.EffectiveCastingSpeed(pc);
             float baseCastingTime = perk.CastingTime(pc, (float)entity.BaseCastingTime);
             float castingTime = baseCastingTime;
 
@@ -461,7 +464,7 @@ namespace SWLOR.Game.Server.Service
                     perkRate = 0.5f * perkBonus;
                 }
 
-                float damageRate = 1.0f + perkRate + (player.EffectiveSneakAttackBonus * 0.05f);
+                float damageRate = 1.0f + perkRate + (_playerStat.EffectiveSneakAttackBonus(player) * 0.05f);
                 data.Base = (int)(data.Base * damageRate);
 
                 if (target.IsNPC)

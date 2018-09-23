@@ -10,12 +10,12 @@ namespace SWLOR.Game.Server.Perk.LightSide
     public class ForceAura: IPerk
     {
         private readonly INWScript _;
-        private readonly ICustomEffect _customEffect;
+        private readonly ICustomEffectService _customEffect;
         private readonly IPerkService _perk;
 
         public ForceAura(
             INWScript script,
-            ICustomEffect customEffect,
+            ICustomEffectService customEffect,
             IPerkService perk)
         {
             _ = script;
@@ -51,7 +51,21 @@ namespace SWLOR.Game.Server.Perk.LightSide
         public void OnImpact(NWPlayer oPC, NWObject oTarget)
         {
             int level = _perk.GetPCPerkLevel(oPC, PerkType.ForceAura);
-            _customEffect.Apply(oPC, oTarget, level);
+            int ticks;
+
+            switch (level)
+            {
+                default:
+                    ticks = 300;
+                    break;
+                case 5:
+                case 6:
+                    ticks = 600;
+                    break;
+            }
+
+
+            _customEffect.ApplyCustomEffect(oPC, oTarget.Object, CustomEffectType.ForceAura, ticks, level, null);
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_AC_BONUS), oTarget);
         }
 

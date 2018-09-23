@@ -12,15 +12,15 @@ namespace SWLOR.Game.Server.Service
     {
         private readonly INWScript _;
         private readonly AppState _state;
-        private readonly IObjectProcessingService _ops;
+        private readonly IPlayerStatService _playerStat;
 
         public EnmityService(INWScript script,
             AppState state,
-            IObjectProcessingService ops)
+            IPlayerStatService playerStat)
         {
             _ = script;
             _state = state;
-            _ops = ops;
+            _playerStat = playerStat;
         }
 
         private Enmity GetEnmity(NWCreature npc, NWCreature attacker)
@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Service
             if (attacker.IsPlayer)
             {
                 NWPlayer player = (attacker.Object);
-                effectiveEnmityRate = player.EffectiveEnmityRate;
+                effectiveEnmityRate = _playerStat.EffectiveEnmityRate(player);
             }
 
             volatileAdjust = (int)(effectiveEnmityRate * volatileAdjust);

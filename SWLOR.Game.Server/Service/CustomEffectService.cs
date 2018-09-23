@@ -38,30 +38,32 @@ namespace SWLOR.Game.Server.Service
         {
             int effectLevel = GetCustomEffectLevel(creature, CustomEffectType.ForceAura);
             
-            int aegisAC = 0;
+            int auraAC = 0;
 
             if (effectLevel > 0)
             {
                 switch (effectLevel)
                 {
                     case 1:
-                        aegisAC = 1;
+                        auraAC = 2;
                         break;
                     case 2:
+                        auraAC = 3;
+                        break;
                     case 3:
-                        aegisAC = 2;
+                        auraAC = 4;
                         break;
                     case 4:
-                        aegisAC = 3;
+                        auraAC = 5;
                         break;
                     case 5:
-                        aegisAC = 4;
+                        auraAC = 5;
                         break;
                     default: return 0;
                 }
             }
 
-            return aegisAC;
+            return auraAC;
         }
 
         public float CalculateEffectHPBonusPercent(NWCreature creature)

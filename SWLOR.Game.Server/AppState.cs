@@ -8,7 +8,6 @@ namespace SWLOR.Game.Server
 {
     public class AppState
     {
-        public List<NWObject> GameObjects { get; }
         public Dictionary<string, PlayerDialog> PlayerDialogs { get; }
         public Dictionary<int, bool> DialogFilesInUse { get; }
         public Dictionary<string, int> EffectTicks { get; }
@@ -24,7 +23,6 @@ namespace SWLOR.Game.Server
         public List<long> PCEffectsForRemoval { get; set; }
         public AppState()
         {
-            GameObjects = new List<NWObject>();
             PlayerDialogs = new Dictionary<string, PlayerDialog>();
             DialogFilesInUse = new Dictionary<int, bool>();
             EffectTicks = new Dictionary<string, int>();

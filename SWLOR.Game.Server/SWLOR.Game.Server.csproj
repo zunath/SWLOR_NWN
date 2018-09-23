@@ -125,7 +125,7 @@
     <Compile Include="AI\SightAggroBehaviour.cs" />
     <Compile Include="AI\StandardBehaviour.cs" />
     <Compile Include="CustomEffect\AbsorptionFieldEffect.cs" />
-    <Compile Include="CustomEffect\AegisEffect.cs" />
+    <Compile Include="CustomEffect\ForceAuraEffect.cs" />
     <Compile Include="CustomEffect\BleedingEffect.cs" />
     <Compile Include="CustomEffect\BurningEffect.cs" />
     <Compile Include="CustomEffect\ChainspellEffect.cs" />

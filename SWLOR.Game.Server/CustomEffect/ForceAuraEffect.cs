@@ -4,11 +4,11 @@ using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.CustomEffect
 {
-    public class AegisEffect: ICustomEffect
+    public class ForceAuraEffect: ICustomEffect
     {
         private readonly IPlayerStatService _stat;
 
-        public AegisEffect(IPlayerStatService stat)
+        public ForceAuraEffect(IPlayerStatService stat)
         {
             _stat = stat;
         }

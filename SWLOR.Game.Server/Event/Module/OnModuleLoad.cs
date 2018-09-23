@@ -60,6 +60,7 @@ namespace SWLOR.Game.Server.Event.Module
             _.ExecuteScript("x2_mod_def_load", Object.OBJECT_SELF);
             _objectProcessing.RegisterProcessingEvent<AppStateProcessor>();
             //_objectProcessing.RegisterProcessingEvent<GarbageCollectorProcessor>(); // For debugging
+            _objectProcessing.RegisterProcessingEvent<ObjectFactoryProcessor>();
             _objectProcessing.OnModuleLoad();
             _farming.OnModuleLoad();
             

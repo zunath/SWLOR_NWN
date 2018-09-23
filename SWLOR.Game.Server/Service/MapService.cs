@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Service
 
         public void OnAreaEnter()
         {
-            NWArea area = NWArea.Wrap(Object.OBJECT_SELF);
+            NWArea area = (Object.OBJECT_SELF);
             if (area.GetLocalInt("AUTO_EXPLORED") == NWScript.TRUE)
             {
                 _.ExploreAreaForPlayer(area.Object, _.GetEnteringObject());

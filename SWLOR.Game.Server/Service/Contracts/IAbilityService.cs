@@ -1,5 +1,6 @@
 ﻿using SWLOR.Game.Server.Data.Entities;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Perk;
 
 namespace SWLOR.Game.Server.Service.Contracts
 {
@@ -10,5 +11,8 @@ namespace SWLOR.Game.Server.Service.Contracts
         void RestoreFP(NWPlayer oPC, int amount);
         PlayerCharacter RestoreFP(NWPlayer oPC, int amount, PlayerCharacter entity);
         void OnModuleApplyDamage();
+        void ApplyCooldown(NWPlayer pc, CooldownCategory cooldown, IPerk ability);
+        void ApplyEnmity(NWPlayer pc, NWCreature target, Data.Entities.Perk perk);
+        void HandleQueueWeaponSkill(NWPlayer pc, Data.Entities.Perk entity, IPerk ability);
     }
 }

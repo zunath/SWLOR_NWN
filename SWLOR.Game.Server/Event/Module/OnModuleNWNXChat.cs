@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Event.Module
 
         public bool Run(params object[] args)
         {
-            NWPlayer player = NWPlayer.Wrap(Object.OBJECT_SELF);
+            NWPlayer player = (Object.OBJECT_SELF);
             _activityLogging.OnModuleNWNXChat(player);
             _chatCommand.OnModuleNWNXChat(player);
             _base.OnModuleNWNXChat(player);

@@ -81,10 +81,10 @@ namespace SWLOR.Game.Server.Service
                 if (plant.RemainingTicks <= 0)
                     resref = plant.Plant.Resref;
 
-                NWArea area = NWArea.Wrap(_.GetObjectByTag(plant.LocationAreaTag));
+                NWArea area = (_.GetObjectByTag(plant.LocationAreaTag));
                 Vector position = _.Vector(plant.LocationX, plant.LocationY, plant.LocationZ);
                 Location location = _.Location(area.Object, position, plant.LocationOrientation);
-                NWPlaceable plantPlc = NWPlaceable.Wrap(_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, resref, location));
+                NWPlaceable plantPlc = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, resref, location));
                 plantPlc.SetLocalInt("GROWING_PLANT_ID", plant.GrowingPlantID);
 
                 if (plant.RemainingTicks > 0)

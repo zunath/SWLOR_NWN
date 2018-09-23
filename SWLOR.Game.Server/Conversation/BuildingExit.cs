@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Conversation
 
             int numberFound = 0;
             int nth = 1;
-            NWCreature nearest = NWCreature.Wrap(_.GetNearestObjectToLocation(NWScript.OBJECT_TYPE_CREATURE, location, nth));
+            NWCreature nearest = (_.GetNearestObjectToLocation(NWScript.OBJECT_TYPE_CREATURE, location, nth));
             while (nearest.IsValid)
             {
                 if (_.GetDistanceBetweenLocations(location, nearest.Location) > MaxDistance) break;
@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Conversation
                 }
 
                 nth++;
-                nearest = NWCreature.Wrap(_.GetNearestObjectToLocation(NWScript.OBJECT_TYPE_CREATURE, location, nth));
+                nearest = (_.GetNearestObjectToLocation(NWScript.OBJECT_TYPE_CREATURE, location, nth));
             }
 
             if (numberFound <= 0)

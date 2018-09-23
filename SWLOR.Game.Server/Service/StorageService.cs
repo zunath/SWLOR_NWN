@@ -63,8 +63,8 @@ namespace SWLOR.Game.Server.Service
             int containerID = oChest.GetLocalInt("STORAGE_CONTAINER_ID");
             if (containerID <= 0) return;
 
-            NWPlayer oPC = NWPlayer.Wrap(_.GetLastDisturbed());
-            NWItem oItem = NWItem.Wrap(_.GetInventoryDisturbItem());
+            NWPlayer oPC = (_.GetLastDisturbed());
+            NWItem oItem = (_.GetInventoryDisturbItem());
             int disturbType = _.GetInventoryDisturbType();
             int itemCount = CountItems(oChest);
             int itemLimit = oChest.GetLocalInt("STORAGE_CONTAINER_ITEM_LIMIT");
@@ -115,11 +115,11 @@ namespace SWLOR.Game.Server.Service
         {
             int count = 0;
 
-            NWItem item = NWItem.Wrap(_.GetFirstItemInInventory(container.Object));
+            NWItem item = (_.GetFirstItemInInventory(container.Object));
             while (item.IsValid)
             {
                 count++;
-                item = NWItem.Wrap(_.GetNextItemInInventory(container.Object));
+                item = (_.GetNextItemInInventory(container.Object));
             }
 
             return count;

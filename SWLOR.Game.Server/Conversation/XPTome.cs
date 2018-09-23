@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Conversation
             }
 
             Model vm = GetDialogCustomData<Model>();
-            vm.Item = NWItem.Wrap(GetPC().GetLocalObject("XP_TOME_OBJECT"));
+            vm.Item = (GetPC().GetLocalObject("XP_TOME_OBJECT"));
             SetDialogCustomData(vm);
         }
 

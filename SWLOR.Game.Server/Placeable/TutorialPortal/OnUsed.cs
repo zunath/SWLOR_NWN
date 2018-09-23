@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Placeable.TutorialPortal
 
         public bool Run(params object[] args)
         {
-            NWPlayer player = NWPlayer.Wrap(_.GetLastUsedBy());
-            NWPlaceable warp = NWPlaceable.Wrap(Object.OBJECT_SELF);
+            NWPlayer player = (_.GetLastUsedBy());
+            NWPlaceable warp = (Object.OBJECT_SELF);
             bool isExit = warp.GetLocalInt("IS_EXIT") == NWScript.TRUE;
 
             if (isExit)
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Placeable.TutorialPortal
             else
             {
                 _player.SaveLocation(player);
-                NWObject waypoint = NWObject.Wrap(_.GetWaypointByTag("TUTORIAL_WP"));
+                NWObject waypoint = (_.GetWaypointByTag("TUTORIAL_WP"));
                 player.AssignCommand(() => _.ActionJumpToLocation(waypoint.Location));
             }
 

@@ -13,6 +13,7 @@ using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Perk;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
+using static NWN.NWScript;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
 
 namespace SWLOR.Game.Server.Service
@@ -46,8 +47,8 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleItemEquipped()
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetPCItemLastEquippedBy());
-            NWItem oItem = NWItem.Wrap(_.GetPCItemLastEquipped());
+            NWPlayer oPC = (_.GetPCItemLastEquippedBy());
+            NWItem oItem = (_.GetPCItemLastEquipped());
             if (!oPC.IsPlayer || !oPC.IsInitializedAsPlayer) return;
             List<PCPerk> perks = _db.StoredProcedure<PCPerk>("GetPCPerksByExecutionType",
                 new SqlParameter("PlayerID", oPC.GlobalID),
@@ -59,15 +60,17 @@ namespace SWLOR.Game.Server.Service
                 string jsName = pcPerk.Perk.ScriptName;
                 if (string.IsNullOrWhiteSpace(jsName)) continue;
 
-                IPerk perkAction = App.ResolveByInterface<IPerk>("Perk." + jsName);
-                perkAction?.OnItemEquipped(oPC, oItem);
+                App.ResolveByInterface<IPerk>("Perk." + jsName, (perkAction) =>
+                {
+                    perkAction?.OnItemEquipped(oPC, oItem);
+                });
             }
         }
 
         public void OnModuleItemUnequipped()
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetPCItemLastUnequippedBy());
-            NWItem oItem = NWItem.Wrap(_.GetPCItemLastUnequipped());
+            NWPlayer oPC = (_.GetPCItemLastUnequippedBy());
+            NWItem oItem = (_.GetPCItemLastUnequipped());
             if (!oPC.IsPlayer) return;
 
             List<PCPerk> perks = _db.StoredProcedure<PCPerk>("GetPCPerksByExecutionType",
@@ -80,8 +83,10 @@ namespace SWLOR.Game.Server.Service
                 string jsName = pcPerk.Perk.ScriptName;
                 if (string.IsNullOrWhiteSpace(jsName)) continue;
                 
-                IPerk perkAction = App.ResolveByInterface<IPerk>("Perk." + jsName);
-                perkAction?.OnItemUnequipped(oPC, oItem);
+                App.ResolveByInterface<IPerk>("Perk." + jsName, (perkAction) =>
+                {
+                    perkAction?.OnItemUnequipped(oPC, oItem);
+                });
             }
         }
 
@@ -104,7 +109,7 @@ namespace SWLOR.Game.Server.Service
         public void OnHitCastSpell(NWPlayer oPC)
         {
             if (!oPC.IsPlayer) return;
-            NWItem oItem = NWItem.Wrap(_.GetSpellCastItem());
+            NWItem oItem = (_.GetSpellCastItem());
             int type = oItem.BaseItemType;
             List<PCPerk> pcPerks = _db.StoredProcedure<PCPerk>("GetPCPerksWithExecutionType",
                 new SqlParameter("PlayerID", oPC.GlobalID));
@@ -113,17 +118,20 @@ namespace SWLOR.Game.Server.Service
             {
                 pcPerk.Perk = GetPerkByID(pcPerk.PerkID);
                 if (string.IsNullOrWhiteSpace(pcPerk.Perk.ScriptName) || pcPerk.Perk.ExecutionTypeID == (int)PerkExecutionType.None) continue;
-
-                IPerk perkAction = App.ResolveByInterface<IPerk>("Perk." +pcPerk.Perk.ScriptName);
-                if (perkAction == null) continue;
                 
-                if (pcPerk.Perk.ExecutionTypeID == (int)PerkExecutionType.ShieldOnHit)
+                if (!App.IsKeyRegistered<IPerk>("Perk." + pcPerk.Perk.ScriptName)) continue;
+
+                App.ResolveByInterface<IPerk>("Perk." +pcPerk.Perk.ScriptName, (perkAction) =>
                 {
-                    if (type == NWScript.BASE_ITEM_SMALLSHIELD || type == NWScript.BASE_ITEM_LARGESHIELD || type == NWScript.BASE_ITEM_TOWERSHIELD)
+                    if (pcPerk.Perk.ExecutionTypeID == (int)PerkExecutionType.ShieldOnHit)
                     {
-                        perkAction.OnImpact(oPC, oItem);
+                        if (type == BASE_ITEM_SMALLSHIELD || type == BASE_ITEM_LARGESHIELD || type == BASE_ITEM_TOWERSHIELD)
+                        {
+                            perkAction.OnImpact(oPC, oItem);
+                        }
                     }
-                }
+                });
+                
             }
         }
 
@@ -218,9 +226,9 @@ namespace SWLOR.Game.Server.Service
                 // Remove any existing cast spell unique power properties and add the correct one based on the DB flag.
                 if (!string.IsNullOrWhiteSpace(perk.ItemResref))
                 {
-                    if (_.GetIsObjectValid(_.GetItemPossessedBy(oPC.Object, perk.ItemResref)) == NWScript.FALSE)
+                    if (_.GetIsObjectValid(_.GetItemPossessedBy(oPC.Object, perk.ItemResref)) == FALSE)
                     {
-                        NWItem spellItem = NWItem.Wrap(_.CreateItemOnObject(perk.ItemResref, oPC.Object));
+                        NWItem spellItem = (_.CreateItemOnObject(perk.ItemResref, oPC.Object));
                         spellItem.IsCursed = true;
                         spellItem.SetLocalInt("ACTIVATION_PERK_ID", perk.PerkID);
 
@@ -228,18 +236,18 @@ namespace SWLOR.Game.Server.Service
                         {
                             int ipType = _.GetItemPropertyType(ipCur);
                             int ipSubType = _.GetItemPropertySubType(ipCur);
-                            if (ipType == NWScript.ITEM_PROPERTY_CAST_SPELL &&
-                                    (ipSubType == NWScript.IP_CONST_CASTSPELL_UNIQUE_POWER ||
-                                            ipSubType == NWScript.IP_CONST_CASTSPELL_UNIQUE_POWER_SELF_ONLY ||
-                                            ipSubType == NWScript.IP_CONST_CASTSPELL_ACTIVATE_ITEM))
+                            if (ipType == ITEM_PROPERTY_CAST_SPELL &&
+                                    (ipSubType == IP_CONST_CASTSPELL_UNIQUE_POWER ||
+                                            ipSubType == IP_CONST_CASTSPELL_UNIQUE_POWER_SELF_ONLY ||
+                                            ipSubType == IP_CONST_CASTSPELL_ACTIVATE_ITEM))
                             {
                                 _.RemoveItemProperty(spellItem.Object, ipCur);
                             }
                         }
                         
                         ItemProperty ip;
-                        if (perk.IsTargetSelfOnly) ip = _.ItemPropertyCastSpell(NWScript.IP_CONST_CASTSPELL_UNIQUE_POWER_SELF_ONLY, NWScript.IP_CONST_CASTSPELL_NUMUSES_UNLIMITED_USE);
-                        else ip = _.ItemPropertyCastSpell(NWScript.IP_CONST_CASTSPELL_UNIQUE_POWER, NWScript.IP_CONST_CASTSPELL_NUMUSES_UNLIMITED_USE);
+                        if (perk.IsTargetSelfOnly) ip = _.ItemPropertyCastSpell(IP_CONST_CASTSPELL_UNIQUE_POWER_SELF_ONLY, IP_CONST_CASTSPELL_NUMUSES_UNLIMITED_USE);
+                        else ip = _.ItemPropertyCastSpell(IP_CONST_CASTSPELL_UNIQUE_POWER, IP_CONST_CASTSPELL_NUMUSES_UNLIMITED_USE);
 
                         _biowareXP2.IPSafeAddItemProperty(spellItem, ip, 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
                     }
@@ -249,7 +257,7 @@ namespace SWLOR.Game.Server.Service
                 // If a feat ID is assigned, add the feat to the player if it doesn't exist yet.
                 else if (perk.FeatID != null && 
                          perk.FeatID > 0 && 
-                         _.GetHasFeat((int)perk.FeatID, oPC.Object) == NWScript.FALSE)
+                         _.GetHasFeat((int)perk.FeatID, oPC.Object) == FALSE)
                 {
                     _nwnxCreature.AddFeatByLevel(oPC, (int)perk.FeatID, 1);
                     
@@ -283,10 +291,12 @@ namespace SWLOR.Game.Server.Service
 
                 oPC.SendMessage(_color.Green("Perk Purchased: " + perk.Name + " (Lvl. " + pcPerk.PerkLevel + ")"));
 
-                IPerk perkScript = App.ResolveByInterface<IPerk>("Perk." + perk.ScriptName);
+                App.ResolveByInterface<IPerk>("Perk." + perk.ScriptName, (perkScript) =>
+                {
+                    if (perkScript == null) return;
+                    perkScript.OnPurchased(oPC, pcPerk.PerkLevel);
+                });
 
-                if (perkScript == null) return;
-                perkScript.OnPurchased(oPC, pcPerk.PerkLevel);
             }
             else
             {
@@ -302,7 +312,7 @@ namespace SWLOR.Game.Server.Service
         public string OnModuleExamine(string existingDescription, NWPlayer examiner, NWObject examinedObject)
         {
             if (!examiner.IsPlayer && !examiner.IsDM) return existingDescription;
-            if (examinedObject.ObjectType != NWScript.OBJECT_TYPE_ITEM) return existingDescription;
+            if (examinedObject.ObjectType != OBJECT_TYPE_ITEM) return existingDescription;
             int perkID = examinedObject.GetLocalInt("ACTIVATION_PERK_ID");
             if (perkID <= 0) return existingDescription;
 

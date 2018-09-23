@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using SWLOR.Game.Server.GameObject.Contracts;
 
 using NWN;
 using SWLOR.Game.Server.NWNX.Contracts;
@@ -9,10 +8,10 @@ using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.GameObject
 {
-    public class NWCreature : NWObject, INWCreature
+    public class NWCreature : NWObject
     {
         private readonly INWNXCreature _nwnxCreature;
-
+        
         public NWCreature(INWScript script,
             INWNXCreature creature,
             AppState state)
@@ -20,16 +19,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             _nwnxCreature = creature;
         }
-
-
-        public new static NWCreature Wrap(Object @object)
-        {
-            NWCreature obj = (NWCreature)App.Resolve<INWCreature>();
-            obj.Object = @object;
-
-            return obj;
-        }
-
+        
         public virtual int Age => _.GetAge(Object);
 
         public virtual float ChallengeRating => _.GetChallengeRating(Object);
@@ -138,24 +128,24 @@ namespace SWLOR.Game.Server.GameObject
             });
         }
 
-        public virtual NWItem Head => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_HEAD, Object));
-        public virtual NWItem Chest => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_CHEST, Object));
-        public virtual NWItem Boots => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_BOOTS, Object));
-        public virtual NWItem Arms => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_ARMS, Object));
-        public virtual NWItem RightHand => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_RIGHTHAND, Object));
-        public virtual NWItem LeftHand => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_LEFTHAND, Object));
-        public virtual NWItem Cloak => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_CLOAK, Object));
-        public virtual NWItem LeftRing => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_LEFTRING, Object));
-        public virtual NWItem RightRing => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_RIGHTRING, Object));
-        public virtual NWItem Neck => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_NECK, Object));
-        public virtual NWItem Belt => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_BELT, Object));
-        public virtual NWItem Arrows => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_ARROWS, Object));
-        public virtual NWItem Bullets => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_BULLETS, Object));
-        public virtual NWItem Bolts => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_BOLTS, Object));
-        public virtual NWItem CreatureWeaponLeft => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_CWEAPON_L, Object));
-        public virtual NWItem CreatureWeaponRight => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_CWEAPON_R, Object));
-        public virtual NWItem CreatureWeaponBite => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_CWEAPON_B, Object));
-        public virtual NWItem CreatureHide => NWItem.Wrap(_.GetItemInSlot(INVENTORY_SLOT_CARMOUR, Object));
+        public virtual NWItem Head => _.GetItemInSlot(INVENTORY_SLOT_HEAD, Object);
+        public virtual NWItem Chest => _.GetItemInSlot(INVENTORY_SLOT_CHEST, Object);
+        public virtual NWItem Boots => _.GetItemInSlot(INVENTORY_SLOT_BOOTS, Object);
+        public virtual NWItem Arms => _.GetItemInSlot(INVENTORY_SLOT_ARMS, Object);
+        public virtual NWItem RightHand => _.GetItemInSlot(INVENTORY_SLOT_RIGHTHAND, Object);
+        public virtual NWItem LeftHand => _.GetItemInSlot(INVENTORY_SLOT_LEFTHAND, Object);
+        public virtual NWItem Cloak => _.GetItemInSlot(INVENTORY_SLOT_CLOAK, Object);
+        public virtual NWItem LeftRing => _.GetItemInSlot(INVENTORY_SLOT_LEFTRING, Object);
+        public virtual NWItem RightRing => _.GetItemInSlot(INVENTORY_SLOT_RIGHTRING, Object);
+        public virtual NWItem Neck => _.GetItemInSlot(INVENTORY_SLOT_NECK, Object);
+        public virtual NWItem Belt => _.GetItemInSlot(INVENTORY_SLOT_BELT, Object);
+        public virtual NWItem Arrows => _.GetItemInSlot(INVENTORY_SLOT_ARROWS, Object);
+        public virtual NWItem Bullets => _.GetItemInSlot(INVENTORY_SLOT_BULLETS, Object);
+        public virtual NWItem Bolts => _.GetItemInSlot(INVENTORY_SLOT_BOLTS, Object);
+        public virtual NWItem CreatureWeaponLeft => _.GetItemInSlot(INVENTORY_SLOT_CWEAPON_L, Object);
+        public virtual NWItem CreatureWeaponRight => _.GetItemInSlot(INVENTORY_SLOT_CWEAPON_R, Object);
+        public virtual NWItem CreatureWeaponBite => _.GetItemInSlot(INVENTORY_SLOT_CWEAPON_B, Object);
+        public virtual NWItem CreatureHide => _.GetItemInSlot(INVENTORY_SLOT_CARMOUR, Object);
 
         public virtual void FloatingText(string text, bool displayToFaction = false)
         {
@@ -193,7 +183,7 @@ namespace SWLOR.Game.Server.GameObject
         }
         public static implicit operator NWCreature(Object o)
         {
-            return Wrap(o);
+            return NWObjectFactory.Build<NWCreature>(o);
         }
     }
 }

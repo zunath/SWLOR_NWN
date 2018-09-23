@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Perk.Armor
 
         public void OnImpact(NWPlayer oPC, NWObject oTarget)
         {
-            NWCreature npc = NWCreature.Wrap(oTarget.Object);
+            NWCreature npc = (oTarget.Object);
             Effect vfx = _.EffectVisualEffect(NWScript.VFX_IMP_CHARM);
             _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, vfx, oTarget.Object);
             

@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleClientEnter()
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetEnteringObject());
+            NWPlayer oPC = (_.GetEnteringObject());
 
             if (!oPC.IsPlayer) return;
             if (oPC.GetLocalInt("MAP_PINS_LOADED") == 1) return;
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (PCMapPin pin in pins)
             {
-                NWArea area = NWArea.Wrap(_.GetObjectByTag(pin.AreaTag));
+                NWArea area = (_.GetObjectByTag(pin.AreaTag));
                 SetMapPin(oPC, pin.NoteText, (float)pin.PositionX, (float)pin.PositionY, area);
             }
             
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleClientLeave()
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetExitingObject());
+            NWPlayer oPC = (_.GetExitingObject());
 
             if (!oPC.IsPlayer) return;
 
@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Service
                 Text = oPC.GetLocalString("NW_MAP_PIN_NTRY_" + index),
                 PositionX = oPC.GetLocalFloat("NW_MAP_PIN_XPOS_" + index),
                 PositionY = oPC.GetLocalFloat("NW_MAP_PIN_YPOS_" + index),
-                Area = NWArea.Wrap(oPC.GetLocalObject("NW_MAP_PIN_AREA_" + index)),
+                Area = (oPC.GetLocalObject("NW_MAP_PIN_AREA_" + index)),
                 Tag = oPC.GetLocalString("CUSTOM_NW_MAP_PIN_TAG_" + index),
                 Player = oPC,
                 Index = index
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Service
 
         public void AddWaypointMapPin(NWPlayer oPC, string waypointTag, string text, string mapPinTag)
         {
-            NWObject waypoint = NWObject.Wrap(_.GetWaypointByTag(waypointTag));
+            NWObject waypoint = (_.GetWaypointByTag(waypointTag));
             SetMapPin(oPC, text, waypoint.Position.m_X, waypoint.Position.m_Y, waypoint.Area, mapPinTag);
         }
 

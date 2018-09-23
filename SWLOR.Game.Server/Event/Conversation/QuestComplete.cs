@@ -64,19 +64,22 @@ namespace SWLOR.Game.Server.Event.Conversation
             if (!string.IsNullOrWhiteSpace(rule))
             {
                 Quest quest = _db.Quests.Single(x => x.QuestID == questID);
-                IQuestRule ruleAction = App.ResolveByInterface<IQuestRule>("QuestRule." + rule);
-                string[] argsArray = null;
-
-                if (string.IsNullOrWhiteSpace(ruleArgs))
+                App.ResolveByInterface<IQuestRule>("QuestRule." + rule, ruleAction =>
                 {
-                    ruleArgs = quest.OnCompleteArgs;
-                }
+                    string[] argsArray = null;
 
-                if (!string.IsNullOrWhiteSpace(ruleArgs))
-                {
-                    argsArray = ruleArgs.Split(',');
-                }
-                ruleAction.Run(player, talkTo, questID, argsArray);
+                    if (string.IsNullOrWhiteSpace(ruleArgs))
+                    {
+                        ruleArgs = quest.OnCompleteArgs;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(ruleArgs))
+                    {
+                        argsArray = ruleArgs.Split(',');
+                    }
+                    ruleAction.Run(player, talkTo, questID, argsArray);
+                });
+                
             }
 
             return true;

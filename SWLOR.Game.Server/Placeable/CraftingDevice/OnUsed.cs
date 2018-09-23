@@ -19,14 +19,14 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
 
         public bool Run(params object[] args)
         {
-            NWPlayer player = NWPlayer.Wrap(_.GetLastUsedBy());
+            NWPlayer player = (_.GetLastUsedBy());
 
             if (player.IsBusy)
             {
                 player.SendMessage("You are too busy to do that right now.");
                 return false;
             }
-            NWPlaceable device = NWPlaceable.Wrap(Object.OBJECT_SELF);
+            NWPlaceable device = (Object.OBJECT_SELF);
             _dialog.StartConversation(player, device, "CraftingDevice");
             return true;
         }

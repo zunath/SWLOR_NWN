@@ -87,8 +87,8 @@ namespace SWLOR.Game.Server.Service
         
         public void OnModuleEquip()
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetPCItemLastEquippedBy());
-            NWItem oItem = NWItem.Wrap(_.GetPCItemLastEquipped());
+            NWPlayer oPC = (_.GetPCItemLastEquippedBy());
+            NWItem oItem = (_.GetPCItemLastEquipped());
             float durability = GetDurability(oItem);
 
             if (durability <= 0 && durability != -1)
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (examinedObject.ObjectType != OBJECT_TYPE_ITEM) return existingDescription;
 
-            NWItem examinedItem = NWItem.Wrap(examinedObject.Object);
+            NWItem examinedItem = (examinedObject.Object);
             if (examinedItem.GetLocalFloat("DURABILITY_MAX") <= 0f) return existingDescription;
 
             string description = _color.Orange("Durability: ");
@@ -189,7 +189,7 @@ namespace SWLOR.Game.Server.Service
         
         public void OnHitCastSpell(NWPlayer oTarget)
         {
-            NWItem oSpellOrigin = NWItem.Wrap(_.GetSpellCastItem());
+            NWItem oSpellOrigin = (_.GetSpellCastItem());
             RunItemDecay(oTarget, oSpellOrigin);
         }
 

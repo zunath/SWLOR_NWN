@@ -32,9 +32,9 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
 
         public bool Run(params object[] args)
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetLastDisturbed());
-            NWItem oItem = NWItem.Wrap(_.GetInventoryDisturbItem());
-            NWPlaceable point = NWPlaceable.Wrap(Object.OBJECT_SELF);
+            NWPlayer oPC = (_.GetLastDisturbed());
+            NWItem oItem = (_.GetInventoryDisturbItem());
+            NWPlaceable point = (Object.OBJECT_SELF);
             int disturbType = _.GetInventoryDisturbType();
 
             if (disturbType == NWScript.INVENTORY_DISTURB_TYPE_ADDED)

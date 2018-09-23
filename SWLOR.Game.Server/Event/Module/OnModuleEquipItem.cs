@@ -51,8 +51,8 @@ namespace SWLOR.Game.Server.Event.Module
         // account for weapons like guns which auto-equip ammo.
         private void HandleEquipmentSwappingDelay()
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetPCItemLastEquippedBy());
-            NWItem oItem = NWItem.Wrap(_.GetPCItemLastEquipped());
+            NWPlayer oPC = (_.GetPCItemLastEquippedBy());
+            NWItem oItem = (_.GetPCItemLastEquipped());
             NWItem rightHand = oPC.RightHand;
             NWItem leftHand = oPC.LeftHand;
 

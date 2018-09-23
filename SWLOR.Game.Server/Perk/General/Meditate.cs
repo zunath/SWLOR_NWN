@@ -2,7 +2,9 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.CustomEffect;
 using SWLOR.Game.Server.Service.Contracts;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Perk.General
 {
@@ -10,21 +12,21 @@ namespace SWLOR.Game.Server.Perk.General
     {
         private readonly INWScript _;
         private readonly IPerkService _perk;
-        private readonly IAbilityService _ability;
+        private readonly ICustomEffectService _customEffect;
 
         public Meditate(INWScript script, 
             IPerkService perk,
-            IAbilityService ability)
+            ICustomEffectService customEffect)
         {
             _ = script;
             _perk = perk;
-            _ability = ability;
+            _customEffect = customEffect;
         }
 
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
-            return CanMeditate(oPC);
+            return MeditateEffect.CanMeditate(oPC);
         }
 
         public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
@@ -64,38 +66,7 @@ namespace SWLOR.Game.Server.Perk.General
 
         public void OnImpact(NWPlayer oPC, NWObject oTarget)
         {
-            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.Meditate);
-            Vector position = oPC.Position;
-            int amount;
-
-            switch (perkLevel)
-            {
-                default:
-                    amount = 1;
-                    break;
-                case 4:
-                case 5:
-                case 6:
-                    amount = 2;
-                    break;
-                case 7:
-                    amount = 3;
-                    break;
-            }
-            amount += oPC.EffectiveMeditateBonus;
-
-            oPC.AssignCommand(() =>
-            {
-                _.ActionPlayAnimation(NWScript.ANIMATION_LOOPING_MEDITATE, 1.0f, 6.1f);
-            });
-
-            oPC.DelayCommand(() =>
-            {
-                RunMeditate(oPC, position, amount);
-            }, 6.0f);
-
-            oPC.SendMessage("You begin to meditate...");
-            oPC.IsBusy = true;
+            _customEffect.ApplyCustomEffect(oPC, oPC, CustomEffectType.Meditate, -1, 0, null);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)
@@ -122,54 +93,5 @@ namespace SWLOR.Game.Server.Perk.General
         {
             return false;
         }
-
-
-        private void RunMeditate(NWPlayer oPC, Vector originalPosition, int amount)
-        {
-            Vector position = oPC.Position;
-
-            if ((position.m_X != originalPosition.m_X || 
-                 position.m_Y != originalPosition.m_Y ||
-                 position.m_Z != originalPosition.m_Z) ||
-                !CanMeditate(oPC) ||
-                !oPC.IsValid)
-            {
-                oPC.SendMessage("You stop meditating.");
-                oPC.IsBusy = false;
-                return;
-            }
-
-            _ability.RestoreFP(oPC, amount);
-            Effect vfx = _.EffectVisualEffect(NWScript.VFX_IMP_HEAD_MIND);
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, vfx, oPC.Object);
-            oPC.AssignCommand(() =>
-            {
-                _.ActionPlayAnimation(NWScript.ANIMATION_LOOPING_MEDITATE, 1.0f, 6.1f);
-            });
-            oPC.DelayCommand(() =>
-            {
-                RunMeditate(oPC, originalPosition, amount);
-            }, 6.0f);
-        }
-
-        private bool CanMeditate(NWPlayer oPC)
-        {
-            bool canMeditate = !oPC.IsInCombat;
-
-            NWArea pcArea = oPC.Area;
-            foreach (NWPlayer member in oPC.GetPartyMembers())
-            {
-                if (!member.Area.Equals(pcArea)) continue;
-
-                if (member.IsInCombat)
-                {
-                    canMeditate = false;
-                    break;
-                }
-            }
-
-            return canMeditate;
-        }
-
     }
 }

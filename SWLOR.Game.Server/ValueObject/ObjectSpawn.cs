@@ -16,8 +16,8 @@ namespace SWLOR.Game.Server.ValueObject
         public int NPCGroupID { get; set; }
         public string BehaviourScript { get; set; }
 
-        public NWPlaceable SpawnPlaceable => NWPlaceable.Wrap(Spawn.Object);
-        public NWCreature SpawnCreature => NWCreature.Wrap(Spawn.Object);
+        public NWPlaceable SpawnPlaceable => (Spawn.Object);
+        public NWCreature SpawnCreature => (Spawn.Object);
 
         public ObjectSpawn(NWObject spawn, bool isStaticSpawnPoint, string resref, float respawnTime = 120.0f)
         {

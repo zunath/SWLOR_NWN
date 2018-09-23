@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entities;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.GameObject.Contracts;
 
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
@@ -14,7 +13,7 @@ using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.GameObject
 {
-    public class NWPlayer : NWCreature, INWPlayer
+    public class NWPlayer : NWCreature
     {
         private readonly ICustomEffectService _customEffect;
         private readonly ISkillService _skill;
@@ -38,14 +37,6 @@ namespace SWLOR.Game.Server.GameObject
             _db = db;
             _perk = perk;
         }
-
-        public new static NWPlayer Wrap(Object @object)
-        {
-            var obj = (NWPlayer)App.Resolve<INWPlayer>();
-            obj.Object = @object;
-
-            return obj;
-        }
         
         public virtual bool IsBusy
         {
@@ -60,7 +51,7 @@ namespace SWLOR.Game.Server.GameObject
             Object member = _.GetFirstFactionMember(Object);
             while (_.GetIsObjectValid(member) == TRUE)
             {
-                partyMembers.Add(Wrap(member));
+                partyMembers.Add(member);
                 member = _.GetNextFactionMember(Object);
             }
 
@@ -144,7 +135,7 @@ namespace SWLOR.Game.Server.GameObject
 
             for (int slot = 0; slot < NUM_INVENTORY_SLOTS; slot++)
             {
-                NWItem item = NWItem.Wrap(_.GetItemInSlot(slot, Object));
+                NWItem item = _.GetItemInSlot(slot, Object);
                 if (item.Equals(ignoreItem)) continue;
 
                 var skillType = _skill.GetSkillTypeForItem(item);
@@ -175,7 +166,7 @@ namespace SWLOR.Game.Server.GameObject
 
             for (int slot = 0; slot < NUM_INVENTORY_SLOTS; slot++)
             {
-                NWItem item = NWItem.Wrap(_.GetItemInSlot(slot, Object));
+                NWItem item = _.GetItemInSlot(slot, Object);
                 if (item.Equals(ignoreItem)) continue;
 
                 var skillType = _skill.GetSkillTypeForItem(item);
@@ -202,7 +193,7 @@ namespace SWLOR.Game.Server.GameObject
             int ac = 0;
             for (int slot = 0; slot < NUM_INVENTORY_SLOTS; slot++)
             {
-                NWItem oItem = NWItem.Wrap(_.GetItemInSlot(slot, Object));
+                NWItem oItem = _.GetItemInSlot(slot, Object);
                 if (oItem.Equals(ignoreItem))
                     continue;
 
@@ -248,7 +239,7 @@ namespace SWLOR.Game.Server.GameObject
 
                 for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
-                    NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
+                    NWItem item = _.GetItemInSlot(itemSlot, Object);
                     if (!item.IsValid) continue;
                     int itemCastingSpeed = item.CastingSpeed;
 
@@ -280,7 +271,7 @@ namespace SWLOR.Game.Server.GameObject
                 float rate = 1.0f;
                 for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
-                    NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
+                    NWItem item = _.GetItemInSlot(itemSlot, Object);
                     if (!item.IsValid) continue;
                     SkillType skill = _skill.GetSkillTypeForItem(item);
                     int rank = _skill.GetPCSkill(this, skill).Rank;
@@ -304,7 +295,7 @@ namespace SWLOR.Game.Server.GameObject
                 int darkBonus = 0;
                 for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
-                    NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
+                    NWItem item = _.GetItemInSlot(itemSlot, Object);
                     if (!item.IsValid) continue;
                     SkillType skill = _skill.GetSkillTypeForItem(item);
                     int rank = _skill.GetPCSkill(this, skill).Rank;
@@ -324,7 +315,7 @@ namespace SWLOR.Game.Server.GameObject
                 int lightBonus = 0;
                 for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
-                    NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
+                    NWItem item = _.GetItemInSlot(itemSlot, Object);
                     if (!item.IsValid) continue;
                     SkillType skill = _skill.GetSkillTypeForItem(item);
                     int rank = _skill.GetPCSkill(this, skill).Rank;
@@ -344,7 +335,7 @@ namespace SWLOR.Game.Server.GameObject
                 int summoningBonus = 0;
                 for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
-                    NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
+                    NWItem item = _.GetItemInSlot(itemSlot, Object);
                     if (!item.IsValid) continue;
                     SkillType skill = _skill.GetSkillTypeForItem(item);
                     int rank = _skill.GetPCSkill(this, skill).Rank;
@@ -364,7 +355,7 @@ namespace SWLOR.Game.Server.GameObject
                 int luckBonus = 0;
                 for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
-                    NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
+                    NWItem item = _.GetItemInSlot(itemSlot, Object);
                     if (!item.IsValid) continue;
                     SkillType skill = _skill.GetSkillTypeForItem(item);
                     int rank = _skill.GetPCSkill(this, skill).Rank;
@@ -383,7 +374,7 @@ namespace SWLOR.Game.Server.GameObject
                 int meditateBonus = 0;
                 for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
-                    NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
+                    NWItem item = _.GetItemInSlot(itemSlot, Object);
                     if (!item.IsValid) continue;
                     SkillType skill = _skill.GetSkillTypeForItem(item);
                     int rank = _skill.GetPCSkill(this, skill).Rank;
@@ -402,7 +393,7 @@ namespace SWLOR.Game.Server.GameObject
                 int restBonus = 0;
                 for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
-                    NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
+                    NWItem item = _.GetItemInSlot(itemSlot, Object);
                     if (!item.IsValid) continue;
                     SkillType skill = _skill.GetSkillTypeForItem(item);
                     int rank = _skill.GetPCSkill(this, skill).Rank;
@@ -422,7 +413,7 @@ namespace SWLOR.Game.Server.GameObject
                 int medicineBonus = 0;
                 for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
-                    NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
+                    NWItem item = _.GetItemInSlot(itemSlot, Object);
                     if (!item.IsValid) continue;
                     SkillType skill = _skill.GetSkillTypeForItem(item);
                     int rank = _skill.GetPCSkill(this, skill).Rank;
@@ -442,7 +433,7 @@ namespace SWLOR.Game.Server.GameObject
                 int hpRegenBonus = 0;
                 for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
-                    NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
+                    NWItem item = _.GetItemInSlot(itemSlot, Object);
                     if (!item.IsValid) continue;
                     SkillType skill = _skill.GetSkillTypeForItem(item);
                     int rank = _skill.GetPCSkill(this, skill).Rank;
@@ -462,7 +453,7 @@ namespace SWLOR.Game.Server.GameObject
                 int fpRegenBonus = 0;
                 for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
-                    NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
+                    NWItem item = _.GetItemInSlot(itemSlot, Object);
                     if (!item.IsValid) continue;
                     SkillType skill = _skill.GetSkillTypeForItem(item);
                     int rank = _skill.GetPCSkill(this, skill).Rank;
@@ -482,7 +473,7 @@ namespace SWLOR.Game.Server.GameObject
                 int weaponsmithBonus = 0;
                 for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
-                    NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
+                    NWItem item = _.GetItemInSlot(itemSlot, Object);
                     if (!item.IsValid) continue;
                     SkillType skill = _skill.GetSkillTypeForItem(item);
                     int rank = _skill.GetPCSkill(this, skill).Rank;
@@ -501,7 +492,7 @@ namespace SWLOR.Game.Server.GameObject
                 int cookingBonus = 0;
                 for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
-                    NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
+                    NWItem item = _.GetItemInSlot(itemSlot, Object);
                     if (!item.IsValid) continue;
                     SkillType skill = _skill.GetSkillTypeForItem(item);
                     int rank = _skill.GetPCSkill(this, skill).Rank;
@@ -520,7 +511,7 @@ namespace SWLOR.Game.Server.GameObject
                 int engineeringBonus = 0;
                 for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
-                    NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
+                    NWItem item = _.GetItemInSlot(itemSlot, Object);
                     SkillType skill = _skill.GetSkillTypeForItem(item);
                     int rank = _skill.GetPCSkill(this, skill).Rank;
                     int itemEngineeringBonus = CalculateAdjustedValue(item.CraftBonusEngineering, item.RecommendedLevel, rank, 0);
@@ -538,7 +529,7 @@ namespace SWLOR.Game.Server.GameObject
                 int fabricationBonus = 0;
                 for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
-                    NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
+                    NWItem item = _.GetItemInSlot(itemSlot, Object);
                     SkillType skill = _skill.GetSkillTypeForItem(item);
                     int rank = _skill.GetPCSkill(this, skill).Rank;
                     int itemFabricationBonus = CalculateAdjustedValue(item.CraftBonusFabrication, item.RecommendedLevel, rank, 0);
@@ -556,7 +547,7 @@ namespace SWLOR.Game.Server.GameObject
                 int armorsmithBonus = 0;
                 for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
-                    NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
+                    NWItem item = _.GetItemInSlot(itemSlot, Object);
                     if (!item.IsValid) continue;
                     SkillType skill = _skill.GetSkillTypeForItem(item);
                     int rank = _skill.GetPCSkill(this, skill).Rank;
@@ -575,7 +566,7 @@ namespace SWLOR.Game.Server.GameObject
                 int harvestingBonus = 0;
                 for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
-                    NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
+                    NWItem item = _.GetItemInSlot(itemSlot, Object);
                     if (!item.IsValid) continue;
                     SkillType skill = _skill.GetSkillTypeForItem(item);
                     int rank = _skill.GetPCSkill(this, skill).Rank;
@@ -595,7 +586,7 @@ namespace SWLOR.Game.Server.GameObject
                 int sneakAttackBonus = 0;
                 for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                 {
-                    NWItem item = NWItem.Wrap(_.GetItemInSlot(itemSlot, Object));
+                    NWItem item = _.GetItemInSlot(itemSlot, Object);
                     if (!item.IsValid) continue;
                     SkillType skill = _skill.GetSkillTypeForItem(item);
                     int rank = _skill.GetPCSkill(this, skill).Rank;
@@ -633,7 +624,7 @@ namespace SWLOR.Game.Server.GameObject
 
         public static implicit operator NWPlayer(Object o)
         {
-            return Wrap(o);
+            return NWObjectFactory.Build<NWPlayer>(o);
         }
     }
 }

@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Service
                 item.Destroy();
             }
 
-            container.DelayCommand(() =>
+            _.DelayCommand(360.0f, () =>
             {
                 if (!container.IsValid) return;
 
@@ -74,8 +74,7 @@ namespace SWLOR.Game.Server.Service
 
                 container.DestroyAllInventoryItems();
                 container.Destroy();
-
-            }, 360.0f);
+            });
 
         }
 

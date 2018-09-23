@@ -40,8 +40,10 @@ namespace SWLOR.Game.Server.Service
             {
                 try
                 {
-                    var processor = App.ResolveByInterface<IEventProcessor>(@event.Value.ProcessorType.ToString());
-                    processor.Run(@event.Value.Args);
+                    App.ResolveByInterface<IEventProcessor>(@event.Value.ProcessorType.ToString(), (processor) =>
+                    {
+                        processor.Run(@event.Value.Args);
+                    });
                 }
                 catch (Exception ex)
                 {

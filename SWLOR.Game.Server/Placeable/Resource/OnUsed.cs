@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Placeable.Resource
 
         public bool Run(params object[] args)
         {
-            NWCreature user = NWCreature.Wrap(_.GetLastUsedBy());
+            NWCreature user = (_.GetLastUsedBy());
             user.SendMessage("Use a scanner to analyze this object's resources. Use a harvester to retrieve resources from it.");
             return true;
         }

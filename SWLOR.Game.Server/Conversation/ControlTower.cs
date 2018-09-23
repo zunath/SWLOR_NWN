@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Conversation
             NWPlaceable tower = (NWPlaceable)GetDialogTarget();
             NWPlayer oPC = GetPC();
 
-            if (NWPlaceable.Wrap(tower.GetLocalObject("CONTROL_TOWER_FUEL_BAY")).IsValid)
+            if (((NWPlaceable)tower.GetLocalObject("CONTROL_TOWER_FUEL_BAY")).IsValid)
             {
                 oPC.FloatingText("Someone else is already accessing that structure's inventory. Please wait.");
                 return;
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Conversation
             int structureID = tower.GetLocalInt("PC_BASE_STRUCTURE_ID");
             var structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
             Location location = oPC.Location;
-            NWPlaceable bay = NWPlaceable.Wrap(_.CreateObject(OBJECT_TYPE_PLACEABLE, "fuel_bay", location));
+            NWPlaceable bay = (_.CreateObject(OBJECT_TYPE_PLACEABLE, "fuel_bay", location));
             bay.AssignCommand(() => _.SetFacingPoint(oPC.Position));
 
             tower.SetLocalObject("CONTROL_TOWER_FUEL_BAY", bay.Object);

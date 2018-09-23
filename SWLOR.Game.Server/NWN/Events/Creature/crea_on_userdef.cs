@@ -11,7 +11,7 @@ namespace NWN.Scripts
     {
         public static void Main()
         {
-            App.RunEvent<OnCreatureEvent>(CreatureEventType.OnUserDefined);
+            App.RunEvent<OnUserDefined>();
         }
     }
 }

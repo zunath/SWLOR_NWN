@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Service
         public string OnModuleExamine(string existingDescription, NWPlayer examiner, NWObject examinedObject)
         {
             if (examinedObject.ObjectType != NWScript.OBJECT_TYPE_ITEM) return existingDescription;
-            NWItem examinedItem = NWItem.Wrap(examinedObject.Object);
+            NWItem examinedItem = (examinedObject.Object);
             string description = string.Empty;
             ModSlots slot = GetModSlots(examinedItem);
             
@@ -151,12 +151,12 @@ namespace SWLOR.Game.Server.Service
         {
             var data = _nwnxDamage.GetDamageEventData();
             NWObject damager = data.Damager;
-            NWItem weapon = NWItem.Wrap(_.GetLastWeaponUsed(damager.Object));
+            NWItem weapon = (_.GetLastWeaponUsed(damager.Object));
             int damageBonus = weapon.DamageBonus;
 
             if (damager.IsPlayer)
             {
-                NWPlayer player = NWPlayer.Wrap(damager.Object);
+                NWPlayer player = (damager.Object);
                 int itemLevel = weapon.RecommendedLevel;
                 SkillType skill = _skill.GetSkillTypeForItem(weapon);
                 int rank = _skill.GetPCSkill(player, skill).Rank;

@@ -47,8 +47,8 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
 
         private void HandleAddItem()
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetLastDisturbed());
-            NWItem oItem = NWItem.Wrap(_.GetInventoryDisturbItem());
+            NWPlayer oPC = (_.GetLastDisturbed());
+            NWItem oItem = (_.GetInventoryDisturbItem());
             if (oItem.Resref == "cft_confirm") return;
             if (oPC.IsBusy)
             {
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
             }
 
             var model = _craft.GetPlayerCraftingData(oPC);
-            NWPlaceable storage = NWPlaceable.Wrap(_.GetObjectByTag("craft_temp_store"));
+            NWPlaceable storage = (_.GetObjectByTag("craft_temp_store"));
 
             List<NWItem> list = null;
             ComponentType allowedType = ComponentType.None;
@@ -147,7 +147,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
                     if (compType == (int) allowedType)
                     {
                         oItem.GetOrAssignGlobalID();
-                        NWItem copy = NWItem.Wrap(_.CopyItem(oItem.Object, storage.Object, TRUE));
+                        NWItem copy = (_.CopyItem(oItem.Object, storage.Object, TRUE));
                         list.Add(copy);
                         return;
                     }
@@ -160,10 +160,10 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
 
         private void HandleRemoveItem()
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetLastDisturbed());
-            NWItem oItem = NWItem.Wrap(_.GetInventoryDisturbItem());
-            NWPlaceable device = NWPlaceable.Wrap(Object.OBJECT_SELF);
-            NWPlaceable storage = NWPlaceable.Wrap(_.GetObjectByTag("craft_temp_store"));
+            NWPlayer oPC = (_.GetLastDisturbed());
+            NWItem oItem = (_.GetInventoryDisturbItem());
+            NWPlaceable device = (Object.OBJECT_SELF);
+            NWPlaceable storage = (_.GetObjectByTag("craft_temp_store"));
             var model = _craft.GetPlayerCraftingData(oPC);
             if (oPC.IsBusy)
             {

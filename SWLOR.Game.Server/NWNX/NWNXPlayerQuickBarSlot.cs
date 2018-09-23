@@ -20,8 +20,8 @@ namespace SWLOR.Game.Server.NWNX
             QuickBarSlot qbs = new QuickBarSlot
             {
                 ObjectType = type,
-                Item = NWItem.Wrap(new Object()),
-                SecondaryItem = NWItem.Wrap(new Object()),
+                Item = (new Object()),
+                SecondaryItem = (new Object()),
                 MultiClass = 0,
                 Resref = "",
                 CommandLabel = "",
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.NWNX
                 MetaType = 0,
                 DomainLevel = 0,
                 AssociateType = 0,
-                Associate = NWObject.Wrap(new Object())
+                Associate = (new Object())
             };
             
             return qbs;

@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Event.Trigger
 
         public bool Run(params object[] args)
         {
-            NWCreature oPC = NWCreature.Wrap(_.GetEnteringObject());
+            NWCreature oPC = (_.GetEnteringObject());
             if (!oPC.IsPlayer) return false;
 
             string triggerID = _.GetLocalString(Object.OBJECT_SELF, "TRIGGER_ID");

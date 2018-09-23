@@ -30,8 +30,8 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
 
         public bool Run(params object[] args)
         {
-            NWPlayer clicker = NWPlayer.Wrap(_.GetPlaceableLastClickedBy());
-            NWPlaceable tower = NWPlaceable.Wrap(Object.OBJECT_SELF);
+            NWPlayer clicker = (_.GetPlaceableLastClickedBy());
+            NWPlaceable tower = (Object.OBJECT_SELF);
 
             clicker.ClearAllActions();
             if (!clicker.IsPlayer) return false;

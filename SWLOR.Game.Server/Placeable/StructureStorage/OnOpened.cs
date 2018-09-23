@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
 
         public bool Run(params object[] args)
         {
-            NWPlaceable chest = NWPlaceable.Wrap(Object.OBJECT_SELF);
+            NWPlaceable chest = (Object.OBJECT_SELF);
             int structureID = chest.GetLocalInt("PC_BASE_STRUCTURE_ID");
             var structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
 

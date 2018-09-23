@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Placeable.TrashCan
     {
         public bool Run(params object[] args)
         {
-            NWPlaceable self = NWPlaceable.Wrap(Object.OBJECT_SELF);
+            NWPlaceable self = (Object.OBJECT_SELF);
             foreach (NWItem item in self.InventoryItems)
             {
                 item.Destroy();

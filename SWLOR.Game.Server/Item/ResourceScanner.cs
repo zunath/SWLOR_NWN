@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Item
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
             Location effectLocation;
-            NWPlayer player = NWPlayer.Wrap(user.Object);
+            NWPlayer player = (user.Object);
             // Targeted a location or self. Locate nearest resource.
             if (!target.IsValid || Equals(user, target))
             {
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Item
 
         private void ScanArea(NWCreature user, Location targetLocation)
         {
-            var area = NWArea.Wrap(_.GetAreaFromLocation(targetLocation));
+            NWArea area = (_.GetAreaFromLocation(targetLocation));
             var spawns = _spawn.GetAreaPlaceableSpawns(area.Resref);
             var spawn = spawns
                 .Where(x => !string.IsNullOrWhiteSpace(x.SpawnPlaceable.GetLocalString("RESOURCE_RESREF")) &&
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Item
 
         private void ScanResource(NWCreature user, NWObject target)
         {
-            NWPlaceable resource = NWPlaceable.Wrap(target.Object);
+            NWPlaceable resource = (target.Object);
             user.SendMessage("[Resource Details]: " + _resource.GetResourceDescription(resource));
         }
 
@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Item
 
             if (user.IsPlayer)
             {
-                var player = NWPlayer.Wrap(user.Object);
+                var player = (user.Object);
                 scanningTime = BaseScanningTime - (BaseScanningTime * _perk.GetPCPerkLevel(player, PerkType.SpeedyScanner));
 
             }

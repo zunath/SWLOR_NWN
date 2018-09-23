@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Placeable.Stores
 
         public bool Run(params object[] args)
         {
-            NWPlaceable self = NWPlaceable.Wrap(Object.OBJECT_SELF);
-            NWObject oPC = NWObject.Wrap(_.GetLastUsedBy());
+            NWPlaceable self = (Object.OBJECT_SELF);
+            NWObject oPC = (_.GetLastUsedBy());
             string storeTag = self.GetLocalString("STORE_TAG");
             Object store = _.GetObjectByTag(storeTag);
 

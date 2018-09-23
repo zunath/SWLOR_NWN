@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Conversation
 
         protected NWPlayer GetPC()
         {
-            return NWPlayer.Wrap(_.GetPCSpeaker());
+            return (_.GetPCSpeaker());
         }
 
         protected NWObject GetDialogTarget()
@@ -148,9 +148,12 @@ namespace SWLOR.Game.Server.Conversation
             dialog.ResetPage();
             ChangePage(dialog.CurrentPageName);
             
-            IConversation convo = App.ResolveByInterface<IConversation>("Conversation." + dialog.ActiveDialogName);
-            convo.Initialize();
-            GetPC().SetLocalInt("DIALOG_SYSTEM_INITIALIZE_RAN", 1);
+            App.ResolveByInterface<IConversation>("Conversation." + dialog.ActiveDialogName, convo =>
+            {
+                convo.Initialize();
+                GetPC().SetLocalInt("DIALOG_SYSTEM_INITIALIZE_RAN", 1);
+            });
+            
         }
 
         protected void EndConversation()

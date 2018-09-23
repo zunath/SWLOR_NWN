@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
         {
             // Should only fire when a player walks away from the device.
             // Clean up temporary data and return all items placed inside.
-            NWPlayer player = NWPlayer.Wrap(_.GetLastClosedBy());
-            NWPlaceable device = NWPlaceable.Wrap(Object.OBJECT_SELF);
+            NWPlayer player = (_.GetLastClosedBy());
+            NWPlaceable device = (Object.OBJECT_SELF);
             var model = _craft.GetPlayerCraftingData(player);
             device.DestroyAllInventoryItems();
             device.IsLocked = false;

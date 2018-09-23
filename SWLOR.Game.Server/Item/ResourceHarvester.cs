@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Item
 
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            NWPlayer player = NWPlayer.Wrap(user.Object);
+            NWPlayer player = (user.Object);
             ResourceQuality quality = (ResourceQuality)target.GetLocalInt("RESOURCE_QUALITY");
             int tier = target.GetLocalInt("RESOURCE_TIER");
             int remaining = target.GetLocalInt("RESOURCE_COUNT") - 1;
@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Item
 
             ipBonusChance += (itemHarvestBonus * 2) + (scanningBonus * 2);
 
-            NWItem resource = NWItem.Wrap(_.CreateItemOnObject(itemResref, player.Object));
+            NWItem resource = (_.CreateItemOnObject(itemResref, player.Object));
 
             if (roll <= ipBonusChance)
             {
@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Item
 
             if (user.IsPlayer)
             {
-                var player = NWPlayer.Wrap(user.Object);
+                var player = (user.Object);
                 harvestingTime = BaseHarvestingTime - (BaseHarvestingTime * _perk.GetPCPerkLevel(player, PerkType.SpeedyHarvester));
 
             }
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Item
 
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            NWPlayer player = NWPlayer.Wrap(user.Object);
+            NWPlayer player = (user.Object);
             ResourceQuality quality = (ResourceQuality)target.GetLocalInt("RESOURCE_QUALITY");
             int tier = target.GetLocalInt("RESOURCE_TIER");
             int rank = _skill.GetPCSkill(player, SkillType.Harvesting).Rank;

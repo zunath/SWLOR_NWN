@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.CustomEffect;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN.NWScript;
 
@@ -11,18 +12,21 @@ namespace SWLOR.Game.Server.Perk.General
     {
         private readonly INWScript _;
         private readonly IPerkService _perk;
+        private readonly ICustomEffectService _customEffect;
 
         public Rest(INWScript script,
-            IPerkService perk)
+            IPerkService perk,
+            ICustomEffectService customEffect)
         {
             _ = script;
             _perk = perk;
+            _customEffect = customEffect;
         }
 
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
-            return CanRest(oPC);
+            return RestEffect.CanRest(oPC);
         }
 
         public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
@@ -62,38 +66,7 @@ namespace SWLOR.Game.Server.Perk.General
 
         public void OnImpact(NWPlayer oPC, NWObject oTarget)
         {
-            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.Rest);
-            Vector position = oPC.Position;
-            int amount;
-
-            switch (perkLevel)
-            {
-                default:
-                    amount = 1;
-                    break;
-                case 4:
-                case 5:
-                case 6:
-                    amount = 2;
-                    break;
-                case 7:
-                    amount = 3;
-                    break;
-            }
-            amount += oPC.EffectiveRestBonus;
-
-            oPC.AssignCommand(() =>
-            {
-                _.ActionPlayAnimation(ANIMATION_LOOPING_SIT_CROSS, 1.0f, 6.1f);
-            });
-
-            oPC.DelayCommand(() =>
-            {
-                RunRest(oPC, position, amount);
-            }, 6.0f);
-
-            oPC.SendMessage("You begin to rest...");
-            oPC.IsBusy = true;
+            _customEffect.ApplyCustomEffect(oPC, oPC, CustomEffectType.Rest, -1, 0, null);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)
@@ -122,53 +95,6 @@ namespace SWLOR.Game.Server.Perk.General
         }
 
 
-        private void RunRest(NWPlayer oPC, Vector originalPosition, int amount)
-        {
-            Vector position = oPC.Position;
-
-            if ((position.m_X != originalPosition.m_X ||
-                 position.m_Y != originalPosition.m_Y ||
-                 position.m_Z != originalPosition.m_Z) ||
-                !CanRest(oPC) ||
-                !oPC.IsValid)
-            {
-                oPC.SendMessage("You stop resting.");
-                oPC.IsBusy = false;
-                return;
-            }
-
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(amount), oPC);
-
-            Effect vfx = _.EffectVisualEffect(VFX_IMP_HEAD_HOLY);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, oPC.Object);
-            oPC.AssignCommand(() =>
-            {
-                _.ActionPlayAnimation(ANIMATION_LOOPING_SIT_CROSS, 1.0f, 6.1f);
-            });
-            oPC.DelayCommand(() =>
-            {
-                RunRest(oPC, originalPosition, amount);
-            }, 6.0f);
-        }
-
-        private bool CanRest(NWPlayer oPC)
-        {
-            bool canRest = !oPC.IsInCombat;
-
-            NWArea pcArea = oPC.Area;
-            foreach (NWPlayer member in oPC.GetPartyMembers())
-            {
-                if (!member.Area.Equals(pcArea)) continue;
-
-                if (member.IsInCombat)
-                {
-                    canRest = false;
-                    break;
-                }
-            }
-
-            return canRest;
-        }
 
     }
 }

@@ -37,10 +37,10 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
         }
         public bool Run(params object[] args)
         {
-            NWPlayer player = NWPlayer.Wrap(_.GetLastDisturbed());
-            NWPlaceable bay = NWPlaceable.Wrap(Object.OBJECT_SELF);
+            NWPlayer player = (_.GetLastDisturbed());
+            NWPlaceable bay = (Object.OBJECT_SELF);
             int disturbType = _.GetInventoryDisturbType();
-            NWItem item = NWItem.Wrap(_.GetInventoryDisturbItem());
+            NWItem item = (_.GetInventoryDisturbItem());
             bool stronidiumOnly = bay.GetLocalInt("CONTROL_TOWER_FUEL_TYPE") == TRUE;
             string allowedResref = stronidiumOnly ? "stronidium" : "fuel_cell";
             int structureID = bay.GetLocalInt("PC_BASE_STRUCTURE_ID");
@@ -70,12 +70,12 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
                 fuelCount += fuel.StackSize;
             }
             
-            NWItem firstFuel = NWItem.Wrap(_.GetFirstItemInInventory(bay.Object));
-            NWItem nextFuel = NWItem.Wrap(_.GetNextItemInInventory(bay.Object));
+            NWItem firstFuel = (_.GetFirstItemInInventory(bay.Object));
+            NWItem nextFuel = (_.GetNextItemInInventory(bay.Object));
             while (nextFuel.IsValid)
             {
                 nextFuel.Destroy();
-                nextFuel = NWItem.Wrap(_.GetNextItemInInventory(bay.Object));
+                nextFuel = (_.GetNextItemInInventory(bay.Object));
             }
 
             int maxFuel;

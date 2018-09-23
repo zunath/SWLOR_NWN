@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
         }
         public bool Run(params object[] args)
         {
-            NWPlaceable tower = NWPlaceable.Wrap(Object.OBJECT_SELF);
+            NWPlaceable tower = (Object.OBJECT_SELF);
             int structureID = tower.GetLocalInt("PC_BASE_STRUCTURE_ID");
             PCBaseStructure structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
             int maxShieldHP = _base.CalculateMaxShieldHP(structure);
@@ -41,13 +41,13 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
                 pcBase.DateFuelEnds = DateTime.UtcNow.AddMinutes(30);
 
                 // If a player is manipulating fuel, look for a fuel item and reduce its stack size or destroy it
-                NWPlaceable bay = NWPlaceable.Wrap(tower.GetLocalObject("CONTROL_TOWER_FUEL_BAY"));
+                NWPlaceable bay = (tower.GetLocalObject("CONTROL_TOWER_FUEL_BAY"));
                 if (bay.IsValid)
                 {
                     bool isStronidium = bay.GetLocalInt("CONTROL_TOWER_FUEL_TYPE") == TRUE;
                     if (!isStronidium)
                     {
-                        NWItem fuel = NWItem.Wrap(_.GetFirstItemInInventory(bay.Object));
+                        NWItem fuel = (_.GetFirstItemInInventory(bay.Object));
 
                         if (fuel.IsValid)
                         {

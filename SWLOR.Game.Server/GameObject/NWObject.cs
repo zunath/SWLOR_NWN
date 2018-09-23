@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using SWLOR.Game.Server.GameObject.Contracts;
 
 using NWN;
+using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.ValueObject;
 using static NWN.NWScript;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.GameObject
 {
-    public class NWObject : INWObject
+    public class NWObject
     {
-        public virtual Object Object { get; protected set; }
+        public virtual Object Object { get; set; }
         protected readonly INWScript _;
         private readonly AppState _state;
 
@@ -21,15 +21,7 @@ namespace SWLOR.Game.Server.GameObject
             _ = script;
             _state = state;
         }
-
-        public static NWObject Wrap(Object @object)
-        {
-            var obj = (NWObject)App.Resolve<INWObject>();
-            obj.Object = @object;
-            
-            return obj;
-        }
-
+        
         public virtual bool IsInitializedAsPlayer
         {
             get
@@ -199,11 +191,11 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual void DestroyAllInventoryItems()
         {
-            NWItem item = NWItem.Wrap(_.GetFirstItemInInventory(Object));
+            NWItem item = _.GetFirstItemInInventory(Object);
             while (item.IsValid)
             {
                 _.DestroyObject(item.Object);
-                item = NWItem.Wrap(_.GetNextItemInInventory(Object));
+                item = _.GetNextItemInInventory(Object);
             }
         }
 
@@ -254,9 +246,13 @@ namespace SWLOR.Game.Server.GameObject
             _.AssignCommand(Object, action);
         }
 
-        public virtual void DelayCommand(ActionDelegate action, float seconds)
+        public virtual void DelayEvent<T>(float seconds, params object[] args)
+            where T: IRegisteredEvent
         {
-            _.DelayCommand(seconds, action);
+            _.DelayCommand(seconds, () =>
+            {
+                App.RunEvent<T>(args);
+            });
         }
 
         public virtual void DelayAssignCommand(ActionDelegate action, float seconds)
@@ -348,7 +344,11 @@ namespace SWLOR.Game.Server.GameObject
 
         public static implicit operator NWObject(Object o)
         {
-            return Wrap(o);
+            return NWObjectFactory.Build<NWObject>(o);
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

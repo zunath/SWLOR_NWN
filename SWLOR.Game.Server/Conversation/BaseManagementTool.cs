@@ -462,7 +462,7 @@ namespace SWLOR.Game.Server.Conversation
             PCBaseStructure structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == data.ManipulatingStructure.PCBaseStructureID);
             PCBase pcBase = structure.PCBase;
             BaseStructureType structureType = (BaseStructureType)structure.BaseStructure.BaseStructureTypeID;
-            var tempStorage = NWPlaceable.Wrap(_.GetObjectByTag("TEMP_ITEM_STORAGE"));
+            var tempStorage = (_.GetObjectByTag("TEMP_ITEM_STORAGE"));
             int pcStructureID = structure.PCBaseStructureID;
             int impoundedCount = 0;
             int structureID = data.ManipulatingStructure.Structure.Area.GetLocalInt("PC_BASE_STRUCTURE_ID");
@@ -527,7 +527,7 @@ namespace SWLOR.Game.Server.Conversation
                 if (pcBase.Fuel > maxFuel)
                 {
                     int returnAmount = pcBase.Fuel - maxFuel;
-                    NWItem refund = NWItem.Wrap(_.CreateItemOnObject("fuel_cell", tempStorage.Object, returnAmount));
+                    NWItem refund = (_.CreateItemOnObject("fuel_cell", tempStorage, returnAmount));
                     pcBase.Fuel = maxFuel;
                     _impound.Impound(pcBase.PlayerID, refund);
                     GetPC().SendMessage("Excess fuel cells have been impounded by the planetary government. The owner of the base will need to retrieve it.");
@@ -537,7 +537,7 @@ namespace SWLOR.Game.Server.Conversation
                 if (pcBase.ReinforcedFuel > maxReinforcedFuel)
                 {
                     int returnAmount = pcBase.ReinforcedFuel - maxReinforcedFuel;
-                    NWItem refund = NWItem.Wrap(_.CreateItemOnObject("stronidium", tempStorage.Object, returnAmount));
+                    NWItem refund = (_.CreateItemOnObject("stronidium", tempStorage, returnAmount));
                     pcBase.ReinforcedFuel = maxReinforcedFuel;
                     _impound.Impound(pcBase.PlayerID, refund);
                     GetPC().SendMessage("Excess stronidium units have been impounded by the planetary government. The owner of the base will need to retrieve it.");

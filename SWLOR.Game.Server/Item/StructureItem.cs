@@ -42,8 +42,8 @@ namespace SWLOR.Game.Server.Item
 
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            NWPlayer player = NWPlayer.Wrap(user.Object);
-            NWArea area = NWArea.Wrap(_.GetAreaFromLocation(targetLocation));
+            NWPlayer player = (user.Object);
+            NWArea area = (_.GetAreaFromLocation(targetLocation));
             int parentStructureID = area.GetLocalInt("PC_BASE_STRUCTURE_ID");
             var data = _base.GetPlayerTempData(player);
             data.TargetLocation = targetLocation;

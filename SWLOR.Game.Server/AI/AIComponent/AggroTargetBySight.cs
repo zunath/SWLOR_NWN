@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.AI.AIComponent
                     _biowarePos.GetChangedPosition(self.Position, aggroRange, self.Facing),
                     self.Facing + 180.0f);
                 
-                NWCreature creature = NWCreature.Wrap(_.GetFirstObjectInShape(SHAPE_SPELLCYLINDER, aggroRange, targetLocation, TRUE, OBJECT_TYPE_CREATURE, self.Position));
+                NWCreature creature = _.GetFirstObjectInShape(SHAPE_SPELLCYLINDER, aggroRange, targetLocation, TRUE, OBJECT_TYPE_CREATURE, self.Position);
                 while (creature.IsValid)
                 {
                     if (_.GetIsEnemy(creature.Object, self.Object) == TRUE &&
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.AI.AIComponent
                         _enmity.AdjustEnmity(self, creature, 0, 1);
                     }
                     
-                    creature = NWCreature.Wrap(_.GetNextObjectInShape(SHAPE_SPELLCYLINDER, aggroRange, targetLocation, TRUE, OBJECT_TYPE_CREATURE, self.Position));
+                    creature = _.GetNextObjectInShape(SHAPE_SPELLCYLINDER, aggroRange, targetLocation, TRUE, OBJECT_TYPE_CREATURE, self.Position);
                 }
 
                 return BehaviourTreeStatus.Running;

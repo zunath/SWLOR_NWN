@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.AI
 
         protected BehaviourBase()
         {
-            Self = NWCreature.Wrap(Object.OBJECT_SELF);
+            Self = (Object.OBJECT_SELF);
         }
 
         public virtual BehaviourTreeBuilder Behaviour => null;

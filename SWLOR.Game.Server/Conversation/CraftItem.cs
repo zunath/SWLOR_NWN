@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Conversation
         
         private NWPlaceable GetDevice()
         {
-            return NWPlaceable.Wrap(GetDialogTarget().Object);
+            return (GetDialogTarget().Object);
         }
         
 
@@ -142,8 +142,8 @@ namespace SWLOR.Game.Server.Conversation
             {
                 case 1: // Examine Base Item
                     CraftBlueprint entity = _craft.GetBlueprintByID(model.BlueprintID);
-                    NWPlaceable tempContainer = NWPlaceable.Wrap(_.GetObjectByTag("craft_temp_store"));
-                    NWItem examineItem = NWItem.Wrap(_.CreateItemOnObject(entity.ItemResref, tempContainer.Object));
+                    NWPlaceable tempContainer = (_.GetObjectByTag("craft_temp_store"));
+                    NWItem examineItem = (_.CreateItemOnObject(entity.ItemResref, tempContainer.Object));
                     GetPC().AssignCommand(() => _.ActionExamine(examineItem.Object));
                     examineItem.Destroy(0.1f);
                     break;

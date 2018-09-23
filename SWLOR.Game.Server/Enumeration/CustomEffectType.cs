@@ -12,6 +12,8 @@
         AbsorptionField = 8,
         ForceSpread = 9,
         DarkSpread = 10,
-        ShieldBoost = 11
+        ShieldBoost = 11,
+        Meditate = 12,
+        Rest = 13
     }
 }

@@ -27,11 +27,11 @@ namespace SWLOR.Game.Server.Service
         
         public string GetResourceDescription(NWPlaceable resource)
         {
-            NWPlaceable tempStorage = NWPlaceable.Wrap(_.GetObjectByTag("TEMP_ITEM_STORAGE"));
+            NWPlaceable tempStorage = (_.GetObjectByTag("TEMP_ITEM_STORAGE"));
             string resref = resource.GetLocalString("RESOURCE_RESREF");
             string qualityName = resource.GetLocalString("RESOURCE_QUALITY_NAME");
 
-            NWItem tempItem = NWItem.Wrap(_.CreateItemOnObject(resref, tempStorage.Object));
+            NWItem tempItem = (_.CreateItemOnObject(resref, tempStorage.Object));
             string resourceName = tempItem.Name;
             
             int typeID = 0;

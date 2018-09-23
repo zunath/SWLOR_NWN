@@ -20,14 +20,16 @@ namespace SWLOR.Game.Server.Event.Dialog
 
         public bool Run(params object[] args)
         {
-            NWPlayer player = NWPlayer.Wrap(_.GetPCSpeaker());
+            NWPlayer player = (_.GetPCSpeaker());
             PlayerDialog dialog = _dialog.LoadPlayerDialog(player.GlobalID);
             
-            IConversation convo = App.ResolveByInterface<IConversation>("Conversation." + dialog.ActiveDialogName);
-            convo.EndDialog();
-            _dialog.RemovePlayerDialog(player.GlobalID);
-            player.DeleteLocalInt("DIALOG_SYSTEM_INITIALIZE_RAN");
-
+            App.ResolveByInterface<IConversation>("Conversation." + dialog.ActiveDialogName, convo =>
+            {
+                convo.EndDialog();
+                _dialog.RemovePlayerDialog(player.GlobalID);
+                player.DeleteLocalInt("DIALOG_SYSTEM_INITIALIZE_RAN");
+            });
+            
             return true;
         }
     }

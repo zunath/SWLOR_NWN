@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
     {
         public bool Run(params object[] args)
         {
-            NWPlaceable forge = NWPlaceable.Wrap(Object.OBJECT_SELF);
+            NWPlaceable forge = (Object.OBJECT_SELF);
             int charges = forge.GetLocalInt("FORGE_CHARGES");
 
             if (charges > 0)
@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
 
             if (charges <= 0)
             {
-                NWPlaceable flames = NWPlaceable.Wrap(forge.GetLocalObject("FORGE_FLAMES"));
+                NWPlaceable flames = (forge.GetLocalObject("FORGE_FLAMES"));
                 flames.Destroy();
             }
             return true;

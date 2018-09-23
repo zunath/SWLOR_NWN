@@ -54,21 +54,24 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            IChatCommand chatCommand = App.ResolveByInterface<IChatCommand>("ChatCommand." + command);
-            CommandDetailsAttribute attribute = chatCommand.GetType().GetCustomAttribute<CommandDetailsAttribute>();
-            bool isDM = _auth.IsPCRegisteredAsDM(sender);
+            App.ResolveByInterface<IChatCommand>("ChatCommand." + command, chatCommand =>
+            {
+                CommandDetailsAttribute attribute = chatCommand.GetType().GetCustomAttribute<CommandDetailsAttribute>();
+                bool isDM = _auth.IsPCRegisteredAsDM(sender);
 
-            if (attribute != null && 
+                if (attribute != null &&
                     (attribute.Permissions.HasFlag(CommandPermissionType.Player) && sender.IsPlayer ||
                      attribute.Permissions.HasFlag(CommandPermissionType.DM) && isDM))
-            {
-                split.RemoveAt(0);
-                chatCommand.DoAction(sender, split.ToArray());
-            }
-            else
-            {
-                sender.SendMessage(_color.Red("Invalid chat command. Use '/help' to get a list of available commands."));
-            }
+                {
+                    split.RemoveAt(0);
+                    chatCommand.DoAction(sender, split.ToArray());
+                }
+                else
+                {
+                    sender.SendMessage(_color.Red("Invalid chat command. Use '/help' to get a list of available commands."));
+                }
+            });
+            
         }
     }
 }

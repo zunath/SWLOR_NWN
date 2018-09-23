@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.AI.AIComponent
                 if (aggroRange <= 0.0f) aggroRange = 5.0f;
 
                 int nth = 1;
-                NWCreature creature = NWCreature.Wrap(_.GetNearestObject(NWScript.OBJECT_TYPE_CREATURE, self.Object, nth));
+                NWCreature creature = _.GetNearestObject(NWScript.OBJECT_TYPE_CREATURE, self.Object, nth);
                 while (creature.IsValid)
                 {
                     if (_.GetIsEnemy(creature.Object, self.Object) == NWScript.TRUE &&
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.AI.AIComponent
                     }
 
                     nth++;
-                    creature = NWCreature.Wrap(_.GetNearestObject(NWScript.OBJECT_TYPE_CREATURE, self.Object, nth));
+                    creature = _.GetNearestObject(NWScript.OBJECT_TYPE_CREATURE, self.Object, nth);
                 }
 
 

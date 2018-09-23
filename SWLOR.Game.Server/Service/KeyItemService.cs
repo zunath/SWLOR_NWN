@@ -80,11 +80,11 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleItemAcquired()
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetModuleItemAcquiredBy());
+            NWPlayer oPC = (_.GetModuleItemAcquiredBy());
 
             if (!oPC.IsPlayer) return;
 
-            NWItem oItem = NWItem.Wrap(_.GetModuleItemAcquired());
+            NWItem oItem = (_.GetModuleItemAcquired());
             int keyItemID = oItem.GetLocalInt("KEY_ITEM_ID");
 
             if (keyItemID <= 0) return;

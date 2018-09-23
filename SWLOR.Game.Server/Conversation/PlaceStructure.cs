@@ -206,10 +206,10 @@ namespace SWLOR.Game.Server.Conversation
             var structure = _db.BaseStructures.Single(x => x.BaseStructureID == data.StructureID);
             string resref = GetPlaceableResref(structure);
 
-            var plc = NWPlaceable.Wrap(_.CreateObject(OBJECT_TYPE_PLACEABLE, resref, data.TargetLocation));
+            NWPlaceable plc = (_.CreateObject(OBJECT_TYPE_PLACEABLE, resref, data.TargetLocation));
             plc.IsUseable = false;
             plc.Destroy(6.0f);
-            plc.DelayCommand(() => { data.IsPreviewing = false; }, 6.1f);
+            _.DelayCommand(6.1f, () => { data.IsPreviewing = false; });
             _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, _.EffectVisualEffect(VFX_DUR_AURA_GREEN), plc.Object);
         }
 
@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 var structure = _db.BaseStructures.Single(x => x.BaseStructureID == data.StructureID);
                 string resref = GetPlaceableResref(structure);
-                data.StructurePreview = NWPlaceable.Wrap(_.CreateObject(OBJECT_TYPE_PLACEABLE, resref, data.TargetLocation));
+                data.StructurePreview = (_.CreateObject(OBJECT_TYPE_PLACEABLE, resref, data.TargetLocation));
                 data.StructurePreview.IsUseable = false;
                 _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, _.EffectVisualEffect(VFX_DUR_AURA_GREEN), data.StructurePreview.Object);
             }

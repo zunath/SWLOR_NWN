@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.GameObject.Contracts;
 
 using NWN;
 using SWLOR.Game.Server.Service.Contracts;
@@ -10,7 +9,7 @@ using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.GameObject
 {
-    public class NWItem : NWObject, INWItem
+    public class NWItem : NWObject
     {
         private readonly IDurabilityService _durability;
         private readonly IItemService _item;
@@ -24,16 +23,8 @@ namespace SWLOR.Game.Server.GameObject
             _durability = durability;
             _item = item;
         }
-
-        public new static NWItem Wrap(Object @object)
-        {
-            var obj = (NWItem)App.Resolve<INWItem>();
-            obj.Object = @object;
-            
-            return obj;
-        }
-
-        public virtual NWCreature Possessor => NWCreature.Wrap(_.GetItemPossessor(Object));
+        
+        public virtual NWCreature Possessor => _.GetItemPossessor(Object);
 
         public virtual int BaseItemType => _.GetBaseItemType(Object);
 
@@ -527,7 +518,7 @@ namespace SWLOR.Game.Server.GameObject
         }
         public static implicit operator NWItem(Object o)
         {
-            return Wrap(o);
+            return NWObjectFactory.Build<NWItem>(o);
         }
     }
 }

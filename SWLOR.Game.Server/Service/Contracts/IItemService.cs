@@ -1,6 +1,8 @@
 ﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using NWN;
+using SWLOR.Game.Server.Item.Contracts;
+using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service.Contracts
 {
@@ -19,5 +21,6 @@ namespace SWLOR.Game.Server.Service.Contracts
         void StripAllItemProperties(NWItem item);
         CustomItemType GetCustomItemType(NWItem item);
         ItemProperty GetCustomItemPropertyByItemTag(string tag);
+        void FinishActionItem(IActionItem actionItem, NWPlayer user, NWItem item, NWObject target, Location targetLocation, Vector userStartPosition, CustomData customData);
     }
 }

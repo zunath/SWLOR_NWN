@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Placeable.TrashCan
 
         public bool Run(params object[] args)
         {
-            NWItem oItem = NWItem.Wrap(_.GetInventoryDisturbItem());
+            NWItem oItem = (_.GetInventoryDisturbItem());
             int type = _.GetInventoryDisturbType();
 
             if (type == NWScript.INVENTORY_DISTURB_TYPE_ADDED)

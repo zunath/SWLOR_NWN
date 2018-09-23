@@ -34,8 +34,8 @@ namespace SWLOR.Game.Server.Service
         
         public void OnPlayerDeath()
         {
-            NWPlayer player = NWPlayer.Wrap(_.GetLastPlayerDied());
-            NWObject hostile = NWObject.Wrap(_.GetLastHostileActor(player.Object));
+            NWPlayer player = (_.GetLastPlayerDied());
+            NWObject hostile = (_.GetLastHostileActor(player.Object));
 
             var factionMember = _.GetFirstFactionMember(hostile.Object, FALSE);
             while (_.GetIsObjectValid(factionMember) == TRUE)
@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Service
         
         public void OnPlayerRespawn()
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetLastRespawnButtonPresser());
+            NWPlayer oPC = (_.GetLastRespawnButtonPresser());
 
             int amount = oPC.MaxHP / 2;
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectResurrection(), oPC.Object);
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (string.IsNullOrWhiteSpace(entity.RespawnAreaResref))
             {
-                NWObject defaultRespawn = NWObject.Wrap(_.GetWaypointByTag("DEFAULT_RESPAWN_POINT"));
+                NWObject defaultRespawn = (_.GetWaypointByTag("DEFAULT_RESPAWN_POINT"));
                 Location location = defaultRespawn.Location;
 
                 pc.AssignCommand(() =>

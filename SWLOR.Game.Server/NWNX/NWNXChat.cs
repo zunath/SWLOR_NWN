@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.NWNX
         public NWObject GetSender()
         {
             NWNX_CallFunction("NWNX_Chat", "GET_SENDER");
-            return NWObject.Wrap(NWNX_GetReturnValueObject("NWNX_Chat", "GET_SENDER"));
+            return (NWNX_GetReturnValueObject("NWNX_Chat", "GET_SENDER"));
         }
 
         // Gets the target. May be OBJECT_INVALID if no target.
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.NWNX
         public NWObject GetTarget()
         {
             NWNX_CallFunction("NWNX_Chat", "GET_TARGET");
-            return NWObject.Wrap(NWNX_GetReturnValueObject("NWNX_Chat", "GET_TARGET"));
+            return (NWNX_GetReturnValueObject("NWNX_Chat", "GET_TARGET"));
         }
 
     }

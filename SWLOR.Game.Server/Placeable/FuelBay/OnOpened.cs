@@ -15,8 +15,8 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
 
         public bool Run(params object[] args)
         {
-            NWPlaceable chest = NWPlaceable.Wrap(Object.OBJECT_SELF);
-            NWPlayer player = NWPlayer.Wrap(_.GetLastOpenedBy());
+            NWPlaceable chest = (Object.OBJECT_SELF);
+            NWPlayer player = (_.GetLastOpenedBy());
 
             player.SendMessage("Place the appropriate fuel inside the container. Click on the control tower when you're finished.");
 

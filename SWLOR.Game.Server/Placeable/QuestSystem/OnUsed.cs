@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem
 
         public bool Run(params object[] args)
         {
-            NWPlaceable container = NWPlaceable.Wrap(_.GetLastUsedBy());
+            NWPlaceable container = (_.GetLastUsedBy());
             _quest.OnQuestPlaceableUsed(container);
             return true;
         }

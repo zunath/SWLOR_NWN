@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleClientEnter()
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetEnteringObject());
+            NWPlayer oPC = (_.GetEnteringObject());
             string name = oPC.Name;
             string cdKey = _.GetPCPublicCDKey(oPC.Object);
             string account = _.GetPCPlayerName(oPC.Object);
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleClientLeave()
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetExitingObject());
+            NWPlayer oPC = (_.GetExitingObject());
             string name = oPC.Name;
             string cdKey = oPC.GetLocalString("PC_CD_KEY");
             string account = oPC.GetLocalString("PC_ACCOUNT");

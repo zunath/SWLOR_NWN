@@ -48,21 +48,43 @@ namespace SWLOR.Game.Server.CustomEffect
             NWPlayer player = oTarget.Object;
             int restTick = oTarget.GetLocalInt("REST_TICK") + 1;
 
+
+            // Pull original position from data
+            string[] values = data.Split(',');
+            Vector originalPosition = _.Vector
+            (
+                Convert.ToSingle(values[0]),
+                Convert.ToSingle(values[1]),
+                Convert.ToSingle(values[2])
+            );
+
+            // Check position
+            Vector position = player.Position;
+
+            if ((Math.Abs(position.m_X - originalPosition.m_X) > 0.01f ||
+                 Math.Abs(position.m_Y - originalPosition.m_Y) > 0.01f ||
+                 Math.Abs(position.m_Z - originalPosition.m_Z) > 0.01f) ||
+                !CanRest(player) ||
+                !player.IsValid)
+            {
+                player.IsBusy = false;
+                _customEffect.RemovePCCustomEffect(player, CustomEffectType.Rest);
+                return;
+            }
+
+            player.AssignCommand(() =>
+            {
+                _.ActionPlayAnimation(ANIMATION_LOOPING_SIT_CROSS, 1.0f, 6.1f);
+            });
+
             if (restTick >= 6)
             {
-                restTick = 0;
-
                 int amount = CalculateAmount(player);
-                string[] values = data.Split(',');
-                Vector originalPosition = _.Vector
-                (
-                    Convert.ToSingle(values[0]),
-                    Convert.ToSingle(values[1]),
-                    Convert.ToSingle(values[2])
-                );
 
-                RunRest(player, originalPosition, amount);
-
+                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(amount), player);
+                Effect vfx = _.EffectVisualEffect(VFX_IMP_HEAD_MIND);
+                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, player);
+                restTick = 0;
             }
 
             oTarget.SetLocalInt("REST_TICK", restTick);
@@ -96,32 +118,7 @@ namespace SWLOR.Game.Server.CustomEffect
 
             return amount;
         }
-
-        private void RunRest(NWPlayer oPC, Vector originalPosition, int amount)
-        {
-            Vector position = oPC.Position;
-
-            if ((position.m_X != originalPosition.m_X ||
-                 position.m_Y != originalPosition.m_Y ||
-                 position.m_Z != originalPosition.m_Z) ||
-                !CanRest(oPC) ||
-                !oPC.IsValid)
-            {
-                _customEffect.RemovePCCustomEffect(oPC, CustomEffectType.Rest);
-                oPC.IsBusy = false;
-                return;
-            }
-
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(amount), oPC);
-
-            Effect vfx = _.EffectVisualEffect(VFX_IMP_HEAD_HOLY);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, oPC.Object);
-            oPC.AssignCommand(() =>
-            {
-                _.ActionPlayAnimation(ANIMATION_LOOPING_SIT_CROSS, 1.0f, 6.1f);
-            });
-        }
-
+        
         public static bool CanRest(NWPlayer oPC)
         {
             bool canRest = !oPC.IsInCombat;

@@ -133,7 +133,9 @@ namespace SWLOR.Game.Server.Processor
                 }
             }
 
-            effect.Ticks = effect.Ticks - 1;
+            if(effect.Ticks > 0)
+                effect.Ticks = effect.Ticks - 1;
+
             if (effect.Ticks == 0) return null;
             
             if (!string.IsNullOrWhiteSpace(effect.CustomEffect.ContinueMessage) &&

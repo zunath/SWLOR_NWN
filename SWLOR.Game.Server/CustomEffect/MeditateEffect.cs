@@ -1,14 +1,14 @@
-﻿using System;
-using NWN;
+﻿using NWN;
 using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
+using System;
 using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.CustomEffect
 {
-    public class MeditateEffect: ICustomEffect
+    public class MeditateEffect : ICustomEffect
     {
         private readonly INWScript _;
         private readonly IAbilityService _ability;
@@ -51,21 +51,42 @@ namespace SWLOR.Game.Server.CustomEffect
             NWPlayer player = oTarget.Object;
             int meditateTick = oTarget.GetLocalInt("MEDITATE_TICK") + 1;
 
+            // Pull original position from data
+            string[] values = data.Split(',');
+            Vector originalPosition = _.Vector
+            (
+                Convert.ToSingle(values[0]),
+                Convert.ToSingle(values[1]),
+                Convert.ToSingle(values[2])
+            );
+
+            // Check position
+            Vector position = player.Position;
+
+            if ((Math.Abs(position.m_X - originalPosition.m_X) > 0.01f ||
+                 Math.Abs(position.m_Y - originalPosition.m_Y) > 0.01f ||
+                 Math.Abs(position.m_Z - originalPosition.m_Z) > 0.01f) ||
+                !CanMeditate(player) ||
+                !player.IsValid)
+            {
+                player.IsBusy = false;
+                _customEffect.RemovePCCustomEffect(player, CustomEffectType.Meditate);
+                return;
+            }
+
+            player.AssignCommand(() =>
+            {
+                _.ActionPlayAnimation(ANIMATION_LOOPING_MEDITATE, 1.0f, 6.1f);
+            });
+            
             if (meditateTick >= 6)
             {
-                meditateTick = 0;
-
                 int amount = CalculateAmount(player);
-                string[] values = data.Split(',');
-                Vector originalPosition = _.Vector
-                (
-                    Convert.ToSingle(values[0]),
-                    Convert.ToSingle(values[1]),
-                    Convert.ToSingle(values[2])
-                );
 
-                RunMeditate(player, originalPosition, amount);
-
+                _ability.RestoreFP(player, amount);
+                Effect vfx = _.EffectVisualEffect(VFX_IMP_HEAD_MIND);
+                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, player);
+                meditateTick = 0;
             }
 
             oTarget.SetLocalInt("MEDITATE_TICK", meditateTick);
@@ -75,6 +96,7 @@ namespace SWLOR.Game.Server.CustomEffect
         {
             NWPlayer player = oTarget.Object;
             player.IsBusy = false;
+            player.DeleteLocalInt("MEDITATE_TICK");
         }
 
         private int CalculateAmount(NWPlayer player)
@@ -98,30 +120,6 @@ namespace SWLOR.Game.Server.CustomEffect
             amount += _playerStat.EffectiveMeditateBonus(player);
 
             return amount;
-        }
-
-        private void RunMeditate(NWPlayer oPC, Vector originalPosition, int amount)
-        {
-            Vector position = oPC.Position;
-
-            if ((position.m_X != originalPosition.m_X ||
-                 position.m_Y != originalPosition.m_Y ||
-                 position.m_Z != originalPosition.m_Z) ||
-                !CanMeditate(oPC) ||
-                !oPC.IsValid)
-            {
-                oPC.IsBusy = false;
-                _customEffect.RemovePCCustomEffect(oPC, CustomEffectType.Meditate);
-                return;
-            }
-
-            _ability.RestoreFP(oPC, amount);
-            Effect vfx = _.EffectVisualEffect(VFX_IMP_HEAD_MIND);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, oPC.Object);
-            oPC.AssignCommand(() =>
-            {
-                _.ActionPlayAnimation(ANIMATION_LOOPING_MEDITATE, 1.0f, 6.1f);
-            });
         }
 
         public static bool CanMeditate(NWPlayer oPC)

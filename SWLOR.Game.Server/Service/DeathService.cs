@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Service
         }
         
 
-        public void SetRespawnLocation(NWPlayer player, bool showMessage)
+        public void SetRespawnLocation(NWPlayer player)
         {
             if (player == null) throw new ArgumentNullException(nameof(player), nameof(player) + " cannot be null.");
             if (player.Object == null) throw new ArgumentNullException(nameof(player.Object), nameof(player.Object) + " cannot be null.");
@@ -83,11 +83,7 @@ namespace SWLOR.Game.Server.Service
             pc.RespawnAreaResref = player.Area.Resref;
 
             _db.SaveChanges();
-
-            if (showMessage)
-            {
-                _.FloatingTextStringOnCreature("You will respawn at this location the next time you die.", player.Object, FALSE);
-            }
+            _.FloatingTextStringOnCreature("You will respawn at this location the next time you die.", player.Object, FALSE);
         }
 
 

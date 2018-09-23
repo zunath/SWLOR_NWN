@@ -75,20 +75,22 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(@class)) throw new ArgumentException(nameof(@class), nameof(@class) + " cannot be null, empty, or whitespace.");
             if (dialogNumber != -1 && (dialogNumber < 1 || dialogNumber > NumberOfDialogs)) throw new ArgumentOutOfRangeException(nameof(dialogNumber), nameof(dialogNumber) + " must be between 1 and " + NumberOfDialogs);
 
-            IConversation convo = App.ResolveByInterface<IConversation>("Conversation." + @class);
-            
-            PlayerDialog dialog = convo.SetUp(player);
-            if (dialog == null)
+            App.ResolveByInterface<IConversation>("Conversation." + @class, (convo) =>
             {
-                throw new NullReferenceException(nameof(dialog) + " cannot be null.");
-            }
+                PlayerDialog dialog = convo.SetUp(player);
 
-            if (dialogNumber > 0)
-                dialog.DialogNumber = dialogNumber;
+                if (dialog == null)
+                {
+                    throw new NullReferenceException(nameof(dialog) + " cannot be null.");
+                }
 
-            dialog.ActiveDialogName = @class;
-            dialog.DialogTarget = talkTo;
-            StorePlayerDialog(player.GlobalID, dialog);
+                if (dialogNumber > 0)
+                    dialog.DialogNumber = dialogNumber;
+
+                dialog.ActiveDialogName = @class;
+                dialog.DialogTarget = talkTo;
+                StorePlayerDialog(player.GlobalID, dialog);
+            });
         }
 
         public void StartConversation(NWPlayer player, NWObject talkTo, string @class)

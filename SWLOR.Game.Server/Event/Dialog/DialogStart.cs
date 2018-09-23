@@ -20,8 +20,8 @@ namespace SWLOR.Game.Server.Event.Dialog
 
         public bool Run(params object[] args)
         {
-            NWPlayer pc = NWPlayer.Wrap(_.GetLastUsedBy());
-            if (!pc.IsValid) pc = NWPlayer.Wrap(_.GetPCSpeaker());
+            NWPlayer pc = (_.GetLastUsedBy());
+            if (!pc.IsValid) pc = (_.GetPCSpeaker());
 
             string conversation = _.GetLocalString(Object.OBJECT_SELF, "CONVERSATION");
             
@@ -30,12 +30,12 @@ namespace SWLOR.Game.Server.Event.Dialog
                 int objectType = _.GetObjectType(Object.OBJECT_SELF);
                 if (objectType == OBJECT_TYPE_PLACEABLE)
                 {
-                    NWPlaceable talkTo = NWPlaceable.Wrap(Object.OBJECT_SELF);
+                    NWPlaceable talkTo = (Object.OBJECT_SELF);
                     _dialog.StartConversation(pc, talkTo, conversation);
                 }
                 else
                 {
-                    NWCreature talkTo = NWCreature.Wrap(Object.OBJECT_SELF);
+                    NWCreature talkTo = (Object.OBJECT_SELF);
                     _dialog.StartConversation(pc, talkTo, conversation);
                 }
             }

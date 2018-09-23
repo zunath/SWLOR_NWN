@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Placeable
 
         public bool Run(params object[] args)
         {
-            NWObject user = NWObject.Wrap(_.GetLastUsedBy());
+            NWObject user = (_.GetLastUsedBy());
             user.AssignCommand(() =>
             {
                 _.ActionSit(Object.OBJECT_SELF);

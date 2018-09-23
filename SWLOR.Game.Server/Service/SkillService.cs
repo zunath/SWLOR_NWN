@@ -159,7 +159,7 @@ namespace SWLOR.Game.Server.Service
             List<NWPlayer> members = player.GetPartyMembers();
 
             int nth = 1;
-            NWCreature creature = NWCreature.Wrap(_.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, 1, player.Object, nth, CREATURE_TYPE_PLAYER_CHAR, 0));
+            NWCreature creature = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, 1, player.Object, nth, CREATURE_TYPE_PLAYER_CHAR, 0);
             while (creature.IsValid)
             {
                 if (_.GetDistanceBetween(player.Object, creature.Object) > 20.0f) break;
@@ -176,7 +176,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 nth++;
-                creature = NWCreature.Wrap(_.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, 1, player.Object, nth, CREATURE_TYPE_PLAYER_CHAR, 0));
+                creature = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, 1, player.Object, nth, CREATURE_TYPE_PLAYER_CHAR, 0);
             }
         }
 
@@ -232,11 +232,11 @@ namespace SWLOR.Game.Server.Service
                 // Reapply skill penalties on a skill level up.
                 for (int slot = 0; slot < NUM_INVENTORY_SLOTS; slot++)
                 {
-                    NWItem item = NWItem.Wrap(_.GetItemInSlot(slot, oPC.Object));
+                    NWItem item = _.GetItemInSlot(slot, oPC.Object);
                     RemoveWeaponPenalties(item);
-                    ApplyWeaponPenalties(oPC, NWItem.Wrap(new Object()));
+                    ApplyWeaponPenalties(oPC, new Object());
                     RemoveEquipmentPenalties(item);
-                    ApplyEquipmentPenalties(oPC, NWItem.Wrap(new Object()));
+                    ApplyEquipmentPenalties(oPC, new Object());
                 }
             }
 
@@ -370,7 +370,7 @@ namespace SWLOR.Game.Server.Service
 
                 for (int slot = 0; slot < NUM_INVENTORY_SLOTS; slot++)
                 {
-                    NWItem item = NWItem.Wrap(_.GetItemInSlot(slot, preg.Player.Object));
+                    NWItem item = _.GetItemInSlot(slot, preg.Player.Object);
                     if (item.CustomItemType == CustomItemType.LightArmor)
                     {
                         lightArmorPoints++;
@@ -440,13 +440,13 @@ namespace SWLOR.Game.Server.Service
         }
         public void OnAreaExit()
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetExitingObject());
+            NWPlayer oPC = _.GetExitingObject();
             RemovePlayerFromRegistrations(oPC);
         }
 
         public void OnModuleEnter()
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetEnteringObject());
+            NWPlayer oPC = _.GetEnteringObject();
             if (oPC.IsPlayer)
             {
                 _db.StoredProcedure("InsertAllPCSkillsByID",
@@ -457,16 +457,16 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleClientLeave()
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetExitingObject());
+            NWPlayer oPC = _.GetExitingObject();
             RemovePlayerFromRegistrations(oPC);
         }
 
         public void OnModuleItemEquipped()
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetPCItemLastEquippedBy());
+            NWPlayer oPC = _.GetPCItemLastEquippedBy();
             if (!oPC.IsInitializedAsPlayer) return; // Players who log in for the first time don't have an ID yet.
 
-            NWItem oItem = NWItem.Wrap(_.GetPCItemLastEquipped());
+            NWItem oItem = _.GetPCItemLastEquipped();
             ApplyStatChanges(oPC, null);
             ApplyWeaponPenalties(oPC, oItem);
             ApplyEquipmentPenalties(oPC, oItem);
@@ -474,8 +474,8 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleItemUnequipped()
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetPCItemLastUnequippedBy());
-            NWItem oItem = NWItem.Wrap(_.GetPCItemLastUnequipped());
+            NWPlayer oPC = _.GetPCItemLastUnequippedBy();
+            NWItem oItem = _.GetPCItemLastUnequipped();
             HandleGlovesUnequipEvent();
             ApplyStatChanges(oPC, oItem);
             RemoveWeaponPenalties(oItem);
@@ -496,17 +496,17 @@ namespace SWLOR.Game.Server.Service
 
         private void ForceEquipFistGlove(NWPlayer oPC)
         {
-            oPC.DelayCommand(() =>
+            _.DelayCommand(1.0f, () =>
             {
                 if (!oPC.Arms.IsValid)
                 {
                     oPC.ClearAllActions();
-                    NWItem glove = NWItem.Wrap(_.CreateItemOnObject("fist", oPC.Object));
+                    NWItem glove = (_.CreateItemOnObject("fist", oPC.Object));
                     glove.SetLocalInt("UNBREAKABLE", 1);
 
                     oPC.AssignCommand(() => _.ActionEquipItem(glove.Object, INVENTORY_SLOT_ARMS));
                 }
-            }, 1.0f);
+            });
         }
 
         private void RemovePlayerFromRegistrations(NWPlayer oPC)
@@ -528,8 +528,8 @@ namespace SWLOR.Game.Server.Service
 
         private void HandleGlovesUnequipEvent()
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetPCItemLastUnequippedBy());
-            NWItem oItem = NWItem.Wrap(_.GetPCItemLastUnequipped());
+            NWPlayer oPC = (_.GetPCItemLastUnequippedBy());
+            NWItem oItem = (_.GetPCItemLastUnequipped());
             int type = oItem.BaseItemType;
 
             if (!oPC.IsPlayer) return;
@@ -762,8 +762,8 @@ namespace SWLOR.Game.Server.Service
         public void OnHitCastSpell(NWPlayer oPC)
         {
             if (!oPC.IsPlayer) return;
-            NWItem oSpellOrigin = NWItem.Wrap(_.GetSpellCastItem());
-            NWCreature oTarget = NWCreature.Wrap(_.GetSpellTargetObject());
+            NWItem oSpellOrigin = (_.GetSpellCastItem());
+            NWCreature oTarget = (_.GetSpellTargetObject());
 
             SkillType skillType = GetSkillTypeForItem(oSpellOrigin);
 
@@ -819,17 +819,17 @@ namespace SWLOR.Game.Server.Service
             Object member = _.GetFirstFactionMember(pc.Object);
             while (_.GetIsObjectValid(member) == TRUE)
             {
-                members.Add(NWCreature.Wrap(member));
+                members.Add((member));
                 member = _.GetNextFactionMember(pc.Object);
             }
 
             int nth = 1;
-            NWCreature creature = NWCreature.Wrap(_.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, 1, pc.Object, nth, CREATURE_TYPE_PLAYER_CHAR, 0));
+            NWCreature creature = (_.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, 1, pc.Object, nth, CREATURE_TYPE_PLAYER_CHAR, 0));
             while (creature.IsValid)
             {
                 if (_.GetDistanceBetween(pc.Object, creature.Object) > 20.0f) break;
 
-                NWCreature target = NWCreature.Wrap(_.GetAttackTarget(creature.Object));
+                NWCreature target = (_.GetAttackTarget(creature.Object));
                 if (target.IsValid && members.Contains(target))
                 {
                     if (target.IsValid && target.Area.Equals(pc.Area))
@@ -839,7 +839,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 nth++;
-                creature = NWCreature.Wrap(_.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, 1, pc.Object, nth, CREATURE_TYPE_PLAYER_CHAR, 0));
+                creature = (_.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, 1, pc.Object, nth, CREATURE_TYPE_PLAYER_CHAR, 0));
             }
         }
 
@@ -971,7 +971,7 @@ namespace SWLOR.Game.Server.Service
             int equipmentBAB = 0;
             for (int x = 0; x < NUM_INVENTORY_SLOTS; x++)
             {
-                NWItem equipped = NWItem.Wrap(_.GetItemInSlot(x, oPC.Object));
+                NWItem equipped = (_.GetItemInSlot(x, oPC.Object));
 
                 int itemLevel = equipped.RecommendedLevel;
                 SkillType equippedSkill = GetSkillTypeForItem(equipped);

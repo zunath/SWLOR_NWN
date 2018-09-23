@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.Conversation
             NWPlaceable chest = (NWPlaceable)GetDialogTarget();
             NWPlayer oPC = GetPC();
 
-            if (NWPlaceable.Wrap(chest.GetLocalObject("STRUCTURE_TEMP_INVENTORY_OPENED")).IsValid)
+            if (((NWPlaceable)chest.GetLocalObject("STRUCTURE_TEMP_INVENTORY_OPENED")).IsValid)
             {
                 oPC.FloatingText("Someone else is already accessing that structure's inventory. Please wait.");
                 return;
@@ -172,7 +172,7 @@ namespace SWLOR.Game.Server.Conversation
 
             int structureID = chest.GetLocalInt("PC_BASE_STRUCTURE_ID");
             Location location = oPC.Location;
-            NWPlaceable copy = NWPlaceable.Wrap(_.CreateObject(OBJECT_TYPE_PLACEABLE, "str_storage_copy", location));
+            NWPlaceable copy = (_.CreateObject(OBJECT_TYPE_PLACEABLE, "str_storage_copy", location));
             copy.Name = chest.Name;
             copy.AssignCommand(() => _.SetFacingPoint(oPC.Position));
 

@@ -48,8 +48,8 @@ namespace SWLOR.Game.Server.Service
 
         public ItemVO GetTempItemInformation(string resref, int quantity)
         {
-            NWPlaceable tempStorage = NWPlaceable.Wrap(_.GetObjectByTag(TempStoragePlaceableTag));
-            NWItem tempItem = NWItem.Wrap(_.CreateItemOnObject(resref, tempStorage.Object));
+            NWPlaceable tempStorage = (_.GetObjectByTag(TempStoragePlaceableTag));
+            NWItem tempItem = (_.CreateItemOnObject(resref, tempStorage.Object));
             ItemVO model = new ItemVO
             {
                 Name = tempItem.Name,
@@ -135,19 +135,21 @@ namespace SWLOR.Game.Server.Service
 
             if (!string.IsNullOrWhiteSpace(quest.OnCompleteRule) && questOwner != null)
             {
-                var rule = App.ResolveByInterface<IQuestRule>("QuestRule." + quest.OnCompleteRule);
-                string[] args = null; 
-                if(!string.IsNullOrWhiteSpace(quest.OnCompleteArgs))
-                    args = quest.OnCompleteArgs.Split(',');
-                rule.Run(player, questOwner, questID, args);
+                App.ResolveByInterface<IQuestRule>("QuestRule." + quest.OnCompleteRule, rule =>
+                {
+                    string[] args = null;
+                    if (!string.IsNullOrWhiteSpace(quest.OnCompleteArgs))
+                        args = quest.OnCompleteArgs.Split(',');
+                    rule.Run(player, questOwner, questID, args);
+                });
             }
 
         }
 
         public void OnModuleItemAcquired()
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetModuleItemAcquiredBy());
-            NWItem oItem = NWItem.Wrap(_.GetModuleItemAcquired());
+            NWPlayer oPC = (_.GetModuleItemAcquiredBy());
+            NWItem oItem = (_.GetModuleItemAcquired());
 
             if (!oPC.IsPlayer) return;
 
@@ -159,7 +161,7 @@ namespace SWLOR.Game.Server.Service
 
         public void OnClientEnter()
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetEnteringObject());
+            NWPlayer oPC = (_.GetEnteringObject());
 
             if (!oPC.IsPlayer) return;
 
@@ -266,11 +268,13 @@ namespace SWLOR.Game.Server.Service
 
             if (!string.IsNullOrWhiteSpace(quest.OnAcceptRule) && questOwner != null)
             {
-                var rule = App.ResolveByInterface<IQuestRule>("QuestRule." + quest.OnAcceptRule);
-                string[] args = null;
-                if (!string.IsNullOrWhiteSpace(quest.OnAcceptArgs))
-                    args = quest.OnAcceptArgs.Split(',');
-                rule.Run(player, questOwner, questID, args);
+                App.ResolveByInterface<IQuestRule>("QuestRule." + quest.OnAcceptRule, rule =>
+                {
+                    string[] args = null;
+                    if (!string.IsNullOrWhiteSpace(quest.OnAcceptArgs))
+                        args = quest.OnAcceptArgs.Split(',');
+                    rule.Run(player, questOwner, questID, args);
+                });
             }
         }
 
@@ -307,11 +311,13 @@ namespace SWLOR.Game.Server.Service
 
                 if (!string.IsNullOrWhiteSpace(quest.OnAdvanceRule) && questOwner != null)
                 {
-                    var rule = App.ResolveByInterface<IQuestRule>("QuestRule." + quest.OnAdvanceRule);
-                    string[] args = null;
-                    if (!string.IsNullOrWhiteSpace(quest.OnAdvanceArgs))
-                        args = quest.OnAdvanceArgs.Split(',');
-                    rule.Run(player, questOwner, questID, args);
+                    App.ResolveByInterface<IQuestRule>("QuestRule." + quest.OnAdvanceRule, rule =>
+                    {
+                        string[] args = null;
+                        if (!string.IsNullOrWhiteSpace(quest.OnAdvanceArgs))
+                            args = quest.OnAdvanceArgs.Split(',');
+                        rule.Run(player, questOwner, questID, args);
+                    });
                 }
             }
         }
@@ -470,19 +476,22 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     var pc = oPC;
-                    oPC.DelayCommand(() =>
+                    _.DelayCommand(1.0f, () =>
                     {
                         pc.SendMessage(updateMessage);
-                    }, 1.0f);
+                    });
 
                     string ruleName = quest.OnKillTargetRule;
                     if (!string.IsNullOrWhiteSpace(ruleName))
                     {
-                        var rule = App.ResolveByInterface<IQuestRule>("QuestRule." + ruleName);
-                        string[] args = null;
-                        if (!string.IsNullOrWhiteSpace(quest.OnKillTargetArgs))
-                            args = quest.OnKillTargetArgs.Split(',');
-                        rule.Run(oPC, creature, quest.QuestID, args);
+                        var pcCopy = oPC;
+                        App.ResolveByInterface<IQuestRule>("QuestRule." + ruleName, (rule) =>
+                        {
+                            string[] args = null;
+                            if (!string.IsNullOrWhiteSpace(quest.OnKillTargetArgs))
+                                args = quest.OnKillTargetArgs.Split(',');
+                            rule.Run(pcCopy, creature, quest.QuestID, args);
+                        });
                     }
 
                 }
@@ -534,10 +543,10 @@ namespace SWLOR.Game.Server.Service
 
             if (!string.IsNullOrWhiteSpace(questMessage))
             {
-                oPC.DelayCommand(() =>
+                _.DelayCommand(1.0f, () =>
                 {
                     oPC.SendMessage(questMessage);
-                }, 1.0f);
+                });
             }
 
             AdvanceQuestState(oPC, oObject, questID);
@@ -545,13 +554,13 @@ namespace SWLOR.Game.Server.Service
 
         public void OnQuestPlaceableUsed(NWObject oObject)
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetLastUsedBy());
+            NWPlayer oPC = (_.GetLastUsedBy());
             HandleTriggerAndPlaceableQuestLogic(oPC, oObject);
         }
 
         public void OnQuestTriggerEntered(NWObject oObject)
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetEnteringObject());
+            NWPlayer oPC = (_.GetEnteringObject());
             HandleTriggerAndPlaceableQuestLogic(oPC, oObject);
         }
 
@@ -585,7 +594,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             Location location = oPC.Location;
-            NWPlaceable collector = NWPlaceable.Wrap(_.CreateObject(OBJECT_TYPE_PLACEABLE, "qst_item_collect", location));
+            NWPlaceable collector = (_.CreateObject(OBJECT_TYPE_PLACEABLE, "qst_item_collect", location));
             collector.SetLocalObject("QUEST_OWNER", questOwner);
 
             collector.AssignCommand(() =>

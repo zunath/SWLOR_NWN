@@ -40,10 +40,10 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
 
         public bool Run(params object[] args)
         {
-            NWPlaceable container = NWPlaceable.Wrap(Object.OBJECT_SELF);
-            NWPlayer oPC = NWPlayer.Wrap(_.GetLastDisturbed());
+            NWPlaceable container = (Object.OBJECT_SELF);
+            NWPlayer oPC = (_.GetLastDisturbed());
             int type = _.GetInventoryDisturbType();
-            NWItem item = NWItem.Wrap(_.GetInventoryDisturbItem());
+            NWItem item = (_.GetInventoryDisturbItem());
 
             if (type != NWScript.INVENTORY_DISTURB_TYPE_ADDED) return false;
 
@@ -99,8 +99,8 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
             _db.GrowingPlants.Add(growingPlant);
             _db.SaveChanges();
             
-            NWPlaceable hole = NWPlaceable.Wrap(container.GetLocalObject("FARM_SMALL_HOLE"));
-            NWPlaceable plantPlc = NWPlaceable.Wrap(_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "growing_plant", hole.Location));
+            NWPlaceable hole = (container.GetLocalObject("FARM_SMALL_HOLE"));
+            NWPlaceable plantPlc = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "growing_plant", hole.Location));
             plantPlc.SetLocalInt("GROWING_PLANT_ID", growingPlant.GrowingPlantID);
             plantPlc.Name = "Growing Plant (" + plant.Name + ")";
 

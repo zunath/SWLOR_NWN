@@ -1,6 +1,6 @@
 ﻿namespace SWLOR.Game.Server.Event
 {
-    internal interface IRegisteredEvent
+    public interface IRegisteredEvent
     {
         bool Run(params object[] args);
     }

@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using NWN;
-using SWLOR.Game.Server.GameObject.Contracts;
 using static NWN.NWScript;
 using Object = NWN.Object;
 
 
 namespace SWLOR.Game.Server.GameObject
 {
-    public class NWModule: NWObject, INWModule
+    public class NWModule : NWObject
     {
         public NWModule(INWScript script,
             AppState state) 
@@ -18,11 +17,7 @@ namespace SWLOR.Game.Server.GameObject
 
         public static NWModule Get()
         {
-            var module = (NWModule) App.Resolve<INWModule>();
-            INWScript _ = App.Resolve<INWScript>();
-            module.Object = _.GetModule();
-
-            return module;
+            return App.Resolve<INWScript, NWModule>(script => NWObjectFactory.Build<NWModule>(script.GetModule()));
         }
 
         public IEnumerable<NWPlayer> Players
@@ -51,6 +46,10 @@ namespace SWLOR.Game.Server.GameObject
         public static implicit operator Object(NWModule o)
         {
             return o.Object;
+        }
+        public static implicit operator NWModule(Object o)
+        {
+            return NWObjectFactory.Build<NWModule>(o);
         }
     }
 }

@@ -48,9 +48,9 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
         {
             if (_.GetInventoryDisturbType() != NWScript.INVENTORY_DISTURB_TYPE_ADDED) return false;
 
-            NWPlayer pc = NWPlayer.Wrap(_.GetLastDisturbed());
-            NWItem item = NWItem.Wrap(_.GetInventoryDisturbItem());
-            NWPlaceable forge = NWPlaceable.Wrap(Object.OBJECT_SELF);
+            NWPlayer pc = (_.GetLastDisturbed());
+            NWItem item = (_.GetInventoryDisturbItem());
+            NWPlaceable forge = (Object.OBJECT_SELF);
 
             if (!CheckValidity(forge, pc, item)) return false;
             StartSmelt(forge, pc, item);
@@ -124,12 +124,12 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
                 charges += 10 + CalculatePerkCoalBonusCharges(pc) + GetPowerCoreDurability(item) * 2;
                 forge.SetLocalInt("FORGE_CHARGES", charges);
 
-                NWPlaceable flames = NWPlaceable.Wrap(forge.GetLocalObject("FORGE_FLAMES"));
+                NWPlaceable flames = (forge.GetLocalObject("FORGE_FLAMES"));
                 if (!flames.IsValid)
                 {
                     Vector flamePosition = _biowarePosition.GetChangedPosition(forge.Position, 0.36f, forge.Facing);
                     Location flameLocation = _.Location(forge.Area.Object, flamePosition, 0.0f);
-                    flames = NWPlaceable.Wrap(_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "forge_flame", flameLocation));
+                    flames = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "forge_flame", flameLocation));
                     forge.SetLocalObject("FORGE_FLAMES", flames.Object);
                 }
 
@@ -153,11 +153,9 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
                 _.GetItemPropertyType(x) == (int) CustomItemPropertyType.RecommendedLevel).ToList();
 
             string itemResref = item.Resref;
-            pc.DelayCommand(() =>
-            {
-                CompleteSmelt(pc, itemResref, itemProperties);
-            }, baseCraftDelay);
 
+            pc.DelayEvent<CompleteSmelt>(baseCraftDelay, pc, itemResref, itemProperties);
+            
             _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, _.EffectCutsceneImmobilize(), pc.Object, baseCraftDelay);
             pc.AssignCommand(() => _.ActionPlayAnimation(NWScript.ANIMATION_LOOPING_GET_MID, 1.0f, baseCraftDelay));
             item.Destroy();
@@ -204,47 +202,5 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
                 default: return 0;
             }
         }
-
-        private void CompleteSmelt(NWPlayer player, string oreResref, List<ItemProperty> itemProperties)
-        {
-            player.IsBusy = false;
-
-            PCSkill pcSkill = _skill.GetPCSkill(player, SkillType.Engineering);
-            int level = _craft.GetIngotLevel(oreResref);
-            string ingotResref = _craft.GetIngotResref(oreResref);
-            if (pcSkill == null || level < 0 || string.IsNullOrWhiteSpace(ingotResref)) return;
-
-            int delta = pcSkill.Rank - level;
-            int count = 2;
-
-            if (delta > 2) count = delta;
-            if (count > 6) count = 6;
-
-            if (_random.Random(100) + 1 <= _perk.GetPCPerkLevel(player, PerkType.Lucky))
-            {
-                count++;
-            }
-
-            if (_random.Random(100) + 1 <= _perk.GetPCPerkLevel(player, PerkType.ProcessingEfficiency) * 10)
-            {
-                count++;
-            }
-
-            for (int x = 1; x <= count; x++)
-            {
-                var item = NWItem.Wrap(_.CreateItemOnObject(ingotResref, player.Object));
-                foreach (var ip in itemProperties)
-                {
-                    _biowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
-                }
-            }
-
-            int stronidiumAmount = 2 + player.EffectiveHarvestingBonus;
-            _.CreateItemOnObject("stronidium", player.Object, stronidiumAmount);
-
-            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(100, level, pcSkill.Rank);
-            _skill.GiveSkillXP(player, SkillType.Engineering, xp);
-        }
-
     }
 }

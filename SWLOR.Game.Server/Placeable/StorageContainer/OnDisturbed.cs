@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Placeable.StorageContainer
 
         public bool Run(params object[] args)
         {
-            _storage.OnChestDisturbed(NWPlaceable.Wrap(Object.OBJECT_SELF));
+            _storage.OnChestDisturbed((Object.OBJECT_SELF));
             return true;
         }
     }

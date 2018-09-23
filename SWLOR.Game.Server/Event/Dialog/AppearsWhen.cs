@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Event.Dialog
             int nodeType = (int)args[0];
             int nodeID = (int)args[1];
             
-            NWPlayer player = NWPlayer.Wrap(_.GetPCSpeaker());
+            NWPlayer player = (_.GetPCSpeaker());
             PlayerDialog dialog = _dialog.LoadPlayerDialog(player.GlobalID);
             DialogPage page = dialog.CurrentPage;
             int currentSelectionNumber = nodeID + 1;
@@ -63,26 +63,28 @@ namespace SWLOR.Game.Server.Event.Dialog
             }
             else if (nodeType == 1)
             {
-                IConversation convo = App.ResolveByInterface<IConversation>("Conversation." + dialog.ActiveDialogName);
-                if (player.GetLocalInt("DIALOG_SYSTEM_INITIALIZE_RAN") != 1)
+                return App.ResolveByInterface<IConversation, bool>("Conversation." + dialog.ActiveDialogName, convo =>
                 {
-                    convo.Initialize();
-                    player.SetLocalInt("DIALOG_SYSTEM_INITIALIZE_RAN", 1);
-                }
+                    if (player.GetLocalInt("DIALOG_SYSTEM_INITIALIZE_RAN") != 1)
+                    {
+                        convo.Initialize();
+                        player.SetLocalInt("DIALOG_SYSTEM_INITIALIZE_RAN", 1);
+                    }
 
-                if (dialog.IsEnding)
-                {
-                    convo.EndDialog();
-                    _dialog.RemovePlayerDialog(player.GlobalID);
-                    player.DeleteLocalInt("DIALOG_SYSTEM_INITIALIZE_RAN");
-                    return false;
-                }
+                    if (dialog.IsEnding)
+                    {
+                        convo.EndDialog();
+                        _dialog.RemovePlayerDialog(player.GlobalID);
+                        player.DeleteLocalInt("DIALOG_SYSTEM_INITIALIZE_RAN");
+                        return false;
+                    }
 
-                page = dialog.CurrentPage;
-                newNodeText = page.Header;
+                    page = dialog.CurrentPage;
+                    newNodeText = page.Header;
 
-                _.SetCustomToken(90000 + dialogOffset, newNodeText);
-                return true;
+                    _.SetCustomToken(90000 + dialogOffset, newNodeText);
+                    return true;
+                });
             }
 
             _.SetCustomToken(90001 + nodeID + dialogOffset, newNodeText);

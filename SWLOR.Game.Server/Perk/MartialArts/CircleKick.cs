@@ -81,11 +81,11 @@ namespace SWLOR.Game.Server.Perk.MartialArts
 
             if (unequippingItem != null && Equals(unequippingItem, mainHand))
             {
-                mainHand = NWItem.Wrap(new Object());
+                mainHand = (new Object());
             }
             else if (unequippingItem != null && Equals(unequippingItem, offHand))
             {
-                offHand = NWItem.Wrap(new Object());
+                offHand = (new Object());
             }
 
             if ((!mainHand.IsValid && !offHand.IsValid) ||

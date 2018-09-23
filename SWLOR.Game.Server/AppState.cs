@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using SWLOR.Game.Server.Data.Entities;
+﻿using System.Collections.Generic;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Processor.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using SWLOR.Game.Server.ValueObject.Skill;
@@ -11,6 +8,7 @@ namespace SWLOR.Game.Server
 {
     public class AppState
     {
+        public List<NWObject> GameObjects { get; }
         public Dictionary<string, PlayerDialog> PlayerDialogs { get; }
         public Dictionary<int, bool> DialogFilesInUse { get; }
         public Dictionary<string, int> EffectTicks { get; }
@@ -26,6 +24,7 @@ namespace SWLOR.Game.Server
         public List<long> PCEffectsForRemoval { get; set; }
         public AppState()
         {
+            GameObjects = new List<NWObject>();
             PlayerDialogs = new Dictionary<string, PlayerDialog>();
             DialogFilesInUse = new Dictionary<int, bool>();
             EffectTicks = new Dictionary<string, int>();

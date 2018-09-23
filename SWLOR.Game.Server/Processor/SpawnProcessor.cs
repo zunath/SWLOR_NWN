@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Processor
                     location = _spawn.GetRandomSpawnPoint(areaResref);
                 }
 
-                spawn.Spawn = NWObject.Wrap(_.CreateObject(objectType, resref, location));
+                spawn.Spawn = (_.CreateObject(objectType, resref, location));
                 if (spawn.NPCGroupID > 0)
                     spawn.Spawn.SetLocalInt("NPC_GROUP", spawn.NPCGroupID);
 

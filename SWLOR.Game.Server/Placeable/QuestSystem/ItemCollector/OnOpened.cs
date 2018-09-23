@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
 
             container.IsUseable = false;
 
-            NWPlayer oPC = NWPlayer.Wrap(_.GetLastOpenedBy());
+            NWPlayer oPC = (_.GetLastOpenedBy());
             int questID = container.GetLocalInt("QUEST_ID");
             PCQuestStatus status = _db.PCQuestStatus.Single(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID);
 

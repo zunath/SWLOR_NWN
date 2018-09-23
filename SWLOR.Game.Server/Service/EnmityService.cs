@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Service
             float effectiveEnmityRate = 1.0f;
             if (attacker.IsPlayer)
             {
-                NWPlayer player = NWPlayer.Wrap(attacker.Object);
+                NWPlayer player = (attacker.Object);
                 effectiveEnmityRate = player.EffectiveEnmityRate;
             }
 
@@ -126,15 +126,15 @@ namespace SWLOR.Game.Server.Service
 
         public void OnNPCPhysicallyAttacked()
         {
-            NWCreature self = NWCreature.Wrap(Object.OBJECT_SELF);
-            NWCreature attacker = NWCreature.Wrap(_.GetLastAttacker(Object.OBJECT_SELF));
+            NWCreature self = (Object.OBJECT_SELF);
+            NWCreature attacker = (_.GetLastAttacker(Object.OBJECT_SELF));
             AdjustEnmity(self, attacker, 0, 1);
         }
 
         public void OnNPCDamaged()
         {
-            NWCreature self = NWCreature.Wrap(Object.OBJECT_SELF);
-            NWCreature damager = NWCreature.Wrap(_.GetLastDamager(Object.OBJECT_SELF));
+            NWCreature self = (Object.OBJECT_SELF);
+            NWCreature damager = (_.GetLastDamager(Object.OBJECT_SELF));
             int enmityAmount = _.GetTotalDamageDealt();
             if (enmityAmount <= 0) enmityAmount = 1;
 
@@ -143,8 +143,8 @@ namespace SWLOR.Game.Server.Service
 
         public void OnPlayerDamaged()
         {
-            NWPlayer player = NWPlayer.Wrap(Object.OBJECT_SELF);
-            NWCreature npc = NWCreature.Wrap(_.GetLastDamager(Object.OBJECT_SELF));
+            NWPlayer player = (Object.OBJECT_SELF);
+            NWCreature npc = (_.GetLastDamager(Object.OBJECT_SELF));
 
             if (!player.IsPlayer || !npc.IsNPC) return;
 

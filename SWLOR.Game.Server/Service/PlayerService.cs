@@ -69,27 +69,27 @@ namespace SWLOR.Game.Server.Service
                 player.InitializePlayer();
                 _.AssignCommand(player, () => _.TakeGoldFromCreature(_.GetGold(player), player, 1));
 
-                player.DelayCommand(() =>
+                _.DelayCommand(0.5f, () =>
                 {
                     _.GiveGoldToCreature(player, 100);
-                }, 0.5f);
+                });
                 
 
-                NWItem knife = NWItem.Wrap(_.CreateItemOnObject("survival_knife", player));
+                NWItem knife = (_.CreateItemOnObject("survival_knife", player));
                 knife.Name = player.Name + "'s Survival Knife";
                 knife.IsCursed = true;
                 knife.MaxDurability = 5;
                 knife.Durability = 5;
 
-                NWItem darts = NWItem.Wrap(_.CreateItemOnObject("nw_wthdt001", player, 50)); // 50x Dart
+                NWItem darts = (_.CreateItemOnObject("nw_wthdt001", player, 50)); // 50x Dart
                 darts.Name = "Starting Darts";
                 darts.IsCursed = true;
 
-                NWItem book = NWItem.Wrap(_.CreateItemOnObject("player_guide", player));
+                NWItem book = (_.CreateItemOnObject("player_guide", player));
                 book.Name = player.Name + "'s Player Guide";
                 book.IsCursed = true;
 
-                NWItem dyeKit = NWItem.Wrap(_.CreateItemOnObject("tk_omnidye", player));
+                NWItem dyeKit = (_.CreateItemOnObject("tk_omnidye", player));
                 dyeKit.IsCursed = true;
                 
                 int numberOfFeats = _nwnxCreature.GetFeatCount(player);
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Service
 
         public void OnAreaEnter()
         {
-            NWPlayer player = NWPlayer.Wrap(_.GetEnteringObject());
+            NWPlayer player = (_.GetEnteringObject());
 
             LoadLocation(player);
             SaveLocation(player);
@@ -200,10 +200,10 @@ namespace SWLOR.Game.Server.Service
             ServerConfiguration config = _db.ServerConfigurations.First();
             string message = _color.Green("Welcome to " + config.ServerName + "!\n\nMOTD: ") + _color.White(config.MessageOfTheDay);
 
-            player.DelayCommand(() =>
+            _.DelayCommand(6.5f, () =>
             {
                 player.SendMessage(message);
-            }, 6.5f);
+            });
         }
 
         public void SaveCharacter(NWPlayer player)
@@ -288,10 +288,10 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
             
-            oPC.DelayCommand(() =>
+            _.DelayCommand(1.0f, () =>
             {
                 CheckForMovement(oPC, location);
-            }, 1.0f);
+            });
         }
         
         private void InitializeHotBar(NWPlayer player)
@@ -305,7 +305,7 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleUseFeat()
         {
-            NWPlayer pc = NWPlayer.Wrap(Object.OBJECT_SELF);
+            NWPlayer pc = (Object.OBJECT_SELF);
             int featID = _nwnxEvents.OnFeatUsed_GetFeatID();
 
             if (featID != (int)CustomFeatType.OpenRestMenu) return;

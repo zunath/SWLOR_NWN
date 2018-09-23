@@ -1,13 +1,11 @@
-﻿using System;
-using SWLOR.Game.Server.GameObject.Contracts;
-
+﻿
 using NWN;
 using static NWN.NWScript;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.GameObject
 {
-    public class NWPlaceable: NWObject, INWPlaceable
+    public class NWPlaceable : NWObject
     {
         public NWPlaceable(INWScript script,
             AppState state) 
@@ -15,14 +13,6 @@ namespace SWLOR.Game.Server.GameObject
         {
         }
         
-        public new static NWPlaceable Wrap(Object @object)
-        {
-            var obj = (NWPlaceable)App.Resolve<INWPlaceable>();
-            obj.Object = @object;
-
-            return obj;
-        }
-
         public virtual bool IsUseable
         {
             get => _.GetUseableFlag(Object) == 1;
@@ -41,7 +31,7 @@ namespace SWLOR.Game.Server.GameObject
         }
         public static implicit operator NWPlaceable(Object o)
         {
-            return Wrap(o);
+            return NWObjectFactory.Build<NWPlaceable>(o);
         }
     }
 }

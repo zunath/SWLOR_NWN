@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Conversation
             switch (responseID)
             {
                 case 1:
-                    NWItem item = NWItem.Wrap(_.GetItemPossessedBy(player.Object, "survival_knife"));
+                    NWItem item = (_.GetItemPossessedBy(player.Object, "survival_knife"));
                     _.DestroyObject(item.Object);
                     EndConversation();
                     break;

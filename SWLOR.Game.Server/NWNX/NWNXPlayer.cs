@@ -79,10 +79,10 @@ namespace SWLOR.Game.Server.NWNX
             _.SetLocalInt(player.Object, "NWNX_PLAYER_GUI_TIMING_ACTIVE", id);
             _.SetLocalInt(player.Object, "NWNX_PLAYER_GUI_TIMING_ID", id);
 
-            player.DelayCommand(() =>
+            _.DelayCommand(seconds, () =>
             {
                 StopGuiTimingBar(player, script, -1);
-            }, seconds);
+            });
         }
 
         // Stops displaying a timing bar.
@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_PushArgumentObject(NWNX_Player, sFunc, player.Object);
             NWNX_CallFunction(NWNX_Player, sFunc);
 
-            qbs.Associate = NWObject.Wrap(NWNX_GetReturnValueObject(NWNX_Player, sFunc));
+            qbs.Associate = (NWNX_GetReturnValueObject(NWNX_Player, sFunc));
             qbs.AssociateType = NWNX_GetReturnValueInt(NWNX_Player, sFunc);
             qbs.DomainLevel = NWNX_GetReturnValueInt(NWNX_Player, sFunc);
             qbs.MetaType = NWNX_GetReturnValueInt(NWNX_Player, sFunc);
@@ -124,8 +124,8 @@ namespace SWLOR.Game.Server.NWNX
             qbs.Resref = NWNX_GetReturnValueString(NWNX_Player, sFunc);
             qbs.MultiClass = NWNX_GetReturnValueInt(NWNX_Player, sFunc);
             qbs.ObjectType = (QuickBarSlotType)NWNX_GetReturnValueInt(NWNX_Player, sFunc);
-            qbs.SecondaryItem = NWItem.Wrap(NWNX_GetReturnValueObject(NWNX_Player, sFunc));
-            qbs.Item = NWItem.Wrap(NWNX_GetReturnValueObject(NWNX_Player, sFunc));
+            qbs.SecondaryItem = (NWNX_GetReturnValueObject(NWNX_Player, sFunc));
+            qbs.Item = (NWNX_GetReturnValueObject(NWNX_Player, sFunc));
 
             return qbs;
         }

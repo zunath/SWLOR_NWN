@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.NWNX
 
         public void SetDamageEventScript(string script, NWObject oOwner = null)
         {
-            if(oOwner == null) oOwner = NWObject.Wrap(new Object());
+            if(oOwner == null) oOwner = (new Object());
 
             string sFunc = "SetDamageEventScript";
 
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.NWNX
 
             NWNX_CallFunction(NWNX_Damage, sFunc);
 
-            data.Damager = NWObject.Wrap(NWNX_GetReturnValueObject(NWNX_Damage, sFunc));
+            data.Damager = (NWNX_GetReturnValueObject(NWNX_Damage, sFunc));
             data.Bludgeoning = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
             data.Pierce = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);
             data.Slash = NWNX_GetReturnValueInt(NWNX_Damage, sFunc);

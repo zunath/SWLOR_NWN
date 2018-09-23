@@ -13,7 +13,6 @@ using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.GameObject.Contracts;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Mod.Contracts;
 
@@ -44,13 +43,20 @@ namespace SWLOR.Game.Server
         {
             try
             {
-                IRegisteredEvent @event = _container.ResolveKeyed<IRegisteredEvent>(typeof(T).ToString());
-                return @event.Run(args);
+                using (var scope = _container.BeginLifetimeScope())
+                {
+                    IRegisteredEvent @event = scope.ResolveKeyed<IRegisteredEvent>(typeof(T).ToString());
+                    return @event.Run(args);
+                }
             }
             catch (Exception ex)
             {
-                IErrorService errorService = _container.Resolve<IErrorService>();
-                errorService.LogError(ex, typeof(T).ToString());
+                using (var scope = _container.BeginLifetimeScope())
+                {
+                    IErrorService errorService = scope.Resolve<IErrorService>();
+                    errorService.LogError(ex, typeof(T).ToString());
+                }
+
                 throw;
             }
         }
@@ -59,39 +65,101 @@ namespace SWLOR.Game.Server
         {
             try
             {
-                IRegisteredEvent @event = _container.ResolveKeyed<IRegisteredEvent>(type.ToString());
-                return @event.Run(args);
+                using (var scope = _container.BeginLifetimeScope())
+                {
+                    IRegisteredEvent @event = scope.ResolveKeyed<IRegisteredEvent>(type.ToString());
+                    return @event.Run(args);
+                }
             }
             catch (Exception ex)
             {
-                IErrorService errorService = _container.Resolve<IErrorService>();
-                errorService.LogError(ex, type.ToString());
+                using (var scope = _container.BeginLifetimeScope())
+                {
+                    IErrorService errorService = scope.Resolve<IErrorService>();
+                    errorService.LogError(ex, type.ToString());
+                }
+
                 throw;
             }
         }
-        
-        public static T ResolveByInterface<T>(string typeName)
+
+        public delegate void AppResolveDelegate<in T>(T obj);
+        public static void ResolveByInterface<T>(string typeName, AppResolveDelegate<T> action)
         {
             if (!typeof(T).IsInterface)
             {
                 throw new Exception(nameof(T) + " must be an interface.");
             }
 
-            string assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
-            typeName = typeName.Replace(assemblyName + ".", string.Empty);
-            string @namespace = assemblyName + "." + typeName;
-            return _container.ResolveKeyed<T>(@namespace);
+            using (var scope = _container.BeginLifetimeScope())
+            {
+                string assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
+                typeName = typeName.Replace(assemblyName + ".", string.Empty);
+                string @namespace = assemblyName + "." + typeName;
+                var resolved = scope.ResolveKeyed<T>(@namespace);
+                action.Invoke(resolved);
+            }
         }
 
-        public static T Resolve<T>()
+        public delegate T2 AppResolveDelegate<in T1, out T2>(T1 obj);
+        public static T2 ResolveByInterface<T1, T2>(string typeName, AppResolveDelegate<T1, T2> action)
         {
-            return (T)_container.Resolve(typeof(T));
+            if (!typeof(T1).IsInterface)
+            {
+                throw new Exception(nameof(T1) + " must be an interface.");
+            }
+
+            using (var scope = _container.BeginLifetimeScope())
+            {
+                string assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
+                typeName = typeName.Replace(assemblyName + ".", string.Empty);
+                string @namespace = assemblyName + "." + typeName;
+                var resolved = scope.ResolveKeyed<T1>(@namespace);
+                return action.Invoke(resolved);
+            }
+
+        }
+        
+        public static void Resolve<T>(AppResolveDelegate<T> action)
+        {
+            if (action == null)
+            {
+                throw new NullReferenceException(nameof(action));
+            }
+
+            using (var scope = _container.BeginLifetimeScope())
+            {
+                T resolved = (T)scope.Resolve(typeof(T));
+                action.Invoke(resolved);
+            }
         }
 
+        public static T2 Resolve<T1, T2>(AppResolveDelegate<T1, T2> action)
+        {
+            if (action == null)
+            {
+                throw new NullReferenceException(nameof(action));
+            }
+
+            using (var scope = _container.BeginLifetimeScope())
+            {
+                T1 resolved = (T1)scope.Resolve(typeof(T1));
+                return action.Invoke(resolved);
+            }
+        }
+
+        public static T ResolveUnmanaged<T>()
+        {
+            return _container.Resolve<T>();
+        }
+        
         public static bool IsKeyRegistered<T>(string key)
         {
-            string @namespace = Assembly.GetExecutingAssembly().GetName().Name + "." + key;
-            return _container.IsRegisteredWithKey<T>(@namespace);
+            using (var scope = _container.BeginLifetimeScope())
+            {
+                string @namespace = Assembly.GetExecutingAssembly().GetName().Name + "." + key;
+                return scope.IsRegisteredWithKey<T>(@namespace);
+            }
         }
         
         private static void BuildIOCContainer()
@@ -102,16 +170,16 @@ namespace SWLOR.Game.Server
             builder.RegisterInstance(new AppState());
 
             // Types
-            builder.RegisterType<DataContext>().As<IDataContext>().InstancePerLifetimeScope();
+            builder.RegisterType<DataContext>().As<IDataContext>().InstancePerDependency();
 
             // Game Objects
-            builder.RegisterType<NWObject>().As<INWObject>();
-            builder.RegisterType<NWCreature>().As<INWCreature>();
-            builder.RegisterType<NWItem>().As<INWItem>();
-            builder.RegisterType<NWPlayer>().As<INWPlayer>();
-            builder.RegisterType<NWArea>().As<INWArea>();
-            builder.RegisterType<NWModule>().As<INWModule>();
-            builder.RegisterType<NWPlaceable>().As<INWPlaceable>();
+            builder.RegisterType<NWObject>();
+            builder.RegisterType<NWCreature>();
+            builder.RegisterType<NWItem>();
+            builder.RegisterType<NWPlayer>();
+            builder.RegisterType<NWArea>();
+            builder.RegisterType<NWModule>();
+            builder.RegisterType<NWPlaceable>();
 
             // Services
             builder.RegisterType<AbilityService>().As<IAbilityService>();

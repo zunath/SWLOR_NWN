@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Placeable.TrashCan
 
         public bool Run(params object[] args)
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetLastOpenedBy());
+            NWPlayer oPC = (_.GetLastOpenedBy());
             oPC.FloatingText("Any item placed inside this trash can will be destroyed permanently.");
 
             return true;

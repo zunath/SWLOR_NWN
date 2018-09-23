@@ -16,8 +16,8 @@ namespace SWLOR.Game.Server.Placeable.WarpDevice
 
         public bool Run(params object[] args)
         {
-            NWObject oPC = NWObject.Wrap(_.GetLastUsedBy());
-            NWPlaceable self = NWPlaceable.Wrap(Object.OBJECT_SELF);
+            NWObject oPC = (_.GetLastUsedBy());
+            NWPlaceable self = (Object.OBJECT_SELF);
             string destination = self.GetLocalString("DESTINATION");
             int visualEffectID = self.GetLocalInt("VISUAL_EFFECT");
 

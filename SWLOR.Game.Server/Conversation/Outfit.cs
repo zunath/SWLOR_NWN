@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Conversation
 
 
             NWPlayer oPC = GetPC();
-            NWItem oClothes = NWItem.Wrap(_.GetItemInSlot(NWScript.INVENTORY_SLOT_CHEST, oPC.Object));
+            NWItem oClothes = (_.GetItemInSlot(NWScript.INVENTORY_SLOT_CHEST, oPC.Object));
             PCOutfit entity = GetPlayerOutfits(oPC);
 
             if (entity == null)
@@ -158,7 +158,7 @@ namespace SWLOR.Game.Server.Conversation
                 int outfitID = (int)response.CustomData[string.Empty];
                 PCOutfit entity = GetPlayerOutfits(GetPC());
 
-                NWPlaceable oTempStorage = NWPlaceable.Wrap(_.GetObjectByTag("OUTFIT_BARREL"));
+                NWPlaceable oTempStorage = (_.GetObjectByTag("OUTFIT_BARREL"));
                 NWItem oClothes = oPC.Chest;
                 NWItem storedClothes = null;
                 oClothes.SetLocalString("TEMP_OUTFIT_UUID", oPC.GlobalID);
@@ -234,7 +234,7 @@ namespace SWLOR.Game.Server.Conversation
                 oCopy = _.CopyItemAndModify(oCopy, NWScript.ITEM_APPR_TYPE_ARMOR_MODEL, NWScript.ITEM_APPR_ARMOR_MODEL_TORSO, _.GetItemAppearance(storedClothes.Object, NWScript.ITEM_APPR_TYPE_ARMOR_MODEL, NWScript.ITEM_APPR_ARMOR_MODEL_TORSO), NWScript.TRUE);
                 oCopy = _.CopyItemAndModify(oCopy, NWScript.ITEM_APPR_TYPE_ARMOR_COLOR, NWScript.ITEM_APPR_ARMOR_MODEL_TORSO, _.GetItemAppearance(storedClothes.Object, NWScript.ITEM_APPR_TYPE_ARMOR_COLOR, NWScript.ITEM_APPR_ARMOR_MODEL_TORSO), NWScript.TRUE);
 
-                NWItem oFinal = NWItem.Wrap(_.CopyItem(oCopy, oPC.Object, NWScript.TRUE));
+                NWItem oFinal = (_.CopyItem(oCopy, oPC.Object, NWScript.TRUE));
                 oFinal.DeleteLocalString("TEMP_OUTFIT_UUID");
                 _.DestroyObject(oCopy);
                 oClothes.Destroy();

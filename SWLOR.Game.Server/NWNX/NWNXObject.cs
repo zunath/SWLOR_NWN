@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.NWNX
 
             NWNX_PushArgumentString(NWNX_Object, sFunc, id);
             NWNX_CallFunction(NWNX_Object, sFunc);
-            return NWObject.Wrap(NWNX_GetReturnValueObject(NWNX_Object, sFunc));
+            return (NWNX_GetReturnValueObject(NWNX_Object, sFunc));
         }
 
         // Set the provided object's position to the provided vector.

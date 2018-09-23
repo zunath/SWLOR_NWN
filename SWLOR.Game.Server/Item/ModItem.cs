@@ -47,8 +47,8 @@ namespace SWLOR.Game.Server.Item
 
         public void ApplyEffects(NWCreature user, NWItem modItem, NWObject target, Location targetLocation, CustomData customData)
         {
-            NWPlayer player = NWPlayer.Wrap(user.Object);
-            NWItem targetItem = NWItem.Wrap(target.Object);
+            NWPlayer player = (user.Object);
+            NWItem targetItem = (target.Object);
             ModSlots slots = _mod.GetModSlots(targetItem);
             CustomItemPropertyType modType = _mod.GetModType(modItem);
             int modID = modItem.GetLocalInt("RUNE_ID");
@@ -57,82 +57,85 @@ namespace SWLOR.Game.Server.Item
             int levelIncrease = modItem.LevelIncrease;
 
             var dbMod = _db.Mods.Single(x => x.ModID == modID && x.IsActive);
-            IMod mod = App.ResolveByInterface<IMod>("Mod." + dbMod.Script);
-            mod.Apply(player, targetItem, modArgs);
-
-            string description = mod.Description(player, targetItem, modArgs);
-            bool usePrismatic = false;
-            switch (modType)
+            App.ResolveByInterface<IMod>("Mod." + dbMod.Script, mod =>
             {
-                case CustomItemPropertyType.RedMod:
-                    if (slots.FilledRedSlots < slots.RedSlots)
-                    {
-                        targetItem.SetLocalInt("MOD_SLOT_RED_" + (slots.FilledRedSlots + 1), modID);
-                        targetItem.SetLocalString("MOD_SLOT_RED_DESC_" + (slots.FilledRedSlots + 1), description);
-                        player.SendMessage("Mod installed into " + _color.Red("red") + " slot #" + (slots.FilledRedSlots + 1));
-                    }
-                    else usePrismatic = true;
-                    break;
-                case CustomItemPropertyType.BlueMod:
-                    if (slots.FilledBlueSlots < slots.BlueSlots)
-                    {
-                        targetItem.SetLocalInt("MOD_SLOT_BLUE_" + (slots.FilledBlueSlots + 1), modID);
-                        targetItem.SetLocalString("MOD_SLOT_BLUE_DESC_" + (slots.FilledBlueSlots + 1), description);
-                        player.SendMessage("Mod installed into " + _color.Blue("blue") + " slot #" + (slots.FilledBlueSlots + 1));
-                    }
-                    else usePrismatic = true;
-                    break;
-                case CustomItemPropertyType.GreenMod:
-                    if (slots.FilledBlueSlots < slots.GreenSlots)
-                    {
-                        targetItem.SetLocalInt("MOD_SLOT_GREEN_" + (slots.FilledGreenSlots + 1), modID);
-                        targetItem.SetLocalString("MOD_SLOT_GREEN_DESC_" + (slots.FilledGreenSlots + 1), description);
-                        player.SendMessage("Mod installed into " + _color.Green("green") + " slot #" + (slots.FilledGreenSlots + 1));
-                    }
-                    else usePrismatic = true;
-                    break;
-                case CustomItemPropertyType.YellowMod:
-                    if (slots.FilledBlueSlots < slots.YellowSlots)
-                    {
-                        targetItem.SetLocalInt("MOD_SLOT_YELLOW_" + (slots.FilledYellowSlots + 1), modID);
-                        targetItem.SetLocalString("MOD_SLOT_YELLOW_DESC_" + (slots.FilledYellowSlots + 1), description);
-                        player.SendMessage("Mod installed into " + _color.Yellow("yellow") + " slot #" + (slots.FilledYellowSlots + 1));
-                    }
-                    else usePrismatic = true;
-                    break;
-            }
+                mod.Apply(player, targetItem, modArgs);
 
-            if (usePrismatic)
-            {
-                string prismaticText = _mod.PrismaticString();
-                targetItem.SetLocalInt("MOD_SLOT_PRISMATIC_" + (slots.FilledPrismaticSlots + 1), modID);
-                targetItem.SetLocalString("MOD_SLOT_PRISMATIC_DESC_" + (slots.FilledPrismaticSlots + 1), description);
-                player.SendMessage("Mod installed into " + prismaticText + " slot #" + (slots.FilledPrismaticSlots + 1));
-            }
+                string description = mod.Description(player, targetItem, modArgs);
+                bool usePrismatic = false;
+                switch (modType)
+                {
+                    case CustomItemPropertyType.RedMod:
+                        if (slots.FilledRedSlots < slots.RedSlots)
+                        {
+                            targetItem.SetLocalInt("MOD_SLOT_RED_" + (slots.FilledRedSlots + 1), modID);
+                            targetItem.SetLocalString("MOD_SLOT_RED_DESC_" + (slots.FilledRedSlots + 1), description);
+                            player.SendMessage("Mod installed into " + _color.Red("red") + " slot #" + (slots.FilledRedSlots + 1));
+                        }
+                        else usePrismatic = true;
+                        break;
+                    case CustomItemPropertyType.BlueMod:
+                        if (slots.FilledBlueSlots < slots.BlueSlots)
+                        {
+                            targetItem.SetLocalInt("MOD_SLOT_BLUE_" + (slots.FilledBlueSlots + 1), modID);
+                            targetItem.SetLocalString("MOD_SLOT_BLUE_DESC_" + (slots.FilledBlueSlots + 1), description);
+                            player.SendMessage("Mod installed into " + _color.Blue("blue") + " slot #" + (slots.FilledBlueSlots + 1));
+                        }
+                        else usePrismatic = true;
+                        break;
+                    case CustomItemPropertyType.GreenMod:
+                        if (slots.FilledBlueSlots < slots.GreenSlots)
+                        {
+                            targetItem.SetLocalInt("MOD_SLOT_GREEN_" + (slots.FilledGreenSlots + 1), modID);
+                            targetItem.SetLocalString("MOD_SLOT_GREEN_DESC_" + (slots.FilledGreenSlots + 1), description);
+                            player.SendMessage("Mod installed into " + _color.Green("green") + " slot #" + (slots.FilledGreenSlots + 1));
+                        }
+                        else usePrismatic = true;
+                        break;
+                    case CustomItemPropertyType.YellowMod:
+                        if (slots.FilledBlueSlots < slots.YellowSlots)
+                        {
+                            targetItem.SetLocalInt("MOD_SLOT_YELLOW_" + (slots.FilledYellowSlots + 1), modID);
+                            targetItem.SetLocalString("MOD_SLOT_YELLOW_DESC_" + (slots.FilledYellowSlots + 1), description);
+                            player.SendMessage("Mod installed into " + _color.Yellow("yellow") + " slot #" + (slots.FilledYellowSlots + 1));
+                        }
+                        else usePrismatic = true;
+                        break;
+                }
 
-            targetItem.RecommendedLevel += levelIncrease;
-            modItem.Destroy();
+                if (usePrismatic)
+                {
+                    string prismaticText = _mod.PrismaticString();
+                    targetItem.SetLocalInt("MOD_SLOT_PRISMATIC_" + (slots.FilledPrismaticSlots + 1), modID);
+                    targetItem.SetLocalString("MOD_SLOT_PRISMATIC_DESC_" + (slots.FilledPrismaticSlots + 1), description);
+                    player.SendMessage("Mod installed into " + prismaticText + " slot #" + (slots.FilledPrismaticSlots + 1));
+                }
 
-            SkillType skillType;
-            if (_item.ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
-            {
-                skillType = SkillType.Armorsmith;
-            }
-            else if (_item.WeaponBaseItemTypes.Contains(targetItem.BaseItemType))
-            {
-                skillType = SkillType.Weaponsmith;
-            }
-            else return;
+                targetItem.RecommendedLevel += levelIncrease;
+                modItem.Destroy();
 
-            PCSkill pcSkill = _skill.GetPCSkill(player, skillType);
-            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(400, modLevel, pcSkill.Rank);
-            _skill.GiveSkillXP(player, skillType, xp);
+                SkillType skillType;
+                if (_item.ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
+                {
+                    skillType = SkillType.Armorsmith;
+                }
+                else if (_item.WeaponBaseItemTypes.Contains(targetItem.BaseItemType))
+                {
+                    skillType = SkillType.Weaponsmith;
+                }
+                else return;
+
+                PCSkill pcSkill = _skill.GetPCSkill(player, skillType);
+                int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(400, modLevel, pcSkill.Rank);
+                _skill.GiveSkillXP(player, skillType, xp);
+            });
+            
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            NWPlayer userPlayer = NWPlayer.Wrap(user.Object);
-            NWItem targetItem = NWItem.Wrap(target.Object);
+            NWPlayer userPlayer = (user.Object);
+            NWItem targetItem = (target.Object);
             float perkBonus = 0.0f;
 
             if (_item.ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
@@ -173,8 +176,8 @@ namespace SWLOR.Game.Server.Item
         {
             if (target.ObjectType != NWScript.OBJECT_TYPE_ITEM) return "Only items may be targeted by mods.";
             if (!user.IsPlayer) return "Only players may use mods.";
-            NWPlayer player = NWPlayer.Wrap(user.Object);
-            NWItem targetItem = NWItem.Wrap(target.Object);
+            NWPlayer player = (user.Object);
+            NWItem targetItem = (target.Object);
 
             int modLevel = mod.RecommendedLevel;
             int itemLevel = targetItem.RecommendedLevel;
@@ -267,8 +270,10 @@ namespace SWLOR.Game.Server.Item
             }
 
             // Run the individual mod's rules for application. Will return the error message or a null.
-            IMod modRules = App.ResolveByInterface<IMod>("Mod." + dbMod.Script);
-            return modRules.CanApply(player, targetItem, modArgs);
+            string canApply = App.ResolveByInterface<IMod, string>("Mod." + dbMod.Script, 
+                (modRules) => modRules.CanApply(player, targetItem, modArgs));
+
+            return canApply;
         }
 
         public bool AllowLocationTarget()

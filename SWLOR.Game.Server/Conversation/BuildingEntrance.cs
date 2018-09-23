@@ -152,7 +152,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (instance != null)
             {
-                NWPlayer player = NWPlayer.Wrap(_.GetFirstPC());
+                NWPlayer player = (_.GetFirstPC());
                 while (player.IsValid)
                 {
                     if (Equals(player.Area, instance))
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Conversation
                         _.FloatingTextStringOnCreature("Someone is knocking on the front door.", player.Object, NWScript.FALSE);
                     }
 
-                    player = NWPlayer.Wrap(_.GetNextPC());
+                    player = (_.GetNextPC());
                 }
             }
 

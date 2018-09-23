@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Service
 
         public void OnAreaEnter()
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetEnteringObject());
+            NWPlayer oPC = (_.GetEnteringObject());
 
             if (!oPC.IsPlayer ||
                 oPC.GetLocalInt("MIGRATION_SYSTEM_LOGGED_IN_ONCE") == 1 ||
@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Service
 
                 for (int slot = 0; slot < NWScript.NUM_INVENTORY_SLOTS; slot++)
                 {
-                    NWItem item = NWItem.Wrap(_.GetItemInSlot(slot, oPC.Object));
+                    NWItem item = (_.GetItemInSlot(slot, oPC.Object));
                     ProcessItem(oPC, item, itemMap, stripItemList);
                 }
 
@@ -86,10 +86,10 @@ namespace SWLOR.Game.Server.Service
                 string message = _color.Green("Your character has been updated!" +
                                               (overflowCount > 0 ? " Items which could not be created have been placed into overflow inventory. You can access this from the rest menu." : ""));
 
-                oPC.DelayCommand(() =>
+                _.DelayCommand(8.0f, () =>
                 {
                     oPC.FloatingText(message);
-                }, 8.0f);
+                });
             }
         }
 
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Service
                 item.Destroy();
                 if (!string.IsNullOrWhiteSpace(migrationItem.NewResref))
                 {
-                    NWItem newItem = NWItem.Wrap(_.CreateItemOnObject(migrationItem.NewResref, oPC.Object, quantity));
+                    NWItem newItem = (_.CreateItemOnObject(migrationItem.NewResref, oPC.Object, quantity));
                     if (!newItem.Possessor.IsValid)
                     {
                         PCOverflowItem overflow = new PCOverflowItem

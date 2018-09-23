@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleChat()
         {
-            NWPlayer sender = NWPlayer.Wrap(_.GetPCChatSpeaker());
+            NWPlayer sender = (_.GetPCChatSpeaker());
             if (sender.GetLocalInt("LISTENING_FOR_DESCRIPTION") != 1) return;
             if (!sender.IsPlayer) return;
 

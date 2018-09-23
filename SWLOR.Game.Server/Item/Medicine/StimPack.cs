@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            NWPlayer player = NWPlayer.Wrap(user);
+            NWPlayer player = user.Object;
             int ability = item.GetLocalInt("ABILITY_TYPE");
             int amount = item.GetLocalInt("AMOUNT") + item.MedicineBonus;
             int rank = player.IsPlayer ? _skill.GetPCSkill(player, SkillType.Medicine).Rank : 0;
@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
             if (!Equals(user, target))
             {
-                NWCreature targetCreature = NWCreature.Wrap(target);
+                NWCreature targetCreature = target.Object;
                 targetCreature.SendMessage(user.Name + " injects you with a stim pack.");
             }
 

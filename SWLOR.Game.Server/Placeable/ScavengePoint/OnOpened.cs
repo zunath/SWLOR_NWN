@@ -38,11 +38,11 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
 
         public bool Run(params object[] args)
         {
-            NWPlaceable point = NWPlaceable.Wrap(Object.OBJECT_SELF);
+            NWPlaceable point = (Object.OBJECT_SELF);
             const int baseChanceToFullyHarvest = 50;
             bool alwaysDestroys = point.GetLocalInt("SCAVENGE_POINT_ALWAYS_DESTROYS") == 1;
             
-            NWPlayer oPC = NWPlayer.Wrap(_.GetLastOpenedBy());
+            NWPlayer oPC = (_.GetLastOpenedBy());
             bool hasBeenSearched = point.GetLocalInt("SCAVENGE_POINT_FULLY_HARVESTED") == 1;
             if (hasBeenSearched)
             {

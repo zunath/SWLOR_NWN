@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Event.Module
 
         public bool Run(params object[] args)
         {
-            NWPlayer pc = NWPlayer.Wrap(_.GetExitingObject());
+            NWPlayer pc = (_.GetExitingObject());
 
             if (pc.IsPlayer)
             {

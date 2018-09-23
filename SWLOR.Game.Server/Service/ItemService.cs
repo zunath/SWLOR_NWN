@@ -7,6 +7,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 
 using NWN;
+using SWLOR.Game.Server.Event.Delayed;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
@@ -38,13 +39,13 @@ namespace SWLOR.Game.Server.Service
 
         public string GetNameByResref(string resref)
         {
-            NWPlaceable tempStorage = NWPlaceable.Wrap(_.GetObjectByTag("TEMP_ITEM_STORAGE"));
+            NWPlaceable tempStorage = (_.GetObjectByTag("TEMP_ITEM_STORAGE"));
             if (!tempStorage.IsValid)
             {
                 Console.WriteLine("Could not locate temp item storage object. Create a placeable container in a non-accessible area with the tag TEMP_ITEM_STORAGE.");
                 return null;
             }
-            NWItem item = NWItem.Wrap(_.CreateItemOnObject(resref, tempStorage.Object));
+            NWItem item = (_.CreateItemOnObject(resref, tempStorage.Object));
             string name = item.Name;
             item.Destroy();
             return name;
@@ -52,13 +53,13 @@ namespace SWLOR.Game.Server.Service
 
         public CustomItemType GetCustomItemTypeByResref(string resref)
         {
-            NWPlaceable tempStorage = NWPlaceable.Wrap(_.GetObjectByTag("TEMP_ITEM_STORAGE"));
+            NWPlaceable tempStorage = (_.GetObjectByTag("TEMP_ITEM_STORAGE"));
             if (!tempStorage.IsValid)
             {
                 Console.WriteLine("Could not locate temp item storage object. Create a placeable container in a non-accessible area with the tag TEMP_ITEM_STORAGE.");
                 return CustomItemType.None;
             }
-            NWItem item = NWItem.Wrap(_.CreateItemOnObject(resref, tempStorage.Object));
+            NWItem item = (_.CreateItemOnObject(resref, tempStorage.Object));
             var itemType = item.CustomItemType;
             item.Destroy();
             return itemType;
@@ -66,9 +67,9 @@ namespace SWLOR.Game.Server.Service
         
         public void OnModuleActivatedItem()
         {
-            NWPlayer user = NWPlayer.Wrap(_.GetItemActivator());
-            NWItem oItem = NWItem.Wrap(_.GetItemActivated());
-            NWObject target = NWObject.Wrap(_.GetItemActivatedTarget());
+            NWPlayer user = (_.GetItemActivator());
+            NWItem oItem = (_.GetItemActivated());
+            NWObject target = (_.GetItemActivatedTarget());
             Location targetLocation = _.GetItemActivatedTargetLocation();
             
             string className = oItem.GetLocalString("JAVA_SCRIPT");
@@ -79,63 +80,70 @@ namespace SWLOR.Game.Server.Service
 
             user.ClearAllActions();
 
-            // Remove "Item." prefix if it exists.
-            if (className.StartsWith("Item."))
-                className = className.Substring(5);
-
-            IActionItem item = App.ResolveByInterface<IActionItem>("Item." + className);
-
             if (user.IsBusy)
             {
                 user.SendMessage("You are busy.");
                 return;
             }
 
-            string invalidTargetMessage = item.IsValidTarget(user, oItem, target, targetLocation);
-            if (!string.IsNullOrWhiteSpace(invalidTargetMessage))
-            {
-                user.SendMessage(invalidTargetMessage);
-                return;
-            }
+            // Remove "Item." prefix if it exists.
+            if (className.StartsWith("Item."))
+                className = className.Substring(5);
 
-            if (item.MaxDistance() > 0.0f)
+            App.ResolveByInterface<IActionItem>("Item." + className, (item) =>
             {
-                if (target.IsValid &&
-                    (_.GetDistanceBetween(user.Object, target.Object) > item.MaxDistance() ||
-                    user.Area.Resref != target.Area.Resref))
+                string invalidTargetMessage = item.IsValidTarget(user, oItem, target, targetLocation);
+                if (!string.IsNullOrWhiteSpace(invalidTargetMessage))
                 {
-                    user.SendMessage("Your target is too far away.");
+                    user.SendMessage(invalidTargetMessage);
                     return;
                 }
-                else if (!target.IsValid &&
-                         (_.GetDistanceBetweenLocations(user.Location, targetLocation) > item.MaxDistance() ||
-                         user.Area.Resref != NWArea.Wrap(_.GetAreaFromLocation(targetLocation)).Resref))
+
+                if (item.MaxDistance() > 0.0f)
                 {
-                    user.SendMessage("That location is too far away.");
-                    return;
+                    if (target.IsValid &&
+                        (_.GetDistanceBetween(user.Object, target.Object) > item.MaxDistance() ||
+                        user.Area.Resref != target.Area.Resref))
+                    {
+                        user.SendMessage("Your target is too far away.");
+                        return;
+                    }
+                    else if (!target.IsValid &&
+                             (_.GetDistanceBetweenLocations(user.Location, targetLocation) > item.MaxDistance() ||
+                             user.Area.Resref != ((NWArea)_.GetAreaFromLocation(targetLocation)).Resref))
+                    {
+                        user.SendMessage("That location is too far away.");
+                        return;
+                    }
                 }
-            }
 
-            CustomData customData = item.StartUseItem(user, oItem, target, targetLocation);
-            float delay = item.Seconds(user, oItem, target, targetLocation, customData);
-            int animationID = item.AnimationID();
-            bool faceTarget = item.FaceTarget();
-            Vector userPosition = user.Position;
+                CustomData customData = item.StartUseItem(user, oItem, target, targetLocation);
+                float delay = item.Seconds(user, oItem, target, targetLocation, customData);
+                int animationID = item.AnimationID();
+                bool faceTarget = item.FaceTarget();
+                Vector userPosition = user.Position;
 
-            user.AssignCommand(() =>
-            {
-                user.IsBusy = true;
-                if (faceTarget)
-                    _.SetFacingPoint(!target.IsValid ? _.GetPositionFromLocation(targetLocation) : target.Position);
-                if (animationID > 0)
-                    _.ActionPlayAnimation(animationID, 1.0f, delay);
+                user.AssignCommand(() =>
+                {
+                    user.IsBusy = true;
+                    if (faceTarget)
+                        _.SetFacingPoint(!target.IsValid ? _.GetPositionFromLocation(targetLocation) : target.Position);
+                    if (animationID > 0)
+                        _.ActionPlayAnimation(animationID, 1.0f, delay);
+                });
+
+                _nwnxPlayer.StartGuiTimingBar(user, delay, string.Empty);
+                user.DelayEvent<FinishActionItem>(
+                    delay,
+                    item,
+                    user,
+                    oItem,
+                    target,
+                    targetLocation,
+                    userPosition,
+                    customData);
             });
-            
-            _nwnxPlayer.StartGuiTimingBar(user, delay, string.Empty);
-            user.DelayCommand(() =>
-            {
-                FinishActionItem(item, user, oItem, target, targetLocation, userPosition, customData);
-            }, delay);
+
         }
 
         public void OnModuleHeartbeat()
@@ -162,7 +170,7 @@ namespace SWLOR.Game.Server.Service
             if (!examiner.IsPlayer) return existingDescription;
             if (examinedObject.ObjectType != OBJECT_TYPE_ITEM) return existingDescription;
 
-            NWItem examinedItem = NWItem.Wrap(examinedObject.Object);
+            NWItem examinedItem = (examinedObject.Object);
             string description = "";
 
             if (examinedItem.RecommendedLevel > 0)
@@ -410,7 +418,7 @@ namespace SWLOR.Game.Server.Service
 
         };
 
-            NWItem oItem = NWItem.Wrap(_.GetPCItemLastEquipped());
+            NWItem oItem = (_.GetPCItemLastEquipped());
             int baseItemType = oItem.BaseItemType;
 
             if (!validItemTypes.Contains(baseItemType)) return;
@@ -453,7 +461,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
         
-        private void FinishActionItem(IActionItem actionItem, NWPlayer user, NWItem item, NWObject target, Location targetLocation, Vector userStartPosition, CustomData customData)
+        public void FinishActionItem(IActionItem actionItem, NWPlayer user, NWItem item, NWObject target, Location targetLocation, Vector userStartPosition, CustomData customData)
         {
             user.IsBusy = false;
 
@@ -477,7 +485,7 @@ namespace SWLOR.Game.Server.Service
                 }
                 else if (!target.IsValid &&
                          (_.GetDistanceBetweenLocations(user.Location, targetLocation) > actionItem.MaxDistance() ||
-                         user.Area.Resref != NWArea.Wrap(_.GetAreaFromLocation(targetLocation)).Resref))
+                         user.Area.Resref != ((NWArea)_.GetAreaFromLocation(targetLocation)).Resref))
                 {
                     user.SendMessage("That location is too far away.");
                     return;
@@ -619,7 +627,7 @@ namespace SWLOR.Game.Server.Service
 
         public ItemProperty GetCustomItemPropertyByItemTag(string tag)
         {
-            NWPlaceable container = NWPlaceable.Wrap(_.GetObjectByTag("item_props"));
+            NWPlaceable container = (_.GetObjectByTag("item_props"));
             NWItem item = container.InventoryItems.SingleOrDefault(x => x.Tag == tag);
             if (item == null)
             {

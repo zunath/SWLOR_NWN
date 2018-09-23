@@ -23,14 +23,14 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
 
         public bool Run(params object[] args)
         {
-            NWPlaceable device = NWPlaceable.Wrap(Object.OBJECT_SELF);
-            NWPlayer oPC = NWPlayer.Wrap(_.GetLastOpenedBy());
+            NWPlaceable device = (Object.OBJECT_SELF);
+            NWPlayer oPC = (_.GetLastOpenedBy());
             var model = _craft.GetPlayerCraftingData(oPC);
             
             if (model.Access != CraftingAccessType.None)
             {
-                NWItem menuItem = NWItem.Wrap(_.CreateItemOnObject("cft_confirm", device.Object));
-                NWPlaceable storage = NWPlaceable.Wrap(_.GetObjectByTag("craft_temp_store"));
+                NWItem menuItem = (_.CreateItemOnObject("cft_confirm", device.Object));
+                NWPlaceable storage = (_.GetObjectByTag("craft_temp_store"));
                 var storageItems = storage.InventoryItems;
                 List<NWItem> list = null;
 

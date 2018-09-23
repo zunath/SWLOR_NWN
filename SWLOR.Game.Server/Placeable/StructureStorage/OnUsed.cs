@@ -23,8 +23,8 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
 
         public bool Run(params object[] args)
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetLastUsedBy());
-            NWPlaceable container = NWPlaceable.Wrap(Object.OBJECT_SELF);
+            NWPlayer oPC = (_.GetLastUsedBy());
+            NWPlaceable container = (Object.OBJECT_SELF);
             int structureID = container.GetLocalInt("PC_BASE_STRUCTURE_ID");
 
             if (!_perm.HasStructurePermission(oPC, structureID, StructurePermission.CanAccessStructureInventory))

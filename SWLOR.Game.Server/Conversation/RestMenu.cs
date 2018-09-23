@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Conversation
                     {
                         // Open Overflow Inventory
                         case 1:
-                            NWObject storage = NWObject.Wrap(_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "overflow_storage", player.Location));
+                            NWObject storage = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "overflow_storage", player.Location));
                             player.AssignCommand(() => _.ActionInteractObject(storage.Object));
                             break;
                         // View Skills
@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Conversation
                         // Open Trash Can (Destroy Items)
                         case 9:
                             EndConversation();
-                            NWPlaceable trashCan = NWPlaceable.Wrap(_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "reo_trash_can", player.Location));
+                            NWPlaceable trashCan = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "reo_trash_can", player.Location));
 
                             player.AssignCommand(() => _.ActionInteractObject(trashCan.Object));
                             _.DelayCommand(0.2f, () => trashCan.IsUseable = false);

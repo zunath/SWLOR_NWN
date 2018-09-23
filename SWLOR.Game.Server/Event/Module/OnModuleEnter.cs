@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Event.Module
 
         private NWPlayer GetEnteringPlayer()
         {
-            return NWPlayer.Wrap(_.GetEnteringObject());
+            return (_.GetEnteringObject());
         }
 
         private void ApplyGhostwalk()

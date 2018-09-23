@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (location == null) throw new ArgumentException("Invalid target location during creature deserialization.");
 
-            NWCreature creature = NWCreature.Wrap(_nwnxObject.Deserialize(base64String));
+            NWCreature creature = (_nwnxObject.Deserialize(base64String));
             if (creature.Object == null) throw new NullReferenceException("Unable to deserialize creature.");
             creature.Location = location;
 
@@ -43,9 +43,9 @@ namespace SWLOR.Game.Server.Service
                 throw new ArgumentException("Invalid target placeable during item deserialization.");
             }
 
-            NWItem item = NWItem.Wrap(_nwnxObject.Deserialize(base64String));
+            NWItem item = (_nwnxObject.Deserialize(base64String));
             if (item.Object == null) throw new NullReferenceException("Unable to deserialize item.");
-            var result = NWItem.Wrap(_.CopyItem(item.Object, target.Object, NWScript.TRUE));
+            var result = (_.CopyItem(item.Object, target.Object, NWScript.TRUE));
             item.Destroy();
 
             return result;
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Service
                 throw new ArgumentException("Invalid target location during item deserialization.");
             }
 
-            NWItem item = NWItem.Wrap(_nwnxObject.Deserialize(base64String));
+            NWItem item = (_nwnxObject.Deserialize(base64String));
             if (item.Object == null) throw new NullReferenceException("Unable to deserialize item.");
             item.Location = targetLocation;
             

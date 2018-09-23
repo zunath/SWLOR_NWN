@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Placeable.GrowingPlant
 
         public bool Run(params object[] args)
         {
-            NWPlaceable plant = NWPlaceable.Wrap(Object.OBJECT_SELF);
+            NWPlaceable plant = (Object.OBJECT_SELF);
             int growingPlantID = plant.GetLocalInt("GROWING_PLANT_ID");
             if (growingPlantID <= 0) return false;
             
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Placeable.GrowingPlant
             if (growingPlant.RemainingTicks <= 0)
             {
                 plant.Destroy();
-                plant = NWPlaceable.Wrap(_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, growingPlant.Plant.Resref, plant.Location));
+                plant = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, growingPlant.Plant.Resref, plant.Location));
                 plant.SetLocalInt("GROWING_PLANT_ID", growingPlantID);
             }
             

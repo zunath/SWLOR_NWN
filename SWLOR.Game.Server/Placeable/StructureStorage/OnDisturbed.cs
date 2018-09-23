@@ -32,9 +32,9 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
 
         public bool Run(params object[] args)
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetLastDisturbed());
-            NWItem item = NWItem.Wrap(_.GetInventoryDisturbItem());
-            NWPlaceable container = NWPlaceable.Wrap(Object.OBJECT_SELF);
+            NWPlayer oPC = (_.GetLastDisturbed());
+            NWItem item = (_.GetInventoryDisturbItem());
+            NWPlaceable container = (Object.OBJECT_SELF);
             int disturbType = _.GetInventoryDisturbType();
             int structureID = container.GetLocalInt("PC_BASE_STRUCTURE_ID");
             var structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);

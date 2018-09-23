@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            NWPlayer player = NWPlayer.Wrap(user.Object);
+            NWPlayer player = (user.Object);
 
             target.RemoveEffect(NWScript.EFFECT_TYPE_REGENERATE);
             PCSkill skill = _skill.GetPCSkill(player, SkillType.Medicine);

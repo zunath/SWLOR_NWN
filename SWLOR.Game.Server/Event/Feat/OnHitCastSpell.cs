@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Event.Feat
 
         public bool Run(params object[] args)
         {
-            NWPlayer player = NWPlayer.Wrap(Object.OBJECT_SELF);
+            NWPlayer player = (Object.OBJECT_SELF);
 
             if (player.IsValid)
             {
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Event.Feat
         
         private void HandleItemSpecificCastSpell()
         {
-            NWObject oSpellOrigin = NWObject.Wrap(_.GetSpellCastItem());
+            NWObject oSpellOrigin = (_.GetSpellCastItem());
             // Item specific
             string script = oSpellOrigin.GetLocalString("JAVA_SCRIPT");
 

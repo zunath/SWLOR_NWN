@@ -71,10 +71,10 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleUseFeat()
         {
-            NWPlayer player = NWPlayer.Wrap(Object.OBJECT_SELF);
+            NWPlayer player = (Object.OBJECT_SELF);
             int featID = _nwnxEvents.OnFeatUsed_GetFeatID();
             Location targetLocation = _nwnxEvents.OnFeatUsed_GetTargetLocation();
-            NWArea targetArea = NWArea.Wrap(_.GetAreaFromLocation(targetLocation));
+            NWArea targetArea = (_.GetAreaFromLocation(targetLocation));
 
             if (featID != (int)CustomFeatType.BaseManagementTool) return;
 
@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.Service
                 resref = structure.ExteriorStyle.Resref;
             }
             
-            var plc = NWPlaceable.Wrap(_.CreateObject(OBJECT_TYPE_PLACEABLE, resref, location));
+            NWPlaceable plc = (_.CreateObject(OBJECT_TYPE_PLACEABLE, resref, location));
             plc.SetLocalInt("PC_BASE_STRUCTURE_ID", structure.PCBaseStructureID);
             plc.SetLocalInt("REQUIRES_BASE_POWER", structure.BaseStructure.RequiresBasePower ? 1 : 0);
             plc.SetLocalString("ORIGINAL_SCRIPT_CLOSED", _.GetEventScript(plc.Object, EVENT_SCRIPT_PLACEABLE_ON_CLOSED));
@@ -243,7 +243,7 @@ namespace SWLOR.Game.Server.Service
                 throw new Exception("Unable to find Door Spawn Procedure #" + doorSpawnProcedure + ". Door was not spawned.");
             }
            
-            var door = NWPlaceable.Wrap(_.CreateObject(OBJECT_TYPE_PLACEABLE, "building_door", doorLocation));
+            NWPlaceable door = (_.CreateObject(OBJECT_TYPE_PLACEABLE, "building_door", doorLocation));
             door.SetLocalInt("PC_BASE_STRUCTURE_ID", pcBaseStructureID);
             door.SetLocalInt("IS_DOOR", TRUE);
 
@@ -407,7 +407,7 @@ namespace SWLOR.Game.Server.Service
 
         public string CanPlaceStructure(NWCreature user, NWItem structureItem, Location targetLocation, int structureID)
         {
-            NWPlayer player = NWPlayer.Wrap(user.Object);
+            NWPlayer player = (user.Object);
             string sector = GetSectorOfLocation(targetLocation);
             if (sector == "INVALID")
             {
@@ -419,7 +419,7 @@ namespace SWLOR.Game.Server.Service
                 return "Unable to locate structure item.";
             }
 
-            NWArea area = NWArea.Wrap(_.GetAreaFromLocation(targetLocation));
+            NWArea area = (_.GetAreaFromLocation(targetLocation));
             int buildingStructureID = area.GetLocalInt("PC_BASE_STRUCTURE_ID");
             bool isOutside = buildingStructureID <= 0;
             Area dbArea = _db.Areas.SingleOrDefault(x => x.Resref == area.Resref);
@@ -484,7 +484,7 @@ namespace SWLOR.Game.Server.Service
 
         public NWItem ConvertStructureToItem(PCBaseStructure pcBaseStructure, NWObject target)
         {
-            NWItem item = NWItem.Wrap(_.CreateItemOnObject(pcBaseStructure.BaseStructure.ItemResref, target.Object));
+            NWItem item = (_.CreateItemOnObject(pcBaseStructure.BaseStructure.ItemResref, target.Object));
             item.SetLocalInt("BASE_STRUCTURE_ID", pcBaseStructure.BaseStructureID);
             item.Name = pcBaseStructure.BaseStructure.Name;
             item.MaxDurability = (float)pcBaseStructure.Durability;
@@ -552,7 +552,7 @@ namespace SWLOR.Game.Server.Service
                     _db.PCBaseStructurePermissions.Remove(permission);
                 }
 
-                var tempStorage = NWPlaceable.Wrap(_.GetObjectByTag("TEMP_ITEM_STORAGE"));
+                var tempStorage = (_.GetObjectByTag("TEMP_ITEM_STORAGE"));
                 NWItem copy = ConvertStructureToItem(pcBaseStructure, tempStorage);
                 _impound.Impound(pcBase.PlayerID, copy);
                 copy.Destroy();
@@ -620,7 +620,7 @@ namespace SWLOR.Game.Server.Service
             NWObject waypoint = null;
             NWObject exit = null;
 
-            NWObject @object = NWObject.Wrap(_.GetFirstObjectInArea(area.Object));
+            NWObject @object = (_.GetFirstObjectInArea(area.Object));
             while (@object.IsValid)
             {
                 if (@object.Tag == "PLAYER_HOME_ENTRANCE")
@@ -632,7 +632,7 @@ namespace SWLOR.Game.Server.Service
                     exit = @object;
                 }
 
-                @object = NWObject.Wrap(_.GetNextObjectInArea(area.Object));
+                @object = (_.GetNextObjectInArea(area.Object));
             }
 
             if (waypoint == null)
@@ -666,15 +666,15 @@ namespace SWLOR.Game.Server.Service
 
             if (door == null)
             {
-                NWObject obj = NWObject.Wrap(_.GetFirstObjectInArea(area.Object));
+                NWObject obj = (_.GetFirstObjectInArea(area.Object));
                 while (obj.IsValid)
                 {
                     if (obj.Tag == "building_exit")
                     {
-                        door = NWPlaceable.Wrap(obj.Object);
+                        door = (obj.Object);
                         break;
                     }
-                    obj = NWObject.Wrap(_.GetNextObjectInArea(area.Object));
+                    obj = (_.GetNextObjectInArea(area.Object));
                 }
             }
 
@@ -686,17 +686,17 @@ namespace SWLOR.Game.Server.Service
             Location location = door.GetLocalLocation("PLAYER_HOME_EXIT_LOCATION");
             player.AssignCommand(() => _.ActionJumpToLocation(location));
 
-            player.DelayCommand(() =>
+            _.DelayCommand(1.0f, () =>
             {
-                player = NWPlayer.Wrap(_.GetFirstPC());
+                player = (_.GetFirstPC());
                 while (player.IsValid)
                 {
                     if (Equals(player.Area, area)) return;
-                    player = NWPlayer.Wrap(_.GetNextPC());
+                    player = (_.GetNextPC());
                 }
 
                 _.DestroyArea(area.Object);
-            }, 1.0f);
+            });
         }
 
         public void OnModuleNWNXChat(NWPlayer sender)

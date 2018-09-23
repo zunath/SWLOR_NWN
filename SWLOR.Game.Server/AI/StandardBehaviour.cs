@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.AI
 
             if (!string.IsNullOrWhiteSpace(convo))
             {
-                NWPlayer player = NWPlayer.Wrap(_.GetLastSpeaker());
+                NWPlayer player = (_.GetLastSpeaker());
                 _dialog.StartConversation(player, Self, convo);
             }
             else if (!string.IsNullOrWhiteSpace(_nwnxObject.GetDialogResref(Self)))
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.AI
         {
             base.OnBlocked();
 
-            NWObject door = NWObject.Wrap(_.GetBlockingDoor());
+            NWObject door = (_.GetBlockingDoor());
             if (!door.IsValid) return;
 
             if (_.GetIsDoorActionPossible(door.Object, NWScript.DOOR_ACTION_OPEN) == NWScript.TRUE)

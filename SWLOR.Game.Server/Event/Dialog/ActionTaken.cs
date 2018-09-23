@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Event.Dialog
         public bool Run(params object[] args)
         {
             int nodeID = (int)args[0];
-            NWPlayer player = NWPlayer.Wrap(_.GetPCSpeaker());
+            NWPlayer player = (_.GetPCSpeaker());
             PlayerDialog dialog = _dialogService.LoadPlayerDialog(player.GlobalID);
             int selectionNumber = nodeID + 1;
             int responseID = nodeID + (_dialogService.NumberOfResponsesPerPage * dialog.PageOffset);
@@ -36,8 +36,10 @@ namespace SWLOR.Game.Server.Event.Dialog
             }
             else if (selectionNumber != _dialogService.NumberOfResponsesPerPage + 3) // End
             {
-                IConversation convo = App.ResolveByInterface<IConversation>("Conversation." + dialog.ActiveDialogName);
-                convo.DoAction(player, dialog.CurrentPageName, responseID + 1);
+                App.ResolveByInterface<IConversation>("Conversation." + dialog.ActiveDialogName, convo =>
+                {
+                    convo.DoAction(player, dialog.CurrentPageName, responseID + 1);
+                });
             }
 
             return true;

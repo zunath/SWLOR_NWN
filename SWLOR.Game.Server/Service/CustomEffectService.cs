@@ -113,19 +113,20 @@ namespace SWLOR.Game.Server.Service
             _db.SaveChanges();
 
             target.SendMessage(effectEntity.StartMessage);
-
-            ICustomEffect handler = App.ResolveByInterface<ICustomEffect>("CustomEffect." + effectEntity.ScriptHandler);
             
-            if(string.IsNullOrWhiteSpace(data))
-                data = handler?.Apply(caster, target, effectiveLevel);
-            if (string.IsNullOrWhiteSpace(data)) data = string.Empty;
-            entity.Data = data;
-            _db.SaveChanges();
+            App.ResolveByInterface<ICustomEffect>("CustomEffect." + effectEntity.ScriptHandler, handler =>
+            {
+                if (string.IsNullOrWhiteSpace(data))
+                    data = handler?.Apply(caster, target, effectiveLevel);
 
-            // Was already queued for removal, but got cast again. Take it out of the list to be removed.
-            if (_state.PCEffectsForRemoval.Contains(entity.PCCustomEffectID))
-                _state.PCEffectsForRemoval.Remove(entity.PCCustomEffectID);
+                if (string.IsNullOrWhiteSpace(data)) data = string.Empty;
+                entity.Data = data;
+                _db.SaveChanges();
 
+                // Was already queued for removal, but got cast again. Take it out of the list to be removed.
+                if (_state.PCEffectsForRemoval.Contains(entity.PCCustomEffectID))
+                    _state.PCEffectsForRemoval.Remove(entity.PCCustomEffectID);
+            });
         }
 
         private void ApplyNPCEffect(NWCreature caster, NWCreature target, int customEffectID, int ticks, int effectiveLevel, string data)
@@ -155,14 +156,16 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
             
-            ICustomEffect handler = App.ResolveByInterface<ICustomEffect>("CustomEffect." + effectEntity.ScriptHandler);
-            
-            if(string.IsNullOrWhiteSpace(data))
-                data = handler?.Apply(caster, target, effectiveLevel);
-            if (string.IsNullOrWhiteSpace(data)) data = string.Empty;
-            spellModel.Data = data;
+            App.ResolveByInterface<ICustomEffect>("CustomEffect." + effectEntity.ScriptHandler, handler =>
+            {
+                if (string.IsNullOrWhiteSpace(data))
+                    data = handler?.Apply(caster, target, effectiveLevel);
+                if (string.IsNullOrWhiteSpace(data)) data = string.Empty;
+                spellModel.Data = data;
 
-            _state.NPCEffects[spellModel] = ticks;
+                _state.NPCEffects[spellModel] = ticks;
+            });
+            
         }
 
         public bool DoesPCHaveCustomEffect(NWPlayer oPC, int customEffectID)

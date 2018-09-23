@@ -57,11 +57,11 @@ namespace SWLOR.Game.Server.Service
 
         public void OnChestDisturbed(NWPlaceable oChest)
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetLastDisturbed());
+            NWPlayer oPC = (_.GetLastDisturbed());
             if (!oPC.IsPlayer && !oPC.IsDM) return;
 
             string pcName = oPC.Name;
-            NWItem oItem = NWItem.Wrap(_.GetInventoryDisturbItem());
+            NWItem oItem = (_.GetInventoryDisturbItem());
             int disturbType = _.GetInventoryDisturbType();
 
             if (disturbType == NWScript.INVENTORY_DISTURB_TYPE_ADDED)
@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Service
 
                 // Notify party members in the vicinity
 
-                NWPlayer player = NWPlayer.Wrap(_.GetFirstPC());
+                NWPlayer player = (_.GetFirstPC());
                 while (player.IsValid)
                 {
                     if (_.GetDistanceBetween(oPC.Object, player.Object) <= 20.0f &&
@@ -98,14 +98,14 @@ namespace SWLOR.Game.Server.Service
                         player.SendMessage(pcName + " found " + itemName + ".");
                     }
 
-                    player = NWPlayer.Wrap(_.GetNextPC());
+                    player = (_.GetNextPC());
                 }
             }
         }
 
         public void OnChestOpen(NWPlaceable oChest)
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetLastOpenedBy());
+            NWPlayer oPC = (_.GetLastOpenedBy());
             if (!oPC.IsPlayer) return;
 
             if (_.GetActionMode(oPC.Object, NWScript.ACTION_MODE_STEALTH) == NWScript.TRUE)
@@ -165,11 +165,11 @@ namespace SWLOR.Game.Server.Service
 
         public void OnChestUsed(NWPlaceable oChest)
         {
-            NWPlayer oPC = NWPlayer.Wrap(_.GetLastUsedBy());
+            NWPlayer oPC = (_.GetLastUsedBy());
             if (!oPC.IsPlayer) return;
 
             
-            NWPlaceable oCopy = NWPlaceable.Wrap(_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, SearchSiteCopyResref, oChest.Location));
+            NWPlaceable oCopy = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, SearchSiteCopyResref, oChest.Location));
             oCopy.Name = oChest.Name;
             _.SetFacingPoint(oPC.Position);
 
@@ -239,7 +239,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (!string.IsNullOrWhiteSpace(spawnItem.Resref) && spawnItem.Quantity > 0)
                 {
-                    NWItem foundItem = NWItem.Wrap(_.CreateItemOnObject(spawnItem.Resref, oChest.Object, spawnItem.Quantity, ""));
+                    NWItem foundItem = (_.CreateItemOnObject(spawnItem.Resref, oChest.Object, spawnItem.Quantity, ""));
                     float maxDurability = _durability.GetMaxDurability(foundItem);
                     if (maxDurability > -1)
                         _durability.SetDurability(foundItem, _random.RandomFloat() * maxDurability + 1);

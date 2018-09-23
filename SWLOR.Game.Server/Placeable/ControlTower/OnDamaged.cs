@@ -38,9 +38,9 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
 
         public bool Run(params object[] args)
         {
-            NWCreature attacker = NWCreature.Wrap(_.GetLastDamager(Object.OBJECT_SELF));
-            NWPlaceable tower = NWPlaceable.Wrap(Object.OBJECT_SELF);
-            NWItem weapon = NWItem.Wrap(_.GetLastWeaponUsed(attacker.Object));
+            NWCreature attacker = (_.GetLastDamager(Object.OBJECT_SELF));
+            NWPlaceable tower = (Object.OBJECT_SELF);
+            NWItem weapon = (_.GetLastWeaponUsed(attacker.Object));
             int damage = _.GetTotalDamageDealt();
             int structureID = tower.GetLocalInt("PC_BASE_STRUCTURE_ID");
             PCBaseStructure structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
 
         private void BlowUpBase(PCBase pcBase)
         {
-            NWArea area = NWArea.Wrap(_.GetArea(Object.OBJECT_SELF));
+            NWArea area = (_.GetArea(Object.OBJECT_SELF));
             List<AreaStructure> cache = area.Data["BASE_SERVICE_STRUCTURES"];
             cache = cache.Where(x => x.PCBaseID == pcBase.PCBaseID).ToList();
             
@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
                 _base.BootPlayersOutOfInstance(structure.PCBaseStructureID);
 
                 // Spawn container for items
-                NWPlaceable container = NWPlaceable.Wrap(_.CreateObject(OBJECT_TYPE_PLACEABLE, "structure_rubble", structure.Structure.Location));
+                NWPlaceable container = (_.CreateObject(OBJECT_TYPE_PLACEABLE, "structure_rubble", structure.Structure.Location));
                 container.Name = dbStructure.BaseStructure.Name + " Rubble";
 
                 // Drop item storage into container

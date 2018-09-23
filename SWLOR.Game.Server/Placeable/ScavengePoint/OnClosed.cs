@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
 
         public bool Run(params object[] args)
         {
-            NWPlaceable point = NWPlaceable.Wrap(Object.OBJECT_SELF);
+            NWPlaceable point = (Object.OBJECT_SELF);
 
             bool isFullyHarvested = point.GetLocalInt("SCAVENGE_POINT_FULLY_HARVESTED") == 1;
 

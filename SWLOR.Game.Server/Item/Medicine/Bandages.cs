@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            NWPlayer player = NWPlayer.Wrap(user.Object);
+            NWPlayer player = (user.Object);
 
             _customEffect.RemovePCCustomEffect((NWPlayer)target, CustomEffectType.Bleeding);
             _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, _.EffectHeal(2 + player.EffectiveMedicineBonus/2), target.Object);

@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
-            NWItem shovel = NWItem.Wrap(GetPC().GetLocalObject("SHOVEL_ITEM"));
+            NWItem shovel = (GetPC().GetLocalObject("SHOVEL_ITEM"));
             string header = "This shovel has " + shovel.Charges + " uses remaining. What would you like to do?";
             SetPageHeader("MainPage", header);
 
@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private bool CanHarvest()
         {
-            NWObject target = NWObject.Wrap(GetPC().GetLocalObject("SHOVEL_TARGET_OBJECT"));
+            NWObject target = (GetPC().GetLocalObject("SHOVEL_TARGET_OBJECT"));
 
             return target.IsValid &&
                    target.GetLocalInt("GROWING_PLANT_ID") > 0 &&
@@ -126,8 +126,8 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            NWItem shovel = NWItem.Wrap(GetPC().GetLocalObject("SHOVEL_ITEM"));
-            NWObject plant = NWObject.Wrap(GetPC().GetLocalObject("SHOVEL_TARGET_OBJECT"));
+            NWItem shovel = (GetPC().GetLocalObject("SHOVEL_ITEM"));
+            NWObject plant = (GetPC().GetLocalObject("SHOVEL_TARGET_OBJECT"));
             _farming.HarvestPlant(GetPC(), shovel, (NWPlaceable)plant);
             EndConversation();
         }

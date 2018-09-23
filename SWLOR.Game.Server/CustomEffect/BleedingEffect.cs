@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.CustomEffect
         public void Tick(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)
         {
             Location location = oTarget.Location;
-            NWPlaceable oBlood = NWPlaceable.Wrap(_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "plc_bloodstain", location));
+            NWPlaceable oBlood = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "plc_bloodstain", location));
             oBlood.Destroy(48.0f);
 
             oCaster.AssignCommand(() =>

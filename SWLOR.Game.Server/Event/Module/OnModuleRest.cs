@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Event.Module
 
         public bool Run(params object[] args)
         {
-            NWPlayer player = NWPlayer.Wrap(_.GetLastPCRested());
+            NWPlayer player = (_.GetLastPCRested());
             int restType = _.GetLastRestEventType();
 
             if (restType != NWScript.REST_EVENTTYPE_REST_STARTED ||

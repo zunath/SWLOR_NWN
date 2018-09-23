@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Event.Module
 
         public bool Run(params object[] args)
         {
-            NWPlayer player = NWPlayer.Wrap(_.GetFirstPC());
+            NWPlayer player = (_.GetFirstPC());
 
             while(player.IsValid)
             {
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Event.Module
                     }
                 }
 
-                player = NWPlayer.Wrap(_.GetNextPC());
+                player = (_.GetNextPC());
             }
 
             SaveCharacters();

@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.ChatCommand
                 }
             }
 
-            var item = NWItem.Wrap(_.CreateItemOnObject(resref, user.Object, quantity));
+            NWItem item = (_.CreateItemOnObject(resref, user.Object, quantity));
 
             if (!item.IsValid)
             {

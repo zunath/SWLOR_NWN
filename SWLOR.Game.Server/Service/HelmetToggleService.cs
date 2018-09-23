@@ -22,10 +22,10 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleItemEquipped()
         {
-            NWPlayer player = NWPlayer.Wrap(_.GetPCItemLastEquippedBy());
+            NWPlayer player = (_.GetPCItemLastEquippedBy());
             if (!player.IsPlayer || !player.IsInitializedAsPlayer) return;
 
-            NWItem item = NWItem.Wrap(_.GetPCItemLastEquipped());
+            NWItem item = (_.GetPCItemLastEquipped());
             if (item.BaseItemType != NWScript.BASE_ITEM_HELMET) return;
 
             PlayerCharacter pc = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
@@ -34,10 +34,10 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleItemUnequipped()
         {
-            NWPlayer player = NWPlayer.Wrap(_.GetPCItemLastUnequippedBy());
+            NWPlayer player = (_.GetPCItemLastUnequippedBy());
             if (!player.IsPlayer) return;
 
-            NWItem item = NWItem.Wrap(_.GetPCItemLastUnequipped());
+            NWItem item = (_.GetPCItemLastUnequipped());
             if (item.BaseItemType != NWScript.BASE_ITEM_HELMET) return;
 
             PlayerCharacter pc = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Service
                 player.Object,
                 NWScript.FALSE);
 
-            NWItem helmet = NWItem.Wrap(_.GetItemInSlot(NWScript.INVENTORY_SLOT_HEAD, player.Object));
+            NWItem helmet = (_.GetItemInSlot(NWScript.INVENTORY_SLOT_HEAD, player.Object));
             if (helmet.IsValid)
             {
                 _.SetHiddenWhenEquipped(helmet.Object, !pc.DisplayHelmet == false ? 0 : 1);

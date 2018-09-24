@@ -329,6 +329,7 @@ namespace SWLOR.Game.Server.Service
         {
             NWObject oTarget = (_.GetSpellTargetObject());
             HandleGrenadeProficiency(oPC, oTarget);
+            HandlePlasmaCellPerk(oPC, oTarget);
             int activeWeaponSkillID = oPC.GetLocalInt("ACTIVE_WEAPON_SKILL");
             if (activeWeaponSkillID <= 0) return;
 
@@ -350,6 +351,71 @@ namespace SWLOR.Game.Server.Service
                 oPC.DeleteLocalString("ACTIVE_WEAPON_SKILL_UUID");
                 oPC.DeleteLocalInt("ACTIVE_WEAPON_SKILL");
             });
+        }
+
+        public void HandlePlasmaCellPerk(NWPlayer player, NWObject target)
+        {
+            if (!player.IsPlayer) return;
+            if (player.RightHand.CustomItemType != CustomItemType.BlasterPistol) return;
+
+            PCCustomEffect pcEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CustomEffectID == (int) CustomEffectType.PlasmaCell);
+            if (pcEffect == null) return;
+
+            int chance;
+            CustomEffectType[] damageTypes;
+            switch (pcEffect.EffectiveLevel)
+            {
+                case 1:
+                    chance = 10;
+                    damageTypes = new[] { CustomEffectType.FireCell };
+                    break;
+                case 2:
+                    chance = 10;
+                    damageTypes = new[] { CustomEffectType.FireCell, CustomEffectType.ElectricCell };
+                    break;
+                case 3:
+                    chance = 20;
+                    damageTypes = new[] { CustomEffectType.FireCell, CustomEffectType.ElectricCell };
+                    break;
+                case 4:
+                    chance = 20;
+                    damageTypes = new[] { CustomEffectType.FireCell, CustomEffectType.ElectricCell, CustomEffectType.SonicCell };
+                    break;
+                case 5:
+                    chance = 30;
+                    damageTypes = new[] { CustomEffectType.FireCell, CustomEffectType.ElectricCell, CustomEffectType.SonicCell };
+                    break;
+                case 6:
+                    chance = 30;
+                    damageTypes = new[] { CustomEffectType.FireCell, CustomEffectType.ElectricCell, CustomEffectType.SonicCell, CustomEffectType.AcidCell };
+                    break;
+                case 7:
+                    chance = 40;
+                    damageTypes = new[] { CustomEffectType.FireCell, CustomEffectType.ElectricCell, CustomEffectType.SonicCell, CustomEffectType.AcidCell };
+                    break;
+                case 8:
+                    chance = 40;
+                    damageTypes = new[] { CustomEffectType.FireCell, CustomEffectType.ElectricCell, CustomEffectType.SonicCell, CustomEffectType.AcidCell, CustomEffectType.IceCell };
+                    break;
+                case 9:
+                    chance = 50;
+                    damageTypes = new[] { CustomEffectType.FireCell, CustomEffectType.ElectricCell, CustomEffectType.SonicCell, CustomEffectType.AcidCell, CustomEffectType.IceCell };
+                    break;
+                case 10:
+                    chance = 50;
+                    damageTypes = new[] { CustomEffectType.FireCell, CustomEffectType.ElectricCell, CustomEffectType.SonicCell, CustomEffectType.AcidCell, CustomEffectType.IceCell, CustomEffectType.DivineCell };
+                    break;
+
+                default: return;
+            }
+
+            foreach (var effect in damageTypes)
+            {
+                if (_random.D100(1) <= chance)
+                {
+                    _customEffect.ApplyCustomEffect(player, target.Object, effect, _random.D6(1), pcEffect.EffectiveLevel, null);
+                }
+            }
 
         }
 

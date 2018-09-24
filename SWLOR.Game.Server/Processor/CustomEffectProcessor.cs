@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Processor
                 {
                     try
                     {
-                        handler?.Tick(casterModel.Caster, casterModel.Target, casterModel.EffectiveLevel, casterModel.Data);
+                        handler?.Tick(casterModel.Caster, casterModel.Target, _state.NPCEffects[entry.Key], casterModel.EffectiveLevel, casterModel.Data);
                     }
                     catch (Exception ex)
                     {
@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Processor
 
             App.ResolveByInterface<ICustomEffect>("CustomEffect." + effect.CustomEffect.ScriptHandler, (handler) =>
             {
-                handler?.Tick(caster, oPC, effect.EffectiveLevel, effect.Data);
+                handler?.Tick(caster, oPC, effect.Ticks, effect.EffectiveLevel, effect.Data);
             });
             
             return effect;

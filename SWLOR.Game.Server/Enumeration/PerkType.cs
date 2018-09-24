@@ -96,7 +96,7 @@
         FarmingEfficiency = 91,
         ExpertFarmer = 92,
         ElectricFist = 93,
-        // 94 is free
+        PlasmaCell = 94,
         // 95 is free
         EngineeringBlueprints = 96,
         SpecialModInstallationWeapons = 97,

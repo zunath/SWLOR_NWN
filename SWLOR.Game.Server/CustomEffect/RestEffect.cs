@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.CustomEffect
             return data;
         }
 
-        public void Tick(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)
+        public void Tick(NWCreature oCaster, NWObject oTarget, int currentTick, int effectiveLevel, string data)
         {
             NWPlayer player = oTarget.Object;
             int restTick = oTarget.GetLocalInt("REST_TICK") + 1;

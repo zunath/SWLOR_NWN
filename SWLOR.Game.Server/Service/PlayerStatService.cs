@@ -45,6 +45,118 @@ namespace SWLOR.Game.Server.Service
         }
 
 
+
+        public void ApplyStatChanges(NWPlayer player, NWItem ignoreItem, bool isInitialization = false)
+        {
+            if (!player.IsPlayer) return;
+            if (!player.IsInitializedAsPlayer) return;
+
+            PlayerCharacter pcEntity = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+            List<PCSkill> skills = _db.PCSkills.Where(x => x.PlayerID == player.GlobalID && x.Skill.IsActive && x.Rank > 0).ToList();
+            float strBonus = 0.0f;
+            float dexBonus = 0.0f;
+            float conBonus = 0.0f;
+            float intBonus = 0.0f;
+            float wisBonus = 0.0f;
+            float chaBonus = 0.0f;
+
+            foreach (PCSkill pcSkill in skills)
+            {
+                Skill skill = pcSkill.Skill;
+                CustomAttribute primary = (CustomAttribute)skill.Primary;
+                CustomAttribute secondary = (CustomAttribute)skill.Secondary;
+                CustomAttribute tertiary = (CustomAttribute)skill.Tertiary;
+
+                // Primary Bonuses
+                if (primary == CustomAttribute.STR) strBonus += PrimaryIncrease * pcSkill.Rank;
+                else if (primary == CustomAttribute.DEX) dexBonus += PrimaryIncrease * pcSkill.Rank;
+                else if (primary == CustomAttribute.CON) conBonus += PrimaryIncrease * pcSkill.Rank;
+                else if (primary == CustomAttribute.INT) intBonus += PrimaryIncrease * pcSkill.Rank;
+                else if (primary == CustomAttribute.WIS) wisBonus += PrimaryIncrease * pcSkill.Rank;
+                else if (primary == CustomAttribute.CHA) chaBonus += PrimaryIncrease * pcSkill.Rank;
+
+                // Secondary Bonuses
+                if (secondary == CustomAttribute.STR) strBonus += SecondaryIncrease * pcSkill.Rank;
+                else if (secondary == CustomAttribute.DEX) dexBonus += SecondaryIncrease * pcSkill.Rank;
+                else if (secondary == CustomAttribute.CON) conBonus += SecondaryIncrease * pcSkill.Rank;
+                else if (secondary == CustomAttribute.INT) intBonus += SecondaryIncrease * pcSkill.Rank;
+                else if (secondary == CustomAttribute.WIS) wisBonus += SecondaryIncrease * pcSkill.Rank;
+                else if (secondary == CustomAttribute.CHA) chaBonus += SecondaryIncrease * pcSkill.Rank;
+
+                // Tertiary Bonuses
+                if (tertiary == CustomAttribute.STR) strBonus += TertiaryIncrease * pcSkill.Rank;
+                else if (tertiary == CustomAttribute.DEX) dexBonus += TertiaryIncrease * pcSkill.Rank;
+                else if (tertiary == CustomAttribute.CON) conBonus += TertiaryIncrease * pcSkill.Rank;
+                else if (tertiary == CustomAttribute.INT) intBonus += TertiaryIncrease * pcSkill.Rank;
+                else if (tertiary == CustomAttribute.WIS) wisBonus += TertiaryIncrease * pcSkill.Rank;
+                else if (tertiary == CustomAttribute.CHA) chaBonus += TertiaryIncrease * pcSkill.Rank;
+            }
+
+            // Check caps.
+            if (strBonus > MaxAttributeBonus) strBonus = MaxAttributeBonus;
+            if (dexBonus > MaxAttributeBonus) dexBonus = MaxAttributeBonus;
+            if (conBonus > MaxAttributeBonus) conBonus = MaxAttributeBonus;
+            if (intBonus > MaxAttributeBonus) intBonus = MaxAttributeBonus;
+            if (wisBonus > MaxAttributeBonus) wisBonus = MaxAttributeBonus;
+            if (chaBonus > MaxAttributeBonus) chaBonus = MaxAttributeBonus;
+
+            // Apply attributes
+            _nwnxCreature.SetRawAbilityScore(player, ABILITY_STRENGTH, (int)strBonus + pcEntity.STRBase);
+            _nwnxCreature.SetRawAbilityScore(player, ABILITY_DEXTERITY, (int)dexBonus + pcEntity.DEXBase);
+            _nwnxCreature.SetRawAbilityScore(player, ABILITY_CONSTITUTION, (int)conBonus + pcEntity.CONBase);
+            _nwnxCreature.SetRawAbilityScore(player, ABILITY_INTELLIGENCE, (int)intBonus + pcEntity.INTBase);
+            _nwnxCreature.SetRawAbilityScore(player, ABILITY_WISDOM, (int)wisBonus + pcEntity.WISBase);
+            _nwnxCreature.SetRawAbilityScore(player, ABILITY_CHARISMA, (int)chaBonus + pcEntity.CHABase);
+
+            // Apply AC
+            int ac = EffectiveArmorClass(player, ignoreItem);
+            _nwnxCreature.SetBaseAC(player, ac);
+
+            // Apply BAB
+            int bab = CalculateBAB(player, ignoreItem);
+            _nwnxCreature.SetBaseAttackBonus(player, bab);
+
+            // Apply HP
+            int hp = EffectiveMaxHitPoints(player, ignoreItem);
+            for (int level = 1; level <= 5; level++)
+            {
+                hp--;
+                _nwnxCreature.SetMaxHitPointsByLevel(player, level, 1);
+            }
+
+            for (int level = 1; level <= 5; level++)
+            {
+                if (hp > 255) // Levels can only contain a max of 255 HP
+                {
+                    _nwnxCreature.SetMaxHitPointsByLevel(player, level, 255);
+                    hp = hp - 255;
+                }
+                else // Remaining value gets set to the level. (<255 hp)
+                {
+                    _nwnxCreature.SetMaxHitPointsByLevel(player, level, hp + 1);
+                    break;
+                }
+            }
+
+            if (player.CurrentHP > player.MaxHP)
+            {
+                int amount = player.CurrentHP - player.MaxHP;
+                Effect damage = _.EffectDamage(amount);
+                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, damage, player.Object);
+            }
+
+            // Apply FP
+            pcEntity.MaxFP = EffectiveMaxFP(player, ignoreItem);
+
+            if (isInitialization)
+                pcEntity.CurrentFP = pcEntity.MaxFP;
+            if (pcEntity.CurrentFP < pcEntity.MaxFP)
+                pcEntity.CurrentFP = pcEntity.MaxFP;
+
+            _db.SaveChanges();
+        }
+
+
         private int CalculateAdjustedValue(int baseValue, int recommendedLevel, int skillRank, int minimumValue = 1)
         {
             int adjustedValue = (int)CalculateAdjustedValue((float)baseValue, recommendedLevel, skillRank, minimumValue);
@@ -65,7 +177,7 @@ namespace SWLOR.Game.Server.Service
 
         public int EffectiveMaxHitPoints(NWPlayer player, NWItem ignoreItem)
         {
-            int hp = 30 + player.ConstitutionModifier * 5;
+            int hp = 25 + player.ConstitutionModifier * 5;
             int equippedItemHPBonus = 0;
             var skills = _db.PCSkills.Where(x => x.PlayerID == player.GlobalID)
                 .Select(x => new
@@ -89,7 +201,7 @@ namespace SWLOR.Game.Server.Service
             hp += equippedItemHPBonus;
             hp = hp + (int)(hp * effectPercentBonus);
 
-            if (hp > 255) hp = 255;
+            if (hp > 1275) hp = 1275;
             if (hp < 20) hp = 20;
 
             return hp;
@@ -504,98 +616,6 @@ namespace SWLOR.Game.Server.Service
             return bonus;
         }
 
-
-
-        public void ApplyStatChanges(NWPlayer player, NWItem ignoreItem, bool isInitialization = false)
-        {
-            if (!player.IsPlayer) return;
-            if (!player.IsInitializedAsPlayer) return;
-
-            PlayerCharacter pcEntity = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
-            List<PCSkill> skills = _db.PCSkills.Where(x => x.PlayerID == player.GlobalID && x.Skill.IsActive).ToList();
-            float strBonus = 0.0f;
-            float dexBonus = 0.0f;
-            float conBonus = 0.0f;
-            float intBonus = 0.0f;
-            float wisBonus = 0.0f;
-            float chaBonus = 0.0f;
-
-            foreach (PCSkill pcSkill in skills)
-            {
-                Skill skill = pcSkill.Skill;
-                CustomAttribute primary = (CustomAttribute)skill.Primary;
-                CustomAttribute secondary = (CustomAttribute)skill.Secondary;
-                CustomAttribute tertiary = (CustomAttribute)skill.Tertiary;
-
-                // Primary Bonuses
-                if (primary == CustomAttribute.STR) strBonus += PrimaryIncrease * pcSkill.Rank;
-                else if (primary == CustomAttribute.DEX) dexBonus += PrimaryIncrease * pcSkill.Rank;
-                else if (primary == CustomAttribute.CON) conBonus += PrimaryIncrease * pcSkill.Rank;
-                else if (primary == CustomAttribute.INT) intBonus += PrimaryIncrease * pcSkill.Rank;
-                else if (primary == CustomAttribute.WIS) wisBonus += PrimaryIncrease * pcSkill.Rank;
-                else if (primary == CustomAttribute.CHA) chaBonus += PrimaryIncrease * pcSkill.Rank;
-
-                // Secondary Bonuses
-                if (secondary == CustomAttribute.STR) strBonus += SecondaryIncrease * pcSkill.Rank;
-                else if (secondary == CustomAttribute.DEX) dexBonus += SecondaryIncrease * pcSkill.Rank;
-                else if (secondary == CustomAttribute.CON) conBonus += SecondaryIncrease * pcSkill.Rank;
-                else if (secondary == CustomAttribute.INT) intBonus += SecondaryIncrease * pcSkill.Rank;
-                else if (secondary == CustomAttribute.WIS) wisBonus += SecondaryIncrease * pcSkill.Rank;
-                else if (secondary == CustomAttribute.CHA) chaBonus += SecondaryIncrease * pcSkill.Rank;
-
-                // Tertiary Bonuses
-                if (tertiary == CustomAttribute.STR) strBonus += TertiaryIncrease * pcSkill.Rank;
-                else if (tertiary == CustomAttribute.DEX) dexBonus += TertiaryIncrease * pcSkill.Rank;
-                else if (tertiary == CustomAttribute.CON) conBonus += TertiaryIncrease * pcSkill.Rank;
-                else if (tertiary == CustomAttribute.INT) intBonus += TertiaryIncrease * pcSkill.Rank;
-                else if (tertiary == CustomAttribute.WIS) wisBonus += TertiaryIncrease * pcSkill.Rank;
-                else if (tertiary == CustomAttribute.CHA) chaBonus += TertiaryIncrease * pcSkill.Rank;
-            }
-
-            // Check caps.
-            if (strBonus > MaxAttributeBonus) strBonus = MaxAttributeBonus;
-            if (dexBonus > MaxAttributeBonus) dexBonus = MaxAttributeBonus;
-            if (conBonus > MaxAttributeBonus) conBonus = MaxAttributeBonus;
-            if (intBonus > MaxAttributeBonus) intBonus = MaxAttributeBonus;
-            if (wisBonus > MaxAttributeBonus) wisBonus = MaxAttributeBonus;
-            if (chaBonus > MaxAttributeBonus) chaBonus = MaxAttributeBonus;
-
-            // Apply attributes
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_STRENGTH, (int)strBonus + pcEntity.STRBase);
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_DEXTERITY, (int)dexBonus + pcEntity.DEXBase);
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_CONSTITUTION, (int)conBonus + pcEntity.CONBase);
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_INTELLIGENCE, (int)intBonus + pcEntity.INTBase);
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_WISDOM, (int)wisBonus + pcEntity.WISBase);
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_CHARISMA, (int)chaBonus + pcEntity.CHABase);
-
-            // Apply AC
-            int ac = EffectiveArmorClass(player, ignoreItem);
-            _nwnxCreature.SetBaseAC(player, ac);
-
-            // Apply BAB
-            int bab = CalculateBAB(player, ignoreItem);
-            _nwnxCreature.SetBaseAttackBonus(player, bab);
-
-            // Apply HP
-            int hp = EffectiveMaxHitPoints(player, ignoreItem);
-            _nwnxCreature.SetMaxHitPointsByLevel(player, 1, hp);
-            if (player.CurrentHP > player.MaxHP)
-            {
-                int amount = player.CurrentHP - player.MaxHP;
-                Effect damage = _.EffectDamage(amount);
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, damage, player.Object);
-            }
-
-            // Apply FP
-            pcEntity.MaxFP = EffectiveMaxFP(player, ignoreItem);
-
-            if (isInitialization)
-                pcEntity.CurrentFP = pcEntity.MaxFP;
-            if (pcEntity.CurrentFP < pcEntity.MaxFP)
-                pcEntity.CurrentFP = pcEntity.MaxFP;
-
-            _db.SaveChanges();
-        }
 
 
 

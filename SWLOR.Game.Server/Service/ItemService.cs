@@ -136,7 +136,7 @@ namespace SWLOR.Game.Server.Service
                 _nwnxPlayer.StartGuiTimingBar(user, delay, string.Empty);
                 user.DelayEvent<FinishActionItem>(
                     delay,
-                    item,
+                    className,
                     user,
                     oItem,
                     target,

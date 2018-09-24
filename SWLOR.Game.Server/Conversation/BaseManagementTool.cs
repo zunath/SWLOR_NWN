@@ -470,7 +470,7 @@ namespace SWLOR.Game.Server.Conversation
             var controlTower = _base.GetBaseControlTower(pcBase.PCBaseID);
             int maxShields = _base.CalculateMaxShieldHP(controlTower);
 
-            if (pcBase.ShieldHP < maxShields)
+            if (pcBase.ShieldHP < maxShields && structureType != BaseStructureType.ControlTower)
             {
                 GetPC().FloatingText("You cannot retrieve any structures because the control tower has less than 100% shields.");
                 return;

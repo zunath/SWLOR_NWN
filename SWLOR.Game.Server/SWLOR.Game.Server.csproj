@@ -658,6 +658,7 @@
     <Compile Include="Perk\Survival\ExpertFarmer.cs" />
     <Compile Include="Perk\Survival\FarmingEfficiency.cs" />
     <Compile Include="Perk\Throwing\GrenadeProficiency.cs" />
+    <Compile Include="Perk\Throwing\PreciseToss.cs" />
     <Compile Include="Perk\Throwing\RapidToss.cs" />
     <Compile Include="Perk\Throwing\ThrowingProficiency.cs" />
     <Compile Include="Perk\Throwing\ZenTossing.cs" />

@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Conversation
                 "Maps",
                 "Quest Items",
                 "Documents",
+                "Keys",
                 "Back"
             );
 
@@ -64,7 +65,11 @@ namespace SWLOR.Game.Server.Conversation
                             GetPC().SetLocalInt("TEMP_MENU_KEY_ITEM_CATEGORY_ID", responseID);
                             LoadKeyItemsOptions(responseID);
                             break;
-                        case 4: // "Back"
+                        case 4:
+                            GetPC().SetLocalInt("TEMP_MENU_KEY_ITEM_CATEGORY_ID", 5);
+                            LoadKeyItemsOptions(5);
+                            break;
+                        case 5: // "Back"
                             SwitchConversation("RestMenu");
                             break;
                     }

@@ -626,6 +626,7 @@
     <Compile Include="Perk\LightSide\ForceAura.cs" />
     <Compile Include="Perk\LightSide\ForcePush.cs" />
     <Compile Include="Perk\LightSide\ForceSpread.cs" />
+    <Compile Include="Perk\MartialArts\Chi.cs" />
     <Compile Include="Perk\MartialArts\ElectricFist.cs" />
     <Compile Include="Perk\Medicine\MedicalBlueprints.cs" />
     <Compile Include="Perk\Medicine\SpeedyMedicine.cs" />

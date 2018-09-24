@@ -97,7 +97,7 @@
         ExpertFarmer = 92,
         ElectricFist = 93,
         PlasmaCell = 94,
-        // 95 is free
+        Chi = 95,
         EngineeringBlueprints = 96,
         SpecialModInstallationWeapons = 97,
         SpeedyWeaponsmith = 98,

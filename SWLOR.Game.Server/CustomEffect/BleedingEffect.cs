@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.CustomEffect.Contracts;
+﻿using System;
+using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
@@ -25,9 +26,16 @@ namespace SWLOR.Game.Server.CustomEffect
             NWPlaceable oBlood = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "plc_bloodstain", location));
             oBlood.Destroy(48.0f);
 
+            int amount = 1;
+
+            if (!string.IsNullOrWhiteSpace(data))
+            {
+                amount = Convert.ToInt32(data);
+            }
+
             oCaster.AssignCommand(() =>
             {
-                Effect damage = _.EffectDamage(1);
+                Effect damage = _.EffectDamage(amount);
                 _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, damage, oTarget.Object);
             });
         }

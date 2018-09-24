@@ -79,7 +79,7 @@
         Tranquilizer = 74,
         MassTranquilizer = 75,
         ForceAura = 76,
-        // 77 is free
+        PreciseToss = 77,
         // 78 is free
         SpeedyRefining = 79,
         ProcessingEfficiency = 80,

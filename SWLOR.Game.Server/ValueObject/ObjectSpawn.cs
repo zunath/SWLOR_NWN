@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.ValueObject
         public ResourceDetails Resource { get; set; }
         public int NPCGroupID { get; set; }
         public string BehaviourScript { get; set; }
+        public string SpawnRule { get; set; }
 
         public NWPlaceable SpawnPlaceable => (Spawn.Object);
         public NWCreature SpawnCreature => (Spawn.Object);

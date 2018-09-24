@@ -23,7 +23,10 @@ namespace SWLOR.Game.Server.Placeable
         public bool Run(params object[] args)
         {
             NWPlaceable placeable = (Object.OBJECT_SELF);
-            NWPlayer user = (_.GetLastUsedBy());
+            NWPlayer user = placeable.ObjectType == OBJECT_TYPE_PLACEABLE ? 
+                _.GetLastUsedBy() :
+                _.GetClickingObject();
+            
             if (!user.IsPlayer && !user.IsDM) return false;
 
             string conversation = placeable.GetLocalString("CONVERSATION");

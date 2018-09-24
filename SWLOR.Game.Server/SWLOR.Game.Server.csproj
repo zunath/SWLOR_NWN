@@ -108,6 +108,7 @@
     <Compile Include="Conversation\DestroySurvivalKnife.cs" />
     <Compile Include="Conversation\DestroyPlayerGuide.cs" />
     <Compile Include="Conversation\KeyItems.cs" />
+    <Compile Include="Conversation\LockedDoor.cs" />
     <Compile Include="Conversation\ManageLease.cs" />
     <Compile Include="Conversation\Outfit.cs" />
     <Compile Include="Conversation\PlaceStructure.cs" />

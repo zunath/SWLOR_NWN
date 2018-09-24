@@ -73,7 +73,30 @@ namespace SWLOR.Game.Server.Service
                 {
                     _.GiveGoldToCreature(player, 100);
                 });
-                
+
+                // Capture original stats before we level up the player.
+                int str = _nwnxCreature.GetRawAbilityScore(player, ABILITY_STRENGTH);
+                int con = _nwnxCreature.GetRawAbilityScore(player, ABILITY_CONSTITUTION);
+                int dex = _nwnxCreature.GetRawAbilityScore(player, ABILITY_DEXTERITY);
+                int @int = _nwnxCreature.GetRawAbilityScore(player, ABILITY_INTELLIGENCE);
+                int wis = _nwnxCreature.GetRawAbilityScore(player, ABILITY_WISDOM);
+                int cha = _nwnxCreature.GetRawAbilityScore(player, ABILITY_CHARISMA);
+
+                // Take player to level 5 in NWN levels so that we have access to more HP slots
+                _.GiveXPToCreature(player, 10000);
+
+                for (int level = 1; level <= 5; level++)
+                {
+                    _.LevelUpHenchman(player, player.Class1);
+                }
+
+                // Set stats back to how they were on entry.
+                _nwnxCreature.SetRawAbilityScore(player, ABILITY_STRENGTH, str);
+                _nwnxCreature.SetRawAbilityScore(player, ABILITY_CONSTITUTION, con);
+                _nwnxCreature.SetRawAbilityScore(player, ABILITY_DEXTERITY, dex);
+                _nwnxCreature.SetRawAbilityScore(player, ABILITY_INTELLIGENCE, @int);
+                _nwnxCreature.SetRawAbilityScore(player, ABILITY_WISDOM, wis);
+                _nwnxCreature.SetRawAbilityScore(player, ABILITY_CHARISMA, cha);
 
                 NWItem knife = (_.CreateItemOnObject("survival_knife", player));
                 knife.Name = player.Name + "'s Survival Knife";

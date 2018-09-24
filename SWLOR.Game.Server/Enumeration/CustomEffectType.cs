@@ -14,6 +14,14 @@
         DarkSpread = 10,
         ShieldBoost = 11,
         Meditate = 12,
-        Rest = 13
+        Rest = 13,
+        FireCell = 14,
+        // 15 is open
+        ElectricCell = 16,
+        SonicCell = 17,
+        AcidCell = 18,
+        IceCell = 19,
+        DivineCell = 20,
+        PlasmaCell = 21
     }
 }

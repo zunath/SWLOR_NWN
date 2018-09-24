@@ -146,6 +146,12 @@
     <Compile Include="AI\SightAggroBehaviour.cs" />
     <Compile Include="AI\StandardBehaviour.cs" />
     <Compile Include="CustomEffect\AbsorptionFieldEffect.cs" />
+    <Compile Include="CustomEffect\ElectricCellEffect.cs" />
+    <Compile Include="CustomEffect\AcidCellEffect.cs" />
+    <Compile Include="CustomEffect\DivineCellEffect.cs" />
+    <Compile Include="CustomEffect\SonicCellEffect.cs" />
+    <Compile Include="CustomEffect\IceCellEffect.cs" />
+    <Compile Include="CustomEffect\FireCellEffect.cs" />
     <Compile Include="CustomEffect\ForceAuraEffect.cs" />
     <Compile Include="CustomEffect\BleedingEffect.cs" />
     <Compile Include="CustomEffect\BurningEffect.cs" />
@@ -156,6 +162,7 @@
     <Compile Include="CustomEffect\DarkSpreadEffect.cs" />
     <Compile Include="CustomEffect\ForceSpreadEffect.cs" />
     <Compile Include="CustomEffect\MeditateEffect.cs" />
+    <Compile Include="CustomEffect\PlasmaCellEffect.cs" />
     <Compile Include="CustomEffect\PoisonEffect.cs" />
     <Compile Include="CustomEffect\RestEffect.cs" />
     <Compile Include="CustomEffect\ShieldBoostEffect.cs" />
@@ -606,6 +613,7 @@
     <Compile Include="Perk\Armor\ShieldBoost.cs" />
     <Compile Include="Perk\Blaster\LegShot.cs" />
     <Compile Include="Perk\Blaster\MassTranquilizer.cs" />
+    <Compile Include="Perk\Blaster\PlasmaCell.cs" />
     <Compile Include="Perk\Blaster\RecoveryBlast.cs" />
     <Compile Include="Perk\Blaster\Tranquilizer.cs" />
     <Compile Include="Perk\DarkSide\DarkHeal.cs" />

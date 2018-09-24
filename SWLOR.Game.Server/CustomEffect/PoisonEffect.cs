@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.CustomEffect
             return null;
         }
 
-        public void Tick(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)
+        public void Tick(NWCreature oCaster, NWObject oTarget, int currentTick, int effectiveLevel, string data)
         {
             Random random = new Random();
             int amount = random.Next(3, 7);

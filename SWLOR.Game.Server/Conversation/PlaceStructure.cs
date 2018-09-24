@@ -103,8 +103,8 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if (isPlacingTower)
             {
-                header += _color.Green("Available Power: ") + structure.Power + (data.StructureItem.StructureBonus * 3) + "\n";
-                header += _color.Green("Available CPU: ") + structure.CPU + (data.StructureItem.StructureBonus * 2) + "\n";
+                header += _color.Green("Available Power: ") + (structure.Power + data.StructureItem.StructureBonus * 3) + "\n";
+                header += _color.Green("Available CPU: ") + (structure.CPU + data.StructureItem.StructureBonus * 2) + "\n";
             }
             else
             {

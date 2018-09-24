@@ -91,7 +91,7 @@
         MagicModInstallationWeapons = 86,
         WeaponFocusLightsaber = 87,
         CraftingModInstallationWeapons = 88,
-        // 89 is free
+        Dash = 89,
         CarefulScavenger = 90,
         FarmingEfficiency = 91,
         ExpertFarmer = 92,

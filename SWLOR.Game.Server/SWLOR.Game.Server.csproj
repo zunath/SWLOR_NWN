@@ -588,6 +588,7 @@
     <Compile Include="Perk\Blaster\Tranquilizer.cs" />
     <Compile Include="Perk\DarkSide\DarkHeal.cs" />
     <Compile Include="Perk\DarkSide\DarkSpread.cs" />
+    <Compile Include="Perk\DarkSide\DrainLife.cs" />
     <Compile Include="Perk\DarkSide\ForceLightning.cs" />
     <Compile Include="Perk\Fabrication\FabricationBlueprints.cs" />
     <Compile Include="Perk\Fabrication\SpeedyFabrication.cs" />

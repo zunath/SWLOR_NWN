@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         if (type == BASE_ITEM_SMALLSHIELD || type == BASE_ITEM_LARGESHIELD || type == BASE_ITEM_TOWERSHIELD)
                         {
-                            perkAction.OnImpact(oPC, oItem);
+                            perkAction.OnImpact(oPC, oItem, pcPerk.PerkLevel);
                         }
                     }
                 });

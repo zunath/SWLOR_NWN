@@ -39,6 +39,7 @@ namespace SWLOR.Game.Server.Event.Delayed
             string spellUUID = Convert.ToString(args[1]);
             int perkID = (int)args[2];
             NWObject target = (NWObject)args[3];
+            int pcPerkLevel = (int) args[4];
 
             Data.Entities.Perk entity = _db.Perks.Single(x => x.PerkID == perkID);
             CooldownCategory cooldown = _db.CooldownCategories.SingleOrDefault(x => x.CooldownCategoryID == entity.CooldownCategoryID);
@@ -58,10 +59,8 @@ namespace SWLOR.Game.Server.Event.Delayed
                 if ((PerkExecutionType)entity.ExecutionTypeID == PerkExecutionType.ForceAbility ||
                     (PerkExecutionType)entity.ExecutionTypeID == PerkExecutionType.CombatAbility)
                 {
-                    perk.OnImpact(pc, target);
-
-
-
+                    perk.OnImpact(pc, target, pcPerkLevel);
+                    
                     if (entity.CastAnimationID != null && entity.CastAnimationID > 0)
                     {
                         pc.AssignCommand(() =>

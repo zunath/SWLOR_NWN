@@ -45,17 +45,16 @@ namespace SWLOR.Game.Server.Perk.DarkSide
             return baseCooldownTime;
         }
 
-        public void OnImpact(NWPlayer oPC, NWObject oTarget)
+        public void OnImpact(NWPlayer player, NWObject target, int perkLevel)
         {
-            NWCreature targetCreature = oTarget.Object;
+            NWCreature targetCreature = target.Object;
 
-            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.DarkSpread);
             int duration;
             int uses;
             float range;
 
 
-            BackgroundType background = (BackgroundType)oPC.Class1;
+            BackgroundType background = (BackgroundType)player.Class1;
 
             if (background == BackgroundType.Corrupter ||
                 background == BackgroundType.Sorcerer)
@@ -102,7 +101,7 @@ namespace SWLOR.Game.Server.Perk.DarkSide
                     break;
                 default: return;
             }
-            _customEffect.ApplyCustomEffect(oPC, targetCreature, CustomEffectType.DarkSpread, duration, perkLevel, uses + "," + range);
+            _customEffect.ApplyCustomEffect(player, targetCreature, CustomEffectType.DarkSpread, duration, perkLevel, uses + "," + range);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

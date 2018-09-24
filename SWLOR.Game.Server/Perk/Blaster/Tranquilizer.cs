@@ -48,10 +48,9 @@ namespace SWLOR.Game.Server.Perk.Blaster
             return baseCooldownTime;
         }
 
-        public void OnImpact(NWPlayer oPC, NWObject oTarget)
+        public void OnImpact(NWPlayer player, NWObject target, int perkLevel)
         {
-            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.Tranquilizer);
-            int luck = _perk.GetPCPerkLevel(oPC, PerkType.Lucky);
+            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky);
             float duration;
 
             switch (perkLevel)
@@ -92,22 +91,22 @@ namespace SWLOR.Game.Server.Perk.Blaster
             if (_random.D100(1) <= luck)
             {
                 duration *= 2;
-                oPC.SendMessage("Lucky shot!");
+                player.SendMessage("Lucky shot!");
             }
 
-            if (RemoveExistingEffect(oTarget, duration))
+            if (RemoveExistingEffect(target, duration))
             {
-                oPC.SendMessage("A more powerful effect already exists on your target.");
+                player.SendMessage("A more powerful effect already exists on your target.");
                 return;
             }
 
-            oTarget.SetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN", 1);
+            target.SetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN", 1);
 
             Effect effect = _.EffectDazed();
             effect = _.EffectLinkEffects(effect, _.EffectVisualEffect(VFX_DUR_IOUNSTONE_BLUE));
             effect = _.TagEffect(effect, "TRANQUILIZER_EFFECT");
 
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, effect, oTarget, duration);
+            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, effect, target, duration);
         }
 
         private bool RemoveExistingEffect(NWObject target, float duration)

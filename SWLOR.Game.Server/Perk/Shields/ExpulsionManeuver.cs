@@ -52,9 +52,8 @@ namespace SWLOR.Game.Server.Perk.Shields
             return baseCooldownTime;
         }
 
-        public void OnImpact(NWPlayer oPC, NWObject oTarget)
+        public void OnImpact(NWPlayer player, NWObject target, int perkLevel)
         {
-            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.ExpulsionManeuver);
             float length;
             int ab;
             int chance;
@@ -90,13 +89,13 @@ namespace SWLOR.Game.Server.Perk.Shields
                     return;
             }
 
-            int luck = _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + _playerStat.EffectiveLuckBonus(oPC);
+            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky) + _playerStat.EffectiveLuckBonus(player);
             chance += luck;
 
             if (_random.Random(100) + 1 <= chance)
             {
-                _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, _.EffectAttackIncrease(ab), oPC.Object, length);
-                oPC.SendMessage(_color.Combat("You perform a defensive maneuver."));
+                _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, _.EffectAttackIncrease(ab), player.Object, length);
+                player.SendMessage(_color.Combat("You perform a defensive maneuver."));
             }
         }
 

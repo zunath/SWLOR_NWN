@@ -48,12 +48,11 @@ namespace SWLOR.Game.Server.Perk.Armor
             return baseCooldownTime;
         }
 
-        public void OnImpact(NWPlayer oPC, NWObject oTarget)
+        public void OnImpact(NWPlayer player, NWObject target, int perkLevel)
         {
-            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.AbsorptionField);
-            _customEffect.ApplyCustomEffect(oPC, oPC, CustomEffectType.AbsorptionField, 20, perkLevel, null);
+            _customEffect.ApplyCustomEffect(player, player, CustomEffectType.AbsorptionField, 20, perkLevel, null);
 
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_GLOBE_USE), oTarget);
+            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_GLOBE_USE), target);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

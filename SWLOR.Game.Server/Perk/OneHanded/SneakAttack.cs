@@ -54,21 +54,21 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             return cooldown;
         }
 
-        public void OnImpact(NWPlayer oPC, NWObject oTarget)
+        public void OnImpact(NWPlayer player, NWObject target, int perkLevel)
         {
-            float minimum = oPC.Facing - 20;
-            float maximum = oPC.Facing + 20;
+            float minimum = player.Facing - 20;
+            float maximum = player.Facing + 20;
 
-            if (oTarget.Facing >= minimum &&
-                oTarget.Facing <= maximum)
+            if (target.Facing >= minimum &&
+                target.Facing <= maximum)
             {
                 // Mark the player as committing a sneak attack.
                 // This is later picked up in the OnApplyDamage event.
-                oPC.SetLocalInt("SNEAK_ATTACK_ACTIVE", 1);
+                player.SetLocalInt("SNEAK_ATTACK_ACTIVE", 1);
             }
             else
             {
-                oPC.SetLocalInt("SNEAK_ATTACK_ACTIVE", 2);
+                player.SetLocalInt("SNEAK_ATTACK_ACTIVE", 2);
             }
         }
 

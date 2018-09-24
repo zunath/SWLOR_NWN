@@ -55,15 +55,14 @@ namespace SWLOR.Game.Server.Perk.LightSide
             return baseCooldownTime;
         }
 
-        public void OnImpact(NWPlayer oPC, NWObject oTarget)
+        public void OnImpact(NWPlayer player, NWObject target, int level)
         {
-            int level = _perk.GetPCPerkLevel(oPC, PerkType.ForceBreach);
-            int lightBonus = _playerStat.EffectiveLightAbilityBonus(oPC);
+            int lightBonus = _playerStat.EffectiveLightAbilityBonus(player);
             int amount;
             int length;
             int dotAmount;
             int min = 1;
-            BackgroundType background = (BackgroundType)oPC.Class1;
+            BackgroundType background = (BackgroundType)player.Class1;
 
             if (background == BackgroundType.Sage ||
                 background == BackgroundType.Consular)
@@ -71,8 +70,8 @@ namespace SWLOR.Game.Server.Perk.LightSide
                 level++;
             }
 
-            int wisdom = oPC.WisdomModifier;
-            int intelligence = oPC.IntelligenceModifier;
+            int wisdom = player.WisdomModifier;
+            int intelligence = player.IntelligenceModifier;
             min += lightBonus / 3 + wisdom / 2 + intelligence / 3;
 
             switch (level)
@@ -135,25 +134,25 @@ namespace SWLOR.Game.Server.Perk.LightSide
                 default: return;
             }
 
-            int luck = _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + _playerStat.EffectiveLuckBonus(oPC);
+            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky) + _playerStat.EffectiveLuckBonus(player);
             if (_random.Random(100) + 1 <= luck)
             {
                 length = length * 2;
-                oPC.SendMessage("Lucky force breach!");
+                player.SendMessage("Lucky force breach!");
             }
 
             Effect damage = _.EffectDamage(amount);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, damage, oTarget.Object);
+            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, damage, target.Object);
 
             if (length > 0.0f && dotAmount > 0)
             {
-                _customEffect.ApplyCustomEffect(oPC, (NWCreature)oTarget, CustomEffectType.ForceBreach, length, level, null);
+                _customEffect.ApplyCustomEffect(player, (NWCreature)target, CustomEffectType.ForceBreach, length, level, null);
             }
 
-            _skill.RegisterPCToAllCombatTargetsForSkill(oPC, SkillType.LightSideAbilities);
+            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.LightSideAbilities);
 
             Effect vfx = _.EffectVisualEffect(VFX_IMP_DOMINATE_S);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, oTarget.Object);
+            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, target.Object);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

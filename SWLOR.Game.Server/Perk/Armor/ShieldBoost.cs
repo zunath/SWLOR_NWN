@@ -47,16 +47,15 @@ namespace SWLOR.Game.Server.Perk.Armor
             return baseCooldownTime;
         }
 
-        public void OnImpact(NWPlayer oPC, NWObject oTarget)
+        public void OnImpact(NWPlayer player, NWObject target, int perkLevel)
         {
-            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.ShieldBoost);
             int duration = 60;
 
             var vfx = _.EffectVisualEffect(VFX_DUR_BLUR);
             vfx = _.TagEffect(vfx, "SHIELD_BOOST_VFX");
 
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, vfx, oTarget, duration);
-            _customEffect.ApplyCustomEffect(oPC, oTarget.Object, CustomEffectType.ShieldBoost, duration, perkLevel, null);
+            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, vfx, target, duration);
+            _customEffect.ApplyCustomEffect(player, target.Object, CustomEffectType.ShieldBoost, duration, perkLevel, null);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

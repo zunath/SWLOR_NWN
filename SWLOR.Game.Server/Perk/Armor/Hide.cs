@@ -46,12 +46,11 @@ namespace SWLOR.Game.Server.Perk.Armor
             return baseCooldownTime;
         }
 
-        public void OnImpact(NWPlayer oPC, NWObject oTarget)
+        public void OnImpact(NWPlayer player, NWObject target, int perkLevel)
         {
-            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.Hide);
             int adjust = perkLevel * 10;
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_DUR_GHOSTLY_VISAGE), oTarget, 3.0f);
-            _enmity.AdjustPercentEnmityOnAllTaggedCreatures(oPC, -adjust, -adjust);
+            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_DUR_GHOSTLY_VISAGE), target, 3.0f);
+            _enmity.AdjustPercentEnmityOnAllTaggedCreatures(player, -adjust, -adjust);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

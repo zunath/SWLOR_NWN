@@ -47,9 +47,8 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             return baseCooldownTime;
         }
 
-        public void OnImpact(NWPlayer oPC, NWObject oTarget)
+        public void OnImpact(NWPlayer player, NWObject target, int perkLevel)
         {
-            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.Knockdown);
             int damage;
             float length;
 
@@ -82,8 +81,8 @@ namespace SWLOR.Game.Server.Perk.OneHanded
                 default: return;
             }
 
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectKnockdown(), oTarget.Object, length);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_BLUDGEONING), oTarget);
+            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectKnockdown(), target.Object, length);
+            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_BLUDGEONING), target);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

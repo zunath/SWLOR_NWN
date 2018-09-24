@@ -48,9 +48,8 @@ namespace SWLOR.Game.Server.Perk.LightSide
             return baseCooldownTime;
         }
 
-        public void OnImpact(NWPlayer oPC, NWObject oTarget)
+        public void OnImpact(NWPlayer player, NWObject target, int level)
         {
-            int level = _perk.GetPCPerkLevel(oPC, PerkType.ForceAura);
             int ticks;
 
             switch (level)
@@ -65,8 +64,8 @@ namespace SWLOR.Game.Server.Perk.LightSide
             }
 
 
-            _customEffect.ApplyCustomEffect(oPC, oTarget.Object, CustomEffectType.ForceAura, ticks, level, null);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_AC_BONUS), oTarget);
+            _customEffect.ApplyCustomEffect(player, target.Object, CustomEffectType.ForceAura, ticks, level, null);
+            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_AC_BONUS), target);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

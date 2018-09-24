@@ -2,9 +2,9 @@
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Processor.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN.NWScript;
 
@@ -85,6 +85,14 @@ namespace SWLOR.Game.Server.Processor
                 if (!string.IsNullOrWhiteSpace(spawn.BehaviourScript) &&
                     string.IsNullOrWhiteSpace(spawn.Spawn.GetLocalString("BEHAVIOUR")))
                     spawn.Spawn.SetLocalString("BEHAVIOUR", spawn.BehaviourScript);
+
+                if (!string.IsNullOrWhiteSpace(spawn.SpawnRule))
+                {
+                    App.ResolveByInterface<ISpawnRule>("SpawnRule." + spawn.SpawnRule, rule =>
+                    {
+                        rule.Run(spawn.Spawn);
+                    });
+                }
 
                 spawn.Timer = 0.0f;
             }

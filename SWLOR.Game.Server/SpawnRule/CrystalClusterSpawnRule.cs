@@ -30,7 +30,13 @@ namespace SWLOR.Game.Server.SpawnRule
             const int VeryHighQualityChance = 2;
 
             var dbArea = _db.Areas.Single(x => x.Resref == target.Area.Resref);
-            int tier = dbArea.ResourceSpawnTableID;
+            int tier = dbArea.ResourceQuality;
+            
+            if (tier <= 0)
+            {
+                Console.WriteLine("WARNING: Area '" + target.Area.Name + "' has resources but the RESOURCE_QUALITY variable is not set. Edit the area properties and add this value to set up resources.");
+                return;
+            }
 
             if (roll <= VeryHighQualityChance)
             {

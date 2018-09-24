@@ -61,6 +61,8 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public bool AutoSpawnResources { get; set; }
 
+        public int ResourceQuality { get; set; }
+
         public virtual PlayerCharacter NortheastOwnerPlayer { get; set; }
 
         public virtual PlayerCharacter NorthwestOwnerPlayer { get; set; }

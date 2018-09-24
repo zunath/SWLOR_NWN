@@ -51,9 +51,8 @@ namespace SWLOR.Game.Server.Perk.Throwing
             return baseCooldownTime;
         }
 
-        public void OnImpact(NWPlayer oPC, NWObject oTarget)
+        public void OnImpact(NWPlayer player, NWObject target, int level)
         {
-            int level = _perk.GetPCPerkLevel(oPC, PerkType.LegShot);
             int damage;
             int seconds;
             int dotDamage;
@@ -108,8 +107,8 @@ namespace SWLOR.Game.Server.Perk.Throwing
                 default: return;
             }
 
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_PIERCING), oTarget);
-            _customEffect.ApplyCustomEffect(oPC, oTarget.Object, CustomEffectType.Bleeding, seconds, level, Convert.ToString(dotDamage));
+            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_PIERCING), target);
+            _customEffect.ApplyCustomEffect(player, target.Object, CustomEffectType.Bleeding, seconds, level, Convert.ToString(dotDamage));
 
 
         }

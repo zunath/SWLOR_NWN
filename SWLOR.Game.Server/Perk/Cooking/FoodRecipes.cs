@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Perk.Cooking
             return baseCooldownTime;
         }
 
-        public void OnImpact(NWPlayer oPC, NWObject oTarget)
+        public void OnImpact(NWPlayer player, NWObject target, int perkLevel)
         {
         }
 

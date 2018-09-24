@@ -49,9 +49,8 @@ namespace SWLOR.Game.Server.Perk.Shields
             return baseCooldownTime;
         }
 
-        public void OnImpact(NWPlayer oPC, NWObject oTarget)
+        public void OnImpact(NWPlayer player, NWObject target, int perkLevel)
         {
-            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.BlockingRecovery);
             int chance;
             int amount;
 
@@ -81,13 +80,13 @@ namespace SWLOR.Game.Server.Perk.Shields
                     return;
             }
 
-            int luck = _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + _playerStat.EffectiveLuckBonus(oPC);
+            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky) + _playerStat.EffectiveLuckBonus(player);
             chance += luck;
 
             if (_random.Random(100) + 1 <= chance)
             {
                 Effect heal = _.EffectHeal(amount);
-                _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, heal, oPC.Object);
+                _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, heal, player.Object);
             }
         }
 

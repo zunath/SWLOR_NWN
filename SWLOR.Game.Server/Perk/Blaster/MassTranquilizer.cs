@@ -48,11 +48,11 @@ namespace SWLOR.Game.Server.Perk.Blaster
             return baseCooldownTime;
         }
 
-        public void OnImpact(NWPlayer oPC, NWObject oTarget)
+        public void OnImpact(NWPlayer player, NWObject target, int perkLevel)
         {
-            int massLevel = _perk.GetPCPerkLevel(oPC, PerkType.MassTranquilizer);
-            int tranqLevel = _perk.GetPCPerkLevel(oPC, PerkType.Tranquilizer);
-            int luck = _perk.GetPCPerkLevel(oPC, PerkType.Lucky);
+            int massLevel = _perk.GetPCPerkLevel(player, PerkType.MassTranquilizer);
+            int tranqLevel = _perk.GetPCPerkLevel(player, PerkType.Tranquilizer);
+            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky);
             float duration;
             float range = 5 * massLevel;
             
@@ -97,26 +97,26 @@ namespace SWLOR.Game.Server.Perk.Blaster
             if (_random.D100(1) <= luck)
             {
                 duration *= 2;
-                oPC.SendMessage("Lucky shot!");
+                player.SendMessage("Lucky shot!");
             }
 
             int current = 1;
-            NWCreature nearest = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, oTarget, current);
+            NWCreature nearest = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, target, current);
 
             while (nearest.IsValid)
             {
-                if (_.GetDistanceBetween(nearest, oTarget) > range) break;
-                if (RemoveExistingEffect(oTarget, duration)) continue;
+                if (_.GetDistanceBetween(nearest, target) > range) break;
+                if (RemoveExistingEffect(target, duration)) continue;
                 
                 nearest.SetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN", 1);
                 Effect effect = _.EffectDazed();
                 effect = _.EffectLinkEffects(effect, _.EffectVisualEffect(VFX_DUR_IOUNSTONE_BLUE));
                 effect = _.TagEffect(effect, "TRANQUILIZER_EFFECT");
                 
-                _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, effect, oTarget, duration);
+                _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, effect, target, duration);
 
                 current++;
-                nearest = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, oTarget, current);
+                nearest = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, target, current);
             }
 
         }

@@ -62,18 +62,17 @@ namespace SWLOR.Game.Server.Perk.DarkSide
             return baseCooldownTime;
         }
 
-        public void OnImpact(NWPlayer oPC, NWObject oTarget)
+        public void OnImpact(NWPlayer player, NWObject target, int level)
         {
-            int level = _perk.GetPCPerkLevel(oPC, PerkType.DarkHeal);
-            int darkBonus = _playerStat.EffectiveDarkAbilityBonus(oPC);
+            int darkBonus = _playerStat.EffectiveDarkAbilityBonus(player);
             
-            PCCustomEffect spreadEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == oPC.GlobalID && x.CustomEffectID == (int) CustomEffectType.DarkSpread);
+            PCCustomEffect spreadEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CustomEffectID == (int) CustomEffectType.DarkSpread);
             string spreadData = spreadEffect?.Data ?? string.Empty;
             int spreadLevel = spreadEffect?.EffectiveLevel ?? 0;
             int spreadUses = spreadEffect == null ? 0 : Convert.ToInt32(spreadData.Split(',')[0]);
             float spreadRange = spreadEffect == null ? 0 : Convert.ToSingle(spreadData.Split(',')[1]);
 
-            BackgroundType background = (BackgroundType) oPC.Class1;
+            BackgroundType background = (BackgroundType) player.Class1;
 
             if (background == BackgroundType.Sorcerer ||
                 background == BackgroundType.Corrupter)
@@ -82,33 +81,33 @@ namespace SWLOR.Game.Server.Perk.DarkSide
             }
 
             if (spreadLevel <= 0)
-                HealTarget(oPC, oTarget, darkBonus, level);
+                HealTarget(player, target, darkBonus, level);
             else
             {
-                var members = oPC.PartyMembers.Where(x => _.GetDistanceBetween(x, oTarget) <= spreadRange || 
-                                                               Equals(x, oTarget)).ToList();
+                var members = player.PartyMembers.Where(x => _.GetDistanceBetween(x, target) <= spreadRange || 
+                                                               Equals(x, target)).ToList();
                 
                 spreadUses--;
 
                 foreach (var member in members)
                 {
-                    HealTarget(oPC, member, darkBonus, level);
+                    HealTarget(player, member, darkBonus, level);
                 }
 
                 if (spreadUses <= 0)
                 {
-                    _customEffect.RemovePCCustomEffect(oPC, CustomEffectType.DarkSpread);
+                    _customEffect.RemovePCCustomEffect(player, CustomEffectType.DarkSpread);
                 }
                 else
                 {
                     // ReSharper disable once PossibleNullReferenceException
                     spreadEffect.Data = spreadUses + "," + spreadRange;
                     _db.SaveChanges();
-                    oPC.SendMessage("Dark Spread uses remaining: " + spreadUses);
+                    player.SendMessage("Dark Spread uses remaining: " + spreadUses);
                 }
 
             }
-            _skill.RegisterPCToAllCombatTargetsForSkill(oPC, SkillType.DarkSideAbilities);
+            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.DarkSideAbilities);
         }
 
 

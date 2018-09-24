@@ -46,10 +46,8 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
             return baseCooldownTime;
         }
 
-        public void OnImpact(NWPlayer oPC, NWObject oTarget)
+        public void OnImpact(NWPlayer player, NWObject target, int perkLevel)
         {
-            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.CrossCut);
-
             int damage = 0;
             float duration = 0.0f;
 
@@ -97,11 +95,11 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
                     break;
             }
 
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_SLASHING), oTarget);
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectACDecrease(3), oTarget, duration);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_HEAD_EVIL), oTarget);
+            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_SLASHING), target);
+            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectACDecrease(3), target, duration);
+            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_HEAD_EVIL), target);
 
-            oPC.SendMessage("Your target's armor has been breached.");
+            player.SendMessage("Your target's armor has been breached.");
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

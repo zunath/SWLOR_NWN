@@ -64,9 +64,9 @@ namespace SWLOR.Game.Server.Perk.General
             }
         }
 
-        public void OnImpact(NWPlayer oPC, NWObject oTarget)
+        public void OnImpact(NWPlayer player, NWObject target, int perkLevel)
         {
-            _customEffect.ApplyCustomEffect(oPC, oPC, CustomEffectType.Meditate, -1, 0, null);
+            _customEffect.ApplyCustomEffect(player, player, CustomEffectType.Meditate, -1, 0, null);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

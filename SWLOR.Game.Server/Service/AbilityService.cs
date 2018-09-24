@@ -82,8 +82,9 @@ namespace SWLOR.Game.Server.Service
                 if (perkAction == null) return;
 
                 PlayerCharacter playerEntity = _db.PlayerCharacters.Single(x => x.PlayerID == pc.GlobalID);
+                int pcPerkLevel = _perk.GetPCPerkLevel(pc, perk.PerkID);
 
-                if (_perk.GetPCPerkLevel(pc, perk.PerkID) <= 0)
+                if (pcPerkLevel <= 0)
                 {
                     pc.SendMessage("You do not meet the prerequisites to use this ability.");
                     return;
@@ -148,12 +149,12 @@ namespace SWLOR.Game.Server.Service
                 // Spells w/ casting time
                 if (perk.PerkExecutionType.PerkExecutionTypeID == (int)PerkExecutionType.ForceAbility)
                 {
-                    CastSpell(pc, target, perk, perkAction);
+                    CastSpell(pc, target, perk, perkAction, pcPerkLevel);
                 }
                 // Combat Abilities w/o casting time
                 else if (perk.PerkExecutionType.PerkExecutionTypeID == (int)PerkExecutionType.CombatAbility)
                 {
-                    perkAction.OnImpact(pc, target);
+                    perkAction.OnImpact(pc, target, pcPerkLevel);
                     ApplyEnmity(pc, target, perk);
 
                     if (fpCost > 0)
@@ -197,7 +198,8 @@ namespace SWLOR.Game.Server.Service
         private void CastSpell(NWPlayer pc,
                                NWObject target,
                                Data.Entities.Perk entity,
-                               IPerk perk)
+                               IPerk perk,
+                               int pcPerkLevel)
         {
             string spellUUID = Guid.NewGuid().ToString("N");
             int itemBonus = _playerStat.EffectiveCastingSpeed(pc);
@@ -245,12 +247,14 @@ namespace SWLOR.Game.Server.Service
 
             _nwnxPlayer.StartGuiTimingBar(pc, (int)castingTime, "");
 
+            int perkID = entity.PerkID;
             pc.DelayEvent<FinishAbilityUse>(
                 castingTime + 0.5f,
                 pc,
                 spellUUID,
-                entity.PerkID,
-                target);
+                perkID,
+                target,
+                pcPerkLevel);
         }
         
         public void ApplyCooldown(NWPlayer pc, CooldownCategory cooldown, IPerk ability)
@@ -328,17 +332,17 @@ namespace SWLOR.Game.Server.Service
             int activeWeaponSkillID = oPC.GetLocalInt("ACTIVE_WEAPON_SKILL");
             if (activeWeaponSkillID <= 0) return;
 
-            Data.Entities.Perk entity = _db.Perks.Single(x => x.PerkID == activeWeaponSkillID);
+            PCPerk entity = _db.PCPerks.Single(x => x.PlayerID == oPC.GlobalID && x.PerkID == activeWeaponSkillID);
 
-            App.ResolveByInterface<IPerk>("Perk." + entity.ScriptName, (perk) =>
+            App.ResolveByInterface<IPerk>("Perk." + entity.Perk.ScriptName, (perk) =>
             {
                 if (perk.CanCastSpell(oPC, oTarget))
                 {
-                    perk.OnImpact(oPC, oTarget);
-
+                    perk.OnImpact(oPC, oTarget, entity.PerkLevel);
+                    
                     if (oTarget.IsNPC)
                     {
-                        ApplyEnmity(oPC, (oTarget.Object), entity);
+                        ApplyEnmity(oPC, (oTarget.Object), entity.Perk);
                     }
                 }
                 else oPC.SendMessage(perk.CannotCastSpellMessage(oPC, oTarget) ?? "That ability cannot be used at this time.");

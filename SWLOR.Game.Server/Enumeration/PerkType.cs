@@ -80,7 +80,7 @@
         MassTranquilizer = 75,
         ForceAura = 76,
         PreciseToss = 77,
-        // 78 is free
+        DrainLife = 78,
         SpeedyRefining = 79,
         ProcessingEfficiency = 80,
         RefineryManagement = 81,

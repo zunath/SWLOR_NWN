@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Perk
         int FPCost(NWPlayer oPC, int baseFPCost);
         float CastingTime(NWPlayer oPC, float baseCastingTime);
         float CooldownTime(NWPlayer oPC, float baseCooldownTime);
-        void OnImpact(NWPlayer oPC, NWObject oTarget);
+        void OnImpact(NWPlayer player, NWObject target, int perkLevel);
         void OnPurchased(NWPlayer oPC, int newLevel);
         void OnRemoved(NWPlayer oPC);
         void OnItemEquipped(NWPlayer oPC, NWItem oItem);

@@ -48,15 +48,14 @@ namespace SWLOR.Game.Server.Perk.Blaster
             return baseCooldownTime;
         }
 
-        public void OnImpact(NWPlayer oPC, NWObject oTarget)
+        public void OnImpact(NWPlayer player, NWObject target, int perkLevel)
         {
             // Mark the player as performing a recovery blast.
             // This is later picked up in the OnApplyDamage event to reduce all damage to 0.
-            oPC.SetLocalInt("RECOVERY_BLAST_ACTIVE", 1);
+            player.SetLocalInt("RECOVERY_BLAST_ACTIVE", 1);
 
-            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.RecoveryBlast);
-            var members = oPC.PartyMembers.Where(x => _.GetDistanceBetween(x, oTarget) <= 10.0f);
-            int luck = _perk.GetPCPerkLevel(oPC, PerkType.Lucky);
+            var members = player.PartyMembers.Where(x => _.GetDistanceBetween(x, target) <= 10.0f);
+            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky);
 
             foreach (var member in members)
             {

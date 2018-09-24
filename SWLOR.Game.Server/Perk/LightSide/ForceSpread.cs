@@ -46,17 +46,16 @@ namespace SWLOR.Game.Server.Perk.LightSide
             return baseCooldownTime;
         }
 
-        public void OnImpact(NWPlayer oPC, NWObject oTarget)
+        public void OnImpact(NWPlayer player, NWObject target, int perkLevel)
         {
-            NWCreature targetCreature = oTarget.Object;
+            NWCreature targetCreature = target.Object;
 
-            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.ForceSpread);
             int duration;
             int uses;
             float range;
             
 
-            BackgroundType background = (BackgroundType)oPC.Class1;
+            BackgroundType background = (BackgroundType)player.Class1;
 
             if (background == BackgroundType.Sage ||
                 background == BackgroundType.Consular)
@@ -103,7 +102,7 @@ namespace SWLOR.Game.Server.Perk.LightSide
                     break;
                 default: return;
             }
-            _customEffect.ApplyCustomEffect(oPC, targetCreature, CustomEffectType.ForceSpread, duration, perkLevel, uses + "," + range);
+            _customEffect.ApplyCustomEffect(player, targetCreature, CustomEffectType.ForceSpread, duration, perkLevel, uses + "," + range);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

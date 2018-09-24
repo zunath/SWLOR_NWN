@@ -55,15 +55,14 @@ namespace SWLOR.Game.Server.Perk.DarkSide
             return baseCooldownTime;
         }
 
-        public void OnImpact(NWPlayer oPC, NWObject oTarget)
+        public void OnImpact(NWPlayer player, NWObject target, int level)
         {
-            int level = _perk.GetPCPerkLevel(oPC, PerkType.ForceLightning);
-            int lightBonus = _playerStat.EffectiveDarkAbilityBonus(oPC);
+            int darkBonus = _playerStat.EffectiveDarkAbilityBonus(player);
             int amount;
             int length;
             int dotAmount;
             int min = 1;
-            BackgroundType background = (BackgroundType)oPC.Class1;
+            BackgroundType background = (BackgroundType)player.Class1;
 
             if (background == BackgroundType.Corrupter ||
                 background == BackgroundType.Sorcerer)
@@ -71,9 +70,9 @@ namespace SWLOR.Game.Server.Perk.DarkSide
                 level++;
             }
 
-            int wisdom = oPC.WisdomModifier;
-            int intelligence = oPC.IntelligenceModifier;
-            min += lightBonus / 3 + intelligence / 2 + wisdom / 3;
+            int wisdom = player.WisdomModifier;
+            int intelligence = player.IntelligenceModifier;
+            min += darkBonus / 3 + intelligence / 2 + wisdom / 3;
 
             switch (level)
             {
@@ -135,25 +134,25 @@ namespace SWLOR.Game.Server.Perk.DarkSide
                 default: return;
             }
 
-            int luck = _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + _playerStat.EffectiveLuckBonus(oPC);
+            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky) + _playerStat.EffectiveLuckBonus(player);
             if (_random.Random(100) + 1 <= luck)
             {
                 length = length * 2;
-                oPC.SendMessage("Lucky force lightning!");
+                player.SendMessage("Lucky force lightning!");
             }
 
             Effect damage = _.EffectDamage(amount);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, damage, oTarget);
+            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, damage, target);
 
             if (length > 0.0f && dotAmount > 0)
             {
-                _customEffect.ApplyCustomEffect(oPC, oTarget.Object, CustomEffectType.ForceShock, length, level, null);
+                _customEffect.ApplyCustomEffect(player, target.Object, CustomEffectType.ForceShock, length, level, null);
             }
 
-            _skill.RegisterPCToAllCombatTargetsForSkill(oPC, SkillType.DarkSideAbilities);
+            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.DarkSideAbilities);
 
             Effect vfx = _.EffectVisualEffect(VFX_IMP_LIGHTNING_S);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, oTarget);
+            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, target);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

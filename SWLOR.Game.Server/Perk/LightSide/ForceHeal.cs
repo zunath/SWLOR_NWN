@@ -62,18 +62,17 @@ namespace SWLOR.Game.Server.Perk.LightSide
             return baseCooldownTime;
         }
 
-        public void OnImpact(NWPlayer oPC, NWObject oTarget)
+        public void OnImpact(NWPlayer player, NWObject target, int level)
         {
-            int level = _perk.GetPCPerkLevel(oPC, PerkType.ForceHeal);
-            int lightBonus = _playerStat.EffectiveLightAbilityBonus(oPC);
+            int lightBonus = _playerStat.EffectiveLightAbilityBonus(player);
 
-            PCCustomEffect spreadEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == oPC.GlobalID && x.CustomEffectID == (int)CustomEffectType.ForceSpread);
+            PCCustomEffect spreadEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CustomEffectID == (int)CustomEffectType.ForceSpread);
             string spreadData = spreadEffect?.Data ?? string.Empty;
             int spreadLevel = spreadEffect?.EffectiveLevel ?? 0;
             int spreadUses = spreadEffect == null ? 0 : Convert.ToInt32(spreadData.Split(',')[0]);
             float spreadRange = spreadEffect == null ? 0 : Convert.ToSingle(spreadData.Split(',')[1]);
 
-            BackgroundType background = (BackgroundType)oPC.Class1;
+            BackgroundType background = (BackgroundType)player.Class1;
 
             if (background == BackgroundType.Sage ||
                 background == BackgroundType.Consular)
@@ -82,33 +81,33 @@ namespace SWLOR.Game.Server.Perk.LightSide
             }
 
             if (spreadLevel <= 0)
-                HealTarget(oPC, oTarget, lightBonus, level);
+                HealTarget(player, target, lightBonus, level);
             else
             {
-                var members = oPC.PartyMembers.Where(x => _.GetDistanceBetween(x, oTarget) <= spreadRange ||
-                                                               Equals(x, oTarget));
+                var members = player.PartyMembers.Where(x => _.GetDistanceBetween(x, target) <= spreadRange ||
+                                                               Equals(x, target));
                 spreadUses--;
 
                 foreach (var member in members)
                 {
-                    HealTarget(oPC, member, lightBonus, level);
+                    HealTarget(player, member, lightBonus, level);
                 }
 
                 if (spreadUses <= 0)
                 {
-                    _customEffect.RemovePCCustomEffect(oPC, CustomEffectType.ForceSpread);
+                    _customEffect.RemovePCCustomEffect(player, CustomEffectType.ForceSpread);
                 }
                 else
                 {
                     // ReSharper disable once PossibleNullReferenceException
                     spreadEffect.Data = spreadUses + "," + spreadRange;
                     _db.SaveChanges();
-                    oPC.SendMessage("Force Spread uses remaining: " + spreadUses);
+                    player.SendMessage("Force Spread uses remaining: " + spreadUses);
                 }
 
             }
 
-            _skill.RegisterPCToAllCombatTargetsForSkill(oPC, SkillType.LightSideAbilities);
+            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.LightSideAbilities);
         }
 
 

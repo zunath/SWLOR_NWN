@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Perk.Throwing
             return baseCooldownTime;
         }
 
-        public void OnImpact(NWPlayer oPC, NWObject oTarget)
+        public void OnImpact(NWPlayer player, NWObject target, int perkLevel)
         {
         }
 

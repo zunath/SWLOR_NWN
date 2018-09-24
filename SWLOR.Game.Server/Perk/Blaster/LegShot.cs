@@ -47,9 +47,8 @@ namespace SWLOR.Game.Server.Perk.Blaster
             return baseCooldownTime;
         }
 
-        public void OnImpact(NWPlayer oPC, NWObject oTarget)
+        public void OnImpact(NWPlayer player, NWObject target, int level)
         {
-            int level = _perk.GetPCPerkLevel(oPC, PerkType.LegShot);
             int damage;
             float duration;
 
@@ -95,9 +94,9 @@ namespace SWLOR.Game.Server.Perk.Blaster
             }
 
 
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_PIERCING), oTarget);
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectCutsceneImmobilize(), oTarget, duration);
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_IMP_ACID_L), oTarget, duration);
+            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_PIERCING), target);
+            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectCutsceneImmobilize(), target, duration);
+            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_IMP_ACID_L), target, duration);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

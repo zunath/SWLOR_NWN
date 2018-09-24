@@ -48,15 +48,14 @@ namespace SWLOR.Game.Server.Perk.LightSide
             return baseCooldownTime;
         }
 
-        public void OnImpact(NWPlayer oPC, NWObject oTarget)
+        public void OnImpact(NWPlayer player, NWObject target, int level)
         {
-            int luck = _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + _playerStat.EffectiveLuckBonus(oPC);
-            int level = _perk.GetPCPerkLevel(oPC, PerkType.ForcePush);
-            int lightBonus = _playerStat.EffectiveLightAbilityBonus(oPC);
+            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky) + _playerStat.EffectiveLuckBonus(player);
+            int lightBonus = _playerStat.EffectiveLightAbilityBonus(player);
             int min = 1;
             float length;
             int damage;
-            BackgroundType background = (BackgroundType)oPC.Class1;
+            BackgroundType background = (BackgroundType)player.Class1;
 
             if (background == BackgroundType.Sage ||
                 background == BackgroundType.Consular)
@@ -64,8 +63,8 @@ namespace SWLOR.Game.Server.Perk.LightSide
                 level++;
             }
 
-            int wisdom = oPC.WisdomModifier;
-            int intelligence = oPC.IntelligenceModifier;
+            int wisdom = player.WisdomModifier;
+            int intelligence = player.IntelligenceModifier;
             min += lightBonus / 4 + wisdom / 3 + intelligence / 4;
 
             switch (level)
@@ -101,11 +100,11 @@ namespace SWLOR.Game.Server.Perk.LightSide
             if (_random.Random(100) + 1 <= luck)
             {
                 length = length * 2;
-                oPC.SendMessage("Lucky force push!");
+                player.SendMessage("Lucky force push!");
             }
 
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_POSITIVE), oTarget);
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectKnockdown(), oTarget, length);
+            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_POSITIVE), target);
+            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectKnockdown(), target, length);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

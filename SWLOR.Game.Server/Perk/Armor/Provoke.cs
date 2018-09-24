@@ -66,18 +66,18 @@ namespace SWLOR.Game.Server.Perk.Armor
             return baseCooldownTime;
         }
 
-        public void OnImpact(NWPlayer oPC, NWObject oTarget)
+        public void OnImpact(NWPlayer player, NWObject target, int perkLevel)
         {
-            NWCreature npc = (oTarget.Object);
+            NWCreature npc = (target.Object);
             Effect vfx = _.EffectVisualEffect(NWScript.VFX_IMP_CHARM);
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, vfx, oTarget.Object);
+            _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, vfx, target.Object);
             
-            oPC.AssignCommand(() =>
+            player.AssignCommand(() =>
             {
                 _.ActionPlayAnimation(NWScript.ANIMATION_FIREFORGET_TAUNT, 1f, 1f);
             });
 
-            _enmity.AdjustEnmity(npc, oPC, 120);
+            _enmity.AdjustEnmity(npc, player, 120);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

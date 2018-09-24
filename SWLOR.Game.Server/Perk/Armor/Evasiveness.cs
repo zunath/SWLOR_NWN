@@ -44,9 +44,8 @@ namespace SWLOR.Game.Server.Perk.Armor
             return baseCooldownTime;
         }
 
-        public void OnImpact(NWPlayer oPC, NWObject oTarget)
+        public void OnImpact(NWPlayer player, NWObject target, int perkLevel)
         {
-            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.Evasiveness);
             int concealment;
             float length;
 
@@ -77,13 +76,13 @@ namespace SWLOR.Game.Server.Perk.Armor
             }
 
             Effect effect = _.EffectConcealment(concealment);
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, effect, oPC.Object, length);
+            _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, effect, player.Object, length);
 
             effect = _.EffectVisualEffect(NWScript.VFX_DUR_AURA_CYAN);
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, effect, oPC.Object, length);
+            _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, effect, player.Object, length);
 
             effect = _.EffectVisualEffect(NWScript.VFX_IMP_AC_BONUS);
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, effect, oPC.Object);
+            _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, effect, player.Object);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

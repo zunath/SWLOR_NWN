@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         void RemovePCCustomEffect(NWPlayer oPC, long customEffectID);
         int GetCustomEffectLevel(NWCreature creature, CustomEffectType customEffectType);
         void ApplyStance(NWPlayer player, CustomEffectType customEffect, PerkType perkType, int effectiveLevel, string data);
-        bool RemoveStance(NWPlayer player, PCCustomEffect stanceEffect = null);
+        bool RemoveStance(NWPlayer player, PCCustomEffect stanceEffect = null, bool sendMessage = true);
+        CustomEffectType GetCurrentStanceType(NWPlayer player);
     }
 }

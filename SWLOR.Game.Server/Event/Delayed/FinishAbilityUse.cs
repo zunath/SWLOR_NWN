@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Event.Delayed
 
             Data.Entities.Perk entity = _db.Perks.Single(x => x.PerkID == perkID);
             CooldownCategory cooldown = _db.CooldownCategories.SingleOrDefault(x => x.CooldownCategoryID == entity.CooldownCategoryID);
+            PerkExecutionType executionType = (PerkExecutionType) entity.ExecutionTypeID;
 
             return App.ResolveByInterface<IPerk, bool>("Perk." + entity.ScriptName, perk =>
             {
@@ -50,14 +51,14 @@ namespace SWLOR.Game.Server.Event.Delayed
                         pc.CurrentHP < 0 || pc.IsDead) // Or is dead/dying
                 {
                     pc.DeleteLocalInt(spellUUID);
-                    pc.SendMessage("Your spell has been interrupted.");
                     return false;
                 }
 
                 pc.DeleteLocalInt(spellUUID);
 
-                if ((PerkExecutionType)entity.ExecutionTypeID == PerkExecutionType.ForceAbility ||
-                    (PerkExecutionType)entity.ExecutionTypeID == PerkExecutionType.CombatAbility)
+                if (executionType == PerkExecutionType.ForceAbility ||
+                    executionType == PerkExecutionType.CombatAbility ||
+                    executionType == PerkExecutionType.Stance)
                 {
                     perk.OnImpact(pc, target, pcPerkLevel);
                     
@@ -74,7 +75,7 @@ namespace SWLOR.Game.Server.Event.Delayed
                         _ability.ApplyEnmity(pc, (target.Object), entity);
                     }
                 }
-                else
+                else if(executionType == PerkExecutionType.QueuedWeaponSkill)
                 {
                     _ability.HandleQueueWeaponSkill(pc, entity, perk);
                 }
@@ -90,12 +91,16 @@ namespace SWLOR.Game.Server.Event.Delayed
 
                 }
 
-                if (!_customEffect.DoesPCHaveCustomEffect(pc, CustomEffectType.Chainspell))
+                bool hasChainspell = _customEffect.DoesPCHaveCustomEffect(pc, CustomEffectType.Chainspell) &&
+                    executionType == PerkExecutionType.ForceAbility;
+
+                if(!hasChainspell)
                 {
                     // Mark cooldown on category
                     _ability.ApplyCooldown(pc, cooldown, perk);
                 }
                 pc.IsBusy = false;
+                pc.SetLocalInt(spellUUID, (int)SpellStatusType.Completed);
 
                 return true;
             });

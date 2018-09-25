@@ -84,6 +84,20 @@ namespace SWLOR.Game.Server.Service
                 PlayerCharacter playerEntity = _db.PlayerCharacters.Single(x => x.PlayerID == pc.GlobalID);
                 int pcPerkLevel = _perk.GetPCPerkLevel(pc, perk.PerkID);
 
+                // If player is disabling an existing stance, remove that effect.
+                if (perk.ExecutionTypeID == (int) PerkExecutionType.Stance)
+                {
+                    PCCustomEffect stanceEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == pc.GlobalID && x.CustomEffect.IsStance);
+
+                    if (stanceEffect != null && perk.PerkID == stanceEffect.StancePerkID)
+                    {
+                        if (_customEffect.RemoveStance(pc))
+                        {
+                            return;
+                        }
+                    }
+                }
+
                 if (pcPerkLevel <= 0)
                 {
                     pc.SendMessage("You do not meet the prerequisites to use this ability.");
@@ -146,28 +160,25 @@ namespace SWLOR.Game.Server.Service
                     return;
                 }
 
-                // Spells w/ casting time
+                // Force Abilities (aka Spells)
                 if (perk.PerkExecutionType.PerkExecutionTypeID == (int)PerkExecutionType.ForceAbility)
                 {
-                    CastSpell(pc, target, perk, perkAction, pcPerkLevel);
+                    ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.ForceAbility);
                 }
-                // Combat Abilities w/o casting time
+                // Combat Abilities
                 else if (perk.PerkExecutionType.PerkExecutionTypeID == (int)PerkExecutionType.CombatAbility)
                 {
-                    perkAction.OnImpact(pc, target, pcPerkLevel);
-                    ApplyEnmity(pc, target, perk);
-
-                    if (fpCost > 0)
-                    {
-                        playerEntity.CurrentFP = playerEntity.CurrentFP - fpCost;
-                        _db.SaveChanges();
-                    }
-                    ApplyCooldown(pc, perk.CooldownCategory, perkAction);
+                    ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.CombatAbility);
                 }
                 // Queued Weapon Skills
                 else if (perk.PerkExecutionType.PerkExecutionTypeID == (int)PerkExecutionType.QueuedWeaponSkill)
                 {
                     HandleQueueWeaponSkill(pc, perk, perkAction);
+                }
+                // Stances
+                else if (perk.PerkExecutionType.PerkExecutionTypeID == (int) PerkExecutionType.Stance)
+                {
+                    ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.Stance);
                 }
             });
             
@@ -194,64 +205,100 @@ namespace SWLOR.Game.Server.Service
                     break;
             }
         }
-
-        private void CastSpell(NWPlayer pc,
+        
+        private void ActivateAbility(NWPlayer pc,
                                NWObject target,
                                Data.Entities.Perk entity,
                                IPerk perk,
-                               int pcPerkLevel)
+                               int pcPerkLevel,
+                               PerkExecutionType executionType)
         {
-            string spellUUID = Guid.NewGuid().ToString("N");
+            string uuid = Guid.NewGuid().ToString("N");
             int itemBonus = _playerStat.EffectiveCastingSpeed(pc);
-            float baseCastingTime = perk.CastingTime(pc, (float)entity.BaseCastingTime);
-            float castingTime = baseCastingTime;
+            float baseActivationTime = perk.CastingTime(pc, (float)entity.BaseCastingTime);
+            float activationTime = baseActivationTime;
+            int vfxID = -1;
+            int animationID = -1;
 
-            // Casting Bonus % - Shorten casting time.
+            // Activation Bonus % - Shorten activation time.
             if (itemBonus < 0)
             {
-                float castingPercentageBonus = Math.Abs(itemBonus) * 0.01f;
-                castingTime = castingTime - (castingTime * castingPercentageBonus);
+                float activationBonus = Math.Abs(itemBonus) * 0.01f;
+                activationTime = activationTime - (activationTime * activationBonus);
             }
-            // Casting Penalty % - Increase casting time.
+            // Activation Penalty % - Increase activation time.
             else if (itemBonus > 0)
             {
-                float castingPercentageBonus = Math.Abs(itemBonus) * 0.01f;
-                castingTime = castingTime + (castingTime * castingPercentageBonus);
+                float activationPenalty = Math.Abs(itemBonus) * 0.01f;
+                activationTime = activationTime + (activationTime * activationPenalty);
             }
 
-            if (castingTime < 0.5f)
-                castingTime = 0.5f;
+            if (baseActivationTime > 0f && activationTime < 0.5f)
+                activationTime = 0.5f;
 
-            // Heavy armor increases casting time by 2x the base casting time
-            if (pc.Chest.CustomItemType == CustomItemType.HeavyArmor)
+            // Force ability armor penalties
+            if (executionType == PerkExecutionType.ForceAbility)
             {
-                castingTime = baseCastingTime * 2;
-            }
+                float armorPenalty = 0.0f;
+                string penaltyMessage = string.Empty;
+                foreach (var item in pc.EquippedItems)
+                {
+                    if (item.CustomItemType == CustomItemType.HeavyArmor)
+                    {
+                        armorPenalty = 2;
+                        penaltyMessage = "Heavy armor slows your force activation speed by 100%.";
+                        break;
+                    }
+                    else if (item.CustomItemType == CustomItemType.LightArmor)
+                    {
+                        armorPenalty = 1.25f;
+                        penaltyMessage = "Light armor slows your force activation speed by 25%.";
+                    }
+                }
 
+                if (armorPenalty > 0.0f)
+                {
+                    activationTime = baseActivationTime * armorPenalty;
+                    pc.SendMessage(penaltyMessage);
+                }
+
+            }
+            
             if (_.GetActionMode(pc.Object, ACTION_MODE_STEALTH) == 1)
                 _.SetActionMode(pc.Object, ACTION_MODE_STEALTH, 0);
 
             _.ClearAllActions();
             _biowarePosition.TurnToFaceObject(target, pc);
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY,
-                    _.EffectVisualEffect(VFX_DUR_ELEMENTAL_SHIELD),
-                    pc.Object,
-                    castingTime + 0.2f);
 
-            float animationTime = castingTime;
-            pc.AssignCommand(() => _.ActionPlayAnimation(ANIMATION_LOOPING_CONJURE1, 1.0f, animationTime - 0.1f));
+            if (executionType == PerkExecutionType.ForceAbility)
+            {
+                vfxID = VFX_DUR_ELEMENTAL_SHIELD;
+                animationID = ANIMATION_LOOPING_CONJURE1;
+            }
+            
+            if (vfxID > -1)
+            {
+                var vfx = _.EffectVisualEffect(vfxID);
+                vfx = _.TagEffect(vfx, "ACTIVATION_VFX");
+                _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, vfx, pc.Object, activationTime + 0.2f);
+            }
+            
+            if (animationID > -1)
+            {
+                pc.AssignCommand(() => _.ActionPlayAnimation(animationID, 1.0f, activationTime - 0.1f));
+            }
 
             pc.IsBusy = true;
-            CheckForSpellInterruption(pc, spellUUID, pc.Position);
-            pc.SetLocalInt(spellUUID, (int)SpellStatusType.Started);
+            CheckForSpellInterruption(pc, uuid, pc.Position);
+            pc.SetLocalInt(uuid, (int)SpellStatusType.Started);
 
-            _nwnxPlayer.StartGuiTimingBar(pc, (int)castingTime, "");
-
+            _nwnxPlayer.StartGuiTimingBar(pc, (int)activationTime, "");
+            
             int perkID = entity.PerkID;
             pc.DelayEvent<FinishAbilityUse>(
-                castingTime + 0.5f,
+                activationTime + 0.2f,
                 pc,
-                spellUUID,
+                uuid,
                 perkID,
                 target,
                 pcPerkLevel);
@@ -270,19 +317,28 @@ namespace SWLOR.Game.Server.Service
 
         private void CheckForSpellInterruption(NWPlayer pc, string spellUUID, Vector position)
         {
+            if (pc.GetLocalInt(spellUUID) == (int) SpellStatusType.Completed) return;
+
             Vector currentPosition = pc.Position;
 
             if (currentPosition.m_X != position.m_X ||
                 currentPosition.m_Y != position.m_Y ||
                 currentPosition.m_Z != position.m_Z)
             {
+                var effect = pc.Effects.SingleOrDefault(x => _.GetEffectTag(x) == "ACTIVATION_VFX");
+                if (effect != null)
+                {
+                    _.RemoveEffect(pc, effect);
+                }
+
                 _nwnxPlayer.StopGuiTimingBar(pc, "", -1);
                 pc.IsBusy = false;
                 pc.SetLocalInt(spellUUID, (int)SpellStatusType.Interrupted);
+                pc.SendMessage("Your ability has been interrupted.");
                 return;
             }
             
-            _.DelayCommand(1.0f, () => { CheckForSpellInterruption(pc, spellUUID, position); });
+            _.DelayCommand(0.5f, () => { CheckForSpellInterruption(pc, spellUUID, position); });
         }
 
         public void HandleQueueWeaponSkill(NWPlayer pc, Data.Entities.Perk entity, IPerk ability)

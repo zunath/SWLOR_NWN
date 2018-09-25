@@ -16,7 +16,7 @@
         Meditate = 12,
         Rest = 13,
         FireCell = 14,
-        // 15 is open
+        BalancedStance = 15,
         ElectricCell = 16,
         SonicCell = 17,
         AcidCell = 18,

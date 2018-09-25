@@ -110,7 +110,7 @@
         ImprovedCriticalLightsabers = 105,
         SeedPicker = 106,
         TwinVibrobladeMastery = 107,
-        // 108 is free
+        BalancedStance = 108,
         CombatModInstallationArmors = 109,
         MagicModInstallationArmors = 110,
         CraftingModInstallationArmors = 111,

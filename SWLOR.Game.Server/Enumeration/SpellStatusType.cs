@@ -3,6 +3,7 @@
     public enum SpellStatusType
     {
         Started = 1,
-        Interrupted = 2
+        Interrupted = 2,
+        Completed = 3
     }
 }

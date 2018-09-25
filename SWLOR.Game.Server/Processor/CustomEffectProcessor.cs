@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Processor
         {
             foreach (var player in NWModule.Get().Players)
             {
-                List<PCCustomEffect> effects = _db.PCCustomEffects.Where(x => x.PlayerID == player.GlobalID).ToList();
+                List<PCCustomEffect> effects = _db.PCCustomEffects.Where(x => x.PlayerID == player.GlobalID && !x.CustomEffect.IsStance).ToList();
 
                 foreach (var effect in effects)
                 {

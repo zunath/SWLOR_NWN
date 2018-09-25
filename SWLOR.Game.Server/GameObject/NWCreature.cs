@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using NWN;
@@ -134,6 +135,19 @@ namespace SWLOR.Game.Server.GameObject
 
             return false;
         }
+
+
+        public virtual IEnumerable<NWItem> EquippedItems
+        {
+            get
+            {
+                for (int slot = 0; slot < NUM_INVENTORY_SLOTS; slot++)
+                {
+                    yield return _.GetItemInSlot(slot, Object);
+                }
+            }
+        }
+
 
 
         public static implicit operator Object(NWCreature o)

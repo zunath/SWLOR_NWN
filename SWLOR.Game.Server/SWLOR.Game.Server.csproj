@@ -146,6 +146,7 @@
     <Compile Include="AI\SightAggroBehaviour.cs" />
     <Compile Include="AI\StandardBehaviour.cs" />
     <Compile Include="CustomEffect\AbsorptionFieldEffect.cs" />
+    <Compile Include="CustomEffect\BalancedStanceEffect.cs" />
     <Compile Include="CustomEffect\ElectricCellEffect.cs" />
     <Compile Include="CustomEffect\AcidCellEffect.cs" />
     <Compile Include="CustomEffect\DivineCellEffect.cs" />
@@ -689,6 +690,7 @@
     <Compile Include="Perk\OneHanded\WeaponFinesse.cs" />
     <Compile Include="Perk\Shields\BlockingRecovery.cs" />
     <Compile Include="Perk\Shields\ExpulsionManeuver.cs" />
+    <Compile Include="Perk\Stances\BalancedStance.cs" />
     <Compile Include="Perk\Survival\ExpertFarmer.cs" />
     <Compile Include="Perk\Survival\FarmingEfficiency.cs" />
     <Compile Include="Perk\Throwing\GrenadeProficiency.cs" />

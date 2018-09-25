@@ -141,8 +141,11 @@ namespace SWLOR.Game.Server.Perk.DarkSide
                 player.SendMessage("Lucky force lightning!");
             }
 
-            Effect damage = _.EffectDamage(amount);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, damage, target);
+            player.AssignCommand(() =>
+            {
+                Effect damage = _.EffectDamage(amount);
+                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, damage, target);
+            });
 
             if (length > 0.0f && dotAmount > 0)
             {

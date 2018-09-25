@@ -37,6 +37,8 @@ namespace SWLOR.Game.Server.Data.Entities
         [StringLength(64)]
         public string WornOffMessage { get; set; }
 
+        public bool IsStance { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PCCustomEffect> PCCustomEffects { get; set; }
     }

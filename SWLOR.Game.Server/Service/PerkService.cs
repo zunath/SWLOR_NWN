@@ -336,6 +336,9 @@ namespace SWLOR.Game.Server.Service
                 case PerkExecutionType.QueuedWeaponSkill:
                     description += _color.Orange("Type: ") + "Queued Attack\n";
                     break;
+                case PerkExecutionType.Stance:
+                    description += _color.Orange("Type: ") + "Stance\n";
+                    break;
             }
 
             if (perk.BaseFPCost > 0)

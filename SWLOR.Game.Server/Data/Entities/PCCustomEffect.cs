@@ -25,6 +25,8 @@ namespace SWLOR.Game.Server.Data.Entities
         [StringLength(32)]
         public string Data { get; set; }
 
+        public int? StancePerkID { get; set; }
+
         public virtual CustomEffect CustomEffect { get; set; }
 
         public virtual PlayerCharacter PlayerCharacter { get; set; }

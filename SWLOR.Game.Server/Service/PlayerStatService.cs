@@ -247,7 +247,7 @@ namespace SWLOR.Game.Server.Service
             int lightRank = armorSkills.Single(x => x.SkillID == (int) SkillType.LightArmor).Rank;
             int forceRank = armorSkills.Single(x => x.SkillID == (int)SkillType.ForceArmor).Rank;
 
-            int ac = 0;
+            int baseAC = 0;
             for (int slot = 0; slot < NUM_INVENTORY_SLOTS; slot++)
             {
                 NWItem oItem = _.GetItemInSlot(slot, player.Object);
@@ -282,10 +282,25 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 int itemAC = oItem.AC + oItem.CustomAC;
-                itemAC = CalculateAdjustedValue(itemAC, oItem.RecommendedLevel, skillRankToUse);
-                ac += itemAC;
+                itemAC = CalculateAdjustedValue(itemAC, oItem.RecommendedLevel, skillRankToUse, 0);
+                baseAC += itemAC;
             }
-            return ac + _customEffect.CalculateEffectAC(player);
+            baseAC = baseAC + _customEffect.CalculateEffectAC(player);
+            int totalAC = _.GetAC(player);
+
+            // Shield Oath and Sword Oath affect a percentage of the TOTAL armor class on a creature.
+            var stance = _customEffect.GetCurrentStanceType(player);
+            if (stance == CustomEffectType.ShieldOath)
+            {
+                baseAC = baseAC + (int)(totalAC * 0.2f - baseAC);
+            }
+            else if (stance == CustomEffectType.SwordOath)
+            {
+                baseAC = baseAC + (int)(totalAC * -0.3f - baseAC);
+            }
+
+
+            return baseAC;
         }
 
         public int EffectiveCastingSpeed(NWPlayer player)
@@ -335,6 +350,13 @@ namespace SWLOR.Game.Server.Service
 
             if (rate < 0.5f) rate = 0.5f;
             else if (rate > 1.5f) rate = 1.5f;
+
+            var stance = _customEffect.GetCurrentStanceType(player);
+
+            if (stance == CustomEffectType.ShieldOath)
+            {
+                rate = rate + 0.2f;
+            }
 
             return rate;
 

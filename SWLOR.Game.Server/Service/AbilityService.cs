@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Service
         private readonly INWNXDamage _nwnxDamage;
         private readonly ICustomEffectService _customEffect;
         private readonly IPlayerStatService _playerStat;
+        private readonly IItemService _item;
 
         public AbilityService(INWScript script, 
             IDataContext db,
@@ -51,7 +52,8 @@ namespace SWLOR.Game.Server.Service
             INWNXEvents nwnxEvents,
             INWNXDamage nwnxDamage,
             ICustomEffectService customEffect,
-            IPlayerStatService playerStat)
+            IPlayerStatService playerStat,
+            IItemService item)
         {
             _ = script;
             _db = db;
@@ -67,6 +69,7 @@ namespace SWLOR.Game.Server.Service
             _nwnxDamage = nwnxDamage;
             _customEffect = customEffect;
             _playerStat = playerStat;
+            _item = item;
         }
         
         public void OnModuleUseFeat()
@@ -512,6 +515,7 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleApplyDamage()
         {
+            HandleStances();
             HandleApplySneakAttackDamage();
             HandleBattlemagePerk();
             HandleAbsorptionFieldEffect();
@@ -672,7 +676,40 @@ namespace SWLOR.Game.Server.Service
                     _.RemoveEffect(self, effect);
                 }
             }
+        }
 
+        private void HandleStances()
+        {
+            DamageData data = _nwnxDamage.GetDamageEventData();
+            NWPlayer damager = data.Damager.Object;
+            NWPlayer receiver = Object.OBJECT_SELF;
+            NWItem damagerWeapon = _.GetLastWeaponUsed(damager);
+
+            if (damager.IsPlayer)
+            {
+                CustomEffectType stance = _customEffect.GetCurrentStanceType(damager);
+
+                switch (stance)
+                {
+                    case CustomEffectType.ShieldOath:
+                        data.AdjustAllByPercent(-0.30f);
+                        break;
+                    case CustomEffectType.SwordOath:
+                        
+                        if (_item.MeleeWeaponTypes.Contains(damagerWeapon.BaseItemType))
+                        {
+                            data.AdjustAllByPercent(0.20f);
+                        }
+                        break;
+                }
+            }
+            
+            if (receiver.IsPlayer)
+            {
+                CustomEffectType stance = _customEffect.GetCurrentStanceType(receiver);
+            }
+
+            _nwnxDamage.SetDamageEventData(data);
         }
 
     }

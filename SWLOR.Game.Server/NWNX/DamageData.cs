@@ -33,5 +33,34 @@ namespace SWLOR.Game.Server.NWNX
                             (Positive < 0 ? 0 : Positive) +
                             (Sonic < 0 ? 0 : Sonic) +
                             (Base < 0 ? 0 : Base);
+
+        public void AdjustAllByPercent(float percent)
+        {
+            Bludgeoning = CalculateAdjustment(Bludgeoning, percent);
+            Pierce = CalculateAdjustment(Pierce, percent);
+            Slash = CalculateAdjustment(Slash, percent);
+            Magical = CalculateAdjustment(Magical, percent);
+            Acid = CalculateAdjustment(Acid, percent);
+            Cold = CalculateAdjustment(Cold, percent);
+            Divine = CalculateAdjustment(Divine, percent);
+            Electrical = CalculateAdjustment(Electrical, percent);
+            Fire = CalculateAdjustment(Fire, percent);
+            Negative = CalculateAdjustment(Negative, percent);
+            Positive = CalculateAdjustment(Positive, percent);
+            Sonic = CalculateAdjustment(Sonic, percent);
+            Base = CalculateAdjustment(Base, percent);
+        }
+
+        private static int CalculateAdjustment(int original, float percent)
+        {
+            bool show = original > -1;
+            int output = (int)(original + (original * percent));
+            if (original <= 0 && show)
+                output = 0;
+            else if (original <= 0 && !show)
+                output = -1;
+
+            return output;
+        }
     }
 }

@@ -133,7 +133,9 @@
         Sturdiness = 128,
         LightsaberProficiency = 129,
         SpeedyScanner = 130,
-        CrossCut = 131
+        CrossCut = 131,
+        ShieldOath = 132,
+        SwordOath = 133
     }
 
 }

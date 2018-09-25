@@ -2,6 +2,7 @@
 {
     public enum CustomEffectType
     {
+        None = 0,
         Bleeding = 1,
         Burning = 2,
         Poison = 3,
@@ -22,6 +23,8 @@
         AcidCell = 18,
         IceCell = 19,
         DivineCell = 20,
-        PlasmaCell = 21
+        PlasmaCell = 21,
+        ShieldOath = 22,
+        SwordOath = 23
     }
 }

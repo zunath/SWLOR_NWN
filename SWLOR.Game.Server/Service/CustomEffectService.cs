@@ -82,7 +82,10 @@ namespace SWLOR.Game.Server.Service
             var stance = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CustomEffect.IsStance);
             if (stance?.StancePerkID == null) return;
 
-            ApplyStance(player, (CustomEffectType)stance.CustomEffectID, (PerkType)stance.StancePerkID, stance.EffectiveLevel, stance.Data);
+            App.ResolveByInterface<ICustomEffect>("CustomEffect." + stance.CustomEffect.ScriptHandler, handler =>
+            {
+                handler?.Apply(player, player, stance.EffectiveLevel);
+            });
         }
 
         public void OnModuleLoad()
@@ -183,21 +186,35 @@ namespace SWLOR.Game.Server.Service
             
         }
 
-        public bool RemoveStance(NWPlayer player, PCCustomEffect stanceEffect = null)
+        public CustomEffectType GetCurrentStanceType(NWPlayer player)
+        {
+            var stanceEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CustomEffect.IsStance);
+            if (stanceEffect == null) return CustomEffectType.None;
+
+            return (CustomEffectType) stanceEffect.CustomEffectID;
+        }
+
+        public bool RemoveStance(NWPlayer player, PCCustomEffect stanceEffect = null, bool sendMessage = true)
         {
             if (stanceEffect == null)
                 stanceEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CustomEffect.IsStance);
             if (stanceEffect == null) return false;
-
-            player.SendMessage("You return to your normal stance.");
-
-            App.ResolveByInterface<ICustomEffect>("CustomEffect." + stanceEffect.CustomEffect.ScriptHandler, handler =>
-            {
-                handler?.WearOff(player, player, stanceEffect.EffectiveLevel, stanceEffect.Data);
-            });
+            
+            if(sendMessage)
+                player.SendMessage("You return to your normal stance.");
+            
+            int effectiveLevel = stanceEffect.EffectiveLevel;
+            string data = stanceEffect.Data;
+            string scriptHandler = stanceEffect.CustomEffect.ScriptHandler;
 
             _db.PCCustomEffects.Remove(stanceEffect);
             _db.SaveChanges();
+
+            App.ResolveByInterface<ICustomEffect>("CustomEffect." + scriptHandler, handler =>
+            {
+                handler?.WearOff(player, player, effectiveLevel, data);
+            });
+
 
             return true;
         }
@@ -207,28 +224,29 @@ namespace SWLOR.Game.Server.Service
             var dbEffect = _db.CustomEffects.Single(x => x.CustomEffectID == (int) customEffect);
             var pcStanceEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CustomEffect.IsStance);
             int customEffectID = (int) customEffect;
-
-            // Player selected to cancel their stance.
+            
+            // Player selected to cancel their stance. Cancel it and end.
             if (pcStanceEffect != null && pcStanceEffect.CustomEffectID == customEffectID && pcStanceEffect.EffectiveLevel == effectiveLevel)
             {
                 RemoveStance(player, pcStanceEffect);
                 return;
             }
-
-            if (pcStanceEffect == null)
+            // Otherwise remove existing stance
+            else if (pcStanceEffect != null)
             {
-                pcStanceEffect = new PCCustomEffect
-                {
-                    PlayerID = player.GlobalID,
-                    Ticks = -1
-                };
-
-                _db.PCCustomEffects.Add(pcStanceEffect);
+                RemoveStance(player, pcStanceEffect, false);
             }
 
-            bool isUpgrade = pcStanceEffect.EffectiveLevel < effectiveLevel && pcStanceEffect.EffectiveLevel > 0;
+            pcStanceEffect = new PCCustomEffect
+            {
+                PlayerID = player.GlobalID,
+                Ticks = -1
+            };
 
+            _db.PCCustomEffects.Add(pcStanceEffect);
+            
             // Player selected to switch stances
+            
             pcStanceEffect.CustomEffectID = customEffectID;
             pcStanceEffect.CasterNWNObjectID = _.ObjectToString(player);
             pcStanceEffect.EffectiveLevel = effectiveLevel;
@@ -241,6 +259,9 @@ namespace SWLOR.Game.Server.Service
                 if (string.IsNullOrWhiteSpace(data))
                     data = handler?.Apply(player, player, effectiveLevel);
                 
+                if(!string.IsNullOrWhiteSpace(pcStanceEffect.CustomEffect.StartMessage))
+                    player.SendMessage(pcStanceEffect.CustomEffect.StartMessage);
+
                 if (string.IsNullOrWhiteSpace(data)) data = string.Empty;
                 pcStanceEffect.Data = data;
                 _db.SaveChanges();
@@ -249,10 +270,6 @@ namespace SWLOR.Game.Server.Service
                 if (_state.PCEffectsForRemoval.Contains(pcStanceEffect.PCCustomEffectID))
                     _state.PCEffectsForRemoval.Remove(pcStanceEffect.PCCustomEffectID);
             });
-            if (isUpgrade)
-            {
-                player.SendMessage("Your active stance has been upgraded.");
-            }
         }
 
         public bool DoesPCHaveCustomEffect(NWPlayer oPC, int customEffectID)

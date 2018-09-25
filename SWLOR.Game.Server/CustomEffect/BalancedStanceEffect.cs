@@ -15,9 +15,17 @@ namespace SWLOR.Game.Server.CustomEffect
             _ = script;
         }
 
-        public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
+        public string Apply(NWCreature oCaster, NWObject target, int effectiveLevel)
         {
-            ApplyStanceEffect(oTarget);
+            if (target.Effects.Any(x => _.GetEffectTag(x) == "BALANCED_STANCE"))
+            {
+                return null;
+            }
+
+            var effect = _.EffectImmunity(IMMUNITY_TYPE_KNOCKDOWN);
+            effect = _.TagEffect(effect, "BALANCED_STANCE");
+
+            _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, effect, target);
             return null;
         }
 
@@ -31,19 +39,6 @@ namespace SWLOR.Game.Server.CustomEffect
             if (effect == null) return;
 
             _.RemoveEffect(oCaster, effect);
-        }
-
-        private void ApplyStanceEffect(NWObject target)
-        {
-            if (target.Effects.Any(x => _.GetEffectTag(x) == "BALANCED_STANCE"))
-            {
-                return;
-            }
-
-            var effect = _.EffectImmunity(IMMUNITY_TYPE_KNOCKDOWN);
-            effect = _.TagEffect(effect, "BALANCED_STANCE");
-
-            _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, effect, target);
         }
     }
 }

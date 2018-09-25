@@ -150,6 +150,7 @@
     <Compile Include="CustomEffect\ElectricCellEffect.cs" />
     <Compile Include="CustomEffect\AcidCellEffect.cs" />
     <Compile Include="CustomEffect\DivineCellEffect.cs" />
+    <Compile Include="CustomEffect\ShieldOathEffect.cs" />
     <Compile Include="CustomEffect\SonicCellEffect.cs" />
     <Compile Include="CustomEffect\IceCellEffect.cs" />
     <Compile Include="CustomEffect\FireCellEffect.cs" />
@@ -167,6 +168,7 @@
     <Compile Include="CustomEffect\PoisonEffect.cs" />
     <Compile Include="CustomEffect\RestEffect.cs" />
     <Compile Include="CustomEffect\ShieldBoostEffect.cs" />
+    <Compile Include="CustomEffect\SwordOathEffect.cs" />
     <Compile Include="Data\Entities\Area.cs" />
     <Compile Include="Data\Entities\BaseStructure.cs" />
     <Compile Include="Data\Entities\BaseStructureType.cs" />
@@ -691,6 +693,8 @@
     <Compile Include="Perk\Shields\BlockingRecovery.cs" />
     <Compile Include="Perk\Shields\ExpulsionManeuver.cs" />
     <Compile Include="Perk\Stances\BalancedStance.cs" />
+    <Compile Include="Perk\Stances\ShieldOath.cs" />
+    <Compile Include="Perk\Stances\SwordOath.cs" />
     <Compile Include="Perk\Survival\ExpertFarmer.cs" />
     <Compile Include="Perk\Survival\FarmingEfficiency.cs" />
     <Compile Include="Perk\Throwing\GrenadeProficiency.cs" />

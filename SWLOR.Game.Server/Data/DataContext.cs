@@ -86,6 +86,7 @@ namespace SWLOR.Game.Server.Data
         public virtual IDbSet<PerkLevel> PerkLevels { get; set; }
         public virtual IDbSet<PerkLevelSkillRequirement> PerkLevelSkillRequirements { get; set; }
         public virtual IDbSet<Entities.Perk> Perks { get; set; }
+        public virtual IDbSet<PCPerkRefund> PCPerkRefunds { get; set; }
         public virtual IDbSet<Plant> Plants { get; set; }
         public virtual IDbSet<PlayerCharacter> PlayerCharacters { get; set; }
         public virtual IDbSet<QuestKillTargetList> QuestKillTargetLists { get; set; }
@@ -360,10 +361,20 @@ namespace SWLOR.Game.Server.Data
                 .HasMany(e => e.PerkLevels)
                 .WithRequired(e => e.Perk)
                 .WillCascadeOnDelete(false);
+            
+            modelBuilder.Entity<Entities.Perk>()
+                .HasMany(e => e.PCPerkRefunds)
+                .WithRequired(e => e.Perk)
+                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<Plant>()
                 .HasMany(e => e.GrowingPlants)
                 .WithRequired(e => e.Plant)
+                .WillCascadeOnDelete(false);
+            
+            modelBuilder.Entity<PlayerCharacter>()
+                .HasMany(e => e.PCPerkRefunds)
+                .WithRequired(e => e.PlayerCharacter)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<PlayerCharacter>()

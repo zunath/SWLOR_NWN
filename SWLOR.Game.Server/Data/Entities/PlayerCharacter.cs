@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Data.Entities
             PCMapPins = new HashSet<PCMapPin>();
             PCObjectVisibilities = new HashSet<PCObjectVisibility>();
             PCOverflowItems = new HashSet<PCOverflowItem>();
+            PCPerkRefunds = new HashSet<PCPerkRefund>();
             PCPerks = new HashSet<PCPerk>();
             PCQuestKillTargetProgresses = new HashSet<PCQuestKillTargetProgress>();
             PCQuestItemProgresses = new HashSet<PCQuestItemProgress>();
@@ -109,6 +110,9 @@ namespace SWLOR.Game.Server.Data.Entities
         
         public int? PrimaryResidencePCBaseStructureID { get; set; }
 
+        [Column(TypeName = "datetime2")]
+        public DateTime? DatePerkRefundAvailable { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Area> NortheastAreas { get; set; }
 
@@ -152,6 +156,9 @@ namespace SWLOR.Game.Server.Data.Entities
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PCOverflowItem> PCOverflowItems { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PCPerkRefund> PCPerkRefunds { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PCPerk> PCPerks { get; set; }

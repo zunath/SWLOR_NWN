@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Data.Entities
         public Perk()
         {
             CraftBlueprints = new HashSet<CraftBlueprint>();
+            PCPerkRefunds = new HashSet<PCPerkRefund>();
             PCPerks = new HashSet<PCPerk>();
             PerkLevels = new HashSet<PerkLevel>();
         }
@@ -58,6 +59,9 @@ namespace SWLOR.Game.Server.Data.Entities
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CraftBlueprint> CraftBlueprints { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PCPerkRefund> PCPerkRefunds { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PCPerk> PCPerks { get; set; }

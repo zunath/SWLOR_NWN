@@ -132,6 +132,7 @@
     <Compile Include="Conversation\LockedDoor.cs" />
     <Compile Include="Conversation\ManageLease.cs" />
     <Compile Include="Conversation\Outfit.cs" />
+    <Compile Include="Conversation\PerkRefund.cs" />
     <Compile Include="Conversation\PlaceStructure.cs" />
     <Compile Include="Conversation\QuestRewardSelection.cs" />
     <Compile Include="Conversation\RestMenu.cs" />
@@ -252,6 +253,7 @@
     <Compile Include="Data\Entities\SpawnObject.cs" />
     <Compile Include="Data\Entities\SpawnObjectType.cs" />
     <Compile Include="Data\Entities\PCObjectVisibility.cs" />
+    <Compile Include="Data\Entities\PCPerkRefund.cs" />
     <Compile Include="Enumeration\AddItemPropertyPolicy.cs" />
     <Compile Include="Enumeration\AreaSector.cs" />
     <Compile Include="Enumeration\BackgroundType.cs" />
@@ -326,6 +328,7 @@
     <Compile Include="Extension\BehaviourTreeBuilderExtensions.cs" />
     <Compile Include="Item\Medicine\StimPack.cs" />
     <Compile Include="Item\ModItem.cs" />
+    <Compile Include="Item\PerkRefund.cs" />
     <Compile Include="Item\ResourceHarvester.cs" />
     <Compile Include="Item\ResourceScanner.cs" />
     <Compile Include="Item\StructureItem.cs" />

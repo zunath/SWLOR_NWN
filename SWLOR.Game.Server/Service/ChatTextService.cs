@@ -52,6 +52,11 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            if (coloringText.Length > 0)
+            {
+                finalText += coloringText;
+            }
+
             _.SetPCChatMessage(finalText);
         }
 

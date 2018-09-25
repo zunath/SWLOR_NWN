@@ -110,6 +110,8 @@ namespace SWLOR.Game.Server.Service
         {
             if (!sender.IsPlayer && !sender.IsDM) return;
             string text = _nwnxChat.GetMessage();
+            if (string.IsNullOrWhiteSpace(text)) return;
+
             int mode = _nwnxChat.GetChannel();
             int channel = ConvertNWNXChatChannelIDToDatabaseID(mode);
             NWObject recipient = _nwnxChat.GetTarget();

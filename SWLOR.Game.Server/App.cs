@@ -201,6 +201,7 @@ namespace SWLOR.Game.Server
             builder.RegisterType<BaseService>().As<IBaseService>();
             builder.RegisterType<BehaviourService>().As<IBehaviourService>();
             builder.RegisterType<ChatCommandService>().As<IChatCommandService>();
+            builder.RegisterType<ChatTextService>().As<IChatTextService>();
             builder.RegisterType<ColorTokenService>().As<IColorTokenService>();
             builder.RegisterType<ComponentBonusService>().As<IComponentBonusService>();
             builder.RegisterType<CraftService>().As<ICraftService>();

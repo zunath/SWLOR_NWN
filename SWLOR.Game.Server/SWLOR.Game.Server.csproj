@@ -926,6 +926,7 @@
     <Compile Include="Service\BaseService.cs" />
     <Compile Include="Service\BehaviourService.cs" />
     <Compile Include="Service\ChatCommandService.cs" />
+    <Compile Include="Service\ChatTextService.cs" />
     <Compile Include="Service\ColorTokenService.cs" />
     <Compile Include="Service\ComponentBonusService.cs" />
     <Compile Include="Service\Contracts\IAbilityService.cs" />
@@ -1013,6 +1014,7 @@
     <Compile Include="Service\DialogService.cs" />
     <Compile Include="Service\Contracts\IDialogService.cs" />
     <Compile Include="Service\DurabilityService.cs" />
+    <Compile Include="Service\Contracts\IChatTextService.cs" />
     <Compile Include="Service\PlayerStatService.cs" />
     <Compile Include="Service\EnmityService.cs" />
     <Compile Include="Service\ErrorService.cs" />

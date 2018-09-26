@@ -240,7 +240,6 @@ namespace SWLOR.Game.Server
             builder.RegisterType<SerializationService>().As<ISerializationService>();
             builder.RegisterType<SkillService>().As<ISkillService>().SingleInstance();
             builder.RegisterType<SpawnService>().As<ISpawnService>();
-            builder.RegisterType<StorageService>().As<IStorageService>();
             builder.RegisterType<TimeService>().As<ITimeService>();
             
             // Interfaces

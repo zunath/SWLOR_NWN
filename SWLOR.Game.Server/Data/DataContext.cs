@@ -34,6 +34,8 @@ namespace SWLOR.Game.Server.Data
         public virtual IDbSet<Attribute> Attributes { get; set; }
         public virtual IDbSet<AuthorizedDM> AuthorizedDMs { get; set; }
         public virtual IDbSet<BaseItemType> BaseItemTypes { get; set; }
+        public virtual IDbSet<Bank> Banks { get; set; }
+        public virtual IDbSet<BankItem> BankItems { get; set; }
         public virtual IDbSet<BuildingStyle> BuildingStyles { get; set; }
         public virtual IDbSet<ChatChannelsDomain> ChatChannelsDomains { get; set; }
         public virtual IDbSet<ChatLog> ChatLogs { get; set; }
@@ -105,8 +107,6 @@ namespace SWLOR.Game.Server.Data
         public virtual IDbSet<SpawnObject> SpawnObjects { get; set; }
         public virtual IDbSet<SpawnObjectType> SpawnObjectTypes { get; set; }
         public virtual IDbSet<Spawn> Spawns { get; set; }
-        public virtual IDbSet<StorageContainer> StorageContainers { get; set; }
-        public virtual IDbSet<StorageItem> StorageItems { get; set; }
         public virtual IDbSet<User> Users { get; set; }
         
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -611,9 +611,14 @@ namespace SWLOR.Game.Server.Data
                 .WithRequired(e => e.Skill)
                 .WillCascadeOnDelete(false);
 
-            modelBuilder.Entity<StorageContainer>()
-                .HasMany(e => e.StorageItems)
-                .WithRequired(e => e.StorageContainer)
+            modelBuilder.Entity<Bank>()
+                .HasMany(e => e.BankItems)
+                .WithRequired(e => e.Bank)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PlayerCharacter>()
+                .HasMany(e => e.BankItems)
+                .WithRequired(e => e.PlayerCharacter)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<SpawnObjectType>()

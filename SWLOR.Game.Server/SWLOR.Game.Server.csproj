@@ -236,8 +236,6 @@
     <Compile Include="Data\Entities\Skill.cs" />
     <Compile Include="Data\Entities\SkillCategory.cs" />
     <Compile Include="Data\Entities\SkillXPRequirement.cs" />
-    <Compile Include="Data\Entities\StorageContainer.cs" />
-    <Compile Include="Data\Entities\StorageItem.cs" />
     <Compile Include="Data\Entities\User.cs" />
     <Compile Include="Data\Contracts\IDataContext.cs" />
     <Compile Include="Data\SqlResults\TotalSkillXPResult.cs" />
@@ -254,6 +252,8 @@
     <Compile Include="Data\Entities\SpawnObjectType.cs" />
     <Compile Include="Data\Entities\PCObjectVisibility.cs" />
     <Compile Include="Data\Entities\PCPerkRefund.cs" />
+    <Compile Include="Data\Entities\Bank.cs" />
+    <Compile Include="Data\Entities\BankItem.cs" />
     <Compile Include="Enumeration\AddItemPropertyPolicy.cs" />
     <Compile Include="Enumeration\AreaSector.cs" />
     <Compile Include="Enumeration\BackgroundType.cs" />
@@ -724,6 +724,7 @@
     <Compile Include="Perk\Weapons\ImprovedCritical.cs" />
     <Compile Include="Perk\Engineering\SpeedyEngineering.cs" />
     <Compile Include="Perk\Engineering\EngineeringBlueprints.cs" />
+    <Compile Include="Placeable\Bank\OnClosed.cs" />
     <Compile Include="Placeable\ControlTower\OnClicked.cs" />
     <Compile Include="Placeable\ControlTower\OnDamaged.cs" />
     <Compile Include="Placeable\ControlTower\OnHeartbeat.cs" />
@@ -867,8 +868,8 @@
     <Compile Include="Placeable\SearchContainer\OnOpened.cs" />
     <Compile Include="Placeable\SearchContainer\OnUsed.cs" />
     <Compile Include="Placeable\Sit.cs" />
-    <Compile Include="Placeable\StorageContainer\OnDisturbed.cs" />
-    <Compile Include="Placeable\StorageContainer\OnOpened.cs" />
+    <Compile Include="Placeable\Bank\OnDisturbed.cs" />
+    <Compile Include="Placeable\Bank\OnOpened.cs" />
     <Compile Include="Placeable\Stores\GenericStore.cs" />
     <Compile Include="Placeable\StructureRubble\OnDisturbed.cs" />
     <Compile Include="Placeable\StructureStorage\OnClosed.cs" />
@@ -1006,7 +1007,6 @@
     <Compile Include="Service\Contracts\ISearchService.cs" />
     <Compile Include="Service\Contracts\ISerializationService.cs" />
     <Compile Include="Service\Contracts\ISkillService.cs" />
-    <Compile Include="Service\Contracts\IStorageService.cs" />
     <Compile Include="Service\CraftService.cs" />
     <Compile Include="Service\CreatureCorpseService.cs" />
     <Compile Include="Service\CustomEffectService.cs" />
@@ -1062,7 +1062,6 @@
     <Compile Include="Service\SerializationService.cs" />
     <Compile Include="Service\SkillService.cs" />
     <Compile Include="Service\SpawnService.cs" />
-    <Compile Include="Service\StorageService.cs" />
     <Compile Include="Service\AreaService.cs" />
     <Compile Include="Service\TimeService.cs" />
     <Compile Include="SpawnRule\Contracts\ISpawnRule.cs" />

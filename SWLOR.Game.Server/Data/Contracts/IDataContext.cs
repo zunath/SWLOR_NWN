@@ -86,8 +86,8 @@ namespace SWLOR.Game.Server.Data.Contracts
         IDbSet<SkillCategory> SkillCategories { get; set; }
         IDbSet<Skill> Skills { get; set; }
         IDbSet<SkillXPRequirement> SkillXPRequirements { get; set; }
-        IDbSet<StorageContainer> StorageContainers { get; set; }
-        IDbSet<StorageItem> StorageItems { get; set; }
+        IDbSet<Bank> Banks { get; set; }
+        IDbSet<BankItem> BankItems { get; set; }
         IDbSet<SpawnObject> SpawnObjects { get; set; }
         IDbSet<SpawnObjectType> SpawnObjectTypes { get; set; }
         IDbSet<Spawn> Spawns { get; set; }

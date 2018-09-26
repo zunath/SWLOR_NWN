@@ -1,19 +1,21 @@
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace SWLOR.Game.Server.Data.Entities
 {
-    public partial class StorageContainer
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Data.Entity.Spatial;
+
+    public partial class Bank
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public StorageContainer()
+        public Bank()
         {
-            StorageItems = new HashSet<StorageItem>();
+            BankItems = new HashSet<BankItem>();
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int StorageContainerID { get; set; }
+        public int BankID { get; set; }
 
         [Required]
         [StringLength(255)]
@@ -28,6 +30,6 @@ namespace SWLOR.Game.Server.Data.Entities
         public string AreaResref { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<StorageItem> StorageItems { get; set; }
+        public virtual ICollection<BankItem> BankItems { get; set; }
     }
 }

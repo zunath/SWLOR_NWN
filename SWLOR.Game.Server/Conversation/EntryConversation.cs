@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Conversation
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
             DialogPage mainPage = new DialogPage("Are you ready to enter the game world? This is the LAST chance for you to use the '/customize' chat command to change your appearance.\n\nAre you sure you want to proceed?",
-                "Enter the Game");
+                "Customize my character",
+                "Enter the game");
 
             dialog.AddPage("MainPage", mainPage);
             return dialog;
@@ -35,7 +36,10 @@ namespace SWLOR.Game.Server.Conversation
         {
             switch (responseID)
             {
-                case 1:
+                case 1: // Customize my character
+                    SwitchConversation("CharacterCustomization");
+                    break;
+                case 2: // Enter the game
                     NWObject waypoint = _.GetObjectByTag("ENTRY_STARTING_WP");
                     player.AssignCommand(() =>
                     {

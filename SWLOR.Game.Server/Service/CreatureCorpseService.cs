@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Service
                     continue;
 
                 NWItem item = _.GetItemInSlot(slot, self);
-                if (item.IsValid)
+                if (item.IsValid && !item.IsCursed && item.IsDroppable)
                 {
                     NWItem copy = _.CopyItem(item, container, TRUE);
 

@@ -132,7 +132,8 @@ namespace SWLOR.Game.Server.Conversation
             PlayerCharacter playerEntity = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
             int totalSkillCount = _db.PCSkills.Where(x => x.PlayerID == player.GlobalID).Sum(s => s.Rank);
 
-            string header = _color.Green("Name: ") + player.Name + "\n\n";
+            string header = _color.Green("Name: ") + player.Name + "\n";
+            header += _color.Green("Association: ") + playerEntity.Association.Name + "\n\n";
             header += _color.Green("Skill Points: ") + totalSkillCount + " / " + _skill.SkillCap + "\n";
             header += _color.Green("Unallocated SP: ") + playerEntity.UnallocatedSP + "\n";
             header += _color.Green("FP: ") + _menu.BuildBar(playerEntity.CurrentFP, playerEntity.MaxFP, 100, _color.TokenStart(32, 223, 219)) + "\n";

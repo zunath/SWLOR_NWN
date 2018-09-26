@@ -5,6 +5,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using System.Linq;
+using SWLOR.Game.Server.Enumeration;
 using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.AI.AIComponent
@@ -31,7 +32,9 @@ namespace SWLOR.Game.Server.AI.AIComponent
 
             if (_enmity.IsEnmityTableEmpty(self) ||
                 _.GetMovementRate(self.Object) == 1 || // 1 = Immobile
-                self.HasAnyEffect(EFFECT_TYPE_DAZED))  // Dazed
+                self.HasAnyEffect(EFFECT_TYPE_DAZED) ||  // Dazed
+                self.RightHand.CustomItemType == CustomItemType.BlasterRifle ||
+                self.RightHand.CustomItemType == CustomItemType.BlasterPistol)
             {
                 if (self.Data.ContainsKey("WarpToTargetIfStuck_Position"))
                     self.Data.Remove("WarpToTargetIfStuck_Position");

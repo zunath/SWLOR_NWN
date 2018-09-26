@@ -114,6 +114,8 @@ namespace SWLOR.Game.Server.Data.Entities
         [Column(TypeName = "datetime2")]
         public DateTime? DatePerkRefundAvailable { get; set; }
 
+        public int AssociationID { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Area> NortheastAreas { get; set; }
 
@@ -125,6 +127,8 @@ namespace SWLOR.Game.Server.Data.Entities
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Area> SouthwestAreas { get; set; }
+
+        public virtual Association Association { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BankItem> BankItems { get; set; }
@@ -198,6 +202,5 @@ namespace SWLOR.Game.Server.Data.Entities
         public virtual ICollection<PCBaseStructurePermission> PCBaseStructurePermissions { get; set; }
 
         public virtual PCBaseStructure PrimaryResidencePCBaseStructure { get; set; }
-
     }
 }

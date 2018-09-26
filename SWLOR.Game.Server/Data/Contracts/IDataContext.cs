@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Data.Contracts
     {
         IDbSet<Area> Areas { get; set; }
         IDbSet<AreaWalkmesh> AreaWalkmeshes { get; set; }
+        IDbSet<Association> Associations { get; set; }
         IDbSet<BaseStructure> BaseStructures { get; set; }
         IDbSet<BaseStructureType> BaseStructureTypes { get; set; }
         IDbSet<PCBasePermission> PCBasePermissions { get; set; }

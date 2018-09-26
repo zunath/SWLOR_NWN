@@ -154,7 +154,8 @@ namespace SWLOR.Game.Server.Service
                     new SqlParameter("PlayerID", player.GlobalID));
 
                 _race.ApplyDefaultAppearance(player);
-
+                _nwnxCreature.SetAlignmentLawChaos(player, 50);
+                _nwnxCreature.SetAlignmentGoodEvil(player, 50);
                 _background.ApplyBackgroundBonuses(player);
 
                 _stat.ApplyStatChanges(player, null, true);
@@ -168,6 +169,56 @@ namespace SWLOR.Game.Server.Service
 
         private PlayerCharacter CreateDBPCEntity(NWPlayer player)
         {
+            AssociationType assType; 
+            int goodEvil = _.GetAlignmentGoodEvil(player);
+            int lawChaos = _.GetAlignmentLawChaos(player);
+
+            // Jedi Order -- Mandalorian -- Sith Empire
+            if (goodEvil >= 70 && goodEvil <= 100 && lawChaos >= 70 && lawChaos <= 100)
+            {
+                assType = AssociationType.JediOrder;
+            }
+            else if (goodEvil >= 70 && goodEvil <= 100 && lawChaos >= 31 && lawChaos <= 69)
+            {
+                assType = AssociationType.Mandalorian;
+            }
+            else if (goodEvil >= 70 && goodEvil <= 100 && lawChaos >= 0 && lawChaos <= 30)
+            {
+                assType = AssociationType.SithEmpire;
+            }
+
+            // Smugglers -- Unaligned -- Hutt Cartel
+            else if (goodEvil >= 31 && goodEvil <= 69 && lawChaos >= 70 && lawChaos <= 100)
+            {
+                assType = AssociationType.Smugglers;
+            }
+            else if (goodEvil >= 31 && goodEvil <= 69 && lawChaos >= 31 && lawChaos <= 69)
+            {
+                assType = AssociationType.Unaligned;
+            }
+            else if (goodEvil >= 31 && goodEvil <= 69 && lawChaos >= 0 && lawChaos <= 30)
+            {
+                assType = AssociationType.HuttCartel;
+            }
+
+            // Republic -- Czerka -- Sith Order
+            else if (goodEvil >= 0 && goodEvil <= 30 && lawChaos >= 70 && lawChaos <= 100)
+            {
+                assType = AssociationType.Republic;
+            }
+            else if (goodEvil >= 0 && goodEvil <= 30 && lawChaos >= 31 && lawChaos <= 69)
+            {
+                assType = AssociationType.Czerka;
+            }
+            else if (goodEvil >= 0 && goodEvil <= 30 && lawChaos >= 0 && lawChaos <= 30)
+            {
+                assType = AssociationType.SithOrder;
+            }
+            else
+            {
+                throw new Exception("Association type not found. GoodEvil = " + goodEvil + ", LawChaos = " + lawChaos);
+            }
+
             PlayerCharacter entity = new PlayerCharacter
             {
                 PlayerID = player.GlobalID,
@@ -202,7 +253,8 @@ namespace SWLOR.Game.Server.Service
                 CHABase = _nwnxCreature.GetRawAbilityScore(player, ABILITY_CHARISMA),
                 TotalSPAcquired = 0,
                 DisplayHelmet = true,
-                PrimaryResidencePCBaseStructureID = null
+                PrimaryResidencePCBaseStructureID = null,
+                AssociationID = (int)assType
             };
 
             return entity;

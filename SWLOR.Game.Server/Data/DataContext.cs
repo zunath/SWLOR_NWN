@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Data
 
         public virtual IDbSet<Area> Areas { get; set; }
         public virtual IDbSet<AreaWalkmesh> AreaWalkmeshes { get; set; }
+        public virtual IDbSet<Association> Associations { get; set; }
         public virtual IDbSet<BaseStructure> BaseStructures { get; set; }
         public virtual IDbSet<BaseStructureType> BaseStructureTypes { get; set; }
         public virtual IDbSet<Attribute> Attributes { get; set; }
@@ -114,6 +115,11 @@ namespace SWLOR.Game.Server.Data
             modelBuilder.Entity<Area>()
                 .HasMany(e => e.AreaWalkmeshes)
                 .WithRequired(e => e.Area)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Association>()
+                .HasMany(e => e.PlayerCharacters)
+                .WithRequired(e => e.Association)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<Attribute>()

@@ -254,8 +254,10 @@
     <Compile Include="Data\Entities\PCPerkRefund.cs" />
     <Compile Include="Data\Entities\Bank.cs" />
     <Compile Include="Data\Entities\BankItem.cs" />
+    <Compile Include="Data\Entities\Association.cs" />
     <Compile Include="Enumeration\AddItemPropertyPolicy.cs" />
     <Compile Include="Enumeration\AreaSector.cs" />
+    <Compile Include="Enumeration\AssociationType.cs" />
     <Compile Include="Enumeration\BackgroundType.cs" />
     <Compile Include="Enumeration\BasePermission.cs" />
     <Compile Include="Enumeration\BaseStructureType.cs" />

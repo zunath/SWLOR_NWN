@@ -5,17 +5,26 @@ using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using System;
 using System.Linq;
+using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.NWNX.Contracts;
 using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Conversation
 {
     public class CharacterCustomization : ConversationBase
     {
+        private readonly IColorTokenService _color;
+        private readonly IDataContext _db;
+
         public CharacterCustomization(
             INWScript script,
-            IDialogService dialog)
+            IDialogService dialog,
+            IColorTokenService color,
+            IDataContext db)
             : base(script, dialog)
         {
+            _color = color;
+            _db = db;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -23,10 +32,29 @@ namespace SWLOR.Game.Server.Conversation
             PlayerDialog dialog = new PlayerDialog("MainPage");
 
             DialogPage mainPage = new DialogPage(
-                "You can customize your character here. Once you leave the entry area you can't make any changes to your appearance. Be sure you have it set up like you want!\n\nNote: We limit the available options based on the race you selected at character creation. This is intended to maintain the 'feel' of the setting. If you don't see an option here then it's unfortunately not available for your race.\n\nYou can request that new options be added on our Discord.",
+                "You can customize your character here. Once you leave the entry area you can't make any changes to your appearance or association. Be sure you have it set up like you want!\n\nNote: We limit the available options based on the race you selected at character creation. This is intended to maintain the 'feel' of the setting. If you don't see an option here then it's unfortunately not available for your race.\n\nYou can request that new options be added on our Discord.",
+                "Change Association",
                 "Change Skin Color",
                 "Change Head",
                 "Change Hair Color");
+
+            DialogPage changeAssociationPage = new DialogPage(
+                "Please select an association from the list below.",
+                "Jedi Order",
+                "Mandalorian",
+                "Sith Empire",
+                "Smugglers",
+                "Unaligned",
+                "Hutt Cartel",
+                "Republic",
+                "Czerka",
+                "Sith Order",
+                "Back");
+
+            DialogPage confirmAssociationPage = new DialogPage(
+                "",
+                "Select this association",
+                "Back");
 
             DialogPage changeSkinColorPage = new DialogPage(
                 "Please select a skin color from the list below.");
@@ -38,6 +66,8 @@ namespace SWLOR.Game.Server.Conversation
                 "Please select a hair color from the list below.");
 
             dialog.AddPage("MainPage", mainPage);
+            dialog.AddPage("ChangeAssociationPage", changeAssociationPage);
+            dialog.AddPage("ConfirmAssociationPage", confirmAssociationPage);
             dialog.AddPage("ChangeSkinColorPage", changeSkinColorPage);
             dialog.AddPage("ChangeHeadPage", changeHeadPage);
             dialog.AddPage("ChangeHairColorPage", changeHairColorPage);
@@ -55,6 +85,12 @@ namespace SWLOR.Game.Server.Conversation
                 case "MainPage":
                     MainResponses(responseID);
                     break;
+                case "ChangeAssociationPage":
+                    ChangeAssociationResponses(responseID);
+                    break;
+                case "ConfirmAssociationPage":
+                    ConfirmAssociationResponses(responseID);
+                    break;
                 case "ChangeSkinColorPage":
                     ChangeSkinColorResponses(responseID);
                     break;
@@ -71,21 +107,24 @@ namespace SWLOR.Game.Server.Conversation
         {
             switch (responseID)
             {
-                case 1: // Change Skin Color
+                case 1: // Change Association
+                    ChangePage("ChangeAssociationPage");
+                    break;
+                case 2: // Change Skin Color
                     LoadSkinColorPage();
                     ChangePage("ChangeSkinColorPage");
                     break;
-                case 2: // Change Head
+                case 3: // Change Head
                     LoadHeadPage();
                     ChangePage("ChangeHeadPage");
                     break;
-                case 3: // Change Hair Color
+                case 4: // Change Hair Color
                     LoadHairColorPage();
                     ChangePage("ChangeHairColorPage");
                     break;
             }
         }
-
+        
         private void LoadSkinColorPage()
         {
             ClearPageResponses("ChangeSkinColorPage");
@@ -136,6 +175,82 @@ namespace SWLOR.Game.Server.Conversation
             }
 
             AddResponseToPage("ChangeSkinColorPage", "Back", true, -1);
+        }
+
+        private void ChangeAssociationResponses(int responseID)
+        {
+            string header;
+            switch (responseID)
+            {
+                case 1: // Jedi Order
+                    header = _color.Green("Jedi Order\n\n");
+                    header += "The Guardians of peace and justice in the Republic, the Jedi Order is a large group of Light Side Force users led by the Jedi Council. Wishing to uphold the ideals of peace and bring balance to the Force they are stalwart defenders of the Galaxy. Association to the Jedi Order is held by Jedi of all positions as well as their closest allies.";
+                    break;
+                case 2: // Mandalorian
+                    header = _color.Green("Mandalorian\n\n");
+                    header += "Mandalorians are one of the supreme fighting cultures on the Galaxy. Ruled by the Mand’alor of that period, they are a fractured group consisting of Clans grouped together under a House by the racially inclusive population. Though there is currently no Mand’alor to lead them their culture lives on through each member. Association with Mandalorians is held by members or hopefuls, Military figures, and Mercenaries.";
+                    break;
+                case 3: // Sith Empire
+                    header = _color.Green("Sith Empire\n\n");
+                    header += "Founded by exiled members of the Jedi Order, the Sith Order consists of those who utilize a focus on the Dark Side of the Force. Unlike the Jedi, the Sith Order wishes to impose their power and will onto others by show of force. Seeing themselves as the true powers of the Galaxy, they seek to rule it above all things. Association to the Sith Order is held by Sith of all positions as well as some of their underlings and aspiring hopefuls.";
+                    break;
+                case 4: // Smugglers
+                    header = _color.Green("Smugglers\n\n");
+                    header += "Smugglers, though not a specific organization, are prevalent throughout the Galaxy. Though they can come from anywhere they generally look out for themselves, selling their services to any willing to pay and almost always for the largest coin. With monetary gain as their primary motivator Smugglers do not hurt for work. Association with the likes of Smugglers is held by any willing to move products or transition supplies from one set of hands to another.";
+                    break;
+                case 5: // Unaligned
+                    header = _color.Green("Unaligned\n\n");
+                    header += "The Unaligned are any who seek out a future for themselves without the strings of being associated with one of the organizations on the main galactic stage. Looking out for their own interests and striving for a better future for themselves, being unaligned is most off the frequent outlook for those in the farther reaches of the galaxy.";
+                    break;
+                case 6: // Hutt Cartel
+                    header = _color.Green("Hutt Cartel\n\n");
+                    header += "One of the largest criminal organizations both in reach and numbers, the Hutt Cartel is a powerful group of Hutts that place their slimy tails in everything they can get their hands on. Dealing in everything from weapons to drugs and assassinations to slavery, the Hutt Cartel knows no bounds to the type of crime they will deal in so long as it is profitable. Association with the Hutt Cartel is held by the likes of assassins, thieves, and gang members, as well as those that aspire to cheat their way through life.";
+                    break;
+                case 7: // Republic
+                    header = _color.Green("Republic\n\n");
+                    header += "For a little over 20 thousand years the Republic has been the ruling force throughout the Galaxy. It’s ruling body is comprised of Senators representing planets and systems. The Jedi Order works with the Republic as their primary peacekeepers with a large Galactic Republic Military Force consisting of individuals from all walks of life. Association to the Republic is held by Military and Political figures throughout the Galaxy, as well as Jedi seeking to hold back the tides of chaos that wish to tear it down.";
+                    break;
+                case 8: // Czerka
+                    header = _color.Green("Czerka Corporation\n\n");
+                    header += "The Czerka Corporation is a galaxy spanning organization that works to make a profit no matter the cost. Though previously unaligned it has recent allied itself with the Sith Empire for exclusive trade benefits throughout their conquered worlds. Dealing in mining resources, weapons, and droids, Czerka are some of the galaxies current forerunners in technology and trade. Association with Czerka can be held by nearly anyone with the ability and drive to create and trade for a profit.";
+                    break;
+                case 9: // Sith Order
+                    header = _color.Green("Sith Order\n\n");
+                    header += "Founded by exiled members of the Jedi Order, the Sith Order consists of those who utilize a focus on the Dark Side of the Force. Unlike the Jedi, the Sith Order wishes to impose their power and will onto others by show of force. Seeing themselves as the true powers of the Galaxy, they seek to rule it above all things. Association to the Sith Order is held by Sith of all positions as well as some of their underlings and aspiring hopefuls.";
+                    break;
+                case 10: // Back
+                    ChangePage("MainPage");
+                    return;
+                default: return;
+            }
+            
+            SetDialogCustomData(responseID);
+            SetPageHeader("ConfirmAssociationPage", header);
+            ChangePage("ConfirmAssociationPage");
+        }
+
+        private void ConfirmAssociationResponses(int responseID)
+        {
+            switch (responseID)
+            {
+                case 1: // Select this association
+                    ApplyAssociationAlignment();
+                    ChangePage("MainPage");
+                    break;
+                case 2: // Back
+                    ChangePage("ChangeAssociationPage");
+                    break;
+            }
+        }
+
+        private void ApplyAssociationAlignment()
+        {
+            int association = GetDialogCustomData<int>();
+            var player = GetPC();
+            var dbPlayer = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+
+            dbPlayer.AssociationID = association;
+            _db.SaveChanges();
         }
 
         private void ChangeSkinColorResponses(int responseID)

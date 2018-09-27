@@ -500,12 +500,12 @@ namespace SWLOR.Game.Server.Conversation
             {
                 case 1: // Torso
                     model.BodyPartID = CREATURE_PART_TORSO;
-                    model.Parts = new[] { 1, 2 };
+                    model.Parts = new[] { 1, 2, 166};
                     model.PartName = "Torso";
                     break;
                 case 2: // Pelvis
                     model.BodyPartID = CREATURE_PART_PELVIS;
-                    model.Parts = new[] { 1, 2 };
+                    model.Parts = new[] { 1, 2, 11, 158 };
                     model.PartName = "Pelvis";
                     break;
                 case 3: // Right Bicep
@@ -515,17 +515,17 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case 4: // Right Forearm
                     model.BodyPartID = CREATURE_PART_RIGHT_FOREARM;
-                    model.Parts = new[] { 1, 2 };
+                    model.Parts = new[] { 1, 2, 152 };
                     model.PartName = "Right Forearm";
                     break;
                 case 5: // Right Hand
                     model.BodyPartID = CREATURE_PART_RIGHT_HAND;
-                    model.Parts = new[] { 1, 2 };
+                    model.Parts = new[] { 1, 2, 5, 6, 63, 100, 110, 113, 121, 151, };
                     model.PartName = "Right Hand";
                     break;
                 case 6: // Right Thigh
                     model.BodyPartID = CREATURE_PART_RIGHT_THIGH;
-                    model.Parts = new[] { 1, 2 };
+                    model.Parts = new[] { 1, 2, 154 };
                     model.PartName = "Right Thigh";
                     break;
                 case 7: // Right Shin
@@ -540,17 +540,17 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case 9: // Left Forearm
                     model.BodyPartID = CREATURE_PART_LEFT_FOREARM;
-                    model.Parts = new[] { 1, 2 };
+                    model.Parts = new[] { 1, 2, 152 };
                     model.PartName = "Left Forearm";
                     break;
                 case 10: // Left Hand
                     model.BodyPartID = CREATURE_PART_LEFT_HAND;
-                    model.Parts = new[] { 1, 2 };
+                    model.Parts = new[] { 1, 2, 5, 6, 63, 100, 110, 113, 121, 151, };
                     model.PartName = "Left Hand";
                     break;
                 case 11: // Left Thigh
                     model.BodyPartID = CREATURE_PART_LEFT_THIGH;
-                    model.Parts = new[] { 1, 2 };
+                    model.Parts = new[] { 1, 2, 154 };
                     model.PartName = "Left Thigh";
                     break;
                 case 12: // Left Shin

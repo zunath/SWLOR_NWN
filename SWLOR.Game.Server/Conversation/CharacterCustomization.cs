@@ -13,6 +13,14 @@ namespace SWLOR.Game.Server.Conversation
 {
     public class CharacterCustomization : ConversationBase
     {
+        private class Model
+        {
+            public int AssociationID { get; set; }
+            public int BodyPartID { get; set; }
+            public int[] Parts { get; set; }
+            public string PartName { get; set; }
+        }
+
         private readonly IColorTokenService _color;
         private readonly IDataContext _db;
 
@@ -36,7 +44,8 @@ namespace SWLOR.Game.Server.Conversation
                 "Change Association",
                 "Change Skin Color",
                 "Change Head",
-                "Change Hair Color");
+                "Change Hair Color",
+                "Change Body Parts");
 
             DialogPage changeAssociationPage = new DialogPage(
                 "Please select an association from the list below.",
@@ -65,12 +74,32 @@ namespace SWLOR.Game.Server.Conversation
             DialogPage changeHairColorPage = new DialogPage(
                 "Please select a hair color from the list below.");
 
+            DialogPage changeBodyPartsPage = new DialogPage(
+                "Please select a body part from the list below.",
+                "Torso",
+                "Pelvis",
+                "Right Bicep",
+                "Right Forearm",
+                "Right Hand",
+                "Right Thigh",
+                "Right Shin",
+                "Left Bicep",
+                "Left Forearm",
+                "Left Hand",
+                "Left Thigh",
+                "Left Shin",
+                "Back");
+
+            DialogPage editPartPage = new DialogPage();
+
             dialog.AddPage("MainPage", mainPage);
             dialog.AddPage("ChangeAssociationPage", changeAssociationPage);
             dialog.AddPage("ConfirmAssociationPage", confirmAssociationPage);
             dialog.AddPage("ChangeSkinColorPage", changeSkinColorPage);
             dialog.AddPage("ChangeHeadPage", changeHeadPage);
             dialog.AddPage("ChangeHairColorPage", changeHairColorPage);
+            dialog.AddPage("ChangeBodyPartsPage", changeBodyPartsPage);
+            dialog.AddPage("EditPartPage", editPartPage);
             return dialog;
         }
 
@@ -80,7 +109,10 @@ namespace SWLOR.Game.Server.Conversation
             string hairText = "Hair";
 
             if (race == CustomRaceType.Trandoshan)
+            {
                 hairText = "Eyes";
+                SetResponseVisible("MainPage", 5, false);
+            }
 
             SetResponseText("MainPage", 4, "Change " + hairText);
         }
@@ -107,6 +139,12 @@ namespace SWLOR.Game.Server.Conversation
                 case "ChangeHairColorPage":
                     ChangeHairColorResponses(responseID);
                     break;
+                case "ChangeBodyPartsPage":
+                    ChangeBodyPartResponses(responseID);
+                    break;
+                case "EditPartPage":
+                    EditPartResponses(responseID);
+                    break;
             }
         }
 
@@ -128,6 +166,9 @@ namespace SWLOR.Game.Server.Conversation
                 case 4: // Change Hair Color
                     LoadHairColorPage();
                     ChangePage("ChangeHairColorPage");
+                    break;
+                case 5: // Change Body Part
+                    ChangePage("ChangeBodyPartsPage");
                     break;
             }
         }
@@ -234,8 +275,9 @@ namespace SWLOR.Game.Server.Conversation
                     return;
                 default: return;
             }
-            
-            SetDialogCustomData(responseID);
+
+            var model = GetDialogCustomData<Model>();
+            model.AssociationID = responseID;
             SetPageHeader("ConfirmAssociationPage", header);
             ChangePage("ConfirmAssociationPage");
         }
@@ -256,7 +298,8 @@ namespace SWLOR.Game.Server.Conversation
 
         private void ApplyAssociationAlignment()
         {
-            int association = GetDialogCustomData<int>();
+            var model = GetDialogCustomData<Model>();
+            int association = model.AssociationID;
             var player = GetPC();
             var dbPlayer = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
 
@@ -444,6 +487,117 @@ namespace SWLOR.Game.Server.Conversation
 
             _.SetColor(GetPC(), COLOR_CHANNEL_HAIR, colorID);
 
+        }
+        
+        private void ChangeBodyPartResponses(int responseID)
+        {
+            var model = GetDialogCustomData<Model>();
+
+            // Note: The following part IDs are found in the "parts_*.2da" files.
+            // Don't use the ID number listed in the toolset when selecting parts to make available.
+            // The ID in the toolset is a DIFFERENT index and doesn't correlate to the 2da ID number.
+            switch (responseID)
+            {
+                case 1: // Torso
+                    model.BodyPartID = CREATURE_PART_TORSO;
+                    model.Parts = new[] { 1, 2 };
+                    model.PartName = "Torso";
+                    break;
+                case 2: // Pelvis
+                    model.BodyPartID = CREATURE_PART_PELVIS;
+                    model.Parts = new[] { 1, 2 };
+                    model.PartName = "Pelvis";
+                    break;
+                case 3: // Right Bicep
+                    model.BodyPartID = CREATURE_PART_RIGHT_BICEP;
+                    model.Parts = new[] { 1, 2 };
+                    model.PartName = "Right Bicep";
+                    break;
+                case 4: // Right Forearm
+                    model.BodyPartID = CREATURE_PART_RIGHT_FOREARM;
+                    model.Parts = new[] { 1, 2 };
+                    model.PartName = "Right Forearm";
+                    break;
+                case 5: // Right Hand
+                    model.BodyPartID = CREATURE_PART_RIGHT_HAND;
+                    model.Parts = new[] { 1, 2 };
+                    model.PartName = "Right Hand";
+                    break;
+                case 6: // Right Thigh
+                    model.BodyPartID = CREATURE_PART_RIGHT_THIGH;
+                    model.Parts = new[] { 1, 2 };
+                    model.PartName = "Right Thigh";
+                    break;
+                case 7: // Right Shin
+                    model.BodyPartID = CREATURE_PART_RIGHT_SHIN;
+                    model.Parts = new[] { 1, 2 };
+                    model.PartName = "Right Shin";
+                    break;
+                case 8: // Left Bicep
+                    model.BodyPartID = CREATURE_PART_LEFT_BICEP;
+                    model.Parts = new[] { 1, 2 };
+                    model.PartName = "Left Bicep";
+                    break;
+                case 9: // Left Forearm
+                    model.BodyPartID = CREATURE_PART_LEFT_FOREARM;
+                    model.Parts = new[] { 1, 2 };
+                    model.PartName = "Left Forearm";
+                    break;
+                case 10: // Left Hand
+                    model.BodyPartID = CREATURE_PART_LEFT_HAND;
+                    model.Parts = new[] { 1, 2 };
+                    model.PartName = "Left Hand";
+                    break;
+                case 11: // Left Thigh
+                    model.BodyPartID = CREATURE_PART_LEFT_THIGH;
+                    model.Parts = new[] { 1, 2 };
+                    model.PartName = "Left Thigh";
+                    break;
+                case 12: // Left Shin
+                    model.BodyPartID = CREATURE_PART_LEFT_SHIN;
+                    model.Parts = new[] { 1, 2 };
+                    model.PartName = "Left Shin";
+                    break;
+                case 13: // Back
+                    ChangePage("MainPage");
+                    return;
+            }
+
+            LoadEditPartPage();
+            ChangePage("EditPartPage");
+        }
+
+        private void LoadEditPartPage()
+        {
+            ClearPageResponses("EditPartPage");
+
+            var model = GetDialogCustomData<Model>();
+            foreach (var modelID in model.Parts)
+            {
+                AddResponseToPage("EditPartPage", model.PartName + " #" + modelID, true, modelID);
+            }
+
+            AddResponseToPage("EditPartPage", "Back", true, -1);
+
+            string header = _color.Green("Body Part: ") + model.PartName + "\n\n";
+            header += "You may need to unequip any clothes or armor you are wearing to see changes made to your body parts.\n\nPlease be aware that many armors override your selection here. This is a limitation in NWN that we can't work around.";
+
+            SetPageHeader("EditPartPage", header);
+        }
+
+        private void EditPartResponses(int responseID)
+        {
+            var model = GetDialogCustomData<Model>();
+            var response = GetResponseByID("EditPartPage", responseID);
+            int modelID = response.CustomData[string.Empty];
+
+            if (modelID == -1)
+            {
+                ChangePage("ChangeBodyPartsPage");
+                return;
+            }
+
+            _.SetCreatureBodyPart(model.BodyPartID, modelID, GetPC());
         }
 
         public override void EndDialog()

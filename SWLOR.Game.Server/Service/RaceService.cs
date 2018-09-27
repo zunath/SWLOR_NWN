@@ -1,8 +1,6 @@
-﻿using System;
-using NWN;
+﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN.NWScript;
 
@@ -17,7 +15,7 @@ namespace SWLOR.Game.Server.Service
         {
             _ = script;
         }
-        
+
         public void ApplyDefaultAppearance(NWPlayer player)
         {
             CustomRaceType race = (CustomRaceType)player.RacialType;
@@ -27,6 +25,39 @@ namespace SWLOR.Game.Server.Service
             int hairColor;
             int gender = player.Gender;
             int appearance = APPEARANCE_TYPE_HUMAN;
+
+            int maleNeck = 1;
+            int maleTorso = 1;
+            int malePelvis = 1;
+            int maleRightBicep = 1;
+            int maleRightForearm = 1;
+            int maleRightHand = 1;
+            int maleRightThigh = 1;
+            int maleRightShin = 1;
+            int maleRightFoot = 1;
+            int maleLeftBicep = 1;
+            int maleLeftForearm = 1;
+            int maleLeftHand = 1;
+            int maleLeftThigh = 1;
+            int maleLeftShin = 1;
+            int maleLeftFoot = 1;
+
+            int femaleNeck = 1;
+            int femaleTorso = 1;
+            int femalePelvis = 1;
+            int femaleRightBicep = 1;
+            int femaleRightForearm = 1;
+            int femaleRightHand = 1;
+            int femaleRightThigh = 1;
+            int femaleRightShin = 1;
+            int femaleRightFoot = 1;
+            int femaleLeftBicep = 1;
+            int femaleLeftForearm = 1;
+            int femaleLeftHand = 1;
+            int femaleLeftThigh = 1;
+            int femaleLeftShin = 1;
+            int femaleLeftFoot = 1;
+
 
             switch (race)
             {
@@ -53,7 +84,7 @@ namespace SWLOR.Game.Server.Service
                     skinColor = 88;
                     hairColor = 0;
                     maleHead = 103;
-                    femaleHead = 120; 
+                    femaleHead = 120;
                     break;
                 case CustomRaceType.Twilek:
                     skinColor = 52;
@@ -74,11 +105,49 @@ namespace SWLOR.Game.Server.Service
                     maleHead = 27;
                     femaleHead = 18;
                     break;
+                case CustomRaceType.Trandoshan:
+                    skinColor = 39;
+                    hairColor = 4;
+                    maleHead = 162;
+                    femaleHead = 135;
+                    maleNeck = 201;
+                    maleTorso = 201;
+                    malePelvis = 201;
+                    maleRightBicep = 201;
+                    maleRightForearm = 201;
+                    maleRightHand = 201;
+                    maleRightThigh = 201;
+                    maleRightShin = 201;
+                    maleRightFoot = 201;
+                    maleLeftBicep = 201;
+                    maleLeftForearm = 201;
+                    maleLeftHand = 201;
+                    maleLeftThigh = 201;
+                    maleLeftShin = 201;
+                    maleLeftFoot = 201;
+
+                    femaleNeck = 201;
+                    femaleTorso = 201;
+                    femalePelvis = 201;
+                    femaleRightBicep = 201;
+                    femaleRightForearm = 201;
+                    femaleRightHand = 201;
+                    femaleRightThigh = 201;
+                    femaleRightShin = 201;
+                    femaleRightFoot = 201;
+                    femaleLeftBicep = 201;
+                    femaleLeftForearm = 201;
+                    femaleLeftHand = 201;
+                    femaleLeftThigh = 201;
+                    femaleLeftShin = 201;
+                    femaleLeftFoot = 201;
+
+                    break;
                 default:
-                {
-                    _.BootPC(player, "You have selected an invalid race. This could be due to files in your override folder. Ensure these are removed from the folder and then try creating a new character. If you have any problems, visit our website at http://starwarsnwn.com");
-                    return;
-                }
+                    {
+                        _.BootPC(player, "You have selected an invalid race. This could be due to files in your override folder. Ensure these are removed from the folder and then try creating a new character. If you have any problems, visit our website at http://starwarsnwn.com");
+                        return;
+                    }
             }
             _.SetCreatureAppearanceType(player, appearance);
             _.SetColor(player, COLOR_CHANNEL_SKIN, skinColor);
@@ -87,10 +156,44 @@ namespace SWLOR.Game.Server.Service
             if (gender == GENDER_MALE)
             {
                 _.SetCreatureBodyPart(CREATURE_PART_HEAD, maleHead, player);
+
+                _.SetCreatureBodyPart(CREATURE_PART_NECK, maleNeck, player);
+                _.SetCreatureBodyPart(CREATURE_PART_TORSO, maleTorso, player);
+                _.SetCreatureBodyPart(CREATURE_PART_PELVIS, malePelvis, player);
+
+                _.SetCreatureBodyPart(CREATURE_PART_RIGHT_BICEP, maleRightBicep, player);
+                _.SetCreatureBodyPart(CREATURE_PART_RIGHT_FOREARM, maleRightForearm, player);
+                _.SetCreatureBodyPart(CREATURE_PART_RIGHT_HAND, maleRightHand, player);
+                _.SetCreatureBodyPart(CREATURE_PART_RIGHT_THIGH, maleRightThigh, player);
+                _.SetCreatureBodyPart(CREATURE_PART_RIGHT_SHIN, maleRightShin, player);
+                _.SetCreatureBodyPart(CREATURE_PART_RIGHT_FOOT, maleRightFoot, player);
+                _.SetCreatureBodyPart(CREATURE_PART_LEFT_BICEP, maleLeftBicep, player);
+                _.SetCreatureBodyPart(CREATURE_PART_LEFT_FOREARM, maleLeftForearm, player);
+                _.SetCreatureBodyPart(CREATURE_PART_LEFT_HAND, maleLeftHand, player);
+                _.SetCreatureBodyPart(CREATURE_PART_LEFT_THIGH, maleLeftThigh, player);
+                _.SetCreatureBodyPart(CREATURE_PART_LEFT_SHIN, maleLeftShin, player);
+                _.SetCreatureBodyPart(CREATURE_PART_LEFT_FOOT, maleLeftFoot, player);
             }
             else if (gender == GENDER_FEMALE)
             {
                 _.SetCreatureBodyPart(CREATURE_PART_HEAD, femaleHead, player);
+
+                _.SetCreatureBodyPart(CREATURE_PART_NECK, femaleNeck, player);
+                _.SetCreatureBodyPart(CREATURE_PART_TORSO, femaleTorso, player);
+                _.SetCreatureBodyPart(CREATURE_PART_PELVIS, femalePelvis, player);
+
+                _.SetCreatureBodyPart(CREATURE_PART_RIGHT_BICEP, femaleRightBicep, player);
+                _.SetCreatureBodyPart(CREATURE_PART_RIGHT_FOREARM, femaleRightForearm, player);
+                _.SetCreatureBodyPart(CREATURE_PART_RIGHT_HAND, femaleRightHand, player);
+                _.SetCreatureBodyPart(CREATURE_PART_RIGHT_THIGH, femaleRightThigh, player);
+                _.SetCreatureBodyPart(CREATURE_PART_RIGHT_SHIN, femaleRightShin, player);
+                _.SetCreatureBodyPart(CREATURE_PART_RIGHT_FOOT, femaleRightFoot, player);
+                _.SetCreatureBodyPart(CREATURE_PART_LEFT_BICEP, femaleLeftBicep, player);
+                _.SetCreatureBodyPart(CREATURE_PART_LEFT_FOREARM, femaleLeftForearm, player);
+                _.SetCreatureBodyPart(CREATURE_PART_LEFT_HAND, femaleLeftHand, player);
+                _.SetCreatureBodyPart(CREATURE_PART_LEFT_THIGH, femaleLeftThigh, player);
+                _.SetCreatureBodyPart(CREATURE_PART_LEFT_SHIN, femaleLeftShin, player);
+                _.SetCreatureBodyPart(CREATURE_PART_LEFT_FOOT, femaleLeftFoot, player);
             }
         }
 

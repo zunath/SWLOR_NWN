@@ -10,6 +10,7 @@
         Wookiee = 155,
         Twilek = 156,
         Cyborg = 157,
-        Cathar = 158
+        Cathar = 158,
+        Trandoshan = 159
     }
 }

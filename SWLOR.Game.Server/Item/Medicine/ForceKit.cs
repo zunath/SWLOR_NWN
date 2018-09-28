@@ -1,4 +1,5 @@
-﻿using NWN;
+﻿using System.Linq;
+using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entities;
 using SWLOR.Game.Server.Enumeration;
@@ -10,39 +11,48 @@ using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Item.Medicine
 {
-    public class HealingKit: IActionItem
+    public class ForceKit: IActionItem
     {
 
         private readonly INWScript _;
+        private readonly IDataContext _db;
         private readonly ISkillService _skill;
         private readonly IRandomService _random;
         private readonly IPerkService _perk;
         private readonly IPlayerStatService _playerStat;
+        private readonly IAbilityService _ability;
+        private readonly ICustomEffectService _customEffect;
 
-        public HealingKit(INWScript script,
+        public ForceKit(
+            INWScript script,
+            IDataContext db,
             ISkillService skill,
             IRandomService random,
             IPerkService perk,
-            IPlayerStatService playerStat)
+            IPlayerStatService playerStat,
+            IAbilityService ability,
+            ICustomEffectService customEffect)
         {
             _ = script;
+            _db = db;
             _skill = skill;
             _random = random;
             _perk = perk;
             _playerStat = playerStat;
+            _ability = ability;
+            _customEffect = customEffect;
         }
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            user.SendMessage("You begin treating " + target.Name + "'s wounds...");
+            user.SendMessage("You begin applying a force pack to " + target.Name + "...");
             return null;
         }
 
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
             NWPlayer player = (user.Object);
-
-            target.RemoveEffect(EFFECT_TYPE_REGENERATE);
+            
             PCSkill skill = _skill.GetPCSkill(player, SkillType.Medicine);
             int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky);
             int perkDurationBonus = _perk.GetPCPerkLevel(player, PerkType.HealingKitExpert) * 6 + (luck * 2);
@@ -58,7 +68,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
             restoreAmount = (int)(restoreAmount * effectivenessPercent);
 
-            int perkBlastBonus = _perk.GetPCPerkLevel(player, PerkType.ImmediateImprovement);
+            int perkBlastBonus = _perk.GetPCPerkLevel(player, PerkType.ImmediateForcePack);
             if (perkBlastBonus > 0)
             {
                 int blastHeal = restoreAmount * perkBlastBonus;
@@ -66,7 +76,8 @@ namespace SWLOR.Game.Server.Item.Medicine
                 {
                     blastHeal *= 2;
                 }
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(blastHeal), target.Object);
+
+                _ability.RestoreFP(target.Object, blastHeal);
             }
 
             float interval = 6.0f;
@@ -75,9 +86,10 @@ namespace SWLOR.Game.Server.Item.Medicine
             if (background == BackgroundType.Medic)
                 interval *= 0.5f;
 
-            Effect regeneration = _.EffectRegenerate(restoreAmount, interval);
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, regeneration, target.Object, duration);
-            player.SendMessage("You successfully treat " + target.Name + "'s wounds.");
+            string data = (int)interval + ", " + restoreAmount;
+            _customEffect.ApplyCustomEffect(user, target.Object, CustomEffectType.ForcePack, (int)duration, restoreAmount, data);
+
+            player.SendMessage("You successfully apply a force pack to " + target.Name + ".");
 
             int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, skill.Rank);
             _skill.GiveSkillXP(player, SkillType.Medicine, xp);
@@ -90,7 +102,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return 0.1f;
             }
 
-            PCSkill skill = _skill.GetPCSkill((NWPlayer)user, SkillType.Medicine);
+            PCSkill skill = _skill.GetPCSkill(user.Object, SkillType.Medicine);
             return 12.0f - (skill.Rank * 0.1f);
         }
 
@@ -125,14 +137,15 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            if (_.GetIsPC(target.Object) == FALSE || _.GetIsDM(target.Object) == TRUE)
+            if (!target.IsPlayer)
             {
                 return "Only players may be targeted with this item.";
             }
 
-            if (target.CurrentHP >= target.MaxHP)
+            var dbTarget = _db.PlayerCharacters.Single(x => x.PlayerID == target.GlobalID);
+            if (dbTarget.CurrentFP >= dbTarget.MaxFP)
             {
-                return "Your target is not hurt.";
+                return "Your target's FP is at their maximum.";
             }
 
             return null;

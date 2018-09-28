@@ -151,6 +151,7 @@
     <Compile Include="CustomEffect\ElectricCellEffect.cs" />
     <Compile Include="CustomEffect\AcidCellEffect.cs" />
     <Compile Include="CustomEffect\DivineCellEffect.cs" />
+    <Compile Include="CustomEffect\ForcePackEffect.cs" />
     <Compile Include="CustomEffect\ShieldOathEffect.cs" />
     <Compile Include="CustomEffect\SonicCellEffect.cs" />
     <Compile Include="CustomEffect\IceCellEffect.cs" />
@@ -328,6 +329,7 @@
     <Compile Include="Event\Module\OnModuleUseFeat.cs" />
     <Compile Include="Event\Player\OnPlayerDamaged.cs" />
     <Compile Include="Extension\BehaviourTreeBuilderExtensions.cs" />
+    <Compile Include="Item\Medicine\ForceKit.cs" />
     <Compile Include="Item\Medicine\ResuscitationKit.cs" />
     <Compile Include="Item\Medicine\StimPack.cs" />
     <Compile Include="Item\ModItem.cs" />
@@ -637,7 +639,9 @@
     <Compile Include="Perk\LightSide\ForceSpread.cs" />
     <Compile Include="Perk\MartialArts\Chi.cs" />
     <Compile Include="Perk\MartialArts\ElectricFist.cs" />
+    <Compile Include="Perk\Medicine\ImmediateForcePack.cs" />
     <Compile Include="Perk\Medicine\MedicalBlueprints.cs" />
+    <Compile Include="Perk\Medicine\RangedHealing.cs" />
     <Compile Include="Perk\Medicine\SpeedyMedicine.cs" />
     <Compile Include="Perk\Medicine\StimFiend.cs" />
     <Compile Include="Perk\General\Rest.cs" />

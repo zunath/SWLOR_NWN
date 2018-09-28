@@ -5,6 +5,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Item.Medicine
 {
@@ -43,10 +44,18 @@ namespace SWLOR.Game.Server.Item.Medicine
             NWPlayer player = (user.Object);
 
             _customEffect.RemovePCCustomEffect((NWPlayer)target, CustomEffectType.Bleeding);
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, _.EffectHeal(2 + _playerStat.EffectiveMedicineBonus(player)/2), target.Object);
             player.SendMessage("You finish bandaging " + target.Name + "'s wounds.");
-
+            
             PCSkill skill = _skill.GetPCSkill(player, SkillType.Medicine);
+            int rank = skill.Rank;
+
+            int healAmount = 2 + _playerStat.EffectiveMedicineBonus(player) / 2;
+            healAmount += item.MedicineBonus;
+            if (rank >= item.RecommendedLevel && item.MedicineBonus > 0)
+            {
+                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(healAmount), target);
+            }
+
             int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(100, item.RecommendedLevel, skill.Rank);
             _skill.GiveSkillXP(player, SkillType.Medicine, xp);
         }
@@ -71,7 +80,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public int AnimationID()
         {
-            return NWScript.ANIMATION_LOOPING_GET_MID;
+            return ANIMATION_LOOPING_GET_MID;
         }
 
         public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)
@@ -86,7 +95,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            if (_.GetIsPC(target.Object) == NWScript.FALSE || _.GetIsDM(target.Object) == NWScript.TRUE)
+            if (!user.IsPlayer)
             {
                 return "Only players may be targeted with this item.";
             }
@@ -94,6 +103,12 @@ namespace SWLOR.Game.Server.Item.Medicine
             if (!_customEffect.DoesPCHaveCustomEffect((NWPlayer)target, CustomEffectType.Bleeding))
             {
                 return "Your target is not bleeding.";
+            }
+
+            int rank = _skill.GetPCSkill(user.Object, SkillType.Medicine).Rank;
+            if (rank < item.RecommendedLevel)
+            {
+                return "Your skill level is too low to use this item.";
             }
 
             return null;

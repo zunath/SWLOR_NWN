@@ -69,6 +69,17 @@ namespace SWLOR.Game.Server.Item.Medicine
 
             baseHeal += perkLevel * 2;
             baseHeal += _playerStat.EffectiveMedicineBonus(player) / 2;
+            baseHeal += item.MedicineBonus / 2;
+
+            int delta = item.RecommendedLevel - skill.Rank;
+            float effectivenessPercent = 1.0f;
+
+            if (delta > 0)
+            {
+                effectivenessPercent = effectivenessPercent - (delta * 0.1f);
+            }
+
+            baseHeal = (int)(baseHeal * effectivenessPercent);
 
             PlayerCharacter dbPlayer = _db.PlayerCharacters.Single(x => x.PlayerID == user.GlobalID);
             int hpRecover = (int)(target.MaxHP * (0.01f * baseHeal));

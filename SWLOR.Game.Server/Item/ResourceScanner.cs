@@ -136,7 +136,7 @@ namespace SWLOR.Game.Server.Item
             return ANIMATION_LOOPING_GET_MID;
         }
 
-        public float MaxDistance()
+        public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
             return 5.0f;
         }

@@ -84,9 +84,9 @@ namespace SWLOR.Game.Server.Item.Medicine
             return NWScript.ANIMATION_LOOPING_GET_MID;
         }
 
-        public float MaxDistance()
+        public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            return 3.5f;
+            return 3.5f + _perk.GetPCPerkLevel(user.Object, PerkType.RangedHealing);
         }
 
         public bool ReducesItemCharge(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)

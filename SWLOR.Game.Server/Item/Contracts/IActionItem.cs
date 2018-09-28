@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Item.Contracts
         float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData);
         bool FaceTarget();
         int AnimationID();
-        float MaxDistance();
+        float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation);
         bool ReducesItemCharge(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData);
         string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation);
         bool AllowLocationTarget();

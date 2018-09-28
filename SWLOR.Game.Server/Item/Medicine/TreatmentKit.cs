@@ -5,6 +5,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Item.Medicine
 {
@@ -44,10 +45,10 @@ namespace SWLOR.Game.Server.Item.Medicine
 
             foreach (Effect effect in target.Effects)
             {
-                if (_.GetIsEffectValid(effect) == NWScript.TRUE)
+                if (_.GetIsEffectValid(effect) == TRUE)
                 {
                     int effectType = _.GetEffectType(effect);
-                    if (effectType == NWScript.EFFECT_TYPE_POISON || effectType == NWScript.EFFECT_TYPE_DISEASE)
+                    if (effectType == EFFECT_TYPE_POISON || effectType == EFFECT_TYPE_DISEASE)
                     {
                         _.RemoveEffect(target.Object, effect);
                     }
@@ -57,7 +58,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             user.SendMessage("You successfully treat " + target.Name + "'s infection.");
 
             PCSkill skill = _skill.GetPCSkill((NWPlayer)user, SkillType.Medicine);
-            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(100, item.RecommendedLevel, skill.Rank);
+            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, skill.Rank);
             _skill.GiveSkillXP((NWPlayer)user, SkillType.Medicine, xp);
         }
 
@@ -81,7 +82,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public int AnimationID()
         {
-            return NWScript.ANIMATION_LOOPING_GET_MID;
+            return ANIMATION_LOOPING_GET_MID;
         }
 
         public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)
@@ -97,7 +98,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            if (_.GetIsPC(target.Object) == NWScript.FALSE || _.GetIsDM(target.Object) == NWScript.TRUE)
+            if (!target.IsPlayer)
             {
                 return "Only players may be targeted with this item.";
             }
@@ -105,10 +106,10 @@ namespace SWLOR.Game.Server.Item.Medicine
             bool hasEffect = false;
             foreach (Effect effect in target.Effects)
             {
-                if (_.GetIsEffectValid(effect) == NWScript.TRUE)
+                if (_.GetIsEffectValid(effect) == TRUE)
                 {
                     int effectType = _.GetEffectType(effect);
-                    if (effectType == NWScript.EFFECT_TYPE_POISON || effectType == NWScript.EFFECT_TYPE_DISEASE)
+                    if (effectType == EFFECT_TYPE_POISON || effectType == EFFECT_TYPE_DISEASE)
                     {
                         hasEffect = true;
                     }
@@ -123,6 +124,13 @@ namespace SWLOR.Game.Server.Item.Medicine
             if (!hasEffect)
             {
                 return "This player is not diseased or poisoned.";
+            }
+
+            int rank = _skill.GetPCSkill(user.Object, SkillType.Medicine).Rank;
+
+            if (rank < item.RecommendedLevel)
+            {
+                return "Your skill level is too low to use this item.";
             }
 
             return null;

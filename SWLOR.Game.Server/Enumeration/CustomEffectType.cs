@@ -25,6 +25,7 @@
         DivineCell = 20,
         PlasmaCell = 21,
         ShieldOath = 22,
-        SwordOath = 23
+        SwordOath = 23,
+        ForcePack = 24
     }
 }

@@ -47,7 +47,16 @@ namespace SWLOR.Game.Server.Item.Medicine
             int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky);
             int perkDurationBonus = _perk.GetPCPerkLevel(player, PerkType.HealingKitExpert) * 6 + (luck * 2);
             float duration = 30.0f + (skill.Rank * 0.4f) + perkDurationBonus;
-            int restoreAmount = 1 + item.GetLocalInt("HEALING_BONUS") + _playerStat.EffectiveMedicineBonus(player);
+            int restoreAmount = 1 + item.GetLocalInt("HEALING_BONUS") + _playerStat.EffectiveMedicineBonus(player) + item.MedicineBonus;
+            int delta = item.RecommendedLevel - skill.Rank;
+            float effectivenessPercent = 1.0f;
+
+            if (delta > 0)
+            {
+                effectivenessPercent = effectivenessPercent - (delta * 0.1f);
+            }
+
+            restoreAmount = (int)(restoreAmount * effectivenessPercent);
 
             int perkBlastBonus = _perk.GetPCPerkLevel(player, PerkType.ImmediateImprovement);
             if (perkBlastBonus > 0)

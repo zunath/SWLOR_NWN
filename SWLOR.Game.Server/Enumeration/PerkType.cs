@@ -137,7 +137,8 @@
         ShieldOath = 132,
         SwordOath = 133,
         ResuscitationDevices = 134,
-        RangedHealing = 135
+        RangedHealing = 135,
+        ImmediateForcePack = 136
     }
 
 }

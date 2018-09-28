@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
@@ -58,7 +57,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
             }
 
             var model = _craft.GetPlayerCraftingData(oPC);
-            NWPlaceable storage = (_.GetObjectByTag("craft_temp_store"));
+            NWPlaceable storage = _.GetObjectByTag("craft_temp_store");
 
             List<NWItem> list = null;
             ComponentType allowedType = ComponentType.None;
@@ -70,19 +69,19 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
             {
                 case CraftingAccessType.MainComponent:
                     allowedType = (ComponentType)model.Blueprint.MainComponentTypeID;
-                    reachedCap = model.Blueprint.MainMaximum < model.MainComponents.Count + 1;
+                    reachedCap = model.MainMaximum < model.MainComponents.Count + 1;
                     list = model.MainComponents;
                     componentName = model.Blueprint.MainComponentType.Name;
                     break;
                 case CraftingAccessType.SecondaryComponent:
                     allowedType = (ComponentType)model.Blueprint.SecondaryComponentTypeID;
-                    reachedCap = model.Blueprint.SecondaryMaximum < model.SecondaryComponents.Count + 1;
+                    reachedCap = model.SecondaryMaximum < model.SecondaryComponents.Count + 1;
                     list = model.SecondaryComponents;
                     componentName = model.Blueprint.SecondaryComponentType.Name;
                     break;
                 case CraftingAccessType.TertiaryComponent:
                     allowedType = (ComponentType)model.Blueprint.TertiaryComponentTypeID;
-                    reachedCap = model.Blueprint.TertiaryMaximum < model.TertiaryComponents.Count + 1;
+                    reachedCap = model.TertiaryMaximum < model.TertiaryComponents.Count + 1;
                     list = model.TertiaryComponents;
                     componentName = model.Blueprint.TertiaryComponentType.Name;
                     break;

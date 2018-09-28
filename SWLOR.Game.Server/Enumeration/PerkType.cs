@@ -138,7 +138,19 @@
         SwordOath = 133,
         ResuscitationDevices = 134,
         RangedHealing = 135,
-        ImmediateForcePack = 136
+        ImmediateForcePack = 136,
+        FabricationEfficiency = 137,
+        MedicineEfficiency = 138,
+        WeaponsmithEfficiency = 139,
+        ArmorsmithEfficiency = 140,
+        EngineeringEfficiency = 141,
+        CookingEfficiency = 142,
+        FabricationOptimization = 143,
+        MedicineOptimization = 144,
+        WeaponsmithOptimization = 145,
+        ArmorsmithOptimization = 146,
+        EngineeringOptimization = 147,
+        CookingOptimization = 148
     }
 
 }

@@ -136,7 +136,6 @@ namespace SWLOR.Game.Server.Conversation
 
         private void HandleBlueprintListPageResponse(int responseID)
         {
-            Model vm = GetDialogCustomData<Model>();
             DialogResponse response = GetResponseByID("BlueprintListPage", responseID);
             int blueprintID = (int)response.CustomData[string.Empty];
 

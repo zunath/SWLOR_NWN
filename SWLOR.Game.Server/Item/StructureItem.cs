@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Item
                 _base.CanPlaceStructure(user, item, targetLocation, structureID);
         }
 
-        public float MaxDistance()
+        public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
             return 5.0f;
         }

@@ -100,17 +100,18 @@ namespace SWLOR.Game.Server.Service
                     return;
                 }
 
-                if (item.MaxDistance() > 0.0f)
+                float maxDistance = item.MaxDistance(user, oItem, target, targetLocation);
+                if (maxDistance > 0.0f)
                 {
                     if (target.IsValid &&
-                        (_.GetDistanceBetween(user.Object, target.Object) > item.MaxDistance() ||
+                        (_.GetDistanceBetween(user.Object, target.Object) > maxDistance ||
                         user.Area.Resref != target.Area.Resref))
                     {
                         user.SendMessage("Your target is too far away.");
                         return;
                     }
                     else if (!target.IsValid &&
-                             (_.GetDistanceBetweenLocations(user.Location, targetLocation) > item.MaxDistance() ||
+                             (_.GetDistanceBetweenLocations(user.Location, targetLocation) > maxDistance ||
                              user.Area.Resref != ((NWArea)_.GetAreaFromLocation(targetLocation)).Resref))
                     {
                         user.SendMessage("That location is too far away.");
@@ -475,17 +476,18 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            if (actionItem.MaxDistance() > 0.0f)
+            float maxDistance = actionItem.MaxDistance(user, item, target, targetLocation);
+            if (maxDistance > 0.0f)
             {
                 if (target.IsValid &&
-                    (_.GetDistanceBetween(user.Object, target.Object) > actionItem.MaxDistance() ||
+                    (_.GetDistanceBetween(user.Object, target.Object) > maxDistance ||
                     user.Area.Resref != target.Area.Resref))
                 {
                     user.SendMessage("Your target is too far away.");
                     return;
                 }
                 else if (!target.IsValid &&
-                         (_.GetDistanceBetweenLocations(user.Location, targetLocation) > actionItem.MaxDistance() ||
+                         (_.GetDistanceBetweenLocations(user.Location, targetLocation) > maxDistance ||
                          user.Area.Resref != ((NWArea)_.GetAreaFromLocation(targetLocation)).Resref))
                 {
                     user.SendMessage("That location is too far away.");

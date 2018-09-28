@@ -1,4 +1,5 @@
-﻿using NWN;
+﻿using System.Linq;
+using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entities;
 using SWLOR.Game.Server.Enumeration;
@@ -10,73 +11,82 @@ using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Item.Medicine
 {
-    public class HealingKit: IActionItem
+    public class ResuscitationKit: IActionItem
     {
 
         private readonly INWScript _;
+        private readonly IDataContext _db;
         private readonly ISkillService _skill;
         private readonly IRandomService _random;
         private readonly IPerkService _perk;
         private readonly IPlayerStatService _playerStat;
 
-        public HealingKit(INWScript script,
+        public ResuscitationKit(
+            INWScript script,
+            IDataContext db,
             ISkillService skill,
             IRandomService random,
             IPerkService perk,
             IPlayerStatService playerStat)
         {
             _ = script;
+            _db = db;
             _skill = skill;
             _random = random;
             _perk = perk;
             _playerStat = playerStat;
         }
-
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            user.SendMessage("You begin treating " + target.Name + "'s wounds...");
+            user.SendMessage("You begin resuscitating " + target.Name + "...");
             return null;
         }
 
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            NWPlayer player = (user.Object);
-
-            target.RemoveEffect(EFFECT_TYPE_REGENERATE);
+            NWPlayer player = user.Object;
             PCSkill skill = _skill.GetPCSkill(player, SkillType.Medicine);
-            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky);
-            int perkDurationBonus = _perk.GetPCPerkLevel(player, PerkType.HealingKitExpert) * 6 + (luck * 2);
-            float duration = 30.0f + (skill.Rank * 0.4f) + perkDurationBonus;
-            int restoreAmount = 1 + item.GetLocalInt("HEALING_BONUS") + _playerStat.EffectiveMedicineBonus(player);
+            int perkLevel = _perk.GetPCPerkLevel(player, PerkType.ResuscitationDevices);
+            int rank = item.GetLocalInt("RANK");
+            int baseHeal;
 
-            int perkBlastBonus = _perk.GetPCPerkLevel(player, PerkType.ImmediateImprovement);
-            if (perkBlastBonus > 0)
+            switch (rank)
             {
-                int blastHeal = restoreAmount * perkBlastBonus;
-                if (_random.Random(100) + 1 <= luck / 2)
-                {
-                    blastHeal *= 2;
-                }
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(blastHeal), target.Object);
+                case 1:
+                    baseHeal = 1;
+                    break;
+                case 2:
+                    baseHeal = 11;
+                    break;
+                case 3:
+                    baseHeal = 31;
+                    break;
+                case 4:
+                    baseHeal = 51;
+                    break;
+                default: return;
             }
 
-            float interval = 6.0f;
-            BackgroundType background = (BackgroundType) player.Class1;
+            baseHeal += perkLevel * 2;
+            baseHeal += _playerStat.EffectiveMedicineBonus(player) / 2;
 
-            if (background == BackgroundType.Medic)
-                interval *= 0.5f;
+            PlayerCharacter dbPlayer = _db.PlayerCharacters.Single(x => x.PlayerID == user.GlobalID);
+            int hpRecover = (int)(target.MaxHP * (0.01f * baseHeal));
+            int fpRecover = (int) (dbPlayer.MaxFP * (0.01f * baseHeal));
 
-            Effect regeneration = _.EffectRegenerate(restoreAmount, interval);
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, regeneration, target.Object, duration);
-            player.SendMessage("You successfully treat " + target.Name + "'s wounds.");
+            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectResurrection(), target);
+            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(hpRecover), target);
+            dbPlayer.CurrentFP = fpRecover;
 
-            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, skill.Rank);
+            _db.SaveChanges();
+            player.SendMessage("You successfully resuscitate " + target.Name + "!");
+            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(600, item.RecommendedLevel, skill.Rank);
             _skill.GiveSkillXP(player, SkillType.Medicine, xp);
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            if ( _random.Random(100) + 1 <= _perk.GetPCPerkLevel((NWPlayer)user, PerkType.SpeedyFirstAid) * 10)
+            if (_random.Random(100) + 1 <= _perk.GetPCPerkLevel((NWPlayer)user, PerkType.SpeedyFirstAid) * 10)
             {
                 return 0.1f;
             }
@@ -87,12 +97,12 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public bool FaceTarget()
         {
-            return true;
+            return false;
         }
 
         public int AnimationID()
         {
-            return ANIMATION_LOOPING_GET_MID;
+            return ANIMATION_LOOPING_GET_LOW;
         }
 
         public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)
@@ -103,14 +113,6 @@ namespace SWLOR.Game.Server.Item.Medicine
         public bool ReducesItemCharge(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
             int consumeChance = _perk.GetPCPerkLevel((NWPlayer)user, PerkType.FrugalMedic) * 10;
-            BackgroundType background = (BackgroundType) user.Class1;
-
-            if (background == BackgroundType.Medic)
-            {
-                consumeChance += 5;
-            }
-
-
             return _random.Random(100) + 1 > consumeChance;
         }
 
@@ -121,9 +123,22 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return "Only players may be targeted with this item.";
             }
 
-            if (target.CurrentHP >= target.MaxHP)
+            if (target.CurrentHP <= -11)
             {
-                return "Your target is not hurt.";
+                return "Your target is not dead.";
+            }
+
+            if (user.IsInCombat)
+            {
+                return "You are in combat.";
+            }
+
+            int perkLevel = _perk.GetPCPerkLevel(user.Object, PerkType.ResuscitationDevices);
+            int requiredLevel = item.GetLocalInt("RANK");
+
+            if (perkLevel < requiredLevel)
+            {
+                return "You must have the Resuscitation Devices perk at level " + requiredLevel + " to use this item.";
             }
 
             return null;

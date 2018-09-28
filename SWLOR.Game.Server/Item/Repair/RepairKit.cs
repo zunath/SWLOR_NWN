@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Item.Repair
             return 0;
         }
 
-        public float MaxDistance()
+        public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
             return 0;
         }

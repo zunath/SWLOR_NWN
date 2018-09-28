@@ -9,6 +9,12 @@ namespace SWLOR.Game.Server.ValueObject
     {
         public int BlueprintID { get; set; }
         public CraftBlueprint Blueprint { get; set; }
+        public int MainMinimum { get; set; }
+        public int MainMaximum { get; set; }
+        public int SecondaryMinimum { get; set; }
+        public int SecondaryMaximum { get; set; }
+        public int TertiaryMinimum { get; set; }
+        public int TertiaryMaximum { get; set; }
         public List<NWItem> MainComponents { get; set; }
         public List<NWItem> SecondaryComponents { get; set; }
         public List<NWItem> TertiaryComponents { get; set; }
@@ -16,6 +22,8 @@ namespace SWLOR.Game.Server.ValueObject
         public bool IsAccessingStorage { get; set; }
         public CraftingAccessType Access { get; set; }
         public int PlayerPerkLevel { get; set; }
+        public int EfficiencyLevel { get; set; }
+        public int OptimizationLevel { get; set; }
         public int PlayerSkillRank { get; set; }
         public bool IsInitialized { get; set; }
 
@@ -50,9 +58,9 @@ namespace SWLOR.Game.Server.ValueObject
                                            + TertiaryComponents.Count
                                            + EnhancementComponents.Count > 0;
 
-        public bool CanBuildItem => MainComponents.Count >= Blueprint.MainMinimum
-                                    && SecondaryComponents.Count >= Blueprint.SecondaryMinimum
-                                    && TertiaryComponents.Count >= Blueprint.TertiaryMinimum;
+        public bool CanBuildItem => MainComponents.Count >= MainMinimum
+                                    && SecondaryComponents.Count >= SecondaryMinimum
+                                    && TertiaryComponents.Count >= TertiaryMinimum;
         
         public CraftingData()
         {

@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
             {
                 NWItem menuItem = (_.CreateItemOnObject("cft_confirm", device.Object));
                 NWPlaceable storage = (_.GetObjectByTag("craft_temp_store"));
-                var storageItems = storage.InventoryItems;
+                var storageItems = storage.InventoryItems.ToList();
                 List<NWItem> list = null;
 
                 if (model.Access == CraftingAccessType.MainComponent)

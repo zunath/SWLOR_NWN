@@ -6,6 +6,7 @@ using NWN;
 using SWLOR.Game.Server.Data.Entities;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -51,23 +52,33 @@ namespace SWLOR.Game.Server.Conversation
                 model.IsInitialized = true;
                 model.Blueprint = _craft.GetBlueprintByID(model.BlueprintID);
                 model.PlayerSkillRank = _skill.GetPCSkill(GetPC(), model.Blueprint.SkillID).Rank;
-
+                
                 switch ((SkillType) model.Blueprint.SkillID)
                 {
                     case SkillType.Armorsmith:
                         model.PlayerPerkLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.ArmorBlueprints);
+                        model.EfficiencyLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.ArmorsmithEfficiency);
+                        model.OptimizationLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.ArmorsmithOptimization);
                         break;
                     case SkillType.Engineering:
                         model.PlayerPerkLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.EngineeringBlueprints);
+                        model.EfficiencyLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.EngineeringEfficiency);
+                        model.OptimizationLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.EngineeringOptimization);
                         break;
                     case SkillType.Weaponsmith:
                         model.PlayerPerkLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.WeaponBlueprints);
+                        model.EfficiencyLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.WeaponsmithEfficiency);
+                        model.OptimizationLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.WeaponsmithOptimization);
                         break;
                     case SkillType.Fabrication:
                         model.PlayerPerkLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.FabricationBlueprints);
+                        model.EfficiencyLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.FabricationEfficiency);
+                        model.OptimizationLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.FabricationOptimization);
                         break;
                     case SkillType.Medicine:
                         model.PlayerPerkLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.MedicalBlueprints);
+                        model.EfficiencyLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.MedicineEfficiency);
+                        model.OptimizationLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.MedicineOptimization);
                         break;
                     default:
                         model.PlayerPerkLevel = 0;
@@ -75,16 +86,31 @@ namespace SWLOR.Game.Server.Conversation
 
                 }
                 GetDevice().IsLocked = true;
+                model.MainMinimum = model.Blueprint.MainMinimum - model.EfficiencyLevel;
+                model.SecondaryMinimum = model.Blueprint.SecondaryMinimum - model.EfficiencyLevel;
+                model.TertiaryMinimum = model.Blueprint.TertiaryMinimum - model.EfficiencyLevel;
+                
+                model.MainMaximum = model.Blueprint.MainMaximum + model.OptimizationLevel;
+                model.SecondaryMaximum = model.Blueprint.SecondaryMaximum > 0 ? model.Blueprint.SecondaryMaximum + model.OptimizationLevel : 0;
+                model.TertiaryMaximum = model.Blueprint.TertiaryMaximum > 0 ? model.Blueprint.TertiaryMaximum + model.OptimizationLevel : 0;
+
+                if (model.MainMinimum <= 0)
+                    model.MainMinimum = 1;
+                if (model.SecondaryMinimum <= 0 && model.Blueprint.SecondaryMinimum > 0)
+                    model.SecondaryMinimum = 1;
+                if (model.TertiaryMinimum <= 0 && model.Blueprint.TertiaryMinimum > 0)
+                    model.TertiaryMinimum = 1;
+
             }
             // Otherwise returning from accessing the device's inventory.
             else
             {
                 model.Access = CraftingAccessType.None;
 
-                _.SetEventScript(device.Object, NWScript.EVENT_SCRIPT_PLACEABLE_ON_USED, "jvm_script_1");
-                _.SetEventScript(device.Object, NWScript.EVENT_SCRIPT_PLACEABLE_ON_OPEN, string.Empty);
-                _.SetEventScript(device.Object, NWScript.EVENT_SCRIPT_PLACEABLE_ON_CLOSED, string.Empty);
-                _.SetEventScript(device.Object, NWScript.EVENT_SCRIPT_PLACEABLE_ON_INVENTORYDISTURBED, string.Empty);
+                _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_USED, "jvm_script_1");
+                _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_OPEN, string.Empty);
+                _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_CLOSED, string.Empty);
+                _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_INVENTORYDISTURBED, string.Empty);
             }
 
 
@@ -188,10 +214,10 @@ namespace SWLOR.Game.Server.Conversation
             device.IsLocked = false;
             model.IsAccessingStorage = true;
 
-            _.SetEventScript(device.Object, NWScript.EVENT_SCRIPT_PLACEABLE_ON_USED, string.Empty);
-            _.SetEventScript(device.Object, NWScript.EVENT_SCRIPT_PLACEABLE_ON_OPEN, "jvm_script_2");
-            _.SetEventScript(device.Object, NWScript.EVENT_SCRIPT_PLACEABLE_ON_CLOSED, "jvm_script_3");
-            _.SetEventScript(device.Object, NWScript.EVENT_SCRIPT_PLACEABLE_ON_INVENTORYDISTURBED, "jvm_script_4");
+            _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_USED, string.Empty);
+            _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_OPEN, "jvm_script_2");
+            _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_CLOSED, "jvm_script_3");
+            _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_INVENTORYDISTURBED, "jvm_script_4");
 
             device.SetLocalString("JAVA_SCRIPT_2", "Placeable.CraftingDevice.OnOpened");
             device.SetLocalString("JAVA_SCRIPT_3", "Placeable.CraftingDevice.OnClosed");

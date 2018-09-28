@@ -619,6 +619,8 @@
     <Compile Include="NWN\Events\Module\mod_on_nwnxchat.cs" />
     <Compile Include="NWN\Events\Module\mod_on_usefeat.cs" />
     <Compile Include="NWN\Events\Player\pc_on_damaged.cs" />
+    <Compile Include="Perk\Armorsmith\ArmorsmithEfficiency.cs" />
+    <Compile Include="Perk\Armorsmith\ArmorsmithOptimization.cs" />
     <Compile Include="Perk\Armor\AbsorptionField.cs" />
     <Compile Include="Perk\Armor\Hide.cs" />
     <Compile Include="Perk\Armor\ShieldBoost.cs" />
@@ -627,11 +629,17 @@
     <Compile Include="Perk\Blaster\PlasmaCell.cs" />
     <Compile Include="Perk\Blaster\RecoveryBlast.cs" />
     <Compile Include="Perk\Blaster\Tranquilizer.cs" />
+    <Compile Include="Perk\Cooking\CookingEfficiency.cs" />
+    <Compile Include="Perk\Cooking\CookingOptimization.cs" />
     <Compile Include="Perk\DarkSide\DarkHeal.cs" />
     <Compile Include="Perk\DarkSide\DarkSpread.cs" />
     <Compile Include="Perk\DarkSide\DrainLife.cs" />
     <Compile Include="Perk\DarkSide\ForceLightning.cs" />
+    <Compile Include="Perk\Engineering\EngineeringEfficiency.cs" />
+    <Compile Include="Perk\Engineering\EngineeringOptimization.cs" />
     <Compile Include="Perk\Fabrication\FabricationBlueprints.cs" />
+    <Compile Include="Perk\Fabrication\FabricationEfficiency.cs" />
+    <Compile Include="Perk\Fabrication\FabricationOptimization.cs" />
     <Compile Include="Perk\Fabrication\SpeedyFabrication.cs" />
     <Compile Include="Perk\General\Dash.cs" />
     <Compile Include="Perk\LightSide\ForceAura.cs" />
@@ -641,6 +649,8 @@
     <Compile Include="Perk\MartialArts\ElectricFist.cs" />
     <Compile Include="Perk\Medicine\ImmediateForcePack.cs" />
     <Compile Include="Perk\Medicine\MedicalBlueprints.cs" />
+    <Compile Include="Perk\Medicine\MedicineEfficiency.cs" />
+    <Compile Include="Perk\Medicine\MedicineOptimization.cs" />
     <Compile Include="Perk\Medicine\RangedHealing.cs" />
     <Compile Include="Perk\Medicine\SpeedyMedicine.cs" />
     <Compile Include="Perk\Medicine\StimFiend.cs" />
@@ -727,6 +737,8 @@
     <Compile Include="Perk\Weaponsmith\SpecialModInstallationWeapons.cs" />
     <Compile Include="Perk\Weaponsmith\WeaponBlueprints.cs" />
     <Compile Include="Perk\Weaponsmith\SpeedyWeaponsmith.cs" />
+    <Compile Include="Perk\Weaponsmith\WeaponsmithEfficiency.cs" />
+    <Compile Include="Perk\Weaponsmith\WeaponsmithOptimization.cs" />
     <Compile Include="Perk\Weapons\Focus.cs" />
     <Compile Include="Perk\Weapons\ImprovedCritical.cs" />
     <Compile Include="Perk\Engineering\SpeedyEngineering.cs" />

@@ -663,7 +663,7 @@ namespace SWLOR.Game.Server.Conversation
                     structure.Position,
                     facing);
                 data.ManipulatingStructure.ChildStructure.Destroy();
-                data.ManipulatingStructure.ChildStructure = _base.SpawnBuildingDoor(dbStructure.ExteriorStyle.DoorSpawnProcedure, structure, locationOverride);
+                data.ManipulatingStructure.ChildStructure = _base.SpawnBuildingDoor(dbStructure.ExteriorStyle.DoorRule, structure, locationOverride);
 
                 // Update the cache
                 List<AreaStructure> areaStructures = data.TargetArea.Data["BASE_SERVICE_STRUCTURES"];

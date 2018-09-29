@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         double GetPowerInUse(int pcBaseID);
         double GetCPUInUse(int pcBaseID);
         NWPlaceable SpawnStructure(NWArea area, int pcBaseStructureID);
-        NWPlaceable SpawnBuildingDoor(int doorSpawnProcedure, NWPlaceable building, Location locationOverride = null);
+        NWPlaceable SpawnBuildingDoor(string doorRule, NWPlaceable building, Location locationOverride = null);
         void JumpPCToBuildingInterior(NWPlayer player, NWArea area);
         string GetPlayerIDOwnerOfSector(Area dbArea, string sector);
         void DoPlayerExitBuildingInstance(NWPlayer player, NWPlaceable door = null);

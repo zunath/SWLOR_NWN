@@ -315,6 +315,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var data = _base.GetPlayerTempData(GetPC());
             string canPlaceStructure = _base.CanPlaceStructure(GetPC(), data.StructureItem, data.TargetLocation, data.StructureID);
+            var baseStructure = _db.BaseStructures.Single(x => x.BaseStructureID == data.StructureID);
 
             if (!string.IsNullOrWhiteSpace(canPlaceStructure))
             {
@@ -343,8 +344,15 @@ namespace SWLOR.Game.Server.Conversation
                 ParentPCBaseStructureID = data.ParentStructureID,
                 StructureBonus = data.StructureItem.StructureBonus
             };
-            
             _db.PCBaseStructures.Add(structure);
+
+            // Placing a control tower. Set base shields to 100%
+            if (baseStructure.BaseStructureTypeID == (int) BaseStructureType.ControlTower)
+            {
+                var pcBase = _db.PCBases.Single(x => x.PCBaseID == data.PCBaseID);
+                pcBase.ShieldHP = _base.CalculateMaxShieldHP(structure);
+            }
+
             _db.SaveChanges();
             _base.SpawnStructure(data.TargetArea, structure.PCBaseStructureID);
             data.StructureItem.Destroy();
@@ -378,7 +386,7 @@ namespace SWLOR.Game.Server.Conversation
                 AddResponseToPage("StylePage", "Preview Interior", true, -2);
             }
 
-            var styles = _db.BuildingStyles.Where(x => x.IsInterior == data.IsInteriorStyle && x.BaseStructureID == data.StructureID).ToList();
+            var styles = _db.BuildingStyles.Where(x => x.IsInterior == data.IsInteriorStyle && x.BaseStructureID == data.StructureID && x.IsActive).ToList();
             foreach (var style in styles)
             {
                 AddResponseToPage("StylePage", style.Name, true, style.BuildingStyleID);

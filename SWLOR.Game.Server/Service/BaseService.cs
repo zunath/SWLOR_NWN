@@ -9,6 +9,7 @@ using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.DoorRule.Contracts;
 using static NWN.NWScript;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 using Object = NWN.Object;
@@ -151,7 +152,7 @@ namespace SWLOR.Game.Server.Service
             NWPlaceable door = null;
             if (structureType == BaseStructureType.Building)
             {
-                door = SpawnBuildingDoor(structure.ExteriorStyle.DoorSpawnProcedure, plc);
+                door = SpawnBuildingDoor(structure.ExteriorStyle.DoorRule, plc);
                 areaStructures.Add(new AreaStructure(structure.PCBaseID, structure.PCBaseStructureID, door, false, null));
             }
             areaStructures.Add(new AreaStructure(structure.PCBaseID, structure.PCBaseStructureID, plc, true, door));
@@ -217,39 +218,16 @@ namespace SWLOR.Game.Server.Service
 
         }
 
-        public NWPlaceable SpawnBuildingDoor(int doorSpawnProcedure, NWPlaceable building, Location locationOverride = null)
+        public NWPlaceable SpawnBuildingDoor(string spawnRule, NWPlaceable building, Location locationOverride = null)
         {
             NWArea area = building.Area;
             Location location = locationOverride ?? building.Location;
-            Vector doorPosition = _.GetPositionFromLocation(location);
-            float fOrient = _.GetFacingFromLocation(location);
+            
             int pcBaseStructureID = building.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            Location doorLocation = null;
-
-            switch (doorSpawnProcedure)
-            {
-                case 1: // House, 2 Story
-                    fOrient = fOrient + 146.31f;
-                    if (fOrient > 360.0) fOrient = fOrient - 360.0f;
-
-                    float fMod = _.sqrt(13.0f) * _.sin(fOrient);
-                    doorPosition.m_X = doorPosition.m_X + fMod;
-
-                    fMod = _.sqrt(13.0f) * _.cos(fOrient);
-                    doorPosition.m_Y = doorPosition.m_Y - fMod;
-                    doorLocation = _.Location(area.Object, doorPosition, _.GetFacingFromLocation(location));
-                    break;
-            }
-
-            if (doorLocation == null)
-            {
-                throw new Exception("Unable to find Door Spawn Procedure #" + doorSpawnProcedure + ". Door was not spawned.");
-            }
-           
-            NWPlaceable door = (_.CreateObject(OBJECT_TYPE_PLACEABLE, "building_door", doorLocation));
+            NWPlaceable door = App.ResolveByInterface<IDoorRule, NWPlaceable>("DoorRule." + spawnRule, rule => rule.Run(area, location));
             door.SetLocalInt("PC_BASE_STRUCTURE_ID", pcBaseStructureID);
             door.SetLocalInt("IS_DOOR", TRUE);
-
+            
             return door;
         }
 
@@ -595,8 +573,8 @@ namespace SWLOR.Game.Server.Service
 
                 if (structure.BaseStructureTypeID == (int)BaseStructureType.Building)
                 {
-                    var defaultInterior = _db.BuildingStyles.Single(x => x.BaseStructureID == structure.BaseStructureID && x.IsDefault && x.IsInterior).BuildingStyleID;
-                    var defaultExterior = _db.BuildingStyles.Single(x => x.BaseStructureID == structure.BaseStructureID && x.IsDefault && !x.IsInterior).BuildingStyleID;
+                    var defaultInterior = _db.BuildingStyles.Single(x => x.BaseStructureID == structure.BaseStructureID && x.IsDefault && x.IsInterior && x.IsActive).BuildingStyleID;
+                    var defaultExterior = _db.BuildingStyles.Single(x => x.BaseStructureID == structure.BaseStructureID && x.IsDefault && !x.IsInterior && x.IsActive).BuildingStyleID;
 
                     item.SetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID", defaultInterior);
                     item.SetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID", defaultExterior);

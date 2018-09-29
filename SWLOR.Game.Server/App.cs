@@ -17,6 +17,7 @@ using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Mod.Contracts;
 
 using NWN;
+using SWLOR.Game.Server.DoorRule.Contracts;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Perk;
@@ -254,6 +255,7 @@ namespace SWLOR.Game.Server
             RegisterInterfaceImplementations<ISpawnRule>(builder);
             RegisterInterfaceImplementations<IQuestRule>(builder);
             RegisterInterfaceImplementations<IEventProcessor>(builder);
+            RegisterInterfaceImplementations<IDoorRule>(builder);
 
             // Third Party
             builder.RegisterType<BiowarePosition>().As<IBiowarePosition>();

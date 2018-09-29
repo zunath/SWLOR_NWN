@@ -32,7 +32,9 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public bool IsDefault { get; set; }
 
-        public int DoorSpawnProcedure { get; set; }
+        public string DoorRule { get; set; }
+
+        public bool IsActive { get; set; }
 
         public virtual BaseStructure BaseStructure { get; set; }
 

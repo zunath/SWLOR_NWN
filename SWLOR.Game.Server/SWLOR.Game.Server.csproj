@@ -256,6 +256,8 @@
     <Compile Include="Data\Entities\Bank.cs" />
     <Compile Include="Data\Entities\BankItem.cs" />
     <Compile Include="Data\Entities\Association.cs" />
+    <Compile Include="DoorRule\Contracts\IDoorRule.cs" />
+    <Compile Include="DoorRule\RoundBuildingRule.cs" />
     <Compile Include="Enumeration\AddItemPropertyPolicy.cs" />
     <Compile Include="Enumeration\AreaSector.cs" />
     <Compile Include="Enumeration\AssociationType.cs" />
@@ -1084,6 +1086,7 @@
     <Compile Include="Service\AreaService.cs" />
     <Compile Include="Service\TimeService.cs" />
     <Compile Include="SpawnRule\Contracts\ISpawnRule.cs" />
+    <Compile Include="DoorRule\OldHouseRule.cs" />
     <Compile Include="SpawnRule\FiberplastSpawnRule.cs" />
     <Compile Include="SpawnRule\CrystalClusterSpawnRule.cs" />
     <Compile Include="SpawnRule\TreeSpawnRule.cs" />
@@ -1274,7 +1277,9 @@
     <None Include="ServerFiles\HakPaks\swlor_gui\cg_race.gui" />
     <None Include="ServerFiles\HakPaks\swlor_tlk.tlk" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="SpawnRule\Doors\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="ServerFiles\Database\scripts\AddWeaponCraftBlueprints.sql" />
     <Content Include="ServerFiles\Database\swlor-db.sql" />

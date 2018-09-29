@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         string OnModuleExamine(string existingDescription, NWObject examinedObject);
         void RunItemDecay(NWPlayer player, NWItem item);
         void RunItemDecay(NWPlayer player, NWItem item, float reduceAmount);
-        void RunItemRepair(NWPlayer oPC, NWItem oItem, float amount);
+        void RunItemRepair(NWPlayer oPC, NWItem item, float amount, float maxReductionAmount);
         void SetDurability(NWItem item, float value);
         void SetMaxDurability(NWItem item, float value);
     }

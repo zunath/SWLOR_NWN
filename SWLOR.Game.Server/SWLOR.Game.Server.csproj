@@ -624,6 +624,7 @@
     <Compile Include="NWN\Events\Module\mod_on_nwnxchat.cs" />
     <Compile Include="NWN\Events\Module\mod_on_usefeat.cs" />
     <Compile Include="NWN\Events\Player\pc_on_damaged.cs" />
+    <Compile Include="Perk\Armorsmith\ArmorRepair.cs" />
     <Compile Include="Perk\Armorsmith\ArmorsmithEfficiency.cs" />
     <Compile Include="Perk\Armorsmith\ArmorsmithOptimization.cs" />
     <Compile Include="Perk\Armor\AbsorptionField.cs" />
@@ -742,6 +743,7 @@
     <Compile Include="Perk\Weaponsmith\SpecialModInstallationWeapons.cs" />
     <Compile Include="Perk\Weaponsmith\WeaponBlueprints.cs" />
     <Compile Include="Perk\Weaponsmith\SpeedyWeaponsmith.cs" />
+    <Compile Include="Perk\Weaponsmith\WeaponRepair.cs" />
     <Compile Include="Perk\Weaponsmith\WeaponsmithEfficiency.cs" />
     <Compile Include="Perk\Weaponsmith\WeaponsmithOptimization.cs" />
     <Compile Include="Perk\Weapons\Focus.cs" />
@@ -801,7 +803,7 @@
     <Compile Include="Item\Medicine\TreatmentKit.cs" />
     <Compile Include="Item\GenericStartConversation.cs" />
     <Compile Include="Item\Contracts\IActionItem.cs" />
-    <Compile Include="Item\Repair\RepairKit.cs" />
+    <Compile Include="Item\RepairKit.cs" />
     <Compile Include="Item\Shovel.cs" />
     <Compile Include="Item\WaterJug.cs" />
     <Compile Include="Item\XPTome.cs" />

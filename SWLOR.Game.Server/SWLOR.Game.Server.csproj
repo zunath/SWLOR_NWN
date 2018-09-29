@@ -87,6 +87,7 @@
     <Compile Include="ChatCommand\Help.cs" />
     <Compile Include="ChatCommand\Interact.cs" />
     <Compile Include="ChatCommand\KeyItems.cs" />
+    <Compile Include="ChatCommand\MoveDoor.cs" />
     <Compile Include="ChatCommand\Night.cs" />
     <Compile Include="ChatCommand\Perks.cs" />
     <Compile Include="ChatCommand\PickUp.cs" />
@@ -257,7 +258,9 @@
     <Compile Include="Data\Entities\BankItem.cs" />
     <Compile Include="Data\Entities\Association.cs" />
     <Compile Include="DoorRule\Contracts\IDoorRule.cs" />
-    <Compile Include="DoorRule\RoundBuildingRule.cs" />
+    <Compile Include="DoorRule\LargeSquareBuildingRule.cs" />
+    <Compile Include="DoorRule\MediumRoundBuildingRule.cs" />
+    <Compile Include="DoorRule\SmallRoundBuildingRule.cs" />
     <Compile Include="Enumeration\AddItemPropertyPolicy.cs" />
     <Compile Include="Enumeration\AreaSector.cs" />
     <Compile Include="Enumeration\AssociationType.cs" />

@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.DoorRule
             _ = script;
         }
 
-        public NWPlaceable Run(NWArea area, Location location)
+        public NWPlaceable Run(NWArea area, Location location, float orientationOverride = 0f, float sqrtValue = 0f)
         {
             Vector doorPosition = _.GetPositionFromLocation(location);
             float fOrient = _.GetFacingFromLocation(location);

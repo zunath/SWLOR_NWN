@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Service
             if (durability <= 0.0f) description += _color.Red(Convert.ToString(durability));
             else description += _color.White(FormatDurability(durability));
 
-            description += _color.White(" / " + GetMaxDurability(examinedItem));
+            description += _color.White(" / " + FormatDurability(GetMaxDurability(examinedItem)));
 
             return existingDescription + "\n\n" + description;
         }
@@ -184,21 +184,23 @@ namespace SWLOR.Game.Server.Service
             return durability.ToString("0.00");
         }
 
-        public void RunItemRepair(NWPlayer oPC, NWItem oItem, float amount)
+        public void RunItemRepair(NWPlayer oPC, NWItem item, float amount, float maxReductionAmount)
         {
             // Prevent repairing for less than 0.01
             if (amount < 0.01f) return;
 
-            // Item has no durability - inform player they can't repair it
-            if (GetDurability(oItem) == -1)
-            {
-                oPC.SendMessage(_color.Red("You cannot repair that item."));
-                return;
-            }
-
-            SetDurability(oItem, GetDurability(oItem) + amount);
-            string durMessage = FormatDurability(GetDurability(oItem)) + " / " + GetMaxDurability(oItem);
-            oPC.SendMessage(_color.Green("You repaired your " + oItem.Name + ". (" + durMessage + ")"));
+            float maxDurability = GetMaxDurability(item) - maxReductionAmount;
+            float durability = GetDurability(item) + amount;
+            
+            if (maxDurability < 0.01f)
+                maxDurability = 0.01f;
+            if (durability > maxDurability)
+                durability = maxDurability;
+            
+            SetMaxDurability(item, maxDurability);
+            SetDurability(item, durability);
+            string durMessage = FormatDurability(durability) + " / " + FormatDurability(maxDurability);
+            oPC.SendMessage(_color.Green("You repaired your " + item.Name + ". (" + durMessage + ")"));
         }
         
         public void OnHitCastSpell(NWPlayer oTarget)

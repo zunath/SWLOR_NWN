@@ -20,7 +20,7 @@
         Fabrication = 15,
         Cooking = 16,
         Medicine = 17,
-        ItemRepair = 18,
+        // 18 is free
         DarkSideAbilities = 19,
         LightSideAbilities = 20,
         // 21 is open

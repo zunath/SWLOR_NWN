@@ -150,7 +150,9 @@
         WeaponsmithOptimization = 145,
         ArmorsmithOptimization = 146,
         EngineeringOptimization = 147,
-        CookingOptimization = 148
+        CookingOptimization = 148,
+        WeaponRepair = 149,
+        ArmorRepair = 150
     }
 
 }

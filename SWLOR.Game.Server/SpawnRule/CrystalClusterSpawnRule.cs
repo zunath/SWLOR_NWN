@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.SpawnRule
             _db = db;
         }
 
-        public void Run(NWObject target)
+        public void Run(NWObject target, params object[] args)
         {
             int roll = _random.Random(0, 100);
             ResourceQuality quality = ResourceQuality.Low;

@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.SpawnRule
             _db = db;
         }
 
-        public void Run(NWObject target)
+        public void Run(NWObject target, params object[] args)
         {
             var dbArea = _db.Areas.Single(x => x.Resref == target.Area.Resref);
             int tier = dbArea.ResourceQuality;

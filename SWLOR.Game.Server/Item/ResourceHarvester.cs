@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Item
 
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            NWPlayer player = (user.Object);
+            NWPlayer player = user.Object;
             ResourceQuality quality = (ResourceQuality)target.GetLocalInt("RESOURCE_QUALITY");
             int tier = target.GetLocalInt("RESOURCE_TIER");
             int remaining = target.GetLocalInt("RESOURCE_COUNT") - 1;
@@ -58,9 +58,9 @@ namespace SWLOR.Game.Server.Item
             int itemHarvestBonus = item.HarvestingBonus;
             int scanningBonus = user.GetLocalInt(target.GlobalID);
 
-            ipBonusChance += (itemHarvestBonus * 2) + (scanningBonus * 2);
+            ipBonusChance += itemHarvestBonus * 2 + scanningBonus * 2;
 
-            NWItem resource = (_.CreateItemOnObject(itemResref, player.Object));
+            NWItem resource = _.CreateItemOnObject(itemResref, player.Object);
 
             if (roll <= ipBonusChance)
             {
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Item
 
             user.SendMessage("You harvest " + resource.Name + ".");
             _durability.RunItemDecay(player, item, _random.RandomFloat(0.03f, 0.07f));
-            int xp = 350 + (delta * 50);
+            int xp = 350 + delta * 50;
             _skill.GiveSkillXP(player, SkillType.Harvesting, xp);
 
             if (remaining <= 0)

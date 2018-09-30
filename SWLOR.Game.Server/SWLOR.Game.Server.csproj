@@ -867,6 +867,7 @@
     <Compile Include="Placeable\CraftingForge\OnDisturbed.cs" />
     <Compile Include="Placeable\CraftingForge\OnHeartbeat.cs" />
     <Compile Include="Placeable\DisabledStructure\OnUsed.cs" />
+    <Compile Include="Placeable\Drill\OnHeartbeat.cs" />
     <Compile Include="Placeable\QuestSystem\ItemCollector\OnClosed.cs" />
     <Compile Include="Placeable\ResourceBay\OnClosed.cs" />
     <Compile Include="Placeable\ResourceBay\OnDisturbed.cs" />
@@ -1095,7 +1096,7 @@
     <Compile Include="Service\TimeService.cs" />
     <Compile Include="SpawnRule\Contracts\ISpawnRule.cs" />
     <Compile Include="DoorRule\OldHouseRule.cs" />
-    <Compile Include="SpawnRule\DrillOreSpawnRule.cs" />
+    <Compile Include="SpawnRule\DrillSpawnRule.cs" />
     <Compile Include="SpawnRule\FiberplastSpawnRule.cs" />
     <Compile Include="SpawnRule\CrystalClusterSpawnRule.cs" />
     <Compile Include="SpawnRule\TreeSpawnRule.cs" />

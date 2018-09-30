@@ -116,6 +116,7 @@ namespace SWLOR.Game.Server.Data
                 .HasMany(e => e.AreaWalkmeshes)
                 .WithRequired(e => e.Area)
                 .WillCascadeOnDelete(false);
+            
 
             modelBuilder.Entity<Association>()
                 .HasMany(e => e.PlayerCharacters)
@@ -279,6 +280,27 @@ namespace SWLOR.Game.Server.Data
                 .HasMany(e => e.LootTableItems)
                 .WithRequired(e => e.LootTable)
                 .WillCascadeOnDelete(false);
+            
+            modelBuilder.Entity<LootTable>()
+                .HasMany(e => e.NortheastAreaLootTables)
+                .WithOptional(e => e.NortheastLootTable)
+                .HasForeignKey(e => e.NortheastLootTableID);
+
+            modelBuilder.Entity<LootTable>()
+                .HasMany(e => e.NorthwestAreaLootTables)
+                .WithOptional(e => e.NorthwestLootTable)
+                .HasForeignKey(e => e.NorthwestLootTableID);
+
+            modelBuilder.Entity<LootTable>()
+                .HasMany(e => e.SoutheastAreaLootTables)
+                .WithOptional(e => e.SoutheastLootTable)
+                .HasForeignKey(e => e.SoutheastLootTableID);
+
+            modelBuilder.Entity<LootTable>()
+                .HasMany(e => e.SouthwestAreaLootTables)
+                .WithOptional(e => e.SouthwestLootTable)
+                .HasForeignKey(e => e.SouthwestLootTableID);
+
 
             modelBuilder.Entity<NPCGroup>()
                 .HasMany(e => e.PCQuestKillTargetProgresses)

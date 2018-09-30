@@ -546,6 +546,32 @@ namespace SWLOR.Game.Server.Conversation
 
                 _db.SaveChanges();
             }
+            else if (structureType == BaseStructureType.ResourceSilo)
+            {
+                int maxResources = _base.CalculateResourceCapacity(pcBase);
+                var items = _db.PCBaseStructureItems.Where(x => x.PCBaseStructureID == controlTower.PCBaseStructureID).ToList();
+
+                while (items.Count > maxResources)
+                {
+                    var item = items.ElementAt(0);
+
+                    var impoundItem = new PCImpoundedItem
+                    {
+                        PlayerID = controlTower.PCBase.PlayerID,
+                        ItemResref = item.ItemResref,
+                        ItemObject = item.ItemObject,
+                        DateImpounded = DateTime.UtcNow,
+                        ItemName = item.ItemName,
+                        ItemTag = item.ItemTag
+                    };
+
+                    _db.PCImpoundedItems.Add(impoundItem);
+                    GetPC().SendMessage(item.ItemName + " has been impounded by the planetary government because your base ran out of space to store resources. The owner of the base will need to retrieve it.");
+                    _db.PCBaseStructureItems.Remove(item);
+                }
+
+                _db.SaveChanges();
+            }
 
             // Update the cache
             List<AreaStructure> areaStructures = data.TargetArea.Data["BASE_SERVICE_STRUCTURES"];

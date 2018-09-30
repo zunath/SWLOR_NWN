@@ -7,5 +7,6 @@
         public string Tag { get; set; }
         public string Resref { get; set; }
         public string Description { get; set; }
+        public string SpawnRule { get; set; }
     }
 }

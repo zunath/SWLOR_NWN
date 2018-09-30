@@ -14,16 +14,19 @@ namespace SWLOR.Game.Server.Conversation
     {
         private readonly IDataContext _db;
         private readonly IBasePermissionService _perm;
+        private readonly ISerializationService _serialization;
 
         public ControlTower(
             INWScript script, 
             IDialogService dialog,
             IDataContext db,
-            IBasePermissionService perm) 
+            IBasePermissionService perm,
+            ISerializationService serialization) 
             : base(script, dialog)
         {
             _db = db;
             _perm = perm;
+            _serialization = serialization;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -33,7 +36,8 @@ namespace SWLOR.Game.Server.Conversation
             DialogPage mainPage = new DialogPage(
                 "What would you like to do with this control tower?",
                 "Access Fuel Bay",
-                "Access Stronidium Bay");
+                "Access Stronidium Bay",
+                "Access Resource Bay");
 
             dialog.AddPage("MainPage", mainPage);
             return dialog;
@@ -49,6 +53,11 @@ namespace SWLOR.Game.Server.Conversation
                 SetResponseVisible("MainPage", 1, false);
                 SetResponseVisible("MainPage", 2, false);
             }
+
+            if (!_perm.HasBasePermission(GetPC(), structure.PCBaseID, BasePermission.CanAccessStructureInventory))
+            {
+                SetResponseVisible("MainPage", 3, false);
+            }
         }
 
         public override void DoAction(NWPlayer player, string pageName, int responseID)
@@ -60,6 +69,9 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case 2: // Access Stronidium Bay
                     OpenFuelBay(true);
+                    break;
+                case 3: // Access Resource Bay
+                    OpenResourceBay();
                     break;
             }
 
@@ -106,5 +118,34 @@ namespace SWLOR.Game.Server.Conversation
 
             oPC.AssignCommand(() => _.ActionInteractObject(bay.Object));
         }
+
+        private void OpenResourceBay()
+        {
+            NWPlaceable tower = (NWPlaceable)GetDialogTarget();
+            NWPlayer oPC = GetPC();
+
+            if (((NWPlaceable)tower.GetLocalObject("CONTROL_TOWER_RESOURCE_BAY")).IsValid)
+            {
+                oPC.FloatingText("Someone else is already accessing that structure's inventory. Please wait.");
+                return;
+            }
+
+            int structureID = tower.GetLocalInt("PC_BASE_STRUCTURE_ID");
+            var structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
+            Location location = oPC.Location;
+            NWPlaceable bay = (_.CreateObject(OBJECT_TYPE_PLACEABLE, "resource_bay", location));
+
+            tower.SetLocalObject("CONTROL_TOWER_RESOURCE_BAY", bay.Object);
+            bay.SetLocalObject("CONTROL_TOWER_PARENT", tower.Object);
+            bay.SetLocalInt("PC_BASE_STRUCTURE_ID", structureID);
+
+            foreach (var item in structure.PCBaseStructureItems)
+            {
+                _serialization.DeserializeItem(item.ItemObject, bay);
+            }
+
+            oPC.AssignCommand(() => _.ActionInteractObject(bay.Object));
+        }
+
     }
 }

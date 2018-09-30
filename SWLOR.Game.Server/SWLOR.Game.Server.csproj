@@ -868,6 +868,9 @@
     <Compile Include="Placeable\CraftingForge\OnHeartbeat.cs" />
     <Compile Include="Placeable\DisabledStructure\OnUsed.cs" />
     <Compile Include="Placeable\QuestSystem\ItemCollector\OnClosed.cs" />
+    <Compile Include="Placeable\ResourceBay\OnClosed.cs" />
+    <Compile Include="Placeable\ResourceBay\OnDisturbed.cs" />
+    <Compile Include="Placeable\ResourceBay\OnOpened.cs" />
     <Compile Include="Placeable\ScavengePoint\OnClosed.cs" />
     <Compile Include="Placeable\ScavengePoint\OnDisturbed.cs" />
     <Compile Include="Placeable\ScavengePoint\OnHeartbeat.cs" />
@@ -1092,6 +1095,7 @@
     <Compile Include="Service\TimeService.cs" />
     <Compile Include="SpawnRule\Contracts\ISpawnRule.cs" />
     <Compile Include="DoorRule\OldHouseRule.cs" />
+    <Compile Include="SpawnRule\DrillOreSpawnRule.cs" />
     <Compile Include="SpawnRule\FiberplastSpawnRule.cs" />
     <Compile Include="SpawnRule\CrystalClusterSpawnRule.cs" />
     <Compile Include="SpawnRule\TreeSpawnRule.cs" />
@@ -1282,9 +1286,7 @@
     <None Include="ServerFiles\HakPaks\swlor_gui\cg_race.gui" />
     <None Include="ServerFiles\HakPaks\swlor_tlk.tlk" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="SpawnRule\Doors\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="ServerFiles\Database\scripts\AddWeaponCraftBlueprints.sql" />
     <Content Include="ServerFiles\Database\swlor-db.sql" />

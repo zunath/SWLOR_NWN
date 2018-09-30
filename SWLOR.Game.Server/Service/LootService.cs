@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Data.Entities;
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service
@@ -45,7 +46,8 @@ namespace SWLOR.Game.Server.Service
             ItemVO result = new ItemVO
             {
                 Quantity = quantity,
-                Resref = itemEntity.Resref
+                Resref = itemEntity.Resref,
+                SpawnRule = itemEntity.SpawnRule
             };
 
 
@@ -76,7 +78,14 @@ namespace SWLOR.Game.Server.Service
 
                         for (int x = 1; x <= spawnQuantity; x++)
                         {
-                            _.CreateItemOnObject(model.Resref, creature.Object);
+                            var item = _.CreateItemOnObject(model.Resref, creature.Object);
+                            if (!string.IsNullOrWhiteSpace(model.SpawnRule))
+                            {
+                                App.ResolveByInterface<ISpawnRule>("SpawnRule." + model.SpawnRule, action =>
+                                {
+                                    action.Run(item);
+                                });
+                            }
                         }
                     }
                 }

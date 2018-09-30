@@ -1,3 +1,5 @@
+using System;
+
 namespace SWLOR.Game.Server.Data.Entities
 {
     using System.Collections.Generic;
@@ -41,6 +43,8 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public int StructureBonus { get; set; }
         
+        public DateTime? DateNextActivity { get; set; }
+
         public virtual BaseStructure BaseStructure { get; set; }
 
         public virtual BuildingStyle InteriorStyle { get; set; }

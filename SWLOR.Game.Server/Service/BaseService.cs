@@ -732,5 +732,20 @@ namespace SWLOR.Game.Server.Service
 
             return (int)(fuelMax + fuelMax * siloBonus);
         }
+
+        public int CalculateResourceCapacity(PCBase pcBase)
+        {
+            const int siloType = (int) BaseStructureType.ResourceSilo;
+            PCBaseStructure tower = GetBaseControlTower(pcBase.PCBaseID);
+            float siloBonus = _db.PCBaseStructures
+                                  .Where(x => x.PCBaseID == pcBase.PCBaseID &&
+                                              x.BaseStructure.BaseStructureTypeID == siloType)
+                                  .DefaultIfEmpty()
+                                  .Sum(x => x == null ? 0 : x.BaseStructure.Storage + x.StructureBonus) * 0.01f;
+
+            var resourceMax = tower.BaseStructure.ResourceStorage;
+
+            return (int) (resourceMax + resourceMax * siloBonus);
+        }
     }
 }

@@ -63,6 +63,14 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public int ResourceQuality { get; set; }
 
+        public int? NorthwestLootTableID { get; set; }
+
+        public int? NortheastLootTableID { get; set; }
+
+        public int? SouthwestLootTableID { get; set; }
+
+        public int? SoutheastLootTableID { get; set; }
+
         public virtual PlayerCharacter NortheastOwnerPlayer { get; set; }
 
         public virtual PlayerCharacter NorthwestOwnerPlayer { get; set; }
@@ -70,6 +78,14 @@ namespace SWLOR.Game.Server.Data.Entities
         public virtual PlayerCharacter SoutheastOwnerPlayer { get; set; }
 
         public virtual PlayerCharacter SouthwestOwnerPlayer { get; set; }
+
+        public virtual LootTable NortheastLootTable { get; set; }
+
+        public virtual LootTable NorthwestLootTable { get; set; }
+
+        public virtual LootTable SoutheastLootTable { get; set; }
+
+        public virtual LootTable SouthwestLootTable { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<AreaWalkmesh> AreaWalkmeshes { get; set; }

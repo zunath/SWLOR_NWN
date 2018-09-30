@@ -32,5 +32,6 @@ namespace SWLOR.Game.Server.Service.Contracts
         int CalculateMaxShieldHP(PCBaseStructure controlTower);
         int CalculateMaxFuel(PCBase pcBase);
         int CalculateMaxReinforcedFuel(PCBase pcBase);
+        int CalculateResourceCapacity(PCBase pcBase);
     }
 }

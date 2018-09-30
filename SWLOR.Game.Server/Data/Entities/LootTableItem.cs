@@ -18,6 +18,9 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public bool IsActive { get; set; }
 
+        [StringLength(64)]
+        public string SpawnRule { get; set; }
+
         public virtual LootTable LootTable { get; set; }
     }
 }

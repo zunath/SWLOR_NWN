@@ -10,6 +10,10 @@ namespace SWLOR.Game.Server.Data.Entities
         public LootTable()
         {
             LootTableItems = new HashSet<LootTableItem>();
+            NorthwestAreaLootTables = new HashSet<Area>();
+            NortheastAreaLootTables = new HashSet<Area>();
+            SouthwestAreaLootTables = new HashSet<Area>();
+            SoutheastAreaLootTables = new HashSet<Area>();
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -21,5 +25,18 @@ namespace SWLOR.Game.Server.Data.Entities
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<LootTableItem> LootTableItems { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Area> NorthwestAreaLootTables { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Area> NortheastAreaLootTables { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Area> SouthwestAreaLootTables { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Area> SoutheastAreaLootTables { get; set; }
+
     }
 }

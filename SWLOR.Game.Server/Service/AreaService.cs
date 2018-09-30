@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Data.Entity.Migrations;
-using System.Data.SqlClient;
-using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using NWN;
+﻿using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entities;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
+using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Data.Entity.Migrations;
+using System.Data.SqlClient;
+using System.Linq;
 using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Service
@@ -59,7 +55,11 @@ namespace SWLOR.Game.Server.Service
 
                 int width = _.GetAreaSize(AREA_WIDTH, area.Object);
                 int height = _.GetAreaSize(AREA_HEIGHT, area.Object);
-
+                int northwestLootTableID = area.GetLocalInt("RESOURCE_NORTHWEST_LOOT_TABLE_ID");
+                int northeastLootTableID = area.GetLocalInt("RESOURCE_NORTHEAST_LOOT_TABLE_ID");
+                int southwestLootTableID = area.GetLocalInt("RESOURCE_SOUTHWEST_LOOT_TABLE_ID");
+                int southeastLootTableID = area.GetLocalInt("RESOURCE_SOUTHEAST_LOOT_TABLE_ID");
+                
                 dbArea.Name = area.Name;
                 dbArea.Tag = area.Tag;
                 dbArea.ResourceSpawnTableID = area.GetLocalInt("RESOURCE_SPAWN_TABLE_ID");
@@ -67,16 +67,25 @@ namespace SWLOR.Game.Server.Service
                 dbArea.Height = height;
                 dbArea.PurchasePrice = area.GetLocalInt("PURCHASE_PRICE");
                 dbArea.DailyUpkeep = area.GetLocalInt("DAILY_UPKEEP");
-                dbArea.IsBuildable = 
-                    (area.GetLocalInt("IS_BUILDABLE") == TRUE && 
-                    dbArea.Width == 32 && 
+                dbArea.NorthwestLootTableID = northwestLootTableID > 0 ? northwestLootTableID : new int?();
+                dbArea.NortheastLootTableID = northeastLootTableID > 0 ? northeastLootTableID : new int?();
+                dbArea.SouthwestLootTableID = southwestLootTableID > 0 ? southwestLootTableID : new int?();
+                dbArea.SoutheastLootTableID = southeastLootTableID > 0 ? southeastLootTableID : new int?();
+                dbArea.IsBuildable =
+                    (area.GetLocalInt("IS_BUILDABLE") == TRUE &&
+                    dbArea.Width == 32 &&
                     dbArea.Height == 32 &&
                     dbArea.PurchasePrice > 0 &&
-                    dbArea.DailyUpkeep > 0) || 
+                    dbArea.DailyUpkeep > 0 &&
+                    dbArea.NorthwestLootTableID != null &&
+                    dbArea.NortheastLootTableID != null &&
+                    dbArea.SouthwestLootTableID != null &&
+                    dbArea.SoutheastLootTableID != null) ||
                     (area.GetLocalInt("IS_BUILDING") == TRUE);
                 dbArea.IsActive = true;
                 dbArea.AutoSpawnResources = area.GetLocalInt("AUTO_SPAWN_RESOURCES") == TRUE;
                 dbArea.ResourceQuality = area.GetLocalInt("RESOURCE_QUALITY");
+
 
                 _db.Areas.AddOrUpdate(dbArea);
             }
@@ -103,7 +112,7 @@ namespace SWLOR.Game.Server.Service
 
                 int arraySizeX = dbArea.Width * (10 / Step);
                 int arraySizeY = dbArea.Height * (10 / Step);
-                Tuple<bool, float>[,] locations = new Tuple<bool,float>[arraySizeX, arraySizeY];
+                Tuple<bool, float>[,] locations = new Tuple<bool, float>[arraySizeX, arraySizeY];
                 string walkmesh = string.Empty;
 
                 for (int x = 0; x < arraySizeX; x++)
@@ -121,7 +130,7 @@ namespace SWLOR.Game.Server.Service
                         {
                             isWalkable = false;
                         }
-                        
+
 
                         locations[x, y] = new Tuple<bool, float>(isWalkable, _.GetGroundHeight(checkLocation));
 
@@ -133,7 +142,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     dbArea.Walkmesh = walkmesh;
                     dbArea.DateLastBaked = DateTime.UtcNow;
-                    ((DbContext) _bakeDB).Entry(dbArea).State = EntityState.Modified; // Manually mark as changed since AutoDetectChanges is disabled for this context
+                    ((DbContext)_bakeDB).Entry(dbArea).State = EntityState.Modified; // Manually mark as changed since AutoDetectChanges is disabled for this context
                     _bakeDB.SaveChanges();
 
                     Console.WriteLine("Baking area because its walkmesh has changed since last run: " + area.Name);
@@ -156,10 +165,10 @@ namespace SWLOR.Game.Server.Service
                             if (!isWalkable) continue;
 
                             float z = locations[x, y].Item2;
-                            
+
                             // Raw SQL inserts are quicker than using EF.
                             sql += $@"INSERT INTO dbo.AreaWalkmesh(AreaID, LocationX, LocationY, LocationZ) VALUES('{dbArea.AreaID}', {x * Step}, {y * Step}, {z});";
-                            
+
                             batchRecords++;
                             if (batchRecords >= BatchSize)
                             {
@@ -188,7 +197,7 @@ namespace SWLOR.Game.Server.Service
 
             area.SetLocalInt("IS_AREA_INSTANCE", TRUE);
             area.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();
-            
+
             return area;
         }
     }

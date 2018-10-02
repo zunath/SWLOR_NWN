@@ -39,12 +39,15 @@ namespace SWLOR.Game.Server.Perk.DarkSide
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
+            if (_.GetDistanceBetween(oPC, oTarget) > 15.0f)
+                return false;
+
             return true;
         }
 
         public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
         {
-            return null;
+            return "Target out of range.";
         }
 
         public int FPCost(NWPlayer oPC, int baseFPCost)

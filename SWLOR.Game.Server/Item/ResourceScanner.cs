@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Item
             if (user.IsPlayer)
             {
                 var player = (user.Object);
-                scanningTime = BaseScanningTime - (BaseScanningTime * _perk.GetPCPerkLevel(player, PerkType.SpeedyScanner));
+                scanningTime = BaseScanningTime - BaseScanningTime * (_perk.GetPCPerkLevel(player, PerkType.SpeedyScanner) * 0.1f);
 
             }
             return scanningTime;

@@ -339,6 +339,7 @@
     <Compile Include="Item\Medicine\ForceKit.cs" />
     <Compile Include="Item\Medicine\ResuscitationKit.cs" />
     <Compile Include="Item\Medicine\StimPack.cs" />
+    <Compile Include="Item\MineralScanner.cs" />
     <Compile Include="Item\ModItem.cs" />
     <Compile Include="Item\PerkRefund.cs" />
     <Compile Include="Item\ResourceHarvester.cs" />

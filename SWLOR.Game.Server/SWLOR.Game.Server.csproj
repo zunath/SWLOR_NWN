@@ -101,6 +101,7 @@
     <Compile Include="ChatCommand\SideStep.cs" />
     <Compile Include="ChatCommand\Skills.cs" />
     <Compile Include="ChatCommand\Spasm.cs" />
+    <Compile Include="ChatCommand\SpawnGold.cs" />
     <Compile Include="ChatCommand\SpawnItem.cs" />
     <Compile Include="ChatCommand\Stuck.cs" />
     <Compile Include="ChatCommand\Sit.cs" />

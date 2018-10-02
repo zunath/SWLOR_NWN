@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.ChatCommand
             }
             int quantity = 1;
 
-            if (args.Length > 1)
+            if (args.Length >= 1)
             {
                 if (!int.TryParse(args[0], out quantity))
                 {

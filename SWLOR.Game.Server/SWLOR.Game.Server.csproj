@@ -313,6 +313,7 @@
     <Compile Include="Event\Conversation\QuestCollectItem.cs" />
     <Compile Include="Event\Conversation\QuestComplete.cs" />
     <Compile Include="Event\Conversation\QuestIsDone.cs" />
+    <Compile Include="Event\Conversation\WarpToWaypoint.cs" />
     <Compile Include="Event\Creature\OnBlocked.cs" />
     <Compile Include="Event\Creature\OnCombatRoundEnd.cs" />
     <Compile Include="Event\Creature\OnConversation.cs" />
@@ -622,6 +623,7 @@
     <Compile Include="NWN\Events\Conversation\Quest\QuestIsDone\quest_done_7.cs" />
     <Compile Include="NWN\Events\Conversation\Quest\QuestIsDone\quest_done_8.cs" />
     <Compile Include="NWN\Events\Conversation\Quest\QuestIsDone\quest_done_9.cs" />
+    <Compile Include="NWN\Events\Conversation\warp_to_wp.cs" />
     <Compile Include="NWN\Events\Module\mod_on_applydmg.cs" />
     <Compile Include="NWN\Events\Module\mod_on_attack.cs" />
     <Compile Include="NWN\Events\Module\mod_on_nwnxchat.cs" />

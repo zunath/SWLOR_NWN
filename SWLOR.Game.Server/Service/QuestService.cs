@@ -25,13 +25,15 @@ namespace SWLOR.Game.Server.Service
         private readonly IMapPinService _mapPin;
         private readonly IDialogService _dialog;
         private readonly IColorTokenService _color;
+        private readonly IObjectVisibilityService _ovs;
 
         public QuestService(INWScript script,
             IDataContext db,
             IKeyItemService keyItem,
             IMapPinService mapPin,
             IDialogService dialog,
-            IColorTokenService color)
+            IColorTokenService color,
+            IObjectVisibilityService ovs)
         {
             _ = script;
             _db = db;
@@ -39,6 +41,7 @@ namespace SWLOR.Game.Server.Service
             _mapPin = mapPin;
             _dialog = dialog;
             _color = color;
+            _ovs = ovs;
         }
 
         public Quest GetQuestByID(int questID)
@@ -411,7 +414,7 @@ namespace SWLOR.Game.Server.Service
         public void SpawnQuestItems(NWPlaceable oChest, NWPlayer oPC)
         {
             int questID = oChest.GetLocalInt("QUEST_ID");
-            int questStateSequence = oChest.GetLocalInt("SEQUENCE_ID");
+            int questStateSequence = oChest.GetLocalInt("QUEST_SEQUENCE");
             string questItemResref = oChest.GetLocalString("QUEST_ITEM_RESREF");
 
             if (questID <= 0 || questStateSequence <= 0 || string.IsNullOrWhiteSpace(questItemResref)) return;
@@ -514,6 +517,7 @@ namespace SWLOR.Game.Server.Service
             string questMessage = oObject.GetLocalString("QUEST_MESSAGE");
             int questID = oObject.GetLocalInt("QUEST_ID");
             int questSequence = oObject.GetLocalInt("QUEST_SEQUENCE");
+            string visibilityObjectID = oObject.GetLocalString("VISIBILITY_OBJECT_ID");
 
             if (questID <= 0)
             {
@@ -532,7 +536,7 @@ namespace SWLOR.Game.Server.Service
 
             QuestState questState = pcQuestStatus.CurrentQuestState;
 
-            if (questState.Sequence == questSequence ||
+            if (questState.Sequence != questSequence ||
               (questState.QuestTypeID != (int)QuestType.UseObject &&
                       questState.QuestTypeID != (int)QuestType.ExploreArea))
             {
@@ -549,6 +553,11 @@ namespace SWLOR.Game.Server.Service
             }
 
             AdvanceQuestState(oPC, oObject, questID);
+
+            if (!string.IsNullOrWhiteSpace(visibilityObjectID))
+            {
+                _ovs.AdjustVisibility(oPC, oObject, false);
+            }
         }
 
         public void OnQuestPlaceableUsed(NWObject oObject)

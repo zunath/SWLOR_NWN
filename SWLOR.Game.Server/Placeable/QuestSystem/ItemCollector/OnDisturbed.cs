@@ -67,8 +67,9 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
 
                     _db.SaveChanges();
 
-                    // Need to commit the above changes before advancing state.
-                    if (progress.Remaining <= 0)
+                    // Recalc the remaining items needed.
+                    int remainingCount = _db.PCQuestItemProgresses.Count(x => x.PCQuestStatusID == status.PCQuestStatusID);
+                    if (remainingCount <= 0)
                     {
                         _quest.AdvanceQuestState(player, owner, questID);
                     }

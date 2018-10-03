@@ -379,7 +379,6 @@ namespace SWLOR.Game.Server.Service
         public void RestoreFP(NWPlayer oPC, int amount)
         {
             PlayerCharacter entity = _db.PlayerCharacters.Single(x => x.PlayerID == oPC.GlobalID);
-            ((IObjectContextAdapter)_db).ObjectContext.Refresh(RefreshMode.StoreWins, entity);
             RestoreFP(oPC, amount, entity);
             _db.SaveChanges();
         }

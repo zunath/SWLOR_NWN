@@ -379,37 +379,6 @@ namespace SWLOR.Game.Server.Service
                 player.AssignCommand(() => _.ActionJumpToLocation(location));
             }
         }
-
-
-        private void CheckForMovement(NWPlayer oPC, Location location)
-        {
-            if (!oPC.IsValid || oPC.IsDead) return;
-            
-            string areaResref = oPC.Area.Resref;
-            Vector position = _.GetPositionFromLocation(location);
-
-            if (areaResref != _.GetResRef(_.GetAreaFromLocation(location)) ||
-                oPC.Facing != _.GetFacingFromLocation(location) ||
-                oPC.Position.m_X != position.m_X ||
-                oPC.Position.m_Y != position.m_Y ||
-                oPC.Position.m_Z != position.m_Z)
-            {
-                foreach (Effect effect in oPC.Effects)
-                {
-                    int type = _.GetEffectType(effect);
-                    if (type == EFFECT_TYPE_DAMAGE_REDUCTION || type == EFFECT_TYPE_SANCTUARY)
-                    {
-                        _.RemoveEffect(oPC.Object, effect);
-                    }
-                }
-                return;
-            }
-            
-            _.DelayCommand(1.0f, () =>
-            {
-                CheckForMovement(oPC, location);
-            });
-        }
         
         private void InitializeHotBar(NWPlayer player)
         {

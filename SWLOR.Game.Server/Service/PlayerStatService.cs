@@ -149,9 +149,9 @@ namespace SWLOR.Game.Server.Service
             pcEntity.MaxFP = EffectiveMaxFP(player, ignoreItem);
 
             if (isInitialization)
+            {
                 pcEntity.CurrentFP = pcEntity.MaxFP;
-            if (pcEntity.CurrentFP < pcEntity.MaxFP)
-                pcEntity.CurrentFP = pcEntity.MaxFP;
+            }
 
             _db.SaveChanges();
         }
@@ -286,17 +286,17 @@ namespace SWLOR.Game.Server.Service
                 baseAC += itemAC;
             }
             baseAC = baseAC + _customEffect.CalculateEffectAC(player);
-            int totalAC = _.GetAC(player);
+            //int totalAC = _.GetAC(player);
 
             // Shield Oath and Sword Oath affect a percentage of the TOTAL armor class on a creature.
             var stance = _customEffect.GetCurrentStanceType(player);
             if (stance == CustomEffectType.ShieldOath)
             {
-                baseAC = baseAC + (int)(totalAC * 0.2f - baseAC);
+                baseAC = baseAC + (int)(baseAC * 0.2f - baseAC);
             }
             else if (stance == CustomEffectType.SwordOath)
             {
-                baseAC = baseAC + (int)(totalAC * -0.3f - baseAC);
+                baseAC = baseAC + (int)(baseAC * -0.3f - baseAC);
             }
 
 

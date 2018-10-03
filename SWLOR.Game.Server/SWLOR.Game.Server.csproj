@@ -873,6 +873,7 @@
     <Compile Include="Placeable\CraftingForge\OnHeartbeat.cs" />
     <Compile Include="Placeable\DisabledStructure\OnUsed.cs" />
     <Compile Include="Placeable\Drill\OnHeartbeat.cs" />
+    <Compile Include="Placeable\ObtainKeyItem.cs" />
     <Compile Include="Placeable\QuestSystem\ItemCollector\OnClosed.cs" />
     <Compile Include="Placeable\ResourceBay\OnClosed.cs" />
     <Compile Include="Placeable\ResourceBay\OnDisturbed.cs" />
@@ -954,6 +955,7 @@
     <Compile Include="QuestRule\HideQuestGiverRule.cs" />
     <Compile Include="QuestRule\FameBonusRule.cs" />
     <Compile Include="QuestRule\RemoveKeyItemsRule.cs" />
+    <Compile Include="QuestRule\ShowQuestObjectRule.cs" />
     <Compile Include="Service\AbilityService.cs" />
     <Compile Include="Service\ActivityLoggingService.cs" />
     <Compile Include="Service\AuthorizationService.cs" />
@@ -1106,6 +1108,7 @@
     <Compile Include="SpawnRule\CrystalClusterSpawnRule.cs" />
     <Compile Include="SpawnRule\TreeSpawnRule.cs" />
     <Compile Include="SpawnRule\OreSpawnRule.cs" />
+    <Compile Include="Trigger\QuestTrigger.cs" />
     <Compile Include="ValueObject\AreaSpawn.cs" />
     <Compile Include="ValueObject\AreaStructure.cs" />
     <Compile Include="ValueObject\ObjectSpawn.cs" />

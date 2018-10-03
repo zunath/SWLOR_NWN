@@ -6,6 +6,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -54,6 +55,7 @@ namespace SWLOR.Game.Server.Service
 
             var dbPlayer = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
 
+            // Apply visibilities for player
             foreach (var visibility in dbPlayer.PCObjectVisibilities)
             {
                 if (!_appState.VisibilityObjects.ContainsKey(visibility.VisibilityObjectID)) continue;
@@ -64,6 +66,17 @@ namespace SWLOR.Game.Server.Service
                     _nwnxPlayer.SetVisibilityOverride(player, obj, (int)PlayerVisibilityType.Visible);
                 else
                     _nwnxPlayer.SetVisibilityOverride(player, obj, (int)PlayerVisibilityType.Hidden);
+            }
+
+            // Hide any objects which are hidden by default, as long as player doesn't have an override already.
+            foreach (var visibilityObject in _appState.VisibilityObjects)
+            {
+                string visibilityObjectID = visibilityObject.Value.GetLocalString("VISIBILITY_OBJECT_ID");
+                var matchingVisibility = dbPlayer.PCObjectVisibilities.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.VisibilityObjectID == visibilityObjectID);
+                if (visibilityObject.Value.GetLocalInt("VISIBILITY_HIDDEN_DEFAULT") == TRUE && matchingVisibility == null)
+                {
+                    _nwnxPlayer.SetVisibilityOverride(player, visibilityObject.Value, (int)PlayerVisibilityType.Hidden);
+                }
             }
 
         }

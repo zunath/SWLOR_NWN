@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entities;
@@ -11,14 +12,17 @@ namespace SWLOR.Game.Server.Conversation
     public class LockedDoor: ConversationBase
     {
         private readonly IDataContext _db;
+        private readonly IKeyItemService _keyItem;
 
         public LockedDoor(
             INWScript script, 
             IDialogService dialog,
-            IDataContext db) 
+            IDataContext db,
+            IKeyItemService keyItem) 
             : base(script, dialog)
         {
             _db = db;
+            _keyItem = keyItem;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -37,13 +41,29 @@ namespace SWLOR.Game.Server.Conversation
         {
             NWObject door = Object.OBJECT_SELF;
             NWPlayer player = GetPC();
-            int keyItemID = door.GetLocalInt("LOCKED_DOOR_REQUIRED_KEY_ITEM_ID");
-            PCKeyItem keyItem = _db.PCKeyItems.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.KeyItemID == keyItemID);
-            bool hasKeyItem = keyItem != null;
+            List<int> keyItemIDs = new List<int>();
 
-            if (hasKeyItem)
+            int count = 1;
+            int keyItemID = door.GetLocalInt("REQUIRED_KEY_ITEM_ID_" + count);
+            while (keyItemID > 0)
             {
-                SetResponseText("MainPage", 1, "Open With: " + keyItem.KeyItem.Name);
+                keyItemIDs.Add(keyItemID);
+
+                count++;
+                keyItemID = door.GetLocalInt("REQUIRED_KEY_ITEM_ID_" + count);
+            }
+            
+            bool hasKeyItems = _keyItem.PlayerHasAllKeyItems(player, keyItemIDs.ToArray());
+            string doorDialogue = door.GetLocalString("DOOR_DIALOGUE");
+
+            if (!string.IsNullOrWhiteSpace(doorDialogue))
+            {
+                SetPageHeader("MainPage", doorDialogue);
+            }
+
+            if (hasKeyItems)
+            {
+                SetResponseText("MainPage", 1, "Open Door");
             }
             else
             {

@@ -350,7 +350,7 @@ namespace SWLOR.Game.Server.Service
                 if (string.IsNullOrWhiteSpace(entity.RespawnAreaResref))
                 {
                     NWObject waypoint = _.GetWaypointByTag("DTH_DEFAULT_RESPAWN_POINT");
-                    entity.RespawnAreaResref = waypoint.Resref;
+                    entity.RespawnAreaResref = waypoint.Area.Resref;
                     entity.RespawnLocationOrientation = waypoint.Facing;
                     entity.RespawnLocationX = waypoint.Position.m_X;
                     entity.RespawnLocationY = waypoint.Position.m_Y;

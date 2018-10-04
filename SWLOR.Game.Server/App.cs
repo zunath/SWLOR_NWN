@@ -239,7 +239,7 @@ namespace SWLOR.Game.Server
             builder.RegisterType<ResourceService>().As<IResourceService>();
             builder.RegisterType<SearchService>().As<ISearchService>();
             builder.RegisterType<SerializationService>().As<ISerializationService>();
-            builder.RegisterType<SkillService>().As<ISkillService>().SingleInstance();
+            builder.RegisterType<SkillService>().As<ISkillService>();
             builder.RegisterType<SpawnService>().As<ISpawnService>();
             builder.RegisterType<TimeService>().As<ITimeService>();
             

@@ -232,13 +232,20 @@ namespace SWLOR.Game.Server.Service
                     var dbSpawn = possibleSpawns.ElementAt(index);
                     Location location = GetRandomSpawnPoint(area.Resref, db);
                     NWPlaceable plc = (_.CreateObject(OBJECT_TYPE_PLACEABLE, dbSpawn.Resref, location));
+                    ObjectSpawn spawn = new ObjectSpawn(plc, false, dbArea.ResourceSpawnTableID, 600.0f);
 
                     if (dbSpawn.NPCGroupID != null && dbSpawn.NPCGroupID > 0)
+                    {
                         plc.SetLocalInt("NPC_GROUP", Convert.ToInt32(dbSpawn.NPCGroupID));
+                        spawn.NPCGroupID = Convert.ToInt32(dbSpawn.NPCGroupID);
+                    }
 
                     if (!string.IsNullOrWhiteSpace(dbSpawn.BehaviourScript) &&
-                       string.IsNullOrWhiteSpace(plc.GetLocalString("BEHAVIOUR")))
+                        string.IsNullOrWhiteSpace(plc.GetLocalString("BEHAVIOUR")))
+                    {
                         plc.SetLocalString("BEHAVIOUR", dbSpawn.BehaviourScript);
+                        spawn.BehaviourScript = dbSpawn.BehaviourScript;
+                    }
 
                     if (!string.IsNullOrWhiteSpace(dbSpawn.SpawnRule))
                     {
@@ -248,7 +255,6 @@ namespace SWLOR.Game.Server.Service
                         });
                     }
 
-                    ObjectSpawn spawn = new ObjectSpawn(plc, false, dbArea.ResourceSpawnTableID, 600.0f);
                     areaSpawn.Placeables.Add(spawn);
                 }
             });

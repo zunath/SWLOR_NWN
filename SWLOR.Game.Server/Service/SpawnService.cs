@@ -97,13 +97,6 @@ namespace SWLOR.Game.Server.Service
                             _.DelayCommand(0.5f, () =>
                             {
                                 NWObject spawn = _.CreateObject(objectType, spawnResref, location);
-                                
-                                if(npcGroupID > 0)
-                                    spawn.SetLocalInt("NPC_GROUP", npcGroupID);
-
-                                if(!string.IsNullOrWhiteSpace(behaviourScript) &&
-                                   string.IsNullOrWhiteSpace(spawn.GetLocalString("BEHAVIOUR")))
-                                    spawn.SetLocalString("BEHAVIOUR", behaviourScript);
 
                                 ObjectSpawn newSpawn; 
                                 if (useResref)
@@ -113,6 +106,19 @@ namespace SWLOR.Game.Server.Service
                                 else
                                 {
                                     newSpawn = new ObjectSpawn(spawn, true, spawnTableID, respawnTime);
+                                }
+
+                                if (npcGroupID > 0)
+                                {
+                                    spawn.SetLocalInt("NPC_GROUP", npcGroupID);
+                                    newSpawn.NPCGroupID = npcGroupID;
+                                }
+
+                                if (!string.IsNullOrWhiteSpace(behaviourScript) &&
+                                    string.IsNullOrWhiteSpace(spawn.GetLocalString("BEHAVIOUR")))
+                                {
+                                    spawn.SetLocalString("BEHAVIOUR", behaviourScript);
+                                    newSpawn.BehaviourScript = behaviourScript;
                                 }
 
                                 if (!string.IsNullOrWhiteSpace(spawnRule))

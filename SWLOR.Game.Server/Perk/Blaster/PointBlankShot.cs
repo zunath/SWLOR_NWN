@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX.Contracts;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
@@ -53,7 +54,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_POINT_BLANK_SHOT);
+            _nwnxCreature.RemoveFeat(oPC, FEAT_POINT_BLANK_SHOT);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
@@ -73,15 +74,15 @@ namespace SWLOR.Game.Server.Perk.Blaster
         private void ApplyFeatChanges(NWPlayer oPC, NWItem oItem)
         {
             NWItem armor = oItem ?? oPC.Chest;
-            if (armor.BaseItemType != NWScript.BASE_ITEM_ARMOR) return;
+            if (armor.BaseItemType != BASE_ITEM_ARMOR) return;
             
             if (Equals(armor, oItem) || armor.CustomItemType != CustomItemType.LightArmor)
             {
-                _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_POINT_BLANK_SHOT);
+                _nwnxCreature.RemoveFeat(oPC, FEAT_POINT_BLANK_SHOT);
                 return;
             }
 
-            _nwnxCreature.AddFeat(oPC, NWScript.FEAT_POINT_BLANK_SHOT);
+            _nwnxCreature.AddFeat(oPC, FEAT_POINT_BLANK_SHOT);
         }
 
         public bool IsHostile()

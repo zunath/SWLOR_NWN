@@ -11,7 +11,7 @@ using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Item.Medicine
 {
-    public class ForceKit: IActionItem
+    public class ForcePack: IActionItem
     {
 
         private readonly INWScript _;
@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Item.Medicine
         private readonly IAbilityService _ability;
         private readonly ICustomEffectService _customEffect;
 
-        public ForceKit(
+        public ForcePack(
             INWScript script,
             IDataContext db,
             ISkillService skill,

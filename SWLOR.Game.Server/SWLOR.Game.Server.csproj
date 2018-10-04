@@ -337,7 +337,7 @@
     <Compile Include="Event\Player\OnPlayerDamaged.cs" />
     <Compile Include="Extension\BehaviourTreeBuilderExtensions.cs" />
     <Compile Include="Item\Enemy\BleedBite.cs" />
-    <Compile Include="Item\Medicine\ForceKit.cs" />
+    <Compile Include="Item\Medicine\ForcePack.cs" />
     <Compile Include="Item\Medicine\ResuscitationKit.cs" />
     <Compile Include="Item\Medicine\StimPack.cs" />
     <Compile Include="Item\MineralScanner.cs" />

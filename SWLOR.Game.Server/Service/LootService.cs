@@ -56,42 +56,61 @@ namespace SWLOR.Game.Server.Service
 
         public void OnCreatureDeath(NWCreature creature)
         {
+            // Single loot table (without an index)
+            int singleLootTableID = creature.GetLocalInt("LOOT_TABLE_ID");
+            if (singleLootTableID > 0)
+            {
+                int chance = creature.GetLocalInt("LOOT_TABLE_CHANCE");
+                int attempts = creature.GetLocalInt("LOOT_TABLE_ATTEMPTS");
+
+                RunLootAttempt(creature, singleLootTableID, chance, attempts);
+            }
+
+            // Multiple loot tables (with an index)
             int lootTableNumber = 1;
             int lootTableID = creature.GetLocalInt("LOOT_TABLE_ID_" + lootTableNumber);
             while (lootTableID > 0)
             {
                 int chance = creature.GetLocalInt("LOOT_TABLE_CHANCE_" + lootTableNumber);
-                if (chance <= 0) chance = 75;
-                else if (chance > 100) chance = 100;
-
                 int attempts = creature.GetLocalInt("LOOT_TABLE_ATTEMPTS_" + lootTableNumber);
-                if (attempts <= 0) attempts = 1;
-
-                for (int a = 1; a <= attempts; a++)
-                {
-                    if (_random.Random(100) + 1 <= chance)
-                    {
-                        ItemVO model = PickRandomItemFromLootTable(lootTableID);
-                        if (model == null) continue;
-
-                        int spawnQuantity = model.Quantity > 1 ? _random.Random(1, model.Quantity) : 1;
-
-                        for (int x = 1; x <= spawnQuantity; x++)
-                        {
-                            var item = _.CreateItemOnObject(model.Resref, creature.Object);
-                            if (!string.IsNullOrWhiteSpace(model.SpawnRule))
-                            {
-                                App.ResolveByInterface<ISpawnRule>("SpawnRule." + model.SpawnRule, action =>
-                                {
-                                    action.Run(item);
-                                });
-                            }
-                        }
-                    }
-                }
+                
+                RunLootAttempt(creature, lootTableID, chance, attempts);
 
                 lootTableNumber++;
                 lootTableID = creature.GetLocalInt("LOOT_TABLE_ID_" + lootTableNumber);
+            }
+        }
+
+        private void RunLootAttempt(NWCreature target, int lootTableID, int chance, int attempts)
+        {
+            if (chance <= 0)
+                chance = 75;
+            else if (chance > 100) chance = 100;
+
+            if (attempts <= 0)
+                attempts = 1;
+
+            for (int a = 1; a <= attempts; a++)
+            {
+                if (_random.Random(100) + 1 <= chance)
+                {
+                    ItemVO model = PickRandomItemFromLootTable(lootTableID);
+                    if (model == null) continue;
+
+                    int spawnQuantity = model.Quantity > 1 ? _random.Random(1, model.Quantity) : 1;
+
+                    for (int x = 1; x <= spawnQuantity; x++)
+                    {
+                        var item = _.CreateItemOnObject(model.Resref, target);
+                        if (!string.IsNullOrWhiteSpace(model.SpawnRule))
+                        {
+                            App.ResolveByInterface<ISpawnRule>("SpawnRule." + model.SpawnRule, action =>
+                            {
+                                action.Run(item);
+                            });
+                        }
+                    }
+                }
             }
         }
     }

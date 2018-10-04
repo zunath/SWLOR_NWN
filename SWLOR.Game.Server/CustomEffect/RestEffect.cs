@@ -103,15 +103,15 @@ namespace SWLOR.Game.Server.CustomEffect
             switch (perkLevel)
             {
                 default:
-                    amount = 1;
+                    amount = 2;
                     break;
                 case 4:
                 case 5:
                 case 6:
-                    amount = 2;
+                    amount = 3;
                     break;
                 case 7:
-                    amount = 3;
+                    amount = 4;
                     break;
             }
             amount += _playerStat.EffectiveRestBonus(player);

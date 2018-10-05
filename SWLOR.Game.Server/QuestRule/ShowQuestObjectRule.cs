@@ -22,12 +22,18 @@ namespace SWLOR.Game.Server.QuestRule
 
         public void Run(NWPlayer player, NWObject questSource, int questID, string[] args)
         {
-            string visibilityObjectID = args[0];
-            
-            if (string.IsNullOrWhiteSpace(visibilityObjectID)) return;
+            int count = args.Length;
 
-            var obj = _state.VisibilityObjects.Single(x => x.Key == visibilityObjectID).Value;
-            _ovs.AdjustVisibility(player, obj, true);
+            for (int index = 0; index < count; index++)
+            {
+                string visibilityObjectID = args[index];
+
+                if (string.IsNullOrWhiteSpace(visibilityObjectID)) return;
+
+                var obj = _state.VisibilityObjects.Single(x => x.Key == visibilityObjectID).Value;
+                _ovs.AdjustVisibility(player, obj, true);
+            }
+            
         }
     }
 }

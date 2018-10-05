@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using System;
+using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.QuestRule.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 
@@ -25,6 +26,12 @@ namespace SWLOR.Game.Server.QuestRule
 
                 count++;
                 keyItemID = questSource.GetLocalInt(prefix + count);
+            }
+
+            foreach (var keyItem in args)
+            {
+                keyItemID = Convert.ToInt32(keyItem);
+                _keyItem.RemovePlayerKeyItem(player, keyItemID);
             }
 
         }

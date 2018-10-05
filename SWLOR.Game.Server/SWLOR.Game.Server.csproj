@@ -141,6 +141,7 @@
     <Compile Include="Conversation\QuestRewardSelection.cs" />
     <Compile Include="Conversation\RestMenu.cs" />
     <Compile Include="Conversation\Shovel.cs" />
+    <Compile Include="Conversation\SliceTerminal.cs" />
     <Compile Include="Conversation\StructureStorage.cs" />
     <Compile Include="Conversation\ViewBlueprints.cs" />
     <Compile Include="Conversation\ViewPerks.cs" />

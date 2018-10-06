@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.Service
 
 
 
-        public ItemProperty GetRandomComponentBonusIP(ResourceQuality quality)
+        public Tuple<ItemProperty, int> GetRandomComponentBonusIP(ResourceQuality quality)
         {
             string[] commonIP =
             {
@@ -251,7 +251,7 @@ namespace SWLOR.Game.Server.Service
 
             string itemTag = setToUse[index];
 
-            return _item.GetCustomItemPropertyByItemTag(itemTag);
+            return new Tuple<ItemProperty, int>(_item.GetCustomItemPropertyByItemTag(itemTag), index); 
         }
     }
 }

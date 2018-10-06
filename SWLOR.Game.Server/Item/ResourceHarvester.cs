@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Item
         private readonly ISkillService _skill;
         private readonly IBiowareXP2 _biowareXP2;
         private readonly IDurabilityService _durability;
+        private readonly IColorTokenService _color;
 
         public ResourceHarvester(
             INWScript script,
@@ -27,7 +28,8 @@ namespace SWLOR.Game.Server.Item
             IResourceService resource,
             ISkillService skill,
             IBiowareXP2 biowareXP2,
-            IDurabilityService durability)
+            IDurabilityService durability,
+            IColorTokenService color)
         {
             _ = script;
             _random = random;
@@ -36,6 +38,7 @@ namespace SWLOR.Game.Server.Item
             _skill = skill;
             _biowareXP2 = biowareXP2;
             _durability = durability;
+            _color = color;
         }
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
@@ -64,8 +67,24 @@ namespace SWLOR.Game.Server.Item
 
             if (roll <= ipBonusChance)
             {
-                ItemProperty ip = _resource.GetRandomComponentBonusIP(quality);
-                _biowareXP2.IPSafeAddItemProperty(resource, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
+                var ip = _resource.GetRandomComponentBonusIP(quality);
+                _biowareXP2.IPSafeAddItemProperty(resource, ip.Item1, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
+
+                switch (ip.Item2)
+                {
+                    case 0:
+                        resource.Name = _color.Green(resource.Name);
+                        break;
+                    case 1:
+                        resource.Name = _color.Blue(resource.Name);
+                        break;
+                    case 2:
+                        resource.Name = _color.Purple(resource.Name);
+                        break;
+                    case 3:
+                        resource.Name = _color.Orange(resource.Name);
+                        break;
+                }
             }
 
             user.SendMessage("You harvest " + resource.Name + ".");

@@ -86,6 +86,10 @@ namespace SWLOR.Game.Server.Processor
                     string.IsNullOrWhiteSpace(spawn.Spawn.GetLocalString("BEHAVIOUR")))
                     spawn.Spawn.SetLocalString("BEHAVIOUR", spawn.BehaviourScript);
 
+                if (objectType == OBJECT_TYPE_CREATURE)
+                    _spawn.AssignScriptEvents(spawn.Spawn.Object);
+
+
                 if (!string.IsNullOrWhiteSpace(spawn.SpawnRule))
                 {
                     App.ResolveByInterface<ISpawnRule>("SpawnRule." + spawn.SpawnRule, rule =>

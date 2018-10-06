@@ -55,4 +55,5 @@ docker run --rm -it \
 -e SQL_SERVER_USERNAME=yourUsername \
 -e SQL_SERVER_PASSWORD=yourPassword \
 -e SQL_SERVER_DATABASE=swlor \
+-e DISCORD_WEBHOOK_URL= \
 nwnxee/unified:latest-full

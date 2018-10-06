@@ -111,6 +111,8 @@ namespace SWLOR.Game.Server.Data.Entities
         
         public int? PrimaryResidencePCBaseStructureID { get; set; }
 
+        public bool DisplayHolonet { get; set; }
+
         [Column(TypeName = "datetime2")]
         public DateTime? DatePerkRefundAvailable { get; set; }
 

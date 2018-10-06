@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Data.Contracts
         IDbSet<CraftBlueprint> CraftBlueprints { get; set; }
         IDbSet<CraftDevice> CraftDevices { get; set; }
         IDbSet<Entities.CustomEffect> CustomEffects { get; set; }
+        IDbSet<DiscordChatQueue> DiscordChatQueues { get; set; }
         IDbSet<DMRoleDomain> DMRoleDomains { get; set; }
         IDbSet<Download> Downloads { get; set; }
         IDbSet<EnmityAdjustmentRule> EnmityAdjustmentRules { get; set; }

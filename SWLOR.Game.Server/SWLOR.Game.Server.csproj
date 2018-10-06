@@ -42,6 +42,9 @@
     <Reference Include="FluentBehaviourTree, Version=0.0.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\FluentBehaviourTree.0.0.4.0\lib\net35\FluentBehaviourTree.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
@@ -83,6 +86,7 @@
     <Compile Include="ChatCommand\Contracts\IChatCommand.cs" />
     <Compile Include="ChatCommand\Coord.cs" />
     <Compile Include="ChatCommand\Customize.cs" />
+    <Compile Include="ChatCommand\Discord.cs" />
     <Compile Include="ChatCommand\Drink.cs" />
     <Compile Include="ChatCommand\Duck.cs" />
     <Compile Include="ChatCommand\Greet.cs" />
@@ -109,6 +113,7 @@
     <Compile Include="ChatCommand\Sit.cs" />
     <Compile Include="ChatCommand\Day.cs" />
     <Compile Include="ChatCommand\Taunt.cs" />
+    <Compile Include="ChatCommand\ToggleDiscord.cs" />
     <Compile Include="ChatCommand\ToggleHolonet.cs" />
     <Compile Include="ChatCommand\Victory1.cs" />
     <Compile Include="ChatCommand\Victory2.cs" />
@@ -194,6 +199,7 @@
     <Compile Include="Data\Entities\CraftDevice.cs" />
     <Compile Include="Data\Entities\CustomEffect.cs" />
     <Compile Include="Data\DataContext.cs" />
+    <Compile Include="Data\Entities\DiscordChatQueue.cs" />
     <Compile Include="Data\Entities\DMRoleDomain.cs" />
     <Compile Include="Data\Entities\Download.cs" />
     <Compile Include="Data\Entities\EnmityAdjustmentRule.cs" />

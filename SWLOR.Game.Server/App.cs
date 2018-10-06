@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using Autofac;
 using FluentBehaviourTree;
@@ -182,6 +183,7 @@ namespace SWLOR.Game.Server
 
             // Types
             builder.RegisterType<DataContext>().As<IDataContext>().InstancePerDependency();
+            builder.RegisterType<HttpClient>().SingleInstance();
 
             // Game Objects
             builder.RegisterType<NWObject>();

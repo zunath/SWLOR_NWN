@@ -29,22 +29,24 @@ namespace SWLOR.Game.Server.Service
         {
             if (!sender.IsPlayer || sender.IsDM) return;
 
-            string message = _nwnxChat.GetMessage().Trim().ToLower();
+            string originalMessage = _nwnxChat.GetMessage().Trim();
+            
 
             // If it is double slash (//) treat it as a normal message (this is used by role-players to denote OOC speech)
-            if (message.Substring(0, 2) == "//") return;
+            if (originalMessage.Substring(0, 2) == "//") return;
 
-            if (message.Substring(0, 1) != "/")
+            if (originalMessage.Substring(0, 1) != "/")
             {
                 return;
             }
 
-            var split = message.Split(' ').ToList();
+            var split = originalMessage.Split(' ').ToList();
 
             // Commands with no arguments won't be split, so if we didn't split anything then add the command to the split list manually.
             if (split.Count <= 0)
-                split.Add(message);
-            
+                split.Add(originalMessage);
+
+            split[0] = split[0].ToLower();
             string command = split[0].Substring(1, split[0].Length-1);
             _nwnxChat.SkipMessage();
 

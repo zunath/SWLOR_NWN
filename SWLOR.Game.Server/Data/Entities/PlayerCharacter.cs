@@ -113,6 +113,8 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public bool DisplayHolonet { get; set; }
 
+        public bool DisplayDiscord { get; set; }
+
         [Column(TypeName = "datetime2")]
         public DateTime? DatePerkRefundAvailable { get; set; }
 

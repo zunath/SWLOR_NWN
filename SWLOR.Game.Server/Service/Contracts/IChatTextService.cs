@@ -7,5 +7,6 @@ namespace SWLOR.Game.Server.Service.Contracts
         void OnModuleChat();
         void OnNWNXChat();
         void OnModuleEnter();
+        void OnModuleHeartbeat();
     }
 }

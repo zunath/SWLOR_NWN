@@ -9,15 +9,18 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IActivityLoggingService _activityLogging;
         private readonly IChatCommandService _chatCommand;
         private readonly IBaseService _base;
+        private readonly IChatTextService _chatText;
         
         public OnModuleNWNXChat(
             IActivityLoggingService activityLogging,
             IChatCommandService chatCommand,
-            IBaseService @base)
+            IBaseService @base,
+            IChatTextService chatText)
         {
             _activityLogging = activityLogging;
             _chatCommand = chatCommand;
             _base = @base;
+            _chatText = chatText;
         }
 
         public bool Run(params object[] args)
@@ -26,6 +29,7 @@ namespace SWLOR.Game.Server.Event.Module
             _activityLogging.OnModuleNWNXChat(player);
             _chatCommand.OnModuleNWNXChat(player);
             _base.OnModuleNWNXChat(player);
+            _chatText.OnNWNXChat();
             return true;
         }
     }

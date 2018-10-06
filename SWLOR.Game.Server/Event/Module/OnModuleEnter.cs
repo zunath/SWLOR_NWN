@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IMapPinService _mapPin;
         private readonly IObjectVisibilityService _objectVisibility;
         private readonly ICustomEffectService _customEffect;
+        private readonly IChatTextService _chatText;
 
         public OnModuleEnter(INWScript script,
             IPlayerService player,
@@ -24,7 +25,8 @@ namespace SWLOR.Game.Server.Event.Module
             IActivityLoggingService activityLogging,
             IMapPinService mapPin,
             IObjectVisibilityService objectVisibility,
-            ICustomEffectService customEffect)
+            ICustomEffectService customEffect,
+            IChatTextService chatText)
         {
             _ = script;
             _player = player;
@@ -34,6 +36,7 @@ namespace SWLOR.Game.Server.Event.Module
             _mapPin = mapPin;
             _objectVisibility = objectVisibility;
             _customEffect = customEffect;
+            _chatText = chatText;
         }
 
         public bool Run(params object[] args)
@@ -52,6 +55,7 @@ namespace SWLOR.Game.Server.Event.Module
             _mapPin.OnModuleClientEnter();
             _objectVisibility.OnClientEnter();
             _customEffect.OnModuleEnter();
+            _chatText.OnModuleEnter();
 
             return true;
         }

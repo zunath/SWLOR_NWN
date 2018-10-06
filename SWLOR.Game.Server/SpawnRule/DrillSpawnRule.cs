@@ -12,15 +12,18 @@ namespace SWLOR.Game.Server.SpawnRule
         private readonly IRandomService _random;
         private readonly IResourceService _resource;
         private readonly IBiowareXP2 _biowareXP2;
+        private readonly IColorTokenService _color;
 
         public DrillSpawnRule(
             IRandomService random,
             IResourceService resource,
-            IBiowareXP2 biowareXP2)
+            IBiowareXP2 biowareXP2,
+            IColorTokenService color)
         {
             _random = random;
             _resource = resource;
             _biowareXP2 = biowareXP2;
+            _color = color;
         }
 
         public void Run(NWObject target, params object[] args)
@@ -41,8 +44,24 @@ namespace SWLOR.Game.Server.SpawnRule
                 quality = ResourceQuality.High;
             }
 
-            ItemProperty ip = _resource.GetRandomComponentBonusIP(quality);
-            _biowareXP2.IPSafeAddItemProperty(target.Object, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
+            var ip = _resource.GetRandomComponentBonusIP(quality);
+            _biowareXP2.IPSafeAddItemProperty(target.Object, ip.Item1, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
+
+            switch (ip.Item2)
+            {
+                case 0:
+                    target.Name = _color.Green(target.Name);
+                    break;
+                case 1:
+                    target.Name = _color.Blue(target.Name);
+                    break;
+                case 2:
+                    target.Name = _color.Purple(target.Name);
+                    break;
+                case 3:
+                    target.Name = _color.Orange(target.Name);
+                    break;
+            }
         }
     }
 }

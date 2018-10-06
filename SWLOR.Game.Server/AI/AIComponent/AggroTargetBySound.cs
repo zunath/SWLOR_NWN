@@ -3,6 +3,7 @@ using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.AI.AIComponent
 {
@@ -28,23 +29,23 @@ namespace SWLOR.Game.Server.AI.AIComponent
             if (self.IsInCombat) return false;
 
             float aggroRange = self.GetLocalFloat("AGGRO_RANGE");
-            if (aggroRange <= 0.0f) aggroRange = 5.0f;
+            if (aggroRange <= 0.0f) aggroRange = 10.0f;
 
             int nth = 1;
-            NWCreature creature = _.GetNearestObject(NWScript.OBJECT_TYPE_CREATURE, self.Object, nth);
+            NWCreature creature = _.GetNearestObject(OBJECT_TYPE_CREATURE, self.Object, nth);
             while (creature.IsValid)
             {
-                if (_.GetIsEnemy(creature.Object, self.Object) == NWScript.TRUE &&
+                if (_.GetIsEnemy(creature.Object, self.Object) == TRUE &&
                     !_enmity.IsOnEnmityTable(self, creature) &&
-                    !creature.HasAnyEffect(NWScript.EFFECT_TYPE_SANCTUARY) &&
+                    !creature.HasAnyEffect(EFFECT_TYPE_SANCTUARY) &&
                     _.GetDistanceBetween(self.Object, creature.Object) <= aggroRange &&
-                    _.LineOfSightObject(self.Object, creature.Object) == NWScript.TRUE)
+                    _.LineOfSightObject(self.Object, creature.Object) == TRUE)
                 {
                     _enmity.AdjustEnmity(self, creature, 0, 1);
                 }
 
                 nth++;
-                creature = _.GetNearestObject(NWScript.OBJECT_TYPE_CREATURE, self.Object, nth);
+                creature = _.GetNearestObject(OBJECT_TYPE_CREATURE, self.Object, nth);
             }
 
 

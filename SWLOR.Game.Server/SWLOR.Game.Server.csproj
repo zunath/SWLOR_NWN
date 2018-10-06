@@ -333,6 +333,7 @@
     <Compile Include="Event\Delayed\CraftCreateItem.cs" />
     <Compile Include="Event\Delayed\FinishAbilityUse.cs" />
     <Compile Include="Event\Delayed\FinishActionItem.cs" />
+    <Compile Include="Event\Legacy\LegacyJVMItemEvent.cs" />
     <Compile Include="Event\Module\OnModuleApplyDamage.cs" />
     <Compile Include="Event\Module\OnModuleAttack.cs" />
     <Compile Include="Event\Module\OnModuleNWNXChat.cs" />

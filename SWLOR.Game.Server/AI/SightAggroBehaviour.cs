@@ -11,25 +11,25 @@ namespace SWLOR.Game.Server.AI
     /// <summary>
     /// Generic behaviour for creatures who aggro by sight.
     /// </summary>
-    public class SightAggroBehaviour: StandardBehaviour
+    public class SightAggroBehaviour : StandardBehaviour
     {
         public SightAggroBehaviour(
-            BehaviourTreeBuilder builder, 
-            INWScript script, 
-            IEnmityService enmity, 
+            BehaviourTreeBuilder builder,
+            INWScript script,
+            IEnmityService enmity,
             IDialogService dialog,
-            INWNXObject nwnxObject) 
+            INWNXObject nwnxObject)
             : base(builder, script, enmity, dialog, nwnxObject)
         {
         }
 
-        public override BehaviourTreeBuilder Behaviour => 
+        public override BehaviourTreeBuilder Behaviour =>
             base.Behaviour
-            .Do<CleanUpEnmity>(Self)
-            .Do<EquipBestMelee>(Self)
-            .Do<EquipBestRanged>(Self)
-            .Do<AggroTargetBySight>(Self)
-            .Do<RandomWalk>(Self);
+                .Do<CleanUpEnmity>(Self)
+                .Do<EquipBestMelee>(Self)
+                .Do<EquipBestRanged>(Self)
+                .Do<AggroTargetBySight>(Self)
+                .Do<RandomWalk>(Self);
 
     }
 }

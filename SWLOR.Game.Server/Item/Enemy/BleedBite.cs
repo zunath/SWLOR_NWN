@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Item.Enemy
         {
             NWCreature oTarget = _.GetSpellTargetObject();
 
-            if (_random.D100(1) > 25) return false;
+            if (_random.D100(1) > 5) return false;
             
             _customEffect.ApplyCustomEffect(Object.OBJECT_SELF, oTarget, CustomEffectType.Bleeding, 12, 1, null);
             return true;

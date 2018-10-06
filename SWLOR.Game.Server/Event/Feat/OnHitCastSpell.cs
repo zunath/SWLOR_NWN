@@ -52,11 +52,7 @@ namespace SWLOR.Game.Server.Event.Feat
 
             if (!string.IsNullOrWhiteSpace(script))
             {
-                // Remove "Item." prefix if it exists.
-                if (script.StartsWith("Item."))
-                    script = script.Substring(5);
-
-                App.RunEvent<LegacyJVMEvent>("Item." + script);
+                App.RunEvent<LegacyJVMItemEvent>(script);
             }
         }
     }

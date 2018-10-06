@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 skill.Rank++;
-                oPC.FloatingText("Your " + skill.Skill.Name + " skill level increased!");
+                oPC.FloatingText("Your " + skill.Skill.Name + " skill level increased to rank " + skill.Rank + "!");
                 req = _db.SkillXPRequirements.Single(x => x.SkillID == skillID && x.Rank == skill.Rank);
 
                 // Reapply skill penalties on a skill level up.

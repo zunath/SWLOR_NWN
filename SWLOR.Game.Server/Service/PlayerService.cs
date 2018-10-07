@@ -254,7 +254,9 @@ namespace SWLOR.Game.Server.Service
                 TotalSPAcquired = 0,
                 DisplayHelmet = true,
                 PrimaryResidencePCBaseStructureID = null,
-                AssociationID = (int)assType
+                AssociationID = (int)assType,
+                DisplayHolonet = true,
+                DisplayDiscord = true
             };
 
             return entity;

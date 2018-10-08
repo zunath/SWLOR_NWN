@@ -94,65 +94,71 @@
 
         public const string DMAppearBefore = "NWNX_ON_DM_APPEAR_BEFORE";
         public const string DMAppearAfter = "NWNX_ON_DM_APPEAR_AFTER";
-
-
+        
         public const string DMDisappearBefore = "NWNX_ON_DM_DISAPPEAR_BEFORE";
         public const string DMDisappearAfter = "NWNX_ON_DM_DISAPPEAR_AFTER";
 
-
         public const string DMJumpToPointBefore = "NWNX_ON_DM_JUMP_TO_POINT_BEFORE";
         public const string DMJumpToPointAfter = "NWNX_ON_DM_JUMP_TO_POINT_AFTER";
-
-
+        
         public const string DMGiveXPBefore = "NWNX_ON_DM_GIVE_XP_BEFORE";
         public const string DMGiveXPAfter = "NWNX_ON_DM_GIVE_XP_AFTER";
-
-
+        
         public const string DMGiveLevelBefore = "NWNX_ON_DM_GIVE_LEVEL_BEFORE";
         public const string DMGiveLevelAfter = "NWNX_ON_DM_GIVE_LEVEL_AFTER";
-
-
+        
         public const string DMGiveGoldBefore = "NWNX_ON_DM_GIVE_GOLD_BEFORE";
         public const string DMGiveGoldAfter = "NWNX_ON_DM_GIVE_GOLD_AFTER";
-
-
+        
         public const string DMSetFactionBefore = "NWNX_ON_DM_SET_FACTION_BEFORE";
         public const string DMSetFactionAfter = "NWNX_ON_DM_SET_FACTION_AFTER";
-
-
+        
         public const string DMGiveItemBefore = "NWNX_ON_DM_GIVE_ITEM_BEFORE";
         public const string DMGiveItemAfter = "NWNX_ON_DM_GIVE_ITEM_AFTER";
-
-
+        
         public const string DMTakeItemBefore = "NWNX_ON_DM_TAKE_ITEM_BEFORE";
         public const string DMTakeItemAfter = "NWNX_ON_DM_TAKE_ITEM_AFTER";
-
-
+        
         public const string DMJumpTargetToPointBefore = "NWNX_ON_DM_JUMP_TARGET_TO_POINT_BEFORE";
         public const string DMJumpTargetToPointAfter = "NWNX_ON_DM_JUMP_TARGET_TO_POINT_AFTER";
-
-
+        
         public const string DMJumpAllPlayersToPointBefore = "NWNX_ON_DM_JUMP_ALL_PLAYERS_TO_POINT_BEFORE";
         public const string DMJumpAllPlayersToPointAfter = "NWNX_ON_DM_JUMP_ALL_PLAYERS_TO_POINT_AFTER";
-
-
+        
         public const string DMSetStatBefore = "NWNX_ON_DM_SET_STAT_BEFORE";
         public const string DMSetStatAfter = "NWNX_ON_DM_SET_STAT_AFTER";
-
-
+        
         public const string DMGetVariableBefore = "NWNX_ON_DM_GET_VARIABLE_BEFORE";
         public const string DMGetVariableAfter = "NWNX_ON_DM_GET_VARIABLE_AFTER";
-
-
+        
         public const string DMSetVariableBefore = "NWNX_ON_DM_SET_VARIABLE_BEFORE";
         public const string DMSetVariableAfter = "NWNX_ON_DM_SET_VARIABLE_AFTER";
-
-
+        
         public const string DMSetTimeBefore = "NWNX_ON_DM_SET_TIME_BEFORE";
         public const string DMSetTimeAfter = "NWNX_ON_DM_SET_TIME_AFTER";
-
-
+        
         public const string DMSetDateBefore = "NWNX_ON_DM_SET_DATE_BEFORE";
         public const string DMSetDateAfter = "NWNX_ON_DM_SET_DATE_AFTER";
+
+        public const string PartyLeaveBefore = "NWNX_ON_PARTY_LEAVE_BEFORE";
+        public const string PartyLeaveAfter = "NWNX_ON_PARTY_LEAVE_AFTER";
+
+        public const string PartyKickBefore = "NWNX_ON_PARTY_KICK_BEFORE";
+        public const string PartyKickAfter = "NWNX_ON_PARTY_KICK_AFTER";
+
+        public const string PartyTransferLeadershipBefore = "NWNX_ON_PARTY_TRANSFER_LEADERSHIP_BEFORE";
+        public const string PartyTransferLeadershipAfter =  "NWNX_ON_PARTY_TRANSFER_LEADERSHIP_AFTER";
+
+        public const string PartyInviteBefore = "NWNX_ON_PARTY_INVITE_BEFORE";
+        public const string PartyInviteAfter = "NWNX_ON_PARTY_INVITE_AFTER";
+
+        public const string PartyIgnoreInvitationBefore = "NWNX_ON_PARTY_IGNORE_INVITATION_BEFORE";
+        public const string PartyIgnoreInvitationAfter =  "NWNX_ON_PARTY_IGNORE_INVITATION_AFTER";
+
+        public const string PartyRejectInvitationBefore = "NWNX_ON_PARTY_REJECT_INVITATION_BEFORE";
+        public const string PartyRejectInvitationAfter =  "NWNX_ON_PARTY_REJECT_INVITATION_AFTER";
+
+        public const string PartyKickHenchmanBefore = "NWNX_ON_PARTY_KICK_HENCHMAN_BEFORE";
+        public const string PartyKickHenchmanAfter =  "NWNX_ON_PARTY_KICK_HENCHMAN_AFTER";
     }
 }

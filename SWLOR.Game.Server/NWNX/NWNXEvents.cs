@@ -55,6 +55,32 @@ namespace SWLOR.Game.Server.NWNX
             return NWNX_GetReturnValueString("NWNX_Events", "GET_EVENT_DATA");
         }
 
+
+        // Skips execution of the currently executing event.
+        // If this is a NWNX event, that means that the base function call won't be called.
+        // This won't impact any other subscribers, nor dispatch for before / after functions.
+        // For example, if you are subscribing to NWNX_ON_EXAMINE_OBJECT_BEFORE, and you skip ...
+        // - The other subscribers will still be called.
+        // - The original function in the base game will be skipped.
+        // - The matching after event (NWNX_ON_EXAMINE_OBJECT_AFTER) will also be executed.
+        //
+        // THIS SHOULD ONLY BE CALLED FROM WITHIN AN EVENT HANDLER.
+        // ONLY WORKS WITH HEALER'S KIT EVENT
+        public void SkipEvent()
+        {
+            NWNX_CallFunction("NWNX_Events", "SKIP_EVENT");
+        }
+
+        // Set the return value of the event.
+        //
+        // THIS SHOULD ONLY BE CALLED FROM WITHIN AN EVENT HANDLER.
+        public void SetEventResult(string data)
+        {
+            NWNX_PushArgumentString("NWNX_Events", "EVENT_RESULT", data);
+            NWNX_CallFunction("NWNX_Events", "EVENT_RESULT");
+        }
+
+
         private int GetEventDataInt(string tag)
         {
             string data = GetEventDataString(tag);

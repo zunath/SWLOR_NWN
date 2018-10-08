@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         string GetNameByResref(string resref);
         CustomItemType GetCustomItemTypeByResref(string resref);
         void OnModuleActivatedItem();
+        void OnModuleUnequipItem();
         void OnModuleEquipItem();
         string OnModuleExamine(string existingDescription, NWPlayer examiner, NWObject examinedObject);
         void OnModuleHeartbeat();

@@ -10,17 +10,20 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly ISkillService _skill;
         private readonly IPerkService _perk;
         private readonly IHelmetToggleService _helmetToggle;
+        private readonly IItemService _item;
 
         public OnModuleUnequipItem(
             INWScript script,
             ISkillService skill,
             IPerkService perk,
-            IHelmetToggleService helmetToggle)
+            IHelmetToggleService helmetToggle,
+            IItemService item)
         {
             _ = script;
             _skill = skill;
             _perk = perk;
             _helmetToggle = helmetToggle;
+            _item = item;
         }
 
         public bool Run(params object[] args)
@@ -30,6 +33,7 @@ namespace SWLOR.Game.Server.Event.Module
             _skill.OnModuleItemUnequipped();
             _perk.OnModuleItemUnequipped();
             _helmetToggle.OnModuleItemUnequipped();
+            _item.OnModuleUnequipItem();
             
             return true;
         }

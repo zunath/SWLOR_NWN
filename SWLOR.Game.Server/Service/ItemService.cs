@@ -359,6 +359,23 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        public void OnModuleUnequipItem()
+        {
+            NWPlayer player = _.GetPCItemLastUnequippedBy();
+            NWItem oItem = _.GetPCItemLastUnequipped();
+
+            // Handle lightsaber sounds
+            if (oItem.CustomItemType == CustomItemType.Lightsaber ||
+                oItem.CustomItemType == CustomItemType.Saberstaff)
+            {
+                player.AssignCommand(() =>
+                {
+                    _.PlaySound("saberoff");
+                });
+            }
+
+        }
+
         public void OnModuleEquipItem()
         {
             int[] validItemTypes = {
@@ -420,8 +437,19 @@ namespace SWLOR.Game.Server.Service
 
         };
 
+            NWPlayer player = _.GetPCItemLastEquippedBy();
             NWItem oItem = (_.GetPCItemLastEquipped());
             int baseItemType = oItem.BaseItemType;
+
+            // Handle lightsaber sounds
+            if (oItem.CustomItemType == CustomItemType.Lightsaber ||
+                oItem.CustomItemType == CustomItemType.Saberstaff)
+            {
+                player.AssignCommand(() =>
+                {
+                    _.PlaySound("saberon");
+                });
+            }
 
             if (!validItemTypes.Contains(baseItemType)) return;
 

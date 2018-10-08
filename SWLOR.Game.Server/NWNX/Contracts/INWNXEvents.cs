@@ -34,5 +34,7 @@ namespace SWLOR.Game.Server.NWNX.Contracts
         int OnCastSpell_GetProjectilePathType();
         bool OnCastSpell_IsInstantSpell();
         NWObject OnCombatRoundStart_GetTarget();
+        void SkipEvent();
+        void SetEventResult(string data);
     }
 }

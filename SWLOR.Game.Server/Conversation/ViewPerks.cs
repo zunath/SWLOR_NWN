@@ -305,6 +305,7 @@ namespace SWLOR.Game.Server.Conversation
                         _perk.DoPerkUpgrade(GetPC(), vm.SelectedPerkID);
                         vm.IsConfirmingPurchase = false;
                         BuildPerkDetails();
+                        SetPageHeader("MainPage", GetMainPageHeader());
                     }
                     else
                     {

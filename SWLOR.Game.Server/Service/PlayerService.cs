@@ -172,45 +172,45 @@ namespace SWLOR.Game.Server.Service
             AssociationType assType; 
             int goodEvil = _.GetAlignmentGoodEvil(player);
             int lawChaos = _.GetAlignmentLawChaos(player);
-
+            
             // Jedi Order -- Mandalorian -- Sith Empire
-            if (goodEvil >= 70 && goodEvil <= 100 && lawChaos >= 70 && lawChaos <= 100)
+            if(goodEvil == ALIGNMENT_GOOD && lawChaos == ALIGNMENT_LAWFUL)
             {
                 assType = AssociationType.JediOrder;
             }
-            else if (goodEvil >= 70 && goodEvil <= 100 && lawChaos >= 31 && lawChaos <= 69)
+            else if(goodEvil == ALIGNMENT_GOOD && lawChaos == ALIGNMENT_NEUTRAL)
             {
                 assType = AssociationType.Mandalorian;
             }
-            else if (goodEvil >= 70 && goodEvil <= 100 && lawChaos >= 0 && lawChaos <= 30)
+            else if(goodEvil == ALIGNMENT_GOOD && lawChaos == ALIGNMENT_CHAOTIC)
             {
                 assType = AssociationType.SithEmpire;
             }
 
             // Smugglers -- Unaligned -- Hutt Cartel
-            else if (goodEvil >= 31 && goodEvil <= 69 && lawChaos >= 70 && lawChaos <= 100)
+            else if(goodEvil == ALIGNMENT_NEUTRAL && lawChaos == ALIGNMENT_LAWFUL)
             {
                 assType = AssociationType.Smugglers;
             }
-            else if (goodEvil >= 31 && goodEvil <= 69 && lawChaos >= 31 && lawChaos <= 69)
+            else if(goodEvil == ALIGNMENT_NEUTRAL && lawChaos == ALIGNMENT_NEUTRAL)
             {
                 assType = AssociationType.Unaligned;
             }
-            else if (goodEvil >= 31 && goodEvil <= 69 && lawChaos >= 0 && lawChaos <= 30)
+            else if(goodEvil == ALIGNMENT_NEUTRAL && lawChaos == ALIGNMENT_CHAOTIC)
             {
                 assType = AssociationType.HuttCartel;
             }
 
             // Republic -- Czerka -- Sith Order
-            else if (goodEvil >= 0 && goodEvil <= 30 && lawChaos >= 70 && lawChaos <= 100)
+            else if(goodEvil == ALIGNMENT_EVIL && lawChaos == ALIGNMENT_LAWFUL)
             {
                 assType = AssociationType.Republic;
             }
-            else if (goodEvil >= 0 && goodEvil <= 30 && lawChaos >= 31 && lawChaos <= 69)
+            else if(goodEvil == ALIGNMENT_EVIL && lawChaos == ALIGNMENT_NEUTRAL)
             {
                 assType = AssociationType.Czerka;
             }
-            else if (goodEvil >= 0 && goodEvil <= 30 && lawChaos >= 0 && lawChaos <= 30)
+            else if(goodEvil == ALIGNMENT_EVIL && lawChaos == ALIGNMENT_CHAOTIC)
             {
                 assType = AssociationType.SithOrder;
             }

@@ -6,6 +6,7 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.AI
 {
@@ -55,6 +56,17 @@ namespace SWLOR.Game.Server.AI
             _enmity.OnNPCPhysicallyAttacked();
         }
 
+        public override void OnDeath()
+        {
+            base.OnDeath();
+
+            int vfx = Self.GetLocalInt("DEATH_VFX");
+            if (vfx > 0)
+            {
+                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(vfx), Self);
+            }
+        }
+
         public override void OnDamaged()
         {
             base.OnDamaged();
@@ -84,9 +96,9 @@ namespace SWLOR.Game.Server.AI
             NWObject door = (_.GetBlockingDoor());
             if (!door.IsValid) return;
 
-            if (_.GetIsDoorActionPossible(door.Object, NWScript.DOOR_ACTION_OPEN) == NWScript.TRUE)
+            if (_.GetIsDoorActionPossible(door.Object, DOOR_ACTION_OPEN) == TRUE)
             {
-                _.DoDoorAction(door.Object, NWScript.DOOR_ACTION_OPEN);
+                _.DoDoorAction(door.Object, DOOR_ACTION_OPEN);
             }
         }
 

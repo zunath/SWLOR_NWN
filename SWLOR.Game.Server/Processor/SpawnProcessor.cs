@@ -82,6 +82,9 @@ namespace SWLOR.Game.Server.Processor
                 if (spawn.NPCGroupID > 0)
                     spawn.Spawn.SetLocalInt("NPC_GROUP", spawn.NPCGroupID);
 
+                if(spawn.DeathVFXID > 0)
+                    spawn.Spawn.SetLocalInt("DEATH_VFX", spawn.DeathVFXID);
+
                 if (!string.IsNullOrWhiteSpace(spawn.BehaviourScript) &&
                     string.IsNullOrWhiteSpace(spawn.Spawn.GetLocalString("BEHAVIOUR")))
                     spawn.Spawn.SetLocalString("BEHAVIOUR", spawn.BehaviourScript);

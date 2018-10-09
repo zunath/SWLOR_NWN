@@ -18,6 +18,8 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public int? NPCGroupID { get; set; }
 
+        public int DeathVFXID { get; set; }
+
         [StringLength(64)]
         public string BehaviourScript { get; set; }
 

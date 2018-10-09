@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
             NWPlayer player = _.GetLastDisturbed();
             NWItem item = _.GetInventoryDisturbItem();
             int disturbType = _.GetInventoryDisturbType();
+            string crafterPlayerID = item.GetLocalString("CRAFTER_PLAYER_ID");
 
             if (disturbType == INVENTORY_DISTURB_TYPE_ADDED)
             {
@@ -54,6 +55,11 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
                 {
                     _.CopyItem(item, player, TRUE);
                     player.SendMessage(_color.Red("That item is not required for this quest."));
+                }
+                else if (progress.MustBeCraftedByPlayer && crafterPlayerID != player.GlobalID)
+                {
+                    _.CopyItem(item, player, TRUE);
+                    player.SendMessage(_color.Red("You may only submit items which you have personally created for this quest."));
                 }
                 else
                 {

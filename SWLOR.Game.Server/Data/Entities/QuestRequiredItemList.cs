@@ -18,6 +18,8 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public int QuestStateID { get; set; }
 
+        public bool MustBeCraftedByPlayer { get; set; }
+        
         public virtual QuestState QuestState { get; set; }
 
         public virtual Quest Quest { get; set; }

@@ -18,6 +18,8 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public int Remaining { get; set; }
 
+        public bool MustBeCraftedByPlayer { get; set; }
+
         public virtual PCQuestStatus PCQuestStatus { get; set; }
 
         public virtual PlayerCharacter PlayerCharacter { get; set; }

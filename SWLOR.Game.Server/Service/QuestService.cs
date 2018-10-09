@@ -351,7 +351,8 @@ namespace SWLOR.Game.Server.Service
                     Resref = item.Resref,
                     PlayerID = status.PlayerID,
                     PCQuestStatusID = status.PCQuestStatusID,
-                    Remaining = item.Quantity
+                    Remaining = item.Quantity,
+                    MustBeCraftedByPlayer = item.MustBeCraftedByPlayer
                 };
                 status.PCQuestItemProgresses.Add(itemProgress);
             }

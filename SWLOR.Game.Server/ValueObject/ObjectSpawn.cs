@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.ValueObject
         public int NPCGroupID { get; set; }
         public string BehaviourScript { get; set; }
         public string SpawnRule { get; set; }
+        public int DeathVFXID { get; set; }
 
         public NWPlaceable SpawnPlaceable => (Spawn.Object);
         public NWCreature SpawnCreature => (Spawn.Object);

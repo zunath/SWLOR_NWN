@@ -64,6 +64,7 @@ namespace SWLOR.Game.Server.Service
                         string spawnResref = obj.GetLocalString("SPAWN_RESREF");
                         float respawnTime = obj.GetLocalFloat("SPAWN_RESPAWN_SECONDS");
                         string spawnRule = obj.GetLocalString("SPAWN_RULE");
+                        int deathVFXID = obj.GetLocalInt("SPAWN_DEATH_VFX");
                         bool useResref = true;
 
                         // No resref specified but a table was, look in the database for a random record.
@@ -86,6 +87,8 @@ namespace SWLOR.Game.Server.Service
                                 if (!string.IsNullOrWhiteSpace(spawnRule))
                                     spawnRule = dbSpawn.SpawnRule;
 
+                                if (deathVFXID <= 0)
+                                    deathVFXID = dbSpawn.DeathVFXID;
                             }
                         }
 
@@ -114,6 +117,12 @@ namespace SWLOR.Game.Server.Service
                                 {
                                     spawn.SetLocalInt("NPC_GROUP", npcGroupID);
                                     newSpawn.NPCGroupID = npcGroupID;
+                                }
+
+                                if (deathVFXID > 0)
+                                {
+                                    spawn.SetLocalInt("DEATH_VFX", deathVFXID);
+                                    newSpawn.DeathVFXID = deathVFXID;
                                 }
 
                                 if (!string.IsNullOrWhiteSpace(behaviourScript) &&

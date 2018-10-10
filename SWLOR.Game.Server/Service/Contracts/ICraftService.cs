@@ -22,5 +22,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         void ClearPlayerCraftingData(NWPlayer player, bool destroyComponents = false);
         string CalculateDifficultyDescription(int pcLevel, int blueprintLevel);
         int CalculatePCEffectiveLevel(NWPlayer player, int skillRank, SkillType skill);
+        void OnNWNXChat();
+        void OnModuleUseFeat();
     }
 }

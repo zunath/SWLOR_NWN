@@ -13,6 +13,7 @@ using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN.NWScript;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -23,19 +24,25 @@ namespace SWLOR.Game.Server.Service
         private readonly IPerkService _perk;
         private readonly IColorTokenService _color;
         private readonly INWNXPlayer _nwnxPlayer;
+        private readonly INWNXEvents _nwnxEvents;
+        private readonly INWNXChat _nwnxChat;
 
         public CraftService(
             INWScript script,
             IDataContext db,
             IPerkService perk,
             IColorTokenService color,
-            INWNXPlayer nwnxPlayer)
+            INWNXPlayer nwnxPlayer,
+            INWNXEvents nwnxEvents,
+            INWNXChat nwnxChat)
         {
             _ = script;
             _db = db;
             _perk = perk;
             _color = color;
             _nwnxPlayer = nwnxPlayer;
+            _nwnxEvents = nwnxEvents;
+            _nwnxChat = nwnxChat;
         }
 
         private const float BaseCraftDelay = 18.0f;
@@ -460,6 +467,67 @@ namespace SWLOR.Game.Server.Service
             player.Data.Remove("CRAFTING_MODEL");
             player.DeleteLocalInt("CRAFT_BLUEPRINT_ID");
 
+        }
+
+        public void OnNWNXChat()
+        {
+            NWPlayer pc = _nwnxChat.GetSender().Object;
+            bool isRenamingCraftedItem = pc.GetLocalInt("CRAFT_RENAMING_ITEM") == TRUE;
+
+            if (!isRenamingCraftedItem) return;
+            
+            _nwnxChat.SkipMessage();
+            NWItem renameItem = pc.GetLocalObject("CRAFT_RENAMING_ITEM_OBJECT");
+            string newName = _nwnxChat.GetMessage();
+
+            pc.DeleteLocalInt("CRAFT_RENAMING_ITEM");
+            pc.DeleteLocalObject("CRAFT_RENAMING_ITEM_OBJECT");
+
+            if (!renameItem.IsValid)
+            {
+                pc.SendMessage("Cannot find the item you were renaming.");
+                return;
+            }
+
+            if (newName.Length < 3 || newName.Length > 64)
+            {
+                pc.SendMessage("Item names must be between 3 and 64 characters long.");
+                return;
+            }
+
+            renameItem.Name = newName;
+
+            pc.FloatingText("New name set!");
+        }
+
+        public void OnModuleUseFeat()
+        {
+            NWPlayer pc = Object.OBJECT_SELF;
+            int featID = _nwnxEvents.OnFeatUsed_GetFeatID();
+
+            if (featID != (int)CustomFeatType.RenameCraftedItem) return;
+            pc.ClearAllActions();
+
+            bool isSetting = pc.GetLocalInt("CRAFT_RENAMING_ITEM") == TRUE;
+            NWItem renameItem = _nwnxEvents.OnFeatUsed_GetTarget().Object;
+
+            if (isSetting)
+            {
+                pc.SendMessage("You are no longer naming an item.");
+                pc.DeleteLocalInt("CRAFT_RENAMING_ITEM");
+                pc.DeleteLocalObject("CRAFT_RENAMING_ITEM_OBJECT");
+                return;
+            }
+
+            if (renameItem.GetLocalString("CRAFTER_PLAYER_ID") != pc.GlobalID)
+            {
+                pc.SendMessage("You may only rename items which you have personally crafted.");
+                return;
+            }
+
+            pc.SetLocalInt("CRAFT_RENAMING_ITEM", TRUE);
+            pc.SetLocalObject("CRAFT_RENAMING_ITEM_OBJECT", renameItem);
+            pc.SendMessage("Please enter in a name for this item. Length should be between 3 and 64 characters. Use this feat again to cancel this procedure.");
         }
     }
 }

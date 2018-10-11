@@ -42,8 +42,7 @@ namespace SWLOR.Game.Server.Conversation
 
             DialogPage confirmPage = new DialogPage(
                 "<SET LATER>",
-                "Select this skill.",
-                "Back"
+                "Select this skill."
             );
 
             dialog.AddPage("CategoryPage", categoryPage);
@@ -83,6 +82,10 @@ namespace SWLOR.Game.Server.Conversation
             }
         }
 
+        public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
+        {
+        }
+
         private void HandleCategoryPageResponse(int responseID)
         {
             DialogResponse response = GetResponseByID("CategoryPage", responseID);
@@ -95,7 +98,6 @@ namespace SWLOR.Game.Server.Conversation
             {
                 AddResponseToPage("SkillListPage", pcSkill.Skill.Name, true, pcSkill.SkillID);
             }
-            AddResponseToPage("SkillListPage", "Back", true, -1);
 
             ChangePage("SkillListPage");
         }
@@ -104,12 +106,6 @@ namespace SWLOR.Game.Server.Conversation
         {
             DialogResponse response = GetResponseByID("SkillListPage", responseID);
             int skillID = (int)response.CustomData;
-            if (skillID == -1)
-            {
-                ChangePage("CategoryPage");
-                return;
-            }
-            
             PCSkill pcSkill = _skill.GetPCSkillByID(GetPC().GlobalID, skillID);
             string header = "Are you sure you want to improve your " + pcSkill.Skill.Name + " skill?";
             SetPageHeader("ConfirmPage", header);
@@ -122,12 +118,6 @@ namespace SWLOR.Game.Server.Conversation
 
         private void HandleConfirmPageResponse(int responseID)
         {
-            if (responseID == 2)
-            {
-                ChangePage("SkillListPage");
-                return;
-            }
-
             Model vm = GetDialogCustomData<Model>();
 
             if (vm.Item != null && vm.Item.IsValid)

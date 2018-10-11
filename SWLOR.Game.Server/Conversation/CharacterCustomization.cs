@@ -57,13 +57,11 @@ namespace SWLOR.Game.Server.Conversation
                 "Hutt Cartel",
                 "Republic",
                 "Czerka",
-                "Sith Order",
-                "Back");
+                "Sith Order");
 
             DialogPage confirmAssociationPage = new DialogPage(
                 "",
-                "Select this association",
-                "Back");
+                "Select this association");
 
             DialogPage changeSkinColorPage = new DialogPage(
                 "Please select a skin color from the list below.");
@@ -87,8 +85,7 @@ namespace SWLOR.Game.Server.Conversation
                 "Left Forearm",
                 "Left Hand",
                 "Left Thigh",
-                "Left Shin",
-                "Back");
+                "Left Shin");
 
             DialogPage editPartPage = new DialogPage();
 
@@ -144,6 +141,15 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case "EditPartPage":
                     EditPartResponses(responseID);
+                    break;
+            }
+        }
+
+        public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
+        {
+            switch (beforeMovePage)
+            {
+                case "ChangeAssociationPage":
                     break;
             }
         }
@@ -225,8 +231,6 @@ namespace SWLOR.Game.Server.Conversation
             {
                 AddResponseToPage("ChangeSkinColorPage", "Color #" + color, true, color);
             }
-
-            AddResponseToPage("ChangeSkinColorPage", "Back", true, -1);
         }
 
         private void ChangeAssociationResponses(int responseID)
@@ -270,9 +274,6 @@ namespace SWLOR.Game.Server.Conversation
                     header = _color.Green("Sith Order\n\n");
                     header += "Founded by exiled members of the Jedi Order, the Sith Order consists of those who utilize a focus on the Dark Side of the Force. Unlike the Jedi, the Sith Order wishes to impose their power and will onto others by show of force. Seeing themselves as the true powers of the Galaxy, they seek to rule it above all things. Association to the Sith Order is held by Sith of all positions as well as some of their underlings and aspiring hopefuls.";
                     break;
-                case 10: // Back
-                    ChangePage("MainPage");
-                    return;
                 default: return;
             }
 
@@ -289,9 +290,6 @@ namespace SWLOR.Game.Server.Conversation
                 case 1: // Select this association
                     ApplyAssociationAlignment();
                     ChangePage("MainPage");
-                    break;
-                case 2: // Back
-                    ChangePage("ChangeAssociationPage");
                     break;
             }
         }
@@ -310,13 +308,6 @@ namespace SWLOR.Game.Server.Conversation
         private void ChangeSkinColorResponses(int responseID)
         {
             int colorID = (int)GetResponseByID("ChangeSkinColorPage", responseID).CustomData;
-
-            if (colorID == -1)
-            {
-                ChangePage("MainPage");
-                return;
-            }
-
             _.SetColor(GetPC(), COLOR_CHANNEL_SKIN, colorID);
 
         }
@@ -325,13 +316,6 @@ namespace SWLOR.Game.Server.Conversation
         private void ChangeHeadResponses(int responseID)
         {
             int headID = (int)GetResponseByID("ChangeHeadPage", responseID).CustomData;
-
-            if (headID == -1)
-            {
-                ChangePage("MainPage");
-                return;
-            }
-
             _.SetCreatureBodyPart(CREATURE_PART_HEAD, headID, GetPC());
         }
 
@@ -400,8 +384,6 @@ namespace SWLOR.Game.Server.Conversation
             {
                 AddResponseToPage("ChangeHeadPage", "Head #" + head, true, head);
             }
-
-            AddResponseToPage("ChangeHeadPage", "Back", true, -1);
         }
 
         private void LoadHairColorPage()
@@ -468,25 +450,13 @@ namespace SWLOR.Game.Server.Conversation
                     AddResponseToPage("ChangeHairColorPage", "Color #" + color, true, color);
                 }
             }
-
-            AddResponseToPage("ChangeHairColorPage", "Back", true, -1);
-
-
         }
 
         private void ChangeHairColorResponses(int responseID)
         {
-
             int colorID = (int)GetResponseByID("ChangeHairColorPage", responseID).CustomData;
-
-            if (colorID == -1)
-            {
-                ChangePage("MainPage");
-                return;
-            }
-
+            
             _.SetColor(GetPC(), COLOR_CHANNEL_HAIR, colorID);
-
         }
         
         private void ChangeBodyPartResponses(int responseID)
@@ -558,9 +528,6 @@ namespace SWLOR.Game.Server.Conversation
                     model.Parts = new[] { 1, 2 };
                     model.PartName = "Left Shin";
                     break;
-                case 13: // Back
-                    ChangePage("MainPage");
-                    return;
             }
 
             LoadEditPartPage();
@@ -576,9 +543,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 AddResponseToPage("EditPartPage", model.PartName + " #" + modelID, true, modelID);
             }
-
-            AddResponseToPage("EditPartPage", "Back", true, -1);
-
+            
             string header = _color.Green("Body Part: ") + model.PartName + "\n\n";
             header += "You may need to unequip any clothes or armor you are wearing to see changes made to your body parts.\n\nPlease be aware that many armors override your selection here. This is a limitation in NWN that we can't work around.";
 
@@ -590,13 +555,6 @@ namespace SWLOR.Game.Server.Conversation
             var model = GetDialogCustomData<Model>();
             var response = GetResponseByID("EditPartPage", responseID);
             int modelID = (int)response.CustomData;
-
-            if (modelID == -1)
-            {
-                ChangePage("ChangeBodyPartsPage");
-                return;
-            }
-
             _.SetCreatureBodyPart(model.BodyPartID, modelID, GetPC());
         }
 

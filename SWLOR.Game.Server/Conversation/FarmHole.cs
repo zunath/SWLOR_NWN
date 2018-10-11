@@ -52,6 +52,10 @@ namespace SWLOR.Game.Server.Conversation
             }
         }
 
+        public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
+        {
+        }
+
         private void HandleMainPageResponse(int responseID)
         {
             switch (responseID)

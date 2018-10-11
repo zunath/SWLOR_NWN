@@ -129,6 +129,16 @@ namespace SWLOR.Game.Server.Conversation
             
         }
 
+        public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
+        {
+            switch (beforeMovePage)
+            {
+                case "MainPage":
+                    _craft.ClearPlayerCraftingData(GetPC());
+                    break;
+            }
+        }
+
         public override void EndDialog()
         {
             var model = _craft.GetPlayerCraftingData(GetPC());
@@ -155,8 +165,6 @@ namespace SWLOR.Game.Server.Conversation
             AddResponseToPage("MainPage", "Select Secondary Components", model.Blueprint.SecondaryMinimum > 0);
             AddResponseToPage("MainPage", "Select Tertiary Components", model.Blueprint.TertiaryMinimum > 0);
             AddResponseToPage("MainPage", "Select Enhancement Components", canAddEnhancements);
-
-            AddResponseToPage("MainPage", "Change Blueprint");
         }
 
         private void HandleMainPageResponses(int responseID)
@@ -199,10 +207,6 @@ namespace SWLOR.Game.Server.Conversation
                 case 6: // Select enhancement components
                     model.Access = CraftingAccessType.Enhancement;
                     OpenDeviceInventory();
-                    break;
-                case 7: // Back (return to blueprint selection)
-                    _craft.ClearPlayerCraftingData(GetPC());
-                    SwitchConversation("CraftingDevice");
                     break;
             }
         }

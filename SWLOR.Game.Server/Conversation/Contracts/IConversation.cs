@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Conversation.Contracts
         PlayerDialog SetUp(NWPlayer player);
         void Initialize();
         void DoAction(NWPlayer player, string pageName, int responseID);
+        void Back(NWPlayer player, string beforeMovePage, string afterMovePage);
         void EndDialog();
     }
 }

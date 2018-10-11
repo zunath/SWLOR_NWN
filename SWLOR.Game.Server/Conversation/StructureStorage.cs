@@ -39,14 +39,12 @@ namespace SWLOR.Game.Server.Conversation
 
             DialogPage changeNamePage = new DialogPage(
                 _color.Green("Change Container Name") + "\n\nPlease type a name for the container into your chat bar and then press enter. After that's done click the 'Next' button on this conversation window.",
-                "Next",
-                "Back"
+                "Next"
             );
 
             DialogPage confirmChangeName = new DialogPage(
                 "<SET LATER>",
-                "Confirm Name Change",
-                "Back"
+                "Confirm Name Change"
             );
 
             dialog.AddPage("MainPage", mainPage);
@@ -88,6 +86,16 @@ namespace SWLOR.Game.Server.Conversation
 
         }
 
+        public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
+        {
+            switch (beforeMovePage)
+            {
+                case "ChangeNamePage":
+                    ClearTempVariables();
+                    break;
+            }
+        }
+
         private void HandleMainPageResponse(int responseID)
         {
             switch (responseID)
@@ -122,10 +130,6 @@ namespace SWLOR.Game.Server.Conversation
                     SetPageHeader("ConfirmChangeNamePage", header);
                     ChangePage("ConfirmChangeNamePage");
                     break;
-                case 2: // Back
-                    ClearTempVariables();
-                    ChangePage("MainPage");
-                    break;
             }
         }
 
@@ -141,9 +145,6 @@ namespace SWLOR.Game.Server.Conversation
                     GetDialogTarget().Name = name;
                     GetPC().DeleteLocalString("NEW_CONTAINER_NAME");
                     EndConversation();
-                    break;
-                case 2: // Back
-                    ChangePage("ChangeNamePage");
                     break;
             }
         }

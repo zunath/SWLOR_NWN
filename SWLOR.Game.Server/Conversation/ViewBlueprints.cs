@@ -37,8 +37,7 @@ namespace SWLOR.Game.Server.Conversation
 
             DialogPage mainPage = new DialogPage(
                 "Which blueprints would you like to view?",
-                "Crafting Blueprints",
-                "Back"
+                "Crafting Blueprints"
             );
 
             DialogPage craftCategoriesPage = new DialogPage(
@@ -50,8 +49,7 @@ namespace SWLOR.Game.Server.Conversation
             );
 
             DialogPage blueprintDetails = new DialogPage(
-                "<SET LATER>",
-                "Back"
+                "<SET LATER>"
             );
 
             dialog.AddPage("MainPage", mainPage);
@@ -72,7 +70,6 @@ namespace SWLOR.Game.Server.Conversation
             {
                 AddResponseToPage("CraftCategoriesPage", category.Name, true, category.CraftBlueprintCategoryID);
             }
-            AddResponseToPage("CraftCategoriesPage", "Back", true, (long)-1);
 
             SetDialogCustomData(vm);
         }
@@ -97,15 +94,16 @@ namespace SWLOR.Game.Server.Conversation
             }
         }
 
+        public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
+        {
+        }
+
         private void HandleMainPageResponse(int responseID)
         {
             switch (responseID)
             {
                 case 1: // Crafting Blueprints
                     ChangePage("CraftCategoriesPage");
-                    break;
-                case 2: // Back
-                    SwitchConversation("RestMenu");
                     break;
             }
         }
@@ -116,20 +114,13 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("BlueprintListPage");
             DialogResponse response = GetResponseByID("CraftCategoriesPage", responseID);
             long categoryID = (long) response.CustomData;
-
-            if (categoryID == -1) // Back
-            {
-                ChangePage("MainPage");
-                return;
-            }
-
+            
             vm.CraftBlueprints = _craft.GetPCBlueprintsByCategoryID(GetPC().GlobalID, categoryID);
 
             foreach (CraftBlueprint bp in vm.CraftBlueprints)
             {
                 AddResponseToPage("BlueprintListPage", bp.ItemName, true, bp.CraftBlueprintID);
             }
-            AddResponseToPage("BlueprintListPage", "Back", true, (long)-1);
 
             ChangePage("BlueprintListPage");
         }

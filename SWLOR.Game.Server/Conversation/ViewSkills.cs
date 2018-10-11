@@ -47,8 +47,7 @@ namespace SWLOR.Game.Server.Conversation
 
             DialogPage skillDetailsPage = new DialogPage(
                 "<SET LATER>",
-                "Toggle Decay Lock",
-                "Back"
+                "Toggle Decay Lock"
             );
 
             dialog.AddPage("CategoryPage", mainPage);
@@ -71,7 +70,6 @@ namespace SWLOR.Game.Server.Conversation
             {
                 AddResponseToPage("CategoryPage", category.Name, true, category.SkillCategoryID);
             }
-            AddResponseToPage("CategoryPage", "Back", true, -1);
         }
 
         private void LoadSkillResponses()
@@ -84,7 +82,6 @@ namespace SWLOR.Game.Server.Conversation
             {
                 AddResponseToPage("SkillListPage", skill.Skill.Name + " (Lvl. " + skill.Rank + ")", true, skill.Skill.SkillID);
             }
-            AddResponseToPage("SkillListPage", "Back", true, -1);
         }
 
         private void LoadSkillDetails()
@@ -141,17 +138,16 @@ namespace SWLOR.Game.Server.Conversation
             }
         }
 
+        public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
+        {
+        }
+
         private void HandleCategoryResponse(int responseID)
         {
             Model vm = GetDialogCustomData<Model>();
             DialogResponse response = GetResponseByID("CategoryPage", responseID);
             int categoryID = (int)response.CustomData;
-            if (categoryID == -1) // Back
-            {
-                SwitchConversation("RestMenu");
-                return;
-            }
-
+            
             vm.SelectedCategoryID = categoryID;
             LoadSkillResponses();
             ChangePage("SkillListPage");
@@ -162,11 +158,6 @@ namespace SWLOR.Game.Server.Conversation
             Model vm = GetDialogCustomData<Model>();
             DialogResponse response = GetResponseByID("SkillListPage", responseID);
             int skillID = (int)response.CustomData;
-            if (skillID == -1) // Back
-            {
-                ChangePage("CategoryPage");
-                return;
-            }
             
             vm.SelectedSkillID = skillID;
             LoadSkillDetails();
@@ -180,12 +171,8 @@ namespace SWLOR.Game.Server.Conversation
             switch (responseID)
             {
                 case 1: // Toggle Lock
-
                     _skill.ToggleSkillLock(GetPC().GlobalID, vm.SelectedSkillID);
                     LoadSkillDetails();
-                    break;
-                case 2: // Back
-                    ChangePage("SkillListPage");
                     break;
             }
 

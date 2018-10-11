@@ -47,6 +47,13 @@ namespace SWLOR.Game.Server.Event.Dialog
                     displayNode = true;
                 }
             }
+            else if (currentSelectionNumber == _dialog.NumberOfResponsesPerPage + 3) // Back
+            {
+                if (dialog.NavigationStack.Count > 0)
+                {
+                    displayNode = true;
+                }
+            }
             else if (nodeType == 2)
             {
                 int responseID = (dialog.PageOffset * _dialog.NumberOfResponsesPerPage) + nodeID;

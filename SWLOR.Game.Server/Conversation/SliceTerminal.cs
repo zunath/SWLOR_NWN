@@ -46,6 +46,10 @@ namespace SWLOR.Game.Server.Conversation
             }
         }
 
+        public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
+        {
+        }
+
         private void DoSlice()
         {
             NWPlaceable self = Object.OBJECT_SELF;

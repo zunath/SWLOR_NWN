@@ -43,15 +43,13 @@ namespace SWLOR.Game.Server.Conversation
             DialogPage baseDetailsPage = new DialogPage(string.Empty,
                 "Extend Lease (+1 day)",
                 "Extend Lease (+7 days)",
-                "Cancel Lease",
-                "Back");
+                "Cancel Lease");
 
             DialogPage cancelLeasePage = new DialogPage(
                 "Cancelling your lease will remove your right to build on this land. All structures you've placed will be sent to the impound. You'll need to go talk to a planetary representative to recover your impounded structures.\n\n" +
                 "Any remaining time on your lease will be forfeit. You will not receive a refund.\n\n" +
                 "Are you sure you want to cancel your lease?",
-                "Confirm Cancel Lease",
-                "Back");
+                "Confirm Cancel Lease");
 
             dialog.AddPage("MainPage", mainPage);
             dialog.AddPage("BaseDetailsPage", baseDetailsPage);
@@ -84,8 +82,6 @@ namespace SWLOR.Game.Server.Conversation
 
                 AddResponseToPage("MainPage", dbArea.Name + " (" + @base.Sector + ")" + status, true, @base.PCBaseID);
             }
-
-            AddResponseToPage("MainPage", "Back", true, -1);
         }
 
         public override void DoAction(NWPlayer player, string pageName, int responseID)
@@ -102,6 +98,24 @@ namespace SWLOR.Game.Server.Conversation
                     CancelLeaseResponses(responseID);
                     break;
             }
+        }
+
+        public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
+        {
+            var data = _base.GetPlayerTempData(GetPC());
+            switch (beforeMovePage)
+            {
+                case "BaseDetailsPage":
+                    data.IsConfirming = false;
+                    SetResponseText("BaseDetailsPage", 1, "Extend Lease (+1 day)");
+                    SetResponseText("BaseDetailsPage", 2, "Extend Lease (+7 days)");
+                    break;
+                case "CancelLeasePage":
+                    data.IsConfirming = false;
+                    SetResponseText("CancelLeasePage", 1, "Confirm Cancel Lease");
+                    break;
+            }
+            
         }
 
         private void MainResponses(int responseID)
@@ -166,13 +180,6 @@ namespace SWLOR.Game.Server.Conversation
                 case 3: // Cancel lease
                     ChangePage("CancelLeasePage");
                     break;
-                case 4: // Back
-                    var data = _base.GetPlayerTempData(GetPC());
-                    data.IsConfirming = false;
-                    SetResponseText("BaseDetailsPage", 1, "Extend Lease (+1 day)");
-                    SetResponseText("BaseDetailsPage", 2, "Extend Lease (+7 days)");
-                    ChangePage("MainPage");
-                    break;
             }
         }
 
@@ -220,12 +227,6 @@ namespace SWLOR.Game.Server.Conversation
             {
                 case 1: // Confirm cancel lease
                     CancelLease();
-                    break;
-                case 2: // Back
-                    var data = _base.GetPlayerTempData(GetPC());
-                    data.IsConfirming = false;
-                    SetResponseText("CancelLeasePage", 1, "Confirm Cancel Lease");
-                    ChangePage("BaseDetailsPage");
                     break;
             }
         }

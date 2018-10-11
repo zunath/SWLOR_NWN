@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.Data.Entities;
 using SWLOR.Game.Server.GameObject;
@@ -31,8 +32,7 @@ namespace SWLOR.Game.Server.Conversation
                 "Please select a blueprint. Only blueprints you've learned will be displayed here. Learn more blueprints by purchasing crafting perks!"
             );
             DialogPage blueprintListPage = new DialogPage(
-                "Please select a blueprint. Only blueprints you've learned will be displayed here. Learn more blueprints by purchasing crafting perks!",
-                "Back"
+                "Please select a blueprint. Only blueprints you've learned will be displayed here. Learn more blueprints by purchasing crafting perks!"
             );
 
             dialog.AddPage("MainPage", mainPage);
@@ -56,6 +56,10 @@ namespace SWLOR.Game.Server.Conversation
                     HandleBlueprintListResponse(responseID);
                     break;
             }
+        }
+
+        public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
+        {
         }
 
         public override void EndDialog()
@@ -89,8 +93,6 @@ namespace SWLOR.Game.Server.Conversation
             {
                 AddResponseToPage("BlueprintListPage", bp.ItemName, bp.IsActive, bp.CraftBlueprintID);
             }
-
-            AddResponseToPage("BlueprintListPage", "Back", true, (long)-1);
         }
         
         private void HandleCategoryResponse(int responseID)
@@ -104,12 +106,6 @@ namespace SWLOR.Game.Server.Conversation
         private void HandleBlueprintListResponse(int responseID)
         {
             DialogResponse response = GetResponseByID("BlueprintListPage", responseID);
-            if ((long)response.CustomData == -1)
-            {
-                ChangePage("MainPage");
-                return;
-            }
-
             long blueprintID = (long)response.CustomData;
             var model = _craft.GetPlayerCraftingData(GetPC());
             model.BlueprintID = blueprintID;

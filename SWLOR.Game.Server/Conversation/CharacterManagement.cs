@@ -37,8 +37,7 @@ namespace SWLOR.Game.Server.Conversation
                 "Character Management & Information Page",
                 "Disable PVP Protection",
                 "Change Description",
-                "Toggle Helmet Display",
-                "Back"
+                "Toggle Helmet Display"
             );
 
             dialog.AddPage("MainPage", characterManagementPage);
@@ -68,13 +67,14 @@ namespace SWLOR.Game.Server.Conversation
                         case 3: // Toggle Helmet Display
                             _helmetToggle.ToggleHelmetDisplay(GetPC());
                             break;
-                        case 4: // Back
-                            SwitchConversation("RestMenu");
-                            break;
                     }
                     break;
                 }
             }
+        }
+
+        public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
+        {
         }
 
         private void ToggleDisablePVPProtectionOption()

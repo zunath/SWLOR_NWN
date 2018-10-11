@@ -37,8 +37,7 @@ namespace SWLOR.Game.Server.Conversation
             DialogPage mainPage = new DialogPage(
                 "Please select an option.",
                 "Save Outfit",
-                "Load Outfit",
-                "Back"
+                "Load Outfit"
             );
 
             DialogPage saveOutfitPage = new DialogPage(
@@ -75,9 +74,6 @@ namespace SWLOR.Game.Server.Conversation
                             ShowLoadOutfitOptions();
                             ChangePage("LoadOutfitPage");
                             break;
-                        case 3: // Back
-                            GetPC().AssignCommand(() => _.ActionStartConversation(GetPC().Object, "x0_skill_ctrap", NWScript.TRUE, NWScript.FALSE));
-                            break;
                     }
                     break;
                 }
@@ -94,6 +90,16 @@ namespace SWLOR.Game.Server.Conversation
             }
         }
 
+        public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
+        {
+            switch (beforeMovePage)
+            {
+                case "MainPage":
+                    GetPC().AssignCommand(() => _.ActionStartConversation(GetPC().Object, "x0_skill_ctrap", NWScript.TRUE, NWScript.FALSE));
+                    break;
+            }
+        }
+
         private PCOutfit GetPlayerOutfits(NWPlayer oPC)
         {
             return _db.PCOutfits.SingleOrDefault(x => x.PlayerID == oPC.GlobalID);
@@ -101,14 +107,6 @@ namespace SWLOR.Game.Server.Conversation
 
         private void HandleSaveOutfit(int responseID)
         {
-            DialogResponse response = GetResponseByID("SaveOutfitPage", responseID);
-            if (response.Text == "Back")
-            {
-                ChangePage("MainPage");
-                return;
-            }
-
-
             NWPlayer oPC = GetPC();
             NWItem oClothes = (_.GetItemInSlot(NWScript.INVENTORY_SLOT_CHEST, oPC.Object));
             PCOutfit entity = GetPlayerOutfits(oPC);
@@ -289,9 +287,6 @@ namespace SWLOR.Game.Server.Conversation
 
             responseText = entity.Outfit10 == null ? _color.Red("Save in Slot 10") : _color.Green("Save in Slot 10");
             AddResponseToPage("SaveOutfitPage", responseText);
-
-            AddResponseToPage("SaveOutfitPage", "Back");
-
         }
 
         private void ShowLoadOutfitOptions()
@@ -319,8 +314,6 @@ namespace SWLOR.Game.Server.Conversation
                 AddResponseToPage("LoadOutfitsPage", "Load from Slot 9", true, 9);
             if (entity.Outfit10 != null)
                 AddResponseToPage("LoadOutfitsPage", "Load from Slot 10", true, 10);
-
-            AddResponseToPage("LoadOutfitsPage", "Back");
         }
 
         public override void EndDialog()

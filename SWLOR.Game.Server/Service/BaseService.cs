@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Service
             Location targetLocation = _nwnxEvents.OnFeatUsed_GetTargetLocation();
             NWArea targetArea = (_.GetAreaFromLocation(targetLocation));
 
-            if (featID != (int)CustomFeatType.BaseManagementTool) return;
+            if (featID != (int)CustomFeatType.StructureManagementTool) return;
 
             var data = GetPlayerTempData(player);
             data.TargetArea = targetArea;
@@ -279,7 +279,8 @@ namespace SWLOR.Game.Server.Service
                 PlayerID = player.GlobalID,
                 DateInitialPurchase = DateTime.UtcNow,
                 DateRentDue = DateTime.UtcNow.AddDays(7),
-                Sector = sector
+                Sector = sector,
+                PCBaseTypeID = (int)PCBaseType.RegularBase
             };
             _db.PCBases.Add(pcBase);
 

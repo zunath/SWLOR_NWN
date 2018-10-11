@@ -45,6 +45,10 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public int ReinforcedFuel { get; set; }
 
+        public int PCBaseTypeID { get; set; }
+
+        public int? ApartmentBuildingID { get; set; }
+
         [Column(TypeName = "datetime2")]
         public DateTime DateFuelEnds { get; set; }
 

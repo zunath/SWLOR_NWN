@@ -300,6 +300,7 @@
     <Compile Include="Enumeration\MovementRate.cs" />
     <Compile Include="Enumeration\MovementType.cs" />
     <Compile Include="Enumeration\NodeType.cs" />
+    <Compile Include="Enumeration\PCBaseType.cs" />
     <Compile Include="Enumeration\PerkExecutionType.cs" />
     <Compile Include="Enumeration\PerkType.cs" />
     <Compile Include="Enumeration\QuestType.cs" />

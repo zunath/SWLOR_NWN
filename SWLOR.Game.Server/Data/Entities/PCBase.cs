@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Data.Entities
         {
             PCBasePermissions = new HashSet<PCBasePermission>();
             PCBaseStructures = new HashSet<PCBaseStructure>();
+            PrimaryResidencePlayerCharacters = new HashSet<PlayerCharacter>();
         }
 
         [Key]
@@ -49,6 +50,11 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public int? ApartmentBuildingID { get; set; }
 
+        [StringLength(64)]
+        public string CustomName { get; set; }
+
+        public int? BuildingStyleID { get; set; }
+
         [Column(TypeName = "datetime2")]
         public DateTime DateFuelEnds { get; set; }
 
@@ -59,5 +65,10 @@ namespace SWLOR.Game.Server.Data.Entities
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PCBaseStructure> PCBaseStructures { get; set; }
+
+        public virtual BuildingStyle BuildingStyle { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PlayerCharacter> PrimaryResidencePlayerCharacters { get; set; }
     }
 }

@@ -119,6 +119,8 @@
     <Compile Include="ChatCommand\Victory2.cs" />
     <Compile Include="ChatCommand\Victory3.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Conversation\ApartmentEntrance.cs" />
+    <Compile Include="Conversation\ApartmentRental.cs" />
     <Compile Include="Conversation\BaseManagementTool.cs" />
     <Compile Include="Conversation\CharacterCustomization.cs" />
     <Compile Include="Conversation\ControlTower.cs" />
@@ -182,12 +184,14 @@
     <Compile Include="CustomEffect\RestEffect.cs" />
     <Compile Include="CustomEffect\ShieldBoostEffect.cs" />
     <Compile Include="CustomEffect\SwordOathEffect.cs" />
+    <Compile Include="Data\Entities\ApartmentBuilding.cs" />
     <Compile Include="Data\Entities\Area.cs" />
     <Compile Include="Data\Entities\BaseStructure.cs" />
     <Compile Include="Data\Entities\BaseStructureType.cs" />
     <Compile Include="Data\Entities\Attribute.cs" />
     <Compile Include="Data\Entities\AuthorizedDM.cs" />
     <Compile Include="Data\Entities\BaseItemType.cs" />
+    <Compile Include="Data\Entities\BuildingType.cs" />
     <Compile Include="Data\Entities\ChatChannelsDomain.cs" />
     <Compile Include="Data\Entities\ChatLog.cs" />
     <Compile Include="Data\Entities\ClientLogEvent.cs" />
@@ -278,6 +282,7 @@
     <Compile Include="Enumeration\BackgroundType.cs" />
     <Compile Include="Enumeration\BasePermission.cs" />
     <Compile Include="Enumeration\BaseStructureType.cs" />
+    <Compile Include="Enumeration\BuildingType.cs" />
     <Compile Include="Enumeration\ChatChannelType.cs" />
     <Compile Include="Enumeration\ClericDomain.cs" />
     <Compile Include="Enumeration\CommandPermissionType.cs" />
@@ -348,6 +353,7 @@
     <Compile Include="Event\Module\OnModuleUseFeat.cs" />
     <Compile Include="Event\Player\OnPlayerDamaged.cs" />
     <Compile Include="Extension\BehaviourTreeBuilderExtensions.cs" />
+    <Compile Include="GameObject\NWLocation.cs" />
     <Compile Include="Item\Enemy\BleedBite.cs" />
     <Compile Include="Item\Medicine\ForcePack.cs" />
     <Compile Include="Item\Medicine\ResuscitationKit.cs" />

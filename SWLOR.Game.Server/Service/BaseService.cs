@@ -12,6 +12,7 @@ using System.Linq;
 using SWLOR.Game.Server.DoorRule.Contracts;
 using static NWN.NWScript;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
+using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
@@ -77,7 +78,7 @@ namespace SWLOR.Game.Server.Service
         {
             NWPlayer player = (Object.OBJECT_SELF);
             int featID = _nwnxEvents.OnFeatUsed_GetFeatID();
-            Location targetLocation = _nwnxEvents.OnFeatUsed_GetTargetLocation();
+            NWLocation targetLocation = _nwnxEvents.OnFeatUsed_GetTargetLocation();
             NWArea targetArea = (_.GetAreaFromLocation(targetLocation));
 
             if (featID != (int)CustomFeatType.StructureManagementTool) return;
@@ -100,7 +101,7 @@ namespace SWLOR.Game.Server.Service
                     area.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();
                 }
 
-                var pcBases = _db.PCBases.Where(x => x.AreaResref == area.Resref).ToList();
+                var pcBases = _db.PCBases.Where(x => x.AreaResref == area.Resref && x.ApartmentBuildingID == null).ToList();
                 foreach (var @base in pcBases)
                 {
                     foreach (var structure in @base.PCBaseStructures)
@@ -117,7 +118,7 @@ namespace SWLOR.Game.Server.Service
         {
             PCBaseStructure structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == pcBaseStructureID);
 
-            Location location = _.Location(area.Object,
+            NWLocation location = _.Location(area.Object,
                 _.Vector((float)structure.LocationX, (float)structure.LocationY, (float)structure.LocationZ),
                 (float)structure.LocationOrientation);
 
@@ -218,10 +219,10 @@ namespace SWLOR.Game.Server.Service
 
         }
 
-        public NWPlaceable SpawnBuildingDoor(string spawnRule, NWPlaceable building, Location locationOverride = null)
+        public NWPlaceable SpawnBuildingDoor(string spawnRule, NWPlaceable building, NWLocation locationOverride = null)
         {
             NWArea area = building.Area;
-            Location location = locationOverride ?? building.Location;
+            NWLocation location = locationOverride ?? building.Location;
             
             int pcBaseStructureID = building.GetLocalInt("PC_BASE_STRUCTURE_ID");
             NWPlaceable door = App.ResolveByInterface<IDoorRule, NWPlaceable>("DoorRule." + spawnRule, rule => rule.Run(area, location));
@@ -280,7 +281,8 @@ namespace SWLOR.Game.Server.Service
                 DateInitialPurchase = DateTime.UtcNow,
                 DateRentDue = DateTime.UtcNow.AddDays(7),
                 Sector = sector,
-                PCBaseTypeID = (int)PCBaseType.RegularBase
+                PCBaseTypeID = (int)PCBaseType.RegularBase,
+                CustomName = string.Empty
             };
             _db.PCBases.Add(pcBase);
 
@@ -317,7 +319,7 @@ namespace SWLOR.Game.Server.Service
                     ClearPCBaseByID(pcBase.PCBaseID, false);
                 }
 
-                var players = module.Players;
+                var players = module.Players.ToList();
                 foreach(var removed in playerIDs)
                 {
                     var existing = players.FirstOrDefault(x => x.GlobalID == removed.Item1);
@@ -356,14 +358,21 @@ namespace SWLOR.Game.Server.Service
                 .Sum(s => s == null || s.BaseStructure == null ? 0 : s.BaseStructure.CPU);
         }
 
-        public string GetSectorOfLocation(Location targetLocation)
+        public string GetSectorOfLocation(NWLocation targetLocation)
         {
+            NWArea area = targetLocation.Area;
             int cellX = (int)(_.GetPositionFromLocation(targetLocation).m_X / 10);
             int cellY = (int)(_.GetPositionFromLocation(targetLocation).m_Y / 10);
+            int pcBaseID = area.GetLocalInt("PC_BASE_ID");
 
             string sector = "INVALID";
+
+            if (pcBaseID > 0)
+            {
+                sector = "AP";
+            }
             // NWN location positions start at the bottom left, not the top left.
-            if (cellX >= 0 && cellX <= 15 &&
+            else if (cellX >= 0 && cellX <= 15 &&
                 cellY >= 0 && cellY <= 15)
             {
                 sector = AreaSector.Southwest;
@@ -387,9 +396,9 @@ namespace SWLOR.Game.Server.Service
             return sector;
         }
 
-        public string CanPlaceStructure(NWCreature user, NWItem structureItem, Location targetLocation, int structureID)
+        public string CanPlaceStructure(NWCreature user, NWItem structureItem, NWLocation targetLocation, int structureID)
         {
-            NWPlayer player = (user.Object);
+            NWPlayer player = user.Object;
             string sector = GetSectorOfLocation(targetLocation);
             if (sector == "INVALID")
             {
@@ -401,14 +410,30 @@ namespace SWLOR.Game.Server.Service
                 return "Unable to locate structure item.";
             }
 
-            NWArea area = (_.GetAreaFromLocation(targetLocation));
+            NWArea area = _.GetAreaFromLocation(targetLocation);
             int buildingStructureID = area.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            bool isOutside = buildingStructureID <= 0;
+            int pcBaseID = area.GetLocalInt("PC_BASE_ID");
+            BuildingType buildingType;
+            if (pcBaseID > 0)
+            {
+                buildingType = BuildingType.Apartment;
+            }
+            else if (buildingStructureID <= 0)
+            {
+                buildingType = BuildingType.Exterior;
+            }
+            else
+            {
+                buildingType = BuildingType.Interior;
+            }
+
             Area dbArea = _db.Areas.SingleOrDefault(x => x.Resref == area.Resref);
 
             if (dbArea == null || !dbArea.IsBuildable ) return "Structures cannot be placed in this area.";
-            PCBase pcBase = _db.PCBases.SingleOrDefault(x => x.AreaResref == area.Resref && x.Sector == sector);
-            if (pcBase == null && !isOutside)
+            PCBase pcBase = pcBaseID > 0 ?
+                _db.PCBases.Single(x => x.PCBaseID == pcBaseID) :
+                _db.PCBases.SingleOrDefault(x => x.AreaResref == area.Resref && x.Sector == sector);
+            if (pcBase == null && buildingType == BuildingType.Interior)
             {
                 var parentStructure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == buildingStructureID);
                 pcBase = parentStructure.PCBase;
@@ -424,7 +449,7 @@ namespace SWLOR.Game.Server.Service
             if (pcBase == null)
                 return "This area is unclaimed but not owned by you. You may purchase a lease on it from the planetary government by using your Base Management Tool (found under feats).";
 
-            var canPlaceOrEditStructures = isOutside ? 
+            var canPlaceOrEditStructures = buildingType == BuildingType.Apartment || buildingType == BuildingType.Exterior ? 
                 _perm.HasBasePermission(player, pcBase.PCBaseID, BasePermission.CanPlaceEditStructures) :                 // Bases
                 _perm.HasStructurePermission(player, buildingStructureID, StructurePermission.CanPlaceEditStructures);    // Buildings
 
@@ -434,17 +459,17 @@ namespace SWLOR.Game.Server.Service
             var structure = _db.BaseStructures.Single(x => x.BaseStructureID == structureID);
             var structureType = structure.BaseStructureType;
             
-            if (!structureType.CanPlaceOutside && isOutside)
+            if (!structureType.CanPlaceOutside && buildingType == BuildingType.Exterior)
             {
                 return "That structure can only be placed inside buildings.";
             }
 
-            if (!structureType.CanPlaceInside && !isOutside)
+            if (!structureType.CanPlaceInside && (buildingType == BuildingType.Interior || buildingType == BuildingType.Apartment))
             {
                 return "That structure can only be placed outside of buildings.";
             }
 
-            if (isOutside)
+            if (buildingType == BuildingType.Exterior)
             {
                 bool hasControlTower = pcBase.PCBaseStructures
                                            .SingleOrDefault(x => x.BaseStructure.BaseStructureTypeID == (int)BaseStructureType.ControlTower) != null;
@@ -509,6 +534,14 @@ namespace SWLOR.Game.Server.Service
             List<AreaStructure> areaStructures = baseArea.Data["BASE_SERVICE_STRUCTURES"];
             areaStructures = areaStructures.Where(x => x.PCBaseID == pcBaseID).ToList();
             
+            // Remove all players who are a resident of any structure in this base or the base itself.
+            var residents = _db.PlayerCharacters.Where(x => x.PrimaryResidencePCBaseID == pcBaseID || (x.PrimaryResidencePCBaseStructure != null && x.PrimaryResidencePCBaseStructure.PCBaseID == pcBaseID));
+            foreach (var resident in residents)
+            {
+                resident.PrimaryResidencePCBaseID = null;
+                resident.PrimaryResidencePCBaseStructureID = null;
+            }
+
             foreach (var structure in areaStructures)
             {
                 BootPlayersOutOfInstance(structure.PCBaseStructureID);
@@ -557,7 +590,9 @@ namespace SWLOR.Game.Server.Service
             else if (pcBase.Sector == AreaSector.Northwest) dbArea.NorthwestOwner = null;
             else if (pcBase.Sector == AreaSector.Southeast) dbArea.SoutheastOwner = null;
             else if (pcBase.Sector == AreaSector.Southwest) dbArea.SouthwestOwner = null;
+
             
+
             if (doSave)
             {
                 _db.SaveChanges();
@@ -574,8 +609,8 @@ namespace SWLOR.Game.Server.Service
 
                 if (structure.BaseStructureTypeID == (int)BaseStructureType.Building)
                 {
-                    var defaultInterior = _db.BuildingStyles.Single(x => x.BaseStructureID == structure.BaseStructureID && x.IsDefault && x.IsInterior && x.IsActive).BuildingStyleID;
-                    var defaultExterior = _db.BuildingStyles.Single(x => x.BaseStructureID == structure.BaseStructureID && x.IsDefault && !x.IsInterior && x.IsActive).BuildingStyleID;
+                    var defaultInterior = _db.BuildingStyles.Single(x => x.BaseStructureID == structure.BaseStructureID && x.IsDefault && x.BuildingTypeID == (int)BuildingType.Interior && x.IsActive).BuildingStyleID;
+                    var defaultExterior = _db.BuildingStyles.Single(x => x.BaseStructureID == structure.BaseStructureID && x.IsDefault && x.BuildingTypeID == (int)BuildingType.Exterior && x.IsActive).BuildingStyleID;
 
                     item.SetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID", defaultInterior);
                     item.SetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID", defaultExterior);
@@ -701,6 +736,8 @@ namespace SWLOR.Game.Server.Service
 
         public int CalculateMaxShieldHP(PCBaseStructure controlTower)
         {
+            if (controlTower == null) return 0;
+
             return (int)(controlTower.Durability * 300);
         }
 
@@ -748,5 +785,7 @@ namespace SWLOR.Game.Server.Service
 
             return (int) (resourceMax + resourceMax * siloBonus);
         }
+
+
     }
 }

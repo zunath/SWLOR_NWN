@@ -15,8 +15,8 @@ namespace SWLOR.Game.Server.Service.Contracts
         void OnModuleHeartbeat();
         void ToggleInstanceObjectPower(NWArea area, bool isPoweredOn);
         PCBaseStructure GetBaseControlTower(int pcBaseID);
-        string CanPlaceStructure(NWCreature player, NWItem structureItem, Location targetLocation, int structureID);
-        string GetSectorOfLocation(Location targetLocation);
+        string CanPlaceStructure(NWCreature player, NWItem structureItem, NWLocation targetLocation, int structureID);
+        string GetSectorOfLocation(NWLocation targetLocation);
         NWItem ConvertStructureToItem(PCBaseStructure pcBaseStructure, NWObject target);
         void BootPlayersOutOfInstance(int pcBaseStructureID);
         void ClearPCBaseByID(int pcBaseID, bool doSave = true);
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         double GetPowerInUse(int pcBaseID);
         double GetCPUInUse(int pcBaseID);
         NWPlaceable SpawnStructure(NWArea area, int pcBaseStructureID);
-        NWPlaceable SpawnBuildingDoor(string doorRule, NWPlaceable building, Location locationOverride = null);
+        NWPlaceable SpawnBuildingDoor(string doorRule, NWPlaceable building, NWLocation locationOverride = null);
         void JumpPCToBuildingInterior(NWPlayer player, NWArea area);
         string GetPlayerIDOwnerOfSector(Area dbArea, string sector);
         void DoPlayerExitBuildingInstance(NWPlayer player, NWPlaceable door = null);

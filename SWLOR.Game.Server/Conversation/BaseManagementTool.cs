@@ -10,6 +10,7 @@ using SWLOR.Game.Server.ValueObject.Dialog;
 using System.Collections.Generic;
 using System.Linq;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
+using BuildingType = SWLOR.Game.Server.Data.Entities.BuildingType;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -89,15 +90,19 @@ namespace SWLOR.Game.Server.Conversation
             Area dbArea = _db.Areas.Single(x => x.Resref == data.TargetArea.Resref);
             bool hasUnclaimed = false;
             string playerID = GetPC().GlobalID;
+            int pcBaseID = data.TargetArea.GetLocalInt("PC_BASE_ID");
             int pcBaseStructureID = data.TargetArea.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            bool isBuilding = pcBaseStructureID > 0;
+            int buildingTypeID = data.TargetArea.GetLocalInt("BUILDING_TYPE");
+            Enumeration.BuildingType buildingType = buildingTypeID <= 0 ? Enumeration.BuildingType.Exterior : (Enumeration.BuildingType)buildingTypeID;
+            data.BuildingType = buildingType;
+
             bool canEditBasePermissions = false;
             bool canEditBuildingPermissions = false;
             bool canEditStructures;
             bool canEditPrimaryResidence = false;
             bool canRemovePrimaryResidence = false;
 
-            if (isBuilding)
+            if (buildingType == Enumeration.BuildingType.Interior)
             {
                 canEditStructures = _perm.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanPlaceEditStructures);
                 canEditBuildingPermissions = _perm.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanAdjustPermissions);
@@ -105,13 +110,25 @@ namespace SWLOR.Game.Server.Conversation
                 canRemovePrimaryResidence = _perm.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanRemovePrimaryResidence);
                 data.StructureID = pcBaseStructureID;
             }
-            else
+            else if (buildingType == Enumeration.BuildingType.Apartment)
+            {
+                canEditStructures = _perm.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanPlaceEditStructures);
+                canEditBasePermissions = _perm.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanAdjustPermissions);
+                canEditPrimaryResidence = _perm.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanEditPrimaryResidence);
+                canRemovePrimaryResidence = _perm.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanRemovePrimaryResidence);
+                data.PCBaseID = pcBaseID;
+            }
+            else if(buildingType == Enumeration.BuildingType.Exterior)
             {
                 var pcBase = _db.PCBases.SingleOrDefault(x => x.AreaResref == data.TargetArea.Resref && x.Sector == sector);
                 canEditStructures = pcBase != null && _perm.HasBasePermission(GetPC(), pcBase.PCBaseID, BasePermission.CanPlaceEditStructures);
                 canEditBasePermissions = pcBase != null && _perm.HasBasePermission(GetPC(), pcBase.PCBaseID, BasePermission.CanAdjustPermissions);
                 if (pcBase != null)
                     data.PCBaseID = pcBase.PCBaseID;
+            }
+            else
+            {
+                throw new Exception("BaseManagementTool -> Cannot locate building type with ID " + buildingTypeID);
             }
 
             string header = _color.Green("Base Management Menu\n\n");
@@ -121,13 +138,19 @@ namespace SWLOR.Game.Server.Conversation
             {
                 header += "Land in this area cannot be claimed. However, you can still manage any leases you own from the list below.";
             }
-            else if(isBuilding)
+            else if(buildingType == Enumeration.BuildingType.Interior)
             {
                 var structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == pcBaseStructureID);
                 int itemLimit = structure.BaseStructure.Storage + structure.StructureBonus;
                 header += _color.Green("Item Limit: ") + structure.ChildStructures.Count + " / " + itemLimit + "\n";
             }
-            else
+            else if (buildingType == Enumeration.BuildingType.Apartment)
+            {
+                var pcBase = _db.PCBases.Single(x => x.PCBaseID == pcBaseID);
+                int itemLimit = pcBase.BuildingStyle.FurnitureLimit;
+                header += _color.Green("Item Limit: ") + pcBase.PCBaseStructures.Count + " / " + itemLimit + "\n";
+            }
+            else if(buildingType == Enumeration.BuildingType.Exterior)
             {
                 if (dbArea.NortheastOwnerPlayer != null)
                 {
@@ -462,7 +485,7 @@ namespace SWLOR.Game.Server.Conversation
             PCBaseStructure structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == data.ManipulatingStructure.PCBaseStructureID);
             PCBase pcBase = structure.PCBase;
             BaseStructureType structureType = (BaseStructureType)structure.BaseStructure.BaseStructureTypeID;
-            var tempStorage = (_.GetObjectByTag("TEMP_ITEM_STORAGE"));
+            var tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
             int pcStructureID = structure.PCBaseStructureID;
             int impoundedCount = 0;
             int structureID = data.ManipulatingStructure.Structure.Area.GetLocalInt("PC_BASE_STRUCTURE_ID");
@@ -476,10 +499,21 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            var canRetrieveStructures =
-                structureID > 0 ?
-                    _perm.HasStructurePermission(GetPC(), structureID, StructurePermission.CanRetrieveStructures) :              // Buildings
-                    _perm.HasBasePermission(GetPC(), data.ManipulatingStructure.PCBaseID, BasePermission.CanRetrieveStructures); // Bases
+            bool canRetrieveStructures;
+
+            if (data.BuildingType == Enumeration.BuildingType.Exterior ||
+                data.BuildingType == Enumeration.BuildingType.Apartment)
+            {
+                canRetrieveStructures = _perm.HasBasePermission(GetPC(), data.ManipulatingStructure.PCBaseID, BasePermission.CanRetrieveStructures);
+            }
+            else if (data.BuildingType == Enumeration.BuildingType.Interior)
+            {
+                canRetrieveStructures = _perm.HasStructurePermission(GetPC(), structureID, StructurePermission.CanRetrieveStructures);
+            }
+            else
+            {
+                throw new Exception("BaseManagementTool -> DoRetrieveStructure: Cannot handle building type " + data.BuildingType);
+            }
 
             if (!canRetrieveStructures)
             {
@@ -527,7 +561,7 @@ namespace SWLOR.Game.Server.Conversation
                 if (pcBase.Fuel > maxFuel)
                 {
                     int returnAmount = pcBase.Fuel - maxFuel;
-                    NWItem refund = (_.CreateItemOnObject("fuel_cell", tempStorage, returnAmount));
+                    NWItem refund = _.CreateItemOnObject("fuel_cell", tempStorage, returnAmount);
                     pcBase.Fuel = maxFuel;
                     _impound.Impound(pcBase.PlayerID, refund);
                     GetPC().SendMessage("Excess fuel cells have been impounded by the planetary government. The owner of the base will need to retrieve it.");
@@ -537,7 +571,7 @@ namespace SWLOR.Game.Server.Conversation
                 if (pcBase.ReinforcedFuel > maxReinforcedFuel)
                 {
                     int returnAmount = pcBase.ReinforcedFuel - maxReinforcedFuel;
-                    NWItem refund = (_.CreateItemOnObject("stronidium", tempStorage, returnAmount));
+                    NWItem refund = _.CreateItemOnObject("stronidium", tempStorage, returnAmount);
                     pcBase.ReinforcedFuel = maxReinforcedFuel;
                     _impound.Impound(pcBase.PlayerID, refund);
                     GetPC().SendMessage("Excess stronidium units have been impounded by the planetary government. The owner of the base will need to retrieve it.");
@@ -645,13 +679,23 @@ namespace SWLOR.Game.Server.Conversation
         private void DoRotate(float degrees, bool isSet)
         {
             var data = _base.GetPlayerTempData(GetPC());
+            bool canPlaceEditStructures;
             var structure = data.ManipulatingStructure.Structure;
-            int structureID = data.ManipulatingStructure.Structure.Area.GetLocalInt("PC_BASE_STRUCTURE_ID");
 
-            var canPlaceEditStructures =
-                structureID > 0 ?
-                    _perm.HasStructurePermission(GetPC(), structureID, StructurePermission.CanPlaceEditStructures) :              // Buildings
-                    _perm.HasBasePermission(GetPC(), data.ManipulatingStructure.PCBaseID, BasePermission.CanPlaceEditStructures); // Bases
+            if (data.BuildingType == Enumeration.BuildingType.Exterior ||
+                data.BuildingType == Enumeration.BuildingType.Apartment)
+            {
+                canPlaceEditStructures = _perm.HasBasePermission(GetPC(), data.ManipulatingStructure.PCBaseID, BasePermission.CanPlaceEditStructures);
+            }
+            else if (data.BuildingType == Enumeration.BuildingType.Interior)
+            {
+                int structureID = data.ManipulatingStructure.Structure.Area.GetLocalInt("PC_BASE_STRUCTURE_ID");
+                canPlaceEditStructures = _perm.HasStructurePermission(GetPC(), structureID, StructurePermission.CanPlaceEditStructures);
+            }
+            else
+            {
+                throw new Exception("BaseManagementTool -> DoRotate: Cannot handle building type " + data.BuildingType);
+            }
 
             if (!canPlaceEditStructures)
             {

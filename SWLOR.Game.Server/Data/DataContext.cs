@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Data
             return $"server={ipAddress};database={database};user id={username};password={password};Integrated Security=False;MultipleActiveResultSets=True;TrustServerCertificate=True;Encrypt=False";
         }
 
+        public virtual IDbSet<ApartmentBuilding> ApartmentBuildings { get; set; }
         public virtual IDbSet<Area> Areas { get; set; }
         public virtual IDbSet<AreaWalkmesh> AreaWalkmeshes { get; set; }
         public virtual IDbSet<Association> Associations { get; set; }
@@ -38,6 +39,7 @@ namespace SWLOR.Game.Server.Data
         public virtual IDbSet<Bank> Banks { get; set; }
         public virtual IDbSet<BankItem> BankItems { get; set; }
         public virtual IDbSet<BuildingStyle> BuildingStyles { get; set; }
+        public virtual IDbSet<BuildingType> BuildingTypes { get; set; }
         public virtual IDbSet<ChatChannelsDomain> ChatChannelsDomains { get; set; }
         public virtual IDbSet<ChatLog> ChatLogs { get; set; }
         public virtual IDbSet<ClientLogEvent> ClientLogEvents { get; set; }
@@ -322,6 +324,11 @@ namespace SWLOR.Game.Server.Data
                 .HasMany(e => e.PCBasePermissions)
                 .WithRequired(e => e.PCBase)
                 .WillCascadeOnDelete(false);
+            
+            modelBuilder.Entity<PCBase>()
+                .HasMany(e => e.PrimaryResidencePlayerCharacters)
+                .WithOptional(e => e.PrimaryResidencePCBase)
+                .HasForeignKey(e => e.PrimaryResidencePCBaseID);
 
             modelBuilder.Entity<PCBaseStructureItem>()
                 .Property(e => e.ItemObject)
@@ -425,9 +432,15 @@ namespace SWLOR.Game.Server.Data
                 .WithOptional(e => e.PrimaryResidencePCBaseStructure)
                 .HasForeignKey(e => e.PrimaryResidencePCBaseStructureID);
 
+            modelBuilder.Entity<PCBase>()
+                .HasMany(e => e.PrimaryResidencePlayerCharacters)
+                .WithOptional(e => e.PrimaryResidencePCBase)
+                .HasForeignKey(e => e.PrimaryResidencePCBaseID);
+
             modelBuilder.Entity<PlayerCharacter>()
                 .HasMany(e => e.PCBases)
                 .WithRequired(e => e.PlayerCharacter)
+                .HasForeignKey(e => e.PlayerID)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<PlayerCharacter>()

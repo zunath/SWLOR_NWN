@@ -25,16 +25,22 @@ namespace SWLOR.Game.Server.Data.Entities
         [Required]
         [StringLength(16)]
         public string Resref { get; set; }
-
-        public bool IsInterior { get; set; }
-
-        public int BaseStructureID { get; set; }
+        
+        public int? BaseStructureID { get; set; }
 
         public bool IsDefault { get; set; }
 
         public string DoorRule { get; set; }
 
         public bool IsActive { get; set; }
+        
+        public int BuildingTypeID { get; set; }
+
+        public int PurchasePrice { get; set; }
+
+        public int DailyUpkeep { get; set; }
+
+        public int FurnitureLimit { get; set; }
 
         public virtual BaseStructure BaseStructure { get; set; }
 
@@ -43,5 +49,7 @@ namespace SWLOR.Game.Server.Data.Entities
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PCBaseStructure> PCBaseInteriorStructures { get; set; }
+
+        public virtual BuildingType BuildingType { get; set; }
     }
 }

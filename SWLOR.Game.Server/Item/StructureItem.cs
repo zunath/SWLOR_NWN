@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using System.Linq;
+using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
 
 
 namespace SWLOR.Game.Server.Item
@@ -45,18 +46,27 @@ namespace SWLOR.Game.Server.Item
             NWPlayer player = (user.Object);
             NWArea area = (_.GetAreaFromLocation(targetLocation));
             int parentStructureID = area.GetLocalInt("PC_BASE_STRUCTURE_ID");
+            int pcBaseID = area.GetLocalInt("PC_BASE_ID");
             var data = _base.GetPlayerTempData(player);
             data.TargetLocation = targetLocation;
             data.TargetArea = area;
             data.StructureID = item.GetLocalInt("BASE_STRUCTURE_ID");
             data.StructureItem = item;
-            
+
+            // Structure is being placed inside an apartment.
+            if (pcBaseID > 0)
+            {
+                data.PCBaseID = pcBaseID;
+                data.ParentStructureID = null;
+                data.BuildingType = BuildingType.Apartment;
+            }
             // Structure is being placed inside a building.
-            if (parentStructureID > 0)
+            else if (parentStructureID > 0)
             {
                 var parentStructure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == parentStructureID);
                 data.PCBaseID = parentStructure.PCBaseID;
                 data.ParentStructureID = parentStructureID;
+                data.BuildingType = BuildingType.Interior;
             }
             // Structure is being placed outside of a building.
             else
@@ -65,9 +75,9 @@ namespace SWLOR.Game.Server.Item
                 PCBase pcBase = _db.PCBases.Single(x => x.AreaResref == area.Resref && x.Sector == sector);
                 data.PCBaseID = pcBase.PCBaseID;
                 data.ParentStructureID = null;
+                data.BuildingType = BuildingType.Exterior;
             }
-
-
+            
             _dialog.StartConversation(user, user, "PlaceStructure");
         }
 

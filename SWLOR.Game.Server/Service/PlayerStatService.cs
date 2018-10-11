@@ -627,9 +627,12 @@ namespace SWLOR.Game.Server.Service
         public float EffectiveResidencyBonus(NWPlayer player)
         {
             var dbPlayer = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
-            if (dbPlayer.PrimaryResidencePCBaseStructureID == null) return 0.0f;
-            var residence = dbPlayer.PrimaryResidencePCBaseStructure;
-            var atmoStructures = residence.ChildStructures.Where(x => x.BaseStructure.HasAtmosphere);
+            if (dbPlayer.PrimaryResidencePCBaseStructureID == null &&
+                dbPlayer.PrimaryResidencePCBaseID == null) return 0.0f;
+
+            var atmoStructures = dbPlayer.PrimaryResidencePCBaseID != null ? 
+                dbPlayer.PrimaryResidencePCBase.PCBaseStructures.Where(x => x.BaseStructure.HasAtmosphere).ToList() : 
+                dbPlayer.PrimaryResidencePCBaseStructure.ChildStructures.Where(x => x.BaseStructure.HasAtmosphere).ToList();
 
             float bonus = atmoStructures.Sum(x => (x.StructureBonus * 0.02f) + 0.02f);
 

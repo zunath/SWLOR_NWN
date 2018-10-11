@@ -60,9 +60,12 @@ namespace SWLOR.Game.Server.Conversation
             data[key] = value;
         }
 
-        protected void ChangePage(string pageName)
+        protected void ChangePage(string pageName, bool updateNavigationStack = true)
         {
             PlayerDialog dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
+
+            if(updateNavigationStack)
+                dialog.NavigationStack.Push(new DialogNavigation(dialog.CurrentPageName, dialog.ActiveDialogName));
             dialog.CurrentPageName = pageName;
             dialog.PageOffset = 0;
         }
@@ -136,11 +139,14 @@ namespace SWLOR.Game.Server.Conversation
         protected void SwitchConversation(string conversationName)
         {
             PlayerDialog dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
+            var navigationStack = dialog.NavigationStack;
+            navigationStack.Push(new DialogNavigation(dialog.CurrentPageName, dialog.ActiveDialogName));
             _dialog.LoadConversation(GetPC(), dialog.DialogTarget, conversationName, dialog.DialogNumber);
             dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
-            
+            dialog.NavigationStack = navigationStack;
+
             dialog.ResetPage();
-            ChangePage(dialog.CurrentPageName);
+            ChangePage(dialog.CurrentPageName, false);
             
             App.ResolveByInterface<IConversation>("Conversation." + dialog.ActiveDialogName, convo =>
             {
@@ -160,6 +166,8 @@ namespace SWLOR.Game.Server.Conversation
         public abstract void Initialize();
 
         public abstract void DoAction(NWPlayer player, string pageName, int responseID);
+        
+        public abstract void Back(NWPlayer player, string beforeMovePage, string afterMovePage);
 
         public abstract void EndDialog();
     }

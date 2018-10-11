@@ -7,6 +7,7 @@ namespace SWLOR.Game.Server.ValueObject.Dialog
     {
         private Dictionary<string, DialogPage> Pages { get; set; }
         public string CurrentPageName { get; set; }
+        public Stack<DialogNavigation> NavigationStack { get; set; }
         public int PageOffset { get; set; }
         public string ActiveDialogName { get; set; }
         public NWObject DialogTarget { get; set; }
@@ -19,6 +20,7 @@ namespace SWLOR.Game.Server.ValueObject.Dialog
         {
             Pages = new Dictionary<string, DialogPage>();
             CurrentPageName = string.Empty;
+            NavigationStack = new Stack<DialogNavigation>();
             PageOffset = 0;
             ActiveDialogName = string.Empty;
             DefaultPageName = defaultPageName;

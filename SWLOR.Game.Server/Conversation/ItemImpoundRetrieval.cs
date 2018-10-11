@@ -82,6 +82,10 @@ namespace SWLOR.Game.Server.Conversation
             LoadMainPage();
         }
 
+        public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
+        {
+        }
+
         public override void EndDialog()
         {
         }

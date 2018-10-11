@@ -1,4 +1,5 @@
-﻿using NWN;
+﻿using System;
+using NWN;
 using SWLOR.Game.Server.Conversation.Contracts;
 using SWLOR.Game.Server.GameObject;
 
@@ -34,7 +35,42 @@ namespace SWLOR.Game.Server.Event.Dialog
             {
                 dialog.PageOffset = dialog.PageOffset - 1;
             }
-            else if (selectionNumber != _dialogService.NumberOfResponsesPerPage + 3) // End
+            else if (selectionNumber == _dialogService.NumberOfResponsesPerPage + 3) // Back
+            {
+                string currentPageName = dialog.CurrentPageName;
+                var previous = dialog.NavigationStack.Pop();
+                
+                // This might be a little confusing but we're passing the active page as the "old page" to the Back() method.
+                // This is because we need to run any dialog-specific clean up prior to moving the conversation backwards.
+                App.ResolveByInterface<IConversation>("Conversation." + dialog.ActiveDialogName, convo =>
+                {
+                    convo.Back(player, currentPageName, previous.PageName);
+                });
+
+                // Previous page was in a different conversation. Switch to it.
+                if (previous.DialogName != dialog.ActiveDialogName)
+                {
+                    _dialogService.LoadConversation(player, dialog.DialogTarget, previous.DialogName, dialog.DialogNumber);
+                    dialog = _dialogService.LoadPlayerDialog(player.GlobalID);
+                    dialog.ResetPage();
+
+                    dialog.CurrentPageName = previous.PageName;
+                    dialog.PageOffset = 0;
+
+                    App.ResolveByInterface<IConversation>("Conversation." + dialog.ActiveDialogName, convo =>
+                    {
+                        convo.Initialize();
+                        player.SetLocalInt("DIALOG_SYSTEM_INITIALIZE_RAN", 1);
+                    });
+                }
+                // Otherwise it's in the same conversation. Switch to that.
+                else
+                {
+                    dialog.CurrentPageName = previous.PageName;
+                    dialog.PageOffset = 0;
+                }
+            }
+            else if (selectionNumber != _dialogService.NumberOfResponsesPerPage + 4) // End
             {
                 App.ResolveByInterface<IConversation>("Conversation." + dialog.ActiveDialogName, convo =>
                 {

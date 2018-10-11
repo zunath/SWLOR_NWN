@@ -39,8 +39,7 @@ namespace SWLOR.Game.Server.Conversation
 
             DialogPage harvestPage = new DialogPage(
                 "Are you sure you want to harvest this plant? Harvesting will destroy the plant and recover a seed.",
-                "Yes, harvest it.",
-                "Back");
+                "Yes, harvest it.");
 
             dialog.AddPage("MainPage", mainPage);
             dialog.AddPage("HarvestPage", harvestPage);
@@ -82,6 +81,10 @@ namespace SWLOR.Game.Server.Conversation
             }
         }
 
+        public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
+        {
+        }
+
         private void HandleMainPageResponse(int responseID)
         {
             switch (responseID)
@@ -111,9 +114,6 @@ namespace SWLOR.Game.Server.Conversation
             {
                 case 1: // Harvest Seed
                     HarvestSeed();
-                    break;
-                case 2: // Back
-                    ChangePage("MainPage");
                     break;
             }
         }

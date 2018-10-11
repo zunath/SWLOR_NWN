@@ -50,6 +50,11 @@ namespace SWLOR.Game.Server.Conversation
             MainPageResponses(responseID);
         }
 
+        public override void Back(NWPlayer player, string previousPageName, string currentPageName)
+        {
+        }
+
+
         private void LoadMainPage()
         {
             NWPlaceable door = Object.OBJECT_SELF;

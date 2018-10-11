@@ -48,8 +48,7 @@ namespace SWLOR.Game.Server.Conversation
             DialogPage structureListPage = new DialogPage("Select a structure to edit it. List is ordered by nearest structure to the location you selected. A maximum of 30 structures will be displayed at a time.");
             DialogPage manageStructureDetailsPage = new DialogPage();
             DialogPage retrievePage = new DialogPage("If this structure contains anything inside - such as items or furniture - they will be sent to the planetary government's impound. You will need to pay a fee to retrieve the items.\n\nAre you sure you want to retrieve this structure?",
-                "Confirm Retrieve Structure",
-                "Back");
+                "Confirm Retrieve Structure");
             DialogPage rotatePage = new DialogPage(string.Empty,
                 "East",
                 "North",
@@ -61,8 +60,7 @@ namespace SWLOR.Game.Server.Conversation
                 "60 degrees",
                 "75 degrees",
                 "90 degrees",
-                "180 degrees",
-                "Back");
+                "180 degrees");
             
 
             dialog.AddPage("MainPage", mainPage);
@@ -243,6 +241,22 @@ namespace SWLOR.Game.Server.Conversation
             }
         }
 
+        public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
+        {
+            var data = _base.GetPlayerTempData(GetPC());
+            switch (beforeMovePage)
+            {
+                case "PurchaseTerritoryPage":
+                    data.IsConfirming = false;
+                    data.ConfirmingPurchaseResponseID = 0;
+                    LoadMainPage();
+                    break;
+                case "StructureListPage":
+                    data.ManipulatingStructure = null;
+                    break;
+            }
+        }
+
         private void MainResponses(int responseID)
         {
             switch (responseID)
@@ -294,7 +308,6 @@ namespace SWLOR.Game.Server.Conversation
             AddResponseToPage("PurchaseTerritoryPage", "Purchase Northwest Sector", string.IsNullOrWhiteSpace(dbArea.NorthwestOwner));
             AddResponseToPage("PurchaseTerritoryPage", "Purchase Southeast Sector", string.IsNullOrWhiteSpace(dbArea.SoutheastOwner));
             AddResponseToPage("PurchaseTerritoryPage", "Purchase Southwest Sector", string.IsNullOrWhiteSpace(dbArea.SouthwestOwner));
-            AddResponseToPage("PurchaseTerritoryPage", "Back");
         }
 
         private void PurchaseTerritoryResponses(int responseID)
@@ -312,13 +325,6 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case 4: // Southwest sector
                     DoBuy(AreaSector.Southwest, responseID);
-                    break;
-                case 5: // Back
-                    var data = _base.GetPlayerTempData(GetPC());
-                    data.IsConfirming = false;
-                    data.ConfirmingPurchaseResponseID = 0;
-                    LoadMainPage();
-                    ChangePage("MainPage");
                     break;
             }
         }
@@ -396,8 +402,6 @@ namespace SWLOR.Game.Server.Conversation
             {
                 AddResponseToPage("StructureListPage", structure.Structure.Name, true, structure);
             }
-
-            AddResponseToPage("StructureListPage", "Back");
         }
 
         private void StructureListResponses(int responseID)
@@ -406,14 +410,7 @@ namespace SWLOR.Game.Server.Conversation
             AreaStructure structure = (AreaStructure)response.CustomData;
             var data = _base.GetPlayerTempData(GetPC());
             data.ManipulatingStructure = structure;
-
-            if (structure == null) // Back
-            {
-                data.ManipulatingStructure = null;
-                ChangePage("MainPage");
-                return;
-            }
-
+            
             LoadManageStructureDetails();
             ChangePage("ManageStructureDetailsPage");
         }
@@ -445,7 +442,6 @@ namespace SWLOR.Game.Server.Conversation
 
             AddResponseToPage("ManageStructureDetailsPage", "Retrieve Structure", canRetrieveStructures);
             AddResponseToPage("ManageStructureDetailsPage", "Rotate", canPlaceEditStructures);
-            AddResponseToPage("ManageStructureDetailsPage", "Back");
         }
 
         private void ManageStructureResponses(int responseID)
@@ -472,9 +468,6 @@ namespace SWLOR.Game.Server.Conversation
             {
                 case 1: // Confirm retrieve structure
                     DoRetrieveStructure();
-                    break;
-                case 2: // Back
-                    ChangePage("ManageStructureDetailsPage");
                     break;
             }
         }
@@ -659,9 +652,6 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case 11: // Rotate 180
                     DoRotate(180.0f, false);
-                    break;
-                case 12: // Back
-                    ChangePage("ManageStructureDetailsPage");
                     break;
             }
         }

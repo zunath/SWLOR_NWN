@@ -643,6 +643,8 @@
     <Compile Include="NWN\Events\Conversation\Quest\QuestIsDone\quest_done_8.cs" />
     <Compile Include="NWN\Events\Conversation\Quest\QuestIsDone\quest_done_9.cs" />
     <Compile Include="NWN\Events\Conversation\warp_to_wp.cs" />
+    <Compile Include="NWN\Events\Dialog\dialog_action_b.cs" />
+    <Compile Include="NWN\Events\Dialog\dialog_appears_b.cs" />
     <Compile Include="NWN\Events\Module\mod_on_applydmg.cs" />
     <Compile Include="NWN\Events\Module\mod_on_attack.cs" />
     <Compile Include="NWN\Events\Module\mod_on_nwnxchat.cs" />
@@ -1130,6 +1132,7 @@
     <Compile Include="Trigger\QuestTrigger.cs" />
     <Compile Include="ValueObject\AreaSpawn.cs" />
     <Compile Include="ValueObject\AreaStructure.cs" />
+    <Compile Include="ValueObject\DialogNavigation.cs" />
     <Compile Include="ValueObject\ObjectSpawn.cs" />
     <Compile Include="ValueObject\PCTempBaseData.cs" />
     <Compile Include="ValueObject\CraftingData.cs" />

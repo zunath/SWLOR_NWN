@@ -28,14 +28,12 @@ namespace SWLOR.Game.Server.Conversation
 
             DialogPage mainPage = new DialogPage(
                 "<SET LATER>",
-                "Next",
-                "Back"
+                "Next"
             );
 
             DialogPage confirmSetPage = new DialogPage(
                 "<SET LATER>",
-                "Confirm Description Change",
-                "Back"
+                "Confirm Description Change"
             );
 
             dialog.AddPage("MainPage", mainPage);
@@ -65,6 +63,10 @@ namespace SWLOR.Game.Server.Conversation
             }
         }
 
+        public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
+        {
+        }
+
         private void HandleMainPageResponse(int responseID)
         {
             switch (responseID)
@@ -84,9 +86,6 @@ namespace SWLOR.Game.Server.Conversation
                     SetPageHeader("ConfirmSetPage", header);
                     ChangePage("ConfirmSetPage");
                     break;
-                case 2: // Back
-                    SwitchConversation("CharacterManagement");
-                    break;
             }
         }
 
@@ -97,9 +96,6 @@ namespace SWLOR.Game.Server.Conversation
                 case 1: // Confirm Description Change
                     _playerDescription.ChangePlayerDescription(GetPC());
                     EndConversation();
-                    break;
-                case 2: // Back
-                    ChangePage("MainPage");
                     break;
             }
         }

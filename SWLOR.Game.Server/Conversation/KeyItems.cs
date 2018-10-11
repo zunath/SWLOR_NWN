@@ -35,8 +35,7 @@ namespace SWLOR.Game.Server.Conversation
                 "Maps",
                 "Quest Items",
                 "Documents",
-                "Keys",
-                "Back"
+                "Keys"
             );
 
             DialogPage keyItemListPage = new DialogPage(
@@ -69,15 +68,16 @@ namespace SWLOR.Game.Server.Conversation
                             GetPC().SetLocalInt("TEMP_MENU_KEY_ITEM_CATEGORY_ID", 5);
                             LoadKeyItemsOptions(5);
                             break;
-                        case 5: // "Back"
-                            SwitchConversation("RestMenu");
-                            break;
                     }
                     break;
                 case "KeyItemsListPage":
                     HandleKeyItemSelection(responseID);
                     break;
             }
+        }
+
+        public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
+        {
         }
 
         public override void EndDialog()
@@ -100,7 +100,6 @@ namespace SWLOR.Game.Server.Conversation
             {
                 AddResponseToPage("KeyItemsListPage", item.KeyItem.Name, true, item.KeyItemID);
             }
-            AddResponseToPage("KeyItemsListPage", "Back", true, -1);
             ChangePage("KeyItemsListPage");
         }
 

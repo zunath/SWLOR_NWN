@@ -40,8 +40,7 @@ namespace SWLOR.Game.Server.Conversation
             DialogPage mainPage = new DialogPage(
                 string.Empty,
                 "Select as my primary residence",                                 
-                "Revoke primary residence",
-                "Back");
+                "Revoke primary residence");
 
             DialogPage revokePage = new DialogPage("Are you sure you want to revoke the current resident's residency?",
                 "Yes, revoke their residency",
@@ -159,6 +158,10 @@ namespace SWLOR.Game.Server.Conversation
             }
         }
 
+        public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
+        {
+        }
+
         private void MainResponses(int responseID)
         {
             switch (responseID)
@@ -169,10 +172,6 @@ namespace SWLOR.Game.Server.Conversation
                 case 2: // Revoke Primary Residence
                     ChangePage("RevokePage");
                     break;
-                case 3: // Back
-                    SwitchConversation("BaseManagementTool");
-                    break;
-
             }
         }
 

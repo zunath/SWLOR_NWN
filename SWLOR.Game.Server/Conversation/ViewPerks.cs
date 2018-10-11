@@ -46,8 +46,7 @@ namespace SWLOR.Game.Server.Conversation
             DialogPage mainPage = new DialogPage(
                 "<SET LATER>",
                 "View My Perks",
-                "Buy Perks",
-                "Back"
+                "Buy Perks"
             );
 
             DialogPage categoryPage = new DialogPage(
@@ -60,13 +59,11 @@ namespace SWLOR.Game.Server.Conversation
 
             DialogPage perkDetailsPage = new DialogPage(
                 "<SET LATER>",
-                "Purchase Upgrade",
-                "Back"
+                "Purchase Upgrade"
             );
 
             DialogPage viewMyPerksPage = new DialogPage(
-                "<SET LATER>",
-                "Back"
+                "<SET LATER>"
             );
 
             dialog.AddPage("MainPage", mainPage);
@@ -116,7 +113,6 @@ namespace SWLOR.Game.Server.Conversation
             {
                 AddResponseToPage("CategoryPage", category.Name, true, category.PerkCategoryID);
             }
-            AddResponseToPage("CategoryPage", "Back", true, -1);
         }
 
         private void BuildPerkList()
@@ -129,7 +125,6 @@ namespace SWLOR.Game.Server.Conversation
             {
                 AddResponseToPage("PerkListPage", perk.Name, true, perk.PerkID);
             }
-            AddResponseToPage("PerkListPage", "Back", true, -1);
         }
 
         private void BuildPerkDetails()
@@ -238,6 +233,19 @@ namespace SWLOR.Game.Server.Conversation
             }
         }
 
+        public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
+        {
+            switch (beforeMovePage)
+            {
+                case "PerkDetailsPage":
+                    Model vm = GetDialogCustomData<Model>();
+                    vm.IsConfirmingPurchase = false;
+                    SetResponseText("PerkDetailsPage", 1, "Purchase Upgrade");
+                    BuildPerkList();
+                    break;
+            }
+        }
+
         private void HandleMainPageResponses(int responseID)
         {
             switch (responseID)
@@ -249,9 +257,6 @@ namespace SWLOR.Game.Server.Conversation
                 case 2: // Buy Perks
                     BuildCategoryList();
                     ChangePage("CategoryPage");
-                    break;
-                case 3: // Back
-                    SwitchConversation("RestMenu");
                     break;
             }
         }
@@ -265,12 +270,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             Model vm = GetDialogCustomData<Model>();
             DialogResponse response = GetResponseByID("CategoryPage", responseID);
-            if ((int)response.CustomData == -1)
-            {
-                ChangePage("MainPage");
-                return;
-            }
-
+            
             vm.SelectedCategoryID = (int) response.CustomData;
             BuildPerkList();
             ChangePage("PerkListPage");
@@ -280,12 +280,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             Model vm = GetDialogCustomData<Model>();
             DialogResponse response = GetResponseByID("PerkListPage", responseID);
-            if ((int)response.CustomData == -1)
-            {
-                ChangePage("CategoryPage");
-                return;
-            }
-
+            
             vm.SelectedPerkID = (int) response.CustomData;
             BuildPerkDetails();
             ChangePage("PerkDetailsPage");
@@ -312,12 +307,6 @@ namespace SWLOR.Game.Server.Conversation
                         vm.IsConfirmingPurchase = true;
                         SetResponseText("PerkDetailsPage", 1, "CONFIRM PURCHASE");
                     }
-                    break;
-                case 2: // Back
-                    vm.IsConfirmingPurchase = false;
-                    SetResponseText("PerkDetailsPage", 1, "Purchase Upgrade");
-                    BuildPerkList();
-                    ChangePage("PerkListPage");
                     break;
             }
         }

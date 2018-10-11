@@ -58,8 +58,7 @@ namespace SWLOR.Game.Server.Conversation
                 "60 degrees",
                 "75 degrees",
                 "90 degrees",
-                "180 degrees",
-                "Back");
+                "180 degrees");
 
             DialogPage stylePage = new DialogPage();
 
@@ -164,9 +163,22 @@ namespace SWLOR.Game.Server.Conversation
             }
         }
 
-        private void MainResponses(int responseID)
+        public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
         {
             var data = _base.GetPlayerTempData(GetPC());
+            switch (beforeMovePage)
+            {
+                case "RotatePage":
+                    if (data.StructurePreview != null && data.StructurePreview.IsValid)
+                    {
+                        data.StructurePreview.Destroy();
+                    }
+                    break;
+            }
+        }
+
+        private void MainResponses(int responseID)
+        {
             switch (responseID)
             {
                 case 1: // Place Structure
@@ -243,7 +255,6 @@ namespace SWLOR.Game.Server.Conversation
 
         private void RotateResponses(int responseID)
         {
-            var data = _base.GetPlayerTempData(GetPC());
             switch (responseID)
             {
                 case 1: // East
@@ -278,13 +289,6 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case 11: // Rotate 180
                     DoRotate(180.0f, false);
-                    break;
-                case 12: // Back
-                    if (data.StructurePreview != null && data.StructurePreview.IsValid)
-                    {
-                        data.StructurePreview.Destroy();
-                    }
-                    ChangePage("MainPage");
                     break;
             }
         }
@@ -394,8 +398,6 @@ namespace SWLOR.Game.Server.Conversation
                 var args = new Tuple<int, BuildingType>(style.BuildingStyleID, buildingType);
                 AddResponseToPage("StylePage", style.Name, true, args);
             }
-
-            AddResponseToPage("StylePage", "Back", true, new Tuple<int, BuildingType>(-1, BuildingType.Unknown));
         }
 
         private void StyleResponses(int responseID)
@@ -405,13 +407,8 @@ namespace SWLOR.Game.Server.Conversation
             Tuple<int, BuildingType> args = (Tuple<int, BuildingType>)response.CustomData;
             int styleID = args.Item1;
             BuildingType type = args.Item2;
-
-            if (styleID == -1)
-            {
-                ChangePage("MainPage");
-                return;
-            }
-            else if (styleID == -2)
+            
+            if (styleID == -2)
             {
                 DoInteriorPreview();
                 EndConversation();

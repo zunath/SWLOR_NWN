@@ -54,8 +54,7 @@ namespace SWLOR.Game.Server.Conversation
 
             DialogPage confirmPage = new DialogPage(
                 "",
-                "Confirm Refund",
-                "Back");
+                "Confirm Refund");
 
             dialog.AddPage("MainPage", mainPage);
             dialog.AddPage("ConfirmPage", confirmPage);
@@ -80,6 +79,17 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case "ConfirmPage":
                     ConfirmPageResponses(responseID);
+                    break;
+            }
+        }
+
+        public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
+        {
+            switch (beforeMovePage)
+            {
+                case "ConfirmPage":
+                    var model = GetDialogCustomData<Model>();
+                    model.IsConfirming = false;
                     break;
             }
         }
@@ -139,14 +149,7 @@ namespace SWLOR.Game.Server.Conversation
         private void ConfirmPageResponses(int responseID)
         {
             var model = GetDialogCustomData<Model>();
-
-            if (responseID == 2)
-            {
-                model.IsConfirming = false;
-                ChangePage("MainPage");
-                return;
-            }
-
+            
             if (model.IsConfirming)
             {
                 DoPerkRemoval();

@@ -39,8 +39,7 @@ namespace SWLOR.Game.Server.Conversation
 
             DialogPage mainPage = new DialogPage(
                 "Settings adjusted here will only affect this particular structure. If this is a building, the permissions will affect everything inside the building.",
-                "Change Permissions",
-                "Back");
+                "Change Permissions");
 
             DialogPage playerListPage = new DialogPage("Please select a player.");
 
@@ -72,6 +71,16 @@ namespace SWLOR.Game.Server.Conversation
             }
         }
 
+        public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
+        {
+            switch (beforeMovePage)
+            {
+                case "PlayerDetailsPage":
+                    BuildPlayerListPage();
+                    break;
+            }
+        }
+
         private void MainResponses(int responseID)
         {
             switch (responseID)
@@ -87,9 +96,6 @@ namespace SWLOR.Game.Server.Conversation
                     BuildPlayerListPage();
                     ChangePage("PlayerListPage");
                     break;
-                case 2: // Back
-                    SwitchConversation("BaseManagementTool");
-                    break;
             }
         }
 
@@ -103,8 +109,6 @@ namespace SWLOR.Game.Server.Conversation
                     AddResponseToPage("PlayerListPage", player.Name, true, player);
                 }
             }
-
-            AddResponseToPage("PlayerListPage", "Back", true, null);
         }
 
         private void PlayerListResponses(int responseID)
@@ -160,7 +164,6 @@ namespace SWLOR.Game.Server.Conversation
             AddResponseToPage("PlayerDetailsPage", "Toggle: Can Rename Structures", true, player);
             AddResponseToPage("PlayerDetailsPage", "Toggle: Can Edit Primary Residence", true, player);
             AddResponseToPage("PlayerDetailsPage", "Toggle: Can Remove Primary Residence", true, player);
-            AddResponseToPage("PlayerDetailsPage", "Back");
         }
 
         private void PlayerDetailsResponses(int responseID)
@@ -193,10 +196,6 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case 8: // Can Remove Primary Residence
                     TogglePermission(player, StructurePermission.CanRemovePrimaryResidence);
-                    break;
-                case 9: // Back
-                    BuildPlayerListPage();
-                    ChangePage("PlayerListPage");
                     break;
             }
         }

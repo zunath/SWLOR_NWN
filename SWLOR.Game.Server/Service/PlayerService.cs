@@ -255,6 +255,7 @@ namespace SWLOR.Game.Server.Service
                 TotalSPAcquired = 0,
                 DisplayHelmet = true,
                 PrimaryResidencePCBaseStructureID = null,
+                PrimaryResidencePCBaseID = null,
                 AssociationID = (int)assType,
                 DisplayHolonet = true,
                 DisplayDiscord = true

@@ -1,10 +1,13 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Data.Entities;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
+using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -64,9 +67,26 @@ namespace SWLOR.Game.Server.Conversation
         private void BuildMainPageHeader()
         {
             var data = _base.GetPlayerTempData(GetPC());
-            int structureID = data.StructureID;
-            var structure = _db.PlayerCharacters.SingleOrDefault(x => x.PrimaryResidencePCBaseStructureID == structureID);
-            string residentName = structure == null ? "[Unclaimed]" : structure.CharacterName;
+            
+            PlayerCharacter player;
+            
+            if (data.BuildingType == BuildingType.Interior)
+            {
+                int structureID = data.StructureID;
+                player = _db.PlayerCharacters.SingleOrDefault(x => x.PrimaryResidencePCBaseStructureID == structureID);
+            }
+            else if (data.BuildingType == BuildingType.Apartment)
+            {
+                int pcBaseID = data.PCBaseID;
+                player = _db.PlayerCharacters.SingleOrDefault(x => x.PrimaryResidencePCBaseID == pcBaseID);
+            }
+            else
+            {
+                SetPageHeader("MainPage", "Unable to select residency for this building type. Notify an admin there's a problem.");
+                return;
+            }
+
+            string residentName = player == null ? "[Unclaimed]" : player.CharacterName;
 
             string header = "Selecting a primary residence grants your character benefits such as increased XP gain and bonuses. These are modified based on the structures you place inside your primary residence.\n\n" +
                             "You may only have one primary residence at a time. A building or starship may only have one primary resident at a time.\n\n" +
@@ -80,14 +100,38 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var data = _base.GetPlayerTempData(player);
-            int structureID = data.StructureID;
-            var dbPlayer = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
-            var primaryResident = _db.PlayerCharacters.SingleOrDefault(x => x.PrimaryResidencePCBaseStructureID == structureID);
 
-            bool isPrimaryResident = dbPlayer.PrimaryResidencePCBaseStructureID != null && dbPlayer.PrimaryResidencePCBaseStructureID == structureID;
-            bool canEditPrimaryResidence = _perm.HasStructurePermission(player, structureID, StructurePermission.CanEditPrimaryResidence);
-            bool canRemovePrimaryResidence = _perm.HasStructurePermission(player, structureID, StructurePermission.CanRemovePrimaryResidence);
+            PlayerCharacter dbPlayer = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+            PlayerCharacter primaryResident;
 
+            bool isPrimaryResident;
+            bool canEditPrimaryResidence;
+            bool canRemovePrimaryResidence;
+
+            if (data.BuildingType == BuildingType.Interior)
+            {
+                int structureID = data.StructureID;
+                primaryResident = _db.PlayerCharacters.SingleOrDefault(x => x.PrimaryResidencePCBaseStructureID == structureID);
+
+                isPrimaryResident = dbPlayer.PrimaryResidencePCBaseStructureID != null && dbPlayer.PrimaryResidencePCBaseStructureID == structureID;
+                canEditPrimaryResidence = _perm.HasStructurePermission(player, structureID, StructurePermission.CanEditPrimaryResidence);
+                canRemovePrimaryResidence = _perm.HasStructurePermission(player, structureID, StructurePermission.CanRemovePrimaryResidence);
+
+            }
+            else if (data.BuildingType == BuildingType.Apartment)
+            {
+                int pcBaseID = data.PCBaseID;
+                primaryResident = _db.PlayerCharacters.SingleOrDefault(x => x.PrimaryResidencePCBaseID == pcBaseID);
+
+                isPrimaryResident = dbPlayer.PrimaryResidencePCBaseID != null && dbPlayer.PrimaryResidencePCBaseID == pcBaseID;
+                canEditPrimaryResidence = _perm.HasBasePermission(player, pcBaseID, BasePermission.CanEditPrimaryResidence);
+                canRemovePrimaryResidence = _perm.HasBasePermission(player, pcBaseID, BasePermission.CanRemovePrimaryResidence);
+            }
+            else
+            {
+                throw new Exception("Invalid building type on EditPrimaryResidence conversation. Type = " + data.BuildingType);
+            }
+            
             // If another person is a resident and this player does not have the "remove" permission, don't allow them to make primary residence.
             if (!isPrimaryResident && primaryResident != null && !canRemovePrimaryResidence)
             {
@@ -162,13 +206,35 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var data = _base.GetPlayerTempData(player);
-            int structureID = data.StructureID;
-            var currentResident = _db.PlayerCharacters.SingleOrDefault(x => x.PrimaryResidencePCBaseStructureID == structureID);
             var newResident = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+            
+            PlayerCharacter currentResident;
+            bool isPrimaryResident;
+            bool canEditPrimaryResidence;
+            bool canRemovePrimaryResidence;
 
-            bool isPrimaryResident = newResident.PrimaryResidencePCBaseStructureID != null && newResident.PrimaryResidencePCBaseStructureID == structureID;
-            bool canEditPrimaryResidence = _perm.HasStructurePermission(player, structureID, StructurePermission.CanEditPrimaryResidence);
-            bool canRemovePrimaryResidence = _perm.HasStructurePermission(player, structureID, StructurePermission.CanRemovePrimaryResidence);
+            if (data.BuildingType == BuildingType.Interior)
+            {
+                int structureID = data.StructureID;
+                currentResident = _db.PlayerCharacters.SingleOrDefault(x => x.PrimaryResidencePCBaseStructureID == structureID);
+
+                isPrimaryResident = newResident.PrimaryResidencePCBaseStructureID != null && newResident.PrimaryResidencePCBaseStructureID == structureID;
+                canEditPrimaryResidence = _perm.HasStructurePermission(player, structureID, StructurePermission.CanEditPrimaryResidence);
+                canRemovePrimaryResidence = _perm.HasStructurePermission(player, structureID, StructurePermission.CanRemovePrimaryResidence);
+            }
+            else if (data.BuildingType == BuildingType.Apartment)
+            {
+                int pcBaseID = data.PCBaseID;
+                currentResident = _db.PlayerCharacters.SingleOrDefault(x => x.PrimaryResidencePCBaseID == pcBaseID);
+
+                isPrimaryResident = newResident.PrimaryResidencePCBaseID != null && newResident.PrimaryResidencePCBaseID == pcBaseID;
+                canEditPrimaryResidence = _perm.HasBasePermission(player, pcBaseID, BasePermission.CanEditPrimaryResidence);
+                canRemovePrimaryResidence = _perm.HasBasePermission(player, pcBaseID, BasePermission.CanRemovePrimaryResidence);
+            }
+            else
+            {
+                throw new Exception("EditPrimaryResidence -> DoSetAsResidence: Can't handle building type ID " + data.BuildingType);
+            }
 
             // If another person is a resident and this player does not have the "remove" permission, don't allow them to make primary residence.
             if (!isPrimaryResident && currentResident != null && !canRemovePrimaryResidence)
@@ -185,11 +251,22 @@ namespace SWLOR.Game.Server.Conversation
 
             if (currentResident != null)
             {
+                currentResident.PrimaryResidencePCBaseID = null;
                 currentResident.PrimaryResidencePCBaseStructureID = null;
                 NotifyPlayer(currentResident.PlayerID);
             }
 
-            newResident.PrimaryResidencePCBaseStructureID = structureID;
+            if (data.BuildingType == BuildingType.Interior)
+            {
+                newResident.PrimaryResidencePCBaseStructureID = data.StructureID;
+                newResident.PrimaryResidencePCBaseID = null;
+            }
+            else if (data.BuildingType == BuildingType.Apartment)
+            {
+                newResident.PrimaryResidencePCBaseStructureID = null;
+                newResident.PrimaryResidencePCBaseID = data.PCBaseID;
+            }
+
             _db.SaveChanges();
             BuildMainPageHeader();
             BuildMainPageResponses();
@@ -199,12 +276,27 @@ namespace SWLOR.Game.Server.Conversation
         private void DoRevoke()
         {
             var data = _base.GetPlayerTempData(GetPC());
-            int structureID = data.StructureID;
-            var currentResident = _db.PlayerCharacters.SingleOrDefault(x => x.PrimaryResidencePCBaseStructureID == structureID);
+            PlayerCharacter currentResident;
+
+            if (data.BuildingType == BuildingType.Interior)
+            {
+                int structureID = data.StructureID;
+                currentResident = _db.PlayerCharacters.SingleOrDefault(x => x.PrimaryResidencePCBaseStructureID == structureID);
+            }
+            else if (data.BuildingType == BuildingType.Apartment)
+            {
+                int pcBaseID = data.PCBaseID;
+                currentResident = _db.PlayerCharacters.SingleOrDefault(x => x.PrimaryResidencePCBaseID == pcBaseID);
+            }
+            else
+            {
+                throw new Exception("EditPrimaryResidence -> DoRevoke: Can't handle building type " + data.BuildingType);
+            }
 
             if (currentResident != null)
             {
                 currentResident.PrimaryResidencePCBaseStructureID = null;
+                currentResident.PrimaryResidencePCBaseID = null;
                 _db.SaveChanges();
 
                 NotifyPlayer(currentResident.PlayerID);

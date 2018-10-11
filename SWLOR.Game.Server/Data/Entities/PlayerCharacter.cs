@@ -120,6 +120,8 @@ namespace SWLOR.Game.Server.Data.Entities
 
         public int AssociationID { get; set; }
 
+        public int? PrimaryResidencePCBaseID { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Area> NortheastAreas { get; set; }
 
@@ -206,5 +208,7 @@ namespace SWLOR.Game.Server.Data.Entities
         public virtual ICollection<PCBaseStructurePermission> PCBaseStructurePermissions { get; set; }
 
         public virtual PCBaseStructure PrimaryResidencePCBaseStructure { get; set; }
+
+        public virtual PCBase PrimaryResidencePCBase { get; set; }
     }
 }

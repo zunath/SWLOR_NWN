@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Data.Contracts
 {
     public interface IDataContext
     {
+        IDbSet<ApartmentBuilding> ApartmentBuildings { get; set; }
         IDbSet<Area> Areas { get; set; }
         IDbSet<AreaWalkmesh> AreaWalkmeshes { get; set; }
         IDbSet<Association> Associations { get; set; }
@@ -19,6 +20,7 @@ namespace SWLOR.Game.Server.Data.Contracts
         IDbSet<PCBasePermission> PCBasePermissions { get; set; }
         IDbSet<PCBaseStructurePermission> PCBaseStructurePermissions { get; set; }
         IDbSet<BuildingStyle> BuildingStyles { get; set; }
+        IDbSet<BuildingType> BuildingTypes { get; set; }
         IDbSet<Attribute> Attributes { get; set; }
         IDbSet<AuthorizedDM> AuthorizedDMs { get; set; }
         IDbSet<BaseItemType> BaseItemTypes { get; set; }

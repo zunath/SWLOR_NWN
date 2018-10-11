@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
+using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -112,7 +113,8 @@ namespace SWLOR.Game.Server.Conversation
 
                 instance = _area.CreateAreaInstance(structure.InteriorStyle.Resref, name);
                 instance.SetLocalInt("PC_BASE_STRUCTURE_ID", structureID);
-                
+                instance.SetLocalInt("BUILDING_TYPE", (int)BuildingType.Interior);
+
                 foreach (var child in structure.ChildStructures)
                 {
                     _base.SpawnStructure(instance, child.PCBaseStructureID);

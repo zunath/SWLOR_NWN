@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Conversation
         private void MainPageResponse(int responseID)
         {
             var response = GetResponseByID("MainPage", responseID);
-            int pcPerkID = response.CustomData[string.Empty];
+            int pcPerkID = (int)response.CustomData;
             var model = GetDialogCustomData<Model>();
             model.PCPerkID = pcPerkID;
             LoadConfirmPage();

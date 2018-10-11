@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Conversation
             }
         }
 
-        private void LoadBlueprintListPage(int categoryID)
+        private void LoadBlueprintListPage(long categoryID)
         {
             NWObject device = GetDialogTarget();
             int deviceID = device.GetLocalInt("CRAFT_DEVICE_ID");
@@ -90,13 +90,13 @@ namespace SWLOR.Game.Server.Conversation
                 AddResponseToPage("BlueprintListPage", bp.ItemName, bp.IsActive, bp.CraftBlueprintID);
             }
 
-            AddResponseToPage("BlueprintListPage", "Back", true, -1);
+            AddResponseToPage("BlueprintListPage", "Back", true, (long)-1);
         }
         
         private void HandleCategoryResponse(int responseID)
         {
             DialogResponse response = GetResponseByID("MainPage", responseID);
-            int categoryID = (int)response.CustomData[string.Empty];
+            long categoryID = (long)response.CustomData;
             LoadBlueprintListPage(categoryID);
             ChangePage("BlueprintListPage");
         }
@@ -104,13 +104,13 @@ namespace SWLOR.Game.Server.Conversation
         private void HandleBlueprintListResponse(int responseID)
         {
             DialogResponse response = GetResponseByID("BlueprintListPage", responseID);
-            if (response.CustomData[string.Empty] == -1)
+            if ((long)response.CustomData == -1)
             {
                 ChangePage("MainPage");
                 return;
             }
 
-            int blueprintID = (int)response.CustomData[string.Empty];
+            long blueprintID = (long)response.CustomData;
             var model = _craft.GetPlayerCraftingData(GetPC());
             model.BlueprintID = blueprintID;
             SwitchConversation("CraftItem");

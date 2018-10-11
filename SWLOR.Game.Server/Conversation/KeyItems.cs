@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Conversation
         private void HandleKeyItemSelection(int responseID)
         {
             DialogResponse response = GetResponseByID(GetCurrentPageName(), responseID);
-            int keyItemID = response.CustomData[string.Empty];
+            int keyItemID = (int)response.CustomData;
 
             if (keyItemID <= 0)
             {
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Conversation
         private string BuildKeyItemHeader(int responseID)
         {
             DialogResponse response = GetResponseByID(GetCurrentPageName(), responseID);
-            int keyItemID = (int)response.CustomData[string.Empty];
+            int keyItemID = (int)response.CustomData;
             KeyItem entity = _keyItem.GetKeyItemByID(keyItemID);
 
             string header = _color.Green("Key Item: ") + entity.Name + "\n\n";

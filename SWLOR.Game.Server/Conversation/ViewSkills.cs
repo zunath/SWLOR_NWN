@@ -69,9 +69,9 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("CategoryPage");
             foreach (SkillCategory category in categories)
             {
-                AddResponseToPage("CategoryPage", category.Name, true, new Tuple<string, dynamic>(string.Empty, category.SkillCategoryID));
+                AddResponseToPage("CategoryPage", category.Name, true, category.SkillCategoryID);
             }
-            AddResponseToPage("CategoryPage", "Back", true, new Tuple<string, dynamic>(string.Empty, -1));
+            AddResponseToPage("CategoryPage", "Back", true, -1);
         }
 
         private void LoadSkillResponses()
@@ -82,9 +82,9 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("SkillListPage");
             foreach (PCSkill skill in skills)
             {
-                AddResponseToPage("SkillListPage", skill.Skill.Name + " (Lvl. " + skill.Rank + ")", true, new Tuple<string, dynamic>(string.Empty, skill.Skill.SkillID));
+                AddResponseToPage("SkillListPage", skill.Skill.Name + " (Lvl. " + skill.Rank + ")", true, skill.Skill.SkillID);
             }
-            AddResponseToPage("SkillListPage", "Back", true, new Tuple<string, dynamic>(string.Empty, -1));
+            AddResponseToPage("SkillListPage", "Back", true, -1);
         }
 
         private void LoadSkillDetails()
@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             Model vm = GetDialogCustomData<Model>();
             DialogResponse response = GetResponseByID("CategoryPage", responseID);
-            int categoryID = (int)response.CustomData[string.Empty];
+            int categoryID = (int)response.CustomData;
             if (categoryID == -1) // Back
             {
                 SwitchConversation("RestMenu");
@@ -161,7 +161,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             Model vm = GetDialogCustomData<Model>();
             DialogResponse response = GetResponseByID("SkillListPage", responseID);
-            int skillID = (int)response.CustomData[string.Empty];
+            int skillID = (int)response.CustomData;
             if (skillID == -1) // Back
             {
                 ChangePage("CategoryPage");

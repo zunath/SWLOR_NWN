@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Conversation
         private void HandleRewardSelection(int responseID)
         {
             Model model = GetDialogCustomData<Model>();
-            ItemVO tempItem = (ItemVO)GetResponseByID("MainPage", responseID).CustomData[string.Empty];
+            ItemVO tempItem = (ItemVO)GetResponseByID("MainPage", responseID).CustomData;
             Quest quest = _quest.GetQuestByID(model.QuestID);
 
             _.RemoveJournalQuestEntry(quest.JournalTag, GetPC(), FALSE);

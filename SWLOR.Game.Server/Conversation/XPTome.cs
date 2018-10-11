@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Conversation
         private void HandleCategoryPageResponse(int responseID)
         {
             DialogResponse response = GetResponseByID("CategoryPage", responseID);
-            int categoryID = (int)response.CustomData[string.Empty];
+            int categoryID = (int)response.CustomData;
             
             List<PCSkill> pcSkills = _skill.GetPCSkillsForCategory(GetPC().GlobalID, categoryID);
 
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Conversation
         private void HandleSkillListResponse(int responseID)
         {
             DialogResponse response = GetResponseByID("SkillListPage", responseID);
-            int skillID = (int)response.CustomData[string.Empty];
+            int skillID = (int)response.CustomData;
             if (skillID == -1)
             {
                 ChangePage("CategoryPage");

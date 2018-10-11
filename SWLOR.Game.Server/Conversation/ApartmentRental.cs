@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 var data = _base.GetPlayerTempData(GetPC());
                 DialogResponse response = GetResponseByID("MainPage", responseID);
-                data.PCBaseID = (int)response.CustomData[string.Empty];
+                data.PCBaseID = (int)response.CustomData;
 
                 LoadDetailsPage();
                 ChangePage("DetailsPage");
@@ -178,7 +178,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             DialogResponse response = GetResponseByID("LeasePage", responseID);
             var data = _base.GetPlayerTempData(GetPC());
-            int styleID = response.CustomData[string.Empty];
+            int styleID = (int)response.CustomData;
             data.BuildingStyleID = styleID;
 
             if (styleID == -1)

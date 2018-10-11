@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var data = _base.GetPlayerTempData(GetPC());
             DialogResponse response = GetResponseByID("MainPage", responseID);
-            int pcBaseID = response.CustomData[string.Empty];
+            int pcBaseID = (int)response.CustomData;
 
             if (pcBaseID <= 0)
             {

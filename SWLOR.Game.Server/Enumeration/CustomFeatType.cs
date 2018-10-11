@@ -16,7 +16,7 @@
         HolyShot = 1127,
         Meditate = 1128,
         Provoke = 1129,
-        BaseManagementTool = 1130,
+        StructureManagementTool = 1130,
         OpenRestMenu = 1131,
         SneakAttack = 1132,
         Battlemage = 1133,

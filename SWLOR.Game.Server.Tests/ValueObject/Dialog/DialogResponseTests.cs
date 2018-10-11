@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Tests.ValueObject.Dialog
 
             Assert.AreEqual("MyResponse", response.Text);
             Assert.AreEqual(true, response.IsActive);
-            Assert.AreEqual(new CustomData(), response.CustomData);
+            Assert.AreEqual(null, response.CustomData);
         }
 
         [Test]
@@ -23,16 +23,12 @@ namespace SWLOR.Game.Server.Tests.ValueObject.Dialog
             DialogResponse response = new DialogResponse(
                 "MyResponse", 
                 false, 
-                new Tuple<string, dynamic>("val1", 852),
-                new Tuple<string, dynamic>("val2", false),
-                new Tuple<string, dynamic>("val3", "myval3"));
+                852);
 
             Assert.AreEqual("MyResponse", response.Text);
             Assert.AreEqual(false, response.IsActive);
 
-            Assert.AreEqual(852, response.CustomData["val1"]);
-            Assert.AreEqual(false, response.CustomData["val2"]);
-            Assert.AreEqual("myval3", response.CustomData["val3"]);
+            Assert.AreEqual(852, response.CustomData);
         }
 
         [Test]
@@ -45,7 +41,7 @@ namespace SWLOR.Game.Server.Tests.ValueObject.Dialog
 
             Assert.AreEqual("MyResponse", response.Text);
             Assert.AreEqual(false, response.IsActive);
-            Assert.AreEqual(new CustomData(), response.CustomData);
+            Assert.AreEqual(null, response.CustomData);
         }
     }
 }

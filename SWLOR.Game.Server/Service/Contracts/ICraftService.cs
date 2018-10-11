@@ -8,13 +8,13 @@ namespace SWLOR.Game.Server.Service.Contracts
 {
     public interface ICraftService
     {
-        string BuildBlueprintHeader(NWPlayer player, int blueprintID, bool showAddedComponentList);
+        string BuildBlueprintHeader(NWPlayer player, long blueprintID, bool showAddedComponentList);
         void CraftItem(NWPlayer oPC, NWPlaceable device);
-        CraftBlueprint GetBlueprintByID(int craftBlueprintID);
+        CraftBlueprint GetBlueprintByID(long craftBlueprintID);
         List<CraftBlueprintCategory> GetCategoriesAvailableToPC(string playerID);
         List<CraftBlueprintCategory> GetCategoriesAvailableToPCByDeviceID(string playerID, int deviceID);
-        List<CraftBlueprint> GetPCBlueprintsByCategoryID(string playerID, int categoryID);
-        List<CraftBlueprint> GetPCBlueprintsByDeviceAndCategoryID(string playerID, int deviceID, int categoryID);
+        List<CraftBlueprint> GetPCBlueprintsByCategoryID(string playerID, long categoryID);
+        List<CraftBlueprint> GetPCBlueprintsByDeviceAndCategoryID(string playerID, int deviceID, long categoryID);
         string GetIngotResref(string oreResref);
         int GetIngotLevel(string oreResref);
         int GetIngotPerkLevel(string oreResref);

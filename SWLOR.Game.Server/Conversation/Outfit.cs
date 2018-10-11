@@ -155,7 +155,7 @@ namespace SWLOR.Game.Server.Conversation
             else
             {
                 NWPlayer oPC = GetPC();
-                int outfitID = (int)response.CustomData[string.Empty];
+                int outfitID = (int)response.CustomData;
                 PCOutfit entity = GetPlayerOutfits(GetPC());
 
                 NWPlaceable oTempStorage = (_.GetObjectByTag("OUTFIT_BARREL"));
@@ -300,25 +300,25 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("LoadOutfitsPage");
 
             if (entity.Outfit1 != null)
-                AddResponseToPage("LoadOutfitsPage", "Load from Slot 1", true, new Tuple<string, dynamic>(string.Empty, 1));
+                AddResponseToPage("LoadOutfitsPage", "Load from Slot 1", true, 1);
             if (entity.Outfit2 != null)
-                AddResponseToPage("LoadOutfitsPage", "Load from Slot 2", true, new Tuple<string, dynamic>(string.Empty, 2));
+                AddResponseToPage("LoadOutfitsPage", "Load from Slot 2", true, 2);
             if (entity.Outfit3 != null)
-                AddResponseToPage("LoadOutfitsPage", "Load from Slot 3", true, new Tuple<string, dynamic>(string.Empty, 3));
+                AddResponseToPage("LoadOutfitsPage", "Load from Slot 3", true, 3);
             if (entity.Outfit4 != null)
-                AddResponseToPage("LoadOutfitsPage", "Load from Slot 4", true, new Tuple<string, dynamic>(string.Empty, 4));
+                AddResponseToPage("LoadOutfitsPage", "Load from Slot 4", true, 4);
             if (entity.Outfit5 != null)
-                AddResponseToPage("LoadOutfitsPage", "Load from Slot 5", true, new Tuple<string, dynamic>(string.Empty, 5));
+                AddResponseToPage("LoadOutfitsPage", "Load from Slot 5", true, 5);
             if (entity.Outfit6 != null)
-                AddResponseToPage("LoadOutfitsPage", "Load from Slot 6", true, new Tuple<string, dynamic>(string.Empty, 6));
+                AddResponseToPage("LoadOutfitsPage", "Load from Slot 6", true, 6);
             if (entity.Outfit7 != null)
-                AddResponseToPage("LoadOutfitsPage", "Load from Slot 7", true, new Tuple<string, dynamic>(string.Empty, 7));
+                AddResponseToPage("LoadOutfitsPage", "Load from Slot 7", true, 7);
             if (entity.Outfit8 != null)
-                AddResponseToPage("LoadOutfitsPage", "Load from Slot 8", true, new Tuple<string, dynamic>(string.Empty, 8));
+                AddResponseToPage("LoadOutfitsPage", "Load from Slot 8", true, 8);
             if (entity.Outfit9 != null)
-                AddResponseToPage("LoadOutfitsPage", "Load from Slot 9", true, new Tuple<string, dynamic>(string.Empty, 9));
+                AddResponseToPage("LoadOutfitsPage", "Load from Slot 9", true, 9);
             if (entity.Outfit10 != null)
-                AddResponseToPage("LoadOutfitsPage", "Load from Slot 10", true, new Tuple<string, dynamic>(string.Empty, 10));
+                AddResponseToPage("LoadOutfitsPage", "Load from Slot 10", true, 10);
 
             AddResponseToPage("LoadOutfitsPage", "Back");
         }

@@ -309,7 +309,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void ChangeSkinColorResponses(int responseID)
         {
-            int colorID = GetResponseByID("ChangeSkinColorPage", responseID).CustomData[string.Empty];
+            int colorID = (int)GetResponseByID("ChangeSkinColorPage", responseID).CustomData;
 
             if (colorID == -1)
             {
@@ -324,7 +324,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void ChangeHeadResponses(int responseID)
         {
-            int headID = GetResponseByID("ChangeHeadPage", responseID).CustomData[string.Empty];
+            int headID = (int)GetResponseByID("ChangeHeadPage", responseID).CustomData;
 
             if (headID == -1)
             {
@@ -477,7 +477,7 @@ namespace SWLOR.Game.Server.Conversation
         private void ChangeHairColorResponses(int responseID)
         {
 
-            int colorID = GetResponseByID("ChangeHairColorPage", responseID).CustomData[string.Empty];
+            int colorID = (int)GetResponseByID("ChangeHairColorPage", responseID).CustomData;
 
             if (colorID == -1)
             {
@@ -589,7 +589,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var model = GetDialogCustomData<Model>();
             var response = GetResponseByID("EditPartPage", responseID);
-            int modelID = response.CustomData[string.Empty];
+            int modelID = (int)response.CustomData;
 
             if (modelID == -1)
             {

@@ -403,7 +403,7 @@ namespace SWLOR.Game.Server.Conversation
         private void StructureListResponses(int responseID)
         {
             DialogResponse response = GetResponseByID("StructureListPage", responseID);
-            AreaStructure structure = response.CustomData[string.Empty];
+            AreaStructure structure = (AreaStructure)response.CustomData;
             var data = _base.GetPlayerTempData(GetPC());
             data.ManipulatingStructure = structure;
 

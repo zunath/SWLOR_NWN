@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            NWPlayer player = response.CustomData[string.Empty];
+            NWPlayer player = (NWPlayer)response.CustomData;
 
             BuildPlayerDetailsPage(player);
             ChangePage("PlayerDetailsPage");
@@ -168,7 +168,7 @@ namespace SWLOR.Game.Server.Conversation
         private void PlayerDetailsResponses(int responseID)
         {
             var response = GetResponseByID("PlayerDetailsPage", responseID);
-            NWPlayer player = response.CustomData[string.Empty];
+            NWPlayer player = (NWPlayer)response.CustomData;
 
             switch (responseID)
             {

@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 AddResponseToPage("CraftCategoriesPage", category.Name, true, category.CraftBlueprintCategoryID);
             }
-            AddResponseToPage("CraftCategoriesPage", "Back", true, -1);
+            AddResponseToPage("CraftCategoriesPage", "Back", true, (long)-1);
 
             SetDialogCustomData(vm);
         }
@@ -115,7 +115,7 @@ namespace SWLOR.Game.Server.Conversation
             Model vm = GetDialogCustomData<Model>();
             ClearPageResponses("BlueprintListPage");
             DialogResponse response = GetResponseByID("CraftCategoriesPage", responseID);
-            int categoryID = (int)response.CustomData[string.Empty];
+            long categoryID = (long) response.CustomData;
 
             if (categoryID == -1) // Back
             {
@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 AddResponseToPage("BlueprintListPage", bp.ItemName, true, bp.CraftBlueprintID);
             }
-            AddResponseToPage("BlueprintListPage", "Back", true, -1);
+            AddResponseToPage("BlueprintListPage", "Back", true, (long)-1);
 
             ChangePage("BlueprintListPage");
         }
@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Conversation
         private void HandleBlueprintListPageResponse(int responseID)
         {
             DialogResponse response = GetResponseByID("BlueprintListPage", responseID);
-            int blueprintID = (int)response.CustomData[string.Empty];
+            long blueprintID = (long)response.CustomData;
 
             if (blueprintID == -1)
             {

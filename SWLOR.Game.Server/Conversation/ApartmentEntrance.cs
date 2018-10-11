@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Conversation
         private void MainPageResponses(int responseID)
         {
             var response = GetResponseByID("MainPage", responseID);
-            int pcApartmentID = response.CustomData[string.Empty];
+            int pcApartmentID = (int)response.CustomData;
             EnterApartment(pcApartmentID);
         }
 

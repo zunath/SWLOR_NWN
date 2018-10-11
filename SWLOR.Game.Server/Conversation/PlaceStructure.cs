@@ -402,7 +402,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var data = _base.GetPlayerTempData(GetPC());
             var response = GetResponseByID("StylePage", responseID);
-            Tuple<int, BuildingType> args = response.CustomData[string.Empty];
+            Tuple<int, BuildingType> args = (Tuple<int, BuildingType>)response.CustomData;
             int styleID = args.Item1;
             BuildingType type = args.Item2;
 

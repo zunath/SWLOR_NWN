@@ -112,17 +112,11 @@ namespace SWLOR.Game.Server.Conversation
             page.Responses[responseID - 1].IsActive = isVisible;
         }
 
-        protected void AddResponseToPage(string pageName, string text, bool isVisible = true,
-            params Tuple<string, dynamic>[] customData)
+        protected void AddResponseToPage(string pageName, string text, bool isVisible = true, object customData = null)
         {
             PlayerDialog dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
             DialogPage page = dialog.GetPageByName(pageName);
             page.Responses.Add(new DialogResponse(text, isVisible, customData));
-        }
-
-        protected void AddResponseToPage(string pageName, string text, bool isVisible = true, dynamic customData = null)
-        {
-            AddResponseToPage(pageName, text, isVisible, new Tuple<string, dynamic>(string.Empty, customData));
         }
 
         protected void AddResponseToPage(string pageName, DialogResponse response)

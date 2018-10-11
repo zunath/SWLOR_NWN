@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Service
                 new SqlParameter("PlayerID", playerID));
         }
 
-        public List<CraftBlueprint> GetPCBlueprintsByDeviceAndCategoryID(string playerID, int deviceID, int categoryID)
+        public List<CraftBlueprint> GetPCBlueprintsByDeviceAndCategoryID(string playerID, int deviceID, long categoryID)
         {
             return _db.StoredProcedure<CraftBlueprint>("GetPCCraftBlueprintsByDeviceAndCategoryID",
                 new SqlParameter("DeviceID", deviceID),
@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Service
                 new SqlParameter("PlayerID", playerID));
         }
 
-        public string BuildBlueprintHeader(NWPlayer player, int blueprintID, bool showAddedComponentList)
+        public string BuildBlueprintHeader(NWPlayer player, long blueprintID, bool showAddedComponentList)
         {
             var model = GetPlayerCraftingData(player);
             var bp = model.Blueprint;
@@ -117,7 +117,7 @@ namespace SWLOR.Game.Server.Service
             return header;
         }
 
-        public CraftBlueprint GetBlueprintByID(int craftBlueprintID)
+        public CraftBlueprint GetBlueprintByID(long craftBlueprintID)
         {
             return _db.CraftBlueprints.SingleOrDefault(x => x.CraftBlueprintID == craftBlueprintID);
         }
@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.Service
                 new SqlParameter("PlayerID", playerID));
         }
 
-        public List<CraftBlueprint> GetPCBlueprintsByCategoryID(string playerID, int categoryID)
+        public List<CraftBlueprint> GetPCBlueprintsByCategoryID(string playerID, long categoryID)
         {
             return _db.StoredProcedure<CraftBlueprint>("GetPCBlueprintsByCategoryID",
                 new SqlParameter("PlayerID", playerID),

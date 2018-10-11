@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Conversation
             }
 
             var response = GetResponseByID("MainPage", responseID);
-            int pcImpoundedItemID = response.CustomData[string.Empty];
+            int pcImpoundedItemID = (int)response.CustomData;
             var item = _db.PCImpoundedItems.Single(x => x.PCImpoundedItemID == pcImpoundedItemID);
 
             if (item.DateRetrieved != null)

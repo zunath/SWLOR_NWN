@@ -114,9 +114,9 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("CategoryPage");
             foreach (PerkCategory category in categories)
             {
-                AddResponseToPage("CategoryPage", category.Name, true, new Tuple<string, dynamic>(string.Empty, category.PerkCategoryID));
+                AddResponseToPage("CategoryPage", category.Name, true, category.PerkCategoryID);
             }
-            AddResponseToPage("CategoryPage", "Back", true, new Tuple<string, dynamic>(string.Empty, -1));
+            AddResponseToPage("CategoryPage", "Back", true, -1);
         }
 
         private void BuildPerkList()
@@ -127,9 +127,9 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("PerkListPage");
             foreach (Data.Entities.Perk perk in perks)
             {
-                AddResponseToPage("PerkListPage", perk.Name, true, new Tuple<string, dynamic>(string.Empty, perk.PerkID));
+                AddResponseToPage("PerkListPage", perk.Name, true, perk.PerkID);
             }
-            AddResponseToPage("PerkListPage", "Back", true, new Tuple<string, dynamic>(string.Empty, -1));
+            AddResponseToPage("PerkListPage", "Back", true, -1);
         }
 
         private void BuildPerkDetails()
@@ -265,13 +265,13 @@ namespace SWLOR.Game.Server.Conversation
         {
             Model vm = GetDialogCustomData<Model>();
             DialogResponse response = GetResponseByID("CategoryPage", responseID);
-            if ((int)response.CustomData[string.Empty] == -1)
+            if ((int)response.CustomData == -1)
             {
                 ChangePage("MainPage");
                 return;
             }
 
-            vm.SelectedCategoryID = (int) response.CustomData[string.Empty];
+            vm.SelectedCategoryID = (int) response.CustomData;
             BuildPerkList();
             ChangePage("PerkListPage");
         }
@@ -280,13 +280,13 @@ namespace SWLOR.Game.Server.Conversation
         {
             Model vm = GetDialogCustomData<Model>();
             DialogResponse response = GetResponseByID("PerkListPage", responseID);
-            if ((int)response.CustomData[string.Empty] == -1)
+            if ((int)response.CustomData == -1)
             {
                 ChangePage("CategoryPage");
                 return;
             }
 
-            vm.SelectedPerkID = (int) response.CustomData[string.Empty];
+            vm.SelectedPerkID = (int) response.CustomData;
             BuildPerkDetails();
             ChangePage("PerkDetailsPage");
         }

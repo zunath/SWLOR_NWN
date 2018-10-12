@@ -10,7 +10,7 @@ using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Conversation
 {
-    public class CraftItem: ConversationBase
+    public class CraftItem : ConversationBase
     {
         private readonly ICraftService _craft;
         private readonly IColorTokenService _color;
@@ -18,12 +18,12 @@ namespace SWLOR.Game.Server.Conversation
         private readonly ISkillService _skill;
 
         public CraftItem(
-            INWScript script, 
+            INWScript script,
             IDialogService dialog,
             ICraftService craft,
             IColorTokenService color,
             IPerkService perk,
-            ISkillService skill) 
+            ISkillService skill)
             : base(script, dialog)
         {
             _craft = craft;
@@ -36,13 +36,15 @@ namespace SWLOR.Game.Server.Conversation
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
             DialogPage mainPage = new DialogPage();
-            
+
             dialog.AddPage("MainPage", mainPage);
             return dialog;
         }
 
         public override void Initialize()
         {
+            ToggleBackButton(false);
+
             var model = _craft.GetPlayerCraftingData(GetPC());
             var device = GetDevice();
 
@@ -52,8 +54,8 @@ namespace SWLOR.Game.Server.Conversation
                 model.IsInitialized = true;
                 model.Blueprint = _craft.GetBlueprintByID(model.BlueprintID);
                 model.PlayerSkillRank = _skill.GetPCSkill(GetPC(), model.Blueprint.SkillID).Rank;
-                
-                switch ((SkillType) model.Blueprint.SkillID)
+
+                switch ((SkillType)model.Blueprint.SkillID)
                 {
                     case SkillType.Armorsmith:
                         model.PlayerPerkLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.ArmorBlueprints);
@@ -89,7 +91,7 @@ namespace SWLOR.Game.Server.Conversation
                 model.MainMinimum = model.Blueprint.MainMinimum - model.EfficiencyLevel;
                 model.SecondaryMinimum = model.Blueprint.SecondaryMinimum - model.EfficiencyLevel;
                 model.TertiaryMinimum = model.Blueprint.TertiaryMinimum - model.EfficiencyLevel;
-                
+
                 model.MainMaximum = model.Blueprint.MainMaximum + model.OptimizationLevel;
                 model.SecondaryMaximum = model.Blueprint.SecondaryMaximum > 0 ? model.Blueprint.SecondaryMaximum + model.OptimizationLevel : 0;
                 model.TertiaryMaximum = model.Blueprint.TertiaryMaximum > 0 ? model.Blueprint.TertiaryMaximum + model.OptimizationLevel : 0;
@@ -126,17 +128,11 @@ namespace SWLOR.Game.Server.Conversation
                     HandleMainPageResponses(responseID);
                     break;
             }
-            
+
         }
 
         public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
         {
-            switch (beforeMovePage)
-            {
-                case "MainPage":
-                    _craft.ClearPlayerCraftingData(GetPC());
-                    break;
-            }
         }
 
         public override void EndDialog()
@@ -146,25 +142,27 @@ namespace SWLOR.Game.Server.Conversation
 
             _craft.ClearPlayerCraftingData(GetPC());
         }
-        
+
         private NWPlaceable GetDevice()
         {
             return (GetDialogTarget().Object);
         }
-        
+
 
         private void BuildMainPageOptions()
         {
             var model = _craft.GetPlayerCraftingData(GetPC());
             int maxEnhancements = model.PlayerPerkLevel / 2;
             bool canAddEnhancements = model.Blueprint.EnhancementSlots > 0 && maxEnhancements > 0;
-            
+
             AddResponseToPage("MainPage", "Examine Base Item");
             AddResponseToPage("MainPage", "Create Item", model.CanBuildItem);
             AddResponseToPage("MainPage", "Select Main Components");
             AddResponseToPage("MainPage", "Select Secondary Components", model.Blueprint.SecondaryMinimum > 0);
             AddResponseToPage("MainPage", "Select Tertiary Components", model.Blueprint.TertiaryMinimum > 0);
             AddResponseToPage("MainPage", "Select Enhancement Components", canAddEnhancements);
+
+            AddResponseToPage("MainPage", "Change Blueprint");
         }
 
         private void HandleMainPageResponses(int responseID)
@@ -172,7 +170,7 @@ namespace SWLOR.Game.Server.Conversation
             var model = _craft.GetPlayerCraftingData(GetPC());
             NWPlaceable device = GetDevice();
 
-            switch(responseID)
+            switch (responseID)
             {
                 case 1: // Examine Base Item
                     CraftBlueprint entity = _craft.GetBlueprintByID(model.BlueprintID);
@@ -182,7 +180,7 @@ namespace SWLOR.Game.Server.Conversation
                     examineItem.Destroy(0.1f);
                     break;
                 case 2: // Create item
-                    if(!model.CanBuildItem)
+                    if (!model.CanBuildItem)
                     {
                         GetPC().FloatingText("You are missing some required components.");
                         return;
@@ -207,6 +205,10 @@ namespace SWLOR.Game.Server.Conversation
                 case 6: // Select enhancement components
                     model.Access = CraftingAccessType.Enhancement;
                     OpenDeviceInventory();
+                    break;
+                case 7: // Back (return to blueprint selection)
+                    _craft.ClearPlayerCraftingData(GetPC());
+                    SwitchConversation("CraftingDevice");
                     break;
             }
         }

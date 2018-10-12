@@ -217,9 +217,6 @@ namespace SWLOR.Game.Server.Conversation
                 case "MainPage":
                     HandleMainPageResponses(responseID);
                     break;
-                case "ViewMyPerksPage":
-                    HandleViewMyPerksResponses(responseID);
-                    break;
                 case "CategoryPage":
                     HandleCategoryResponses(responseID);
                     break;
@@ -260,12 +257,7 @@ namespace SWLOR.Game.Server.Conversation
                     break;
             }
         }
-
-        private void HandleViewMyPerksResponses(int responseID)
-        {
-            ChangePage("MainPage");
-        }
-
+        
         private void HandleCategoryResponses(int responseID)
         {
             Model vm = GetDialogCustomData<Model>();

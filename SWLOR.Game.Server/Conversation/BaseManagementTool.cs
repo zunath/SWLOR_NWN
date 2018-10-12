@@ -339,7 +339,8 @@ namespace SWLOR.Game.Server.Conversation
                 data.IsConfirming = false;
                 RefreshPurchaseResponses();
                 LoadMainPage();
-                ChangePage("MainPage");
+                ClearNavigationStack();
+                ChangePage("MainPage", false);
             }
             else if (data.IsConfirming && data.ConfirmingPurchaseResponseID != responseID)
             {

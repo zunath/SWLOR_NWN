@@ -299,7 +299,8 @@ namespace SWLOR.Game.Server.Conversation
             _.TakeGoldFromCreature(style.PurchasePrice, player, TRUE);
             
             LoadMainPage();
-            ChangePage("MainPage");
+            ClearNavigationStack();
+            ChangePage("MainPage", false);
         }
 
 
@@ -416,7 +417,8 @@ namespace SWLOR.Game.Server.Conversation
                 GetPC().FloatingText("Your lease has been canceled. Any property left behind has been delivered to the planetary government. Speak with them to retrieve it.");
                 LoadMainPage();
                 SetResponseText("CancelLeasePage", 1, "Confirm Cancel Lease");
-                ChangePage("MainPage");
+                ClearNavigationStack();
+                ChangePage("MainPage", false);
             }
             else
             {

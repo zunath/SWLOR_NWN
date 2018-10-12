@@ -289,7 +289,8 @@ namespace SWLOR.Game.Server.Conversation
             {
                 case 1: // Select this association
                     ApplyAssociationAlignment();
-                    ChangePage("MainPage");
+                    ClearNavigationStack();
+                    ChangePage("MainPage", false);
                     break;
             }
         }

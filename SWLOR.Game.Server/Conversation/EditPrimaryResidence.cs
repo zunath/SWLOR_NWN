@@ -43,12 +43,10 @@ namespace SWLOR.Game.Server.Conversation
                 "Revoke primary residence");
 
             DialogPage revokePage = new DialogPage("Are you sure you want to revoke the current resident's residency?",
-                "Yes, revoke their residency",
-                "Cancel");
+                "Yes, revoke their residency");
 
             DialogPage setAsResidence = new DialogPage("Are you sure you want to claim this building as your primary residence?\n\nThe current resident's residency will be revoked.",
-                "Yes, set as my primary residence",
-                "Cancel");
+                "Yes, set as my primary residence");
 
 
             dialog.AddPage("MainPage", mainPage);
@@ -182,9 +180,6 @@ namespace SWLOR.Game.Server.Conversation
                 case 1:
                     DoSetAsResidence();
                     break;
-                case 2:
-                    ChangePage("MainPage");
-                    break;
             }
         }
 
@@ -194,9 +189,6 @@ namespace SWLOR.Game.Server.Conversation
             {
                 case 1:
                     DoRevoke();
-                    break;
-                case 2:
-                    ChangePage("MainPage");
                     break;
             }
         }
@@ -269,7 +261,8 @@ namespace SWLOR.Game.Server.Conversation
             _db.SaveChanges();
             BuildMainPageHeader();
             BuildMainPageResponses();
-            ChangePage("MainPage");
+            ClearNavigationStack();
+            ChangePage("MainPage", false);
         }
 
         private void DoRevoke()
@@ -303,7 +296,8 @@ namespace SWLOR.Game.Server.Conversation
 
             BuildMainPageHeader();
             BuildMainPageResponses();
-            ChangePage("MainPage");
+            ClearNavigationStack();
+            ChangePage("MainPage", false);
         }
 
         private void NotifyPlayer(string playerID)

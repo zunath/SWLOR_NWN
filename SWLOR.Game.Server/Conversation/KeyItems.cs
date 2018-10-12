@@ -111,7 +111,8 @@ namespace SWLOR.Game.Server.Conversation
             if (keyItemID <= 0)
             {
                 ClearTempVariables();
-                ChangePage("MainPage");
+                ClearNavigationStack();
+                ChangePage("MainPage", false);
             }
             else
             {

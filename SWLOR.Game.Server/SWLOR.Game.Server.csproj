@@ -88,6 +88,7 @@
     <Compile Include="ChatCommand\Customize.cs" />
     <Compile Include="ChatCommand\DeadBack.cs" />
     <Compile Include="ChatCommand\DeadFront.cs" />
+    <Compile Include="ChatCommand\Dice.cs" />
     <Compile Include="ChatCommand\Discord.cs" />
     <Compile Include="ChatCommand\Drink.cs" />
     <Compile Include="ChatCommand\Drunk.cs" />

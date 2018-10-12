@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Item
 
         public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            return 5.0f;
+            return 10.0f;
         }
 
         public bool ReducesItemCharge(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)

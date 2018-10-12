@@ -66,13 +66,6 @@ namespace SWLOR.Game.Server.Perk.DarkSide
             int length;
             int dotAmount;
             int min = 1;
-            BackgroundType background = (BackgroundType)player.Class1;
-
-            if (background == BackgroundType.Corrupter ||
-                background == BackgroundType.Sorcerer)
-            {
-                level++;
-            }
 
             int wisdom = player.WisdomModifier;
             int intelligence = player.IntelligenceModifier;

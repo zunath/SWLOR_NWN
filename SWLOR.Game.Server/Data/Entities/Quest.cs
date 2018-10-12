@@ -9,6 +9,7 @@ namespace SWLOR.Game.Server.Data.Entities
         public Quest()
         {
             PCQuestStatus = new HashSet<PCQuestStatus>();
+            PerkLevelQuestRequirements = new HashSet<PerkLevelQuestRequirement>();
             QuestKillTargetLists = new HashSet<QuestKillTargetList>();
             QuestPrerequisites = new HashSet<QuestPrerequisite>();
             RequiredQuestPrerequisites = new HashSet<QuestPrerequisite>();
@@ -82,6 +83,9 @@ namespace SWLOR.Game.Server.Data.Entities
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PCQuestStatus> PCQuestStatus { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PerkLevelQuestRequirement> PerkLevelQuestRequirements { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<QuestKillTargetList> QuestKillTargetLists { get; set; }

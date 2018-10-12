@@ -74,6 +74,7 @@ namespace SWLOR.Game.Server.Data.Contracts
         IDbSet<PerkCategory> PerkCategories { get; set; }
         IDbSet<PerkExecutionType> PerkExecutionTypes { get; set; }
         IDbSet<PerkLevel> PerkLevels { get; set; }
+        IDbSet<PerkLevelQuestRequirement> PerkLevelQuestRequirements { get; set; }
         IDbSet<PerkLevelSkillRequirement> PerkLevelSkillRequirements { get; set; }
         IDbSet<Entities.Perk> Perks { get; set; }
         IDbSet<Plant> Plants { get; set; }

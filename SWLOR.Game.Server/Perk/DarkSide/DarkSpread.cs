@@ -52,16 +52,7 @@ namespace SWLOR.Game.Server.Perk.DarkSide
             int duration;
             int uses;
             float range;
-
-
-            BackgroundType background = (BackgroundType)player.Class1;
-
-            if (background == BackgroundType.Corrupter ||
-                background == BackgroundType.Sorcerer)
-            {
-                perkLevel++;
-            }
-
+            
             switch (perkLevel)
             {
                 case 1:

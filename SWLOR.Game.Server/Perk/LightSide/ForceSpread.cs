@@ -54,15 +54,6 @@ namespace SWLOR.Game.Server.Perk.LightSide
             int uses;
             float range;
             
-
-            BackgroundType background = (BackgroundType)player.Class1;
-
-            if (background == BackgroundType.Sage ||
-                background == BackgroundType.Consular)
-            {
-                perkLevel++;
-            }
-
             switch (perkLevel)
             {
                 case 1:

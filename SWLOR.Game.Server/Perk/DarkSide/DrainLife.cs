@@ -60,15 +60,7 @@ namespace SWLOR.Game.Server.Perk.DarkSide
             int wisdom = player.WisdomModifier;
             int intelligence = player.IntelligenceModifier;
             min += darkBonus / 3 + intelligence / 2 + wisdom / 3;
-
-            BackgroundType background = (BackgroundType)player.Class1;
-
-            if (background == BackgroundType.Sorcerer ||
-                background == BackgroundType.Corrupter)
-            {
-                perkLevel++;
-            }
-
+            
             switch (perkLevel)
             {
                 case 1:

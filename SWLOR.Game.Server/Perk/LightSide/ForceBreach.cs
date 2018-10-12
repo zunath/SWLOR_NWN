@@ -66,14 +66,6 @@ namespace SWLOR.Game.Server.Perk.LightSide
             int length;
             int dotAmount;
             int min = 1;
-            BackgroundType background = (BackgroundType)player.Class1;
-
-            if (background == BackgroundType.Sage ||
-                background == BackgroundType.Consular)
-            {
-                level++;
-            }
-
             int wisdom = player.WisdomModifier;
             int intelligence = player.IntelligenceModifier;
             min += lightBonus / 3 + wisdom / 2 + intelligence / 3;

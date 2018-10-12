@@ -722,7 +722,6 @@ namespace SWLOR.Game.Server.Service
                 case CustomItemType.Saberstaff:
                     proficiencyPerk = PerkType.SaberstaffProficiency;
                     proficiencySkill = SkillType.TwoHanded;
-                    receivesBackgroundBonus = background == BackgroundType.Sentinel || background == BackgroundType.Assassin;
                     break;
                 case CustomItemType.Polearm:
                     proficiencyPerk = PerkType.PolearmProficiency;
@@ -755,7 +754,6 @@ namespace SWLOR.Game.Server.Service
                 case CustomItemType.Lightsaber:
                     proficiencyPerk = PerkType.LightsaberProficiency;
                     proficiencySkill = SkillType.OneHanded;
-                    receivesBackgroundBonus = background == BackgroundType.Guardian || background == BackgroundType.Warrior;
                     break;
             }
 

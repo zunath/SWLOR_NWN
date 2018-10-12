@@ -92,6 +92,7 @@ namespace SWLOR.Game.Server.Data
         public virtual IDbSet<PerkExecutionType> PerkExecutionTypes { get; set; }
         public virtual IDbSet<PerkLevel> PerkLevels { get; set; }
         public virtual IDbSet<PerkLevelSkillRequirement> PerkLevelSkillRequirements { get; set; }
+        public virtual IDbSet<PerkLevelQuestRequirement> PerkLevelQuestRequirements { get; set; }
         public virtual IDbSet<Entities.Perk> Perks { get; set; }
         public virtual IDbSet<PCPerkRefund> PCPerkRefunds { get; set; }
         public virtual IDbSet<Plant> Plants { get; set; }
@@ -377,6 +378,11 @@ namespace SWLOR.Game.Server.Data
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<PerkLevel>()
+                .HasMany(e => e.PerkLevelQuestRequirements)
+                .WithRequired(e => e.PerkLevel)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PerkLevel>()
                 .HasMany(e => e.PerkLevelSkillRequirements)
                 .WithRequired(e => e.PerkLevel)
                 .WillCascadeOnDelete(false);
@@ -561,6 +567,12 @@ namespace SWLOR.Game.Server.Data
             modelBuilder.Entity<Quest>()
                 .HasMany(e => e.PCQuestStatus)
                 .WithRequired(e => e.Quest)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Quest>()
+                .HasMany(e => e.PerkLevelQuestRequirements)
+                .WithRequired(e => e.Quest)
+                .HasForeignKey(e => e.RequiredQuestID)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<Quest>()

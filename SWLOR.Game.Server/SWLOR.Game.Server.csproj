@@ -86,8 +86,11 @@
     <Compile Include="ChatCommand\Contracts\IChatCommand.cs" />
     <Compile Include="ChatCommand\Coord.cs" />
     <Compile Include="ChatCommand\Customize.cs" />
+    <Compile Include="ChatCommand\DeadBack.cs" />
+    <Compile Include="ChatCommand\DeadFront.cs" />
     <Compile Include="ChatCommand\Discord.cs" />
     <Compile Include="ChatCommand\Drink.cs" />
+    <Compile Include="ChatCommand\Drunk.cs" />
     <Compile Include="ChatCommand\Duck.cs" />
     <Compile Include="ChatCommand\GetLocalFloat.cs" />
     <Compile Include="ChatCommand\GetLocalInt.cs" />
@@ -96,6 +99,10 @@
     <Compile Include="ChatCommand\Help.cs" />
     <Compile Include="ChatCommand\Interact.cs" />
     <Compile Include="ChatCommand\KeyItems.cs" />
+    <Compile Include="ChatCommand\Laughing.cs" />
+    <Compile Include="ChatCommand\Listen.cs" />
+    <Compile Include="ChatCommand\Look.cs" />
+    <Compile Include="ChatCommand\LoopingAnimationCommand.cs" />
     <Compile Include="ChatCommand\MoveDoor.cs" />
     <Compile Include="ChatCommand\Night.cs" />
     <Compile Include="ChatCommand\Perks.cs" />
@@ -119,6 +126,7 @@
     <Compile Include="ChatCommand\Sit.cs" />
     <Compile Include="ChatCommand\Day.cs" />
     <Compile Include="ChatCommand\Taunt.cs" />
+    <Compile Include="ChatCommand\Tired.cs" />
     <Compile Include="ChatCommand\ToggleDiscord.cs" />
     <Compile Include="ChatCommand\ToggleHolonet.cs" />
     <Compile Include="ChatCommand\Victory1.cs" />

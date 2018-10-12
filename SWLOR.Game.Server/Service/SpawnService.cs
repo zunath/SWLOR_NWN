@@ -103,6 +103,11 @@ namespace SWLOR.Game.Server.Service
                                 if(objectType == OBJECT_TYPE_CREATURE)
                                     AssignScriptEvents(spawn.Object);
 
+                                App.Resolve<IObjectVisibilityService>(ovs =>
+                                {
+                                    ovs.ApplyVisibilityForObject(spawn);
+                                });
+
                                 ObjectSpawn newSpawn; 
                                 if (useResref)
                                 {
@@ -244,6 +249,12 @@ namespace SWLOR.Game.Server.Service
                     Location location = GetRandomSpawnPoint(area.Resref, db);
                     NWPlaceable plc = (_.CreateObject(OBJECT_TYPE_PLACEABLE, dbSpawn.Resref, location));
                     ObjectSpawn spawn = new ObjectSpawn(plc, false, dbArea.ResourceSpawnTableID, 600.0f);
+
+                    App.Resolve<IObjectVisibilityService>(ovs =>
+                    {
+                        ovs.ApplyVisibilityForObject(plc);
+                    });
+                    
 
                     if (dbSpawn.NPCGroupID != null && dbSpawn.NPCGroupID > 0)
                     {

@@ -81,6 +81,38 @@ namespace SWLOR.Game.Server.Service
 
         }
 
+        public void ApplyVisibilityForObject(NWObject target)
+        {
+            string visibilityObjectID = target.GetLocalString("VISIBILITY_OBJECT_ID");
+            if (string.IsNullOrWhiteSpace(visibilityObjectID)) return;
+
+            if (!_appState.VisibilityObjects.ContainsKey(visibilityObjectID))
+            {
+                _appState.VisibilityObjects.Add(visibilityObjectID, target);
+            }
+
+            var players = NWModule.Get().Players.ToList();
+            var concatPlayerIDs = players.Select(x => x.GlobalID);
+            var pcVisibilities = _db.PCObjectVisibilities.Where(x => concatPlayerIDs.Contains(x.PlayerID)).ToList();
+
+            foreach (var player in players)
+            {
+                var visibility = pcVisibilities.SingleOrDefault(x => x.PlayerID == player.GlobalID);
+
+                if (visibility == null)
+                {
+                    if(target.GetLocalInt("VISIBILITY_HIDDEN_DEFAULT") == TRUE)
+                        _nwnxPlayer.SetVisibilityOverride(player, target, (int)PlayerVisibilityType.Hidden);
+                    continue;
+                }
+
+                if(visibility.IsVisible)
+                    _nwnxPlayer.SetVisibilityOverride(player, target, (int)PlayerVisibilityType.Visible);
+                else
+                    _nwnxPlayer.SetVisibilityOverride(player, target, (int)PlayerVisibilityType.Hidden);
+            }
+        }
+
         public void AdjustVisibility(NWPlayer player, NWObject target, bool isVisible)
         {
             if (!player.IsPlayer) return;

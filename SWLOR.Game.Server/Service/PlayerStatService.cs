@@ -286,20 +286,21 @@ namespace SWLOR.Game.Server.Service
                 baseAC += itemAC;
             }
             baseAC = baseAC + _customEffect.CalculateEffectAC(player);
-            //int totalAC = _.GetAC(player);
-
+            int totalAC = _.GetAC(player) - baseAC;
+            
             // Shield Oath and Sword Oath affect a percentage of the TOTAL armor class on a creature.
             var stance = _customEffect.GetCurrentStanceType(player);
             if (stance == CustomEffectType.ShieldOath)
             {
-                baseAC = baseAC + (int)(baseAC * 0.2f - baseAC);
+                int bonus = (int) (totalAC * 0.2f);
+                baseAC = baseAC + bonus;
             }
             else if (stance == CustomEffectType.SwordOath)
             {
-                baseAC = baseAC + (int)(baseAC * -0.3f - baseAC);
+                int penalty = (int)(totalAC * 0.3f);
+                baseAC = baseAC - penalty;
             }
-
-
+            
             return baseAC;
         }
 

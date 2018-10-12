@@ -52,14 +52,21 @@ namespace SWLOR.Game.Server.Placeable.Drill
 
                 return true;
             }
-            if (!(now >= structure.DateNextActivity)) return true;
 
-            // Time to spawn a new item and reset the timer.
             int minuteReduce = 2 * structure.StructureBonus;
             int increaseMinutes = 60 - minuteReduce;
             int retrievalRating = structure.BaseStructure.RetrievalRating;
 
             if (increaseMinutes <= 20) increaseMinutes = 20;
+            if (structure.DateNextActivity == null)
+            {
+                structure.DateNextActivity = now.AddMinutes(increaseMinutes);
+                _db.SaveChanges();
+            }
+
+            if (!(now >= structure.DateNextActivity)) return true;
+
+            // Time to spawn a new item and reset the timer.
 
             var dbArea = _db.Areas.Single(x => x.Resref == structure.PCBase.AreaResref);
             string sector = structure.PCBase.Sector;

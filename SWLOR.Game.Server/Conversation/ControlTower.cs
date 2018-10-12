@@ -91,16 +91,25 @@ namespace SWLOR.Game.Server.Conversation
             NWPlaceable tower = (NWPlaceable)GetDialogTarget();
             NWPlayer oPC = GetPC();
 
-            if (((NWPlaceable)tower.GetLocalObject("CONTROL_TOWER_FUEL_BAY")).IsValid)
+            NWPlaceable bay = tower.GetLocalObject("CONTROL_TOWER_FUEL_BAY");
+            if (bay.IsValid)
             {
-                oPC.FloatingText("Someone else is already accessing that structure's inventory. Please wait.");
-                return;
+                NWObject accessor = bay.GetLocalObject("BAY_ACCESSOR");
+                if (!accessor.IsValid)
+                {
+                    bay.Destroy();
+                }
+                else
+                {
+                    oPC.FloatingText("Someone else is already accessing that structure's inventory. Please wait.");
+                    return;
+                }
             }
 
             int structureID = tower.GetLocalInt("PC_BASE_STRUCTURE_ID");
             var structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
             Location location = oPC.Location;
-            NWPlaceable bay = (_.CreateObject(OBJECT_TYPE_PLACEABLE, "fuel_bay", location));
+            bay = _.CreateObject(OBJECT_TYPE_PLACEABLE, "fuel_bay", location);
             bay.AssignCommand(() => _.SetFacingPoint(oPC.Position));
 
             tower.SetLocalObject("CONTROL_TOWER_FUEL_BAY", bay.Object);
@@ -128,16 +137,26 @@ namespace SWLOR.Game.Server.Conversation
             NWPlaceable tower = (NWPlaceable)GetDialogTarget();
             NWPlayer oPC = GetPC();
 
-            if (((NWPlaceable)tower.GetLocalObject("CONTROL_TOWER_RESOURCE_BAY")).IsValid)
-            {
-                oPC.FloatingText("Someone else is already accessing that structure's inventory. Please wait.");
-                return;
-            }
 
+            NWPlaceable bay = tower.GetLocalObject("CONTROL_TOWER_RESOURCE_BAY");
+            if (bay.IsValid)
+            {
+                NWObject accessor = bay.GetLocalObject("BAY_ACCESSOR");
+                if (!accessor.IsValid)
+                {
+                    bay.Destroy();
+                }
+                else
+                {
+                    oPC.FloatingText("Someone else is already accessing that structure's inventory. Please wait.");
+                    return;
+                }
+            }
+            
             int structureID = tower.GetLocalInt("PC_BASE_STRUCTURE_ID");
             var structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
             Location location = oPC.Location;
-            NWPlaceable bay = (_.CreateObject(OBJECT_TYPE_PLACEABLE, "resource_bay", location));
+            bay = _.CreateObject(OBJECT_TYPE_PLACEABLE, "resource_bay", location);
 
             tower.SetLocalObject("CONTROL_TOWER_RESOURCE_BAY", bay.Object);
             bay.SetLocalObject("CONTROL_TOWER_PARENT", tower.Object);

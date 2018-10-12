@@ -20,13 +20,15 @@ namespace SWLOR.Game.Server.ChatCommand
             _ = script;
             _color = color;
         }
-        
+
         /// <summary>
         /// Spawns an item by resref in the user's inventory.
         /// </summary>
         /// <param name="user"></param>
+        /// <param name="target"></param>
+        /// <param name="targetLocation"></param>
         /// <param name="args"></param>
-        public void DoAction(NWPlayer user, params string[] args)
+        public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             if (args.Length <= 0)
             {
@@ -54,5 +56,7 @@ namespace SWLOR.Game.Server.ChatCommand
 
             item.IsIdentified = true;
         }
+
+        public bool RequiresTarget => false;
     }
 }

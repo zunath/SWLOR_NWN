@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.ChatCommand
             _color = color;
         }
 
-        public void DoAction(NWPlayer user, params string[] args)
+        public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             var player = _db.PlayerCharacters.Single(x => x.PlayerID == user.GlobalID);
             player.DisplayDiscord = !player.DisplayDiscord;
@@ -42,5 +42,7 @@ namespace SWLOR.Game.Server.ChatCommand
                 user.SendMessage("Discord chat: " + _color.Red("DISABLED"));
             }
         }
+
+        public bool RequiresTarget => false;
     }
 }

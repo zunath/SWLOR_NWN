@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.ChatCommand
             _color = color;
         }
 
-        public void DoAction(NWPlayer user, params string[] args)
+        public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             bool isEnabled = user.GetLocalInt("DISPLAY_DISCORD") == TRUE;
 
@@ -81,5 +81,7 @@ namespace SWLOR.Game.Server.ChatCommand
                 }
             });
         }
+
+        public bool RequiresTarget => false;
     }
 }

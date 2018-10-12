@@ -19,8 +19,10 @@ namespace SWLOR.Game.Server.ChatCommand
         /// Opens the character customization menu.
         /// </summary>
         /// <param name="user"></param>
+        /// <param name="target"></param>
+        /// <param name="targetLocation"></param>
         /// <param name="args"></param>
-        public void DoAction(NWPlayer user, params string[] args)
+        public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             string areaResref = user.Area.Resref;
 
@@ -32,5 +34,7 @@ namespace SWLOR.Game.Server.ChatCommand
 
             _dialog.StartConversation(user, user, "CharacterCustomization");
         }
+
+        public bool RequiresTarget => false;
     }
 }

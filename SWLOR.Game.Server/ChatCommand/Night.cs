@@ -15,15 +15,19 @@ namespace SWLOR.Game.Server.ChatCommand
         {
             _ = script;
         }
-        
+
         /// <summary>
         /// Sets the world time to 8 PM.
         /// </summary>
         /// <param name="user"></param>
+        /// <param name="target"></param>
+        /// <param name="targetLocation"></param>
         /// <param name="args"></param>
-        public void DoAction(NWPlayer user, params string[] args)
+        public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             _.SetTime(20, 0, 0, 0);
         }
+
+        public bool RequiresTarget => false;
     }
 }

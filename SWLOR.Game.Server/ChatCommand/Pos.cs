@@ -11,10 +11,14 @@ namespace SWLOR.Game.Server.ChatCommand
         /// Returns the current position of user.
         /// </summary>
         /// <param name="user"></param>
+        /// <param name="target"></param>
+        /// <param name="targetLocation"></param>
         /// <param name="args"></param>
-        public void DoAction(NWPlayer user, params string[] args)
+        public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             user.SendMessage($"Current Position: ({user.Position.m_X}, {user.Position.m_Y}, {user.Position.m_Z})");
         }
+
+        public bool RequiresTarget => false;
     }
 }

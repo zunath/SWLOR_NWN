@@ -20,8 +20,10 @@ namespace SWLOR.Game.Server.ChatCommand
         /// Revives and heals user completely.
         /// </summary>
         /// <param name="user"></param>
+        /// <param name="target"></param>
+        /// <param name="targetLocation"></param>
         /// <param name="args"></param>
-        public void DoAction(NWPlayer user, params string[] args)
+        public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             if (user.IsDead)
             {
@@ -31,5 +33,7 @@ namespace SWLOR.Game.Server.ChatCommand
             _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, _.EffectHeal(999), user.Object);
 
         }
+
+        public bool RequiresTarget => false;
     }
 }

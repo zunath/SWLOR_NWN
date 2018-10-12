@@ -89,6 +89,9 @@
     <Compile Include="ChatCommand\Discord.cs" />
     <Compile Include="ChatCommand\Drink.cs" />
     <Compile Include="ChatCommand\Duck.cs" />
+    <Compile Include="ChatCommand\GetLocalFloat.cs" />
+    <Compile Include="ChatCommand\GetLocalInt.cs" />
+    <Compile Include="ChatCommand\GetLocalString.cs" />
     <Compile Include="ChatCommand\Greet.cs" />
     <Compile Include="ChatCommand\Help.cs" />
     <Compile Include="ChatCommand\Interact.cs" />
@@ -104,6 +107,9 @@
     <Compile Include="ChatCommand\Salute.cs" />
     <Compile Include="ChatCommand\Save.cs" />
     <Compile Include="ChatCommand\ScratchHead.cs" />
+    <Compile Include="ChatCommand\SetLocalFloat.cs" />
+    <Compile Include="ChatCommand\SetLocalInt.cs" />
+    <Compile Include="ChatCommand\SetLocalString.cs" />
     <Compile Include="ChatCommand\SideStep.cs" />
     <Compile Include="ChatCommand\Skills.cs" />
     <Compile Include="ChatCommand\Spasm.cs" />

@@ -20,13 +20,15 @@ namespace SWLOR.Game.Server.ChatCommand
             _ = script;
             _db = db;
         }
-        
+
         /// <summary>
         /// Sends user back to his/her respawn point.
         /// </summary>
         /// <param name="user"></param>
+        /// <param name="target"></param>
+        /// <param name="targetLocation"></param>
         /// <param name="args"></param>
-        public void DoAction(NWPlayer user, params string[] args)
+        public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             PlayerCharacter pc = _db.PlayerCharacters.Single(x => x.PlayerID == user.GlobalID);
 
@@ -39,5 +41,7 @@ namespace SWLOR.Game.Server.ChatCommand
             user.AssignCommand(() => _.ActionJumpToLocation(location));
             _.SendMessageToPC(user.Object, "Alpha feature: Returning to bind point. Please report bugs on Discord/GitHub. And for the love of all that is Zunath, don't abuse this!");
         }
+
+        public bool RequiresTarget => false;
     }
 }

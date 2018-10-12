@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             player.SendMessage("Place the appropriate fuel inside the container. Click on the control tower when you're finished.");
 
             chest.IsUseable = false;
+            chest.SetLocalObject("BAY_ACCESSOR", player);
             return true;
         }
     }

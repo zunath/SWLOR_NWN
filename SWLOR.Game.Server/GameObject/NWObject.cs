@@ -246,6 +246,14 @@ namespace SWLOR.Game.Server.GameObject
             _.AssignCommand(Object, action);
         }
 
+        public virtual void SpeakString(string message, int talkVolume = TALKVOLUME_TALK)
+        {
+            _.AssignCommand(Object, () =>
+            {
+                _.SpeakString(message);
+            });
+        }
+
         public virtual void DelayEvent<T>(float seconds, params object[] args)
             where T: IRegisteredEvent
         {

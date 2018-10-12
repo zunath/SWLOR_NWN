@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.NWNX
             return GetEventDataObject("TARGET_OBJECT_ID");
         }
 
-        public Location OnFeatUsed_GetTargetLocation()
+        public NWLocation OnFeatUsed_GetTargetLocation()
         {
             return _.Location(
                     OnFeatUsed_GetArea().Object,

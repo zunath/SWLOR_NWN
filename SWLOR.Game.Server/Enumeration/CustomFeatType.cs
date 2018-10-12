@@ -26,6 +26,7 @@
         ForceHeal = 1137,
         DarkHeal = 1138,
         Rest = 1139,
-        RenameCraftedItem = 1160
+        RenameCraftedItem = 1160,
+        ChatCommandTargeter = 1161
     }
 }

@@ -16,12 +16,14 @@ namespace SWLOR.Game.Server.ChatCommand
             _ = script;
         }
 
-        public void DoAction(NWPlayer user, params string[] args)
+        public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             user.AssignCommand(() =>
             {
                 _.ActionPlayAnimation(ANIMATION_FIREFORGET_DODGE_SIDE);
             });
         }
+
+        public bool RequiresTarget => false;
     }
 }

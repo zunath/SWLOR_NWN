@@ -20,13 +20,15 @@ namespace SWLOR.Game.Server.ChatCommand
             _color = color;
             _auth = auth;
         }
-        
+
         /// <summary>
         /// Displays all the chat commands available to a user
         /// </summary>
         /// <param name="user"></param>
+        /// <param name="target"></param>
+        /// <param name="targetLocation"></param>
         /// <param name="args"></param>
-        public void DoAction(NWPlayer user, params string[] args)
+        public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             bool isDM = user.IsDM || _auth.IsPCRegisteredAsDM(user);
 
@@ -48,5 +50,7 @@ namespace SWLOR.Game.Server.ChatCommand
                 }
             }
         }
+
+        public bool RequiresTarget => false;
     }
 }

@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.NWNX.Contracts
         int OnFeatUsed_GetFeatID();
         int OnFeatUsed_GetSubFeatID();
         NWObject OnFeatUsed_GetTarget();
-        Location OnFeatUsed_GetTargetLocation();
+        NWLocation OnFeatUsed_GetTargetLocation();
         NWObject OnFeatUsed_GetArea();
         float OnFeatUsed_GetTargetPositionX();
         float OnFeatUsed_GetTargetPositionY();

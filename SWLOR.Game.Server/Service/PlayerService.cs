@@ -131,6 +131,7 @@ namespace SWLOR.Game.Server.Service
                 _nwnxCreature.AddFeatByLevel(player, (int) CustomFeatType.StructureManagementTool, 1);
                 _nwnxCreature.AddFeatByLevel(player, (int) CustomFeatType.OpenRestMenu, 1);
                 _nwnxCreature.AddFeatByLevel(player, (int) CustomFeatType.RenameCraftedItem, 1);
+                _nwnxCreature.AddFeatByLevel(player, (int) CustomFeatType.ChatCommandTargeter, 1);
 
                 for (int iCurSkill = 1; iCurSkill <= 27; iCurSkill++)
                 {
@@ -388,11 +389,13 @@ namespace SWLOR.Game.Server.Service
         {
             var openRestMenu = _qbs.UseFeat((int)CustomFeatType.OpenRestMenu);
             var structure = _qbs.UseFeat((int) CustomFeatType.StructureManagementTool);
-            var renameCraftedItem = _qbs.UseFeat((int) CustomFeatType.RenameCraftedItem);
-            
+            var renameCraftedItem = _qbs.UseFeat((int)CustomFeatType.RenameCraftedItem);
+            var chatCommandTargeter = _qbs.UseFeat((int)CustomFeatType.ChatCommandTargeter);
+
             _player.SetQuickBarSlot(player, 0, openRestMenu);
             _player.SetQuickBarSlot(player, 1, structure);
             _player.SetQuickBarSlot(player, 2, renameCraftedItem);
+            _player.SetQuickBarSlot(player, 3, chatCommandTargeter);
         }
 
         public void OnModuleUseFeat()

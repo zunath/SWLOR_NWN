@@ -24,13 +24,17 @@ namespace SWLOR.Game.Server.ChatCommand
         /// Exports user's character bic file.
         /// </summary>
         /// <param name="user"></param>
+        /// <param name="target"></param>
+        /// <param name="targetLocation"></param>
         /// <param name="args"></param>
-        public void DoAction(NWPlayer user, params string[] args)
+        public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             _player.SaveCharacter(user);
             _player.SaveLocation(user);
             _.ExportSingleCharacter(user.Object);
             _.SendMessageToPC(user.Object, "Character saved successfully.");
         }
+
+        public bool RequiresTarget => false;
     }
 }

@@ -12,8 +12,10 @@ namespace SWLOR.Game.Server.ChatCommand
         /// Returns the X and Y position, in tiles, of the user.
         /// </summary>
         /// <param name="user"></param>
+        /// <param name="target"></param>
+        /// <param name="targetLocation"></param>
         /// <param name="args"></param>
-        public void DoAction(NWPlayer user, params string[] args)
+        public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             Vector position = user.Position;
             int cellX = (int)(position.m_X / 10);
@@ -21,5 +23,7 @@ namespace SWLOR.Game.Server.ChatCommand
 
             user.SendMessage($"Current Area Coordinates: ({cellX}, {cellY})");
         }
+
+        public bool RequiresTarget => false;
     }
 }

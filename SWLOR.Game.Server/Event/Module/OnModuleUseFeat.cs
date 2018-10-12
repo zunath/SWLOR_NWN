@@ -11,19 +11,22 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IPlayerService _player;
         private readonly IBaseService _base;
         private readonly ICraftService _craft;
+        private readonly IChatCommandService _chat;
 
         public OnModuleUseFeat(
             INWScript script,
             IAbilityService ability,
             IPlayerService player,
             IBaseService @base,
-            ICraftService craft)
+            ICraftService craft,
+            IChatCommandService chat)
         {
             _ = script;
             _ability = ability;
             _player = player;
             _base = @base;
             _craft = craft;
+            _chat = chat;
         }
 
         public bool Run(params object[] args)
@@ -32,6 +35,7 @@ namespace SWLOR.Game.Server.Event.Module
             _player.OnModuleUseFeat();
             _base.OnModuleUseFeat();
             _craft.OnModuleUseFeat();
+            _chat.OnModuleUseFeat();
             return true;
 
         }

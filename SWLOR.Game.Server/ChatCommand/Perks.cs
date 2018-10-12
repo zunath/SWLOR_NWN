@@ -16,9 +16,11 @@ namespace SWLOR.Game.Server.ChatCommand
             _dialog = dialog;
         }
 
-        public void DoAction(NWPlayer user, params string[] args)
+        public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             _dialog.StartConversation(user, user, "ViewPerks");
         }
+
+        public bool RequiresTarget => false;
     }
 }

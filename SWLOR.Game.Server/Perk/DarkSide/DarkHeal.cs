@@ -74,15 +74,7 @@ namespace SWLOR.Game.Server.Perk.DarkSide
             int spreadLevel = spreadEffect?.EffectiveLevel ?? 0;
             int spreadUses = spreadEffect == null ? 0 : Convert.ToInt32(spreadData.Split(',')[0]);
             float spreadRange = spreadEffect == null ? 0 : Convert.ToSingle(spreadData.Split(',')[1]);
-
-            BackgroundType background = (BackgroundType) player.Class1;
-
-            if (background == BackgroundType.Sorcerer ||
-                background == BackgroundType.Corrupter)
-            {
-                level++;
-            }
-
+            
             if (spreadLevel <= 0)
                 HealTarget(player, target, darkBonus, level);
             else

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.Conversation.Contracts;
 using SWLOR.Game.Server.GameObject;
@@ -64,7 +65,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             PlayerDialog dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
 
-            if(updateNavigationStack)
+            if(updateNavigationStack && dialog.EnableBackButton)
                 dialog.NavigationStack.Push(new DialogNavigation(dialog.CurrentPageName, dialog.ActiveDialogName));
             dialog.CurrentPageName = pageName;
             dialog.PageOffset = 0;
@@ -139,11 +140,18 @@ namespace SWLOR.Game.Server.Conversation
         protected void SwitchConversation(string conversationName)
         {
             PlayerDialog dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
-            var navigationStack = dialog.NavigationStack;
-            navigationStack.Push(new DialogNavigation(dialog.CurrentPageName, dialog.ActiveDialogName));
+            Stack<DialogNavigation> navigationStack = null;
+
+            if (dialog.EnableBackButton)
+            {
+                navigationStack = dialog.NavigationStack;
+                navigationStack.Push(new DialogNavigation(dialog.CurrentPageName, dialog.ActiveDialogName));
+            }
             _dialog.LoadConversation(GetPC(), dialog.DialogTarget, conversationName, dialog.DialogNumber);
             dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
-            dialog.NavigationStack = navigationStack;
+            
+            if(dialog.EnableBackButton && navigationStack != null)
+                dialog.NavigationStack = navigationStack;
 
             dialog.ResetPage();
             ChangePage(dialog.CurrentPageName, false);
@@ -152,8 +160,20 @@ namespace SWLOR.Game.Server.Conversation
             {
                 convo.Initialize();
                 GetPC().SetLocalInt("DIALOG_SYSTEM_INITIALIZE_RAN", 1);
-            });
-            
+            });   
+        }
+
+        protected void ToggleBackButton(bool isOn)
+        {
+            PlayerDialog dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
+            dialog.EnableBackButton = isOn;
+            dialog.NavigationStack.Clear();
+        }
+
+        protected void ClearNavigationStack()
+        {
+            PlayerDialog dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
+            dialog.NavigationStack.Clear();
         }
 
         protected void EndConversation()

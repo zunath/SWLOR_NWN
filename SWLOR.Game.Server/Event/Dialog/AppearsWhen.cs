@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Event.Dialog
             }
             else if (currentSelectionNumber == _dialog.NumberOfResponsesPerPage + 3) // Back
             {
-                if (dialog.NavigationStack.Count > 0)
+                if (dialog.NavigationStack.Count > 0 && dialog.EnableBackButton)
                 {
                     displayNode = true;
                 }

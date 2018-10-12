@@ -26,8 +26,7 @@ namespace SWLOR.Game.Server.Conversation
 
             DialogPage coverUpConfirm = new DialogPage(
                 "Are you sure you want to cover up this hole? You'll need a shovel to dig it up again!",
-                "Yes, cover up the hole",
-                "Cancel"
+                "Yes, cover up the hole"
             );
 
             dialog.AddPage("MainPage", mainPage);
@@ -79,9 +78,6 @@ namespace SWLOR.Game.Server.Conversation
                 case 1: // Confirm
                     GetDialogTarget().Destroy();
                     EndConversation();
-                    break;
-                case 2: // Cancel
-                    ChangePage("MainPage");
                     break;
             }
         }

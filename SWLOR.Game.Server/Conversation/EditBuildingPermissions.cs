@@ -114,12 +114,6 @@ namespace SWLOR.Game.Server.Conversation
         private void PlayerListResponses(int responseID)
         {
             var response = GetResponseByID("PlayerListPage", responseID);
-            if (!response.HasCustomData)
-            {
-                ChangePage("MainPage");
-                return;
-            }
-
             NWPlayer player = (NWPlayer)response.CustomData;
 
             BuildPlayerDetailsPage(player);

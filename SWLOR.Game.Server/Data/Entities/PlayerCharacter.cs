@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Data.Entities
             PCCustomEffects = new HashSet<PCCustomEffect>();
             PCKeyItems = new HashSet<PCKeyItem>();
             PCMapPins = new HashSet<PCMapPin>();
+            PCMapProgressions = new HashSet<PCMapProgression>();
             PCObjectVisibilities = new HashSet<PCObjectVisibility>();
             PCOverflowItems = new HashSet<PCOverflowItem>();
             PCPerkRefunds = new HashSet<PCPerkRefund>();
@@ -162,6 +163,9 @@ namespace SWLOR.Game.Server.Data.Entities
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PCMapPin> PCMapPins { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PCMapProgression> PCMapProgressions { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PCObjectVisibility> PCObjectVisibilities { get; set; }

@@ -12,19 +12,22 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IActivityLoggingService _activityLogging;
         private readonly ISkillService _skill;
         private readonly IMapPinService _mapPin;
+        private readonly IMapService _map;
 
         public OnModuleLeave(
             INWScript script,
             IPlayerService player,
             IActivityLoggingService activityLogging,
             ISkillService skill,
-            IMapPinService mapPin)
+            IMapPinService mapPin,
+            IMapService map)
         {
             _ = script;
             _player = player;
             _activityLogging = activityLogging;
             _skill = skill;
             _mapPin = mapPin;
+            _map = map;
         }
 
         public bool Run(params object[] args)
@@ -40,6 +43,7 @@ namespace SWLOR.Game.Server.Event.Module
             _activityLogging.OnModuleClientLeave();
             _skill.OnModuleClientLeave();
             _mapPin.OnModuleClientLeave();
+            _map.OnModuleLeave();
             return true;
 
         }

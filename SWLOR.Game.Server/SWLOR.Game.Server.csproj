@@ -273,6 +273,7 @@
     <Compile Include="Data\Entities\Bank.cs" />
     <Compile Include="Data\Entities\BankItem.cs" />
     <Compile Include="Data\Entities\Association.cs" />
+    <Compile Include="Data\Entities\PCMapProgression.cs" />
     <Compile Include="DoorRule\Contracts\IDoorRule.cs" />
     <Compile Include="DoorRule\LargeSquareBuildingRule.cs" />
     <Compile Include="DoorRule\MediumRoundBuildingRule.cs" />

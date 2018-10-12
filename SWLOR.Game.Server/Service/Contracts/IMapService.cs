@@ -3,5 +3,7 @@
     public interface IMapService
     {
         void OnAreaEnter();
+        void OnAreaExit();
+        void OnModuleLeave();
     }
 }

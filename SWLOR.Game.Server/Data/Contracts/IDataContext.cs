@@ -56,6 +56,7 @@ namespace SWLOR.Game.Server.Data.Contracts
         IDbSet<PCImpoundedItem> PCImpoundedItems { get; set; }
         IDbSet<PCKeyItem> PCKeyItems { get; set; }
         IDbSet<PCMapPin> PCMapPins { get; set; }
+        IDbSet<PCMapProgression> PCMapProgressions { get; set; }
         IDbSet<PCMigrationItem> PCMigrationItems { get; set; }
         IDbSet<PCMigration> PCMigrations { get; set; }
         IDbSet<PCOutfit> PCOutfits { get; set; }

@@ -74,6 +74,7 @@ namespace SWLOR.Game.Server.Data
         public virtual IDbSet<PCImpoundedItem> PCImpoundedItems { get; set; }
         public virtual IDbSet<PCKeyItem> PCKeyItems { get; set; }
         public virtual IDbSet<PCMapPin> PCMapPins { get; set; }
+        public virtual IDbSet<PCMapProgression> PCMapProgressions { get; set; }
         public virtual IDbSet<PCMigrationItem> PCMigrationItems { get; set; }
         public virtual IDbSet<PCMigration> PCMigrations { get; set; }
         public virtual IDbSet<PCObjectVisibility> PCObjectVisibilities { get; set; }
@@ -490,6 +491,11 @@ namespace SWLOR.Game.Server.Data
 
             modelBuilder.Entity<PlayerCharacter>()
                 .HasMany(e => e.PCMapPins)
+                .WithRequired(e => e.PlayerCharacter)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PlayerCharacter>()
+                .HasMany(e => e.PCMapProgressions)
                 .WithRequired(e => e.PlayerCharacter)
                 .WillCascadeOnDelete(false);
 

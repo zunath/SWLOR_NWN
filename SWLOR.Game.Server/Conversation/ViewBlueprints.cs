@@ -87,9 +87,6 @@ namespace SWLOR.Game.Server.Conversation
                 case "BlueprintListPage":
                     HandleBlueprintListPageResponse(responseID);
                     break;
-                case "BlueprintDetailsPage":
-                    HandleBlueprintDetailsPageResponse(responseID);
-                    break;
 
             }
         }
@@ -140,20 +137,19 @@ namespace SWLOR.Game.Server.Conversation
             model.Blueprint = _craft.GetBlueprintByID(blueprintID);
             model.BlueprintID = blueprintID;
             model.PlayerSkillRank = _skill.GetPCSkill(GetPC(), model.Blueprint.SkillID).Rank;
-            
+            model.MainMinimum = model.Blueprint.MainMinimum;
+            model.MainMaximum = model.Blueprint.MainMaximum;
+            model.SecondaryMinimum = model.Blueprint.SecondaryMinimum;
+            model.SecondaryMaximum = model.Blueprint.SecondaryMaximum;
+            model.TertiaryMinimum = model.Blueprint.TertiaryMinimum;
+            model.TertiaryMaximum = model.Blueprint.TertiaryMaximum;
+
             string header = _craft.BuildBlueprintHeader(GetPC(), blueprintID, false);
 
             SetPageHeader("BlueprintDetailsPage", header);
             ChangePage("BlueprintDetailsPage");
         }
-
-        private void HandleBlueprintDetailsPageResponse(int responseID)
-        {
-            if (responseID == 1)
-            {
-                ChangePage("BlueprintListPage");
-            }
-        }
+        
         public override void EndDialog()
         {
             _craft.ClearPlayerCraftingData(GetPC());

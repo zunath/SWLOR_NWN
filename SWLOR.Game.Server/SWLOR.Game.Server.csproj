@@ -130,6 +130,7 @@
     <Compile Include="ChatCommand\Tired.cs" />
     <Compile Include="ChatCommand\ToggleDiscord.cs" />
     <Compile Include="ChatCommand\ToggleHolonet.cs" />
+    <Compile Include="ChatCommand\TpWp.cs" />
     <Compile Include="ChatCommand\Victory1.cs" />
     <Compile Include="ChatCommand\Victory2.cs" />
     <Compile Include="ChatCommand\Victory3.cs" />

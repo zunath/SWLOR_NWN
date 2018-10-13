@@ -90,7 +90,11 @@ namespace SWLOR.Game.Server.Service
             {
                 _appState.VisibilityObjects.Add(visibilityObjectID, target);
             }
-
+            else
+            {
+                _appState.VisibilityObjects[visibilityObjectID] = target;
+            }
+            
             var players = NWModule.Get().Players.ToList();
             var concatPlayerIDs = players.Select(x => x.GlobalID);
             var pcVisibilities = _db.PCObjectVisibilities.Where(x => concatPlayerIDs.Contains(x.PlayerID)).ToList();

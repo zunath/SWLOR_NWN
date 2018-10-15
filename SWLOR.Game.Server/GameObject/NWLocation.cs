@@ -20,6 +20,8 @@ namespace SWLOR.Game.Server.GameObject
 
         public NWArea Area => _.GetAreaFromLocation(Location);
 
+        public Vector Position => _.GetPositionFromLocation(Location);
+
         public static implicit operator Location(NWLocation l)
         {
             return l.Location;

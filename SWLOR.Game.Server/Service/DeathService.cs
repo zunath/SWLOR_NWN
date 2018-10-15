@@ -95,7 +95,18 @@ namespace SWLOR.Game.Server.Service
 
         private void TeleportPlayerToBindPoint(NWObject pc, PlayerCharacter entity)
         {
-            if (string.IsNullOrWhiteSpace(entity.RespawnAreaResref))
+            // Instances
+            if (pc.Area.IsInstance)
+            {
+                var area = pc.Area;
+                NWLocation entrance = area.GetLocalLocation("INSTANCE_ENTRANCE");
+                pc.AssignCommand(() =>
+                {
+                    _.ActionJumpToLocation(entrance);
+                });
+            }
+            // Send player to default respawn point if no bind point is set.
+            else if (string.IsNullOrWhiteSpace(entity.RespawnAreaResref))
             {
                 NWObject defaultRespawn = (_.GetWaypointByTag("DEFAULT_RESPAWN_POINT"));
                 Location location = defaultRespawn.Location;
@@ -105,6 +116,7 @@ namespace SWLOR.Game.Server.Service
                     _.ActionJumpToLocation(location);
                 });
             }
+            // Send player to their stored bind point.
             else
             {
                 NWArea area = NWModule.Get().Areas.Single(x => x.Resref == entity.RespawnAreaResref);

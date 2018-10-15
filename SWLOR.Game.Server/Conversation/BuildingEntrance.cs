@@ -115,7 +115,7 @@ namespace SWLOR.Game.Server.Conversation
                     name = owner.CharacterName + "'s Building";
                 }
 
-                instance = _area.CreateAreaInstance(structure.InteriorStyle.Resref, name);
+                instance = _area.CreateAreaInstance(oPC, structure.InteriorStyle.Resref, name, "PLAYER_HOME_ENTRANCE");
                 instance.SetLocalInt("PC_BASE_STRUCTURE_ID", structureID);
                 instance.SetLocalInt("BUILDING_TYPE", (int)BuildingType.Interior);
 

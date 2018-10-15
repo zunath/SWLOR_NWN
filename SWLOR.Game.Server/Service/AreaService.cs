@@ -10,6 +10,8 @@ using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Data.SqlClient;
 using System.Linq;
+using SWLOR.Game.Server.AreaInstance.Contracts;
+using SWLOR.Game.Server.Event;
 using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Service
@@ -190,15 +192,43 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        public NWArea CreateAreaInstance(string areaResref, string areaName)
+        public NWArea CreateAreaInstance(NWPlayer owner, string areaResref, string areaName, string entranceWaypointTag)
         {
             string tag = Guid.NewGuid().ToString("N");
-            NWArea area = (_.CreateArea(areaResref, tag, areaName));
+            NWArea instance = _.CreateArea(areaResref, tag, areaName);
 
-            area.SetLocalInt("IS_AREA_INSTANCE", TRUE);
-            area.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();
+            instance.SetLocalString("INSTANCE_OWNER", owner.GlobalID);
+            instance.SetLocalString("ORIGINAL_RESREF", areaResref);
+            instance.SetLocalInt("IS_AREA_INSTANCE", TRUE);
+            instance.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();
 
-            return area;
+            NWObject searchByObject = _.GetFirstObjectInArea(instance);
+            NWObject entranceWP;
+
+            if (searchByObject.Tag == entranceWaypointTag)
+                entranceWP = searchByObject;
+            else
+                entranceWP = _.GetNearestObjectByTag(entranceWaypointTag, searchByObject);
+            
+            if (!entranceWP.IsValid)
+            {
+                owner.SendMessage("ERROR: Couldn't locate entrance waypoint with tag '" + entranceWaypointTag + "'. Notify an admin.");
+                return new NWN.Object();
+            }
+
+            instance.SetLocalLocation("INSTANCE_ENTRANCE", entranceWP.Location);
+            entranceWP.Destroy(); // Destroy it so we don't get dupes.
+
+            string spawnScript = instance.GetLocalString("INSTANCE_ON_SPAWN");
+            if (!string.IsNullOrWhiteSpace(spawnScript))
+            {
+                App.ResolveByInterface<IAreaInstance>("AreaInstance." + spawnScript, s =>
+                {
+                    s.Run(instance);
+                });
+            }
+
+            return instance;
         }
     }
 }

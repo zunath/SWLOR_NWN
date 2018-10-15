@@ -75,6 +75,9 @@
     <Compile Include="AI\AIComponent\EquipBestMelee.cs" />
     <Compile Include="AI\AIComponent\EquipBestRanged.cs" />
     <Compile Include="AI\AIComponent\RandomWalk.cs" />
+    <Compile Include="AreaInstance\CoxxionBase\OnSpawn.cs" />
+    <Compile Include="AreaInstance\Contracts\IAreaInstance.cs" />
+    <Compile Include="AreaInstance\ExitAreaInstance.cs" />
     <Compile Include="Bioware\BiowarePosition.cs" />
     <Compile Include="Bioware\BiowareXP2.cs" />
     <Compile Include="Bioware\Contracts\IBiowarePosition.cs" />
@@ -140,6 +143,7 @@
     <Compile Include="Conversation\BaseManagementTool.cs" />
     <Compile Include="Conversation\CharacterCustomization.cs" />
     <Compile Include="Conversation\ControlTower.cs" />
+    <Compile Include="Conversation\CoxxionTerminal.cs" />
     <Compile Include="Conversation\EditBuildingPermissions.cs" />
     <Compile Include="Conversation\EditBasePermissions.cs" />
     <Compile Include="Conversation\BindSoul.cs" />
@@ -156,6 +160,7 @@
     <Compile Include="Conversation\FarmHole.cs" />
     <Compile Include="Conversation\DestroySurvivalKnife.cs" />
     <Compile Include="Conversation\DestroyPlayerGuide.cs" />
+    <Compile Include="Conversation\InstanceSelection.cs" />
     <Compile Include="Conversation\ItemImpoundRetrieval.cs" />
     <Compile Include="Conversation\KeyItems.cs" />
     <Compile Include="Conversation\LockedDoor.cs" />
@@ -913,6 +918,7 @@
     <Compile Include="Placeable\DisabledStructure\OnUsed.cs" />
     <Compile Include="Placeable\Drill\OnHeartbeat.cs" />
     <Compile Include="Placeable\ObtainKeyItem.cs" />
+    <Compile Include="Placeable\PermanentVisualEffect.cs" />
     <Compile Include="Placeable\QuestSystem\ItemCollector\OnClosed.cs" />
     <Compile Include="Placeable\ResourceBay\OnClosed.cs" />
     <Compile Include="Placeable\ResourceBay\OnDisturbed.cs" />

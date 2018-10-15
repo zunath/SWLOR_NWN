@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Conversation
                     name = apartment.CustomName;
                 }
 
-                instance = _area.CreateAreaInstance(apartment.BuildingStyle.Resref, name);
+                instance = _area.CreateAreaInstance(oPC, apartment.BuildingStyle.Resref, name, "PLAYER_HOME_ENTRANCE");
                 instance.SetLocalInt("PC_BASE_ID", pcBaseID);
                 instance.SetLocalInt("BUILDING_TYPE", (int)BuildingType.Apartment);
 

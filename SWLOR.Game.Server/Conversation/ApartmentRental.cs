@@ -252,7 +252,7 @@ namespace SWLOR.Game.Server.Conversation
             NWPlayer player = GetPC();
             var data = _base.GetPlayerTempData(GetPC());
             var style = _db.BuildingStyles.Single(x => x.BuildingStyleID == data.BuildingStyleID);
-            var area = _area.CreateAreaInstance(style.Resref, "APARTMENT PREVIEW: " + style.Name);
+            var area = _area.CreateAreaInstance(player, style.Resref, "APARTMENT PREVIEW: " + style.Name, "PLAYER_HOME_ENTRANCE");
             area.SetLocalInt("IS_BUILDING_PREVIEW", TRUE);
             _base.JumpPCToBuildingInterior(player, area);
         }

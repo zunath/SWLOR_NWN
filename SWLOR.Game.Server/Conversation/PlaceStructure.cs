@@ -432,7 +432,7 @@ namespace SWLOR.Game.Server.Conversation
             var data = _base.GetPlayerTempData(GetPC());
             int styleID = data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID");
             var style = _db.BuildingStyles.Single(x => x.BuildingStyleID == styleID);
-            var area = _area.CreateAreaInstance(style.Resref, "BUILDING PREVIEW: " + style.Name);
+            var area = _area.CreateAreaInstance(GetPC(), style.Resref, "BUILDING PREVIEW: " + style.Name, "PLAYER_HOME_ENTRANCE");
             area.SetLocalInt("IS_BUILDING_PREVIEW", TRUE);
             NWPlayer player = GetPC();
 

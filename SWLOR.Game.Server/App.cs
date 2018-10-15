@@ -18,6 +18,7 @@ using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Mod.Contracts;
 
 using NWN;
+using SWLOR.Game.Server.AreaInstance.Contracts;
 using SWLOR.Game.Server.DoorRule.Contracts;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWNX.Contracts;
@@ -258,6 +259,7 @@ namespace SWLOR.Game.Server
             RegisterInterfaceImplementations<IQuestRule>(builder);
             RegisterInterfaceImplementations<IEventProcessor>(builder);
             RegisterInterfaceImplementations<IDoorRule>(builder);
+            RegisterInterfaceImplementations<IAreaInstance>(builder);
 
             // Third Party
             builder.RegisterType<BiowarePosition>().As<IBiowarePosition>();

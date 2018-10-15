@@ -635,30 +635,19 @@ namespace SWLOR.Game.Server.Service
 
         public void JumpPCToBuildingInterior(NWPlayer player, NWArea area)
         {
-            NWObject waypoint = null;
             NWObject exit = null;
 
             NWObject @object = (_.GetFirstObjectInArea(area.Object));
             while (@object.IsValid)
             {
-                if (@object.Tag == "PLAYER_HOME_ENTRANCE")
-                {
-                    waypoint = @object;
-                }
-                else if (@object.Tag == "building_exit")
+                if (@object.Tag == "building_exit")
                 {
                     exit = @object;
                 }
 
                 @object = (_.GetNextObjectInArea(area.Object));
             }
-
-            if (waypoint == null)
-            {
-                player.FloatingText("ERROR: Couldn't find the building interior's entrance. Inform an admin of this issue.");
-                return;
-            }
-
+            
             if (exit == null)
             {
                 player.FloatingText("ERROR: Couldn't find the building interior's exit. Inform an admin of this issue.");
@@ -670,7 +659,7 @@ namespace SWLOR.Game.Server.Service
             exit.SetLocalLocation("PLAYER_HOME_EXIT_LOCATION", player.Location);
             exit.SetLocalInt("IS_BUILDING_DOOR", 1);
 
-            Location location = waypoint.Location;
+            Location location = area.GetLocalLocation("INSTANCE_ENTRANCE");
             player.AssignCommand(() =>
             {
                 _.ActionJumpToLocation(location);

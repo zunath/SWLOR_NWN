@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Processor.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.SpawnRule.Contracts;
@@ -35,36 +37,39 @@ namespace SWLOR.Game.Server.Processor
         public void Run(object[] args)
         {
             var spawns = _state.AreaSpawns;
-
+            
             foreach (var spawn in spawns)
             {
-                string areaResref = spawn.Key;
+                // Check for a valid area - otherwise it causes hangs sometimes when the server shuts down.
+                if (!spawn.Key.IsValid) continue;
+
                 AreaSpawn areaSpawn = spawn.Value;
 
-                foreach (var plc in areaSpawn.Placeables)
+                foreach (var plc in areaSpawn.Placeables.Where(x => x.Respawns || !x.Respawns && !x.HasSpawnedOnce))
                 {
-                    ProcessSpawn(plc, OBJECT_TYPE_PLACEABLE, areaResref);
+                    ProcessSpawn(plc, OBJECT_TYPE_PLACEABLE, spawn.Key);
                 }
 
-                foreach (var creature in areaSpawn.Creatures)
+                foreach (var creature in areaSpawn.Creatures.Where(x => x.Respawns || !x.Respawns && !x.HasSpawnedOnce))
                 {
-                    ProcessSpawn(creature, OBJECT_TYPE_CREATURE, areaResref);
+                    ProcessSpawn(creature, OBJECT_TYPE_CREATURE, spawn.Key);
                 }
             }
         }
 
 
-        private void ProcessSpawn(ObjectSpawn spawn, int objectType, string areaResref)
+        private void ProcessSpawn(ObjectSpawn spawn, int objectType, NWArea area)
         {
             // Don't process anything that's valid.
             if (spawn.Spawn.IsValid) return;
             spawn.Timer += _processor.ProcessingTickInterval;
-
+            
             // Time to respawn!
             if (spawn.Timer >= spawn.RespawnTime)
             {
                 string resref = spawn.Resref;
                 Location location = spawn.IsStaticSpawnPoint ? spawn.SpawnLocation : null;
+                spawn.HasSpawnedOnce = true;
 
                 if (string.IsNullOrWhiteSpace(resref))
                 {
@@ -75,7 +80,7 @@ namespace SWLOR.Game.Server.Processor
 
                 if (location == null)
                 {
-                    location = _spawn.GetRandomSpawnPoint(areaResref);
+                    location = _spawn.GetRandomSpawnPoint(area);
                 }
 
                 spawn.Spawn = (_.CreateObject(objectType, resref, location));

@@ -10,13 +10,15 @@ namespace SWLOR.Game.Server.ValueObject
         public float Timer { get; set; }
         public int SpawnTableID { get; set; }
         public string Resref { get; set; }
-        public Location SpawnLocation { get; }
+        public NWLocation SpawnLocation { get; set; }
         public bool IsStaticSpawnPoint { get; }
         public ResourceDetails Resource { get; set; }
         public int NPCGroupID { get; set; }
         public string BehaviourScript { get; set; }
         public string SpawnRule { get; set; }
         public int DeathVFXID { get; set; }
+        public bool Respawns { get; set; }
+        public bool HasSpawnedOnce { get; set; }
 
         public NWPlaceable SpawnPlaceable => (Spawn.Object);
         public NWCreature SpawnCreature => (Spawn.Object);
@@ -28,6 +30,7 @@ namespace SWLOR.Game.Server.ValueObject
             IsStaticSpawnPoint = isStaticSpawnPoint;
             RespawnTime = respawnTime;
             Resref = resref;
+            Respawns = true;
         }
         public ObjectSpawn(NWObject spawn, bool isStaticSpawnPoint, int spawnTableID, float respawnTime = 120.0f)
         {
@@ -36,6 +39,7 @@ namespace SWLOR.Game.Server.ValueObject
             IsStaticSpawnPoint = isStaticSpawnPoint;
             RespawnTime = respawnTime;
             SpawnTableID = spawnTableID;
+            Respawns = true;
         }
     }
 }

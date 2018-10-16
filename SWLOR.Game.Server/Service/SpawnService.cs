@@ -46,146 +46,154 @@ namespace SWLOR.Game.Server.Service
         {
             foreach (var area in NWModule.Get().Areas)
             {
-                var areaSpawn = new AreaSpawn();
-
-                // Check for manually placed spawns
-                NWObject obj = _.GetFirstObjectInArea(area.Object);
-                while (obj.IsValid)
-                {
-                    bool isSpawn = obj.ObjectType == OBJECT_TYPE_WAYPOINT && obj.GetLocalInt("IS_SPAWN") == TRUE;
-
-                    if (isSpawn)
-                    {
-                        int spawnType = obj.GetLocalInt("SPAWN_TYPE");
-                        int objectType = spawnType == 0 || spawnType == OBJECT_TYPE_CREATURE ? OBJECT_TYPE_CREATURE : spawnType;
-                        int spawnTableID = obj.GetLocalInt("SPAWN_TABLE_ID");
-                        int npcGroupID = obj.GetLocalInt("SPAWN_NPC_GROUP_ID");
-                        string behaviourScript = obj.GetLocalString("SPAWN_BEHAVIOUR_SCRIPT");
-                        string spawnResref = obj.GetLocalString("SPAWN_RESREF");
-                        float respawnTime = obj.GetLocalFloat("SPAWN_RESPAWN_SECONDS");
-                        string spawnRule = obj.GetLocalString("SPAWN_RULE");
-                        int deathVFXID = obj.GetLocalInt("SPAWN_DEATH_VFX");
-                        bool useResref = true;
-
-                        // No resref specified but a table was, look in the database for a random record.
-                        if (string.IsNullOrWhiteSpace(spawnResref) && spawnTableID > 0)
-                        {
-                            // Pick a random record.
-                            var dbSpawn = _db.SpawnObjects.Where(x => x.SpawnID == spawnTableID)
-                                .OrderBy(o => Guid.NewGuid()).First();
-                            if (dbSpawn != null)
-                            {
-                                spawnResref = dbSpawn.Resref;
-                                useResref = false;
-
-                                if (dbSpawn.NPCGroupID != null && dbSpawn.NPCGroupID > 0)
-                                    npcGroupID = Convert.ToInt32(dbSpawn.NPCGroupID);
-
-                                if (!string.IsNullOrWhiteSpace(dbSpawn.BehaviourScript))
-                                    behaviourScript = dbSpawn.BehaviourScript;
-
-                                if (!string.IsNullOrWhiteSpace(spawnRule))
-                                    spawnRule = dbSpawn.SpawnRule;
-
-                                if (deathVFXID <= 0)
-                                    deathVFXID = dbSpawn.DeathVFXID;
-                            }
-                        }
-
-                        // If we found a resref, spawn the object and add it to the cache.
-                        if (!string.IsNullOrWhiteSpace(spawnResref))
-                        {
-                            // Delay the creation so that the iteration through the area doesn't get thrown off by new entries.
-                            Location location = obj.Location;
-                            _.DelayCommand(0.5f, () =>
-                            {
-                                NWObject spawn = _.CreateObject(objectType, spawnResref, location);
-                                if(objectType == OBJECT_TYPE_CREATURE)
-                                    AssignScriptEvents(spawn.Object);
-
-                                App.Resolve<IObjectVisibilityService>(ovs =>
-                                {
-                                    ovs.ApplyVisibilityForObject(spawn);
-                                });
-
-                                ObjectSpawn newSpawn; 
-                                if (useResref)
-                                {
-                                    newSpawn = new ObjectSpawn(spawn, true, spawnResref, respawnTime);
-                                }
-                                else
-                                {
-                                    newSpawn = new ObjectSpawn(spawn, true, spawnTableID, respawnTime);
-                                }
-
-                                if (npcGroupID > 0)
-                                {
-                                    spawn.SetLocalInt("NPC_GROUP", npcGroupID);
-                                    newSpawn.NPCGroupID = npcGroupID;
-                                }
-
-                                if (deathVFXID > 0)
-                                {
-                                    spawn.SetLocalInt("DEATH_VFX", deathVFXID);
-                                    newSpawn.DeathVFXID = deathVFXID;
-                                }
-
-                                if (!string.IsNullOrWhiteSpace(behaviourScript) &&
-                                    string.IsNullOrWhiteSpace(spawn.GetLocalString("BEHAVIOUR")))
-                                {
-                                    spawn.SetLocalString("BEHAVIOUR", behaviourScript);
-                                    newSpawn.BehaviourScript = behaviourScript;
-                                }
-
-                                if (!string.IsNullOrWhiteSpace(spawnRule))
-                                {
-                                    newSpawn.SpawnRule = spawnRule;
-                                    
-                                    App.ResolveByInterface<ISpawnRule>("SpawnRule." + spawnRule, rule =>
-                                    {
-                                        rule.Run(spawn);
-                                    });
-                                }
-
-
-                                if (objectType == OBJECT_TYPE_CREATURE)
-                                {
-                                    areaSpawn.Creatures.Add(newSpawn);
-                                }
-                                else if (objectType == OBJECT_TYPE_PLACEABLE)
-                                {
-                                    areaSpawn.Placeables.Add(newSpawn);
-                                }
-                            });
-                            
-                        }
-                         
-                        // Destroy the waypoint to conserve resources.
-                        obj.Destroy();
-                    }
-
-                    obj = _.GetNextObjectInArea(area.Object);
-                }
-
-                _state.AreaSpawns.Add(area.Resref, areaSpawn);
-
-                _.DelayCommand(1.0f, () =>
-                {
-                    SpawnResources(area, areaSpawn);
-                });
+                InitializeAreaSpawns(area);
             }
         }
         
-        public Location GetRandomSpawnPoint(string areaResref)
+        public void InitializeAreaSpawns(NWArea area)
         {
-            return GetRandomSpawnPoint(areaResref, _db);
+            var areaSpawn = new AreaSpawn();
+
+            // Check for manually placed spawns
+            NWObject obj = _.GetFirstObjectInArea(area.Object);
+            while (obj.IsValid)
+            {
+                bool isSpawn = obj.ObjectType == OBJECT_TYPE_WAYPOINT && obj.GetLocalInt("IS_SPAWN") == TRUE;
+
+                if (isSpawn)
+                {
+                    int spawnType = obj.GetLocalInt("SPAWN_TYPE");
+                    int objectType = spawnType == 0 || spawnType == OBJECT_TYPE_CREATURE ? OBJECT_TYPE_CREATURE : spawnType;
+                    int spawnTableID = obj.GetLocalInt("SPAWN_TABLE_ID");
+                    int npcGroupID = obj.GetLocalInt("SPAWN_NPC_GROUP_ID");
+                    string behaviourScript = obj.GetLocalString("SPAWN_BEHAVIOUR_SCRIPT");
+                    string spawnResref = obj.GetLocalString("SPAWN_RESREF");
+                    float respawnTime = obj.GetLocalFloat("SPAWN_RESPAWN_SECONDS");
+                    string spawnRule = obj.GetLocalString("SPAWN_RULE");
+                    int deathVFXID = obj.GetLocalInt("SPAWN_DEATH_VFX");
+                    bool useResref = true;
+
+                    // No resref specified but a table was, look in the database for a random record.
+                    if (string.IsNullOrWhiteSpace(spawnResref) && spawnTableID > 0)
+                    {
+                        // Pick a random record.
+                        var dbSpawn = _db.SpawnObjects.Where(x => x.SpawnID == spawnTableID)
+                            .OrderBy(o => Guid.NewGuid()).First();
+                        if (dbSpawn != null)
+                        {
+                            spawnResref = dbSpawn.Resref;
+                            useResref = false;
+
+                            if (dbSpawn.NPCGroupID != null && dbSpawn.NPCGroupID > 0)
+                                npcGroupID = Convert.ToInt32(dbSpawn.NPCGroupID);
+
+                            if (!string.IsNullOrWhiteSpace(dbSpawn.BehaviourScript))
+                                behaviourScript = dbSpawn.BehaviourScript;
+
+                            if (!string.IsNullOrWhiteSpace(spawnRule))
+                                spawnRule = dbSpawn.SpawnRule;
+
+                            if (deathVFXID <= 0)
+                                deathVFXID = dbSpawn.DeathVFXID;
+                        }
+                    }
+
+                    // If we found a resref, spawn the object and add it to the cache.
+                    if (!string.IsNullOrWhiteSpace(spawnResref))
+                    {
+                        // Delay the creation so that the iteration through the area doesn't get thrown off by new entries.
+                        Location location = obj.Location;
+                        bool isInstance = area.IsInstance;
+
+                        _.DelayCommand(0.5f, () =>
+                        {
+                            NWObject spawn = _.CreateObject(objectType, spawnResref, location);
+                            if (objectType == OBJECT_TYPE_CREATURE)
+                                AssignScriptEvents(spawn.Object);
+
+                            App.Resolve<IObjectVisibilityService>(ovs =>
+                            {
+                                ovs.ApplyVisibilityForObject(spawn);
+                            });
+
+                            ObjectSpawn newSpawn;
+                            if (useResref)
+                            {
+                                newSpawn = new ObjectSpawn(spawn, true, spawnResref, respawnTime);
+                            }
+                            else
+                            {
+                                newSpawn = new ObjectSpawn(spawn, true, spawnTableID, respawnTime);
+                            }
+
+                            if (npcGroupID > 0)
+                            {
+                                spawn.SetLocalInt("NPC_GROUP", npcGroupID);
+                                newSpawn.NPCGroupID = npcGroupID;
+                            }
+
+                            if (deathVFXID > 0)
+                            {
+                                spawn.SetLocalInt("DEATH_VFX", deathVFXID);
+                                newSpawn.DeathVFXID = deathVFXID;
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(behaviourScript) &&
+                                string.IsNullOrWhiteSpace(spawn.GetLocalString("BEHAVIOUR")))
+                            {
+                                spawn.SetLocalString("BEHAVIOUR", behaviourScript);
+                                newSpawn.BehaviourScript = behaviourScript;
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(spawnRule))
+                            {
+                                newSpawn.SpawnRule = spawnRule;
+
+                                App.ResolveByInterface<ISpawnRule>("SpawnRule." + spawnRule, rule =>
+                                {
+                                    rule.Run(spawn);
+                                });
+                            }
+
+                            // Instance spawns are one-shot.
+                            if (isInstance)
+                            {
+                                newSpawn.Respawns = false;
+                            }
+
+                            if (objectType == OBJECT_TYPE_CREATURE)
+                            {
+                                areaSpawn.Creatures.Add(newSpawn);
+                            }
+                            else if (objectType == OBJECT_TYPE_PLACEABLE)
+                            {
+                                areaSpawn.Placeables.Add(newSpawn);
+                            }
+                        });
+
+                    }
+                }
+
+                obj = _.GetNextObjectInArea(area.Object);
+            }
+
+            _state.AreaSpawns.Add(area, areaSpawn);
+
+            _.DelayCommand(1.0f, () =>
+            {
+                SpawnResources(area, areaSpawn);
+            });
         }
 
-        private Location GetRandomSpawnPoint(string areaResref, IDataContext db)
+        public Location GetRandomSpawnPoint(NWArea area)
         {
-            var area = NWModule.Get().Areas.Single(x => x.Resref == areaResref);
+            return GetRandomSpawnPoint(area, _db);
+        }
+
+        private Location GetRandomSpawnPoint(NWArea area, IDataContext db)
+        {
             var spawnPoint = db.AreaWalkmeshes
-                .Where(x => x.Area.Resref == areaResref)
+                .Where(x => x.Area.Resref == area.Resref)
                 .OrderBy(o => Guid.NewGuid()).First();
 
             return _.Location(area.Object,
@@ -246,7 +254,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     int index = _random.GetRandomWeightedIndex(weights);
                     var dbSpawn = possibleSpawns.ElementAt(index);
-                    Location location = GetRandomSpawnPoint(area.Resref, db);
+                    Location location = GetRandomSpawnPoint(area, db);
                     NWPlaceable plc = (_.CreateObject(OBJECT_TYPE_PLACEABLE, dbSpawn.Resref, location));
                     ObjectSpawn spawn = new ObjectSpawn(plc, false, dbArea.ResourceSpawnTableID, 600.0f);
 
@@ -283,14 +291,14 @@ namespace SWLOR.Game.Server.Service
             
         }
         
-        public IReadOnlyCollection<ObjectSpawn> GetAreaPlaceableSpawns(string areaResref)
+        public IReadOnlyCollection<ObjectSpawn> GetAreaPlaceableSpawns(NWArea area)
         {
-            var areaSpawn = _state.AreaSpawns[areaResref];
+            var areaSpawn = _state.AreaSpawns[area];
             return new ReadOnlyCollection<ObjectSpawn>(areaSpawn.Placeables);
         }
-        public IReadOnlyCollection<ObjectSpawn> GetAreaCreatureSpawns(string areaResref)
+        public IReadOnlyCollection<ObjectSpawn> GetAreaCreatureSpawns(NWArea area)
         {
-            var areaSpawn = _state.AreaSpawns[areaResref];
+            var areaSpawn = _state.AreaSpawns[area];
             return new ReadOnlyCollection<ObjectSpawn>(areaSpawn.Creatures);
         }
 

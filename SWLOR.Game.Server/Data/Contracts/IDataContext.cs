@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
-using System.Threading;
-using System.Threading.Tasks;
 using Attribute = SWLOR.Game.Server.Data.Entities.Attribute;
 
 namespace SWLOR.Game.Server.Data.Contracts

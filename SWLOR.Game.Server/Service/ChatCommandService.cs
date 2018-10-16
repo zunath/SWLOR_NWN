@@ -42,6 +42,8 @@ namespace SWLOR.Game.Server.Service
 
             string originalMessage = _nwnxChat.GetMessage().Trim();
 
+            if (originalMessage.Length <= 1)
+                return;
 
             // If it is double slash (//) treat it as a normal message (this is used by role-players to denote OOC speech)
             if (originalMessage.Substring(0, 2) == "//") return;

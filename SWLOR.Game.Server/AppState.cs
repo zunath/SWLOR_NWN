@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server
         public Dictionary<string, EnmityTable> NPCEnmityTables { get; set; }
         public Dictionary<string, CustomData> CustomObjectData { get; set; } 
         public Dictionary<string, NWCreature> NPCBehaviours { get; set; }
-        public Dictionary<string, AreaSpawn> AreaSpawns { get; set; }
+        public Dictionary<NWArea, AreaSpawn> AreaSpawns { get; set; }
         public Dictionary<string, NWObject> VisibilityObjects { get; set; }
         public List<long> PCEffectsForRemoval { get; set; }
         public AppState()
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server
             NPCEnmityTables = new Dictionary<string, EnmityTable>();
             CustomObjectData = new Dictionary<string, CustomData>();
             NPCBehaviours = new Dictionary<string, NWCreature>();
-            AreaSpawns = new Dictionary<string, AreaSpawn>();
+            AreaSpawns = new Dictionary<NWArea, AreaSpawn>();
             VisibilityObjects = new Dictionary<string, NWObject>();
             PCEffectsForRemoval = new List<long>();
 

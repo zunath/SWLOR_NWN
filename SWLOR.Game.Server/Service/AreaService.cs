@@ -21,15 +21,21 @@ namespace SWLOR.Game.Server.Service
         private readonly INWScript _;
         private readonly IDataContext _db;
         private readonly IDataContext _bakeDB;
+        private readonly ISpawnService _spawn;
+        private readonly AppState _state;
 
         public AreaService(
             INWScript script,
             IDataContext db,
-            IDataContext bakeDB)
+            IDataContext bakeDB,
+            ISpawnService spawn,
+            AppState state)
         {
             _ = script;
             _db = db;
             _bakeDB = bakeDB;
+            _spawn = spawn;
+            _state = state;
 
             // Disable stuff that slows down bulk inserts.
             _bakeDB.Configuration.AutoDetectChangesEnabled = false;
@@ -190,13 +196,12 @@ namespace SWLOR.Game.Server.Service
 
             }
         }
-
-
+        
         public NWArea CreateAreaInstance(NWPlayer owner, string areaResref, string areaName, string entranceWaypointTag)
         {
             string tag = Guid.NewGuid().ToString("N");
             NWArea instance = _.CreateArea(areaResref, tag, areaName);
-
+            
             instance.SetLocalString("INSTANCE_OWNER", owner.GlobalID);
             instance.SetLocalString("ORIGINAL_RESREF", areaResref);
             instance.SetLocalInt("IS_AREA_INSTANCE", TRUE);
@@ -219,6 +224,8 @@ namespace SWLOR.Game.Server.Service
             instance.SetLocalLocation("INSTANCE_ENTRANCE", entranceWP.Location);
             entranceWP.Destroy(); // Destroy it so we don't get dupes.
 
+            _spawn.InitializeAreaSpawns(instance);
+            
             string spawnScript = instance.GetLocalString("INSTANCE_ON_SPAWN");
             if (!string.IsNullOrWhiteSpace(spawnScript))
             {
@@ -230,5 +237,19 @@ namespace SWLOR.Game.Server.Service
 
             return instance;
         }
+
+        public void DestroyAreaInstance(NWArea area)
+        {
+            if (!area.IsInstance) return;
+
+            if (_state.AreaSpawns.ContainsKey(area))
+            {
+                _state.AreaSpawns.Remove(area);
+            }
+
+            _.DestroyArea(area);
+
+        }
+
     }
 }

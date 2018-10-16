@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Item
         private void ScanArea(NWCreature user, Location targetLocation)
         {
             NWArea area = (_.GetAreaFromLocation(targetLocation));
-            var spawns = _spawn.GetAreaPlaceableSpawns(area.Resref);
+            var spawns = _spawn.GetAreaPlaceableSpawns(area);
             var spawn = spawns
                 .Where(x => !string.IsNullOrWhiteSpace(x.SpawnPlaceable.GetLocalString("RESOURCE_RESREF")) &&
                             x.SpawnPlaceable.IsValid)

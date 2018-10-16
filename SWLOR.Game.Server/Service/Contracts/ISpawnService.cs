@@ -8,9 +8,10 @@ namespace SWLOR.Game.Server.Service.Contracts
     public interface ISpawnService
     {
         void OnModuleLoad();
-        Location GetRandomSpawnPoint(string areaResref);
-        IReadOnlyCollection<ObjectSpawn> GetAreaPlaceableSpawns(string areaResref);
-        IReadOnlyCollection<ObjectSpawn> GetAreaCreatureSpawns(string areaResref);
+        Location GetRandomSpawnPoint(NWArea area);
+        IReadOnlyCollection<ObjectSpawn> GetAreaPlaceableSpawns(NWArea area);
+        IReadOnlyCollection<ObjectSpawn> GetAreaCreatureSpawns(NWArea area);
         void AssignScriptEvents(NWCreature creature);
+        void InitializeAreaSpawns(NWArea area);
     }
 }

@@ -28,8 +28,10 @@ namespace SWLOR.Game.Server.Service
         private readonly IBasePermissionService _perm;
         private readonly INWNXChat _nwnxChat;
         private readonly IDurabilityService _durability;
+        private readonly IAreaService _area;
 
-        public BaseService(INWScript script,
+        public BaseService(
+            INWScript script,
             INWNXEvents nwnxEvents,
             IDialogService dialog,
             IDataContext db,
@@ -37,7 +39,8 @@ namespace SWLOR.Game.Server.Service
             IImpoundService impound,
             IBasePermissionService perm,
             INWNXChat nwnxChat,
-            IDurabilityService durability)
+            IDurabilityService durability,
+            IAreaService area)
         {
             _ = script;
             _nwnxEvents = nwnxEvents;
@@ -48,6 +51,7 @@ namespace SWLOR.Game.Server.Service
             _perm = perm;
             _nwnxChat = nwnxChat;
             _durability = durability;
+            _area = area;
         }
 
         public PCTempBaseData GetPlayerTempData(NWPlayer player)
@@ -702,7 +706,7 @@ namespace SWLOR.Game.Server.Service
                     player = (_.GetNextPC());
                 }
 
-                _.DestroyArea(area.Object);
+                _area.DestroyAreaInstance(area);
             });
         }
 

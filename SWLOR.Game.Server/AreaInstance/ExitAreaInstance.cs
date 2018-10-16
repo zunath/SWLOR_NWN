@@ -2,16 +2,21 @@
 using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.AreaInstance
 {
     public class ExitAreaInstance: IRegisteredEvent
     {
         private readonly INWScript _;
+        private readonly IAreaService _area;
 
-        public ExitAreaInstance(INWScript script)
+        public ExitAreaInstance(
+            INWScript script,
+            IAreaService area)
         {
             _ = script;
+            _area = area;
         }
 
         public bool Run(params object[] args)
@@ -28,7 +33,7 @@ namespace SWLOR.Game.Server.AreaInstance
                 int playerCount = NWModule.Get().Players.Count(x => !Equals(x, player) && Equals(x.Area, door.Area));
                 if (playerCount <= 0)
                 {
-                    _.DestroyArea(door.Area);
+                    _area.DestroyAreaInstance(door.Area);
                 }
             });
 

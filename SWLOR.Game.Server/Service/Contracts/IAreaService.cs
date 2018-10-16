@@ -6,5 +6,6 @@ namespace SWLOR.Game.Server.Service.Contracts
     {
         void OnModuleLoad();
         NWArea CreateAreaInstance(NWPlayer owner, string areaResref, string areaName, string entranceWaypointTag);
+        void DestroyAreaInstance(NWArea area);
     }
 }

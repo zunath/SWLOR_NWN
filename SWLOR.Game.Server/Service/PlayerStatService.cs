@@ -281,7 +281,7 @@ namespace SWLOR.Game.Server.Service
                     skillRankToUse = forceRank;
                 }
 
-                int itemAC = oItem.AC + oItem.CustomAC;
+                int itemAC = oItem.CustomAC;
                 itemAC = CalculateAdjustedValue(itemAC, oItem.RecommendedLevel, skillRankToUse, 0);
                 baseAC += itemAC;
             }

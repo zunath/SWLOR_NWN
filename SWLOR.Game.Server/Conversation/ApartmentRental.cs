@@ -218,7 +218,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (player.Gold < style.PurchasePrice)
             {
-                SetResponseVisible("PurchaseDetailsPage", 2, false);
+                SetResponseVisible("PurchaseDetailsPage", 1, false);
             }
         }
 

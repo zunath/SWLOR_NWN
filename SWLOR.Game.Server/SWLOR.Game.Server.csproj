@@ -142,11 +142,11 @@
     <Compile Include="Conversation\ApartmentRental.cs" />
     <Compile Include="Conversation\BaseManagementTool.cs" />
     <Compile Include="Conversation\CharacterCustomization.cs" />
+    <Compile Include="Conversation\CloningTerminal.cs" />
     <Compile Include="Conversation\ControlTower.cs" />
     <Compile Include="Conversation\CoxxionTerminal.cs" />
     <Compile Include="Conversation\EditBuildingPermissions.cs" />
     <Compile Include="Conversation\EditBasePermissions.cs" />
-    <Compile Include="Conversation\BindSoul.cs" />
     <Compile Include="Conversation\BuildingEntrance.cs" />
     <Compile Include="Conversation\BuildingExit.cs" />
     <Compile Include="Conversation\ChangeDescription.cs" />

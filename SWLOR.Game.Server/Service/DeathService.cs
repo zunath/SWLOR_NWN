@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Service
             pc.RespawnAreaResref = player.Area.Resref;
 
             _db.SaveChanges();
-            _.FloatingTextStringOnCreature("You will respawn at this location the next time you die.", player.Object, FALSE);
+            _.FloatingTextStringOnCreature("You will return to this location the next time you die.", player.Object, FALSE);
         }
 
 

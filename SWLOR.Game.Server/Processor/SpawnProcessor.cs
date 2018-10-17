@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Processor
         public void Run(object[] args)
         {
             var spawns = _state.AreaSpawns;
-            
+
             foreach (var spawn in spawns)
             {
                 // Check for a valid area - otherwise it causes hangs sometimes when the server shuts down.
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Processor
             // Don't process anything that's valid.
             if (spawn.Spawn.IsValid) return;
             spawn.Timer += _processor.ProcessingTickInterval;
-            
+
             // Time to respawn!
             if (spawn.Timer >= spawn.RespawnTime)
             {
@@ -84,10 +84,16 @@ namespace SWLOR.Game.Server.Processor
                 }
 
                 spawn.Spawn = (_.CreateObject(objectType, resref, location));
+
+                if (!spawn.Spawn.IsValid)
+                {
+                    Console.WriteLine("ERROR: Cannot locate object with resref " + resref + ". Error occurred in area " + area.Name + " (" + area.Resref + ")");
+                }
+
                 if (spawn.NPCGroupID > 0)
                     spawn.Spawn.SetLocalInt("NPC_GROUP", spawn.NPCGroupID);
 
-                if(spawn.DeathVFXID > 0)
+                if (spawn.DeathVFXID > 0)
                     spawn.Spawn.SetLocalInt("DEATH_VFX", spawn.DeathVFXID);
 
                 if (!string.IsNullOrWhiteSpace(spawn.BehaviourScript) &&

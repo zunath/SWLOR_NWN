@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Service
                 InitializeAreaSpawns(area);
             }
         }
-        
+
         public void InitializeAreaSpawns(NWArea area)
         {
             var areaSpawn = new AreaSpawn();
@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         ovs.ApplyVisibilityForObject(plc);
                     });
-                    
+
 
                     if (dbSpawn.NPCGroupID != null && dbSpawn.NPCGroupID > 0)
                     {
@@ -288,9 +288,9 @@ namespace SWLOR.Game.Server.Service
                     areaSpawn.Placeables.Add(spawn);
                 }
             });
-            
+
         }
-        
+
         public IReadOnlyCollection<ObjectSpawn> GetAreaPlaceableSpawns(NWArea area)
         {
             var areaSpawn = _state.AreaSpawns[area];

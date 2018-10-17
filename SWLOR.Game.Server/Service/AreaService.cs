@@ -189,8 +189,12 @@ namespace SWLOR.Game.Server.Service
                         }
                     }
 
-                    Console.WriteLine("Saving " + batchRecords + " records...");
-                    _bakeDB.Database.ExecuteSqlCommand(sql);
+                    if(!string.IsNullOrWhiteSpace(sql))
+                    {
+                        Console.WriteLine("Saving " + batchRecords + " records...");
+                        _bakeDB.Database.ExecuteSqlCommand(sql);
+                    }
+                    
                     Console.WriteLine("Finished baking area: " + area.Name);
                 }
 

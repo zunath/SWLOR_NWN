@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.ChatCommand
                 return;
             }
 
-            if (args.Length <= 0)
+            if (args.Length <= 0 || args[0].Length <= 0)
             {
                 user.SendMessage("Please enter in a message to send to Discord.");
                 return;

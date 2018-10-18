@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Data.Contracts
         IDbSet<Association> Associations { get; set; }
         IDbSet<BaseStructure> BaseStructures { get; set; }
         IDbSet<BaseStructureType> BaseStructureTypes { get; set; }
+        IDbSet<BugReport> BugReports { get; set; }
         IDbSet<PCBasePermission> PCBasePermissions { get; set; }
         IDbSet<PCBaseStructurePermission> PCBaseStructurePermissions { get; set; }
         IDbSet<BuildingStyle> BuildingStyles { get; set; }

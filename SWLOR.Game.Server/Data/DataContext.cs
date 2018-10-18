@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Data
         public virtual IDbSet<Association> Associations { get; set; }
         public virtual IDbSet<BaseStructure> BaseStructures { get; set; }
         public virtual IDbSet<BaseStructureType> BaseStructureTypes { get; set; }
+        public virtual IDbSet<BugReport> BugReports { get; set; }
         public virtual IDbSet<Attribute> Attributes { get; set; }
         public virtual IDbSet<AuthorizedDM> AuthorizedDMs { get; set; }
         public virtual IDbSet<BaseItemType> BaseItemTypes { get; set; }
@@ -680,6 +681,11 @@ namespace SWLOR.Game.Server.Data
                 .HasMany(e => e.BankItems)
                 .WithRequired(e => e.PlayerCharacter)
                 .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PlayerCharacter>()
+                .HasMany(e => e.BugReports)
+                .WithOptional(e => e.PlayerCharacter)
+                .HasForeignKey(e => e.SenderPlayerID);
 
             modelBuilder.Entity<SpawnObjectType>()
                 .HasMany(e => e.Spawns)

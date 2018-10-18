@@ -155,11 +155,28 @@ namespace SWLOR.Game.Server.Event.Delayed
                     _durability.SetDurability(item, maxDur);
                 }
             }
-
-
+            
             player.SendMessage("You created " + blueprint.Quantity + "x " + blueprint.ItemName + "!");
             int baseXP = 250 + successAmount * _random.Random(1, 50);
             float xp = _skill.CalculateRegisteredSkillLevelAdjustedXP(baseXP, model.AdjustedLevel, pcSkill.Rank);
+
+            var pcCraftedBlueprint = _db.PCCraftedBlueprints.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CraftBlueprintID == blueprint.CraftBlueprintID);
+            if(pcCraftedBlueprint == null)
+            {
+                xp = xp * 1.25f;
+                player.SendMessage("You receive an XP bonus for crafting this item for the first time.");
+
+                pcCraftedBlueprint = new PCCraftedBlueprint
+                {
+                    CraftBlueprintID = blueprint.CraftBlueprintID,
+                    DateFirstCrafted = DateTime.UtcNow,
+                    PlayerID = player.GlobalID
+                };
+
+                _db.PCCraftedBlueprints.Add(pcCraftedBlueprint);
+                _db.SaveChanges();
+            }
+
             _skill.GiveSkillXP(player, blueprint.SkillID, (int)xp);
             _craft.ClearPlayerCraftingData(player, true);
         }

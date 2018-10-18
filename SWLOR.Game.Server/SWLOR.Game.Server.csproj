@@ -298,6 +298,7 @@
     <Compile Include="Data\Entities\PCMapProgression.cs" />
     <Compile Include="Data\Entities\PerkLevelQuestRequirement.cs" />
     <Compile Include="Data\Entities\BugReport.cs" />
+    <Compile Include="Data\Entities\PCCraftedBlueprint.cs" />
     <Compile Include="DoorRule\Contracts\IDoorRule.cs" />
     <Compile Include="DoorRule\LargeSquareBuildingRule.cs" />
     <Compile Include="DoorRule\MediumRoundBuildingRule.cs" />

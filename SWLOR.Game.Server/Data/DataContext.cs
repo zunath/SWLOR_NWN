@@ -71,6 +71,7 @@ namespace SWLOR.Game.Server.Data
         public virtual IDbSet<PCBasePermission> PCBasePermissions { get; set; }
         public virtual IDbSet<PCBaseStructurePermission> PCBaseStructurePermissions { get; set; }
         public virtual IDbSet<PCCooldown> PCCooldowns { get; set; }
+        public virtual IDbSet<PCCraftedBlueprint> PCCraftedBlueprints { get; set; }
         public virtual IDbSet<PCCustomEffect> PCCustomEffects { get; set; }
         public virtual IDbSet<PCImpoundedItem> PCImpoundedItems { get; set; }
         public virtual IDbSet<PCKeyItem> PCKeyItems { get; set; }
@@ -196,6 +197,11 @@ namespace SWLOR.Game.Server.Data
                 .HasMany(e => e.CraftBlueprints)
                 .WithRequired(e => e.CraftBlueprintCategory)
                 .HasForeignKey(e => e.CraftCategoryID)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<CraftBlueprint>()
+                .HasMany(e => e.PCCraftedBlueprints)
+                .WithRequired(e => e.CraftBlueprint)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<ComponentType>()
@@ -483,6 +489,11 @@ namespace SWLOR.Game.Server.Data
             
             modelBuilder.Entity<PlayerCharacter>()
                 .HasMany(e => e.PCCooldowns)
+                .WithRequired(e => e.PlayerCharacter)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<PlayerCharacter>()
+                .HasMany(e => e.PCCraftedBlueprints)
                 .WithRequired(e => e.PlayerCharacter)
                 .WillCascadeOnDelete(false);
 

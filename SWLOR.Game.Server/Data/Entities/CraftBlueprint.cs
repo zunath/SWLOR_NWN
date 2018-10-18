@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -8,6 +9,7 @@ namespace SWLOR.Game.Server.Data.Entities
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public CraftBlueprint()
         {
+            PCCraftedBlueprints = new HashSet<PCCraftedBlueprint>();
         }
 
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -74,5 +76,8 @@ namespace SWLOR.Game.Server.Data.Entities
         public int? BaseStructureID { get; set; }
 
         public virtual BaseStructure BaseStructure { get; set; }
+        
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PCCraftedBlueprint> PCCraftedBlueprints { get; set; }
     }
 }

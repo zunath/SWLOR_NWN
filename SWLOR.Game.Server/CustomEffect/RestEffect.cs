@@ -72,6 +72,8 @@ namespace SWLOR.Game.Server.CustomEffect
                 return;
             }
 
+            player.IsBusy = true;
+
             player.AssignCommand(() =>
             {
                 _.ActionPlayAnimation(ANIMATION_LOOPING_SIT_CROSS, 1.0f, 6.1f);

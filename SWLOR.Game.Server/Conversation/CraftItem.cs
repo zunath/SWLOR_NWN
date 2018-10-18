@@ -186,6 +186,15 @@ namespace SWLOR.Game.Server.Conversation
                         return;
                     }
 
+                    int effectiveLevel = _craft.CalculatePCEffectiveLevel(GetPC(), model.PlayerSkillRank, (SkillType)model.Blueprint.SkillID);
+                    int difficulty = effectiveLevel - model.AdjustedLevel;
+
+                    if(difficulty <= -5)
+                    {
+                        GetPC().FloatingText("It's impossible to make this item because its level is too high. Use lower-level components to reduce the level and difficulty.");
+                        return;
+                    }
+
                     _craft.CraftItem(GetPC(), device);
                     model.IsAccessingStorage = true;
                     EndConversation();

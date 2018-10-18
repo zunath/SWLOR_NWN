@@ -196,6 +196,30 @@ namespace SWLOR.Game.Server.Service
             {
                 description += _color.Orange("FP Bonus: ") + examinedItem.FPBonus + "\n";
             }
+            if (examinedItem.StrengthBonus > 0)
+            {
+                description += _color.Orange("Strength Bonus: ") + examinedItem.StrengthBonus + "\n";
+            }
+            if (examinedItem.DexterityBonus > 0)
+            {
+                description += _color.Orange("Dexterity Bonus: ") + examinedItem.DexterityBonus + "\n";
+            }
+            if (examinedItem.ConstitutionBonus > 0)
+            {
+                description += _color.Orange("Constitution Bonus: ") + examinedItem.ConstitutionBonus + "\n";
+            }
+            if (examinedItem.WisdomBonus > 0)
+            {
+                description += _color.Orange("Wisdom Bonus: ") + examinedItem.WisdomBonus + "\n";
+            }
+            if (examinedItem.IntelligenceBonus > 0)
+            {
+                description += _color.Orange("Intelligence Bonus: ") + examinedItem.IntelligenceBonus + "\n";
+            }
+            if (examinedItem.CharismaBonus > 0)
+            {
+                description += _color.Orange("Charisma Bonus: ") + examinedItem.CharismaBonus + "\n";
+            }
             if (examinedItem.CastingSpeed > 0)
             {
                 description += _color.Orange("Casting Speed: +") + examinedItem.CastingSpeed + "%\n";

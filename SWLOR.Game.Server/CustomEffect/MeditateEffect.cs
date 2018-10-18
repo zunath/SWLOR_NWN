@@ -103,6 +103,7 @@ namespace SWLOR.Game.Server.CustomEffect
 
         private int CalculateAmount(NWPlayer player)
         {
+            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
             int perkLevel = _perk.GetPCPerkLevel(player, PerkType.Meditate);
             int amount;
             switch (perkLevel)
@@ -119,7 +120,7 @@ namespace SWLOR.Game.Server.CustomEffect
                     amount = 4;
                     break;
             }
-            amount += _playerStat.EffectiveMeditateBonus(player);
+            amount += effectiveStats.Meditate;
 
             return amount;
         }

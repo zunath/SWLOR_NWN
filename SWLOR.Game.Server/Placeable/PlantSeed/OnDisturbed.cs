@@ -47,6 +47,7 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
             NWPlayer oPC = (_.GetLastDisturbed());
             int type = _.GetInventoryDisturbType();
             NWItem item = (_.GetInventoryDisturbItem());
+            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(oPC);
 
             if (type != NWScript.INVENTORY_DISTURB_TYPE_ADDED) return false;
 
@@ -112,7 +113,7 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
 
             int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(200, plant.Level, rank);
 
-            if (_random.Random(100) + 1 <= _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + _playerStat.EffectiveLuckBonus(oPC))
+            if (_random.Random(100) + 1 <= _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + effectiveStats.Luck)
             {
                 xp *= 2;
             }

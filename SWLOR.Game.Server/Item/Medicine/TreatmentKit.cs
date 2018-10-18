@@ -65,6 +65,7 @@ namespace SWLOR.Game.Server.Item.Medicine
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
             NWPlayer player = (user.Object);
+            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
 
             if (_random.Random(100) + 1 <= _perk.GetPCPerkLevel(player, PerkType.SpeedyFirstAid) * 10)
             {
@@ -72,7 +73,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             }
 
             PCSkill skill = _skill.GetPCSkill(player, SkillType.Medicine);
-            return 12.0f - (skill.Rank + _playerStat.EffectiveMedicineBonus(player) / 2) * 0.1f;
+            return 12.0f - (skill.Rank + effectiveStats.Medicine / 2) * 0.1f;
         }
 
         public bool FaceTarget()

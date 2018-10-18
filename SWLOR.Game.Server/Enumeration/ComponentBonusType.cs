@@ -36,7 +36,13 @@
         LightAbilityDown = 31,
         FabricationUp = 32,
         StructureBonusUp = 33,
-        ScanningUp = 34
+        ScanningUp = 34,
+        StrengthUp = 35,
+        DexterityUp = 36,
+        ConstitutionUp = 37,
+        WisdomUp = 38,
+        IntelligenceUp = 39,
+        CharismaUp = 40
         
 
     }

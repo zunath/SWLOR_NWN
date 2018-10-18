@@ -55,7 +55,8 @@ namespace SWLOR.Game.Server.Perk.DarkSide
         {
             int damage;
             float recoveryPercent;
-            int darkBonus = _stat.EffectiveDarkAbilityBonus(player);
+            var effectiveStats = _stat.GetPlayerItemEffectiveStats(player);
+            int darkBonus = effectiveStats.DarkAbility;
             int min = 1;
             int wisdom = player.WisdomModifier;
             int intelligence = player.IntelligenceModifier;

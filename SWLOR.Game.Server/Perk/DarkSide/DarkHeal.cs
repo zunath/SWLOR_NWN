@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Perk.DarkSide
 
         public void OnImpact(NWPlayer player, NWObject target, int level)
         {
-            int darkBonus = _playerStat.EffectiveDarkAbilityBonus(player);
+            int darkBonus = _playerStat.GetPlayerItemEffectiveStats(player).DarkAbility;
             
             PCCustomEffect spreadEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CustomEffectID == (int) CustomEffectType.DarkSpread);
             string spreadData = spreadEffect?.Data ?? string.Empty;
@@ -177,7 +177,8 @@ namespace SWLOR.Game.Server.Perk.DarkSide
                 default: return;
             }
 
-            int luck = _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + _playerStat.EffectiveLuckBonus(oPC);
+            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(oPC);
+            int luck = _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + effectiveStats.Luck;
             if (_random.Random(100) + 1 <= luck)
             {
                 length = length * 2;

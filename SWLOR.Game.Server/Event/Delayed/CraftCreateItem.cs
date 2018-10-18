@@ -230,15 +230,16 @@ namespace SWLOR.Game.Server.Event.Delayed
         private float CalculateEquipmentBonus(NWPlayer player, SkillType skillType)
         {
             int equipmentBonus = 0;
+            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
 
             switch (skillType)
             {
-                case SkillType.Armorsmith: equipmentBonus = _playerStat.EffectiveArmorsmithBonus(player); break;
-                case SkillType.Weaponsmith: equipmentBonus = _playerStat.EffectiveWeaponsmithBonus(player); break;
-                case SkillType.Cooking: equipmentBonus = _playerStat.EffectiveCookingBonus(player); break;
-                case SkillType.Engineering: equipmentBonus = _playerStat.EffectiveEngineeringBonus(player); break;
-                case SkillType.Fabrication: equipmentBonus = _playerStat.EffectiveFabricationBonus(player); break;
-                case SkillType.Medicine: equipmentBonus = _playerStat.EffectiveMedicineBonus(player); break;
+                case SkillType.Armorsmith: equipmentBonus = effectiveStats.Armorsmith; break;
+                case SkillType.Weaponsmith: equipmentBonus = effectiveStats.Weaponsmith; break;
+                case SkillType.Cooking: equipmentBonus = effectiveStats.Cooking; break;
+                case SkillType.Engineering: equipmentBonus = effectiveStats.Engineering; break;
+                case SkillType.Fabrication: equipmentBonus = effectiveStats.Fabrication; break;
+                case SkillType.Medicine: equipmentBonus = effectiveStats.Medicine; break;
             }
 
             return equipmentBonus * 0.5f; // +0.5% per equipment bonus

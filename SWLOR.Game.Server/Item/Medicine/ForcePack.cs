@@ -52,12 +52,12 @@ namespace SWLOR.Game.Server.Item.Medicine
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
             NWPlayer player = (user.Object);
-            
+            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
             PCSkill skill = _skill.GetPCSkill(player, SkillType.Medicine);
             int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky);
             int perkDurationBonus = _perk.GetPCPerkLevel(player, PerkType.HealingKitExpert) * 6 + (luck * 2);
             float duration = 30.0f + (skill.Rank * 0.4f) + perkDurationBonus;
-            int restoreAmount = 1 + item.GetLocalInt("HEALING_BONUS") + _playerStat.EffectiveMedicineBonus(player) + item.MedicineBonus;
+            int restoreAmount = 1 + item.GetLocalInt("HEALING_BONUS") + effectiveStats.Medicine + item.MedicineBonus;
             int delta = item.RecommendedLevel - skill.Rank;
             float effectivenessPercent = 1.0f;
 

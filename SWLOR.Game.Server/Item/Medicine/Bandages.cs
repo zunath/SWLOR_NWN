@@ -42,6 +42,7 @@ namespace SWLOR.Game.Server.Item.Medicine
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
             NWPlayer player = (user.Object);
+            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
 
             _customEffect.RemovePCCustomEffect((NWPlayer)target, CustomEffectType.Bleeding);
             player.SendMessage("You finish bandaging " + target.Name + "'s wounds.");
@@ -49,7 +50,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             PCSkill skill = _skill.GetPCSkill(player, SkillType.Medicine);
             int rank = skill.Rank;
 
-            int healAmount = 2 + _playerStat.EffectiveMedicineBonus(player) / 2;
+            int healAmount = 2 + effectiveStats.Medicine / 2;
             healAmount += item.MedicineBonus;
             if (rank >= item.RecommendedLevel && item.MedicineBonus > 0)
             {

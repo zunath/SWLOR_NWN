@@ -105,7 +105,8 @@ namespace SWLOR.Game.Server.Service
                 case -6: chance = 27; break;
             }
 
-            int itemBonus = _playerStat.EffectiveHarvestingBonus(player) / 2;
+            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
+            int itemBonus = effectiveStats.Harvesting / 2;
             if (itemBonus > 30) itemBonus = 30;
             chance += itemBonus;
 
@@ -170,7 +171,13 @@ namespace SWLOR.Game.Server.Service
                 "compbon_snkatk1",
                 "compbon_fab2",
                 "compbon_scanup2",
-                "compbon_rest2"
+                "compbon_rest2",
+                "compbon_str1",
+                "compbon_dex1",
+                "compbon_con1",
+                "compbon_wis1",
+                "compbon_int1",
+                "compbon_cha1",
 
             };
 
@@ -199,7 +206,13 @@ namespace SWLOR.Game.Server.Service
                 "compbon_snkatk2",
                 "compbon_fab3",
                 "compbon_scanup3",
-                "compbon_rest3"
+                "compbon_rest3",
+                "compbon_str2",
+                "compbon_dex2",
+                "compbon_con2",
+                "compbon_wis2",
+                "compbon_int2",
+                "compbon_cha2",
             };
 
             string[] ultraRareIP =
@@ -209,6 +222,12 @@ namespace SWLOR.Game.Server.Service
                 "compbon_hpregen3",
                 "compbon_fpregen3",
                 "compbon_snkatk3",
+                "compbon_str3",
+                "compbon_dex3",
+                "compbon_con3",
+                "compbon_wis3",
+                "compbon_int3",
+                "compbon_cha3",
 
             };
 

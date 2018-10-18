@@ -93,13 +93,14 @@ namespace SWLOR.Game.Server.Event.Module
             {
                 if (oPC.CurrentHP < oPC.MaxHP)
                 {
+                    var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(oPC);
                     // CON bonus
                     int con = oPC.ConstitutionModifier;
                     if (con > 0)
                     {
                         amount += con;
                     }
-                    amount += _playerStat.EffectiveHPRegenBonus(oPC);
+                    amount += effectiveStats.HPRegen;
                     
                     if (oPC.Chest.CustomItemType == CustomItemType.HeavyArmor)
                     {
@@ -126,13 +127,14 @@ namespace SWLOR.Game.Server.Event.Module
             {
                 if (entity.CurrentFP < entity.MaxFP)
                 {
+                    var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(oPC);
                     // CHA bonus
                     int cha = oPC.CharismaModifier;
                     if (cha > 0)
                     {
                         amount += cha;
                     }
-                    amount += _playerStat.EffectiveFPRegenBonus(oPC);
+                    amount += effectiveStats.FPRegen;
 
                     if (oPC.Chest.CustomItemType == CustomItemType.ForceArmor)
                     {

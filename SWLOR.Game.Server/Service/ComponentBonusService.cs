@@ -145,6 +145,24 @@ namespace SWLOR.Game.Server.Service
                     case ComponentBonusType.StructureBonusUp:
                         product.StructureBonus += amount;
                         break;
+                    case ComponentBonusType.StrengthUp:
+                        product.StrengthBonus += amount;
+                        break;
+                    case ComponentBonusType.DexterityUp:
+                        product.DexterityBonus += amount;
+                        break;
+                    case ComponentBonusType.ConstitutionUp:
+                        product.ConstitutionBonus += amount;
+                        break;
+                    case ComponentBonusType.WisdomUp:
+                        product.WisdomBonus += amount;
+                        break;
+                    case ComponentBonusType.IntelligenceUp:
+                        product.IntelligenceBonus += amount;
+                        break;
+                    case ComponentBonusType.CharismaUp:
+                        product.CharismaBonus += amount;
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }

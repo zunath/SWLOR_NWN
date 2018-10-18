@@ -154,8 +154,15 @@ namespace SWLOR.Game.Server.Item
                 return "Please select a target to harvest.";
             }
 
+            int qualityID = target.GetLocalInt("RESOURCE_QUALITY");
+
+            if(qualityID <= 0)
+            {
+                return "You cannot harvest that object.";
+            }
+
             NWPlayer player = (user.Object);
-            ResourceQuality quality = (ResourceQuality)target.GetLocalInt("RESOURCE_QUALITY");
+            ResourceQuality quality = (ResourceQuality)qualityID;
             int tier = target.GetLocalInt("RESOURCE_TIER");
             int rank = _skill.GetPCSkill(player, SkillType.Harvesting).Rank;
             int difficulty = (tier - 1) * 10 + _resource.GetDifficultyAdjustment(quality);

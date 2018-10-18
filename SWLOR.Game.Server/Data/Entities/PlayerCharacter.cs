@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Data.Entities
             PCBaseStructurePermissions = new HashSet<PCBaseStructurePermission>();
             PCBases = new HashSet<PCBase>();
             PCCooldowns = new HashSet<PCCooldown>();
+            PCCraftedBlueprints = new HashSet<PCCraftedBlueprint>();
             PCCustomEffects = new HashSet<PCCustomEffect>();
             PCKeyItems = new HashSet<PCKeyItem>();
             PCMapPins = new HashSet<PCMapPin>();
@@ -158,6 +159,9 @@ namespace SWLOR.Game.Server.Data.Entities
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PCCooldown> PCCooldowns { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PCCraftedBlueprint> PCCraftedBlueprints { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PCCustomEffect> PCCustomEffects { get; set; }

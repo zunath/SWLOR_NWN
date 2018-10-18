@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Event.Delayed
             // Also mark who crafted the item. This is later used for display on the item's examination event.
             foreach (var item in craftedItems)
             {
-                item.RecommendedLevel = itemLevel;
+                item.RecommendedLevel = itemLevel < 0 ? 0 : itemLevel;
                 item.SetLocalString("CRAFTER_PLAYER_ID", player.GlobalID);
 
                 _base.ApplyCraftedItemLocalVariables(item, blueprint.BaseStructure);

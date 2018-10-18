@@ -28,6 +28,8 @@ namespace SWLOR.Game.Server.Placeable.Resource
             NWPlaceable prop = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, propResref, location));
             objSelf.SetLocalObject("RESOURCE_PROP_OBJ", prop.Object);
             objSelf.SetLocalInt("RESOURCE_PROP_SPAWNED", 1);
+
+            _.SetEventScript(objSelf, NWScript.EVENT_SCRIPT_PLACEABLE_ON_HEARTBEAT, string.Empty);
             return true;
         }
     }

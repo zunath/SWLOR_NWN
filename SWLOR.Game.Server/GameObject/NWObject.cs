@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual string Resref => _.GetResRef(Object);
 
-        public virtual Location Location
+        public virtual NWLocation Location
         {
             get => _.GetLocation(Object);
             set

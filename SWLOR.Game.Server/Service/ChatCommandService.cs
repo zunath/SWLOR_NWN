@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleNWNXChat(NWPlayer sender)
         {
-            if (!sender.IsPlayer || sender.IsDM) return;
+            if (!sender.IsPlayer && !sender.IsDM) return;
 
             string originalMessage = _nwnxChat.GetMessage().Trim();
 
@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             CommandDetailsAttribute attribute = command.GetType().GetCustomAttribute<CommandDetailsAttribute>();
-            bool isDM = _auth.IsPCRegisteredAsDM(sender);
+            bool isDM = sender.IsDM || _auth.IsPCRegisteredAsDM(sender);
 
             if (attribute != null &&
                 (attribute.Permissions.HasFlag(CommandPermissionType.Player) && sender.IsPlayer ||

@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Data.Entities
             SoutheastAreas = new HashSet<Area>();
             SouthwestAreas = new HashSet<Area>();
             BankItems = new HashSet<BankItem>();
+            BugReports = new HashSet<BugReport>();
             ChatLogs = new HashSet<ChatLog>();
             ChatLogs1 = new HashSet<ChatLog>();
             ClientLogEvents = new HashSet<ClientLogEvent>();
@@ -139,6 +140,9 @@ namespace SWLOR.Game.Server.Data.Entities
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BankItem> BankItems { get; set; }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<BugReport> BugReports { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ChatLog> ChatLogs { get; set; }

@@ -88,6 +88,7 @@ namespace SWLOR.Game.Server.Processor
                 if (!spawn.Spawn.IsValid)
                 {
                     Console.WriteLine("ERROR: Cannot locate object with resref " + resref + ". Error occurred in area " + area.Name + " (" + area.Resref + ")");
+                    return;
                 }
 
                 if (spawn.NPCGroupID > 0)

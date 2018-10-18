@@ -9,7 +9,7 @@ using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Enables or disables Discord chat channel.", CommandPermissionType.Player)]
+    [CommandDetails("Enables or disables Discord chat channel.", CommandPermissionType.Player | CommandPermissionType.DM)]
     public class ToggleDiscord : IChatCommand
     {
         private readonly INWScript _;

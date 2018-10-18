@@ -85,6 +85,7 @@
     <Compile Include="ChatCommand\Blueprints.cs" />
     <Compile Include="ChatCommand\Bored.cs" />
     <Compile Include="ChatCommand\Bow.cs" />
+    <Compile Include="ChatCommand\Bug.cs" />
     <Compile Include="ChatCommand\CommandDetailsAttribute.cs" />
     <Compile Include="ChatCommand\Contracts\IChatCommand.cs" />
     <Compile Include="ChatCommand\Coord.cs" />
@@ -296,6 +297,7 @@
     <Compile Include="Data\Entities\Association.cs" />
     <Compile Include="Data\Entities\PCMapProgression.cs" />
     <Compile Include="Data\Entities\PerkLevelQuestRequirement.cs" />
+    <Compile Include="Data\Entities\BugReport.cs" />
     <Compile Include="DoorRule\Contracts\IDoorRule.cs" />
     <Compile Include="DoorRule\LargeSquareBuildingRule.cs" />
     <Compile Include="DoorRule\MediumRoundBuildingRule.cs" />

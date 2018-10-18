@@ -68,7 +68,8 @@ namespace SWLOR.Game.Server.Perk.LightSide
 
         public void OnImpact(NWPlayer player, NWObject target, int level)
         {
-            int lightBonus = _playerStat.EffectiveLightAbilityBonus(player);
+            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
+            int lightBonus = effectiveStats.LightAbility;
 
             PCCustomEffect spreadEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CustomEffectID == (int)CustomEffectType.ForceSpread);
             string spreadData = spreadEffect?.Data ?? string.Empty;
@@ -109,6 +110,7 @@ namespace SWLOR.Game.Server.Perk.LightSide
 
         private void HealTarget(NWPlayer oPC, NWObject oTarget, int lightBonus, int level)
         {
+            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(oPC);
             int amount;
             float length;
             int regenAmount;
@@ -178,7 +180,7 @@ namespace SWLOR.Game.Server.Perk.LightSide
                 default: return;
             }
 
-            int luck = _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + _playerStat.EffectiveLuckBonus(oPC);
+            int luck = _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + effectiveStats.Luck;
             if (_random.Random(100) + 1 <= luck)
             {
                 length = length * 2;

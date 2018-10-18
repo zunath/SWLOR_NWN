@@ -549,6 +549,37 @@ namespace SWLOR.Game.Server.GameObject
             set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_DAMAGE_BONUS", value);
         }
 
+        public virtual int StrengthBonus
+        {
+            get => _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_STRENGTH_BONUS");
+            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_STRENGTH_BONUS", value);
+        }
+        public virtual int DexterityBonus
+        {
+            get => _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_DEXTERITY_BONUS");
+            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_DEXTERITY_BONUS", value);
+        }
+        public virtual int ConstitutionBonus
+        {
+            get => _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CONSTITUTION_BONUS");
+            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CONSTITUTION_BONUS", value);
+        }
+        public virtual int WisdomBonus
+        {
+            get => _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_WISDOM_BONUS");
+            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_WISDOM_BONUS", value);
+        }
+        public virtual int IntelligenceBonus
+        {
+            get => _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_INTELLIGENCE_BONUS");
+            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_INTELLIGENCE_BONUS", value);
+        }
+        public virtual int CharismaBonus
+        {
+            get => _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CHARISMA_BONUS");
+            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CHARISMA_BONUS", value);
+        }
+
         public virtual void ReduceItemStack()
         {
             int stackSize = _.GetItemStackSize(Object);

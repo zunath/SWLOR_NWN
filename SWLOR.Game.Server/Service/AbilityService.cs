@@ -217,7 +217,8 @@ namespace SWLOR.Game.Server.Service
                                PerkExecutionType executionType)
         {
             string uuid = Guid.NewGuid().ToString("N");
-            int itemBonus = _playerStat.EffectiveCastingSpeed(pc);
+            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(pc);
+            int itemBonus = effectiveStats.CastingSpeed;
             float baseActivationTime = perk.CastingTime(pc, (float)entity.BaseCastingTime);
             float activationTime = baseActivationTime;
             int vfxID = -1;
@@ -593,7 +594,8 @@ namespace SWLOR.Game.Server.Service
                     perkRate = 0.5f * perkBonus;
                 }
 
-                float damageRate = 1.0f + perkRate + (_playerStat.EffectiveSneakAttackBonus(player) * 0.05f);
+                var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
+                float damageRate = 1.0f + perkRate + (effectiveStats.SneakAttack * 0.05f);
                 data.Base = (int)(data.Base * damageRate);
 
                 if (target.IsNPC)

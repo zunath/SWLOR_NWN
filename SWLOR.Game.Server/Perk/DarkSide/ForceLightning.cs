@@ -61,7 +61,8 @@ namespace SWLOR.Game.Server.Perk.DarkSide
 
         public void OnImpact(NWPlayer player, NWObject target, int level)
         {
-            int darkBonus = _playerStat.EffectiveDarkAbilityBonus(player);
+            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
+            int darkBonus = effectiveStats.DarkAbility;
             int amount;
             int length;
             int dotAmount;
@@ -131,7 +132,7 @@ namespace SWLOR.Game.Server.Perk.DarkSide
                 default: return;
             }
 
-            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky) + _playerStat.EffectiveLuckBonus(player);
+            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
             if (_random.Random(100) + 1 <= luck)
             {
                 length = length * 2;

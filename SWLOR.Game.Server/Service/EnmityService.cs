@@ -62,7 +62,8 @@ namespace SWLOR.Game.Server.Service
             if (attacker.IsPlayer)
             {
                 NWPlayer player = (attacker.Object);
-                effectiveEnmityRate = _playerStat.EffectiveEnmityRate(player);
+                var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
+                effectiveEnmityRate = effectiveStats.EnmityRate;
             }
 
             volatileAdjust = (int)(effectiveEnmityRate * volatileAdjust);

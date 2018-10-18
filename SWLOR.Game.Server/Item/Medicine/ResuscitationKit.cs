@@ -45,6 +45,7 @@ namespace SWLOR.Game.Server.Item.Medicine
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
             NWPlayer player = user.Object;
+            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
             PCSkill skill = _skill.GetPCSkill(player, SkillType.Medicine);
             int perkLevel = _perk.GetPCPerkLevel(player, PerkType.ResuscitationDevices);
             int rank = item.GetLocalInt("RANK");
@@ -68,7 +69,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             }
 
             baseHeal += perkLevel * 2;
-            baseHeal += _playerStat.EffectiveMedicineBonus(player) / 2;
+            baseHeal += effectiveStats.Medicine / 2;
             baseHeal += item.MedicineBonus / 2;
 
             int delta = item.RecommendedLevel - skill.Rank;

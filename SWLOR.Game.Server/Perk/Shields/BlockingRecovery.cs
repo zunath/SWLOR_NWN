@@ -51,6 +51,7 @@ namespace SWLOR.Game.Server.Perk.Shields
 
         public void OnImpact(NWPlayer player, NWObject target, int perkLevel)
         {
+            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
             int chance;
             int amount;
 
@@ -80,7 +81,7 @@ namespace SWLOR.Game.Server.Perk.Shields
                     return;
             }
 
-            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky) + _playerStat.EffectiveLuckBonus(player);
+            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
             chance += luck;
 
             if (_random.Random(100) + 1 <= chance)

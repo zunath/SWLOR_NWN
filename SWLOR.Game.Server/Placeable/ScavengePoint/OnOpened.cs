@@ -42,10 +42,11 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
         public bool Run(params object[] args)
         {
             NWPlaceable point = (Object.OBJECT_SELF);
+            NWPlayer oPC = (_.GetLastOpenedBy());
+            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(oPC);
             const int baseChanceToFullyHarvest = 50;
             bool alwaysDestroys = point.GetLocalInt("SCAVENGE_POINT_ALWAYS_DESTROYS") == 1;
             
-            NWPlayer oPC = (_.GetLastOpenedBy());
             bool hasBeenSearched = point.GetLocalInt("SCAVENGE_POINT_FULLY_HARVESTED") == 1;
             if (hasBeenSearched)
             {
@@ -81,7 +82,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
             if (dc <= 4) dc = 4;
             int searchAttempts = 1 + CalculateSearchAttempts(oPC);
 
-            int luck = _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + _playerStat.EffectiveLuckBonus(oPC);
+            int luck = _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + effectiveStats.Luck;
             if (_random.Random(100) + 1 <= luck / 2)
             {
                 dc--;

@@ -54,8 +54,9 @@ namespace SWLOR.Game.Server.Perk.LightSide
 
         public void OnImpact(NWPlayer player, NWObject target, int level)
         {
-            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky) + _playerStat.EffectiveLuckBonus(player);
-            int lightBonus = _playerStat.EffectiveLightAbilityBonus(player);
+            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
+            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
+            int lightBonus = effectiveStats.LightAbility;
             int min = 1;
             float length;
             int damage;

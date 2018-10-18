@@ -23,7 +23,6 @@ namespace SWLOR.Game.Server.SpawnRule
         {
             int roll = _random.Random(0, 100);
             ResourceQuality quality = ResourceQuality.Low;
-            ResourceType resourceType = ResourceType.Ore;
             string qualityName = "Low Quality";
 
             const int NormalQualityChance = 20;

@@ -94,6 +94,13 @@ namespace SWLOR.Game.Server.Item
 
             if (remaining <= 0)
             {
+                NWPlaceable prop = target.GetLocalObject("RESOURCE_PROP_OBJ");
+
+                if(prop.IsValid)
+                {
+                    prop.Destroy();
+                }
+
                 target.Destroy();
                 user.DeleteLocalInt(target.GlobalID);
             }
@@ -142,6 +149,11 @@ namespace SWLOR.Game.Server.Item
 
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
+            if (!target.IsValid)
+            {
+                return "Please select a target to harvest.";
+            }
+
             NWPlayer player = (user.Object);
             ResourceQuality quality = (ResourceQuality)target.GetLocalInt("RESOURCE_QUALITY");
             int tier = target.GetLocalInt("RESOURCE_TIER");
@@ -153,6 +165,7 @@ namespace SWLOR.Game.Server.Item
             {
                 return "Your Harvesting skill rank is too low to harvest this resource.";
             }
+
 
             return null;
         }

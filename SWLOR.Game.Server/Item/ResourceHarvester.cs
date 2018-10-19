@@ -87,8 +87,17 @@ namespace SWLOR.Game.Server.Item
                 }
             }
 
+            float decayMinimum = 0.03f;
+            float decayMaximum = 0.07f;
+
+            if(difficulty > 0)
+            {
+                decayMinimum += difficulty * 0.1f;
+                decayMaximum += difficulty * 0.1f;
+            }
+
             user.SendMessage("You harvest " + resource.Name + ".");
-            _durability.RunItemDecay(player, item, _random.RandomFloat(0.03f, 0.07f));
+            _durability.RunItemDecay(player, item, _random.RandomFloat(decayMinimum, decayMaximum));
             int xp = 350 + delta * 50;
             _skill.GiveSkillXP(player, SkillType.Harvesting, xp);
 
@@ -168,7 +177,7 @@ namespace SWLOR.Game.Server.Item
             int difficulty = (tier - 1) * 10 + _resource.GetDifficultyAdjustment(quality);
             int delta = difficulty - rank;
 
-            if (delta >= 7)
+            if (delta >= 5)
             {
                 return "Your Harvesting skill rank is too low to harvest this resource.";
             }

@@ -153,6 +153,11 @@ namespace SWLOR.Game.Server.Processor
                     });
                 }
 
+                App.Resolve<IObjectVisibilityService>(ovs =>
+                {
+                    ovs.ApplyVisibilityForObject(spawn.Spawn);
+                });
+
                 spawn.Timer = 0.0f;
             }
         }

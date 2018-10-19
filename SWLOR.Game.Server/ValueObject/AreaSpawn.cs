@@ -7,6 +7,8 @@ namespace SWLOR.Game.Server.ValueObject
     {
         public List<ObjectSpawn> Placeables { get; set; }
         public List<ObjectSpawn> Creatures { get; set; }
+        public float SecondsEmpty { get; set; }
+        public bool HasSpawned { get; set; }
 
         public AreaSpawn()
         {

@@ -44,37 +44,78 @@ namespace SWLOR.Game.Server.Processor
                 if (!spawn.Key.IsValid) continue;
 
                 AreaSpawn areaSpawn = spawn.Value;
+                int pcsInArea = NWModule.Get().Players.Count(x => x.Area.Equals(spawn.Key));
 
-                foreach (var plc in areaSpawn.Placeables.Where(x => x.Respawns || !x.Respawns && !x.HasSpawnedOnce))
+                // No players in area. Process the despawner.
+                if(pcsInArea <= 0 && areaSpawn.HasSpawned)
                 {
-                    ProcessSpawn(plc, OBJECT_TYPE_PLACEABLE, spawn.Key);
+                    areaSpawn.SecondsEmpty += _processor.ProcessingTickInterval;
+
+                    if(areaSpawn.SecondsEmpty >= 1200) // 20 minutes have passed with no players in the area.
+                    {
+                        areaSpawn.SecondsEmpty = 0.0f;
+                        areaSpawn.HasSpawned = false;
+
+                        foreach(var plc in areaSpawn.Placeables)
+                        {
+                            if(plc.Spawn.IsValid)
+                            {
+                                plc.Spawn.Destroy();
+                            }
+                        }
+
+                        foreach(var creature in areaSpawn.Creatures)
+                        {
+                            if(creature.Spawn.IsValid)
+                            {
+                                creature.Spawn.Destroy();
+                            }
+                        }
+                    }
                 }
-
-                foreach (var creature in areaSpawn.Creatures.Where(x => x.Respawns || !x.Respawns && !x.HasSpawnedOnce))
+                // Players in the area
+                else if(pcsInArea > 0)
                 {
-                    ProcessSpawn(creature, OBJECT_TYPE_CREATURE, spawn.Key);
+                    bool forceSpawn = !areaSpawn.HasSpawned;
+
+                    foreach (var plc in areaSpawn.Placeables.Where(x => x.Respawns || !x.Respawns && !x.HasSpawnedOnce))
+                    {
+                        ProcessSpawn(plc, OBJECT_TYPE_PLACEABLE, spawn.Key, forceSpawn);
+                    }
+
+                    foreach (var creature in areaSpawn.Creatures.Where(x => x.Respawns || !x.Respawns && !x.HasSpawnedOnce))
+                    {
+                        ProcessSpawn(creature, OBJECT_TYPE_CREATURE, spawn.Key, forceSpawn);
+                    }
+
+                    areaSpawn.SecondsEmpty = 0.0f;
+                    areaSpawn.HasSpawned = true;
+
                 }
             }
         }
 
 
-        private void ProcessSpawn(ObjectSpawn spawn, int objectType, NWArea area)
+        private void ProcessSpawn(ObjectSpawn spawn, int objectType, NWArea area, bool forceSpawn)
         {
             // Don't process anything that's valid.
             if (spawn.Spawn.IsValid) return;
+
             spawn.Timer += _processor.ProcessingTickInterval;
 
             // Time to respawn!
-            if (spawn.Timer >= spawn.RespawnTime)
+            if (spawn.Timer >= spawn.RespawnTime || forceSpawn)
             {
                 string resref = spawn.Resref;
-                Location location = spawn.IsStaticSpawnPoint ? spawn.SpawnLocation : null;
+                NWLocation location = spawn.IsStaticSpawnPoint ? spawn.SpawnLocation : null;
+
                 spawn.HasSpawnedOnce = true;
 
                 if (string.IsNullOrWhiteSpace(resref))
                 {
                     var dbSpawn = _db.SpawnObjects.Where(x => x.SpawnID == spawn.SpawnTableID)
                         .OrderBy(o => Guid.NewGuid()).First();
+
                     resref = dbSpawn.Resref;
                 }
 
@@ -83,7 +124,7 @@ namespace SWLOR.Game.Server.Processor
                     location = _spawn.GetRandomSpawnPoint(area);
                 }
 
-                spawn.Spawn = (_.CreateObject(objectType, resref, location));
+                spawn.Spawn = _.CreateObject(objectType, resref, location);
 
                 if (!spawn.Spawn.IsValid)
                 {
@@ -103,7 +144,6 @@ namespace SWLOR.Game.Server.Processor
 
                 if (objectType == OBJECT_TYPE_CREATURE)
                     _spawn.AssignScriptEvents(spawn.Spawn.Object);
-
 
                 if (!string.IsNullOrWhiteSpace(spawn.SpawnRule))
                 {

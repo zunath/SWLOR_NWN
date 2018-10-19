@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.AI
         public override BehaviourTreeBuilder Behaviour =>
             base.Behaviour
                 .Do<CleanUpEnmity>(Self)
+                .Do<AttackHighestEnmity>(Self)
                 .Do<EquipBestMelee>(Self)
                 .Do<EquipBestRanged>(Self)
                 .Do<AggroTargetBySound>(Self)

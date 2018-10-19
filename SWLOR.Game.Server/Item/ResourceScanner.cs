@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Item
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
+            _.ApplyEffectAtLocation(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_DUR_PARALYZE_HOLD), target.Location, Seconds(user, item, target, targetLocation, null));
             return null;
         }
 

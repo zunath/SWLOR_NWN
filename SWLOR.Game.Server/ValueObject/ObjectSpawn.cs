@@ -22,20 +22,20 @@ namespace SWLOR.Game.Server.ValueObject
 
         public NWPlaceable SpawnPlaceable => (Spawn.Object);
         public NWCreature SpawnCreature => (Spawn.Object);
-
-        public ObjectSpawn(NWObject spawn, bool isStaticSpawnPoint, string resref, float respawnTime = 120.0f)
+        
+        public ObjectSpawn(NWLocation location, bool isStaticSpawnPoint, string resref, float respawnTime = 120.0f)
         {
-            Spawn = spawn;
-            SpawnLocation = spawn.Location;
+            Spawn = new Object();
+            SpawnLocation = location;
             IsStaticSpawnPoint = isStaticSpawnPoint;
             RespawnTime = respawnTime;
             Resref = resref;
             Respawns = true;
         }
-        public ObjectSpawn(NWObject spawn, bool isStaticSpawnPoint, int spawnTableID, float respawnTime = 120.0f)
+        public ObjectSpawn(NWLocation location, bool isStaticSpawnPoint, int spawnTableID, float respawnTime = 120.0f)
         {
-            Spawn = spawn;
-            SpawnLocation = spawn.Location;
+            Spawn = new Object();
+            SpawnLocation = location;
             IsStaticSpawnPoint = isStaticSpawnPoint;
             RespawnTime = respawnTime;
             SpawnTableID = spawnTableID;

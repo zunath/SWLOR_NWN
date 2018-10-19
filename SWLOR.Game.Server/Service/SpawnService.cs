@@ -104,72 +104,52 @@ namespace SWLOR.Game.Server.Service
                         // Delay the creation so that the iteration through the area doesn't get thrown off by new entries.
                         Location location = obj.Location;
                         bool isInstance = area.IsInstance;
-
-                        _.DelayCommand(0.5f, () =>
+                        
+                        ObjectSpawn newSpawn;
+                        if (useResref)
                         {
-                            NWObject spawn = _.CreateObject(objectType, spawnResref, location);
-                            if (objectType == OBJECT_TYPE_CREATURE)
-                                AssignScriptEvents(spawn.Object);
+                            newSpawn = new ObjectSpawn(location, true, spawnResref, respawnTime);
+                        }
+                        else
+                        {
+                            newSpawn = new ObjectSpawn(location, true, spawnTableID, respawnTime);
+                        }
 
-                            App.Resolve<IObjectVisibilityService>(ovs =>
-                            {
-                                ovs.ApplyVisibilityForObject(spawn);
-                            });
+                        if (npcGroupID > 0)
+                        {
+                            newSpawn.NPCGroupID = npcGroupID;
+                        }
 
-                            ObjectSpawn newSpawn;
-                            if (useResref)
-                            {
-                                newSpawn = new ObjectSpawn(spawn, true, spawnResref, respawnTime);
-                            }
-                            else
-                            {
-                                newSpawn = new ObjectSpawn(spawn, true, spawnTableID, respawnTime);
-                            }
+                        if (deathVFXID > 0)
+                        {
+                            newSpawn.DeathVFXID = deathVFXID;
+                        }
 
-                            if (npcGroupID > 0)
-                            {
-                                spawn.SetLocalInt("NPC_GROUP", npcGroupID);
-                                newSpawn.NPCGroupID = npcGroupID;
-                            }
+                        if (!string.IsNullOrWhiteSpace(behaviourScript))
+                        {
+                            newSpawn.BehaviourScript = behaviourScript;
+                        }
 
-                            if (deathVFXID > 0)
-                            {
-                                spawn.SetLocalInt("DEATH_VFX", deathVFXID);
-                                newSpawn.DeathVFXID = deathVFXID;
-                            }
+                        if (!string.IsNullOrWhiteSpace(spawnRule))
+                        {
+                            newSpawn.SpawnRule = spawnRule;
+                        }
 
-                            if (!string.IsNullOrWhiteSpace(behaviourScript) &&
-                                string.IsNullOrWhiteSpace(spawn.GetLocalString("BEHAVIOUR")))
-                            {
-                                spawn.SetLocalString("BEHAVIOUR", behaviourScript);
-                                newSpawn.BehaviourScript = behaviourScript;
-                            }
+                        // Instance spawns are one-shot.
+                        if (isInstance)
+                        {
+                            newSpawn.Respawns = false;
+                        }
 
-                            if (!string.IsNullOrWhiteSpace(spawnRule))
-                            {
-                                newSpawn.SpawnRule = spawnRule;
-
-                                App.ResolveByInterface<ISpawnRule>("SpawnRule." + spawnRule, rule =>
-                                {
-                                    rule.Run(spawn);
-                                });
-                            }
-
-                            // Instance spawns are one-shot.
-                            if (isInstance)
-                            {
-                                newSpawn.Respawns = false;
-                            }
-
-                            if (objectType == OBJECT_TYPE_CREATURE)
-                            {
-                                areaSpawn.Creatures.Add(newSpawn);
-                            }
-                            else if (objectType == OBJECT_TYPE_PLACEABLE)
-                            {
-                                areaSpawn.Placeables.Add(newSpawn);
-                            }
-                        });
+                        if (objectType == OBJECT_TYPE_CREATURE)
+                        {
+                            areaSpawn.Creatures.Add(newSpawn);
+                        }
+                        else if (objectType == OBJECT_TYPE_PLACEABLE)
+                        {
+                            areaSpawn.Placeables.Add(newSpawn);
+                        }
+                        
 
                     }
                 }
@@ -256,7 +236,8 @@ namespace SWLOR.Game.Server.Service
                     var dbSpawn = possibleSpawns.ElementAt(index);
                     Location location = GetRandomSpawnPoint(area, db);
                     NWPlaceable plc = (_.CreateObject(OBJECT_TYPE_PLACEABLE, dbSpawn.Resref, location));
-                    ObjectSpawn spawn = new ObjectSpawn(plc, false, dbArea.ResourceSpawnTableID, 600.0f);
+                    ObjectSpawn spawn = new ObjectSpawn(location, false, dbArea.ResourceSpawnTableID, 600.0f);
+                    spawn.Spawn = plc;
 
                     App.Resolve<IObjectVisibilityService>(ovs =>
                     {

@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             NWPlayer player = (user.Object);
             var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
 
-            _customEffect.RemovePCCustomEffect((NWPlayer)target, CustomEffectType.Bleeding);
+            _customEffect.RemovePCCustomEffect(target.Object, CustomEffectType.Bleeding);
             player.SendMessage("You finish bandaging " + target.Name + "'s wounds.");
             
             PCSkill skill = _skill.GetPCSkill(player, SkillType.Medicine);
@@ -63,12 +63,12 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            if (_random.Random(100) + 1 <= _perk.GetPCPerkLevel((NWPlayer)user, PerkType.SpeedyFirstAid) * 10)
+            if (_random.Random(100) + 1 <= _perk.GetPCPerkLevel(user.Object, PerkType.SpeedyFirstAid) * 10)
             {
                 return 0.1f;
             }
 
-            PCSkill skill = _skill.GetPCSkill((NWPlayer)user, SkillType.Medicine);
+            PCSkill skill = _skill.GetPCSkill(user.Object, SkillType.Medicine);
             float seconds = 6.0f - (skill.Rank * 0.2f);
             if (seconds < 1.0f) seconds = 1.0f;
             return seconds;
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return "Only players may be targeted with this item.";
             }
 
-            if (!_customEffect.DoesPCHaveCustomEffect((NWPlayer)target, CustomEffectType.Bleeding))
+            if (!_customEffect.DoesPCHaveCustomEffect(target.Object, CustomEffectType.Bleeding))
             {
                 return "Your target is not bleeding.";
             }

@@ -42,7 +42,8 @@
         ConstitutionUp = 37,
         WisdomUp = 38,
         IntelligenceUp = 39,
-        CharismaUp = 40
+        CharismaUp = 40,
+        AttackBonusUp = 41
         
 
     }

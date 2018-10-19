@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Perk.MartialArts
 
         private void DoHeal(NWObject target, int perkLevel, int minimum)
         {
-            float percentage = perkLevel * 0.05f;
+            float percentage = perkLevel * 0.10f;
             int heal = (int)(target.MaxHP * percentage);
 
             heal = _random.Random(minimum, heal);

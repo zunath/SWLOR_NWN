@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Processor
             IBehaviourTreeNode node = (IBehaviourTreeNode)args[0];
             NWCreature creature = (NWCreature)args[1];
 
-            if (creature.IsValid)
+            if (creature.IsValid && !creature.IsDead)
             {
                 node.Tick(time);
             }

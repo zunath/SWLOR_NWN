@@ -579,6 +579,11 @@ namespace SWLOR.Game.Server.GameObject
             get => _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CHARISMA_BONUS");
             set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CHARISMA_BONUS", value);
         }
+        public virtual int DurationBonus
+        {
+            get => _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_DURATION_BONUS");
+            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_DURATION_BONUS", value);
+        }
 
         public virtual void ReduceItemStack()
         {

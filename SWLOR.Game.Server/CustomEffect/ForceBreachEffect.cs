@@ -42,8 +42,8 @@ namespace SWLOR.Game.Server.CustomEffect
                     damage = 4;
                     break;
             }
-
-            oTarget.AssignCommand(() =>
+            
+            oCaster.AssignCommand(() =>
             {
                 Effect effect = _.EffectDamage(damage, DAMAGE_TYPE_SONIC);
                 _.ApplyEffectToObject(DURATION_TYPE_INSTANT, effect, oTarget);

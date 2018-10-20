@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
+using System;
 using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Perk.LightSide
@@ -140,10 +141,10 @@ namespace SWLOR.Game.Server.Perk.LightSide
 
             Effect damage = _.EffectDamage(amount);
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, damage, target.Object);
-
+            
             if (length > 0.0f && dotAmount > 0)
             {
-                _customEffect.ApplyCustomEffect(player, (NWCreature)target, CustomEffectType.ForceBreach, length, level, null);
+                _customEffect.ApplyCustomEffect(player, target.Object, CustomEffectType.ForceBreach, length, level, null);
             }
 
             _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.LightSideAbilities);

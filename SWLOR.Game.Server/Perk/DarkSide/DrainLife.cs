@@ -11,11 +11,13 @@ namespace SWLOR.Game.Server.Perk.DarkSide
         private readonly INWScript _;
         private readonly IRandomService _random;
         private readonly IPlayerStatService _stat;
+        private readonly ISkillService _skill;
 
         public DrainLife(
             INWScript script,
             IRandomService random,
-            IPlayerStatService stat)
+            IPlayerStatService stat,
+            ISkillService skill)
         {
             _ = script;
             _random = random;
@@ -100,6 +102,7 @@ namespace SWLOR.Game.Server.Perk.DarkSide
                 _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_BEAM_MIND), target, 1.0f);
             });
 
+            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.DarkSideAbilities);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

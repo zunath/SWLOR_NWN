@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return "Only players may be targeted with this item.";
             }
 
-            if (target.CurrentHP <= -11)
+            if (target.CurrentHP > -11)
             {
                 return "Your target is not dead.";
             }

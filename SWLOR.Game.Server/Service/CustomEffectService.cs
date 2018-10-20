@@ -162,7 +162,8 @@ namespace SWLOR.Game.Server.Service
                     Caster = caster,
                     CustomEffectID = customEffectID,
                     EffectName = effectEntity.Name,
-                    Target = target
+                    Target = target,
+                    EffectiveLevel = effectiveLevel
                 };
 
                 _state.NPCEffects.Add(spellModel, 0);
@@ -173,7 +174,7 @@ namespace SWLOR.Game.Server.Service
                 caster.SendMessage("A more powerful effect already exists on your target.");
                 return;
             }
-            
+
             App.ResolveByInterface<ICustomEffect>("CustomEffect." + effectEntity.ScriptHandler, handler =>
             {
                 if (string.IsNullOrWhiteSpace(data))

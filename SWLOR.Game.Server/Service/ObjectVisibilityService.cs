@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var player in players)
             {
-                var visibility = pcVisibilities.SingleOrDefault(x => x.PlayerID == player.GlobalID);
+                var visibility = pcVisibilities.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.VisibilityObjectID == visibilityObjectID);
 
                 if (visibility == null)
                 {

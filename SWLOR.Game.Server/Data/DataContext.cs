@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Data
             var password = Environment.GetEnvironmentVariable("SQL_SERVER_PASSWORD");
             var database = Environment.GetEnvironmentVariable("SQL_SERVER_DATABASE");
 
-            return $"server={ipAddress};database={database};user id={username};password={password};Integrated Security=False;MultipleActiveResultSets=True;TrustServerCertificate=True;Encrypt=False";
+            return $"server={ipAddress};database={database};user id={username};password='{password}';Integrated Security=False;MultipleActiveResultSets=True;TrustServerCertificate=True;Encrypt=False";
         }
 
         public virtual IDbSet<ApartmentBuilding> ApartmentBuildings { get; set; }

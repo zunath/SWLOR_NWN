@@ -43,7 +43,8 @@
         WisdomUp = 38,
         IntelligenceUp = 39,
         CharismaUp = 40,
-        AttackBonusUp = 41
+        AttackBonusUp = 41,
+        DurationUp = 42
         
 
     }

@@ -166,6 +166,9 @@ namespace SWLOR.Game.Server.Service
                     case ComponentBonusType.AttackBonusUp:
                         prop = _.ItemPropertyAttackBonus(amount);
                         break;
+                    case ComponentBonusType.DurationUp:
+                        product.DurationBonus += amount;
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }

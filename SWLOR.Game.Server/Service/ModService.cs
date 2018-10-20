@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Service
                         modSlots.RedSlots++;
                         break;
                     case (int)CustomItemPropertyType.ModSlotBlue:
-                        modSlots.YellowSlots++;
+                        modSlots.BlueSlots++;
                         break;
                     case (int)CustomItemPropertyType.ModSlotGreen:
                         modSlots.GreenSlots++;

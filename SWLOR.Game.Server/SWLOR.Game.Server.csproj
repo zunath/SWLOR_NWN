@@ -710,6 +710,7 @@
     <Compile Include="Perk\Medicine\MedicineEfficiency.cs" />
     <Compile Include="Perk\Medicine\MedicineOptimization.cs" />
     <Compile Include="Perk\Medicine\RangedHealing.cs" />
+    <Compile Include="Perk\Medicine\ResuscitationDevices.cs" />
     <Compile Include="Perk\Medicine\SpeedyMedicine.cs" />
     <Compile Include="Perk\Medicine\StimFiend.cs" />
     <Compile Include="Perk\General\Rest.cs" />

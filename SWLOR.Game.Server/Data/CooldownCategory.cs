@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public CooldownCategory()
         {
+            this.Name = "";
             this.PCCooldowns = new HashSet<PCCooldown>();
             this.Perks = new HashSet<Perk>();
         }

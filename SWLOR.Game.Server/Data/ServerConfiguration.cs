@@ -14,6 +14,13 @@ namespace SWLOR.Game.Server.Data
     
     public partial class ServerConfiguration
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public ServerConfiguration()
+        {
+            this.ServerName = "";
+            this.MessageOfTheDay = "";
+        }
+    
         public int ServerConfigurationID { get; set; }
         public string ServerName { get; set; }
         public string MessageOfTheDay { get; set; }

@@ -17,11 +17,19 @@ namespace SWLOR.Game.Server.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Quest()
         {
+            this.OnAcceptRule = "";
+            this.OnAdvanceRule = "";
+            this.OnCompleteRule = "";
+            this.OnKillTargetRule = "";
+            this.OnAcceptArgs = "";
+            this.OnAdvanceArgs = "";
+            this.OnCompleteArgs = "";
+            this.OnKillTargetArgs = "";
             this.PCQuestStatus = new HashSet<PCQuestStatus>();
             this.PerkLevelQuestRequirements = new HashSet<PerkLevelQuestRequirement>();
             this.QuestKillTargetLists = new HashSet<QuestKillTargetList>();
-            this.Quests = new HashSet<QuestPrerequisite>();
             this.QuestPrerequisites = new HashSet<QuestPrerequisite>();
+            this.RequiredQuests = new HashSet<QuestPrerequisite>();
             this.QuestRequiredItemLists = new HashSet<QuestRequiredItemList>();
             this.QuestRequiredKeyItemLists = new HashSet<QuestRequiredKeyItemList>();
             this.QuestRewardItems = new HashSet<QuestRewardItem>();
@@ -60,9 +68,9 @@ namespace SWLOR.Game.Server.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<QuestKillTargetList> QuestKillTargetLists { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<QuestPrerequisite> Quests { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<QuestPrerequisite> QuestPrerequisites { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<QuestPrerequisite> RequiredQuests { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<QuestRequiredItemList> QuestRequiredItemLists { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

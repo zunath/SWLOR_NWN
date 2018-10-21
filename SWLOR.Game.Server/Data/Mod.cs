@@ -14,6 +14,13 @@ namespace SWLOR.Game.Server.Data
     
     public partial class Mod
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Mod()
+        {
+            this.Name = "";
+            this.Script = "";
+        }
+    
         public int ModID { get; set; }
         public string Name { get; set; }
         public string Script { get; set; }

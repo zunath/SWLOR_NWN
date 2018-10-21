@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PCBase()
         {
+            this.CustomName = "";
             this.PCBasePermissions = new HashSet<PCBasePermission>();
             this.PCBaseStructures = new HashSet<PCBaseStructure>();
             this.PrimaryResidencePlayerCharacters = new HashSet<PlayerCharacter>();

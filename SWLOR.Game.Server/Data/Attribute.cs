@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Attribute()
         {
+            this.Name = "";
             this.PrimarySkills = new HashSet<Skill>();
             this.SecondarySkills = new HashSet<Skill>();
             this.TertiarySkills = new HashSet<Skill>();

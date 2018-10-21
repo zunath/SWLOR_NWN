@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PerkExecutionType()
         {
+            this.Name = "";
             this.Perks = new HashSet<Perk>();
         }
     

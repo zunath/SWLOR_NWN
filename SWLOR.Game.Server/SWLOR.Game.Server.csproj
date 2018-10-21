@@ -1237,6 +1237,7 @@
     <Compile Include="Processor\SpawnProcessor.cs" />
     <Compile Include="QuestRule\Contracts\IQuestRule.cs" />
     <Compile Include="QuestRule\CreditBonusRule.cs" />
+    <Compile Include="QuestRule\GiveItemRule.cs" />
     <Compile Include="QuestRule\HideQuestGiverRule.cs" />
     <Compile Include="QuestRule\FameBonusRule.cs" />
     <Compile Include="QuestRule\RemoveKeyItemsRule.cs" />

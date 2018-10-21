@@ -14,6 +14,14 @@ namespace SWLOR.Game.Server.Data
     
     public partial class ChatLog
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public ChatLog()
+        {
+            this.SenderAccountName = "";
+            this.SenderCDKey = "";
+            this.Message = "";
+        }
+    
         public long ChatLogID { get; set; }
         public int ChatChannelID { get; set; }
         public string SenderPlayerID { get; set; }

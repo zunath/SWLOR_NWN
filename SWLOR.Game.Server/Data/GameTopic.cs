@@ -14,6 +14,12 @@ namespace SWLOR.Game.Server.Data
     
     public partial class GameTopic
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public GameTopic()
+        {
+            this.Icon = "";
+        }
+    
         public int GameTopicID { get; set; }
         public string Name { get; set; }
         public string Text { get; set; }

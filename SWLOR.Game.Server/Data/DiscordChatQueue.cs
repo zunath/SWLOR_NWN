@@ -14,6 +14,14 @@ namespace SWLOR.Game.Server.Data
     
     public partial class DiscordChatQueue
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public DiscordChatQueue()
+        {
+            this.Message = "";
+            this.SenderAccountName = "";
+            this.SenderCDKey = "";
+        }
+    
         public int DiscordChatQueueID { get; set; }
         public string SenderName { get; set; }
         public string Message { get; set; }

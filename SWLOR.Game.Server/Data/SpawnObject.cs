@@ -14,6 +14,13 @@ namespace SWLOR.Game.Server.Data
     
     public partial class SpawnObject
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public SpawnObject()
+        {
+            this.SpawnRule = "";
+            this.BehaviourScript = "";
+        }
+    
         public int SpawnObjectID { get; set; }
         public int SpawnID { get; set; }
         public string Resref { get; set; }

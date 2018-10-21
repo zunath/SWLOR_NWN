@@ -558,7 +558,7 @@
           <Property Name="CustomEffectID" Type="bigint" Nullable="false" />
           <Property Name="Ticks" Type="int" Nullable="false" />
           <Property Name="EffectiveLevel" Type="int" Nullable="false" />
-          <Property Name="Data" Type="nvarchar" MaxLength="32" Nullable="false" />
+          <Property Name="Data" Type="nvarchar" MaxLength="32" Nullable="false" StoreGeneratedPattern="None" />
           <Property Name="CasterNWNObjectID" Type="nvarchar" MaxLength="10" Nullable="false" />
           <Property Name="StancePerkID" Type="int" />
         </EntityType>
@@ -3185,7 +3185,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           </Key>
           <Property Name="AttributeID" Type="Int32" Nullable="false" />
           <Property Name="NWNValue" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="3" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="3" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <NavigationProperty Name="PrimarySkills" Relationship="Self.FK_Skills_Primary" FromRole="Attributes" ToRole="Skills" />
           <NavigationProperty Name="SecondarySkills" Relationship="Self.FK_Skills_Secondary" FromRole="Attributes" ToRole="Skills" />
           <NavigationProperty Name="TertiarySkills" Relationship="Self.FK_Skills_Tertiary" FromRole="Attributes" ToRole="Skills" />
@@ -3205,9 +3205,9 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
             <PropertyRef Name="BackgroundID" />
           </Key>
           <Property Name="BackgroundID" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Description" Type="String" MaxLength="512" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Bonuses" Type="String" MaxLength="512" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
+          <Property Name="Description" Type="String" MaxLength="512" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
+          <Property Name="Bonuses" Type="String" MaxLength="512" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="BankItem">
@@ -3250,9 +3250,9 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           </Key>
           <Property Name="BaseStructureID" Type="Int32" Nullable="false" />
           <Property Name="BaseStructureTypeID" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="PlaceableResref" Type="String" MaxLength="16" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="ItemResref" Type="String" MaxLength="16" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
+          <Property Name="PlaceableResref" Type="String" MaxLength="16" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
+          <Property Name="ItemResref" Type="String" MaxLength="16" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
           <Property Name="Power" Type="Double" Nullable="false" />
           <Property Name="CPU" Type="Double" Nullable="false" />
@@ -3273,7 +3273,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
             <PropertyRef Name="BaseStructureTypeID" />
           </Key>
           <Property Name="BaseStructureTypeID" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
           <Property Name="CanPlaceInside" Type="Boolean" Nullable="false" />
           <Property Name="CanPlaceOutside" Type="Boolean" Nullable="false" />
@@ -3301,11 +3301,11 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
             <PropertyRef Name="BuildingStyleID" />
           </Key>
           <Property Name="BuildingStyleID" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Resref" Type="String" MaxLength="16" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
+          <Property Name="Resref" Type="String" MaxLength="16" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <Property Name="BaseStructureID" Type="Int32" />
           <Property Name="IsDefault" Type="Boolean" Nullable="false" />
-          <Property Name="DoorRule" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="DoorRule" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
           <Property Name="BuildingTypeID" Type="Int32" Nullable="false" />
           <Property Name="PurchasePrice" Type="Int32" Nullable="false" />
@@ -3330,7 +3330,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
             <PropertyRef Name="ChatChannelID" />
           </Key>
           <Property Name="ChatChannelID" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <NavigationProperty Name="ChatLogs" Relationship="Self.fk_ChatLog_ChatChannelID" FromRole="ChatChannelsDomain" ToRole="ChatLog" />
         </EntityType>
         <EntityType Name="ChatLog">
@@ -3340,12 +3340,12 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <Property Name="ChatLogID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ChatChannelID" Type="Int32" Nullable="false" />
           <Property Name="SenderPlayerID" Type="String" MaxLength="60" FixedLength="false" Unicode="true" />
-          <Property Name="SenderAccountName" Type="String" MaxLength="1024" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="SenderCDKey" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="SenderAccountName" Type="String" MaxLength="1024" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
+          <Property Name="SenderCDKey" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <Property Name="ReceiverPlayerID" Type="String" MaxLength="60" FixedLength="false" Unicode="true" />
           <Property Name="ReceiverAccountName" Type="String" MaxLength="1024" FixedLength="false" Unicode="true" />
           <Property Name="ReceiverCDKey" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
-          <Property Name="Message" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Message" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <Property Name="DateSent" Type="DateTime" Nullable="false" Precision="7" />
           <Property Name="SenderDMName" Type="String" MaxLength="60" FixedLength="false" Unicode="true" />
           <Property Name="ReceiverDMName" Type="String" MaxLength="60" FixedLength="false" Unicode="true" />
@@ -3379,7 +3379,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
             <PropertyRef Name="ComponentTypeID" />
           </Key>
           <Property Name="ComponentTypeID" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <NavigationProperty Name="MainCraftBlueprints" Relationship="Self.fk_CraftBlueprints_MainComponentTypeID" FromRole="ComponentTypes" ToRole="CraftBlueprints" />
           <NavigationProperty Name="SecondaryCraftBlueprints" Relationship="Self.fk_CraftBlueprints_SecondaryComponentTypeID" FromRole="ComponentTypes" ToRole="CraftBlueprints" />
           <NavigationProperty Name="TertiaryCraftBlueprints" Relationship="Self.fk_CraftBlueprints_TertiaryComponentTypeID" FromRole="ComponentTypes" ToRole="CraftBlueprints" />
@@ -3389,7 +3389,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
             <PropertyRef Name="CooldownCategoryID" />
           </Key>
           <Property Name="CooldownCategoryID" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <Property Name="BaseCooldownTime" Type="Double" Nullable="false" />
           <NavigationProperty Name="PCCooldowns" Relationship="Self.fk_PCCooldowns_CooldownCategoryID" FromRole="CooldownCategories" ToRole="PCCooldowns" />
           <NavigationProperty Name="Perks" Relationship="Self.fk_Perks_CooldownCategoryID" FromRole="CooldownCategories" ToRole="Perks" />
@@ -3444,7 +3444,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
             <PropertyRef Name="CraftDeviceID" />
           </Key>
           <Property Name="CraftDeviceID" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <NavigationProperty Name="CraftBlueprints" Relationship="Self.FK_CraftBlueprints_CraftDeviceID" FromRole="CraftDevices" ToRole="CraftBlueprints" />
         </EntityType>
         <EntityType Name="CustomEffect">
@@ -3467,14 +3467,14 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           </Key>
           <Property Name="DiscordChatQueueID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="SenderName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Message" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Message" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <Property Name="DateSent" Type="DateTime" Nullable="false" Precision="7" />
           <Property Name="DatePosted" Type="DateTime" Precision="7" />
           <Property Name="DateForRetry" Type="DateTime" Precision="7" />
           <Property Name="ResponseContent" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="RetryAttempts" Type="Int32" Nullable="false" />
-          <Property Name="SenderAccountName" Type="String" MaxLength="1024" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="SenderCDKey" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="SenderAccountName" Type="String" MaxLength="1024" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
+          <Property Name="SenderCDKey" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
         </EntityType>
         <EntityType Name="DMRoleDomain">
           <Key>
@@ -3489,9 +3489,9 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
             <PropertyRef Name="DownloadID" />
           </Key>
           <Property Name="DownloadID" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Description" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Url" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
+          <Property Name="Description" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
+          <Property Name="Url" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="EnmityAdjustmentRule">
@@ -3499,7 +3499,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
             <PropertyRef Name="EnmityAdjustmentRuleID" />
           </Key>
           <Property Name="EnmityAdjustmentRuleID" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <NavigationProperty Name="Perks" Relationship="Self.fk_Perks_EnmityAdjustmentRuleID" FromRole="EnmityAdjustmentRule" ToRole="Perks" />
         </EntityType>
         <EntityType Name="FameRegion">
@@ -3529,7 +3529,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <Property Name="GameTopicCategoryID" Type="Int32" Nullable="false" />
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
           <Property Name="Sequence" Type="Int32" Nullable="false" />
-          <Property Name="Icon" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Icon" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <NavigationProperty Name="GameTopicCategory" Relationship="Self.FK_GameTopics_GameTopicCategoryID" FromRole="GameTopics" ToRole="GameTopicCategories" />
         </EntityType>
         <EntityType Name="GrowingPlant">
@@ -3539,7 +3539,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <Property Name="GrowingPlantID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="PlantID" Type="Int32" Nullable="false" />
           <Property Name="RemainingTicks" Type="Int32" Nullable="false" />
-          <Property Name="LocationAreaTag" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="LocationAreaTag" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <Property Name="LocationX" Type="Double" Nullable="false" />
           <Property Name="LocationY" Type="Double" Nullable="false" />
           <Property Name="LocationZ" Type="Double" Nullable="false" />
@@ -3556,7 +3556,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
             <PropertyRef Name="ItemTypeID" />
           </Key>
           <Property Name="ItemTypeID" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
         </EntityType>
         <EntityType Name="KeyItemCategory">
           <Key>
@@ -3591,7 +3591,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <Property Name="MaxQuantity" Type="Int32" Nullable="false" />
           <Property Name="Weight" Type="Byte" Nullable="false" />
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
-          <Property Name="SpawnRule" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="SpawnRule" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <NavigationProperty Name="LootTable" Relationship="Self.fk_LootTableItems_LootTableID" FromRole="LootTableItems" ToRole="LootTables" />
         </EntityType>
         <EntityType Name="LootTable">
@@ -3611,8 +3611,8 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
             <PropertyRef Name="ModID" />
           </Key>
           <Property Name="ModID" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Script" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
+          <Property Name="Script" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="NPCGroup">
@@ -3663,7 +3663,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <Property Name="DateFuelEnds" Type="DateTime" Nullable="false" Precision="7" />
           <Property Name="PCBaseTypeID" Type="Int32" Nullable="false" />
           <Property Name="ApartmentBuildingID" Type="Int32" />
-          <Property Name="CustomName" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="CustomName" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <Property Name="BuildingStyleID" Type="Int32" />
           <NavigationProperty Name="ApartmentBuilding" Relationship="Self.FK_PCBases_ApartmentBuildingID" FromRole="PCBases" ToRole="ApartmentBuildings" />
           <NavigationProperty Name="BuildingStyle" Relationship="Self.FK_PCBases_BuildingStyleID" FromRole="PCBases" ToRole="BuildingStyles" />
@@ -3719,7 +3719,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <Property Name="InteriorStyleID" Type="Int32" />
           <Property Name="ExteriorStyleID" Type="Int32" />
           <Property Name="ParentPCBaseStructureID" Type="Int32" />
-          <Property Name="CustomName" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="CustomName" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <Property Name="StructureBonus" Type="Int32" Nullable="false" />
           <Property Name="DateNextActivity" Type="DateTime" Precision="7" />
           <NavigationProperty Name="BaseStructure" Relationship="Self.FK_PCBaseStructures_BaseStructureID" FromRole="PCBaseStructures" ToRole="BaseStructures" />
@@ -3771,8 +3771,8 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <Property Name="CustomEffectID" Type="Int64" Nullable="false" />
           <Property Name="Ticks" Type="Int32" Nullable="false" />
           <Property Name="EffectiveLevel" Type="Int32" Nullable="false" />
-          <Property Name="Data" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="CasterNWNObjectID" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Data" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" annotation:StoreGeneratedPattern="None" DefaultValue="" />
+          <Property Name="CasterNWNObjectID" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <Property Name="StancePerkID" Type="Int32" />
           <NavigationProperty Name="CustomEffect" Relationship="Self.fk_PCCustomEffects_CustomEffectID" FromRole="PCCustomEffects" ToRole="CustomEffects" />
           <NavigationProperty Name="PlayerCharacter" Relationship="Self.fk_PCCustomEffects_PlayerID" FromRole="PCCustomEffects" ToRole="PlayerCharacters" />
@@ -4001,7 +4001,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
             <PropertyRef Name="PerkCategoryID" />
           </Key>
           <Property Name="PerkCategoryID" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
           <Property Name="Sequence" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Perks" Relationship="Self.fk_Perks_PerkCategoryID" FromRole="PerkCategories" ToRole="Perks" />
@@ -4011,7 +4011,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
             <PropertyRef Name="PerkExecutionTypeID" />
           </Key>
           <Property Name="PerkExecutionTypeID" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <NavigationProperty Name="Perks" Relationship="Self.fk_Perks_ExecutionTypeID" FromRole="PerkExecutionTypes" ToRole="Perks" />
         </EntityType>
         <EntityType Name="PerkLevelQuestRequirement">
@@ -4032,7 +4032,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <Property Name="PerkID" Type="Int32" Nullable="false" />
           <Property Name="Level" Type="Int32" Nullable="false" />
           <Property Name="Price" Type="Int32" Nullable="false" />
-          <Property Name="Description" Type="String" MaxLength="512" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="512" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <NavigationProperty Name="PerkLevelQuestRequirements" Relationship="Self.FK_PerkLevelQuestRequirements_PerkLevelID" FromRole="PerkLevels" ToRole="PerkLevelQuestRequirements" />
           <NavigationProperty Name="Perk" Relationship="Self.FK_PerkLevels_PerkID" FromRole="PerkLevels" ToRole="Perks" />
           <NavigationProperty Name="PerkLevelSkillRequirements" Relationship="Self.FK_PerkLevelSkillRequirements_PerkLevelID" FromRole="PerkLevels" ToRole="PerkLevelSkillRequirements" />
@@ -4053,13 +4053,13 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
             <PropertyRef Name="PerkID" />
           </Key>
           <Property Name="PerkID" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="64" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="64" FixedLength="false" Unicode="false" Nullable="false" DefaultValue="" />
           <Property Name="FeatID" Type="Int32" />
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
-          <Property Name="ScriptName" Type="String" MaxLength="64" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ScriptName" Type="String" MaxLength="64" FixedLength="false" Unicode="false" Nullable="false" DefaultValue="" />
           <Property Name="BaseFPCost" Type="Int32" Nullable="false" />
           <Property Name="BaseCastingTime" Type="Double" Nullable="false" />
-          <Property Name="Description" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <Property Name="PerkCategoryID" Type="Int32" Nullable="false" />
           <Property Name="CooldownCategoryID" Type="Int32" />
           <Property Name="ExecutionTypeID" Type="Int32" Nullable="false" />
@@ -4082,12 +4082,12 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
             <PropertyRef Name="PlantID" />
           </Key>
           <Property Name="PlantID" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <Property Name="BaseTicks" Type="Int32" Nullable="false" />
-          <Property Name="Resref" Type="String" MaxLength="16" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Resref" Type="String" MaxLength="16" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <Property Name="WaterTicks" Type="Int32" Nullable="false" />
           <Property Name="Level" Type="Int32" Nullable="false" />
-          <Property Name="SeedResref" Type="String" MaxLength="16" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="SeedResref" Type="String" MaxLength="16" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <NavigationProperty Name="GrowingPlants" Relationship="Self.FK_GrowingPlants_PlantID" FromRole="Plants" ToRole="GrowingPlants" />
         </EntityType>
         <EntityType Name="PlayerCharacter">
@@ -4111,7 +4111,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <Property Name="MaxFP" Type="Int32" Nullable="false" />
           <Property Name="CurrentFP" Type="Int32" Nullable="false" />
           <Property Name="CurrentFPTick" Type="Int32" Nullable="false" />
-          <Property Name="RespawnAreaResref" Type="String" MaxLength="16" FixedLength="false" Unicode="true" />
+          <Property Name="RespawnAreaResref" Type="String" MaxLength="16" FixedLength="false" Unicode="true" DefaultValue="" />
           <Property Name="RespawnLocationX" Type="Double" Nullable="false" />
           <Property Name="RespawnLocationY" Type="Double" Nullable="false" />
           <Property Name="RespawnLocationZ" Type="Double" Nullable="false" />
@@ -4243,22 +4243,22 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <Property Name="MapNoteTag" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="StartKeyItemID" Type="Int32" />
           <Property Name="RemoveStartKeyItemAfterCompletion" Type="Boolean" Nullable="false" />
-          <Property Name="OnAcceptRule" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="OnAdvanceRule" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="OnCompleteRule" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="OnKillTargetRule" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="OnAcceptArgs" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="OnAdvanceArgs" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="OnCompleteArgs" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="OnKillTargetArgs" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="OnAcceptRule" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
+          <Property Name="OnAdvanceRule" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
+          <Property Name="OnCompleteRule" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
+          <Property Name="OnKillTargetRule" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
+          <Property Name="OnAcceptArgs" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
+          <Property Name="OnAdvanceArgs" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
+          <Property Name="OnCompleteArgs" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
+          <Property Name="OnKillTargetArgs" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <NavigationProperty Name="FameRegion" Relationship="Self.FK_Quests_FameRegionID" FromRole="Quests" ToRole="FameRegions" />
           <NavigationProperty Name="RewardKeyItem" Relationship="Self.FK_Quests_RewardKeyItemID" FromRole="Quests" ToRole="KeyItems" />
           <NavigationProperty Name="TemporaryKeyItem" Relationship="Self.FK_Quests_TemporaryKeyItemID" FromRole="Quests" ToRole="KeyItems" />
           <NavigationProperty Name="PCQuestStatus" Relationship="Self.FK_PCQuestStatus_QuestID" FromRole="Quests" ToRole="PCQuestStatus" />
           <NavigationProperty Name="PerkLevelQuestRequirements" Relationship="Self.FK_PerkLevelQuestRequirements_RequiredQuestID" FromRole="Quests" ToRole="PerkLevelQuestRequirements" />
           <NavigationProperty Name="QuestKillTargetLists" Relationship="Self.FK_QuestKillTargetList_QuestID" FromRole="Quests" ToRole="QuestKillTargetList" />
-          <NavigationProperty Name="Quests" Relationship="Self.FK_QuestPrerequisites_QuestID" FromRole="Quests" ToRole="QuestPrerequisites" />
-          <NavigationProperty Name="QuestPrerequisites" Relationship="Self.FK_QuestPrerequisites_RequiredQuestID" FromRole="Quests" ToRole="QuestPrerequisites" />
+          <NavigationProperty Name="QuestPrerequisites" Relationship="Self.FK_QuestPrerequisites_QuestID" FromRole="Quests" ToRole="QuestPrerequisites" />
+          <NavigationProperty Name="RequiredQuests" Relationship="Self.FK_QuestPrerequisites_RequiredQuestID" FromRole="Quests" ToRole="QuestPrerequisites" />
           <NavigationProperty Name="QuestRequiredItemLists" Relationship="Self.FK_QuestRequiredItemList_QuestID" FromRole="Quests" ToRole="QuestRequiredItemList" />
           <NavigationProperty Name="QuestRequiredKeyItemLists" Relationship="Self.FK_QuestRequiredKeyItemList_QuestID" FromRole="Quests" ToRole="QuestRequiredKeyItemList" />
           <NavigationProperty Name="QuestRewardItems" Relationship="Self.FK_QuestRewards_QuestID" FromRole="Quests" ToRole="QuestRewardItems" />
@@ -4293,8 +4293,8 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
             <PropertyRef Name="ServerConfigurationID" />
           </Key>
           <Property Name="ServerConfigurationID" Type="Int32" Nullable="false" />
-          <Property Name="ServerName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="MessageOfTheDay" Type="String" MaxLength="1024" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ServerName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" DefaultValue="" />
+          <Property Name="MessageOfTheDay" Type="String" MaxLength="1024" FixedLength="false" Unicode="false" Nullable="false" DefaultValue="" />
           <Property Name="AreaBakeStep" Type="Int32" Nullable="false" />
         </EntityType>
         <EntityType Name="SkillCategory">
@@ -4302,7 +4302,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
             <PropertyRef Name="SkillCategoryID" />
           </Key>
           <Property Name="SkillCategoryID" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
           <Property Name="Sequence" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Skills" Relationship="Self.FK_Skills_SkillCategoryID" FromRole="SkillCategories" ToRole="Skills" />
@@ -4313,10 +4313,10 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           </Key>
           <Property Name="SkillID" Type="Int32" Nullable="false" />
           <Property Name="SkillCategoryID" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <Property Name="MaxRank" Type="Int32" Nullable="false" />
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
-          <Property Name="Description" Type="String" MaxLength="1024" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="1024" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <Property Name="Primary" Type="Int32" Nullable="false" />
           <Property Name="Secondary" Type="Int32" Nullable="false" />
           <Property Name="Tertiary" Type="Int32" Nullable="false" />
@@ -4347,9 +4347,9 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <Property Name="SpawnID" Type="Int32" Nullable="false" />
           <Property Name="Resref" Type="String" MaxLength="16" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Weight" Type="Int32" Nullable="false" />
-          <Property Name="SpawnRule" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="SpawnRule" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <Property Name="NPCGroupID" Type="Int32" />
-          <Property Name="BehaviourScript" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="BehaviourScript" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <Property Name="DeathVFXID" Type="Int32" Nullable="false" />
           <NavigationProperty Name="NPCGroup" Relationship="Self.FK_SpawnObjects_NPCGroupID" FromRole="SpawnObjects" ToRole="NPCGroups" />
           <NavigationProperty Name="Spawn" Relationship="Self.FK_SpawnObjects_SpawnID" FromRole="SpawnObjects" ToRole="Spawns" />

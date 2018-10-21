@@ -17,6 +17,9 @@ namespace SWLOR.Game.Server.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Plant()
         {
+            this.Name = "";
+            this.Resref = "";
+            this.SeedResref = "";
             this.GrowingPlants = new HashSet<GrowingPlant>();
         }
     

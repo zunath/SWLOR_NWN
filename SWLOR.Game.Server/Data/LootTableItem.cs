@@ -14,6 +14,12 @@ namespace SWLOR.Game.Server.Data
     
     public partial class LootTableItem
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public LootTableItem()
+        {
+            this.SpawnRule = "";
+        }
+    
         public int LootTableItemID { get; set; }
         public int LootTableID { get; set; }
         public string Resref { get; set; }

@@ -22,11 +22,6 @@ namespace SWLOR.Game.Server.GameObject
             _state = App.GetAppState();
         }
 
-        public static implicit operator NWObject(uint objId)
-        {
-            return new NWObject(objId);
-        }
-
         public virtual bool IsInitializedAsPlayer
         {
             get

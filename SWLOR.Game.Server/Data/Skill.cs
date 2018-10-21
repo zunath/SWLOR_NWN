@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Data
         public int Primary { get; set; }
         public int Secondary { get; set; }
         public int Tertiary { get; set; }
+        public bool ContributesToSkillCap { get; set; }
     
         public virtual Attribute PrimaryAttribute { get; set; }
         public virtual Attribute SecondaryAttribute { get; set; }

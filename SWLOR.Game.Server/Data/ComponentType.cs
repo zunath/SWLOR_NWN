@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public ComponentType()
         {
+            this.Name = "";
             this.MainCraftBlueprints = new HashSet<CraftBlueprint>();
             this.SecondaryCraftBlueprints = new HashSet<CraftBlueprint>();
             this.TertiaryCraftBlueprints = new HashSet<CraftBlueprint>();

@@ -14,6 +14,14 @@ namespace SWLOR.Game.Server.Data
     
     public partial class Background
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Background()
+        {
+            this.Name = "";
+            this.Description = "";
+            this.Bonuses = "";
+        }
+    
         public int BackgroundID { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }

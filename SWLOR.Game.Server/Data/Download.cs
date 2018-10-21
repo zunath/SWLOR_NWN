@@ -14,6 +14,14 @@ namespace SWLOR.Game.Server.Data
     
     public partial class Download
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Download()
+        {
+            this.Name = "";
+            this.Description = "";
+            this.Url = "";
+        }
+    
         public int DownloadID { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }

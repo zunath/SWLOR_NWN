@@ -14,6 +14,12 @@ namespace SWLOR.Game.Server.Data
     
     public partial class ItemType
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public ItemType()
+        {
+            this.Name = "";
+        }
+    
         public int ItemTypeID { get; set; }
         public string Name { get; set; }
     }

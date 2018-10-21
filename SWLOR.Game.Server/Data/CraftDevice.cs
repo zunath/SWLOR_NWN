@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public CraftDevice()
         {
+            this.Name = "";
             this.CraftBlueprints = new HashSet<CraftBlueprint>();
         }
     

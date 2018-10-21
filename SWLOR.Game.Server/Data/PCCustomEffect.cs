@@ -14,6 +14,13 @@ namespace SWLOR.Game.Server.Data
     
     public partial class PCCustomEffect
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public PCCustomEffect()
+        {
+            this.Data = "";
+            this.CasterNWNObjectID = "";
+        }
+    
         public long PCCustomEffectID { get; set; }
         public string PlayerID { get; set; }
         public long CustomEffectID { get; set; }

@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PlayerCharacter()
         {
+            this.RespawnAreaResref = "";
             this.NortheastOwnedAreas = new HashSet<Area>();
             this.NorthwestOwnedAreas = new HashSet<Area>();
             this.SoutheastOwnedAreas = new HashSet<Area>();

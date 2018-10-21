@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PCBaseStructure()
         {
+            this.CustomName = "";
             this.PCBaseStructureItems = new HashSet<PCBaseStructureItem>();
             this.PCBaseStructurePermissions = new HashSet<PCBaseStructurePermission>();
             this.ChildStructures = new HashSet<PCBaseStructure>();

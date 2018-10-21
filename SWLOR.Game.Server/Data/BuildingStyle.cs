@@ -17,6 +17,9 @@ namespace SWLOR.Game.Server.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public BuildingStyle()
         {
+            this.Name = "";
+            this.Resref = "";
+            this.DoorRule = "";
             this.PCBases = new HashSet<PCBase>();
             this.ExteriorPCBaseStructures = new HashSet<PCBaseStructure>();
             this.InteriorPCBaseStructures = new HashSet<PCBaseStructure>();

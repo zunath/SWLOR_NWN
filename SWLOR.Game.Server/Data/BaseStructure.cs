@@ -17,6 +17,9 @@ namespace SWLOR.Game.Server.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public BaseStructure()
         {
+            this.Name = "";
+            this.PlaceableResref = "";
+            this.ItemResref = "";
             this.CraftBlueprints = new HashSet<CraftBlueprint>();
             this.BuildingStyles = new HashSet<BuildingStyle>();
             this.PCBaseStructures = new HashSet<PCBaseStructure>();

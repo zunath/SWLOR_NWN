@@ -17,6 +17,9 @@ namespace SWLOR.Game.Server.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Perk()
         {
+            this.Name = "";
+            this.ScriptName = "";
+            this.Description = "";
             this.CraftBlueprints = new HashSet<CraftBlueprint>();
             this.PCPerkRefunds = new HashSet<PCPerkRefund>();
             this.PCPerks = new HashSet<PCPerk>();

@@ -14,6 +14,12 @@ namespace SWLOR.Game.Server.Data
     
     public partial class GrowingPlant
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public GrowingPlant()
+        {
+            this.LocationAreaTag = "";
+        }
+    
         public int GrowingPlantID { get; set; }
         public int PlantID { get; set; }
         public int RemainingTicks { get; set; }

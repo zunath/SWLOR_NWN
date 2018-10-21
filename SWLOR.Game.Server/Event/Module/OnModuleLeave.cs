@@ -34,6 +34,11 @@ namespace SWLOR.Game.Server.Event.Module
         {
             NWPlayer pc = (_.GetExitingObject());
 
+            if (pc.IsDM)
+            {
+                App.GetAppState().ConnectedDMs.Remove(pc);
+            }
+
             if (pc.IsPlayer)
             {
                 _.ExportSingleCharacter(pc.Object);

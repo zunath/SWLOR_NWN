@@ -42,6 +42,21 @@ namespace SWLOR.Game.Server.GameObject
             }
         }
 
+        //
+        // -- BELOW THIS POINT IS JUNK TO MAKE THE API FRIENDLIER!
+        //
+
+        public static bool operator ==(NWModule lhs, NWModule rhs)
+        {
+            bool lhsNull = lhs is null;
+            bool rhsNull = rhs is null;
+            return (lhsNull && rhsNull) || (!lhsNull && !rhsNull && lhs.Object == rhs.Object);
+        }
+
+        public static bool operator !=(NWModule lhs, NWModule rhs)
+        {
+            return !(lhs == rhs);
+        }
 
         public static implicit operator Object(NWModule o)
         {

@@ -21,14 +21,30 @@ namespace SWLOR.Game.Server.GameObject
             set => _.SetLocked(Object, value ? 1 : 0);
         }
 
+        //
+        // -- BELOW THIS POINT IS JUNK TO MAKE THE API FRIENDLIER!
+        //
+
+        public static bool operator ==(NWPlaceable lhs, NWPlaceable rhs)
+        {
+            bool lhsNull = lhs is null;
+            bool rhsNull = rhs is null;
+            return (lhsNull && rhsNull) || (!lhsNull && !rhsNull && lhs.Object == rhs.Object);
+        }
+
+        public static bool operator !=(NWPlaceable lhs, NWPlaceable rhs)
+        {
+            return !(lhs == rhs);
+        }
+
         public static implicit operator Object(NWPlaceable o)
         {
             return o.Object;
         }
+
         public static implicit operator NWPlaceable(Object o)
         {
             return new NWPlaceable(o);
         }
-
     }
 }

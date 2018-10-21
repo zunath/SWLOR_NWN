@@ -18,8 +18,8 @@ namespace SWLOR.Game.Server.Data
         public BuildingStyle()
         {
             this.PCBases = new HashSet<PCBase>();
-            this.PCBaseStructures = new HashSet<PCBaseStructure>();
-            this.PCBaseStructures1 = new HashSet<PCBaseStructure>();
+            this.ExteriorPCBaseStructures = new HashSet<PCBaseStructure>();
+            this.InteriorPCBaseStructures = new HashSet<PCBaseStructure>();
         }
     
         public int BuildingStyleID { get; set; }
@@ -39,8 +39,8 @@ namespace SWLOR.Game.Server.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PCBase> PCBases { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PCBaseStructure> PCBaseStructures { get; set; }
+        public virtual ICollection<PCBaseStructure> ExteriorPCBaseStructures { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PCBaseStructure> PCBaseStructures1 { get; set; }
+        public virtual ICollection<PCBaseStructure> InteriorPCBaseStructures { get; set; }
     }
 }

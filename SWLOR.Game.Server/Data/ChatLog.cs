@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Data
         public string ReceiverDMName { get; set; }
     
         public virtual ChatChannelsDomain ChatChannelsDomain { get; set; }
-        public virtual PlayerCharacter PlayerCharacter { get; set; }
-        public virtual PlayerCharacter PlayerCharacter1 { get; set; }
+        public virtual PlayerCharacter ReceiverPlayerCharacter { get; set; }
+        public virtual PlayerCharacter SenderPlayerCharacter { get; set; }
     }
 }

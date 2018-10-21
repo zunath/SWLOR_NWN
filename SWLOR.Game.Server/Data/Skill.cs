@@ -33,9 +33,9 @@ namespace SWLOR.Game.Server.Data
         public int Secondary { get; set; }
         public int Tertiary { get; set; }
     
-        public virtual Attribute Attribute { get; set; }
-        public virtual Attribute Attribute1 { get; set; }
-        public virtual Attribute Attribute2 { get; set; }
+        public virtual Attribute PrimaryAttribute { get; set; }
+        public virtual Attribute SecondaryAttribute { get; set; }
+        public virtual Attribute TertiaryAttribute { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CraftBlueprint> CraftBlueprints { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

@@ -86,12 +86,22 @@ namespace SWLOR.Game.Server.Service
             NWPlayer sender = _nwnxChat.GetSender().Object;
             string message = _nwnxChat.GetMessage();
 
+            if (ChatCommandService.CanHandleChat(sender, message) ||
+                BaseService.CanHandleChat(sender, message) ||
+                CraftService.CanHandleChat(sender, message))
+            {
+                // This will be handled by other services, so just bail.
+                return;
+            }
+
+
             if (channel == ChatChannelType.PlayerDM)
             {
                 // Simply echo the message back to the player.
                 _nwnxChat.SendMessage((int)ChatChannelType.ServerMessage, "(Sent to DM) " + message, sender, sender);
                 return;
             }
+
 
             // At this point, every channel left is one we want to manually handle.
             _nwnxChat.SkipMessage();
@@ -103,9 +113,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            // TODO: If chat command, skip.
 
-            // TODO: If crafting command, skip.
 
             // TODO - Assume emote mode is regular.
             List<ChatComponent> chatComponents;

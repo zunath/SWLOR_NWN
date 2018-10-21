@@ -469,16 +469,23 @@ namespace SWLOR.Game.Server.Service
 
         }
 
+        public static bool CanHandleChat(NWObject sender, string message)
+        {
+            return sender.GetLocalInt("CRAFT_RENAMING_ITEM") == TRUE;
+        }
+
         public void OnNWNXChat()
         {
             NWPlayer pc = _nwnxChat.GetSender().Object;
-            bool isRenamingCraftedItem = pc.GetLocalInt("CRAFT_RENAMING_ITEM") == TRUE;
+            string newName = _nwnxChat.GetMessage();
 
-            if (!isRenamingCraftedItem) return;
-            
+            if (!CanHandleChat(pc, newName))
+            {
+                return;
+            }
+
             _nwnxChat.SkipMessage();
             NWItem renameItem = pc.GetLocalObject("CRAFT_RENAMING_ITEM_OBJECT");
-            string newName = _nwnxChat.GetMessage();
 
             pc.DeleteLocalInt("CRAFT_RENAMING_ITEM");
             pc.DeleteLocalObject("CRAFT_RENAMING_ITEM_OBJECT");

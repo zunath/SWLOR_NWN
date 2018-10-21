@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Data
         {
             this.PCBasePermissions = new HashSet<PCBasePermission>();
             this.PCBaseStructures = new HashSet<PCBaseStructure>();
-            this.PlayerCharacters = new HashSet<PlayerCharacter>();
+            this.PrimaryResidencePlayerCharacters = new HashSet<PlayerCharacter>();
         }
     
         public int PCBaseID { get; set; }
@@ -47,6 +47,6 @@ namespace SWLOR.Game.Server.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PCBaseStructure> PCBaseStructures { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PlayerCharacter> PlayerCharacters { get; set; }
+        public virtual ICollection<PlayerCharacter> PrimaryResidencePlayerCharacters { get; set; }
     }
 }

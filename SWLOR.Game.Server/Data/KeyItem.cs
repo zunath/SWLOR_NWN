@@ -19,8 +19,8 @@ namespace SWLOR.Game.Server.Data
         {
             this.PCKeyItems = new HashSet<PCKeyItem>();
             this.QuestRequiredKeyItemLists = new HashSet<QuestRequiredKeyItemList>();
-            this.Quests = new HashSet<Quest>();
-            this.Quests1 = new HashSet<Quest>();
+            this.RewardKeyItemQuests = new HashSet<Quest>();
+            this.TemporaryKeyItemQuests = new HashSet<Quest>();
         }
     
         public int KeyItemID { get; set; }
@@ -34,8 +34,8 @@ namespace SWLOR.Game.Server.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<QuestRequiredKeyItemList> QuestRequiredKeyItemLists { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Quest> Quests { get; set; }
+        public virtual ICollection<Quest> RewardKeyItemQuests { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Quest> Quests1 { get; set; }
+        public virtual ICollection<Quest> TemporaryKeyItemQuests { get; set; }
     }
 }

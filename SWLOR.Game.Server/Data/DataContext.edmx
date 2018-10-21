@@ -3186,9 +3186,9 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <Property Name="AttributeID" Type="Int32" Nullable="false" />
           <Property Name="NWNValue" Type="Int32" Nullable="false" />
           <Property Name="Name" Type="String" MaxLength="3" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="Skills" Relationship="Self.FK_Skills_Primary" FromRole="Attributes" ToRole="Skills" />
-          <NavigationProperty Name="Skills1" Relationship="Self.FK_Skills_Secondary" FromRole="Attributes" ToRole="Skills" />
-          <NavigationProperty Name="Skills2" Relationship="Self.FK_Skills_Tertiary" FromRole="Attributes" ToRole="Skills" />
+          <NavigationProperty Name="PrimarySkills" Relationship="Self.FK_Skills_Primary" FromRole="Attributes" ToRole="Skills" />
+          <NavigationProperty Name="SecondarySkills" Relationship="Self.FK_Skills_Secondary" FromRole="Attributes" ToRole="Skills" />
+          <NavigationProperty Name="TertiarySkills" Relationship="Self.FK_Skills_Tertiary" FromRole="Attributes" ToRole="Skills" />
         </EntityType>
         <EntityType Name="AuthorizedDM">
           <Key>
@@ -3314,8 +3314,8 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <NavigationProperty Name="BaseStructure" Relationship="Self.FK_BuildingStyles_BaseStructureID" FromRole="BuildingStyles" ToRole="BaseStructures" />
           <NavigationProperty Name="BuildingType" Relationship="Self.FK_BuildingStyles_BuildingTypeID" FromRole="BuildingStyles" ToRole="BuildingTypes" />
           <NavigationProperty Name="PCBases" Relationship="Self.FK_PCBases_BuildingStyleID" FromRole="BuildingStyles" ToRole="PCBases" />
-          <NavigationProperty Name="PCBaseStructures" Relationship="Self.FK_PCBaseStructures_ExteriorStyleID" FromRole="BuildingStyles" ToRole="PCBaseStructures" />
-          <NavigationProperty Name="PCBaseStructures1" Relationship="Self.FK_PCBaseStructures_InteriorStyleID" FromRole="BuildingStyles" ToRole="PCBaseStructures" />
+          <NavigationProperty Name="ExteriorPCBaseStructures" Relationship="Self.FK_PCBaseStructures_ExteriorStyleID" FromRole="BuildingStyles" ToRole="PCBaseStructures" />
+          <NavigationProperty Name="InteriorPCBaseStructures" Relationship="Self.FK_PCBaseStructures_InteriorStyleID" FromRole="BuildingStyles" ToRole="PCBaseStructures" />
         </EntityType>
         <EntityType Name="BuildingType">
           <Key>
@@ -3350,8 +3350,8 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <Property Name="SenderDMName" Type="String" MaxLength="60" FixedLength="false" Unicode="true" />
           <Property Name="ReceiverDMName" Type="String" MaxLength="60" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="ChatChannelsDomain" Relationship="Self.fk_ChatLog_ChatChannelID" FromRole="ChatLog" ToRole="ChatChannelsDomain" />
-          <NavigationProperty Name="PlayerCharacter" Relationship="Self.fk_ChatLog_ReceiverPlayerID" FromRole="ChatLog" ToRole="PlayerCharacters" />
-          <NavigationProperty Name="PlayerCharacter1" Relationship="Self.fk_ChatLog_SenderPlayerID" FromRole="ChatLog" ToRole="PlayerCharacters" />
+          <NavigationProperty Name="ReceiverPlayerCharacter" Relationship="Self.fk_ChatLog_ReceiverPlayerID" FromRole="ChatLog" ToRole="PlayerCharacters" />
+          <NavigationProperty Name="SenderPlayerCharacter" Relationship="Self.fk_ChatLog_SenderPlayerID" FromRole="ChatLog" ToRole="PlayerCharacters" />
         </EntityType>
         <EntityType Name="ClientLogEvent">
           <Key>
@@ -3380,9 +3380,9 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           </Key>
           <Property Name="ComponentTypeID" Type="Int32" Nullable="false" />
           <Property Name="Name" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="CraftBlueprints" Relationship="Self.fk_CraftBlueprints_MainComponentTypeID" FromRole="ComponentTypes" ToRole="CraftBlueprints" />
-          <NavigationProperty Name="CraftBlueprints1" Relationship="Self.fk_CraftBlueprints_SecondaryComponentTypeID" FromRole="ComponentTypes" ToRole="CraftBlueprints" />
-          <NavigationProperty Name="CraftBlueprints2" Relationship="Self.fk_CraftBlueprints_TertiaryComponentTypeID" FromRole="ComponentTypes" ToRole="CraftBlueprints" />
+          <NavigationProperty Name="MainCraftBlueprints" Relationship="Self.fk_CraftBlueprints_MainComponentTypeID" FromRole="ComponentTypes" ToRole="CraftBlueprints" />
+          <NavigationProperty Name="SecondaryCraftBlueprints" Relationship="Self.fk_CraftBlueprints_SecondaryComponentTypeID" FromRole="ComponentTypes" ToRole="CraftBlueprints" />
+          <NavigationProperty Name="TertiaryCraftBlueprints" Relationship="Self.fk_CraftBlueprints_TertiaryComponentTypeID" FromRole="ComponentTypes" ToRole="CraftBlueprints" />
         </EntityType>
         <EntityType Name="CooldownCategory">
           <Key>
@@ -3578,8 +3578,8 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <NavigationProperty Name="KeyItemCategory" Relationship="Self.fk_KeyItems_KeyItemCategoryID" FromRole="KeyItems" ToRole="KeyItemCategories" />
           <NavigationProperty Name="PCKeyItems" Relationship="Self.fk_PCKeyItems_KeyItemID" FromRole="KeyItems" ToRole="PCKeyItems" />
           <NavigationProperty Name="QuestRequiredKeyItemLists" Relationship="Self.FK_QuestRequiredKeyItemList_KeyItemID" FromRole="KeyItems" ToRole="QuestRequiredKeyItemList" />
-          <NavigationProperty Name="Quests" Relationship="Self.FK_Quests_RewardKeyItemID" FromRole="KeyItems" ToRole="Quests" />
-          <NavigationProperty Name="Quests1" Relationship="Self.FK_Quests_TemporaryKeyItemID" FromRole="KeyItems" ToRole="Quests" />
+          <NavigationProperty Name="RewardKeyItemQuests" Relationship="Self.FK_Quests_RewardKeyItemID" FromRole="KeyItems" ToRole="Quests" />
+          <NavigationProperty Name="TemporaryKeyItemQuests" Relationship="Self.FK_Quests_TemporaryKeyItemID" FromRole="KeyItems" ToRole="Quests" />
         </EntityType>
         <EntityType Name="LootTableItem">
           <Key>
@@ -3600,10 +3600,10 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           </Key>
           <Property Name="LootTableID" Type="Int32" Nullable="false" />
           <Property Name="Name" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" />
-          <NavigationProperty Name="Areas" Relationship="Self.FK_Areas_NortheastLootTableID" FromRole="LootTables" ToRole="Areas" />
-          <NavigationProperty Name="Areas1" Relationship="Self.FK_Areas_NorthwestLootTableID" FromRole="LootTables" ToRole="Areas" />
-          <NavigationProperty Name="Areas2" Relationship="Self.FK_Areas_SoutheastLootTableID" FromRole="LootTables" ToRole="Areas" />
-          <NavigationProperty Name="Areas3" Relationship="Self.FK_Areas_SouthwestLootTableID" FromRole="LootTables" ToRole="Areas" />
+          <NavigationProperty Name="NortheastAreas" Relationship="Self.FK_Areas_NortheastLootTableID" FromRole="LootTables" ToRole="Areas" />
+          <NavigationProperty Name="NorthwestAreas" Relationship="Self.FK_Areas_NorthwestLootTableID" FromRole="LootTables" ToRole="Areas" />
+          <NavigationProperty Name="SoutheastAreas" Relationship="Self.FK_Areas_SoutheastLootTableID" FromRole="LootTables" ToRole="Areas" />
+          <NavigationProperty Name="SouthwestAreas" Relationship="Self.FK_Areas_SouthwestLootTableID" FromRole="LootTables" ToRole="Areas" />
           <NavigationProperty Name="LootTableItems" Relationship="Self.fk_LootTableItems_LootTableID" FromRole="LootTables" ToRole="LootTableItems" />
         </EntityType>
         <EntityType Name="Mod">
@@ -3671,7 +3671,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <NavigationProperty Name="PCBaseType" Relationship="Self.FK_PCBases_PCBaseTypeID" FromRole="PCBases" ToRole="PCBaseTypes" />
           <NavigationProperty Name="PlayerCharacter" Relationship="Self.FK_PCBases_PlayerID" FromRole="PCBases" ToRole="PlayerCharacters" />
           <NavigationProperty Name="PCBaseStructures" Relationship="Self.FK_PCBaseStructures_PCBaseID" FromRole="PCBases" ToRole="PCBaseStructures" />
-          <NavigationProperty Name="PlayerCharacters" Relationship="Self.FK_PlayerCharacters_PrimaryResidencePCBaseID" FromRole="PCBases" ToRole="PlayerCharacters" />
+          <NavigationProperty Name="PrimaryResidencePlayerCharacters" Relationship="Self.FK_PlayerCharacters_PrimaryResidencePCBaseID" FromRole="PCBases" ToRole="PlayerCharacters" />
         </EntityType>
         <EntityType Name="PCBaseStructureItem">
           <Key>
@@ -3919,7 +3919,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <Property Name="Resref" Type="String" MaxLength="16" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Remaining" Type="Int32" Nullable="false" />
           <Property Name="MustBeCraftedByPlayer" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="PCQuestStatu" Relationship="Self.FK_PCQuestItemProgress_PCQuestStatusID" FromRole="PCQuestItemProgress" ToRole="PCQuestStatus" />
+          <NavigationProperty Name="PCQuestStatus" Relationship="Self.FK_PCQuestItemProgress_PCQuestStatusID" FromRole="PCQuestItemProgress" ToRole="PCQuestStatus" />
           <NavigationProperty Name="PlayerCharacter" Relationship="Self.FK_PCQuestItemProgress_PlayerID" FromRole="PCQuestItemProgress" ToRole="PlayerCharacters" />
         </EntityType>
         <EntityType Name="PCQuestKillTargetProgress">
@@ -4320,9 +4320,9 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <Property Name="Primary" Type="Int32" Nullable="false" />
           <Property Name="Secondary" Type="Int32" Nullable="false" />
           <Property Name="Tertiary" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Attribute" Relationship="Self.FK_Skills_Primary" FromRole="Skills" ToRole="Attributes" />
-          <NavigationProperty Name="Attribute1" Relationship="Self.FK_Skills_Secondary" FromRole="Skills" ToRole="Attributes" />
-          <NavigationProperty Name="Attribute2" Relationship="Self.FK_Skills_Tertiary" FromRole="Skills" ToRole="Attributes" />
+          <NavigationProperty Name="PrimaryAttribute" Relationship="Self.FK_Skills_Primary" FromRole="Skills" ToRole="Attributes" />
+          <NavigationProperty Name="SecondaryAttribute" Relationship="Self.FK_Skills_Secondary" FromRole="Skills" ToRole="Attributes" />
+          <NavigationProperty Name="TertiaryAttribute" Relationship="Self.FK_Skills_Tertiary" FromRole="Skills" ToRole="Attributes" />
           <NavigationProperty Name="CraftBlueprints" Relationship="Self.FK_CraftBlueprints_SkillID" FromRole="Skills" ToRole="CraftBlueprints" />
           <NavigationProperty Name="PCSkills" Relationship="Self.FK_PCSkills_SkillID" FromRole="Skills" ToRole="PCSkills" />
           <NavigationProperty Name="PerkLevelSkillRequirements" Relationship="Self.FK_PerkLevelSkillRequirements_SkillID" FromRole="Skills" ToRole="PerkLevelSkillRequirements" />

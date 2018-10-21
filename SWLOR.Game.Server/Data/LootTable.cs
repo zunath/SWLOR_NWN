@@ -17,10 +17,10 @@ namespace SWLOR.Game.Server.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public LootTable()
         {
-            this.Areas = new HashSet<Area>();
-            this.Areas1 = new HashSet<Area>();
-            this.Areas2 = new HashSet<Area>();
-            this.Areas3 = new HashSet<Area>();
+            this.NortheastAreas = new HashSet<Area>();
+            this.NorthwestAreas = new HashSet<Area>();
+            this.SoutheastAreas = new HashSet<Area>();
+            this.SouthwestAreas = new HashSet<Area>();
             this.LootTableItems = new HashSet<LootTableItem>();
         }
     
@@ -28,13 +28,13 @@ namespace SWLOR.Game.Server.Data
         public string Name { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Area> Areas { get; set; }
+        public virtual ICollection<Area> NortheastAreas { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Area> Areas1 { get; set; }
+        public virtual ICollection<Area> NorthwestAreas { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Area> Areas2 { get; set; }
+        public virtual ICollection<Area> SoutheastAreas { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Area> Areas3 { get; set; }
+        public virtual ICollection<Area> SouthwestAreas { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<LootTableItem> LootTableItems { get; set; }
     }

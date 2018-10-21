@@ -17,19 +17,19 @@ namespace SWLOR.Game.Server.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public ComponentType()
         {
-            this.CraftBlueprints = new HashSet<CraftBlueprint>();
-            this.CraftBlueprints1 = new HashSet<CraftBlueprint>();
-            this.CraftBlueprints2 = new HashSet<CraftBlueprint>();
+            this.MainCraftBlueprints = new HashSet<CraftBlueprint>();
+            this.SecondaryCraftBlueprints = new HashSet<CraftBlueprint>();
+            this.TertiaryCraftBlueprints = new HashSet<CraftBlueprint>();
         }
     
         public int ComponentTypeID { get; set; }
         public string Name { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CraftBlueprint> CraftBlueprints { get; set; }
+        public virtual ICollection<CraftBlueprint> MainCraftBlueprints { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CraftBlueprint> CraftBlueprints1 { get; set; }
+        public virtual ICollection<CraftBlueprint> SecondaryCraftBlueprints { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CraftBlueprint> CraftBlueprints2 { get; set; }
+        public virtual ICollection<CraftBlueprint> TertiaryCraftBlueprints { get; set; }
     }
 }

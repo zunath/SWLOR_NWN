@@ -17,9 +17,9 @@ namespace SWLOR.Game.Server.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Attribute()
         {
-            this.Skills = new HashSet<Skill>();
-            this.Skills1 = new HashSet<Skill>();
-            this.Skills2 = new HashSet<Skill>();
+            this.PrimarySkills = new HashSet<Skill>();
+            this.SecondarySkills = new HashSet<Skill>();
+            this.TertiarySkills = new HashSet<Skill>();
         }
     
         public int AttributeID { get; set; }
@@ -27,10 +27,10 @@ namespace SWLOR.Game.Server.Data
         public string Name { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Skill> Skills { get; set; }
+        public virtual ICollection<Skill> PrimarySkills { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Skill> Skills1 { get; set; }
+        public virtual ICollection<Skill> SecondarySkills { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Skill> Skills2 { get; set; }
+        public virtual ICollection<Skill> TertiarySkills { get; set; }
     }
 }

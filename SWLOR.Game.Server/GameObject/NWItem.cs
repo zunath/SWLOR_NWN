@@ -237,6 +237,12 @@ namespace SWLOR.Game.Server.GameObject
             return CustomItemType.None;
         }
 
+        private void SetCustomProperty(string propertyName, CustomItemPropertyType type, int value)
+        {
+            GetItemPropertyValueAndRemove((int)type); // We're setting, so just remove it and ignore the return value.
+            _.SetLocalInt(Object, propertyName, value);
+        }
+
         public virtual int RecommendedLevel
         {
             get
@@ -246,7 +252,7 @@ namespace SWLOR.Game.Server.GameObject
                 RecommendedLevel = recommendedLevel;
                 return recommendedLevel;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_TYPE_RECOMMENDED_LEVEL", value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_TYPE_RECOMMENDED_LEVEL", CustomItemPropertyType.RecommendedLevel, value);
         }
 
         public virtual int LevelIncrease
@@ -258,7 +264,7 @@ namespace SWLOR.Game.Server.GameObject
                 LevelIncrease = levelIncrease;
                 return levelIncrease;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_TYPE_LEVEL_INCREASE", value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_TYPE_LEVEL_INCREASE", CustomItemPropertyType.LevelIncrease, value);
         }
 
         public virtual int HarvestingBonus
@@ -270,7 +276,7 @@ namespace SWLOR.Game.Server.GameObject
                 HarvestingBonus = craftBonus;
                 return craftBonus;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_HARVESTING_BONUS", value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_HARVESTING_BONUS", CustomItemPropertyType.HarvestingBonus, value);
         }
 
         public virtual int ScanningBonus
@@ -282,7 +288,7 @@ namespace SWLOR.Game.Server.GameObject
                 ScanningBonus = craftBonus;
                 return craftBonus;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_SCANNING_BONUS", value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_SCANNING_BONUS", CustomItemPropertyType.ScanningBonus, value);
         }
 
         public virtual int CastingSpeed
@@ -297,7 +303,7 @@ namespace SWLOR.Game.Server.GameObject
                 CastingSpeed = castingSpeed;
                 return castingSpeed;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CASTING_SPEED", value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_CASTING_SPEED", CustomItemPropertyType.CastingSpeed, value);
         }
 
         public virtual int CraftBonusArmorsmith
@@ -309,7 +315,7 @@ namespace SWLOR.Game.Server.GameObject
                 CraftBonusArmorsmith = craftBonus;
                 return craftBonus;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CRAFT_BONUS_ARMORSMITH", value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_CRAFT_BONUS_ARMORSMITH", CustomItemPropertyType.CraftBonusArmorsmith, value);
         }
         public virtual int CraftBonusWeaponsmith
         {
@@ -320,7 +326,7 @@ namespace SWLOR.Game.Server.GameObject
                 CraftBonusWeaponsmith = craftBonus;
                 return craftBonus;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CRAFT_BONUS_WEAPONSMITH", value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_CRAFT_BONUS_WEAPONSMITH", CustomItemPropertyType.CraftBonusWeaponsmith, value);
         }
         public virtual int CraftBonusCooking
         {
@@ -331,7 +337,7 @@ namespace SWLOR.Game.Server.GameObject
                 CraftBonusCooking = craftBonus;
                 return craftBonus;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CRAFT_BONUS_COOKING", value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_CRAFT_BONUS_COOKING", CustomItemPropertyType.CraftBonusCooking, value);
         }
         public virtual int CraftBonusEngineering
         {
@@ -342,7 +348,7 @@ namespace SWLOR.Game.Server.GameObject
                 CraftBonusEngineering = craftBonus;
                 return craftBonus;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CRAFT_BONUS_ENGINEERING", value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_CRAFT_BONUS_ENGINEERING", CustomItemPropertyType.CraftBonusEngineering, value);
         }
         public virtual int CraftBonusFabrication
         {
@@ -353,7 +359,7 @@ namespace SWLOR.Game.Server.GameObject
                 CraftBonusFabrication = craftBonus;
                 return craftBonus;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CRAFT_BONUS_FABRICATION", value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_CRAFT_BONUS_FABRICATION", CustomItemPropertyType.CraftBonusFabrication, value);
         }
         public virtual SkillType AssociatedSkillType
         {
@@ -364,7 +370,11 @@ namespace SWLOR.Game.Server.GameObject
                 AssociatedSkillType = (SkillType)skillType;
                 return (SkillType)skillType;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_ASSOCIATED_SKILL_ID", (int)value);
+            set 
+            {
+                GetItemPropertyValueAndRemove((int)CustomItemPropertyType.AssociatedSkill);
+                _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_ASSOCIATED_SKILL_ID", (int)value);
+            }
         }
         public virtual int CraftTierLevel
         {
@@ -375,7 +385,7 @@ namespace SWLOR.Game.Server.GameObject
                 CraftTierLevel = craftTier;
                 return craftTier;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CRAFT_TIER_LEVEL", value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_CRAFT_TIER_LEVEL", CustomItemPropertyType.CraftTierLevel, value);
         }
         public virtual int HPBonus
         {
@@ -386,7 +396,7 @@ namespace SWLOR.Game.Server.GameObject
                 HPBonus = hpBonus;
                 return hpBonus;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_HP_BONUS", value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_HP_BONUS", CustomItemPropertyType.HPBonus, value);
         }
         public virtual int FPBonus
         {
@@ -397,7 +407,7 @@ namespace SWLOR.Game.Server.GameObject
                 FPBonus = fpBonus;
                 return fpBonus;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_FP_BONUS", value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_FP_BONUS", CustomItemPropertyType.FPBonus, value);
         }
 
         public virtual int EnmityRate
@@ -412,7 +422,7 @@ namespace SWLOR.Game.Server.GameObject
                 EnmityRate = enmityRate;
                 return enmityRate;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_ENMITY_RATE", value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_ENMITY_RATE", CustomItemPropertyType.EnmityRate, value);
         }
 
         public virtual int DarkAbilityBonus
@@ -424,7 +434,7 @@ namespace SWLOR.Game.Server.GameObject
                 DarkAbilityBonus = darkAbilityBonus;
                 return darkAbilityBonus;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_DARK_ABILITY_BONUS", value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_DARK_ABILITY_BONUS", CustomItemPropertyType.DarkAbilityBonus, value);
         }
         public virtual int LightAbilityBonus
         {
@@ -435,7 +445,7 @@ namespace SWLOR.Game.Server.GameObject
                 LightAbilityBonus = lightAbilityBonus;
                 return lightAbilityBonus;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_LIGHT_ABILITY_BONUS", value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_LIGHT_ABILITY_BONUS", CustomItemPropertyType.LightAbilityBonus, value);
         }
         public virtual int SummoningBonus
         {
@@ -446,7 +456,7 @@ namespace SWLOR.Game.Server.GameObject
                 SummoningBonus = summoningBonus;
                 return summoningBonus;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_SUMMONING_BONUS", value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_SUMMONING_BONUS", CustomItemPropertyType.SummoningBonus, value);
         }
         public virtual int LuckBonus
         {
@@ -457,7 +467,7 @@ namespace SWLOR.Game.Server.GameObject
                 LuckBonus = luckBonus;
                 return luckBonus;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_LUCK_BONUS", value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_LUCK_BONUS", CustomItemPropertyType.LuckBonus, value);
         }
         public virtual int MeditateBonus
         {
@@ -468,7 +478,7 @@ namespace SWLOR.Game.Server.GameObject
                 MeditateBonus = meditateBonus;
                 return meditateBonus;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_MEDITATE_BONUS", value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_MEDITATE_BONUS", CustomItemPropertyType.MeditateBonus, value);
         }
         public virtual int RestBonus
         {
@@ -479,7 +489,7 @@ namespace SWLOR.Game.Server.GameObject
                 RestBonus = restBonus;
                 return restBonus;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_REST_BONUS", value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_REST_BONUS", CustomItemPropertyType.RestBonus, value);
         }
         public virtual int MedicineBonus
         {
@@ -490,7 +500,7 @@ namespace SWLOR.Game.Server.GameObject
                 MedicineBonus = medicineBonus;
                 return medicineBonus;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_MEDICINE_BONUS", value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_MEDICINE_BONUS", CustomItemPropertyType.MedicineBonus, value);
         }
         public virtual int HPRegenBonus
         {
@@ -501,7 +511,7 @@ namespace SWLOR.Game.Server.GameObject
                 HPRegenBonus = hpRegenBonus;
                 return hpRegenBonus;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_HP_REGEN_BONUS", value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_HP_REGEN_BONUS", CustomItemPropertyType.HPRegenBonus, value);
         }
         public virtual int FPRegenBonus
         {
@@ -512,7 +522,7 @@ namespace SWLOR.Game.Server.GameObject
                 FPRegenBonus = fpRegenBonus;
                 return fpRegenBonus;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_FP_REGEN_BONUS", value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_FP_REGEN_BONUS", CustomItemPropertyType.FPRegenBonus, value);
         }
         public virtual int BaseAttackBonus
         {
@@ -523,7 +533,7 @@ namespace SWLOR.Game.Server.GameObject
                 BaseAttackBonus = baseAttackBonus;
                 return baseAttackBonus;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_BASE_ATTACK_BONUS", value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_BASE_ATTACK_BONUS", CustomItemPropertyType.BaseAttackBonus, value);
         }
         public virtual int StructureBonus
         {
@@ -534,7 +544,7 @@ namespace SWLOR.Game.Server.GameObject
                 StructureBonus = structureBonus;
                 return structureBonus;
             }
-            set => _.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_STRUCTURE_BONUS", value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_STRUCTURE_BONUS", CustomItemPropertyType.StructureBonus, value);
         }
 
         public virtual int SneakAttackBonus

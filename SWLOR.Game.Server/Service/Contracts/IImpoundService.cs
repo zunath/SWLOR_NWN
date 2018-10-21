@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Data.Entities;
+﻿using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Service.Contracts

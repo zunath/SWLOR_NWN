@@ -2,7 +2,7 @@
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data.Entities;
+using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Placeable.Bank
             int itemLimit = terminal.GetLocalInt("BANK_LIMIT");
             if (itemLimit <= 0) itemLimit = 20;
 
-            Data.Entities.Bank entity = _db.Banks.Single(x => x.BankID == bankID);
+            Data.Bank entity = _db.Banks.Single(x => x.BankID == bankID);
 
             if (disturbType == INVENTORY_DISTURB_TYPE_ADDED)
             {

@@ -5,7 +5,7 @@ using System.Linq;
 using NSubstitute;
 using NUnit.Framework;
 using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data.Entities;
+using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Tests.Service
                 }.AsQueryable();
 
 
-            IDbSet<PlayerCharacter> playerDbSet = Substitute.For<IDbSet<PlayerCharacter>>();
+            IDbSet<PlayerCharacter> playerDbSet = Substitute.For<DbSet<PlayerCharacter>>();
             playerDbSet.Provider.Returns(players.Provider);
             playerDbSet.Expression.Returns(players.Expression);
             playerDbSet.ElementType.Returns(players.ElementType);

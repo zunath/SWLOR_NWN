@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data.Entities;
+using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
@@ -42,11 +42,11 @@ namespace SWLOR.Game.Server.Placeable.Bank
                 return false;
             }
 
-            Data.Entities.Bank entity = _db.Banks.SingleOrDefault(x => x.BankID == bankID);
+            Data.Bank entity = _db.Banks.SingleOrDefault(x => x.BankID == bankID);
 
             if (entity == null)
             {
-                entity = new Data.Entities.Bank
+                entity = new Data.Bank
                 {
                     AreaName = area.Name,
                     AreaResref = area.Resref,

@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Placeable.GrowingPlant
             if (growingPlantID <= 0) return false;
 
             NWPlayer oPC = (_.GetLastUsedBy());
-            Data.Entities.GrowingPlant growingPlant = _farming.GetGrowingPlantByID(growingPlantID);
+            Data.GrowingPlant growingPlant = _farming.GetGrowingPlantByID(growingPlantID);
             if (growingPlant.WaterStatus <= 0)
             {
                 oPC.SendMessage("This plant doesn't seem to need anything right now.");

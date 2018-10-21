@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Entities;
+using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.Service.Contracts;
@@ -118,10 +118,10 @@ namespace SWLOR.Game.Server.Conversation
         private void BuildPerkList()
         {
             Model vm = GetDialogCustomData<Model>();
-            List<Data.Entities.Perk> perks = _perk.GetPerksForPC(GetPC().GlobalID, vm.SelectedCategoryID);
+            List<Data.Perk> perks = _perk.GetPerksForPC(GetPC().GlobalID, vm.SelectedCategoryID);
 
             ClearPageResponses("PerkListPage");
-            foreach (Data.Entities.Perk perk in perks)
+            foreach (Data.Perk perk in perks)
             {
                 AddResponseToPage("PerkListPage", perk.Name, true, perk.PerkID);
             }
@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Conversation
         private void BuildPerkDetails()
         {
             Model vm = GetDialogCustomData<Model>();
-            Data.Entities.Perk perk = _perk.GetPerkByID(vm.SelectedPerkID);
+            Data.Perk perk = _perk.GetPerkByID(vm.SelectedPerkID);
             PCPerk pcPerk = _perk.GetPCPerkByID(GetPC().GlobalID, perk.PerkID);
             PlayerCharacter player = _player.GetPlayerEntity(GetPC().GlobalID);
 

@@ -208,98 +208,332 @@
     <Compile Include="CustomEffect\RestEffect.cs" />
     <Compile Include="CustomEffect\ShieldBoostEffect.cs" />
     <Compile Include="CustomEffect\SwordOathEffect.cs" />
-    <Compile Include="Data\Entities\ApartmentBuilding.cs" />
-    <Compile Include="Data\Entities\Area.cs" />
-    <Compile Include="Data\Entities\BaseStructure.cs" />
-    <Compile Include="Data\Entities\BaseStructureType.cs" />
-    <Compile Include="Data\Entities\Attribute.cs" />
-    <Compile Include="Data\Entities\AuthorizedDM.cs" />
-    <Compile Include="Data\Entities\BaseItemType.cs" />
-    <Compile Include="Data\Entities\BuildingType.cs" />
-    <Compile Include="Data\Entities\ChatChannelsDomain.cs" />
-    <Compile Include="Data\Entities\ChatLog.cs" />
-    <Compile Include="Data\Entities\ClientLogEvent.cs" />
-    <Compile Include="Data\Entities\ClientLogEventTypesDomain.cs" />
-    <Compile Include="Data\Entities\ComponentType.cs" />
-    <Compile Include="Data\Entities\CooldownCategory.cs" />
-    <Compile Include="Data\Entities\CraftBlueprint.cs" />
-    <Compile Include="Data\Entities\CraftBlueprintCategory.cs" />
-    <Compile Include="Data\Entities\CraftDevice.cs" />
-    <Compile Include="Data\Entities\CustomEffect.cs" />
-    <Compile Include="Data\DataContext.cs" />
-    <Compile Include="Data\Entities\DiscordChatQueue.cs" />
-    <Compile Include="Data\Entities\DMRoleDomain.cs" />
-    <Compile Include="Data\Entities\Download.cs" />
-    <Compile Include="Data\Entities\EnmityAdjustmentRule.cs" />
-    <Compile Include="Data\Entities\FameRegion.cs" />
-    <Compile Include="Data\Entities\GameTopic.cs" />
-    <Compile Include="Data\Entities\GameTopicCategory.cs" />
-    <Compile Include="Data\Entities\GrowingPlant.cs" />
-    <Compile Include="Data\Entities\ItemType.cs" />
-    <Compile Include="Data\Entities\KeyItem.cs" />
-    <Compile Include="Data\Entities\KeyItemCategory.cs" />
-    <Compile Include="Data\Entities\LootTable.cs" />
-    <Compile Include="Data\Entities\LootTableItem.cs" />
-    <Compile Include="Data\Entities\NPCGroup.cs" />
-    <Compile Include="Data\Entities\PCCooldown.cs" />
-    <Compile Include="Data\Entities\PCCustomEffect.cs" />
-    <Compile Include="Data\Entities\PCKeyItem.cs" />
-    <Compile Include="Data\Entities\PCMapPin.cs" />
-    <Compile Include="Data\Entities\PCMigration.cs" />
-    <Compile Include="Data\Entities\PCMigrationItem.cs" />
-    <Compile Include="Data\Entities\PCOutfit.cs" />
-    <Compile Include="Data\Entities\PCOverflowItem.cs" />
-    <Compile Include="Data\Entities\PCPerk.cs" />
-    <Compile Include="Data\Entities\PCQuestItemProgress.cs" />
-    <Compile Include="Data\Entities\PCQuestKillTargetProgress.cs" />
-    <Compile Include="Data\Entities\PCQuestStatus.cs" />
-    <Compile Include="Data\Entities\PCRegionalFame.cs" />
-    <Compile Include="Data\Entities\PCSearchSite.cs" />
-    <Compile Include="Data\Entities\PCSearchSiteItem.cs" />
-    <Compile Include="Data\Entities\PCSkill.cs" />
-    <Compile Include="Data\Entities\Perk.cs" />
-    <Compile Include="Data\Entities\PerkCategory.cs" />
-    <Compile Include="Data\Entities\PerkExecutionType.cs" />
-    <Compile Include="Data\Entities\PerkLevel.cs" />
-    <Compile Include="Data\Entities\PerkLevelSkillRequirement.cs" />
-    <Compile Include="Data\Entities\Plant.cs" />
-    <Compile Include="Data\Entities\PlayerCharacter.cs" />
-    <Compile Include="Data\Entities\Quest.cs" />
-    <Compile Include="Data\Entities\QuestKillTargetList.cs" />
-    <Compile Include="Data\Entities\QuestPrerequisite.cs" />
-    <Compile Include="Data\Entities\QuestRequiredItemList.cs" />
-    <Compile Include="Data\Entities\QuestRequiredKeyItemList.cs" />
-    <Compile Include="Data\Entities\QuestRewardItem.cs" />
-    <Compile Include="Data\Entities\QuestState.cs" />
-    <Compile Include="Data\Entities\QuestTypeDomain.cs" />
-    <Compile Include="Data\Entities\Mod.cs" />
-    <Compile Include="Data\Entities\ServerConfiguration.cs" />
-    <Compile Include="Data\Entities\Skill.cs" />
-    <Compile Include="Data\Entities\SkillCategory.cs" />
-    <Compile Include="Data\Entities\SkillXPRequirement.cs" />
-    <Compile Include="Data\Entities\User.cs" />
+    <Compile Include="Data\ApartmentBuilding.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Area.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\AreaWalkmesh.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Association.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Attribute.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\AuthorizedDM.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Background.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Bank.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\BankItem.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\BaseItemType.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\BaseStructure.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\BaseStructureType.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\BugReport.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\BuildingStyle.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\BuildingType.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\ChatChannelsDomain.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\ChatLog.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\ClientLogEvent.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\ClientLogEventTypesDomain.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\ComponentType.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
     <Compile Include="Data\Contracts\IDataContext.cs" />
-    <Compile Include="Data\SqlResults\TotalSkillXPResult.cs" />
-    <Compile Include="Data\Entities\PCBase.cs" />
-    <Compile Include="Data\Entities\PCBaseStructure.cs" />
-    <Compile Include="Data\Entities\PCBaseStructureItem.cs" />
-    <Compile Include="Data\Entities\PCImpoundedItem.cs" />
-    <Compile Include="Data\Entities\BuildingStyle.cs" />
-    <Compile Include="Data\Entities\PCBasePermission.cs" />
-    <Compile Include="Data\Entities\PCBaseStructurePermission.cs" />
-    <Compile Include="Data\Entities\AreaWalkmesh.cs" />
-    <Compile Include="Data\Entities\Spawn.cs" />
-    <Compile Include="Data\Entities\SpawnObject.cs" />
-    <Compile Include="Data\Entities\SpawnObjectType.cs" />
-    <Compile Include="Data\Entities\PCObjectVisibility.cs" />
-    <Compile Include="Data\Entities\PCPerkRefund.cs" />
-    <Compile Include="Data\Entities\Bank.cs" />
-    <Compile Include="Data\Entities\BankItem.cs" />
-    <Compile Include="Data\Entities\Association.cs" />
-    <Compile Include="Data\Entities\PCMapProgression.cs" />
-    <Compile Include="Data\Entities\PerkLevelQuestRequirement.cs" />
-    <Compile Include="Data\Entities\BugReport.cs" />
-    <Compile Include="Data\Entities\PCCraftedBlueprint.cs" />
+    <Compile Include="Data\CooldownCategory.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\CraftBlueprint.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\CraftBlueprintCategory.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\CraftDevice.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\CustomEffect.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\DataContext.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DataContext.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\DataContext.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\DataContext.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DataContext.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Data\DataContextConfig.cs" />
+    <Compile Include="Data\DiscordChatQueue.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\DMRoleDomain.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Download.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\EnmityAdjustmentRule.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\FameRegion.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\fn_GetPlayerEffectivePerkLevel_Result.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\GameTopic.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\GameTopicCategory.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\GetCategoriesAvailableToPC_Result.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\GetCraftCategoriesAvailableToPCByDeviceID_Result.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\GetPCBlueprintsByCategoryID_Result.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\GetPCCraftBlueprintsByDeviceAndCategoryID_Result.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\GetPCPerksByExecutionType_Result.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\GetPCPerksForMenuHeader_Result.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\GetPCPerksWithExecutionType_Result.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\GetPCSkillAdjustedPerkLevel_Result.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\GetPerkCategoriesForPC_Result.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\GetPerksForPC_Result.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\GrowingPlant.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\ItemType.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\KeyItem.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\KeyItemCategory.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\LootTable.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\LootTableItem.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Mod.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\NPCGroup.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PCBase.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PCBasePermission.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PCBaseStructure.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PCBaseStructureItem.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PCBaseStructurePermission.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PCBaseType.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PCCooldown.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PCCraftedBlueprint.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PCCustomEffect.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PCImpoundedItem.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PCKeyItem.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PCMapPin.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PCMapProgression.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PCMigration.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PCMigrationItem.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PCObjectVisibility.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PCOutfit.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PCOverflowItem.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PCPerk.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PCPerkRefund.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PCQuestItemProgress.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PCQuestKillTargetProgress.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PCQuestStatus.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PCRegionalFame.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PCSearchSite.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PCSearchSiteItem.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PCSkill.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Perk.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PerkCategory.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PerkExecutionType.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PerkLevel.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PerkLevelQuestRequirement.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PerkLevelSkillRequirement.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Plant.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\PlayerCharacter.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Quest.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\QuestKillTargetList.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\QuestPrerequisite.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\QuestRequiredItemList.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\QuestRequiredKeyItemList.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\QuestRewardItem.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\QuestState.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\QuestTypeDomain.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\ServerConfiguration.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Skill.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\SkillCategory.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\SkillXPRequirement.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\Spawn.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\SpawnObject.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\SpawnObjectType.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\TotalSkillXPResult.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\User.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
     <Compile Include="DoorRule\Contracts\IDoorRule.cs" />
     <Compile Include="DoorRule\LargeSquareBuildingRule.cs" />
     <Compile Include="DoorRule\MediumRoundBuildingRule.cs" />
@@ -1189,6 +1423,13 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <EntityDeploy Include="Data\DataContext.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>DataContext.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="Data\DataContext.edmx.diagram">
+      <DependentUpon>DataContext.edmx</DependentUpon>
+    </None>
     <None Include="packages.config" />
     <None Include="ServerFiles\docker-linux-startSWLOR.sh" />
     <None Include="ServerFiles\docker-windows-startSWLOR.cmd" />
@@ -1351,6 +1592,16 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="Data\DataContext.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>DataContext.edmx</DependentUpon>
+      <LastGenOutput>DataContext.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Data\DataContext.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>DataContext.edmx</DependentUpon>
+      <LastGenOutput>DataContext.cs</LastGenOutput>
+    </Content>
     <Content Include="ServerFiles\Database\scripts\AddWeaponCraftBlueprints.sql" />
     <Content Include="ServerFiles\Database\swlor-db.sql" />
     <Content Include="ServerFiles\Database\scripts\AddPerkLevels.sql" />

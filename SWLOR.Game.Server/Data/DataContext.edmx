@@ -558,7 +558,7 @@
           <Property Name="CustomEffectID" Type="bigint" Nullable="false" />
           <Property Name="Ticks" Type="int" Nullable="false" />
           <Property Name="EffectiveLevel" Type="int" Nullable="false" />
-          <Property Name="Data" Type="nvarchar" MaxLength="32" Nullable="false" StoreGeneratedPattern="None" />
+          <Property Name="Data" Type="nvarchar" MaxLength="32" Nullable="false" />
           <Property Name="CasterNWNObjectID" Type="nvarchar" MaxLength="10" Nullable="false" />
           <Property Name="StancePerkID" Type="int" />
         </EntityType>
@@ -989,6 +989,7 @@
           <Property Name="Primary" Type="int" Nullable="false" />
           <Property Name="Secondary" Type="int" Nullable="false" />
           <Property Name="Tertiary" Type="int" Nullable="false" />
+          <Property Name="ContributesToSkillCap" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="SkillXPRequirement">
           <Key>
@@ -4328,6 +4329,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <NavigationProperty Name="PerkLevelSkillRequirements" Relationship="Self.FK_PerkLevelSkillRequirements_SkillID" FromRole="Skills" ToRole="PerkLevelSkillRequirements" />
           <NavigationProperty Name="SkillCategory" Relationship="Self.FK_Skills_SkillCategoryID" FromRole="Skills" ToRole="SkillCategories" />
           <NavigationProperty Name="SkillXPRequirements" Relationship="Self.FK_SkillXPRequirement_SkillID" FromRole="Skills" ToRole="SkillXPRequirement" />
+          <Property Name="ContributesToSkillCap" Type="Boolean" Nullable="false" DefaultValue="true" />
         </EntityType>
         <EntityType Name="SkillXPRequirement">
           <Key>
@@ -7614,6 +7616,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <EntitySetMapping Name="Skills">
             <EntityTypeMapping TypeName="Entities.Skill">
               <MappingFragment StoreEntitySet="Skills">
+                <ScalarProperty Name="ContributesToSkillCap" ColumnName="ContributesToSkillCap" />
                 <ScalarProperty Name="SkillID" ColumnName="SkillID" />
                 <ScalarProperty Name="SkillCategoryID" ColumnName="SkillCategoryID" />
                 <ScalarProperty Name="Name" ColumnName="Name" />

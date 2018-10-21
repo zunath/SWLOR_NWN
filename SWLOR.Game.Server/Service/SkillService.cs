@@ -124,7 +124,7 @@ namespace SWLOR.Game.Server.Service
             {
                 skill.XP = skill.XP - req.XP;
 
-                if (player.TotalSPAcquired < SkillCap)
+                if (player.TotalSPAcquired < SkillCap && skill.Skill.ContributesToSkillCap)
                 {
                     player.UnallocatedSP++;
                     player.TotalSPAcquired++;
@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.Service
 
         public int GetPCTotalSkillCount(string playerID)
         {
-            return _db.PCSkills.Where(x => x.PlayerID == playerID).Sum(x => x.Rank);
+            return _db.PCSkills.Where(x => x.PlayerID == playerID && x.Skill.ContributesToSkillCap).Sum(x => x.Rank);
         }
 
         public PCSkill GetPCSkillByID(string playerID, int skillID)

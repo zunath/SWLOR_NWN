@@ -122,7 +122,7 @@ namespace SWLOR.Game.Server.Conversation
         private string BuildMainPageHeader(NWPlayer player)
         {
             PlayerCharacter playerEntity = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
-            int totalSkillCount = _db.PCSkills.Where(x => x.PlayerID == player.GlobalID).Sum(s => s.Rank);
+            int totalSkillCount = _db.PCSkills.Where(x => x.PlayerID == player.GlobalID && x.Skill.ContributesToSkillCap).Sum(s => s.Rank);
 
             string header = _color.Green("Name: ") + player.Name + "\n";
             header += _color.Green("Association: ") + playerEntity.Association.Name + "\n\n";

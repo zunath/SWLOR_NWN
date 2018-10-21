@@ -151,7 +151,7 @@ namespace SWLOR.Game.Server.Service
             // This is a server-wide holonet message (that receivers can toggle on or off).
             if (channel == ChatChannelType.PlayerShout)
             {
-                recipients.AddRange(NWModule.Get().Players.Where(player => player.GetLocalInt("DISPLAY_HOLONET") == FALSE));
+                recipients.AddRange(NWModule.Get().Players.Where(player => player.GetLocalInt("DISPLAY_HOLONET") == TRUE));
             }
             // This is the normal party chat, plus everyone within 20 units of the sender.
             else if (channel == ChatChannelType.PlayerParty)

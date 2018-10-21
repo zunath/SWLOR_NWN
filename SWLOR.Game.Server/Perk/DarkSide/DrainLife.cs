@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
+using System;
 using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Perk.DarkSide
@@ -22,6 +23,7 @@ namespace SWLOR.Game.Server.Perk.DarkSide
             _ = script;
             _random = random;
             _stat = stat;
+            _skill = skill;
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -97,11 +99,12 @@ namespace SWLOR.Game.Server.Perk.DarkSide
             {
                 int heal = (int)(damage * recoveryPercent);
                 if (heal > target.CurrentHP) heal = target.CurrentHP;
+
                 _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage), target);
                 _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(heal), player);
                 _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_BEAM_MIND), target, 1.0f);
             });
-
+            
             _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.DarkSideAbilities);
         }
 

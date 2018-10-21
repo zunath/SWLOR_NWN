@@ -18,7 +18,7 @@ using System.Text;
 
 namespace SWLOR.Game.Server.Service
 {
-    public struct ChatComponent
+    public class ChatComponent
     {
         public string m_Text;
         public bool m_Translatable;
@@ -104,20 +104,21 @@ namespace SWLOR.Game.Server.Service
             // At this point, every channel left is one we want to manually handle.
             _nwnxChat.SkipMessage();
 
-            // If this is a party message, and the holonet is disabled, we disallow it.
-            if (channel == ChatChannelType.PlayerParty && sender.IsPlayer && sender.GetLocalInt("DISPLAY_HOLONET") == FALSE)
+            // If this is a shout message, and the holonet is disabled, we disallow it.
+            if (channel == ChatChannelType.PlayerShout && sender.IsPlayer && sender.GetLocalInt("DISPLAY_HOLONET") == FALSE)
             {
                 NWPlayer player = sender.Object;
                 player.SendMessage("You have disabled the holonet and cannot send this message.");
                 return;
             }
 
-            // TODO - Assume emote mode is regular.
             List<ChatComponent> chatComponents;
+
+            // TODO - For now, assume emote mode is regular.
             EmoteMode emoteMode = EmoteMode.Regular;
 
             // Quick early out - if we start with "//" or "((", this is an OOC message.
-            if (message.Substring(0, 2) == "//" || message.Substring(0, 2) == "((")
+            if (message.Length >= 2 && (message.Substring(0, 2) == "//" || message.Substring(0, 2) == "(("))
             {
                 ChatComponent component = new ChatComponent
                 {
@@ -144,6 +145,17 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            // For any components with colour, set the emote colour.
+            foreach (ChatComponent component in chatComponents)
+            {
+                if (component.m_CustomColour)
+                {
+                    component.m_ColourRed = 0;
+                    component.m_ColourGreen = 255;
+                    component.m_ColourBlue = 0;
+                }
+            }
+
             // Now, depending on the chat channel, we need to build a list of recipients.
             bool needsAreaCheck = false;
             float distanceCheck = 0.0f;
@@ -157,13 +169,16 @@ namespace SWLOR.Game.Server.Service
             if (channel == ChatChannelType.PlayerShout)
             {
                 recipients.AddRange(NWModule.Get().Players.Where(player => player.GetLocalInt("DISPLAY_HOLONET") == TRUE));
+                recipients.AddRange(App.GetAppState().ConnectedDMs);
             }
             // This is the normal party chat, plus everyone within 20 units of the sender.
             else if (channel == ChatChannelType.PlayerParty)
             {
                 // Can an NPC use the playerparty channel? I feel this is safe ...
                 NWPlayer player = sender.Object;
-                recipients.AddRange(player.PartyMembers.Where(pm => !pm.Equals(sender)).Cast<NWObject>());
+                recipients.AddRange(player.PartyMembers.Cast<NWObject>());
+                recipients.AddRange(App.GetAppState().ConnectedDMs);
+
                 needsAreaCheck = true;
                 distanceCheck = 20.0f;
             }
@@ -182,14 +197,14 @@ namespace SWLOR.Game.Server.Service
 
             if (needsAreaCheck)
             {
-                recipients.AddRange(sender.Area.Objects.Where(obj => !obj.Equals(sender) && obj.IsPlayer && _.GetDistanceBetween(sender, obj) <= distanceCheck));
-                // TODO: Need to add DMs too, Area.Objects doesn't return them. We need to cache them on entry.
+                recipients.AddRange(sender.Area.Objects.Where(obj => obj.IsPlayer && _.GetDistanceBetween(sender, obj) <= distanceCheck));
+                recipients.AddRange(App.GetAppState().ConnectedDMs.Where(dm => dm.Area == sender.Area && _.GetDistanceBetween(sender, dm) <= distanceCheck));
             }
 
             // Now we have a list of who is going to actually receive a message, we need to modify
             // the message for each recipient then dispatch them.
 
-            foreach (NWObject obj in recipients)
+            foreach (NWObject obj in recipients.Distinct())
             {
                 // Generate the final message as perceived by obj.
 
@@ -202,6 +217,36 @@ namespace SWLOR.Game.Server.Service
                 else if (channel == ChatChannelType.PlayerParty)
                 {
                     finalMessage.Append("[Comms] ");
+
+                    if (obj.IsDM)
+                    {
+                        // Convenience for DMs - append the party members.
+                        finalMessage.Append("{ ");
+
+                        int count = 0;
+                        NWPlayer player = sender.Object;
+                        List<NWPlayer> partyMembers = player.PartyMembers.ToList();
+
+                        foreach (NWPlayer otherPlayer in partyMembers)
+                        {
+                            string name = otherPlayer.Name;
+                            finalMessage.Append(name.Substring(0, Math.Min(name.Length, 10)));
+
+                            ++count;
+
+                            if (count >= 3)
+                            {
+                                finalMessage.Append(", ...");
+                                break;
+                            }
+                            else if (count != partyMembers.Count)
+                            {
+                                finalMessage.Append(",");
+                            }
+                        }
+
+                        finalMessage.Append(" } ");
+                    }
                 }
 
                 // TODO - append language name if not basic.
@@ -224,16 +269,16 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 // Dispatch the final message - method depends on the original chat channel.
-                // - Shout is sent as talk.
-                // - Party is sent as talk.
-                // - Talk is sent as talk.
-                // - Whisper is sent as whisper.
+                // - Shout and party is sent as DMTalk. We do this to get around the restriction that
+                //   the PC needs to be in the same area for the normal talk channel.
+                //   We could use the native channels for these but the [shout] or [party chat] labels look silly.
+                // - Talk and whisper are sent as-is.
 
                 ChatChannelType finalChannel = channel;
 
                 if (channel == ChatChannelType.PlayerShout || channel == ChatChannelType.PlayerParty)
                 {
-                    finalChannel = ChatChannelType.PlayerTalk;
+                    finalChannel = ChatChannelType.DMTalk;
                 }
 
                 // There are a couple of colour overrides we want to use here.
@@ -248,9 +293,9 @@ namespace SWLOR.Game.Server.Service
                 }
                 else if (channel == ChatChannelType.PlayerParty)
                 {
-                    finalMessageColoured = _color.Yellow(finalMessageColoured);
+                    finalMessageColoured = _color.Orange(finalMessageColoured);
                 }
-            
+
                 _nwnxChat.SendMessage((int)finalChannel, finalMessageColoured, sender, obj);
             }
         }
@@ -283,38 +328,249 @@ namespace SWLOR.Game.Server.Service
             _db.SaveChanges();
         }
 
-        private List<ChatComponent> SplitMessageIntoComponents_Regular(string message)
+        private enum WorkingOnEmoteStyle
         {
-            // TODO
+            None,
+            Asterisk,
+            Bracket,
+            ColonForward,
+            ColonBackward
+        };
 
+        private static List<ChatComponent> SplitMessageIntoComponents_Regular(string message)
+        {
             List<ChatComponent> components = new List<ChatComponent>();
 
-            ChatComponent component = new ChatComponent
-            {
-                m_Text = message,
-                m_CustomColour = false,
-                m_Translatable = false
-            };
+            WorkingOnEmoteStyle workingOn = WorkingOnEmoteStyle.None;
+            int indexStart = 0;
+            int length = -1;
+            int depth = 0;
 
-            components.Add(component);
+            for (int i = 0; i < message.Length; ++i)
+            {
+                char ch = message[i];
+
+                if (ch == '[')
+                {
+                    if (workingOn == WorkingOnEmoteStyle.None || workingOn == WorkingOnEmoteStyle.Bracket)
+                    {
+                        depth += 1;
+                        if (depth == 1)
+                        {
+                            ChatComponent component = new ChatComponent
+                            {
+                                m_CustomColour = false,
+                                m_Translatable = true,
+                                m_Text = message.Substring(indexStart, i - indexStart)
+                            };
+                            components.Add(component);
+
+                            indexStart = i + 1;
+                            workingOn = WorkingOnEmoteStyle.Bracket;
+                        }
+                    }
+                }
+                else if (ch == ']')
+                {
+                    if (workingOn == WorkingOnEmoteStyle.Bracket)
+                    {
+                        depth -= 1;
+                        if (depth == 0)
+                        {
+                            length = i - indexStart;
+                        }
+                    }
+                }
+                else if (ch == '*')
+                {
+                    if (workingOn == WorkingOnEmoteStyle.None || workingOn == WorkingOnEmoteStyle.Asterisk)
+                    {
+                        if (depth == 0)
+                        {
+                            ChatComponent component = new ChatComponent
+                            {
+                                m_CustomColour = false,
+                                m_Translatable = true,
+                                m_Text = message.Substring(indexStart, i - indexStart)
+                            };
+                            components.Add(component);
+
+                            depth = 1;
+                            indexStart = i;
+                            workingOn = WorkingOnEmoteStyle.Asterisk;
+                        }
+                        else
+                        {
+                            depth = 0;
+                            length = i - indexStart + 1;
+                        }
+                    }
+                }
+                else if (ch == ':')
+                {
+                    if (workingOn == WorkingOnEmoteStyle.None || workingOn == WorkingOnEmoteStyle.ColonForward)
+                    {
+                        depth += 1;
+                        if (depth == 1)
+                        {
+                            // Only match this colon if the next symbol is also a colon.
+                            // This needs to be done because a single colon can be used in normal chat.
+                            if (i + 1 < message.Length && message[i + 1] == ':')
+                            {
+                                ChatComponent component = new ChatComponent
+                                {
+                                    m_CustomColour = false,
+                                    m_Translatable = true,
+                                    m_Text = message.Substring(indexStart, i - indexStart)
+                                };
+                                components.Add(component);
+
+                                indexStart = i;
+                                workingOn = WorkingOnEmoteStyle.ColonForward;
+                            }
+                            else
+                            {
+                                depth -= 1;
+                            }
+                        }
+                        else if (depth == 2)
+                        {
+                            workingOn = WorkingOnEmoteStyle.ColonBackward;
+                        }
+                    }
+                    else if (workingOn == WorkingOnEmoteStyle.ColonBackward)
+                    {
+                        depth -= 1;
+                        if (depth == 0)
+                        {
+                            length = i - indexStart + 1;
+                        }
+                    }
+                }
+
+                if (length != -1)
+                {
+                    ChatComponent component = new ChatComponent
+                    {
+                        m_CustomColour = workingOn != WorkingOnEmoteStyle.Bracket || message[indexStart] == '[',
+                        m_Translatable = false,
+                        m_Text = message.Substring(indexStart, length)
+                    };
+                    components.Add(component);
+
+                    indexStart = i + 1;
+                    length = -1;
+                    workingOn = WorkingOnEmoteStyle.None;
+                }
+                else
+                {
+                    // If this is the last character in the string, we should just display what we've got.
+                    if (i == message.Length - 1)
+                    {
+                        ChatComponent component = new ChatComponent
+                        {
+                            m_CustomColour = depth != 0,
+                            m_Translatable = depth == 0,
+                            m_Text = message.Substring(indexStart, i - indexStart + 1)
+                        };
+                        components.Add(component);
+                    }
+                }
+            }
+
+            // Strip any empty components.
+            components.RemoveAll(comp => string.IsNullOrEmpty(comp.m_Text));
 
             return components;
         }
 
-        private List<ChatComponent> SplitMessageIntoComponents_Novel(string message)
+        private static List<ChatComponent> SplitMessageIntoComponents_Novel(string message)
         {
             // TODO
-        
+
             List<ChatComponent> components = new List<ChatComponent>();
 
-            ChatComponent component = new ChatComponent
-            {
-                m_Text = message,
-                m_CustomColour = false,
-                m_Translatable = false
-            };
+            int indexStart = 0;
+            bool workingOnQuotes = false;
+            bool workingOnBrackets = false;
 
-            components.Add(component);
+            for (int i = 0; i < message.Length; ++i)
+            {
+                char ch = message[i];
+
+                if (ch == '"')
+                {
+                    if (!workingOnQuotes)
+                    {
+                        ChatComponent component = new ChatComponent
+                        {
+                            m_CustomColour = true,
+                            m_Translatable = false,
+                            m_Text = message.Substring(indexStart, i - indexStart)
+                        };
+                        components.Add(component);
+
+                        workingOnQuotes = true;
+                        indexStart = i;
+                    }
+                    else
+                    {
+                        ChatComponent component = new ChatComponent
+                        {
+                            m_CustomColour = false,
+                            m_Translatable = true,
+                            m_Text = message.Substring(indexStart, i - indexStart + 1)
+                        };
+                        components.Add(component);
+
+                        workingOnQuotes = false;
+                        indexStart = i + 1;
+                    }
+                }
+                else if (ch == '[')
+                {
+                    bool translate = workingOnQuotes;
+
+                    ChatComponent component = new ChatComponent
+                    {
+                        m_CustomColour = !translate,
+                        m_Translatable = translate,
+                        m_Text = message.Substring(indexStart, i - indexStart)
+                    };
+                    components.Add(component);
+
+                    workingOnBrackets = true;
+                    indexStart = i + 1;
+                }
+                else if (ch == ']')
+                {
+                    ChatComponent component = new ChatComponent
+                    {
+                        m_CustomColour = true,
+                        m_Translatable = false,
+                        m_Text = message.Substring(indexStart, i - indexStart)
+                    };
+                    components.Add(component);
+
+                    workingOnBrackets = false;
+                    indexStart = i + 1;
+                }
+            }
+
+            {
+                bool translate = workingOnQuotes && !workingOnBrackets;
+
+                ChatComponent component = new ChatComponent
+                {
+                    m_CustomColour = !translate,
+                    m_Translatable = translate,
+                    m_Text = message.Substring(indexStart, message.Length - indexStart)
+                };
+                components.Add(component);
+            }
+
+            // Strip any empty components.
+            components.RemoveAll(comp => string.IsNullOrEmpty(comp.m_Text));
 
             return components;
         }

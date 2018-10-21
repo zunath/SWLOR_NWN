@@ -41,19 +41,22 @@ namespace SWLOR.Game.Server.Service
         private readonly INWNXChat _nwnxChat;
         private readonly IDataContext _db;
         private readonly HttpClient _httpClient;
+        private readonly ILanguageService _language;
 
         public ChatTextService(
             INWScript script,
             IColorTokenService color,
             INWNXChat nwnxChat,
             IDataContext db,
-            HttpClient httpClient)
+            HttpClient httpClient,
+            ILanguageService language)
         {
             _ = script;
             _color = color;
             _nwnxChat = nwnxChat;
             _db = db;
             _httpClient = httpClient;
+            _language = language;
         }
 
         public void OnNWNXChat()
@@ -249,7 +252,20 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
+                // TODO - Selected language (we presume twilek for now)
+                SkillType language = SkillType.Twileki;
+
+                int colour = _language.GetColour(language);
+                byte r = (byte)(colour >> 24 & 0xFF);
+                byte g = (byte)(colour >> 16 & 0xFF);
+                byte b = (byte)(colour >> 8 & 0xFF);
+
                 // TODO - append language name if not basic.
+                // if (language != SkillType.Basic)
+                {
+                    string languageName = _language.GetName(language);
+                    finalMessage.Append(_color.Custom($"[{languageName}] ", r, g, b));
+                }
 
                 foreach (ChatComponent component in chatComponents)
                 {
@@ -257,7 +273,16 @@ namespace SWLOR.Game.Server.Service
 
                     if (component.m_Translatable)
                     {
-                        // TODO - Translate from translation service.
+                        if (obj.IsPlayer)
+                        {
+                            NWPlayer player = obj.Object;
+                            text = _language.TranslateSnippetForListener(player, language, component.m_Text);
+
+                            if (colour != 0)
+                            {
+                                text = _color.Custom(text, r, g, b);
+                            }
+                        }
                     }
 
                     if (component.m_CustomColour)

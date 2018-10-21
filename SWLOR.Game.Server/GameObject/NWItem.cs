@@ -645,6 +645,17 @@ namespace SWLOR.Game.Server.GameObject
             return !(lhs == rhs);
         }
 
+        public override bool Equals(object o)
+        {
+            NWItem other = o as NWItem;
+            return other != null && other == this;
+        }
+
+        public override int GetHashCode()
+        {
+            return Object.GetHashCode();
+        }
+
         public static implicit operator Object(NWItem o)
         {
             return o.Object;

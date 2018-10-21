@@ -194,9 +194,8 @@ namespace SWLOR.Game.Server.Service
                         Console.WriteLine("Saving " + batchRecords + " records...");
                         _bakeDB.Database.ExecuteSqlCommand(sql);
                     }
-                    
-                    Console.WriteLine("Finished baking area: " + area.Name);
                 }
+                Console.WriteLine("Area walkmesh up to date: " + area.Name);
 
             }
         }

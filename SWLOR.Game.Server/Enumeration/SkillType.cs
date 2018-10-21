@@ -26,6 +26,14 @@
         // 21 is open
         Engineering = 22,
         Farming = 23,
-        Scavenging = 24
+        Scavenging = 24,
+        Bothese = 25,
+        Cheunh = 26,
+        Zabraki = 27,
+        Twileki = 28,
+        Catharese = 29,
+        Dosh = 30,
+        Wookieespeak = 31,
+        Droid = 32
     }
 }

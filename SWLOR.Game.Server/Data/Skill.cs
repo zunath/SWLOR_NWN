@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Data
         {
             this.Name = "";
             this.Description = "";
+            this.ContributesToSkillCap = true;
             this.CraftBlueprints = new HashSet<CraftBlueprint>();
             this.PCSkills = new HashSet<PCSkill>();
             this.PerkLevelSkillRequirements = new HashSet<PerkLevelSkillRequirement>();
@@ -34,6 +35,7 @@ namespace SWLOR.Game.Server.Data
         public int Primary { get; set; }
         public int Secondary { get; set; }
         public int Tertiary { get; set; }
+        public bool ContributesToSkillCap { get; set; }
     
         public virtual Attribute PrimaryAttribute { get; set; }
         public virtual Attribute SecondaryAttribute { get; set; }

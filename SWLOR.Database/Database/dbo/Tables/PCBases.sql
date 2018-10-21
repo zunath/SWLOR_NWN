@@ -1,0 +1,25 @@
+﻿CREATE TABLE [dbo].[PCBases] (
+    [PCBaseID]            INT           IDENTITY (1, 1) NOT NULL,
+    [PlayerID]            NVARCHAR (60) NOT NULL,
+    [AreaResref]          NVARCHAR (16) NOT NULL,
+    [Sector]              CHAR (2)      NOT NULL,
+    [DateInitialPurchase] DATETIME2 (7) DEFAULT (getutcdate()) NOT NULL,
+    [DateRentDue]         DATETIME2 (7) NOT NULL,
+    [ShieldHP]            INT           DEFAULT ((0)) NOT NULL,
+    [IsInReinforcedMode]  BIT           DEFAULT ((0)) NOT NULL,
+    [Fuel]                INT           DEFAULT ((0)) NOT NULL,
+    [ReinforcedFuel]      INT           DEFAULT ((0)) NOT NULL,
+    [DateFuelEnds]        DATETIME2 (7) DEFAULT (getutcdate()) NOT NULL,
+    [PCBaseTypeID]        INT           NOT NULL,
+    [ApartmentBuildingID] INT           NULL,
+    [CustomName]          NVARCHAR (64) DEFAULT ('') NOT NULL,
+    [BuildingStyleID]     INT           NULL,
+    PRIMARY KEY CLUSTERED ([PCBaseID] ASC),
+    CONSTRAINT [CK_PCBases_Sector] CHECK ([Sector]='SE' OR [Sector]='SW' OR [Sector]='NE' OR [Sector]='NW' OR [Sector]='AP'),
+    CONSTRAINT [FK_PCBases_ApartmentBuildingID] FOREIGN KEY ([ApartmentBuildingID]) REFERENCES [dbo].[ApartmentBuildings] ([ApartmentBuildingID]),
+    CONSTRAINT [FK_PCBases_AreaResref] FOREIGN KEY ([AreaResref]) REFERENCES [dbo].[Areas] ([Resref]),
+    CONSTRAINT [FK_PCBases_BuildingStyleID] FOREIGN KEY ([BuildingStyleID]) REFERENCES [dbo].[BuildingStyles] ([BuildingStyleID]),
+    CONSTRAINT [FK_PCBases_PCBaseTypeID] FOREIGN KEY ([PCBaseTypeID]) REFERENCES [dbo].[PCBaseTypes] ([PCBaseTypeID]),
+    CONSTRAINT [FK_PCBases_PlayerID] FOREIGN KEY ([PlayerID]) REFERENCES [dbo].[PlayerCharacters] ([PlayerID])
+);
+

@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Game.Server", "SWLOR.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SWLOR.Game.Server.Tests", "SWLOR.Game.Server.Tests\SWLOR.Game.Server.Tests.csproj", "{C05D52A5-E0FA-4C7C-ABBD-0DBD60E3749B}"
 EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "SWLOR.Database", "SWLOR.Database\Database\SWLOR.Database.sqlproj", "{8B20284E-63DB-4288-AEAD-AA465C88183E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,12 @@ Global
 		{C05D52A5-E0FA-4C7C-ABBD-0DBD60E3749B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C05D52A5-E0FA-4C7C-ABBD-0DBD60E3749B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C05D52A5-E0FA-4C7C-ABBD-0DBD60E3749B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B20284E-63DB-4288-AEAD-AA465C88183E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B20284E-63DB-4288-AEAD-AA465C88183E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B20284E-63DB-4288-AEAD-AA465C88183E}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{8B20284E-63DB-4288-AEAD-AA465C88183E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B20284E-63DB-4288-AEAD-AA465C88183E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B20284E-63DB-4288-AEAD-AA465C88183E}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

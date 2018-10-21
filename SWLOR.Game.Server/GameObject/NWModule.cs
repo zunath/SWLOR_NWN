@@ -58,6 +58,17 @@ namespace SWLOR.Game.Server.GameObject
             return !(lhs == rhs);
         }
 
+        public override bool Equals(object o)
+        {
+            NWModule other = o as NWModule;
+            return other != null && other == this;
+        }
+
+        public override int GetHashCode()
+        {
+            return Object.GetHashCode();
+        }
+
         public static implicit operator Object(NWModule o)
         {
             return o.Object;

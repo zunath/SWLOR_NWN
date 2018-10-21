@@ -7,9 +7,7 @@ namespace NWN
 {
     public class Internal
     {
-        public const uint OBJECT_INVALID = 0x7F000000;
-
-        public static Object OBJECT_SELF { get; private set; } = OBJECT_INVALID;
+        public static Object OBJECT_SELF { get; private set; } = Object.OBJECT_INVALID;
 
         private static Stack<Object> s_ScriptContexts = new Stack<Object>();
 
@@ -22,7 +20,7 @@ namespace NWN
         private static void PopScriptContext()
         {
             s_ScriptContexts.Pop();
-            OBJECT_SELF = s_ScriptContexts.Count == 0 ? OBJECT_INVALID : s_ScriptContexts.Peek();
+            OBJECT_SELF = s_ScriptContexts.Count == 0 ? Object.OBJECT_INVALID : s_ScriptContexts.Peek();
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -44,7 +42,7 @@ namespace NWN
         {
             if (value == null)
             {
-                value = defAsObjSelf ? OBJECT_SELF : OBJECT_INVALID;
+                value = defAsObjSelf ? OBJECT_SELF : Object.OBJECT_INVALID;
             }
 
             StackPushObject_Native(value.m_ObjId);

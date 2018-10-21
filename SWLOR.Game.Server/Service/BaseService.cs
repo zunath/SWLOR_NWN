@@ -1,6 +1,6 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data.Entities;
+using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX.Contracts;
@@ -285,7 +285,7 @@ namespace SWLOR.Game.Server.Service
                 DateInitialPurchase = DateTime.UtcNow,
                 DateRentDue = DateTime.UtcNow.AddDays(7),
                 Sector = sector,
-                PCBaseTypeID = (int)PCBaseType.RegularBase,
+                PCBaseTypeID = (int)Enumeration.PCBaseType.RegularBase,
                 CustomName = string.Empty
             };
             _db.PCBases.Add(pcBase);

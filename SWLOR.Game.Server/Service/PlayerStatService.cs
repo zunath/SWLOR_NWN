@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Service.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Data.Entities;
+using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.NWNX.Contracts;
 using static NWN.NWScript;
 using SWLOR.Game.Server.ValueObject;

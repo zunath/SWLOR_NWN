@@ -1,6 +1,6 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data.Entities;
+using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
@@ -11,7 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using static NWN.NWScript;
-using Quest = SWLOR.Game.Server.Data.Entities.Quest;
+using Quest = SWLOR.Game.Server.Data.Quest;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -464,8 +464,8 @@ namespace SWLOR.Game.Server.Service
                 foreach (var kt in _db.PCQuestKillTargetProgresses.Where(x => x.PlayerID == oPC.GlobalID && x.NPCGroupID == npcGroupID))
                 {
                     kt.RemainingToKill--;
-                    int questID = kt.PcQuestStatus.QuestID;
-                    var quest = kt.PcQuestStatus.Quest;
+                    int questID = kt.PCQuestStatus.QuestID;
+                    var quest = kt.PCQuestStatus.Quest;
                     string targetGroupName = kt.NPCGroup.Name;
                     
                     string updateMessage = "[" + quest.Name + "] " + targetGroupName + " remaining: " + kt.RemainingToKill;

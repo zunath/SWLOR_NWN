@@ -4,7 +4,7 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data.Entities;
+using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Processor.Contracts;
@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Processor
                 var entry = _state.NPCEffects.ElementAt(index);
                 CasterSpellVO casterModel = entry.Key;
                 _state.NPCEffects[entry.Key] = entry.Value - 1;
-                Data.Entities.CustomEffect entity = _db.CustomEffects.Single(x => x.CustomEffectID == casterModel.CustomEffectID);
+                Data.CustomEffect entity = _db.CustomEffects.Single(x => x.CustomEffectID == casterModel.CustomEffectID);
                 App.ResolveByInterface<ICustomEffect>("CustomEffect." + entity.ScriptHandler, (handler) =>
                 {
                     try

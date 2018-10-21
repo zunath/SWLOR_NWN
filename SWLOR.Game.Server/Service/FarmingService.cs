@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data.Entities;
+using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
@@ -82,8 +82,8 @@ namespace SWLOR.Game.Server.Service
                     resref = plant.Plant.Resref;
 
                 NWArea area = (_.GetObjectByTag(plant.LocationAreaTag));
-                Vector position = _.Vector(plant.LocationX, plant.LocationY, plant.LocationZ);
-                Location location = _.Location(area.Object, position, plant.LocationOrientation);
+                Vector position = _.Vector((float)plant.LocationX, (float)plant.LocationY, (float)plant.LocationZ);
+                Location location = _.Location(area.Object, position, (float)plant.LocationOrientation);
                 NWPlaceable plantPlc = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, resref, location));
                 plantPlc.SetLocalInt("GROWING_PLANT_ID", plant.GrowingPlantID);
 

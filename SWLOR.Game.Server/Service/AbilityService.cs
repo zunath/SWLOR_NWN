@@ -4,7 +4,7 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using SWLOR.Game.Server.Bioware.Contracts;
 using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data.Entities;
+using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer pc = (Object.OBJECT_SELF);
             NWCreature target = (_nwnxEvents.OnFeatUsed_GetTarget().Object);
             int featID = _nwnxEvents.OnFeatUsed_GetFeatID();
-            Data.Entities.Perk perk = _db.Perks.SingleOrDefault(x => x.FeatID == featID);
+            Data.Perk perk = _db.Perks.SingleOrDefault(x => x.FeatID == featID);
             if (perk == null) return;
 
             App.ResolveByInterface<IPerk>("Perk." + perk.ScriptName, (perkAction) =>
@@ -187,7 +187,7 @@ namespace SWLOR.Game.Server.Service
             
         }
 
-        public void ApplyEnmity(NWPlayer pc, NWCreature target, Data.Entities.Perk perk)
+        public void ApplyEnmity(NWPlayer pc, NWCreature target, Data.Perk perk)
         {
             switch ((EnmityAdjustmentRuleType)perk.EnmityAdjustmentRuleID)
             {
@@ -211,7 +211,7 @@ namespace SWLOR.Game.Server.Service
         
         private void ActivateAbility(NWPlayer pc,
                                NWObject target,
-                               Data.Entities.Perk entity,
+                               Data.Perk entity,
                                IPerk perk,
                                int pcPerkLevel,
                                PerkExecutionType executionType)
@@ -345,7 +345,7 @@ namespace SWLOR.Game.Server.Service
             _.DelayCommand(0.5f, () => { CheckForSpellInterruption(pc, spellUUID, position); });
         }
 
-        public void HandleQueueWeaponSkill(NWPlayer pc, Data.Entities.Perk entity, IPerk ability)
+        public void HandleQueueWeaponSkill(NWPlayer pc, Data.Perk entity, IPerk ability)
         {
             string queueUUID = Guid.NewGuid().ToString("N");
             pc.SetLocalInt("ACTIVE_WEAPON_SKILL", entity.PerkID);

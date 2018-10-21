@@ -1,7 +1,7 @@
 ﻿using System;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data.Entities;
+using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
@@ -10,7 +10,7 @@ using SWLOR.Game.Server.ValueObject.Dialog;
 using System.Collections.Generic;
 using System.Linq;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
-using BuildingType = SWLOR.Game.Server.Data.Entities.BuildingType;
+using BuildingType = SWLOR.Game.Server.Data.BuildingType;
 
 namespace SWLOR.Game.Server.Conversation
 {

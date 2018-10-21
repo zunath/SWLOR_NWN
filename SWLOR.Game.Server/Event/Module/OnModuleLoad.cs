@@ -58,16 +58,32 @@ namespace SWLOR.Game.Server.Event.Module
             SetModuleEventScripts();
             SetAreaEventScripts();
 
+            Console.WriteLine("Executing bioware");
             // Bioware default
             _.ExecuteScript("x2_mod_def_load", Object.OBJECT_SELF);
+
+            Console.WriteLine("Executing app state processor register");
             _objectProcessing.RegisterProcessingEvent<AppStateProcessor>();
+
+            Console.WriteLine("Executing object processing on load");
             _objectProcessing.OnModuleLoad();
+
+            Console.WriteLine("Executing farming onload");
             _farming.OnModuleLoad();
-            
+
+            Console.WriteLine("Executing base onload");
             _base.OnModuleLoad();
+
+            Console.WriteLine("Executing area onload");
             _area.OnModuleLoad();
+
+            Console.WriteLine("Executing spawn onload");
             _spawn.OnModuleLoad();
+
+            Console.WriteLine("Executing customeffect onload");
             _customEffect.OnModuleLoad();
+
+            Console.WriteLine("Executing obvs onload");
             _objectVisibility.OnModuleLoad();
 
             nowString = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");

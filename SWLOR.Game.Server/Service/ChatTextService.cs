@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            NWPlayer sender = _nwnxChat.GetSender().Object;
+            NWObject sender = _nwnxChat.GetSender();
             string message = _nwnxChat.GetMessage();
 
             if (ChatCommandService.CanHandleChat(sender, message) ||
@@ -94,7 +94,6 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-
             if (channel == ChatChannelType.PlayerDM)
             {
                 // Simply echo the message back to the player.
@@ -102,18 +101,16 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-
             // At this point, every channel left is one we want to manually handle.
             _nwnxChat.SkipMessage();
 
             // If this is a party message, and the holonet is disabled, we disallow it.
-            if (sender.GetLocalInt("DISPLAY_HOLONET") == FALSE)
+            if (channel == ChatChannelType.PlayerParty && sender.IsPlayer && sender.GetLocalInt("DISPLAY_HOLONET") == FALSE)
             {
-                sender.SendMessage("You have disabled the holonet and cannot send this message.");
+                NWPlayer player = sender.Object;
+                player.SendMessage("You have disabled the holonet and cannot send this message.");
                 return;
             }
-
-
 
             // TODO - Assume emote mode is regular.
             List<ChatComponent> chatComponents;
@@ -164,7 +161,9 @@ namespace SWLOR.Game.Server.Service
             // This is the normal party chat, plus everyone within 20 units of the sender.
             else if (channel == ChatChannelType.PlayerParty)
             {
-                recipients.AddRange(sender.PartyMembers.Where(pm => !pm.Equals(sender)).Cast<NWObject>());
+                // Can an NPC use the playerparty channel? I feel this is safe ...
+                NWPlayer player = sender.Object;
+                recipients.AddRange(player.PartyMembers.Where(pm => !pm.Equals(sender)).Cast<NWObject>());
                 needsAreaCheck = true;
                 distanceCheck = 20.0f;
             }

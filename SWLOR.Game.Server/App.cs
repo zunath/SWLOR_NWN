@@ -181,6 +181,9 @@ namespace SWLOR.Game.Server
 
             // Instances
             builder.RegisterInstance(new AppState());
+            builder.RegisterType<DatabaseMigrationRunner>()
+                .As<IStartable>()
+                .SingleInstance();
 
             // Types
             builder.RegisterType<DataContext>().As<IDataContext>().InstancePerDependency().WithParameter("useCustom", true);

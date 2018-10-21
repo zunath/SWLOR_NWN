@@ -118,6 +118,7 @@ namespace SWLOR.Game.Server.Data
         public virtual DbSet<SpawnObjectType> SpawnObjectTypes { get; set; }
         public virtual DbSet<Spawn> Spawns { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<DatabaseVersion> DatabaseVersions { get; set; }
     
         [DbFunction("DataContext", "fn_GetPlayerEffectivePerkLevel")]
         public virtual IQueryable<fn_GetPlayerEffectivePerkLevel_Result> fn_GetPlayerEffectivePerkLevel(string playerID, Nullable<int> perkID, Nullable<int> skillLevel)

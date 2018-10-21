@@ -284,6 +284,10 @@
     <Compile Include="Data\CustomEffect.cs">
       <DependentUpon>DataContext.tt</DependentUpon>
     </Compile>
+    <Compile Include="Data\DatabaseMigrationRunner.cs" />
+    <Compile Include="Data\DatabaseVersion.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
     <Compile Include="Data\DataContext.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -1603,6 +1607,8 @@
       <DependentUpon>DataContext.edmx</DependentUpon>
       <LastGenOutput>DataContext.cs</LastGenOutput>
     </Content>
+    <EmbeddedResource Include="Data\Migrations\2018-10-22.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <Content Include="ServerFiles\Database\scripts\AddWeaponCraftBlueprints.sql" />
     <Content Include="ServerFiles\Database\swlor-db.sql" />
     <Content Include="ServerFiles\Database\scripts\AddPerkLevels.sql" />

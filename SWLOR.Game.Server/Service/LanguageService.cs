@@ -47,9 +47,6 @@ namespace SWLOR.Game.Server.Service
             map.TryGetValue(language, out type);
             ITranslator translator = Activator.CreateInstance(type) as ITranslator;
 
-            // This gives us the thing written in Bothese.
-            string textAsForeignLanguage = translator.Translate(snippet);
-
             if (speaker.IsPlayer && !speaker.IsDM)
             {
                 // Get the rank and max rank for the speaker, and garble their English text based on it.
@@ -84,48 +81,53 @@ namespace SWLOR.Game.Server.Service
             int rank = skill.Rank;
             int maxRank = skill.Skill.MaxRank;
 
-            if (rank == maxRank)
+            if (rank == maxRank || speaker == listener)
             {
                 // Guaranteed success - return original.
                 return snippet;
             }
-            else if (rank == 0)
+
+            string textAsForeignLanguage = translator.Translate(snippet);
+
+            if (rank != 0)
             {
-                // Guaranteed failure - return translated.
-                return textAsForeignLanguage;
-            }
+                int englishChance = (int)(((float)rank / (float)maxRank) * 100);
 
-            int englishChance = (int)(((float)rank / (float)maxRank) * 100);
+                string[] originalSplit = snippet.Split(' ');
+                string[] foreignSplit = textAsForeignLanguage.Split(' ');
 
-            string[] originalSplit = snippet.Split(' ');
-            string[] foreignSplit = textAsForeignLanguage.Split(' ');
+                StringBuilder endResult = new StringBuilder();
 
-            StringBuilder endResult = new StringBuilder();
-
-            // WARNING: We're making the assumption that originalSplit.Length == foreignSplit.Length.
-            // If this assumption changes, the below logic needs to change too.
-            for (int i = 0; i < originalSplit.Length; ++i)
-            {
-                if (_randomService.Random(100) <= englishChance)
+                // WARNING: We're making the assumption that originalSplit.Length == foreignSplit.Length.
+                // If this assumption changes, the below logic needs to change too.
+                for (int i = 0; i < originalSplit.Length; ++i)
                 {
-                    endResult.Append(originalSplit[i]);
-                }
-                else
-                {
-                    endResult.Append(foreignSplit[i]);
+                    if (_randomService.Random(100) <= englishChance)
+                    {
+                        endResult.Append(originalSplit[i]);
+                    }
+                    else
+                    {
+                        endResult.Append(foreignSplit[i]);
+                    }
+
+                    endResult.Append(" ");
                 }
 
-                endResult.Append(" ");
+                textAsForeignLanguage = endResult.ToString();
             }
 
-            // Reward exp towards the language - we scale this with character count, maxing at 50 exp for 150 characters.
-            if (speaker != listener && rank != maxRank)
+            int now = (int)DateTime.Now.Ticks;
+            int lastSkillUp = listenerAsPlayer.GetLocalInt("LAST_LANGUAGE_SKILL_INCREASE");
+
+            if (TimeSpan.FromTicks(Math.Abs(now - lastSkillUp)).Minutes >= 10)
             {
-                int expToReward = Math.Max(10, Math.Min(150, snippet.Length) / 3);
-                _skillService.GiveSkillXP(listenerAsPlayer, language, expToReward);
+                // Reward exp towards the language - we scale this with character count, maxing at 50 exp for 150 characters.
+                _skillService.GiveSkillXP(listenerAsPlayer, language, Math.Max(10, Math.Min(150, snippet.Length) / 3));
+                listenerAsPlayer.SetLocalInt("LAST_LANGUAGE_SKILL_INCREASE", now);
             }
 
-            return endResult.ToString();
+            return textAsForeignLanguage;
         }
 
         public int GetColour(SkillType language)

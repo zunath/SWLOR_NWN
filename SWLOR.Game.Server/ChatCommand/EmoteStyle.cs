@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Toggles your emote style between regular and novel.", CommandPermissionType.Player)]
+    [CommandDetails("Toggles your emote style between regular and novel.", CommandPermissionType.Player | CommandPermissionType.DM)]
     public class EmoteStyle : IChatCommand
     {
         private readonly IEmoteStyleService _emoteStyle;

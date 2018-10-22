@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server
         public Dictionary<NWArea, AreaSpawn> AreaSpawns { get; set; }
         public Dictionary<string, NWObject> VisibilityObjects { get; set; }
         public List<long> PCEffectsForRemoval { get; set; }
+        public List<NWObject> ConnectedDMs { get; set; }
         public AppState()
         {
             PlayerDialogs = new Dictionary<string, PlayerDialog>();
@@ -36,6 +37,7 @@ namespace SWLOR.Game.Server
             AreaSpawns = new Dictionary<NWArea, AreaSpawn>();
             VisibilityObjects = new Dictionary<string, NWObject>();
             PCEffectsForRemoval = new List<long>();
+            ConnectedDMs = new List<NWObject>();
 
             for (int x = 1; x <= Constants.NumberOfDialogs; x++)
             {

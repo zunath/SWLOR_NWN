@@ -219,5 +219,28 @@ namespace SWLOR.Game.Server.Service
             _db.SaveChanges();
         }
 
+        public SkillType GetActiveLanguage(NWObject obj)
+        {
+            int ret = obj.GetLocalInt("ACTIVE_LANGUAGE");
+
+            if (ret == 0)
+            {
+                return SkillType.Basic;
+            }
+
+            return (SkillType)ret;
+        }
+
+        public void SetActiveLanguage(NWObject obj, SkillType language)
+        {
+            if (language == SkillType.Basic)
+            {
+                obj.DeleteLocalInt("ACTIVE_LANGUAGE");
+            }
+            else
+            {
+                obj.SetLocalInt("ACTIVE_LANGUAGE", (int)language);
+            }
+        }
     }
 }

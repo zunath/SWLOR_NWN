@@ -28,12 +28,6 @@ namespace SWLOR.Game.Server.Service
         public byte m_ColourBlue;
     };
 
-    public enum EmoteMode
-    {
-        Regular,
-        Novel
-    };
-
     public class ChatTextService : IChatTextService
     {
         private readonly INWScript _;
@@ -42,6 +36,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IDataContext _db;
         private readonly HttpClient _httpClient;
         private readonly ILanguageService _language;
+        private readonly IEmoteStyleService _emoteStyle;
 
         public ChatTextService(
             INWScript script,
@@ -49,7 +44,8 @@ namespace SWLOR.Game.Server.Service
             INWNXChat nwnxChat,
             IDataContext db,
             HttpClient httpClient,
-            ILanguageService language)
+            ILanguageService language,
+            IEmoteStyleService emoteStyle)
         {
             _ = script;
             _color = color;
@@ -57,6 +53,7 @@ namespace SWLOR.Game.Server.Service
             _db = db;
             _httpClient = httpClient;
             _language = language;
+            _emoteStyle = emoteStyle;
         }
 
         public void OnNWNXChat()
@@ -123,9 +120,6 @@ namespace SWLOR.Game.Server.Service
 
             List<ChatComponent> chatComponents;
 
-            // TODO - For now, assume emote mode is regular.
-            EmoteMode emoteMode = EmoteMode.Regular;
-
             // Quick early out - if we start with "//" or "((", this is an OOC message.
             if (message.Length >= 2 && (message.Substring(0, 2) == "//" || message.Substring(0, 2) == "(("))
             {
@@ -144,7 +138,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                if (emoteMode == EmoteMode.Regular)
+                if (_emoteStyle.GetEmoteStyle(sender) == EmoteStyle.Regular)
                 {
                     chatComponents = SplitMessageIntoComponents_Regular(message);
                 }
@@ -258,8 +252,7 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
-                // TODO - Selected language (we presume twilek for now)
-                SkillType language = SkillType.Twileki;
+                SkillType language = _language.GetActiveLanguage(sender);
 
                 int colour = _language.GetColour(language);
                 byte r = (byte)(colour >> 24 & 0xFF);
@@ -276,7 +269,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     string text = component.m_Text;
 
-                    if (component.m_Translatable)
+                    if (component.m_Translatable && language != SkillType.Basic)
                     {
                         if (obj.IsPlayer)
                         {

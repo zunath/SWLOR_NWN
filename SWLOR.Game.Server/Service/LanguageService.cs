@@ -242,5 +242,24 @@ namespace SWLOR.Game.Server.Service
                 obj.SetLocalInt("ACTIVE_LANGUAGE", (int)language);
             }
         }
+
+        public SkillType[] GetLanguages()
+        {
+            // TODO - Can this be improved? DB query based on the category?
+            return new SkillType[]
+            {
+                SkillType.Basic,
+                SkillType.Bothese,
+                SkillType.Catharese,
+                SkillType.Cheunh,
+                SkillType.Dosh,
+                SkillType.Droidspeak,
+                SkillType.Huttese,
+                SkillType.Mandoa,
+                SkillType.Shyriiwook,
+                SkillType.Twileki,
+                SkillType.Zabraki,
+            };
+        }
     }
 }

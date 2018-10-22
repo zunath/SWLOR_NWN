@@ -11,5 +11,6 @@ namespace SWLOR.Game.Server.Service.Contracts
         void InitializePlayerLanguages(NWPlayer player);
         SkillType GetActiveLanguage(NWObject obj);
         void SetActiveLanguage(NWObject obj, SkillType language);
+        SkillType[] GetLanguages();
     }
 }

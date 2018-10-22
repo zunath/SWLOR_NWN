@@ -260,7 +260,6 @@ namespace SWLOR.Game.Server.Service
                 byte g = (byte)(colour >> 16 & 0xFF);
                 byte b = (byte)(colour >> 8 & 0xFF);
 
-                // TODO - append language name if not basic.
                 if (language != SkillType.Basic)
                 {
                     string languageName = _language.GetName(language);
@@ -275,8 +274,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         if (obj.IsPlayer)
                         {
-                            NWPlayer player = obj.Object;
-                            text = _language.TranslateSnippetForListener(player, language, component.m_Text);
+                            text = _language.TranslateSnippetForListener(sender, obj.Object, language, component.m_Text);
 
                             if (colour != 0)
                             {

@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Service
             // Let's grab the max rank for the listener skill, and then we roll for a successful translate based on that.
             NWPlayer listenerAsPlayer = listener.Object;
             PCSkill skill = _skillService.GetPCSkill(listenerAsPlayer, language);
-            int rank = 5;//skill.Rank;
+            int rank = skill.Rank;
             int maxRank = skill.Skill.MaxRank;
 
             if (rank == maxRank)

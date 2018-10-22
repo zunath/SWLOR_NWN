@@ -89,6 +89,12 @@ namespace SWLOR.Game.Server.Service
             NWObject sender = _nwnxChat.GetSender();
             string message = _nwnxChat.GetMessage();
 
+            if (string.IsNullOrWhiteSpace(message))
+            {
+                // We can't handle empty messages, so skip it.
+                return;
+            }
+
             if (ChatCommandService.CanHandleChat(sender, message) ||
                 BaseService.CanHandleChat(sender, message) ||
                 CraftService.CanHandleChat(sender, message))

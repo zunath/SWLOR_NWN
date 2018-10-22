@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 
 namespace SWLOR.Game.Server.Language
 {
@@ -13,83 +12,83 @@ namespace SWLOR.Game.Server.Language
             {
                 switch (ch)
                 {
-                    case 'a': sb.Append("ca"); break;
-                    case 'A': sb.Append("C"); break;
+                    case 'a': sb.Append("z"); break;
+                    case 'A': sb.Append("Z"); break;
 
-                    case 'b': sb.Append("z"); break;
-                    case 'B': sb.Append("Z"); break;
+                    case 'b': sb.Append("t"); break;
+                    case 'B': sb.Append("T"); break;
 
-                    case 'c': sb.Append("h"); break;
-                    case 'C': sb.Append("H"); break;
+                    case 'c': sb.Append("p"); break;
+                    case 'C': sb.Append("P"); break;
 
-                    case 'd': sb.Append("'"); break;
-                    case 'D': sb.Append("Q"); break;
+                    case 'd': sb.Append("c"); break;
+                    case 'D': sb.Append("C"); break;
 
-                    case 'e': sb.Append("a"); break;
-                    case 'E': sb.Append("A"); break;
+                    case 'e': sb.Append("x"); break;
+                    case 'E': sb.Append("X"); break;
 
-                    case 'f': sb.Append("f"); break;
-                    case 'F': sb.Append("F"); break;
+                    case 'f': sb.Append("h"); break;
+                    case 'F': sb.Append("H"); break;
 
-                    case 'g': sb.Append("zn"); break;
-                    case 'G': sb.Append("Z"); break;
+                    case 'g': sb.Append("uy"); break;
+                    case 'G': sb.Append("U"); break;
 
-                    case 'h': sb.Append("g"); break;
-                    case 'H': sb.Append("G"); break;
+                    case 'h': sb.Append("r"); break;
+                    case 'H': sb.Append("R"); break;
 
-                    case 'i': sb.Append("e"); break;
-                    case 'I': sb.Append("E"); break;
+                    case 'i': sb.Append("i"); break;
+                    case 'I': sb.Append("I"); break;
 
-                    case 'j': sb.Append("n"); break;
-                    case 'J': sb.Append("N"); break;
+                    case 'j': sb.Append("g"); break;
+                    case 'J': sb.Append("G"); break;
 
-                    case 'k': sb.Append("ka"); break;
-                    case 'K': sb.Append("K"); break;
+                    case 'k': sb.Append("f"); break;
+                    case 'K': sb.Append("F"); break;
 
-                    case 'l': sb.Append("ca"); break;
-                    case 'L': sb.Append("C"); break;
+                    case 'l': sb.Append("e"); break;
+                    case 'L': sb.Append("E"); break;
 
-                    case 'm': sb.Append("x"); break;
-                    case 'M': sb.Append("X"); break;
+                    case 'm': sb.Append("q"); break;
+                    case 'M': sb.Append("Q"); break;
 
-                    case 'n': sb.Append("k"); break;
-                    case 'N': sb.Append("K"); break;
+                    case 'n': sb.Append("'"); break;
+                    case 'N': sb.Append("'"); break;
 
-                    case 'o': sb.Append("p"); break;
-                    case 'O': sb.Append("P"); break;
+                    case 'o': sb.Append("v"); break;
+                    case 'O': sb.Append("V"); break;
 
-                    case 'p': sb.Append("l"); break;
-                    case 'P': sb.Append("L"); break;
+                    case 'p': sb.Append("j"); break;
+                    case 'P': sb.Append("J"); break;
 
-                    case 'q': sb.Append("r"); break;
-                    case 'Q': sb.Append("R"); break;
+                    case 'q': sb.Append("b"); break;
+                    case 'Q': sb.Append("B"); break;
 
-                    case 'r': sb.Append("j"); break;
-                    case 'R': sb.Append("J"); break;
+                    case 'r': sb.Append("a"); break;
+                    case 'R': sb.Append("A"); break;
 
-                    case 's': sb.Append("h"); break;
-                    case 'S': sb.Append("H"); break;
+                    case 's': sb.Append("g"); break;
+                    case 'S': sb.Append("G"); break;
 
-                    case 't': sb.Append("u"); break;
-                    case 'T': sb.Append("U"); break;
+                    case 't': sb.Append("k"); break;
+                    case 'T': sb.Append("K"); break;
 
-                    case 'u': sb.Append("t"); break;
-                    case 'U': sb.Append("T"); break;
+                    case 'u': sb.Append("s"); break;
+                    case 'U': sb.Append("S"); break;
 
-                    case 'v': sb.Append("s"); break;
-                    case 'V': sb.Append("S"); break;
+                    case 'v': sb.Append("wo"); break;
+                    case 'V': sb.Append("W"); break;
 
                     case 'w': sb.Append("m"); break;
                     case 'W': sb.Append("M"); break;
 
-                    case 'x': sb.Append("sk"); break;
-                    case 'X': sb.Append("S"); break;
+                    case 'x': sb.Append("q"); break;
+                    case 'X': sb.Append("Q"); break;
 
-                    case 'y': sb.Append("b"); break;
-                    case 'Y': sb.Append("B"); break;
+                    case 'y': sb.Append("n"); break;
+                    case 'Y': sb.Append("N"); break;
 
-                    case 'z': sb.Append("vz"); break;
-                    case 'Z': sb.Append("V"); break;
+                    case 'z': sb.Append("d"); break;
+                    case 'Z': sb.Append("D"); break;
 
                     default: sb.Append(ch); break;
                 }

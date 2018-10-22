@@ -217,7 +217,6 @@ namespace SWLOR.Game.Server
             builder.RegisterType<DeathService>().As<IDeathService>();
             builder.RegisterType<DialogService>().As<IDialogService>();
             builder.RegisterType<DurabilityService>().As<IDurabilityService>();
-            builder.RegisterType<PlayerStatService>().As<IPlayerStatService>();
             builder.RegisterType<EnmityService>().As<IEnmityService>();
             builder.RegisterType<ErrorService>().As<IErrorService>();
             builder.RegisterType<ExaminationService>().As<IExaminationService>();
@@ -226,6 +225,7 @@ namespace SWLOR.Game.Server
             builder.RegisterType<ImpoundService>().As<IImpoundService>();
             builder.RegisterType<ItemService>().As<IItemService>();
             builder.RegisterType<KeyItemService>().As<IKeyItemService>();
+            builder.RegisterType<LanguageService>().As<ILanguageService>();
             builder.RegisterType<LocalVariableService>().As<ILocalVariableService>();
             builder.RegisterType<LootService>().As<ILootService>();
             builder.RegisterType<MapService>().As<IMapService>();
@@ -238,6 +238,7 @@ namespace SWLOR.Game.Server
             builder.RegisterType<PerkService>().As<IPerkService>();
             builder.RegisterType<PlayerDescriptionService>().As<IPlayerDescriptionService>();
             builder.RegisterType<PlayerService>().As<IPlayerService>();
+            builder.RegisterType<PlayerStatService>().As<IPlayerStatService>();
             builder.RegisterType<PVPSanctuaryService>().As<IPVPSanctuaryService>();
             builder.RegisterType<QuestService>().As<IQuestService>();
             builder.RegisterType<RaceService>().As<IRaceService>();

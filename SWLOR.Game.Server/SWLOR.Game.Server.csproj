@@ -630,6 +630,18 @@
     <Compile Include="Item\ResourceHarvester.cs" />
     <Compile Include="Item\ResourceScanner.cs" />
     <Compile Include="Item\StructureItem.cs" />
+    <Compile Include="Language\TranslatorCatharese.cs" />
+    <Compile Include="Language\TranslatorCheunh.cs" />
+    <Compile Include="Language\TranslatorBothese.cs" />
+    <Compile Include="Language\ITranslator.cs" />
+    <Compile Include="Language\TranslatorDosh.cs" />
+    <Compile Include="Language\TranslatorDroidspeak.cs" />
+    <Compile Include="Language\TranslatorGeneric.cs" />
+    <Compile Include="Language\TranslatorHuttese.cs" />
+    <Compile Include="Language\TranslatorMandoa.cs" />
+    <Compile Include="Language\TranslatorShyriiwook.cs" />
+    <Compile Include="Language\TranslatorTwileki.cs" />
+    <Compile Include="Language\TranslatorZabraki.cs" />
     <Compile Include="Mod\FabricationMod.cs" />
     <Compile Include="Mod\RestMod.cs" />
     <Compile Include="NWNX\DamageData.cs" />
@@ -1255,6 +1267,7 @@
     <Compile Include="Service\BehaviourService.cs" />
     <Compile Include="Service\ChatCommandService.cs" />
     <Compile Include="Service\ChatTextService.cs" />
+    <Compile Include="Service\LanguageService.cs" />
     <Compile Include="Service\ColorTokenService.cs" />
     <Compile Include="Service\ComponentBonusService.cs" />
     <Compile Include="Service\Contracts\IAbilityService.cs" />
@@ -1320,6 +1333,7 @@
     <Compile Include="Service\Contracts\IHelmetToggleService.cs" />
     <Compile Include="Service\Contracts\IItemService.cs" />
     <Compile Include="Service\Contracts\IKeyItemService.cs" />
+    <Compile Include="Service\Contracts\ILanguageService.cs" />
     <Compile Include="Service\Contracts\ILocalVariableService.cs" />
     <Compile Include="Service\Contracts\ILootService.cs" />
     <Compile Include="Service\Contracts\IMapPinService.cs" />

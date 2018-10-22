@@ -148,7 +148,32 @@ namespace SWLOR.Game.Server.GameObject
             }
         }
 
+        //
+        // -- BELOW THIS POINT IS JUNK TO MAKE THE API FRIENDLIER!
+        //
 
+        public static bool operator ==(NWCreature lhs, NWCreature rhs)
+        {
+            bool lhsNull = lhs is null;
+            bool rhsNull = rhs is null;
+            return (lhsNull && rhsNull) || (!lhsNull && !rhsNull && lhs.Object == rhs.Object);
+        }
+
+        public static bool operator !=(NWCreature lhs, NWCreature rhs)
+        {
+            return !(lhs == rhs);
+        }
+
+        public override bool Equals(object o)
+        {
+            NWCreature other = o as NWCreature;
+            return other != null && other == this;
+        }
+
+        public override int GetHashCode()
+        {
+            return Object.GetHashCode();
+        }
 
         public static implicit operator Object(NWCreature o)
         {

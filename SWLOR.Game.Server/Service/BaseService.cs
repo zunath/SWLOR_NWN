@@ -710,13 +710,23 @@ namespace SWLOR.Game.Server.Service
             });
         }
 
+        public static bool CanHandleChat(NWObject sender, string message)
+        {
+            bool validTarget = sender.IsPlayer || sender.IsDM;
+            return validTarget && sender.GetLocalInt("LISTENING_FOR_NEW_CONTAINER_NAME") == TRUE;
+        }
+
         public void OnModuleNWNXChat(NWPlayer sender)
         {
-            if (sender.GetLocalInt("LISTENING_FOR_NEW_CONTAINER_NAME") != 1) return;
-            if (!sender.IsPlayer && !sender.IsDM) return;
+            string text = _nwnxChat.GetMessage().Trim();
+
+            if (!CanHandleChat(sender, text))
+            {
+                return;
+            }
 
             _nwnxChat.SkipMessage();
-            string text = _nwnxChat.GetMessage().Trim();
+
             if (text.Length > 32)
             {
                 sender.FloatingText("Container names must be 32 characters or less.");

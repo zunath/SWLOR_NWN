@@ -5,9 +5,10 @@ namespace NWN
 {
     public partial class Object
     {
+        public const uint OBJECT_INVALID = 0x7F000000;
         public static Object OBJECT_SELF { get { return Internal.OBJECT_SELF; } }
 
-        public uint m_ObjId = Internal.OBJECT_INVALID;
+        public uint m_ObjId = OBJECT_INVALID;
 
         public static implicit operator Object(uint objId)
         {

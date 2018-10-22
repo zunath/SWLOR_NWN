@@ -43,6 +43,11 @@ namespace SWLOR.Game.Server.Event.Module
         {
             NWPlayer player = GetEnteringPlayer();
 
+            if (player.IsDM)
+            {
+                App.GetAppState().ConnectedDMs.Add(player);
+            }
+
             _.ExecuteScript("x3_mod_def_enter", Object.OBJECT_SELF);
             _player.InitializePlayer(player);
             _skill.OnModuleEnter();

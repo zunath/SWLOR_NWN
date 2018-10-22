@@ -26,6 +26,17 @@
         // 21 is open
         Engineering = 22,
         Farming = 23,
-        Scavenging = 24
+        Scavenging = 24,
+        Bothese = 25,
+        Cheunh = 26,
+        Zabraki = 27,
+        Twileki = 28,
+        Catharese = 29,
+        Dosh = 30,
+        Shyriiwook = 31,
+        Droidspeak = 32,
+        Basic = 33,
+        Mandoa = 34,
+        Huttese = 35
     }
 }

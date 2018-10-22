@@ -97,6 +97,7 @@
     <Compile Include="ChatCommand\Drink.cs" />
     <Compile Include="ChatCommand\Drunk.cs" />
     <Compile Include="ChatCommand\Duck.cs" />
+    <Compile Include="ChatCommand\EmoteStyle.cs" />
     <Compile Include="ChatCommand\GetLocalFloat.cs" />
     <Compile Include="ChatCommand\GetLocalInt.cs" />
     <Compile Include="ChatCommand\GetLocalString.cs" />
@@ -105,6 +106,7 @@
     <Compile Include="ChatCommand\Interact.cs" />
     <Compile Include="ChatCommand\KeyItems.cs" />
     <Compile Include="ChatCommand\Kill.cs" />
+    <Compile Include="ChatCommand\Language.cs" />
     <Compile Include="ChatCommand\Laughing.cs" />
     <Compile Include="ChatCommand\Listen.cs" />
     <Compile Include="ChatCommand\Look.cs" />
@@ -565,6 +567,7 @@
     <Compile Include="Enumeration\CustomPhenoType.cs" />
     <Compile Include="Enumeration\CustomRaceType.cs" />
     <Compile Include="Enumeration\DMActionType.cs" />
+    <Compile Include="Enumeration\EmoteStyle.cs" />
     <Compile Include="Enumeration\EnmityAdjustmentRuleType.cs" />
     <Compile Include="Enumeration\EventType.cs" />
     <Compile Include="Enumeration\LocalVariableType.cs" />
@@ -630,6 +633,18 @@
     <Compile Include="Item\ResourceHarvester.cs" />
     <Compile Include="Item\ResourceScanner.cs" />
     <Compile Include="Item\StructureItem.cs" />
+    <Compile Include="Language\TranslatorCatharese.cs" />
+    <Compile Include="Language\TranslatorCheunh.cs" />
+    <Compile Include="Language\TranslatorBothese.cs" />
+    <Compile Include="Language\ITranslator.cs" />
+    <Compile Include="Language\TranslatorDosh.cs" />
+    <Compile Include="Language\TranslatorDroidspeak.cs" />
+    <Compile Include="Language\TranslatorGeneric.cs" />
+    <Compile Include="Language\TranslatorHuttese.cs" />
+    <Compile Include="Language\TranslatorMandoa.cs" />
+    <Compile Include="Language\TranslatorShyriiwook.cs" />
+    <Compile Include="Language\TranslatorTwileki.cs" />
+    <Compile Include="Language\TranslatorZabraki.cs" />
     <Compile Include="Mod\FabricationMod.cs" />
     <Compile Include="Mod\RestMod.cs" />
     <Compile Include="NWNX\DamageData.cs" />
@@ -1255,6 +1270,9 @@
     <Compile Include="Service\BehaviourService.cs" />
     <Compile Include="Service\ChatCommandService.cs" />
     <Compile Include="Service\ChatTextService.cs" />
+    <Compile Include="Service\Contracts\IEmoteStyleService.cs" />
+    <Compile Include="Service\EmoteStyleService.cs" />
+    <Compile Include="Service\LanguageService.cs" />
     <Compile Include="Service\ColorTokenService.cs" />
     <Compile Include="Service\ComponentBonusService.cs" />
     <Compile Include="Service\Contracts\IAbilityService.cs" />
@@ -1320,6 +1338,7 @@
     <Compile Include="Service\Contracts\IHelmetToggleService.cs" />
     <Compile Include="Service\Contracts\IItemService.cs" />
     <Compile Include="Service\Contracts\IKeyItemService.cs" />
+    <Compile Include="Service\Contracts\ILanguageService.cs" />
     <Compile Include="Service\Contracts\ILocalVariableService.cs" />
     <Compile Include="Service\Contracts\ILootService.cs" />
     <Compile Include="Service\Contracts\IMapPinService.cs" />
@@ -1609,6 +1628,7 @@
     </Content>
     <EmbeddedResource Include="Data\Migrations\2018-10-22.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-10-22.2.sql" />
+    <EmbeddedResource Include="Data\Migrations\2018-10-22.3.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-10-22.4.sql" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <Content Include="Data\Migrations\Readme.txt" />

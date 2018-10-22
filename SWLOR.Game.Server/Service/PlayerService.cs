@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IRaceService _race;
         private readonly IDurabilityService _durability;
         private readonly IPlayerStatService _stat;
+        private readonly ILanguageService _language;
 
         public PlayerService(
             INWScript script, 
@@ -41,7 +42,8 @@ namespace SWLOR.Game.Server.Service
             IBackgroundService background,
             IRaceService race,
             IDurabilityService durability,
-            IPlayerStatService stat)
+            IPlayerStatService stat,
+            ILanguageService language)
         {
             _ = script;
             _db = db;
@@ -55,6 +57,7 @@ namespace SWLOR.Game.Server.Service
             _race = race;
             _durability = durability;
             _stat = stat;
+            _language = language;
         }
 
         public void InitializePlayer(NWPlayer player)
@@ -161,6 +164,7 @@ namespace SWLOR.Game.Server.Service
                 _background.ApplyBackgroundBonuses(player);
 
                 _stat.ApplyStatChanges(player, null, true);
+                _language.InitializePlayerLanguages(player);
 
                 _.DelayCommand(1.0f, () => _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(999), player));
 

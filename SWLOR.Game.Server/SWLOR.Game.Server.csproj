@@ -565,6 +565,7 @@
     <Compile Include="Enumeration\CustomPhenoType.cs" />
     <Compile Include="Enumeration\CustomRaceType.cs" />
     <Compile Include="Enumeration\DMActionType.cs" />
+    <Compile Include="Enumeration\EmoteStyle.cs" />
     <Compile Include="Enumeration\EnmityAdjustmentRuleType.cs" />
     <Compile Include="Enumeration\EventType.cs" />
     <Compile Include="Enumeration\LocalVariableType.cs" />
@@ -1267,6 +1268,8 @@
     <Compile Include="Service\BehaviourService.cs" />
     <Compile Include="Service\ChatCommandService.cs" />
     <Compile Include="Service\ChatTextService.cs" />
+    <Compile Include="Service\Contracts\IEmoteStyleService.cs" />
+    <Compile Include="Service\EmoteStyleService.cs" />
     <Compile Include="Service\LanguageService.cs" />
     <Compile Include="Service\ColorTokenService.cs" />
     <Compile Include="Service\ComponentBonusService.cs" />

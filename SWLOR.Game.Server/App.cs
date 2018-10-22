@@ -217,6 +217,7 @@ namespace SWLOR.Game.Server
             builder.RegisterType<DeathService>().As<IDeathService>();
             builder.RegisterType<DialogService>().As<IDialogService>();
             builder.RegisterType<DurabilityService>().As<IDurabilityService>();
+            builder.RegisterType<EmoteStyleService>().As<IEmoteStyleService>();
             builder.RegisterType<EnmityService>().As<IEnmityService>();
             builder.RegisterType<ErrorService>().As<IErrorService>();
             builder.RegisterType<ExaminationService>().As<IExaminationService>();

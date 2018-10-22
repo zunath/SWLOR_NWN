@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.GameObject
             _ = App.GetNWScript();
             _state = App.GetAppState();
         }
-        
+
         public virtual bool IsInitializedAsPlayer
         {
             get
@@ -333,11 +333,26 @@ namespace SWLOR.Game.Server.GameObject
             }
         }
 
-        public override bool Equals(object obj)
-        {
-            if (!(obj is NWObject item)) return false;
+        //
+        // -- BELOW THIS POINT IS JUNK TO MAKE THE API FRIENDLIER!
+        //
 
-            return item.Object == Object;
+        public static bool operator ==(NWObject lhs, NWObject rhs)
+        {
+            bool lhsNull = lhs is null;
+            bool rhsNull = rhs is null;
+            return (lhsNull && rhsNull) || (!lhsNull && !rhsNull && lhs.Object == rhs.Object);
+        }
+
+        public static bool operator !=(NWObject lhs, NWObject rhs)
+        {
+            return !(lhs == rhs);
+        }
+
+        public override bool Equals(object o)
+        {
+            NWObject other = o as NWObject;
+            return other != null && other == this;
         }
 
         public override int GetHashCode()
@@ -353,10 +368,6 @@ namespace SWLOR.Game.Server.GameObject
         public static implicit operator NWObject(Object o)
         {
             return new NWObject(o);
-        }
-
-        public void Dispose()
-        {
         }
     }
 }

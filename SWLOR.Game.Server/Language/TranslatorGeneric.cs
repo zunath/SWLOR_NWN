@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Language
     {
         public string Translate(string message)
         {
-            throw new NotImplementedException();
+            return message;
         }
     }
 }

@@ -140,7 +140,8 @@ namespace SWLOR.Game.Server.Service
                 (attribute.Permissions.HasFlag(CommandPermissionType.Player) && sender.IsPlayer ||
                  attribute.Permissions.HasFlag(CommandPermissionType.DM) && isDM))
             {
-                command.DoAction(sender, target, targetLocation, args.Split(' ').ToArray());
+                string[] argsArr = string.IsNullOrWhiteSpace(args) ? new string[0] : args.Split(' ').ToArray();
+                command.DoAction(sender, target, targetLocation, argsArr);
             }
             else
             {

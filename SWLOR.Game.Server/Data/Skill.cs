@@ -19,7 +19,6 @@ namespace SWLOR.Game.Server.Data
         {
             this.Name = "";
             this.Description = "";
-            this.ContributesToSkillCap = true;
             this.CraftBlueprints = new HashSet<CraftBlueprint>();
             this.PCSkills = new HashSet<PCSkill>();
             this.PerkLevelSkillRequirements = new HashSet<PerkLevelSkillRequirement>();

@@ -74,15 +74,15 @@ namespace SWLOR.Game.Server.SpawnRule
         {
             switch (tier)
             {
-                case 1: return "elm_wood";
-                case 2: return "ash_wood";
-                case 3: return "walnut_wood";
-                case 4: return "arrowwood_wood";
-                case 5: return "rosewood_wood";
-                case 6: return "mahogany_wood";
-                case 7: return "maple_wood";
-                case 8: return "willow_wood";
-                case 9: return "lauan_wood";
+                case 1: return "greel_wood";
+                case 2: return "borl_wood";
+                case 3: return "cosian_wood";
+                case 4: return "homogoni_wood";
+                case 5: return "japor_wood";
+                case 6: return "laroon_wood";
+                case 7: return "quasiwood_wood";
+                case 8: return "resinwood_wood";
+                case 9: return "scentwood_wood";
                 case 10: return "ebony_wood";
                 default: return string.Empty;
             }

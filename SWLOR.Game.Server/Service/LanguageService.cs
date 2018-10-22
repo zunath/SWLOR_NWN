@@ -117,14 +117,19 @@ namespace SWLOR.Game.Server.Service
                 textAsForeignLanguage = endResult.ToString();
             }
 
-            int now = (int)DateTime.Now.Ticks;
-            int lastSkillUp = listenerAsPlayer.GetLocalInt("LAST_LANGUAGE_SKILL_INCREASE");
+            long now = DateTime.Now.Ticks;
+            int lastSkillUpLow = listenerAsPlayer.GetLocalInt("LAST_LANGUAGE_SKILL_INCREASE_LOW");
+            int lastSkillUpHigh = listenerAsPlayer.GetLocalInt("LAST_LANGUAGE_SKILL_INCREASE_HIGH");
+            long lastSkillUp = lastSkillUpHigh;
+            lastSkillUp = (lastSkillUp << 32) | (uint)lastSkillUpLow;
+            long differenceInSeconds = (now - lastSkillUp) / 10000000;
 
-            if (TimeSpan.FromTicks(Math.Abs(now - lastSkillUp)).Minutes >= 5)
+            if (differenceInSeconds / 60 >= 5)
             {
                 // Reward exp towards the language - we scale this with character count, maxing at 50 exp for 150 characters.
                 _skillService.GiveSkillXP(listenerAsPlayer, language, Math.Max(10, Math.Min(150, snippet.Length) / 3));
-                listenerAsPlayer.SetLocalInt("LAST_LANGUAGE_SKILL_INCREASE", now);
+                listenerAsPlayer.SetLocalInt("LAST_LANGUAGE_SKILL_INCREASE_LOW", (int)(now & 0xFFFFFFFF));
+                listenerAsPlayer.SetLocalInt("LAST_LANGUAGE_SKILL_INCREASE_HIGH", (int)((now >> 32) & 0xFFFFFFFF));
             }
 
             return textAsForeignLanguage;

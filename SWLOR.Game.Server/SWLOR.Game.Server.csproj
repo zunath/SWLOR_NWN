@@ -97,6 +97,7 @@
     <Compile Include="ChatCommand\Drink.cs" />
     <Compile Include="ChatCommand\Drunk.cs" />
     <Compile Include="ChatCommand\Duck.cs" />
+    <Compile Include="ChatCommand\EmoteStyle.cs" />
     <Compile Include="ChatCommand\GetLocalFloat.cs" />
     <Compile Include="ChatCommand\GetLocalInt.cs" />
     <Compile Include="ChatCommand\GetLocalString.cs" />

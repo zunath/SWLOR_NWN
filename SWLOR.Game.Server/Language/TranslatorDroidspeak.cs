@@ -12,21 +12,35 @@ namespace SWLOR.Game.Server.Language
             {
                 string word = words[i];
 
+                bool isAllSpecialChars = true;
                 string specialCharsAtEndOfWord = "";
 
                 for (int j = 0; j < word.Length; ++j)
                 {
                     char ch = word[j];
 
-                    if (!char.IsLetter(ch))
+                    if (char.IsLetter(ch))
+                    {
+                        isAllSpecialChars = false;
+                    }
+                    else
                     {
                         specialCharsAtEndOfWord += ch;
                     }
                 }
 
-                if (!string.IsNullOrEmpty(word))
+                if (!string.IsNullOrEmpty(word) && !isAllSpecialChars)
                 {
-                    bool firstIsUpper = char.IsUpper(word[0]);
+                    bool firstIsUpper = false;
+
+                    foreach (char ch in word)
+                    {
+                        if (char.IsLetter(ch))
+                        {
+                            firstIsUpper = char.IsUpper(ch);
+                            break;
+                        }
+                    }
 
                     if (word.Length <= 2)
                     {

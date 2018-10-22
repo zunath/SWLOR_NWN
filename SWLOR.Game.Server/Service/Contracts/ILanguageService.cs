@@ -8,5 +8,6 @@ namespace SWLOR.Game.Server.Service.Contracts
         string TranslateSnippetForListener(NWPlayer player, SkillType language, string snippet);
         int GetColour(SkillType language);
         string GetName(SkillType language);
+        void InitializePlayerLanguages(NWPlayer player);
     }
 }

@@ -496,6 +496,7 @@ namespace SWLOR.Game.Server.Service
             // We have enough XP to remove. Reduce XP, picking random skills each time we reduce.
             List<PCSkill> skillsPossibleToDecay = _db.PCSkills
                 .Where(x => !x.IsLocked &&
+                            x.Skill.ContributesToSkillCap &&
                             x.PlayerID == oPC.GlobalID &&
                             x.SkillID != levelingSkill.SkillID &&
                             (x.XP > 0 || x.Rank > 0)).ToList();

@@ -89,7 +89,13 @@ namespace SWLOR.Game.Server.Conversation
             Model vm = GetDialogCustomData<Model>();
             PCSkill pcSkill = _skill.GetPCSkillByID(GetPC().GlobalID, vm.SelectedSkillID);
             SkillXPRequirement req = _skill.GetSkillXPRequirementByRank(vm.SelectedSkillID, pcSkill.Rank);
-            SetPageHeader("SkillDetailsPage", CreateSkillDetailsHeader(pcSkill, req));
+            string header = CreateSkillDetailsHeader(pcSkill, req);
+            SetPageHeader("SkillDetailsPage", header);
+
+            if(!pcSkill.Skill.ContributesToSkillCap)
+            {
+                SetResponseVisible("SkillDetailsPage", 1, false);
+            }
         }
 
         private string CreateSkillDetailsHeader(PCSkill pcSkill, SkillXPRequirement req)
@@ -108,17 +114,28 @@ namespace SWLOR.Game.Server.Conversation
 
             title += " (" + pcSkill.Rank + ")";
 
-            string decayLock = _color.White("Unlocked");
+            string decayLock = _color.Green("Decay Lock: ") + _color.White("Unlocked");
             if (pcSkill.IsLocked)
             {
-                decayLock = _color.Red("Locked");
+                decayLock = _color.Green("Decay Lock: ") + _color.Red("Locked");
+            }
+
+
+            // Skills which don't contribute to the cap cannot be locked (there's no reason for it.)
+            // Display a message explaining this to the player instead.
+            string noContributeMessage = string.Empty;
+            if (!pcSkill.Skill.ContributesToSkillCap)
+            {
+                decayLock = string.Empty;
+                noContributeMessage = _color.Green("This skill does not contribute to your cumulative skill cap.") + "\n\n";
             }
 
             return
                     _color.Green("Skill: ") + pcSkill.Skill.Name + "\n" +
                     _color.Green("Rank: ") + title + "\n" +
                     _color.Green("Exp: ") + _menu.BuildBar(pcSkill.XP, req.XP, 100, _color.TokenStart(255, 127, 0)) + "\n" +
-                    _color.Green("Decay Lock: ") + decayLock + "\n\n" +
+                    noContributeMessage +
+                    decayLock + "\n\n" +
                     _color.Green("Description: ") + pcSkill.Skill.Description + "\n";
         }
 

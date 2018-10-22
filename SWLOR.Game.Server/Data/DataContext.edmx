@@ -877,6 +877,7 @@
           <Property Name="DisplayHolonet" Type="bit" Nullable="false" />
           <Property Name="DisplayDiscord" Type="bit" Nullable="false" />
           <Property Name="PrimaryResidencePCBaseID" Type="int" />
+          <Property Name="IsUsingNovelEmoteStyle" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="QuestKillTargetList">
           <Key>
@@ -4178,6 +4179,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <NavigationProperty Name="PCSearchSiteItems" Relationship="Self.fk_PCSearchSiteItems_PlayerID" FromRole="PlayerCharacters" ToRole="PCSearchSiteItems" />
           <NavigationProperty Name="PCSearchSites" Relationship="Self.fk_PCSearchSites_PlayerID" FromRole="PlayerCharacters" ToRole="PCSearchSites" />
           <NavigationProperty Name="PCSkills" Relationship="Self.FK_PCSkills_PlayerID" FromRole="PlayerCharacters" ToRole="PCSkills" />
+          <Property Name="IsUsingNovelEmoteStyle" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="QuestKillTargetList">
           <Key>
@@ -7476,6 +7478,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <EntitySetMapping Name="PlayerCharacters">
             <EntityTypeMapping TypeName="Entities.PlayerCharacter">
               <MappingFragment StoreEntitySet="PlayerCharacters">
+                <ScalarProperty Name="IsUsingNovelEmoteStyle" ColumnName="IsUsingNovelEmoteStyle" />
                 <ScalarProperty Name="PlayerID" ColumnName="PlayerID" />
                 <ScalarProperty Name="CharacterName" ColumnName="CharacterName" />
                 <ScalarProperty Name="HitPoints" ColumnName="HitPoints" />

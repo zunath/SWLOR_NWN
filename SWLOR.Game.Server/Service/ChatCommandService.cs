@@ -36,19 +36,18 @@ namespace SWLOR.Game.Server.Service
             _ = script;
         }
 
+        public static bool CanHandleChat(NWObject sender, string message)
+        {
+            bool validTarget = sender.IsPlayer || sender.IsDM;
+            bool validMessage = message.Length >= 2 && message[0] == '/' && message[1] != '/';
+            return validTarget && validMessage;
+        }
+
         public void OnModuleNWNXChat(NWPlayer sender)
         {
-            if (!sender.IsPlayer && !sender.IsDM) return;
-
             string originalMessage = _nwnxChat.GetMessage().Trim();
 
-            if (originalMessage.Length <= 1)
-                return;
-
-            // If it is double slash (//) treat it as a normal message (this is used by role-players to denote OOC speech)
-            if (originalMessage.Substring(0, 2) == "//") return;
-
-            if (originalMessage.Substring(0, 1) != "/")
+            if (!CanHandleChat(sender, originalMessage))
             {
                 return;
             }
@@ -141,7 +140,8 @@ namespace SWLOR.Game.Server.Service
                 (attribute.Permissions.HasFlag(CommandPermissionType.Player) && sender.IsPlayer ||
                  attribute.Permissions.HasFlag(CommandPermissionType.DM) && isDM))
             {
-                command.DoAction(sender, target, targetLocation, args.Split(' ').ToArray());
+                string[] argsArr = string.IsNullOrWhiteSpace(args) ? new string[0] : args.Split(' ').ToArray();
+                command.DoAction(sender, target, targetLocation, argsArr);
             }
             else
             {

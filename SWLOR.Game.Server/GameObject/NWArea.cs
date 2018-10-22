@@ -1,5 +1,4 @@
-﻿using System;
-using NWN;
+﻿using System.Collections.Generic;
 using static NWN.NWScript;
 using Object = NWN.Object;
 
@@ -18,7 +17,45 @@ namespace SWLOR.Game.Server.GameObject
         public int Height => _.GetAreaSize(AREA_HEIGHT, Object);
 
         public bool IsInstance => _.GetLocalInt(Object, "IS_AREA_INSTANCE") == TRUE;
-        
+
+        public IEnumerable<NWObject> Objects
+        {
+            get
+            {
+                for (NWObject obj = _.GetFirstObjectInArea(Object); obj.IsValid; obj = _.GetNextObjectInArea(Object))
+                {
+                    yield return obj;
+                }
+            }
+        }
+
+        //
+        // -- BELOW THIS POINT IS JUNK TO MAKE THE API FRIENDLIER!
+        //
+
+        public static bool operator ==(NWArea lhs, NWArea rhs)
+        {
+            bool lhsNull = lhs is null;
+            bool rhsNull = rhs is null;
+            return (lhsNull && rhsNull) || (!lhsNull && !rhsNull && lhs.Object == rhs.Object);
+        }
+
+        public static bool operator !=(NWArea lhs, NWArea rhs)
+        {
+            return !(lhs == rhs);
+        }
+
+        public override bool Equals(object o)
+        {
+            NWArea other = o as NWArea;
+            return other != null && other == this;
+        }
+
+        public override int GetHashCode()
+        {
+            return Object.GetHashCode();
+        }
+
         public static implicit operator Object(NWArea o)
         {
             return o.Object;

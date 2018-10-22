@@ -9,5 +9,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         int GetColour(SkillType language);
         string GetName(SkillType language);
         void InitializePlayerLanguages(NWPlayer player);
+        SkillType GetActiveLanguage(NWObject obj);
+        void SetActiveLanguage(NWObject obj, SkillType language);
     }
 }

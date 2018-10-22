@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Service
             switch (language)
             {
                 case SkillType.Bothese: r = 132; g = 56; b = 18; break;
-                case SkillType.Catharese: r = 255; g = 255; b = 219; break;
+                case SkillType.Catharese: r = 235; g = 235; b = 199; break;
                 case SkillType.Cheunh: r = 82; g = 143; b = 174; break;
                 case SkillType.Dosh: r = 166; g = 181; b = 73; break;
                 case SkillType.Droidspeak: r = 192; g = 192; b = 192; break;

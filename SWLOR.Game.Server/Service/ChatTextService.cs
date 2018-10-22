@@ -261,7 +261,7 @@ namespace SWLOR.Game.Server.Service
                 byte b = (byte)(colour >> 8 & 0xFF);
 
                 // TODO - append language name if not basic.
-                // if (language != SkillType.Basic)
+                if (language != SkillType.Basic)
                 {
                     string languageName = _language.GetName(language);
                     finalMessage.Append(_color.Custom($"[{languageName}] ", r, g, b));

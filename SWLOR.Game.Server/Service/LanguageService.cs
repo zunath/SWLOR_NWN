@@ -29,6 +29,12 @@ namespace SWLOR.Game.Server.Service
 
         public string TranslateSnippetForListener(NWPlayer player, SkillType language, string snippet)
         {
+            if (player.IsDM)
+            {
+                // Short circuit for a DM - they will always understand the test.
+                return snippet;
+            }
+
             Dictionary<SkillType, Type> map = new Dictionary<SkillType, Type>
             {
                 { SkillType.Bothese, typeof(TranslatorBothese) },
@@ -91,28 +97,38 @@ namespace SWLOR.Game.Server.Service
                 endResult.Append(" ");
             }
 
-            // TODO: Skill increase
+            // Reward exp towards the language - we scale this with character count, maxing at 50 exp for 150 characters.
+            int expToReward = Math.Max(10, Math.Min(150, snippet.Length) / 3);
+            _skillService.GiveSkillXP(player, language, expToReward);
+
             return endResult.ToString();
         }
 
         public int GetColour(SkillType language)
         {
-            byte r;
-            byte g;
-            byte b;
+            byte r = 0;
+            byte g = 0;
+            byte b = 0;
 
-            // TODO - Database
-            r = 100;
-            g = 149;
-            b = 237;
+            switch (language)
+            {
+                case SkillType.Bothese: r = 132; g = 56; b = 18; break;
+                case SkillType.Catharese: r = 255; g = 255; b = 219; break;
+                case SkillType.Cheunh: r = 82; g = 143; b = 174; break;
+                case SkillType.Dosh: r = 166; g = 181; b = 73; break;
+                case SkillType.Droidspeak: r = 192; g = 192; b = 192; break;
+                case SkillType.Huttese: r = 162; g = 74; b = 10; break;
+                case SkillType.Mandoa: r = 255; g = 215; b = 0; break;
+                case SkillType.Shyriiwook: r = 149; g = 125; b = 86; break;
+                case SkillType.Twileki: r = 65; g = 105; b = 225; break;
+                case SkillType.Zabraki: r = 255; g = 102; b = 102; break;
+            }
 
             return r << 24 | g << 16 | b << 8;
         }
 
         public string GetName(SkillType language)
         {
-            // TODO - Database???
-
             switch (language)
             {
                 case SkillType.Bothese: return "Bothese";
@@ -129,8 +145,6 @@ namespace SWLOR.Game.Server.Service
 
             return "Basic";
         }
-
-
 
         public void InitializePlayerLanguages(NWPlayer player)
         {

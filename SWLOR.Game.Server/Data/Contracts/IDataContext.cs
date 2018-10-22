@@ -11,16 +11,17 @@ namespace SWLOR.Game.Server.Data.Contracts
         DbSet<Area> Areas { get; set; }
         DbSet<AreaWalkmesh> AreaWalkmeshes { get; set; }
         DbSet<Association> Associations { get; set; }
+        DbSet<Attribute> Attributes { get; set; }
+        DbSet<AuthorizedDM> AuthorizedDMs { get; set; }
+        DbSet<Background> Backgrounds { get; set; }
+        DbSet<BankItem> BankItems { get; set; }
+        DbSet<Bank> Banks { get; set; }
+        DbSet<BaseItemType> BaseItemTypes { get; set; }
         DbSet<BaseStructure> BaseStructures { get; set; }
         DbSet<BaseStructureType> BaseStructureTypes { get; set; }
         DbSet<BugReport> BugReports { get; set; }
-        DbSet<PCBasePermission> PCBasePermissions { get; set; }
-        DbSet<PCBaseStructurePermission> PCBaseStructurePermissions { get; set; }
         DbSet<BuildingStyle> BuildingStyles { get; set; }
         DbSet<BuildingType> BuildingTypes { get; set; }
-        DbSet<Attribute> Attributes { get; set; }
-        DbSet<AuthorizedDM> AuthorizedDMs { get; set; }
-        DbSet<BaseItemType> BaseItemTypes { get; set; }
         DbSet<ChatChannelsDomain> ChatChannelsDomains { get; set; }
         DbSet<ChatLog> ChatLogs { get; set; }
         DbSet<ClientLogEvent> ClientLogEvents { get; set; }
@@ -31,6 +32,7 @@ namespace SWLOR.Game.Server.Data.Contracts
         DbSet<CraftBlueprint> CraftBlueprints { get; set; }
         DbSet<CraftDevice> CraftDevices { get; set; }
         DbSet<CustomEffect> CustomEffects { get; set; }
+        DbSet<DatabaseVersion> DatabaseVersions { get; set; }
         DbSet<DiscordChatQueue> DiscordChatQueues { get; set; }
         DbSet<DMRoleDomain> DMRoleDomains { get; set; }
         DbSet<Download> Downloads { get; set; }
@@ -44,10 +46,14 @@ namespace SWLOR.Game.Server.Data.Contracts
         DbSet<KeyItem> KeyItems { get; set; }
         DbSet<LootTableItem> LootTableItems { get; set; }
         DbSet<LootTable> LootTables { get; set; }
+        DbSet<Mod> Mods { get; set; }
         DbSet<NPCGroup> NPCGroups { get; set; }
+        DbSet<PCBasePermission> PCBasePermissions { get; set; }
         DbSet<PCBase> PCBases { get; set; }
-        DbSet<PCBaseStructure> PCBaseStructures { get; set; }
         DbSet<PCBaseStructureItem> PCBaseStructureItems { get; set; }
+        DbSet<PCBaseStructurePermission> PCBaseStructurePermissions { get; set; }
+        DbSet<PCBaseStructure> PCBaseStructures { get; set; }
+        DbSet<PCBaseType> PCBaseTypes { get; set; }
         DbSet<PCCooldown> PCCooldowns { get; set; }
         DbSet<PCCraftedBlueprint> PCCraftedBlueprints { get; set; }
         DbSet<PCCustomEffect> PCCustomEffects { get; set; }
@@ -57,13 +63,13 @@ namespace SWLOR.Game.Server.Data.Contracts
         DbSet<PCMapProgression> PCMapProgressions { get; set; }
         DbSet<PCMigrationItem> PCMigrationItems { get; set; }
         DbSet<PCMigration> PCMigrations { get; set; }
-        DbSet<PCOutfit> PCOutfits { get; set; }
         DbSet<PCObjectVisibility> PCObjectVisibilities { get; set; }
+        DbSet<PCOutfit> PCOutfits { get; set; }
         DbSet<PCOverflowItem> PCOverflowItems { get; set; }
-        DbSet<PCPerk> PCPerks { get; set; }
         DbSet<PCPerkRefund> PCPerkRefunds { get; set; }
-        DbSet<PCQuestKillTargetProgress> PCQuestKillTargetProgresses { get; set; }
+        DbSet<PCPerk> PCPerks { get; set; }
         DbSet<PCQuestItemProgress> PCQuestItemProgresses { get; set; }
+        DbSet<PCQuestKillTargetProgress> PCQuestKillTargetProgresses { get; set; }
         DbSet<PCQuestStatus> PCQuestStatus { get; set; }
         DbSet<PCRegionalFame> PCRegionalFames { get; set; }
         DbSet<PCSearchSiteItem> PCSearchSiteItems { get; set; }
@@ -71,8 +77,8 @@ namespace SWLOR.Game.Server.Data.Contracts
         DbSet<PCSkill> PCSkills { get; set; }
         DbSet<PerkCategory> PerkCategories { get; set; }
         DbSet<PerkExecutionType> PerkExecutionTypes { get; set; }
-        DbSet<PerkLevel> PerkLevels { get; set; }
         DbSet<PerkLevelQuestRequirement> PerkLevelQuestRequirements { get; set; }
+        DbSet<PerkLevel> PerkLevels { get; set; }
         DbSet<PerkLevelSkillRequirement> PerkLevelSkillRequirements { get; set; }
         DbSet<Perk> Perks { get; set; }
         DbSet<Plant> Plants { get; set; }
@@ -85,18 +91,15 @@ namespace SWLOR.Game.Server.Data.Contracts
         DbSet<Quest> Quests { get; set; }
         DbSet<QuestState> QuestStates { get; set; }
         DbSet<QuestTypeDomain> QuestTypeDomains { get; set; }
-        DbSet<Mod> Mods { get; set; }
         DbSet<ServerConfiguration> ServerConfigurations { get; set; }
         DbSet<SkillCategory> SkillCategories { get; set; }
         DbSet<Skill> Skills { get; set; }
         DbSet<SkillXPRequirement> SkillXPRequirements { get; set; }
-        DbSet<Bank> Banks { get; set; }
-        DbSet<BankItem> BankItems { get; set; }
         DbSet<SpawnObject> SpawnObjects { get; set; }
         DbSet<SpawnObjectType> SpawnObjectTypes { get; set; }
         DbSet<Spawn> Spawns { get; set; }
         DbSet<User> Users { get; set; }
-
+        
         DbContextConfiguration Configuration { get; }
         Database Database { get; }
         void Dispose();

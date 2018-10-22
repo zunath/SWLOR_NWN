@@ -229,6 +229,12 @@ namespace SWLOR.Game.Server.Service
             else if (delta == -5) baseXP = 90;
             else if (delta == -6) baseXP = 70;
 
+            float bonusXPPercentage = creature.GetLocalFloat("BONUS_XP_PERCENTAGE");
+            if (bonusXPPercentage > 1) bonusXPPercentage = 1;
+            else if (bonusXPPercentage < 0) bonusXPPercentage = 0;
+
+            baseXP = baseXP + (baseXP * bonusXPPercentage);
+
             // Process each player skill registration.
             foreach (PlayerSkillRegistration preg in playerRegs)
             {

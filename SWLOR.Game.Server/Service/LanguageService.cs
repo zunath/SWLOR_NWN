@@ -27,14 +27,8 @@ namespace SWLOR.Game.Server.Service
             _db = db;
         }
 
-        public string TranslateSnippetForListener(NWPlayer player, SkillType language, string snippet)
+        public string TranslateSnippetForListener(NWObject speaker, NWObject listener, SkillType language, string snippet)
         {
-            if (player.IsDM)
-            {
-                // Short circuit for a DM - they will always understand the test.
-                return snippet;
-            }
-
             Dictionary<SkillType, Type> map = new Dictionary<SkillType, Type>
             {
                 { SkillType.Bothese, typeof(TranslatorBothese) },
@@ -56,11 +50,38 @@ namespace SWLOR.Game.Server.Service
             // This gives us the thing written in Bothese.
             string textAsForeignLanguage = translator.Translate(snippet);
 
-            // Now we know what the English text is and we know what the Bothese text is.
-            // Let's grab the max rank for our skill, and then we roll for a successful translate based on that.
+            if (speaker.IsPlayer && !speaker.IsDM)
+            {
+                // Get the rank and max rank for the speaker, and garble their English text based on it.
+                NWPlayer speakerAsPlayer = speaker.Object;
+                PCSkill speakerSkill = _skillService.GetPCSkill(speakerAsPlayer, language);
+                int speakerSkillRank = speakerSkill.Rank;
+                int speakerSkillMaxRank = speakerSkill.Skill.MaxRank;
 
-            PCSkill skill = _skillService.GetPCSkill(player, language);
-            int rank = skill.Rank;
+                if (speakerSkillRank != speakerSkillMaxRank)
+                {
+                    int garbledChance = 100 - (int)(((float)speakerSkillRank / (float)speakerSkillMaxRank) * 100);
+
+                    string[] split = snippet.Split(' ');
+                    for (int i = 0; i < split.Length; ++i)
+                    {
+                        split[i] = new string(split[i].ToCharArray().OrderBy(s => (_randomService.Random(2) % 2) == 0).ToArray());
+                    }
+
+                    snippet = split.Aggregate((a, b) => a + " " + b);
+                }
+            }
+
+            if (!listener.IsPlayer || listener.IsDM)
+            {
+                // Short circuit for a DM or NPC - they will always understand the text.
+                return snippet;
+            }
+
+            // Let's grab the max rank for the listener skill, and then we roll for a successful translate based on that.
+            NWPlayer listenerAsPlayer = listener.Object;
+            PCSkill skill = _skillService.GetPCSkill(listenerAsPlayer, language);
+            int rank = 5;//skill.Rank;
             int maxRank = skill.Skill.MaxRank;
 
             if (rank == maxRank)
@@ -98,8 +119,11 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Reward exp towards the language - we scale this with character count, maxing at 50 exp for 150 characters.
-            int expToReward = Math.Max(10, Math.Min(150, snippet.Length) / 3);
-            _skillService.GiveSkillXP(player, language, expToReward);
+            if (speaker != listener && rank != maxRank)
+            {
+                int expToReward = Math.Max(10, Math.Min(150, snippet.Length) / 3);
+                _skillService.GiveSkillXP(listenerAsPlayer, language, expToReward);
+            }
 
             return endResult.ToString();
         }

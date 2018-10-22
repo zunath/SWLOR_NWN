@@ -5,7 +5,7 @@ namespace SWLOR.Game.Server.Service.Contracts
 {
     public interface ILanguageService
     {
-        string TranslateSnippetForListener(NWPlayer player, SkillType language, string snippet);
+        string TranslateSnippetForListener(NWObject speaker, NWObject listener, SkillType language, string snippet);
         int GetColour(SkillType language);
         string GetName(SkillType language);
         void InitializePlayerLanguages(NWPlayer player);

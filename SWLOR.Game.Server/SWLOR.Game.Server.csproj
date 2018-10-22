@@ -106,6 +106,7 @@
     <Compile Include="ChatCommand\Interact.cs" />
     <Compile Include="ChatCommand\KeyItems.cs" />
     <Compile Include="ChatCommand\Kill.cs" />
+    <Compile Include="ChatCommand\Language.cs" />
     <Compile Include="ChatCommand\Laughing.cs" />
     <Compile Include="ChatCommand\Listen.cs" />
     <Compile Include="ChatCommand\Look.cs" />

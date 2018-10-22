@@ -33,7 +33,10 @@
         Twileki = 28,
         Catharese = 29,
         Dosh = 30,
-        Wookieespeak = 31,
-        Droid = 32
+        Shyriiwook = 31,
+        Droidspeak = 32,
+        Basic = 33,
+        Mandoa = 34,
+        Huttese = 35
     }
 }

@@ -1607,11 +1607,9 @@
       <DependentUpon>DataContext.edmx</DependentUpon>
       <LastGenOutput>DataContext.cs</LastGenOutput>
     </Content>
-    <EmbeddedResource Include="Data\Migrations\2018-10-22.1.sql" />
-    <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
+    <EmbeddedResource Include="Data\Migrations\*.sql" />
     <Content Include="Data\Migrations\Readme.txt" />
     <Content Include="ServerFiles\Database\scripts\AddWeaponCraftBlueprints.sql" />
-    <Content Include="ServerFiles\Database\swlor-db.sql" />
     <Content Include="ServerFiles\Database\scripts\AddPerkLevels.sql" />
     <Content Include="ServerFiles\Database\scripts\WipePlayerData.sql" />
     <Content Include="ServerFiles\Reference\ClothAndLeatherColors.jpg" />

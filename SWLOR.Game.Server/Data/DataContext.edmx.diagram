@@ -215,6 +215,7 @@
         <AssociationConnector Association="Entities.FK_SkillXPRequirement_SkillID" ManuallyRouted="false" />
         <AssociationConnector Association="Entities.FK_SpawnObjects_SpawnID" ManuallyRouted="false" />
         <AssociationConnector Association="Entities.FK_Spawns_SpawnObjectTypeID" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="Entities.DatabaseVersion" Width="1.5" PointX="12.375" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

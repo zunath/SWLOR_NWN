@@ -296,6 +296,16 @@
           <Property Name="WornOffMessage" Type="nvarchar" MaxLength="64" Nullable="false" />
           <Property Name="IsStance" Type="bit" Nullable="false" />
         </EntityType>
+        <EntityType Name="DatabaseVersions">
+          <Key>
+            <PropertyRef Name="DatabaseVersionID" />
+          </Key>
+          <Property Name="DatabaseVersionID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ScriptName" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="DateApplied" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="VersionDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="VersionNumber" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="DiscordChatQueue">
           <Key>
             <PropertyRef Name="DiscordChatQueueID" />
@@ -2561,6 +2571,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <EntitySet Name="CraftBlueprints" EntityType="Self.CraftBlueprints" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CraftDevices" EntityType="Self.CraftDevices" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CustomEffects" EntityType="Self.CustomEffects" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DatabaseVersions" EntityType="Self.DatabaseVersions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DiscordChatQueue" EntityType="Self.DiscordChatQueue" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DMRoleDomain" EntityType="Self.DMRoleDomain" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Downloads" EntityType="Self.Downloads" Schema="dbo" store:Type="Tables" />
@@ -4329,7 +4340,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <NavigationProperty Name="PerkLevelSkillRequirements" Relationship="Self.FK_PerkLevelSkillRequirements_SkillID" FromRole="Skills" ToRole="PerkLevelSkillRequirements" />
           <NavigationProperty Name="SkillCategory" Relationship="Self.FK_Skills_SkillCategoryID" FromRole="Skills" ToRole="SkillCategories" />
           <NavigationProperty Name="SkillXPRequirements" Relationship="Self.FK_SkillXPRequirement_SkillID" FromRole="Skills" ToRole="SkillXPRequirement" />
-          <Property Name="ContributesToSkillCap" Type="Boolean" Nullable="false" DefaultValue="true" />
+          <Property Name="ContributesToSkillCap" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="SkillXPRequirement">
           <Key>
@@ -6437,6 +6448,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <FunctionImport Name="InsertAllPCSkillsByID">
           <Parameter Name="PlayerID" Mode="In" Type="String" />
           </FunctionImport>
+          <EntitySet Name="DatabaseVersions" EntityType="Entities.DatabaseVersion" />
         </EntityContainer>
         <ComplexType Name="GetCategoriesAvailableToPC_Result">
           <Property Type="Int64" Name="CraftBlueprintCategoryID" Nullable="false" />
@@ -6551,6 +6563,16 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <Property Type="Int32" Name="SkillID" Nullable="false" />
           <Property Type="Int32" Name="TotalSkillXP" Nullable="false" />
         </ComplexType>
+        <EntityType Name="DatabaseVersion">
+          <Key>
+            <PropertyRef Name="DatabaseVersionID" />
+          </Key>
+          <Property Name="DatabaseVersionID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ScriptName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="DateApplied" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="VersionDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="VersionNumber" Type="Int32" Nullable="false" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -7854,6 +7876,17 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
             </ResultMapping>
           </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="InsertAllPCSkillsByID" FunctionName="Entities.Store.InsertAllPCSkillsByID" />
+          <EntitySetMapping Name="DatabaseVersions">
+            <EntityTypeMapping TypeName="Entities.DatabaseVersion">
+              <MappingFragment StoreEntitySet="DatabaseVersions">
+                <ScalarProperty Name="VersionNumber" ColumnName="VersionNumber" />
+                <ScalarProperty Name="VersionDate" ColumnName="VersionDate" />
+                <ScalarProperty Name="DateApplied" ColumnName="DateApplied" />
+                <ScalarProperty Name="ScriptName" ColumnName="ScriptName" />
+                <ScalarProperty Name="DatabaseVersionID" ColumnName="DatabaseVersionID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

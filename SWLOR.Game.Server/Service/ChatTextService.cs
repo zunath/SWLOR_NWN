@@ -508,8 +508,6 @@ namespace SWLOR.Game.Server.Service
 
         private static List<ChatComponent> SplitMessageIntoComponents_Novel(string message)
         {
-            // TODO
-
             List<ChatComponent> components = new List<ChatComponent>();
 
             int indexStart = 0;

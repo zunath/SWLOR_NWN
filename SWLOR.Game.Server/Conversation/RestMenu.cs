@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.Conversation
             header += _color.Green("Association: ") + playerEntity.Association.Name + "\n\n";
             header += _color.Green("Skill Points: ") + totalSkillCount + " / " + _skill.SkillCap + "\n";
             header += _color.Green("Unallocated SP: ") + playerEntity.UnallocatedSP + "\n";
-            header += _color.Green("FP: ") + _menu.BuildBar(playerEntity.CurrentFP, playerEntity.MaxFP, 100, _color.TokenStart(32, 223, 219)) + "\n";
+            header += _color.Green("FP: ")  + (playerEntity.MaxFP > 0 ? _menu.BuildBar(playerEntity.CurrentFP, playerEntity.MaxFP, 100, _color.TokenStart(32, 223, 219)) : "N/A") + "\n";
 
             return header;
         }

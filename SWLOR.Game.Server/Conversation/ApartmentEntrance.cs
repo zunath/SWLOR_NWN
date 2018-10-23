@@ -72,7 +72,8 @@ namespace SWLOR.Game.Server.Conversation
             var apartments = _db.PCBases.Where(x => x.PlayerID == player.GlobalID &&
                                                          x.ApartmentBuildingID == apartmentBuildingID &&
                                                          x.DateRentDue > DateTime.UtcNow)
-                                             .OrderBy(o => o.DateInitialPurchase);
+                                             .OrderBy(o => o.DateInitialPurchase)
+                                             .ToList();
 
             int count = 1;
             foreach (var apartment in apartments)

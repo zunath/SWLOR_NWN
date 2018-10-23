@@ -72,7 +72,8 @@ namespace SWLOR.Game.Server.Conversation
             var bases = _db.PCBases
                 .Where(x => x.Sector != "AP" && 
                             x.PCBasePermissions
-                                .Any(p => p.PlayerID == playerID && (p.CanExtendLease || p.CanCancelLease)));
+                                .Any(p => p.PlayerID == playerID && (p.CanExtendLease || p.CanCancelLease)))
+                .ToList();
             
             ClearPageResponses("MainPage");
             foreach (var @base in bases)

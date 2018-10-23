@@ -88,12 +88,18 @@ namespace SWLOR.Game.Server.Data
                         var command = connection.CreateCommand();
                         command.CommandText = sql;
                         command.ExecuteNonQuery();
+
+                        
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine("ERROR: Unable to create database. Please check your permissions.");
                         _error.LogError(ex);
                         return;
+                    }
+                    finally    
+                    {
+                        connection.Close();
                     }
                 }
 

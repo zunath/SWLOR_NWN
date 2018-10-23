@@ -69,6 +69,8 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Caliburn.Micro.3.2.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
     </Reference>
@@ -109,12 +111,30 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AppBootstrapper.cs" />
-    <Compile Include="Contracts\IShell.cs" />
+    <Compile Include="IShellViewModel.cs" />
+    <Compile Include="Views\EditorListView.xaml.cs">
+      <DependentUpon>EditorListView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\EditorListViewModel.cs" />
+    <Compile Include="ViewModels\Contracts\IEditorListViewModel.cs" />
+    <Compile Include="ViewModels\Contracts\IMenuBarViewModel.cs" />
+    <Compile Include="Views\MenuBarView.xaml.cs">
+      <DependentUpon>MenuBarView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\MenuBarViewModel.cs" />
     <Compile Include="ShellViewModel.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\EditorListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MenuBarView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ShellView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -155,8 +175,6 @@
       <Name>SWLOR.Game.Server</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Features\ApartmentBuildingEditor\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -2,12 +2,13 @@ using Autofac;
 using Caliburn.Micro;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Tools.Editor.Constracts;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using SWLOR.Tools.Editor.ViewModels;
+using SWLOR.Tools.Editor.ViewModels.Contracts;
 using IContainer = Autofac.IContainer;
 
 namespace SWLOR.Tools.Editor
@@ -87,12 +88,14 @@ namespace SWLOR.Tools.Editor
 
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
-            DisplayRootViewFor<IShell>();
+            DisplayRootViewFor<IShellViewModel>();
         }
 
         protected virtual void ConfigureContainer(ContainerBuilder builder)
         {
-            builder.RegisterType<ShellViewModel>().As<IShell>();
+            builder.RegisterType<ShellViewModel>().As<IShellViewModel>();
+            builder.RegisterType<EditorListViewModel>().As<IEditorListViewModel>();
+            builder.RegisterType<MenuBarViewModel>().As<IMenuBarViewModel>();
 
             builder.RegisterType<DataContext>().As<IDataContext>().InstancePerDependency();
         }

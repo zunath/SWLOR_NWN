@@ -12,31 +12,25 @@ namespace SWLOR.Tools.Editor.ViewModels
     {
         public LootEditorViewModel(IEventAggregator eventAggregator)
         {
-            LootTables = new ObservableCollection<ObjectListItem>();
-
+            ObjectListVM = new ObjectListViewModel();
+            
             eventAggregator.Subscribe(this);
         }
+        
+        private ObjectListViewModel _objListVM;
 
-        private ObservableCollection<ObjectListItem> _lootTables;
-        public ObservableCollection<ObjectListItem> LootTables
+        public ObjectListViewModel ObjectListVM
         {
-            get => _lootTables;
+            get => _objListVM;
             set
             {
-                _lootTables = value;
-                NotifyOfPropertyChange(()=> LootTables);
+                _objListVM = value;
+                NotifyOfPropertyChange(() => ObjectListVM);
             }
         }
 
         public void Handle(ApplicationStartedMessage message)
         {
-            for(int x = 0; x <= 10; x++)
-            {
-                LootTables.Add(new ObjectListItem("test", "My test x = " + x));
-            }
-
-            NotifyOfPropertyChange(() => LootTables);
-
 
         }
     }

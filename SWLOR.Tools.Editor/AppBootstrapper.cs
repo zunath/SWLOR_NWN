@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using SWLOR.Tools.Editor.Messages;
+using SWLOR.Tools.Editor.Startup;
 using SWLOR.Tools.Editor.ViewModels;
 using SWLOR.Tools.Editor.ViewModels.Contracts;
 using IContainer = Autofac.IContainer;
@@ -105,7 +106,10 @@ namespace SWLOR.Tools.Editor
         {
             // SWLOR.Game.Server types
             builder.RegisterType<DataContext>().As<IDataContext>().InstancePerDependency();
-            
+
+            // Startables
+            builder.RegisterType<CreateDataDirectories>().As<IStartable>().SingleInstance();
+
             // View Models
             builder.RegisterType<ShellViewModel>().As<IShellViewModel>();
             builder.RegisterType<EditorListViewModel>().As<IEditorListViewModel>();

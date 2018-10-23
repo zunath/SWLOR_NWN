@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.IO;
 using Caliburn.Micro;
 using SWLOR.Tools.Editor.Messages;
 using SWLOR.Tools.Editor.ValueObjects;
@@ -31,7 +32,14 @@ namespace SWLOR.Tools.Editor.ViewModels
 
         public void Handle(ApplicationStartedMessage message)
         {
-
+            if (!Directory.Exists("./Data/LootTables"))
+            {
+                Directory.CreateDirectory("./Data/LootTables");
+            }
+            if (!Directory.Exists("./Data/LootTableItems"))
+            {
+                Directory.CreateDirectory("./Data/LootTableItems");
+            }
         }
     }
 }

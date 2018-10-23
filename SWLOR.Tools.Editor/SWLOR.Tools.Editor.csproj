@@ -114,6 +114,7 @@
     <Compile Include="Messages\ApplicationEndedMessage.cs" />
     <Compile Include="Messages\ApplicationStartedMessage.cs" />
     <Compile Include="IShellViewModel.cs" />
+    <Compile Include="Startup\CreateDataDirectories.cs" />
     <Compile Include="ValueObjects\ObjectListItem.cs" />
     <Compile Include="ViewModels\Contracts\ILootEditorViewModel.cs" />
     <Compile Include="ViewModels\Contracts\IObjectListViewModel.cs" />

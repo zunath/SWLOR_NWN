@@ -8,7 +8,7 @@
     <Grid>
             <Menu>
             <MenuItem Header="File">
-                <MenuItem Header="Import" Name="ImportName"></MenuItem>
+                <MenuItem Header="Import"></MenuItem>
                 <MenuItem Header="Export"></MenuItem>
                 <Separator></Separator>
                 <MenuItem Header="Exit" x:Name="Exit"></MenuItem>

@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Placeable.OverflowStorage
         {
             NWPlaceable container = (Object.OBJECT_SELF);
             NWPlayer oPC = (_.GetLastOpenedBy());
-            var items = _db.PCOverflowItems.Where(x => x.PlayerID == oPC.GlobalID);
+            var items = _db.PCOverflowItems.Where(x => x.PlayerID == oPC.GlobalID).ToList();
             foreach (PCOverflowItem item in items)
             {
                 NWItem oItem = _serialization.DeserializeItem(item.ItemObject, container);

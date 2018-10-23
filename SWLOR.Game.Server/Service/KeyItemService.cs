@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Service
 
         public bool PlayerHasAllKeyItems(NWObject oPC, params int[] keyItemIDs)
         {
-            var result = _db.PCKeyItems.Where(x => x.PlayerID == oPC.GlobalID && keyItemIDs.Contains(x.KeyItemID));
+            var result = _db.PCKeyItems.Where(x => x.PlayerID == oPC.GlobalID && keyItemIDs.Contains(x.KeyItemID)).ToList();
             return result.Count() == keyItemIDs.Length;
         }
 

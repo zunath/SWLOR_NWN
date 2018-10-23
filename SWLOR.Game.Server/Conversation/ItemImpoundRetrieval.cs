@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadMainPage()
         {
             var player = GetPC();
-            var items = _db.PCImpoundedItems.Where(x => x.PlayerID == player.GlobalID && x.DateRetrieved == null);
+            var items = _db.PCImpoundedItems.Where(x => x.PlayerID == player.GlobalID && x.DateRetrieved == null).ToList();
 
             ClearPageResponses("MainPage");
             foreach (var item in items)

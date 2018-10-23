@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                var searchItems = _db.PCSearchSiteItems.Where(x => x.PlayerID == oPC.GlobalID && x.SearchSiteID == searchEntity.SearchSiteID);
+                var searchItems = _db.PCSearchSiteItems.Where(x => x.PlayerID == oPC.GlobalID && x.SearchSiteID == searchEntity.SearchSiteID).ToList();
                 foreach (PCSearchSiteItem item in searchItems)
                 {
                     NWItem oItem = _serialization.DeserializeItem(item.SearchItem, oChest);

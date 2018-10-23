@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using SWLOR.Tools.Editor.Messages;
 using SWLOR.Tools.Editor.ViewModels;
 using SWLOR.Tools.Editor.ViewModels.Contracts;
 using IContainer = Autofac.IContainer;
@@ -85,19 +86,33 @@ namespace SWLOR.Tools.Editor
         {
             _container.InjectProperties(instance);
         }
-
+        
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
             DisplayRootViewFor<IShellViewModel>();
+
+            var message = new ApplicationStartedMessage();
+            _container.Resolve<IEventAggregator>().PublishOnUIThread(message);
+        }
+
+        protected override void OnExit(object sender, EventArgs args)
+        {
+            var message = new ApplicationEndedMessage();
+            _container.Resolve<IEventAggregator>().PublishOnUIThread(message);
         }
 
         protected virtual void ConfigureContainer(ContainerBuilder builder)
         {
+            // SWLOR.Game.Server types
+            builder.RegisterType<DataContext>().As<IDataContext>().InstancePerDependency();
+            
+            // View Models
             builder.RegisterType<ShellViewModel>().As<IShellViewModel>();
             builder.RegisterType<EditorListViewModel>().As<IEditorListViewModel>();
             builder.RegisterType<MenuBarViewModel>().As<IMenuBarViewModel>();
+            builder.RegisterType<ObjectListViewModel>().As<IObjectListViewModel>();
+            builder.RegisterType<LootEditorViewModel>().As<ILootEditorViewModel>();
 
-            builder.RegisterType<DataContext>().As<IDataContext>().InstancePerDependency();
         }
     }
 }

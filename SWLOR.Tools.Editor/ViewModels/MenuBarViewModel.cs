@@ -10,18 +10,7 @@ namespace SWLOR.Tools.Editor.ViewModels
         {
             
         }
-
-        private string _importName;
-        public string ImportName
-        {
-            get => _importName;
-            set
-            {
-                _importName = value;
-                NotifyOfPropertyChange(() => ImportName);
-            }
-        }
-
+        
         public void Exit()
         {
             Application.Current.Shutdown();

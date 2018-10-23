@@ -131,7 +131,9 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var data = _base.GetPlayerTempData(player);
-            var bases = _db.PCBases.Where(x => x.PlayerID == player.GlobalID && x.ApartmentBuildingID == data.ApartmentBuildingID).OrderBy(o => o.DateInitialPurchase);
+            var bases = _db.PCBases
+                .Where(x => x.PlayerID == player.GlobalID && x.ApartmentBuildingID == data.ApartmentBuildingID).OrderBy(o => o.DateInitialPurchase)
+                .ToList();
 
             string header = _color.Green("Apartment Rental Terminal") + "\n\n";
             header += "Apartments you are currently renting can be found in the list below. You may also rent an apartment here.";
@@ -178,7 +180,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var data = _base.GetPlayerTempData(GetPC());
             var apartmentBuilding = _db.ApartmentBuildings.Single(x => x.ApartmentBuildingID == data.ApartmentBuildingID);
-            var styles = _db.BuildingStyles.Where(x => x.BuildingTypeID == (int)Enumeration.BuildingType.Apartment && x.IsActive);
+            var styles = _db.BuildingStyles.Where(x => x.BuildingTypeID == (int)Enumeration.BuildingType.Apartment && x.IsActive).ToList();
 
             string header = _color.Green(apartmentBuilding.Name) + "\n\n";
 

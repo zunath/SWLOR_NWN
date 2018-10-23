@@ -18,6 +18,13 @@ namespace SWLOR.Game.Server.Data
         {
         }
 
+        // This constructor should only be used for the Editor.
+        public DataContext(string ipAddress, string username, string password, string database)
+            : base(BuildConnectionString(ipAddress, username, password, database))
+        {
+
+        }
+
         private static string BuildConnectionString()
         {
             var ipAddress = Environment.GetEnvironmentVariable("SQL_SERVER_IP_ADDRESS");
@@ -42,6 +49,26 @@ namespace SWLOR.Game.Server.Data
 
             //return $"server={ipAddress};database={database};user id={username};password='{password}';Integrated Security=False;MultipleActiveResultSets=True;TrustServerCertificate=True;Encrypt=False";
             return entityString.ConnectionString;
+        }
+
+        private static string BuildConnectionString(string ipAddress, string username, string password, string database)
+        {
+            SqlConnectionStringBuilder sqlString = new SqlConnectionStringBuilder()
+            {
+                DataSource = ipAddress,
+                InitialCatalog = database,
+                UserID = username,
+                Password = password
+            };
+
+            EntityConnectionStringBuilder entityString = new EntityConnectionStringBuilder()
+            {
+                Provider = "System.Data.SqlClient",
+                Metadata = "res://*/Data.DataContext.csdl|res://*/Data.DataContext.ssdl|res://*/Data.DataContext.msl",
+                ProviderConnectionString = sqlString.ToString()
+
+            };
+            return entityString.ToString();
         }
 
         private string BuildSQLQuery(string procedureName, params SqlParameter[] args)

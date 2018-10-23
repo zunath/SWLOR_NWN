@@ -9,6 +9,7 @@ using System.Linq;
 using System.Windows;
 using SWLOR.Tools.Editor.Messages;
 using SWLOR.Tools.Editor.Startup;
+using SWLOR.Tools.Editor.Startup.Contracts;
 using SWLOR.Tools.Editor.ViewModels;
 using SWLOR.Tools.Editor.ViewModels.Contracts;
 using IContainer = Autofac.IContainer;
@@ -92,14 +93,13 @@ namespace SWLOR.Tools.Editor
         {
             DisplayRootViewFor<IShellViewModel>();
 
-            var message = new ApplicationStartedMessage();
-            _container.Resolve<IEventAggregator>().PublishOnUIThread(message);
+            _container.Resolve<IPostBootstrap>().RunStartUp(); 
+            _container.Resolve<IEventAggregator>().PublishOnUIThread(new ApplicationStartedMessage());
         }
 
         protected override void OnExit(object sender, EventArgs args)
         {
-            var message = new ApplicationEndedMessage();
-            _container.Resolve<IEventAggregator>().PublishOnUIThread(message);
+            _container.Resolve<IEventAggregator>().PublishOnUIThread(new ApplicationEndedMessage());
         }
 
         protected virtual void ConfigureContainer(ContainerBuilder builder)
@@ -109,12 +109,16 @@ namespace SWLOR.Tools.Editor
 
             // Startables
             builder.RegisterType<CreateDataDirectories>().As<IStartable>().SingleInstance();
+            builder.RegisterType<InitializeJsonSerializer>().As<IStartable>().SingleInstance();
+            
+            // Other Startup Events
+            builder.RegisterType<PostBootstrap>().As<IPostBootstrap>().SingleInstance();
 
             // View Models
             builder.RegisterType<ShellViewModel>().As<IShellViewModel>();
             builder.RegisterType<EditorListViewModel>().As<IEditorListViewModel>();
             builder.RegisterType<MenuBarViewModel>().As<IMenuBarViewModel>();
-            builder.RegisterType<ObjectListViewModel>().As<IObjectListViewModel>();
+            builder.RegisterType(typeof(ObjectListViewModel<LootTable>)).As<IObjectListViewModel<LootTable>>();
             builder.RegisterType<LootEditorViewModel>().As<ILootEditorViewModel>();
 
         }

@@ -111,10 +111,19 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AppBootstrapper.cs" />
+    <Compile Include="AppSettings.cs" />
     <Compile Include="Messages\ApplicationEndedMessage.cs" />
     <Compile Include="Messages\ApplicationStartedMessage.cs" />
     <Compile Include="IShellViewModel.cs" />
+    <Compile Include="Messages\DeleteEditorObjectMessage.cs" />
+    <Compile Include="Messages\EditorObjectSelectedMessage.cs" />
+    <Compile Include="Messages\NewEditorObjectMessage.cs" />
+    <Compile Include="Messages\RenamedEditorObjectMessage.cs" />
+    <Compile Include="Messages\SettingsLoadedMessage.cs" />
+    <Compile Include="Startup\Contracts\IPostBootstrap.cs" />
     <Compile Include="Startup\CreateDataDirectories.cs" />
+    <Compile Include="Startup\InitializeJsonSerializer.cs" />
+    <Compile Include="Startup\PostBootstrap.cs" />
     <Compile Include="ValueObjects\ObjectListItem.cs" />
     <Compile Include="ViewModels\Contracts\ILootEditorViewModel.cs" />
     <Compile Include="ViewModels\Contracts\IObjectListViewModel.cs" />

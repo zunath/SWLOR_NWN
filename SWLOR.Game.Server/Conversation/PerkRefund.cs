@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Conversation
             }
             else
             {
-                var pcPerks = _db.PCPerks.Where(x => x.PlayerID == player.GlobalID).OrderBy(o => o.Perk.Name);
+                var pcPerks = _db.PCPerks.Where(x => x.PlayerID == player.GlobalID).OrderBy(o => o.Perk.Name).ToList();
 
                 foreach (var perk in pcPerks)
                 {

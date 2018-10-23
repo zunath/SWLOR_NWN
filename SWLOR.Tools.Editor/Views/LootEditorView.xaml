@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:SWLOR.Tools.Editor.Views"
              xmlns:cal="http://www.caliburnproject.org"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -24,8 +25,105 @@
         <Grid Grid.Column="2">
 
             <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="5"></RowDefinition>
                 <RowDefinition Height="32"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <Grid Column="0"
+                  Row="0"
+                  ColumnSpan="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="32"></RowDefinition>
+                    <RowDefinition Height="32"></RowDefinition>
+                    <RowDefinition Height="32"></RowDefinition>
+                    <RowDefinition Height="32"></RowDefinition>
+                    <RowDefinition Height="32"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="128"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <Label Content="Resref:"
+                       Grid.Column="0"
+                       Grid.Row="0">
+                </Label>
+
+                <TextBox Grid.Row="0"
+                         Grid.Column="1"
+                         x:Name="Resref">
+                </TextBox>
+                <Label Content="Max Quantity:"
+                       Grid.Column="0"
+                       Grid.Row="1">
+                </Label>
+
+                <TextBox Grid.Row="1"
+                         Grid.Column="1"
+                         x:Name="MaxQuantity">
+                </TextBox>
+
+                <Label Content="Weight:"
+                       Grid.Column="0"
+                       Grid.Row="2">
+                </Label>
+
+                <TextBox Grid.Row="2"
+                         Grid.Column="1"
+                         x:Name="Weight">
+                </TextBox>
+                <Label Content="Is Active:"
+                       Grid.Column="0"
+                       Grid.Row="4">
+                </Label>
+
+                <CheckBox Grid.Row="4"
+                         Grid.Column="1"
+                         x:Name="IsActive">
+                </CheckBox>
+                <Label Content="Spawn Rule:"
+                       Grid.Column="0"
+                       Grid.Row="3">
+                </Label>
+
+                <TextBox Grid.Row="3"
+                         Grid.Column="1"
+                         x:Name="SpawnRule">
+                </TextBox>
+            </Grid>
+
+
+            <GridSplitter Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Stretch"></GridSplitter>
+
+            <Button Grid.Row="2"
+                    Grid.Column="1"
+                    Content="New"
+                    x:Name="New">
+
+            </Button>
+
+            <Button Grid.Row="2"
+                    Grid.Column="2"
+                    Content="Delete"
+                    x:Name="Delete">
+
+            </Button>
+
+            <ListBox Grid.Row="3" 
+                     Grid.Column="0"
+                     Grid.ColumnSpan="3"
+                     x:Name="LootTableItems"
+                     DisplayMemberPath="Resref">
+
+            </ListBox>
 
         </Grid>
 

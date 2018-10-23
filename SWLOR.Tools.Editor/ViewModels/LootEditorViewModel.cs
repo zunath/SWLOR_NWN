@@ -1,6 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using System.IO;
 using Caliburn.Micro;
+using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Tools.Editor.Messages;
 using SWLOR.Tools.Editor.ValueObjects;
 using SWLOR.Tools.Editor.ViewModels.Contracts;
@@ -9,18 +11,19 @@ namespace SWLOR.Tools.Editor.ViewModels
 {
     public class LootEditorViewModel: PropertyChangedBase, 
         ILootEditorViewModel, 
-        IHandle<ApplicationStartedMessage>
+        IHandle<EditorObjectSelectedMessage<LootTable>>
     {
-        public LootEditorViewModel(IEventAggregator eventAggregator)
+        public LootEditorViewModel(IEventAggregator eventAggregator, IObjectListViewModel<LootTable> objListVM)
         {
-            ObjectListVM = new ObjectListViewModel();
+            ObjectListVM = objListVM;
+            ObjectListVM.DisplayName = "Name";
             
             eventAggregator.Subscribe(this);
         }
         
-        private ObjectListViewModel _objListVM;
+        private IObjectListViewModel<LootTable> _objListVM;
 
-        public ObjectListViewModel ObjectListVM
+        public IObjectListViewModel<LootTable> ObjectListVM
         {
             get => _objListVM;
             set
@@ -30,16 +33,22 @@ namespace SWLOR.Tools.Editor.ViewModels
             }
         }
 
-        public void Handle(ApplicationStartedMessage message)
+        private LootTable _activeRecord;
+
+        public LootTable ActiveRecord
         {
-            if (!Directory.Exists("./Data/LootTables"))
+            get => _activeRecord;
+            set
             {
-                Directory.CreateDirectory("./Data/LootTables");
+                _activeRecord = value;
+                NotifyOfPropertyChange(() => ActiveRecord);
             }
-            if (!Directory.Exists("./Data/LootTableItems"))
-            {
-                Directory.CreateDirectory("./Data/LootTableItems");
-            }
+        }
+
+        public void Handle(EditorObjectSelectedMessage<LootTable> message)
+        {
+            ActiveRecord = message.SelectedObject;
+
         }
     }
 }

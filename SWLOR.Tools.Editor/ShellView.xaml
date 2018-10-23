@@ -4,7 +4,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:views="clr-namespace:SWLOR.Tools.Editor.Views"
         xmlns:cal="http://www.caliburnproject.org"
-        Title="SWLOR Data Editor">
+        Title="SWLOR Data Editor"
+        Width="{Binding Path=Width, Mode=TwoWay}"
+        Height="{Binding Path=Height, Mode=TwoWay}">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"></ColumnDefinition>

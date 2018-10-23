@@ -13,8 +13,8 @@
             <RowDefinition Height="42"></RowDefinition>
         </Grid.RowDefinitions>
         <ListBox 
-            ItemsSource="{Binding DataObjects}"
-            DisplayMemberPath="Name">
+            DisplayMemberPath="Name"
+            x:Name="DataObjects">
         </ListBox>
 
         <Grid Grid.Column="0" Grid.Row="1">

@@ -27,6 +27,8 @@ namespace SWLOR.Game.Server.CustomEffect
             {
                 Effect effect = _.EffectDamage(damage, DAMAGE_TYPE_ELECTRICAL);
                 _.ApplyEffectToObject(DURATION_TYPE_INSTANT, effect, oTarget);
+
+                Console.WriteLine("Goddamnit zunath! I hate all this hard shit.");
             });
         }
 

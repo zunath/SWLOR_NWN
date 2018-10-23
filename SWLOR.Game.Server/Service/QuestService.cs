@@ -461,13 +461,13 @@ namespace SWLOR.Game.Server.Service
                     continue;
                 }
 
-                foreach (var kt in _db.PCQuestKillTargetProgresses.Where(x => x.PlayerID == oPC.GlobalID && x.NPCGroupID == npcGroupID))
+                var killTargets = _db.PCQuestKillTargetProgresses.Where(x => x.PlayerID == oPC.GlobalID && x.NPCGroupID == npcGroupID).ToList();
+                foreach (var kt in killTargets)
                 {
                     kt.RemainingToKill--;
                     int questID = kt.PCQuestStatus.QuestID;
                     var quest = kt.PCQuestStatus.Quest;
                     string targetGroupName = kt.NPCGroup.Name;
-                    
                     string updateMessage = "[" + quest.Name + "] " + targetGroupName + " remaining: " + kt.RemainingToKill;
 
                     if (kt.RemainingToKill <= 0)
@@ -508,10 +508,8 @@ namespace SWLOR.Game.Server.Service
             {
                 AdvanceQuestState(player.Key, null, player.Value);
             }
-
         }
-
-
+        
         private void HandleTriggerAndPlaceableQuestLogic(NWPlayer oPC, NWObject oObject)
         {
             if (!oPC.IsPlayer) return;

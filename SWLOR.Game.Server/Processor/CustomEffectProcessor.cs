@@ -10,7 +10,6 @@ using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Processor.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
-using Z.EntityFramework.Plus;
 
 namespace SWLOR.Game.Server.Processor
 {
@@ -154,7 +153,8 @@ namespace SWLOR.Game.Server.Processor
 
         private void ClearRemovedPCEffects()
         {
-            _db.PCCustomEffects.Where(x => _state.PCEffectsForRemoval.Contains(x.PCCustomEffectID)).Delete();
+            var records = _db.PCCustomEffects.Where(x => _state.PCEffectsForRemoval.Contains(x.PCCustomEffectID)).ToList();
+            _db.PCCustomEffects.RemoveRange(records);
             _db.SaveChanges();
             _state.PCEffectsForRemoval.Clear();
         }

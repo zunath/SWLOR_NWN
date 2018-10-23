@@ -14,7 +14,7 @@
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
-        <local:ObjectListView Grid.Column="0" Grid.Row="0" DataContext="{Binding LootTables}">
+        <local:ObjectListView Grid.Column="0" Grid.Row="0" cal:View.Model="{Binding ObjectListVM}">
 
         </local:ObjectListView>
 

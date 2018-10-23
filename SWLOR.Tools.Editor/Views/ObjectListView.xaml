@@ -29,7 +29,7 @@
             <Button Grid.Column="0" Content="New" x:Name="New">
 
             </Button>
-            <Button Grid.Column="2" Content="Edit" x:Name="Edit">
+            <Button Grid.Column="2" Content="Rename" x:Name="Rename">
 
             </Button>
             <Button Grid.Column="4" Content="Delete" x:Name="Delete">

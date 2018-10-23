@@ -7,8 +7,12 @@ namespace SWLOR.Tools.Editor.ViewModels
 {
     public class ObjectListViewModel: PropertyChangedBase, IObjectListViewModel
     {
-        private ObservableCollection<ObjectListItem> _dataObjects;
+        public ObjectListViewModel()
+        {
+            DataObjects = new ObservableCollection<ObjectListItem>();
+        }
 
+        private ObservableCollection<ObjectListItem> _dataObjects;
         public ObservableCollection<ObjectListItem> DataObjects
         {
             get => _dataObjects;
@@ -17,6 +21,22 @@ namespace SWLOR.Tools.Editor.ViewModels
                 _dataObjects = value;
                 NotifyOfPropertyChange(() => DataObjects);
             }
+        }
+
+
+        public void New()
+        {
+
+        }
+
+        public void Rename()
+        {
+
+        }
+
+        public void Delete()
+        {
+
         }
 
     }

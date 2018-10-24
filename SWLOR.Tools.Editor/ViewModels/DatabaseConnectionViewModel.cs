@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Caliburn.Micro;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Tools.Editor.Factories.Contracts;
@@ -26,6 +27,11 @@ namespace SWLOR.Tools.Editor.ViewModels
             _dbFactory = dbFactory;
             _appSettings = appSettings;
             _eventAggregator = eventAggregator;
+
+            IPAddress = string.Empty;
+            Username = string.Empty;
+            Password = string.Empty;
+            Database = string.Empty;
 
             eventAggregator.Subscribe(this);
         }
@@ -86,6 +92,7 @@ namespace SWLOR.Tools.Editor.ViewModels
                 _appSettings.DatabaseName = Database;
 
                 _db = _dbFactory.CreateContext();
+                var config = _db.ServerConfigurations.First();
 
                 _eventAggregator.PublishOnUIThread(new DatabaseConnectionSucceededMessage());
             }

@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Perk.DarkSide
                 }
 
             }
-            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.DarkSideAbilities);
+            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.DarkSideAbilities, target.Object);
         }
 
 

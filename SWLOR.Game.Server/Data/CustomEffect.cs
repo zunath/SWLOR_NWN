@@ -27,8 +27,9 @@ namespace SWLOR.Game.Server.Data
         public string StartMessage { get; set; }
         public string ContinueMessage { get; set; }
         public string WornOffMessage { get; set; }
-        public bool IsStance { get; set; }
+        public int CustomEffectCategoryID { get; set; }
     
+        public virtual CustomEffectCategory CustomEffectCategory { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PCCustomEffect> PCCustomEffects { get; set; }
     }

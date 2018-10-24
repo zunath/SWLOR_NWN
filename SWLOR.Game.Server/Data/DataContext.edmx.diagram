@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="66159b341ad141029660cf34a5c62f27" Name="Diagram1" ZoomLevel="64">
+      <Diagram DiagramId="66159b341ad141029660cf34a5c62f27" Name="Diagram1" ZoomLevel="45">
         <EntityTypeShape EntityType="Entities.ApartmentBuilding" Width="1.5" PointX="8.25" PointY="48.25" IsExpanded="true" />
         <EntityTypeShape EntityType="Entities.Area" Width="1.5" PointX="29.25" PointY="49" IsExpanded="true" />
         <EntityTypeShape EntityType="Entities.AreaWalkmesh" Width="1.5" PointX="31.5" PointY="40.5" IsExpanded="true" />
@@ -29,7 +29,6 @@
         <EntityTypeShape EntityType="Entities.CraftBlueprintCategory" Width="1.5" PointX="6" PointY="47.75" IsExpanded="true" />
         <EntityTypeShape EntityType="Entities.CraftBlueprint" Width="1.5" PointX="8.25" PointY="52.875" IsExpanded="true" />
         <EntityTypeShape EntityType="Entities.CraftDevice" Width="1.5" PointX="6" PointY="50.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="Entities.CustomEffect" Width="1.5" PointX="27" PointY="32.25" IsExpanded="true" />
         <EntityTypeShape EntityType="Entities.DiscordChatQueue" Width="1.5" PointX="4.75" PointY="8.75" IsExpanded="true" />
         <EntityTypeShape EntityType="Entities.DMRoleDomain" Width="1.5" PointX="2.75" PointY="5.5" IsExpanded="true" />
         <EntityTypeShape EntityType="Entities.Download" Width="1.5" PointX="6.75" PointY="9.75" IsExpanded="true" />
@@ -138,7 +137,6 @@
         <AssociationConnector Association="Entities.FK_CraftBlueprints_PerkID" ManuallyRouted="false" />
         <AssociationConnector Association="Entities.FK_CraftBlueprints_SkillID" ManuallyRouted="false" />
         <AssociationConnector Association="Entities.FK_PCCraftedBlueprints_CraftBlueprintID" ManuallyRouted="false" />
-        <AssociationConnector Association="Entities.fk_PCCustomEffects_CustomEffectID" ManuallyRouted="false" />
         <AssociationConnector Association="Entities.fk_Users_RoleID" ManuallyRouted="false" />
         <AssociationConnector Association="Entities.fk_Perks_EnmityAdjustmentRuleID" ManuallyRouted="false" />
         <AssociationConnector Association="Entities.FK_PCRegionalFame_FameRegionID" ManuallyRouted="false" />
@@ -216,6 +214,10 @@
         <AssociationConnector Association="Entities.FK_SpawnObjects_SpawnID" ManuallyRouted="false" />
         <AssociationConnector Association="Entities.FK_Spawns_SpawnObjectTypeID" ManuallyRouted="false" />
         <EntityTypeShape EntityType="Entities.DatabaseVersion" Width="1.5" PointX="12.375" PointY="0.75" />
+        <EntityTypeShape EntityType="Entities.CustomEffectCategory" Width="1.5" PointX="12.375" PointY="4.625" />
+        <EntityTypeShape EntityType="Entities.CustomEffect" Width="1.5" PointX="14.625" PointY="4" />
+        <AssociationConnector Association="Entities.FK_CustomEffects_CustomEffectCategoryID" />
+        <AssociationConnector Association="Entities.fk_PCCustomEffects_CustomEffectID" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

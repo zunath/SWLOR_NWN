@@ -147,7 +147,7 @@ namespace SWLOR.Game.Server.Perk.LightSide
                 _customEffect.ApplyCustomEffect(player, target.Object, CustomEffectType.ForceBreach, length, level, null);
             }
 
-            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.LightSideAbilities);
+            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.LightSideAbilities, target.Object);
 
             Effect vfx = _.EffectVisualEffect(VFX_IMP_DOMINATE_S);
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, target.Object);

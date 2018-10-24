@@ -14,14 +14,15 @@ namespace SWLOR.Game.Server.Data
     /// It will look for the database supplied by the end user. If it doesn't exist, it will create it with the necessary DDL.
     /// It will then grab all migration scripts and run those sequentially until the database is at the current version.
     /// Scripts are located in Data/Migrations/ and all of the sql files should be marked as "Embedded Resource" so the app can pick them up.
+    /// WARNING: Your scripts cannot end with a GO call at the moment. Make sure the final command in a migration script is a DB operation.
     /// </summary>
     public class DatabaseMigrationRunner: IStartable
     {
         private readonly IDataContext _db;
         private readonly IErrorService _error;
 
-        private string _masterConnectionString;
-        private string _swlorConnectionString;
+        private readonly string _masterConnectionString;
+        private readonly string _swlorConnectionString;
 
         public DatabaseMigrationRunner(
             IDataContext db,
@@ -54,14 +55,14 @@ namespace SWLOR.Game.Server.Data
         /// <summary>
         /// Returns the folder name containing the sql migration files.
         /// </summary>
-        private string FolderName => string.Format("{0}.Data.Migrations", Assembly.GetExecutingAssembly().GetName().Name);
+        private string FolderName => $"{Assembly.GetExecutingAssembly().GetName().Name}.Data.Migrations";
 
+        /// <inheritdoc />
         /// <summary>
         /// This is fired automatically by Autofac. It's the entry point to the migration runner.
         /// </summary>
         public void Start()
         {
-            var executingAssembly = Assembly.GetExecutingAssembly();
             Console.WriteLine("Starting database migration runner. This can take a few moments...");
 
             BuildDatabase();
@@ -146,7 +147,7 @@ namespace SWLOR.Game.Server.Data
         /// Only the scripts which haven't been applied to the database will be retrieved.
         /// </summary>
         /// <returns></returns>
-        private List<string> GetScriptResources()
+        private IEnumerable<string> GetScriptResources()
         {
             var currentVersion = _db.DatabaseVersions
                 .OrderByDescending(o => o.ScriptName).FirstOrDefault();
@@ -155,15 +156,12 @@ namespace SWLOR.Game.Server.Data
 
             var fullList = executingAssembly
                 .GetManifestResourceNames()
-                .Where(r =>
-                {
-                    return r.StartsWith(FolderName) &&
-                           r.EndsWith(".sql") &&
-                           r != (FolderName + ".Initialization.sql");
-                })
+                .Where(r => r.StartsWith(FolderName) &&
+                            r.EndsWith(".sql") &&
+                            r != (FolderName + ".Initialization.sql"))
                 .OrderBy(o => o)
                 .ToList();
-
+            
             if (currentVersion == null)
                 return fullList;
 
@@ -172,8 +170,16 @@ namespace SWLOR.Game.Server.Data
                 var fileName = GetFileNameFromScriptResourceName(r);
                 var versionInfo = GetVersionInformation(fileName);
 
-                return versionInfo.Item1 >= currentVersion.VersionDate &&
-                       versionInfo.Item2 > currentVersion.VersionNumber;
+                // Greater date than currently applied update.
+                if (versionInfo.Item1 > currentVersion.VersionDate)
+                    return true;
+
+                // Current date but version is greater than currently applied update.
+                if (versionInfo.Item1 == currentVersion.VersionDate)
+                    return versionInfo.Item2 > currentVersion.VersionNumber;
+                
+                // Older than current version. Ignore this since it's already been applied.
+                return false;
             }).ToList();
         }
 
@@ -202,7 +208,6 @@ namespace SWLOR.Game.Server.Data
         private void ApplyMigrationScript(string resource)
         {
             string fileName = GetFileNameFromScriptResourceName(resource);
-            var executingAssembly = Assembly.GetExecutingAssembly();
             Console.WriteLine("Applying migration script: " + resource);
 
             using (var connection = new SqlConnection(_swlorConnectionString))
@@ -223,7 +228,6 @@ namespace SWLOR.Game.Server.Data
                 {
                     Console.WriteLine("ERROR: Database migration script named '" + resource + "' failed to apply. Canceling database migration process!");
                     _error.LogError(ex, nameof(DatabaseMigrationRunner));
-                    return; // Early exit.
                 }
             }
         }

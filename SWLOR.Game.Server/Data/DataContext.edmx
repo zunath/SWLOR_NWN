@@ -283,6 +283,13 @@
           <Property Name="CraftDeviceID" Type="int" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="32" Nullable="false" />
         </EntityType>
+        <EntityType Name="CustomEffectCategory">
+          <Key>
+            <PropertyRef Name="CustomEffectCategoryID" />
+          </Key>
+          <Property Name="CustomEffectCategoryID" Type="int" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="32" Nullable="false" />
+        </EntityType>
         <EntityType Name="CustomEffects">
           <Key>
             <PropertyRef Name="CustomEffectID" />
@@ -294,7 +301,7 @@
           <Property Name="StartMessage" Type="nvarchar" MaxLength="64" Nullable="false" />
           <Property Name="ContinueMessage" Type="nvarchar" MaxLength="64" Nullable="false" />
           <Property Name="WornOffMessage" Type="nvarchar" MaxLength="64" Nullable="false" />
-          <Property Name="IsStance" Type="bit" Nullable="false" />
+          <Property Name="CustomEffectCategoryID" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="DatabaseVersions">
           <Key>
@@ -568,7 +575,7 @@
           <Property Name="CustomEffectID" Type="bigint" Nullable="false" />
           <Property Name="Ticks" Type="int" Nullable="false" />
           <Property Name="EffectiveLevel" Type="int" Nullable="false" />
-          <Property Name="Data" Type="nvarchar" MaxLength="32" Nullable="false" />
+          <Property Name="Data" Type="nvarchar(max)" Nullable="false" />
           <Property Name="CasterNWNObjectID" Type="nvarchar" MaxLength="10" Nullable="false" />
           <Property Name="StancePerkID" Type="int" />
         </EntityType>
@@ -1052,7 +1059,7 @@
           <Property Name="RoleID" Type="int" Nullable="false" />
           <Property Name="DateRegistered" Type="datetime2" Precision="7" Nullable="false" />
         </EntityType>
-        <Association Name="FK__CraftBlue__BaseS__2F2FFC0C">
+        <Association Name="FK__CraftBlue__BaseS__60083D91">
           <End Role="BaseStructures" Type="Self.BaseStructures" Multiplicity="0..1" />
           <End Role="CraftBlueprints" Type="Self.CraftBlueprints" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1397,6 +1404,18 @@
             </Principal>
             <Dependent Role="CraftBlueprints">
               <PropertyRef Name="TertiaryComponentTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CustomEffects_CustomEffectCategoryID">
+          <End Role="CustomEffectCategory" Type="Self.CustomEffectCategory" Multiplicity="1" />
+          <End Role="CustomEffects" Type="Self.CustomEffects" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CustomEffectCategory">
+              <PropertyRef Name="CustomEffectCategoryID" />
+            </Principal>
+            <Dependent Role="CustomEffects">
+              <PropertyRef Name="CustomEffectCategoryID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2483,6 +2502,10 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Function Name="ADM_Drop_Column" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="TableName" Type="nvarchar" Mode="In" />
+          <Parameter Name="ColumnName" Type="nvarchar" Mode="In" />
+        </Function>
         <Function Name="DeleteAreaWalkmeshes" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="AreaID" Type="nvarchar" Mode="In" />
         </Function>
@@ -2571,6 +2594,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <EntitySet Name="CraftBlueprintCategories" EntityType="Self.CraftBlueprintCategories" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CraftBlueprints" EntityType="Self.CraftBlueprints" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CraftDevices" EntityType="Self.CraftDevices" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CustomEffectCategory" EntityType="Self.CustomEffectCategory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CustomEffects" EntityType="Self.CustomEffects" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DatabaseVersions" EntityType="Self.DatabaseVersions" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DiscordChatQueue" EntityType="Self.DiscordChatQueue" Schema="dbo" store:Type="Tables" />
@@ -2639,7 +2663,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <EntitySet Name="SpawnObjectType" EntityType="Self.SpawnObjectType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Spawns" EntityType="Self.Spawns" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK__CraftBlue__BaseS__2F2FFC0C" Association="Self.FK__CraftBlue__BaseS__2F2FFC0C">
+          <AssociationSet Name="FK__CraftBlue__BaseS__60083D91" Association="Self.FK__CraftBlue__BaseS__60083D91">
             <End Role="BaseStructures" EntitySet="BaseStructures" />
             <End Role="CraftBlueprints" EntitySet="CraftBlueprints" />
           </AssociationSet>
@@ -2754,6 +2778,10 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <AssociationSet Name="fk_CraftBlueprints_TertiaryComponentTypeID" Association="Self.fk_CraftBlueprints_TertiaryComponentTypeID">
             <End Role="ComponentTypes" EntitySet="ComponentTypes" />
             <End Role="CraftBlueprints" EntitySet="CraftBlueprints" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CustomEffects_CustomEffectCategoryID" Association="Self.FK_CustomEffects_CustomEffectCategoryID">
+            <End Role="CustomEffectCategory" EntitySet="CustomEffectCategory" />
+            <End Role="CustomEffects" EntitySet="CustomEffects" />
           </AssociationSet>
           <AssociationSet Name="FK_GameTopics_GameTopicCategoryID" Association="Self.FK_GameTopics_GameTopicCategoryID">
             <End Role="GameTopicCategories" EntitySet="GameTopicCategories" />
@@ -3460,20 +3488,6 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <Property Name="Name" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <NavigationProperty Name="CraftBlueprints" Relationship="Self.FK_CraftBlueprints_CraftDeviceID" FromRole="CraftDevices" ToRole="CraftBlueprints" />
         </EntityType>
-        <EntityType Name="CustomEffect">
-          <Key>
-            <PropertyRef Name="CustomEffectID" />
-          </Key>
-          <Property Name="CustomEffectID" Type="Int64" Nullable="false" />
-          <Property Name="Name" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="IconID" Type="Int32" Nullable="false" />
-          <Property Name="ScriptHandler" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="StartMessage" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="ContinueMessage" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="WornOffMessage" Type="String" MaxLength="64" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="IsStance" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="PCCustomEffects" Relationship="Self.fk_PCCustomEffects_CustomEffectID" FromRole="CustomEffects" ToRole="PCCustomEffects" />
-        </EntityType>
         <EntityType Name="DiscordChatQueue">
           <Key>
             <PropertyRef Name="DiscordChatQueueID" />
@@ -3784,11 +3798,11 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <Property Name="CustomEffectID" Type="Int64" Nullable="false" />
           <Property Name="Ticks" Type="Int32" Nullable="false" />
           <Property Name="EffectiveLevel" Type="Int32" Nullable="false" />
-          <Property Name="Data" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" annotation:StoreGeneratedPattern="None" DefaultValue="" />
+          <Property Name="Data" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" annotation:StoreGeneratedPattern="None" DefaultValue="" />
           <Property Name="CasterNWNObjectID" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" DefaultValue="" />
           <Property Name="StancePerkID" Type="Int32" />
-          <NavigationProperty Name="CustomEffect" Relationship="Self.fk_PCCustomEffects_CustomEffectID" FromRole="PCCustomEffects" ToRole="CustomEffects" />
           <NavigationProperty Name="PlayerCharacter" Relationship="Self.fk_PCCustomEffects_PlayerID" FromRole="PCCustomEffects" ToRole="PlayerCharacters" />
+          <NavigationProperty Name="CustomEffect" Relationship="Entities.fk_PCCustomEffects_CustomEffectID" FromRole="PCCustomEffect" ToRole="CustomEffect" />
         </EntityType>
         <EntityType Name="PCImpoundedItem">
           <Key>
@@ -4906,18 +4920,6 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="fk_PCCustomEffects_CustomEffectID">
-          <End Role="CustomEffects" Type="Self.CustomEffect" Multiplicity="1" />
-          <End Role="PCCustomEffects" Type="Self.PCCustomEffect" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="CustomEffects">
-              <PropertyRef Name="CustomEffectID" />
-            </Principal>
-            <Dependent Role="PCCustomEffects">
-              <PropertyRef Name="CustomEffectID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="fk_Users_RoleID">
           <End Role="DMRoleDomain" Type="Self.DMRoleDomain" Multiplicity="1" />
           <End Role="Users" Type="Self.User" Multiplicity="*" />
@@ -5855,7 +5857,6 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <EntitySet Name="CraftBlueprintCategories" EntityType="Self.CraftBlueprintCategory" />
           <EntitySet Name="CraftBlueprints" EntityType="Self.CraftBlueprint" />
           <EntitySet Name="CraftDevices" EntityType="Self.CraftDevice" />
-          <EntitySet Name="CustomEffects" EntityType="Self.CustomEffect" />
           <EntitySet Name="DiscordChatQueues" EntityType="Self.DiscordChatQueue" />
           <EntitySet Name="DMRoleDomains" EntityType="Self.DMRoleDomain" />
           <EntitySet Name="Downloads" EntityType="Self.Download" />
@@ -6089,10 +6090,6 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <AssociationSet Name="FK_PCCraftedBlueprints_CraftBlueprintID" Association="Self.FK_PCCraftedBlueprints_CraftBlueprintID">
             <End Role="CraftBlueprints" EntitySet="CraftBlueprints" />
             <End Role="PCCraftedBlueprints" EntitySet="PCCraftedBlueprints" />
-          </AssociationSet>
-          <AssociationSet Name="fk_PCCustomEffects_CustomEffectID" Association="Self.fk_PCCustomEffects_CustomEffectID">
-            <End Role="CustomEffects" EntitySet="CustomEffects" />
-            <End Role="PCCustomEffects" EntitySet="PCCustomEffects" />
           </AssociationSet>
           <AssociationSet Name="fk_Users_RoleID" Association="Self.fk_Users_RoleID">
             <End Role="DMRoleDomain" EntitySet="DMRoleDomains" />
@@ -6451,6 +6448,20 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <Parameter Name="PlayerID" Mode="In" Type="String" />
           </FunctionImport>
           <EntitySet Name="DatabaseVersions" EntityType="Entities.DatabaseVersion" />
+          <FunctionImport Name="ADM_Drop_Column">
+            <Parameter Name="TableName" Mode="In" Type="String" />
+            <Parameter Name="ColumnName" Mode="In" Type="String" />
+          </FunctionImport>
+          <EntitySet Name="CustomEffectCategories" EntityType="Entities.CustomEffectCategory" />
+          <EntitySet Name="CustomEffects" EntityType="Entities.CustomEffect" />
+          <AssociationSet Name="FK_CustomEffects_CustomEffectCategoryID" Association="Entities.FK_CustomEffects_CustomEffectCategoryID">
+            <End Role="CustomEffectCategory" EntitySet="CustomEffectCategories" />
+            <End Role="CustomEffect" EntitySet="CustomEffects" />
+          </AssociationSet>
+          <AssociationSet Name="fk_PCCustomEffects_CustomEffectID" Association="Entities.fk_PCCustomEffects_CustomEffectID">
+            <End Role="CustomEffect" EntitySet="CustomEffects" />
+            <End Role="PCCustomEffect" EntitySet="PCCustomEffects" />
+          </AssociationSet>
         </EntityContainer>
         <ComplexType Name="GetCategoriesAvailableToPC_Result">
           <Property Type="Int64" Name="CraftBlueprintCategoryID" Nullable="false" />
@@ -6575,6 +6586,53 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <Property Name="VersionDate" Type="DateTime" Nullable="false" Precision="7" />
           <Property Name="VersionNumber" Type="Int32" Nullable="false" />
         </EntityType>
+        <EntityType Name="CustomEffectCategory">
+          <Key>
+            <PropertyRef Name="CustomEffectCategoryID" />
+          </Key>
+          <Property Name="CustomEffectCategoryID" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="32" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="CustomEffects" Relationship="Entities.FK_CustomEffects_CustomEffectCategoryID" FromRole="CustomEffectCategory" ToRole="CustomEffect" />
+        </EntityType>
+        <EntityType Name="CustomEffect">
+          <Key>
+            <PropertyRef Name="CustomEffectID" />
+          </Key>
+          <Property Name="CustomEffectID" Type="Int64" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="32" FixedLength="false" Unicode="true" />
+          <Property Name="IconID" Type="Int32" Nullable="false" />
+          <Property Name="ScriptHandler" Type="String" Nullable="false" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Name="StartMessage" Type="String" Nullable="false" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Name="ContinueMessage" Type="String" Nullable="false" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Name="WornOffMessage" Type="String" Nullable="false" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Name="CustomEffectCategoryID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="CustomEffectCategory" Relationship="Entities.FK_CustomEffects_CustomEffectCategoryID" FromRole="CustomEffect" ToRole="CustomEffectCategory" />
+          <NavigationProperty Name="PCCustomEffects" Relationship="Entities.fk_PCCustomEffects_CustomEffectID" FromRole="CustomEffect" ToRole="PCCustomEffect" />
+        </EntityType>
+        <Association Name="FK_CustomEffects_CustomEffectCategoryID">
+          <End Type="Entities.CustomEffectCategory" Role="CustomEffectCategory" Multiplicity="1" />
+          <End Type="Entities.CustomEffect" Role="CustomEffect" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CustomEffectCategory">
+              <PropertyRef Name="CustomEffectCategoryID" />
+            </Principal>
+            <Dependent Role="CustomEffect">
+              <PropertyRef Name="CustomEffectCategoryID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_PCCustomEffects_CustomEffectID">
+          <End Type="Entities.CustomEffect" Role="CustomEffect" Multiplicity="1" />
+          <End Type="Entities.PCCustomEffect" Role="PCCustomEffect" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CustomEffect">
+              <PropertyRef Name="CustomEffectID" />
+            </Principal>
+            <Dependent Role="PCCustomEffect">
+              <PropertyRef Name="CustomEffectID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -6880,20 +6938,6 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
               <MappingFragment StoreEntitySet="CraftDevices">
                 <ScalarProperty Name="CraftDeviceID" ColumnName="CraftDeviceID" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="CustomEffects">
-            <EntityTypeMapping TypeName="Entities.CustomEffect">
-              <MappingFragment StoreEntitySet="CustomEffects">
-                <ScalarProperty Name="CustomEffectID" ColumnName="CustomEffectID" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="IconID" ColumnName="IconID" />
-                <ScalarProperty Name="ScriptHandler" ColumnName="ScriptHandler" />
-                <ScalarProperty Name="StartMessage" ColumnName="StartMessage" />
-                <ScalarProperty Name="ContinueMessage" ColumnName="ContinueMessage" />
-                <ScalarProperty Name="WornOffMessage" ColumnName="WornOffMessage" />
-                <ScalarProperty Name="IsStance" ColumnName="IsStance" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -7887,6 +7931,29 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
                 <ScalarProperty Name="DateApplied" ColumnName="DateApplied" />
                 <ScalarProperty Name="ScriptName" ColumnName="ScriptName" />
                 <ScalarProperty Name="DatabaseVersionID" ColumnName="DatabaseVersionID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="ADM_Drop_Column" FunctionName="Entities.Store.ADM_Drop_Column" />
+          <EntitySetMapping Name="CustomEffectCategories">
+            <EntityTypeMapping TypeName="Entities.CustomEffectCategory">
+              <MappingFragment StoreEntitySet="CustomEffectCategory">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="CustomEffectCategoryID" ColumnName="CustomEffectCategoryID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CustomEffects">
+            <EntityTypeMapping TypeName="Entities.CustomEffect">
+              <MappingFragment StoreEntitySet="CustomEffects">
+                <ScalarProperty Name="CustomEffectCategoryID" ColumnName="CustomEffectCategoryID" />
+                <ScalarProperty Name="WornOffMessage" ColumnName="WornOffMessage" />
+                <ScalarProperty Name="ContinueMessage" ColumnName="ContinueMessage" />
+                <ScalarProperty Name="StartMessage" ColumnName="StartMessage" />
+                <ScalarProperty Name="ScriptHandler" ColumnName="ScriptHandler" />
+                <ScalarProperty Name="IconID" ColumnName="IconID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="CustomEffectID" ColumnName="CustomEffectID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

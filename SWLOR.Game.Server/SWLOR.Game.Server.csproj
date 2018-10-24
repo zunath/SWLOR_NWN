@@ -187,6 +187,7 @@
     <Compile Include="CustomEffect\ElectricCellEffect.cs" />
     <Compile Include="CustomEffect\AcidCellEffect.cs" />
     <Compile Include="CustomEffect\DivineCellEffect.cs" />
+    <Compile Include="CustomEffect\FoodEffect.cs" />
     <Compile Include="CustomEffect\ForcePackEffect.cs" />
     <Compile Include="CustomEffect\ShieldOathEffect.cs" />
     <Compile Include="CustomEffect\SonicCellEffect.cs" />
@@ -281,6 +282,9 @@
       <DependentUpon>DataContext.tt</DependentUpon>
     </Compile>
     <Compile Include="Data\CustomEffect.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Data\CustomEffectCategory.cs">
       <DependentUpon>DataContext.tt</DependentUpon>
     </Compile>
     <Compile Include="Data\DatabaseMigrationRunner.cs" />
@@ -557,6 +561,7 @@
     <Compile Include="Enumeration\CraftingAccessType.cs" />
     <Compile Include="Enumeration\CustomAttribute.cs" />
     <Compile Include="Enumeration\CustomBaseItemType.cs" />
+    <Compile Include="Enumeration\CustomEffectCategoryType.cs" />
     <Compile Include="Enumeration\CustomEffectType.cs" />
     <Compile Include="Enumeration\CustomFeatType.cs" />
     <Compile Include="Enumeration\CustomItemPropertyType.cs" />
@@ -621,6 +626,7 @@
     <Compile Include="Extension\BehaviourTreeBuilderExtensions.cs" />
     <Compile Include="GameObject\NWLocation.cs" />
     <Compile Include="Item\Enemy\BleedBite.cs" />
+    <Compile Include="Item\Food.cs" />
     <Compile Include="Item\Medicine\ForcePack.cs" />
     <Compile Include="Item\Medicine\ResuscitationKit.cs" />
     <Compile Include="Item\Medicine\StimPack.cs" />
@@ -1629,6 +1635,8 @@
     <EmbeddedResource Include="Data\Migrations\2018-10-22.4.sql" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-10-23.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2018-10-24.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2018-10-24.2.sql" />
     <Content Include="Data\Migrations\Readme.txt" />
     <Content Include="ServerFiles\Database\scripts\AddWeaponCraftBlueprints.sql" />
     <Content Include="ServerFiles\Database\scripts\AddPerkLevels.sql" />

@@ -12,25 +12,18 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class PCCustomEffect
+    public partial class CustomEffectCategory
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public PCCustomEffect()
+        public CustomEffectCategory()
         {
-            this.Data = "";
-            this.CasterNWNObjectID = "";
+            this.CustomEffects = new HashSet<CustomEffect>();
         }
     
-        public long PCCustomEffectID { get; set; }
-        public string PlayerID { get; set; }
-        public long CustomEffectID { get; set; }
-        public int Ticks { get; set; }
-        public int EffectiveLevel { get; set; }
-        public string Data { get; set; }
-        public string CasterNWNObjectID { get; set; }
-        public Nullable<int> StancePerkID { get; set; }
+        public int CustomEffectCategoryID { get; set; }
+        public string Name { get; set; }
     
-        public virtual PlayerCharacter PlayerCharacter { get; set; }
-        public virtual CustomEffect CustomEffect { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<CustomEffect> CustomEffects { get; set; }
     }
 }

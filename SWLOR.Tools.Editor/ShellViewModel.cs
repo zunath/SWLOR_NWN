@@ -1,5 +1,4 @@
 using Caliburn.Micro;
-using System.Windows;
 using SWLOR.Tools.Editor.Messages;
 using SWLOR.Tools.Editor.ViewModels.Contracts;
 

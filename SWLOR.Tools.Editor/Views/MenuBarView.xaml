@@ -6,13 +6,16 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-            <Menu>
+        <Menu>
             <MenuItem Header="File">
-                <MenuItem Header="Import"></MenuItem>
-                <MenuItem Header="Export"></MenuItem>
+                <MenuItem Header="Import" x:Name="Import"></MenuItem>
+                <MenuItem Header="Export" x:Name="Export"></MenuItem>
                 <Separator></Separator>
                 <MenuItem Header="Exit" x:Name="Exit"></MenuItem>
             </MenuItem>
-            </Menu>
+            <MenuItem Header="Data">
+                <MenuItem Header="Sync" x:Name="Sync"></MenuItem>
+            </MenuItem>
+        </Menu>
     </Grid>
 </UserControl>

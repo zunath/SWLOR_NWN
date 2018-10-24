@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Data.Contracts;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using SWLOR.Tools.Editor.Messages;
@@ -13,6 +14,11 @@ using SWLOR.Tools.Editor.Startup.Contracts;
 using SWLOR.Tools.Editor.ViewModels;
 using SWLOR.Tools.Editor.ViewModels.Contracts;
 using IContainer = Autofac.IContainer;
+using System.Windows.Controls;
+using SWLOR.Tools.Editor.Factories;
+using SWLOR.Tools.Editor.Factories.Contracts;
+using SWLOR.Tools.Editor.Helpers;
+using Newtonsoft.Json;
 
 namespace SWLOR.Tools.Editor
 {
@@ -23,6 +29,11 @@ namespace SWLOR.Tools.Editor
         public AppBootstrapper()
         {
             Initialize();
+            
+            ConventionManager.AddElementConvention<PasswordBox>(
+                PasswordBoxHelper.BoundPasswordProperty,
+                "Password",
+                "PasswordChanged");
         }
 
         protected override void Configure()
@@ -100,12 +111,16 @@ namespace SWLOR.Tools.Editor
         protected override void OnExit(object sender, EventArgs args)
         {
             _container.Resolve<IEventAggregator>().PublishOnUIThread(new ApplicationEndedMessage());
+
+            var settings = _container.Resolve<AppSettings>();
+            string json = JsonConvert.SerializeObject(settings);
+            File.WriteAllText("./Settings.json", json);
         }
 
         protected virtual void ConfigureContainer(ContainerBuilder builder)
         {
-            // SWLOR.Game.Server types
-            builder.RegisterType<DataContext>().As<IDataContext>().InstancePerDependency();
+            // Singletons
+            builder.RegisterType<AppSettings>().SingleInstance();
 
             // Startables
             builder.RegisterType<CreateDataDirectories>().As<IStartable>().SingleInstance();
@@ -114,13 +129,19 @@ namespace SWLOR.Tools.Editor
             // Other Startup Events
             builder.RegisterType<PostBootstrap>().As<IPostBootstrap>().SingleInstance();
 
+            // Factories
+            builder.RegisterType<DataContextFactory>().As<IDataContextFactory>().SingleInstance();
+
             // View Models
-            builder.RegisterType<ShellViewModel>().As<IShellViewModel>();
+            builder.RegisterType<DatabaseConnectionViewModel>().As<IDatabaseConnectionViewModel>();
+            builder.RegisterType<DataSyncViewModel>().As<IDataSyncViewModel>();
             builder.RegisterType<EditorListViewModel>().As<IEditorListViewModel>();
+            builder.RegisterType<LootEditorViewModel>().As<ILootEditorViewModel>();
             builder.RegisterType<MenuBarViewModel>().As<IMenuBarViewModel>();
             builder.RegisterType(typeof(ObjectListViewModel<LootTable>)).As<IObjectListViewModel<LootTable>>();
-            builder.RegisterType<LootEditorViewModel>().As<ILootEditorViewModel>();
 
+            // Shell
+            builder.RegisterType<ShellViewModel>().As<IShellViewModel>();
         }
     }
 }

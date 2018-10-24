@@ -12,25 +12,18 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class CustomEffect
+    public partial class CustomEffectCategory
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public CustomEffect()
+        public CustomEffectCategory()
         {
-            this.PCCustomEffects = new HashSet<PCCustomEffect>();
+            this.CustomEffects = new HashSet<CustomEffect>();
         }
     
-        public long CustomEffectID { get; set; }
-        public string Name { get; set; }
-        public int IconID { get; set; }
-        public string ScriptHandler { get; set; }
-        public string StartMessage { get; set; }
-        public string ContinueMessage { get; set; }
-        public string WornOffMessage { get; set; }
         public int CustomEffectCategoryID { get; set; }
+        public string Name { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PCCustomEffect> PCCustomEffects { get; set; }
-        public virtual CustomEffectCategory CustomEffectType { get; set; }
+        public virtual ICollection<CustomEffect> CustomEffects { get; set; }
     }
 }

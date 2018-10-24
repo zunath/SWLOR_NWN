@@ -5,6 +5,7 @@ using NWN;
 using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Processor.Contracts;
@@ -48,7 +49,8 @@ namespace SWLOR.Game.Server.Processor
         {
             foreach (var player in NWModule.Get().Players)
             {
-                List<PCCustomEffect> effects = _db.PCCustomEffects.Where(x => x.PlayerID == player.GlobalID && !x.CustomEffect.IsStance).ToList();
+                List<PCCustomEffect> effects = _db.PCCustomEffects.Where(x => x.PlayerID == player.GlobalID && 
+                                                                              x.CustomEffect.CustomEffectCategoryID != (int)CustomEffectCategoryType.Stance).ToList();
 
                 foreach (var effect in effects)
                 {

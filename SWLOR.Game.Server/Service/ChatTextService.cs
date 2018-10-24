@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Service
             _nwnxChat.SkipMessage();
 
             // If this is a shout message, and the holonet is disabled, we disallow it.
-            if (channel == ChatChannelType.PlayerShout && sender.IsPlayer && sender.GetLocalInt("DISPLAY_HOLONET") == FALSE)
+            if (channel == ChatChannelType.PlayerShout && sender.IsPC && sender.GetLocalInt("DISPLAY_HOLONET") == FALSE)
             {
                 NWPlayer player = sender.Object;
                 player.SendMessage("You have disabled the holonet and cannot send this message.");
@@ -200,7 +200,7 @@ namespace SWLOR.Game.Server.Service
 
             if (needsAreaCheck)
             {
-                recipients.AddRange(sender.Area.Objects.Where(obj => obj.IsPlayer && _.GetDistanceBetween(sender, obj) <= distanceCheck));
+                recipients.AddRange(sender.Area.Objects.Where(obj => obj.IsPC && _.GetDistanceBetween(sender, obj) <= distanceCheck));
                 recipients.AddRange(App.GetAppState().ConnectedDMs.Where(dm => dm.Area == sender.Area && _.GetDistanceBetween(sender, dm) <= distanceCheck));
             }
 
@@ -271,14 +271,11 @@ namespace SWLOR.Game.Server.Service
 
                     if (component.m_Translatable && language != SkillType.Basic)
                     {
-                        if (obj.IsPlayer)
-                        {
-                            text = _language.TranslateSnippetForListener(sender, obj.Object, language, component.m_Text);
+                        text = _language.TranslateSnippetForListener(sender, obj.Object, language, component.m_Text);
 
-                            if (colour != 0)
-                            {
-                                text = _color.Custom(text, r, g, b);
-                            }
+                        if (colour != 0)
+                        {
+                            text = _color.Custom(text, r, g, b);
                         }
                     }
 

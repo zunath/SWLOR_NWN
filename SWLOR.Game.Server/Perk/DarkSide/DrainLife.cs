@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Perk.DarkSide
                 _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_BEAM_MIND), target, 1.0f);
             });
             
-            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.DarkSideAbilities);
+            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.DarkSideAbilities, target.Object);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

@@ -150,7 +150,7 @@ namespace SWLOR.Game.Server.Perk.DarkSide
                 _customEffect.ApplyCustomEffect(player, target.Object, CustomEffectType.ForceShock, length, level, dotAmount.ToString());
             }
 
-            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.DarkSideAbilities);
+            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.DarkSideAbilities, target.Object);
 
             Effect vfx = _.EffectVisualEffect(VFX_IMP_LIGHTNING_S);
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, target);

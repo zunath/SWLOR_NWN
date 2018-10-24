@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Perk.LightSide
 
             }
 
-            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.LightSideAbilities);
+            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.LightSideAbilities, target.Object);
         }
 
 

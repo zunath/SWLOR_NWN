@@ -44,20 +44,20 @@ namespace SWLOR.Game.Server.Service
             {
                 switch (bonusType)
                 {
-                    case ComponentBonusType.ModSocketRed: 
-                        sourceTag = "rslot_red"; 
+                    case ComponentBonusType.ModSocketRed:
+                        sourceTag = "rslot_red";
                         break;
-                    case ComponentBonusType.ModSocketBlue: 
-                        sourceTag = "rslot_blue"; 
+                    case ComponentBonusType.ModSocketBlue:
+                        sourceTag = "rslot_blue";
                         break;
-                    case ComponentBonusType.ModSocketGreen: 
-                        sourceTag = "rslot_green"; 
+                    case ComponentBonusType.ModSocketGreen:
+                        sourceTag = "rslot_green";
                         break;
-                    case ComponentBonusType.ModSocketYellow: 
-                        sourceTag = "rslot_yellow"; 
+                    case ComponentBonusType.ModSocketYellow:
+                        sourceTag = "rslot_yellow";
                         break;
-                    case ComponentBonusType.ModSocketPrismatic: 
-                        sourceTag = "rslot_prismatic"; 
+                    case ComponentBonusType.ModSocketPrismatic:
+                        sourceTag = "rslot_prismatic";
                         break;
                     case ComponentBonusType.DurabilityUp:
                         var maxDur = _durability.GetMaxDurability(product) + amount;
@@ -168,6 +168,9 @@ namespace SWLOR.Game.Server.Service
                         break;
                     case ComponentBonusType.DurationUp:
                         product.DurationBonus += amount;
+                        break;
+                    case ComponentBonusType.ScanningUp:
+                        product.ScanningBonus += amount;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

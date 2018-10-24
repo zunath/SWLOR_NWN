@@ -51,7 +51,6 @@ namespace SWLOR.Game.Server.Data
         public virtual DbSet<CraftBlueprintCategory> CraftBlueprintCategories { get; set; }
         public virtual DbSet<CraftBlueprint> CraftBlueprints { get; set; }
         public virtual DbSet<CraftDevice> CraftDevices { get; set; }
-        public virtual DbSet<CustomEffect> CustomEffects { get; set; }
         public virtual DbSet<DiscordChatQueue> DiscordChatQueues { get; set; }
         public virtual DbSet<DMRoleDomain> DMRoleDomains { get; set; }
         public virtual DbSet<Download> Downloads { get; set; }
@@ -119,6 +118,8 @@ namespace SWLOR.Game.Server.Data
         public virtual DbSet<Spawn> Spawns { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<DatabaseVersion> DatabaseVersions { get; set; }
+        public virtual DbSet<CustomEffectCategory> CustomEffectCategories { get; set; }
+        public virtual DbSet<CustomEffect> CustomEffects { get; set; }
     
         [DbFunction("DataContext", "fn_GetPlayerEffectivePerkLevel")]
         public virtual IQueryable<fn_GetPlayerEffectivePerkLevel_Result> fn_GetPlayerEffectivePerkLevel(string playerID, Nullable<int> perkID, Nullable<int> skillLevel)
@@ -285,6 +286,19 @@ namespace SWLOR.Game.Server.Data
                 new ObjectParameter("PlayerID", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("InsertAllPCSkillsByID", playerIDParameter);
+        }
+    
+        public virtual int ADM_Drop_Column(string tableName, string columnName)
+        {
+            var tableNameParameter = tableName != null ?
+                new ObjectParameter("TableName", tableName) :
+                new ObjectParameter("TableName", typeof(string));
+    
+            var columnNameParameter = columnName != null ?
+                new ObjectParameter("ColumnName", columnName) :
+                new ObjectParameter("ColumnName", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ADM_Drop_Column", tableNameParameter, columnNameParameter);
         }
     }
 }

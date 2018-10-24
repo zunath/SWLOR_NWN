@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Runtime.InteropServices;
+﻿using System.Linq;
 using NWN;
 using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.Data.Contracts;
@@ -79,7 +77,8 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
 
-            var stance = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CustomEffect.IsStance);
+            var stance = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && 
+                                                                  x.CustomEffect.CustomEffectCategoryID == (int)CustomEffectCategoryType.Stance);
             if (stance?.StancePerkID == null) return;
 
             App.ResolveByInterface<ICustomEffect>("CustomEffect." + stance.CustomEffect.ScriptHandler, handler =>
@@ -109,41 +108,51 @@ namespace SWLOR.Game.Server.Service
 
         private void ApplyPCEffect(NWCreature caster, NWCreature target, int customEffectID, int ticks, int effectiveLevel, string data)
         {
-            Data.CustomEffect effectEntity = _db.CustomEffects.Single(x => x.CustomEffectID == customEffectID);
-            PCCustomEffect entity = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == target.GlobalID && x.CustomEffectID == customEffectID);
+            Data.CustomEffect customEffect = _db.CustomEffects.Single(x => x.CustomEffectID == customEffectID);
+            PCCustomEffect pcEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == target.GlobalID && x.CustomEffectID == customEffectID);
+            CustomEffectCategoryType category = (CustomEffectCategoryType) customEffect.CustomEffectCategoryID;
 
-            if (entity == null)
+            if(category == CustomEffectCategoryType.FoodEffect)
             {
-                entity = new PCCustomEffect { PlayerID = target.GlobalID };
-                _db.PCCustomEffects.Add(entity);
+                if (pcEffect != null && pcEffect.CustomEffect.CustomEffectCategoryID == (int) category)
+                {
+                    caster.SendMessage("You are not hungry.");
+                    return;
+                }
+            }
+            
+            if (pcEffect == null)
+            {
+                pcEffect = new PCCustomEffect { PlayerID = target.GlobalID };
+                _db.PCCustomEffects.Add(pcEffect);
             }
 
-            if (entity.EffectiveLevel > effectiveLevel)
+            if (pcEffect.EffectiveLevel > effectiveLevel)
             {
                 caster.SendMessage("A more powerful effect already exists on your target.");
                 return;
             }
 
-            entity.CustomEffectID = customEffectID;
-            entity.EffectiveLevel = effectiveLevel;
-            entity.Ticks = ticks;
-            entity.CasterNWNObjectID = _.ObjectToString(caster);
+            pcEffect.CustomEffectID = customEffectID;
+            pcEffect.EffectiveLevel = effectiveLevel;
+            pcEffect.Ticks = ticks;
+            pcEffect.CasterNWNObjectID = _.ObjectToString(caster);
             _db.SaveChanges();
 
-            target.SendMessage(effectEntity.StartMessage);
+            target.SendMessage(customEffect.StartMessage);
             
-            App.ResolveByInterface<ICustomEffect>("CustomEffect." + effectEntity.ScriptHandler, handler =>
+            App.ResolveByInterface<ICustomEffect>("CustomEffect." + customEffect.ScriptHandler, handler =>
             {
                 if (string.IsNullOrWhiteSpace(data))
                     data = handler?.Apply(caster, target, effectiveLevel);
 
                 if (string.IsNullOrWhiteSpace(data)) data = string.Empty;
-                entity.Data = data;
+                pcEffect.Data = data;
                 _db.SaveChanges();
 
                 // Was already queued for removal, but got cast again. Take it out of the list to be removed.
-                if (_state.PCEffectsForRemoval.Contains(entity.PCCustomEffectID))
-                    _state.PCEffectsForRemoval.Remove(entity.PCCustomEffectID);
+                if (_state.PCEffectsForRemoval.Contains(pcEffect.PCCustomEffectID))
+                    _state.PCEffectsForRemoval.Remove(pcEffect.PCCustomEffectID);
             });
         }
         
@@ -189,7 +198,8 @@ namespace SWLOR.Game.Server.Service
 
         public CustomEffectType GetCurrentStanceType(NWPlayer player)
         {
-            var stanceEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CustomEffect.IsStance);
+            var stanceEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && 
+                                                                        x.CustomEffect.CustomEffectCategoryID == (int)CustomEffectCategoryType.Stance);
             if (stanceEffect == null) return CustomEffectType.None;
 
             return (CustomEffectType) stanceEffect.CustomEffectID;
@@ -198,7 +208,8 @@ namespace SWLOR.Game.Server.Service
         public bool RemoveStance(NWPlayer player, PCCustomEffect stanceEffect = null, bool sendMessage = true)
         {
             if (stanceEffect == null)
-                stanceEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CustomEffect.IsStance);
+                stanceEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && 
+                                                                        x.CustomEffect.CustomEffectCategoryID == (int)CustomEffectCategoryType.Stance);
             if (stanceEffect == null) return false;
             
             if(sendMessage)
@@ -223,7 +234,8 @@ namespace SWLOR.Game.Server.Service
         public void ApplyStance(NWPlayer player, CustomEffectType customEffect, PerkType perkType, int effectiveLevel, string data)
         {
             var dbEffect = _db.CustomEffects.Single(x => x.CustomEffectID == (int) customEffect);
-            var pcStanceEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CustomEffect.IsStance);
+            var pcStanceEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && 
+                                                                          x.CustomEffect.CustomEffectCategoryID == (int)CustomEffectCategoryType.Stance);
             int customEffectID = (int) customEffect;
             
             // Player selected to cancel their stance. Cancel it and end.
@@ -287,6 +299,13 @@ namespace SWLOR.Game.Server.Service
         public bool DoesPCHaveCustomEffect(NWPlayer oPC, CustomEffectType customEffectType)
         {
             return DoesPCHaveCustomEffect(oPC, (int) customEffectType);
+        }
+
+        public bool DoesPCHaveCustomEffectByCategory(NWPlayer player, CustomEffectCategoryType category)
+        {
+            var pcEffect = _db.PCCustomEffects.FirstOrDefault(x => x.CustomEffect.CustomEffectCategoryID == (int) category);
+
+            return pcEffect != null;
         }
 
         public void RemovePCCustomEffect(NWPlayer oPC, long customEffectID)

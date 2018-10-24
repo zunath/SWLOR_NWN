@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Service
         public int SkillCap => 500;
 
 
-        public void RegisterPCToAllCombatTargetsForSkill(NWPlayer player, SkillType skillType)
+        public void RegisterPCToAllCombatTargetsForSkill(NWPlayer player, SkillType skillType, NWCreature target)
         {
             int skillID = (int)skillType;
             if (!player.IsPlayer) return;
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Service
                 EnmityTable enmityTable = _enmity.GetEnmityTable(creature);
                 foreach (var member in members)
                 {
-                    if (enmityTable.ContainsKey(member.GlobalID))
+                    if (enmityTable.ContainsKey(member.GlobalID) || (target != null && target.IsValid && target == creature))
                     {
                         RegisterPCToNPCForSkill(player, creature, skillID);
                         break;
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Service
                 creature = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, 1, player.Object, nth, CREATURE_TYPE_PLAYER_CHAR, 0);
             }
         }
-
+        
         public void GiveSkillXP(NWPlayer oPC, SkillType skill, int xp)
         {
             GiveSkillXP(oPC, (int)skill, xp);
@@ -608,7 +608,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public void RegisterPCToNPCForSkill(NWPlayer pc, NWCreature npc, int skillID)
+        private void RegisterPCToNPCForSkill(NWPlayer pc, NWCreature npc, int skillID)
         {
             if (!pc.IsPlayer || !pc.IsValid) return;
             if (npc.IsPlayer || npc.IsDM || !npc.IsValid) return;
@@ -620,46 +620,7 @@ namespace SWLOR.Game.Server.Service
             CreatureSkillRegistration reg = GetCreatureSkillRegistration(npc.GlobalID);
             reg.AddSkillRegistrationPoint(pc, skillID, pcSkill.Rank, pcSkill.Rank);
         }
-
-        public void RegisterPCToNPCForSkill(NWPlayer pc, NWCreature npc, SkillType skillType)
-        {
-            RegisterPCToNPCForSkill(pc, npc, (int)skillType);
-        }
-
-        public void RegisterPCToAllCombatTargetsForSkill(NWPlayer pc, int skillID)
-        {
-            if (!pc.IsPlayer || skillID <= 0) return;
-
-            List<NWCreature> members = new List<NWCreature>();
-
-            Object member = _.GetFirstFactionMember(pc.Object);
-            while (_.GetIsObjectValid(member) == TRUE)
-            {
-                members.Add((member));
-                member = _.GetNextFactionMember(pc.Object);
-            }
-
-            int nth = 1;
-            NWCreature creature = (_.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, 1, pc.Object, nth, CREATURE_TYPE_PLAYER_CHAR, 0));
-            while (creature.IsValid)
-            {
-                if (_.GetDistanceBetween(pc.Object, creature.Object) > 20.0f) break;
-
-                NWCreature target = (_.GetAttackTarget(creature.Object));
-                if (target.IsValid && members.Contains(target))
-                {
-                    if (target.IsValid && target.Area.Equals(pc.Area))
-                    {
-                        RegisterPCToNPCForSkill(pc, creature, skillID);
-                    }
-                }
-
-                nth++;
-                creature = (_.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, 1, pc.Object, nth, CREATURE_TYPE_PLAYER_CHAR, 0));
-            }
-        }
-
-
+        
         private void ApplyWeaponPenalties(NWPlayer oPC, NWItem oItem)
         {
             SkillType skillType = _item.GetSkillTypeForItem(oItem);

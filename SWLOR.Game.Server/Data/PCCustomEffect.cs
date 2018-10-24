@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Data
         public string CasterNWNObjectID { get; set; }
         public Nullable<int> StancePerkID { get; set; }
     
-        public virtual CustomEffect CustomEffect { get; set; }
         public virtual PlayerCharacter PlayerCharacter { get; set; }
+        public virtual CustomEffect CustomEffect { get; set; }
     }
 }

@@ -187,6 +187,7 @@
     <Compile Include="CustomEffect\ElectricCellEffect.cs" />
     <Compile Include="CustomEffect\AcidCellEffect.cs" />
     <Compile Include="CustomEffect\DivineCellEffect.cs" />
+    <Compile Include="CustomEffect\FoodEffect.cs" />
     <Compile Include="CustomEffect\ForcePackEffect.cs" />
     <Compile Include="CustomEffect\ShieldOathEffect.cs" />
     <Compile Include="CustomEffect\SonicCellEffect.cs" />

@@ -79,7 +79,8 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
 
-            var stance = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CustomEffect.IsStance);
+            var stance = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && 
+                                                                  x.CustomEffect.CustomEffectCategoryID == (int)CustomEffectCategoryType.Stance);
             if (stance?.StancePerkID == null) return;
 
             App.ResolveByInterface<ICustomEffect>("CustomEffect." + stance.CustomEffect.ScriptHandler, handler =>
@@ -189,7 +190,8 @@ namespace SWLOR.Game.Server.Service
 
         public CustomEffectType GetCurrentStanceType(NWPlayer player)
         {
-            var stanceEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CustomEffect.IsStance);
+            var stanceEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && 
+                                                                        x.CustomEffect.CustomEffectCategoryID == (int)CustomEffectCategoryType.Stance);
             if (stanceEffect == null) return CustomEffectType.None;
 
             return (CustomEffectType) stanceEffect.CustomEffectID;
@@ -198,7 +200,8 @@ namespace SWLOR.Game.Server.Service
         public bool RemoveStance(NWPlayer player, PCCustomEffect stanceEffect = null, bool sendMessage = true)
         {
             if (stanceEffect == null)
-                stanceEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CustomEffect.IsStance);
+                stanceEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && 
+                                                                        x.CustomEffect.CustomEffectCategoryID == (int)CustomEffectCategoryType.Stance);
             if (stanceEffect == null) return false;
             
             if(sendMessage)
@@ -223,7 +226,8 @@ namespace SWLOR.Game.Server.Service
         public void ApplyStance(NWPlayer player, CustomEffectType customEffect, PerkType perkType, int effectiveLevel, string data)
         {
             var dbEffect = _db.CustomEffects.Single(x => x.CustomEffectID == (int) customEffect);
-            var pcStanceEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CustomEffect.IsStance);
+            var pcStanceEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && 
+                                                                          x.CustomEffect.CustomEffectCategoryID == (int)CustomEffectCategoryType.Stance);
             int customEffectID = (int) customEffect;
             
             // Player selected to cancel their stance. Cancel it and end.

@@ -90,7 +90,8 @@ namespace SWLOR.Game.Server.Service
                 // If player is disabling an existing stance, remove that effect.
                 if (perk.ExecutionTypeID == (int) PerkExecutionType.Stance)
                 {
-                    PCCustomEffect stanceEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == pc.GlobalID && x.CustomEffect.IsStance);
+                    PCCustomEffect stanceEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == pc.GlobalID && 
+                                                                                           x.CustomEffect.CustomEffectCategoryID == (int)CustomEffectCategoryType.Stance);
 
                     if (stanceEffect != null && perk.PerkID == stanceEffect.StancePerkID)
                     {

@@ -10,15 +10,9 @@ namespace SWLOR.Tools.Editor.ViewModels
         IErrorViewModel,
         IHandle<DatabaseConnectionFailedMessage>
     {
-        private readonly IEventAggregator _eventAggregator;
-
         public ErrorViewModel(IEventAggregator eventAggregator)
         {
-            _eventAggregator = eventAggregator;
-
-            ErrorDetails = "my error now";
-
-            _eventAggregator.Subscribe(this);
+            eventAggregator.Subscribe(this);
         }
 
         private string _errorDetails;

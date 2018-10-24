@@ -13,7 +13,13 @@
             cal:View.Model="{Binding DatabaseConnectionVM}" 
             Visibility="{Binding DBConnectionViewVisibility}"
             IsEnabled="{Binding ControlsEnabled}">
-
         </local:DatabaseConnectionView>
+
+        <Button Visibility="{Binding SyncVisibility}"
+                IsEnabled="{Binding SyncEnabled}"
+                Content="Sync"
+                x:Name="Sync">
+
+        </Button>
     </Grid>
 </mah:MetroWindow>

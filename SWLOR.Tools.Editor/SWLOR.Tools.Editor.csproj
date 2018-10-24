@@ -112,8 +112,6 @@
     </ApplicationDefinition>
     <Compile Include="AppBootstrapper.cs" />
     <Compile Include="AppSettings.cs" />
-    <Compile Include="Factories\Contracts\IDataContextFactory.cs" />
-    <Compile Include="Factories\DataContextFactory.cs" />
     <Compile Include="Helpers\PasswordBoxHelper.cs" />
     <Compile Include="Messages\ApplicationEndedMessage.cs" />
     <Compile Include="Messages\ApplicationStartedMessage.cs" />
@@ -130,7 +128,6 @@
     <Compile Include="Startup\CreateDataDirectories.cs" />
     <Compile Include="Startup\InitializeJsonSerializer.cs" />
     <Compile Include="Startup\PostBootstrap.cs" />
-    <Compile Include="ValueObjects\ObjectListItem.cs" />
     <Compile Include="ViewModels\Contracts\IDatabaseConnectionViewModel.cs" />
     <Compile Include="ViewModels\Contracts\IDataSyncViewModel.cs" />
     <Compile Include="ViewModels\Contracts\IErrorViewModel.cs" />

@@ -1,24 +1,22 @@
 using Autofac;
 using Caliburn.Micro;
+using Newtonsoft.Json;
 using SWLOR.Game.Server.Data;
-using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Tools.Editor.Helpers;
+using SWLOR.Tools.Editor.Messages;
+using SWLOR.Tools.Editor.Startup;
+using SWLOR.Tools.Editor.Startup.Contracts;
+using SWLOR.Tools.Editor.ViewModels;
+using SWLOR.Tools.Editor.ViewModels.Contracts;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using SWLOR.Tools.Editor.Messages;
-using SWLOR.Tools.Editor.Startup;
-using SWLOR.Tools.Editor.Startup.Contracts;
-using SWLOR.Tools.Editor.ViewModels;
-using SWLOR.Tools.Editor.ViewModels.Contracts;
-using IContainer = Autofac.IContainer;
 using System.Windows.Controls;
-using SWLOR.Tools.Editor.Factories;
-using SWLOR.Tools.Editor.Factories.Contracts;
-using SWLOR.Tools.Editor.Helpers;
-using Newtonsoft.Json;
+using SWLOR.Game.Server.Data.Contracts;
+using IContainer = Autofac.IContainer;
 
 namespace SWLOR.Tools.Editor
 {
@@ -29,7 +27,7 @@ namespace SWLOR.Tools.Editor
         public AppBootstrapper()
         {
             Initialize();
-            
+
             ConventionManager.AddElementConvention<PasswordBox>(
                 PasswordBoxHelper.BoundPasswordProperty,
                 "Password",
@@ -99,12 +97,12 @@ namespace SWLOR.Tools.Editor
         {
             _container.InjectProperties(instance);
         }
-        
+
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
             DisplayRootViewFor<IShellViewModel>();
 
-            _container.Resolve<IPostBootstrap>().RunStartUp(); 
+            _container.Resolve<IPostBootstrap>().RunStartUp();
             _container.Resolve<IEventAggregator>().PublishOnUIThread(new ApplicationStartedMessage());
         }
 
@@ -119,19 +117,19 @@ namespace SWLOR.Tools.Editor
 
         protected virtual void ConfigureContainer(ContainerBuilder builder)
         {
+            // SWLOR.Game.Server Registrations
+            builder.RegisterType<DataContext>().As<IDataContext>().InstancePerDependency();
+            
             // Singletons
             builder.RegisterType<AppSettings>().SingleInstance();
 
             // Startables
             builder.RegisterType<CreateDataDirectories>().As<IStartable>().SingleInstance();
             builder.RegisterType<InitializeJsonSerializer>().As<IStartable>().SingleInstance();
-            
+
             // Other Startup Events
             builder.RegisterType<PostBootstrap>().As<IPostBootstrap>().SingleInstance();
-
-            // Factories
-            builder.RegisterType<DataContextFactory>().As<IDataContextFactory>().SingleInstance();
-
+            
             // View Models
             builder.RegisterType<DatabaseConnectionViewModel>().As<IDatabaseConnectionViewModel>();
             builder.RegisterType<DataSyncViewModel>().As<IDataSyncViewModel>();

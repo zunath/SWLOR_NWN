@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Service
             map.TryGetValue(language, out type);
             ITranslator translator = Activator.CreateInstance(type) as ITranslator;
 
-            if (speaker.IsPlayer && !speaker.IsDM)
+            if (speaker.IsPC && !speaker.IsDM)
             {
                 // Get the rank and max rank for the speaker, and garble their English text based on it.
                 NWPlayer speakerAsPlayer = speaker.Object;
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            if (!listener.IsPlayer || listener.IsDM)
+            if (!listener.IsPC || listener.IsDM)
             {
                 // Short circuit for a DM or NPC - they will always understand the text.
                 return snippet;

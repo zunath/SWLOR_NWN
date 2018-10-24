@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Data
     /// It will look for the database supplied by the end user. If it doesn't exist, it will create it with the necessary DDL.
     /// It will then grab all migration scripts and run those sequentially until the database is at the current version.
     /// Scripts are located in Data/Migrations/ and all of the sql files should be marked as "Embedded Resource" so the app can pick them up.
+    /// WARNING: Your scripts cannot end with a GO call at the moment. Make sure the final command in a migration script is a DB operation.
     /// </summary>
     public class DatabaseMigrationRunner: IStartable
     {

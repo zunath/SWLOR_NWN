@@ -26,6 +26,7 @@
         PlasmaCell = 21,
         ShieldOath = 22,
         SwordOath = 23,
-        ForcePack = 24
+        ForcePack = 24,
+        FoodEffect = 25
     }
 }

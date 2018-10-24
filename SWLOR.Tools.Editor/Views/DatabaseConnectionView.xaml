@@ -46,7 +46,8 @@
 
         <PasswordBox Grid.Column="1"
                  Grid.Row="2"
-                 x:Name="Password">
+                 x:Name="Password"
+                     PasswordChanged="Password_OnPasswordChanged">
         </PasswordBox>
 
         <Label Grid.Column="0"

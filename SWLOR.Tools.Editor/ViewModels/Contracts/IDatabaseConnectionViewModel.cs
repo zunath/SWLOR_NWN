@@ -1,4 +1,6 @@
-﻿namespace SWLOR.Tools.Editor.ViewModels.Contracts
+﻿using System.Security;
+
+namespace SWLOR.Tools.Editor.ViewModels.Contracts
 {
     public interface IDatabaseConnectionViewModel
     {

@@ -7,7 +7,6 @@ using Newtonsoft.Json;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Tools.Editor.Messages;
-using SWLOR.Tools.Editor.ValueObjects;
 using SWLOR.Tools.Editor.ViewModels.Contracts;
 
 namespace SWLOR.Tools.Editor.ViewModels

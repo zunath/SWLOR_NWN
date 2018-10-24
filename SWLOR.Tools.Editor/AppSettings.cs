@@ -26,6 +26,7 @@ namespace SWLOR.Tools.Editor
             DatabaseIPAddress = string.Empty;
             DatabaseUsername = string.Empty;
             DatabaseName = string.Empty;
+            DatabasePassword = string.Empty;
         }
 
     }

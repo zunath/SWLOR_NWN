@@ -118,6 +118,7 @@
     <Compile Include="Messages\ApplicationEndedMessage.cs" />
     <Compile Include="Messages\ApplicationStartedMessage.cs" />
     <Compile Include="IShellViewModel.cs" />
+    <Compile Include="Messages\DatabaseConnectingMessage.cs" />
     <Compile Include="Messages\DatabaseConnectionFailedMessage.cs" />
     <Compile Include="Messages\DatabaseConnectionSucceededMessage.cs" />
     <Compile Include="Messages\DeleteEditorObjectMessage.cs" />
@@ -132,10 +133,12 @@
     <Compile Include="ValueObjects\ObjectListItem.cs" />
     <Compile Include="ViewModels\Contracts\IDatabaseConnectionViewModel.cs" />
     <Compile Include="ViewModels\Contracts\IDataSyncViewModel.cs" />
+    <Compile Include="ViewModels\Contracts\IErrorViewModel.cs" />
     <Compile Include="ViewModels\Contracts\ILootEditorViewModel.cs" />
     <Compile Include="ViewModels\Contracts\IObjectListViewModel.cs" />
     <Compile Include="ViewModels\DatabaseConnectionViewModel.cs" />
     <Compile Include="ViewModels\DataSyncViewModel.cs" />
+    <Compile Include="ViewModels\ErrorViewModel.cs" />
     <Compile Include="ViewModels\LootEditorViewModel.cs" />
     <Compile Include="ViewModels\ObjectListViewModel.cs" />
     <Compile Include="Views\DatabaseConnectionView.xaml.cs">
@@ -150,6 +153,9 @@
     <Compile Include="ViewModels\EditorListViewModel.cs" />
     <Compile Include="ViewModels\Contracts\IEditorListViewModel.cs" />
     <Compile Include="ViewModels\Contracts\IMenuBarViewModel.cs" />
+    <Compile Include="Views\ErrorView.xaml.cs">
+      <DependentUpon>ErrorView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\LootEditorView.xaml.cs">
       <DependentUpon>LootEditorView.xaml</DependentUpon>
     </Compile>
@@ -174,6 +180,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\EditorListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ErrorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

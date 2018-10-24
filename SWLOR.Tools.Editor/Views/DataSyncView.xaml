@@ -9,7 +9,10 @@
         mc:Ignorable="d"
         Title="Data Sync" Height="450" Width="800">
     <Grid>
-        <local:DatabaseConnectionView cal:View.Model="{Binding DatabaseConnectionVM}">
+        <local:DatabaseConnectionView 
+            cal:View.Model="{Binding DatabaseConnectionVM}" 
+            Visibility="{Binding DBConnectionViewVisibility}"
+            IsEnabled="{Binding ControlsEnabled}">
 
         </local:DatabaseConnectionView>
     </Grid>

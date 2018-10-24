@@ -1,6 +1,6 @@
 ﻿namespace SWLOR.Tools.Editor.Messages
 {
-    public class DatabaseConnectionSucceededMessage
+    public class DatabaseConnecting
     {
     }
 }

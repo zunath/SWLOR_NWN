@@ -3,11 +3,11 @@ using System.Runtime.Serialization;
 
 namespace SWLOR.Tools.Editor.Messages
 {
-    public class DatabaseConnectionFailedMessage
+    public class DatabaseConnectionFailed
     {
         public Exception Exception { get; set; }
 
-        public DatabaseConnectionFailedMessage(Exception ex)
+        public DatabaseConnectionFailed(Exception ex)
         {
             Exception = ex;
         }

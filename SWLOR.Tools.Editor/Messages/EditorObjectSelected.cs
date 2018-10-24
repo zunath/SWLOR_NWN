@@ -1,10 +1,10 @@
 ﻿namespace SWLOR.Tools.Editor.Messages
 {
-    public class EditorObjectSelectedMessage<T>
+    public class EditorObjectSelected<T>
     {
         public T SelectedObject{ get; set; }
 
-        public EditorObjectSelectedMessage(T selectedObject)
+        public EditorObjectSelected(T selectedObject)
         {
             SelectedObject = selectedObject;
         }

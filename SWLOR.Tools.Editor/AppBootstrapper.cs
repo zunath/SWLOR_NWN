@@ -103,12 +103,12 @@ namespace SWLOR.Tools.Editor
             DisplayRootViewFor<IShellViewModel>();
 
             _container.Resolve<IPostBootstrap>().RunStartUp();
-            _container.Resolve<IEventAggregator>().PublishOnUIThread(new ApplicationStartedMessage());
+            _container.Resolve<IEventAggregator>().PublishOnUIThread(new ApplicationStarted());
         }
 
         protected override void OnExit(object sender, EventArgs args)
         {
-            _container.Resolve<IEventAggregator>().PublishOnUIThread(new ApplicationEndedMessage());
+            _container.Resolve<IEventAggregator>().PublishOnUIThread(new ApplicationEnded());
 
             var settings = _container.Resolve<AppSettings>();
             string json = JsonConvert.SerializeObject(settings);

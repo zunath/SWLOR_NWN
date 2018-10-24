@@ -31,7 +31,7 @@ namespace SWLOR.Tools.Editor.Startup
 
             json = File.ReadAllText(fileName);
             settings = JsonConvert.DeserializeObject<AppSettings>(json);
-            _eventAggregator.PublishOnUIThread(new SettingsLoadedMessage(settings));
+            _eventAggregator.PublishOnUIThread(new SettingsLoaded(settings));
         }
     }
 }

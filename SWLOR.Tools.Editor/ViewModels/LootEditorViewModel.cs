@@ -8,7 +8,7 @@ namespace SWLOR.Tools.Editor.ViewModels
 {
     public class LootEditorViewModel: PropertyChangedBase, 
         ILootEditorViewModel, 
-        IHandle<EditorObjectSelectedMessage<LootTable>>
+        IHandle<EditorObjectSelected<LootTable>>
     {
         public LootEditorViewModel(IEventAggregator eventAggregator, IObjectListViewModel<LootTable> objListVM)
         {
@@ -122,7 +122,7 @@ namespace SWLOR.Tools.Editor.ViewModels
             }
         }
 
-        public void Handle(EditorObjectSelectedMessage<LootTable> message)
+        public void Handle(EditorObjectSelected<LootTable> message)
         {
             ActiveLootTable = message.SelectedObject;
             LootTableItems.Clear();

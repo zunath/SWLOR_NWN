@@ -29,27 +29,15 @@ namespace SWLOR.Tools.Editor.Startup
                 nameof(KeyItem),
                 nameof(KeyItemCategory),
                 nameof(LootTable),
-                nameof(LootTableItem),
                 nameof(Mod),
                 nameof(NPCGroup),
                 nameof(Perk),
                 nameof(PerkCategory),
-                nameof(PerkLevel),
-                nameof(PerkLevelQuestRequirement),
-                nameof(PerkLevelSkillRequirement),
                 nameof(Plant),
                 nameof(Quest),
-                nameof(QuestKillTargetList),
-                nameof(QuestPrerequisite),
-                nameof(QuestRequiredItemList),
-                nameof(QuestRequiredKeyItemList),
-                nameof(QuestRewardItem),
-                nameof(QuestState),
                 nameof(Skill),
                 nameof(SkillCategory),
-                nameof(SkillXPRequirement),
                 nameof(Spawn),
-                nameof(SpawnObject)
             };
 
             foreach (var folder in folderNames)

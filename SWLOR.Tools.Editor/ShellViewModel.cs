@@ -4,7 +4,7 @@ using SWLOR.Tools.Editor.ViewModels.Contracts;
 
 namespace SWLOR.Tools.Editor
 {
-    public class ShellViewModel: PropertyChangedBase, IShellViewModel, IHandle<SettingsLoadedMessage>
+    public class ShellViewModel: PropertyChangedBase, IShellViewModel, IHandle<SettingsLoaded>
     {
         private IEventAggregator _eventAggregator;
         private IMenuBarViewModel _menuBarVM;
@@ -66,7 +66,7 @@ namespace SWLOR.Tools.Editor
             }
         }
 
-        public void Handle(SettingsLoadedMessage message)
+        public void Handle(SettingsLoaded message)
         {
             Height = message.Settings.Height;
             Width = message.Settings.Width;

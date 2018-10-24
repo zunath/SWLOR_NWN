@@ -77,11 +77,11 @@ namespace SWLOR.Tools.Editor.Startup
                     case nameof(NPCGroup):
                         return Create("NPCGroupID", "Name");
                     case nameof(Perk):
-                        return Create("PerkID", "Name", "FeatID", "IsActive", "ScriptName", "BaseFPCost", "BaseCastingTime", "Description", "PerkCategoryID", "CooldownCategoryID", "ExecutionTypeID", "ItemResref", "IsTargetSelfOnly", "Enmity", "EnmityAdjustmentRuleID", "CastAnimationID");
+                        return Create("PerkID", "Name", "FeatID", "IsActive", "ScriptName", "BaseFPCost", "BaseCastingTime", "Description", "PerkCategoryID", "CooldownCategoryID", "ExecutionTypeID", "ItemResref", "IsTargetSelfOnly", "Enmity", "EnmityAdjustmentRuleID", "CastAnimationID", "PerkLevels");
                     case nameof(PerkCategory):
                         return Create("PerkCategoryID", "Name", "IsActive", "Sequence");
                     case nameof(PerkLevel):
-                        return Create("PerkLevelID", "PerkID", "Level", "Price", "Description");
+                        return Create("PerkLevelID", "PerkID", "Level", "Price", "Description", "PerkLevelQuestRequirements", "PerkLevelSkillRequirements");
                     case nameof(PerkLevelQuestRequirement):
                         return Create("PerkLevelQuestRequirementID", "PerkLevelID", "RequiredQuestID");
                     case nameof(PerkLevelSkillRequirement):
@@ -89,7 +89,7 @@ namespace SWLOR.Tools.Editor.Startup
                     case nameof(Plant):
                         return Create("PlantID", "Name", "BaseTicks", "Resref", "WaterTicks", "Level", "SeedResref");
                     case nameof(Quest):
-                        return Create("QuestID", "Name", "JournalTag", "FameRegionID", "RequiredFameAmount", "AllowRewardSelection", "RewardGold", "RewardKeyItemID", "RewardFame", "IsRepeatable", "MapNoteTag", "StartKeyItemID", "RemoveStartKeyItemAfterCompletion", "OnAcceptRule", "OnAdvanceRule", "OnCompleteRule", "OnKillTargetRule", "OnAcceptArgs", "OnAdvanceArgs", "OnCompleteArgs", "OnKillTargetArgs");
+                        return Create("QuestID", "Name", "JournalTag", "FameRegionID", "RequiredFameAmount", "AllowRewardSelection", "RewardGold", "RewardKeyItemID", "RewardFame", "IsRepeatable", "MapNoteTag", "StartKeyItemID", "RemoveStartKeyItemAfterCompletion", "OnAcceptRule", "OnAdvanceRule", "OnCompleteRule", "OnKillTargetRule", "OnAcceptArgs", "OnAdvanceArgs", "OnCompleteArgs", "OnKillTargetArgs", "QuestKillTargetLists", "QuestPrerequisites", "QuestRequiredItemLists", "QuestRequiredKeyItemLists", "QuestRewardItems", "QuestStates");
                     case nameof(QuestKillTargetList):
                         return Create("QuestKillTargetListID", "QuestID", "NPCGroupID", "Quantity", "QuestStateID");
                     case nameof(QuestPrerequisite):
@@ -103,7 +103,7 @@ namespace SWLOR.Tools.Editor.Startup
                     case nameof(QuestState):
                         return Create("QuestStateID", "QuestID", "Sequence", "QuestTypeID", "JournalStateID");
                     case nameof(Skill):
-                        return Create("SkillID", "SkillCategoryID", "Name", "MaxRank", "IsActive", "Description", "Primary", "Secondary", "Tertiary", "ContributesToSkillCap");
+                        return Create("SkillID", "SkillCategoryID", "Name", "MaxRank", "IsActive", "Description", "Primary", "Secondary", "Tertiary", "ContributesToSkillCap", "SkillXPRequirements");
                     case nameof(SkillCategory):
                         return Create("SkillCategoryID", "Name", "IsActive", "Sequence");
                     case nameof(SkillXPRequirement):

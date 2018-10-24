@@ -1,10 +1,10 @@
 ﻿namespace SWLOR.Tools.Editor.Messages
 {
-    public class SettingsLoadedMessage
+    public class SettingsLoaded
     {
         public AppSettings Settings { get; set; }
 
-        public SettingsLoadedMessage(AppSettings settings)
+        public SettingsLoaded(AppSettings settings)
         {
             Settings = settings;
         }

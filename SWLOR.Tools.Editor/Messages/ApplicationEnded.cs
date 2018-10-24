@@ -1,6 +1,6 @@
 ﻿namespace SWLOR.Tools.Editor.Messages
 {
-    public class DatabaseConnectingMessage
+    public class ApplicationEnded
     {
     }
 }

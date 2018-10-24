@@ -69,7 +69,6 @@ namespace SWLOR.Tools.Editor.ViewModels
 
                 if (value != null)
                 {
-                    MaxQuantity = value.MaxQuantity;
                     Weight = value.Weight;
                     Resref = value.Resref;
                     IsActive = value.IsActive;
@@ -77,18 +76,7 @@ namespace SWLOR.Tools.Editor.ViewModels
                 }
             }
         }
-
-        private int _maxQuantity;
-
-        public int MaxQuantity
-        {
-            get => _maxQuantity;
-            set
-            {
-                _maxQuantity = value;
-                NotifyOfPropertyChange(() => MaxQuantity);
-            }
-        }
+        
 
         private int _weight;
 
@@ -149,18 +137,6 @@ namespace SWLOR.Tools.Editor.ViewModels
             }
 
             NotifyOfPropertyChange(() => LootTableItems);
-
-
-            LootTableItems.Add(new LootTableItem
-            {
-                
-                IsActive = true,
-                MaxQuantity = 100,
-                Resref = "my_resref",
-                Weight = 10
-            });
-
-            
         }
     }
 }

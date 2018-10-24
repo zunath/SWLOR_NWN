@@ -112,9 +112,14 @@
     </ApplicationDefinition>
     <Compile Include="AppBootstrapper.cs" />
     <Compile Include="AppSettings.cs" />
+    <Compile Include="Factories\Contracts\IDataContextFactory.cs" />
+    <Compile Include="Factories\DataContextFactory.cs" />
+    <Compile Include="Helpers\PasswordBoxHelper.cs" />
     <Compile Include="Messages\ApplicationEndedMessage.cs" />
     <Compile Include="Messages\ApplicationStartedMessage.cs" />
     <Compile Include="IShellViewModel.cs" />
+    <Compile Include="Messages\DatabaseConnectionFailedMessage.cs" />
+    <Compile Include="Messages\DatabaseConnectionSucceededMessage.cs" />
     <Compile Include="Messages\DeleteEditorObjectMessage.cs" />
     <Compile Include="Messages\EditorObjectSelectedMessage.cs" />
     <Compile Include="Messages\NewEditorObjectMessage.cs" />
@@ -125,10 +130,20 @@
     <Compile Include="Startup\InitializeJsonSerializer.cs" />
     <Compile Include="Startup\PostBootstrap.cs" />
     <Compile Include="ValueObjects\ObjectListItem.cs" />
+    <Compile Include="ViewModels\Contracts\IDatabaseConnectionViewModel.cs" />
+    <Compile Include="ViewModels\Contracts\IDataSyncViewModel.cs" />
     <Compile Include="ViewModels\Contracts\ILootEditorViewModel.cs" />
     <Compile Include="ViewModels\Contracts\IObjectListViewModel.cs" />
+    <Compile Include="ViewModels\DatabaseConnectionViewModel.cs" />
+    <Compile Include="ViewModels\DataSyncViewModel.cs" />
     <Compile Include="ViewModels\LootEditorViewModel.cs" />
     <Compile Include="ViewModels\ObjectListViewModel.cs" />
+    <Compile Include="Views\DatabaseConnectionView.xaml.cs">
+      <DependentUpon>DatabaseConnectionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DataSyncView.xaml.cs">
+      <DependentUpon>DataSyncView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\EditorListView.xaml.cs">
       <DependentUpon>EditorListView.xaml</DependentUpon>
     </Compile>
@@ -150,6 +165,14 @@
     <Compile Include="Views\ObjectListView.xaml.cs">
       <DependentUpon>ObjectListView.xaml</DependentUpon>
     </Compile>
+    <Page Include="Views\DatabaseConnectionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\DataSyncView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\EditorListView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

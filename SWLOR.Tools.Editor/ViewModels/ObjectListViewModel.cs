@@ -14,7 +14,7 @@ namespace SWLOR.Tools.Editor.ViewModels
     public class ObjectListViewModel<T>: 
         PropertyChangedBase, 
         IObjectListViewModel<T>, 
-        IHandle<ApplicationStartedMessage>
+        IHandle<ApplicationStarted>
     {
         private readonly IEventAggregator _eventAggregator;
 
@@ -58,7 +58,7 @@ namespace SWLOR.Tools.Editor.ViewModels
             {
                 _selectedDataObject = value;
                 NotifyOfPropertyChange(() => SelectedDataObject);
-                _eventAggregator.PublishOnUIThread(new EditorObjectSelectedMessage<T>(SelectedDataObject));
+                _eventAggregator.PublishOnUIThread(new EditorObjectSelected<T>(SelectedDataObject));
             }
         }
         
@@ -77,7 +77,7 @@ namespace SWLOR.Tools.Editor.ViewModels
 
         }
 
-        public void Handle(ApplicationStartedMessage message)
+        public void Handle(ApplicationStarted message)
         {
             foreach (var file in Directory.GetFiles("./Data/" + typeof(T).Name))
             {

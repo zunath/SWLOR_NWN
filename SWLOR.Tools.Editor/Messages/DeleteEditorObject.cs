@@ -1,10 +1,10 @@
 ﻿namespace SWLOR.Tools.Editor.Messages
 {
-    public class DeleteEditorObjectMessage<T>
+    public class DeleteEditorObject<T>
     {
         public T DeletedEditorObject { get; set; }
 
-        public DeleteEditorObjectMessage(T newEditorObject)
+        public DeleteEditorObject(T newEditorObject)
         {
             DeletedEditorObject = newEditorObject;
         }

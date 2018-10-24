@@ -1,6 +1,6 @@
 ﻿namespace SWLOR.Tools.Editor.Messages
 {
-    public class ApplicationStartedMessage
+    public class ApplicationStarted
     {
     }
 }

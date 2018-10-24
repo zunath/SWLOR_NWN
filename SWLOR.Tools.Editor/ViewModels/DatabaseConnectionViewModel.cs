@@ -12,8 +12,8 @@ namespace SWLOR.Tools.Editor.ViewModels
     public class DatabaseConnectionViewModel : 
         PropertyChangedBase, 
         IDatabaseConnectionViewModel,
-        IHandle<SettingsLoadedMessage>,
-        IHandle<ApplicationEndedMessage>
+        IHandle<SettingsLoaded>,
+        IHandle<ApplicationEnded>
     {
         private readonly AppSettings _appSettings;
         private readonly IEventAggregator _eventAggregator;
@@ -94,23 +94,23 @@ namespace SWLOR.Tools.Editor.ViewModels
                 }
                 
                 Password = string.Empty;
-                _eventAggregator.PublishOnUIThread(new DatabaseConnectionSucceededMessage());
+                _eventAggregator.PublishOnUIThread(new DatabaseConnectionSucceeded());
             }
             catch(Exception ex)
             {
-                _eventAggregator.PublishOnUIThread(new DatabaseConnectionFailedMessage(ex));
+                _eventAggregator.PublishOnUIThread(new DatabaseConnectionFailed(ex));
             }
 
         }
         
-        public void Handle(SettingsLoadedMessage message)
+        public void Handle(SettingsLoaded message)
         {
             IPAddress = message.Settings.DatabaseIPAddress;
             Username = message.Settings.DatabaseUsername;
             Database = message.Settings.DatabaseName;
         }
 
-        public void Handle(ApplicationEndedMessage message)
+        public void Handle(ApplicationEnded message)
         {
             _appSettings.DatabaseIPAddress = IPAddress;
             _appSettings.DatabaseName = Database;

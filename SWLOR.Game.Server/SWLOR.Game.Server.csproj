@@ -652,6 +652,8 @@
     <Compile Include="Mod\RestMod.cs" />
     <Compile Include="NWNX\DamageData.cs" />
     <Compile Include="NWNX\Contracts\INWNXDamage.cs" />
+    <Compile Include="NWNX\Contracts\INWNXAdmin.cs" />
+    <Compile Include="NWNX\NWNXAdmin.cs" />
     <Compile Include="NWNX\NWNXDamage.cs" />
     <Compile Include="NWNX\PlayerVisibilityType.cs" />
     <Compile Include="NWN\Events\Conversation\KeyItem\AnyKeyItems\any_keyitems_1.cs" />

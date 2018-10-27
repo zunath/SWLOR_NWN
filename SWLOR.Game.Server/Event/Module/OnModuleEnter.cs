@@ -49,6 +49,7 @@ namespace SWLOR.Game.Server.Event.Module
             }
 
             _.ExecuteScript("x3_mod_def_enter", Object.OBJECT_SELF);
+            _player.ValidatePlayer(player);
             _player.InitializePlayer(player);
             _skill.OnModuleEnter();
             _player.LoadCharacter(player);

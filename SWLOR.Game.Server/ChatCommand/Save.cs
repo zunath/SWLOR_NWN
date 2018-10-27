@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Saves your character.", CommandPermissionType.Player)]
+    [CommandDetails("Manually saves your character. Your character also saves automatically every few minutes.", CommandPermissionType.Player)]
     public class Save: IChatCommand
     {
         private readonly INWScript _;

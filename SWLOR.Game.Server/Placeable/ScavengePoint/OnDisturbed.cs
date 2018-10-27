@@ -33,6 +33,8 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
         public bool Run(params object[] args)
         {
             NWPlayer oPC = (_.GetLastDisturbed());
+            if (!oPC.IsPlayer) return false;
+
             NWItem oItem = (_.GetInventoryDisturbItem());
             NWPlaceable point = (Object.OBJECT_SELF);
             int disturbType = _.GetInventoryDisturbType();

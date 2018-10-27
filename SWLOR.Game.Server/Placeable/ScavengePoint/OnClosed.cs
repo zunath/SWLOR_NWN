@@ -23,6 +23,9 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
         public bool Run(params object[] args)
         {
             NWPlaceable point = (Object.OBJECT_SELF);
+            NWPlayer player = _.GetLastClosedBy();
+
+            if (!player.IsPlayer) return false;
 
             bool isFullyHarvested = point.GetLocalInt("SCAVENGE_POINT_FULLY_HARVESTED") == 1;
 

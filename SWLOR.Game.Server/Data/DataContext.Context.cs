@@ -300,5 +300,18 @@ namespace SWLOR.Game.Server.Data
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ADM_Drop_Column", tableNameParameter, columnNameParameter);
         }
+    
+        public virtual int ADM_Drop_Constraint(string tableName, string columnName)
+        {
+            var tableNameParameter = tableName != null ?
+                new ObjectParameter("TableName", tableName) :
+                new ObjectParameter("TableName", typeof(string));
+    
+            var columnNameParameter = columnName != null ?
+                new ObjectParameter("ColumnName", columnName) :
+                new ObjectParameter("ColumnName", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ADM_Drop_Constraint", tableNameParameter, columnNameParameter);
+        }
     }
 }

@@ -269,6 +269,7 @@ namespace SWLOR.Game.Server
             // Third Party
             builder.RegisterType<BiowarePosition>().As<IBiowarePosition>();
             builder.RegisterType<BiowareXP2>().As<IBiowareXP2>();
+            builder.RegisterType<NWNXAdmin>().As<INWNXAdmin>();
             builder.RegisterType<NWNXChat>().As<INWNXChat>();
             builder.RegisterType<NWNXCreature>().As<INWNXCreature>();
             builder.RegisterType<NWNXDamage>().As<INWNXDamage>();

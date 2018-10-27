@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.Contracts;
 using static NWN.NWScript;
 using Object = NWN.Object;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -29,6 +30,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IDurabilityService _durability;
         private readonly IPlayerStatService _stat;
         private readonly ILanguageService _language;
+        private readonly INWNXAdmin _nwnxAdmin;
 
         public PlayerService(
             INWScript script, 
@@ -43,7 +45,8 @@ namespace SWLOR.Game.Server.Service
             IRaceService race,
             IDurabilityService durability,
             IPlayerStatService stat,
-            ILanguageService language)
+            ILanguageService language,
+            INWNXAdmin nwnxAdmin)
         {
             _ = script;
             _db = db;
@@ -58,6 +61,7 @@ namespace SWLOR.Game.Server.Service
             _durability = durability;
             _stat = stat;
             _language = language;
+            _nwnxAdmin = nwnxAdmin;
         }
 
         public void InitializePlayer(NWPlayer player)
@@ -410,6 +414,22 @@ namespace SWLOR.Game.Server.Service
             if (featID != (int)CustomFeatType.OpenRestMenu) return;
             pc.ClearAllActions();
             _dialog.StartConversation(pc, pc, "RestMenu");
+        }
+
+        public void ValidatePlayer(NWPlayer player)
+        {
+            if (!player.IsPlayer) return;
+
+            int classID = _.GetClassByPosition(1, player);
+            bool isPlayerClass = Convert.ToInt32(_.Get2DAString("classes", "PlayerClass", classID)) == 1;
+            bool isValid = isPlayerClass;
+
+            if (!isValid)
+            {
+                _.BootPC(player, "You have selected an invalid player background. Please ensure your hak files are up to date and then create a new character.");
+                _nwnxAdmin.DeletePlayerCharacter(player, TRUE);
+            }
+
         }
 
     }

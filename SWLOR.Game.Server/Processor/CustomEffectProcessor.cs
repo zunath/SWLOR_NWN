@@ -49,6 +49,8 @@ namespace SWLOR.Game.Server.Processor
         {
             foreach (var player in NWModule.Get().Players)
             {
+                if (!player.IsInitializedAsPlayer) continue; // Ignored to prevent a timing issue where new characters would be included in this processing.
+
                 List<PCCustomEffect> effects = _db.PCCustomEffects.Where(x => x.PlayerID == player.GlobalID && 
                                                                               x.CustomEffect.CustomEffectCategoryID != (int)CustomEffectCategoryType.Stance).ToList();
 

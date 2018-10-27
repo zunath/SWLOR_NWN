@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Data
         public Nullable<int> NortheastLootTableID { get; set; }
         public Nullable<int> SouthwestLootTableID { get; set; }
         public Nullable<int> SoutheastLootTableID { get; set; }
+        public int MaxResourceQuality { get; set; }
     
         public virtual LootTable NortheastLootTable { get; set; }
         public virtual PlayerCharacter NortheastOwnerPlayer { get; set; }

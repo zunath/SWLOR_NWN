@@ -14,6 +14,5 @@ namespace SWLOR.Game.Server.Service.Contracts
         void SaveLocation(NWPlayer player);
         void ShowMOTD(NWPlayer player);
         void OnModuleUseFeat();
-        void ValidatePlayer(NWPlayer player);
     }
 }

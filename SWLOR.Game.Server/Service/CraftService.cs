@@ -71,8 +71,23 @@ namespace SWLOR.Game.Server.Service
             string header = _color.Green("Blueprint: ") + bp.Quantity + "x " + bp.ItemName + "\n";
             header += _color.Green("Level: ") + (model.AdjustedLevel < 0 ? 0 : model.AdjustedLevel) + " (Base: " + (bp.BaseLevel < 0 ? 0 : bp.BaseLevel) + ")\n";
             header += _color.Green("Difficulty: ") + CalculateDifficultyDescription(playerEL, model.AdjustedLevel) + "\n";
-            header += _color.Green("Required Components (Required/Maximum): ") + "\n\n";
+            
+            if (bp.BaseStructure != null)
+            {
+                header += _color.Green("Raises Atmosphere: ");
+                if (bp.BaseStructure.HasAtmosphere)
+                {
+                    header += _color.Green("Yes");
+                }
+                else
+                {
+                    header += _color.Red("No");
+                }
 
+                header += "\n";
+            }
+
+            header += _color.Green("Required Components (Required/Maximum): ") + "\n\n";
 
             string mainCounts = " (" + (model.MainMinimum > 0 ? Convert.ToString(model.MainMinimum) : "Optional") + "/" + model.MainMaximum + ")";
             header += _color.Green("Main: ") + bp.MainComponentType.Name + mainCounts + "\n";

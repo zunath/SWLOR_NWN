@@ -259,7 +259,6 @@ namespace SWLOR.Game.Server.Service
 
                     if (!string.IsNullOrWhiteSpace(dbSpawn.SpawnRule))
                     {
-                        spawn.SpawnRule = dbSpawn.SpawnRule;
                         App.ResolveByInterface<ISpawnRule>("SpawnRule." + dbSpawn.SpawnRule, rule =>
                         {
                             rule.Run(plc);

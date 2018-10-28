@@ -415,22 +415,5 @@ namespace SWLOR.Game.Server.Service
             pc.ClearAllActions();
             _dialog.StartConversation(pc, pc, "RestMenu");
         }
-
-        public void ValidatePlayer(NWPlayer player)
-        {
-            if (!player.IsPlayer) return;
-
-            int classID = _.GetClassByPosition(1, player);
-            bool isPlayerClass = Convert.ToInt32(_.Get2DAString("classes", "PlayerClass", classID)) == 1;
-            bool isValid = isPlayerClass;
-
-            if (!isValid)
-            {
-                _.BootPC(player, "You have selected an invalid player background. Please ensure your hak files are up to date and then create a new character.");
-                _nwnxAdmin.DeletePlayerCharacter(player, TRUE);
-            }
-
-        }
-
     }
 }

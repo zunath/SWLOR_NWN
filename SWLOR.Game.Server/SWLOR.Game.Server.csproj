@@ -1277,6 +1277,7 @@
     <Compile Include="Service\ChatTextService.cs" />
     <Compile Include="Service\Contracts\IEmoteStyleService.cs" />
     <Compile Include="Service\EmoteStyleService.cs" />
+    <Compile Include="Service\Contracts\IPlayerValidationService.cs" />
     <Compile Include="Service\LanguageService.cs" />
     <Compile Include="Service\ColorTokenService.cs" />
     <Compile Include="Service\ComponentBonusService.cs" />
@@ -1403,6 +1404,7 @@
     <Compile Include="Service\PerkService.cs" />
     <Compile Include="Service\PlayerDescriptionService.cs" />
     <Compile Include="Service\PlayerService.cs" />
+    <Compile Include="Service\PlayerValidationService.cs" />
     <Compile Include="Service\PVPSanctuaryService.cs" />
     <Compile Include="Service\QuestService.cs" />
     <Compile Include="Service\RaceService.cs" />

@@ -238,6 +238,7 @@ namespace SWLOR.Game.Server
             builder.RegisterType<ObjectVisibilityService>().As<IObjectVisibilityService>();
             builder.RegisterType<PerkService>().As<IPerkService>();
             builder.RegisterType<PlayerDescriptionService>().As<IPlayerDescriptionService>();
+            builder.RegisterType<PlayerValidationService>().As<IPlayerValidationService>();
             builder.RegisterType<PlayerService>().As<IPlayerService>();
             builder.RegisterType<PlayerStatService>().As<IPlayerStatService>();
             builder.RegisterType<PVPSanctuaryService>().As<IPVPSanctuaryService>();

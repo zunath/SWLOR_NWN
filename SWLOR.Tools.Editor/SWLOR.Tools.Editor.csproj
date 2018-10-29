@@ -120,6 +120,7 @@
     <Compile Include="AppBootstrapper.cs" />
     <Compile Include="AppSettings.cs" />
     <Compile Include="Attributes\FolderAttribute.cs" />
+    <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Helpers\PasswordBoxHelper.cs" />
     <Compile Include="Messages\ApplicationEnded.cs" />
     <Compile Include="Messages\ApplicationStarted.cs" />
@@ -136,6 +137,7 @@
     <Compile Include="Messages\SettingsLoaded.cs" />
     <Compile Include="Startup\Contracts\IPostBootstrap.cs" />
     <Compile Include="Startup\CreateDataDirectories.cs" />
+    <Compile Include="Startup\InitializeAutomapper.cs" />
     <Compile Include="Startup\InitializeJsonSerializer.cs" />
     <Compile Include="Startup\PostBootstrap.cs" />
     <Compile Include="ViewModels\Contracts\IDatabaseConnectionViewModel.cs" />

@@ -11,7 +11,8 @@
                  IsMinButtonEnabled="False"
                  IsMaxRestoreButtonEnabled="False"
                  SizeToContent="WidthAndHeight"
-                 WindowStartupLocation="CenterOwner">
+                 WindowStartupLocation="CenterOwner"
+                 Title="Confirmation">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>

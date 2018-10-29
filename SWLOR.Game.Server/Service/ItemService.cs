@@ -483,16 +483,19 @@ namespace SWLOR.Game.Server.Service
             if(player.Arrows.IsValid)
             {
                 AddOnHitProperty(player.Arrows);
+                player.Arrows.RecommendedLevel = oItem.RecommendedLevel;
             }
 
             if (player.Bolts.IsValid)
             {
                 AddOnHitProperty(player.Bolts);
+                player.Bolts.RecommendedLevel = oItem.RecommendedLevel;
             }
 
             if (player.Bullets.IsValid)
             {
                 AddOnHitProperty(player.Bullets);
+                player.Bullets.RecommendedLevel = oItem.RecommendedLevel;
             }
 
 

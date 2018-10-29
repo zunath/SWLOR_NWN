@@ -28,6 +28,8 @@ using SWLOR.Game.Server.QuestRule.Contracts;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.SpawnRule.Contracts;
+using SWLOR.Game.Server.Threading;
+using SWLOR.Game.Server.Threading.Contracts;
 
 namespace SWLOR.Game.Server
 {
@@ -184,6 +186,9 @@ namespace SWLOR.Game.Server
             builder.RegisterType<DatabaseMigrationRunner>()
                 .As<IStartable>()
                 .SingleInstance();
+            builder.RegisterType<BackgroundThreadManager>()
+                .As<IBackgroundThreadManager>()
+                .SingleInstance();
 
             // Types
             builder.RegisterType<DataContext>().As<IDataContext>().InstancePerDependency().WithParameter("useCustom", true);
@@ -252,6 +257,9 @@ namespace SWLOR.Game.Server
             builder.RegisterType<SpawnService>().As<ISpawnService>();
             builder.RegisterType<TimeService>().As<ITimeService>();
             
+            // Background threads
+            builder.RegisterType<DiscordBackgroundThread>().As<IBackgroundThread>();
+
             // Interfaces
             RegisterInterfaceImplementations<IRegisteredEvent>(builder);
             RegisterInterfaceImplementations<ICustomEffect>(builder);

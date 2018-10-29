@@ -1424,6 +1424,10 @@
     <Compile Include="SpawnRule\CrystalClusterSpawnRule.cs" />
     <Compile Include="SpawnRule\TreeSpawnRule.cs" />
     <Compile Include="SpawnRule\OreSpawnRule.cs" />
+    <Compile Include="Threading\BackgroundThreadManager.cs" />
+    <Compile Include="Threading\Contracts\IBackgroundThreadManager.cs" />
+    <Compile Include="Threading\Contracts\IBackgroundThread.cs" />
+    <Compile Include="Threading\DiscordBackgroundThread.cs" />
     <Compile Include="Trigger\QuestTrigger.cs" />
     <Compile Include="ValueObject\AreaSpawn.cs" />
     <Compile Include="ValueObject\AreaStructure.cs" />

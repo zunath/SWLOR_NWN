@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.SpawnRule
 
             var dbArea = _db.Areas.Single(x => x.Resref == target.Area.Resref);
             int tier = dbArea.ResourceQuality;
+            int maxTier = dbArea.MaxResourceQuality;
             
             if (tier <= 0)
             {
@@ -61,6 +62,9 @@ namespace SWLOR.Game.Server.SpawnRule
             }
 
             if (tier > 10) tier = 10;
+
+            if (tier > maxTier)
+                tier = maxTier;
 
             string resref = GetResourceResref(tier);
             int quantity = _random.Random(3, 10);

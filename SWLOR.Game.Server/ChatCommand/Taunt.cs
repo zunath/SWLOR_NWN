@@ -24,6 +24,11 @@ namespace SWLOR.Game.Server.ChatCommand
             });
         }
 
+        public string ValidateArguments(NWPlayer user, params string[] args)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public bool RequiresTarget => false;
     }
 }

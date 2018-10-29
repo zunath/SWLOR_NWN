@@ -83,12 +83,14 @@
     <Compile Include="ChatCommand\Bored.cs" />
     <Compile Include="ChatCommand\Bow.cs" />
     <Compile Include="ChatCommand\Bug.cs" />
+    <Compile Include="ChatCommand\CDKey.cs" />
     <Compile Include="ChatCommand\CommandDetailsAttribute.cs" />
     <Compile Include="ChatCommand\Contracts\IChatCommand.cs" />
     <Compile Include="ChatCommand\Coord.cs" />
     <Compile Include="ChatCommand\Customize.cs" />
     <Compile Include="ChatCommand\DeadBack.cs" />
     <Compile Include="ChatCommand\DeadFront.cs" />
+    <Compile Include="ChatCommand\Delete.cs" />
     <Compile Include="ChatCommand\Dice.cs" />
     <Compile Include="ChatCommand\Discord.cs" />
     <Compile Include="ChatCommand\Drink.cs" />
@@ -127,7 +129,6 @@
     <Compile Include="ChatCommand\Spasm.cs" />
     <Compile Include="ChatCommand\SpawnGold.cs" />
     <Compile Include="ChatCommand\SpawnItem.cs" />
-    <Compile Include="ChatCommand\Stuck.cs" />
     <Compile Include="ChatCommand\Sit.cs" />
     <Compile Include="ChatCommand\Day.cs" />
     <Compile Include="ChatCommand\Taunt.cs" />
@@ -652,6 +653,8 @@
     <Compile Include="Mod\RestMod.cs" />
     <Compile Include="NWNX\DamageData.cs" />
     <Compile Include="NWNX\Contracts\INWNXDamage.cs" />
+    <Compile Include="NWNX\Contracts\INWNXAdmin.cs" />
+    <Compile Include="NWNX\NWNXAdmin.cs" />
     <Compile Include="NWNX\NWNXDamage.cs" />
     <Compile Include="NWNX\PlayerVisibilityType.cs" />
     <Compile Include="NWN\Events\Conversation\KeyItem\AnyKeyItems\any_keyitems_1.cs" />
@@ -974,7 +977,7 @@
     <Compile Include="Perk\Harvesting\SpeedyResourceScanner.cs" />
     <Compile Include="Perk\Armorsmith\CombatModInstallationArmors.cs" />
     <Compile Include="Perk\Armorsmith\CraftingModInstallationArmors.cs" />
-    <Compile Include="Perk\Armorsmith\MagicModInstallationArmors.cs" />
+    <Compile Include="Perk\Armorsmith\ForceModInstallationArmors.cs" />
     <Compile Include="Perk\Armorsmith\ArmorBlueprints.cs" />
     <Compile Include="Perk\Armorsmith\SpecialModInstallationArmors.cs" />
     <Compile Include="Perk\Armor\Clarity.cs" />
@@ -1049,7 +1052,7 @@
     <Compile Include="Perk\TwoHanded\PolearmProficiency.cs" />
     <Compile Include="Perk\Weaponsmith\CraftingModInstallationWeapons.cs" />
     <Compile Include="Perk\Weaponsmith\LightsaberBlueprints.cs" />
-    <Compile Include="Perk\Weaponsmith\MagicModInstallationWeapons.cs" />
+    <Compile Include="Perk\Weaponsmith\ForceModInstallationWeapons.cs" />
     <Compile Include="Perk\Weaponsmith\CombatModInstallationWeapons.cs" />
     <Compile Include="Perk\Weaponsmith\SpecialModInstallationWeapons.cs" />
     <Compile Include="Perk\Weaponsmith\WeaponBlueprints.cs" />
@@ -1275,6 +1278,7 @@
     <Compile Include="Service\ChatTextService.cs" />
     <Compile Include="Service\Contracts\IEmoteStyleService.cs" />
     <Compile Include="Service\EmoteStyleService.cs" />
+    <Compile Include="Service\Contracts\IPlayerValidationService.cs" />
     <Compile Include="Service\LanguageService.cs" />
     <Compile Include="Service\ColorTokenService.cs" />
     <Compile Include="Service\ComponentBonusService.cs" />
@@ -1401,6 +1405,7 @@
     <Compile Include="Service\PerkService.cs" />
     <Compile Include="Service\PlayerDescriptionService.cs" />
     <Compile Include="Service\PlayerService.cs" />
+    <Compile Include="Service\PlayerValidationService.cs" />
     <Compile Include="Service\PVPSanctuaryService.cs" />
     <Compile Include="Service\QuestService.cs" />
     <Compile Include="Service\RaceService.cs" />
@@ -1420,6 +1425,10 @@
     <Compile Include="SpawnRule\CrystalClusterSpawnRule.cs" />
     <Compile Include="SpawnRule\TreeSpawnRule.cs" />
     <Compile Include="SpawnRule\OreSpawnRule.cs" />
+    <Compile Include="Threading\BackgroundThreadManager.cs" />
+    <Compile Include="Threading\Contracts\IBackgroundThreadManager.cs" />
+    <Compile Include="Threading\Contracts\IBackgroundThread.cs" />
+    <Compile Include="Threading\DiscordBackgroundThread.cs" />
     <Compile Include="Trigger\QuestTrigger.cs" />
     <Compile Include="ValueObject\AreaSpawn.cs" />
     <Compile Include="ValueObject\AreaStructure.cs" />
@@ -1637,6 +1646,9 @@
     <EmbeddedResource Include="Data\Migrations\2018-10-23.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-10-24.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-10-24.2.sql" />
+    <EmbeddedResource Include="Data\Migrations\2018-10-27.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2018-10-27.2.sql" />
+    <EmbeddedResource Include="Data\Migrations\2018-10-29.1.sql" />
     <Content Include="Data\Migrations\Readme.txt" />
     <Content Include="ServerFiles\Database\scripts\AddWeaponCraftBlueprints.sql" />
     <Content Include="ServerFiles\Database\scripts\AddPerkLevels.sql" />

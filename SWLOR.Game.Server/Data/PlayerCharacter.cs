@@ -89,6 +89,7 @@ namespace SWLOR.Game.Server.Data
         public bool DisplayDiscord { get; set; }
         public Nullable<int> PrimaryResidencePCBaseID { get; set; }
         public bool IsUsingNovelEmoteStyle { get; set; }
+        public bool IsDeleted { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Area> NortheastOwnedAreas { get; set; }

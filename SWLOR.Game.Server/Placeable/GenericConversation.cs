@@ -30,14 +30,15 @@ namespace SWLOR.Game.Server.Placeable
             if (!user.IsPlayer && !user.IsDM) return false;
 
             string conversation = placeable.GetLocalString("CONVERSATION");
+            NWObject target = placeable.GetLocalInt("TARGET_PC") == TRUE ? user.Object : placeable.Object;
 
             if (!string.IsNullOrWhiteSpace(conversation))
             {
-                _dialog.StartConversation(user, placeable, conversation);
+                _dialog.StartConversation(user, target, conversation);
             }
             else
             {
-                user.AssignCommand(() => _.ActionStartConversation(placeable, string.Empty, TRUE, FALSE));
+                user.AssignCommand(() => _.ActionStartConversation(target, string.Empty, TRUE, FALSE));
             }
 
             return true;

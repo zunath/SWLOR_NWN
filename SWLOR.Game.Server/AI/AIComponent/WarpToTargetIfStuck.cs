@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.AI.AIComponent
                 if (cyclesStuck >= 12) // Stuck for 12 seconds - warp to the target if still in the area.
                 {
                     EnmityTable table = _enmity.GetEnmityTable(self);
-                    var topTarget = table.Values.OrderByDescending(o => o.TotalAmount).SingleOrDefault();
+                    var topTarget = table.Values.OrderByDescending(o => o.TotalAmount).FirstOrDefault();
                     if (topTarget != null && topTarget.TargetObject.IsValid)
                     {
                         var location = topTarget.TargetObject.Location;

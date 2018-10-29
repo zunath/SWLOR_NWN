@@ -23,12 +23,6 @@ namespace SWLOR.Game.Server.ChatCommand
 
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            if (args.Length < 1)
-            {
-                user.SendMessage(_color.Red("Please enter /language help for more information on how to use this command."));
-                return;
-            }
-
             string command = args[0].ToLower();
 
             if (command == "help")
@@ -58,6 +52,16 @@ namespace SWLOR.Game.Server.ChatCommand
             }
 
             user.SendMessage(_color.Red($"Unknown language {command}."));
+        }
+
+        public string ValidateArguments(NWPlayer user, params string[] args)
+        {
+            if (args.Length < 1)
+            {
+                return _color.Red("Please enter /language help for more information on how to use this command.");
+            }
+
+            return string.Empty;
         }
 
         public bool RequiresTarget => false;

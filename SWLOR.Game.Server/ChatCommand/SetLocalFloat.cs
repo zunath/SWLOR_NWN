@@ -18,29 +18,32 @@ namespace SWLOR.Game.Server.ChatCommand
 
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            if (args.Length < 2)
-            {
-                user.SendMessage("Missing arguments. Format should be: /SetLocalFloat Variable_Name <VALUE>. Example: /SetLocalFloat MY_VARIABLE 6.9");
-                return;
-            }
-
             if (!target.IsValid)
             {
                 user.SendMessage("Target is invalid.");
                 return;
             }
 
-            string variableName = Convert.ToString(args[0]);
-
-            if (!float.TryParse(args[1], out var value))
-            {
-                user.SendMessage("Invalid value entered. Please try again.");
-                return;
-            }
+            string variableName = args[0];
+            float value = float.Parse(args[1]);
 
             _.SetLocalFloat(target, variableName, value);
 
             user.SendMessage("Local float set: " + variableName + " = " + value);
+        }
+
+        public string ValidateArguments(NWPlayer user, params string[] args)
+        {
+            if (args.Length < 2)
+            {
+                return "Missing arguments. Format should be: /SetLocalFloat Variable_Name <VALUE>. Example: /SetLocalFloat MY_VARIABLE 6.9";
+            }
+            
+            if (!float.TryParse(args[1], out var value))
+            {
+                return "Invalid value entered. Please try again.";
+            }
+            return string.Empty;
         }
 
         public bool RequiresTarget => true;

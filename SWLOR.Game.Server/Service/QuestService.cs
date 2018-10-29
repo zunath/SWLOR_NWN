@@ -135,6 +135,7 @@ namespace SWLOR.Game.Server.Service
 
             player.SendMessage("Quest '" + quest.Name + "' complete!");
             _db.SaveChanges();
+            _.RemoveJournalQuestEntry(quest.JournalTag, player, FALSE);
 
             if (!string.IsNullOrWhiteSpace(quest.OnCompleteRule) && questOwner != null)
             {
@@ -371,7 +372,6 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                _.RemoveJournalQuestEntry(quest.JournalTag, oPC, FALSE);
                 CompleteQuest(oPC, questOwner, questID, null);
             }
 

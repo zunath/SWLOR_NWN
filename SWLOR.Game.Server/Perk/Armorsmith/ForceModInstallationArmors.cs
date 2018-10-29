@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.Armorsmith
 {
-    public class MagicModInstallationArmors : IPerk
+    public class ForceModInstallationArmors : IPerk
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

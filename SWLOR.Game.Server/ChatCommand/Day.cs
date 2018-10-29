@@ -28,6 +28,11 @@ namespace SWLOR.Game.Server.ChatCommand
             _.SetTime(8, 0, 0, 0);
         }
 
+        public string ValidateArguments(NWPlayer user, params string[] args)
+        {
+            return string.Empty;
+        }
+
         public bool RequiresTarget => false;
     }
 }

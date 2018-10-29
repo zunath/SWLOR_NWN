@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Item
         {
             SkillType skillType = GetSkillType(item);
             int tech = item.GetLocalInt("TECH_LEVEL");
+            float maxDurabilityReductionPenalty = item.GetLocalFloat("MAX_DURABILITY_REDUCTION_PENALTY");
             int repairAmount = tech * 2;
 
             if (skillType == SkillType.Armorsmith)
@@ -43,7 +44,7 @@ namespace SWLOR.Game.Server.Item
             float maxReduction = 0.15f * tech;
             float reductionAmount = _random.RandomFloat(minReduction, maxReduction);
 
-            _durability.RunItemRepair(user.Object, target.Object, repairAmount, reductionAmount);
+            _durability.RunItemRepair(user.Object, target.Object, repairAmount, reductionAmount + maxDurabilityReductionPenalty);
         }
 
         private SkillType GetSkillType(NWItem item)

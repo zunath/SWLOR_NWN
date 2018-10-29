@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Service
             if (player.IsInitializedAsPlayer) return string.Empty;
 
             string error = string.Empty;
-            PlayerCharacter dbPlayer = _db.PlayerCharacters.FirstOrDefault(x => x.CharacterName == player.Name);
+            PlayerCharacter dbPlayer = _db.PlayerCharacters.FirstOrDefault(x => x.CharacterName == player.Name && x.IsDeleted == false);
 
             if (dbPlayer != null)
             {

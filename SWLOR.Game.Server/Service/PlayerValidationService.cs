@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
@@ -13,13 +14,16 @@ namespace SWLOR.Game.Server.Service
     {
         private readonly INWScript _;
         private readonly INWNXAdmin _nwnxAdmin;
+        private readonly IDataContext _db;
 
         public PlayerValidationService(
             INWScript script,
-            INWNXAdmin nwnxAdmin)
+            INWNXAdmin nwnxAdmin,
+            IDataContext db)
         {
             _ = script;
             _nwnxAdmin = nwnxAdmin;
+            _db = db;
         }
 
         public void OnModuleEnter()
@@ -33,7 +37,12 @@ namespace SWLOR.Game.Server.Service
             {
                 error = ValidateName(player);
             }
-            
+
+            if (string.IsNullOrWhiteSpace(error))
+            {
+                error = ValidateExistingCharacter(player);
+            }
+
             if (!string.IsNullOrWhiteSpace(error))
             {
                 _.BootPC(player, error);
@@ -84,6 +93,20 @@ namespace SWLOR.Game.Server.Service
             "mical", "mira", "hanharr", "brianna", "visas", "marr", "g0-t0", "go-to", "goto", "zayne", "carrick", "marn", "hierogryph", "jarael", "gorman",
             "vandrayk", "elbee", "rohlan", "dyre", "slyssk", "sion", "nihilus", "general", "zunath", "xephnin", "taelon", "lestat", "dm", "gm"
         };
+
+        private string ValidateExistingCharacter(NWPlayer player)
+        {
+            string error = string.Empty;
+            PlayerCharacter dbPlayer = _db.PlayerCharacters.FirstOrDefault(x => x.CharacterName == player.Name);
+
+            if (dbPlayer != null)
+            {
+                error = "Another player character with the same name already exists. Please create a new character with a unique name.";
+            }
+
+            return error;
+        }
+
 
     }
 }

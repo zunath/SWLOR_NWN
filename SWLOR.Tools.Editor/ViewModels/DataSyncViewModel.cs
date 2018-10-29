@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
@@ -8,6 +9,7 @@ using System.Windows;
 using Caliburn.Micro;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Tools.Editor.Messages;
 using SWLOR.Tools.Editor.ViewModels.Contracts;
 
@@ -112,7 +114,7 @@ namespace SWLOR.Tools.Editor.ViewModels
                 WriteDataFileAsync(db.BuildingStyles.ToList());
                 WriteDataFileAsync(db.ComponentTypes.ToList());
                 WriteDataFileAsync(db.CooldownCategories.ToList());
-                WriteDataFileAsync(db.CraftBlueprints.ToList(), "ItemName");
+                WriteDataFileAsync(db.CraftBlueprints.ToList());
                 WriteDataFileAsync(db.CraftBlueprintCategories.ToList());
                 WriteDataFileAsync(db.CraftDevices.ToList());
                 WriteDataFileAsync(db.CustomEffects.ToList());
@@ -163,26 +165,19 @@ namespace SWLOR.Tools.Editor.ViewModels
             }
         }
 
-        private static void WriteDataFileAsync<T>(IEnumerable<T> set, string propertyName = "Name")
+        private static void WriteDataFileAsync<T>(IEnumerable<T> set)
         {
             string Folder = typeof(T).Name;
 
             Parallel.ForEach(set, item =>
             {
-                string fileName = (string) item.GetType().GetProperty(propertyName).GetValue(item, null);
-                fileName = ReplaceSpecialCharacters(fileName);
-
+                string fileName = Guid.NewGuid().ToString();
                 string json = JsonConvert.SerializeObject(item);
                 File.WriteAllText("./Data/" + Folder + "/" + fileName + ".json", json);
             });
 
         }
-
-        private static string ReplaceSpecialCharacters(string str)
-        {
-            return Regex.Replace(str, "[^a-zA-Z0-9_.]+", "_", RegexOptions.Compiled);
-        }
-
+        
         public void Handle(DatabaseConnectionSucceeded message)
         {
             DBConnectionViewVisibility = Visibility.Collapsed;
@@ -192,6 +187,7 @@ namespace SWLOR.Tools.Editor.ViewModels
 
         public void Handle(DatabaseConnectionFailed message)
         {
+            _errorVM.ErrorDetails = message.Exception.ToMessageAndCompleteStacktrace();
             _windowManager.ShowDialog(_errorVM);
             ControlsEnabled = true;
         }

@@ -38,6 +38,9 @@
     <Reference Include="Autofac, Version=4.8.1.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\packages\Autofac.4.8.1\lib\net45\Autofac.dll</HintPath>
     </Reference>
+    <Reference Include="AutoMapper, Version=7.0.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.7.0.1\lib\net45\AutoMapper.dll</HintPath>
+    </Reference>
     <Reference Include="Caliburn.Micro, Version=3.2.0.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
       <HintPath>..\packages\Caliburn.Micro.Core.3.2.0\lib\net45\Caliburn.Micro.dll</HintPath>
     </Reference>
@@ -70,6 +73,10 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Caliburn.Micro.3.2.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
@@ -112,6 +119,7 @@
     </ApplicationDefinition>
     <Compile Include="AppBootstrapper.cs" />
     <Compile Include="AppSettings.cs" />
+    <Compile Include="Attributes\FolderAttribute.cs" />
     <Compile Include="Helpers\PasswordBoxHelper.cs" />
     <Compile Include="Messages\ApplicationEnded.cs" />
     <Compile Include="Messages\ApplicationStarted.cs" />
@@ -120,6 +128,7 @@
     <Compile Include="Messages\DatabaseConnectionFailed.cs" />
     <Compile Include="Messages\DatabaseConnectionSucceeded.cs" />
     <Compile Include="Messages\DatabaseSyncCompleted.cs" />
+    <Compile Include="Messages\DataObjectSaved.cs" />
     <Compile Include="Messages\DeleteEditorObject.cs" />
     <Compile Include="Messages\EditorObjectSelected.cs" />
     <Compile Include="Messages\NewEditorObject.cs" />
@@ -130,15 +139,21 @@
     <Compile Include="Startup\InitializeJsonSerializer.cs" />
     <Compile Include="Startup\PostBootstrap.cs" />
     <Compile Include="ViewModels\Contracts\IDatabaseConnectionViewModel.cs" />
+    <Compile Include="ViewModels\Contracts\IDBObjectViewModel.cs" />
     <Compile Include="ViewModels\Contracts\IDataSyncViewModel.cs" />
     <Compile Include="ViewModels\Contracts\IErrorViewModel.cs" />
     <Compile Include="ViewModels\Contracts\ILootEditorViewModel.cs" />
     <Compile Include="ViewModels\Contracts\IObjectListViewModel.cs" />
+    <Compile Include="ViewModels\Contracts\IYesNoViewModel.cs" />
     <Compile Include="ViewModels\DatabaseConnectionViewModel.cs" />
     <Compile Include="ViewModels\DataSyncViewModel.cs" />
+    <Compile Include="ViewModels\Data\DBObjectViewModelBase.cs" />
+    <Compile Include="ViewModels\Data\LootTableItemViewModel.cs" />
+    <Compile Include="ViewModels\Data\LootTableViewModel.cs" />
     <Compile Include="ViewModels\ErrorViewModel.cs" />
     <Compile Include="ViewModels\LootEditorViewModel.cs" />
     <Compile Include="ViewModels\ObjectListViewModel.cs" />
+    <Compile Include="ViewModels\YesNoViewModel.cs" />
     <Compile Include="Views\DatabaseConnectionView.xaml.cs">
       <DependentUpon>DatabaseConnectionView.xaml</DependentUpon>
     </Compile>
@@ -169,6 +184,9 @@
     <Compile Include="Views\ObjectListView.xaml.cs">
       <DependentUpon>ObjectListView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\YesNoView.xaml.cs">
+      <DependentUpon>YesNoView.xaml</DependentUpon>
+    </Compile>
     <Page Include="Views\DatabaseConnectionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -198,6 +216,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\ObjectListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\YesNoView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

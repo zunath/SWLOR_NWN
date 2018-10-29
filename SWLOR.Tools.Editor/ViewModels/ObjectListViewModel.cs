@@ -4,17 +4,17 @@ using System.IO;
 using System.Linq;
 using Caliburn.Micro;
 using Newtonsoft.Json;
-using SWLOR.Game.Server.Data;
-using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Tools.Editor.Attributes;
 using SWLOR.Tools.Editor.Messages;
 using SWLOR.Tools.Editor.ViewModels.Contracts;
 
 namespace SWLOR.Tools.Editor.ViewModels
 {
-    public class ObjectListViewModel<T>: 
-        PropertyChangedBase, 
-        IObjectListViewModel<T>, 
+    public class ObjectListViewModel<T>:
+        PropertyChangedBase,
+        IObjectListViewModel<T>,
         IHandle<ApplicationStarted>
+        where T: IDBObjectViewModel
     {
         private readonly IEventAggregator _eventAggregator;
 
@@ -37,18 +37,6 @@ namespace SWLOR.Tools.Editor.ViewModels
             }
         }
         
-        private string _displayName;
-
-        public string DisplayName
-        {
-            get => _displayName;
-            set
-            {
-                _displayName = value;
-                NotifyOfPropertyChange(() => DisplayName);
-            }
-        }
-
         private T _selectedDataObject;
 
         public T SelectedDataObject
@@ -79,13 +67,21 @@ namespace SWLOR.Tools.Editor.ViewModels
 
         public void Handle(ApplicationStarted message)
         {
-            foreach (var file in Directory.GetFiles("./Data/" + typeof(T).Name))
+            FolderAttribute folderAttribute = typeof(T).GetCustomAttributes(typeof(FolderAttribute), false).FirstOrDefault() as FolderAttribute;
+
+            if (folderAttribute == null)
+            {
+                throw new NullReferenceException("Unable to find " + nameof(FolderAttribute) + " attribute on data object.");
+            }
+
+            foreach (var file in Directory.GetFiles("./Data/" + folderAttribute.Folder))
             {
                 var json = File.ReadAllText(file);
                 T data = JsonConvert.DeserializeObject<T>(json);
+                data.FileName = Path.GetFileName(file);
+                
                 DataObjects.Add(data);
             }
-
         }
     }
 }

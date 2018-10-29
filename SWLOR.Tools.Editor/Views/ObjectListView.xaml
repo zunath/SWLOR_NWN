@@ -13,8 +13,9 @@
             <RowDefinition Height="42"></RowDefinition>
         </Grid.RowDefinitions>
         <ListBox 
-            DisplayMemberPath="Name"
-            x:Name="DataObjects">
+            DisplayMemberPath="DisplayName"
+            x:Name="DataObjects"
+            SelectedItem="{Binding SelectedDataObject}">
         </ListBox>
 
         <Grid Grid.Column="0" Grid.Row="1">

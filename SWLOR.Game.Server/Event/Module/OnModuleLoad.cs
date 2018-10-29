@@ -6,6 +6,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Processor;
 using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Threading.Contracts;
 using static NWN.NWScript;
 using Object = NWN.Object;
 
@@ -24,6 +25,7 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly ISpawnService _spawn;
         private readonly ICustomEffectService _customEffect;
         private readonly IObjectVisibilityService _objectVisibility;
+        private readonly IBackgroundThreadManager _backgroundThreadManager;
 
         public OnModuleLoad(INWScript script,
             INWNXChat nwnxChat,
@@ -35,7 +37,8 @@ namespace SWLOR.Game.Server.Event.Module
             IBaseService @base,
             ISpawnService spawn,
             ICustomEffectService customEffect,
-            IObjectVisibilityService objectVisibility)
+            IObjectVisibilityService objectVisibility,
+            IBackgroundThreadManager backgroundThreadManager)
         {
             _ = script;
             _nwnxChat = nwnxChat;
@@ -48,42 +51,30 @@ namespace SWLOR.Game.Server.Event.Module
             _spawn = spawn;
             _customEffect = customEffect;
             _objectVisibility = objectVisibility;
+            _backgroundThreadManager = backgroundThreadManager;
         }
 
         public bool Run(params object[] args)
         {
             string nowString = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
             Console.WriteLine(nowString + ": Module OnLoad executing...");
+            
+            Console.WriteLine("Starting background thread manager...");
+            _backgroundThreadManager.Start();
+            
             _nwnxChat.RegisterChatScript("mod_on_nwnxchat");
             SetModuleEventScripts();
             SetAreaEventScripts();
 
-            Console.WriteLine("Executing bioware");
             // Bioware default
             _.ExecuteScript("x2_mod_def_load", Object.OBJECT_SELF);
-
-            Console.WriteLine("Executing app state processor register");
             _objectProcessing.RegisterProcessingEvent<AppStateProcessor>();
-
-            Console.WriteLine("Executing object processing on load");
             _objectProcessing.OnModuleLoad();
-
-            Console.WriteLine("Executing farming onload");
             _farming.OnModuleLoad();
-
-            Console.WriteLine("Executing base onload");
             _base.OnModuleLoad();
-
-            Console.WriteLine("Executing area onload");
             _area.OnModuleLoad();
-
-            Console.WriteLine("Executing spawn onload");
             _spawn.OnModuleLoad();
-
-            Console.WriteLine("Executing customeffect onload");
             _customEffect.OnModuleLoad();
-
-            Console.WriteLine("Executing obvs onload");
             _objectVisibility.OnModuleLoad();
 
             nowString = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");

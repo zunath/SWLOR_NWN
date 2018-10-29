@@ -17,6 +17,7 @@ using System.Windows;
 using System.Windows.Controls;
 using SWLOR.Game.Server.Data.Contracts;
 using IContainer = Autofac.IContainer;
+using SWLOR.Tools.Editor.ViewModels.Data;
 
 namespace SWLOR.Tools.Editor
 {
@@ -137,7 +138,8 @@ namespace SWLOR.Tools.Editor
             builder.RegisterType<ErrorViewModel>().As<IErrorViewModel>();
             builder.RegisterType<LootEditorViewModel>().As<ILootEditorViewModel>();
             builder.RegisterType<MenuBarViewModel>().As<IMenuBarViewModel>();
-            builder.RegisterType(typeof(ObjectListViewModel<LootTable>)).As<IObjectListViewModel<LootTable>>();
+            builder.RegisterType(typeof(ObjectListViewModel<LootTableViewModel>)).As<IObjectListViewModel<LootTableViewModel>>();
+            builder.RegisterType<YesNoViewModel>().As<IYesNoViewModel>();
 
             // Shell
             builder.RegisterType<ShellViewModel>().As<IShellViewModel>();

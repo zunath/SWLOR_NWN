@@ -1,27 +1,40 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows.Forms;
 using Caliburn.Micro;
 using SWLOR.Game.Server.Data;
 using SWLOR.Tools.Editor.Messages;
 using SWLOR.Tools.Editor.ViewModels.Contracts;
+using SWLOR.Tools.Editor.ViewModels.Data;
 
 namespace SWLOR.Tools.Editor.ViewModels
 {
     public class LootEditorViewModel: PropertyChangedBase, 
         ILootEditorViewModel, 
-        IHandle<EditorObjectSelected<LootTable>>
+        IHandle<EditorObjectSelected<LootTableViewModel>>
     {
-        public LootEditorViewModel(IEventAggregator eventAggregator, IObjectListViewModel<LootTable> objListVM)
+        private readonly IWindowManager _windowManager;
+        private readonly IYesNoViewModel _yesNo;
+        private readonly IEventAggregator _eventAggregator;
+
+        public LootEditorViewModel(
+            IEventAggregator eventAggregator, 
+            IObjectListViewModel<LootTableViewModel> objListVM,
+            IWindowManager windowManager,
+            IYesNoViewModel yesNo)
         {
             ObjectListVM = objListVM;
-            ObjectListVM.DisplayName = "Name";
-            LootTableItems = new ObservableCollection<LootTableItem>();
-            
-            eventAggregator.Subscribe(this);
-        }
-        
-        private IObjectListViewModel<LootTable> _objListVM;
+            _windowManager = windowManager;
+            _yesNo = yesNo;
 
-        public IObjectListViewModel<LootTable> ObjectListVM
+            _eventAggregator = eventAggregator;
+            _eventAggregator.Subscribe(this);
+        }
+
+        private IObjectListViewModel<LootTableViewModel> _objListVM;
+
+        public IObjectListViewModel<LootTableViewModel> ObjectListVM
         {
             get => _objListVM;
             set
@@ -31,108 +44,91 @@ namespace SWLOR.Tools.Editor.ViewModels
             }
         }
 
-        private LootTable _activeLootTable;
 
-        public LootTable ActiveLootTable
+        private LootTableViewModel _activeLootTable;
+        public LootTableViewModel ActiveLootTable
         {
             get => _activeLootTable;
             set
             {
+                if (_activeLootTable != null && _activeLootTable.IsDirty)
+                {
+                    _yesNo.Prompt = "You have modified this object. Would you like to save changes?";
+                    _windowManager.ShowDialog(_yesNo);
+
+                    if (_yesNo.Result == DialogResult.Yes)
+                    {
+                        SaveChanges();
+                    }
+                    else if(_yesNo.Result == DialogResult.Cancel)
+                    {
+                        NotifyOfPropertyChange(() => ActiveLootTable);
+                        return;
+                    }
+                }
+
                 _activeLootTable = value;
                 NotifyOfPropertyChange(() => ActiveLootTable);
+
+
+                if (ActiveLootTable != null)
+                {
+                    ActiveLootTable.SetTrackedValues();
+                    ActiveLootTable.OnDirty += OnDirty;
+                }
             }
         }
-
-        private ObservableCollection<LootTableItem> _lootTableItems;
-        public ObservableCollection<LootTableItem> LootTableItems
-        {
-            get => _lootTableItems;
-            set
-            {
-                _lootTableItems = value;
-                NotifyOfPropertyChange(() => LootTableItems);
-            }
-        }
-
-        private LootTableItem _selectedLootTableItem;
-        public LootTableItem SelectedLootTableItem
+        
+        private LootTableItemViewModel _selectedLootTableItem;
+        public LootTableItemViewModel SelectedLootTableItem
         {
             get => _selectedLootTableItem;
             set
             {
                 _selectedLootTableItem = value;
                 NotifyOfPropertyChange(() => SelectedLootTableItem);
-
-                if (value != null)
+                NotifyOfPropertyChange(() => IsTableSelected);
+                
+                if(SelectedLootTableItem != null)
                 {
-                    Weight = value.Weight;
-                    Resref = value.Resref;
-                    IsActive = value.IsActive;
-                    SpawnRule = value.SpawnRule;
+                    SelectedLootTableItem.OnDirty += OnDirty;
                 }
             }
         }
-        
 
-        private int _weight;
-
-        public int Weight
+        private void OnDirty(object sender, EventArgs e)
         {
-            get => _weight;
-            set
-            {
-                _weight = value;
-                NotifyOfPropertyChange(() => Weight);
-            }
+            NotifyOfPropertyChange(() => IsTableSelected);
+            NotifyOfPropertyChange(() => CanSaveOrDiscardChanges);
         }
 
-        private string _resref;
+        public bool IsTableSelected => ActiveLootTable != null;
+        public bool CanSaveOrDiscardChanges => IsTableSelected && (ActiveLootTable.IsDirty || SelectedLootTableItem.IsDirty);
 
-        public string Resref
+        public void SaveChanges()
         {
-            get => _resref;
-            set
-            {
-                _resref = value;
-                NotifyOfPropertyChange(() => Resref);
-            }
+            ActiveLootTable.IsDirty = false;
+            SelectedLootTableItem.IsDirty = false;
+            
+            _eventAggregator.PublishOnUIThread(new DataObjectSaved<LootTableViewModel>(ActiveLootTable));
         }
 
-        private string _spawnRule;
-
-        public string SpawnRule
+        public void DiscardChanges()
         {
-            get => _spawnRule;
-            set
-            {
-                _spawnRule = value;
-                NotifyOfPropertyChange(() => SpawnRule);
-            }
+            ActiveLootTable.DiscardChanges();
+
+            ActiveLootTable.IsDirty = false;
+            SelectedLootTableItem.IsDirty = false;
         }
 
-        private bool _isActive;
-
-        public bool IsActive
-        {
-            get => _isActive;
-            set
-            {
-                _isActive = value;
-                NotifyOfPropertyChange(() => IsActive);
-            }
-        }
-
-        public void Handle(EditorObjectSelected<LootTable> message)
+        public void Handle(EditorObjectSelected<LootTableViewModel> message)
         {
             ActiveLootTable = message.SelectedObject;
-            LootTableItems.Clear();
 
-            foreach (var lti in message.SelectedObject.LootTableItems)
+            if (ActiveLootTable.LootTableItems.Count > 0)
             {
-                LootTableItems.Add(lti);
+                SelectedLootTableItem = ActiveLootTable.LootTableItems.First();
             }
-
-            NotifyOfPropertyChange(() => LootTableItems);
         }
     }
 }

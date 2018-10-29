@@ -7,8 +7,7 @@ namespace SWLOR.Tools.Editor.ViewModels
 {
     public class ErrorViewModel: 
         Screen, 
-        IErrorViewModel,
-        IHandle<DatabaseConnectionFailed>
+        IErrorViewModel
     {
         public ErrorViewModel(IEventAggregator eventAggregator)
         {
@@ -23,18 +22,13 @@ namespace SWLOR.Tools.Editor.ViewModels
             set
             {
                 _errorDetails = value;
-                NotifyOfPropertyChange(() => _errorDetails);
+                NotifyOfPropertyChange(() => ErrorDetails);
             }
         }
 
         public void OK()
         {
             TryClose();
-        }
-
-        public void Handle(DatabaseConnectionFailed message)
-        {
-            ErrorDetails = message.Exception.ToMessageAndCompleteStacktrace();
         }
     }
 }

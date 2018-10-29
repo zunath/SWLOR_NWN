@@ -6,16 +6,20 @@
              xmlns:local="clr-namespace:SWLOR.Tools.Editor.Views"
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="42"></ColumnDefinition>
+            <ColumnDefinition Width="100"></ColumnDefinition>
             <ColumnDefinition Width="5"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
-        <local:ObjectListView Grid.Column="0" Grid.Row="0" cal:View.Model="{Binding ObjectListVM}">
+        <local:ObjectListView 
+            Grid.Column="0" 
+            Grid.Row="0" 
+            cal:View.Model="{Binding ObjectListVM}">
 
         </local:ObjectListView>
 
@@ -29,6 +33,7 @@
                 <RowDefinition Height="5"></RowDefinition>
                 <RowDefinition Height="32"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="32"></RowDefinition>
             </Grid.RowDefinitions>
 
             <Grid.ColumnDefinitions>
@@ -59,27 +64,30 @@
 
                 <TextBox Grid.Row="0"
                          Grid.Column="1"
-                         x:Name="Resref">
+                         Text="{Binding Path=SelectedLootTableItem.Resref, Mode=TwoWay}">
                 </TextBox>
                 <Label Content="Max Quantity:"
                        Grid.Column="0"
                        Grid.Row="1">
                 </Label>
 
-                <TextBox Grid.Row="1"
-                         Grid.Column="1"
-                         x:Name="MaxQuantity">
-                </TextBox>
+                <xctk:IntegerUpDown Grid.Row="1"
+                                    Grid.Column="1" 
+                                    TextAlignment="Left"
+                                    Value="{Binding Path=SelectedLootTableItem.MaxQuantity, Mode=TwoWay}">
+                </xctk:IntegerUpDown>
 
                 <Label Content="Weight:"
                        Grid.Column="0"
                        Grid.Row="2">
                 </Label>
 
-                <TextBox Grid.Row="2"
-                         Grid.Column="1"
-                         x:Name="Weight">
-                </TextBox>
+                <xctk:IntegerUpDown 
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    TextAlignment="Left"
+                    Value="{Binding Path=SelectedLootTableItem.Weight, Mode=TwoWay}">
+                </xctk:IntegerUpDown>
                 <Label Content="Is Active:"
                        Grid.Column="0"
                        Grid.Row="4">
@@ -87,7 +95,7 @@
 
                 <CheckBox Grid.Row="4"
                          Grid.Column="1"
-                         x:Name="IsActive">
+                         IsChecked="{Binding Path=SelectedLootTableItem.IsActive, Mode=TwoWay}">
                 </CheckBox>
                 <Label Content="Spawn Rule:"
                        Grid.Column="0"
@@ -96,34 +104,67 @@
 
                 <TextBox Grid.Row="3"
                          Grid.Column="1"
-                         x:Name="SpawnRule">
+                         Text="{Binding Path=SelectedLootTableItem.SpawnRule, Mode=TwoWay}">
                 </TextBox>
             </Grid>
 
 
             <GridSplitter Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Stretch"></GridSplitter>
 
-            <Button Grid.Row="2"
-                    Grid.Column="1"
-                    Content="New"
-                    x:Name="New">
+            <Grid Grid.Row="2"
+                  Grid.Column="0"
+                  Grid.ColumnSpan="3">
 
-            </Button>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
 
-            <Button Grid.Row="2"
-                    Grid.Column="2"
-                    Content="Delete"
-                    x:Name="Delete">
+                <Button Grid.Row="0"
+                        Grid.Column="0"
+                        Content="New"
+                        x:Name="New"
+                        IsEnabled="{Binding IsTableSelected}">
 
-            </Button>
+                </Button>
 
+                <Button Grid.Row="0"
+                        Grid.Column="1"
+                        Content="Delete"
+                        x:Name="Delete"
+                        IsEnabled="{Binding IsTableSelected}">
+
+                </Button>
+            </Grid>
             <ListBox Grid.Row="3" 
                      Grid.Column="0"
                      Grid.ColumnSpan="3"
-                     x:Name="LootTableItems"
+                     ItemsSource="{Binding Path=ActiveLootTable.LootTableItems}"
+                     SelectedItem="{Binding SelectedLootTableItem}"
                      DisplayMemberPath="Resref">
 
             </ListBox>
+
+            <Grid Grid.Row="4"
+                  Grid.Column="0"
+                  Grid.ColumnSpan="3">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <Button 
+                    Grid.Column="0" 
+                    Content="Save Changes"
+                    x:Name="SaveChanges"
+                    IsEnabled="{Binding CanSaveOrDiscardChanges}"/>
+                <Button 
+                    Grid.Column="1" 
+                    Content="Discard Changes"
+                    x:Name="DiscardChanges"
+                    IsEnabled="{Binding CanSaveOrDiscardChanges}"/>
+            </Grid>
 
         </Grid>
 

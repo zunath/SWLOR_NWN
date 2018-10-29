@@ -1,23 +1,24 @@
-﻿using System;
+﻿using Caliburn.Micro;
+using Newtonsoft.Json;
+using SWLOR.Tools.Editor.ViewModels.Contracts;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Caliburn.Micro;
-using Newtonsoft.Json;
-using SWLOR.Game.Server.Data;
-using SWLOR.Tools.Editor.ViewModels.Contracts;
 
 namespace SWLOR.Tools.Editor.ViewModels.Data
 {
     [Serializable]
-    public abstract class DBObjectViewModelBase: PropertyChangedBase, IDBObjectViewModel
+    public abstract class DBObjectViewModelBase : PropertyChangedBase, IDBObjectViewModel
     {
-        private Dictionary<string, object> _originalValues;
+        private readonly Dictionary<string, object> _trackedProperties;
 
         protected DBObjectViewModelBase()
         {
-            _originalValues = new Dictionary<string, object>();
+            _trackedProperties = new Dictionary<string, object>();
+            PropertyChanged += OnPropertyChanged;
         }
 
         private string _fileName;
@@ -45,13 +46,13 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
             {
                 _isDirty = value;
                 NotifyOfPropertyChange(() => IsDirty);
+
                 OnDirty?.Invoke(this, new EventArgs());
             }
         }
 
-        public void TrackProperty<TSource, TProperty>(
-            TSource source,
-            Expression<Func<TSource, TProperty>> propertyLambda)
+        private PropertyInfo ValidateProperty<TProperty>(
+            Expression<TProperty> propertyLambda)
         {
             Type type = GetType();
 
@@ -67,24 +68,47 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
                 !type.IsSubclassOf(propInfo.ReflectedType))
                 throw new ArgumentException($"Expression '{propertyLambda}' refers to a property that is not from type {type}.");
 
-            _originalValues.Add(propInfo.Name, propInfo.GetValue(this));
+
+            return propInfo;
         }
 
+
+        protected void TrackProperty<T, TProperty>(T obj, Expression<Func<T, TProperty>> expression)
+        {
+            var propInfo = ValidateProperty(expression);
+            _trackedProperties.Add(propInfo.Name, propInfo.GetValue(obj));
+        }
 
         public virtual void DiscardChanges()
         {
-            foreach (var prop in _originalValues)
+            foreach (var prop in _trackedProperties)
             {
                 GetType().GetProperty(prop.Key).SetValue(this, prop.Value);
-            }            
+            }
+
+            IsDirty = false;
         }
 
-        public virtual void SetTrackedValues()
+        public virtual void RefreshTrackedProperties()
         {
-            foreach (var prop in _originalValues.Keys.ToList())
+            foreach (var prop in _trackedProperties.Keys.ToList())
             {
                 var value = GetType().GetProperty(prop).GetValue(this);
-                _originalValues[prop] = value;
+                _trackedProperties[prop] = value;
+            }
+        }
+
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (_trackedProperties.ContainsKey(e.PropertyName))
+            {
+                var oldValue = _trackedProperties[e.PropertyName];
+                var newValue = GetType().GetProperty(e.PropertyName).GetValue(this);
+
+                if (oldValue != newValue)
+                {
+                    IsDirty = true;
+                }
             }
         }
 

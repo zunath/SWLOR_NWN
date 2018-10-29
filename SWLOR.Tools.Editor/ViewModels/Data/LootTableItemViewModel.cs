@@ -23,7 +23,6 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
             {
                 _weight = value;
                 NotifyOfPropertyChange(() => Weight);
-                IsDirty = true;
             }
         }
 
@@ -37,7 +36,6 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
             {
                 _resref = value;
                 NotifyOfPropertyChange(() => Resref);
-                IsDirty = true;
             }
         }
 
@@ -51,7 +49,6 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
             {
                 _spawnRule = value;
                 NotifyOfPropertyChange(() => SpawnRule);
-                IsDirty = true;
             }
         }
 
@@ -65,7 +62,6 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
             {
                 _isActive = value;
                 NotifyOfPropertyChange(() => IsActive);
-                IsDirty = true;
             }
         }
 
@@ -79,7 +75,6 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
             {
                 _maxQuantity = value;
                 NotifyOfPropertyChange(() => MaxQuantity);
-                IsDirty = true;
             }
         }
 
@@ -92,7 +87,6 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
                 _resref = value;
                 NotifyOfPropertyChange(() => DisplayName);
                 NotifyOfPropertyChange(() => Resref);
-                IsDirty = true;
             }
         }
     }

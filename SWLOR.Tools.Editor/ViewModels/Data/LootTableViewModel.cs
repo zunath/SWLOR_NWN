@@ -27,7 +27,6 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
             {
                 _lootTableID = value;
                 NotifyOfPropertyChange(() => LootTableID);
-                IsDirty = true;
             }
         }
 
@@ -41,7 +40,6 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
                 _name = value;
                 NotifyOfPropertyChange(() => Name);
                 NotifyOfPropertyChange(() => DisplayName);
-                IsDirty = true;
             }
         }
 
@@ -54,7 +52,6 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
                 _name = value;
                 NotifyOfPropertyChange(() => DisplayName);
                 NotifyOfPropertyChange(() => Name);
-                IsDirty = true;
             }
         }
 
@@ -68,13 +65,13 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
             }
         }
 
-        public override void SetTrackedValues()
+        public override void RefreshTrackedProperties()
         {
-            base.SetTrackedValues();
+            base.RefreshTrackedProperties();
 
             foreach (var item in LootTableItems)
             {
-                item.SetTrackedValues();
+                item.RefreshTrackedProperties();
             }
         }
     }

@@ -127,6 +127,7 @@ namespace SWLOR.Tools.Editor
             // Startables
             builder.RegisterType<CreateDataDirectories>().As<IStartable>().SingleInstance();
             builder.RegisterType<InitializeJsonSerializer>().As<IStartable>().SingleInstance();
+            builder.RegisterType<InitializeAutomapper>().As<IStartable>().SingleInstance();
 
             // Other Startup Events
             builder.RegisterType<PostBootstrap>().As<IPostBootstrap>().SingleInstance();

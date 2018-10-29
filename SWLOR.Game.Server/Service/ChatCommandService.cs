@@ -80,6 +80,13 @@ namespace SWLOR.Game.Server.Service
                 }
                 else
                 {
+                    string error = chatCommand.ValidateArguments(sender, args);
+                    if (!string.IsNullOrWhiteSpace(error))
+                    {
+                        sender.SendMessage(error);
+                        return;
+                    }
+
                     sender.SetLocalString("CHAT_COMMAND", command);
                     sender.SetLocalString("CHAT_COMMAND_ARGS", args);
                     sender.SendMessage("Please use your 'Chat Command Targeter' feat to select the target of this chat command.");
@@ -141,7 +148,16 @@ namespace SWLOR.Game.Server.Service
                  attribute.Permissions.HasFlag(CommandPermissionType.DM) && isDM))
             {
                 string[] argsArr = string.IsNullOrWhiteSpace(args) ? new string[0] : args.Split(' ').ToArray();
-                command.DoAction(sender, target, targetLocation, argsArr);
+                string error = command.ValidateArguments(sender, argsArr);
+
+                if (!string.IsNullOrWhiteSpace(error))
+                {
+                    sender.SendMessage(error);
+                }
+                else
+                {
+                    command.DoAction(sender, target, targetLocation, argsArr);
+                }
             }
             else
             {

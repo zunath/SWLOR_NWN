@@ -81,9 +81,6 @@ namespace SWLOR.Game.Server.Conversation
         {
             Model model = GetDialogCustomData<Model>();
             ItemVO tempItem = (ItemVO)GetResponseByID("MainPage", responseID).CustomData;
-            Quest quest = _quest.GetQuestByID(model.QuestID);
-
-            _.RemoveJournalQuestEntry(quest.JournalTag, GetPC(), FALSE);
             _quest.CompleteQuest(GetPC(), null, model.QuestID, tempItem);
 
             EndConversation();

@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.Contracts;
 using static NWN.NWScript;
 using Object = NWN.Object;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -29,6 +30,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IDurabilityService _durability;
         private readonly IPlayerStatService _stat;
         private readonly ILanguageService _language;
+        private readonly INWNXAdmin _nwnxAdmin;
 
         public PlayerService(
             INWScript script, 
@@ -43,7 +45,8 @@ namespace SWLOR.Game.Server.Service
             IRaceService race,
             IDurabilityService durability,
             IPlayerStatService stat,
-            ILanguageService language)
+            ILanguageService language,
+            INWNXAdmin nwnxAdmin)
         {
             _ = script;
             _db = db;
@@ -58,6 +61,7 @@ namespace SWLOR.Game.Server.Service
             _durability = durability;
             _stat = stat;
             _language = language;
+            _nwnxAdmin = nwnxAdmin;
         }
 
         public void InitializePlayer(NWPlayer player)
@@ -411,6 +415,5 @@ namespace SWLOR.Game.Server.Service
             pc.ClearAllActions();
             _dialog.StartConversation(pc, pc, "RestMenu");
         }
-
     }
 }

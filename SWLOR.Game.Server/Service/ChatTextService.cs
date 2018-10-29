@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Dynamic;
 using System.Linq;
 using System.Net;
@@ -34,7 +35,6 @@ namespace SWLOR.Game.Server.Service
         private readonly IColorTokenService _color;
         private readonly INWNXChat _nwnxChat;
         private readonly IDataContext _db;
-        private readonly HttpClient _httpClient;
         private readonly ILanguageService _language;
         private readonly IEmoteStyleService _emoteStyle;
 
@@ -43,7 +43,6 @@ namespace SWLOR.Game.Server.Service
             IColorTokenService color,
             INWNXChat nwnxChat,
             IDataContext db,
-            HttpClient httpClient,
             ILanguageService language,
             IEmoteStyleService emoteStyle)
         {
@@ -51,7 +50,6 @@ namespace SWLOR.Game.Server.Service
             _color = color;
             _nwnxChat = nwnxChat;
             _db = db;
-            _httpClient = httpClient;
             _language = language;
             _emoteStyle = emoteStyle;
         }
@@ -328,25 +326,7 @@ namespace SWLOR.Game.Server.Service
             player.SetLocalInt("DISPLAY_HOLONET", dbPlayer.DisplayHolonet ? TRUE : FALSE);
             player.SetLocalInt("DISPLAY_DISCORD", dbPlayer.DisplayDiscord ? TRUE : FALSE);
         }
-
-        public void OnModuleHeartbeat()
-        {
-            List<DiscordChatQueue> discordQueue = _db
-                .DiscordChatQueues
-                .Where(x => x.DatePosted == null || x.DatePosted == null && x.DateForRetry != null && DateTime.UtcNow > x.DateForRetry && x.RetryAttempts < 10)
-                .OrderBy(o => o.DateForRetry)
-                .ThenBy(o => o.DateSent)
-                .ToList();
-
-            foreach (var queue in discordQueue)
-            {
-                PostAsync(queue.DiscordChatQueueID, queue.SenderName, queue.Message, queue.SenderAccountName);
-                queue.DatePosted = DateTime.UtcNow;
-            }
-
-            _db.SaveChanges();
-        }
-
+        
         private enum WorkingOnEmoteStyle
         {
             None,
@@ -592,60 +572,5 @@ namespace SWLOR.Game.Server.Service
             return components;
         }
 
-        private async void PostAsync(int queueID, string characterName, string message, string accountName)
-        {
-            string url = Environment.GetEnvironmentVariable("DISCORD_WEBHOOK_URL");
-            if (string.IsNullOrWhiteSpace(url)) return;
-
-            dynamic data = new ExpandoObject();
-            data.content = message;
-            data.username = characterName + " (" + accountName + ")";
-            data.file = message;
-
-            string json = JsonConvert.SerializeObject(data);
-            var content = new StringContent(json);
-            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var response = await _httpClient.PostAsync(url, content);
-            
-            switch (response.StatusCode)
-            {
-                case HttpStatusCode.OK:
-                case HttpStatusCode.Created:
-                case HttpStatusCode.NoContent:
-                    return;
-            }
-            
-            if (response.Content != null)
-            {
-                var responseContent = await response.Content.ReadAsStringAsync();
-                if (responseContent.Length <= 0) return;
-
-                dynamic responseData = JsonConvert.DeserializeObject<dynamic>(responseContent);
-
-                Console.WriteLine(responseContent);
-
-                App.Resolve<IDataContext>(db =>
-                {
-                    var record = db.DiscordChatQueues.Single(x => x.DiscordChatQueueID == queueID);
-                    record.DatePosted = null;
-
-                    if (responseContent.Length > 0)
-                    {
-                        record.ResponseContent = responseContent;
-                    }
-
-                    record.RetryAttempts++;
-
-                    int retryMS = 60000; // 1 minute
-                    if (responseData != null && responseData.retry_after != null)
-                    {
-                        retryMS = responseData.retry_after;
-                    }
-
-                    record.DateForRetry = DateTime.UtcNow.AddMilliseconds(retryMS);
-                    db.SaveChanges();
-                });
-            }
-        }
     }
 }

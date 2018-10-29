@@ -208,7 +208,7 @@ namespace SWLOR.Game.Server.Service
             if (registration.Value == null) return;
 
             int partyLevel = registration.Value.HighestRank;
-
+            
             // Identify base XP using delta between party level and enemy level.
             float cr = creature.ChallengeRating;
             int enemyLevel = (int)(cr * 5.0f);

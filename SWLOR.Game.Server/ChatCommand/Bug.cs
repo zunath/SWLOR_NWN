@@ -24,12 +24,6 @@ namespace SWLOR.Game.Server.ChatCommand
 
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            if(args.Length <= 0 || args[0].Length <= 0)
-            {
-                user.SendMessage("Please enter in a description for the bug.");
-                return;
-            }
-            
             string message = string.Empty;
 
             foreach (var arg in args)
@@ -61,6 +55,16 @@ namespace SWLOR.Game.Server.ChatCommand
             _db.SaveChanges();
 
             user.SendMessage("Bug report submitted! Thank you for your report.");
+        }
+
+        public string ValidateArguments(NWPlayer user, params string[] args)
+        {
+            if (args.Length <= 0 || args[0].Length <= 0)
+            {
+                return "Please enter in a description for the bug.";
+            }
+
+            return string.Empty;
         }
 
         public bool RequiresTarget => true;

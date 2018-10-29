@@ -30,11 +30,6 @@ namespace SWLOR.Game.Server.ChatCommand
         /// <param name="args"></param>
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            if (args.Length <= 0)
-            {
-                user.SendMessage(_color.Red("Please specify a resref and optionally a quantity. Example: /" + nameof(SpawnItem) + " my_resref 20"));
-                return;
-            }
             string resref = args[0];
             int quantity = 1;
 
@@ -55,6 +50,16 @@ namespace SWLOR.Game.Server.ChatCommand
             }
 
             item.IsIdentified = true;
+        }
+
+        public string ValidateArguments(NWPlayer user, params string[] args)
+        {
+            if (args.Length <= 0)
+            {
+                return _color.Red("Please specify a resref and optionally a quantity. Example: /" + nameof(SpawnItem) + " my_resref 20");
+            }
+
+            return string.Empty;
         }
 
         public bool RequiresTarget => false;

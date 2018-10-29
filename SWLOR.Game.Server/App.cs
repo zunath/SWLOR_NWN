@@ -28,6 +28,8 @@ using SWLOR.Game.Server.QuestRule.Contracts;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.SpawnRule.Contracts;
+using SWLOR.Game.Server.Threading;
+using SWLOR.Game.Server.Threading.Contracts;
 
 namespace SWLOR.Game.Server
 {
@@ -184,6 +186,9 @@ namespace SWLOR.Game.Server
             builder.RegisterType<DatabaseMigrationRunner>()
                 .As<IStartable>()
                 .SingleInstance();
+            builder.RegisterType<BackgroundThreadManager>()
+                .As<IBackgroundThreadManager>()
+                .SingleInstance();
 
             // Types
             builder.RegisterType<DataContext>().As<IDataContext>().InstancePerDependency().WithParameter("useCustom", true);
@@ -238,6 +243,7 @@ namespace SWLOR.Game.Server
             builder.RegisterType<ObjectVisibilityService>().As<IObjectVisibilityService>();
             builder.RegisterType<PerkService>().As<IPerkService>();
             builder.RegisterType<PlayerDescriptionService>().As<IPlayerDescriptionService>();
+            builder.RegisterType<PlayerValidationService>().As<IPlayerValidationService>();
             builder.RegisterType<PlayerService>().As<IPlayerService>();
             builder.RegisterType<PlayerStatService>().As<IPlayerStatService>();
             builder.RegisterType<PVPSanctuaryService>().As<IPVPSanctuaryService>();
@@ -251,6 +257,9 @@ namespace SWLOR.Game.Server
             builder.RegisterType<SpawnService>().As<ISpawnService>();
             builder.RegisterType<TimeService>().As<ITimeService>();
             
+            // Background threads
+            builder.RegisterType<DiscordBackgroundThread>().As<IBackgroundThread>();
+
             // Interfaces
             RegisterInterfaceImplementations<IRegisteredEvent>(builder);
             RegisterInterfaceImplementations<ICustomEffect>(builder);
@@ -269,6 +278,7 @@ namespace SWLOR.Game.Server
             // Third Party
             builder.RegisterType<BiowarePosition>().As<IBiowarePosition>();
             builder.RegisterType<BiowareXP2>().As<IBiowareXP2>();
+            builder.RegisterType<NWNXAdmin>().As<INWNXAdmin>();
             builder.RegisterType<NWNXChat>().As<INWNXChat>();
             builder.RegisterType<NWNXCreature>().As<INWNXCreature>();
             builder.RegisterType<NWNXDamage>().As<INWNXDamage>();

@@ -119,6 +119,9 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual bool IsDead => _.GetIsDead(Object) == 1;
 
+        public virtual bool IsPossessedFamiliar => _.GetIsPossessedFamiliar(Object) == TRUE;
+
+        public virtual bool IsDMPossessed => _.GetIsDMPossessed(Object) == TRUE;
 
         public bool HasAnyEffect(params int[] effectIDs)
         {

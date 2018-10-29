@@ -18,12 +18,6 @@ namespace SWLOR.Game.Server.ChatCommand
 
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            if (args.Length < 1)
-            {
-                user.SendMessage("You must specify a waypoint tag. Example: /tpwp MY_WAYPOINT_TAG");
-                return;
-            }
-
             string tag = args[0];
             NWObject wp = _.GetWaypointByTag(tag);
 
@@ -37,6 +31,16 @@ namespace SWLOR.Game.Server.ChatCommand
             {
                 _.ActionJumpToLocation(wp.Location);
             });
+        }
+
+        public string ValidateArguments(NWPlayer user, params string[] args)
+        {
+            if (args.Length < 1)
+            {
+                return "You must specify a waypoint tag. Example: /tpwp MY_WAYPOINT_TAG";
+            }
+
+            return string.Empty;
         }
 
         public bool RequiresTarget => false;

@@ -43,6 +43,8 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
         {
             NWPlaceable point = (Object.OBJECT_SELF);
             NWPlayer oPC = (_.GetLastOpenedBy());
+            if (!oPC.IsPlayer) return false;
+
             var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(oPC);
             const int baseChanceToFullyHarvest = 50;
             bool alwaysDestroys = point.GetLocalInt("SCAVENGE_POINT_ALWAYS_DESTROYS") == 1;

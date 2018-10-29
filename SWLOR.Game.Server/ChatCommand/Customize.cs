@@ -24,15 +24,19 @@ namespace SWLOR.Game.Server.ChatCommand
         /// <param name="args"></param>
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
+            _dialog.StartConversation(user, user, "CharacterCustomization");
+        }
+
+        public string ValidateArguments(NWPlayer user, params string[] args)
+        {
             string areaResref = user.Area.Resref;
 
             if (areaResref != "ooc_area")
             {
-                user.SendMessage("Customization can only occur in the starting area. You can't use this command any more.");
-                return;
+                return "Customization can only occur in the starting area. You can't use this command any more.";
             }
 
-            _dialog.StartConversation(user, user, "CharacterCustomization");
+            return string.Empty;
         }
 
         public bool RequiresTarget => false;

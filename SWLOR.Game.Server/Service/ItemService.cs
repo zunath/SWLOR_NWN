@@ -477,6 +477,40 @@ namespace SWLOR.Game.Server.Service
 
             if (!validItemTypes.Contains(baseItemType)) return;
 
+            AddOnHitProperty(oItem);
+
+            // Check ammo every time
+            if(player.Arrows.IsValid)
+            {
+                AddOnHitProperty(player.Arrows);
+                player.Arrows.RecommendedLevel = oItem.RecommendedLevel;
+            }
+
+            if (player.Bolts.IsValid)
+            {
+                AddOnHitProperty(player.Bolts);
+                player.Bolts.RecommendedLevel = oItem.RecommendedLevel;
+            }
+
+            if (player.Bullets.IsValid)
+            {
+                AddOnHitProperty(player.Bullets);
+                player.Bullets.RecommendedLevel = oItem.RecommendedLevel;
+            }
+
+
+            if (baseItemType == BASE_ITEM_TORCH)
+            {
+                int charges = oItem.ReduceCharges();
+                if (charges <= 0)
+                {
+                    oItem.Destroy();
+                }
+            }
+        }
+
+        private void AddOnHitProperty(NWItem oItem)
+        {
             foreach (ItemProperty ip in oItem.ItemProperties)
             {
                 if (_.GetItemPropertyType(ip) == ITEM_PROPERTY_ONHITCASTSPELL)
@@ -490,15 +524,6 @@ namespace SWLOR.Game.Server.Service
 
             // No item property found. Add it to the item.
             _xp2.IPSafeAddItemProperty(oItem, _.ItemPropertyOnHitCastSpell(IP_CONST_ONHIT_CASTSPELL_ONHIT_UNIQUEPOWER, 40), 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-
-            if (baseItemType == BASE_ITEM_TORCH)
-            {
-                int charges = oItem.ReduceCharges();
-                if (charges <= 0)
-                {
-                    oItem.Destroy();
-                }
-            }
         }
 
         public void ReturnItem(NWObject target, NWItem item)

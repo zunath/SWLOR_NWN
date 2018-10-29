@@ -18,7 +18,6 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IPerkService _perk;
         private readonly IBaseService _base;
         private readonly IPlayerStatService _playerStat;
-        private readonly IChatTextService _chatText;
         
         public OnModuleHeartbeat(INWScript script,
             IDataContext db,
@@ -26,8 +25,7 @@ namespace SWLOR.Game.Server.Event.Module
             IAbilityService ability,
             IPerkService perk,
             IBaseService @base,
-            IPlayerStatService playerStat,
-            IChatTextService chatText)
+            IPlayerStatService playerStat)
         {
             _ = script;
             _db = db;
@@ -36,7 +34,6 @@ namespace SWLOR.Game.Server.Event.Module
             _perk = perk;
             _base = @base;
             _playerStat = playerStat;
-            _chatText = chatText;
         }
 
         public bool Run(params object[] args)
@@ -64,7 +61,6 @@ namespace SWLOR.Game.Server.Event.Module
             SaveCharacters();
             _item.OnModuleHeartbeat();
             _base.OnModuleHeartbeat();
-            _chatText.OnModuleHeartbeat();
 
             return true;
         }

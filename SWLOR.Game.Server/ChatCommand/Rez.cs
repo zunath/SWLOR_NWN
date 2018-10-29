@@ -34,6 +34,11 @@ namespace SWLOR.Game.Server.ChatCommand
 
         }
 
+        public string ValidateArguments(NWPlayer user, params string[] args)
+        {
+            return string.Empty;
+        }
+
         public bool RequiresTarget => false;
     }
 }

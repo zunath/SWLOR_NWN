@@ -21,6 +21,11 @@ namespace SWLOR.Game.Server.ChatCommand
             _dialog.StartConversation(user, user, "ViewSkills");
         }
 
+        public string ValidateArguments(NWPlayer user, params string[] args)
+        {
+            return string.Empty;
+        }
+
         public bool RequiresTarget => false;
     }
 }

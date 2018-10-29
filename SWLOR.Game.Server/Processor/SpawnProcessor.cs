@@ -117,6 +117,11 @@ namespace SWLOR.Game.Server.Processor
                         .OrderBy(o => Guid.NewGuid()).First();
 
                     resref = dbSpawn.Resref;
+
+                    if (!string.IsNullOrWhiteSpace(dbSpawn.SpawnRule))
+                    {
+                        spawn.SpawnRule = dbSpawn.SpawnRule;
+                    }
                 }
 
                 if (location == null)

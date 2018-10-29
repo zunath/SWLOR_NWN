@@ -93,6 +93,9 @@ namespace SWLOR.Game.Server.Service
                 dbArea.IsActive = true;
                 dbArea.AutoSpawnResources = area.GetLocalInt("AUTO_SPAWN_RESOURCES") == TRUE;
                 dbArea.ResourceQuality = area.GetLocalInt("RESOURCE_QUALITY");
+                dbArea.MaxResourceQuality = area.GetLocalInt("RESOURCE_MAX_QUALITY");
+                if (dbArea.MaxResourceQuality < dbArea.ResourceQuality)
+                    dbArea.MaxResourceQuality = dbArea.ResourceQuality;
 
 
                 _db.Areas.AddOrUpdate(dbArea);

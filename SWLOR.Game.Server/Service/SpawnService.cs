@@ -243,8 +243,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         ovs.ApplyVisibilityForObject(plc);
                     });
-
-
+                    
                     if (dbSpawn.NPCGroupID != null && dbSpawn.NPCGroupID > 0)
                     {
                         plc.SetLocalInt("NPC_GROUP", Convert.ToInt32(dbSpawn.NPCGroupID));

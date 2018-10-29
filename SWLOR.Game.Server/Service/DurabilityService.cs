@@ -206,7 +206,17 @@ namespace SWLOR.Game.Server.Service
         public void OnHitCastSpell(NWPlayer oTarget)
         {
             NWItem oSpellOrigin = (_.GetSpellCastItem());
-            RunItemDecay(oTarget, oSpellOrigin);
+
+            NWItem decayItem = oSpellOrigin;
+
+            if (oSpellOrigin.BaseItemType == BASE_ITEM_ARROW ||
+                oSpellOrigin.BaseItemType == BASE_ITEM_BOLT ||
+                oSpellOrigin.BaseItemType == BASE_ITEM_BULLET)
+            {
+                decayItem = oTarget.RightHand;
+            }
+
+            RunItemDecay(oTarget, decayItem);
         }
 
     }

@@ -15,6 +15,8 @@ namespace SWLOR.Game.Server.ChatCommand
         private readonly IRandomService _random;
         private readonly IColorTokenService _color;
 
+        private string GenericError;
+
         public Dice(
             INWScript script,
             IRandomService random,
@@ -23,18 +25,12 @@ namespace SWLOR.Game.Server.ChatCommand
             _ = script;
             _random = random;
             _color = color;
+
+            GenericError = _color.Red("Please enter /dice help for more information on how to use this command.");
         }
 
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            string genericError = _color.Red("Please enter /dice help for more information on how to use this command.");
-
-            if (args.Length < 1)
-            {
-                user.SendMessage(genericError);
-                return;
-            }
-
             string command = args[0].ToLower();
 
             switch (command)
@@ -63,7 +59,7 @@ namespace SWLOR.Game.Server.ChatCommand
                     break;
 
                 default:
-                    user.SendMessage(genericError);
+                    user.SendMessage(GenericError);
                     return;
             }
 
@@ -134,5 +130,14 @@ namespace SWLOR.Game.Server.ChatCommand
             user.SpeakString(message);
         }
 
+        public string ValidateArguments(NWPlayer user, params string[] args)
+        {
+            if (args.Length < 1)
+            {
+                return GenericError;
+            }
+
+            return string.Empty;
+        }
     }
 }

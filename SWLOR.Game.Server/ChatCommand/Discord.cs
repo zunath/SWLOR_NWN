@@ -33,19 +33,6 @@ namespace SWLOR.Game.Server.ChatCommand
 
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            bool isEnabled = user.GetLocalInt("DISPLAY_DISCORD") == TRUE;
-
-            if (!isEnabled)
-            {
-                user.SendMessage("You have disabled the Discord chat channel. You can't send messages to it while disabled.");
-                return;
-            }
-
-            if (args.Length <= 0 || args[0].Length <= 0)
-            {
-                user.SendMessage("Please enter in a message to send to Discord.");
-                return;
-            }
             
             string message = string.Empty;
 
@@ -80,6 +67,23 @@ namespace SWLOR.Game.Server.ChatCommand
                     _nwnxChat.SendMessage((int)ChatChannelType.PlayerTell, message, chatSender, user);
                 }
             });
+        }
+
+        public string ValidateArguments(NWPlayer user, params string[] args)
+        {
+            bool isEnabled = user.GetLocalInt("DISPLAY_DISCORD") == TRUE;
+
+            if (!isEnabled)
+            {
+                return "You have disabled the Discord chat channel. You can't send messages to it while disabled.";
+            }
+
+            if (args.Length <= 0 || args[0].Length <= 0)
+            {
+                return "Please enter in a message to send to Discord.";
+            }
+
+            return string.Empty;
         }
 
         public bool RequiresTarget => false;

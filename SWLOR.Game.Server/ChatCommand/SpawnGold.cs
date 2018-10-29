@@ -30,11 +30,6 @@ namespace SWLOR.Game.Server.ChatCommand
         /// <param name="args"></param>
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            if (args.Length <= 0)
-            {
-                user.SendMessage(_color.Red("Please specify a quantity. Example: /" + nameof(SpawnGold) + " 34"));
-                return;
-            }
             int quantity = 1;
 
             if (args.Length >= 1)
@@ -46,6 +41,15 @@ namespace SWLOR.Game.Server.ChatCommand
             }
 
             _.GiveGoldToCreature(user, quantity);
+        }
+
+        public string ValidateArguments(NWPlayer user, params string[] args)
+        {
+            if (args.Length <= 0)
+            {
+                return _color.Red("Please specify a quantity. Example: /" + nameof(SpawnGold) + " 34");
+            }
+            return string.Empty;
         }
 
         public bool RequiresTarget => false;

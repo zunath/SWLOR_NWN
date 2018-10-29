@@ -19,6 +19,11 @@ namespace SWLOR.Game.Server.ChatCommand
             user.SendMessage($"Current Position: ({user.Position.m_X}, {user.Position.m_Y}, {user.Position.m_Z})");
         }
 
+        public string ValidateArguments(NWPlayer user, params string[] args)
+        {
+            return string.Empty;
+        }
+
         public bool RequiresTarget => false;
     }
 }

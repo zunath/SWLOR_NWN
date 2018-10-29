@@ -28,6 +28,11 @@ namespace SWLOR.Game.Server.ChatCommand
             user.AssignCommand(() => _.ActionPlayAnimation(NWScript.ANIMATION_LOOPING_SIT_CROSS, 1.0f, 9999));
         }
 
+        public string ValidateArguments(NWPlayer user, params string[] args)
+        {
+            return string.Empty;
+        }
+
         public bool RequiresTarget => false;
     }
 }

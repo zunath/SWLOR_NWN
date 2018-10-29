@@ -17,5 +17,16 @@ namespace SWLOR.Game.Server.ChatCommand.Contracts
         /// If true, a player must use the Chat Command Targeter feat in order for the command to run.
         /// </summary>
         bool RequiresTarget { get; }
+
+        /// <summary>
+        /// If null or empty string, the user can use the chat command.
+        /// If any other value, the user will be given the return value as an error message 
+        /// </summary>
+        /// <param name="user">The user which typed the command</param>
+        /// <param name="args">Arguments passed in by player.</param>
+        /// 
+        /// 
+        /// <returns></returns>
+        string ValidateArguments(NWPlayer user, params string[] args);
     }
 }

@@ -24,6 +24,11 @@ namespace SWLOR.Game.Server.ChatCommand
             user.SendMessage($"Current Area Coordinates: ({cellX}, {cellY})");
         }
 
+        public string ValidateArguments(NWPlayer user, params string[] args)
+        {
+            return string.Empty;
+        }
+
         public bool RequiresTarget => false;
     }
 }

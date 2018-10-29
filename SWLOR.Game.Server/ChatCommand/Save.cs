@@ -35,6 +35,11 @@ namespace SWLOR.Game.Server.ChatCommand
             _.SendMessageToPC(user.Object, "Character saved successfully.");
         }
 
+        public string ValidateArguments(NWPlayer user, params string[] args)
+        {
+            return string.Empty;
+        }
+
         public bool RequiresTarget => false;
     }
 }

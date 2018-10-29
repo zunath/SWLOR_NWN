@@ -18,12 +18,6 @@ namespace SWLOR.Game.Server.ChatCommand
 
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            if (args.Length < 1)
-            {
-                user.SendMessage("Missing arguments. Format should be: /SetLocalString Variable_Name <VALUE>. Example: /SetLocalString MY_VARIABLE My Text");
-                return;
-            }
-
             if (!target.IsValid)
             {
                 user.SendMessage("Target is invalid.");
@@ -43,6 +37,16 @@ namespace SWLOR.Game.Server.ChatCommand
             _.SetLocalString(target, variableName, value);
 
             user.SendMessage("Local string set: " + variableName + " = " + value);
+        }
+
+        public string ValidateArguments(NWPlayer user, params string[] args)
+        {
+            if (args.Length < 1)
+            {
+                return "Missing arguments. Format should be: /SetLocalString Variable_Name <VALUE>. Example: /SetLocalString MY_VARIABLE My Text";
+            }
+            
+            return string.Empty;
         }
 
         public bool RequiresTarget => true;

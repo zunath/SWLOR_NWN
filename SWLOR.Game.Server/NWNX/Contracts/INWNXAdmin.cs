@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.NWNX.Contracts
         void AddBannedIP(string ip);
         void AddBannedPlayerName(string playername);
         void ClearPlayerPassword();
-        void DeletePlayerCharacter(NWPlayer pc, int bPreserveBackup);
+        void DeletePlayerCharacter(NWPlayer pc, bool bPreserveBackup);
         string GetBannedList();
         string GetDMPassword();
         string GetPlayerPassword();

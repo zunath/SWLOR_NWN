@@ -83,12 +83,14 @@
     <Compile Include="ChatCommand\Bored.cs" />
     <Compile Include="ChatCommand\Bow.cs" />
     <Compile Include="ChatCommand\Bug.cs" />
+    <Compile Include="ChatCommand\CDKey.cs" />
     <Compile Include="ChatCommand\CommandDetailsAttribute.cs" />
     <Compile Include="ChatCommand\Contracts\IChatCommand.cs" />
     <Compile Include="ChatCommand\Coord.cs" />
     <Compile Include="ChatCommand\Customize.cs" />
     <Compile Include="ChatCommand\DeadBack.cs" />
     <Compile Include="ChatCommand\DeadFront.cs" />
+    <Compile Include="ChatCommand\Delete.cs" />
     <Compile Include="ChatCommand\Dice.cs" />
     <Compile Include="ChatCommand\Discord.cs" />
     <Compile Include="ChatCommand\Drink.cs" />

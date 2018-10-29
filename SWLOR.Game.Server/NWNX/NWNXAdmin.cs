@@ -1,6 +1,7 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX.Contracts;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.NWNX
 {
@@ -78,9 +79,9 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="pc">The player character to boot.</param>
         /// <param name="bPreserveBackup">If true, it will leave the files on the server and append ".deleted0" to the bic file name.</param>
-        public void DeletePlayerCharacter(NWPlayer pc, int bPreserveBackup)
+        public void DeletePlayerCharacter(NWPlayer pc, bool bPreserveBackup)
         {
-            NWNX_PushArgumentInt("NWNX_Administration", "DELETE_PLAYER_CHARACTER", bPreserveBackup);
+            NWNX_PushArgumentInt("NWNX_Administration", "DELETE_PLAYER_CHARACTER", bPreserveBackup ? TRUE : FALSE);
             NWNX_PushArgumentObject("NWNX_Administration", "DELETE_PLAYER_CHARACTER", pc);
             NWNX_CallFunction("NWNX_Administration", "DELETE_PLAYER_CHARACTER");
         }

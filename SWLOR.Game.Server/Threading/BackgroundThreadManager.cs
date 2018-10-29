@@ -31,7 +31,6 @@ namespace SWLOR.Game.Server.Threading
         {
             Console.WriteLine("Shutting down Discord thread...");
             _discordThread.Exit();
-            Console.WriteLine("Discord thread shut down successfully.");
         }
     }
 

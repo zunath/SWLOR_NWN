@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Service
             if (!string.IsNullOrWhiteSpace(error))
             {
                 _.BootPC(player, error);
-                _nwnxAdmin.DeletePlayerCharacter(player, TRUE);
+                _nwnxAdmin.DeletePlayerCharacter(player, true);
             }
         }
 
@@ -96,6 +96,8 @@ namespace SWLOR.Game.Server.Service
 
         private string ValidateExistingCharacter(NWPlayer player)
         {
+            if (player.IsInitializedAsPlayer) return string.Empty;
+
             string error = string.Empty;
             PlayerCharacter dbPlayer = _db.PlayerCharacters.FirstOrDefault(x => x.CharacterName == player.Name);
 

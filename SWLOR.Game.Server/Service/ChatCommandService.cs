@@ -19,6 +19,8 @@ namespace SWLOR.Game.Server.Service
         private readonly IAuthorizationService _auth;
         private readonly INWNXEvents _nwnxEvents;
         private readonly INWNXCreature _nwnxCreature;
+        private readonly INWNXPlayer _nwnxPlayer;
+        private readonly INWNXPlayerQuickBarSlot _nwnxQBS;
 
         public ChatCommandService(
             INWNXChat nwnxChat,
@@ -26,7 +28,9 @@ namespace SWLOR.Game.Server.Service
             IAuthorizationService auth,
             INWNXEvents nwnxEvents,
             INWNXCreature nwnxCreature,
-            INWScript script)
+            INWScript script,
+            INWNXPlayer nwnxPlayer,
+            INWNXPlayerQuickBarSlot nwnxQBS)
         {
             _nwnxChat = nwnxChat;
             _color = color;
@@ -34,6 +38,8 @@ namespace SWLOR.Game.Server.Service
             _nwnxEvents = nwnxEvents;
             _nwnxCreature = nwnxCreature;
             _ = script;
+            _nwnxPlayer = nwnxPlayer;
+            _nwnxQBS = nwnxQBS;
         }
 
         public static bool CanHandleChat(NWObject sender, string message)
@@ -91,9 +97,18 @@ namespace SWLOR.Game.Server.Service
                     sender.SetLocalString("CHAT_COMMAND_ARGS", args);
                     sender.SendMessage("Please use your 'Chat Command Targeter' feat to select the target of this chat command.");
 
-                    if (_.GetHasFeat((int) CustomFeatType.ChatCommandTargeter, sender) == FALSE)
+                    if (_.GetHasFeat((int) CustomFeatType.ChatCommandTargeter, sender) == FALSE || sender.IsDM)
                     {
                         _nwnxCreature.AddFeatByLevel(sender, (int)CustomFeatType.ChatCommandTargeter, 1);
+
+                        if(sender.IsDM)
+                        {
+                            var qbs = _nwnxPlayer.GetQuickBarSlot(sender, 11);
+                            if (qbs.ObjectType == QuickBarSlotType.Empty)
+                            {
+                                _nwnxPlayer.SetQuickBarSlot(sender, 11, _nwnxQBS.UseFeat((int)CustomFeatType.ChatCommandTargeter));
+                            }
+                        }
                     }
                 }
             });

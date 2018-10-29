@@ -18,12 +18,6 @@ namespace SWLOR.Game.Server.ChatCommand
 
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            if (args.Length < 1)
-            {
-                user.SendMessage("Missing arguments. Format should be: /GetLocalInt Variable_Name. Example: /GetLocalInt MY_VARIABLE");
-                return;
-            }
-
             if (!target.IsValid)
             {
                 user.SendMessage("Target is invalid.");
@@ -34,6 +28,16 @@ namespace SWLOR.Game.Server.ChatCommand
             int value = _.GetLocalInt(target, variableName);
 
            user.SendMessage(variableName + " = " + value);
+        }
+
+        public string ValidateArguments(NWPlayer user, params string[] args)
+        {
+            if (args.Length < 1)
+            {
+                return "Missing arguments. Format should be: /GetLocalInt Variable_Name. Example: /GetLocalInt MY_VARIABLE";
+            }
+            
+            return string.Empty;
         }
 
         public bool RequiresTarget => true;

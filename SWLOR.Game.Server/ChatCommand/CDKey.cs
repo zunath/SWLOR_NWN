@@ -32,6 +32,11 @@ namespace SWLOR.Game.Server.ChatCommand
             user.SendMessage("Your public CD Key is: " + cdKey);
         }
 
+        public string ValidateArguments(NWPlayer user, params string[] args)
+        {
+            return string.Empty;
+        }
+
         public bool RequiresTarget => false;
     }
 }

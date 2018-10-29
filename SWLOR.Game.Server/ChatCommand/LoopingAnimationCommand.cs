@@ -24,5 +24,9 @@ namespace SWLOR.Game.Server.ChatCommand
 
         protected abstract void DoAction(NWPlayer user, float duration);
 
+        public string ValidateArguments(NWPlayer user, params string[] args)
+        {
+            return string.Empty;
+        }
     }
 }

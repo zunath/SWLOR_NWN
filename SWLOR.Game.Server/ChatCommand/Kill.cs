@@ -22,6 +22,11 @@ namespace SWLOR.Game.Server.ChatCommand
             _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, damage, target);
         }
 
+        public string ValidateArguments(NWPlayer user, params string[] args)
+        {
+            return string.Empty;
+        }
+
         public bool RequiresTarget => true;
     }
 }

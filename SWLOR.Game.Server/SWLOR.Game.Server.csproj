@@ -129,7 +129,6 @@
     <Compile Include="ChatCommand\Spasm.cs" />
     <Compile Include="ChatCommand\SpawnGold.cs" />
     <Compile Include="ChatCommand\SpawnItem.cs" />
-    <Compile Include="ChatCommand\Stuck.cs" />
     <Compile Include="ChatCommand\Sit.cs" />
     <Compile Include="ChatCommand\Day.cs" />
     <Compile Include="ChatCommand\Taunt.cs" />

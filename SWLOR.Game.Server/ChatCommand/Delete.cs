@@ -37,15 +37,6 @@ namespace SWLOR.Game.Server.ChatCommand
         /// <param name="args"></param>
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            string cdKey = _.GetPCPublicCDKey(user);
-            string enteredCDKey = args.Length > 0 ? args[0] : string.Empty;
-
-            if (cdKey != enteredCDKey)
-            {
-                user.FloatingText("Invalid CD key entered. Please enter the command as follows: \"/delete <CD Key>\". You can retrieve your CD key with the /CDKey chat command.");
-                return;
-            }
-
             string lastSubmission = user.GetLocalString("DELETE_CHARACTER_LAST_SUBMISSION");
             bool isFirstSubmission = true;
 
@@ -78,6 +69,19 @@ namespace SWLOR.Game.Server.ChatCommand
                 _admin.DeletePlayerCharacter(user, true);
 
             }
+        }
+
+        public string ValidateArguments(NWPlayer user, params string[] args)
+        {
+            string cdKey = _.GetPCPublicCDKey(user);
+            string enteredCDKey = args.Length > 0 ? args[0] : string.Empty;
+
+            if (cdKey != enteredCDKey)
+            {
+                return "Invalid CD key entered. Please enter the command as follows: \"/delete <CD Key>\". You can retrieve your CD key with the /CDKey chat command.";
+            }
+            
+            return string.Empty;
         }
 
         public bool RequiresTarget => false;

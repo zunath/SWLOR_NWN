@@ -64,6 +64,7 @@
 
                 <TextBox Grid.Row="0"
                          Grid.Column="1"
+                         MaxLength="16"
                          Text="{Binding Path=SelectedLootTableItem.Resref, Mode=TwoWay}">
                 </TextBox>
                 <Label Content="Max Quantity:"
@@ -74,6 +75,8 @@
                 <xctk:IntegerUpDown Grid.Row="1"
                                     Grid.Column="1" 
                                     TextAlignment="Left"
+                                    Minimum="1"
+                                    Maximum="255"
                                     Value="{Binding Path=SelectedLootTableItem.MaxQuantity, Mode=TwoWay}">
                 </xctk:IntegerUpDown>
 
@@ -86,6 +89,8 @@
                     Grid.Row="2"
                     Grid.Column="1"
                     TextAlignment="Left"
+                    Minimum="1"
+                    Maximum="100"
                     Value="{Binding Path=SelectedLootTableItem.Weight, Mode=TwoWay}">
                 </xctk:IntegerUpDown>
                 <Label Content="Is Active:"
@@ -104,6 +109,7 @@
 
                 <TextBox Grid.Row="3"
                          Grid.Column="1"
+                         MaxLength="64"
                          Text="{Binding Path=SelectedLootTableItem.SpawnRule, Mode=TwoWay}">
                 </TextBox>
             </Grid>
@@ -122,16 +128,16 @@
 
                 <Button Grid.Row="0"
                         Grid.Column="0"
-                        Content="New"
-                        x:Name="New"
+                        Content="New Item"
+                        x:Name="NewItem"
                         IsEnabled="{Binding IsTableSelected}">
 
                 </Button>
 
                 <Button Grid.Row="0"
                         Grid.Column="1"
-                        Content="Delete"
-                        x:Name="Delete"
+                        Content="Delete Item"
+                        x:Name="DeleteItem"
                         IsEnabled="{Binding IsTableSelected}">
 
                 </Button>

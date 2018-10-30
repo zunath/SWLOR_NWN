@@ -12,7 +12,7 @@ namespace SWLOR.Tools.Editor.Views
         {
             InitializeComponent();
 
-            DataObjects.Items.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
+            DataObjectsList.Items.SortDescriptions.Add(new SortDescription("Name", ListSortDirection.Ascending));
         }
     }
 }

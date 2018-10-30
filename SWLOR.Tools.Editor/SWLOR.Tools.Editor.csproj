@@ -120,6 +120,7 @@
     <Compile Include="AppBootstrapper.cs" />
     <Compile Include="AppSettings.cs" />
     <Compile Include="Attributes\FolderAttribute.cs" />
+    <Compile Include="Extensions\ObjectCopyExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Helpers\PasswordBoxHelper.cs" />
     <Compile Include="Messages\ApplicationEnded.cs" />
@@ -262,6 +263,8 @@
       <Name>SWLOR.Game.Server</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Observables\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

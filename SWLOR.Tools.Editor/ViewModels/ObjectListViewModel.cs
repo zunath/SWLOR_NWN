@@ -4,8 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
-using System.Windows.Threading;
-using AutoMapper;
 using Caliburn.Micro;
 using Newtonsoft.Json;
 using SWLOR.Tools.Editor.Attributes;
@@ -122,6 +120,7 @@ namespace SWLOR.Tools.Editor.ViewModels
 
                 DataObjects.Add(data);
             }
+
         }
         
         public void Handle(DataObjectsLoadedFromDisk message)

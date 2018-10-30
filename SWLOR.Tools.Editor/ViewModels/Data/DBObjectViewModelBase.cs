@@ -11,7 +11,8 @@ using System.Reflection;
 namespace SWLOR.Tools.Editor.ViewModels.Data
 {
     [Serializable]
-    public abstract class DBObjectViewModelBase : PropertyChangedBase, IDBObjectViewModel
+    public abstract class DBObjectViewModelBase
+        : PropertyChangedBase, IDBObjectViewModel
     {
         private readonly Dictionary<string, object> _trackedProperties;
 
@@ -81,9 +82,11 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
 
         public virtual void DiscardChanges()
         {
-            foreach (var prop in _trackedProperties)
+            foreach (var tracked in _trackedProperties)
             {
-                GetType().GetProperty(prop.Key).SetValue(this, prop.Value);
+                var type = GetType();
+                var prop = type.GetProperty(tracked.Key);
+                prop.SetValue(this, tracked.Value);
             }
 
             IsDirty = false;
@@ -91,13 +94,16 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
 
         public virtual void RefreshTrackedProperties()
         {
-            foreach (var prop in _trackedProperties.Keys.ToList())
+            foreach (var tracked in _trackedProperties.Keys.ToList())
             {
-                var value = GetType().GetProperty(prop).GetValue(this);
-                _trackedProperties[prop] = value;
+                var type = GetType();
+                var prop = type.GetProperty(tracked);
+                var value = prop.GetValue(this);
+                
+                _trackedProperties[tracked] = value;
             }
         }
-
+        
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (_trackedProperties.ContainsKey(e.PropertyName))

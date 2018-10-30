@@ -1,7 +1,6 @@
 ﻿using System.Windows;
 using Caliburn.Micro;
 using SWLOR.Tools.Editor.ViewModels.Contracts;
-using SWLOR.Tools.Editor.Views;
 
 namespace SWLOR.Tools.Editor.ViewModels
 {
@@ -9,12 +8,16 @@ namespace SWLOR.Tools.Editor.ViewModels
     {
         private readonly IWindowManager _windowManager;
         private readonly IDataSyncViewModel _dataSyncVM;
+        private readonly IExportViewModel _exportVM;
 
-        public MenuBarViewModel(IWindowManager windowManager,
-            IDataSyncViewModel dataSyncVM)
+        public MenuBarViewModel(
+            IWindowManager windowManager,
+            IDataSyncViewModel dataSyncVM,
+            IExportViewModel exportVM)
         {
             _windowManager = windowManager;
             _dataSyncVM = dataSyncVM;
+            _exportVM = exportVM;
         }
 
         public void Import()
@@ -24,7 +27,7 @@ namespace SWLOR.Tools.Editor.ViewModels
 
         public void Export()
         {
-
+            _windowManager.ShowDialog(_exportVM);
         }
 
         public void Sync()

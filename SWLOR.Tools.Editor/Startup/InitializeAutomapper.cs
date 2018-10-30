@@ -1,6 +1,7 @@
 ﻿using System;
 using Autofac;
 using AutoMapper;
+using SWLOR.Tools.Editor.ViewModels.Data;
 
 namespace SWLOR.Tools.Editor.Startup
 {
@@ -10,6 +11,8 @@ namespace SWLOR.Tools.Editor.Startup
         {
             Mapper.Initialize(cfg =>
             {
+                cfg.CreateMap<LootTableViewModel, LootTableViewModel>();
+                cfg.CreateMap<LootTableItemViewModel, LootTableItemViewModel>();
 
             });
         }

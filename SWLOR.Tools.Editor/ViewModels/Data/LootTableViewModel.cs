@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using Newtonsoft.Json;
 using SWLOR.Tools.Editor.Attributes;
 
@@ -13,10 +14,21 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
 
             TrackProperty(this, x => x.LootTableID);
             TrackProperty(this, x => x.Name);
+            TrackProperty(this, x => x.LootTableItems);
         }
         
+        private ObservableCollection<LootTableItemViewModel> _lootTableItems;
+
         [JsonProperty(nameof(LootTableItems))]
-        public ObservableCollection<LootTableItemViewModel> LootTableItems { get; set; }
+        public ObservableCollection<LootTableItemViewModel> LootTableItems
+        {
+            get => _lootTableItems;
+            set
+            {
+                _lootTableItems = value;
+                NotifyOfPropertyChange(() => LootTableItems);
+            }
+        }
 
         private int _lootTableID;
         [JsonProperty(nameof(LootTableID))]

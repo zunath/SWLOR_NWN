@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -33,13 +34,14 @@ namespace SWLOR.Tools.Editor.ViewModels
             ObjectListVM = objListVM;
             _windowManager = windowManager;
             _yesNo = yesNo;
+            _deletedItems = new List<Tuple<int, LootTableItemViewModel>>();
+            _addedItems = new List<LootTableItemViewModel>();
 
             _eventAggregator = eventAggregator;
             _eventAggregator.Subscribe(this);
         }
 
         private IObjectListViewModel<LootTableViewModel> _objListVM;
-
         public IObjectListViewModel<LootTableViewModel> ObjectListVM
         {
             get => _objListVM;
@@ -49,8 +51,7 @@ namespace SWLOR.Tools.Editor.ViewModels
                 NotifyOfPropertyChange(() => ObjectListVM);
             }
         }
-
-
+        
         private LootTableViewModel _activeLootTable;
         public LootTableViewModel ActiveLootTable
         {
@@ -60,7 +61,14 @@ namespace SWLOR.Tools.Editor.ViewModels
                 _activeLootTable = value;
                 NotifyOfPropertyChange(() => ActiveLootTable);
                 
-                ActiveLootTable?.RefreshTrackedProperties();
+                if (ActiveLootTable != null)
+                {
+                    ActiveLootTable.OnDirty += (sender, args) =>
+                    {
+                        NotifyOfPropertyChange(() => IsTableSelected);
+                        NotifyOfPropertyChange(() => CanSaveOrDiscardChanges);
+                    };
+                }
             }
         }
         
@@ -85,8 +93,11 @@ namespace SWLOR.Tools.Editor.ViewModels
             }
         }
 
+        private List<Tuple<int, LootTableItemViewModel>> _deletedItems;
+        private List<LootTableItemViewModel> _addedItems;
+
         public bool IsTableSelected => ActiveLootTable != null;
-        public bool CanSaveOrDiscardChanges => IsTableSelected && (ActiveLootTable.IsDirty || SelectedLootTableItem.IsDirty);
+        public bool CanSaveOrDiscardChanges => IsTableSelected && (ActiveLootTable.IsDirty || SelectedLootTableItem != null && SelectedLootTableItem.IsDirty);
 
         public void SaveChanges()
         {
@@ -111,8 +122,49 @@ namespace SWLOR.Tools.Editor.ViewModels
         public void DiscardChanges()
         {
             ActiveLootTable.DiscardChanges();
+
+            foreach (var added in _addedItems)
+            {
+                ActiveLootTable.LootTableItems.Remove(added);
+            }
+
+            foreach (var deleted in _deletedItems)
+            {
+                ActiveLootTable.LootTableItems.Insert(deleted.Item1, deleted.Item2);
+            }
+
+            _addedItems.Clear();
+            _deletedItems.Clear();
         }
 
+        public void NewItem()
+        {
+            var newItem = new LootTableItemViewModel();
+            ActiveLootTable.LootTableItems.Add(newItem);
+            _addedItems.Add(newItem);
+
+            SelectedLootTableItem = newItem;
+            ActiveLootTable.IsDirty = true;
+        }
+
+        public void DeleteItem()
+        {
+            _yesNo.Prompt = "Are you sure you want to delete this item?";
+
+            _windowManager.ShowDialog(_yesNo);
+
+            if (_yesNo.Result == DialogResult.Yes)
+            {
+                int index = ActiveLootTable.LootTableItems.IndexOf(SelectedLootTableItem);
+                _deletedItems.Add(new Tuple<int, LootTableItemViewModel>(index, SelectedLootTableItem));
+
+                ActiveLootTable.LootTableItems.Remove(SelectedLootTableItem);
+                SelectedLootTableItem = ActiveLootTable.LootTableItems.FirstOrDefault();
+                ActiveLootTable.IsDirty = true;
+            }
+        }
+
+        // Selected a new loot table
         public void Handle(EditorObjectSelected<LootTableViewModel> message)
         {
             message.OldObject?.DiscardChanges();
@@ -120,6 +172,7 @@ namespace SWLOR.Tools.Editor.ViewModels
             if (message.SelectedObject == null) return;
 
             ActiveLootTable = message.SelectedObject;
+            ActiveLootTable.RefreshTrackedProperties();
 
             if (ActiveLootTable.LootTableItems.Count > 0)
             {
@@ -127,6 +180,7 @@ namespace SWLOR.Tools.Editor.ViewModels
             }
         }
 
+        // Deleted Loot Table
         public void Handle(DeleteEditorObject<LootTableViewModel> message)
         {
             if (ActiveLootTable == message.DeletedEditorObject)

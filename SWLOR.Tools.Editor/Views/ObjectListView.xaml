@@ -14,7 +14,8 @@
         </Grid.RowDefinitions>
         <ListBox 
             DisplayMemberPath="DisplayName"
-            x:Name="DataObjects"
+            x:Name="DataObjectsList"
+            ItemsSource="{Binding Path=DataObjects, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
             SelectedItem="{Binding SelectedDataObject}">
         </ListBox>
 

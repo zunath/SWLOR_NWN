@@ -51,65 +51,88 @@
                     <RowDefinition Height="32"></RowDefinition>
                     <RowDefinition Height="32"></RowDefinition>
                     <RowDefinition Height="32"></RowDefinition>
+                    <RowDefinition Height="32"></RowDefinition>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="128"></ColumnDefinition>
                     <ColumnDefinition Width="*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
-                <Label Content="Resref:"
+                <Label Content="Loot Table:" 
                        Grid.Column="0"
-                       Grid.Row="0">
-                </Label>
+                       Grid.Row="0"></Label>
 
-                <TextBox Grid.Row="0"
-                         Grid.Column="1"
-                         MaxLength="16"
-                         Text="{Binding Path=SelectedLootTableItem.Resref, Mode=TwoWay}">
+                <TextBox Grid.Column="1"
+                         Grid.Row="0"
+                         TabIndex="0"
+                         IsEnabled="{Binding IsTableSelected}"
+                         Text="{Binding Path=ActiveLootTable.Name, Mode=TwoWay}">
+
                 </TextBox>
-                <Label Content="Max Quantity:"
+
+                <Label Content="Resref:"
                        Grid.Column="0"
                        Grid.Row="1">
                 </Label>
 
-                <xctk:IntegerUpDown Grid.Row="1"
+                <TextBox Grid.Row="1"
+                         Grid.Column="1"
+                         TabIndex="1"
+                         MaxLength="16"
+                         IsEnabled="{Binding IsLootItemSelected}"
+                         Text="{Binding Path=SelectedLootTableItem.Resref, Mode=TwoWay}">
+                </TextBox>
+                <Label Content="Max Quantity:"
+                       Grid.Column="0"
+                       Grid.Row="2">
+                </Label>
+
+                <xctk:IntegerUpDown Grid.Row="2"
                                     Grid.Column="1" 
+                                    TabIndex="2"
                                     TextAlignment="Left"
                                     Minimum="1"
                                     Maximum="255"
+                                    IsEnabled="{Binding IsLootItemSelected}"
                                     Value="{Binding Path=SelectedLootTableItem.MaxQuantity, Mode=TwoWay}">
                 </xctk:IntegerUpDown>
 
                 <Label Content="Weight:"
                        Grid.Column="0"
-                       Grid.Row="2">
+                       Grid.Row="3">
                 </Label>
 
                 <xctk:IntegerUpDown 
-                    Grid.Row="2"
+                    Grid.Row="3"
                     Grid.Column="1"
+                    TabIndex="3"
                     TextAlignment="Left"
                     Minimum="1"
                     Maximum="100"
+                    IsEnabled="{Binding IsLootItemSelected}"
                     Value="{Binding Path=SelectedLootTableItem.Weight, Mode=TwoWay}">
                 </xctk:IntegerUpDown>
                 <Label Content="Is Active:"
                        Grid.Column="0"
-                       Grid.Row="4">
+                       Grid.Row="5">
                 </Label>
 
-                <CheckBox Grid.Row="4"
+                <CheckBox Grid.Row="5"
                          Grid.Column="1"
+                          TabIndex="5"
+                          IsEnabled="{Binding IsLootItemSelected}"
                          IsChecked="{Binding Path=SelectedLootTableItem.IsActive, Mode=TwoWay}">
                 </CheckBox>
                 <Label Content="Spawn Rule:"
                        Grid.Column="0"
-                       Grid.Row="3">
+                       Grid.Row="4">
                 </Label>
 
-                <TextBox Grid.Row="3"
+                <TextBox Grid.Row="4"
                          Grid.Column="1"
+                         TabIndex="4"
                          MaxLength="64"
+                         IsEnabled="{Binding IsLootItemSelected}"
                          Text="{Binding Path=SelectedLootTableItem.SpawnRule, Mode=TwoWay}">
                 </TextBox>
             </Grid>
@@ -128,6 +151,7 @@
 
                 <Button Grid.Row="0"
                         Grid.Column="0"
+                        TabIndex="6"
                         Content="New Item"
                         x:Name="NewItem"
                         IsEnabled="{Binding IsTableSelected}">
@@ -136,9 +160,10 @@
 
                 <Button Grid.Row="0"
                         Grid.Column="1"
+                        TabIndex="7"
                         Content="Delete Item"
                         x:Name="DeleteItem"
-                        IsEnabled="{Binding IsTableSelected}">
+                        IsEnabled="{Binding IsLootItemSelected}">
 
                 </Button>
             </Grid>

@@ -10,7 +10,6 @@ using SWLOR.Tools.Editor.Attributes;
 using SWLOR.Tools.Editor.Extensions;
 using SWLOR.Tools.Editor.Messages;
 using SWLOR.Tools.Editor.ViewModels.Contracts;
-using SWLOR.Tools.Editor.ViewModels.Data;
 
 namespace SWLOR.Tools.Editor.ViewModels
 {
@@ -18,7 +17,9 @@ namespace SWLOR.Tools.Editor.ViewModels
         PropertyChangedBase,
         IObjectListViewModel<T>,
         IHandle<ApplicationStarted>,
-        IHandle<DataObjectsLoadedFromDisk> 
+        IHandle<DataObjectsLoadedFromDisk>,
+        IHandle<RenamedEditorObject<T>>,
+        IHandle<CreatedNewEditorObject<T>>
         where T: IDBObjectViewModel
     {
         private readonly IEventAggregator _eventAggregator;
@@ -37,6 +38,7 @@ namespace SWLOR.Tools.Editor.ViewModels
             _windowManager = windowManager;
             _sync = SynchronizationContext.Current;
 
+            MaxRenameLength = 32;
             eventAggregator.Subscribe(this);
         }
 
@@ -61,22 +63,31 @@ namespace SWLOR.Tools.Editor.ViewModels
                 var oldObject = _selectedDataObject;
                 _selectedDataObject = value;
                 NotifyOfPropertyChange(() => SelectedDataObject);
+                NotifyOfPropertyChange(() => IsObjectSelected);
+
                 _eventAggregator.PublishOnUIThread(new EditorObjectSelected<T>(oldObject, SelectedDataObject));
             }
         }
-        
+
+        private int _maxRenameLength;
+
+        public int MaxRenameLength
+        {
+            get => _maxRenameLength;
+            set
+            {
+                _maxRenameLength = value;
+                NotifyOfPropertyChange(() => MaxRenameLength);
+            }
+        }
+
+        public bool IsObjectSelected => SelectedDataObject != null;
+
         public void New()
         {
-
-            _eventAggregator.PublishOnUIThread(new NewEditorObject<T>(SelectedDataObject));
+            _eventAggregator.PublishOnUIThread(new RequestNewEditorObject<T>());
         }
-
-        public void Rename()
-        {
-
-            _eventAggregator.PublishOnUIThread(new RenamedEditorObject<T>(SelectedDataObject));
-        }
-
+        
         public void Delete()
         {
             _yesNo.Prompt = "Are you sure you want to delete this object?";
@@ -132,6 +143,20 @@ namespace SWLOR.Tools.Editor.ViewModels
                 DataObjects.Clear();
                 LoadFiles();
             }, null);
+        }
+
+        public void Handle(RenamedEditorObject<T> message)
+        {
+            if (SelectedDataObject == null) return;
+
+            SelectedDataObject.DisplayName = message.Object.DisplayName;
+        }
+
+        public void Handle(CreatedNewEditorObject<T> message)
+        {
+            message.Object.FileName = Guid.NewGuid() + ".json";
+            DataObjects.Add(message.Object);
+            SelectedDataObject = message.Object;
         }
     }
 }

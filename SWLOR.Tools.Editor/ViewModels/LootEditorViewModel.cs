@@ -19,7 +19,8 @@ namespace SWLOR.Tools.Editor.ViewModels
     public class LootEditorViewModel: PropertyChangedBase, 
         ILootEditorViewModel, 
         IHandle<EditorObjectSelected<LootTableViewModel>>,
-        IHandle<DeleteEditorObject<LootTableViewModel>>
+        IHandle<DeleteEditorObject<LootTableViewModel>>,
+        IHandle<RequestNewEditorObject<LootTableViewModel>>
     {
         private readonly IWindowManager _windowManager;
         private readonly IYesNoViewModel _yesNo;
@@ -59,16 +60,18 @@ namespace SWLOR.Tools.Editor.ViewModels
             set
             {
                 _activeLootTable = value;
-                NotifyOfPropertyChange(() => ActiveLootTable);
                 
                 if (ActiveLootTable != null)
                 {
                     ActiveLootTable.OnDirty += (sender, args) =>
                     {
                         NotifyOfPropertyChange(() => IsTableSelected);
+                        NotifyOfPropertyChange(() => IsLootItemSelected);
                         NotifyOfPropertyChange(() => CanSaveOrDiscardChanges);
                     };
                 }
+
+                NotifyOfPropertyChange(() => ActiveLootTable);
             }
         }
         
@@ -79,31 +82,40 @@ namespace SWLOR.Tools.Editor.ViewModels
             set
             {
                 _selectedLootTableItem = value;
-                NotifyOfPropertyChange(() => SelectedLootTableItem);
-                NotifyOfPropertyChange(() => IsTableSelected);
 
                 if (SelectedLootTableItem != null)
                 {
                     SelectedLootTableItem.OnDirty += (sender, args) =>
                     {
                         NotifyOfPropertyChange(() => IsTableSelected);
+                        NotifyOfPropertyChange(() => IsLootItemSelected);
                         NotifyOfPropertyChange(() => CanSaveOrDiscardChanges);
                     };
                 }
+
+                NotifyOfPropertyChange(() => SelectedLootTableItem);
+                NotifyOfPropertyChange(() => IsTableSelected);
+                NotifyOfPropertyChange(() => IsLootItemSelected);
             }
         }
 
-        private List<Tuple<int, LootTableItemViewModel>> _deletedItems;
-        private List<LootTableItemViewModel> _addedItems;
+        private readonly List<Tuple<int, LootTableItemViewModel>> _deletedItems;
+        private readonly List<LootTableItemViewModel> _addedItems;
 
         public bool IsTableSelected => ActiveLootTable != null;
-        public bool CanSaveOrDiscardChanges => IsTableSelected && (ActiveLootTable.IsDirty || SelectedLootTableItem != null && SelectedLootTableItem.IsDirty);
+        public bool IsLootItemSelected => SelectedLootTableItem != null;
+        public bool CanSaveOrDiscardChanges => IsTableSelected && (ActiveLootTable.IsDirty || IsLootItemSelected && SelectedLootTableItem.IsDirty);
+
 
         public void SaveChanges()
         {
             ActiveLootTable.IsDirty = false;
-            SelectedLootTableItem.IsDirty = false;
 
+            if(SelectedLootTableItem != null)
+            {
+                SelectedLootTableItem.IsDirty = false;
+            }
+            
             string json = JsonConvert.SerializeObject(ActiveLootTable);
             FolderAttribute folderAttribute = ActiveLootTable.GetAttributeByType<FolderAttribute>();
             if (folderAttribute == null)
@@ -115,7 +127,7 @@ namespace SWLOR.Tools.Editor.ViewModels
             File.WriteAllText(path, json);
 
             ActiveLootTable.RefreshTrackedProperties();
-            SelectedLootTableItem.RefreshTrackedProperties();
+            SelectedLootTableItem?.RefreshTrackedProperties();
             _eventAggregator.PublishOnUIThread(new DataObjectSaved<LootTableViewModel>(ActiveLootTable));
         }
 
@@ -180,6 +192,15 @@ namespace SWLOR.Tools.Editor.ViewModels
             }
         }
 
+        // Renamed a loot table
+        public void Handle(RenamedEditorObject<LootTableViewModel> message)
+        {
+            if (ActiveLootTable == message.Object)
+            {
+                ActiveLootTable.Name = message.Object.DisplayName;
+            }
+        }
+        
         // Deleted Loot Table
         public void Handle(DeleteEditorObject<LootTableViewModel> message)
         {
@@ -188,8 +209,14 @@ namespace SWLOR.Tools.Editor.ViewModels
                 ActiveLootTable.IsDirty = false;
                 ActiveLootTable = null;
             }
-
         }
 
+        // Request for a new loot table
+        public void Handle(RequestNewEditorObject<LootTableViewModel> message)
+        {
+            LootTableViewModel table = new LootTableViewModel();
+            ActiveLootTable = table;
+            _eventAggregator.PublishOnUIThread(new CreatedNewEditorObject<LootTableViewModel>(table));
+        }
     }
 }

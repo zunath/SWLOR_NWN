@@ -140,6 +140,7 @@ namespace SWLOR.Tools.Editor
             builder.RegisterType<LootEditorViewModel>().As<ILootEditorViewModel>();
             builder.RegisterType<MenuBarViewModel>().As<IMenuBarViewModel>();
             builder.RegisterType(typeof(ObjectListViewModel<LootTableViewModel>)).As<IObjectListViewModel<LootTableViewModel>>();
+            builder.RegisterType<RenameObjectViewModel>().As<IRenameObjectViewModel>();
             builder.RegisterType<YesNoViewModel>().As<IYesNoViewModel>();
 
             // Shell

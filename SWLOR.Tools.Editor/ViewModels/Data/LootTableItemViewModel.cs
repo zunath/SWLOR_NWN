@@ -7,6 +7,12 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
     {
         public LootTableItemViewModel()
         {
+            Weight = 1;
+            Resref = "resref";
+            SpawnRule = string.Empty;
+            IsActive = true;
+            MaxQuantity = 1;
+
             TrackProperty(this, x => x.Weight);
             TrackProperty(this, x => x.Resref);
             TrackProperty(this, x => x.SpawnRule);

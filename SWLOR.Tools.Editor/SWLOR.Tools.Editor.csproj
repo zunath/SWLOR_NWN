@@ -126,6 +126,7 @@
     <Compile Include="Messages\ApplicationEnded.cs" />
     <Compile Include="Messages\ApplicationStarted.cs" />
     <Compile Include="IShellViewModel.cs" />
+    <Compile Include="Messages\CreatedNewEditorObject.cs" />
     <Compile Include="Messages\DatabaseConnecting.cs" />
     <Compile Include="Messages\DatabaseConnectionFailed.cs" />
     <Compile Include="Messages\DatabaseConnectionSucceeded.cs" />
@@ -134,7 +135,7 @@
     <Compile Include="Messages\DataObjectsLoadedFromDisk.cs" />
     <Compile Include="Messages\DeleteEditorObject.cs" />
     <Compile Include="Messages\EditorObjectSelected.cs" />
-    <Compile Include="Messages\NewEditorObject.cs" />
+    <Compile Include="Messages\RequestNewEditorObject.cs" />
     <Compile Include="Messages\RenamedEditorObject.cs" />
     <Compile Include="Messages\SettingsLoaded.cs" />
     <Compile Include="Startup\Contracts\IPostBootstrap.cs" />
@@ -148,6 +149,7 @@
     <Compile Include="ViewModels\Contracts\IErrorViewModel.cs" />
     <Compile Include="ViewModels\Contracts\ILootEditorViewModel.cs" />
     <Compile Include="ViewModels\Contracts\IObjectListViewModel.cs" />
+    <Compile Include="ViewModels\Contracts\IRenameObjectViewModel.cs" />
     <Compile Include="ViewModels\Contracts\IYesNoViewModel.cs" />
     <Compile Include="ViewModels\DatabaseConnectionViewModel.cs" />
     <Compile Include="ViewModels\DataSyncViewModel.cs" />
@@ -157,6 +159,7 @@
     <Compile Include="ViewModels\ErrorViewModel.cs" />
     <Compile Include="ViewModels\LootEditorViewModel.cs" />
     <Compile Include="ViewModels\ObjectListViewModel.cs" />
+    <Compile Include="ViewModels\RenameObjectViewModel.cs" />
     <Compile Include="ViewModels\YesNoViewModel.cs" />
     <Compile Include="Views\DatabaseConnectionView.xaml.cs">
       <DependentUpon>DatabaseConnectionView.xaml</DependentUpon>
@@ -187,6 +190,9 @@
     </Compile>
     <Compile Include="Views\ObjectListView.xaml.cs">
       <DependentUpon>ObjectListView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RenameObjectView.xaml.cs">
+      <DependentUpon>RenameObjectView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\YesNoView.xaml.cs">
       <DependentUpon>YesNoView.xaml</DependentUpon>
@@ -220,6 +226,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\ObjectListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RenameObjectView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

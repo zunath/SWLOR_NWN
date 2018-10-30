@@ -26,7 +26,8 @@
 
         <TextBox Grid.Column="1"
                  Grid.Row="0"
-                 x:Name="IPAddress">
+                 x:Name="IPAddress"
+                 IsEnabled="{Binding NotConnected}">
         </TextBox>
 
         <Label Grid.Column="0"
@@ -36,7 +37,8 @@
 
         <TextBox Grid.Column="1"
                  Grid.Row="1"
-                 x:Name="Username">
+                 x:Name="Username"
+                 IsEnabled="{Binding NotConnected}">
         </TextBox>
 
         <Label Grid.Column="0"
@@ -47,6 +49,7 @@
         <PasswordBox Grid.Column="1"
                  Grid.Row="2"
                  x:Name="Password"
+                     IsEnabled="{Binding NotConnected}"
                      PasswordChanged="Password_OnPasswordChanged">
         </PasswordBox>
 
@@ -57,14 +60,16 @@
 
         <TextBox Grid.Column="1"
                  Grid.Row="3"
-                 x:Name="Database">
+                 x:Name="Database"
+                 IsEnabled="{Binding NotConnected}">
         </TextBox>
 
         <Button Grid.Column="0"
                 Grid.Row="4"
                 Grid.ColumnSpan="2"
                 Content="Connect"
-                x:Name="Connect">
+                x:Name="Connect"
+                IsEnabled="{Binding NotConnected}">
 
         </Button>
     </Grid>

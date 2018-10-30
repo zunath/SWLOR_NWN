@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
 using Caliburn.Micro;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Tools.Editor.Messages;
 using SWLOR.Tools.Editor.ViewModels.Contracts;
+using Screen = Caliburn.Micro.Screen;
 
 namespace SWLOR.Tools.Editor.ViewModels
 {
@@ -25,26 +28,42 @@ namespace SWLOR.Tools.Editor.ViewModels
         private IDatabaseConnectionViewModel _dbConnectionVm;
         private readonly IWindowManager _windowManager;
         private readonly IErrorViewModel _errorVM;
+        private readonly IYesNoViewModel _yesNo;
         private readonly AppSettings _appSettings;
         private readonly IEventAggregator _eventAggregator;
+        private readonly BackgroundWorker _worker;
 
         public DataSyncViewModel(
             IDatabaseConnectionViewModel dbConnectionVm,
             IWindowManager windowManager,
             IErrorViewModel errorVM,
+            IYesNoViewModel yesNo,
             IEventAggregator eventAggregator,
             AppSettings appSettings)
         {
             _dbConnectionVm = dbConnectionVm;
             _windowManager = windowManager;
             _errorVM = errorVM;
+            _yesNo = yesNo;
             _appSettings = appSettings;
             _eventAggregator = eventAggregator;
+            _worker = new BackgroundWorker();
+            _worker.DoWork += PerformDataSyncAsync;
+            _worker.RunWorkerCompleted += DataSyncCompleted;
+            _worker.WorkerReportsProgress = true;
+            _worker.ProgressChanged += SyncProgressChanged;
 
-            ControlsEnabled = true;
-            SyncVisibility = Visibility.Collapsed;
+            ProgressMax = 100;
+
+            IsCancelEnabled = false;
+            DatabaseControlsEnabled = true;
             _eventAggregator.Subscribe(this);
         }
+
+
+        // WARNING: This is on the worker thread, not the UI thread.
+        private int _progress = 0;
+        // END WARNING
 
         public IDatabaseConnectionViewModel DatabaseConnectionVM
         {
@@ -56,27 +75,51 @@ namespace SWLOR.Tools.Editor.ViewModels
             }
         }
 
-        private Visibility _dbConnectionViewVisibility;
+        private int _progressMax;
 
-        public Visibility DBConnectionViewVisibility
+        public int ProgressMax
         {
-            get => _dbConnectionViewVisibility;
+            get => _progressMax;
             set
             {
-                _dbConnectionViewVisibility = value;
-                NotifyOfPropertyChange(() => DBConnectionViewVisibility);
+                _progressMax = value;
+                NotifyOfPropertyChange(() => ProgressMax);
             }
         }
 
-        private bool _controlsEnabled;
+        private int _currentProgress;
 
-        public bool ControlsEnabled
+        public int CurrentProgress
         {
-            get => _controlsEnabled;
+            get => _currentProgress;
             set
             {
-                _controlsEnabled = value;
-                NotifyOfPropertyChange(() => ControlsEnabled);
+                _currentProgress = value;
+                NotifyOfPropertyChange(() => CurrentProgress);
+            }
+        }
+
+        private bool _isCancelEnabled;
+
+        public bool IsCancelEnabled
+        {
+            get => _isCancelEnabled;
+            set
+            {
+                _isCancelEnabled = value;
+                NotifyOfPropertyChange(() => IsCancelEnabled);
+            }
+        }
+
+        private bool _databaseControlsEnabled;
+
+        public bool DatabaseControlsEnabled
+        {
+            get => _databaseControlsEnabled;
+            set
+            {
+                _databaseControlsEnabled = value;
+                NotifyOfPropertyChange(() => DatabaseControlsEnabled);
             }
         }
 
@@ -91,25 +134,27 @@ namespace SWLOR.Tools.Editor.ViewModels
                 NotifyOfPropertyChange(() => SyncEnabled);
             }
         }
-
-        private Visibility _syncVisibility;
-
-        public Visibility SyncVisibility
+        
+        public void Sync()
         {
-            get => _syncVisibility;
-            set
+            _yesNo.Prompt = "WARNING: This will overwrite any local changes you have made. It's highly suggested you back up your data files or push them to the server before syncing. Are you sure you want to continue?";
+            _windowManager.ShowDialog(_yesNo);
+
+            if(_yesNo.Result == DialogResult.Yes)
             {
-                _syncVisibility = value;
-                NotifyOfPropertyChange(() => SyncVisibility);
+                IsCancelEnabled = false;
+                SyncEnabled = false;
+                _worker.RunWorkerAsync();
             }
         }
 
-        public void Sync()
+        private void PerformDataSyncAsync(object sender, DoWorkEventArgs e)
         {
+            _progress = 0;
             using (DataContext db = new DataContext(_appSettings.DatabaseIPAddress, _appSettings.DatabaseUsername, _appSettings.DatabasePassword, _appSettings.DatabaseName))
             {
                 db.Configuration.LazyLoadingEnabled = false;
-
+                
                 WriteDataFileAsync(db.ApartmentBuildings.ToList());
                 WriteDataFileAsync(db.BaseStructures.ToList());
                 WriteDataFileAsync(db.BaseStructureTypes.ToList());
@@ -142,7 +187,7 @@ namespace SWLOR.Tools.Editor.ViewModels
                     .Include(i => i.PerkLevels.Select(x => x.PerkLevelSkillRequirements))
                     .ToList();
                 WriteDataFileAsync(perks);
-                
+
                 WriteDataFileAsync(db.PerkCategories.ToList());
                 WriteDataFileAsync(db.Plants.ToList());
 
@@ -163,8 +208,29 @@ namespace SWLOR.Tools.Editor.ViewModels
 
                 WriteDataFileAsync(db.SkillCategories.ToList());
                 WriteDataFileAsync(db.Spawns.Include(i => i.SpawnObjects).ToList());
-
             }
+        }
+
+        private void SyncProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            CurrentProgress = e.ProgressPercentage;
+        }
+
+        private void DataSyncCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Error != null)
+            {
+                _errorVM.ErrorDetails = e.Error.ToMessageAndCompleteStacktrace();
+                _windowManager.ShowDialog(_errorVM);
+            }
+            else
+            {
+                TryClose();
+            }
+
+            CurrentProgress = 0;
+            SyncEnabled = true;
+            IsCancelEnabled = true;
         }
 
         private void WriteDataFileAsync<T>(IEnumerable<T> set)
@@ -184,14 +250,20 @@ namespace SWLOR.Tools.Editor.ViewModels
                 string json = JsonConvert.SerializeObject(record);
                 File.WriteAllText("./Data/" + Folder + "/" + fileName + ".json", json);
             }
-            
+
+            _progress++;
+            int percentDone = Convert.ToInt32(_progress / 30.0f * 100);
+            _worker.ReportProgress(percentDone);
             _eventAggregator.PublishOnBackgroundThread(new DataObjectsLoadedFromDisk(Folder));
         }
-        
+
+        public void Cancel()
+        {
+            TryClose();
+        }
+
         public void Handle(DatabaseConnectionSucceeded message)
         {
-            DBConnectionViewVisibility = Visibility.Collapsed;
-            SyncVisibility = Visibility.Visible;
             SyncEnabled = true;
         }
 
@@ -199,12 +271,12 @@ namespace SWLOR.Tools.Editor.ViewModels
         {
             _errorVM.ErrorDetails = message.Exception.ToMessageAndCompleteStacktrace();
             _windowManager.ShowDialog(_errorVM);
-            ControlsEnabled = true;
+            DatabaseControlsEnabled = true;
         }
 
         public void Handle(DatabaseConnecting message)
         {
-            ControlsEnabled = false;
+            DatabaseControlsEnabled = false;
         }
     }
 }

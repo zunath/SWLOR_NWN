@@ -25,12 +25,25 @@ namespace SWLOR.Tools.Editor.ViewModels
             _appSettings = appSettings;
             _eventAggregator = eventAggregator;
 
+            NotConnected = true;
             IPAddress = string.Empty;
             Username = string.Empty;
             Password = string.Empty;
             Database = string.Empty;
 
             eventAggregator.Subscribe(this);
+        }
+
+        private bool _notConnected;
+
+        public bool NotConnected
+        {
+            get => _notConnected;
+            set
+            {
+                _notConnected = value;
+                NotifyOfPropertyChange(() => NotConnected);
+            }
         }
 
         private string _ipAddress;
@@ -83,6 +96,7 @@ namespace SWLOR.Tools.Editor.ViewModels
         {
             try
             {
+                NotConnected = false;
                 _appSettings.DatabaseIPAddress = IPAddress;
                 _appSettings.DatabaseUsername = Username;
                 _appSettings.DatabaseName = Database;
@@ -99,6 +113,7 @@ namespace SWLOR.Tools.Editor.ViewModels
             catch(Exception ex)
             {
                 _eventAggregator.PublishOnUIThread(new DatabaseConnectionFailed(ex));
+                NotConnected = true;
             }
 
         }

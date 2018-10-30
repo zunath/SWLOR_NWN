@@ -141,6 +141,7 @@ namespace SWLOR.Tools.Editor
             builder.RegisterType<ErrorViewModel>().As<IErrorViewModel>();
             builder.RegisterType<LootEditorViewModel>().As<ILootEditorViewModel>();
             builder.RegisterType<MenuBarViewModel>().As<IMenuBarViewModel>();
+            builder.RegisterType<PlantEditorViewModel>().As<IPlantEditorViewModel>();
             builder.RegisterType<RenameObjectViewModel>().As<IRenameObjectViewModel>();
             builder.RegisterType<YesNoViewModel>().As<IYesNoViewModel>();
 

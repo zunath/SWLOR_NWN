@@ -57,7 +57,8 @@
 
             </TabItem>
             <TabItem Header="Plants">
-
+                <views:PlantEditorView cal:View.Model="{Binding PlantEditorVM}">
+                </views:PlantEditorView>
             </TabItem>
             <TabItem Header="Quests">
 

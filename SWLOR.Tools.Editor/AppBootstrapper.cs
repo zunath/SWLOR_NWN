@@ -134,6 +134,7 @@ namespace SWLOR.Tools.Editor
             
             // View Models
             builder.RegisterType<ApartmentBuildingEditorViewModel>().As<IApartmentBuildingEditorViewModel>();
+            builder.RegisterType<CustomEffectEditorViewModel>().As<ICustomEffectEditorViewModel>();
             builder.RegisterType<DatabaseConnectionViewModel>().As<IDatabaseConnectionViewModel>();
             builder.RegisterType<DataSyncViewModel>().As<IDataSyncViewModel>();
             builder.RegisterType<EditorListViewModel>().As<IEditorListViewModel>();
@@ -145,7 +146,29 @@ namespace SWLOR.Tools.Editor
 
             // Object list view models
             builder.RegisterType(typeof(ObjectListViewModel<ApartmentBuildingViewModel>)).As<IObjectListViewModel<ApartmentBuildingViewModel>>();
+            builder.RegisterType(typeof(ObjectListViewModel<BaseStructureViewModel>)).As<IObjectListViewModel<BaseStructureViewModel>>();
+            builder.RegisterType(typeof(ObjectListViewModel<BuildingStyleViewModel>)).As<IObjectListViewModel<BuildingStyleViewModel>>();
+            builder.RegisterType(typeof(ObjectListViewModel<CooldownCategoryViewModel>)).As<IObjectListViewModel<CooldownCategoryViewModel>>();
+            builder.RegisterType(typeof(ObjectListViewModel<CraftBlueprintCategoryViewModel>)).As<IObjectListViewModel<CraftBlueprintCategoryViewModel>>();
+            builder.RegisterType(typeof(ObjectListViewModel<CraftBlueprintViewModel>)).As<IObjectListViewModel<CraftBlueprintViewModel>>();
+            builder.RegisterType(typeof(ObjectListViewModel<CraftDeviceViewModel>)).As<IObjectListViewModel<CraftDeviceViewModel>>();
+            builder.RegisterType(typeof(ObjectListViewModel<CustomEffectViewModel>)).As<IObjectListViewModel<CustomEffectViewModel>>();
+            builder.RegisterType(typeof(ObjectListViewModel<DownloadViewModel>)).As<IObjectListViewModel<DownloadViewModel>>();
+            builder.RegisterType(typeof(ObjectListViewModel<FameRegionViewModel>)).As<IObjectListViewModel<FameRegionViewModel>>();
+            builder.RegisterType(typeof(ObjectListViewModel<GameTopicCategoryViewModel>)).As<IObjectListViewModel<GameTopicCategoryViewModel>>();
+            builder.RegisterType(typeof(ObjectListViewModel<GameTopicViewModel>)).As<IObjectListViewModel<GameTopicViewModel>>();
+            builder.RegisterType(typeof(ObjectListViewModel<KeyItemCategoryViewModel>)).As<IObjectListViewModel<KeyItemCategoryViewModel>>();
+            builder.RegisterType(typeof(ObjectListViewModel<KeyItemViewModel>)).As<IObjectListViewModel<KeyItemViewModel>>();
             builder.RegisterType(typeof(ObjectListViewModel<LootTableViewModel>)).As<IObjectListViewModel<LootTableViewModel>>();
+            builder.RegisterType(typeof(ObjectListViewModel<ModViewModel>)).As<IObjectListViewModel<ModViewModel>>();
+            builder.RegisterType(typeof(ObjectListViewModel<NPCGroupViewModel>)).As<IObjectListViewModel<NPCGroupViewModel>>();
+            builder.RegisterType(typeof(ObjectListViewModel<PerkCategoryViewModel>)).As<IObjectListViewModel<PerkCategoryViewModel>>();
+            builder.RegisterType(typeof(ObjectListViewModel<PerkViewModel>)).As<IObjectListViewModel<PerkViewModel>>();
+            builder.RegisterType(typeof(ObjectListViewModel<PlantViewModel>)).As<IObjectListViewModel<PlantViewModel>>();
+            builder.RegisterType(typeof(ObjectListViewModel<QuestViewModel>)).As<IObjectListViewModel<QuestViewModel>>();
+            builder.RegisterType(typeof(ObjectListViewModel<SkillCategoryViewModel>)).As<IObjectListViewModel<SkillCategoryViewModel>>();
+            builder.RegisterType(typeof(ObjectListViewModel<SkillViewModel>)).As<IObjectListViewModel<SkillViewModel>>();
+            builder.RegisterType(typeof(ObjectListViewModel<SpawnViewModel>)).As<IObjectListViewModel<SpawnViewModel>>();
 
             // Shell
             builder.RegisterType<ShellViewModel>().As<IShellViewModel>();

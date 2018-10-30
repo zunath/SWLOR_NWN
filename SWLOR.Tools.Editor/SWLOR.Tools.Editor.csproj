@@ -120,6 +120,7 @@
     <Compile Include="AppBootstrapper.cs" />
     <Compile Include="AppSettings.cs" />
     <Compile Include="Attributes\FolderAttribute.cs" />
+    <Compile Include="Converters\EnumConverter.cs" />
     <Compile Include="Extensions\ObjectCopyExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Helpers\PasswordBoxHelper.cs" />
@@ -143,6 +144,8 @@
     <Compile Include="Startup\InitializeAutomapper.cs" />
     <Compile Include="Startup\InitializeJsonSerializer.cs" />
     <Compile Include="Startup\PostBootstrap.cs" />
+    <Compile Include="ViewModels\Contracts\ICustomEffectEditorViewModel.cs" />
+    <Compile Include="ViewModels\CustomEffectEditorViewModel.cs" />
     <Compile Include="ViewModels\ApartmentBuildingEditorViewModel.cs" />
     <Compile Include="ViewModels\BaseEditorViewModel.cs" />
     <Compile Include="ViewModels\Contracts\IApartmentBuildingEditorViewModel.cs" />
@@ -187,6 +190,9 @@
     <Compile Include="ViewModels\ObjectListViewModel.cs" />
     <Compile Include="ViewModels\RenameObjectViewModel.cs" />
     <Compile Include="ViewModels\YesNoViewModel.cs" />
+    <Compile Include="Views\ApartmentBuildingEditorView.xaml.cs">
+      <DependentUpon>ApartmentBuildingEditorView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\DatabaseConnectionView.xaml.cs">
       <DependentUpon>DatabaseConnectionView.xaml</DependentUpon>
     </Compile>
@@ -220,8 +226,8 @@
     <Compile Include="Views\RenameObjectView.xaml.cs">
       <DependentUpon>RenameObjectView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ApartmentBuildingEditorView.xaml.cs">
-      <DependentUpon>ApartmentBuildingEditorView.xaml</DependentUpon>
+    <Compile Include="Views\CustomEffectEditorView.xaml.cs">
+      <DependentUpon>CustomEffectEditorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SpawnEditorView.xaml.cs">
       <DependentUpon>SpawnEditorView.xaml</DependentUpon>
@@ -229,6 +235,10 @@
     <Compile Include="Views\YesNoView.xaml.cs">
       <DependentUpon>YesNoView.xaml</DependentUpon>
     </Compile>
+    <Page Include="Views\ApartmentBuildingEditorView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\DatabaseConnectionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -265,7 +275,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ApartmentBuildingEditorView.xaml">
+    <Page Include="Views\CustomEffectEditorView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

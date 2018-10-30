@@ -24,7 +24,9 @@
 
             </TabItem>
             <TabItem Header="Custom Effects">
+                <views:CustomEffectEditorView cal:View.Model="{Binding CustomEffectVM}">
 
+                </views:CustomEffectEditorView>
             </TabItem>
             <TabItem Header="Downloads">
 

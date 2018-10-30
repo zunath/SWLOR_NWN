@@ -8,7 +8,6 @@ namespace SWLOR.Tools.Editor.ViewModels.Contracts
         ObservableCollection<T> DataObjects { get; set; }
         T SelectedDataObject { get; set; }
         void New();
-        void Rename();
         void Delete();
     }
 }

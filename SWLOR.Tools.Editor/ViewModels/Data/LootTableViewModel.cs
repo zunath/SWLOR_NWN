@@ -11,9 +11,11 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
         public LootTableViewModel()
         {
             LootTableItems = new ObservableCollection<LootTableItemViewModel>();
+            Name = "New Loot Table";
+            LootTableItems.Add(new LootTableItemViewModel());
 
-            TrackProperty(this, x => x.LootTableID);
             TrackProperty(this, x => x.Name);
+            TrackProperty(this, x => x.LootTableID);
             TrackProperty(this, x => x.LootTableItems);
         }
         

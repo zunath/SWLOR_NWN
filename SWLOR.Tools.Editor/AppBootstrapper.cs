@@ -133,15 +133,19 @@ namespace SWLOR.Tools.Editor
             builder.RegisterType<PostBootstrap>().As<IPostBootstrap>().SingleInstance();
             
             // View Models
+            builder.RegisterType<ApartmentBuildingEditorViewModel>().As<IApartmentBuildingEditorViewModel>();
             builder.RegisterType<DatabaseConnectionViewModel>().As<IDatabaseConnectionViewModel>();
             builder.RegisterType<DataSyncViewModel>().As<IDataSyncViewModel>();
             builder.RegisterType<EditorListViewModel>().As<IEditorListViewModel>();
             builder.RegisterType<ErrorViewModel>().As<IErrorViewModel>();
             builder.RegisterType<LootEditorViewModel>().As<ILootEditorViewModel>();
             builder.RegisterType<MenuBarViewModel>().As<IMenuBarViewModel>();
-            builder.RegisterType(typeof(ObjectListViewModel<LootTableViewModel>)).As<IObjectListViewModel<LootTableViewModel>>();
             builder.RegisterType<RenameObjectViewModel>().As<IRenameObjectViewModel>();
             builder.RegisterType<YesNoViewModel>().As<IYesNoViewModel>();
+
+            // Object list view models
+            builder.RegisterType(typeof(ObjectListViewModel<ApartmentBuildingViewModel>)).As<IObjectListViewModel<ApartmentBuildingViewModel>>();
+            builder.RegisterType(typeof(ObjectListViewModel<LootTableViewModel>)).As<IObjectListViewModel<LootTableViewModel>>();
 
             // Shell
             builder.RegisterType<ShellViewModel>().As<IShellViewModel>();

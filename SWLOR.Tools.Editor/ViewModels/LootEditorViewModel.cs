@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using System.Windows.Threading;
 using Caliburn.Micro;
 using Newtonsoft.Json;
-using SWLOR.Game.Server.Data;
 using SWLOR.Tools.Editor.Attributes;
 using SWLOR.Tools.Editor.Extensions;
 using SWLOR.Tools.Editor.Messages;
@@ -191,15 +188,6 @@ namespace SWLOR.Tools.Editor.ViewModels
                 SelectedLootTableItem = ActiveLootTable.LootTableItems.First();
             }
         }
-
-        // Renamed a loot table
-        public void Handle(RenamedEditorObject<LootTableViewModel> message)
-        {
-            if (ActiveLootTable == message.Object)
-            {
-                ActiveLootTable.Name = message.Object.DisplayName;
-            }
-        }
         
         // Deleted Loot Table
         public void Handle(DeleteEditorObject<LootTableViewModel> message)
@@ -215,6 +203,8 @@ namespace SWLOR.Tools.Editor.ViewModels
         public void Handle(RequestNewEditorObject<LootTableViewModel> message)
         {
             LootTableViewModel table = new LootTableViewModel();
+            table.LootTableItems.Add(new LootTableItemViewModel());
+
             ActiveLootTable = table;
             _eventAggregator.PublishOnUIThread(new CreatedNewEditorObject<LootTableViewModel>(table));
         }

@@ -143,6 +143,9 @@
     <Compile Include="Startup\InitializeAutomapper.cs" />
     <Compile Include="Startup\InitializeJsonSerializer.cs" />
     <Compile Include="Startup\PostBootstrap.cs" />
+    <Compile Include="ViewModels\ApartmentBuildingEditorViewModel.cs" />
+    <Compile Include="ViewModels\BaseEditorViewModel.cs" />
+    <Compile Include="ViewModels\Contracts\IApartmentBuildingEditorViewModel.cs" />
     <Compile Include="ViewModels\Contracts\IDatabaseConnectionViewModel.cs" />
     <Compile Include="ViewModels\Contracts\IDBObjectViewModel.cs" />
     <Compile Include="ViewModels\Contracts\IDataSyncViewModel.cs" />
@@ -153,6 +156,7 @@
     <Compile Include="ViewModels\Contracts\IYesNoViewModel.cs" />
     <Compile Include="ViewModels\DatabaseConnectionViewModel.cs" />
     <Compile Include="ViewModels\DataSyncViewModel.cs" />
+    <Compile Include="ViewModels\Data\ApartmentBuildingViewModel.cs" />
     <Compile Include="ViewModels\Data\DBObjectViewModelBase.cs" />
     <Compile Include="ViewModels\Data\LootTableItemViewModel.cs" />
     <Compile Include="ViewModels\Data\LootTableViewModel.cs" />
@@ -194,6 +198,12 @@
     <Compile Include="Views\RenameObjectView.xaml.cs">
       <DependentUpon>RenameObjectView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ApartmentBuildingEditorView.xaml.cs">
+      <DependentUpon>ApartmentBuildingEditorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SpawnEditorView.xaml.cs">
+      <DependentUpon>SpawnEditorView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\YesNoView.xaml.cs">
       <DependentUpon>YesNoView.xaml</DependentUpon>
     </Compile>
@@ -230,6 +240,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\RenameObjectView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ApartmentBuildingEditorView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\SpawnEditorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -275,6 +293,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Observables\" />
+    <Folder Include="ViewModels\Editor\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

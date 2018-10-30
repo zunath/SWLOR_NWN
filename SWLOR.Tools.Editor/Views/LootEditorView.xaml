@@ -66,7 +66,7 @@
                          Grid.Row="0"
                          TabIndex="0"
                          IsEnabled="{Binding IsTableSelected}"
-                         Text="{Binding Path=ActiveLootTable.Name, Mode=TwoWay}">
+                         Text="{Binding Path=ActiveLootTable.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
 
                 </TextBox>
 
@@ -80,7 +80,7 @@
                          TabIndex="1"
                          MaxLength="16"
                          IsEnabled="{Binding IsLootItemSelected}"
-                         Text="{Binding Path=SelectedLootTableItem.Resref, Mode=TwoWay}">
+                         Text="{Binding Path=SelectedLootTableItem.Resref, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                 </TextBox>
                 <Label Content="Max Quantity:"
                        Grid.Column="0"
@@ -94,7 +94,7 @@
                                     Minimum="1"
                                     Maximum="255"
                                     IsEnabled="{Binding IsLootItemSelected}"
-                                    Value="{Binding Path=SelectedLootTableItem.MaxQuantity, Mode=TwoWay}">
+                                    Value="{Binding Path=SelectedLootTableItem.MaxQuantity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                 </xctk:IntegerUpDown>
 
                 <Label Content="Weight:"
@@ -110,7 +110,7 @@
                     Minimum="1"
                     Maximum="100"
                     IsEnabled="{Binding IsLootItemSelected}"
-                    Value="{Binding Path=SelectedLootTableItem.Weight, Mode=TwoWay}">
+                    Value="{Binding Path=SelectedLootTableItem.Weight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                 </xctk:IntegerUpDown>
                 <Label Content="Is Active:"
                        Grid.Column="0"
@@ -133,7 +133,7 @@
                          TabIndex="4"
                          MaxLength="64"
                          IsEnabled="{Binding IsLootItemSelected}"
-                         Text="{Binding Path=SelectedLootTableItem.SpawnRule, Mode=TwoWay}">
+                         Text="{Binding Path=SelectedLootTableItem.SpawnRule, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                 </TextBox>
             </Grid>
 

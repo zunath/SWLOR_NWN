@@ -36,7 +36,7 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
         }
 
         public abstract string DisplayName { get; set; }
-
+        
         private bool _isDirty;
 
         [JsonIgnore]

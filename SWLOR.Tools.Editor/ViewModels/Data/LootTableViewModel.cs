@@ -1,24 +1,22 @@
-﻿using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using SWLOR.Tools.Editor.Attributes;
+using System.Collections.ObjectModel;
 
 namespace SWLOR.Tools.Editor.ViewModels.Data
 {
     [Folder("LootTable")]
-    public class LootTableViewModel: DBObjectViewModelBase
+    public class LootTableViewModel : DBObjectViewModelBase
     {
         public LootTableViewModel()
         {
             LootTableItems = new ObservableCollection<LootTableItemViewModel>();
             Name = "New Loot Table";
-            LootTableItems.Add(new LootTableItemViewModel());
 
             TrackProperty(this, x => x.Name);
             TrackProperty(this, x => x.LootTableID);
             TrackProperty(this, x => x.LootTableItems);
         }
-        
+
         private ObservableCollection<LootTableItemViewModel> _lootTableItems;
 
         [JsonProperty(nameof(LootTableItems))]

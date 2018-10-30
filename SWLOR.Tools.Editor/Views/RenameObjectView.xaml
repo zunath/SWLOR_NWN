@@ -35,7 +35,7 @@
             Grid.Column="0"
             Grid.ColumnSpan="2"
             x:Name="Name" 
-            MaxLength="{Binding MaxLength}"
+            MaxLength="{Binding MaxLength, UpdateSourceTrigger=PropertyChanged}"
             HorizontalScrollBarVisibility="Visible"
             VerticalScrollBarVisibility="Visible">
 

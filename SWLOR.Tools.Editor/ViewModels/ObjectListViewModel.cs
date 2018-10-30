@@ -157,6 +157,10 @@ namespace SWLOR.Tools.Editor.ViewModels
             message.Object.FileName = Guid.NewGuid() + ".json";
             DataObjects.Add(message.Object);
             SelectedDataObject = message.Object;
+
+            string path = "./Data/" + GetFolderName() + "/" + message.Object.FileName;
+            string json = JsonConvert.SerializeObject(message.Object);
+            File.WriteAllText(path, json);
         }
     }
 }

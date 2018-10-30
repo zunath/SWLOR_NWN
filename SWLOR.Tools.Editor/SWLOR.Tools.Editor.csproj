@@ -145,6 +145,7 @@
     <Compile Include="Startup\InitializeJsonSerializer.cs" />
     <Compile Include="Startup\PostBootstrap.cs" />
     <Compile Include="ViewModels\Contracts\ICustomEffectEditorViewModel.cs" />
+    <Compile Include="ViewModels\Contracts\IPlantEditorViewModel.cs" />
     <Compile Include="ViewModels\CustomEffectEditorViewModel.cs" />
     <Compile Include="ViewModels\ApartmentBuildingEditorViewModel.cs" />
     <Compile Include="ViewModels\BaseEditorViewModel.cs" />
@@ -188,8 +189,12 @@
     <Compile Include="ViewModels\ErrorViewModel.cs" />
     <Compile Include="ViewModels\LootEditorViewModel.cs" />
     <Compile Include="ViewModels\ObjectListViewModel.cs" />
+    <Compile Include="ViewModels\PlantEditorViewModel.cs" />
     <Compile Include="ViewModels\RenameObjectViewModel.cs" />
     <Compile Include="ViewModels\YesNoViewModel.cs" />
+    <Compile Include="Views\PlantEditorView.xaml.cs">
+      <DependentUpon>PlantEditorView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ApartmentBuildingEditorView.xaml.cs">
       <DependentUpon>ApartmentBuildingEditorView.xaml</DependentUpon>
     </Compile>
@@ -235,6 +240,10 @@
     <Compile Include="Views\YesNoView.xaml.cs">
       <DependentUpon>YesNoView.xaml</DependentUpon>
     </Compile>
+    <Page Include="Views\PlantEditorView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\ApartmentBuildingEditorView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

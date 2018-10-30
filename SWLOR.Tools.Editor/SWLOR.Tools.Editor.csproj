@@ -157,9 +157,31 @@
     <Compile Include="ViewModels\DatabaseConnectionViewModel.cs" />
     <Compile Include="ViewModels\DataSyncViewModel.cs" />
     <Compile Include="ViewModels\Data\ApartmentBuildingViewModel.cs" />
+    <Compile Include="ViewModels\Data\BaseStructureViewModel.cs" />
+    <Compile Include="ViewModels\Data\BuildingStyleViewModel.cs" />
+    <Compile Include="ViewModels\Data\CooldownCategoryViewModel.cs" />
+    <Compile Include="ViewModels\Data\CraftBlueprintCategoryViewModel.cs" />
+    <Compile Include="ViewModels\Data\CraftBlueprintViewModel.cs" />
+    <Compile Include="ViewModels\Data\CraftDeviceViewModel.cs" />
+    <Compile Include="ViewModels\Data\CustomEffectViewModel.cs" />
     <Compile Include="ViewModels\Data\DBObjectViewModelBase.cs" />
+    <Compile Include="ViewModels\Data\DownloadViewModel.cs" />
+    <Compile Include="ViewModels\Data\FameRegionViewModel.cs" />
+    <Compile Include="ViewModels\Data\GameTopicCategoryViewModel.cs" />
+    <Compile Include="ViewModels\Data\GameTopicViewModel.cs" />
+    <Compile Include="ViewModels\Data\KeyItemCategoryViewModel.cs" />
+    <Compile Include="ViewModels\Data\KeyItemViewModel.cs" />
     <Compile Include="ViewModels\Data\LootTableItemViewModel.cs" />
     <Compile Include="ViewModels\Data\LootTableViewModel.cs" />
+    <Compile Include="ViewModels\Data\ModViewModel.cs" />
+    <Compile Include="ViewModels\Data\NPCGroupViewModel.cs" />
+    <Compile Include="ViewModels\Data\PerkCategoryViewModel.cs" />
+    <Compile Include="ViewModels\Data\PerkViewModel.cs" />
+    <Compile Include="ViewModels\Data\PlantViewModel.cs" />
+    <Compile Include="ViewModels\Data\QuestViewModel.cs" />
+    <Compile Include="ViewModels\Data\SkillCategoryViewModel.cs" />
+    <Compile Include="ViewModels\Data\SkillViewModel.cs" />
+    <Compile Include="ViewModels\Data\SpawnViewModel.cs" />
     <Compile Include="ViewModels\ErrorViewModel.cs" />
     <Compile Include="ViewModels\LootEditorViewModel.cs" />
     <Compile Include="ViewModels\ObjectListViewModel.cs" />
@@ -293,7 +315,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Observables\" />
-    <Folder Include="ViewModels\Editor\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

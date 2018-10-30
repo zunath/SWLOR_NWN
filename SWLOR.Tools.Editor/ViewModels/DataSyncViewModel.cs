@@ -157,9 +157,7 @@ namespace SWLOR.Tools.Editor.ViewModels
                 
                 WriteDataFileAsync(db.ApartmentBuildings.ToList());
                 WriteDataFileAsync(db.BaseStructures.ToList());
-                WriteDataFileAsync(db.BaseStructureTypes.ToList());
                 WriteDataFileAsync(db.BuildingStyles.ToList());
-                WriteDataFileAsync(db.ComponentTypes.ToList());
                 WriteDataFileAsync(db.CooldownCategories.ToList());
                 WriteDataFileAsync(db.CraftBlueprints.ToList());
                 WriteDataFileAsync(db.CraftBlueprintCategories.ToList());
@@ -169,8 +167,6 @@ namespace SWLOR.Tools.Editor.ViewModels
                 WriteDataFileAsync(db.FameRegions.ToList());
                 WriteDataFileAsync(db.GameTopics.ToList());
                 WriteDataFileAsync(db.GameTopicCategories.ToList());
-                WriteDataFileAsync(db.GrowingPlants.ToList());
-                WriteDataFileAsync(db.ItemTypes.ToList());
                 WriteDataFileAsync(db.KeyItems.ToList());
                 WriteDataFileAsync(db.KeyItemCategories.ToList());
 
@@ -252,7 +248,7 @@ namespace SWLOR.Tools.Editor.ViewModels
             }
 
             _progress++;
-            int percentDone = Convert.ToInt32(_progress / 30.0f * 100);
+            int percentDone = Convert.ToInt32(_progress / 25.0f * 100);
             _worker.ReportProgress(percentDone);
             _eventAggregator.PublishOnBackgroundThread(new DataObjectsLoadedFromDisk(Folder));
         }

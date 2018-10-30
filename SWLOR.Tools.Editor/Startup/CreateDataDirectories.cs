@@ -1,6 +1,11 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Windows;
 using Autofac;
 using SWLOR.Game.Server.Data;
+using SWLOR.Tools.Editor.Attributes;
 
 namespace SWLOR.Tools.Editor.Startup
 {
@@ -8,41 +13,17 @@ namespace SWLOR.Tools.Editor.Startup
     {
         public void Start()
         {
-            string[] folderNames =
+            var types =
+                from a in AppDomain.CurrentDomain.GetAssemblies()
+                from t in a.GetTypes()
+                let attributes = t.GetCustomAttributes(typeof(FolderAttribute), true)
+                where attributes != null && attributes.Length > 0
+                select new { Type = t, Attributes = attributes.Cast<FolderAttribute>() };
+            
+            foreach (var type in types)
             {
-                nameof(ApartmentBuilding),
-                nameof(BaseStructure),
-                nameof(BaseStructureType),
-                nameof(BuildingStyle),
-                nameof(ComponentType),
-                nameof(CooldownCategory),
-                nameof(CraftBlueprint),
-                nameof(CraftBlueprintCategory),
-                nameof(CraftDevice),
-                nameof(CustomEffect),
-                nameof(Download),
-                nameof(FameRegion),
-                nameof(GameTopic),
-                nameof(GameTopicCategory),
-                nameof(GrowingPlant),
-                nameof(ItemType),
-                nameof(KeyItem),
-                nameof(KeyItemCategory),
-                nameof(LootTable),
-                nameof(Mod),
-                nameof(NPCGroup),
-                nameof(Perk),
-                nameof(PerkCategory),
-                nameof(Plant),
-                nameof(Quest),
-                nameof(Skill),
-                nameof(SkillCategory),
-                nameof(Spawn),
-            };
-
-            foreach (var folder in folderNames)
-            {
-                CreateDirectory(folder);
+                var attribute = type.Attributes.First();
+                CreateDirectory(attribute.Folder);
             }
         }
 

@@ -4,22 +4,14 @@ using SWLOR.Tools.Editor.Attributes;
 
 namespace SWLOR.Tools.Editor.ViewModels.Data
 {
-    [Folder(nameof(ApartmentBuilding))]
-    public class ApartmentBuildingViewModel: DBObjectViewModelBase
+    [Folder(nameof(NPCGroup))]
+    public class NPCGroupViewModel : DBObjectViewModelBase
     {
-        
-        public ApartmentBuildingViewModel()
-        {
-            Name = "New Apartment Building";
+        private string _displayName;
 
-            TrackProperty(this, x => x.Name);
-        }
-
-        private string _name;
-        [JsonProperty(nameof(Name))]
-        public string Name
+        public override string DisplayName
         {
-            get => _name;
+            get => _displayName;
             set
             {
                 _name = value;
@@ -29,11 +21,11 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
             }
         }
 
-        private string _displayName;
-
-        public override string DisplayName
+        private string _name;
+        [JsonProperty(nameof(Name))]
+        public string Name
         {
-            get => _displayName;
+            get => _name;
             set
             {
                 _name = value;

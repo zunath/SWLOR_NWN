@@ -130,6 +130,7 @@
     <Compile Include="Messages\DatabaseConnectionSucceeded.cs" />
     <Compile Include="Messages\DatabaseSyncCompleted.cs" />
     <Compile Include="Messages\DataObjectSaved.cs" />
+    <Compile Include="Messages\DataObjectsLoadedFromDisk.cs" />
     <Compile Include="Messages\DeleteEditorObject.cs" />
     <Compile Include="Messages\EditorObjectSelected.cs" />
     <Compile Include="Messages\NewEditorObject.cs" />

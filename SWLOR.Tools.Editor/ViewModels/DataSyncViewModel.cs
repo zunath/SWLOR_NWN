@@ -26,6 +26,7 @@ namespace SWLOR.Tools.Editor.ViewModels
         private readonly IWindowManager _windowManager;
         private readonly IErrorViewModel _errorVM;
         private readonly AppSettings _appSettings;
+        private readonly IEventAggregator _eventAggregator;
 
         public DataSyncViewModel(
             IDatabaseConnectionViewModel dbConnectionVm,
@@ -38,10 +39,11 @@ namespace SWLOR.Tools.Editor.ViewModels
             _windowManager = windowManager;
             _errorVM = errorVM;
             _appSettings = appSettings;
+            _eventAggregator = eventAggregator;
 
             ControlsEnabled = true;
             SyncVisibility = Visibility.Collapsed;
-            eventAggregator.Subscribe(this);
+            _eventAggregator.Subscribe(this);
         }
 
         public IDatabaseConnectionViewModel DatabaseConnectionVM
@@ -165,17 +167,25 @@ namespace SWLOR.Tools.Editor.ViewModels
             }
         }
 
-        private static void WriteDataFileAsync<T>(IEnumerable<T> set)
+        private void WriteDataFileAsync<T>(IEnumerable<T> set)
         {
             string Folder = typeof(T).Name;
+            string path = "./Data/" + Folder + "/";
+            string[] files = Directory.GetFiles(path);
 
-            Parallel.ForEach(set, item =>
+            foreach (var file in files)
+            {
+                File.Delete(file);
+            }
+
+            foreach (var record in set)
             {
                 string fileName = Guid.NewGuid().ToString();
-                string json = JsonConvert.SerializeObject(item);
+                string json = JsonConvert.SerializeObject(record);
                 File.WriteAllText("./Data/" + Folder + "/" + fileName + ".json", json);
-            });
-
+            }
+            
+            _eventAggregator.PublishOnBackgroundThread(new DataObjectsLoadedFromDisk(Folder));
         }
         
         public void Handle(DatabaseConnectionSucceeded message)

@@ -2,7 +2,9 @@
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
+using System.Windows.Threading;
 using AutoMapper;
 using Caliburn.Micro;
 using Newtonsoft.Json;
@@ -17,12 +19,14 @@ namespace SWLOR.Tools.Editor.ViewModels
     public class ObjectListViewModel<T>:
         PropertyChangedBase,
         IObjectListViewModel<T>,
-        IHandle<ApplicationStarted>
+        IHandle<ApplicationStarted>,
+        IHandle<DataObjectsLoadedFromDisk> 
         where T: IDBObjectViewModel
     {
         private readonly IEventAggregator _eventAggregator;
         private readonly IYesNoViewModel _yesNo;
         private readonly IWindowManager _windowManager;
+        private readonly SynchronizationContext _sync;
 
         public ObjectListViewModel(
             IEventAggregator eventAggregator,
@@ -33,6 +37,7 @@ namespace SWLOR.Tools.Editor.ViewModels
             _eventAggregator = eventAggregator;
             _yesNo = yesNo;
             _windowManager = windowManager;
+            _sync = SynchronizationContext.Current;
 
             eventAggregator.Subscribe(this);
         }
@@ -91,6 +96,11 @@ namespace SWLOR.Tools.Editor.ViewModels
 
         public void Handle(ApplicationStarted message)
         {
+            LoadFiles();
+        }
+
+        private string GetFolderName()
+        {
             FolderAttribute folderAttribute = typeof(T).GetCustomAttributes(typeof(FolderAttribute), false).FirstOrDefault() as FolderAttribute;
 
             if (folderAttribute == null)
@@ -98,14 +108,31 @@ namespace SWLOR.Tools.Editor.ViewModels
                 throw new NullReferenceException("Unable to find " + nameof(FolderAttribute) + " attribute on data object.");
             }
 
-            foreach (var file in Directory.GetFiles("./Data/" + folderAttribute.Folder))
+            return folderAttribute.Folder;
+        }
+
+        private void LoadFiles()
+        {
+            var files = Directory.GetFiles("./Data/" + GetFolderName());
+            foreach (var file in files)
             {
                 var json = File.ReadAllText(file);
                 T data = JsonConvert.DeserializeObject<T>(json);
                 data.FileName = Path.GetFileName(file);
-                
+
                 DataObjects.Add(data);
             }
+        }
+        
+        public void Handle(DataObjectsLoadedFromDisk message)
+        {
+            if (message.Folder != GetFolderName()) return;
+
+            _sync.Post(op =>
+            {
+                DataObjects.Clear();
+                LoadFiles();
+            }, null);
         }
     }
 }

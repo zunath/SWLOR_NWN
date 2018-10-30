@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using System.Windows.Threading;
 using Caliburn.Micro;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Data;
@@ -135,5 +136,6 @@ namespace SWLOR.Tools.Editor.ViewModels
             }
 
         }
+
     }
 }

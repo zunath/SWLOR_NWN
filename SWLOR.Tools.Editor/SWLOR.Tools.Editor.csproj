@@ -121,6 +121,7 @@
     <Compile Include="AppSettings.cs" />
     <Compile Include="Attributes\FolderAttribute.cs" />
     <Compile Include="Converters\EnumConverter.cs" />
+    <Compile Include="Enumeration\ResourceType.cs" />
     <Compile Include="Extensions\ObjectCopyExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Helpers\PasswordBoxHelper.cs" />
@@ -145,6 +146,7 @@
     <Compile Include="Startup\InitializeJsonSerializer.cs" />
     <Compile Include="Startup\PostBootstrap.cs" />
     <Compile Include="ViewModels\Contracts\ICustomEffectEditorViewModel.cs" />
+    <Compile Include="ViewModels\Contracts\IExportViewModel.cs" />
     <Compile Include="ViewModels\Contracts\IPlantEditorViewModel.cs" />
     <Compile Include="ViewModels\CustomEffectEditorViewModel.cs" />
     <Compile Include="ViewModels\ApartmentBuildingEditorViewModel.cs" />
@@ -173,6 +175,7 @@
     <Compile Include="ViewModels\Data\FameRegionViewModel.cs" />
     <Compile Include="ViewModels\Data\GameTopicCategoryViewModel.cs" />
     <Compile Include="ViewModels\Data\GameTopicViewModel.cs" />
+    <Compile Include="ViewModels\Data\ImportExportPackageViewModel.cs" />
     <Compile Include="ViewModels\Data\KeyItemCategoryViewModel.cs" />
     <Compile Include="ViewModels\Data\KeyItemViewModel.cs" />
     <Compile Include="ViewModels\Data\LootTableItemViewModel.cs" />
@@ -183,15 +186,20 @@
     <Compile Include="ViewModels\Data\PerkViewModel.cs" />
     <Compile Include="ViewModels\Data\PlantViewModel.cs" />
     <Compile Include="ViewModels\Data\QuestViewModel.cs" />
+    <Compile Include="ViewModels\Data\ResourceGroup.cs" />
     <Compile Include="ViewModels\Data\SkillCategoryViewModel.cs" />
     <Compile Include="ViewModels\Data\SkillViewModel.cs" />
     <Compile Include="ViewModels\Data\SpawnViewModel.cs" />
     <Compile Include="ViewModels\ErrorViewModel.cs" />
+    <Compile Include="ViewModels\ExportViewModel.cs" />
     <Compile Include="ViewModels\LootEditorViewModel.cs" />
     <Compile Include="ViewModels\ObjectListViewModel.cs" />
     <Compile Include="ViewModels\PlantEditorViewModel.cs" />
     <Compile Include="ViewModels\RenameObjectViewModel.cs" />
     <Compile Include="ViewModels\YesNoViewModel.cs" />
+    <Compile Include="Views\ExportView.xaml.cs">
+      <DependentUpon>ExportView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\PlantEditorView.xaml.cs">
       <DependentUpon>PlantEditorView.xaml</DependentUpon>
     </Compile>
@@ -240,6 +248,10 @@
     <Compile Include="Views\YesNoView.xaml.cs">
       <DependentUpon>YesNoView.xaml</DependentUpon>
     </Compile>
+    <Page Include="Views\ExportView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\PlantEditorView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

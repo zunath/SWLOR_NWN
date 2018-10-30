@@ -51,7 +51,7 @@ namespace SWLOR.Tools.Editor.Startup
                     case nameof(CraftDevice):
                         return Create("CraftDeviceID", "Name");
                     case nameof(CustomEffect):
-                        return Create("CustomEffectID", "Name", "IconID", "ScriptHandler", "StartMessage", "ContinueMessage", "WornOffMessage", "IsStance");
+                        return Create("CustomEffectID", "Name", "IconID", "ScriptHandler", "StartMessage", "ContinueMessage", "WornOffMessage", "CustomEffectCategoryID");
                     case nameof(Download):
                         return Create("DownloadID", "Name", "Description", "Url", "IsActive");
                     case nameof(FameRegion):

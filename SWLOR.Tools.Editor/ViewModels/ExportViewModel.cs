@@ -15,43 +15,55 @@ using Action = System.Action;
 namespace SWLOR.Tools.Editor.ViewModels
 {
     public class ExportViewModel :
-        Screen,
-        IExportViewModel
+        Screen, IExportViewModel
     {
         public ExportViewModel()
         {
-            ActivePackage = new ImportExportPackageViewModel(string.Empty);
+            PackageName = string.Empty;
             ResourceGroups = new ObservableCollection<ResourceGroup>
             {
-                new ResourceGroup("Apartment Buildings", ResourceType.ApartmentBuildings, nameof(ApartmentBuilding), typeof(ApartmentBuildingViewModel), new ObservableCollection<dynamic>(ActivePackage.ApartmentBuildings)),
-                new ResourceGroup("Base Structures", ResourceType.BaseStructures, nameof(BaseStructure), typeof(BaseStructureViewModel), new ObservableCollection<dynamic>(ActivePackage.BaseStructures)),
-                new ResourceGroup("Building Styles", ResourceType.BuildingStyles, nameof(BuildingStyle), typeof(BuildingStyleViewModel), new ObservableCollection<dynamic>(ActivePackage.BuildingStyles)),
-                new ResourceGroup("Cooldown Categories", ResourceType.CooldownCategories, nameof(CooldownCategory), typeof(CooldownCategoryViewModel), new ObservableCollection<dynamic>(ActivePackage.CooldownCategories)),
-                new ResourceGroup("Craft Blueprint Categories", ResourceType.CraftBlueprintCategories, nameof(CraftBlueprintCategory), typeof(CraftBlueprintCategoryViewModel), new ObservableCollection<dynamic>(ActivePackage.CraftBlueprintCategories)),
-                new ResourceGroup("Craft Blueprints", ResourceType.CraftBlueprints, nameof(CraftBlueprint), typeof(CraftBlueprintViewModel), new ObservableCollection<dynamic>(ActivePackage.CraftBlueprints), "ItemName"),
-                new ResourceGroup("Craft Devices", ResourceType.CraftDevices, nameof(CraftDevice), typeof(CraftDeviceViewModel), new ObservableCollection<dynamic>(ActivePackage.CraftDevices)),
-                new ResourceGroup("Custom Effects", ResourceType.CustomEffects, nameof(CustomEffect), typeof(CustomEffectViewModel), new ObservableCollection<dynamic>(ActivePackage.CustomEffects)),
-                new ResourceGroup("Downloads", ResourceType.Downloads, nameof(Download), typeof(DownloadViewModel), new ObservableCollection<dynamic>(ActivePackage.Downloads)),
-                new ResourceGroup("Fame Regions", ResourceType.FameRegions, nameof(FameRegion), typeof(FameRegionViewModel), new ObservableCollection<dynamic>(ActivePackage.FameRegions)),
-                new ResourceGroup("Game Topic Categories", ResourceType.GameTopicCategories, nameof(GameTopicCategory), typeof(GameTopicCategoryViewModel), new ObservableCollection<dynamic>(ActivePackage.GameTopicCategories)),
-                new ResourceGroup("Game Topics", ResourceType.GameTopics, nameof(GameTopic), typeof(GameTopicViewModel), new ObservableCollection<dynamic>(ActivePackage.GameTopics)),
-                new ResourceGroup("Key Item Categories", ResourceType.KeyItemCategories, nameof(KeyItemCategory), typeof(KeyItemCategoryViewModel), new ObservableCollection<dynamic>(ActivePackage.KeyItemCategories)),
-                new ResourceGroup("Key Items", ResourceType.KeyItems, nameof(KeyItem), typeof(KeyItemViewModel), new ObservableCollection<dynamic>(ActivePackage.KeyItems)),
-                new ResourceGroup("Loot Tables", ResourceType.LootTables, nameof(LootTable), typeof(LootTableViewModel), new ObservableCollection<dynamic>(ActivePackage.LootTables)),
-                new ResourceGroup("Mods", ResourceType.Mods, nameof(Mod), typeof(ModViewModel), new ObservableCollection<dynamic>(ActivePackage.Mods)),
-                new ResourceGroup("NPC Groups", ResourceType.NPCGroups, nameof(NPCGroup), typeof(NPCGroupViewModel), new ObservableCollection<dynamic>(ActivePackage.NPCGroups)),
-                new ResourceGroup("Perk Categories", ResourceType.PerkCategories, nameof(PerkCategory), typeof(PerkCategoryViewModel), new ObservableCollection<dynamic>(ActivePackage.PerkCategories)),
-                new ResourceGroup("Plants", ResourceType.Plants, nameof(Plant), typeof(PlantViewModel), new ObservableCollection<dynamic>(ActivePackage.Plants)),
-                new ResourceGroup("Quests", ResourceType.Quests, nameof(Quest), typeof(QuestViewModel), new ObservableCollection<dynamic>(ActivePackage.Quests)),
-                new ResourceGroup("Skill Categories", ResourceType.SkillCategories, nameof(SkillCategory), typeof(SkillCategoryViewModel), new ObservableCollection<dynamic>(ActivePackage.SkillCategories)),
-                new ResourceGroup("Skills", ResourceType.Skills, nameof(Skill), typeof(SkillViewModel), new ObservableCollection<dynamic>(ActivePackage.Skills)),
-                new ResourceGroup("Spawns", ResourceType.Spawns, nameof(Spawn), typeof(SpawnViewModel), new ObservableCollection<dynamic>(ActivePackage.Spawns)),
+                new ResourceGroup("Apartment Buildings", ResourceType.ApartmentBuildings, nameof(ApartmentBuilding), typeof(ApartmentBuildingViewModel)),
+                new ResourceGroup("Base Structures", ResourceType.BaseStructures, nameof(BaseStructure), typeof(BaseStructureViewModel)),
+                new ResourceGroup("Building Styles", ResourceType.BuildingStyles, nameof(BuildingStyle), typeof(BuildingStyleViewModel)),
+                new ResourceGroup("Cooldown Categories", ResourceType.CooldownCategories, nameof(CooldownCategory), typeof(CooldownCategoryViewModel)),
+                new ResourceGroup("Craft Blueprint Categories", ResourceType.CraftBlueprintCategories, nameof(CraftBlueprintCategory), typeof(CraftBlueprintCategoryViewModel)),
+                new ResourceGroup("Craft Blueprints", ResourceType.CraftBlueprints, nameof(CraftBlueprint), typeof(CraftBlueprintViewModel)),
+                new ResourceGroup("Craft Devices", ResourceType.CraftDevices, nameof(CraftDevice), typeof(CraftDeviceViewModel)),
+                new ResourceGroup("Custom Effects", ResourceType.CustomEffects, nameof(CustomEffect), typeof(CustomEffectViewModel)),
+                new ResourceGroup("Downloads", ResourceType.Downloads, nameof(Download), typeof(DownloadViewModel)),
+                new ResourceGroup("Fame Regions", ResourceType.FameRegions, nameof(FameRegion), typeof(FameRegionViewModel)),
+                new ResourceGroup("Game Topic Categories", ResourceType.GameTopicCategories, nameof(GameTopicCategory), typeof(GameTopicCategoryViewModel)),
+                new ResourceGroup("Game Topics", ResourceType.GameTopics, nameof(GameTopic), typeof(GameTopicViewModel)),
+                new ResourceGroup("Key Item Categories", ResourceType.KeyItemCategories, nameof(KeyItemCategory), typeof(KeyItemCategoryViewModel)),
+                new ResourceGroup("Key Items", ResourceType.KeyItems, nameof(KeyItem), typeof(KeyItemViewModel)),
+                new ResourceGroup("Loot Tables", ResourceType.LootTables, nameof(LootTable), typeof(LootTableViewModel)),
+                new ResourceGroup("Mods", ResourceType.Mods, nameof(Mod), typeof(ModViewModel)),
+                new ResourceGroup("NPC Groups", ResourceType.NPCGroups, nameof(NPCGroup), typeof(NPCGroupViewModel)),
+                new ResourceGroup("Perk Categories", ResourceType.PerkCategories, nameof(PerkCategory), typeof(PerkCategoryViewModel)),
+                new ResourceGroup("Plants", ResourceType.Plants, nameof(Plant), typeof(PlantViewModel)),
+                new ResourceGroup("Quests", ResourceType.Quests, nameof(Quest), typeof(QuestViewModel)),
+                new ResourceGroup("Skill Categories", ResourceType.SkillCategories, nameof(SkillCategory), typeof(SkillCategoryViewModel)),
+                new ResourceGroup("Skills", ResourceType.Skills, nameof(Skill), typeof(SkillViewModel)),
+                new ResourceGroup("Spawns", ResourceType.Spawns, nameof(Spawn), typeof(SpawnViewModel)),
             };
             AvailableResources = new ObservableCollection<dynamic>();
             _addedResources = new ObservableCollection<dynamic>();
 
             SelectedAvailableResourceGroup = ResourceGroups.First();
             SelectedAddedResourceGroup = ResourceGroups.First();
+        }
+
+        private string _packageName;
+        public string PackageName
+        {
+            get => _packageName;
+            set
+            {
+                _packageName = value;
+                NotifyOfPropertyChange(() => PackageName);
+                Notify();
+            }
+
         }
 
         private ObservableCollection<ResourceGroup> _resourceGroups;
@@ -137,18 +149,22 @@ namespace SWLOR.Tools.Editor.ViewModels
             }
         }
 
-        private ImportExportPackageViewModel _activePackage;
-        public ImportExportPackageViewModel ActivePackage
+        public bool IsExportEnabled
         {
-            get => _activePackage;
-            set
+            get
             {
-                _activePackage = value;
-                NotifyOfPropertyChange(() => ActivePackage);
+                if (string.IsNullOrWhiteSpace(PackageName))
+                    return false;
+
+                foreach (var group in ResourceGroups)
+                {
+                    if (group.TargetCollection.Count > 0)
+                        return true;
+                }
+
+                return false;
             }
         }
-
-        public bool IsExportEnabled => ActivePackage.HasData;
         public bool IsRemoveEnabled => SelectedAddedResource != null;
 
         public bool IsAddEnabled
@@ -177,7 +193,7 @@ namespace SWLOR.Tools.Editor.ViewModels
 
 
 
-        private void LoadAvailableResources()
+        public void LoadAvailableResources()
         {
             AvailableResources.Clear();
             if (SelectedAvailableResourceGroup == null) return;
@@ -232,7 +248,6 @@ namespace SWLOR.Tools.Editor.ViewModels
 
         public void Cancel()
         {
-            ActivePackage.Clear();
             AddedResources.Clear();
             SelectedAvailableResourceGroup = ResourceGroups.First();
             SelectedAddedResourceGroup = ResourceGroups.First();

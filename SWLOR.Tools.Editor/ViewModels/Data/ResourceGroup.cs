@@ -7,13 +7,13 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
 {
     public class ResourceGroup: PropertyChangedBase
     {
-        public ResourceGroup(string name, ResourceType resourceType, string folderName, Type type, ObservableCollection<dynamic> targetCollection, string displayName = "Name")
+        public ResourceGroup(string name, ResourceType resourceType, string folderName, Type type, string displayName = "Name")
         {
             Name = name;
             ResourceType = resourceType;
             FolderName = folderName;
             Type = type;
-            TargetCollection = targetCollection;
+            TargetCollection = new ObservableCollection<dynamic>();
             DisplayName = displayName;
         }
 

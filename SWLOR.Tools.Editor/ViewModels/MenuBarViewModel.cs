@@ -27,6 +27,7 @@ namespace SWLOR.Tools.Editor.ViewModels
 
         public void Export()
         {
+            _exportVM.LoadAvailableResources();
             _windowManager.ShowDialog(_exportVM);
         }
 

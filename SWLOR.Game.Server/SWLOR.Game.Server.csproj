@@ -1649,10 +1649,11 @@
     <EmbeddedResource Include="Data\Migrations\2018-10-27.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-10-27.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-10-29.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2018-10-31.1.sql" />
     <Content Include="Data\Migrations\Readme.txt" />
-    <Content Include="ServerFiles\Database\scripts\AddWeaponCraftBlueprints.sql" />
-    <Content Include="ServerFiles\Database\scripts\AddPerkLevels.sql" />
-    <Content Include="ServerFiles\Database\scripts\WipePlayerData.sql" />
+    <Content Include="Data\Scripts\AddWeaponCraftBlueprints.sql" />
+    <Content Include="Data\Scripts\AddPerkLevels.sql" />
+    <Content Include="Data\Scripts\WipePlayerData.sql" />
     <Content Include="ServerFiles\Reference\ClothAndLeatherColors.jpg" />
     <Content Include="ServerFiles\Reference\HairColors.jpg" />
     <Content Include="ServerFiles\Reference\MetalColors.jpg" />

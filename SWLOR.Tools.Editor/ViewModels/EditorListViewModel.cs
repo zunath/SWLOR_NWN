@@ -7,17 +7,20 @@ namespace SWLOR.Tools.Editor.ViewModels
     {
         private IApartmentBuildingEditorViewModel _apartmentEditorVM;
         private ICustomEffectEditorViewModel _customEffectVM;
+        private IDownloadEditorViewModel _downloadVM;
         private ILootEditorViewModel _lootEditorVM;
         private IPlantEditorViewModel _plantEditorVM;
 
         public EditorListViewModel(
             IApartmentBuildingEditorViewModel apartmentEditorVM,
             ICustomEffectEditorViewModel customEffectVM,
+            IDownloadEditorViewModel downloadVM,
             ILootEditorViewModel lootEditorVM,
             IPlantEditorViewModel plantEditorVM)
         {
             _apartmentEditorVM = apartmentEditorVM;
             _customEffectVM = customEffectVM;
+            _downloadVM = downloadVM;
             _lootEditorVM = lootEditorVM;
             _plantEditorVM = plantEditorVM;
         }
@@ -39,6 +42,16 @@ namespace SWLOR.Tools.Editor.ViewModels
             {
                 _customEffectVM = value;
                 NotifyOfPropertyChange(() => CustomEffectVM);
+            }
+        }
+
+        public IDownloadEditorViewModel DownloadVM
+        {
+            get => _downloadVM;
+            set
+            {
+                _downloadVM = value;
+                NotifyOfPropertyChange(() => DownloadVM);
             }
         }
 

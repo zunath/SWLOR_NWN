@@ -137,6 +137,7 @@ namespace SWLOR.Tools.Editor
             builder.RegisterType<CustomEffectEditorViewModel>().As<ICustomEffectEditorViewModel>();
             builder.RegisterType<DatabaseConnectionViewModel>().As<IDatabaseConnectionViewModel>();
             builder.RegisterType<DataSyncViewModel>().As<IDataSyncViewModel>();
+            builder.RegisterType<DownloadEditorViewModel>().As<IDownloadEditorViewModel>();
             builder.RegisterType<EditorListViewModel>().As<IEditorListViewModel>();
             builder.RegisterType<ErrorViewModel>().As<IErrorViewModel>();
             builder.RegisterType<ImportViewModel>().As<IImportViewModel>();

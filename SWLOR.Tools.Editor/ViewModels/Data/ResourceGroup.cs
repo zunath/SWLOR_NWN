@@ -13,6 +13,7 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
             ResourceType = resourceType;
             FolderName = folderName;
             Type = type;
+            SourceCollection = new ObservableCollection<dynamic>();
             TargetCollection = new ObservableCollection<dynamic>();
             DisplayName = displayName;
         }
@@ -60,6 +61,17 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
             {
                 _displayName = value;
                 NotifyOfPropertyChange(() => DisplayName);
+            }
+        }
+
+        private ObservableCollection<dynamic> _sourceCollection;
+        public ObservableCollection<dynamic> SourceCollection
+        {
+            get => _sourceCollection;
+            set
+            {
+                _sourceCollection = value;
+                NotifyOfPropertyChange(() => SourceCollection);
             }
         }
 

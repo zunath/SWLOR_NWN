@@ -12,6 +12,7 @@ namespace SWLOR.Tools.Editor.Startup
         {
             Mapper.Initialize(cfg =>
             {
+                // View Model -> DB Object
                 cfg.CreateMap<ApartmentBuildingViewModel, ApartmentBuilding>();
                 cfg.CreateMap<BaseStructureViewModel, BaseStructure>();
                 cfg.CreateMap<BuildingStyleViewModel, BuildingStyle>();
@@ -37,6 +38,34 @@ namespace SWLOR.Tools.Editor.Startup
                 cfg.CreateMap<SkillCategoryViewModel, SkillCategory>();
                 cfg.CreateMap<SkillViewModel, Skill>();
                 cfg.CreateMap<SpawnViewModel, Spawn>();
+
+                // DB Object -> View Model
+                cfg.CreateMap<ApartmentBuilding, ApartmentBuildingViewModel>();
+                cfg.CreateMap<BaseStructure, BaseStructureViewModel>();
+                cfg.CreateMap<BuildingStyle, BuildingStyleViewModel>();
+                cfg.CreateMap<CooldownCategory, CooldownCategoryViewModel>();
+                cfg.CreateMap<CraftBlueprintCategory, CraftBlueprintCategoryViewModel>();
+                cfg.CreateMap<CraftBlueprint, CraftBlueprintViewModel>();
+                cfg.CreateMap<CraftDevice, CraftDeviceViewModel>();
+                cfg.CreateMap<CustomEffect, CustomEffectViewModel>();
+                cfg.CreateMap<Download, DownloadViewModel>();
+                cfg.CreateMap<FameRegion, FameRegionViewModel>();
+                cfg.CreateMap<GameTopicCategory, GameTopicCategoryViewModel>();
+                cfg.CreateMap<GameTopic, GameTopicViewModel>();
+                cfg.CreateMap<KeyItemCategory, KeyItemCategoryViewModel>();
+                cfg.CreateMap<KeyItem, KeyItemViewModel>();
+                cfg.CreateMap<LootTableItem, LootTableItemViewModel>();
+                cfg.CreateMap<LootTable, LootTableViewModel>();
+                cfg.CreateMap<Mod, ModViewModel>();
+                cfg.CreateMap<NPCGroup, NPCGroupViewModel>();
+                cfg.CreateMap<PerkCategory, PerkCategoryViewModel>();
+                cfg.CreateMap<Perk, PerkViewModel>();
+                cfg.CreateMap<Plant, PlantViewModel>();
+                cfg.CreateMap<Quest, QuestViewModel>();
+                cfg.CreateMap<SkillCategory, SkillCategoryViewModel>();
+                cfg.CreateMap<Skill, SkillViewModel>();
+                cfg.CreateMap<SpawnViewModel, Spawn>();
+
             });
         }
     }

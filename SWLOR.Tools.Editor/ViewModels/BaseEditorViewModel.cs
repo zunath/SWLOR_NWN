@@ -3,9 +3,11 @@ using System.IO;
 using Caliburn.Micro;
 using Newtonsoft.Json;
 using SWLOR.Tools.Editor.Attributes;
+using SWLOR.Tools.Editor.Enumeration;
 using SWLOR.Tools.Editor.Extensions;
 using SWLOR.Tools.Editor.Messages;
 using SWLOR.Tools.Editor.ViewModels.Contracts;
+using SWLOR.Tools.Editor.ViewModels.Data;
 
 namespace SWLOR.Tools.Editor.ViewModels
 {
@@ -13,7 +15,8 @@ namespace SWLOR.Tools.Editor.ViewModels
         PropertyChangedBase,
         IHandle<EditorObjectSelected<T>>,
         IHandle<DeleteEditorObject<T>>,
-        IHandle<RequestNewEditorObject<T>>
+        IHandle<RequestNewEditorObject<T>>,
+        IHandle<DataObjectImported> 
         where T: IDBObjectViewModel
     {
         private readonly IEventAggregator _eventAggregator;
@@ -70,10 +73,6 @@ namespace SWLOR.Tools.Editor.ViewModels
 
             string json = JsonConvert.SerializeObject(ActiveObject);
             FolderAttribute folderAttribute = ActiveObject.GetAttributeByType<FolderAttribute>();
-            if (folderAttribute == null)
-            {
-                throw new NullReferenceException("Ensure the " + nameof(FolderAttribute) + " attribute is specified on all data view model objects.");
-            }
 
             string path = "./Data/" + folderAttribute.Folder + "/" + ActiveObject.FileName;
             File.WriteAllText(path, json);
@@ -122,5 +121,20 @@ namespace SWLOR.Tools.Editor.ViewModels
         protected abstract T CreateNew();
         protected virtual void BeforeSaveChanges() { }
         protected virtual void AfterSaveChanges() { }
+
+        public void Handle(DataObjectImported message)
+        {
+            if (message.DataObject.GetType() != typeof(T)) return;
+
+            T data = (T)message.DataObject;
+            data.FileName = Guid.NewGuid() + ".json";
+
+            string json = JsonConvert.SerializeObject(data);
+            FolderAttribute folderAttribute = data.GetAttributeByType<FolderAttribute>();
+
+            string path = "./Data/" + folderAttribute.Folder + "/" + data.FileName;
+            File.WriteAllText(path, json);
+            ObjectListVM.DataObjects.Add(data);
+        }
     }
 }

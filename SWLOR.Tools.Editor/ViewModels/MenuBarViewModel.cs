@@ -8,21 +8,24 @@ namespace SWLOR.Tools.Editor.ViewModels
     {
         private readonly IWindowManager _windowManager;
         private readonly IDataSyncViewModel _dataSyncVM;
+        private readonly IImportViewModel _importVM;
         private readonly IExportViewModel _exportVM;
 
         public MenuBarViewModel(
             IWindowManager windowManager,
             IDataSyncViewModel dataSyncVM,
+            IImportViewModel importVM,
             IExportViewModel exportVM)
         {
             _windowManager = windowManager;
             _dataSyncVM = dataSyncVM;
+            _importVM = importVM;
             _exportVM = exportVM;
         }
 
         public void Import()
         {
-
+            _windowManager.ShowDialog(_importVM);
         }
 
         public void Export()

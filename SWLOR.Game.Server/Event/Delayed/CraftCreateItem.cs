@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Event.Delayed
         private readonly IRandomService _random;
         private readonly IPlayerStatService _playerStat;
         private readonly IDurabilityService _durability;
+        private readonly IPerkService _perk;
 
         public CraftCreateItem(
             INWScript script,
@@ -38,7 +39,8 @@ namespace SWLOR.Game.Server.Event.Delayed
             ISkillService skill,
             IRandomService random,
             IPlayerStatService playerStat,
-            IDurabilityService durability)
+            IDurabilityService durability,
+            IPerkService perk)
         {
             _ = script;
             _db = db;
@@ -52,6 +54,7 @@ namespace SWLOR.Game.Server.Event.Delayed
             _random = random;
             _playerStat = playerStat;
             _durability = durability;
+            _perk = perk;
         }
 
         public bool Run(params object[] args)
@@ -92,6 +95,7 @@ namespace SWLOR.Game.Server.Event.Delayed
                 return;
             }
 
+            int luckyBonus = _perk.GetPCPerkLevel(player, PerkType.Lucky);
             var craftedItems = new List<NWItem>();
             NWItem craftedItem = (_.CreateItemOnObject(blueprint.ItemResref, player.Object, blueprint.Quantity));
             craftedItem.IsIdentified = true;
@@ -118,6 +122,11 @@ namespace SWLOR.Game.Server.Event.Delayed
                 _base.ApplyCraftedItemLocalVariables(item, blueprint.BaseStructure);
             }
 
+            if(_random.Random(0, 100) <= luckyBonus)
+            {
+                chance += _random.Random(1, luckyBonus);
+            }
+            
             int successAmount = 0;
             foreach (var component in model.MainComponents)
             {

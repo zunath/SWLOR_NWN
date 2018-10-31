@@ -147,6 +147,7 @@
     <Compile Include="Startup\InitializeJsonSerializer.cs" />
     <Compile Include="Startup\PostBootstrap.cs" />
     <Compile Include="ViewModels\Contracts\ICustomEffectEditorViewModel.cs" />
+    <Compile Include="ViewModels\Contracts\IDownloadEditorViewModel.cs" />
     <Compile Include="ViewModels\Contracts\IExportViewModel.cs" />
     <Compile Include="ViewModels\Contracts\IImportViewModel.cs" />
     <Compile Include="ViewModels\Contracts\IPlantEditorViewModel.cs" />
@@ -192,6 +193,7 @@
     <Compile Include="ViewModels\Data\SkillCategoryViewModel.cs" />
     <Compile Include="ViewModels\Data\SkillViewModel.cs" />
     <Compile Include="ViewModels\Data\SpawnViewModel.cs" />
+    <Compile Include="ViewModels\DownloadEditorViewModel.cs" />
     <Compile Include="ViewModels\ErrorViewModel.cs" />
     <Compile Include="ViewModels\ExportViewModel.cs" />
     <Compile Include="ViewModels\ImportExportViewModelBase.cs" />
@@ -206,6 +208,9 @@
     </Compile>
     <Compile Include="Views\ExportView.xaml.cs">
       <DependentUpon>ExportView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DownloadEditorView.xaml.cs">
+      <DependentUpon>DownloadEditorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PlantEditorView.xaml.cs">
       <DependentUpon>PlantEditorView.xaml</DependentUpon>
@@ -260,6 +265,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\ExportView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\DownloadEditorView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

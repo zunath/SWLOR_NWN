@@ -29,7 +29,9 @@
                 </views:CustomEffectEditorView>
             </TabItem>
             <TabItem Header="Downloads">
+                <views:DownloadEditorView cal:View.Model="{Binding DownloadVM}">
 
+                </views:DownloadEditorView>
             </TabItem>
             <TabItem Header="Item Types">
 

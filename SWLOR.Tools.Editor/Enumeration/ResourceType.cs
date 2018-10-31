@@ -2,6 +2,7 @@
 {
     public enum ResourceType
     {
+        Unknown = 0,
         ApartmentBuildings = 1,
         BaseStructures = 2,
         BuildingStyles = 3,

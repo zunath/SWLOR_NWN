@@ -139,6 +139,7 @@ namespace SWLOR.Tools.Editor
             builder.RegisterType<DataSyncViewModel>().As<IDataSyncViewModel>();
             builder.RegisterType<EditorListViewModel>().As<IEditorListViewModel>();
             builder.RegisterType<ErrorViewModel>().As<IErrorViewModel>();
+            builder.RegisterType<ImportViewModel>().As<IImportViewModel>();
             builder.RegisterType<ExportViewModel>().As<IExportViewModel>();
             builder.RegisterType<LootEditorViewModel>().As<ILootEditorViewModel>();
             builder.RegisterType<MenuBarViewModel>().As<IMenuBarViewModel>();

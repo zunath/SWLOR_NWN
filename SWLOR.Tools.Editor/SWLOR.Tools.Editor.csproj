@@ -133,6 +133,7 @@
     <Compile Include="Messages\DatabaseConnectionFailed.cs" />
     <Compile Include="Messages\DatabaseConnectionSucceeded.cs" />
     <Compile Include="Messages\DatabaseSyncCompleted.cs" />
+    <Compile Include="Messages\DataObjectImported.cs" />
     <Compile Include="Messages\DataObjectSaved.cs" />
     <Compile Include="Messages\DataObjectsLoadedFromDisk.cs" />
     <Compile Include="Messages\DeleteEditorObject.cs" />
@@ -147,6 +148,7 @@
     <Compile Include="Startup\PostBootstrap.cs" />
     <Compile Include="ViewModels\Contracts\ICustomEffectEditorViewModel.cs" />
     <Compile Include="ViewModels\Contracts\IExportViewModel.cs" />
+    <Compile Include="ViewModels\Contracts\IImportViewModel.cs" />
     <Compile Include="ViewModels\Contracts\IPlantEditorViewModel.cs" />
     <Compile Include="ViewModels\CustomEffectEditorViewModel.cs" />
     <Compile Include="ViewModels\ApartmentBuildingEditorViewModel.cs" />
@@ -192,11 +194,16 @@
     <Compile Include="ViewModels\Data\SpawnViewModel.cs" />
     <Compile Include="ViewModels\ErrorViewModel.cs" />
     <Compile Include="ViewModels\ExportViewModel.cs" />
+    <Compile Include="ViewModels\ImportExportViewModelBase.cs" />
+    <Compile Include="ViewModels\ImportViewModel.cs" />
     <Compile Include="ViewModels\LootEditorViewModel.cs" />
     <Compile Include="ViewModels\ObjectListViewModel.cs" />
     <Compile Include="ViewModels\PlantEditorViewModel.cs" />
     <Compile Include="ViewModels\RenameObjectViewModel.cs" />
     <Compile Include="ViewModels\YesNoViewModel.cs" />
+    <Compile Include="Views\ImportView.xaml.cs">
+      <DependentUpon>ImportView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ExportView.xaml.cs">
       <DependentUpon>ExportView.xaml</DependentUpon>
     </Compile>
@@ -248,6 +255,10 @@
     <Compile Include="Views\YesNoView.xaml.cs">
       <DependentUpon>YesNoView.xaml</DependentUpon>
     </Compile>
+    <Page Include="Views\ImportView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\ExportView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

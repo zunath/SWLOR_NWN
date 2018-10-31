@@ -10,10 +10,12 @@ using System.Windows;
 using System.Windows.Forms;
 using Caliburn.Micro;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Tools.Editor.Messages;
 using SWLOR.Tools.Editor.ViewModels.Contracts;
+using SWLOR.Tools.Editor.ViewModels.Data;
 using Screen = Caliburn.Micro.Screen;
 
 namespace SWLOR.Tools.Editor.ViewModels
@@ -242,8 +244,10 @@ namespace SWLOR.Tools.Editor.ViewModels
 
             foreach (var record in set)
             {
+                JObject jObj = JObject.FromObject(record);
+                jObj.Add(nameof(DBObjectViewModelBase.InternalEditorID), Guid.NewGuid().ToString());
                 string fileName = Guid.NewGuid().ToString();
-                string json = JsonConvert.SerializeObject(record);
+                string json = JsonConvert.SerializeObject(jObj);
                 File.WriteAllText("./Data/" + Folder + "/" + fileName + ".json", json);
             }
 

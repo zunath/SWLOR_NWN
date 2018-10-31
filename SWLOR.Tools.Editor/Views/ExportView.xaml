@@ -45,7 +45,8 @@
             Grid.RowSpan="3"
             DisplayMemberPath="Name"
             SelectedItem="{Binding SelectedAvailableResourceGroup}"
-            x:Name="ResourceGroups">
+            ItemsSource="{Binding ResourceGroups}"
+            x:Name="AvailableResourceGroups">
 
         </ListBox>
 
@@ -76,7 +77,7 @@
             <ListBox
                 Grid.Column="0"
                 Grid.Row="0"
-                DisplayMemberPath="Name"
+                DisplayMemberPath="{Binding Path=SelectedAvailableResourceGroup.DisplayName}"
                 SelectedItem="{Binding SelectedAvailableResource}"
                 x:Name="AvailableResources"
                 SelectionMode="Extended">
@@ -112,7 +113,7 @@
             <ListBox
                 Grid.Column="0"
                 Grid.Row="0"
-                DisplayMemberPath="Name"
+                DisplayMemberPath="{Binding Path=SelectedAddedResourceGroup.DisplayName}"
                 x:Name="AddedResources"
                 SelectedItem="{Binding SelectedAddedResource}"
                 SelectionMode="Extended">

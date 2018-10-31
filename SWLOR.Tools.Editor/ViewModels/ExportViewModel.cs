@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using AutoMapper;
 using Caliburn.Micro;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Tools.Editor.Enumeration;
 using SWLOR.Tools.Editor.ViewModels.Contracts;
 using SWLOR.Tools.Editor.ViewModels.Data;
@@ -21,32 +23,35 @@ namespace SWLOR.Tools.Editor.ViewModels
             ActivePackage = new ImportExportPackageViewModel(string.Empty);
             ResourceGroups = new ObservableCollection<ResourceGroup>
             {
-                new ResourceGroup("Apartment Buildings", ResourceType.ApartmentBuildings, nameof(ApartmentBuilding), typeof(ApartmentBuildingViewModel)),
-                new ResourceGroup("Base Structures", ResourceType.BaseStructures, nameof(BaseStructure), typeof(BaseStructureViewModel)),
-                new ResourceGroup("Building Styles", ResourceType.BuildingStyles, nameof(BuildingStyle), typeof(BuildingStyleViewModel)),
-                new ResourceGroup("Cooldown Categories", ResourceType.CooldownCategories, nameof(CooldownCategory), typeof(CooldownCategoryViewModel)),
-                new ResourceGroup("Craft Blueprint Categories", ResourceType.CraftBlueprintCategories, nameof(CraftBlueprintCategory), typeof(CraftBlueprintCategoryViewModel)),
-                new ResourceGroup("Craft Blueprints", ResourceType.CraftBlueprints, nameof(CraftBlueprint), typeof(CraftBlueprintViewModel)),
-                new ResourceGroup("Craft Devices", ResourceType.CraftDevices, nameof(CraftDevice), typeof(CraftDeviceViewModel)),
-                new ResourceGroup("Custom Effects", ResourceType.CustomEffects, nameof(CustomEffect), typeof(CustomEffectViewModel)),
-                new ResourceGroup("Downloads", ResourceType.Downloads, nameof(Download), typeof(DownloadViewModel)),
-                new ResourceGroup("Fame Regions", ResourceType.FameRegions, nameof(FameRegion), typeof(FameRegionViewModel)),
-                new ResourceGroup("Game Topic Categories", ResourceType.GameTopicCategories, nameof(GameTopicCategory), typeof(GameTopicCategoryViewModel)),
-                new ResourceGroup("Game Topics", ResourceType.GameTopics, nameof(GameTopic), typeof(GameTopicViewModel)),
-                new ResourceGroup("Key Item Categories", ResourceType.KeyItemCategories, nameof(KeyItemCategory), typeof(KeyItemViewModel)),
-                new ResourceGroup("Key Items", ResourceType.KeyItems, nameof(KeyItem), typeof(KeyItemViewModel)),
-                new ResourceGroup("Loot Tables", ResourceType.LootTables, nameof(LootTable), typeof(LootTableViewModel)),
-                new ResourceGroup("Mods", ResourceType.Mods, nameof(Mod), typeof(ModViewModel)),
-                new ResourceGroup("NPC Groups", ResourceType.NPCGroups, nameof(NPCGroup), typeof(NPCGroupViewModel)),
-                new ResourceGroup("Perk Categories", ResourceType.PerkCategories, nameof(PerkCategory), typeof(PerkCategoryViewModel)),
-                new ResourceGroup("Plants", ResourceType.Plants, nameof(Plant), typeof(PlantViewModel)),
-                new ResourceGroup("Quests", ResourceType.Quests, nameof(Quest), typeof(QuestViewModel)),
-                new ResourceGroup("Skill Categories", ResourceType.SkillCategories, nameof(SkillCategory), typeof(SkillCategoryViewModel)),
-                new ResourceGroup("Skills", ResourceType.Skills, nameof(Skill), typeof(SkillViewModel)),
-                new ResourceGroup("Spawns", ResourceType.Spawns, nameof(Spawn), typeof(SpawnViewModel)),
+                new ResourceGroup("Apartment Buildings", ResourceType.ApartmentBuildings, nameof(ApartmentBuilding), typeof(ApartmentBuildingViewModel), new ObservableCollection<dynamic>(ActivePackage.ApartmentBuildings)),
+                new ResourceGroup("Base Structures", ResourceType.BaseStructures, nameof(BaseStructure), typeof(BaseStructureViewModel), new ObservableCollection<dynamic>(ActivePackage.BaseStructures)),
+                new ResourceGroup("Building Styles", ResourceType.BuildingStyles, nameof(BuildingStyle), typeof(BuildingStyleViewModel), new ObservableCollection<dynamic>(ActivePackage.BuildingStyles)),
+                new ResourceGroup("Cooldown Categories", ResourceType.CooldownCategories, nameof(CooldownCategory), typeof(CooldownCategoryViewModel), new ObservableCollection<dynamic>(ActivePackage.CooldownCategories)),
+                new ResourceGroup("Craft Blueprint Categories", ResourceType.CraftBlueprintCategories, nameof(CraftBlueprintCategory), typeof(CraftBlueprintCategoryViewModel), new ObservableCollection<dynamic>(ActivePackage.CraftBlueprintCategories)),
+                new ResourceGroup("Craft Blueprints", ResourceType.CraftBlueprints, nameof(CraftBlueprint), typeof(CraftBlueprintViewModel), new ObservableCollection<dynamic>(ActivePackage.CraftBlueprints), "ItemName"),
+                new ResourceGroup("Craft Devices", ResourceType.CraftDevices, nameof(CraftDevice), typeof(CraftDeviceViewModel), new ObservableCollection<dynamic>(ActivePackage.CraftDevices)),
+                new ResourceGroup("Custom Effects", ResourceType.CustomEffects, nameof(CustomEffect), typeof(CustomEffectViewModel), new ObservableCollection<dynamic>(ActivePackage.CustomEffects)),
+                new ResourceGroup("Downloads", ResourceType.Downloads, nameof(Download), typeof(DownloadViewModel), new ObservableCollection<dynamic>(ActivePackage.Downloads)),
+                new ResourceGroup("Fame Regions", ResourceType.FameRegions, nameof(FameRegion), typeof(FameRegionViewModel), new ObservableCollection<dynamic>(ActivePackage.FameRegions)),
+                new ResourceGroup("Game Topic Categories", ResourceType.GameTopicCategories, nameof(GameTopicCategory), typeof(GameTopicCategoryViewModel), new ObservableCollection<dynamic>(ActivePackage.GameTopicCategories)),
+                new ResourceGroup("Game Topics", ResourceType.GameTopics, nameof(GameTopic), typeof(GameTopicViewModel), new ObservableCollection<dynamic>(ActivePackage.GameTopics)),
+                new ResourceGroup("Key Item Categories", ResourceType.KeyItemCategories, nameof(KeyItemCategory), typeof(KeyItemCategoryViewModel), new ObservableCollection<dynamic>(ActivePackage.KeyItemCategories)),
+                new ResourceGroup("Key Items", ResourceType.KeyItems, nameof(KeyItem), typeof(KeyItemViewModel), new ObservableCollection<dynamic>(ActivePackage.KeyItems)),
+                new ResourceGroup("Loot Tables", ResourceType.LootTables, nameof(LootTable), typeof(LootTableViewModel), new ObservableCollection<dynamic>(ActivePackage.LootTables)),
+                new ResourceGroup("Mods", ResourceType.Mods, nameof(Mod), typeof(ModViewModel), new ObservableCollection<dynamic>(ActivePackage.Mods)),
+                new ResourceGroup("NPC Groups", ResourceType.NPCGroups, nameof(NPCGroup), typeof(NPCGroupViewModel), new ObservableCollection<dynamic>(ActivePackage.NPCGroups)),
+                new ResourceGroup("Perk Categories", ResourceType.PerkCategories, nameof(PerkCategory), typeof(PerkCategoryViewModel), new ObservableCollection<dynamic>(ActivePackage.PerkCategories)),
+                new ResourceGroup("Plants", ResourceType.Plants, nameof(Plant), typeof(PlantViewModel), new ObservableCollection<dynamic>(ActivePackage.Plants)),
+                new ResourceGroup("Quests", ResourceType.Quests, nameof(Quest), typeof(QuestViewModel), new ObservableCollection<dynamic>(ActivePackage.Quests)),
+                new ResourceGroup("Skill Categories", ResourceType.SkillCategories, nameof(SkillCategory), typeof(SkillCategoryViewModel), new ObservableCollection<dynamic>(ActivePackage.SkillCategories)),
+                new ResourceGroup("Skills", ResourceType.Skills, nameof(Skill), typeof(SkillViewModel), new ObservableCollection<dynamic>(ActivePackage.Skills)),
+                new ResourceGroup("Spawns", ResourceType.Spawns, nameof(Spawn), typeof(SpawnViewModel), new ObservableCollection<dynamic>(ActivePackage.Spawns)),
             };
             AvailableResources = new ObservableCollection<dynamic>();
             _addedResources = new ObservableCollection<dynamic>();
+
+            SelectedAvailableResourceGroup = ResourceGroups.First();
+            SelectedAddedResourceGroup = ResourceGroups.First();
         }
 
         private ObservableCollection<ResourceGroup> _resourceGroups;
@@ -109,77 +114,14 @@ namespace SWLOR.Tools.Editor.ViewModels
             }
         }
 
-        private readonly ObservableCollection<dynamic> _addedResources;
+        private ObservableCollection<dynamic> _addedResources;
         public ObservableCollection<dynamic> AddedResources
         {
-            get
+            get => _addedResources;
+            set
             {
-                _addedResources.Clear();
-                if (SelectedAddedResourceGroup == null) return _addedResources;
-
-                switch (SelectedAddedResourceGroup.ResourceType)
-                {
-                    case ResourceType.ApartmentBuildings:
-                        foreach(var x in ActivePackage.ApartmentBuildings)
-                            _addedResources.Add(x);
-                        break;
-                    case ResourceType.BaseStructures:
-                        foreach (var x in ActivePackage.BaseStructures)
-                            _addedResources.Add(x);
-                        break;
-                    case ResourceType.BuildingStyles:
-                        foreach (var x in ActivePackage.BuildingStyles)
-                            _addedResources.Add(x);
-                        break;
-                    case ResourceType.CooldownCategories:
-                        foreach (var x in ActivePackage.CooldownCategories)
-                            _addedResources.Add(x);
-                        break;
-                    case ResourceType.CraftBlueprintCategories:
-                        break;
-                    case ResourceType.CraftBlueprints:
-                        break;
-                    case ResourceType.CraftDevices:
-                        break;
-                    case ResourceType.CustomEffects:
-                        break;
-                    case ResourceType.Downloads:
-                        break;
-                    case ResourceType.FameRegions:
-                        break;
-                    case ResourceType.GameTopicCategories:
-                        break;
-                    case ResourceType.GameTopics:
-                        break;
-                    case ResourceType.KeyItemCategories:
-                        break;
-                    case ResourceType.KeyItems:
-                        break;
-                    case ResourceType.LootTableItems:
-                        break;
-                    case ResourceType.LootTables:
-                        break;
-                    case ResourceType.Mods:
-                        break;
-                    case ResourceType.NPCGroups:
-                        break;
-                    case ResourceType.PerkCategories:
-                        break;
-                    case ResourceType.Plants:
-                        break;
-                    case ResourceType.Quests:
-                        break;
-                    case ResourceType.SkillCategories:
-                        break;
-                    case ResourceType.Skills:
-                        break;
-                    case ResourceType.Spawns:
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
-                return _addedResources;
+                _addedResources = value;
+                NotifyOfPropertyChange(() => AddedResources);
             }
         }
 
@@ -208,7 +150,32 @@ namespace SWLOR.Tools.Editor.ViewModels
 
         public bool IsExportEnabled => ActivePackage.HasData;
         public bool IsRemoveEnabled => SelectedAddedResource != null;
-        public bool IsAddEnabled => SelectedAvailableResource != null && !AddedResources.Contains(SelectedAvailableResource);
+
+        public bool IsAddEnabled
+        {
+            get
+            {
+                bool isEnabled = SelectedAvailableResource != null;
+
+                if (SelectedAvailableResource != null)
+                {
+
+                    foreach (var group in ResourceGroups)
+                    {
+                        var existing = group.TargetCollection.FirstOrDefault(x => x.InternalEditorID == ((DBObjectViewModelBase) SelectedAvailableResource).InternalEditorID);
+                        if (existing != null)
+                        {
+                            isEnabled = false;
+                            break;
+                        }
+                    }
+                }
+
+                return isEnabled;
+            }
+        }
+
+
 
         private void LoadAvailableResources()
         {
@@ -217,71 +184,23 @@ namespace SWLOR.Tools.Editor.ViewModels
 
             string path = "./Data/" + SelectedAvailableResourceGroup.FolderName + "/";
             string[] files = Directory.GetFiles(path);
-            foreach (var file in files)
+
+            foreach(var file in files)
             {
                 string json = File.ReadAllText(file);
-
-                switch (SelectedAvailableResourceGroup.ResourceType)
-                {
-                    case ResourceType.ApartmentBuildings:
-                        var dbObject = JsonConvert.DeserializeObject<ApartmentBuildingViewModel>(json);
-                        AvailableResources.Add(dbObject);
-                        break;
-                    case ResourceType.BaseStructures:
-                        break;
-                    case ResourceType.BuildingStyles:
-                        break;
-                    case ResourceType.CooldownCategories:
-                        break;
-                    case ResourceType.CraftBlueprintCategories:
-                        break;
-                    case ResourceType.CraftBlueprints:
-                        break;
-                    case ResourceType.CraftDevices:
-                        break;
-                    case ResourceType.CustomEffects:
-                        break;
-                    case ResourceType.Downloads:
-                        break;
-                    case ResourceType.FameRegions:
-                        break;
-                    case ResourceType.GameTopicCategories:
-                        break;
-                    case ResourceType.GameTopics:
-                        break;
-                    case ResourceType.KeyItemCategories:
-                        break;
-                    case ResourceType.KeyItems:
-                        break;
-                    case ResourceType.LootTableItems:
-                        break;
-                    case ResourceType.LootTables:
-                        break;
-                    case ResourceType.Mods:
-                        break;
-                    case ResourceType.NPCGroups:
-                        break;
-                    case ResourceType.PerkCategories:
-                        break;
-                    case ResourceType.Plants:
-                        break;
-                    case ResourceType.Quests:
-                        break;
-                    case ResourceType.SkillCategories:
-                        break;
-                    case ResourceType.Skills:
-                        break;
-                    case ResourceType.Spawns:
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                var dbObject = JsonConvert.DeserializeObject(json, SelectedAvailableResourceGroup.Type);
+                AvailableResources.Add(dbObject);
             }
         }
 
         private void LoadAddedResources()
         {
-            
+            AddedResources.Clear();
+            var set = SelectedAddedResourceGroup.TargetCollection;
+            foreach(var item in set)
+            {
+                AddedResources.Add(item);
+            }
         }
         
         private void Notify()
@@ -294,67 +213,15 @@ namespace SWLOR.Tools.Editor.ViewModels
 
         public void AddResource()
         {
-            switch (SelectedAvailableResourceGroup.ResourceType)
-            {
-                case ResourceType.ApartmentBuildings:
-                    var obj = Mapper.Map<ApartmentBuildingViewModel, ApartmentBuilding>((ApartmentBuildingViewModel) SelectedAvailableResource);
-                    ActivePackage.ApartmentBuildings.Add(obj);
-                    break;
-                case ResourceType.BaseStructures:
-                    break;
-                case ResourceType.BuildingStyles:
-                    break;
-                case ResourceType.CooldownCategories:
-                    break;
-                case ResourceType.CraftBlueprintCategories:
-                    break;
-                case ResourceType.CraftBlueprints:
-                    break;
-                case ResourceType.CraftDevices:
-                    break;
-                case ResourceType.CustomEffects:
-                    break;
-                case ResourceType.Downloads:
-                    break;
-                case ResourceType.FameRegions:
-                    break;
-                case ResourceType.GameTopicCategories:
-                    break;
-                case ResourceType.GameTopics:
-                    break;
-                case ResourceType.KeyItemCategories:
-                    break;
-                case ResourceType.KeyItems:
-                    break;
-                case ResourceType.LootTableItems:
-                    break;
-                case ResourceType.LootTables:
-                    break;
-                case ResourceType.Mods:
-                    break;
-                case ResourceType.NPCGroups:
-                    break;
-                case ResourceType.PerkCategories:
-                    break;
-                case ResourceType.Plants:
-                    break;
-                case ResourceType.Quests:
-                    break;
-                case ResourceType.SkillCategories:
-                    break;
-                case ResourceType.Skills:
-                    break;
-                case ResourceType.Spawns:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            SelectedAvailableResourceGroup.TargetCollection.Add(SelectedAvailableResource);
+            SelectedAddedResourceGroup = SelectedAvailableResourceGroup;
             Notify();
         }
 
         public void RemoveResource()
         {
-            AddedResources.Remove(SelectedAddedResource);
+            SelectedAddedResourceGroup.TargetCollection.Remove(SelectedAddedResource);
+            LoadAddedResources();
             Notify();
         }
 
@@ -366,6 +233,9 @@ namespace SWLOR.Tools.Editor.ViewModels
         public void Cancel()
         {
             ActivePackage.Clear();
+            AddedResources.Clear();
+            SelectedAvailableResourceGroup = ResourceGroups.First();
+            SelectedAddedResourceGroup = ResourceGroups.First();
             TryClose();
         }
     }

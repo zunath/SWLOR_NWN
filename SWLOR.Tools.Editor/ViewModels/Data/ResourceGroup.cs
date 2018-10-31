@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using Caliburn.Micro;
 using SWLOR.Tools.Editor.Enumeration;
 
@@ -6,11 +7,14 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
 {
     public class ResourceGroup: PropertyChangedBase
     {
-        public ResourceGroup(string name, ResourceType resourceType, string folderName, Type type)
+        public ResourceGroup(string name, ResourceType resourceType, string folderName, Type type, ObservableCollection<dynamic> targetCollection, string displayName = "Name")
         {
             Name = name;
             ResourceType = resourceType;
             FolderName = folderName;
+            Type = type;
+            TargetCollection = targetCollection;
+            DisplayName = displayName;
         }
 
         private string _name;
@@ -47,5 +51,27 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
         }
 
         public Type Type { get; set; }
+
+        private string _displayName;
+        public string DisplayName
+        {
+            get => _displayName;
+            set
+            {
+                _displayName = value;
+                NotifyOfPropertyChange(() => DisplayName);
+            }
+        }
+
+        private ObservableCollection<dynamic> _targetCollection;
+        public ObservableCollection<dynamic> TargetCollection
+        {
+            get => _targetCollection;
+            set
+            {
+                _targetCollection = value;
+                NotifyOfPropertyChange(() => TargetCollection);
+            }
+        }
     }
 }

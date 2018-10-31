@@ -14,23 +14,23 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
             get => _displayName;
             set
             {
-                _name = value;
+                _itemName = value;
                 _displayName = value;
-                NotifyOfPropertyChange(() => Name);
+                NotifyOfPropertyChange(() => ItemName);
                 NotifyOfPropertyChange(() => DisplayName);
             }
         }
 
-        private string _name;
-        [JsonProperty(nameof(Name))]
-        public string Name
+        private string _itemName;
+        [JsonProperty(nameof(ItemName))]
+        public string ItemName
         {
-            get => _name;
+            get => _itemName;
             set
             {
-                _name = value;
+                _itemName = value;
                 _displayName = value;
-                NotifyOfPropertyChange(() => Name);
+                NotifyOfPropertyChange(() => ItemName);
                 NotifyOfPropertyChange(() => DisplayName);
             }
         }

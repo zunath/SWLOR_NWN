@@ -18,8 +18,21 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
 
         protected DBObjectViewModelBase()
         {
+            InternalEditorID = Guid.NewGuid().ToString();
             _trackedProperties = new Dictionary<string, object>();
             PropertyChanged += OnPropertyChanged;
+        }
+
+        private string _internalEditorID;
+        [JsonProperty(nameof(InternalEditorID))]
+        public string InternalEditorID
+        {
+            get => _internalEditorID;
+            set
+            {
+                _internalEditorID = value;
+                NotifyOfPropertyChange(() => InternalEditorID);
+            }
         }
 
         private string _fileName;

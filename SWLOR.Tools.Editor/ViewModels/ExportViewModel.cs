@@ -3,8 +3,8 @@ using System.Collections.ObjectModel;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 using AutoMapper;
-using Caliburn.Micro;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Extension;
@@ -12,14 +12,20 @@ using SWLOR.Tools.Editor.Enumeration;
 using SWLOR.Tools.Editor.ViewModels.Contracts;
 using SWLOR.Tools.Editor.ViewModels.Data;
 using Action = System.Action;
+using Screen = Caliburn.Micro.Screen;
 
 namespace SWLOR.Tools.Editor.ViewModels
 {
     public class ExportViewModel :
         Screen, IExportViewModel
     {
+        private SaveFileDialog _saveFile;
+
         public ExportViewModel()
         {
+            _saveFile = new SaveFileDialog();
+            _saveFile.Filter = @"JSON File (*.json)|*.json";
+
             PackageName = string.Empty;
             ResourceGroups = new ObservableCollection<ResourceGroup>
             {
@@ -244,6 +250,12 @@ namespace SWLOR.Tools.Editor.ViewModels
 
         public void Export()
         {
+            var result = _saveFile.ShowDialog();
+
+            if (result == DialogResult.Cancel) return;
+
+            string fileName = _saveFile.FileName;
+
             var package = new ImportExportPackageViewModel(PackageName);
             foreach (var group in ResourceGroups)
             {
@@ -329,7 +341,7 @@ namespace SWLOR.Tools.Editor.ViewModels
                             break;
                         case ResourceType.Plants:
                             var plant = Mapper.Map<PlantViewModel, Plant>(item);
-                            package.FameRegions.Add(plant);
+                            package.Plants.Add(plant);
                             break;
                         case ResourceType.Quests:
                             var quest = Mapper.Map<QuestViewModel, Quest>(item);
@@ -354,7 +366,9 @@ namespace SWLOR.Tools.Editor.ViewModels
             }
 
             string json = JsonConvert.SerializeObject(package);
-            File.WriteAllText("./output.json", json);
+            File.WriteAllText(fileName, json);
+
+            TryClose();
         }
 
         public void Cancel()

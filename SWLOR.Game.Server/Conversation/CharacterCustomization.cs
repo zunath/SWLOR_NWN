@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Conversation
             public int BodyPartID { get; set; }
             public int[] Parts { get; set; }
             public string PartName { get; set; }
+            public int TattooChannel { get; set; }
         }
 
         private readonly IColorTokenService _color;
@@ -45,7 +46,8 @@ namespace SWLOR.Game.Server.Conversation
                 "Change Skin Color",
                 "Change Head",
                 "Change Hair Color",
-                "Change Body Parts");
+                "Change Body Parts",
+                "Change Tattoo Color");
 
             DialogPage changeAssociationPage = new DialogPage(
                 "Please select an association from the list below.",
@@ -87,6 +89,14 @@ namespace SWLOR.Game.Server.Conversation
                 "Left Thigh",
                 "Left Shin");
 
+            DialogPage changeTattoosPage = new DialogPage(
+                "Please select a tattoo option from the list below.",
+                "Tattoo Color 1",
+                "Tattoo Color 2");
+
+            DialogPage changeTattooColorPage = new DialogPage(
+                "Please select a tattoo color from the list below.");
+
             DialogPage editPartPage = new DialogPage();
 
             dialog.AddPage("MainPage", mainPage);
@@ -96,6 +106,8 @@ namespace SWLOR.Game.Server.Conversation
             dialog.AddPage("ChangeHeadPage", changeHeadPage);
             dialog.AddPage("ChangeHairColorPage", changeHairColorPage);
             dialog.AddPage("ChangeBodyPartsPage", changeBodyPartsPage);
+            dialog.AddPage("ChangeTattooPage", changeTattoosPage);
+            dialog.AddPage("ChangeTattooColorPage", changeTattooColorPage);
             dialog.AddPage("EditPartPage", editPartPage);
             return dialog;
         }
@@ -139,9 +151,16 @@ namespace SWLOR.Game.Server.Conversation
                 case "ChangeBodyPartsPage":
                     ChangeBodyPartResponses(responseID);
                     break;
+                case "ChangeTattooPage":
+                    ChangeTattooResponses(responseID);
+                    break;
+                case "ChangeTattooColorPage":
+                    ChangeTattooColorResponses(responseID);
+                    break;
                 case "EditPartPage":
                     EditPartResponses(responseID);
                     break;
+
             }
         }
 
@@ -175,6 +194,9 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case 5: // Change Body Part
                     ChangePage("ChangeBodyPartsPage");
+                    break;
+                case 6: // Change Tattoo
+                    ChangePage("ChangeTattooPage");
                     break;
             }
         }
@@ -463,7 +485,7 @@ namespace SWLOR.Game.Server.Conversation
         private void ChangeBodyPartResponses(int responseID)
         {
             var model = GetDialogCustomData<Model>();
-
+            
             // Note: The following part IDs are found in the "parts_*.2da" files.
             // Don't use the ID number listed in the toolset when selecting parts to make available.
             // The ID in the toolset is a DIFFERENT index and doesn't correlate to the 2da ID number.
@@ -533,6 +555,44 @@ namespace SWLOR.Game.Server.Conversation
 
             LoadEditPartPage();
             ChangePage("EditPartPage");
+        }
+
+        private void ChangeTattooResponses(int responseID)
+        {
+            var model = GetDialogCustomData<Model>();
+            switch (responseID)
+            {
+                case 1:
+                    model.TattooChannel = COLOR_CHANNEL_TATTOO_1;
+                    LoadChangeTattooColorPage();
+                    ChangePage("ChangeTattooColorPage");
+                    break;
+                case 2:
+                    model.TattooChannel = COLOR_CHANNEL_TATTOO_2;
+                    LoadChangeTattooColorPage();
+                    ChangePage("ChangeTattooColorPage");
+                    break;
+            }
+        }
+
+        private void LoadChangeTattooColorPage()
+        {
+            ClearPageResponses("ChangeTattooColorPage");
+
+            for (int x = 0; x <= 175; x++)
+            {
+                AddResponseToPage("ChangeTattooColorPage", "Color #" + x, true, x);
+            }
+        }
+
+        private void ChangeTattooColorResponses(int responseID)
+        {
+            var model = GetDialogCustomData<Model>();
+            var response = GetResponseByID("ChangeTattooColorPage", responseID);
+            int colorID = (int)response.CustomData;
+            int colorChannel = model.TattooChannel;
+
+            _.SetColor(GetPC(), colorChannel, colorID);
         }
 
         private void LoadEditPartPage()

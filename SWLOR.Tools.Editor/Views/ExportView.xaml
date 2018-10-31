@@ -12,6 +12,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="32"></RowDefinition>
+            <RowDefinition Height="32"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="32"></RowDefinition>
         </Grid.RowDefinitions>
@@ -26,22 +27,38 @@
         </Grid.ColumnDefinitions>
 
         <Label
-            Grid.Column="2"
+            Grid.Column="0"
             Grid.Row="0"
+            Content="Package Name:">
+
+        </Label>
+
+        <TextBox
+            Grid.Column="1"
+            Grid.Row="0"
+            Grid.ColumnSpan="5"
+            MaxLength="64"
+            Text="{Binding PackageName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+
+        </TextBox>
+
+        <Label
+            Grid.Column="2"
+            Grid.Row="1"
             Content="Available Resources:">
 
         </Label>
 
         <Label
             Grid.Column="5"
-            Grid.Row="0"
+            Grid.Row="1"
             Content="Added Resources:">
 
         </Label>
 
         <ListBox
             Grid.Column="0"
-            Grid.Row="0"
+            Grid.Row="1"
             Grid.RowSpan="3"
             DisplayMemberPath="Name"
             SelectedItem="{Binding SelectedAvailableResourceGroup}"
@@ -52,14 +69,14 @@
 
         <GridSplitter 
             Grid.Column="1" 
-            Grid.Row="0"
+            Grid.Row="1"
             Grid.RowSpan="3"
             ShowsPreview="True" 
             HorizontalAlignment="Stretch">
         </GridSplitter>
         <GridSplitter 
             Grid.Column="4" 
-            Grid.Row="0"
+            Grid.Row="1"
             Grid.RowSpan="3"
             ShowsPreview="True" 
             HorizontalAlignment="Stretch">
@@ -67,7 +84,7 @@
 
         <Grid
             Grid.Column="2"
-            Grid.Row="1">
+            Grid.Row="2">
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"></RowDefinition>
@@ -95,7 +112,7 @@
 
         <ListBox
             Grid.Column="3"
-            Grid.Row="0"
+            Grid.Row="1"
             Grid.RowSpan="3"
             DisplayMemberPath="Name"
             SelectedItem="{Binding SelectedAddedResourceGroup}"
@@ -105,7 +122,7 @@
         </ListBox>
         <Grid
             Grid.Column="5"
-            Grid.Row="1">
+            Grid.Row="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"></RowDefinition>
                 <RowDefinition Height="32"></RowDefinition>
@@ -130,7 +147,7 @@
         </Grid>
 
         <Button
-            Grid.Row="2"
+            Grid.Row="3"
             Grid.Column="2"
             x:Name="Export"
             Content="Export"
@@ -138,7 +155,7 @@
         </Button>
 
         <Button
-            Grid.Row="2"
+            Grid.Row="3"
             Grid.Column="5"
             x:Name="Cancel"
             Content="Cancel">

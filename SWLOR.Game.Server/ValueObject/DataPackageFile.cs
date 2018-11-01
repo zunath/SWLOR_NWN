@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Data;
 
-namespace SWLOR.Tools.Editor.ViewModels.Data
+namespace SWLOR.Game.Server.ValueObject
 {
-    public class ImportExportPackageViewModel
+    public class DataPackageFile
     {
         public string PackageName { get; set; }
         public DateTime ExportDate { get; set; }
@@ -16,7 +16,7 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
         public List<CraftBlueprintCategory> CraftBlueprintCategories { get; set; }
         public List<CraftBlueprint> CraftBlueprints { get; set; }
         public List<CraftDevice> CraftDevices { get; set; }
-        public List<CustomEffect> CustomEffects { get; set; }
+        public List<Data.CustomEffect> CustomEffects { get; set; }
         public List<Download> Downloads { get; set; }
         public List<FameRegion> FameRegions { get; set; }
         public List<GameTopicCategory> GameTopicCategories { get; set; }
@@ -25,16 +25,16 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
         public List<KeyItem> KeyItems { get; set; }
         public List<LootTableItem> LootTableItems { get; set; }
         public List<LootTable> LootTables { get; set; }
-        public List<Mod> Mods { get; set; }
+        public List<Data.Mod> Mods { get; set; }
         public List<NPCGroup> NPCGroups { get; set; }
         public List<PerkCategory> PerkCategories { get; set; }
         public List<Plant> Plants { get; set; }
         public List<Quest> Quests { get; set; }
         public List<SkillCategory> SkillCategories { get; set; }
-        public List<Skill> Skills { get; set; }
+        public List<Data.Skill> Skills { get; set; }
         public List<Spawn> Spawns { get; set; }
 
-        public ImportExportPackageViewModel(string packageName)
+        public DataPackageFile(string packageName)
         {
             PackageName = packageName;
             ExportDate = DateTime.UtcNow;
@@ -46,7 +46,7 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
             CraftBlueprintCategories = new List<CraftBlueprintCategory>();
             CraftBlueprints = new List<CraftBlueprint>();
             CraftDevices = new List<CraftDevice>();
-            CustomEffects = new List<CustomEffect>();
+            CustomEffects = new List<Data.CustomEffect>();
             Downloads = new List<Download>();
             FameRegions = new List<FameRegion>();
             GameTopicCategories = new List<GameTopicCategory>();
@@ -55,13 +55,13 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
             KeyItems = new List<KeyItem>();
             LootTableItems = new List<LootTableItem>();
             LootTables = new List<LootTable>();
-            Mods = new List<Mod>();
+            Mods = new List<Data.Mod>();
             NPCGroups = new List<NPCGroup>();
             PerkCategories = new List<PerkCategory>();
             Plants = new List<Plant>();
             Quests = new List<Quest>();
             SkillCategories = new List<SkillCategory>();
-            Skills = new List<Skill>();
+            Skills = new List<Data.Skill>();
             Spawns = new List<Spawn>();
         }
     }

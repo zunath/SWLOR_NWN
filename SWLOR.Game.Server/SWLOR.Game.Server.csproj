@@ -42,16 +42,28 @@
     <Reference Include="FluentBehaviourTree, Version=0.0.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\FluentBehaviourTree.0.0.4.0\lib\net35\FluentBehaviourTree.dll</HintPath>
     </Reference>
+    <Reference Include="FluentValidation, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7de548da2fbae0f0, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentValidation.8.0.100\lib\net45\FluentValidation.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Annotations, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ComponentModel.Annotations.4.4.1\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
+    </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.ComponentModel.Primitives, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ComponentModel.Primitives.4.3.0\lib\net45\System.ComponentModel.Primitives.dll</HintPath>
+    </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Linq" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -270,6 +282,7 @@
       <DependentUpon>DataContext.tt</DependentUpon>
     </Compile>
     <Compile Include="Data\Contracts\IDataContext.cs" />
+    <Compile Include="Data\Contracts\IDataProcessor.cs" />
     <Compile Include="Data\CooldownCategory.cs">
       <DependentUpon>DataContext.tt</DependentUpon>
     </Compile>
@@ -308,6 +321,9 @@
       <DependentUpon>DataContext.edmx</DependentUpon>
     </Compile>
     <Compile Include="Data\DataContextConfig.cs" />
+    <Compile Include="Data\DataPackage.cs">
+      <DependentUpon>DataContext.tt</DependentUpon>
+    </Compile>
     <Compile Include="Data\DiscordChatQueue.cs">
       <DependentUpon>DataContext.tt</DependentUpon>
     </Compile>
@@ -491,6 +507,30 @@
     <Compile Include="Data\PlayerCharacter.cs">
       <DependentUpon>DataContext.tt</DependentUpon>
     </Compile>
+    <Compile Include="Data\Processor\ApartmentBuildingProcessor.cs" />
+    <Compile Include="Data\Processor\BaseStructureProcessor.cs" />
+    <Compile Include="Data\Processor\BuildingStyleProcessor.cs" />
+    <Compile Include="Data\Processor\CooldownCategoryProcessor.cs" />
+    <Compile Include="Data\Processor\CraftBlueprintCategoryProcessor.cs" />
+    <Compile Include="Data\Processor\CraftBlueprintProcessor.cs" />
+    <Compile Include="Data\Processor\CraftDeviceProcessor.cs" />
+    <Compile Include="Data\Processor\CustomEffectProcessor.cs" />
+    <Compile Include="Data\Processor\DownloadProcessor.cs" />
+    <Compile Include="Data\Processor\FameRegionProcessor.cs" />
+    <Compile Include="Data\Processor\GameTopicCategoryProcessor.cs" />
+    <Compile Include="Data\Processor\GameTopicProcessor.cs" />
+    <Compile Include="Data\Processor\KeyItemCategoryProcessor.cs" />
+    <Compile Include="Data\Processor\KeyItemProcessor.cs" />
+    <Compile Include="Data\Processor\LootTableItemProcessor.cs" />
+    <Compile Include="Data\Processor\LootTableProcessor.cs" />
+    <Compile Include="Data\Processor\ModProcessor.cs" />
+    <Compile Include="Data\Processor\NPCGroupProcessor.cs" />
+    <Compile Include="Data\Processor\PerkCategoryProcessor.cs" />
+    <Compile Include="Data\Processor\PlantProcessor.cs" />
+    <Compile Include="Data\Processor\QuestProcessor.cs" />
+    <Compile Include="Data\Processor\SkillCategoryProcessor.cs" />
+    <Compile Include="Data\Processor\SkillProcessor.cs" />
+    <Compile Include="Data\Processor\SpawnProcessor.cs" />
     <Compile Include="Data\Quest.cs">
       <DependentUpon>DataContext.tt</DependentUpon>
     </Compile>
@@ -542,6 +582,30 @@
     <Compile Include="Data\User.cs">
       <DependentUpon>DataContext.tt</DependentUpon>
     </Compile>
+    <Compile Include="Data\Validator\ApartmentBuildingValidator.cs" />
+    <Compile Include="Data\Validator\BaseStructureValidator.cs" />
+    <Compile Include="Data\Validator\BuildingStyleValidator.cs" />
+    <Compile Include="Data\Validator\CooldownCategoryValidator.cs" />
+    <Compile Include="Data\Validator\CraftBlueprintCategoryValidator.cs" />
+    <Compile Include="Data\Validator\CraftBlueprintValidator.cs" />
+    <Compile Include="Data\Validator\CraftDeviceValidator.cs" />
+    <Compile Include="Data\Validator\CustomEffectValidator.cs" />
+    <Compile Include="Data\Validator\DownloadValidator.cs" />
+    <Compile Include="Data\Validator\FameRegionValidator.cs" />
+    <Compile Include="Data\Validator\GameTopicCategoryValidator.cs" />
+    <Compile Include="Data\Validator\GameTopicValidator.cs" />
+    <Compile Include="Data\Validator\KeyItemCategoryValidator.cs" />
+    <Compile Include="Data\Validator\KeyItemValidator.cs" />
+    <Compile Include="Data\Validator\LootTableItemValidator.cs" />
+    <Compile Include="Data\Validator\LootTableValidator.cs" />
+    <Compile Include="Data\Validator\ModValidator.cs" />
+    <Compile Include="Data\Validator\NPCGroupValidator.cs" />
+    <Compile Include="Data\Validator\PerkCategoryValidator.cs" />
+    <Compile Include="Data\Validator\PlantValidator.cs" />
+    <Compile Include="Data\Validator\QuestValidator.cs" />
+    <Compile Include="Data\Validator\SkillCategoryValidator.cs" />
+    <Compile Include="Data\Validator\SkillValidator.cs" />
+    <Compile Include="Data\Validator\SpawnValidator.cs" />
     <Compile Include="DoorRule\Contracts\IDoorRule.cs" />
     <Compile Include="DoorRule\LargeSquareBuildingRule.cs" />
     <Compile Include="DoorRule\MediumRoundBuildingRule.cs" />
@@ -1277,8 +1341,10 @@
     <Compile Include="Service\ChatCommandService.cs" />
     <Compile Include="Service\ChatTextService.cs" />
     <Compile Include="Service\Contracts\IEmoteStyleService.cs" />
+    <Compile Include="Service\DataPackageService.cs" />
     <Compile Include="Service\EmoteStyleService.cs" />
     <Compile Include="Service\Contracts\IPlayerValidationService.cs" />
+    <Compile Include="Service\Contracts\IDataPackageService.cs" />
     <Compile Include="Service\LanguageService.cs" />
     <Compile Include="Service\ColorTokenService.cs" />
     <Compile Include="Service\ComponentBonusService.cs" />
@@ -1433,6 +1499,7 @@
     <Compile Include="ValueObject\AreaSpawn.cs" />
     <Compile Include="ValueObject\AreaStructure.cs" />
     <Compile Include="ValueObject\ColorNames.cs" />
+    <Compile Include="ValueObject\DataPackageFile.cs" />
     <Compile Include="ValueObject\DialogNavigation.cs" />
     <Compile Include="ValueObject\EffectiveStats.cs" />
     <Compile Include="ValueObject\ObjectSpawn.cs" />
@@ -1652,6 +1719,7 @@
     <EmbeddedResource Include="Data\Migrations\2018-10-31.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-01.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-01.2.sql" />
+    <Content Include="Data\Migrations\2018-11-01.3.sql" />
     <Content Include="Data\Migrations\Readme.txt" />
     <Content Include="Data\Scripts\AddWeaponCraftBlueprints.sql" />
     <Content Include="Data\Scripts\AddPerkLevels.sql" />

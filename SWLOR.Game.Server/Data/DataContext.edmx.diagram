@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="66159b341ad141029660cf34a5c62f27" Name="Diagram1" ZoomLevel="45">
+      <Diagram DiagramId="66159b341ad141029660cf34a5c62f27" Name="Diagram1" ZoomLevel="256">
         <EntityTypeShape EntityType="Entities.ApartmentBuilding" Width="1.5" PointX="8.25" PointY="48.25" IsExpanded="true" />
         <EntityTypeShape EntityType="Entities.Area" Width="1.5" PointX="29.25" PointY="49" IsExpanded="true" />
         <EntityTypeShape EntityType="Entities.AreaWalkmesh" Width="1.5" PointX="31.5" PointY="40.5" IsExpanded="true" />
@@ -218,6 +218,7 @@
         <EntityTypeShape EntityType="Entities.CustomEffect" Width="1.5" PointX="14.625" PointY="4" />
         <AssociationConnector Association="Entities.FK_CustomEffects_CustomEffectCategoryID" />
         <AssociationConnector Association="Entities.fk_PCCustomEffects_CustomEffectID" />
+        <EntityTypeShape EntityType="Entities.DataPackage" Width="1.5" PointX="3.375" PointY="12.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

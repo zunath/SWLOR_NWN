@@ -605,6 +605,7 @@
     <Compile Include="Data\Validator\QuestValidator.cs" />
     <Compile Include="Data\Validator\SkillCategoryValidator.cs" />
     <Compile Include="Data\Validator\SkillValidator.cs" />
+    <Compile Include="Data\Validator\SpawnObjectValidator.cs" />
     <Compile Include="Data\Validator\SpawnValidator.cs" />
     <Compile Include="DoorRule\Contracts\IDoorRule.cs" />
     <Compile Include="DoorRule\LargeSquareBuildingRule.cs" />

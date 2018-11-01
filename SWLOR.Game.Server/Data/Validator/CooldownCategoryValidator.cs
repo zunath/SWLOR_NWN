@@ -6,7 +6,14 @@ namespace SWLOR.Game.Server.Data.Validator
     {
         public CooldownCategoryValidator()
         {
-            
+            RuleFor(x => x.Name)
+                .NotNull()
+                .NotEmpty()
+                .MaximumLength(64);
+
+            RuleFor(x => x.BaseCooldownTime)
+                .GreaterThan(0);
+
         }
     }
 }

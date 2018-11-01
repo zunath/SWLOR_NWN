@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Data.Validator
     {
         public BaseStructureValidator()
         {
-
+            
         }
     }
 }

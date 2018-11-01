@@ -6,7 +6,10 @@ namespace SWLOR.Game.Server.Data.Validator
     {
         public GameTopicCategoryValidator()
         {
-            
+            RuleFor(x => x.Name)
+                .NotNull()
+                .NotEmpty()
+                .MaximumLength(32);
         }
     }
 }

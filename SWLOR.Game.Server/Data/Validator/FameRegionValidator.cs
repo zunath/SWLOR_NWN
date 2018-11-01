@@ -6,7 +6,10 @@ namespace SWLOR.Game.Server.Data.Validator
     {
         public FameRegionValidator()
         {
-            
+            RuleFor(x => x.Name)
+                .NotNull()
+                .NotEmpty()
+                .MaximumLength(32);
         }
     }
 }

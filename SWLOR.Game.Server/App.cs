@@ -219,6 +219,7 @@ namespace SWLOR.Game.Server
             builder.RegisterType<CraftService>().As<ICraftService>();
             builder.RegisterType<CreatureCorpseService>().As<ICreatureCorpseService>();
             builder.RegisterType<CustomEffectService>().As<ICustomEffectService>();
+            builder.RegisterType<DataPackageService>().As<IDataPackageService>();
             builder.RegisterType<DeathService>().As<IDeathService>();
             builder.RegisterType<DialogService>().As<IDialogService>();
             builder.RegisterType<DurabilityService>().As<IDurabilityService>();

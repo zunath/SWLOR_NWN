@@ -4,6 +4,7 @@ docker run --rm -it \
 -p 5151:5151/udp \
 -e NWN_PORT=5151 \
 -v $(pwd):/nwn/home \
+-v $(pwd)/DataPackages:/nwn/data/bin/linux-x86/DataPackages \
 -e NWN_SERVERNAME="SWLOR Testing" \
 -e NWN_MODULE="Star Wars LOR" \
 -e NWN_PUBLICSERVER=1 \

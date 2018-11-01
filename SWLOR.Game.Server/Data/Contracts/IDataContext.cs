@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Data.Contracts
         DbSet<CraftDevice> CraftDevices { get; set; }
         DbSet<CustomEffect> CustomEffects { get; set; }
         DbSet<DatabaseVersion> DatabaseVersions { get; set; }
+        DbSet<DataPackage> DataPackages { get; set; }
         DbSet<DiscordChatQueue> DiscordChatQueues { get; set; }
         DbSet<DMRoleDomain> DMRoleDomains { get; set; }
         DbSet<Download> Downloads { get; set; }

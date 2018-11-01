@@ -9,6 +9,7 @@ using AutoMapper;
 using Caliburn.Micro;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.ValueObject;
 using SWLOR.Tools.Editor.Enumeration;
 using SWLOR.Tools.Editor.Messages;
 using SWLOR.Tools.Editor.ViewModels.Contracts;
@@ -49,8 +50,8 @@ namespace SWLOR.Tools.Editor.ViewModels
             }
         }
 
-        private ImportExportPackageViewModel _activePackage;
-        public ImportExportPackageViewModel ActivePackage
+        private DataPackageFile _activePackage;
+        public DataPackageFile ActivePackage
         {
             get => _activePackage;
             set
@@ -72,7 +73,7 @@ namespace SWLOR.Tools.Editor.ViewModels
             AddedResources.Clear();
 
             string json = File.ReadAllText(_openFile.FileName);
-            ActivePackage = JsonConvert.DeserializeObject<ImportExportPackageViewModel>(json);
+            ActivePackage = JsonConvert.DeserializeObject<DataPackageFile>(json);
             PackageName = ActivePackage.PackageName;
             PopulateDataSources();
             LoadAvailableResources();

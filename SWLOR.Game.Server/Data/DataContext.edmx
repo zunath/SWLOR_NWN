@@ -314,6 +314,20 @@
           <Property Name="VersionDate" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="VersionNumber" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="DataPackages">
+          <Key>
+            <PropertyRef Name="DataPackageID" />
+          </Key>
+          <Property Name="DataPackageID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DateFound" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="DateExported" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="FileName" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="PackageName" Type="nvarchar" MaxLength="64" Nullable="false" />
+          <Property Name="Checksum" Type="nchar" MaxLength="40" Nullable="false" />
+          <Property Name="Content" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="ImportedSuccessfully" Type="bit" Nullable="false" />
+          <Property Name="ErrorMessage" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
         <EntityType Name="DiscordChatQueue">
           <Key>
             <PropertyRef Name="DiscordChatQueueID" />
@@ -2603,6 +2617,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
           <EntitySet Name="CustomEffectCategory" EntityType="Self.CustomEffectCategory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CustomEffects" EntityType="Self.CustomEffects" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DatabaseVersions" EntityType="Self.DatabaseVersions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="DataPackages" EntityType="Self.DataPackages" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DiscordChatQueue" EntityType="Self.DiscordChatQueue" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DMRoleDomain" EntityType="Self.DMRoleDomain" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Downloads" EntityType="Self.Downloads" Schema="dbo" store:Type="Tables" />
@@ -6474,6 +6489,7 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
             <Parameter Name="TableName" Mode="In" Type="String" />
             <Parameter Name="ColumnName" Mode="In" Type="String" />
           </FunctionImport>
+          <EntitySet Name="DataPackages" EntityType="Entities.DataPackage" />
         </EntityContainer>
         <ComplexType Name="GetCategoriesAvailableToPC_Result">
           <Property Type="Int64" Name="CraftBlueprintCategoryID" Nullable="false" />
@@ -6645,6 +6661,20 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="DataPackage">
+          <Key>
+            <PropertyRef Name="DataPackageID" />
+          </Key>
+          <Property Name="DataPackageID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DateFound" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="DateExported" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="FileName" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PackageName" Type="String" Nullable="false" MaxLength="64" FixedLength="false" Unicode="true" />
+          <Property Name="Checksum" Type="String" Nullable="false" MaxLength="40" FixedLength="true" Unicode="true" />
+          <Property Name="Content" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ImportedSuccessfully" Type="Boolean" Nullable="false" />
+          <Property Name="ErrorMessage" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -7972,6 +8002,21 @@ warning 6035: The relationship 'FK_PCBases_AreaResref' has columns that are not 
             </EntityTypeMapping>
           </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="ADM_Drop_Constraint" FunctionName="Entities.Store.ADM_Drop_Constraint" />
+          <EntitySetMapping Name="DataPackages">
+            <EntityTypeMapping TypeName="Entities.DataPackage">
+              <MappingFragment StoreEntitySet="DataPackages">
+                <ScalarProperty Name="ErrorMessage" ColumnName="ErrorMessage" />
+                <ScalarProperty Name="ImportedSuccessfully" ColumnName="ImportedSuccessfully" />
+                <ScalarProperty Name="Content" ColumnName="Content" />
+                <ScalarProperty Name="Checksum" ColumnName="Checksum" />
+                <ScalarProperty Name="PackageName" ColumnName="PackageName" />
+                <ScalarProperty Name="FileName" ColumnName="FileName" />
+                <ScalarProperty Name="DateExported" ColumnName="DateExported" />
+                <ScalarProperty Name="DateFound" ColumnName="DateFound" />
+                <ScalarProperty Name="DataPackageID" ColumnName="DataPackageID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

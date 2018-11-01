@@ -120,6 +120,7 @@ namespace SWLOR.Game.Server.Data
         public virtual DbSet<DatabaseVersion> DatabaseVersions { get; set; }
         public virtual DbSet<CustomEffectCategory> CustomEffectCategories { get; set; }
         public virtual DbSet<CustomEffect> CustomEffects { get; set; }
+        public virtual DbSet<DataPackage> DataPackages { get; set; }
     
         [DbFunction("DataContext", "fn_GetPlayerEffectivePerkLevel")]
         public virtual IQueryable<fn_GetPlayerEffectivePerkLevel_Result> fn_GetPlayerEffectivePerkLevel(string playerID, Nullable<int> perkID, Nullable<int> skillLevel)

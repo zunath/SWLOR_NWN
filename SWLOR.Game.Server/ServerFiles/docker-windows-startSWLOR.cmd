@@ -3,6 +3,7 @@ docker run --rm -it ^
 -e NWN_PORT=5121 ^
 -v c:/NeverwinterNights/NWN:/nwn/home ^
 -v /opt/nwn/logs.0:/nwn/run/logs.0 ^
+-v C:/NeverwinterNights/NWN/DataPackages:/nwn/data/bin/linux-x86/DataPackages ^
 -e NWN_SERVERNAME="SWLOR Testing" ^
 -e NWN_MODULE="Star Wars LOR" ^
 -e NWN_PUBLICSERVER=1 ^

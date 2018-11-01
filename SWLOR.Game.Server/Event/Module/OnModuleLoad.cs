@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly ICustomEffectService _customEffect;
         private readonly IObjectVisibilityService _objectVisibility;
         private readonly IBackgroundThreadManager _backgroundThreadManager;
+        private readonly IDataPackageService _dataPackage;
 
         public OnModuleLoad(INWScript script,
             INWNXChat nwnxChat,
@@ -38,7 +39,8 @@ namespace SWLOR.Game.Server.Event.Module
             ISpawnService spawn,
             ICustomEffectService customEffect,
             IObjectVisibilityService objectVisibility,
-            IBackgroundThreadManager backgroundThreadManager)
+            IBackgroundThreadManager backgroundThreadManager,
+            IDataPackageService dataPackage)
         {
             _ = script;
             _nwnxChat = nwnxChat;
@@ -52,6 +54,7 @@ namespace SWLOR.Game.Server.Event.Module
             _customEffect = customEffect;
             _objectVisibility = objectVisibility;
             _backgroundThreadManager = backgroundThreadManager;
+            _dataPackage = dataPackage;
         }
 
         public bool Run(params object[] args)
@@ -70,6 +73,7 @@ namespace SWLOR.Game.Server.Event.Module
             _.ExecuteScript("x2_mod_def_load", Object.OBJECT_SELF);
             _objectProcessing.RegisterProcessingEvent<AppStateProcessor>();
             _objectProcessing.OnModuleLoad();
+            _dataPackage.OnModuleLoad();
             _farming.OnModuleLoad();
             _base.OnModuleLoad();
             _area.OnModuleLoad();

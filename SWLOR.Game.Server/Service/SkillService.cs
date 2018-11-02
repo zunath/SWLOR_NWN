@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Service
             };
             _db.PCSkills.Attach(pcSkill);
             _db.Entry(pcSkill).State = EntityState.Modified;
-            _db.SaveChangesAsync();
+            _db.SaveChanges();
 
             // Update player and apply stat changes only if a level up occurred.
             if (originalRank != cachedPCSkill.Rank)
@@ -246,7 +246,7 @@ namespace SWLOR.Game.Server.Service
             };
             _db.PCSkills.Attach(dbPCSkill);
             _db.Entry(dbPCSkill).State = EntityState.Modified;
-            _db.SaveChangesAsync();
+            _db.SaveChanges();
         }
 
         public void OnCreatureDeath(NWCreature creature)

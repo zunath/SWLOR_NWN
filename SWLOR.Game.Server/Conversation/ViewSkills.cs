@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
@@ -63,10 +65,10 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadCategoryResponses()
         {
-            List<SkillCategory> categories = _skill.GetActiveCategories();
+            List<CachedSkillCategory> categories = _skill.GetActiveCategories();
 
             ClearPageResponses("CategoryPage");
-            foreach (SkillCategory category in categories)
+            foreach (CachedSkillCategory category in categories)
             {
                 AddResponseToPage("CategoryPage", category.Name, true, category.SkillCategoryID);
             }
@@ -75,31 +77,34 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadSkillResponses()
         {
             Model vm = GetDialogCustomData<Model>();
-            List<PCSkill> skills = _skill.GetPCSkillsForCategory(GetPC().GlobalID, vm.SelectedCategoryID);
+            List<CachedPCSkill> skills = _skill.GetPCSkillsForCategory(GetPC().GlobalID, vm.SelectedCategoryID);
 
             ClearPageResponses("SkillListPage");
-            foreach (PCSkill skill in skills)
+            foreach (CachedPCSkill pcSkill in skills)
             {
-                AddResponseToPage("SkillListPage", skill.Skill.Name + " (Lvl. " + skill.Rank + ")", true, skill.Skill.SkillID);
+                CachedSkill skill = _skill.GetSkill(pcSkill.SkillID);
+                AddResponseToPage("SkillListPage", skill.Name + " (Lvl. " + pcSkill.Rank + ")", true, skill.SkillID);
             }
         }
 
         private void LoadSkillDetails()
         {
             Model vm = GetDialogCustomData<Model>();
-            PCSkill pcSkill = _skill.GetPCSkill(GetPC(), vm.SelectedSkillID);
-            SkillXPRequirement req = _skill.GetSkillXPRequirementByRank(vm.SelectedSkillID, pcSkill.Rank);
+            CachedSkill skill = _skill.GetSkill(vm.SelectedSkillID);
+            CachedPCSkill pcSkill = _skill.GetPCSkill(GetPC(), vm.SelectedSkillID);
+            CachedSkillXPRequirement req = skill.SkillXPRequirements.Single(x => x.Rank == pcSkill.Rank && x.SkillID == skill.SkillID); 
             string header = CreateSkillDetailsHeader(pcSkill, req);
             SetPageHeader("SkillDetailsPage", header);
 
-            if(!pcSkill.Skill.ContributesToSkillCap)
+            if(!skill.ContributesToSkillCap)
             {
                 SetResponseVisible("SkillDetailsPage", 1, false);
             }
         }
 
-        private string CreateSkillDetailsHeader(PCSkill pcSkill, SkillXPRequirement req)
+        private string CreateSkillDetailsHeader(CachedPCSkill pcSkill, CachedSkillXPRequirement req)
         {
+            CachedSkill skill = _skill.GetSkill(pcSkill.SkillID);
             string title;
             if (pcSkill.Rank <= 3) title = "Untrained";
             else if (pcSkill.Rank <= 7) title = "Neophyte";
@@ -124,19 +129,19 @@ namespace SWLOR.Game.Server.Conversation
             // Skills which don't contribute to the cap cannot be locked (there's no reason for it.)
             // Display a message explaining this to the player instead.
             string noContributeMessage = string.Empty;
-            if (!pcSkill.Skill.ContributesToSkillCap)
+            if (!skill.ContributesToSkillCap)
             {
                 decayLock = string.Empty;
                 noContributeMessage = _color.Green("This skill does not contribute to your cumulative skill cap.") + "\n\n";
             }
 
             return
-                    _color.Green("Skill: ") + pcSkill.Skill.Name + "\n" +
+                    _color.Green("Skill: ") + skill.Name + "\n" +
                     _color.Green("Rank: ") + title + "\n" +
                     _color.Green("Exp: ") + _menu.BuildBar(pcSkill.XP, req.XP, 100, _color.TokenStart(255, 127, 0)) + "\n" +
                     noContributeMessage +
                     decayLock + "\n\n" +
-                    _color.Green("Description: ") + pcSkill.Skill.Description + "\n";
+                    _color.Green("Description: ") + skill.Description + "\n";
         }
 
         public override void DoAction(NWPlayer player, string pageName, int responseID)

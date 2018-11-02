@@ -1501,7 +1501,11 @@
     <Compile Include="Trigger\QuestTrigger.cs" />
     <Compile Include="ValueObject\AreaSpawn.cs" />
     <Compile Include="ValueObject\AreaStructure.cs" />
+    <Compile Include="ValueObject\CachedPCSkill.cs" />
     <Compile Include="ValueObject\CachedPCSkills.cs" />
+    <Compile Include="ValueObject\CachedSkill.cs" />
+    <Compile Include="ValueObject\CachedSkillCategory.cs" />
+    <Compile Include="ValueObject\CachedSkillXPRequirement.cs" />
     <Compile Include="ValueObject\ColorNames.cs" />
     <Compile Include="ValueObject\DataPackageFile.cs" />
     <Compile Include="ValueObject\DialogNavigation.cs" />

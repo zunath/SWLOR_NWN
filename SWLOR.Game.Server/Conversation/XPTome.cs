@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
@@ -54,9 +54,9 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
-            List<SkillCategory> categories = _skill.GetActiveCategories();
+            List<CachedSkillCategory> categories = _skill.GetActiveCategories();
 
-            foreach (SkillCategory category in categories)
+            foreach (CachedSkillCategory category in categories)
             {
                 AddResponseToPage("CategoryPage", category.Name, true, category.SkillCategoryID);
             }
@@ -91,12 +91,13 @@ namespace SWLOR.Game.Server.Conversation
             DialogResponse response = GetResponseByID("CategoryPage", responseID);
             int categoryID = (int)response.CustomData;
             
-            List<PCSkill> pcSkills = _skill.GetPCSkillsForCategory(GetPC().GlobalID, categoryID);
+            List<CachedPCSkill> pcSkills = _skill.GetPCSkillsForCategory(GetPC().GlobalID, categoryID);
 
             ClearPageResponses("SkillListPage");
-            foreach (PCSkill pcSkill in pcSkills)
+            foreach (CachedPCSkill pcSkill in pcSkills)
             {
-                AddResponseToPage("SkillListPage", pcSkill.Skill.Name, true, pcSkill.SkillID);
+                CachedSkill skill = _skill.GetSkill(pcSkill.SkillID);
+                AddResponseToPage("SkillListPage", skill.Name, true, pcSkill.SkillID);
             }
 
             ChangePage("SkillListPage");
@@ -106,8 +107,8 @@ namespace SWLOR.Game.Server.Conversation
         {
             DialogResponse response = GetResponseByID("SkillListPage", responseID);
             int skillID = (int)response.CustomData;
-            PCSkill pcSkill = _skill.GetPCSkill(GetPC(), skillID);
-            string header = "Are you sure you want to improve your " + pcSkill.Skill.Name + " skill?";
+            CachedSkill skill = _skill.GetSkill(skillID);
+            string header = "Are you sure you want to improve your " + skill.Name + " skill?";
             SetPageHeader("ConfirmPage", header);
 
             Model vm = GetDialogCustomData<Model>();

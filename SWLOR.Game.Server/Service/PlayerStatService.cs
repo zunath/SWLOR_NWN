@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Service
 
             PlayerCharacter pcEntity = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
             var pcSkillCache = _cache.PCSkills[player.GlobalID];
-            List<PCSkill> skills = pcSkillCache.Values.Where(x => x.Rank > 0).ToList();
+            List<CachedPCSkill> skills = pcSkillCache.Values.Where(x => x.Rank > 0).ToList();
             var itemBonuses = GetPlayerItemEffectiveStats(player, ignoreItem);
 
             float strBonus = 0.0f;
@@ -65,9 +65,9 @@ namespace SWLOR.Game.Server.Service
             float wisBonus = 0.0f;
             float chaBonus = 0.0f;
 
-            foreach (PCSkill pcSkill in skills)
+            foreach (CachedPCSkill pcSkill in skills)
             {
-                Skill skill = pcSkill.Skill;
+                CachedSkill skill = _cache.Skills[pcSkill.SkillType];
                 CustomAttribute primary = (CustomAttribute)skill.Primary;
                 CustomAttribute secondary = (CustomAttribute)skill.Secondary;
                 CustomAttribute tertiary = (CustomAttribute)skill.Tertiary;

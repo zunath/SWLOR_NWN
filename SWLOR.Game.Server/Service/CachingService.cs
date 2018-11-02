@@ -25,6 +25,18 @@ namespace SWLOR.Game.Server.Service
             _cache = cache;
         }
 
+        private void CacheSkillCategories()
+        {
+            var categories = _db.SkillCategories
+                .Where(x => x.IsActive)
+                .ToList();
+
+            foreach (var category in categories)
+            {
+                _cache.SkillCategories.Add(new CachedSkillCategory(category));
+            }
+        }
+
         private void CacheSkills()
         {
             var skills = _db.Skills.AsNoTracking()
@@ -33,8 +45,7 @@ namespace SWLOR.Game.Server.Service
                 .ToList();
             foreach (var skill in skills)
             {
-                _db.Entry(skill).State = EntityState.Detached;
-                _cache.Skills.Add((SkillType)skill.SkillID, skill);
+                _cache.Skills.Add((SkillType)skill.SkillID, new CachedSkill(skill));
             }
         }
 
@@ -46,11 +57,14 @@ namespace SWLOR.Game.Server.Service
             }
 
             var ranks = new CachedPCSkills();
-            var pcSkills = _db.PCSkills.AsNoTracking().Where(x => x.PlayerID == player.GlobalID).ToList();
+            var pcSkills = _db.PCSkills
+                .Include(i => i.Skill)
+                .AsNoTracking()
+                .Where(x => x.PlayerID == player.GlobalID && 
+                            x.Skill.IsActive).ToList();
             foreach (var skill in pcSkills)
             {
-                _db.Entry(skill).State = EntityState.Detached;
-                ranks.Add((SkillType)skill.SkillID, skill);
+                ranks.Add((SkillType)skill.SkillID, new CachedPCSkill(skill));
             }
 
             _cache.PCSkills.Add(player.GlobalID, ranks);
@@ -58,6 +72,7 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleLoad()
         {
+            CacheSkillCategories();
             CacheSkills();
         }
 

@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             PlayerCharacter pcEntity = _player.GetPlayerEntity(GetPC().GlobalID);
 
-            int totalSP = _skill.GetPCTotalSkillCount(GetPC().GlobalID);
+            int totalSP = _skill.GetPCTotalSkillCount(GetPC());
             int totalPerks = _perk.GetPCTotalPerkCount(GetPC().GlobalID);
 
             return _color.Green("Total SP: ") + totalSP + " / " + _skill.SkillCap + "\n" +
@@ -184,7 +184,7 @@ namespace SWLOR.Game.Server.Conversation
                         {
                             string detailLine = req.Skill.Name + " Rank " + req.RequiredRank;
                             
-                            PCSkill skill = _skill.GetPCSkill(GetPC(), req.SkillID);
+                            CachedPCSkill skill = _skill.GetPCSkill(GetPC(), req.SkillID);
                             if (skill.Rank >= req.RequiredRank)
                             {
                                 header += _color.Green(detailLine) + "\n";

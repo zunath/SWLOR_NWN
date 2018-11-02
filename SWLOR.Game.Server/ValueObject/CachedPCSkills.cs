@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.ValueObject
 {
-    public class CachedPCSkills: Dictionary<SkillType, PCSkill>
+    public class CachedPCSkills: Dictionary<SkillType, CachedPCSkill>
     {
     }
 }

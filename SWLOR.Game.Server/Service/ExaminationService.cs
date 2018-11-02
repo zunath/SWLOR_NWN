@@ -58,11 +58,12 @@ namespace SWLOR.Game.Server.Service
                     _color.Green("FP: ") + playerEntity.CurrentFP + " / " + playerEntity.MaxFP + "\n" +
                     _color.Green("Skill Levels: ") + "\n\n");
 
-            List<PCSkill> pcSkills = _skill.GetAllPCSkills(target.Object);
+            List<CachedPCSkill> pcSkills = _skill.GetAllPCSkills(target.Object);
 
-            foreach (PCSkill skill in pcSkills)
+            foreach (CachedPCSkill pcSkill in pcSkills)
             {
-                description.Append(skill.Skill.Name).Append(" rank ").Append(skill.Rank).AppendLine();
+                CachedSkill skill = _skill.GetSkill(pcSkill.SkillID);
+                description.Append(skill.Name).Append(" rank ").Append(pcSkill.Rank).AppendLine();
             }
 
             description.Append("\n\n").Append(_color.Green("Perks: ")).Append("\n\n");

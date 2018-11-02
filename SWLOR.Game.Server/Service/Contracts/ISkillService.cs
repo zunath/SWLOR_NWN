@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service.Contracts
 {
@@ -10,16 +11,15 @@ namespace SWLOR.Game.Server.Service.Contracts
         int SkillCap { get; }
 
         float CalculateRegisteredSkillLevelAdjustedXP(float xp, int registeredLevel, int skillRank);
-        List<SkillCategory> GetActiveCategories();
+        List<CachedSkillCategory> GetActiveCategories();
         int GetPCSkillRank(NWPlayer player, int skillID);
         int GetPCSkillRank(NWPlayer player, SkillType skill);
-        PCSkill GetPCSkill(NWPlayer player, int skillID);
-        List<PCSkill> GetAllPCSkills(NWPlayer player);
-        Skill GetSkill(int skillID);
-        Skill GetSkill(SkillType skillType);
-        List<PCSkill> GetPCSkillsForCategory(string playerID, int skillCategoryID);
-        int GetPCTotalSkillCount(string playerID);
-        SkillXPRequirement GetSkillXPRequirementByRank(int skillID, int rank);
+        CachedPCSkill GetPCSkill(NWPlayer player, int skillID);
+        List<CachedPCSkill> GetAllPCSkills(NWPlayer player);
+        CachedSkill GetSkill(int skillID);
+        CachedSkill GetSkill(SkillType skillType);
+        List<CachedPCSkill> GetPCSkillsForCategory(string playerID, int skillCategoryID);
+        int GetPCTotalSkillCount(NWPlayer player);
         void GiveSkillXP(NWPlayer oPC, int skillID, int xp);
         void GiveSkillXP(NWPlayer oPC, SkillType skill, int xp);
         void OnAreaExit();

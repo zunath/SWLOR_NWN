@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Autofac.Util;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -24,7 +25,8 @@ namespace SWLOR.Game.Server
         public Dictionary<string, NWObject> VisibilityObjects { get; set; }
         public List<long> PCEffectsForRemoval { get; set; }
         public List<NWObject> ConnectedDMs { get; set; }
-        public Dictionary<SkillType, Skill> Skills { get; set; }
+        public HashSet<CachedSkillCategory> SkillCategories { get; set; }
+        public Dictionary<SkillType, CachedSkill> Skills { get; set; }
         public Dictionary<string, CachedPCSkills> PCSkills { get; set; }
 
         public AppCache()
@@ -43,7 +45,8 @@ namespace SWLOR.Game.Server
             VisibilityObjects = new Dictionary<string, NWObject>();
             PCEffectsForRemoval = new List<long>();
             ConnectedDMs = new List<NWObject>();
-            Skills = new Dictionary<SkillType, Skill>();
+            SkillCategories = new HashSet<CachedSkillCategory>();
+            Skills = new Dictionary<SkillType, CachedSkill>();
             PCSkills = new Dictionary<string, CachedPCSkills>();
             
 

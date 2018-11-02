@@ -102,7 +102,17 @@ namespace SWLOR.Game.Server.Service
             }
             _db.SaveChanges();
 
-            BakeAreas();
+            string arg = Environment.GetEnvironmentVariable("AREA_BAKING_ENABLED");
+            bool bakingEnabled =  arg == null || Convert.ToBoolean(arg);
+            
+            if(bakingEnabled)
+            {
+                BakeAreas();
+            }
+            else
+            {
+                Console.WriteLine("WARNING: Area baking has been disabled. You may encounter errors during normal operations. This should only be disabled for debugging purposes. Please shut down the server and set the AREA_BAKING_ENABLED argument to true for all other scenarios.");
+            }
         }
 
         // Area baking process

@@ -1,7 +1,6 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Bioware.Contracts;
 using SWLOR.Game.Server.Data;
-using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
@@ -9,7 +8,6 @@ using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Skill;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
 using static NWN.NWScript;
@@ -28,7 +26,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IEnmityService _enmity;
         private readonly IPlayerStatService _playerStat;
         private readonly IItemService _item;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly AppCache _cache;
 
         public SkillService(
@@ -38,7 +36,7 @@ namespace SWLOR.Game.Server.Service
             IEnmityService enmity,
             IPlayerStatService playerStat,
             IItemService item,
-            IDataContext db,
+            IDataService data,
             AppCache cache)
         {
             _ = script;
@@ -47,7 +45,7 @@ namespace SWLOR.Game.Server.Service
             _enmity = enmity;
             _playerStat = playerStat;
             _item = item;
-            _db = db;
+            _data = data;
             _cache = cache;
         }
 
@@ -94,7 +92,7 @@ namespace SWLOR.Game.Server.Service
             if (skillID <= 0 || xp <= 0 || !oPC.IsPlayer) return;
 
             xp = (int)(xp + xp * _playerStat.EffectiveResidencyBonus(oPC));
-            PlayerCharacter player = _db.PlayerCharacters.Single(x => x.PlayerID == oPC.GlobalID);
+            PlayerCharacter player = _data.Get<PlayerCharacter>(oPC.GlobalID);
             CachedSkill skill = GetSkill(skillID);
             CachedPCSkill cachedPCSkill = GetPCSkill(oPC, skillID);
             CachedSkillXPRequirement req = skill.SkillXPRequirements.Single(x => x.SkillID == skillID && x.Rank == cachedPCSkill.Rank);
@@ -154,9 +152,7 @@ namespace SWLOR.Game.Server.Service
                 Rank = cachedPCSkill.Rank,
                 XP = cachedPCSkill.XP
             };
-            _db.PCSkills.Attach(pcSkill);
-            _db.Entry(pcSkill).State = EntityState.Modified;
-            _db.SaveChanges();
+            _data.SubmitDataChange(pcSkill, DatabaseActionType.Update);
 
             // Update player and apply stat changes only if a level up occurred.
             if (originalRank != cachedPCSkill.Rank)
@@ -167,7 +163,7 @@ namespace SWLOR.Game.Server.Service
 
         public int GetPCSkillRank(NWPlayer player, SkillType skill)
         {
-            if (!player.IsPlayer) return 0;
+            if (!player.IsPlayer || skill == SkillType.Unknown) return 0;
             
             var pcSkill = _cache.PCSkills[player.GlobalID][skill];
             return pcSkill.Rank;
@@ -244,9 +240,7 @@ namespace SWLOR.Game.Server.Service
                 Rank = pcSkill.Rank,
                 XP = pcSkill.XP
             };
-            _db.PCSkills.Attach(dbPCSkill);
-            _db.Entry(dbPCSkill).State = EntityState.Modified;
-            _db.SaveChanges();
+            _data.SubmitDataChange(dbPCSkill, DatabaseActionType.Update);
         }
 
         public void OnCreatureDeath(NWCreature creature)
@@ -416,7 +410,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer oPC = _.GetEnteringObject();
             if (oPC.IsPlayer)
             {
-                _db.StoredProcedure("InsertAllPCSkillsByID",
+                _data.StoredProcedure("InsertAllPCSkillsByID",
                     new SqlParameter("PlayerID", oPC.GlobalID));
                 ForceEquipFistGlove(oPC);
             }
@@ -545,7 +539,7 @@ namespace SWLOR.Game.Server.Service
             if (totalSkillRanks < SkillCap) return true;
 
             // Find out if we have enough XP to remove. If we don't, make no changes and return false signifying no XP could be removed.
-            List<TotalSkillXPResult> skillTotalXP = _db.StoredProcedure<TotalSkillXPResult>("GetTotalXPAmountsForPC",
+            List<TotalSkillXPResult> skillTotalXP = _data.StoredProcedure<TotalSkillXPResult>("GetTotalXPAmountsForPC",
                 new SqlParameter("PlayerID", oPC.GlobalID),
                 new SqlParameter("SkillID", levelingSkill.SkillID));
             
@@ -619,8 +613,7 @@ namespace SWLOR.Game.Server.Service
                     Rank = decaySkill.Rank, 
                     XP = decaySkill.XP
                 };
-                _db.PCSkills.Attach(dbDecaySkill);
-                _db.Entry(dbDecaySkill).State = EntityState.Modified;
+                _data.SubmitDataChange(dbDecaySkill, DatabaseActionType.Update);
             }
 
             // TODO: Verify we can get away without applying stat changes at this point.

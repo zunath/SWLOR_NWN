@@ -1694,7 +1694,9 @@
     <None Include="ServerFiles\HakPaks\swlor_gui\cg_race.gui" />
     <None Include="ServerFiles\HakPaks\swlor_tlk.tlk" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Data\Repository\Contracts\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Data\DataContext.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

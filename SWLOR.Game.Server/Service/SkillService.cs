@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
+﻿using NWN;
 using SWLOR.Game.Server.Bioware.Contracts;
-using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using NWN;
-using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Skill;
+using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Linq;
 using static NWN.NWScript;
 using Object = NWN.Object;
 
@@ -84,7 +82,7 @@ namespace SWLOR.Game.Server.Service
                 creature = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, 1, player.Object, nth, CREATURE_TYPE_PLAYER_CHAR, 0);
             }
         }
-        
+
         public void GiveSkillXP(NWPlayer oPC, SkillType skill, int xp)
         {
             GiveSkillXP(oPC, (int)skill, xp);
@@ -94,7 +92,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (skillID <= 0 || xp <= 0 || !oPC.IsPlayer) return;
 
-            xp = (int) (xp + xp * _playerStat.EffectiveResidencyBonus(oPC));
+            xp = (int)(xp + xp * _playerStat.EffectiveResidencyBonus(oPC));
             PlayerCharacter player = _db.PlayerCharacters.Single(x => x.PlayerID == oPC.GlobalID);
             PCSkill skill = GetPCSkillByID(oPC.GlobalID, skillID);
             SkillXPRequirement req = _db.SkillXPRequirements.Single(x => x.SkillID == skillID && x.Rank == skill.Rank);
@@ -146,7 +144,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             _db.SaveChanges();
-            
+
             // Update player and apply stat changes only if a level up occurred.
             if (originalRank != skill.Rank)
             {
@@ -208,7 +206,7 @@ namespace SWLOR.Game.Server.Service
             if (registration.Value == null) return;
 
             int partyLevel = registration.Value.HighestRank;
-            
+
             // Identify base XP using delta between party level and enemy level.
             float cr = creature.ChallengeRating;
             int enemyLevel = (int)(cr * 5.0f);
@@ -250,12 +248,26 @@ namespace SWLOR.Game.Server.Service
                 List<Tuple<int, PlayerSkillPointTracker>> skillRegs = preg.GetSkillRegistrationPoints();
                 int totalPoints = preg.GetTotalSkillRegistrationPoints();
                 bool receivesMartialArtsPenalty = CheckForMartialArtsPenalty(skillRegs);
+
+                // Retrieve all necessary PC skills up front
+                int[] skillIDsToSearchFor = skillRegs.Select(x => x.Item2.SkillID).ToArray();
+                var pcSkills = _db
+                    .PCSkills
+                    .AsNoTracking()
+                    .Where(x => x.PlayerID == preg.Player.GlobalID && 
+                                skillIDsToSearchFor.Contains(x.SkillID))
+                    .Select(s => new
+                    {
+                        s.SkillID,
+                        s.Rank
+                    })
+                    .ToList();
                 
                 // Grant XP based on points acquired during combat.
                 foreach (Tuple<int, PlayerSkillPointTracker> skreg in skillRegs)
                 {
                     int skillID = skreg.Item1;
-                    int skillRank = GetPCSkillByID(preg.Player.GlobalID, skillID).Rank;
+                    int skillRank = pcSkills.Single(x => x.SkillID == skillID).Rank;
 
                     int points = skreg.Item2.Points;
                     int itemLevel = skreg.Item2.RegisteredLevel;
@@ -309,7 +321,7 @@ namespace SWLOR.Game.Server.Service
                 percent = heavyArmorPoints / (float)totalPoints;
 
                 GiveSkillXP(preg.Player, SkillType.HeavyArmor, (int)(armorXP * percent * armorLDP));
-                
+
                 armorRank = GetPCSkillByID(preg.Player.GlobalID, (int)SkillType.ForceArmor).Rank;
                 armorLDP = CalculatePartyLevelDifferencePenalty(partyLevel, armorRank);
                 percent = forceArmorPoints / (float)totalPoints;
@@ -620,7 +632,7 @@ namespace SWLOR.Game.Server.Service
             CreatureSkillRegistration reg = GetCreatureSkillRegistration(npc.GlobalID);
             reg.AddSkillRegistrationPoint(pc, skillID, pcSkill.Rank, pcSkill.Rank);
         }
-        
+
         private void ApplyWeaponPenalties(NWPlayer oPC, NWItem oItem)
         {
             SkillType skillType = _item.GetSkillTypeForItem(oItem);
@@ -783,7 +795,7 @@ namespace SWLOR.Game.Server.Service
             {
                 int newStr = 1 + delta / 5;
                 if (newStr > str) newStr = str;
-                
+
                 ItemProperty ip = _.ItemPropertyDecreaseAbility(ABILITY_STRENGTH, newStr);
                 ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
                 _biowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);

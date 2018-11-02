@@ -38,28 +38,21 @@ namespace SWLOR.Game.Server.Event.Module
 
         public bool Run(params object[] args)
         {
-            NWPlayer player = (_.GetFirstPC());
+            string[] playerIDs = NWModule.Get().Players.Where(x => x.IsPlayer).Select(x => x.GlobalID).ToArray();
+            var entities = _db.PlayerCharacters.Where(x => playerIDs.Contains(x.PlayerID));
 
-            while(player.IsValid)
+            foreach (var player in NWModule.Get().Players)
             {
-                if (!player.IsDM)
-                {
-                    PlayerCharacter entity = _db.PlayerCharacters.SingleOrDefault(x => x.PlayerID == player.GlobalID);
+                var entity = entities.SingleOrDefault(x => x.PlayerID == player.GlobalID);
+                if (entity == null) continue;
 
-                    if (entity != null)
-                    {
-                        HandleRegenerationTick(player, entity);
-                        HandleFPRegenerationTick(player, entity);
-
-                        _db.SaveChanges();
-                    }
-                }
-
-                player = (_.GetNextPC());
+                HandleRegenerationTick(player, entity);
+                HandleFPRegenerationTick(player, entity);
             }
 
+            _db.SaveChanges();
+            
             SaveCharacters();
-            _item.OnModuleHeartbeat();
             _base.OnModuleHeartbeat();
 
             return true;

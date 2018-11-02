@@ -147,25 +147,6 @@ namespace SWLOR.Game.Server.Service
             });
 
         }
-
-        public void OnModuleHeartbeat()
-        {
-            NWModule module = NWModule.Get();
-
-            foreach (NWPlayer pc in module.Players)
-            {
-                NWItem offHand = pc.LeftHand;
-                if (offHand.BaseItemType == BASE_ITEM_TORCH)
-                {
-                    int charges = offHand.ReduceCharges();
-                    if (charges <= 0)
-                    {
-                        offHand.Destroy();
-                        pc.SendMessage("Your torch has burned out.");
-                    }
-                }
-            }
-        }
         
         public string OnModuleExamine(string existingDescription, NWPlayer examiner, NWObject examinedObject)
         {

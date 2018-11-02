@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class QuestRequiredItemList
+    using SWLOR.Game.Server.Data.Contracts;
+    
+    public partial class QuestRequiredItemList: IEntity
     {
         public int QuestRequiredItemListID { get; set; }
         public int QuestID { get; set; }

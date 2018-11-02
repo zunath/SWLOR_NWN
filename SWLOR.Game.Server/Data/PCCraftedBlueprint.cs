@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class PCCraftedBlueprint
+    using SWLOR.Game.Server.Data.Contracts;
+    
+    public partial class PCCraftedBlueprint: IEntity
     {
         public int PCCraftedBlueprintID { get; set; }
         public string PlayerID { get; set; }

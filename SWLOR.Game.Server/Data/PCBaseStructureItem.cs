@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class PCBaseStructureItem
+    using SWLOR.Game.Server.Data.Contracts;
+    
+    public partial class PCBaseStructureItem: IEntity
     {
         public int PCBaseStructureItemID { get; set; }
         public int PCBaseStructureID { get; set; }

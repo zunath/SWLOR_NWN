@@ -1,8 +1,8 @@
 ﻿namespace SWLOR.Game.Server.Threading.Contracts
 {
-    public interface IBackgroundThread
+    public interface IDatabaseThread
     {
-        void Start();
+        void Run();
         void Exit();
     }
 }

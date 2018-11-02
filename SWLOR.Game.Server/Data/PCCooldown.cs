@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class PCCooldown
+    using SWLOR.Game.Server.Data.Contracts;
+    
+    public partial class PCCooldown: IEntity
     {
         public int PCCooldownID { get; set; }
         public string PlayerID { get; set; }

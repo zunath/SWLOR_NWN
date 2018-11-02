@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class AreaWalkmesh
+    using SWLOR.Game.Server.Data.Contracts;
+    
+    public partial class AreaWalkmesh: IEntity
     {
         public int AreaWalkmeshID { get; set; }
         public string AreaID { get; set; }

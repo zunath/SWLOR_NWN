@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class PCMapPin
+    using SWLOR.Game.Server.Data.Contracts;
+    
+    public partial class PCMapPin: IEntity
     {
         public int PCMapPinID { get; set; }
         public string PlayerID { get; set; }

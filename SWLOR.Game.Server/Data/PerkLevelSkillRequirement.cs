@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class PerkLevelSkillRequirement
+    using SWLOR.Game.Server.Data.Contracts;
+    
+    public partial class PerkLevelSkillRequirement: IEntity
     {
         public int PerkLevelSkillRequirementID { get; set; }
         public int PerkLevelID { get; set; }

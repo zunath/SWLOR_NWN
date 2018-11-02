@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class DatabaseVersion
+    using SWLOR.Game.Server.Data.Contracts;
+    
+    public partial class DatabaseVersion: IEntity
     {
         public int DatabaseVersionID { get; set; }
         public string ScriptName { get; set; }

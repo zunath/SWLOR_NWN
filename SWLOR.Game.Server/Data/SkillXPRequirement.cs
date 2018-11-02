@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class SkillXPRequirement
+    using SWLOR.Game.Server.Data.Contracts;
+    
+    public partial class SkillXPRequirement: IEntity
     {
         public int SkillXPRequirementID { get; set; }
         public int SkillID { get; set; }

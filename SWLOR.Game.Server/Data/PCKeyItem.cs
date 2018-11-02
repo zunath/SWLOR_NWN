@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class PCKeyItem
+    using SWLOR.Game.Server.Data.Contracts;
+    
+    public partial class PCKeyItem: IEntity
     {
         public int PCKeyItemID { get; set; }
         public string PlayerID { get; set; }

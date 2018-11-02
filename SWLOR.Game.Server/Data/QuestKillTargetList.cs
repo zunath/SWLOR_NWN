@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class QuestKillTargetList
+    using SWLOR.Game.Server.Data.Contracts;
+    
+    public partial class QuestKillTargetList: IEntity
     {
         public int QuestKillTargetListID { get; set; }
         public int QuestID { get; set; }

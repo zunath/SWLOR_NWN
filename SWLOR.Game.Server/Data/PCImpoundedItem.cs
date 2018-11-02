@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class PCImpoundedItem
+    using SWLOR.Game.Server.Data.Contracts;
+    
+    public partial class PCImpoundedItem: IEntity
     {
         public int PCImpoundedItemID { get; set; }
         public string PlayerID { get; set; }

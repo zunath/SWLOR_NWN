@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class PCOverflowItem
+    using SWLOR.Game.Server.Data.Contracts;
+    
+    public partial class PCOverflowItem: IEntity
     {
         public long PCOverflowItemID { get; set; }
         public string PlayerID { get; set; }

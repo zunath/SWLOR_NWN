@@ -14,7 +14,7 @@ using SWLOR.Game.Server.Threading.Contracts;
 
 namespace SWLOR.Game.Server.Threading
 {
-    public class DiscordBackgroundThread: IBackgroundThread
+    public class DiscordBackgroundThread: IDiscordThread
     {
         private readonly HttpClient _httpClient;
         private bool _isExiting;
@@ -28,23 +28,13 @@ namespace SWLOR.Game.Server.Threading
             _isExiting = false;
             _error = error;
         }
-
-        public void Start()
-        {
-            while (!_isExiting)
-            {
-                Run();
-            }
-
-            Console.WriteLine("Discord thread shut down successfully!");
-        }
-
+        
         public void Exit()
         {
             _isExiting = true;
         }
 
-        private void Run()
+        public void Run()
         {
             App.Resolve<IDataContext>(db =>
             {

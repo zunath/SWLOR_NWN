@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class ClientLogEvent
+    using SWLOR.Game.Server.Data.Contracts;
+    
+    public partial class ClientLogEvent: IEntity
     {
         public int ClientLogEventID { get; set; }
         public int ClientLogEventTypeID { get; set; }

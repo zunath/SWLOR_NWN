@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class PCQuestKillTargetProgress
+    using SWLOR.Game.Server.Data.Contracts;
+    
+    public partial class PCQuestKillTargetProgress: IEntity
     {
         public int PCQuestKillTargetProgressID { get; set; }
         public string PlayerID { get; set; }

@@ -220,6 +220,7 @@ namespace SWLOR.Game.Server
             builder.RegisterType<CraftService>().As<ICraftService>();
             builder.RegisterType<CreatureCorpseService>().As<ICreatureCorpseService>();
             builder.RegisterType<CustomEffectService>().As<ICustomEffectService>();
+            builder.RegisterType<DataService>().As<IDataService>().SingleInstance(); // Database processing needs to be a single instance because it holds state.
             builder.RegisterType<DataPackageService>().As<IDataPackageService>();
             builder.RegisterType<DeathService>().As<IDeathService>();
             builder.RegisterType<DialogService>().As<IDialogService>();
@@ -260,7 +261,8 @@ namespace SWLOR.Game.Server
             builder.RegisterType<TimeService>().As<ITimeService>();
             
             // Background threads
-            builder.RegisterType<DiscordBackgroundThread>().As<IBackgroundThread>();
+            builder.RegisterType<DiscordBackgroundThread>().As<IDiscordThread>();
+            builder.RegisterType<DatabaseBackgroundThread>().As<IDatabaseThread>();
 
             // Interfaces
             RegisterInterfaceImplementations<IRegisteredEvent>(builder);

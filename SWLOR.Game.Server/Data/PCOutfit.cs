@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class PCOutfit
+    using SWLOR.Game.Server.Data.Contracts;
+    
+    public partial class PCOutfit: IEntity
     {
         public string PlayerID { get; set; }
         public string Outfit1 { get; set; }

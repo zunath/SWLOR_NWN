@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class PCQuestItemProgress
+    using SWLOR.Game.Server.Data.Contracts;
+    
+    public partial class PCQuestItemProgress: IEntity
     {
         public int PCQuestItemProgressID { get; set; }
         public string PlayerID { get; set; }

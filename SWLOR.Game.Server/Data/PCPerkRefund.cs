@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class PCPerkRefund
+    using SWLOR.Game.Server.Data.Contracts;
+    
+    public partial class PCPerkRefund: IEntity
     {
         public int PCPerkRefundID { get; set; }
         public string PlayerID { get; set; }

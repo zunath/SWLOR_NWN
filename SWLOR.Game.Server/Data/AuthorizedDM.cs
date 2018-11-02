@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class AuthorizedDM
+    using SWLOR.Game.Server.Data.Contracts;
+    
+    public partial class AuthorizedDM: IEntity
     {
         public int AuthorizedDMID { get; set; }
         public string Name { get; set; }

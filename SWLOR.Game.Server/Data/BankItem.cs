@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class BankItem
+    using SWLOR.Game.Server.Data.Contracts;
+    
+    public partial class BankItem: IEntity
     {
         public int BankItemID { get; set; }
         public int BankID { get; set; }

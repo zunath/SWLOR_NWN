@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class PCSearchSiteItem
+    using SWLOR.Game.Server.Data.Contracts;
+    
+    public partial class PCSearchSiteItem: IEntity
     {
         public long PCSearchSiteItemID { get; set; }
         public string PlayerID { get; set; }

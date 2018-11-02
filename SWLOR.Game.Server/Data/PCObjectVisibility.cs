@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class PCObjectVisibility
+    using SWLOR.Game.Server.Data.Contracts;
+    
+    public partial class PCObjectVisibility: IEntity
     {
         public int PCObjectVisibilityID { get; set; }
         public string PlayerID { get; set; }

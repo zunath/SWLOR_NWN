@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class User
+    using SWLOR.Game.Server.Data.Contracts;
+    
+    public partial class User: IEntity
     {
         public long UserID { get; set; }
         public string DiscordUserID { get; set; }

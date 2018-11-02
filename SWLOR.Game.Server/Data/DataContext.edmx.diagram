@@ -14,7 +14,7 @@
         <EntityTypeShape EntityType="Entities.Background" Width="1.5" PointX="2.75" PointY="8.75" IsExpanded="true" />
         <EntityTypeShape EntityType="Entities.BankItem" Width="1.5" PointX="26.25" PointY="55" IsExpanded="true" />
         <EntityTypeShape EntityType="Entities.Bank" Width="1.5" PointX="24" PointY="61.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="Entities.BaseItemType" Width="1.5" PointX="0.75" PointY="1.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="Entities.BaseItemType" Width="1.5" PointX="0.625" PointY="1.125" IsExpanded="true" />
         <EntityTypeShape EntityType="Entities.BaseStructure" Width="1.5" PointX="3" PointY="54.125" IsExpanded="true" />
         <EntityTypeShape EntityType="Entities.BaseStructureType" Width="1.5" PointX="0.75" PointY="55.375" IsExpanded="true" />
         <EntityTypeShape EntityType="Entities.BugReport" Width="1.5" PointX="26.25" PointY="50.625" IsExpanded="true" />

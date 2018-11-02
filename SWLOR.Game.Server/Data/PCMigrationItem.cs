@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class PCMigrationItem
+    using SWLOR.Game.Server.Data.Contracts;
+    
+    public partial class PCMigrationItem: IEntity
     {
         public int PCMigrationItemID { get; set; }
         public int PCMigrationID { get; set; }

@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class DataPackage
+    using SWLOR.Game.Server.Data.Contracts;
+    
+    public partial class DataPackage: IEntity
     {
         public int DataPackageID { get; set; }
         public System.DateTime DateFound { get; set; }

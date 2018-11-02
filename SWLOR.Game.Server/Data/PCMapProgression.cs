@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class PCMapProgression
+    using SWLOR.Game.Server.Data.Contracts;
+    
+    public partial class PCMapProgression: IEntity
     {
         public int PCMapProgressionID { get; set; }
         public string PlayerID { get; set; }

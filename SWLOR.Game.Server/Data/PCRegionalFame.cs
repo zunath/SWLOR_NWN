@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class PCRegionalFame
+    using SWLOR.Game.Server.Data.Contracts;
+    
+    public partial class PCRegionalFame: IEntity
     {
         public int PCRegionalFameID { get; set; }
         public string PlayerID { get; set; }

@@ -12,7 +12,9 @@ namespace SWLOR.Game.Server.Data
     using System;
     using System.Collections.Generic;
     
-    public partial class BugReport
+    using SWLOR.Game.Server.Data.Contracts;
+    
+    public partial class BugReport: IEntity
     {
         public int BugReportID { get; set; }
         public string SenderPlayerID { get; set; }

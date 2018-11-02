@@ -283,6 +283,7 @@
     </Compile>
     <Compile Include="Data\Contracts\IDataContext.cs" />
     <Compile Include="Data\Contracts\IDataProcessor.cs" />
+    <Compile Include="Data\Contracts\IEntity.cs" />
     <Compile Include="Data\CooldownCategory.cs">
       <DependentUpon>DataContext.tt</DependentUpon>
     </Compile>
@@ -634,6 +635,7 @@
     <Compile Include="Enumeration\CustomItemType.cs" />
     <Compile Include="Enumeration\CustomPhenoType.cs" />
     <Compile Include="Enumeration\CustomRaceType.cs" />
+    <Compile Include="Enumeration\DatabaseActionType.cs" />
     <Compile Include="Enumeration\DMActionType.cs" />
     <Compile Include="Enumeration\EmoteStyle.cs" />
     <Compile Include="Enumeration\EnmityAdjustmentRuleType.cs" />
@@ -1344,10 +1346,12 @@
     <Compile Include="Service\ChatTextService.cs" />
     <Compile Include="Service\Contracts\IEmoteStyleService.cs" />
     <Compile Include="Service\DataPackageService.cs" />
+    <Compile Include="Service\DataService.cs" />
     <Compile Include="Service\EmoteStyleService.cs" />
     <Compile Include="Service\Contracts\IPlayerValidationService.cs" />
     <Compile Include="Service\Contracts\IDataPackageService.cs" />
     <Compile Include="Service\Contracts\ICachingService.cs" />
+    <Compile Include="Service\Contracts\IDataService.cs" />
     <Compile Include="Service\LanguageService.cs" />
     <Compile Include="Service\ColorTokenService.cs" />
     <Compile Include="Service\ComponentBonusService.cs" />
@@ -1496,7 +1500,9 @@
     <Compile Include="SpawnRule\OreSpawnRule.cs" />
     <Compile Include="Threading\BackgroundThreadManager.cs" />
     <Compile Include="Threading\Contracts\IBackgroundThreadManager.cs" />
-    <Compile Include="Threading\Contracts\IBackgroundThread.cs" />
+    <Compile Include="Threading\Contracts\IDatabaseThread.cs" />
+    <Compile Include="Threading\Contracts\IDiscordThread.cs" />
+    <Compile Include="Threading\DatabaseBackgroundThread.cs" />
     <Compile Include="Threading\DiscordBackgroundThread.cs" />
     <Compile Include="Trigger\QuestTrigger.cs" />
     <Compile Include="ValueObject\AreaSpawn.cs" />
@@ -1507,6 +1513,7 @@
     <Compile Include="ValueObject\CachedSkillCategory.cs" />
     <Compile Include="ValueObject\CachedSkillXPRequirement.cs" />
     <Compile Include="ValueObject\ColorNames.cs" />
+    <Compile Include="ValueObject\DatabaseAction.cs" />
     <Compile Include="ValueObject\DataPackageFile.cs" />
     <Compile Include="ValueObject\DialogNavigation.cs" />
     <Compile Include="ValueObject\EffectiveStats.cs" />

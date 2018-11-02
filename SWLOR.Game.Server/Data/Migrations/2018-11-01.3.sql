@@ -10,4 +10,3 @@ CREATE TABLE DataPackages(
 	ImportedSuccessfully BIT NOT NULL,
 	ErrorMessage NVARCHAR(MAX) NOT NULL DEFAULT ''
 )
-GO

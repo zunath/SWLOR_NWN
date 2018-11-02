@@ -6,6 +6,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.NWNX.Contracts;
@@ -387,7 +388,21 @@ namespace SWLOR.Game.Server.Service
 
         public float EffectiveResidencyBonus(NWPlayer player)
         {
-            var dbPlayer = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+            var dbPlayer = _db
+                .PlayerCharacters
+                .AsNoTracking()
+                .Include(i => i.PrimaryResidencePCBase)
+                .Include(i => i.PrimaryResidencePCBaseStructure)
+                .Select(x => new
+                {
+                    x.PlayerID,
+                    x.PrimaryResidencePCBaseID,
+                    x.PrimaryResidencePCBaseStructureID,
+                    x.PrimaryResidencePCBase,
+                    x.PrimaryResidencePCBaseStructure
+                })
+                .Single(x => x.PlayerID == player.GlobalID);
+
             if (dbPlayer.PrimaryResidencePCBaseStructureID == null &&
                 dbPlayer.PrimaryResidencePCBaseID == null) return 0.0f;
 

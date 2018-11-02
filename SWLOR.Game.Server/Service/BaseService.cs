@@ -317,7 +317,7 @@ namespace SWLOR.Game.Server.Service
                 var pcBases = _db.PCBases.Where(x => x.DateRentDue <= DateTime.UtcNow).ToList();
                 
                 foreach (var pcBase in pcBases)
-                {
+                { 
                     Area dbArea = _db.Areas.Single(x => x.Resref == pcBase.AreaResref);
                     playerIDs.Add(new Tuple<string, string>(pcBase.PlayerID, dbArea.Name + " (" + pcBase.Sector + ")"));
                     ClearPCBaseByID(pcBase.PCBaseID, false);

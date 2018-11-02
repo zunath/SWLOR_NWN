@@ -18,7 +18,6 @@ namespace SWLOR.Game.Server.Service.Contracts
         void OnModuleUnequipItem();
         void OnModuleEquipItem();
         string OnModuleExamine(string existingDescription, NWPlayer examiner, NWObject examinedObject);
-        void OnModuleHeartbeat();
         void ReturnItem(NWObject target, NWItem item);
         void StripAllItemProperties(NWItem item);
         ItemProperty GetCustomItemPropertyByItemTag(string tag);

@@ -16,15 +16,18 @@ namespace SWLOR.Game.Server.Service
         private readonly ISkillService _skillService;
         private readonly IRandomService _randomService;
         private readonly IDataContext _db;
+        private readonly AppCache _cache;
 
         public LanguageService(
             ISkillService skillService,
             IRandomService randomService,
-            IDataContext db)
+            IDataContext db,
+            AppCache cache)
         {
             _skillService = skillService;
             _randomService = randomService;
             _db = db;
+            _cache = cache;
         }
 
         public string TranslateSnippetForListener(NWObject speaker, NWObject listener, SkillType language, string snippet)
@@ -51,9 +54,8 @@ namespace SWLOR.Game.Server.Service
             {
                 // Get the rank and max rank for the speaker, and garble their English text based on it.
                 NWPlayer speakerAsPlayer = speaker.Object;
-                PCSkill speakerSkill = _skillService.GetPCSkill(speakerAsPlayer, language);
-                int speakerSkillRank = speakerSkill.Rank;
-                int speakerSkillMaxRank = speakerSkill.Skill.MaxRank;
+                int speakerSkillRank = _skillService.GetPCSkillRank(speakerAsPlayer, language);
+                int speakerSkillMaxRank = _skillService.GetSkill(language).MaxRank;
 
                 if (speakerSkillRank != speakerSkillMaxRank)
                 {
@@ -77,9 +79,8 @@ namespace SWLOR.Game.Server.Service
 
             // Let's grab the max rank for the listener skill, and then we roll for a successful translate based on that.
             NWPlayer listenerAsPlayer = listener.Object;
-            PCSkill skill = _skillService.GetPCSkill(listenerAsPlayer, language);
-            int rank = skill.Rank;
-            int maxRank = skill.Skill.MaxRank;
+            int rank = _skillService.GetPCSkillRank(listenerAsPlayer, language);
+            int maxRank = _skillService.GetSkill(language).MaxRank;
 
             if (rank == maxRank || speaker == listener)
             {
@@ -214,7 +215,9 @@ namespace SWLOR.Game.Server.Service
                 .Where(x => x.PlayerID == player.GlobalID &&
                             languages.Contains((SkillType)x.SkillID))
                 .ToList();
-            foreach(var skill in dbSkills)
+            var skillCache = _cache.PCSkills[player.GlobalID];
+
+            foreach (var skill in dbSkills)
             {
                 int maxRank = skill.Skill.MaxRank;
                 int skillID = skill.SkillID;
@@ -222,9 +225,12 @@ namespace SWLOR.Game.Server.Service
 
                 skill.Rank = maxRank;
                 skill.XP = xpRecord.XP - 1;
+
+                skillCache[(SkillType) skill.SkillID].Rank = maxRank;
             }
 
             _db.SaveChanges();
+            
         }
 
         public SkillType GetActiveLanguage(NWObject obj)

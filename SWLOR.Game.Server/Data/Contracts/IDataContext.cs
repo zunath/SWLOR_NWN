@@ -2,6 +2,7 @@
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
 
 namespace SWLOR.Game.Server.Data.Contracts
 {
@@ -105,8 +106,11 @@ namespace SWLOR.Game.Server.Data.Contracts
         Database Database { get; }
         void Dispose();
         int SaveChanges();
+        Task<int> SaveChangesAsync();
         void StoredProcedure(string procedureName, params SqlParameter[] args);
         List<T> StoredProcedure<T>(string procedureName, params SqlParameter[] args);
         T StoredProcedureSingle<T>(string procedureName, params SqlParameter[] args);
+        DbEntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class;
+        DbEntityEntry Entry(object entity);
     }
 }

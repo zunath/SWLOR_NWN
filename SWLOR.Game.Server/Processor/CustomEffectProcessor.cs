@@ -19,21 +19,21 @@ namespace SWLOR.Game.Server.Processor
         private readonly IDataContext _db;
         private readonly IErrorService _error;
         private readonly INWScript _;
-        private readonly AppState _state;
+        private readonly AppCache _cache;
         private readonly INWNXObject _nwnxObject;
         private readonly ICustomEffectService _customEffect;
 
         public CustomEffectProcessor(IDataContext db,
             IErrorService error,
             INWScript script,
-            AppState state,
+            AppCache cache,
             INWNXObject nwnxObject,
             ICustomEffectService customEffect)
         {
             _db = db;
             _error = error;
             _ = script;
-            _state = state;
+            _cache = cache;
             _nwnxObject = nwnxObject;
             _customEffect = customEffect;
         }
@@ -85,17 +85,17 @@ namespace SWLOR.Game.Server.Processor
 
         private void ProcessNPCCustomEffects()
         {
-            for (int index = _state.NPCEffects.Count - 1; index >= 0; index--)
+            for (int index = _cache.NPCEffects.Count - 1; index >= 0; index--)
             {
-                var entry = _state.NPCEffects.ElementAt(index);
+                var entry = _cache.NPCEffects.ElementAt(index);
                 CasterSpellVO casterModel = entry.Key;
-                _state.NPCEffects[entry.Key] = entry.Value - 1;
+                _cache.NPCEffects[entry.Key] = entry.Value - 1;
                 Data.CustomEffect entity = _db.CustomEffects.Single(x => x.CustomEffectID == casterModel.CustomEffectID);
                 App.ResolveByInterface<ICustomEffect>("CustomEffect." + entity.ScriptHandler, (handler) =>
                 {
                     try
                     {
-                        handler?.Tick(casterModel.Caster, casterModel.Target, _state.NPCEffects[entry.Key], casterModel.EffectiveLevel, casterModel.Data);
+                        handler?.Tick(casterModel.Caster, casterModel.Target, _cache.NPCEffects[entry.Key], casterModel.EffectiveLevel, casterModel.Data);
                     }
                     catch (Exception ex)
                     {
@@ -117,7 +117,7 @@ namespace SWLOR.Game.Server.Processor
 
                         casterModel.Target.DeleteLocalInt("CUSTOM_EFFECT_ACTIVE_" + casterModel.CustomEffectID);
 
-                        _state.NPCEffects.Remove(entry.Key);
+                        _cache.NPCEffects.Remove(entry.Key);
                     }
                 });
 
@@ -157,10 +157,10 @@ namespace SWLOR.Game.Server.Processor
 
         private void ClearRemovedPCEffects()
         {
-            var records = _db.PCCustomEffects.Where(x => _state.PCEffectsForRemoval.Contains(x.PCCustomEffectID)).ToList();
+            var records = _db.PCCustomEffects.Where(x => _cache.PCEffectsForRemoval.Contains(x.PCCustomEffectID)).ToList();
             _db.PCCustomEffects.RemoveRange(records);
             _db.SaveChanges();
-            _state.PCEffectsForRemoval.Clear();
+            _cache.PCEffectsForRemoval.Clear();
         }
     }
 }

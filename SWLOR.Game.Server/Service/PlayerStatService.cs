@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IDataContext _db;
         private readonly IPerkService _perk;
         private readonly INWNXCreature _nwnxCreature;
+        private readonly AppCache _cache;
 
         public PlayerStatService(
             INWScript script,
@@ -35,7 +36,8 @@ namespace SWLOR.Game.Server.Service
             INWNXCreature nwnxCreature,
             IItemService item,
             IDataContext db,
-            IPerkService perk)
+            IPerkService perk,
+            AppCache cache)
         {
             _ = script;
             _customEffect = customEffect;
@@ -43,7 +45,7 @@ namespace SWLOR.Game.Server.Service
             _db = db;
             _perk = perk;
             _nwnxCreature = nwnxCreature;
-
+            _cache = cache;
         }
         
         public void ApplyStatChanges(NWPlayer player, NWItem ignoreItem, bool isInitialization = false)
@@ -52,7 +54,8 @@ namespace SWLOR.Game.Server.Service
             if (!player.IsInitializedAsPlayer) return;
 
             PlayerCharacter pcEntity = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
-            List<PCSkill> skills = _db.PCSkills.Where(x => x.PlayerID == player.GlobalID && x.Skill.IsActive && x.Rank > 0).ToList();
+            var pcSkillCache = _cache.PCSkills[player.GlobalID];
+            List<PCSkill> skills = pcSkillCache.Values.Where(x => x.Rank > 0).ToList();
             var itemBonuses = GetPlayerItemEffectiveStats(player, ignoreItem);
 
             float strBonus = 0.0f;

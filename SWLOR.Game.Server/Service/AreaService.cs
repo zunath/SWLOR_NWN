@@ -22,20 +22,20 @@ namespace SWLOR.Game.Server.Service
         private readonly IDataContext _db;
         private readonly IDataContext _bakeDB;
         private readonly ISpawnService _spawn;
-        private readonly AppState _state;
+        private readonly AppCache _cache;
 
         public AreaService(
             INWScript script,
             IDataContext db,
             IDataContext bakeDB,
             ISpawnService spawn,
-            AppState state)
+            AppCache cache)
         {
             _ = script;
             _db = db;
             _bakeDB = bakeDB;
             _spawn = spawn;
-            _state = state;
+            _cache = cache;
 
             // Disable stuff that slows down bulk inserts.
             _bakeDB.Configuration.AutoDetectChangesEnabled = false;
@@ -258,9 +258,9 @@ namespace SWLOR.Game.Server.Service
         {
             if (!area.IsInstance) return;
 
-            if (_state.AreaSpawns.ContainsKey(area))
+            if (_cache.AreaSpawns.ContainsKey(area))
             {
-                _state.AreaSpawns.Remove(area);
+                _cache.AreaSpawns.Remove(area);
             }
 
             _.DestroyArea(area);

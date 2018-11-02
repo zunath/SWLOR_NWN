@@ -66,10 +66,9 @@ namespace SWLOR.Game.Server.Item
 
             user.SendMessage("You water the plant.");
             
-            PCSkill pcSkill = _skill.GetPCSkill((NWPlayer)user, SkillType.Farming);
-            if (pcSkill == null) return;
-
-            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(100, growingPlant.Plant.Level, pcSkill.Rank);
+            int rank = _skill.GetPCSkillRank((NWPlayer)user, SkillType.Farming);
+            
+            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(100, growingPlant.Plant.Level, rank);
             _skill.GiveSkillXP((NWPlayer)user, SkillType.Farming, xp);
         }
 

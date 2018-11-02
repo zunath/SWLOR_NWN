@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
@@ -6,7 +8,7 @@ using SWLOR.Game.Server.ValueObject.Skill;
 
 namespace SWLOR.Game.Server
 {
-    public class AppState
+    public class AppCache
     {
         public Dictionary<string, PlayerDialog> PlayerDialogs { get; }
         public Dictionary<int, bool> DialogFilesInUse { get; }
@@ -22,7 +24,10 @@ namespace SWLOR.Game.Server
         public Dictionary<string, NWObject> VisibilityObjects { get; set; }
         public List<long> PCEffectsForRemoval { get; set; }
         public List<NWObject> ConnectedDMs { get; set; }
-        public AppState()
+        public Dictionary<SkillType, Skill> Skills { get; set; }
+        public Dictionary<string, CachedPCSkills> PCSkills { get; set; }
+
+        public AppCache()
         {
             PlayerDialogs = new Dictionary<string, PlayerDialog>();
             DialogFilesInUse = new Dictionary<int, bool>();
@@ -38,6 +43,9 @@ namespace SWLOR.Game.Server
             VisibilityObjects = new Dictionary<string, NWObject>();
             PCEffectsForRemoval = new List<long>();
             ConnectedDMs = new List<NWObject>();
+            Skills = new Dictionary<SkillType, Skill>();
+            PCSkills = new Dictionary<string, CachedPCSkills>();
+            
 
             for (int x = 1; x <= Constants.NumberOfDialogs; x++)
             {

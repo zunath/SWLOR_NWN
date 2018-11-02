@@ -53,12 +53,12 @@ namespace SWLOR.Game.Server.Item.Medicine
         {
             NWPlayer player = (user.Object);
             var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
-            PCSkill skill = _skill.GetPCSkill(player, SkillType.Medicine);
+            int rank = _skill.GetPCSkillRank(player, SkillType.Medicine);
             int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky);
             int perkDurationBonus = _perk.GetPCPerkLevel(player, PerkType.HealingKitExpert) * 6 + (luck * 2);
-            float duration = 30.0f + (skill.Rank * 0.4f) + perkDurationBonus;
+            float duration = 30.0f + (rank * 0.4f) + perkDurationBonus;
             int restoreAmount = 1 + item.GetLocalInt("HEALING_BONUS") + effectiveStats.Medicine + item.MedicineBonus;
-            int delta = item.RecommendedLevel - skill.Rank;
+            int delta = item.RecommendedLevel - rank;
             float effectivenessPercent = 1.0f;
 
             if (delta > 0)
@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
             player.SendMessage("You successfully apply a force pack to " + target.Name + ".");
 
-            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, skill.Rank);
+            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, rank);
             _skill.GiveSkillXP(player, SkillType.Medicine, xp);
         }
 
@@ -102,8 +102,8 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return 0.1f;
             }
 
-            PCSkill skill = _skill.GetPCSkill(user.Object, SkillType.Medicine);
-            return 12.0f - (skill.Rank * 0.1f);
+            int rank = _skill.GetPCSkillRank(user.Object, SkillType.Medicine);
+            return 12.0f - (rank * 0.1f);
         }
 
         public bool FaceTarget()

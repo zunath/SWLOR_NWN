@@ -136,7 +136,7 @@ namespace SWLOR.Game.Server.Conversation
             var model = _craft.GetPlayerCraftingData(GetPC());
             model.Blueprint = _craft.GetBlueprintByID(blueprintID);
             model.BlueprintID = blueprintID;
-            model.PlayerSkillRank = _skill.GetPCSkill(GetPC(), model.Blueprint.SkillID).Rank;
+            model.PlayerSkillRank = _skill.GetPCSkillRank(GetPC(), model.Blueprint.SkillID);
             model.MainMinimum = model.Blueprint.MainMinimum;
             model.MainMaximum = model.Blueprint.MainMaximum;
             model.SecondaryMinimum = model.Blueprint.SecondaryMinimum;

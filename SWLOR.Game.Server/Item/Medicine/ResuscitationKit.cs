@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Item.Medicine
         {
             NWPlayer player = user.Object;
             var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
-            PCSkill skill = _skill.GetPCSkill(player, SkillType.Medicine);
+            int skillRank = _skill.GetPCSkillRank(player, SkillType.Medicine);
             int perkLevel = _perk.GetPCPerkLevel(player, PerkType.ResuscitationDevices);
             int rank = item.GetLocalInt("RANK");
             int baseHeal;
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             baseHeal += effectiveStats.Medicine / 2;
             baseHeal += item.MedicineBonus / 2;
 
-            int delta = item.RecommendedLevel - skill.Rank;
+            int delta = item.RecommendedLevel - skillRank;
             float effectivenessPercent = 1.0f;
 
             if (delta > 0)
@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
             _db.SaveChanges();
             player.SendMessage("You successfully resuscitate " + target.Name + "!");
-            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(600, item.RecommendedLevel, skill.Rank);
+            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(600, item.RecommendedLevel, skillRank);
             _skill.GiveSkillXP(player, SkillType.Medicine, xp);
         }
 
@@ -103,8 +103,8 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return 0.1f;
             }
 
-            PCSkill skill = _skill.GetPCSkill((NWPlayer)user, SkillType.Medicine);
-            return 12.0f - (skill.Rank * 0.1f);
+            int rank = _skill.GetPCSkillRank((NWPlayer)user, SkillType.Medicine);
+            return 12.0f - (rank * 0.1f);
         }
 
         public bool FaceTarget()

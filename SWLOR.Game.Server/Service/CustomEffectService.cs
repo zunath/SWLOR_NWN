@@ -15,17 +15,17 @@ namespace SWLOR.Game.Server.Service
     {
         private readonly IDataContext _db;
         private readonly INWScript _;
-        private readonly AppState _state;
+        private readonly AppCache _cache;
         private readonly IObjectProcessingService _ops;
 
         public CustomEffectService(IDataContext db,
             INWScript script,
-            AppState state,
+            AppCache cache,
             IObjectProcessingService ops)
         {
             _db = db;
             _ = script;
-            _state = state;
+            _cache = cache;
             _ops = ops;
         }
         
@@ -151,8 +151,8 @@ namespace SWLOR.Game.Server.Service
                 _db.SaveChanges();
 
                 // Was already queued for removal, but got cast again. Take it out of the list to be removed.
-                if (_state.PCEffectsForRemoval.Contains(pcEffect.PCCustomEffectID))
-                    _state.PCEffectsForRemoval.Remove(pcEffect.PCCustomEffectID);
+                if (_cache.PCEffectsForRemoval.Contains(pcEffect.PCCustomEffectID))
+                    _cache.PCEffectsForRemoval.Remove(pcEffect.PCCustomEffectID);
             });
         }
         
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Service
         {
             Data.CustomEffect effectEntity = _db.CustomEffects.Single(x => x.CustomEffectID == customEffectID);
             // Look for existing effect.
-            var spellModel = _state.NPCEffects.SingleOrDefault(x => x.Key.Caster.Equals(caster) &&
+            var spellModel = _cache.NPCEffects.SingleOrDefault(x => x.Key.Caster.Equals(caster) &&
                                                                     x.Key.CustomEffectID == customEffectID &&
                                                                     x.Key.Target.Equals(target)).Key;
 
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Service
                     EffectiveLevel = effectiveLevel
                 };
 
-                _state.NPCEffects.Add(spellModel, 0);
+                _cache.NPCEffects.Add(spellModel, 0);
             }
 
             if (spellModel.EffectiveLevel > effectiveLevel)
@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.Service
                 if (string.IsNullOrWhiteSpace(data)) data = string.Empty;
                 spellModel.Data = data;
 
-                _state.NPCEffects[spellModel] = ticks;
+                _cache.NPCEffects[spellModel] = ticks;
             });
             
         }
@@ -280,8 +280,8 @@ namespace SWLOR.Game.Server.Service
                 _db.SaveChanges();
                 
                 // Was already queued for removal, but got cast again. Take it out of the list to be removed.
-                if (_state.PCEffectsForRemoval.Contains(pcStanceEffect.PCCustomEffectID))
-                    _state.PCEffectsForRemoval.Remove(pcStanceEffect.PCCustomEffectID);
+                if (_cache.PCEffectsForRemoval.Contains(pcStanceEffect.PCCustomEffectID))
+                    _cache.PCEffectsForRemoval.Remove(pcStanceEffect.PCCustomEffectID);
             });
         }
 
@@ -290,7 +290,7 @@ namespace SWLOR.Game.Server.Service
             PCCustomEffect effect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == oPC.GlobalID && x.CustomEffectID == customEffectID);
 
             if (effect == null) return false;
-            else if (_state.PCEffectsForRemoval.Contains(effect.PCCustomEffectID))
+            else if (_cache.PCEffectsForRemoval.Contains(effect.PCCustomEffectID))
                 return false;
 
             return true;
@@ -315,11 +315,11 @@ namespace SWLOR.Game.Server.Service
 
             // Doesn't exist in DB or is already marked for removal
             if (effect == null ||
-                _state.PCEffectsForRemoval.Contains(effect.PCCustomEffectID)) return;
+                _cache.PCEffectsForRemoval.Contains(effect.PCCustomEffectID)) return;
             
             oPC.SendMessage(effect.CustomEffect.WornOffMessage);
 
-            _state.PCEffectsForRemoval.Add(effect.PCCustomEffectID);
+            _cache.PCEffectsForRemoval.Add(effect.PCCustomEffectID);
         }
 
         public void RemovePCCustomEffect(NWPlayer oPC, CustomEffectType customEffectType)
@@ -332,7 +332,7 @@ namespace SWLOR.Game.Server.Service
             int effectLevel = 0;
             if (creature.IsNPC)
             {
-                var effect = _state.NPCEffects.SingleOrDefault(x => x.Key.Target.Equals(creature) && x.Key.CustomEffectID == (int)customEffectType);
+                var effect = _cache.NPCEffects.SingleOrDefault(x => x.Key.Target.Equals(creature) && x.Key.CustomEffectID == (int)customEffectType);
 
                 if (effect.Key != null)
                     effectLevel = effect.Key.EffectiveLevel;
@@ -342,7 +342,7 @@ namespace SWLOR.Game.Server.Service
                 PCCustomEffect dbEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == creature.GlobalID && x.CustomEffectID == (int)customEffectType);
                 if (dbEffect != null)
                 {
-                    if (!_state.PCEffectsForRemoval.Contains(dbEffect.PCCustomEffectID))
+                    if (!_cache.PCEffectsForRemoval.Contains(dbEffect.PCCustomEffectID))
                     {
                         effectLevel = dbEffect.EffectiveLevel;
                     }

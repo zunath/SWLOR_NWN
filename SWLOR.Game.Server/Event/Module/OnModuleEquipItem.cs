@@ -14,13 +14,15 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IPerkService _perk;
         private readonly IItemService _item;
         private readonly IHelmetToggleService _helmetToggle;
+        private readonly ICachingService _caching;
 
         public OnModuleEquipItem(INWScript script,
             IDurabilityService durability,
             ISkillService skill,
             IPerkService perk,
             IItemService item,
-            IHelmetToggleService helmetToggle)
+            IHelmetToggleService helmetToggle,
+            ICachingService caching)
         {
             _ = script;
             _durability = durability;
@@ -28,6 +30,7 @@ namespace SWLOR.Game.Server.Event.Module
             _perk = perk;
             _item = item;
             _helmetToggle = helmetToggle;
+            _caching = caching;
         }
 
         public bool Run(params object[] args)
@@ -35,6 +38,7 @@ namespace SWLOR.Game.Server.Event.Module
             // Bioware Default
             _.ExecuteScript("x2_mod_def_equ", Object.OBJECT_SELF);
 
+            _caching.OnModuleEquipItem();
             _durability.OnModuleEquip();
             _skill.OnModuleItemEquipped();
             _perk.OnModuleItemEquipped();

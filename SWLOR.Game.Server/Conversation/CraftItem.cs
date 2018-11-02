@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 model.IsInitialized = true;
                 model.Blueprint = _craft.GetBlueprintByID(model.BlueprintID);
-                model.PlayerSkillRank = _skill.GetPCSkill(GetPC(), model.Blueprint.SkillID).Rank;
+                model.PlayerSkillRank = _skill.GetPCSkillRank(GetPC(), model.Blueprint.SkillID);
 
                 switch ((SkillType)model.Blueprint.SkillID)
                 {

@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Conversation
                     HandleSkillListResponse(responseID);
                     break;
                 case "ConfirmPage":
-                    HandleConfirmPageResponse(responseID);
+                    HandleConfirmPageResponse();
                     break;
             }
         }
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             DialogResponse response = GetResponseByID("SkillListPage", responseID);
             int skillID = (int)response.CustomData;
-            PCSkill pcSkill = _skill.GetPCSkillByID(GetPC().GlobalID, skillID);
+            PCSkill pcSkill = _skill.GetPCSkill(GetPC(), skillID);
             string header = "Are you sure you want to improve your " + pcSkill.Skill.Name + " skill?";
             SetPageHeader("ConfirmPage", header);
 
@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Conversation
             ChangePage("ConfirmPage");
         }
 
-        private void HandleConfirmPageResponse(int responseID)
+        private void HandleConfirmPageResponse()
         {
             Model vm = GetDialogCustomData<Model>();
 

@@ -47,9 +47,8 @@ namespace SWLOR.Game.Server.Item.Medicine
             _customEffect.RemovePCCustomEffect(target.Object, CustomEffectType.Bleeding);
             player.SendMessage("You finish bandaging " + target.Name + "'s wounds.");
             
-            PCSkill skill = _skill.GetPCSkill(player, SkillType.Medicine);
-            int rank = skill.Rank;
-
+            int rank = _skill.GetPCSkillRank(player, SkillType.Medicine);
+            
             int healAmount = 2 + effectiveStats.Medicine / 2;
             healAmount += item.MedicineBonus;
             if (rank >= item.RecommendedLevel && item.MedicineBonus > 0)
@@ -57,7 +56,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(healAmount), target);
             }
 
-            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(100, item.RecommendedLevel, skill.Rank);
+            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(100, item.RecommendedLevel, rank);
             _skill.GiveSkillXP(player, SkillType.Medicine, xp);
         }
 
@@ -68,8 +67,8 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return 0.1f;
             }
 
-            PCSkill skill = _skill.GetPCSkill(user.Object, SkillType.Medicine);
-            float seconds = 6.0f - (skill.Rank * 0.2f);
+            int rank = _skill.GetPCSkillRank(user.Object, SkillType.Medicine);
+            float seconds = 6.0f - (rank * 0.2f);
             if (seconds < 1.0f) seconds = 1.0f;
             return seconds;
         }
@@ -106,7 +105,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return "Your target is not bleeding.";
             }
 
-            int rank = _skill.GetPCSkill(user.Object, SkillType.Medicine).Rank;
+            int rank = _skill.GetPCSkillRank(user.Object, SkillType.Medicine);
             if (rank < item.RecommendedLevel)
             {
                 return "Your skill level is too low to use this item.";

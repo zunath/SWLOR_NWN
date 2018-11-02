@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadSkillDetails()
         {
             Model vm = GetDialogCustomData<Model>();
-            PCSkill pcSkill = _skill.GetPCSkillByID(GetPC().GlobalID, vm.SelectedSkillID);
+            PCSkill pcSkill = _skill.GetPCSkill(GetPC(), vm.SelectedSkillID);
             SkillXPRequirement req = _skill.GetSkillXPRequirementByRank(vm.SelectedSkillID, pcSkill.Rank);
             string header = CreateSkillDetailsHeader(pcSkill, req);
             SetPageHeader("SkillDetailsPage", header);

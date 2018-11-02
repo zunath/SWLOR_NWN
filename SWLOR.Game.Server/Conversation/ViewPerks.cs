@@ -184,7 +184,7 @@ namespace SWLOR.Game.Server.Conversation
                         {
                             string detailLine = req.Skill.Name + " Rank " + req.RequiredRank;
                             
-                            PCSkill skill = _skill.GetPCSkillByID(GetPC().GlobalID, req.SkillID);
+                            PCSkill skill = _skill.GetPCSkill(GetPC(), req.SkillID);
                             if (skill.Rank >= req.RequiredRank)
                             {
                                 header += _color.Green(detailLine) + "\n";

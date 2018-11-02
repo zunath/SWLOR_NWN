@@ -125,8 +125,8 @@ namespace SWLOR.Game.Server.Item
                 }
                 else return;
 
-                PCSkill pcSkill = _skill.GetPCSkill(player, skillType);
-                int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(400, modLevel, pcSkill.Rank);
+                int rank = _skill.GetPCSkillRank(player, skillType);
+                int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(400, modLevel, rank);
                 _skill.GiveSkillXP(player, skillType, xp);
             });
             

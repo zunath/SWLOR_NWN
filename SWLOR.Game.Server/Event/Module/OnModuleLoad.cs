@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IObjectVisibilityService _objectVisibility;
         private readonly IBackgroundThreadManager _backgroundThreadManager;
         private readonly IDataPackageService _dataPackage;
+        private readonly ICachingService _caching;
 
         public OnModuleLoad(INWScript script,
             INWNXChat nwnxChat,
@@ -40,7 +41,8 @@ namespace SWLOR.Game.Server.Event.Module
             ICustomEffectService customEffect,
             IObjectVisibilityService objectVisibility,
             IBackgroundThreadManager backgroundThreadManager,
-            IDataPackageService dataPackage)
+            IDataPackageService dataPackage,
+            ICachingService caching)
         {
             _ = script;
             _nwnxChat = nwnxChat;
@@ -55,6 +57,7 @@ namespace SWLOR.Game.Server.Event.Module
             _objectVisibility = objectVisibility;
             _backgroundThreadManager = backgroundThreadManager;
             _dataPackage = dataPackage;
+            _caching = caching;
         }
 
         public bool Run(params object[] args)
@@ -71,6 +74,7 @@ namespace SWLOR.Game.Server.Event.Module
 
             // Bioware default
             _.ExecuteScript("x2_mod_def_load", Object.OBJECT_SELF);
+            _caching.OnModuleLoad();
             _objectProcessing.RegisterProcessingEvent<AppStateProcessor>();
             _objectProcessing.OnModuleLoad();
             _dataPackage.OnModuleLoad();

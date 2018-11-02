@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Event.Delayed
             var model = _craft.GetPlayerCraftingData(player);
 
             CraftBlueprint blueprint = _db.CraftBlueprints.Single(x => x.CraftBlueprintID == model.BlueprintID);
-            PCSkill pcSkill = _db.PCSkills.Single(x => x.PlayerID == player.GlobalID && x.SkillID == blueprint.SkillID);
+            PCSkill pcSkill = _skill.GetPCSkill(player, blueprint.SkillID);
 
             int pcEffectiveLevel = _craft.CalculatePCEffectiveLevel(player, pcSkill.Rank, (SkillType)blueprint.SkillID);
             int itemLevel = model.AdjustedLevel;

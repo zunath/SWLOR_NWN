@@ -11,9 +11,12 @@ namespace SWLOR.Game.Server.Service.Contracts
 
         float CalculateRegisteredSkillLevelAdjustedXP(float xp, int registeredLevel, int skillRank);
         List<SkillCategory> GetActiveCategories();
+        int GetPCSkillRank(NWPlayer player, int skillID);
+        int GetPCSkillRank(NWPlayer player, SkillType skill);
         PCSkill GetPCSkill(NWPlayer player, int skillID);
-        PCSkill GetPCSkill(NWPlayer player, SkillType skill);
-        PCSkill GetPCSkillByID(string playerID, int skillID);
+        List<PCSkill> GetAllPCSkills(NWPlayer player);
+        Skill GetSkill(int skillID);
+        Skill GetSkill(SkillType skillType);
         List<PCSkill> GetPCSkillsForCategory(string playerID, int skillCategoryID);
         int GetPCTotalSkillCount(string playerID);
         SkillXPRequirement GetSkillXPRequirementByRank(int skillID, int rank);

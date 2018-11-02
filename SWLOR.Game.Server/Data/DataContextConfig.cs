@@ -22,7 +22,6 @@ namespace SWLOR.Game.Server.Data
         public DataContext(string ipAddress, string username, string password, string database)
             : base(BuildConnectionString(ipAddress, username, password, database))
         {
-
         }
 
         private static string BuildConnectionString()

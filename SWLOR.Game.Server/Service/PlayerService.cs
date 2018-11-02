@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IDurabilityService _durability;
         private readonly IPlayerStatService _stat;
         private readonly ILanguageService _language;
-        private readonly INWNXAdmin _nwnxAdmin;
+        private readonly ICachingService _caching;
 
         public PlayerService(
             INWScript script, 
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Service
             IDurabilityService durability,
             IPlayerStatService stat,
             ILanguageService language,
-            INWNXAdmin nwnxAdmin)
+            ICachingService caching)
         {
             _ = script;
             _db = db;
@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Service
             _durability = durability;
             _stat = stat;
             _language = language;
-            _nwnxAdmin = nwnxAdmin;
+            _caching = caching;
         }
 
         public void InitializePlayer(NWPlayer player)
@@ -161,6 +161,8 @@ namespace SWLOR.Game.Server.Service
 
                 _db.StoredProcedure("InsertAllPCSkillsByID",
                     new SqlParameter("PlayerID", player.GlobalID));
+                _caching.CachePCSkills(player);
+                
 
                 _race.ApplyDefaultAppearance(player);
                 _nwnxCreature.SetAlignmentLawChaos(player, 50);

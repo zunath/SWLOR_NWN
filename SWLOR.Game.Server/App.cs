@@ -130,9 +130,9 @@ namespace SWLOR.Game.Server
             return _container.Resolve<INWScript>();
         }
 
-        public static AppState GetAppState()
+        public static AppCache GetAppState()
         {
-            return _container.Resolve<AppState>();
+            return _container.Resolve<AppCache>();
         }
 
         public static void Resolve<T>(AppResolveDelegate<T> action)
@@ -182,7 +182,7 @@ namespace SWLOR.Game.Server
             var builder = new ContainerBuilder();
 
             // Instances
-            builder.RegisterInstance(new AppState());
+            builder.RegisterInstance(new AppCache());
             builder.RegisterType<DatabaseMigrationRunner>()
                 .As<IStartable>()
                 .SingleInstance();
@@ -212,6 +212,7 @@ namespace SWLOR.Game.Server
             builder.RegisterType<BasePermissionService>().As<IBasePermissionService>();
             builder.RegisterType<BaseService>().As<IBaseService>();
             builder.RegisterType<BehaviourService>().As<IBehaviourService>();
+            builder.RegisterType<CachingService>().As<ICachingService>();
             builder.RegisterType<ChatCommandService>().As<IChatCommandService>();
             builder.RegisterType<ChatTextService>().As<IChatTextService>();
             builder.RegisterType<ColorTokenService>().As<IColorTokenService>();

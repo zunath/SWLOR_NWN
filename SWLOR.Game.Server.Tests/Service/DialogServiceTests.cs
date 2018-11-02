@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Tests.Service
         {
             DialogService service = new DialogService(
                 Substitute.For<INWScript>(),
-                new AppState()
+                new AppCache()
             );
             Assert.AreEqual(12, service.NumberOfResponsesPerPage);
         }
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Tests.Service
         {
             DialogService service = new DialogService(
                 Substitute.For<INWScript>(),
-                new AppState()
+                new AppCache()
             );
 
             Assert.Throws(typeof(ArgumentException), () =>
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Tests.Service
         {
             DialogService service = new DialogService(
                 Substitute.For<INWScript>(),
-                new AppState()
+                new AppCache()
             );
 
             Assert.Throws(typeof(Exception), () =>
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Tests.Service
 
             DialogService service = new DialogService(
                 script,
-                new AppState()
+                new AppCache()
             );
 
             NWPlayer player = Substitute.For<NWPlayer>(script, nwnxCreature);
@@ -150,7 +150,7 @@ namespace SWLOR.Game.Server.Tests.Service
 
             DialogService service = new DialogService(
                 script,
-                new AppState()
+                new AppCache()
             );
 
             NWPlayer player = Substitute.For<NWPlayer>(script, nwnxCreature);
@@ -170,7 +170,7 @@ namespace SWLOR.Game.Server.Tests.Service
 
             DialogService service = new DialogService(
                 script,
-                new AppState()
+                new AppCache()
             );
 
             NWPlayer player = Substitute.For<NWPlayer>(script, nwnxCreature);
@@ -192,7 +192,7 @@ namespace SWLOR.Game.Server.Tests.Service
         {
             DialogService service = new DialogService(
                 Substitute.For<INWScript>(),
-                new AppState()
+                new AppCache()
             );
 
             Assert.Throws(typeof(ArgumentException), () =>
@@ -214,7 +214,7 @@ namespace SWLOR.Game.Server.Tests.Service
         {
             DialogService service = new DialogService(
                 Substitute.For<INWScript>(),
-                new AppState()
+                new AppCache()
             );
 
             Assert.Throws(typeof(KeyNotFoundException), () =>
@@ -231,7 +231,7 @@ namespace SWLOR.Game.Server.Tests.Service
 
             DialogService service = new DialogService(
                 script,
-                new AppState()
+                new AppCache()
             );
 
             NWPlayer player = Substitute.For<NWPlayer>(script, nwnxCreature);
@@ -255,7 +255,7 @@ namespace SWLOR.Game.Server.Tests.Service
 
             DialogService service = new DialogService(
                 script,
-                new AppState()
+                new AppCache()
             );
 
             NWPlayer player = Substitute.For<NWPlayer>(script, nwnxCreature);
@@ -307,7 +307,7 @@ namespace SWLOR.Game.Server.Tests.Service
 
             DialogService service = new DialogService(
                 script,
-                new AppState()
+                new AppCache()
             );
 
             for (int number = 1; number <= 99; number++)
@@ -337,7 +337,7 @@ namespace SWLOR.Game.Server.Tests.Service
 
             DialogService service = new DialogService(
                 script,
-                new AppState()
+                new AppCache()
             );
             NWPlayer player = Substitute.For<NWPlayer>(script, nwnxCreature);
             player.GlobalID.Returns(x => "123");
@@ -358,7 +358,7 @@ namespace SWLOR.Game.Server.Tests.Service
 
             DialogService service = new DialogService(
                 script,
-                new AppState()
+                new AppCache()
             );
             NWPlayer player = Substitute.For<NWPlayer>(script, nwnxCreature);
             player.GlobalID.Returns(x => "123");

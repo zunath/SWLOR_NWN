@@ -10,15 +10,15 @@ namespace SWLOR.Game.Server.Service
     public class ObjectProcessingService : IObjectProcessingService
     {
         private readonly INWScript _;
-        private readonly AppState _state;
+        private readonly AppCache _cache;
         private readonly IErrorService _error;
 
         public ObjectProcessingService(INWScript script,
-            AppState state,
+            AppCache cache,
             IErrorService error)
         {
             _ = script;
-            _state = state;
+            _cache = cache;
             _error = error;
         }
 
@@ -31,13 +31,13 @@ namespace SWLOR.Game.Server.Service
 
         private void RunProcessor()
         {
-            foreach (var toUnregister in _state.UnregisterProcessingEvents)
+            foreach (var toUnregister in _cache.UnregisterProcessingEvents)
             {
-                _state.ProcessingEvents.Remove(toUnregister);
+                _cache.ProcessingEvents.Remove(toUnregister);
             }
-            _state.UnregisterProcessingEvents.Clear();
+            _cache.UnregisterProcessingEvents.Clear();
 
-            foreach (var @event in _state.ProcessingEvents)
+            foreach (var @event in _cache.ProcessingEvents)
             {
                 try
                 {
@@ -61,15 +61,15 @@ namespace SWLOR.Game.Server.Service
         {
             string globalID = Guid.NewGuid().ToString("N");
             ProcessingEvent @event = new ProcessingEvent(typeof(T), args);
-            _state.ProcessingEvents.Add(globalID, @event);
+            _cache.ProcessingEvents.Add(globalID, @event);
             return globalID;
         }
 
         public void UnregisterProcessingEvent(string globalID)
         {
-            if (_state.ProcessingEvents.ContainsKey(globalID))
+            if (_cache.ProcessingEvents.ContainsKey(globalID))
             {
-                _state.UnregisterProcessingEvents.Enqueue(globalID);
+                _cache.UnregisterProcessingEvents.Enqueue(globalID);
             }
         }
     }

@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Service
 
         public int CalculateChanceForComponentBonus(NWPlayer player, int tier, ResourceQuality quality)
         {
-            int rank = _skill.GetPCSkill(player, SkillType.Harvesting).Rank;
+            int rank = _skill.GetPCSkillRank(player, SkillType.Harvesting);
             int difficulty = (tier - 1) * 10 + GetDifficultyAdjustment(quality);
             int delta = difficulty - rank;
 

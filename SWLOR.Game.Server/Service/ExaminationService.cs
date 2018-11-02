@@ -17,12 +17,18 @@ namespace SWLOR.Game.Server.Service
         private readonly IDataContext _db;
         private readonly INWScript _;
         private readonly IColorTokenService _color;
+        private readonly ISkillService _skill;
 
-        public ExaminationService(IDataContext db, INWScript script, IColorTokenService color)
+        public ExaminationService(
+            IDataContext db, 
+            INWScript script, 
+            IColorTokenService color,
+            ISkillService skill)
         {
             _db = db;
             _ = script;
             _color = color;
+            _skill = skill;
         }
 
         public bool OnModuleExamine(NWPlayer examiner, NWObject target)
@@ -52,7 +58,7 @@ namespace SWLOR.Game.Server.Service
                     _color.Green("FP: ") + playerEntity.CurrentFP + " / " + playerEntity.MaxFP + "\n" +
                     _color.Green("Skill Levels: ") + "\n\n");
 
-            List<PCSkill> pcSkills = _db.PCSkills.Where(x => x.PlayerID == target.GlobalID && x.Skill.IsActive).ToList();
+            List<PCSkill> pcSkills = _skill.GetAllPCSkills(target.Object);
 
             foreach (PCSkill skill in pcSkills)
             {

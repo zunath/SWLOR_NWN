@@ -68,13 +68,8 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
                 return true;
             }
 
-            PCSkill pcSkill = _skill.GetPCSkill(oPC, SkillType.Farming);
-            int rank = 0;
-            if (pcSkill != null)
-            {
-                rank = pcSkill.Rank;
-            }
-
+            int rank = _skill.GetPCSkillRank(oPC, SkillType.Farming);
+            
             if (rank + 2 < plant.Level)
             {
                 _item.ReturnItem(oPC, item);

@@ -123,7 +123,6 @@ namespace SWLOR.Tools.Editor
         protected virtual void ConfigureContainer(ContainerBuilder builder)
         {
             // SWLOR.Game.Server Registrations
-            //builder.RegisterType<DataContext>().As<IDataContext>().InstancePerDependency();
             builder.RegisterType<DatabaseBackgroundThread>().As<IDatabaseThread>().SingleInstance();
             builder.RegisterType<DataService>().As<IDataService>().SingleInstance();
 

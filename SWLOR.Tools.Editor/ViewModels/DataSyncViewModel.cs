@@ -166,120 +166,16 @@ namespace SWLOR.Tools.Editor.ViewModels
             WriteDataFileAsync(_data.GetAll<GameTopicCategory>());
             WriteDataFileAsync(_data.GetAll<KeyItem>());
             WriteDataFileAsync(_data.GetAll<KeyItemCategory>());
-
-            var ltDictionary = new Dictionary<int, LootTable>();
-            var lootTables = _data.StoredProcedure<LootTable, LootTableItem, LootTable>(
-                "GetLootTables",
-                (table, item) =>
-                {
-                    if (!ltDictionary.TryGetValue(table.LootTableID, out var lt))
-                    {
-                        lt = table;
-                        lt.LootTableItems = new List<LootTableItem>();
-                        ltDictionary.Add(lt.LootTableID, lt);
-                    }
-
-                    lt.LootTableItems.Add(item);
-                    return lt;
-                }, "LootTableItemID")
-                .Distinct()
-                .ToList();
-            WriteDataFileAsync(lootTables);
-            ltDictionary.Clear();
-
+            WriteDataFileAsync(_data.GetAll<LootTable>());
             WriteDataFileAsync(_data.GetAll<Mod>());
             WriteDataFileAsync(_data.GetAll<NPCGroup>());
-
-            var perkDictionary = new Dictionary<int, Perk>();
-            var perkLevelDictionary = new Dictionary<int, PerkLevel>();
-            var perkLevelSkillRequirementDictionary = new Dictionary<int, PerkLevelSkillRequirement>();
-            var perkLevelQuestRequirementDictionary = new Dictionary<int, PerkLevelQuestRequirement>();
-
-            var perks = _data.StoredProcedure<Perk, PerkLevel, PerkLevelSkillRequirement, PerkLevelQuestRequirement, Perk>(
-                "GetPerks",
-                (perk, perkLevel, skillReq, questReq) =>
-                {
-                    // Process the perk
-                    if(!perkDictionary.TryGetValue(perk.PerkID, out var p))
-                    {
-                        p = perk;
-                        p.PerkLevels = new List<PerkLevel>();
-                        perkDictionary.Add(p.PerkID, p);
-                    }
-
-                    // Process perk levels
-                    if(!perkLevelDictionary.TryGetValue(perkLevel.PerkLevelID, out var pl))
-                    {
-                        pl = perkLevel;
-                        pl.PerkLevelSkillRequirements = new List<PerkLevelSkillRequirement>();
-                        pl.PerkLevelQuestRequirements = new List<PerkLevelQuestRequirement>();
-                        
-                        // Add to both the result dictionary as well as the perk object itself.
-                        perkLevelDictionary.Add(pl.PerkLevelID, pl);
-                    }
-
-                    if (skillReq != null)
-                    {
-                        // Process the perk skill requirements
-                        if (!perkLevelSkillRequirementDictionary.TryGetValue(skillReq.PerkLevelSkillRequirementID, out var sr))
-                        {
-                            sr = skillReq;
-
-                            // Add to both the result dictionary as well as the perk level object itself.
-                            perkLevelSkillRequirementDictionary.Add(sr.PerkLevelSkillRequirementID, sr);
-                            pl.PerkLevelSkillRequirements.Add(sr);
-                        }
-                    }
-
-                    if(questReq != null)
-                    {
-                        // Process the perk quest requirements
-                        if (!perkLevelQuestRequirementDictionary.TryGetValue(questReq.PerkLevelQuestRequirementID, out var qr))
-                        {
-                            qr = questReq;
-
-                            // Add to both the result dictionary as well as the perk level object itself.
-                            perkLevelQuestRequirementDictionary.Add(qr.PerkLevelQuestRequirementID, qr);
-                            pl.PerkLevelQuestRequirements.Add(qr);
-                        }
-                    }
-
-                    p.PerkLevels.Add(pl);
-                    return p;
-                }, "PerkLevelID,PerkLevelSkillRequirementID,PerkLevelQuestRequirementID")
-                .Distinct()
-                .ToList();
-
-            WriteDataFileAsync(perks);
-
-            //var perks = db.Perks
-            //    .Include(i => i.PerkLevels.Select(x => x.PerkLevelQuestRequirements))
-            //    .Include(i => i.PerkLevels.Select(x => x.PerkLevelSkillRequirements))
-            //    .ToList();
-            //WriteDataFileAsync(perks);
-
-            //WriteDataFileAsync(_data.GetAll<PerkCategory>());
-            //WriteDataFileAsync(_data.GetAll<Plant>());
-
-            //var quests = db.Quests
-            //    .Include(i => i.QuestStates.Select(x => x.QuestKillTargetLists))
-            //    .Include(i => i.QuestStates.Select(x => x.QuestKillTargetLists))
-            //    .Include(i => i.QuestPrerequisites)
-            //    .Include(i => i.QuestStates.Select(x => x.QuestRequiredItemLists))
-            //    .Include(i => i.QuestStates.Select(x => x.QuestRequiredKeyItemLists))
-            //    .Include(i => i.QuestRewardItems)
-            //    .ToList();
-            //WriteDataFileAsync(quests);
-
-            //var skills = db.Skills
-            //    .Include(i => i.SkillXPRequirements)
-            //    .ToList();
-            //WriteDataFileAsync(skills);
-
+            WriteDataFileAsync(_data.GetAll<Perk>());
+            WriteDataFileAsync(_data.GetAll<PerkCategory>());
+            WriteDataFileAsync(_data.GetAll<Plant>());
+            WriteDataFileAsync(_data.GetAll<Quest>());
+            WriteDataFileAsync(_data.GetAll<Skill>());
             WriteDataFileAsync(_data.GetAll<SkillCategory>());
-
-            //WriteDataFileAsync(db.Spawns.Include(i => i.SpawnObjects).ToList());
-
+            WriteDataFileAsync(_data.GetAll<Spawn>());
         }
 
         private void SyncProgressChanged(object sender, ProgressChangedEventArgs e)

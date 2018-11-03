@@ -227,6 +227,7 @@
     <Compile Include="CustomEffect\RestEffect.cs" />
     <Compile Include="CustomEffect\ShieldBoostEffect.cs" />
     <Compile Include="CustomEffect\SwordOathEffect.cs" />
+    <Compile Include="Data\Contracts\ICacheable.cs" />
     <Compile Include="Data\Contracts\IDataContext.cs" />
     <Compile Include="Data\Contracts\IDataProcessor.cs" />
     <Compile Include="Data\Contracts\IEntity.cs" />
@@ -237,7 +238,6 @@
     <Compile Include="Data\Entity\Association.cs" />
     <Compile Include="Data\Entity\Attribute.cs" />
     <Compile Include="Data\Entity\AuthorizedDM.cs" />
-    <Compile Include="Data\Entity\Background.cs" />
     <Compile Include="Data\Entity\Bank.cs" />
     <Compile Include="Data\Entity\BankItem.cs" />
     <Compile Include="Data\Entity\BaseItemType.cs" />

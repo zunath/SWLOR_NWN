@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using System.Linq;
+using SWLOR.Game.Server.Data.Entity;
 using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
 
 

@@ -3,6 +3,7 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Data.Contracts
 {
@@ -14,7 +15,6 @@ namespace SWLOR.Game.Server.Data.Contracts
         DbSet<Association> Associations { get; set; }
         DbSet<Attribute> Attributes { get; set; }
         DbSet<AuthorizedDM> AuthorizedDMs { get; set; }
-        DbSet<Background> Backgrounds { get; set; }
         DbSet<BankItem> BankItems { get; set; }
         DbSet<Bank> Banks { get; set; }
         DbSet<BaseItemType> BaseItemTypes { get; set; }
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Data.Contracts
         DbSet<CraftBlueprintCategory> CraftBlueprintCategories { get; set; }
         DbSet<CraftBlueprint> CraftBlueprints { get; set; }
         DbSet<CraftDevice> CraftDevices { get; set; }
-        DbSet<CustomEffect> CustomEffects { get; set; }
+        DbSet<Entity.CustomEffect> CustomEffects { get; set; }
         DbSet<DatabaseVersion> DatabaseVersions { get; set; }
         DbSet<DataPackage> DataPackages { get; set; }
         DbSet<DiscordChatQueue> DiscordChatQueues { get; set; }
@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Data.Contracts
         DbSet<KeyItem> KeyItems { get; set; }
         DbSet<LootTableItem> LootTableItems { get; set; }
         DbSet<LootTable> LootTables { get; set; }
-        DbSet<Mod> Mods { get; set; }
+        DbSet<Entity.Mod> Mods { get; set; }
         DbSet<NPCGroup> NPCGroups { get; set; }
         DbSet<PCBasePermission> PCBasePermissions { get; set; }
         DbSet<PCBase> PCBases { get; set; }
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Data.Contracts
         DbSet<PerkLevelQuestRequirement> PerkLevelQuestRequirements { get; set; }
         DbSet<PerkLevel> PerkLevels { get; set; }
         DbSet<PerkLevelSkillRequirement> PerkLevelSkillRequirements { get; set; }
-        DbSet<Perk> Perks { get; set; }
+        DbSet<Entity.Perk> Perks { get; set; }
         DbSet<Plant> Plants { get; set; }
         DbSet<PlayerCharacter> PlayerCharacters { get; set; }
         DbSet<QuestKillTargetList> QuestKillTargetLists { get; set; }

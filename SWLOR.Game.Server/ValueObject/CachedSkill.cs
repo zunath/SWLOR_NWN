@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.ValueObject
 
         public HashSet<CachedSkillXPRequirement> SkillXPRequirements { get; set; }
 
-        public CachedSkill(Data.Skill skill)
+        public CachedSkill(Data.Entity.Skill skill)
         {
             SkillID = skill.SkillID;
             SkillCategoryID = skill.SkillCategoryID;

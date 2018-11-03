@@ -9,8 +9,9 @@ using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Data.Entity;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
-using BuildingType = SWLOR.Game.Server.Data.BuildingType;
+using BuildingType = SWLOR.Game.Server.Data.Entity.BuildingType;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -21,6 +22,7 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IDataContext _db;
         private readonly IImpoundService _impound;
         private readonly IBasePermissionService _perm;
+        private readonly IDataService _data;
 
         public BaseManagementTool(
             INWScript script,
@@ -29,7 +31,8 @@ namespace SWLOR.Game.Server.Conversation
             IColorTokenService color,
             IDataContext db,
             IImpoundService impound,
-            IBasePermissionService perm)
+            IBasePermissionService perm,
+            IDataService data)
             : base(script, dialog)
         {
             _base = @base;
@@ -37,6 +40,7 @@ namespace SWLOR.Game.Server.Conversation
             _db = db;
             _impound = impound;
             _perm = perm;
+            _data = data;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -150,11 +154,16 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if(buildingType == Enumeration.BuildingType.Exterior)
             {
-                if (dbArea.NortheastOwnerPlayer != null)
+                var northeastOwner = _data.Get<PlayerCharacter>(dbArea.NortheastOwner);
+                var northwestOwner = _data.Get<PlayerCharacter>(dbArea.NorthwestOwner);
+                var southeastOwner = _data.Get<PlayerCharacter>(dbArea.SoutheastOwner);
+                var southwestOwner = _data.Get<PlayerCharacter>(dbArea.SouthwestOwner);
+
+                if (northeastOwner != null)
                 {
                     header += _color.Green("Northeast Owner: ") + "Claimed";
                     if (dbArea.NortheastOwner == playerID)
-                        header += " (" + dbArea.NortheastOwnerPlayer.CharacterName + ")";
+                        header += " (" + northeastOwner.CharacterName + ")";
                     header += "\n";
                 }
                 else
@@ -163,11 +172,11 @@ namespace SWLOR.Game.Server.Conversation
                     hasUnclaimed = true;
                 }
 
-                if (dbArea.NorthwestOwnerPlayer != null)
+                if (northwestOwner != null)
                 {
                     header += _color.Green("Northwest Owner: ") + "Claimed";
                     if (dbArea.NorthwestOwner == playerID)
-                        header += " (" + dbArea.NorthwestOwnerPlayer.CharacterName + ")";
+                        header += " (" + northwestOwner.CharacterName + ")";
                     header += "\n";
                 }
                 else
@@ -176,11 +185,11 @@ namespace SWLOR.Game.Server.Conversation
                     hasUnclaimed = true;
                 }
 
-                if (dbArea.SoutheastOwnerPlayer != null)
+                if (southeastOwner != null)
                 {
                     header += _color.Green("Southeast Owner: ") + "Claimed";
                     if (dbArea.SoutheastOwner == playerID)
-                        header += " (" + dbArea.SoutheastOwnerPlayer.CharacterName + ")";
+                        header += " (" + southeastOwner.CharacterName + ")";
                     header += "\n";
                 }
                 else
@@ -189,11 +198,11 @@ namespace SWLOR.Game.Server.Conversation
                     hasUnclaimed = true;
                 }
 
-                if (dbArea.SouthwestOwnerPlayer != null)
+                if (southwestOwner != null)
                 {
                     header += _color.Green("Southwest Owner: ") + "Claimed";
                     if (dbArea.SouthwestOwner == playerID)
-                        header += " (" + dbArea.SouthwestOwnerPlayer.CharacterName + ")";
+                        header += " (" + southwestOwner.CharacterName + ")";
                     header += "\n";
                 }
                 else

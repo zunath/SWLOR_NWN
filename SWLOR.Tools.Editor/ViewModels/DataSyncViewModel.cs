@@ -13,6 +13,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using SWLOR.Game.Server.Data.Entity;
 using Screen = Caliburn.Micro.Screen;
 
 namespace SWLOR.Tools.Editor.ViewModels

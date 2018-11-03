@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Placeable.OverflowStorage
 {

@@ -4,11 +4,11 @@ using SWLOR.Game.Server.Data.Validator;
 
 namespace SWLOR.Game.Server.Data.Processor
 {
-    public class ModProcessor : IDataProcessor<Mod>
+    public class ModProcessor : IDataProcessor<Entity.Mod>
     {
         public IValidator Validator => new ModValidator();
 
-        public void Process(IDataContext db, Mod dataObject)
+        public void Process(IDataContext db, Entity.Mod dataObject)
         {
         }
     }

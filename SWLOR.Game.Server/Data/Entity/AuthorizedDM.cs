@@ -1,14 +1,10 @@
-
 using Dapper.Contrib.Extensions;
+using SWLOR.Game.Server.Data.Contracts;
 
-namespace SWLOR.Game.Server.Data
+namespace SWLOR.Game.Server.Data.Entity
 {
-    using System;
-    using System.Collections.Generic;
-    
-    using SWLOR.Game.Server.Data.Contracts;
-    
-    public partial class AuthorizedDM: IEntity
+    [Table("AuthorizedDMs")]
+    public class AuthorizedDM: IEntity, ICacheable
     {
         [ExplicitKey]
         public int AuthorizedDMID { get; set; }

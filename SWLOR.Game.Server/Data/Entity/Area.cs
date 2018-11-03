@@ -1,19 +1,18 @@
 
+using System;
+using System.Collections.Generic;
 using Dapper.Contrib.Extensions;
+using SWLOR.Game.Server.Data.Contracts;
 
-namespace SWLOR.Game.Server.Data
+namespace SWLOR.Game.Server.Data.Entity
 {
-    using System;
-    using System.Collections.Generic;
-    
-    using SWLOR.Game.Server.Data.Contracts;
-    
-    public partial class Area: IEntity
+    [Table("Areas")]
+    public class Area: IEntity, ICacheable
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Area()
         {
-            this.AreaWalkmeshes = new HashSet<AreaWalkmesh>();
+            AreaWalkmeshes = new HashSet<AreaWalkmesh>();
         }
 
         [Key]
@@ -33,25 +32,15 @@ namespace SWLOR.Game.Server.Data
         public int PurchasePrice { get; set; }
         public int DailyUpkeep { get; set; }
         public string Walkmesh { get; set; }
-        public System.DateTime DateLastBaked { get; set; }
+        public DateTime DateLastBaked { get; set; }
         public bool AutoSpawnResources { get; set; }
         public int ResourceQuality { get; set; }
-        public Nullable<int> NorthwestLootTableID { get; set; }
-        public Nullable<int> NortheastLootTableID { get; set; }
-        public Nullable<int> SouthwestLootTableID { get; set; }
-        public Nullable<int> SoutheastLootTableID { get; set; }
+        public int? NorthwestLootTableID { get; set; }
+        public int? NortheastLootTableID { get; set; }
+        public int? SouthwestLootTableID { get; set; }
+        public int? SoutheastLootTableID { get; set; }
         public int MaxResourceQuality { get; set; }
-    
-        public virtual LootTable NortheastLootTable { get; set; }
-        public virtual PlayerCharacter NortheastOwnerPlayer { get; set; }
-        public virtual LootTable NorthwestLootTable { get; set; }
-        public virtual PlayerCharacter NorthwestOwnerPlayer { get; set; }
-        public virtual Spawn Spawn { get; set; }
-        public virtual LootTable SoutheastLootTable { get; set; }
-        public virtual PlayerCharacter SoutheastOwnerPlayer { get; set; }
-        public virtual LootTable SouthwestLootTable { get; set; }
-        public virtual PlayerCharacter SouthwestOwnerPlayer { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        
         public virtual ICollection<AreaWalkmesh> AreaWalkmeshes { get; set; }
     }
 }

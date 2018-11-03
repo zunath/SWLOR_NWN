@@ -3,6 +3,7 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Perk;
@@ -227,7 +228,7 @@ namespace SWLOR.Game.Server.Conversation
             });
         }
 
-        private void RemovePerkItem(Data.Perk perk)
+        private void RemovePerkItem(Data.Entity.Perk perk)
         {
             if (string.IsNullOrWhiteSpace(perk.ItemResref)) return;
 
@@ -244,7 +245,7 @@ namespace SWLOR.Game.Server.Conversation
             }
         }
 
-        private void RemovePerkFeat(Data.Perk perk)
+        private void RemovePerkFeat(Data.Entity.Perk perk)
         {
             if (perk.FeatID == null || perk.FeatID <= 0) return;
 

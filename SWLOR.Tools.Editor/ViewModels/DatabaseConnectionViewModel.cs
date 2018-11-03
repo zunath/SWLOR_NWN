@@ -4,6 +4,7 @@ using System.Security;
 using Caliburn.Micro;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Tools.Editor.Messages;
 using SWLOR.Tools.Editor.ViewModels.Contracts;
@@ -106,10 +107,10 @@ namespace SWLOR.Tools.Editor.ViewModels
                 _appSettings.DatabaseName = Database;
                 _appSettings.DatabasePassword = Password;
 
-                _data.Initialize(IPAddress, Database, Username, Password);
+                _data.Initialize(IPAddress, Database, Username, Password, false);
 
                 // Attempt to grab some data from the new connection, to ensure it's running.
-                _data.Get<User>(1);
+                _data.Get<ServerConfiguration>(1);
                 
                 Password = string.Empty;
                 _eventAggregator.PublishOnUIThread(new DatabaseConnectionSucceeded());

@@ -10,8 +10,9 @@ using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Data.Entity;
 using static NWN.NWScript;
-using Quest = SWLOR.Game.Server.Data.Quest;
+using Quest = SWLOR.Game.Server.Data.Entity.Quest;
 
 namespace SWLOR.Game.Server.Service
 {

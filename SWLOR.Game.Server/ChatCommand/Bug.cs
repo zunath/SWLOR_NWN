@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using System;
+using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.ChatCommand
 {

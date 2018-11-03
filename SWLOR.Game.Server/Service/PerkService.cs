@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Perk;
 using SWLOR.Game.Server.Service.Contracts;
@@ -152,14 +153,14 @@ namespace SWLOR.Game.Server.Service
                 new SqlParameter("PlayerID", playerID));
         }
 
-        public List<Data.Perk> GetPerksForPC(string playerID, int categoryID)
+        public List<Data.Entity.Perk> GetPerksForPC(string playerID, int categoryID)
         {
-            return _db.StoredProcedure<Data.Perk>("GetPerksForPC",
+            return _db.StoredProcedure<Data.Entity.Perk>("GetPerksForPC",
                 new SqlParameter("PlayerID", playerID),
                 new SqlParameter("CategoryID", categoryID));
         }
 
-        public Data.Perk GetPerkByID(int perkID)
+        public Data.Entity.Perk GetPerkByID(int perkID)
         {
             return _db.Perks.Single(x => x.PerkID == perkID);
         }
@@ -174,7 +175,7 @@ namespace SWLOR.Game.Server.Service
             return levels.FirstOrDefault(lvl => lvl.Level == findLevel);
         }
 
-        public bool CanPerkBeUpgraded(Data.Perk perk, PCPerk pcPerk, PlayerCharacter player)
+        public bool CanPerkBeUpgraded(Data.Entity.Perk perk, PCPerk pcPerk, PlayerCharacter player)
         {
             int rank = pcPerk?.PerkLevel ?? 0;
             int maxRank = perk.PerkLevels.Count;
@@ -196,7 +197,7 @@ namespace SWLOR.Game.Server.Service
 
         public void DoPerkUpgrade(NWPlayer oPC, int perkID)
         {
-            Data.Perk perk = _db.Perks.Single(x => x.PerkID == perkID);
+            Data.Entity.Perk perk = _db.Perks.Single(x => x.PerkID == perkID);
             PCPerk pcPerk = _db.PCPerks.SingleOrDefault(x => x.PlayerID == oPC.GlobalID && x.PerkID == perkID);
             PlayerCharacter player = _db.PlayerCharacters.Single(x => x.PlayerID == oPC.GlobalID);
 
@@ -316,7 +317,7 @@ namespace SWLOR.Game.Server.Service
             int perkID = examinedObject.GetLocalInt("ACTIVATION_PERK_ID");
             if (perkID <= 0) return existingDescription;
 
-            Data.Perk perk = _db.Perks.Single(x => x.PerkID == perkID);
+            Data.Entity.Perk perk = _db.Perks.Single(x => x.PerkID == perkID);
             string description = existingDescription;
 
             description += _color.Orange("Name: ") + perk.Name + "\n" +

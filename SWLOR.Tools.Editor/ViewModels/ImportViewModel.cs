@@ -9,6 +9,7 @@ using AutoMapper;
 using Caliburn.Micro;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Tools.Editor.Enumeration;
 using SWLOR.Tools.Editor.Messages;

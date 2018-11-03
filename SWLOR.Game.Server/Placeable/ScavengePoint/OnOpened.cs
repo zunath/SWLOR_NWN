@@ -125,7 +125,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
             int growingPlantID = point.GetLocalInt("GROWING_PLANT_ID");
             if (growingPlantID > 0)
             {
-                Data.GrowingPlant growingPlant = _farming.GetGrowingPlantByID(growingPlantID);
+                Data.Entity.GrowingPlant growingPlant = _farming.GetGrowingPlantByID(growingPlantID);
                 chanceToFullyHarvest = chanceToFullyHarvest - (growingPlant.LongevityBonus);
             }
 

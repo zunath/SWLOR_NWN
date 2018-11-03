@@ -9,6 +9,7 @@ using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.DoorRule.Contracts;
 using static NWN.NWScript;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
@@ -29,6 +30,7 @@ namespace SWLOR.Game.Server.Service
         private readonly INWNXChat _nwnxChat;
         private readonly IDurabilityService _durability;
         private readonly IAreaService _area;
+        private readonly IDataService _data;
 
         public BaseService(
             INWScript script,
@@ -40,7 +42,8 @@ namespace SWLOR.Game.Server.Service
             IBasePermissionService perm,
             INWNXChat nwnxChat,
             IDurabilityService durability,
-            IAreaService area)
+            IAreaService area,
+            IDataService data)
         {
             _ = script;
             _nwnxEvents = nwnxEvents;
@@ -52,6 +55,7 @@ namespace SWLOR.Game.Server.Service
             _nwnxChat = nwnxChat;
             _durability = durability;
             _area = area;
+            _data = data;
         }
 
         public PCTempBaseData GetPlayerTempData(NWPlayer player)
@@ -461,7 +465,7 @@ namespace SWLOR.Game.Server.Service
                 return "You do not have permission to place or edit structures in this territory.";
             
             var structure = _db.BaseStructures.Single(x => x.BaseStructureID == structureID);
-            var structureType = structure.BaseStructureType;
+            var structureType = _data.Get<Data.Entity.BaseStructureType>(structure.BaseStructureTypeID);
             
             if (!structureType.CanPlaceOutside && buildingType == BuildingType.Exterior)
             {

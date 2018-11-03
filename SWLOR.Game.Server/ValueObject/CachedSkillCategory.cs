@@ -1,4 +1,5 @@
 ﻿using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.ValueObject
 {

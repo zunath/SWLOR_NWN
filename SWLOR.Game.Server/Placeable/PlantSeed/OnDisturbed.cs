@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Service.Contracts;
 using Object = NWN.Object;
 
@@ -83,7 +84,7 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
             Location plantLocation = container.Location;
             int perkBonus = _perk.GetPCPerkLevel(oPC, PerkType.FarmingEfficiency) * 2;
             int ticks = (int)(plant.BaseTicks - ((_perk.GetPCPerkLevel(oPC, PerkType.ExpertFarmer) * 0.05f)) * plant.BaseTicks);
-            Data.GrowingPlant growingPlant = new Data.GrowingPlant();
+            Data.Entity.GrowingPlant growingPlant = new Data.Entity.GrowingPlant();
             growingPlant.PlantID = plant.PlantID;
             growingPlant.RemainingTicks = ticks;
             growingPlant.LocationAreaTag = areaTag;

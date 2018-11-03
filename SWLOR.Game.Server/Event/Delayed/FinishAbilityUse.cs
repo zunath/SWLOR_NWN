@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Perk;
 using SWLOR.Game.Server.Service.Contracts;
 using System;
 using System.Linq;
+using SWLOR.Game.Server.Data.Entity;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
 
 namespace SWLOR.Game.Server.Event.Delayed
@@ -41,7 +42,7 @@ namespace SWLOR.Game.Server.Event.Delayed
             NWObject target = (NWObject)args[3];
             int pcPerkLevel = (int) args[4];
 
-            Data.Perk entity = _db.Perks.Single(x => x.PerkID == perkID);
+            Data.Entity.Perk entity = _db.Perks.Single(x => x.PerkID == perkID);
             CooldownCategory cooldown = _db.CooldownCategories.SingleOrDefault(x => x.CooldownCategoryID == entity.CooldownCategoryID);
             PerkExecutionType executionType = (PerkExecutionType) entity.ExecutionTypeID;
 

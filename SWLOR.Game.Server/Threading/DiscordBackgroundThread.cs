@@ -9,6 +9,7 @@ using System.Threading;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.Threading.Contracts;
 

@@ -1,13 +1,12 @@
+using System;
+using System.Collections.Generic;
 using Dapper.Contrib.Extensions;
+using SWLOR.Game.Server.Data.Contracts;
 
-namespace SWLOR.Game.Server.Data
+namespace SWLOR.Game.Server.Data.Entity
 {
-    using System;
-    using System.Collections.Generic;
-    
-    using SWLOR.Game.Server.Data.Contracts;
-    
-    public partial class Quest: IEntity
+    [Table("Quests")]
+    public class Quest: IEntity, ICacheable
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Quest()

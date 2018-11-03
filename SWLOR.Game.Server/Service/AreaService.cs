@@ -11,6 +11,7 @@ using System.Data.Entity.Migrations;
 using System.Data.SqlClient;
 using System.Linq;
 using SWLOR.Game.Server.AreaInstance.Contracts;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event;
 using static NWN.NWScript;
 

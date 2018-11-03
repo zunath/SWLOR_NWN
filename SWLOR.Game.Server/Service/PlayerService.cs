@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Service.Contracts;
 using static NWN.NWScript;
 using Object = NWN.Object;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Service

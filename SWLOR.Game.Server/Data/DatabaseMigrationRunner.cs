@@ -7,6 +7,8 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using SWLOR.Game.Server.Data.Entity;
+
 namespace SWLOR.Game.Server.Data
 {
     /// <summary>
@@ -51,7 +53,7 @@ namespace SWLOR.Game.Server.Data
                 Password = password
             }.ToString();
 
-            data.Initialize(); // todo: move this somewhere more appropriate or change this class to use dapper.
+            data.Initialize(true); // todo: move this somewhere more appropriate or change this class to use dapper.
         }
         
         /// <summary>

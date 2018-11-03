@@ -5,6 +5,7 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Processor;
 using SWLOR.Game.Server.Service.Contracts;
@@ -17,20 +18,20 @@ namespace SWLOR.Game.Server.Service
     public class SpawnService : ISpawnService
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IObjectProcessingService _processor;
         private readonly AppCache _cache;
         private readonly IRandomService _random;
 
         public SpawnService(
             INWScript script,
-            IDataContext db,
+            IDataService data,
             IRandomService random,
             IObjectProcessingService processor,
             AppCache cache)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _random = random;
             _processor = processor;
             _cache = cache;
@@ -77,8 +78,8 @@ namespace SWLOR.Game.Server.Service
                     if (string.IsNullOrWhiteSpace(spawnResref) && spawnTableID > 0)
                     {
                         // Pick a random record.
-                        var dbSpawn = _db.SpawnObjects.Where(x => x.SpawnID == spawnTableID)
-                            .OrderBy(o => Guid.NewGuid()).First();
+                        var dbSpawn = _data.Get<Spawn>(spawnTableID).SpawnObjects
+                            .OrderBy(o => Guid.NewGuid()).First(); // TODO: Potential issue with getting random records this way now that calls aren't in SQL
                         if (dbSpawn != null)
                         {
                             spawnResref = dbSpawn.Resref;
@@ -164,17 +165,13 @@ namespace SWLOR.Game.Server.Service
                 SpawnResources(area, areaSpawn);
             });
         }
-
+        
         public Location GetRandomSpawnPoint(NWArea area)
         {
-            return GetRandomSpawnPoint(area, _db);
-        }
+            Area dbArea = _data.Get<Area>(area.Resref);
 
-        private Location GetRandomSpawnPoint(NWArea area, IDataContext db)
-        {
-            var spawnPoint = db.AreaWalkmeshes
-                .Where(x => x.Area.Resref == area.Resref)
-                .OrderBy(o => Guid.NewGuid()).First();
+            var spawnPoint = dbArea.AreaWalkmeshes
+                .OrderBy(o => Guid.NewGuid()).First(); // TODO: Potential issue with getting random records this way now that calls aren't in SQL
 
             return _.Location(area.Object,
                 _.Vector((float)spawnPoint.LocationX, (float)spawnPoint.LocationY, (float)spawnPoint.LocationZ),
@@ -234,7 +231,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     int index = _random.GetRandomWeightedIndex(weights);
                     var dbSpawn = possibleSpawns.ElementAt(index);
-                    Location location = GetRandomSpawnPoint(area, db);
+                    Location location = GetRandomSpawnPoint(area);
                     NWPlaceable plc = (_.CreateObject(OBJECT_TYPE_PLACEABLE, dbSpawn.Resref, location));
                     ObjectSpawn spawn = new ObjectSpawn(location, false, dbArea.ResourceSpawnTableID, 600.0f);
                     spawn.Spawn = plc;

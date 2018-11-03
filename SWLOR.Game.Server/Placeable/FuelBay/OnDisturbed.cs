@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
     public class OnDisturbed : IRegisteredEvent
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IItemService _item;
         private readonly ITimeService _time;
         private readonly IColorTokenService _color;
@@ -22,14 +22,14 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
 
         public OnDisturbed(
             INWScript script,
-            IDataContext db,
+            IDataService data,
             IItemService item,
             ITimeService time,
             IColorTokenService color,
             IBaseService @base)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _item = item;
             _time = time;
             _color = color;
@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
                 }
             }
 
-            var structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
+            var structure = _data.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
 
             int fuelCount = 0;
             foreach (var fuel in bay.InventoryItems)
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
                 structure.PCBase.Fuel = fuelCount;
             }
 
-            _db.SaveChanges();
+            _data.SaveChanges();
 
             TimeSpan timeSpan = TimeSpan.FromMinutes(30.0f * fuelCount);
             player.SendMessage(_color.Gray("Fuel will last for " + 

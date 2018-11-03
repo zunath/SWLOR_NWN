@@ -8,7 +8,6 @@ using System.Linq;
 using System.Reflection;
 using Dapper;
 using Dapper.Contrib.Extensions;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -183,10 +182,20 @@ namespace SWLOR.Game.Server.Service
         /// <param name="actionType">The type (Insert, Update, Delete, etc.) of change to make.</param>
         public void SubmitDataChange(IEntity data, DatabaseActionType actionType)
         {
+            if (actionType == DatabaseActionType.Insert || actionType == DatabaseActionType.Update)
+            {
+                SetIntoCache(data.GetType(), data, GetEntityKey(data));
+            }
+            else if (actionType == DatabaseActionType.Delete)
+            {
+                DeleteFromCache(data.GetType(), GetEntityKey(data));
+            }
+
             SubmitDataChange(new DatabaseAction(data, actionType));
         }
         
         private T GetFromCache<T>(object key)
+            where T: IEntity
         {
             if(!_cache.TryGetValue(typeof(T), out var cachedSet))
             {
@@ -203,11 +212,20 @@ namespace SWLOR.Game.Server.Service
         }
 
         private void SetIntoCache<T>(object key, object value)
+            where T: IEntity
         {
-            if (!_cache.TryGetValue(typeof(T), out var cachedSet))
+            SetIntoCache(typeof(T), key, value);
+        }
+
+        private void SetIntoCache(Type type, object key, object value)
+        {
+            if(!type.GetInterfaces().Contains(typeof(IEntity)))
+                throw new ArgumentException("Only objects which implement " + nameof(IEntity) + " may be set into the cache.");
+
+            if (!_cache.TryGetValue(type, out var cachedSet))
             {
                 cachedSet = new Dictionary<object, object>();
-                _cache.Add(typeof(T), cachedSet);
+                _cache.Add(type, cachedSet);
             }
 
             if (cachedSet.ContainsKey(key))
@@ -218,18 +236,26 @@ namespace SWLOR.Game.Server.Service
             {
                 cachedSet.Add(key, value);
             }
+
         }
 
         private void DeleteFromCache<T>(object key)
+            where T: IEntity
         {
-            if (!_cache.ContainsKey(typeof(T))) return;
+            DeleteFromCache(typeof(T), key);
+        }
 
-            var cachedSet = _cache[typeof(T)];
+        private void DeleteFromCache(Type type, object key)
+        {
+            if (!_cache.ContainsKey(type)) return;
+
+            var cachedSet = _cache[type];
 
             if (cachedSet.ContainsKey(key))
             {
                 cachedSet.Remove(key);
             }
+
         }
         
         /// <summary>
@@ -239,7 +265,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="id"></param>
         /// <returns></returns>
         public T Get<T>(object id)
-            where T: class, ICacheable
+            where T: class, IEntity
         {
             var cached = GetFromCache<T>(id);
             if (cached != null)
@@ -274,8 +300,13 @@ namespace SWLOR.Game.Server.Service
         /// <typeparam name="T">The type of entity to retrieve.</typeparam>
         /// <returns></returns>
         public IEnumerable<T> GetAll<T>()
-            where T: class, ICacheable
+            where T: class, IEntity
         {
+            if (typeof(T) == typeof(PlayerCharacter))
+            {
+                throw new ArgumentException("GetAll() is not permitted on PlayerCharacter objects.");
+            }
+
             // Cache already built. Return everything that's cached so far.
             if(_cache.ContainsKey(typeof(T)))
             {
@@ -300,10 +331,58 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            foreach (var result in results)
+            {
+                object id = GetEntityKey(result);
+                SetIntoCache<T>(id, result);
+            }
+
+            // Send back the results if we know they exist in the cache.
+            if (_cache.TryGetValue(typeof(T), out var set))
+            {
+                return set.Values.Cast<T>();
+            }
+            
+            // If there's no data in the database for that table, return an empty list.
+            return new List<T>();
+        }
+
+        public T Single<T>()
+            where T : class, IEntity
+        {
+            return GetAll<T>().Single();
+        }
+
+        public T Single<T>(Func<T, bool> predicate)
+            where T : class, IEntity
+        {
+            return GetAll<T>().Single(predicate);
+        }
+
+        public T SingleOrDefault<T>()
+            where T : class, IEntity
+        {
+            return GetAll<T>().SingleOrDefault();
+        }
+
+        public T SingleOrDefault<T>(Func<T, bool> predicate)
+            where T : class, IEntity
+        {
+            return GetAll<T>().SingleOrDefault(predicate);
+        }
+        
+        public IEnumerable<T> Where<T>(Func<T, bool> predicate)
+            where T : class, IEntity
+        {
+            return GetAll<T>().Where(predicate);
+        }
+
+        private object GetEntityKey(IEntity entity)
+        {
             // Locate a Key or ExplicitKey attribute on this type. These are Dapper attributes which determine if the key
             // is auto-generated (Key) or manually set (ExplicitKey) on the entity.
             // We will reuse these attributes for identifying cache items.
-            var properties = typeof(T).GetProperties();
+            var properties = entity.GetType().GetProperties();
             PropertyInfo propertyWithKey = null;
 
             foreach (var prop in properties)
@@ -325,25 +404,11 @@ namespace SWLOR.Game.Server.Service
 
             if (propertyWithKey == null)
             {
-                throw new NullReferenceException("Unable to find a Key or ExplicitKey attribute on the entity provided (" + typeof(T) + "). Make sure you add the Key attribute for a database-generated IDs or an ExplicitKey attribute for manually-set IDs.");
+                throw new NullReferenceException("Unable to find a Key or ExplicitKey attribute on the entity provided (" + entity.GetType() + "). Make sure you add the Key attribute for a database-generated IDs or an ExplicitKey attribute for manually-set IDs.");
             }
 
-            foreach (var result in results)
-            {
-                object id = propertyWithKey.GetValue(result);
-                SetIntoCache<T>(id, result);
-            }
-
-            // Send back the results if we know they exist in the cache.
-            if (_cache.TryGetValue(typeof(T), out var set))
-            {
-                return set.Values.Cast<T>();
-            }
-            
-            // If there's no data in the database for that table, return an empty list.
-            return new List<T>();
+            return propertyWithKey.GetValue(entity);
         }
-
 
         public void StoredProcedure(string procedureName, params SqlParameter[] args)
         {
@@ -447,6 +512,7 @@ namespace SWLOR.Game.Server.Service
                         if (item != null)
                         {
                             a.AreaWalkmeshes.Add(item);
+                            SetIntoCache<AreaWalkmesh>(item.AreaWalkmeshID, item);
                         }
 
                         return a;
@@ -473,6 +539,7 @@ namespace SWLOR.Game.Server.Service
                         if (item != null)
                         {
                             b.BankItems.Add(item);
+                            SetIntoCache<BankItem>(item.BankItemID, item);
                         }
 
                         return b;
@@ -495,6 +562,7 @@ namespace SWLOR.Game.Server.Service
                         {
                             lt = table;
                             ltDictionary.Add(lt.LootTableID, lt);
+                            SetIntoCache<LootTableItem>(item.LootTableItemID, item);
                         }
 
                         lt.LootTableItems.Add(item);
@@ -529,6 +597,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         pl = perkLevel;
                         perkLevelDictionary.Add(pl.PerkLevelID, pl);
+                        SetIntoCache<PerkLevel>(pl.PerkLevelID, pl);
                     }
 
                     if (skillReq != null)
@@ -541,6 +610,7 @@ namespace SWLOR.Game.Server.Service
                             // Add to both the result dictionary as well as the perk level.
                             perkLevelSkillRequirementDictionary.Add(sr.PerkLevelSkillRequirementID, sr);
                             pl.PerkLevelSkillRequirements.Add(sr);
+                            SetIntoCache<PerkLevelSkillRequirement>(sr.PerkLevelSkillRequirementID, sr);
                         }
                     }
 
@@ -554,6 +624,7 @@ namespace SWLOR.Game.Server.Service
                             // Add to both the result dictionary as well as the perk level.
                             perkLevelQuestRequirementDictionary.Add(qr.PerkLevelQuestRequirementID, qr);
                             pl.PerkLevelQuestRequirements.Add(qr);
+                            SetIntoCache<PerkLevelQuestRequirement>(qr.PerkLevelQuestRequirementID, qr);
                         }
                     }
 
@@ -594,6 +665,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         qs = questState;
                         questStateDictionary.Add(qs.QuestStateID, qs);
+                        SetIntoCache<QuestState>(qs.QuestStateID, qs);
                     }
 
                     // Process kill targets
@@ -604,6 +676,7 @@ namespace SWLOR.Game.Server.Service
                             kt = killTarget;
                             questKillTargetListDictionary.Add(kt.QuestKillTargetListID, kt);
                             qs.QuestKillTargetLists.Add(kt);
+                            SetIntoCache<QuestKillTargetList>(kt.QuestKillTargetListID, kt);
                         }
                     }
 
@@ -616,6 +689,7 @@ namespace SWLOR.Game.Server.Service
 
                             questRequiredItemListDictionary.Add(ri.QuestRequiredItemListID, ri);
                             qs.QuestRequiredItemLists.Add(ri);
+                            SetIntoCache<QuestRequiredItemList>(ri.QuestRequiredItemListID, ri);
                         }
                     }
 
@@ -628,6 +702,7 @@ namespace SWLOR.Game.Server.Service
 
                             questPrerequisiteDictionary.Add(pq.QuestPrerequisiteID, pq);
                             q.QuestPrerequisites.Add(pq);
+                            SetIntoCache<QuestPrerequisite>(pq.QuestPrerequisiteID, pq);
                         }
                     }
 
@@ -640,6 +715,7 @@ namespace SWLOR.Game.Server.Service
 
                             questRequiredKeyItemListDictionary.Add(rki.QuestRequiredKeyItemID, rki);
                             qs.QuestRequiredKeyItemLists.Add(rki);
+                            SetIntoCache<QuestRequiredKeyItemList>(rki.QuestRequiredKeyItemID, rki);
                         }
                     }
 
@@ -652,6 +728,7 @@ namespace SWLOR.Game.Server.Service
 
                             questRewardItemDictionary.Add(rw.QuestRewardItemID, rw);
                             q.QuestRewardItems.Add(rw);
+                            SetIntoCache<QuestRewardItem>(rw.QuestRewardItemID, rw);
                         }
                     }
 
@@ -683,6 +760,7 @@ namespace SWLOR.Game.Server.Service
                         }
 
                         s.SkillXPRequirements.Add(xpReq);
+                        SetIntoCache<SkillXPRequirement>(xpReq.SkillXPRequirementID, xpReq);
                         return s;
                     }, "SkillXPRequirementID", key == null ? null : new SqlParameter("@Key", key))
                 .Distinct()
@@ -706,6 +784,7 @@ namespace SWLOR.Game.Server.Service
                         }
 
                         s.SpawnObjects.Add(obj);
+                        SetIntoCache<SpawnObject>(obj.SpawnObjectID, obj);
                         return s;
                     }, "SpawnObjectID", key == null ? null : new SqlParameter("@Key", key))
                 .Distinct()

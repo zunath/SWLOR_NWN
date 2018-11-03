@@ -5,13 +5,12 @@ using SWLOR.Game.Server.Data.Contracts;
 namespace SWLOR.Game.Server.Data.Entity
 {
     [Table("BaseStructureType")]
-    public partial class BaseStructureType: IEntity, ICacheable
+    public class BaseStructureType: IEntity
     {
 
         public BaseStructureType()
         {
-            this.Name = "";
-            this.BaseStructures = new HashSet<BaseStructure>();
+            Name = "";
         }
 
         [ExplicitKey]
@@ -20,8 +19,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public bool IsActive { get; set; }
         public bool CanPlaceInside { get; set; }
         public bool CanPlaceOutside { get; set; }
-    
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<BaseStructure> BaseStructures { get; set; }
     }
 }

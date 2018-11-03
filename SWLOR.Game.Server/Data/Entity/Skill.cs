@@ -6,17 +6,14 @@ using SWLOR.Game.Server.Data.Contracts;
 namespace SWLOR.Game.Server.Data.Entity
 {
     [Table("Skills")]
-    public partial class Skill: IEntity, ICacheable
+    public class Skill: IEntity
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Skill()
         {
-            this.Name = "";
-            this.Description = "";
-            this.CraftBlueprints = new HashSet<CraftBlueprint>();
-            this.PCSkills = new HashSet<PCSkill>();
-            this.PerkLevelSkillRequirements = new HashSet<PerkLevelSkillRequirement>();
-            this.SkillXPRequirements = new HashSet<SkillXPRequirement>();
+            Name = "";
+            Description = "";
+            SkillXPRequirements = new HashSet<SkillXPRequirement>();
         }
 
         [ExplicitKey]
@@ -31,17 +28,6 @@ namespace SWLOR.Game.Server.Data.Entity
         public int Tertiary { get; set; }
         public bool ContributesToSkillCap { get; set; }
     
-        public virtual Attribute PrimaryAttribute { get; set; }
-        public virtual Attribute SecondaryAttribute { get; set; }
-        public virtual Attribute TertiaryAttribute { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CraftBlueprint> CraftBlueprints { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PCSkill> PCSkills { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<PerkLevelSkillRequirement> PerkLevelSkillRequirements { get; set; }
-        public virtual SkillCategory SkillCategory { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SkillXPRequirement> SkillXPRequirements { get; set; }
     }
 }

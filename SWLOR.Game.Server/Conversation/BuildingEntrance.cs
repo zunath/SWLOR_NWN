@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Conversation
     {
         private readonly IBaseService _base;
         private readonly IPlayerService _player;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IAreaService _area;
         private readonly IBasePermissionService _perm;
 
@@ -24,14 +24,14 @@ namespace SWLOR.Game.Server.Conversation
             IDialogService dialog,
             IBaseService @base,
             IPlayerService player,
-            IDataContext db,
+            IDataService data,
             IAreaService area,
             IBasePermissionService perm)
             : base(script, dialog)
         {
             _base = @base;
             _player = player;
-            _db = db;
+            _data = data;
             _area = area;
             _perm = perm;
         }
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            var structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
+            var structure = _data.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
             NWArea instance = GetAreaInstance(structureID);
 
             if (instance == null)

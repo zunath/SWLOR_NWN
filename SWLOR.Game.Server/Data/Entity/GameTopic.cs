@@ -5,12 +5,12 @@ using SWLOR.Game.Server.Data.Contracts;
 namespace SWLOR.Game.Server.Data.Entity
 {
     [Table("GameTopics")]
-    public partial class GameTopic: IEntity, ICacheable
+    public class GameTopic: IEntity
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public GameTopic()
         {
-            this.Icon = "";
+            Icon = "";
         }
 
         [ExplicitKey]
@@ -21,7 +21,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public bool IsActive { get; set; }
         public int Sequence { get; set; }
         public string Icon { get; set; }
-    
-        public virtual GameTopicCategory GameTopicCategory { get; set; }
     }
 }

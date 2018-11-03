@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Data.Contracts;
 namespace SWLOR.Game.Server.Data.Entity
 {
     [Table("QuestRequiredItemList")]
-    public partial class QuestRequiredItemList: IEntity
+    public class QuestRequiredItemList: IEntity
     {
         [Key]
         public int QuestRequiredItemListID { get; set; }
@@ -14,8 +14,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public int Quantity { get; set; }
         public int QuestStateID { get; set; }
         public bool MustBeCraftedByPlayer { get; set; }
-    
-        public virtual QuestState QuestState { get; set; }
-        public virtual Quest Quest { get; set; }
     }
 }

@@ -4,6 +4,7 @@ using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.Service.Contracts;
@@ -14,14 +15,14 @@ namespace SWLOR.Game.Server.Service
     public class MapPinService : IMapPinService
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
 
         public MapPinService(
             INWScript script,
-            IDataContext db)
+            IDataService data)
         {
             _ = script;
-            _db = db;
+            _data = data;
         }
 
         public void OnModuleClientEnter()
@@ -31,7 +32,7 @@ namespace SWLOR.Game.Server.Service
             if (!oPC.IsPlayer) return;
             if (oPC.GetLocalInt("MAP_PINS_LOADED") == 1) return;
 
-            List<PCMapPin> pins = _db.PCMapPins.Where(x => x.PlayerID == oPC.GlobalID).ToList();
+            List<PCMapPin> pins = _data.Where<PCMapPin>(x => x.PlayerID == oPC.GlobalID).ToList();
 
             foreach (PCMapPin pin in pins)
             {
@@ -48,9 +49,9 @@ namespace SWLOR.Game.Server.Service
 
             if (!oPC.IsPlayer) return;
 
-            foreach (var pin in _db.PCMapPins.Where(x => x.PlayerID == oPC.GlobalID))
+            foreach (var pin in _data.Where<PCMapPin>(x => x.PlayerID == oPC.GlobalID))
             {
-                _db.PCMapPins.Remove(pin);
+                _data.SubmitDataChange(pin, DatabaseActionType.Delete);
             }
             
             for (int x = 0; x < GetNumberOfMapPins(oPC); x++)
@@ -68,10 +69,8 @@ namespace SWLOR.Game.Server.Service
                     PositionY = mapPin.PositionY
                 };
 
-                _db.PCMapPins.Add(entity);
+                _data.SubmitDataChange(entity, DatabaseActionType.Insert);
             }
-
-            _db.SaveChanges();
         }
 
 

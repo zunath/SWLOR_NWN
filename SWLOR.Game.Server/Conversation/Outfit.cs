@@ -16,18 +16,18 @@ namespace SWLOR.Game.Server.Conversation
     {
         private readonly IColorTokenService _color;
         private readonly ISerializationService _serialization;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
 
         public Outfit(
             INWScript script, 
             IDialogService dialog,
             IColorTokenService color,
             ISerializationService serialization,
-            IDataContext db) 
+            IDataService data) 
             : base(script, dialog)
         {
             _color = color;
-            _db = db;
+            _data = data;
             _serialization = serialization;
         }
 
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private PCOutfit GetPlayerOutfits(NWPlayer oPC)
         {
-            return _db.PCOutfits.SingleOrDefault(x => x.PlayerID == oPC.GlobalID);
+            return _data.PCOutfits.SingleOrDefault(x => x.PlayerID == oPC.GlobalID);
         }
 
         private void HandleSaveOutfit(int responseID)
@@ -138,7 +138,7 @@ namespace SWLOR.Game.Server.Conversation
             else if (responseID == 9) entity.Outfit9 = clothesData;
             else if (responseID == 10) entity.Outfit10 = clothesData;
 
-            _db.SaveChanges();
+            _data.SaveChanges();
 
             ShowSaveOutfitOptions();
         }

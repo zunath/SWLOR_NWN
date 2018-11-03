@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data.Entity.Migrations;
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
@@ -16,7 +15,7 @@ namespace SWLOR.Game.Server.Conversation
     {
         private readonly IBaseService _base;
         private readonly IColorTokenService _color;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IBasePermissionService _perm;
 
         public EditBuildingPermissions(
@@ -24,13 +23,13 @@ namespace SWLOR.Game.Server.Conversation
             IDialogService dialog,
             IBaseService @base,
             IColorTokenService color,
-            IDataContext db,
+            IDataService data,
             IBasePermissionService perm) 
             : base(script, dialog)
         {
             _base = @base;
             _color = color;
-            _db = db;
+            _data = data;
             _perm = perm;
         }
 
@@ -125,7 +124,8 @@ namespace SWLOR.Game.Server.Conversation
         {
             ClearPageResponses("PlayerDetailsPage");
             var data = _base.GetPlayerTempData(GetPC());
-            var permission = _db.PCBaseStructurePermissions.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.PCBaseStructureID == data.StructureID);
+            var pcBase = _data.GetAll<PCBase>().Single(x => x.PlayerID == player.GlobalID);
+            var permission = pcBase.PCBaseStructurePermissions.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.PCBaseStructureID == data.StructureID);
 
             // Intentionally excluded permissions: CanAdjustPermissions, CanCancelLease
             bool canPlaceEditStructures = permission?.CanPlaceEditStructures ?? false;
@@ -198,7 +198,7 @@ namespace SWLOR.Game.Server.Conversation
         private void TogglePermission(NWPlayer player, StructurePermission permission)
         {
             var data = _base.GetPlayerTempData(GetPC());
-            var dbPermission = _db.PCBaseStructurePermissions.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.PCBaseStructureID == data.StructureID);
+            var dbPermission = _data.PCBaseStructurePermissions.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.PCBaseStructureID == data.StructureID);
             if (dbPermission == null)
             {
                 dbPermission = new PCBaseStructurePermission()
@@ -238,8 +238,8 @@ namespace SWLOR.Game.Server.Conversation
                     throw new ArgumentOutOfRangeException(nameof(permission), permission, null);
             }
 
-            _db.PCBaseStructurePermissions.AddOrUpdate(dbPermission);
-            _db.SaveChanges();
+            _data.PCBaseStructurePermissions.AddOrUpdate(dbPermission);
+            _data.SaveChanges();
         }
 
         public override void EndDialog()

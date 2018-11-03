@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Event.Delayed
     public class CraftCreateItem: IRegisteredEvent
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IErrorService _error;
         private readonly ICraftService _craft;
         private readonly IComponentBonusService _componentBonus;
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Event.Delayed
 
         public CraftCreateItem(
             INWScript script,
-            IDataContext db,
+            IDataService data,
             IErrorService error,
             ICraftService craft,
             IComponentBonusService componentBonus,
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Event.Delayed
             IPerkService perk)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _error = error;
             _craft = craft;
             _componentBonus = componentBonus;
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Event.Delayed
         {
             var model = _craft.GetPlayerCraftingData(player);
 
-            CraftBlueprint blueprint = _db.CraftBlueprints.Single(x => x.CraftBlueprintID == model.BlueprintID);
+            CraftBlueprint blueprint = _data.CraftBlueprints.Single(x => x.CraftBlueprintID == model.BlueprintID);
             CachedPCSkill pcSkill = _skill.GetPCSkill(player, blueprint.SkillID);
 
             int pcEffectiveLevel = _craft.CalculatePCEffectiveLevel(player, pcSkill.Rank, (SkillType)blueprint.SkillID);
@@ -171,7 +171,7 @@ namespace SWLOR.Game.Server.Event.Delayed
             int baseXP = 250 + successAmount * _random.Random(1, 50);
             float xp = _skill.CalculateRegisteredSkillLevelAdjustedXP(baseXP, model.AdjustedLevel, pcSkill.Rank);
 
-            var pcCraftedBlueprint = _db.PCCraftedBlueprints.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CraftBlueprintID == blueprint.CraftBlueprintID);
+            var pcCraftedBlueprint = _data.PCCraftedBlueprints.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CraftBlueprintID == blueprint.CraftBlueprintID);
             if(pcCraftedBlueprint == null)
             {
                 xp = xp * 1.25f;
@@ -184,8 +184,8 @@ namespace SWLOR.Game.Server.Event.Delayed
                     PlayerID = player.GlobalID
                 };
 
-                _db.PCCraftedBlueprints.Add(pcCraftedBlueprint);
-                _db.SaveChanges();
+                _data.PCCraftedBlueprints.Add(pcCraftedBlueprint);
+                _data.SaveChanges();
             }
 
             _skill.GiveSkillXP(player, blueprint.SkillID, (int)xp);

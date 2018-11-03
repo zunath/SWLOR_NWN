@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Item.Medicine
     {
 
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly ISkillService _skill;
         private readonly IRandomService _random;
         private readonly IPerkService _perk;
@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public ForcePack(
             INWScript script,
-            IDataContext db,
+            IDataService data,
             ISkillService skill,
             IRandomService random,
             IPerkService perk,
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             ICustomEffectService customEffect)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _skill = skill;
             _random = random;
             _perk = perk;
@@ -142,7 +142,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return "Only players may be targeted with this item.";
             }
 
-            var dbTarget = _db.PlayerCharacters.Single(x => x.PlayerID == target.GlobalID);
+            var dbTarget = _data.PlayerCharacters.Single(x => x.PlayerID == target.GlobalID);
             if (dbTarget.CurrentFP >= dbTarget.MaxFP)
             {
                 return "Your target's FP is at their maximum.";

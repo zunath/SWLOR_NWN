@@ -15,18 +15,18 @@ namespace SWLOR.Game.Server.Service
 {
     public class ExaminationService: IExaminationService
     {
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly INWScript _;
         private readonly IColorTokenService _color;
         private readonly ISkillService _skill;
 
         public ExaminationService(
-            IDataContext db, 
+            IDataService data, 
             INWScript script, 
             IColorTokenService color,
             ISkillService skill)
         {
-            _db = db;
+            _data = data;
             _ = script;
             _color = color;
             _skill = skill;
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Service
             backupDescription = target.IdentifiedDescription;
             target.SetLocalString("BACKUP_DESCRIPTION", backupDescription);
             
-            PlayerCharacter playerEntity = _db.PlayerCharacters.Single(x => x.PlayerID == target.GlobalID);
+            PlayerCharacter playerEntity = _data.PlayerCharacters.Single(x => x.PlayerID == target.GlobalID);
             NWArea area = NWModule.Get().Areas.Single(x => x.Resref == playerEntity.RespawnAreaResref);
             string respawnAreaName = area.Name;
 
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Service
 
             description.Append("\n\n").Append(_color.Green("Perks: ")).Append("\n\n");
 
-            List<PCPerkHeader> pcPerks = _db.StoredProcedure<PCPerkHeader>("GetPCPerksForMenuHeader",
+            List<PCPerkHeader> pcPerks = _data.StoredProcedure<PCPerkHeader>("GetPCPerksForMenuHeader",
                 new SqlParameter("PlayerID", target.GlobalID));
 
             foreach (PCPerkHeader perk in pcPerks)

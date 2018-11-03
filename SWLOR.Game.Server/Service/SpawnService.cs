@@ -168,7 +168,7 @@ namespace SWLOR.Game.Server.Service
         
         public Location GetRandomSpawnPoint(NWArea area)
         {
-            Area dbArea = _data.Get<Area>(area.Resref);
+            Area dbArea = _data.GetAll<Area>().Single(x => x.Resref == area.Resref);
 
             var spawnPoint = dbArea.AreaWalkmeshes
                 .OrderBy(o => Guid.NewGuid()).First(); // TODO: Potential issue with getting random records this way now that calls aren't in SQL
@@ -181,91 +181,87 @@ namespace SWLOR.Game.Server.Service
 
         private void SpawnResources(NWArea area, AreaSpawn areaSpawn)
         {
-            App.Resolve<IDataContext>(db =>
+            var dbArea = _data.GetAll<Area>().Single(x => x.Resref == area.Resref);
+
+            if (dbArea.ResourceSpawnTableID <= 0 ||
+                !dbArea.AutoSpawnResources) return;
+            Spawn table = _data.Single<Spawn>(x => x.SpawnID == dbArea.ResourceSpawnTableID);
+            var possibleSpawns = table.SpawnObjects;
+
+            // 1024 size = 32x32
+            // 256  size = 16x16
+            // 64   size = 8x8
+            int size = area.Width * area.Height;
+
+            int maxSpawns = 0;
+            if (size <= 12)
             {
-                var dbArea = db.Areas.Single(x => x.Resref == area.Resref);
+                maxSpawns = 2;
+            }
+            else if (size <= 32)
+            {
+                maxSpawns = 6;
+            }
+            else if (size <= 64)
+            {
+                maxSpawns = 10;
+            }
+            else if (size <= 256)
+            {
+                maxSpawns = 25;
+            }
+            else if (size <= 512)
+            {
+                maxSpawns = 40;
+            }
+            else if (size <= 1024)
+            {
+                maxSpawns = 50;
+            }
 
-                if (dbArea.ResourceSpawnTableID <= 0 ||
-                    !dbArea.AutoSpawnResources) return;
-                Spawn table = db.Spawns.Single(x => x.SpawnID == dbArea.ResourceSpawnTableID);
-                var possibleSpawns = table.SpawnObjects;
+            int[] weights = new int[possibleSpawns.Count];
+            for (int x = 0; x < possibleSpawns.Count; x++)
+            {
+                weights[x] = possibleSpawns.ElementAt(x).Weight;
+            }
 
-                // 1024 size = 32x32
-                // 256  size = 16x16
-                // 64   size = 8x8
-                int size = area.Width * area.Height;
+            for (int x = 1; x <= maxSpawns; x++)
+            {
+                int index = _random.GetRandomWeightedIndex(weights);
+                var dbSpawn = possibleSpawns.ElementAt(index);
+                Location location = GetRandomSpawnPoint(area);
+                NWPlaceable plc = (_.CreateObject(OBJECT_TYPE_PLACEABLE, dbSpawn.Resref, location));
+                ObjectSpawn spawn = new ObjectSpawn(location, false, dbArea.ResourceSpawnTableID, 600.0f);
+                spawn.Spawn = plc;
 
-                int maxSpawns = 0;
-                if (size <= 12)
+                App.Resolve<IObjectVisibilityService>(ovs =>
                 {
-                    maxSpawns = 2;
-                }
-                else if (size <= 32)
+                    ovs.ApplyVisibilityForObject(plc);
+                });
+
+                if (dbSpawn.NPCGroupID != null && dbSpawn.NPCGroupID > 0)
                 {
-                    maxSpawns = 6;
-                }
-                else if (size <= 64)
-                {
-                    maxSpawns = 10;
-                }
-                else if (size <= 256)
-                {
-                    maxSpawns = 25;
-                }
-                else if (size <= 512)
-                {
-                    maxSpawns = 40;
-                }
-                else if (size <= 1024)
-                {
-                    maxSpawns = 50;
+                    plc.SetLocalInt("NPC_GROUP", Convert.ToInt32(dbSpawn.NPCGroupID));
+                    spawn.NPCGroupID = Convert.ToInt32(dbSpawn.NPCGroupID);
                 }
 
-                int[] weights = new int[possibleSpawns.Count];
-                for (int x = 0; x < possibleSpawns.Count; x++)
+                if (!string.IsNullOrWhiteSpace(dbSpawn.BehaviourScript) &&
+                    string.IsNullOrWhiteSpace(plc.GetLocalString("BEHAVIOUR")))
                 {
-                    weights[x] = possibleSpawns.ElementAt(x).Weight;
+                    plc.SetLocalString("BEHAVIOUR", dbSpawn.BehaviourScript);
+                    spawn.BehaviourScript = dbSpawn.BehaviourScript;
                 }
 
-                for (int x = 1; x <= maxSpawns; x++)
+                if (!string.IsNullOrWhiteSpace(dbSpawn.SpawnRule))
                 {
-                    int index = _random.GetRandomWeightedIndex(weights);
-                    var dbSpawn = possibleSpawns.ElementAt(index);
-                    Location location = GetRandomSpawnPoint(area);
-                    NWPlaceable plc = (_.CreateObject(OBJECT_TYPE_PLACEABLE, dbSpawn.Resref, location));
-                    ObjectSpawn spawn = new ObjectSpawn(location, false, dbArea.ResourceSpawnTableID, 600.0f);
-                    spawn.Spawn = plc;
-
-                    App.Resolve<IObjectVisibilityService>(ovs =>
+                    App.ResolveByInterface<ISpawnRule>("SpawnRule." + dbSpawn.SpawnRule, rule =>
                     {
-                        ovs.ApplyVisibilityForObject(plc);
+                        rule.Run(plc);
                     });
-                    
-                    if (dbSpawn.NPCGroupID != null && dbSpawn.NPCGroupID > 0)
-                    {
-                        plc.SetLocalInt("NPC_GROUP", Convert.ToInt32(dbSpawn.NPCGroupID));
-                        spawn.NPCGroupID = Convert.ToInt32(dbSpawn.NPCGroupID);
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(dbSpawn.BehaviourScript) &&
-                        string.IsNullOrWhiteSpace(plc.GetLocalString("BEHAVIOUR")))
-                    {
-                        plc.SetLocalString("BEHAVIOUR", dbSpawn.BehaviourScript);
-                        spawn.BehaviourScript = dbSpawn.BehaviourScript;
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(dbSpawn.SpawnRule))
-                    {
-                        App.ResolveByInterface<ISpawnRule>("SpawnRule." + dbSpawn.SpawnRule, rule =>
-                        {
-                            rule.Run(plc);
-                        });
-                    }
-
-                    areaSpawn.Placeables.Add(spawn);
                 }
-            });
 
+                areaSpawn.Placeables.Add(spawn);
+            }
         }
 
         public IReadOnlyCollection<ObjectSpawn> GetAreaPlaceableSpawns(NWArea area)

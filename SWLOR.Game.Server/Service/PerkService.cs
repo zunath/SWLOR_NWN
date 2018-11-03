@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Service
     {
         private readonly INWScript _;
         private readonly IColorTokenService _color;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IBiowareXP2 _biowareXP2;
         private readonly INWNXCreature _nwnxCreature;
         private readonly INWNXPlayerQuickBarSlot _nwnxQBS;
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Service
 
         public PerkService(INWScript script,
             IColorTokenService color,
-            IDataContext db,
+            IDataService data,
             IBiowareXP2 biowareXP2,
             INWNXCreature nwnxCreature,
             INWNXPlayerQuickBarSlot nwnxQBS,
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Service
         {
             _ = script;
             _color = color;
-            _db = db;
+            _data = data;
             _biowareXP2 = biowareXP2;
             _nwnxCreature = nwnxCreature;
             _nwnxQBS = nwnxQBS;
@@ -51,13 +51,13 @@ namespace SWLOR.Game.Server.Service
             NWPlayer oPC = (_.GetPCItemLastEquippedBy());
             NWItem oItem = (_.GetPCItemLastEquipped());
             if (!oPC.IsPlayer || !oPC.IsInitializedAsPlayer) return;
-            List<PCPerk> perks = _db.StoredProcedure<PCPerk>("GetPCPerksByExecutionType",
+            List<PCPerk> perks = _data.StoredProcedure<PCPerk>("GetPCPerksByExecutionType",
                 new SqlParameter("PlayerID", oPC.GlobalID),
                 new SqlParameter("ExecutionTypeID", (int) PerkExecutionType.EquipmentBased));
 
             foreach (PCPerk pcPerk in perks)
             {
-                pcPerk.Perk = _db.Perks.Single(x => x.PerkID == pcPerk.PerkID);
+                pcPerk.Perk = _data.Perks.Single(x => x.PerkID == pcPerk.PerkID);
                 string jsName = pcPerk.Perk.ScriptName;
                 if (string.IsNullOrWhiteSpace(jsName)) continue;
 
@@ -74,13 +74,13 @@ namespace SWLOR.Game.Server.Service
             NWItem oItem = (_.GetPCItemLastUnequipped());
             if (!oPC.IsPlayer) return;
 
-            List<PCPerk> perks = _db.StoredProcedure<PCPerk>("GetPCPerksByExecutionType",
+            List<PCPerk> perks = _data.StoredProcedure<PCPerk>("GetPCPerksByExecutionType",
                 new SqlParameter("PlayerID", oPC.GlobalID),
                 new SqlParameter("ExecutionTypeID", (int)PerkExecutionType.EquipmentBased));
 
             foreach (PCPerk pcPerk in perks)
             {
-                pcPerk.Perk = _db.Perks.Single(x => x.PerkID == pcPerk.PerkID);
+                pcPerk.Perk = _data.Perks.Single(x => x.PerkID == pcPerk.PerkID);
                 string jsName = pcPerk.Perk.ScriptName;
                 if (string.IsNullOrWhiteSpace(jsName)) continue;
                 
@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!player.IsPlayer) return -1;
             
-            PerkLevel perkLevel = _db.StoredProcedureSingle<PerkLevel>("GetPCSkillAdjustedPerkLevel",
+            PerkLevel perkLevel = _data.StoredProcedureSingle<PerkLevel>("GetPCSkillAdjustedPerkLevel",
                 new SqlParameter("PlayerID", player.GlobalID),
                 new SqlParameter("PerkID", perkID));
 
@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Service
             if (!oPC.IsPlayer) return;
             NWItem oItem = (_.GetSpellCastItem());
             int type = oItem.BaseItemType;
-            List<PCPerk> pcPerks = _db.StoredProcedure<PCPerk>("GetPCPerksWithExecutionType",
+            List<PCPerk> pcPerks = _data.StoredProcedure<PCPerk>("GetPCPerksWithExecutionType",
                 new SqlParameter("PlayerID", oPC.GlobalID));
             
             foreach (PCPerk pcPerk in pcPerks)
@@ -138,36 +138,36 @@ namespace SWLOR.Game.Server.Service
 
         public int GetPCTotalPerkCount(string playerID)
         {
-            return _db.PCPerks.Count(x => x.PlayerID == playerID);
+            return _data.PCPerks.Count(x => x.PlayerID == playerID);
         }
 
         public List<PCPerkHeader> GetPCPerksForMenuHeader(string playerID)
         {
-            return _db.StoredProcedure<PCPerkHeader>("GetPCPerksForMenuHeader",
+            return _data.StoredProcedure<PCPerkHeader>("GetPCPerksForMenuHeader",
                     new SqlParameter("PlayerID", playerID)); ;
         }
 
         public List<PerkCategory> GetPerkCategoriesForPC(string playerID)
         {
-            return _db.StoredProcedure<PerkCategory>("GetPerkCategoriesForPC",
+            return _data.StoredProcedure<PerkCategory>("GetPerkCategoriesForPC",
                 new SqlParameter("PlayerID", playerID));
         }
 
         public List<Data.Entity.Perk> GetPerksForPC(string playerID, int categoryID)
         {
-            return _db.StoredProcedure<Data.Entity.Perk>("GetPerksForPC",
+            return _data.StoredProcedure<Data.Entity.Perk>("GetPerksForPC",
                 new SqlParameter("PlayerID", playerID),
                 new SqlParameter("CategoryID", categoryID));
         }
 
         public Data.Entity.Perk GetPerkByID(int perkID)
         {
-            return _db.Perks.Single(x => x.PerkID == perkID);
+            return _data.Perks.Single(x => x.PerkID == perkID);
         }
 
         public PCPerk GetPCPerkByID(string playerID, int perkID)
         {
-            return _db.PCPerks.SingleOrDefault(x => x.PlayerID == playerID && x.PerkID == perkID);
+            return _data.PCPerks.SingleOrDefault(x => x.PlayerID == playerID && x.PerkID == perkID);
         }
 
         public PerkLevel FindPerkLevel(IEnumerable<PerkLevel> levels, int findLevel)
@@ -188,7 +188,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (PerkLevelSkillRequirement req in level.PerkLevelSkillRequirements)
             {
-                PCSkill pcSkill = _db.PCSkills.Single(x => x.PlayerID == player.PlayerID && x.SkillID == req.SkillID);
+                PCSkill pcSkill = _data.PCSkills.Single(x => x.PlayerID == player.PlayerID && x.SkillID == req.SkillID);
                 if (pcSkill.Rank < req.RequiredRank) return false;
             }
 
@@ -197,9 +197,9 @@ namespace SWLOR.Game.Server.Service
 
         public void DoPerkUpgrade(NWPlayer oPC, int perkID)
         {
-            Data.Entity.Perk perk = _db.Perks.Single(x => x.PerkID == perkID);
-            PCPerk pcPerk = _db.PCPerks.SingleOrDefault(x => x.PlayerID == oPC.GlobalID && x.PerkID == perkID);
-            PlayerCharacter player = _db.PlayerCharacters.Single(x => x.PlayerID == oPC.GlobalID);
+            Data.Entity.Perk perk = _data.Perks.Single(x => x.PerkID == perkID);
+            PCPerk pcPerk = _data.PCPerks.SingleOrDefault(x => x.PlayerID == oPC.GlobalID && x.PerkID == perkID);
+            PlayerCharacter player = _data.PlayerCharacters.Single(x => x.PlayerID == oPC.GlobalID);
 
             if (CanPerkBeUpgraded(perk, pcPerk, player))
             {
@@ -212,7 +212,7 @@ namespace SWLOR.Game.Server.Service
                     pcPerk.PlayerID = oPC.GlobalID;
                     pcPerk.PerkLevel = 0;
 
-                    _db.PCPerks.Add(pcPerk);
+                    _data.PCPerks.Add(pcPerk);
                 }
 
                 PerkLevel nextPerkLevel = FindPerkLevel(perk.PerkLevels, pcPerk.PerkLevel + 1);
@@ -221,7 +221,7 @@ namespace SWLOR.Game.Server.Service
                 pcPerk.PerkLevel++;
                 player.UnallocatedSP -= nextPerkLevel.Price;
 
-                _db.SaveChanges();
+                _data.SaveChanges();
 
                 // If a perk is activatable, create the item on the PC.
                 // Remove any existing cast spell unique power properties and add the correct one based on the DB flag.
@@ -317,7 +317,7 @@ namespace SWLOR.Game.Server.Service
             int perkID = examinedObject.GetLocalInt("ACTIVATION_PERK_ID");
             if (perkID <= 0) return existingDescription;
 
-            Data.Entity.Perk perk = _db.Perks.Single(x => x.PerkID == perkID);
+            Data.Entity.Perk perk = _data.Perks.Single(x => x.PerkID == perkID);
             string description = existingDescription;
 
             description += _color.Orange("Name: ") + perk.Name + "\n" +

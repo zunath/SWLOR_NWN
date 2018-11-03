@@ -12,13 +12,13 @@ namespace SWLOR.Game.Server.Placeable.OverflowStorage
     public class OnDisturbed: IRegisteredEvent
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
 
         public OnDisturbed(INWScript script,
-            IDataContext db)
+            IDataService data)
         {
             _ = script;
-            _db = db;
+            _data = data;
         }
 
         public bool Run(params object[] args)
@@ -35,9 +35,9 @@ namespace SWLOR.Game.Server.Placeable.OverflowStorage
             }
             
             int overflowItemID = oItem.GetLocalInt("TEMP_OVERFLOW_ITEM_ID");
-            PCOverflowItem overflowItem = _db.PCOverflowItems.Single(x => x.PCOverflowItemID == overflowItemID);
-            _db.PCOverflowItems.Remove(overflowItem);
-            _db.SaveChanges();
+            PCOverflowItem overflowItem = _data.PCOverflowItems.Single(x => x.PCOverflowItemID == overflowItemID);
+            _data.PCOverflowItems.Remove(overflowItem);
+            _data.SaveChanges();
 
             oItem.DeleteLocalInt("TEMP_OVERFLOW_ITEM_ID");
 

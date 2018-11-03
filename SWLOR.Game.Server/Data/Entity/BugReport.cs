@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Data.Contracts;
 namespace SWLOR.Game.Server.Data.Entity
 {
     [Table("BugReports")]
-    public partial class BugReport: IEntity
+    public class BugReport: IEntity
     {
         [Key]
         public int BugReportID { get; set; }

@@ -17,21 +17,21 @@ namespace SWLOR.Game.Server.Processor
 {
     public class CustomEffectProcessor: IEventProcessor
     {
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IErrorService _error;
         private readonly INWScript _;
         private readonly AppCache _cache;
         private readonly INWNXObject _nwnxObject;
         private readonly ICustomEffectService _customEffect;
 
-        public CustomEffectProcessor(IDataContext db,
+        public CustomEffectProcessor(IDataService data,
             IErrorService error,
             INWScript script,
             AppCache cache,
             INWNXObject nwnxObject,
             ICustomEffectService customEffect)
         {
-            _db = db;
+            _data = data;
             _error = error;
             _ = script;
             _cache = cache;
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Processor
             {
                 if (!player.IsInitializedAsPlayer) continue; // Ignored to prevent a timing issue where new characters would be included in this processing.
 
-                List<PCCustomEffect> effects = _db.PCCustomEffects.Where(x => x.PlayerID == player.GlobalID && 
+                List<PCCustomEffect> effects = _data.PCCustomEffects.Where(x => x.PlayerID == player.GlobalID && 
                                                                               x.CustomEffect.CustomEffectCategoryID != (int)CustomEffectCategoryType.Stance).ToList();
 
                 foreach (var effect in effects)
@@ -70,8 +70,8 @@ namespace SWLOR.Game.Server.Processor
                         string scriptHandler = effect.CustomEffect.ScriptHandler;
                         player.SendMessage(message);
                         player.DeleteLocalInt("CUSTOM_EFFECT_ACTIVE_" + effect.CustomEffectID);
-                        _db.PCCustomEffects.Remove(effect);
-                        _db.SaveChanges();
+                        _data.PCCustomEffects.Remove(effect);
+                        _data.SaveChanges();
 
                         App.ResolveByInterface<ICustomEffect>("CustomEffect." + scriptHandler, (handler) =>
                         {
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Processor
                 }
             }
 
-            _db.SaveChanges();
+            _data.SaveChanges();
         }
 
         private void ProcessNPCCustomEffects()
@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Processor
                 var entry = _cache.NPCEffects.ElementAt(index);
                 CasterSpellVO casterModel = entry.Key;
                 _cache.NPCEffects[entry.Key] = entry.Value - 1;
-                Data.Entity.CustomEffect entity = _db.CustomEffects.Single(x => x.CustomEffectID == casterModel.CustomEffectID);
+                Data.Entity.CustomEffect entity = _data.CustomEffects.Single(x => x.CustomEffectID == casterModel.CustomEffectID);
                 App.ResolveByInterface<ICustomEffect>("CustomEffect." + entity.ScriptHandler, (handler) =>
                 {
                     try
@@ -158,9 +158,9 @@ namespace SWLOR.Game.Server.Processor
 
         private void ClearRemovedPCEffects()
         {
-            var records = _db.PCCustomEffects.Where(x => _cache.PCEffectsForRemoval.Contains(x.PCCustomEffectID)).ToList();
-            _db.PCCustomEffects.RemoveRange(records);
-            _db.SaveChanges();
+            var records = _data.PCCustomEffects.Where(x => _cache.PCEffectsForRemoval.Contains(x.PCCustomEffectID)).ToList();
+            _data.PCCustomEffects.RemoveRange(records);
+            _data.SaveChanges();
             _cache.PCEffectsForRemoval.Clear();
         }
     }

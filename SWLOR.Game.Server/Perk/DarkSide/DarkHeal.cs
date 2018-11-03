@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Perk.DarkSide
         private readonly IPerkService _perk;
         private readonly IRandomService _random;
         private readonly ISkillService _skill;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly ICustomEffectService _customEffect;
         private readonly IPlayerStatService _playerStat;
 
@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Perk.DarkSide
             IPerkService perk,
             IRandomService random,
             ISkillService skill,
-            IDataContext db,
+            IDataService data,
             ICustomEffectService customEffect,
             IPlayerStatService playerStat)
         {
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Perk.DarkSide
             _perk = perk;
             _random = random;
             _skill = skill;
-            _db = db;
+            _data = data;
             _customEffect = customEffect;
             _playerStat = playerStat;
         }
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Perk.DarkSide
         {
             int darkBonus = _playerStat.GetPlayerItemEffectiveStats(player).DarkAbility;
             
-            PCCustomEffect spreadEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CustomEffectID == (int) CustomEffectType.DarkSpread);
+            PCCustomEffect spreadEffect = _data.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CustomEffectID == (int) CustomEffectType.DarkSpread);
             string spreadData = spreadEffect?.Data ?? string.Empty;
             int spreadLevel = spreadEffect?.EffectiveLevel ?? 0;
             int spreadUses = spreadEffect == null ? 0 : Convert.ToInt32(spreadData.Split(',')[0]);
@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Perk.DarkSide
                 {
                     // ReSharper disable once PossibleNullReferenceException
                     spreadEffect.Data = spreadUses + "," + spreadRange;
-                    _db.SaveChanges();
+                    _data.SaveChanges();
                     player.SendMessage("Dark Spread uses remaining: " + spreadUses);
                 }
 

@@ -15,13 +15,13 @@ namespace SWLOR.Game.Server.Service
     public class ActivityLoggingService: IActivityLoggingService
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly INWNXChat _nwnxChat;
 
-        public ActivityLoggingService(INWScript script, IDataContext db, INWNXChat nwnxChat)
+        public ActivityLoggingService(INWScript script, IDataService data, INWNXChat nwnxChat)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _nwnxChat = nwnxChat;
         }
 
@@ -52,8 +52,8 @@ namespace SWLOR.Game.Server.Service
                 DateOfEvent = now
             };
             
-            _db.ClientLogEvents.Add(entity);
-            _db.SaveChanges();
+            _data.ClientLogEvents.Add(entity);
+            _data.SaveChanges();
         }
 
         public void OnModuleClientLeave()
@@ -76,8 +76,8 @@ namespace SWLOR.Game.Server.Service
                 DateOfEvent = now
             };
 
-            _db.ClientLogEvents.Add(entity);
-            _db.SaveChanges();
+            _data.ClientLogEvents.Add(entity);
+            _data.SaveChanges();
         }
 
 
@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Service
             int mode = _nwnxChat.GetChannel();
             int channel = ConvertNWNXChatChannelIDToDatabaseID(mode);
             NWObject recipient = _nwnxChat.GetTarget();
-            ChatChannelsDomain channelEntity = _db.ChatChannelsDomains.Single(x => x.ChatChannelID == channel);
+            ChatChannelsDomain channelEntity = _data.ChatChannelsDomains.Single(x => x.ChatChannelID == channel);
 
             // Sender - should always have this data.
             string senderCDKey = _.GetPCPublicCDKey(sender.Object);
@@ -164,8 +164,8 @@ namespace SWLOR.Game.Server.Service
                 DateSent = DateTime.UtcNow
             };
             
-            _db.ChatLogs.Add(entity);
-            _db.SaveChanges();
+            _data.ChatLogs.Add(entity);
+            _data.SaveChanges();
 
         }
 

@@ -13,30 +13,30 @@ namespace SWLOR.Game.Server.Service
 {
     public class KeyItemService : IKeyItemService
     {
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly INWScript _;
 
-        public KeyItemService(IDataContext db, INWScript script)
+        public KeyItemService(IDataService data, INWScript script)
         {
-            _db = db;
+            _data = data;
             _ = script;
         }
 
         public bool PlayerHasKeyItem(NWObject oPC, int keyItemID)
         {
-            var entity = _db.PCKeyItems.FirstOrDefault(x => x.PlayerID == oPC.GlobalID && x.KeyItemID == keyItemID);
+            var entity = _data.PCKeyItems.FirstOrDefault(x => x.PlayerID == oPC.GlobalID && x.KeyItemID == keyItemID);
             return entity != null;
         }
 
         public bool PlayerHasAllKeyItems(NWObject oPC, params int[] keyItemIDs)
         {
-            var result = _db.PCKeyItems.Where(x => x.PlayerID == oPC.GlobalID && keyItemIDs.Contains(x.KeyItemID)).ToList();
+            var result = _data.PCKeyItems.Where(x => x.PlayerID == oPC.GlobalID && keyItemIDs.Contains(x.KeyItemID)).ToList();
             return result.Count() == keyItemIDs.Length;
         }
 
         public bool PlayerHasAnyKeyItem(NWObject oPC, params int[] keyItemIDs)
         {
-            return _db.PCKeyItems.Any(x => x.PlayerID == oPC.GlobalID && keyItemIDs.Contains(x.KeyItemID));
+            return _data.PCKeyItems.Any(x => x.PlayerID == oPC.GlobalID && keyItemIDs.Contains(x.KeyItemID));
         }
 
 
@@ -50,10 +50,10 @@ namespace SWLOR.Game.Server.Service
                     KeyItemID = keyItemID,
                     AcquiredDate = DateTime.UtcNow
                 };
-                _db.PCKeyItems.Add(entity);
-                _db.SaveChanges();
+                _data.PCKeyItems.Add(entity);
+                _data.SaveChanges();
 
-                KeyItem keyItem = _db.KeyItems.Single(x => x.KeyItemID == keyItemID);
+                KeyItem keyItem = _data.KeyItems.Single(x => x.KeyItemID == keyItemID);
                 oPC.SendMessage("You acquired the key item '" + keyItem.Name + "'.");
             }
         }
@@ -63,20 +63,20 @@ namespace SWLOR.Game.Server.Service
             if (PlayerHasKeyItem(oPC, keyItemID))
             {
 
-                PCKeyItem entity = _db.PCKeyItems.Single(x => x.PlayerID == oPC.GlobalID && x.KeyItemID == keyItemID);
-                _db.PCKeyItems.Remove(entity);
-                _db.SaveChanges();
+                PCKeyItem entity = _data.PCKeyItems.Single(x => x.PlayerID == oPC.GlobalID && x.KeyItemID == keyItemID);
+                _data.PCKeyItems.Remove(entity);
+                _data.SaveChanges();
             }
         }
 
         public IEnumerable<PCKeyItem> GetPlayerKeyItemsByCategory(NWPlayer player, int categoryID)
         {
-            return _db.PCKeyItems.Where(x => x.PlayerID == player.GlobalID && x.KeyItem.KeyItemCategoryID == categoryID).ToList();
+            return _data.PCKeyItems.Where(x => x.PlayerID == player.GlobalID && x.KeyItem.KeyItemCategoryID == categoryID).ToList();
         }
 
         public KeyItem GetKeyItemByID(int keyItemID)
         {
-            return _db.KeyItems.Single(x => x.KeyItemID == keyItemID);
+            return _data.KeyItems.Single(x => x.KeyItemID == keyItemID);
         }
 
         public void OnModuleItemAcquired()

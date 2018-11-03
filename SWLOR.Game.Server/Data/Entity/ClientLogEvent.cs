@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Data.Contracts;
 namespace SWLOR.Game.Server.Data.Entity
 {
     [Table("ClientLogEvents")]
-    public partial class ClientLogEvent: IEntity
+    public class ClientLogEvent: IEntity
     {
 
         [Key]
@@ -15,8 +15,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public string CDKey { get; set; }
         public string AccountName { get; set; }
         public System.DateTime DateOfEvent { get; set; }
-    
-        public virtual ClientLogEventTypesDomain ClientLogEventTypesDomain { get; set; }
-        public virtual PlayerCharacter PlayerCharacter { get; set; }
     }
 }

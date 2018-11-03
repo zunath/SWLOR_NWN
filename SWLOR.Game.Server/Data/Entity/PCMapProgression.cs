@@ -5,14 +5,12 @@ using SWLOR.Game.Server.Data.Contracts;
 namespace SWLOR.Game.Server.Data.Entity
 {
     [Table("PCMapProgression")]
-    public partial class PCMapProgression: IEntity
+    public class PCMapProgression: IEntity
     {
         [Key]
         public int PCMapProgressionID { get; set; }
         public string PlayerID { get; set; }
         public string AreaResref { get; set; }
         public string Progression { get; set; }
-    
-        public virtual PlayerCharacter PlayerCharacter { get; set; }
     }
 }

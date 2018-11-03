@@ -10,21 +10,21 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
     public class OnOpened : IRegisteredEvent
     {
         private readonly ISerializationService _serialization;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
 
         public OnOpened(
             ISerializationService serialization,
-            IDataContext db)
+            IDataService data)
         {
             _serialization = serialization;
-            _db = db;
+            _data = data;
         }
 
         public bool Run(params object[] args)
         {
             NWPlaceable chest = (Object.OBJECT_SELF);
             int structureID = chest.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            var structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
+            var structure = _data.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
 
             foreach (var item in structure.PCBaseStructureItems)
             {

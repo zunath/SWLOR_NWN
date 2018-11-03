@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Data.Contracts;
 namespace SWLOR.Game.Server.Data.Entity
 {
     [Table("DataPackages")]
-    public partial class DataPackage: IEntity
+    public class DataPackage: IEntity
     {
         [Key]
         public int DataPackageID { get; set; }

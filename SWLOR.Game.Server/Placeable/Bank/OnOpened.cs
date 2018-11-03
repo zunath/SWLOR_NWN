@@ -16,16 +16,16 @@ namespace SWLOR.Game.Server.Placeable.Bank
     public class OnOpened : IRegisteredEvent
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly ISerializationService _serialization;
 
         public OnOpened(
             INWScript script,
-            IDataContext db,
+            IDataService data,
             ISerializationService serialization)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _serialization = serialization;
         }
 
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Placeable.Bank
                 return false;
             }
 
-            Data.Entity.Bank entity = _db.Banks.SingleOrDefault(x => x.BankID == bankID);
+            Data.Entity.Bank entity = _data.Banks.SingleOrDefault(x => x.BankID == bankID);
 
             if (entity == null)
             {
@@ -54,8 +54,8 @@ namespace SWLOR.Game.Server.Placeable.Bank
                     AreaTag = area.Tag,
                     BankID = bankID
                 };
-                _db.Banks.Add(entity);
-                _db.SaveChanges();
+                _data.Banks.Add(entity);
+                _data.SaveChanges();
             }
 
             foreach (BankItem item in entity.BankItems.Where(x => x.PlayerID == player.GlobalID))

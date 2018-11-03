@@ -9,14 +9,14 @@ namespace SWLOR.Game.Server.Service
 {
     public class ImpoundService : IImpoundService
     {
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly ISerializationService _serialization;
 
         public ImpoundService(
-            IDataContext db,
+            IDataService data,
             ISerializationService serialization)
         {
-            _db = db;
+            _data = data;
             _serialization = serialization;
         }
 
@@ -32,8 +32,8 @@ namespace SWLOR.Game.Server.Service
                 PlayerID = pcBaseStructureItem.PCBaseStructure.PCBase.PlayerID
             };
 
-            _db.PCImpoundedItems.Add(impoundItem);
-            _db.SaveChanges();
+            _data.PCImpoundedItems.Add(impoundItem);
+            _data.SaveChanges();
         }
 
         public void Impound(string playerID, NWItem item)
@@ -49,8 +49,8 @@ namespace SWLOR.Game.Server.Service
                 ItemName = item.Name
             };
 
-            _db.PCImpoundedItems.Add(structureImpoundedItem);
-            _db.SaveChanges();
+            _data.PCImpoundedItems.Add(structureImpoundedItem);
+            _data.SaveChanges();
         }
     }
 }

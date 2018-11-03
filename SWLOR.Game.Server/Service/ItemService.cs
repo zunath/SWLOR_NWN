@@ -23,20 +23,20 @@ namespace SWLOR.Game.Server.Service
         private readonly IBiowareXP2 _xp2;
         private readonly IColorTokenService _color;
         private readonly INWNXPlayer _nwnxPlayer;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
 
         public ItemService(
             INWScript script,
             IBiowareXP2 xp2,
             IColorTokenService color,
             INWNXPlayer nwnxPlayer,
-            IDataContext db)
+            IDataService data)
         {
             _ = script;
             _xp2 = xp2;
             _color = color;
             _nwnxPlayer = nwnxPlayer;
-            _db = db;
+            _data = data;
         }
 
         public string GetNameByResref(string resref)
@@ -163,7 +163,7 @@ namespace SWLOR.Game.Server.Service
             }
             if (examinedItem.AssociatedSkillType > 0)
             {
-                PCSkill pcSkill = _db.PCSkills.Single(x => x.PlayerID == examiner.GlobalID && x.SkillID == (int) examinedItem.AssociatedSkillType);
+                PCSkill pcSkill = _data.PCSkills.Single(x => x.PlayerID == examiner.GlobalID && x.SkillID == (int) examinedItem.AssociatedSkillType);
                 description += _color.Orange("Associated Skill: ") + pcSkill.Skill.Name + "\n";
             }
             if (examinedItem.CustomAC > 0)

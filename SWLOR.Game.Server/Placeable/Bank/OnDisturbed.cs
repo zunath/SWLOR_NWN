@@ -16,20 +16,20 @@ namespace SWLOR.Game.Server.Placeable.Bank
     {
         private readonly INWScript _;
         private readonly IItemService _item;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IColorTokenService _color;
         private readonly ISerializationService _serialization;
 
         public OnDisturbed(
             INWScript script,
             IItemService item,
-            IDataContext db,
+            IDataService data,
             IColorTokenService color,
             ISerializationService serialization)
         {
             _ = script;
             _item = item;
-            _db = db;
+            _data = data;
             _color = color;
             _serialization = serialization;
         }
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Placeable.Bank
             int itemLimit = terminal.GetLocalInt("BANK_LIMIT");
             if (itemLimit <= 0) itemLimit = 20;
 
-            Data.Entity.Bank entity = _db.Banks.Single(x => x.BankID == bankID);
+            Data.Entity.Bank entity = _data.Banks.Single(x => x.BankID == bankID);
 
             if (disturbType == INVENTORY_DISTURB_TYPE_ADDED)
             {
@@ -71,14 +71,14 @@ namespace SWLOR.Game.Server.Placeable.Bank
                     };
 
                     entity.BankItems.Add(itemEntity);
-                    _db.SaveChanges();
+                    _data.SaveChanges();
                 }
             }
             else if (disturbType == INVENTORY_DISTURB_TYPE_REMOVED)
             {
-                var record = _db.BankItems.Single(x => x.ItemID == item.GlobalID);
-                _db.BankItems.Remove(record);
-                _db.SaveChanges();
+                var record = _data.BankItems.Single(x => x.ItemID == item.GlobalID);
+                _data.BankItems.Remove(record);
+                _data.SaveChanges();
             }
 
             player.SendMessage(_color.White("Item Limit: " + (itemCount > itemLimit ? itemLimit : itemCount) + " / ") + _color.Red("" + itemLimit));

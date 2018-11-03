@@ -6,12 +6,12 @@ using SWLOR.Game.Server.Data.Contracts;
 namespace SWLOR.Game.Server.Data.Entity
 {
     [Table("KeyItemCategories")]
-    public partial class KeyItemCategory: IEntity, ICacheable
+    public class KeyItemCategory: IEntity
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public KeyItemCategory()
         {
-            this.KeyItems = new HashSet<KeyItem>();
+            KeyItems = new HashSet<KeyItem>();
         }
 
         [ExplicitKey]

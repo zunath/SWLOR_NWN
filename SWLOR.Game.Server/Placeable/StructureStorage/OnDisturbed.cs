@@ -13,19 +13,19 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
     public class OnDisturbed : IRegisteredEvent
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IColorTokenService _color;
         private readonly ISerializationService _serialization;
         private readonly IItemService _item;
 
         public OnDisturbed(INWScript script,
-            IDataContext db,
+            IDataService data,
             IColorTokenService color,
             ISerializationService serialization,
             IItemService item)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _color = color;
             _serialization = serialization;
             _item = item;
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
             NWPlaceable container = (Object.OBJECT_SELF);
             int disturbType = _.GetInventoryDisturbType();
             int structureID = container.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            var structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
+            var structure = _data.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
             int itemLimit = structure.BaseStructure.Storage + structure.StructureBonus;
 
             int itemCount = container.InventoryItems.Count();
@@ -73,10 +73,10 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
             }
             else if (disturbType == INVENTORY_DISTURB_TYPE_REMOVED)
             {
-                var dbItem = _db.PCBaseStructureItems.Single(x => x.ItemGlobalID == item.GlobalID);
-                _db.PCBaseStructureItems.Remove(dbItem);
+                var dbItem = _data.PCBaseStructureItems.Single(x => x.ItemGlobalID == item.GlobalID);
+                _data.PCBaseStructureItems.Remove(dbItem);
             }
-            _db.SaveChanges();
+            _data.SaveChanges();
 
             oPC.SendMessage(_color.White("Item Limit: " + itemCount + " / ") + _color.Red(itemLimit.ToString()));
 

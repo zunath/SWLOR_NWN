@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Data.Contracts;
 namespace SWLOR.Game.Server.Data.Entity
 {
     [Table("Users")]
-    public partial class User: IEntity
+    public class User: IEntity
     {
         [Key]
         public long UserID { get; set; }
@@ -16,7 +16,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public string Email { get; set; }
         public int RoleID { get; set; }
         public System.DateTime DateRegistered { get; set; }
-    
-        public virtual DMRoleDomain DMRoleDomain { get; set; }
     }
 }

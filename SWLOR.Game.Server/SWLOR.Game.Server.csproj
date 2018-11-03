@@ -39,12 +39,6 @@
     <Reference Include="Dapper.Contrib, Version=1.50.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dapper.Contrib.1.50.5\lib\net451\Dapper.Contrib.dll</HintPath>
     </Reference>
-    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-    </Reference>
     <Reference Include="FluentBehaviourTree, Version=0.0.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\FluentBehaviourTree.0.0.4.0\lib\net35\FluentBehaviourTree.dll</HintPath>
     </Reference>
@@ -227,8 +221,6 @@
     <Compile Include="CustomEffect\RestEffect.cs" />
     <Compile Include="CustomEffect\ShieldBoostEffect.cs" />
     <Compile Include="CustomEffect\SwordOathEffect.cs" />
-    <Compile Include="Data\Contracts\ICacheable.cs" />
-    <Compile Include="Data\Contracts\IDataContext.cs" />
     <Compile Include="Data\Contracts\IDataProcessor.cs" />
     <Compile Include="Data\Contracts\IEntity.cs" />
     <Compile Include="Data\DatabaseMigrationRunner.cs" />
@@ -1274,11 +1266,6 @@
     <Compile Include="Trigger\QuestTrigger.cs" />
     <Compile Include="ValueObject\AreaSpawn.cs" />
     <Compile Include="ValueObject\AreaStructure.cs" />
-    <Compile Include="ValueObject\CachedPCSkill.cs" />
-    <Compile Include="ValueObject\CachedPCSkills.cs" />
-    <Compile Include="ValueObject\CachedSkill.cs" />
-    <Compile Include="ValueObject\CachedSkillCategory.cs" />
-    <Compile Include="ValueObject\CachedSkillXPRequirement.cs" />
     <Compile Include="ValueObject\ColorNames.cs" />
     <Compile Include="ValueObject\DatabaseAction.cs" />
     <Compile Include="ValueObject\DataPackageFile.cs" />

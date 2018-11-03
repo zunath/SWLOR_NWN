@@ -5,12 +5,12 @@ using SWLOR.Game.Server.Data.Contracts;
 namespace SWLOR.Game.Server.Data.Entity
 {
     [Table("LootTableItems")]
-    public partial class LootTableItem: IEntity, ICacheable
+    public class LootTableItem: IEntity
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public LootTableItem()
         {
-            this.SpawnRule = "";
+            SpawnRule = "";
         }
 
         [Key]
@@ -21,7 +21,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public byte Weight { get; set; }
         public bool IsActive { get; set; }
         public string SpawnRule { get; set; }
-    
-        public virtual LootTable LootTable { get; set; }
     }
 }

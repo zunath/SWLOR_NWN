@@ -1,18 +1,13 @@
 ﻿using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
-using System.Data.Entity.Migrations;
-using System.Data.SqlClient;
 using System.Linq;
 using SWLOR.Game.Server.AreaInstance.Contracts;
 using SWLOR.Game.Server.Data.Entity;
-using SWLOR.Game.Server.Event;
+using SWLOR.Game.Server.Enumeration;
 using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Service
@@ -20,38 +15,32 @@ namespace SWLOR.Game.Server.Service
     public class AreaService : IAreaService
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
-        private readonly IDataContext _bakeDB;
+        private readonly IDataService _data;
         private readonly ISpawnService _spawn;
         private readonly AppCache _cache;
 
         public AreaService(
             INWScript script,
-            IDataContext db,
-            IDataContext bakeDB,
+            IDataService data,
             ISpawnService spawn,
             AppCache cache)
         {
             _ = script;
-            _db = db;
-            _bakeDB = bakeDB;
+            _data = data;
             _spawn = spawn;
             _cache = cache;
-
-            // Disable stuff that slows down bulk inserts.
-            _bakeDB.Configuration.AutoDetectChangesEnabled = false;
-            _bakeDB.Configuration.ValidateOnSaveEnabled = false;
         }
 
         public void OnModuleLoad()
         {
             var areas = NWModule.Get().Areas;
-            var dbAreas = _db.Areas.Where(x => x.IsActive).ToList();
+            var dbAreas = _data.GetAll<Area>().Where(x => x.IsActive).ToList();
             dbAreas.ForEach(x => x.IsActive = false);
 
             foreach (var area in areas)
             {
                 var dbArea = dbAreas.SingleOrDefault(x => x.Resref == area.Resref);
+                var action = DatabaseActionType.Update;
 
                 if (dbArea == null)
                 {
@@ -60,6 +49,7 @@ namespace SWLOR.Game.Server.Service
                         AreaID = Guid.NewGuid().ToString("N"),
                         Resref = area.Resref
                     };
+                    action = DatabaseActionType.Insert;
                 }
 
                 int width = _.GetAreaSize(AREA_WIDTH, area.Object);
@@ -98,10 +88,8 @@ namespace SWLOR.Game.Server.Service
                 if (dbArea.MaxResourceQuality < dbArea.ResourceQuality)
                     dbArea.MaxResourceQuality = dbArea.ResourceQuality;
 
-
-                _db.Areas.AddOrUpdate(dbArea);
+                _data.SubmitDataChange(dbArea, action);
             }
-            _db.SaveChanges();
 
             string arg = Environment.GetEnvironmentVariable("AREA_BAKING_ENABLED");
             bool bakingEnabled =  arg == null || Convert.ToBoolean(arg);
@@ -124,13 +112,13 @@ namespace SWLOR.Game.Server.Service
         // accuracy I wanted, without too much overhead. Your mileage may vary.
         private void BakeAreas()
         {
-            var config = _db.ServerConfigurations.Single();
+            var config = _data.GetAll<ServerConfiguration>().First();
             int Step = config.AreaBakeStep;
             const float MinDistance = 6.0f;
 
             foreach (var area in NWModule.Get().Areas)
             {
-                var dbArea = _bakeDB.Areas.Single(x => x.Resref == area.Resref);
+                var dbArea = _data.GetAll<Area>().Single(x => x.Resref == area.Resref);
 
                 int arraySizeX = dbArea.Width * (10 / Step);
                 int arraySizeY = dbArea.Height * (10 / Step);
@@ -164,20 +152,19 @@ namespace SWLOR.Game.Server.Service
                 {
                     dbArea.Walkmesh = walkmesh;
                     dbArea.DateLastBaked = DateTime.UtcNow;
-                    ((DbContext)_bakeDB).Entry(dbArea).State = EntityState.Modified; // Manually mark as changed since AutoDetectChanges is disabled for this context
-                    _bakeDB.SaveChanges();
+                    _data.SubmitDataChange(dbArea, DatabaseActionType.Update);
 
                     Console.WriteLine("Baking area because its walkmesh has changed since last run: " + area.Name);
 
-                    _bakeDB.StoredProcedure("DeleteAreaWalkmeshes",
-                        new SqlParameter("AreaID", dbArea.AreaID));
-
+                    foreach (var mesh in dbArea.AreaWalkmeshes)
+                    {
+                        _data.SubmitDataChange(mesh, DatabaseActionType.Delete);
+                    }
+                    dbArea.AreaWalkmeshes.Clear();
+                    
                     Console.WriteLine("Cleared old walkmesh. Adding new one now.");
-
-                    const int BatchSize = 5000;
-                    int batchRecords = 0;
-                    string sql = string.Empty;
-
+                    
+                    int records = 0;
                     for (int x = 0; x < arraySizeX; x++)
                     {
                         for (int y = 0; y < arraySizeY; y++)
@@ -187,27 +174,23 @@ namespace SWLOR.Game.Server.Service
                             if (!isWalkable) continue;
 
                             float z = locations[x, y].Item2;
-
-                            // Raw SQL inserts are quicker than using EF.
-                            sql += $@"INSERT INTO dbo.AreaWalkmesh(AreaID, LocationX, LocationY, LocationZ) VALUES('{dbArea.AreaID}', {x * Step}, {y * Step}, {z});";
-
-                            batchRecords++;
-                            if (batchRecords >= BatchSize)
+                            
+                            AreaWalkmesh mesh = new AreaWalkmesh()
                             {
-                                Console.WriteLine("Saving " + BatchSize + " records...");
-                                _bakeDB.Database.ExecuteSqlCommand(sql);
-                                sql = string.Empty;
-                                batchRecords = 0;
-                            }
+                                AreaID = dbArea.AreaID,
+                                LocationX = x * Step,
+                                LocationY = y * Step,
+                                LocationZ = z
+                            };
 
+                            dbArea.AreaWalkmeshes.Add(mesh);
+                            _data.SubmitDataChange(mesh, DatabaseActionType.Insert);
+
+                            records++;
                         }
                     }
 
-                    if(!string.IsNullOrWhiteSpace(sql))
-                    {
-                        Console.WriteLine("Saving " + batchRecords + " records...");
-                        _bakeDB.Database.ExecuteSqlCommand(sql);
-                    }
+                    Console.WriteLine("Saved " + records + " records.");
                 }
                 Console.WriteLine("Area walkmesh up to date: " + area.Name);
 

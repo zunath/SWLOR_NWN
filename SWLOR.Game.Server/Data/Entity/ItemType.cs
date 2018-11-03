@@ -5,12 +5,12 @@ using SWLOR.Game.Server.Data.Contracts;
 namespace SWLOR.Game.Server.Data.Entity
 {
     [Table("ItemTypes")]
-    public partial class ItemType: IEntity, ICacheable
+    public class ItemType: IEntity
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public ItemType()
         {
-            this.Name = "";
+            Name = "";
         }
 
         [ExplicitKey]

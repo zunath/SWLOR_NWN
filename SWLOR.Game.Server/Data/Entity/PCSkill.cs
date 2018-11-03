@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Data.Contracts;
 namespace SWLOR.Game.Server.Data.Entity
 {
     [Table("PCSkills")]
-    public partial class PCSkill: IEntity
+    public class PCSkill: IEntity
     {
         [Key]
         public int PCSkillID { get; set; }
@@ -14,8 +14,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public int XP { get; set; }
         public int Rank { get; set; }
         public bool IsLocked { get; set; }
-    
-        public virtual PlayerCharacter PlayerCharacter { get; set; }
-        public virtual Skill Skill { get; set; }
     }
 }

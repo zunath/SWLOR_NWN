@@ -5,12 +5,12 @@ using SWLOR.Game.Server.Data.Contracts;
 namespace SWLOR.Game.Server.Data.Entity
 {
     [Table("GrowingPlants")]
-    public partial class GrowingPlant: IEntity, ICacheable
+    public class GrowingPlant: IEntity
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public GrowingPlant()
         {
-            this.LocationAreaTag = "";
+            LocationAreaTag = "";
         }
 
         [Key]
@@ -27,7 +27,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public int TotalTicks { get; set; }
         public int WaterStatus { get; set; }
         public int LongevityBonus { get; set; }
-    
-        public virtual Plant Plant { get; set; }
     }
 }

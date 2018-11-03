@@ -16,20 +16,20 @@ namespace SWLOR.Game.Server.Processor
     {
         private readonly AppCache _cache;
         private readonly IObjectProcessingService _processor;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly ISpawnService _spawn;
         private readonly INWScript _;
 
         public SpawnProcessor(
             AppCache cache,
             IObjectProcessingService processor,
-            IDataContext db,
+            IDataService data,
             ISpawnService spawn,
             INWScript script)
         {
             _cache = cache;
             _processor = processor;
-            _db = db;
+            _data = data;
             _spawn = spawn;
             _ = script;
         }
@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Processor
 
                 if (string.IsNullOrWhiteSpace(resref))
                 {
-                    var dbSpawn = _db.SpawnObjects.Where(x => x.SpawnID == spawn.SpawnTableID)
+                    var dbSpawn = _data.SpawnObjects.Where(x => x.SpawnID == spawn.SpawnTableID)
                         .OrderBy(o => Guid.NewGuid()).First();
 
                     resref = dbSpawn.Resref;

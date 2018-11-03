@@ -5,14 +5,14 @@ using SWLOR.Game.Server.Data.Contracts;
 namespace SWLOR.Game.Server.Data.Entity
 {
     [Table("ChatLog")]
-    public partial class ChatLog: IEntity
+    public class ChatLog: IEntity
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public ChatLog()
         {
-            this.SenderAccountName = "";
-            this.SenderCDKey = "";
-            this.Message = "";
+            SenderAccountName = "";
+            SenderCDKey = "";
+            Message = "";
         }
 
         [Key]
@@ -28,9 +28,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public System.DateTime DateSent { get; set; }
         public string SenderDMName { get; set; }
         public string ReceiverDMName { get; set; }
-    
-        public virtual ChatChannelsDomain ChatChannelsDomain { get; set; }
-        public virtual PlayerCharacter ReceiverPlayerCharacter { get; set; }
-        public virtual PlayerCharacter SenderPlayerCharacter { get; set; }
     }
 }

@@ -17,12 +17,12 @@ namespace SWLOR.Game.Server.Service
 {
     public class DataPackageService : IDataPackageService
     {
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         const string PackagesPath = "./DataPackages/";
 
-        public DataPackageService(IDataContext db)
+        public DataPackageService(IDataService data)
         {
-            _db = db;
+            _data = data;
         }
 
         public void OnModuleLoad()
@@ -64,8 +64,8 @@ namespace SWLOR.Game.Server.Service
                     package.ImportedSuccessfully = false;
                 }
 
-                _db.DataPackages.Add(package);
-                _db.SaveChanges();
+                _data.DataPackages.Add(package);
+                _data.SaveChanges();
 
                 if (package.ImportedSuccessfully)
                 {
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Service
         private List<DataPackage> BuildPackageList()
         {
             // Pull back all of the packages we've already attempted to import.
-            var importedPackages = _db.DataPackages.ToList();
+            var importedPackages = _data.DataPackages.ToList();
 
             List<DataPackage> packages = new List<DataPackage>();
             string[] files = Directory.GetFiles(PackagesPath, "*.json");
@@ -182,7 +182,7 @@ namespace SWLOR.Game.Server.Service
             return errors;
         }
 
-        private string ValidateAndProcess<T>(IDataContext db, IDataProcessor<T> processor, T dataObject)
+        private string ValidateAndProcess<T>(IDataService data, IDataProcessor<T> processor, T dataObject)
         {
             string errors = string.Empty;
 

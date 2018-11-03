@@ -14,18 +14,18 @@ namespace SWLOR.Game.Server.Service
     public class ObjectVisibilityService : IObjectVisibilityService
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly AppCache _appCache;
         private readonly INWNXPlayer _nwnxPlayer;
 
         public ObjectVisibilityService(
             INWScript script,
-            IDataContext db,
+            IDataService data,
             AppCache appCache,
             INWNXPlayer nwnxPlayer)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _appCache = appCache;
             _nwnxPlayer = nwnxPlayer;
         }
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
 
-            var dbPlayer = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+            var dbPlayer = _data.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
 
             // Apply visibilities for player
             foreach (var visibility in dbPlayer.PCObjectVisibilities)
@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Service
             
             var players = NWModule.Get().Players.ToList();
             var concatPlayerIDs = players.Select(x => x.GlobalID);
-            var pcVisibilities = _db.PCObjectVisibilities.Where(x => concatPlayerIDs.Contains(x.PlayerID)).ToList();
+            var pcVisibilities = _data.PCObjectVisibilities.Where(x => concatPlayerIDs.Contains(x.PlayerID)).ToList();
 
             foreach (var player in players)
             {
@@ -133,7 +133,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var visibility = _db.PCObjectVisibilities.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.VisibilityObjectID == visibilityObjectID);
+            var visibility = _data.PCObjectVisibilities.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.VisibilityObjectID == visibilityObjectID);
             if (visibility == null)
             {
                 visibility = new PCObjectVisibility
@@ -141,11 +141,11 @@ namespace SWLOR.Game.Server.Service
                     PlayerID = player.GlobalID,
                     VisibilityObjectID = visibilityObjectID
                 };
-                _db.PCObjectVisibilities.Add(visibility);
+                _data.PCObjectVisibilities.Add(visibility);
             }
 
             visibility.IsVisible = isVisible;
-            _db.SaveChanges();
+            _data.SaveChanges();
 
             if (visibility.IsVisible)
                 _nwnxPlayer.SetVisibilityOverride(player, target, (int)PlayerVisibilityType.Visible);

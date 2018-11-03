@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
     {
         private readonly INWScript _;
         private readonly IItemService _item;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IRandomService _random;
         private readonly ISkillService _skill;
         private readonly IPerkService _perk;
@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
 
         public OnDisturbed(INWScript script,
             IItemService item,
-            IDataContext db,
+            IDataService data,
             IRandomService random,
             ISkillService skill,
             IPerkService perk,
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
         {
             _ = script;
             _item = item;
-            _db = db;
+            _data = data;
             _random = random;
             _skill = skill;
             _perk = perk;
@@ -96,8 +96,8 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
             growingPlant.DateCreated = DateTime.UtcNow; 
             growingPlant.LongevityBonus = perkBonus;
 
-            _db.GrowingPlants.Add(growingPlant);
-            _db.SaveChanges();
+            _data.GrowingPlants.Add(growingPlant);
+            _data.SaveChanges();
             
             NWPlaceable hole = (container.GetLocalObject("FARM_SMALL_HOLE"));
             NWPlaceable plantPlc = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "growing_plant", hole.Location));

@@ -16,18 +16,18 @@ namespace SWLOR.Game.Server.Item
     public class StructureItem : IActionItem
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IDialogService _dialog;
         private readonly IBaseService _base;
 
         public StructureItem(
             INWScript script,
-            IDataContext db,
+            IDataService data,
             IDialogService dialog,
             IBaseService @base)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _dialog = dialog;
             _base = @base;
         }
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Item
             // Structure is being placed inside a building.
             else if (parentStructureID > 0)
             {
-                var parentStructure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == parentStructureID);
+                var parentStructure = _data.PCBaseStructures.Single(x => x.PCBaseStructureID == parentStructureID);
                 data.PCBaseID = parentStructure.PCBaseID;
                 data.ParentStructureID = parentStructureID;
                 data.BuildingType = BuildingType.Interior;
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Item
             else
             {
                 string sector = _base.GetSectorOfLocation(targetLocation);
-                PCBase pcBase = _db.PCBases.Single(x => x.AreaResref == area.Resref && x.Sector == sector);
+                PCBase pcBase = _data.PCBases.Single(x => x.AreaResref == area.Resref && x.Sector == sector);
                 data.PCBaseID = pcBase.PCBaseID;
                 data.ParentStructureID = null;
                 data.BuildingType = BuildingType.Exterior;

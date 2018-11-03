@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Data.Contracts;
 namespace SWLOR.Game.Server.Data.Entity
 {
     [Table("PCOutfits")]
-    public partial class PCOutfit: IEntity
+    public class PCOutfit: IEntity
     {
         [ExplicitKey]
         public string PlayerID { get; set; }
@@ -19,7 +19,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public string Outfit8 { get; set; }
         public string Outfit9 { get; set; }
         public string Outfit10 { get; set; }
-    
-        public virtual PlayerCharacter PlayerCharacter { get; set; }
     }
 }

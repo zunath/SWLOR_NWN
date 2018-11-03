@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data.Entity.Migrations;
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
@@ -16,7 +15,7 @@ namespace SWLOR.Game.Server.Conversation
     {
         private readonly IBaseService _base;
         private readonly IColorTokenService _color;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IBasePermissionService _perm;
 
         public EditBasePermissions(
@@ -24,13 +23,13 @@ namespace SWLOR.Game.Server.Conversation
             IDialogService dialog,
             IBaseService @base,
             IColorTokenService color,
-            IDataContext db,
+            IDataService data,
             IBasePermissionService perm) 
             : base(script, dialog)
         {
             _base = @base;
             _color = color;
-            _db = db;
+            _data = data;
             _perm = perm;
         }
 
@@ -125,7 +124,9 @@ namespace SWLOR.Game.Server.Conversation
         {
             ClearPageResponses("PlayerDetailsPage");
             var data = _base.GetPlayerTempData(GetPC());
-            var permission = _db.PCBasePermissions.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.PCBaseID == data.PCBaseID);
+            var pcBase = _data.GetAll<PCBase>().Single(x => x.PlayerID == player.GlobalID);
+            var permission = pcBase
+                .PCBasePermissions.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.PCBaseID == data.PCBaseID);
 
             // Intentionally excluded permissions: CanAdjustPermissions, CanCancelLease
             bool canPlaceEditStructures = permission?.CanPlaceEditStructures ?? false;
@@ -200,7 +201,10 @@ namespace SWLOR.Game.Server.Conversation
         private void TogglePermission(NWPlayer player, BasePermission permission)
         {
             var data = _base.GetPlayerTempData(GetPC());
-            var dbPermission = _db.PCBasePermissions.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.PCBaseID == data.PCBaseID);
+            var pcBase = _data.GetAll<PCBase>().Single(x => x.PlayerID == player.GlobalID);
+            var dbPermission = pcBase.PCBasePermissions.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.PCBaseID == data.PCBaseID);
+
+            DatabaseActionType action = DatabaseActionType.Update;
             if (dbPermission == null)
             {
                 dbPermission = new PCBasePermission
@@ -208,6 +212,7 @@ namespace SWLOR.Game.Server.Conversation
                     PCBaseID = data.PCBaseID,
                     PlayerID = player.GlobalID
                 };
+                action = DatabaseActionType.Insert;
             }
 
             switch (permission)
@@ -243,8 +248,7 @@ namespace SWLOR.Game.Server.Conversation
                     throw new ArgumentOutOfRangeException(nameof(permission), permission, null);
             }
 
-            _db.PCBasePermissions.AddOrUpdate(dbPermission);
-            _db.SaveChanges();
+            _data.SubmitDataChange(dbPermission, action);
         }
 
         public override void EndDialog()

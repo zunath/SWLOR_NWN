@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Conversation
     {
         private readonly IBaseService _base;
         private readonly IColorTokenService _color;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IBasePermissionService _perm;
 
         public ManageLease(
@@ -24,13 +24,13 @@ namespace SWLOR.Game.Server.Conversation
             IDialogService dialog,
             IBaseService @base,
             IColorTokenService color,
-            IDataContext db,
+            IDataService data,
             IBasePermissionService perm) 
             : base(script, dialog)
         {
             _base = @base;
             _color = color;
-            _db = db;
+            _data = data;
             _perm = perm;
         }
 
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Conversation
             // Look for any bases for which the player has permissions to manage leases or cancel leases.
             // Owners are included in this since they automatically get all permissions for their own bases.
             // Apartments are excluded from this list as they are canceled from terminals outside individual apartment buildings.
-            var bases = _db.PCBases
+            var bases = _data.PCBases
                 .Where(x => x.Sector != "AP" && 
                             x.PCBasePermissions
                                 .Any(p => p.PlayerID == playerID && (p.CanExtendLease || p.CanCancelLease)))
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("MainPage");
             foreach (var @base in bases)
             {
-                Area dbArea = _db.Areas.Single(x => x.Resref == @base.AreaResref);
+                Area dbArea = _data.Areas.Single(x => x.Resref == @base.AreaResref);
                 string status = @base.PlayerID == playerID ? " [OWNER]" : " [GUEST]";
 
                 AddResponseToPage("MainPage", dbArea.Name + " (" + @base.Sector + ")" + status, true, @base.PCBaseID);
@@ -140,8 +140,8 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadBaseDetailsPage()
         {
             var data = _base.GetPlayerTempData(GetPC());
-            PCBase pcBase = _db.PCBases.Single(x => x.PCBaseID == data.PCBaseID);
-            Area dbArea = _db.Areas.Single(x => x.Resref == pcBase.AreaResref);
+            PCBase pcBase = _data.PCBases.Single(x => x.PCBaseID == data.PCBaseID);
+            Area dbArea = _data.Areas.Single(x => x.Resref == pcBase.AreaResref);
             bool canExtendLease = _perm.HasBasePermission(GetPC(), pcBase.PCBaseID, BasePermission.CanExtendLease);
             bool canCancelLease = _perm.HasBasePermission(GetPC(), pcBase.PCBaseID, BasePermission.CanCancelLease);
 
@@ -188,8 +188,8 @@ namespace SWLOR.Game.Server.Conversation
         private void ExtendLease(int days, int responseID, string optionText)
         {
             var data = _base.GetPlayerTempData(GetPC());
-            PCBase pcBase = _db.PCBases.Single(x => x.PCBaseID == data.PCBaseID);
-            Area dbArea = _db.Areas.Single(x => x.Resref == pcBase.AreaResref);
+            PCBase pcBase = _data.PCBases.Single(x => x.PCBaseID == data.PCBaseID);
+            Area dbArea = _data.Areas.Single(x => x.Resref == pcBase.AreaResref);
             bool canExtendLease = _perm.HasBasePermission(GetPC(), pcBase.PCBaseID, BasePermission.CanExtendLease);
 
             if (!canExtendLease)
@@ -212,7 +212,7 @@ namespace SWLOR.Game.Server.Conversation
                 data.IsConfirming = false;
                 SetResponseText("BaseDetailsPage", responseID, optionText);
                 pcBase.DateRentDue = pcBase.DateRentDue.AddDays(days);
-                _db.SaveChanges();
+                _data.SaveChanges();
                 LoadBaseDetailsPage();
             }
             else

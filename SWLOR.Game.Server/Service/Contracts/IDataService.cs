@@ -14,8 +14,20 @@ namespace SWLOR.Game.Server.Service.Contracts
         void Initialize(bool initializeCache);
         void Initialize(string ip, string database, string user, string password, bool initializeCache);
 
-        T Get<T>(object id) where T : class, ICacheable;
-        IEnumerable<T> GetAll<T>() where T : class, ICacheable;
+        T Get<T>(object id) where T : class, IEntity;
+        IEnumerable<T> GetAll<T>() where T : class, IEntity;
+
+        T Single<T>()
+            where T : class, IEntity;
+        T Single<T>(Func<T, bool> predicate)
+            where T : class, IEntity;
+        T SingleOrDefault<T>()
+            where T : class, IEntity;
+        T SingleOrDefault<T>(Func<T, bool> predicate)
+            where T : class, IEntity;
+        IEnumerable<T> Where<T>(Func<T, bool> predicate)
+            where T : class, IEntity;
+
         void StoredProcedure(string procedureName, params SqlParameter[] args);
         IEnumerable<T> StoredProcedure<T>(string procedureName, params SqlParameter[] args);
         T StoredProcedureSingle<T>(string procedureName, params SqlParameter[] args);

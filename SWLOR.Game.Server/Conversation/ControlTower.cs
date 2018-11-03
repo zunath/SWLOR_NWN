@@ -13,19 +13,19 @@ namespace SWLOR.Game.Server.Conversation
 {
     public class ControlTower: ConversationBase
     {
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IBasePermissionService _perm;
         private readonly ISerializationService _serialization;
 
         public ControlTower(
             INWScript script, 
             IDialogService dialog,
-            IDataContext db,
+            IDataService data,
             IBasePermissionService perm,
             ISerializationService serialization) 
             : base(script, dialog)
         {
-            _db = db;
+            _data = data;
             _perm = perm;
             _serialization = serialization;
         }
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Conversation
         public override void Initialize()
         {
             int structureID = GetDialogTarget().GetLocalInt("PC_BASE_STRUCTURE_ID");
-            PCBaseStructure structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
+            PCBaseStructure structure = _data.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
 
             if (!_perm.HasBasePermission(GetPC(), structure.PCBaseID, BasePermission.CanManageBaseFuel))
             {
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Conversation
             }
 
             int structureID = tower.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            var structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
+            var structure = _data.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
             Location location = oPC.Location;
             bay = _.CreateObject(OBJECT_TYPE_PLACEABLE, "fuel_bay", location);
             bay.AssignCommand(() => _.SetFacingPoint(oPC.Position));
@@ -155,7 +155,7 @@ namespace SWLOR.Game.Server.Conversation
             }
             
             int structureID = tower.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            var structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
+            var structure = _data.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
             Location location = oPC.Location;
             bay = _.CreateObject(OBJECT_TYPE_PLACEABLE, "resource_bay", location);
 

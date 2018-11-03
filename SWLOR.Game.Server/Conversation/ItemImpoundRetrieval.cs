@@ -11,17 +11,17 @@ namespace SWLOR.Game.Server.Conversation
 {
     public class ItemImpoundRetrieval: ConversationBase
     {
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly ISerializationService _serialization;
 
         public ItemImpoundRetrieval(
             INWScript script, 
             IDialogService dialog,
-            IDataContext db,
+            IDataService data,
             ISerializationService serialization) 
             : base(script, dialog)
         {
-            _db = db;
+            _data = data;
             _serialization = serialization;
         }
 
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadMainPage()
         {
             var player = GetPC();
-            var items = _db.PCImpoundedItems.Where(x => x.PlayerID == player.GlobalID && x.DateRetrieved == null).ToList();
+            var items = _data.PCImpoundedItems.Where(x => x.PlayerID == player.GlobalID && x.DateRetrieved == null).ToList();
 
             ClearPageResponses("MainPage");
             foreach (var item in items)
@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Conversation
 
             var response = GetResponseByID("MainPage", responseID);
             int pcImpoundedItemID = (int)response.CustomData;
-            var item = _db.PCImpoundedItems.Single(x => x.PCImpoundedItemID == pcImpoundedItemID);
+            var item = _data.PCImpoundedItems.Single(x => x.PCImpoundedItemID == pcImpoundedItemID);
 
             if (item.DateRetrieved != null)
             {
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Conversation
             }
 
             item.DateRetrieved = DateTime.UtcNow;
-            _db.SaveChanges();
+            _data.SaveChanges();
 
             _serialization.DeserializeItem(item.ItemObject, player);
             _.TakeGoldFromCreature(50, player, TRUE);

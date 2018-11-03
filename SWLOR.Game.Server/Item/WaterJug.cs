@@ -14,15 +14,15 @@ namespace SWLOR.Game.Server.Item
     public class WaterJug: IActionItem
     {
         private readonly IRandomService _random;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly ISkillService _skill;
 
         public WaterJug(IRandomService random, 
-            IDataContext db,
+            IDataService data,
             ISkillService skill)
         {
             _random = random;
-            _db = db;
+            _data = data;
             _skill = skill;
         }
 
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Item
                 user.SendMessage("Water jugs can only target growing plants.");
                 return;
             }
-            GrowingPlant growingPlant = _db.GrowingPlants.Single(x => x.GrowingPlantID == growingPlantID);
+            GrowingPlant growingPlant = _data.GrowingPlants.Single(x => x.GrowingPlantID == growingPlantID);
 
             if (growingPlant.WaterStatus <= 0)
             {
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Item
 
             growingPlant.WaterStatus = 0;
             growingPlant.RemainingTicks = remainingTicks;
-            _db.SaveChanges();
+            _data.SaveChanges();
 
             user.SendMessage("You water the plant.");
             

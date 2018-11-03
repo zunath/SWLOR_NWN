@@ -11,18 +11,18 @@ namespace SWLOR.Game.Server.Service
 {
     public class BackgroundService: IBackgroundService
     {
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly INWScript _;
         private readonly IPerkService _perk;
         private readonly IPlayerStatService _stat;
 
         public BackgroundService(
-            IDataContext db, 
+            IDataService data, 
             INWScript script, 
             IPerkService perk,
             IPlayerStatService stat)
         {
-            _db = db;
+            _data = data;
             _ = script;
             _perk = perk;
             _stat = stat;
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Service
         
         public void ApplyBackgroundBonuses(NWPlayer oPC)
         {
-            var dbPlayer = _db.PlayerCharacters.Single(x => x.PlayerID == oPC.GlobalID);
+            var dbPlayer = _data.PlayerCharacters.Single(x => x.PlayerID == oPC.GlobalID);
             string pcName = oPC.Name;
             int classID = oPC.Class1;
 
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Service
             {
                 case BackgroundType.Freelancer:
                     dbPlayer.UnallocatedSP = dbPlayer.UnallocatedSP + 3;
-                    _db.SaveChanges();
+                    _data.SaveChanges();
                     break;
                 case BackgroundType.Smuggler:
                     item1Resref = "blaster_s";

@@ -16,20 +16,20 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
     public class OnDisturbed : IRegisteredEvent
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IQuestService _quest;
         private readonly IColorTokenService _color;
         private readonly IDialogService _dialog;
 
         public OnDisturbed(
             INWScript script,
-            IDataContext db,
+            IDataService data,
             IQuestService quest,
             IColorTokenService color,
             IDialogService dialog)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _quest = quest;
             _color = color;
             _dialog = dialog;
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
             if (disturbType == INVENTORY_DISTURB_TYPE_ADDED)
             {
                 int questID = container.GetLocalInt("QUEST_ID");
-                PCQuestStatus status = _db.PCQuestStatus.Single(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
+                PCQuestStatus status = _data.PCQuestStatus.Single(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
                 PCQuestItemProgress progress = status.PCQuestItemProgresses.SingleOrDefault(x => x.Resref == item.Resref);
 
                 if (progress == null)
@@ -68,14 +68,14 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
 
                     if (progress.Remaining <= 0)
                     {
-                        progress = _db.PCQuestItemProgresses.Single(x => x.PCQuestItemProgressID == progress.PCQuestItemProgressID);
-                        _db.PCQuestItemProgresses.Remove(progress);
+                        progress = _data.PCQuestItemProgresses.Single(x => x.PCQuestItemProgressID == progress.PCQuestItemProgressID);
+                        _data.PCQuestItemProgresses.Remove(progress);
                     }
 
-                    _db.SaveChanges();
+                    _data.SaveChanges();
 
                     // Recalc the remaining items needed.
-                    int remainingCount = _db.PCQuestItemProgresses.Count(x => x.PCQuestStatusID == status.PCQuestStatusID);
+                    int remainingCount = _data.PCQuestItemProgresses.Count(x => x.PCQuestStatusID == status.PCQuestStatusID);
                     if (remainingCount <= 0)
                     {
                         _quest.AdvanceQuestState(player, owner, questID);

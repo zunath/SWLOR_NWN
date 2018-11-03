@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Conversation
 {
     internal class RestMenu : ConversationBase
     {
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IColorTokenService _color;
         private readonly ISkillService _skill;
         private readonly IMenuService _menu;
@@ -20,13 +20,13 @@ namespace SWLOR.Game.Server.Conversation
         public RestMenu(INWScript script,
             IDialogService dialog,
             IColorTokenService color,
-            IDataContext db,
+            IDataService data,
             ISkillService skill,
             IMenuService menu)
             : base(script, dialog)
         {
             _color = color;
-            _db = db;
+            _data = data;
             _skill = skill;
             _menu = menu;
         }
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Conversation
         public override void Initialize()
         {
             string playerID = GetPC().GlobalID;
-            long overflowCount = _db.PCOverflowItems.Where(x => x.PlayerID == playerID).LongCount();
+            long overflowCount = _data.PCOverflowItems.Where(x => x.PlayerID == playerID).LongCount();
 
             if (overflowCount <= 0)
             {
@@ -122,8 +122,8 @@ namespace SWLOR.Game.Server.Conversation
 
         private string BuildMainPageHeader(NWPlayer player)
         {
-            PlayerCharacter playerEntity = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
-            int totalSkillCount = _db.PCSkills.Where(x => x.PlayerID == player.GlobalID && x.Skill.ContributesToSkillCap).Sum(s => s.Rank);
+            PlayerCharacter playerEntity = _data.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+            int totalSkillCount = _data.PCSkills.Where(x => x.PlayerID == player.GlobalID && x.Skill.ContributesToSkillCap).Sum(s => s.Rank);
 
             string header = _color.Green("Name: ") + player.Name + "\n";
             header += _color.Green("Association: ") + playerEntity.Association.Name + "\n\n";

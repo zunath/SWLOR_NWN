@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Data.Contracts;
 namespace SWLOR.Game.Server.Data.Entity
 {
     [Table("PCBaseStructurePermissions")]
-    public partial class PCBaseStructurePermission: IEntity
+    public class PCBaseStructurePermission: IEntity
     {
         [Key]
         public int PCBaseStructurePermissionID { get; set; }
@@ -18,8 +18,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public bool CanRenameStructures { get; set; }
         public bool CanEditPrimaryResidence { get; set; }
         public bool CanRemovePrimaryResidence { get; set; }
-    
-        public virtual PCBaseStructure PCBaseStructure { get; set; }
-        public virtual PlayerCharacter PlayerCharacter { get; set; }
     }
 }

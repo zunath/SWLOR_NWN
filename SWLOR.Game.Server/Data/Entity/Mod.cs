@@ -5,13 +5,13 @@ using SWLOR.Game.Server.Data.Contracts;
 namespace SWLOR.Game.Server.Data.Entity
 {
     [Table("Mods")]
-    public partial class Mod: IEntity, ICacheable
+    public class Mod: IEntity
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Mod()
         {
-            this.Name = "";
-            this.Script = "";
+            Name = "";
+            Script = "";
         }
 
         [ExplicitKey]

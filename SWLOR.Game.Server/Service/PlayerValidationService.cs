@@ -15,16 +15,16 @@ namespace SWLOR.Game.Server.Service
     {
         private readonly INWScript _;
         private readonly INWNXAdmin _nwnxAdmin;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
 
         public PlayerValidationService(
             INWScript script,
             INWNXAdmin nwnxAdmin,
-            IDataContext db)
+            IDataService data)
         {
             _ = script;
             _nwnxAdmin = nwnxAdmin;
-            _db = db;
+            _data = data;
         }
 
         public void OnModuleEnter()
@@ -100,7 +100,8 @@ namespace SWLOR.Game.Server.Service
             if (player.IsInitializedAsPlayer) return string.Empty;
 
             string error = string.Empty;
-            PlayerCharacter dbPlayer = _db.PlayerCharacters.FirstOrDefault(x => x.CharacterName == player.Name && x.IsDeleted == false);
+            // todo: Figure out a better way to filter player characters without putting them all into cache.
+            PlayerCharacter dbPlayer = _data.GetAll<PlayerCharacter>().FirstOrDefault(x => x.CharacterName == player.Name && x.IsDeleted == false);
 
             if (dbPlayer != null)
             {

@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Conversation
             public NWItem TomeItem { get; set; }
         }
 
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IColorTokenService _color;
         private readonly INWNXCreature _nwnxCreature;
         private readonly ICustomEffectService _customEffect;
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Conversation
         public PerkRefund(
             INWScript script, 
             IDialogService dialog,
-            IDataContext db,
+            IDataService data,
             IColorTokenService color,
             INWNXCreature nwnxCreature,
             ICustomEffectService customEffect,
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Conversation
             ITimeService time)
             : base(script, dialog)
         {
-            _db = db;
+            _data = data;
             _color = color;
             _nwnxCreature = nwnxCreature;
             _customEffect = customEffect;
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             ClearPageResponses("MainPage");
             var player = GetPC();
-            var dbPlayer = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+            var dbPlayer = _data.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
             var header = "You may use this tome to refund one of your perks. Refunding may only occur once every 24 hours (real world time). Selecting a perk from this list will refund all levels you have purchased of that perk. The refunded SP may be used to purchase other perks immediately afterwards.\n\n";
 
             if (dbPlayer.DatePerkRefundAvailable != null && dbPlayer.DatePerkRefundAvailable > DateTime.UtcNow)
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Conversation
             }
             else
             {
-                var pcPerks = _db.PCPerks.Where(x => x.PlayerID == player.GlobalID).OrderBy(o => o.Perk.Name).ToList();
+                var pcPerks = _data.PCPerks.Where(x => x.PlayerID == player.GlobalID).OrderBy(o => o.Perk.Name).ToList();
 
                 foreach (var perk in pcPerks)
                 {
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadConfirmPage()
         {
             var model = GetDialogCustomData<Model>();
-            var pcPerk = _db.PCPerks.Single(x => x.PCPerkID == model.PCPerkID);
+            var pcPerk = _data.PCPerks.Single(x => x.PCPerkID == model.PCPerkID);
             var perk = pcPerk.Perk;
             int refundAmount = perk.PerkLevels.Where(x => x.Level <= pcPerk.PerkLevel).Sum(x => x.Price);
 
@@ -168,7 +168,7 @@ namespace SWLOR.Game.Server.Conversation
         private bool CanRefundPerk()
         {
             var player = GetPC();
-            var dbPlayer = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+            var dbPlayer = _data.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
 
             if (dbPlayer.DatePerkRefundAvailable == null) return true;
 
@@ -193,10 +193,10 @@ namespace SWLOR.Game.Server.Conversation
 
             var model = GetDialogCustomData<Model>();
             var player = GetPC();
-            var pcPerk = _db.PCPerks.Single(x => x.PCPerkID == model.PCPerkID);
+            var pcPerk = _data.PCPerks.Single(x => x.PCPerkID == model.PCPerkID);
             var perk = pcPerk.Perk;
             var refundAmount = perk.PerkLevels.Where(x => x.Level <= pcPerk.PerkLevel).Sum(x => x.Price);
-            var dbPlayer = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+            var dbPlayer = _data.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
             var scriptName = perk.ScriptName;
 
             dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow.AddHours(24);
@@ -215,10 +215,10 @@ namespace SWLOR.Game.Server.Conversation
                 Level = pcPerk.PerkLevel,
                 PerkID = pcPerk.PerkID
             };
-            _db.PCPerkRefunds.Add(refundAudit);
-            _db.PCPerks.Remove(pcPerk);
+            _data.PCPerkRefunds.Add(refundAudit);
+            _data.PCPerks.Remove(pcPerk);
 
-            _db.SaveChanges();
+            _data.SaveChanges();
             GetPC().FloatingText("Perk refunded! You reclaimed " + refundAmount + " SP.");
             model.TomeItem.Destroy();
 

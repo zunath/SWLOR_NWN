@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Event.Module
     internal class OnModuleHeartbeat : IRegisteredEvent
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IItemService _item;
         private readonly IAbilityService _ability;
         private readonly IPerkService _perk;
@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IPlayerStatService _playerStat;
         
         public OnModuleHeartbeat(INWScript script,
-            IDataContext db,
+            IDataService data,
             IItemService item,
             IAbilityService ability,
             IPerkService perk,
@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Event.Module
             IPlayerStatService playerStat)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _item = item;
             _ability = ability;
             _perk = perk;
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Event.Module
         public bool Run(params object[] args)
         {
             string[] playerIDs = NWModule.Get().Players.Where(x => x.IsPlayer).Select(x => x.GlobalID).ToArray();
-            var entities = _db.PlayerCharacters.Where(x => playerIDs.Contains(x.PlayerID));
+            var entities = _data.PlayerCharacters.Where(x => playerIDs.Contains(x.PlayerID));
 
             foreach (var player in NWModule.Get().Players)
             {
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Event.Module
                 HandleFPRegenerationTick(player, entity);
             }
 
-            _db.SaveChanges();
+            _data.SaveChanges();
             
             SaveCharacters();
             _base.OnModuleHeartbeat();

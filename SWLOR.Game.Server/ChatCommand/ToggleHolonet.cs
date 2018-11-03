@@ -2,6 +2,7 @@
 using NWN;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
@@ -13,25 +14,26 @@ namespace SWLOR.Game.Server.ChatCommand
     public class ToggleHolonet : IChatCommand
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IColorTokenService _color;
 
         public ToggleHolonet(
             INWScript script,
-            IDataContext db,
+            IDataService data,
             IColorTokenService color)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _color = color;
         }
 
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            var player = _db.PlayerCharacters.Single(x => x.PlayerID == user.GlobalID);
+            var player = _data.Get<PlayerCharacter>(user.GlobalID);
             player.DisplayHolonet = !player.DisplayHolonet;
             user.SetLocalInt("DISPLAY_HOLONET", player.DisplayHolonet ? 1 : 0);
-            _db.SaveChanges();
+
+            _data.SubmitDataChange(player, DatabaseActionType.Update);
 
             if (player.DisplayHolonet)
             {

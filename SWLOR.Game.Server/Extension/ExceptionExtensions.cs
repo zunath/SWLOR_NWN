@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data.Entity.Validation;
 using System.Text;
 
 namespace SWLOR.Game.Server.Extension
@@ -17,23 +16,6 @@ namespace SWLOR.Game.Server.Extension
                 s.AppendLine("Stacktrace:");
                 s.AppendLine(e.StackTrace);
                 
-                if (e is DbEntityValidationException valEx)
-                {
-                    s.AppendLine("Entity validation errors: ");
-                    
-                    foreach (var error in valEx.EntityValidationErrors)
-                    {
-                        if (error.ValidationErrors == null) continue;
-                        foreach (var val in error.ValidationErrors)
-                        {
-                            s.AppendLine(val.PropertyName + ": " + val.ErrorMessage);
-                        }
-
-                    }
-
-                    s.AppendLine();
-                }
-
                 s.AppendLine();
                 e = e.InnerException;
             }

@@ -16,20 +16,20 @@ namespace SWLOR.Game.Server.Placeable.Drill
     public class OnHeartbeat: IRegisteredEvent
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IBaseService _base;
         private readonly ILootService _loot;
         private readonly ISerializationService _serialization;
 
         public OnHeartbeat(
             INWScript script,
-            IDataContext db,
+            IDataService data,
             IBaseService @base,
             ILootService loot,
             ISerializationService serialization)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _base = @base;
             _loot = loot;
             _serialization = serialization;
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Placeable.Drill
         {
             NWPlaceable drill = Object.OBJECT_SELF;
             int structureID = drill.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            PCBaseStructure structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
+            PCBaseStructure structure = _data.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
             DateTime now = DateTime.UtcNow;
 
             if (now >= structure.PCBase.DateFuelEnds)
@@ -62,14 +62,14 @@ namespace SWLOR.Game.Server.Placeable.Drill
             if (structure.DateNextActivity == null)
             {
                 structure.DateNextActivity = now.AddMinutes(increaseMinutes);
-                _db.SaveChanges();
+                _data.SaveChanges();
             }
 
             if (!(now >= structure.DateNextActivity)) return true;
 
             // Time to spawn a new item and reset the timer.
 
-            var dbArea = _db.Areas.Single(x => x.Resref == structure.PCBase.AreaResref);
+            var dbArea = _data.Areas.Single(x => x.Resref == structure.PCBase.AreaResref);
             string sector = structure.PCBase.Sector;
             int lootTableID = 0;
 
@@ -113,8 +113,8 @@ namespace SWLOR.Game.Server.Placeable.Drill
                 ItemObject = _serialization.Serialize(item)
             };
 
-            _db.PCBaseStructureItems.Add(dbItem);
-            _db.SaveChanges();
+            _data.PCBaseStructureItems.Add(dbItem);
+            _data.SaveChanges();
             
             item.Destroy();
             return true;

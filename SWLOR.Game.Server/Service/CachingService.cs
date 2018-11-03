@@ -12,22 +12,22 @@ namespace SWLOR.Game.Server.Service
     public class CachingService : ICachingService
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly AppCache _cache;
 
         public CachingService(
             INWScript script,
-            IDataContext db,
+            IDataService data,
             AppCache cache)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _cache = cache;
         }
 
         private void CacheSkillCategories()
         {
-            var categories = _db.SkillCategories
+            var categories = _data.SkillCategories
                 .Where(x => x.IsActive)
                 .ToList();
 
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Service
 
         private void CacheSkills()
         {
-            var skills = _db.Skills.AsNoTracking()
+            var skills = _data.Skills.AsNoTracking()
                 .Include(i => i.SkillCategory)
                 .Include(i => i.SkillXPRequirements)
                 .ToList();
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             var ranks = new CachedPCSkills();
-            var pcSkills = _db.PCSkills
+            var pcSkills = _data.PCSkills
                 .Include(i => i.Skill)
                 .AsNoTracking()
                 .Where(x => x.PlayerID == player.GlobalID && 

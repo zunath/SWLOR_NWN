@@ -20,18 +20,18 @@ namespace SWLOR.Game.Server.Data
     /// </summary>
     public class DatabaseMigrationRunner: IStartable
     {
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IErrorService _error;
 
         private readonly string _masterConnectionString;
         private readonly string _swlorConnectionString;
 
         public DatabaseMigrationRunner(
-            IDataContext db,
+            IDataService data,
             IErrorService error,
             IDataService data)
         {
-            _db = db;
+            _data = data;
             _error = error;
 
             var ip = Environment.GetEnvironmentVariable("SQL_SERVER_IP_ADDRESS");
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Data
         /// </summary>
         private void BuildDatabase()
         {
-            if (!_db.Database.Exists())
+            if (!_data.Database.Exists())
             {
                 Console.WriteLine("Database not found. Generating database...");
 
@@ -153,7 +153,7 @@ namespace SWLOR.Game.Server.Data
         /// <returns></returns>
         private IEnumerable<string> GetScriptResources()
         {
-            var currentVersion = _db.DatabaseVersions
+            var currentVersion = _data.DatabaseVersions
                 .OrderByDescending(o => o.ScriptName).FirstOrDefault();
 
             var executingAssembly = Assembly.GetExecutingAssembly();
@@ -264,14 +264,14 @@ namespace SWLOR.Game.Server.Data
         private void AddDatabaseVersionRecord(string fileName)
         {
             var versionInfo = GetVersionInformation(fileName);
-            _db.DatabaseVersions.Add(new DatabaseVersion
+            _data.DatabaseVersions.Add(new DatabaseVersion
             {
                 DateApplied = DateTime.UtcNow,
                 ScriptName = fileName,
                 VersionDate = versionInfo.Item1,
                 VersionNumber = versionInfo.Item2
             });
-            _db.SaveChanges();
+            _data.SaveChanges();
         }
 
         // Code I pulled from StackOverflow: https://stackoverflow.com/questions/40814/execute-a-large-sql-script-with-go-commands

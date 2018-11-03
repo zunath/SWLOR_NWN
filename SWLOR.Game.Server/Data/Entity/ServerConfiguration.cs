@@ -5,13 +5,13 @@ using SWLOR.Game.Server.Data.Contracts;
 namespace SWLOR.Game.Server.Data.Entity
 {
     [Table("ServerConfiguration")]
-    public partial class ServerConfiguration: IEntity, ICacheable
+    public class ServerConfiguration: IEntity
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public ServerConfiguration()
         {
-            this.ServerName = "";
-            this.MessageOfTheDay = "";
+            ServerName = "";
+            MessageOfTheDay = "";
         }
 
         [ExplicitKey]

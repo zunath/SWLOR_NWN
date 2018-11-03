@@ -13,15 +13,15 @@ namespace SWLOR.Game.Server.Placeable.OverflowStorage
     public class OnOpened: IRegisteredEvent
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly ISerializationService _serialization;
 
         public OnOpened(INWScript script,
-            IDataContext db,
+            IDataService data,
             ISerializationService serialization)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _serialization = serialization;
         }
 
@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Placeable.OverflowStorage
         {
             NWPlaceable container = (Object.OBJECT_SELF);
             NWPlayer oPC = (_.GetLastOpenedBy());
-            var items = _db.PCOverflowItems.Where(x => x.PlayerID == oPC.GlobalID).ToList();
+            var items = _data.PCOverflowItems.Where(x => x.PlayerID == oPC.GlobalID).ToList();
             foreach (PCOverflowItem item in items)
             {
                 NWItem oItem = _serialization.DeserializeItem(item.ItemObject, container);

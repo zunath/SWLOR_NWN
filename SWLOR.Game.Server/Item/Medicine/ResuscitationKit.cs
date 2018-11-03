@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Item.Medicine
     {
 
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly ISkillService _skill;
         private readonly IRandomService _random;
         private readonly IPerkService _perk;
@@ -24,14 +24,14 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public ResuscitationKit(
             INWScript script,
-            IDataContext db,
+            IDataService data,
             ISkillService skill,
             IRandomService random,
             IPerkService perk,
             IPlayerStatService playerStat)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _skill = skill;
             _random = random;
             _perk = perk;
@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
             baseHeal = (int)(baseHeal * effectivenessPercent);
 
-            PlayerCharacter dbPlayer = _db.PlayerCharacters.Single(x => x.PlayerID == user.GlobalID);
+            PlayerCharacter dbPlayer = _data.PlayerCharacters.Single(x => x.PlayerID == user.GlobalID);
             int hpRecover = (int)(target.MaxHP * (0.01f * baseHeal));
             int fpRecover = (int) (dbPlayer.MaxFP * (0.01f * baseHeal));
 
@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(hpRecover), target);
             dbPlayer.CurrentFP = fpRecover;
 
-            _db.SaveChanges();
+            _data.SaveChanges();
             player.SendMessage("You successfully resuscitate " + target.Name + "!");
             int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(600, item.RecommendedLevel, skillRank);
             _skill.GiveSkillXP(player, SkillType.Medicine, xp);

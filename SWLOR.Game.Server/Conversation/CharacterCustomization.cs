@@ -23,17 +23,17 @@ namespace SWLOR.Game.Server.Conversation
         }
 
         private readonly IColorTokenService _color;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
 
         public CharacterCustomization(
             INWScript script,
             IDialogService dialog,
             IColorTokenService color,
-            IDataContext db)
+            IDataService data)
             : base(script, dialog)
         {
             _color = color;
-            _db = db;
+            _data = data;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -322,10 +322,10 @@ namespace SWLOR.Game.Server.Conversation
             var model = GetDialogCustomData<Model>();
             int association = model.AssociationID;
             var player = GetPC();
-            var dbPlayer = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+            var dbPlayer = _data.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
 
             dbPlayer.AssociationID = association;
-            _db.SaveChanges();
+            _data.SaveChanges();
         }
 
         private void ChangeSkinColorResponses(int responseID)

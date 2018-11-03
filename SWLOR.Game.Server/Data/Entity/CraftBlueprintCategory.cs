@@ -6,12 +6,11 @@ using SWLOR.Game.Server.Data.Contracts;
 namespace SWLOR.Game.Server.Data.Entity
 {
     [Table("CraftBlueprintCategories")]
-    public partial class CraftBlueprintCategory: IEntity, ICacheable
+    public class CraftBlueprintCategory: IEntity
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public CraftBlueprintCategory()
         {
-            this.CraftBlueprints = new HashSet<CraftBlueprint>();
         }
 
         [ExplicitKey]
@@ -19,7 +18,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public string Name { get; set; }
         public bool IsActive { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CraftBlueprint> CraftBlueprints { get; set; }
     }
 }

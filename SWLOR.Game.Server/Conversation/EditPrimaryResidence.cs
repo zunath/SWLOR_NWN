@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Conversation
 {
     public class EditPrimaryResidence: ConversationBase
     {
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IBaseService _base;
         private readonly IBasePermissionService _perm;
         private readonly IColorTokenService _color;
@@ -22,13 +22,13 @@ namespace SWLOR.Game.Server.Conversation
         public EditPrimaryResidence(
             INWScript script, 
             IDialogService dialog,
-            IDataContext db,
+            IDataService data,
             IBaseService @base,
             IBasePermissionService perm,
             IColorTokenService color) 
             : base(script, dialog)
         {
-            _db = db;
+            _data = data;
             _base = @base;
             _perm = perm;
             _color = color;
@@ -71,12 +71,12 @@ namespace SWLOR.Game.Server.Conversation
             if (data.BuildingType == BuildingType.Interior)
             {
                 int structureID = data.StructureID;
-                player = _db.PlayerCharacters.SingleOrDefault(x => x.PrimaryResidencePCBaseStructureID == structureID);
+                player = _data.PlayerCharacters.SingleOrDefault(x => x.PrimaryResidencePCBaseStructureID == structureID);
             }
             else if (data.BuildingType == BuildingType.Apartment)
             {
                 int pcBaseID = data.PCBaseID;
-                player = _db.PlayerCharacters.SingleOrDefault(x => x.PrimaryResidencePCBaseID == pcBaseID);
+                player = _data.PlayerCharacters.SingleOrDefault(x => x.PrimaryResidencePCBaseID == pcBaseID);
             }
             else
             {
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Conversation
             var player = GetPC();
             var data = _base.GetPlayerTempData(player);
 
-            PlayerCharacter dbPlayer = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+            PlayerCharacter dbPlayer = _data.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
             PlayerCharacter primaryResident;
 
             bool isPrimaryResident;
@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Conversation
             if (data.BuildingType == BuildingType.Interior)
             {
                 int structureID = data.StructureID;
-                primaryResident = _db.PlayerCharacters.SingleOrDefault(x => x.PrimaryResidencePCBaseStructureID == structureID);
+                primaryResident = _data.PlayerCharacters.SingleOrDefault(x => x.PrimaryResidencePCBaseStructureID == structureID);
 
                 isPrimaryResident = dbPlayer.PrimaryResidencePCBaseStructureID != null && dbPlayer.PrimaryResidencePCBaseStructureID == structureID;
                 canEditPrimaryResidence = _perm.HasStructurePermission(player, structureID, StructurePermission.CanEditPrimaryResidence);
@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Conversation
             else if (data.BuildingType == BuildingType.Apartment)
             {
                 int pcBaseID = data.PCBaseID;
-                primaryResident = _db.PlayerCharacters.SingleOrDefault(x => x.PrimaryResidencePCBaseID == pcBaseID);
+                primaryResident = _data.PlayerCharacters.SingleOrDefault(x => x.PrimaryResidencePCBaseID == pcBaseID);
 
                 isPrimaryResident = dbPlayer.PrimaryResidencePCBaseID != null && dbPlayer.PrimaryResidencePCBaseID == pcBaseID;
                 canEditPrimaryResidence = _perm.HasBasePermission(player, pcBaseID, BasePermission.CanEditPrimaryResidence);
@@ -198,7 +198,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var data = _base.GetPlayerTempData(player);
-            var newResident = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+            var newResident = _data.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
             
             PlayerCharacter currentResident;
             bool isPrimaryResident;
@@ -208,7 +208,7 @@ namespace SWLOR.Game.Server.Conversation
             if (data.BuildingType == BuildingType.Interior)
             {
                 int structureID = data.StructureID;
-                currentResident = _db.PlayerCharacters.SingleOrDefault(x => x.PrimaryResidencePCBaseStructureID == structureID);
+                currentResident = _data.PlayerCharacters.SingleOrDefault(x => x.PrimaryResidencePCBaseStructureID == structureID);
 
                 isPrimaryResident = newResident.PrimaryResidencePCBaseStructureID != null && newResident.PrimaryResidencePCBaseStructureID == structureID;
                 canEditPrimaryResidence = _perm.HasStructurePermission(player, structureID, StructurePermission.CanEditPrimaryResidence);
@@ -217,7 +217,7 @@ namespace SWLOR.Game.Server.Conversation
             else if (data.BuildingType == BuildingType.Apartment)
             {
                 int pcBaseID = data.PCBaseID;
-                currentResident = _db.PlayerCharacters.SingleOrDefault(x => x.PrimaryResidencePCBaseID == pcBaseID);
+                currentResident = _data.PlayerCharacters.SingleOrDefault(x => x.PrimaryResidencePCBaseID == pcBaseID);
 
                 isPrimaryResident = newResident.PrimaryResidencePCBaseID != null && newResident.PrimaryResidencePCBaseID == pcBaseID;
                 canEditPrimaryResidence = _perm.HasBasePermission(player, pcBaseID, BasePermission.CanEditPrimaryResidence);
@@ -259,7 +259,7 @@ namespace SWLOR.Game.Server.Conversation
                 newResident.PrimaryResidencePCBaseID = data.PCBaseID;
             }
 
-            _db.SaveChanges();
+            _data.SaveChanges();
             BuildMainPageHeader();
             BuildMainPageResponses();
             ClearNavigationStack();
@@ -274,12 +274,12 @@ namespace SWLOR.Game.Server.Conversation
             if (data.BuildingType == BuildingType.Interior)
             {
                 int structureID = data.StructureID;
-                currentResident = _db.PlayerCharacters.SingleOrDefault(x => x.PrimaryResidencePCBaseStructureID == structureID);
+                currentResident = _data.PlayerCharacters.SingleOrDefault(x => x.PrimaryResidencePCBaseStructureID == structureID);
             }
             else if (data.BuildingType == BuildingType.Apartment)
             {
                 int pcBaseID = data.PCBaseID;
-                currentResident = _db.PlayerCharacters.SingleOrDefault(x => x.PrimaryResidencePCBaseID == pcBaseID);
+                currentResident = _data.PlayerCharacters.SingleOrDefault(x => x.PrimaryResidencePCBaseID == pcBaseID);
             }
             else
             {
@@ -290,7 +290,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 currentResident.PrimaryResidencePCBaseStructureID = null;
                 currentResident.PrimaryResidencePCBaseID = null;
-                _db.SaveChanges();
+                _data.SaveChanges();
 
                 NotifyPlayer(currentResident.PlayerID);
             }

@@ -13,15 +13,15 @@ namespace SWLOR.Game.Server.Service
 {
     public class LootService: ILootService
     {
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IRandomService _random;
         private readonly INWScript _;
 
-        public LootService(IDataContext db,
+        public LootService(IDataService data,
             IRandomService random,
             INWScript script)
         {
-            _db = db;
+            _data = data;
             _random = random;
             _ = script;
         }
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (lootTableID <= 0) return null;
 
-            LootTable entity = _db.LootTables.Single(x => x.LootTableID == lootTableID);
+            LootTable entity = _data.LootTables.Single(x => x.LootTableID == lootTableID);
             if (entity.LootTableItems.Count <= 0) return null;
 
             int[] weights = new int[entity.LootTableItems.Count];

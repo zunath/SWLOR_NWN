@@ -10,13 +10,13 @@ namespace SWLOR.Game.Server.Placeable.GrowingPlant
     public class OnHeartbeat: IRegisteredEvent
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
 
         public OnHeartbeat(INWScript script,
-            IDataContext db)
+            IDataService data)
         {
             _ = script;
-            _db = db;
+            _data = data;
         }
 
         public bool Run(params object[] args)
@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Placeable.GrowingPlant
             int growingPlantID = plant.GetLocalInt("GROWING_PLANT_ID");
             if (growingPlantID <= 0) return false;
             
-            Data.Entity.GrowingPlant growingPlant = _db.GrowingPlants.Single(x => x.GrowingPlantID == growingPlantID);
+            Data.Entity.GrowingPlant growingPlant = _data.GrowingPlants.Single(x => x.GrowingPlantID == growingPlantID);
             growingPlant.RemainingTicks--;
             growingPlant.TotalTicks++;
 
@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Placeable.GrowingPlant
                 plant.SetLocalInt("GROWING_PLANT_ID", growingPlantID);
             }
             
-            _db.SaveChanges();
+            _data.SaveChanges();
             return true;
         }
     }

@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Data.Contracts;
 namespace SWLOR.Game.Server.Data.Entity
 {
     [Table("PCBaseStructureItems")]
-    public partial class PCBaseStructureItem: IEntity
+    public class PCBaseStructureItem: IEntity
     {
         [Key]
         public int PCBaseStructureItemID { get; set; }
@@ -14,7 +14,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public string ItemTag { get; set; }
         public string ItemResref { get; set; }
         public string ItemObject { get; set; }
-    
-        public virtual PCBaseStructure PCBaseStructure { get; set; }
     }
 }

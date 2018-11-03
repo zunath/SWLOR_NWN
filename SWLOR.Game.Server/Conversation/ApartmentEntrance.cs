@@ -2,30 +2,31 @@
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static NWN.NWScript;
+using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Conversation
 {
     public class ApartmentEntrance : ConversationBase
     {
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IAreaService _area;
         private readonly IBaseService _base;
 
         public ApartmentEntrance(
             INWScript script,
             IDialogService dialog,
-            IDataContext db,
+            IDataService data,
             IAreaService area,
             IBaseService @base)
             : base(script, dialog)
         {
-            _db = db;
+            _data = data;
             _area = area;
             _base = @base;
         }
@@ -69,7 +70,7 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("MainPage");
 
             var player = GetPC();
-            var apartments = _db.PCBases.Where(x => x.PlayerID == player.GlobalID &&
+            var apartments = _data.GetAll<PCBase>().Where(x => x.PlayerID == player.GlobalID &&
                                                          x.ApartmentBuildingID == apartmentBuildingID &&
                                                          x.DateRentDue > DateTime.UtcNow)
                                              .OrderBy(o => o.DateInitialPurchase)
@@ -103,7 +104,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             NWPlayer oPC = GetPC();
 
-            var apartment = _db.PCBases.Single(x => x.PCBaseID == pcBaseID);
+            var apartment = _data.Get<PCBase>(pcBaseID);
             NWArea instance = GetAreaInstance(pcBaseID);
 
             if (instance == null)

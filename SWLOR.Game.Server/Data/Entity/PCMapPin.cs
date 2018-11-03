@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Data.Contracts;
 namespace SWLOR.Game.Server.Data.Entity
 {
     [Table("PCMapPins")]
-    public partial class PCMapPin: IEntity
+    public class PCMapPin: IEntity
     {
         [Key]
         public int PCMapPinID { get; set; }
@@ -14,7 +14,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public double PositionX { get; set; }
         public double PositionY { get; set; }
         public string NoteText { get; set; }
-    
-        public virtual PlayerCharacter PlayerCharacter { get; set; }
     }
 }

@@ -25,9 +25,6 @@ namespace SWLOR.Game.Server
         public Dictionary<string, NWObject> VisibilityObjects { get; set; }
         public List<long> PCEffectsForRemoval { get; set; }
         public List<NWObject> ConnectedDMs { get; set; }
-        public HashSet<CachedSkillCategory> SkillCategories { get; set; }
-        public Dictionary<SkillType, CachedSkill> Skills { get; set; }
-        public Dictionary<string, CachedPCSkills> PCSkills { get; set; }
 
         public AppCache()
         {
@@ -45,9 +42,6 @@ namespace SWLOR.Game.Server
             VisibilityObjects = new Dictionary<string, NWObject>();
             PCEffectsForRemoval = new List<long>();
             ConnectedDMs = new List<NWObject>();
-            SkillCategories = new HashSet<CachedSkillCategory>();
-            Skills = new Dictionary<SkillType, CachedSkill>();
-            PCSkills = new Dictionary<string, CachedPCSkills>();
             
 
             for (int x = 1; x <= Constants.NumberOfDialogs; x++)

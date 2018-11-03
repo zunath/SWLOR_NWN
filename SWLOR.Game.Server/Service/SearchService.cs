@@ -6,6 +6,7 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 
@@ -21,7 +22,7 @@ namespace SWLOR.Game.Server.Service
 
         private readonly INWScript _;
         private readonly IRandomService _random;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IQuestService _quest;
         private readonly ISerializationService _serialization;
         private readonly ILocalVariableService _localVariable;
@@ -31,7 +32,7 @@ namespace SWLOR.Game.Server.Service
         public SearchService(
             INWScript script,
             IRandomService random,
-            IDataContext db,
+            IDataService data,
             IQuestService quest,
             ISerializationService serialization,
             ILocalVariableService localVariable,
@@ -40,7 +41,7 @@ namespace SWLOR.Game.Server.Service
         {
             _ = script;
             _random = random;
-            _db = db;
+            _data = data;
             _quest = quest;
             _serialization = serialization;
             _localVariable = localVariable;
@@ -116,7 +117,7 @@ namespace SWLOR.Game.Server.Service
             int chestID = oChest.GetLocalInt(SearchSiteIDVariableName);
             int skillRank = _.GetSkillRank(NWScript.SKILL_SEARCH, oPC.Object);
             int numberOfSearches = (skillRank / ExtraSearchPerNumberLevels) + 1;
-            PCSearchSite searchEntity = _db.PCSearchSites.SingleOrDefault(x => x.PlayerID == oPC.GlobalID && x.SearchSiteID == chestID);
+            PCSearchSite searchEntity = _data.SingleOrDefault<PCSearchSite>(x => x.PlayerID == oPC.GlobalID && x.SearchSiteID == chestID);
             DateTime timeLock = DateTime.UtcNow;
 
             if (numberOfSearches <= 0) numberOfSearches = 1;
@@ -147,7 +148,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                var searchItems = _db.PCSearchSiteItems.Where(x => x.PlayerID == oPC.GlobalID && x.SearchSiteID == searchEntity.SearchSiteID).ToList();
+                var searchItems = _data.Where<PCSearchSiteItem>(x => x.PlayerID == oPC.GlobalID && x.SearchSiteID == searchEntity.SearchSiteID).ToList();
                 foreach (PCSearchSiteItem item in searchItems)
                 {
                     NWItem oItem = _serialization.DeserializeItem(item.SearchItem, oChest);
@@ -185,7 +186,7 @@ namespace SWLOR.Game.Server.Service
         private void SaveChestInventory(NWPlayer oPC, NWPlaceable oChest, bool resetTimeLock)
         {
             int chestID = oChest.GetLocalInt(SearchSiteIDVariableName);
-            PCSearchSite entity = _db.PCSearchSites.SingleOrDefault(x => x.PlayerID == oPC.GlobalID && x.SearchSiteID == chestID);
+            PCSearchSite entity = _data.SingleOrDefault<PCSearchSite>(x => x.PlayerID == oPC.GlobalID && x.SearchSiteID == chestID);
 
             int lockHours = _random.Random(2, 5);
             DateTime lockTime = DateTime.UtcNow.AddHours(lockHours);
@@ -195,7 +196,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     lockTime = entity.UnlockDateTime;
                 }
-                _db.PCSearchSites.Remove(entity);
+                _data.SubmitDataChange(entity, DatabaseActionType.Delete);
             }
 
             entity = new PCSearchSite
@@ -215,12 +216,9 @@ namespace SWLOR.Game.Server.Service
                         SearchSiteID = entity.SearchSiteID
                     };
 
-                    _db.PCSearchSiteItems.Add(itemEntity);
+                    _data.SubmitDataChange(itemEntity, DatabaseActionType.Insert);
                 }
-
             }
-
-            _db.SaveChanges();
         }
 
 
@@ -255,7 +253,7 @@ namespace SWLOR.Game.Server.Service
 
         private ItemVO PickResultItem(int lootTable)
         {
-            LootTable entity = _db.LootTables.Single(x => x.LootTableID == lootTable);
+            LootTable entity = _data.Single<LootTable>(x => x.LootTableID == lootTable);
             
             int[] weights = new int[entity.LootTableItems.Count];
 

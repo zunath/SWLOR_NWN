@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Service
     public class CraftService : ICraftService
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IPerkService _perk;
         private readonly IColorTokenService _color;
         private readonly INWNXPlayer _nwnxPlayer;
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Service
 
         public CraftService(
             INWScript script,
-            IDataContext db,
+            IDataService data,
             IPerkService perk,
             IColorTokenService color,
             INWNXPlayer nwnxPlayer,
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Service
             INWNXChat nwnxChat)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _perk = perk;
             _color = color;
             _nwnxPlayer = nwnxPlayer;
@@ -50,14 +50,14 @@ namespace SWLOR.Game.Server.Service
 
         public List<CraftBlueprintCategory> GetCategoriesAvailableToPCByDeviceID(string playerID, int deviceID)
         {
-            return _db.StoredProcedure<CraftBlueprintCategory>("GetCraftCategoriesAvailableToPCByDeviceID",
+            return _data.StoredProcedure<CraftBlueprintCategory>("GetCraftCategoriesAvailableToPCByDeviceID",
                 new SqlParameter("DeviceID", deviceID),
                 new SqlParameter("PlayerID", playerID));
         }
 
         public List<CraftBlueprint> GetPCBlueprintsByDeviceAndCategoryID(string playerID, int deviceID, long categoryID)
         {
-            return _db.StoredProcedure<CraftBlueprint>("GetPCCraftBlueprintsByDeviceAndCategoryID",
+            return _data.StoredProcedure<CraftBlueprint>("GetPCCraftBlueprintsByDeviceAndCategoryID",
                 new SqlParameter("DeviceID", deviceID),
                 new SqlParameter("CraftCategoryID", categoryID),
                 new SqlParameter("PlayerID", playerID));
@@ -135,18 +135,18 @@ namespace SWLOR.Game.Server.Service
 
         public CraftBlueprint GetBlueprintByID(long craftBlueprintID)
         {
-            return _db.CraftBlueprints.SingleOrDefault(x => x.CraftBlueprintID == craftBlueprintID);
+            return _data.CraftBlueprints.SingleOrDefault(x => x.CraftBlueprintID == craftBlueprintID);
         }
 
         public List<CraftBlueprintCategory> GetCategoriesAvailableToPC(string playerID)
         {
-            return _db.StoredProcedure<CraftBlueprintCategory>("GetCategoriesAvailableToPC",
+            return _data.StoredProcedure<CraftBlueprintCategory>("GetCategoriesAvailableToPC",
                 new SqlParameter("PlayerID", playerID));
         }
 
         public List<CraftBlueprint> GetPCBlueprintsByCategoryID(string playerID, long categoryID)
         {
-            return _db.StoredProcedure<CraftBlueprint>("GetPCBlueprintsByCategoryID",
+            return _data.StoredProcedure<CraftBlueprint>("GetPCBlueprintsByCategoryID",
                 new SqlParameter("PlayerID", playerID),
                 new SqlParameter("CraftCategoryID", categoryID));
         }
@@ -155,7 +155,7 @@ namespace SWLOR.Game.Server.Service
         public void CraftItem(NWPlayer oPC, NWPlaceable device)
         {
             var model = GetPlayerCraftingData(oPC);
-            CraftBlueprint blueprint = _db.CraftBlueprints.Single(x => x.CraftBlueprintID == model.BlueprintID);
+            CraftBlueprint blueprint = _data.CraftBlueprints.Single(x => x.CraftBlueprintID == model.BlueprintID);
             if (blueprint == null) return;
 
             if (oPC.IsBusy)

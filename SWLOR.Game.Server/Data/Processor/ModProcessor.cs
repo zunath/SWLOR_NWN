@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Validator;
+using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Data.Processor
 {
@@ -8,7 +9,7 @@ namespace SWLOR.Game.Server.Data.Processor
     {
         public IValidator Validator => new ModValidator();
 
-        public void Process(IDataContext db, Entity.Mod dataObject)
+        public void Process(IDataService data, Entity.Mod dataObject)
         {
         }
     }

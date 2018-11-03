@@ -15,18 +15,18 @@ namespace SWLOR.Game.Server.Service
     {
         private readonly ISkillService _skillService;
         private readonly IRandomService _randomService;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly AppCache _cache;
 
         public LanguageService(
             ISkillService skillService,
             IRandomService randomService,
-            IDataContext db,
+            IDataService data,
             AppCache cache)
         {
             _skillService = skillService;
             _randomService = randomService;
-            _db = db;
+            _data = data;
             _cache = cache;
         }
 
@@ -211,7 +211,7 @@ namespace SWLOR.Game.Server.Service
             // Fair warning: We're short-circuiting the skill system here.
             // Languages don't level up like normal skills (no stat increases, SP, etc.)
             // So it's safe to simply set the player's rank in the skill to max.
-            var dbSkills = _db.PCSkills
+            var dbSkills = _data.PCSkills
                 .Where(x => x.PlayerID == player.GlobalID &&
                             languages.Contains((SkillType)x.SkillID))
                 .ToList();
@@ -229,7 +229,7 @@ namespace SWLOR.Game.Server.Service
                 skillCache[(SkillType) skill.SkillID].Rank = maxRank;
             }
 
-            _db.SaveChanges();
+            _data.SaveChanges();
             
         }
 

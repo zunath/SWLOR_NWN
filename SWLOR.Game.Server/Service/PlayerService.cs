@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Service
     public class PlayerService : IPlayerService
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IColorTokenService _color;
         private readonly INWNXCreature _nwnxCreature;
         private readonly INWNXPlayer _player;
@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Service
 
         public PlayerService(
             INWScript script, 
-            IDataContext db, 
+            IDataService data, 
             IColorTokenService color,
             INWNXCreature nwnxCreature,
             INWNXPlayer player,
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Service
             ICachingService caching)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _color = color;
             _nwnxCreature = nwnxCreature;
             _player = player;
@@ -157,10 +157,10 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 PlayerCharacter entity = CreateDBPCEntity(player);
-                _db.PlayerCharacters.Add(entity);
-                _db.SaveChanges();
+                _data.PlayerCharacters.Add(entity);
+                _data.SaveChanges();
 
-                _db.StoredProcedure("InsertAllPCSkillsByID",
+                _data.StoredProcedure("InsertAllPCSkillsByID",
                     new SqlParameter("PlayerID", player.GlobalID));
                 _caching.CachePCSkills(player);
                 
@@ -281,14 +281,14 @@ namespace SWLOR.Game.Server.Service
             if(player == null) throw new ArgumentNullException(nameof(player));
             if(!player.IsPlayer) throw new ArgumentException(nameof(player) + " must be a player.", nameof(player));
 
-            return _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+            return _data.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
         }
 
         public PlayerCharacter GetPlayerEntity(string playerID)
         {
             if (string.IsNullOrWhiteSpace(playerID)) throw new ArgumentException("Invalid player ID.", nameof(playerID));
 
-            return _db.PlayerCharacters.Single(x => x.PlayerID == playerID);
+            return _data.PlayerCharacters.Single(x => x.PlayerID == playerID);
         }
 
         public void OnAreaEnter()
@@ -330,7 +330,7 @@ namespace SWLOR.Game.Server.Service
 
         public void ShowMOTD(NWPlayer player)
         {
-            ServerConfiguration config = _db.ServerConfigurations.First();
+            ServerConfiguration config = _data.ServerConfigurations.First();
             string message = _color.Green("Welcome to " + config.ServerName + "!\n\nMOTD: ") + _color.White(config.MessageOfTheDay);
 
             _.DelayCommand(6.5f, () =>
@@ -346,7 +346,7 @@ namespace SWLOR.Game.Server.Service
             entity.CharacterName = player.Name;
             entity.HitPoints = player.CurrentHP;
 
-            _db.SaveChanges();
+            _data.SaveChanges();
         }
 
         public void SaveLocation(NWPlayer player)
@@ -373,7 +373,7 @@ namespace SWLOR.Game.Server.Service
                     entity.RespawnLocationZ = waypoint.Position.m_Z;
                 }
 
-                _db.SaveChanges();
+                _data.SaveChanges();
             }
         }
 

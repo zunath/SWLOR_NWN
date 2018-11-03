@@ -14,17 +14,17 @@ namespace SWLOR.Game.Server.Service
     public class FarmingService: IFarmingService
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IRandomService _random;
         private readonly IColorTokenService _color;
 
         public FarmingService(INWScript script, 
-            IDataContext db,
+            IDataService data,
             IRandomService random,
             IColorTokenService color)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _random = random;
             _color = color;
         }
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            GrowingPlant growingPlant = _db.GrowingPlants.Single(x => x.GrowingPlantID == growingPlantID);
+            GrowingPlant growingPlant = _data.GrowingPlants.Single(x => x.GrowingPlantID == growingPlantID);
             Plant plantEntity = growingPlant.Plant;
 
             if (string.IsNullOrWhiteSpace(plantEntity.SeedResref))
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Service
             }
             
             growingPlant.IsActive = false;
-            _db.SaveChanges();
+            _data.SaveChanges();
 
             _.CreateItemOnObject(plantEntity.SeedResref, player.Object);
             plant.Destroy();
@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Service
             if (plantID <= 0) return existingDescription;
             if (examinedObject.ObjectType != NWScript.OBJECT_TYPE_ITEM) return existingDescription;
 
-            Plant plant = _db.Plants.SingleOrDefault(x => x.PlantID == plantID);
+            Plant plant = _data.Plants.SingleOrDefault(x => x.PlantID == plantID);
             if (plant == null) return existingDescription;
 
             existingDescription += _color.Orange("This item can be planted. Farming skill required: " + plant.Level) + "\n\n";
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleLoad()
         {
-            List<GrowingPlant> plants = _db.GrowingPlants.Where(x => x.IsActive).ToList();
+            List<GrowingPlant> plants = _data.GrowingPlants.Where(x => x.IsActive).ToList();
 
             foreach (GrowingPlant plant in plants)
             {
@@ -100,19 +100,19 @@ namespace SWLOR.Game.Server.Service
             int growingPlantID = plant.GetLocalInt("GROWING_PLANT_ID");
             if (growingPlantID <= 0) return;
 
-            GrowingPlant growingPlant = _db.GrowingPlants.Single(x => x.GrowingPlantID == growingPlantID);
+            GrowingPlant growingPlant = _data.GrowingPlants.Single(x => x.GrowingPlantID == growingPlantID);
             growingPlant.IsActive = false;
-            _db.SaveChanges();
+            _data.SaveChanges();
         }
 
         public GrowingPlant GetGrowingPlantByID(int growingPlantID)
         {
-            return _db.GrowingPlants.Single(x => x.GrowingPlantID == growingPlantID);
+            return _data.GrowingPlants.Single(x => x.GrowingPlantID == growingPlantID);
         }
 
         public Plant GetPlantByID(int plantID)
         {
-            return _db.Plants.Single(x => x.PlantID == plantID);
+            return _data.Plants.Single(x => x.PlantID == plantID);
         }
 
     }

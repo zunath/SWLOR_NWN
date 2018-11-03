@@ -6,19 +6,15 @@ using SWLOR.Game.Server.Data.Contracts;
 namespace SWLOR.Game.Server.Data.Entity
 {
     [Table("QuestTypeDomain")]
-    public partial class QuestTypeDomain: IEntity, ICacheable
+    public class QuestTypeDomain: IEntity
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public QuestTypeDomain()
         {
-            this.QuestStates = new HashSet<QuestState>();
         }
 
         [Key]
         public int QuestTypeID { get; set; }
         public string Name { get; set; }
-    
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<QuestState> QuestStates { get; set; }
     }
 }

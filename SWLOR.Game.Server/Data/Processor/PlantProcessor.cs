@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Data.Validator;
+using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Data.Processor
 {
@@ -9,7 +10,7 @@ namespace SWLOR.Game.Server.Data.Processor
     {
         public IValidator Validator => new PlantValidator();
 
-        public void Process(IDataContext db, Plant dataObject)
+        public void Process(IDataService data, Plant dataObject)
         {
         }
     }

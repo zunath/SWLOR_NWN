@@ -10,12 +10,12 @@ namespace SWLOR.Game.Server.Service
 {
     public class EmoteStyleService : IEmoteStyleService
     {
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
 
         public EmoteStyleService(
-            IDataContext db)
+            IDataService data)
         {
-            _db = db;
+            _data = data;
         }
 
         public EmoteStyle GetEmoteStyle(NWObject obj)
@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Service
             if (obj.IsPlayer)
             {
                 NWPlayer player = obj.Object;
-                PlayerCharacter pc = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+                PlayerCharacter pc = _data.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
                 novelStyle = pc.IsUsingNovelEmoteStyle;
             }
 
@@ -37,9 +37,9 @@ namespace SWLOR.Game.Server.Service
             if (obj.IsPlayer)
             {
                 NWPlayer player = obj.Object;
-                PlayerCharacter pc = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+                PlayerCharacter pc = _data.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
                 pc.IsUsingNovelEmoteStyle = style == EmoteStyle.Novel;
-                _db.SaveChanges();
+                _data.SaveChanges();
             }
         }
     }

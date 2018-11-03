@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Item
         private readonly IPerkService _perk;
         private readonly IItemService _item;
         private readonly IModService _mod;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IColorTokenService _color;
         private readonly ISkillService _skill;
 
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Item
             IPerkService perk,
             IItemService item,
             IModService mod,
-            IDataContext db,
+            IDataService data,
             IColorTokenService color,
             ISkillService skill)
         {
@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Item
             _item = item;
             _ = script;
             _mod = mod;
-            _db = db;
+            _data = data;
             _color = color;
             _skill = skill;
         }
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Item
             int modLevel = modItem.RecommendedLevel;
             int levelIncrease = modItem.LevelIncrease;
 
-            var dbMod = _db.Mods.Single(x => x.ModID == modID && x.IsActive);
+            var dbMod = _data.Mods.Single(x => x.ModID == modID && x.IsActive);
             App.ResolveByInterface<IMod>("Mod." + dbMod.Script, mod =>
             {
                 mod.Apply(player, targetItem, modArgs);
@@ -263,7 +263,7 @@ namespace SWLOR.Game.Server.Item
             if (!targetItem.Possessor.Equals(player)) return "Targeted item must be in your inventory.";
 
             // Look for a database entry for this mod type.
-            var dbMod = _db.Mods.SingleOrDefault(x => x.ModID == modID && x.IsActive);
+            var dbMod = _data.Mods.SingleOrDefault(x => x.ModID == modID && x.IsActive);
             if (dbMod == null)
             {
                 return "Couldn't find a matching mod ID in the database. Inform an admin of this issue.";

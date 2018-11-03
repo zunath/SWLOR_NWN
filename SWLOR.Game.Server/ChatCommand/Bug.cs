@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using System;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
@@ -13,14 +14,14 @@ namespace SWLOR.Game.Server.ChatCommand
     public class Bug : IChatCommand
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
 
         public Bug(
             INWScript script,
-            IDataContext db)
+            IDataService data)
         {
             _ = script;
-            _db = db;
+            _data = data;
         }
 
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
@@ -52,8 +53,7 @@ namespace SWLOR.Game.Server.ChatCommand
                 DateSubmitted = DateTime.UtcNow
             };
 
-            _db.BugReports.Add(report);
-            _db.SaveChanges();
+            _data.SubmitDataChange(report, DatabaseActionType.Insert);
 
             user.SendMessage("Bug report submitted! Thank you for your report.");
         }

@@ -5,14 +5,12 @@ using SWLOR.Game.Server.Data.Contracts;
 namespace SWLOR.Game.Server.Data.Entity
 {
     [Table("SkillXPRequirement")]
-    public partial class SkillXPRequirement: IEntity
+    public class SkillXPRequirement: IEntity
     {
         [Key]
         public int SkillXPRequirementID { get; set; }
         public int SkillID { get; set; }
         public int Rank { get; set; }
         public int XP { get; set; }
-    
-        public virtual Skill Skill { get; set; }
     }
 }

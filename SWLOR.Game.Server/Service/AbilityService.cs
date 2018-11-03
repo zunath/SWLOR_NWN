@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Data.Entity.Core.Objects;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
 using SWLOR.Game.Server.Bioware.Contracts;
 using SWLOR.Game.Server.Data.Contracts;
@@ -25,7 +23,7 @@ namespace SWLOR.Game.Server.Service
     public class AbilityService : IAbilityService
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IPerkService _perk;
         private readonly IPVPSanctuaryService _pvpSanctuary;
         private readonly ITimeService _time;
@@ -41,7 +39,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IItemService _item;
 
         public AbilityService(INWScript script, 
-            IDataContext db,
+            IDataService data,
             IPerkService perk,
             IPVPSanctuaryService pvpSanctuary,
             ITimeService time,
@@ -57,7 +55,7 @@ namespace SWLOR.Game.Server.Service
             IItemService item)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _perk = perk;
             _pvpSanctuary = pvpSanctuary;
             _time = time;
@@ -78,20 +76,20 @@ namespace SWLOR.Game.Server.Service
             NWPlayer pc = (Object.OBJECT_SELF);
             NWCreature target = (_nwnxEvents.OnFeatUsed_GetTarget().Object);
             int featID = _nwnxEvents.OnFeatUsed_GetFeatID();
-            Data.Entity.Perk perk = _db.Perks.SingleOrDefault(x => x.FeatID == featID);
+            Data.Entity.Perk perk = _data.GetAll<Data.Entity.Perk>().SingleOrDefault(x => x.FeatID == featID);
             if (perk == null) return;
 
             App.ResolveByInterface<IPerk>("Perk." + perk.ScriptName, (perkAction) =>
             {
                 if (perkAction == null) return;
 
-                PlayerCharacter playerEntity = _db.PlayerCharacters.Single(x => x.PlayerID == pc.GlobalID);
+                PlayerCharacter playerEntity =  _data.Get<PlayerCharacter>(pc.GlobalID);
                 int pcPerkLevel = _perk.GetPCPerkLevel(pc, perk.PerkID);
 
                 // If player is disabling an existing stance, remove that effect.
                 if (perk.ExecutionTypeID == (int) PerkExecutionType.Stance)
                 {
-                    PCCustomEffect stanceEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == pc.GlobalID && 
+                    PCCustomEffect stanceEffect = _data.GetAll<PCCustomEffect>().SingleOrDefault(x => x.PlayerID == pc.GlobalID && 
                                                                                            x.CustomEffect.CustomEffectCategoryID == (int)CustomEffectCategoryType.Stance);
 
                     if (stanceEffect != null && perk.PerkID == stanceEffect.StancePerkID)
@@ -141,7 +139,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 // Check cooldown
-                PCCooldown pcCooldown = _db.PCCooldowns.SingleOrDefault(x => x.PlayerID == pc.GlobalID && x.CooldownCategoryID == perk.CooldownCategoryID);
+                PCCooldown pcCooldown = _data.GetAll<PCCooldown>().SingleOrDefault(x => x.PlayerID == pc.GlobalID && x.CooldownCategoryID == perk.CooldownCategoryID);
                 if (pcCooldown == null)
                 {
                     pcCooldown = new PCCooldown
@@ -151,8 +149,7 @@ namespace SWLOR.Game.Server.Service
                         PlayerID = pc.GlobalID
                     };
 
-                    _db.PCCooldowns.Add(pcCooldown);
-                    _db.SaveChanges();
+                    _data.SubmitDataChange(pcCooldown, DatabaseActionType.Insert);
                 }
 
                 DateTime unlockDateTime = pcCooldown.DateUnlocked;
@@ -316,9 +313,9 @@ namespace SWLOR.Game.Server.Service
             int cooldownSeconds = (int)finalCooldown;
             int cooldownMillis = (int)((finalCooldown - cooldownSeconds) * 100);
 
-            PCCooldown pcCooldown = _db.PCCooldowns.Single(x => x.PlayerID == pc.GlobalID && x.CooldownCategoryID == cooldown.CooldownCategoryID);
+            PCCooldown pcCooldown = _data.GetAll<PCCooldown>().Single(x => x.PlayerID == pc.GlobalID && x.CooldownCategoryID == cooldown.CooldownCategoryID);
             pcCooldown.DateUnlocked = DateTime.UtcNow.AddSeconds(cooldownSeconds).AddMilliseconds(cooldownMillis);
-            _db.SaveChanges();
+            _data.SubmitDataChange(pcCooldown, DatabaseActionType.Update);
         }
 
         private void CheckForSpellInterruption(NWPlayer pc, string spellUUID, Vector position)
@@ -381,9 +378,9 @@ namespace SWLOR.Game.Server.Service
 
         public void RestoreFP(NWPlayer oPC, int amount)
         {
-            PlayerCharacter entity = _db.PlayerCharacters.Single(x => x.PlayerID == oPC.GlobalID);
+            PlayerCharacter entity = _data.Get<PlayerCharacter>(oPC.GlobalID);
             RestoreFP(oPC, amount, entity);
-            _db.SaveChanges();
+            _data.SubmitDataChange(entity, DatabaseActionType.Update);
         }
 
         public void OnHitCastSpell(NWPlayer oPC)
@@ -394,7 +391,7 @@ namespace SWLOR.Game.Server.Service
             int activeWeaponSkillID = oPC.GetLocalInt("ACTIVE_WEAPON_SKILL");
             if (activeWeaponSkillID <= 0) return;
 
-            PCPerk entity = _db.PCPerks.Single(x => x.PlayerID == oPC.GlobalID && x.PerkID == activeWeaponSkillID);
+            PCPerk entity = _data.GetAll<PCPerk>().Single(x => x.PlayerID == oPC.GlobalID && x.PerkID == activeWeaponSkillID);
 
             App.ResolveByInterface<IPerk>("Perk." + entity.Perk.ScriptName, (perk) =>
             {
@@ -419,7 +416,7 @@ namespace SWLOR.Game.Server.Service
             if (!player.IsPlayer) return;
             if (player.RightHand.CustomItemType != CustomItemType.BlasterPistol) return;
 
-            PCCustomEffect pcEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CustomEffectID == (int) CustomEffectType.PlasmaCell);
+            PCCustomEffect pcEffect = _data.GetAll<PCCustomEffect>().SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CustomEffectID == (int) CustomEffectType.PlasmaCell);
             if (pcEffect == null) return;
 
             int chance;

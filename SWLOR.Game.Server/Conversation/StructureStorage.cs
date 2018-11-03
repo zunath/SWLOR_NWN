@@ -12,19 +12,19 @@ namespace SWLOR.Game.Server.Conversation
     public class StructureStorage : ConversationBase
     {
         private readonly IColorTokenService _color;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IBasePermissionService _perm;
 
         public StructureStorage(
             INWScript script,
             IDialogService dialog,
             IColorTokenService color,
-            IDataContext db,
+            IDataService data,
             IBasePermissionService perm)
             : base(script, dialog)
         {
             _color = color;
-            _db = db;
+            _data = data;
             _perm = perm;
         }
 
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Conversation
                 case 1: // Confirm Change Name
                     string name = GetPC().GetLocalString("NEW_CONTAINER_NAME");
                     int structureID = GetDialogTarget().GetLocalInt("PC_BASE_STRUCTURE_ID");
-                    var structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
+                    var structure = _data.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
                     structure.CustomName = name;
                     GetDialogTarget().Name = name;
                     GetPC().DeleteLocalString("NEW_CONTAINER_NAME");

@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Service
         private const string TempStoragePlaceableTag = "QUEST_BARREL";
 
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IKeyItemService _keyItem;
         private readonly IMapPinService _mapPin;
         private readonly IDialogService _dialog;
@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IObjectVisibilityService _ovs;
 
         public QuestService(INWScript script,
-            IDataContext db,
+            IDataService data,
             IKeyItemService keyItem,
             IMapPinService mapPin,
             IDialogService dialog,
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Service
             IObjectVisibilityService ovs)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _keyItem = keyItem;
             _mapPin = mapPin;
             _dialog = dialog;
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Service
 
         public Quest GetQuestByID(int questID)
         {
-            return _db.Quests.Single(x => x.QuestID == questID);
+            return _data.Single<Quest>(x => x.QuestID == questID);
         }
 
         public ItemVO GetTempItemInformation(string resref, int quantity)
@@ -70,8 +70,8 @@ namespace SWLOR.Game.Server.Service
         {
             if (!player.IsPlayer) return;
 
-            Quest quest = _db.Quests.Single(x => x.QuestID == questID);
-            PCQuestStatus pcState = _db.PCQuestStatus.Single(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
+            Quest quest = _data.Single<Quest>(x => x.QuestID == questID);
+            PCQuestStatus pcState = _data.Single<PCQuestStatus>(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
 
             QuestState finalState = quest.QuestStates.OrderBy(o => o.Sequence).Last();
 
@@ -118,7 +118,9 @@ namespace SWLOR.Game.Server.Service
 
             if (quest.RewardFame > 0)
             {
-                PCRegionalFame fame = _db.PCRegionalFames.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.FameRegionID == quest.FameRegionID);
+                PCRegionalFame fame = _data.SingleOrDefault<PCRegionalFame>(x => x.PlayerID == player.GlobalID && x.FameRegionID == quest.FameRegionID);
+                DatabaseActionType action = DatabaseActionType.Update;
+
                 if (fame == null)
                 {
                     fame = new PCRegionalFame
@@ -128,14 +130,15 @@ namespace SWLOR.Game.Server.Service
                         Amount = 0
                     };
 
-                    _db.PCRegionalFames.Add(fame);
+                    action = DatabaseActionType.Insert;
                 }
 
                 fame.Amount += quest.RewardFame;
+                _data.SubmitDataChange(fame, action);
             }
 
             player.SendMessage("Quest '" + quest.Name + "' complete!");
-            _db.SaveChanges();
+            _data.SubmitDataChange(pcState, DatabaseActionType.Update);
             _.RemoveJournalQuestEntry(quest.JournalTag, player, FALSE);
 
             if (!string.IsNullOrWhiteSpace(quest.OnCompleteRule) && questOwner != null)
@@ -170,7 +173,7 @@ namespace SWLOR.Game.Server.Service
 
             if (!oPC.IsPlayer) return;
 
-            List<PCQuestStatus> pcQuests = _db.PCQuestStatus.Where(x => x.PlayerID == oPC.GlobalID && x.CompletionDate == null).ToList();
+            List<PCQuestStatus> pcQuests = _data.PCQuestStatus.Where(x => x.PlayerID == oPC.GlobalID && x.CompletionDate == null).ToList();
 
             foreach (PCQuestStatus quest in pcQuests)
             {
@@ -186,7 +189,7 @@ namespace SWLOR.Game.Server.Service
 
         public bool CanAcceptQuest(NWPlayer oPC, Quest quest, bool sendMessage)
         {
-            PCQuestStatus status = _db.PCQuestStatus.SingleOrDefault(x => x.PlayerID == oPC.GlobalID && x.QuestID == quest.QuestID);
+            PCQuestStatus status = _data.PCQuestStatus.SingleOrDefault(x => x.PlayerID == oPC.GlobalID && x.QuestID == quest.QuestID);
 
             if (status != null)
             {
@@ -218,7 +221,7 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
-            PCRegionalFame fame = _db.PCRegionalFames.SingleOrDefault(x => x.PlayerID == oPC.GlobalID && x.FameRegionID == quest.FameRegionID);
+            PCRegionalFame fame = _data.PCRegionalFames.SingleOrDefault(x => x.PlayerID == oPC.GlobalID && x.FameRegionID == quest.FameRegionID);
 
             if (fame != null)
             {
@@ -238,7 +241,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!player.IsPlayer) return;
 
-            Quest quest = _db.Quests.Single(x => x.QuestID == questID);
+            Quest quest = _data.Quests.Single(x => x.QuestID == questID);
 
             if (!CanAcceptQuest(player, quest, true))
             {
@@ -263,9 +266,9 @@ namespace SWLOR.Game.Server.Service
 
             status.QuestID = quest.QuestID;
             status.PlayerID = player.GlobalID;
-            _db.PCQuestStatus.Add(status);
+            _data.PCQuestStatus.Add(status);
             CreateExtendedQuestDataEntries(status);
-            _db.SaveChanges();
+            _data.SaveChanges();
 
             _.AddJournalQuestEntry(quest.JournalTag, 1, player.Object, FALSE);
             player.SendMessage("Quest '" + quest.Name + "' accepted. Refer to your journal for more information on this quest.");
@@ -287,7 +290,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!player.IsPlayer) return;
 
-            PCQuestStatus questStatus = _db.PCQuestStatus.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
+            PCQuestStatus questStatus = _data.PCQuestStatus.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
 
             if (questStatus == null)
             {
@@ -312,7 +315,7 @@ namespace SWLOR.Game.Server.Service
                 player.SendMessage("Objective for quest '" + quest.Name + "' complete! Check your journal for information on the next objective.");
                 
                 CreateExtendedQuestDataEntries(questStatus);
-                _db.SaveChanges();
+                _data.SaveChanges();
 
                 if (!string.IsNullOrWhiteSpace(quest.OnAdvanceRule) && questOwner != null)
                 {
@@ -364,7 +367,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!oPC.IsPlayer) return;
 
-            Quest quest = _db.Quests.Single(x => x.QuestID == questID);
+            Quest quest = _data.Quests.Single(x => x.QuestID == questID);
 
             if (quest.AllowRewardSelection)
             {
@@ -383,7 +386,7 @@ namespace SWLOR.Game.Server.Service
             if (!oPC.IsPlayer) return false;
             if (prereqs.Count <= 0) return true;
 
-            List<int> completedQuestIDs = _db.PCQuestStatus.Where(x => x.PlayerID == oPC.GlobalID && x.CompletionDate != null)
+            List<int> completedQuestIDs = _data.PCQuestStatus.Where(x => x.PlayerID == oPC.GlobalID && x.CompletionDate != null)
                 .Select(s => s.QuestID).ToList();
 
             List<int> prereqIDs = new List<int>();
@@ -400,7 +403,7 @@ namespace SWLOR.Game.Server.Service
             if (!oPC.IsPlayer) return false;
             if (requiredKeyItems.Count <= 0) return true;
 
-            List<int> keyItemIDs = _db.PCKeyItems.Where(x => x.PlayerID == oPC.GlobalID)
+            List<int> keyItemIDs = _data.PCKeyItems.Where(x => x.PlayerID == oPC.GlobalID)
                 .Select(s => s.KeyItemID).ToList();
 
             List<int> requiredKeyItemIDs = new List<int>();
@@ -421,7 +424,7 @@ namespace SWLOR.Game.Server.Service
 
             if (questID <= 0 || questStateSequence <= 0 || string.IsNullOrWhiteSpace(questItemResref)) return;
 
-            PCQuestStatus status = _db.PCQuestStatus.Single(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID);
+            PCQuestStatus status = _data.PCQuestStatus.Single(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID);
             QuestState questState = status.CurrentQuestState;
 
             if (questStateSequence != questState.Sequence) return;
@@ -462,7 +465,7 @@ namespace SWLOR.Game.Server.Service
                     continue;
                 }
 
-                var killTargets = _db.PCQuestKillTargetProgresses.Where(x => x.PlayerID == oPC.GlobalID && x.NPCGroupID == npcGroupID).ToList();
+                var killTargets = _data.PCQuestKillTargetProgresses.Where(x => x.PlayerID == oPC.GlobalID && x.NPCGroupID == npcGroupID).ToList();
                 foreach (var kt in killTargets)
                 {
                     kt.RemainingToKill--;
@@ -475,7 +478,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         updateMessage += " " + _color.Green(" {COMPLETE}");
                         playersToAdvance.Add(new KeyValuePair<NWPlayer, int>(oPC, questID));
-                        _db.PCQuestKillTargetProgresses.Remove(kt);
+                        _data.PCQuestKillTargetProgresses.Remove(kt);
 
                     }
 
@@ -503,7 +506,7 @@ namespace SWLOR.Game.Server.Service
                 oPC = _.GetNextFactionMember(oKiller);
             }
 
-            _db.SaveChanges();
+            _data.SaveChanges();
 
             foreach (var player in playersToAdvance)
             {
@@ -531,7 +534,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            PCQuestStatus pcQuestStatus = _db.PCQuestStatus.SingleOrDefault(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID);
+            PCQuestStatus pcQuestStatus = _data.PCQuestStatus.SingleOrDefault(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID);
             if (pcQuestStatus == null) return;
 
             QuestState questState = pcQuestStatus.CurrentQuestState;
@@ -576,7 +579,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!oPC.IsPlayer) return;
 
-            PCQuestStatus pcStatus = _db.PCQuestStatus.SingleOrDefault(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID);
+            PCQuestStatus pcStatus = _data.PCQuestStatus.SingleOrDefault(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID);
 
             if (pcStatus == null)
             {
@@ -619,14 +622,14 @@ namespace SWLOR.Game.Server.Service
 
         public bool HasPlayerCompletedQuest(NWObject oPC, int questID)
         {
-            PCQuestStatus status = _db.PCQuestStatus.Single(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID);
+            PCQuestStatus status = _data.PCQuestStatus.Single(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID);
 
             return status?.CompletionDate != null;
         }
 
         public int GetPlayerQuestJournalID(NWObject oPC, int questID)
         {
-            PCQuestStatus status = _db.PCQuestStatus.Single(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID);
+            PCQuestStatus status = _data.PCQuestStatus.Single(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID);
 
             if (status == null) return -1;
             return status.CurrentQuestState.JournalStateID;

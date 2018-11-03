@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Service
     public class MigrationService: IMigrationService
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IColorTokenService _color;
         private readonly ISerializationService _serialization;
         private readonly IItemService _item;
@@ -21,13 +21,13 @@ namespace SWLOR.Game.Server.Service
         private const int PlayerVersionNumber = 1;
 
         public MigrationService(INWScript script,
-            IDataContext db,
+            IDataService data,
             IColorTokenService color,
             ISerializationService serialization,
             IItemService item)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _color = color;
             _serialization = serialization;
             _item = item;
@@ -46,13 +46,13 @@ namespace SWLOR.Game.Server.Service
 
         private void PerformMigration(NWPlayer oPC)
         {
-            PlayerCharacter entity = _db.PlayerCharacters.Single(x => x.PlayerID == oPC.GlobalID);
+            PlayerCharacter entity = _data.PlayerCharacters.Single(x => x.PlayerID == oPC.GlobalID);
 
             for (int version = entity.VersionNumber + 1; version <= PlayerVersionNumber; version++)
             {
                 Dictionary<string, PCMigrationItem> itemMap = new Dictionary<string, PCMigrationItem>();
                 List<int> stripItemList = new List<int>();
-                PCMigration migration = _db.PCMigrations.Single(x => x.PCMigrationID == version);
+                PCMigration migration = _data.PCMigrations.Single(x => x.PCMigrationID == version);
 
                 foreach (PCMigrationItem item in migration.PCMigrationItems)
                 {
@@ -78,12 +78,12 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 RunCustomMigrationProcess(oPC, version);
-                entity = _db.PlayerCharacters.Single(x => x.PlayerID == oPC.GlobalID);
+                entity = _data.PlayerCharacters.Single(x => x.PlayerID == oPC.GlobalID);
                 entity.VersionNumber = version;
-                _db.SaveChanges();
+                _data.SaveChanges();
                 oPC.SetLocalInt("MIGRATION_SYSTEM_LOGGED_IN_ONCE", NWScript.TRUE);
 
-                long overflowCount = _db.PCOverflowItems.LongCount(x => x.PlayerID == oPC.GlobalID);
+                long overflowCount = _data.PCOverflowItems.LongCount(x => x.PlayerID == oPC.GlobalID);
                 string message = _color.Green("Your character has been updated!" +
                                               (overflowCount > 0 ? " Items which could not be created have been placed into overflow inventory. You can access this from the rest menu." : ""));
 
@@ -117,8 +117,8 @@ namespace SWLOR.Game.Server.Service
                             ItemObject = _serialization.Serialize(newItem),
                             PlayerID = oPC.GlobalID
                         };
-                        _db.PCOverflowItems.Add(overflow);
-                        _db.SaveChanges();
+                        _data.PCOverflowItems.Add(overflow);
+                        _data.SaveChanges();
 
                         newItem.Destroy();
                     }

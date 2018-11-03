@@ -82,8 +82,9 @@ namespace SWLOR.Game.Server.Event.Delayed
         {
             var model = _craft.GetPlayerCraftingData(player);
 
-            CraftBlueprint blueprint = _data.CraftBlueprints.Single(x => x.CraftBlueprintID == model.BlueprintID);
-            CachedPCSkill pcSkill = _skill.GetPCSkill(player, blueprint.SkillID);
+            CraftBlueprint blueprint = _data.Single<CraftBlueprint>(x => x.CraftBlueprintID == model.BlueprintID);
+            BaseStructure baseStructure = _data.Get<BaseStructure>(blueprint.BaseStructureID);
+            PCSkill pcSkill = _skill.GetPCSkill(player, blueprint.SkillID);
 
             int pcEffectiveLevel = _craft.CalculatePCEffectiveLevel(player, pcSkill.Rank, (SkillType)blueprint.SkillID);
             int itemLevel = model.AdjustedLevel;
@@ -121,7 +122,7 @@ namespace SWLOR.Game.Server.Event.Delayed
                 item.RecommendedLevel = itemLevel < 0 ? 0 : itemLevel;
                 item.SetLocalString("CRAFTER_PLAYER_ID", player.GlobalID);
 
-                _base.ApplyCraftedItemLocalVariables(item, blueprint.BaseStructure);
+                _base.ApplyCraftedItemLocalVariables(item, baseStructure);
             }
 
             if(_random.Random(0, 100) <= luckyBonus)
@@ -156,12 +157,12 @@ namespace SWLOR.Game.Server.Event.Delayed
             }
 
             // Structures gain increased durability based on the blueprint
-            if (blueprint.BaseStructure != null)
+            if (baseStructure != null)
             {
                 foreach (var item in craftedItems)
                 {
                     var maxDur = _durability.GetMaxDurability(item);
-                    maxDur += (float)blueprint.BaseStructure.Durability;
+                    maxDur += (float)baseStructure.Durability;
                     _durability.SetMaxDurability(item, maxDur);
                     _durability.SetDurability(item, maxDur);
                 }
@@ -171,7 +172,7 @@ namespace SWLOR.Game.Server.Event.Delayed
             int baseXP = 250 + successAmount * _random.Random(1, 50);
             float xp = _skill.CalculateRegisteredSkillLevelAdjustedXP(baseXP, model.AdjustedLevel, pcSkill.Rank);
 
-            var pcCraftedBlueprint = _data.PCCraftedBlueprints.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CraftBlueprintID == blueprint.CraftBlueprintID);
+            var pcCraftedBlueprint = _data.SingleOrDefault<PCCraftedBlueprint>(x => x.PlayerID == player.GlobalID && x.CraftBlueprintID == blueprint.CraftBlueprintID);
             if(pcCraftedBlueprint == null)
             {
                 xp = xp * 1.25f;
@@ -184,8 +185,7 @@ namespace SWLOR.Game.Server.Event.Delayed
                     PlayerID = player.GlobalID
                 };
 
-                _data.PCCraftedBlueprints.Add(pcCraftedBlueprint);
-                _data.SaveChanges();
+                _data.SubmitDataChange(pcCraftedBlueprint, DatabaseActionType.Insert);
             }
 
             _skill.GiveSkillXP(player, blueprint.SkillID, (int)xp);

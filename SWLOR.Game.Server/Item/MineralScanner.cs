@@ -2,6 +2,7 @@
 using NWN;
 using SWLOR.Game.Server.Bioware.Contracts;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
@@ -50,7 +51,7 @@ namespace SWLOR.Game.Server.Item
             if (lootTableID <= 0) return;
 
             NWArea area = _.GetAreaFromLocation(targetLocation);
-            var lootTable = _data.LootTables.Single(x => x.LootTableID == lootTableID);
+            var lootTable = _data.Single<LootTable>(x => x.LootTableID == lootTableID);
             var items = lootTable.LootTableItems.OrderByDescending(o => o.Weight);
             string sector = _base.GetSectorOfLocation(targetLocation);
             string sectorName = "Unknown";
@@ -112,7 +113,7 @@ namespace SWLOR.Game.Server.Item
         private int GetLootTable(Location targetLocation)
         {
             NWArea area = _.GetAreaFromLocation(targetLocation);
-            var dbArea = _data.Areas.Single(x => x.Resref == area.Resref);
+            var dbArea = _data.Single<Area>(x => x.Resref == area.Resref);
             var sector = _base.GetSectorOfLocation(targetLocation);
             int lootTableID = 0;
 

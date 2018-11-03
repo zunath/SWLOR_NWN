@@ -104,7 +104,9 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            var structure = _data.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
+            var structure = _data.Single<PCBaseStructure>(x => x.PCBaseStructureID == structureID);
+            var pcBase = _data.Get<PCBase>(structure.PCBaseID);
+            var interiorStyle = _data.Get<BuildingStyle>(structure.InteriorStyleID);
             NWArea instance = GetAreaInstance(structureID);
 
             if (instance == null)
@@ -112,11 +114,11 @@ namespace SWLOR.Game.Server.Conversation
                 string name = structure.CustomName;
                 if (string.IsNullOrWhiteSpace(name))
                 {
-                    PlayerCharacter owner = _player.GetPlayerEntity(structure.PCBase.PlayerID);
+                    PlayerCharacter owner = _player.GetPlayerEntity(pcBase.PlayerID);
                     name = owner.CharacterName + "'s Building";
                 }
 
-                instance = _area.CreateAreaInstance(oPC, structure.InteriorStyle.Resref, name, "PLAYER_HOME_ENTRANCE");
+                instance = _area.CreateAreaInstance(oPC, interiorStyle.Resref, name, "PLAYER_HOME_ENTRANCE");
                 instance.SetLocalInt("PC_BASE_STRUCTURE_ID", structureID);
                 instance.SetLocalInt("BUILDING_TYPE", (int)BuildingType.Interior);
 

@@ -3,6 +3,7 @@ using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
@@ -38,8 +39,9 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
             NWPlaceable container = (Object.OBJECT_SELF);
             int disturbType = _.GetInventoryDisturbType();
             int structureID = container.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            var structure = _data.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
-            int itemLimit = structure.BaseStructure.Storage + structure.StructureBonus;
+            var structure = _data.Single<PCBaseStructure>(x => x.PCBaseStructureID == structureID);
+            var baseStructure = _data.Get<BaseStructure>(structure.BaseStructureID);
+            int itemLimit = baseStructure.Storage + structure.StructureBonus;
 
             int itemCount = container.InventoryItems.Count();
             string itemResref = item.Resref;
@@ -73,10 +75,9 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
             }
             else if (disturbType == INVENTORY_DISTURB_TYPE_REMOVED)
             {
-                var dbItem = _data.PCBaseStructureItems.Single(x => x.ItemGlobalID == item.GlobalID);
-                _data.PCBaseStructureItems.Remove(dbItem);
+                var dbItem = _data.Single<PCBaseStructureItem>(x => x.ItemGlobalID == item.GlobalID);
+                _data.SubmitDataChange(dbItem, DatabaseActionType.Delete);
             }
-            _data.SaveChanges();
 
             oPC.SendMessage(_color.White("Item Limit: " + itemCount + " / ") + _color.Red(itemLimit.ToString()));
 

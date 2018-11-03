@@ -47,9 +47,9 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             NWItem weapon = (_.GetLastWeaponUsed(attacker.Object));
             int damage = _.GetTotalDamageDealt();
             int structureID = tower.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            PCBaseStructure structure = _data.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
+            PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.PCBaseStructureID == structureID);
             int maxShieldHP = _base.CalculateMaxShieldHP(structure);
-            PCBase pcBase = structure.PCBase;
+            PCBase pcBase = _data.Get<PCBase>(structure.PCBaseID);
             pcBase.ShieldHP -= damage;
             if (pcBase.ShieldHP <= 0) pcBase.ShieldHP = 0;
             float hpPercentage = (float)pcBase.ShieldHP / (float)maxShieldHP * 100.0f;
@@ -83,12 +83,13 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
                 if (structure.Durability <= 0.0f)
                 {
                     structure.Durability = 0.0f;
-                    BlowUpBase(structure.PCBase);
+                    BlowUpBase(pcBase);
+                    return true;
                 }
             }
 
-
-            _data.SaveChanges();
+            _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+            _data.SubmitDataChange(structure, DatabaseActionType.Update);
             return true;
         }
 
@@ -110,6 +111,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
                 }
 
                 var dbStructure = pcBase.PCBaseStructures.Single(x => x.PCBaseStructureID == structure.PCBaseStructureID);
+                var baseStructure = _data.Get<BaseStructure>(dbStructure.BaseStructureID);
 
                 // Explosion effect
                 Location location = structure.Structure.Location;
@@ -120,14 +122,14 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
 
                 // Spawn container for items
                 NWPlaceable container = (_.CreateObject(OBJECT_TYPE_PLACEABLE, "structure_rubble", structure.Structure.Location));
-                container.Name = dbStructure.BaseStructure.Name + " Rubble";
+                container.Name = baseStructure.Name + " Rubble";
 
                 // Drop item storage into container
                 for (int i = dbStructure.PCBaseStructureItems.Count - 1; i >= 0; i--)
                 {
                     var dbItem = dbStructure.PCBaseStructureItems.ElementAt(i);
                     _serialization.DeserializeItem(dbItem.ItemObject, container);
-                    _data.PCBaseStructureItems.Remove(dbItem);
+                    _data.SubmitDataChange(dbItem, DatabaseActionType.Delete);
                 }
 
                 // Convert child placeables to items and drop into container
@@ -144,12 +146,12 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
                         {
                             var dbItem = child.PCBaseStructureItems.ElementAt(i);
                             _serialization.DeserializeItem(dbItem.ItemObject, container);
-                            _data.PCBaseStructureItems.Remove(dbItem);
+                            _data.SubmitDataChange(dbItem, DatabaseActionType.Delete);
                         }
 
                         // Convert child structure to item
                         _base.ConvertStructureToItem(child, container);
-                        _data.PCBaseStructures.Remove(child);
+                        _data.SubmitDataChange(child, DatabaseActionType.Delete);
                     }
                 }
 
@@ -157,11 +159,11 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
                 for (int p = dbStructure.PCBaseStructurePermissions.Count - 1; p >= 0; p--)
                 {
                     var permission = dbStructure.PCBaseStructurePermissions.ElementAt(p);
-                    _data.PCBaseStructurePermissions.Remove(permission);
+                    _data.SubmitDataChange(permission, DatabaseActionType.Delete);
                 }
 
                 // Destroy structure placeable
-                _data.PCBaseStructures.Remove(dbStructure);
+                _data.SubmitDataChange(dbStructure, DatabaseActionType.Delete);
                 structure.Structure.Destroy();
             }
 
@@ -175,13 +177,12 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             for (int p = pcBase.PCBasePermissions.Count - 1; p >= 0; p--)
             {
                 var permission = pcBase.PCBasePermissions.ElementAt(p);
-                _data.PCBasePermissions.Remove(permission);
+                _data.SubmitDataChange(permission, DatabaseActionType.Delete);
             }
             
-            _data.PCBases.Remove(pcBase);
-
-
-            Area dbArea = _data.Areas.Single(x => x.Resref == pcBase.AreaResref);
+            _data.SubmitDataChange(pcBase, DatabaseActionType.Delete);
+            
+            Area dbArea = _data.Single<Area>(x => x.Resref == pcBase.AreaResref);
             if (pcBase.Sector == AreaSector.Northeast) dbArea.NortheastOwner = null;
             else if (pcBase.Sector == AreaSector.Northwest) dbArea.NorthwestOwner = null;
             else if (pcBase.Sector == AreaSector.Southeast) dbArea.SoutheastOwner = null;

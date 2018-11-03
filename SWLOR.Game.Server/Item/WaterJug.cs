@@ -40,7 +40,8 @@ namespace SWLOR.Game.Server.Item
                 user.SendMessage("Water jugs can only target growing plants.");
                 return;
             }
-            GrowingPlant growingPlant = _data.GrowingPlants.Single(x => x.GrowingPlantID == growingPlantID);
+            GrowingPlant growingPlant = _data.Single<GrowingPlant>(x => x.GrowingPlantID == growingPlantID);
+            var plant = _data.Get<Plant>(growingPlant.PlantID);
 
             if (growingPlant.WaterStatus <= 0)
             {
@@ -63,13 +64,13 @@ namespace SWLOR.Game.Server.Item
 
             growingPlant.WaterStatus = 0;
             growingPlant.RemainingTicks = remainingTicks;
-            _data.SaveChanges();
+            _data.SubmitDataChange(growingPlant, DatabaseActionType.Update);
 
             user.SendMessage("You water the plant.");
             
             int rank = _skill.GetPCSkillRank((NWPlayer)user, SkillType.Farming);
             
-            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(100, growingPlant.Plant.Level, rank);
+            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(100, plant.Level, rank);
             _skill.GiveSkillXP((NWPlayer)user, SkillType.Farming, xp);
         }
 

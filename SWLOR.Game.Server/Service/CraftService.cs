@@ -14,6 +14,7 @@ using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN.NWScript;
+using ComponentType = SWLOR.Game.Server.Data.Entity.ComponentType;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
@@ -52,7 +53,8 @@ namespace SWLOR.Game.Server.Service
         {
             return _data.StoredProcedure<CraftBlueprintCategory>("GetCraftCategoriesAvailableToPCByDeviceID",
                 new SqlParameter("DeviceID", deviceID),
-                new SqlParameter("PlayerID", playerID));
+                new SqlParameter("PlayerID", playerID)).ToList();
+            // todo: migrate the above query
         }
 
         public List<CraftBlueprint> GetPCBlueprintsByDeviceAndCategoryID(string playerID, int deviceID, long categoryID)
@@ -60,7 +62,8 @@ namespace SWLOR.Game.Server.Service
             return _data.StoredProcedure<CraftBlueprint>("GetPCCraftBlueprintsByDeviceAndCategoryID",
                 new SqlParameter("DeviceID", deviceID),
                 new SqlParameter("CraftCategoryID", categoryID),
-                new SqlParameter("PlayerID", playerID));
+                new SqlParameter("PlayerID", playerID)).ToList();
+            // todo: migrate the above query
         }
 
         public string BuildBlueprintHeader(NWPlayer player, long blueprintID, bool showAddedComponentList)
@@ -68,15 +71,19 @@ namespace SWLOR.Game.Server.Service
             var model = GetPlayerCraftingData(player);
             var bp = model.Blueprint;
             int playerEL = CalculatePCEffectiveLevel(player, model.PlayerSkillRank, (SkillType)bp.SkillID);
+            var baseStructure = _data.Get<BaseStructure>(bp.BaseStructureID);
+            var mainComponent = _data.Get<ComponentType>(bp.MainComponentTypeID);
+            var secondaryComponent = _data.Get<ComponentType>(bp.SecondaryComponentTypeID);
+            var tertiaryComponent = _data.Get<ComponentType>(bp.TertiaryComponentTypeID);
 
             string header = _color.Green("Blueprint: ") + bp.Quantity + "x " + bp.ItemName + "\n";
             header += _color.Green("Level: ") + (model.AdjustedLevel < 0 ? 0 : model.AdjustedLevel) + " (Base: " + (bp.BaseLevel < 0 ? 0 : bp.BaseLevel) + ")\n";
             header += _color.Green("Difficulty: ") + CalculateDifficultyDescription(playerEL, model.AdjustedLevel) + "\n";
             
-            if (bp.BaseStructure != null)
+            if (baseStructure != null)
             {
                 header += _color.Green("Raises Atmosphere: ");
-                if (bp.BaseStructure.HasAtmosphere)
+                if (baseStructure.HasAtmosphere)
                 {
                     header += _color.Green("Yes");
                 }
@@ -91,17 +98,17 @@ namespace SWLOR.Game.Server.Service
             header += _color.Green("Required Components (Required/Maximum): ") + "\n\n";
 
             string mainCounts = " (" + (model.MainMinimum > 0 ? Convert.ToString(model.MainMinimum) : "Optional") + "/" + model.MainMaximum + ")";
-            header += _color.Green("Main: ") + bp.MainComponentType.Name + mainCounts + "\n";
+            header += _color.Green("Main: ") + mainComponent.Name + mainCounts + "\n";
 
             if (bp.SecondaryMinimum > 0 && bp.SecondaryComponentTypeID > 0)
             {
                 string secondaryCounts = " (" + (model.SecondaryMinimum > 0 ? Convert.ToString(model.SecondaryMinimum) : "Optional") + "/" + model.SecondaryMaximum + ")";
-                header += _color.Green("Secondary: ") + bp.SecondaryComponentType.Name + secondaryCounts + "\n";
+                header += _color.Green("Secondary: ") + secondaryComponent.Name + secondaryCounts + "\n";
             }
             if (bp.TertiaryMinimum > 0 && bp.TertiaryComponentTypeID > 0)
             {
                 string tertiaryCounts = " (" + (model.TertiaryMinimum > 0 ? Convert.ToString(model.TertiaryMinimum) : "Optional") + "/" + model.TertiaryMaximum + ")";
-                header += _color.Green("Tertiary: ") + bp.TertiaryComponentType.Name + tertiaryCounts + "\n";
+                header += _color.Green("Tertiary: ") + tertiaryComponent.Name + tertiaryCounts + "\n";
             }
 
             if (showAddedComponentList)
@@ -135,27 +142,29 @@ namespace SWLOR.Game.Server.Service
 
         public CraftBlueprint GetBlueprintByID(long craftBlueprintID)
         {
-            return _data.CraftBlueprints.SingleOrDefault(x => x.CraftBlueprintID == craftBlueprintID);
+            return _data.SingleOrDefault<CraftBlueprint>(x => x.CraftBlueprintID == craftBlueprintID);
         }
 
         public List<CraftBlueprintCategory> GetCategoriesAvailableToPC(string playerID)
         {
             return _data.StoredProcedure<CraftBlueprintCategory>("GetCategoriesAvailableToPC",
-                new SqlParameter("PlayerID", playerID));
+                new SqlParameter("PlayerID", playerID)).ToList();
+            // todo: migrate above query
         }
 
         public List<CraftBlueprint> GetPCBlueprintsByCategoryID(string playerID, long categoryID)
         {
             return _data.StoredProcedure<CraftBlueprint>("GetPCBlueprintsByCategoryID",
                 new SqlParameter("PlayerID", playerID),
-                new SqlParameter("CraftCategoryID", categoryID));
+                new SqlParameter("CraftCategoryID", categoryID)).ToList();
+            // todo: migrate above query
         }
 
 
         public void CraftItem(NWPlayer oPC, NWPlaceable device)
         {
             var model = GetPlayerCraftingData(oPC);
-            CraftBlueprint blueprint = _data.CraftBlueprints.Single(x => x.CraftBlueprintID == model.BlueprintID);
+            CraftBlueprint blueprint = _data.Single<CraftBlueprint>(x => x.CraftBlueprintID == model.BlueprintID);
             if (blueprint == null) return;
 
             if (oPC.IsBusy)

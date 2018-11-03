@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Perk.DarkSide
         {
             int darkBonus = _playerStat.GetPlayerItemEffectiveStats(player).DarkAbility;
             
-            PCCustomEffect spreadEffect = _data.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CustomEffectID == (int) CustomEffectType.DarkSpread);
+            PCCustomEffect spreadEffect = _data.SingleOrDefault<PCCustomEffect>(x => x.PlayerID == player.GlobalID && x.CustomEffectID == (int) CustomEffectType.DarkSpread);
             string spreadData = spreadEffect?.Data ?? string.Empty;
             int spreadLevel = spreadEffect?.EffectiveLevel ?? 0;
             int spreadUses = spreadEffect == null ? 0 : Convert.ToInt32(spreadData.Split(',')[0]);
@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Perk.DarkSide
                 {
                     // ReSharper disable once PossibleNullReferenceException
                     spreadEffect.Data = spreadUses + "," + spreadRange;
-                    _data.SaveChanges();
+                    _data.SubmitDataChange(spreadEffect, DatabaseActionType.Update);
                     player.SendMessage("Dark Spread uses remaining: " + spreadUses);
                 }
 

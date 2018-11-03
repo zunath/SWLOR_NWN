@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
@@ -24,7 +25,7 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
         {
             NWPlaceable chest = (Object.OBJECT_SELF);
             int structureID = chest.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            var structure = _data.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
+            var structure = _data.Single<PCBaseStructure>(x => x.PCBaseStructureID == structureID);
 
             foreach (var item in structure.PCBaseStructureItems)
             {

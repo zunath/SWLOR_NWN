@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using SWLOR.Game.Server.Bioware.Contracts;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
@@ -53,12 +51,13 @@ namespace SWLOR.Game.Server.Service
             if (!oPC.IsPlayer || !oPC.IsInitializedAsPlayer) return;
             List<PCPerk> perks = _data.StoredProcedure<PCPerk>("GetPCPerksByExecutionType",
                 new SqlParameter("PlayerID", oPC.GlobalID),
-                new SqlParameter("ExecutionTypeID", (int) PerkExecutionType.EquipmentBased));
+                new SqlParameter("ExecutionTypeID", (int) PerkExecutionType.EquipmentBased)).ToList();
+            //TODO: Figure out caching for the above query. There's a function in use in the proc that makes it challenging to directly migrate.
 
             foreach (PCPerk pcPerk in perks)
             {
-                pcPerk.Perk = _data.Perks.Single(x => x.PerkID == pcPerk.PerkID);
-                string jsName = pcPerk.Perk.ScriptName;
+                var perk = _data.Get<Data.Entity.Perk>(pcPerk.PerkID);
+                string jsName = perk.ScriptName;
                 if (string.IsNullOrWhiteSpace(jsName)) continue;
 
                 App.ResolveByInterface<IPerk>("Perk." + jsName, (perkAction) =>
@@ -76,14 +75,16 @@ namespace SWLOR.Game.Server.Service
 
             List<PCPerk> perks = _data.StoredProcedure<PCPerk>("GetPCPerksByExecutionType",
                 new SqlParameter("PlayerID", oPC.GlobalID),
-                new SqlParameter("ExecutionTypeID", (int)PerkExecutionType.EquipmentBased));
+                new SqlParameter("ExecutionTypeID", (int)PerkExecutionType.EquipmentBased))
+                .ToList();
+            //TODO: Figure out caching for the above query. There's a function in use in the proc that makes it challenging to directly migrate.
 
             foreach (PCPerk pcPerk in perks)
             {
-                pcPerk.Perk = _data.Perks.Single(x => x.PerkID == pcPerk.PerkID);
-                string jsName = pcPerk.Perk.ScriptName;
+                var perk = _data.Get<Data.Entity.Perk>(pcPerk.PerkID);
+                string jsName = perk.ScriptName;
                 if (string.IsNullOrWhiteSpace(jsName)) continue;
-                
+
                 App.ResolveByInterface<IPerk>("Perk." + jsName, (perkAction) =>
                 {
                     perkAction?.OnItemUnequipped(oPC, oItem);
@@ -103,6 +104,7 @@ namespace SWLOR.Game.Server.Service
             PerkLevel perkLevel = _data.StoredProcedureSingle<PerkLevel>("GetPCSkillAdjustedPerkLevel",
                 new SqlParameter("PlayerID", player.GlobalID),
                 new SqlParameter("PerkID", perkID));
+            //TODO: Figure out caching for the above query. There's a function in use in the proc that makes it challenging to directly migrate.
 
             return perkLevel?.Level ?? 0;
         }
@@ -113,18 +115,20 @@ namespace SWLOR.Game.Server.Service
             NWItem oItem = (_.GetSpellCastItem());
             int type = oItem.BaseItemType;
             List<PCPerk> pcPerks = _data.StoredProcedure<PCPerk>("GetPCPerksWithExecutionType",
-                new SqlParameter("PlayerID", oPC.GlobalID));
-            
+                new SqlParameter("PlayerID", oPC.GlobalID))
+                .ToList();
+            //TODO: Figure out caching for the above query. There's a function in use in the proc that makes it challenging to directly migrate.
+
             foreach (PCPerk pcPerk in pcPerks)
             {
-                pcPerk.Perk = GetPerkByID(pcPerk.PerkID);
-                if (string.IsNullOrWhiteSpace(pcPerk.Perk.ScriptName) || pcPerk.Perk.ExecutionTypeID == (int)PerkExecutionType.None) continue;
+                var perk = GetPerkByID(pcPerk.PerkID);
+                if (string.IsNullOrWhiteSpace(perk.ScriptName) || perk.ExecutionTypeID == (int)PerkExecutionType.None) continue;
                 
-                if (!App.IsKeyRegistered<IPerk>("Perk." + pcPerk.Perk.ScriptName)) continue;
+                if (!App.IsKeyRegistered<IPerk>("Perk." + perk.ScriptName)) continue;
 
-                App.ResolveByInterface<IPerk>("Perk." +pcPerk.Perk.ScriptName, (perkAction) =>
+                App.ResolveByInterface<IPerk>("Perk." + perk.ScriptName, (perkAction) =>
                 {
-                    if (pcPerk.Perk.ExecutionTypeID == (int)PerkExecutionType.ShieldOnHit)
+                    if (perk.ExecutionTypeID == (int)PerkExecutionType.ShieldOnHit)
                     {
                         if (type == BASE_ITEM_SMALLSHIELD || type == BASE_ITEM_LARGESHIELD || type == BASE_ITEM_TOWERSHIELD)
                         {
@@ -138,36 +142,39 @@ namespace SWLOR.Game.Server.Service
 
         public int GetPCTotalPerkCount(string playerID)
         {
-            return _data.PCPerks.Count(x => x.PlayerID == playerID);
+            return _data.GetAll<PCPerk>().Count(x => x.PlayerID == playerID);
         }
 
         public List<PCPerkHeader> GetPCPerksForMenuHeader(string playerID)
         {
             return _data.StoredProcedure<PCPerkHeader>("GetPCPerksForMenuHeader",
-                    new SqlParameter("PlayerID", playerID)); ;
+                    new SqlParameter("PlayerID", playerID)).ToList();
+            // TODO: Migrate the above query
         }
 
         public List<PerkCategory> GetPerkCategoriesForPC(string playerID)
         {
             return _data.StoredProcedure<PerkCategory>("GetPerkCategoriesForPC",
-                new SqlParameter("PlayerID", playerID));
+                new SqlParameter("PlayerID", playerID)).ToList();
+            // TODO: Migrate the above query
         }
 
         public List<Data.Entity.Perk> GetPerksForPC(string playerID, int categoryID)
         {
             return _data.StoredProcedure<Data.Entity.Perk>("GetPerksForPC",
                 new SqlParameter("PlayerID", playerID),
-                new SqlParameter("CategoryID", categoryID));
+                new SqlParameter("CategoryID", categoryID)).ToList();
+            // TODO: Migrate the above query
         }
 
         public Data.Entity.Perk GetPerkByID(int perkID)
         {
-            return _data.Perks.Single(x => x.PerkID == perkID);
+            return _data.Single<Data.Entity.Perk>(x => x.PerkID == perkID);
         }
 
         public PCPerk GetPCPerkByID(string playerID, int perkID)
         {
-            return _data.PCPerks.SingleOrDefault(x => x.PlayerID == playerID && x.PerkID == perkID);
+            return _data.SingleOrDefault<PCPerk>(x => x.PlayerID == playerID && x.PerkID == perkID);
         }
 
         public PerkLevel FindPerkLevel(IEnumerable<PerkLevel> levels, int findLevel)
@@ -188,7 +195,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (PerkLevelSkillRequirement req in level.PerkLevelSkillRequirements)
             {
-                PCSkill pcSkill = _data.PCSkills.Single(x => x.PlayerID == player.PlayerID && x.SkillID == req.SkillID);
+                PCSkill pcSkill = _data.Single<PCSkill>(x => x.PlayerID == player.PlayerID && x.SkillID == req.SkillID);
                 if (pcSkill.Rank < req.RequiredRank) return false;
             }
 
@@ -197,12 +204,13 @@ namespace SWLOR.Game.Server.Service
 
         public void DoPerkUpgrade(NWPlayer oPC, int perkID)
         {
-            Data.Entity.Perk perk = _data.Perks.Single(x => x.PerkID == perkID);
-            PCPerk pcPerk = _data.PCPerks.SingleOrDefault(x => x.PlayerID == oPC.GlobalID && x.PerkID == perkID);
-            PlayerCharacter player = _data.PlayerCharacters.Single(x => x.PlayerID == oPC.GlobalID);
+            Data.Entity.Perk perk = _data.Single<Data.Entity.Perk>(x => x.PerkID == perkID);
+            PCPerk pcPerk = _data.SingleOrDefault<PCPerk>(x => x.PlayerID == oPC.GlobalID && x.PerkID == perkID);
+            PlayerCharacter player = _data.Single<PlayerCharacter>(x => x.PlayerID == oPC.GlobalID);
 
             if (CanPerkBeUpgraded(perk, pcPerk, player))
             {
+                DatabaseActionType action = DatabaseActionType.Update;
                 if (pcPerk == null)
                 {
                     pcPerk = new PCPerk();
@@ -212,7 +220,7 @@ namespace SWLOR.Game.Server.Service
                     pcPerk.PlayerID = oPC.GlobalID;
                     pcPerk.PerkLevel = 0;
 
-                    _data.PCPerks.Add(pcPerk);
+                    action = DatabaseActionType.Insert;
                 }
 
                 PerkLevel nextPerkLevel = FindPerkLevel(perk.PerkLevels, pcPerk.PerkLevel + 1);
@@ -221,8 +229,9 @@ namespace SWLOR.Game.Server.Service
                 pcPerk.PerkLevel++;
                 player.UnallocatedSP -= nextPerkLevel.Price;
 
-                _data.SaveChanges();
-
+                _data.SubmitDataChange(pcPerk, action);
+                _data.SubmitDataChange(player, DatabaseActionType.Update);
+                
                 // If a perk is activatable, create the item on the PC.
                 // Remove any existing cast spell unique power properties and add the correct one based on the DB flag.
                 if (!string.IsNullOrWhiteSpace(perk.ItemResref))
@@ -317,13 +326,15 @@ namespace SWLOR.Game.Server.Service
             int perkID = examinedObject.GetLocalInt("ACTIVATION_PERK_ID");
             if (perkID <= 0) return existingDescription;
 
-            Data.Entity.Perk perk = _data.Perks.Single(x => x.PerkID == perkID);
+            var perk = _data.Single<Data.Entity.Perk>(x => x.PerkID == perkID);
+            var executionType = _data.Get<Data.Entity.PerkExecutionType>(perk.ExecutionTypeID);
+            var cooldownCategory = _data.Get<CooldownCategory>(perk.CooldownCategoryID);
             string description = existingDescription;
 
             description += _color.Orange("Name: ") + perk.Name + "\n" +
                 _color.Orange("Description: ") + perk.Description + "\n";
 
-            switch ((PerkExecutionType)perk.PerkExecutionType.PerkExecutionTypeID)
+            switch ((PerkExecutionType)executionType.PerkExecutionTypeID)
             {
                 case PerkExecutionType.CombatAbility:
                     description += _color.Orange("Type: ") + "Combat Ability\n";
@@ -346,9 +357,9 @@ namespace SWLOR.Game.Server.Service
             {
                 description += _color.Orange("Base FP Cost: ") + perk.BaseFPCost + "\n";
             }
-            if (perk.CooldownCategory.BaseCooldownTime > 0.0f)
+            if (cooldownCategory.BaseCooldownTime > 0.0f)
             {
-                description += _color.Orange("Cooldown: ") + perk.CooldownCategory.BaseCooldownTime + "s\n";
+                description += _color.Orange("Cooldown: ") + cooldownCategory.BaseCooldownTime + "s\n";
             }
             if (perk.BaseCastingTime > 0.0f)
             {

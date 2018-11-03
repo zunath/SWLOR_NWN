@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Language;
@@ -211,25 +212,23 @@ namespace SWLOR.Game.Server.Service
             // Fair warning: We're short-circuiting the skill system here.
             // Languages don't level up like normal skills (no stat increases, SP, etc.)
             // So it's safe to simply set the player's rank in the skill to max.
-            var dbSkills = _data.PCSkills
-                .Where(x => x.PlayerID == player.GlobalID &&
+            var pcSkills = _data.Where<PCSkill>
+                (x => x.PlayerID == player.GlobalID &&
                             languages.Contains((SkillType)x.SkillID))
                 .ToList();
-            var skillCache = _cache.PCSkills[player.GlobalID];
-
-            foreach (var skill in dbSkills)
+            
+            foreach (var pcSkill in pcSkills)
             {
-                int maxRank = skill.Skill.MaxRank;
+                var skill = _data.Get<Skill>(pcSkill.SkillID);
+                int maxRank = skill.MaxRank;
                 int skillID = skill.SkillID;
-                var xpRecord = skill.Skill.SkillXPRequirements.Single(x => x.SkillID == skillID && x.Rank == maxRank);
+                var xpRecord = skill.SkillXPRequirements.Single(x => x.SkillID == skillID && x.Rank == maxRank);
 
-                skill.Rank = maxRank;
-                skill.XP = xpRecord.XP - 1;
+                pcSkill.Rank = maxRank;
+                pcSkill.XP = xpRecord.XP - 1;
 
-                skillCache[(SkillType) skill.SkillID].Rank = maxRank;
+                _data.SubmitDataChange(pcSkill, DatabaseActionType.Update);
             }
-
-            _data.SaveChanges();
             
         }
 

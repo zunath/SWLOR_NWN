@@ -124,8 +124,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             ClearPageResponses("PlayerDetailsPage");
             var data = _base.GetPlayerTempData(GetPC());
-            var pcBase = _data.GetAll<PCBase>().Single(x => x.PlayerID == player.GlobalID);
-            var permission = pcBase.PCBaseStructurePermissions.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.PCBaseStructureID == data.StructureID);
+            var permission = _data.SingleOrDefault<PCBaseStructurePermission>(x => x.PlayerID == player.GlobalID && x.PCBaseStructureID == data.StructureID);
 
             // Intentionally excluded permissions: CanAdjustPermissions, CanCancelLease
             bool canPlaceEditStructures = permission?.CanPlaceEditStructures ?? false;
@@ -198,7 +197,9 @@ namespace SWLOR.Game.Server.Conversation
         private void TogglePermission(NWPlayer player, StructurePermission permission)
         {
             var data = _base.GetPlayerTempData(GetPC());
-            var dbPermission = _data.PCBaseStructurePermissions.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.PCBaseStructureID == data.StructureID);
+            var dbPermission = _data.SingleOrDefault<PCBaseStructurePermission>(x => x.PlayerID == player.GlobalID && x.PCBaseStructureID == data.StructureID);
+            var action = DatabaseActionType.Update;
+
             if (dbPermission == null)
             {
                 dbPermission = new PCBaseStructurePermission()
@@ -206,6 +207,7 @@ namespace SWLOR.Game.Server.Conversation
                     PCBaseStructureID = data.StructureID,
                     PlayerID = player.GlobalID
                 };
+                action = DatabaseActionType.Insert;
             }
 
             switch (permission)
@@ -238,8 +240,7 @@ namespace SWLOR.Game.Server.Conversation
                     throw new ArgumentOutOfRangeException(nameof(permission), permission, null);
             }
 
-            _data.PCBaseStructurePermissions.AddOrUpdate(dbPermission);
-            _data.SaveChanges();
+            _data.SubmitDataChange(dbPermission, action);
         }
 
         public override void EndDialog()

@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Data.Validator;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Data.Processor
 {
@@ -13,7 +14,7 @@ namespace SWLOR.Game.Server.Data.Processor
     {
         public IValidator Validator => new ApartmentBuildingValidator();
         
-        public void Process(IDataService data, ApartmentBuilding dataObject)
+        public DatabaseAction Process(IDataService data, ApartmentBuilding dataObject)
         {
             var action = DatabaseActionType.Update;
             if(dataObject.ApartmentBuildingID <= 0)
@@ -22,8 +23,8 @@ namespace SWLOR.Game.Server.Data.Processor
                 dataObject.ApartmentBuildingID = id;
                 action = DatabaseActionType.Insert;
             }
-
-            data.SubmitDataChange(dataObject, action);
+            
+            return new DatabaseAction(dataObject, action);
         }
     }
 }

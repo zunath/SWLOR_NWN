@@ -31,7 +31,6 @@ namespace SWLOR.Game.Server.Service
         private readonly IDurabilityService _durability;
         private readonly IPlayerStatService _stat;
         private readonly ILanguageService _language;
-        private readonly ICachingService _caching;
 
         public PlayerService(
             INWScript script, 
@@ -46,8 +45,7 @@ namespace SWLOR.Game.Server.Service
             IRaceService race,
             IDurabilityService durability,
             IPlayerStatService stat,
-            ILanguageService language,
-            ICachingService caching)
+            ILanguageService language)
         {
             _ = script;
             _data = data;
@@ -62,7 +60,6 @@ namespace SWLOR.Game.Server.Service
             _durability = durability;
             _stat = stat;
             _language = language;
-            _caching = caching;
         }
 
         public void InitializePlayer(NWPlayer player)
@@ -157,13 +154,22 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 PlayerCharacter entity = CreateDBPCEntity(player);
-                _data.PlayerCharacters.Add(entity);
-                _data.SaveChanges();
-
-                _data.StoredProcedure("InsertAllPCSkillsByID",
-                    new SqlParameter("PlayerID", player.GlobalID));
-                _caching.CachePCSkills(player);
+                _data.SubmitDataChange(entity, DatabaseActionType.Insert);
                 
+                var skills = _data.GetAll<Skill>();
+                foreach (var skill in skills)
+                {
+                    var pcSkill = new PCSkill
+                    {
+                        IsLocked = false,
+                        SkillID = skill.SkillID,
+                        PlayerID = entity.PlayerID,
+                        Rank = 0,
+                        XP = 0
+                    };
+
+                    _data.SubmitDataChange(pcSkill,DatabaseActionType.Insert);
+                }
 
                 _race.ApplyDefaultAppearance(player);
                 _nwnxCreature.SetAlignmentLawChaos(player, 50);
@@ -281,14 +287,15 @@ namespace SWLOR.Game.Server.Service
             if(player == null) throw new ArgumentNullException(nameof(player));
             if(!player.IsPlayer) throw new ArgumentException(nameof(player) + " must be a player.", nameof(player));
 
-            return _data.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+            return _data.Get<PlayerCharacter>(player.GlobalID);
         }
 
         public PlayerCharacter GetPlayerEntity(string playerID)
         {
             if (string.IsNullOrWhiteSpace(playerID)) throw new ArgumentException("Invalid player ID.", nameof(playerID));
 
-            return _data.PlayerCharacters.Single(x => x.PlayerID == playerID);
+
+            return _data.Get<PlayerCharacter>(playerID);
         }
 
         public void OnAreaEnter()
@@ -330,7 +337,7 @@ namespace SWLOR.Game.Server.Service
 
         public void ShowMOTD(NWPlayer player)
         {
-            ServerConfiguration config = _data.ServerConfigurations.First();
+            ServerConfiguration config = _data.GetAll<ServerConfiguration>().First();
             string message = _color.Green("Welcome to " + config.ServerName + "!\n\nMOTD: ") + _color.White(config.MessageOfTheDay);
 
             _.DelayCommand(6.5f, () =>
@@ -346,7 +353,7 @@ namespace SWLOR.Game.Server.Service
             entity.CharacterName = player.Name;
             entity.HitPoints = player.CurrentHP;
 
-            _data.SaveChanges();
+            _data.SubmitDataChange(entity, DatabaseActionType.Update);
         }
 
         public void SaveLocation(NWPlayer player)
@@ -373,7 +380,7 @@ namespace SWLOR.Game.Server.Service
                     entity.RespawnLocationZ = waypoint.Position.m_Z;
                 }
 
-                _data.SaveChanges();
+                _data.SubmitDataChange(entity, DatabaseActionType.Update);
             }
         }
 

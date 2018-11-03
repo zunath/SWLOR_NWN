@@ -1100,7 +1100,6 @@
     <Compile Include="Service\BasePermissionService.cs" />
     <Compile Include="Service\BaseService.cs" />
     <Compile Include="Service\BehaviourService.cs" />
-    <Compile Include="Service\CachingService.cs" />
     <Compile Include="Service\ChatCommandService.cs" />
     <Compile Include="Service\ChatTextService.cs" />
     <Compile Include="Service\Contracts\IEmoteStyleService.cs" />
@@ -1109,7 +1108,6 @@
     <Compile Include="Service\EmoteStyleService.cs" />
     <Compile Include="Service\Contracts\IPlayerValidationService.cs" />
     <Compile Include="Service\Contracts\IDataPackageService.cs" />
-    <Compile Include="Service\Contracts\ICachingService.cs" />
     <Compile Include="Service\Contracts\IDataService.cs" />
     <Compile Include="Service\LanguageService.cs" />
     <Compile Include="Service\ColorTokenService.cs" />

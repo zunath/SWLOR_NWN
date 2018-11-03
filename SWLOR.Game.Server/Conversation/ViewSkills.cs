@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.Service.Contracts;
@@ -65,10 +66,10 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadCategoryResponses()
         {
-            List<CachedSkillCategory> categories = _skill.GetActiveCategories();
+            List<SkillCategory> categories = _skill.GetActiveCategories();
 
             ClearPageResponses("CategoryPage");
-            foreach (CachedSkillCategory category in categories)
+            foreach (SkillCategory category in categories)
             {
                 AddResponseToPage("CategoryPage", category.Name, true, category.SkillCategoryID);
             }
@@ -77,12 +78,12 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadSkillResponses()
         {
             Model vm = GetDialogCustomData<Model>();
-            List<CachedPCSkill> skills = _skill.GetPCSkillsForCategory(GetPC().GlobalID, vm.SelectedCategoryID);
+            List<PCSkill> skills = _skill.GetPCSkillsForCategory(GetPC().GlobalID, vm.SelectedCategoryID);
 
             ClearPageResponses("SkillListPage");
-            foreach (CachedPCSkill pcSkill in skills)
+            foreach (PCSkill pcSkill in skills)
             {
-                CachedSkill skill = _skill.GetSkill(pcSkill.SkillID);
+                Skill skill = _skill.GetSkill(pcSkill.SkillID);
                 AddResponseToPage("SkillListPage", skill.Name + " (Lvl. " + pcSkill.Rank + ")", true, skill.SkillID);
             }
         }
@@ -90,9 +91,9 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadSkillDetails()
         {
             Model vm = GetDialogCustomData<Model>();
-            CachedSkill skill = _skill.GetSkill(vm.SelectedSkillID);
-            CachedPCSkill pcSkill = _skill.GetPCSkill(GetPC(), vm.SelectedSkillID);
-            CachedSkillXPRequirement req = skill.SkillXPRequirements.Single(x => x.Rank == pcSkill.Rank && x.SkillID == skill.SkillID); 
+            Skill skill = _skill.GetSkill(vm.SelectedSkillID);
+            PCSkill pcSkill = _skill.GetPCSkill(GetPC(), vm.SelectedSkillID);
+            SkillXPRequirement req = skill.SkillXPRequirements.Single(x => x.Rank == pcSkill.Rank && x.SkillID == skill.SkillID); 
             string header = CreateSkillDetailsHeader(pcSkill, req);
             SetPageHeader("SkillDetailsPage", header);
 
@@ -102,9 +103,9 @@ namespace SWLOR.Game.Server.Conversation
             }
         }
 
-        private string CreateSkillDetailsHeader(CachedPCSkill pcSkill, CachedSkillXPRequirement req)
+        private string CreateSkillDetailsHeader(PCSkill pcSkill, SkillXPRequirement req)
         {
-            CachedSkill skill = _skill.GetSkill(pcSkill.SkillID);
+            Skill skill = _skill.GetSkill(pcSkill.SkillID);
             string title;
             if (pcSkill.Rank <= 3) title = "Untrained";
             else if (pcSkill.Rank <= 7) title = "Neophyte";

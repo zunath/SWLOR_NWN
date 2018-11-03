@@ -2,7 +2,9 @@
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service.Contracts;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Event.Conversation
@@ -28,13 +30,13 @@ namespace SWLOR.Game.Server.Event.Conversation
             int questID = talkingTo.GetLocalInt("QUEST_ID_" + index);
             if (questID <= 0) questID = talkingTo.GetLocalInt("QST_ID_" + index);
 
-            if (!_data.Quests.Any(x => x.QuestID == questID))
+            if (_data.GetAll<Quest>().All(x => x.QuestID != questID))
             {
                 _.SpeakString("ERROR: Quest #" + index + " is improperly configured. Please notify an admin");
                 return false;
             }
 
-            var status = _data.PCQuestStatus.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
+            var status = _data.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
             return status != null && status.CurrentQuestStateID > 0;
         }
     }

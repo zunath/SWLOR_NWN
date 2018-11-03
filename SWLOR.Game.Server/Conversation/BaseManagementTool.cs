@@ -22,7 +22,6 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IDataService _data;
         private readonly IImpoundService _impound;
         private readonly IBasePermissionService _perm;
-        private readonly IDataService _data;
 
         public BaseManagementTool(
             INWScript script,
@@ -31,8 +30,7 @@ namespace SWLOR.Game.Server.Conversation
             IColorTokenService color,
             IDataService data,
             IImpoundService impound,
-            IBasePermissionService perm,
-            IDataService data)
+            IBasePermissionService perm)
             : base(script, dialog)
         {
             _base = @base;
@@ -40,7 +38,6 @@ namespace SWLOR.Game.Server.Conversation
             _data = data;
             _impound = impound;
             _perm = perm;
-            _data = data;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -89,7 +86,7 @@ namespace SWLOR.Game.Server.Conversation
             int cellY = (int)(_.GetPositionFromLocation(data.TargetLocation).m_Y / 10.0f);
             string sector = _base.GetSectorOfLocation(data.TargetLocation);
 
-            Area dbArea = _data.Areas.Single(x => x.Resref == data.TargetArea.Resref);
+            Area dbArea = _data.Single<Area>(x => x.Resref == data.TargetArea.Resref);
             bool hasUnclaimed = false;
             string playerID = GetPC().GlobalID;
             int pcBaseID = data.TargetArea.GetLocalInt("PC_BASE_ID");
@@ -122,7 +119,7 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if(buildingType == Enumeration.BuildingType.Exterior)
             {
-                var pcBase = _data.PCBases.SingleOrDefault(x => x.AreaResref == data.TargetArea.Resref && x.Sector == sector);
+                var pcBase = _data.SingleOrDefault<PCBase>(x => x.AreaResref == data.TargetArea.Resref && x.Sector == sector);
                 canEditStructures = pcBase != null && _perm.HasBasePermission(GetPC(), pcBase.PCBaseID, BasePermission.CanPlaceEditStructures);
                 canEditBasePermissions = pcBase != null && _perm.HasBasePermission(GetPC(), pcBase.PCBaseID, BasePermission.CanAdjustPermissions);
                 if (pcBase != null)
@@ -142,14 +139,16 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if(buildingType == Enumeration.BuildingType.Interior)
             {
-                var structure = _data.PCBaseStructures.Single(x => x.PCBaseStructureID == pcBaseStructureID);
-                int itemLimit = structure.BaseStructure.Storage + structure.StructureBonus;
+                var structure = _data.Single<PCBaseStructure>(x => x.PCBaseStructureID == pcBaseStructureID);
+                var baseStructure = _data.Get<BaseStructure>(structure.BaseStructureID);
+                int itemLimit = baseStructure.Storage + structure.StructureBonus;
                 header += _color.Green("Item Limit: ") + structure.ChildStructures.Count + " / " + itemLimit + "\n";
             }
             else if (buildingType == Enumeration.BuildingType.Apartment)
             {
-                var pcBase = _data.PCBases.Single(x => x.PCBaseID == pcBaseID);
-                int itemLimit = pcBase.BuildingStyle.FurnitureLimit;
+                var pcBase = _data.Get<PCBase>(pcBaseID);
+                var buildingStyle = _data.Get<BuildingStyle>(pcBase.BuildingStyleID);
+                int itemLimit = buildingStyle.FurnitureLimit;
                 header += _color.Green("Item Limit: ") + pcBase.PCBaseStructures.Count + " / " + itemLimit + "\n";
             }
             else if(buildingType == Enumeration.BuildingType.Exterior)
@@ -214,7 +213,7 @@ namespace SWLOR.Game.Server.Conversation
 
             SetPageHeader("MainPage", header);
 
-            bool showManage = _data.PCBases.Count(x => x.PlayerID == playerID) > 0;
+            bool showManage = _data.GetAll<PCBase>().Count(x => x.PlayerID == playerID) > 0;
             
 
             AddResponseToPage("MainPage", "Manage My Leases", showManage);
@@ -297,7 +296,7 @@ namespace SWLOR.Game.Server.Conversation
         private string BuildPurchaseTerritoryHeader()
         {
             var data = _base.GetPlayerTempData(GetPC());
-            Area dbArea = _data.Areas.Single(x => x.Resref == data.TargetArea.Resref);
+            Area dbArea = _data.Single<Area>(x => x.Resref == data.TargetArea.Resref);
             string header = _color.Green("Purchase Territory Menu\n\n");
             header += "Land leases in this sector cost an initial price of " + dbArea.PurchasePrice + " credits.\n\n";
             header += "You will also be billed " + dbArea.DailyUpkeep + " credits per day (real world time). Your initial payment covers the cost of the first week.\n\n";
@@ -311,7 +310,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             ClearPageResponses("PurchaseTerritoryPage");
             var data = _base.GetPlayerTempData(GetPC());
-            Area dbArea = _data.Areas.Single(x => x.Resref == data.TargetArea.Resref);
+            Area dbArea = _data.Single<Area>(x => x.Resref == data.TargetArea.Resref);
 
             AddResponseToPage("PurchaseTerritoryPage", "Purchase Northeast Sector", string.IsNullOrWhiteSpace(dbArea.NortheastOwner));
             AddResponseToPage("PurchaseTerritoryPage", "Purchase Northwest Sector", string.IsNullOrWhiteSpace(dbArea.NorthwestOwner));
@@ -485,9 +484,10 @@ namespace SWLOR.Game.Server.Conversation
         private void DoRetrieveStructure()
         {
             var data = _base.GetPlayerTempData(GetPC());
-            PCBaseStructure structure = _data.PCBaseStructures.Single(x => x.PCBaseStructureID == data.ManipulatingStructure.PCBaseStructureID);
-            PCBase pcBase = structure.PCBase;
-            BaseStructureType structureType = (BaseStructureType)structure.BaseStructure.BaseStructureTypeID;
+            PCBaseStructure structure = _data.Get<PCBaseStructure>(data.ManipulatingStructure.PCBaseStructureID);
+            BaseStructure baseStructure = _data.Get<BaseStructure>(structure.BaseStructureID);
+            PCBase pcBase = _data.Get<PCBase>(structure.PCBaseID);
+            BaseStructureType structureType = (BaseStructureType)baseStructure.BaseStructureTypeID;
             var tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
             int pcStructureID = structure.PCBaseStructureID;
             int impoundedCount = 0;
@@ -527,7 +527,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (structureType == BaseStructureType.ControlTower)
             {
-                var structureCount = _data.PCBaseStructures.Count(x => x.PCBaseID == structure.PCBaseID);
+                var structureCount = _data.GetAll<PCBaseStructure>().Count(x => x.PCBaseID == structure.PCBaseID);
 
                 if (structureCount > 1)
                 {
@@ -545,15 +545,14 @@ namespace SWLOR.Game.Server.Conversation
                     _impound.Impound(GetPC().GlobalID, furnitureItem);
                     furnitureItem.Destroy();
 
-                    _data.PCBaseStructures.Remove(furniture);
+                    _data.SubmitDataChange(furniture, DatabaseActionType.Delete);
                     impoundedCount++;
                 }
             }
 
             _base.ConvertStructureToItem(structure, GetPC());
-            _data.PCBaseStructures.Remove(structure);
+            _data.SubmitDataChange(structure, DatabaseActionType.Delete);
             data.ManipulatingStructure.Structure.Destroy();
-            _data.SaveChanges();
 
             // Impound any fuel that's over the limit.
             if (structureType == BaseStructureType.StronidiumSilo || structureType == BaseStructureType.FuelSilo)
@@ -580,13 +579,11 @@ namespace SWLOR.Game.Server.Conversation
                     GetPC().SendMessage("Excess stronidium units have been impounded by the planetary government. The owner of the base will need to retrieve it.");
                     refund.Destroy();
                 }
-
-                _data.SaveChanges();
             }
             else if (structureType == BaseStructureType.ResourceSilo)
             {
                 int maxResources = _base.CalculateResourceCapacity(pcBase);
-                var items = _data.PCBaseStructureItems.Where(x => x.PCBaseStructureID == controlTower.PCBaseStructureID).ToList();
+                var items = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == controlTower.PCBaseStructureID).ToList();
 
                 while (items.Count > maxResources)
                 {
@@ -594,7 +591,7 @@ namespace SWLOR.Game.Server.Conversation
 
                     var impoundItem = new PCImpoundedItem
                     {
-                        PlayerID = controlTower.PCBase.PlayerID,
+                        PlayerID = pcBase.PlayerID,
                         ItemResref = item.ItemResref,
                         ItemObject = item.ItemObject,
                         DateImpounded = DateTime.UtcNow,
@@ -602,12 +599,10 @@ namespace SWLOR.Game.Server.Conversation
                         ItemTag = item.ItemTag
                     };
 
-                    _data.PCImpoundedItems.Add(impoundItem);
+                    _data.SubmitDataChange(impoundItem, DatabaseActionType.Insert);
                     GetPC().SendMessage(item.ItemName + " has been impounded by the planetary government because your base ran out of space to store resources. The owner of the base will need to retrieve it.");
-                    _data.PCBaseStructureItems.Remove(item);
+                    _data.SubmitDataChange(item, DatabaseActionType.Delete);
                 }
-
-                _data.SaveChanges();
             }
 
             // Update the cache
@@ -722,18 +717,21 @@ namespace SWLOR.Game.Server.Conversation
             structure.Facing = facing;
             LoadRotatePage();
 
-            var dbStructure = _data.PCBaseStructures.Single(x => x.PCBaseStructureID == data.ManipulatingStructure.PCBaseStructureID);
+            var dbStructure = _data.Single<PCBaseStructure>(x => x.PCBaseStructureID == data.ManipulatingStructure.PCBaseStructureID);
+            var baseStructure = _data.Get<BaseStructure>(dbStructure.BaseStructureID);
             dbStructure.LocationOrientation = facing;
 
-            if (dbStructure.BaseStructure.BaseStructureTypeID == (int)BaseStructureType.Building)
+            if (baseStructure.BaseStructureTypeID == (int)BaseStructureType.Building)
             {
                 // The structure's facing isn't updated until after this code executes.
                 // Build a new location object for use with spawning the door.
+                var exteriorStyle = _data.Get<BuildingStyle>(dbStructure.ExteriorStyleID);
+
                 Location locationOverride = _.Location(data.TargetArea.Object,
                     structure.Position,
                     facing);
                 data.ManipulatingStructure.ChildStructure.Destroy();
-                data.ManipulatingStructure.ChildStructure = _base.SpawnBuildingDoor(dbStructure.ExteriorStyle.DoorRule, structure, locationOverride);
+                data.ManipulatingStructure.ChildStructure = _base.SpawnBuildingDoor(exteriorStyle.DoorRule, structure, locationOverride);
 
                 // Update the cache
                 List<AreaStructure> areaStructures = data.TargetArea.Data["BASE_SERVICE_STRUCTURES"];
@@ -742,7 +740,7 @@ namespace SWLOR.Game.Server.Conversation
                 areaStructures[doorIndex].Structure = data.ManipulatingStructure.ChildStructure;
             }
 
-            _data.SaveChanges();
+            _data.SubmitDataChange(dbStructure, DatabaseActionType.Update);
         }
 
         public override void EndDialog()

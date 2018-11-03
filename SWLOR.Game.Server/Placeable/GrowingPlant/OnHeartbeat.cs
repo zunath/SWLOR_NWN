@@ -4,6 +4,9 @@ using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Placeable.GrowingPlant
 {
@@ -21,18 +24,20 @@ namespace SWLOR.Game.Server.Placeable.GrowingPlant
 
         public bool Run(params object[] args)
         {
-            NWPlaceable plant = (Object.OBJECT_SELF);
-            int growingPlantID = plant.GetLocalInt("GROWING_PLANT_ID");
+            NWPlaceable plc = (Object.OBJECT_SELF);
+            int growingPlantID = plc.GetLocalInt("GROWING_PLANT_ID");
             if (growingPlantID <= 0) return false;
             
-            Data.Entity.GrowingPlant growingPlant = _data.GrowingPlants.Single(x => x.GrowingPlantID == growingPlantID);
+            var growingPlant = _data.Get<Data.Entity.GrowingPlant>(growingPlantID);
+            var plant = _data.Get<Plant>(growingPlant.PlantID);
+
             growingPlant.RemainingTicks--;
             growingPlant.TotalTicks++;
 
-            int waterTicks = growingPlant.Plant.WaterTicks;
+            int waterTicks = plant.WaterTicks;
             if (waterTicks > 0 && growingPlant.TotalTicks % waterTicks == 0)
             {
-                int maxWaterStatus = growingPlant.Plant.BaseTicks / growingPlant.Plant.WaterTicks;
+                int maxWaterStatus = plant.BaseTicks / plant.WaterTicks;
 
                 if (growingPlant.WaterStatus < maxWaterStatus)
                 {
@@ -43,12 +48,12 @@ namespace SWLOR.Game.Server.Placeable.GrowingPlant
 
             if (growingPlant.RemainingTicks <= 0)
             {
-                plant.Destroy();
-                plant = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, growingPlant.Plant.Resref, plant.Location));
-                plant.SetLocalInt("GROWING_PLANT_ID", growingPlantID);
+                plc.Destroy();
+                plc = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, plant.Resref, plc.Location));
+                plc.SetLocalInt("GROWING_PLANT_ID", growingPlantID);
             }
             
-            _data.SaveChanges();
+            _data.SubmitDataChange(growingPlant, DatabaseActionType.Update);
             return true;
         }
     }

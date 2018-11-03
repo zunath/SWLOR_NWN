@@ -6,6 +6,8 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Placeable.OverflowStorage
 {
@@ -35,10 +37,8 @@ namespace SWLOR.Game.Server.Placeable.OverflowStorage
             }
             
             int overflowItemID = oItem.GetLocalInt("TEMP_OVERFLOW_ITEM_ID");
-            PCOverflowItem overflowItem = _data.PCOverflowItems.Single(x => x.PCOverflowItemID == overflowItemID);
-            _data.PCOverflowItems.Remove(overflowItem);
-            _data.SaveChanges();
-
+            PCOverflowItem overflowItem = _data.Get<PCOverflowItem>(overflowItemID);
+            _data.SubmitDataChange(overflowItem, DatabaseActionType.Delete);
             oItem.DeleteLocalInt("TEMP_OVERFLOW_ITEM_ID");
 
             if (!container.InventoryItems.Any())

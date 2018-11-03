@@ -4,6 +4,7 @@ using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
@@ -38,10 +39,12 @@ namespace SWLOR.Game.Server.Placeable.Drill
         {
             NWPlaceable drill = Object.OBJECT_SELF;
             int structureID = drill.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            PCBaseStructure structure = _data.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
+            PCBaseStructure structure = _data.Get<PCBaseStructure>(structureID);
+            PCBase pcBase = _data.Get<PCBase>(structure.PCBaseID);
+            BaseStructure baseStructure = _data.Get<BaseStructure>(structure.BaseStructureID);
             DateTime now = DateTime.UtcNow;
 
-            if (now >= structure.PCBase.DateFuelEnds)
+            if (now >= pcBase.DateFuelEnds)
             {
                 var outOfPowerEffect = drill.Effects.SingleOrDefault(x => _.GetEffectTag(x) == "CONTROL_TOWER_OUT_OF_POWER");
                 if (outOfPowerEffect == null)
@@ -56,21 +59,20 @@ namespace SWLOR.Game.Server.Placeable.Drill
 
             int minuteReduce = 2 * structure.StructureBonus;
             int increaseMinutes = 60 - minuteReduce;
-            int retrievalRating = structure.BaseStructure.RetrievalRating;
+            int retrievalRating = baseStructure.RetrievalRating;
 
             if (increaseMinutes <= 20) increaseMinutes = 20;
             if (structure.DateNextActivity == null)
             {
                 structure.DateNextActivity = now.AddMinutes(increaseMinutes);
-                _data.SaveChanges();
+                _data.SubmitDataChange(structure, DatabaseActionType.Update);
             }
 
             if (!(now >= structure.DateNextActivity)) return true;
 
             // Time to spawn a new item and reset the timer.
-
-            var dbArea = _data.Areas.Single(x => x.Resref == structure.PCBase.AreaResref);
-            string sector = structure.PCBase.Sector;
+            var dbArea = _data.Single<Area>(x => x.Resref == pcBase.AreaResref);
+            string sector = pcBase.Sector;
             int lootTableID = 0;
 
             switch (sector)
@@ -113,9 +115,8 @@ namespace SWLOR.Game.Server.Placeable.Drill
                 ItemObject = _serialization.Serialize(item)
             };
 
-            _data.PCBaseStructureItems.Add(dbItem);
-            _data.SaveChanges();
-            
+            _data.SubmitDataChange(structure, DatabaseActionType.Update);
+            _data.SubmitDataChange(dbItem, DatabaseActionType.Insert);
             item.Destroy();
             return true;
         }

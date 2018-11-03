@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Data
 {
@@ -28,8 +29,7 @@ namespace SWLOR.Game.Server.Data
 
         public DatabaseMigrationRunner(
             IDataService data,
-            IErrorService error,
-            IDataService data)
+            IErrorService error)
         {
             _data = data;
             _error = error;
@@ -78,7 +78,9 @@ namespace SWLOR.Game.Server.Data
         /// </summary>
         private void BuildDatabase()
         {
-            if (!_data.Database.Exists())
+            bool exists = CheckDatabaseExists(_masterConnectionString, Environment.GetEnvironmentVariable("SQL_SERVER_DATABASE"));
+
+            if (!exists)
             {
                 Console.WriteLine("Database not found. Generating database...");
 
@@ -121,6 +123,19 @@ namespace SWLOR.Game.Server.Data
                 Console.WriteLine("Database generated!");
             }
         }
+
+        private static bool CheckDatabaseExists(string connectionString, string databaseName)
+        {
+            using (var connection = new SqlConnection(connectionString))
+            {
+                using (var command = new SqlCommand($"SELECT db_id('{databaseName}')", connection))
+                {
+                    connection.Open();
+                    return (command.ExecuteScalar() != DBNull.Value);
+                }
+            }
+        }
+
         /// <summary> 
         /// Pull back all of the script files located in the Data/Migrations folder.
         /// All files in this directory should be "Embedded Resources".
@@ -153,7 +168,7 @@ namespace SWLOR.Game.Server.Data
         /// <returns></returns>
         private IEnumerable<string> GetScriptResources()
         {
-            var currentVersion = _data.DatabaseVersions
+            var currentVersion = _data.GetAll<DatabaseVersion>()
                 .OrderByDescending(o => o.ScriptName).FirstOrDefault();
 
             var executingAssembly = Assembly.GetExecutingAssembly();
@@ -264,14 +279,14 @@ namespace SWLOR.Game.Server.Data
         private void AddDatabaseVersionRecord(string fileName)
         {
             var versionInfo = GetVersionInformation(fileName);
-            _data.DatabaseVersions.Add(new DatabaseVersion
+            var version = new DatabaseVersion
             {
                 DateApplied = DateTime.UtcNow,
                 ScriptName = fileName,
                 VersionDate = versionInfo.Item1,
                 VersionNumber = versionInfo.Item2
-            });
-            _data.SaveChanges();
+            };
+            _data.SubmitDataChange(version, DatabaseActionType.Insert);
         }
 
         // Code I pulled from StackOverflow: https://stackoverflow.com/questions/40814/execute-a-large-sql-script-with-go-commands

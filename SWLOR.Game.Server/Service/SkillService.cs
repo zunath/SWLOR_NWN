@@ -94,34 +94,34 @@ namespace SWLOR.Game.Server.Service
 
             xp = (int)(xp + xp * _playerStat.EffectiveResidencyBonus(oPC));
             PlayerCharacter player = _data.Get<PlayerCharacter>(oPC.GlobalID);
-            CachedSkill skill = GetSkill(skillID);
-            CachedPCSkill cachedPCSkill = GetPCSkill(oPC, skillID);
-            CachedSkillXPRequirement req = skill.SkillXPRequirements.Single(x => x.SkillID == skillID && x.Rank == cachedPCSkill.Rank);
+            Skill skill = GetSkill(skillID);
+            PCSkill pcSkill = GetPCSkill(oPC, skillID);
+            SkillXPRequirement req = skill.SkillXPRequirements.Single(x => x.SkillID == skillID && x.Rank == pcSkill.Rank);
             int maxRank = skill.MaxRank;
-            int originalRank = cachedPCSkill.Rank;
+            int originalRank = pcSkill.Rank;
             xp = CalculateTotalSkillPointsPenalty(player.TotalSPAcquired, xp);
 
             // Run the skill decay rules.
             // If the method returns false, that means all skills are locked.
             // So we can't give the player any XP.
-            if (!ApplySkillDecay(oPC, cachedPCSkill, xp))
+            if (!ApplySkillDecay(oPC, pcSkill, xp))
             {
                 return;
             }
 
-            cachedPCSkill.XP = cachedPCSkill.XP + xp;
+            pcSkill.XP = pcSkill.XP + xp;
             oPC.SendMessage("You earned " + skill.Name + " skill experience. (" + xp + ")");
 
             // Skill is at cap and player would level up.
             // Reduce XP to required amount minus 1 XP
-            if (cachedPCSkill.Rank >= maxRank && cachedPCSkill.XP > req.XP)
+            if (pcSkill.Rank >= maxRank && pcSkill.XP > req.XP)
             {
-                cachedPCSkill.XP = cachedPCSkill.XP - 1;
+                pcSkill.XP = pcSkill.XP - 1;
             }
         
-            while (cachedPCSkill.XP >= req.XP)
+            while (pcSkill.XP >= req.XP)
             {
-                cachedPCSkill.XP = cachedPCSkill.XP - req.XP;
+                pcSkill.XP = pcSkill.XP - req.XP;
 
                 if (player.TotalSPAcquired < SkillCap && skill.ContributesToSkillCap)
                 {
@@ -129,9 +129,9 @@ namespace SWLOR.Game.Server.Service
                     player.TotalSPAcquired++;
                 }
 
-                cachedPCSkill.Rank++;
-                oPC.FloatingText("Your " + skill.Name + " skill level increased to rank " + cachedPCSkill.Rank + "!");
-                req = skill.SkillXPRequirements.Single(x => x.SkillID == skillID && x.Rank == cachedPCSkill.Rank);
+                pcSkill.Rank++;
+                oPC.FloatingText("Your " + skill.Name + " skill level increased to rank " + pcSkill.Rank + "!");
+                req = skill.SkillXPRequirements.Single(x => x.SkillID == skillID && x.Rank == pcSkill.Rank);
 
                 // Reapply skill penalties on a skill level up.
                 for (int slot = 0; slot < NUM_INVENTORY_SLOTS; slot++)
@@ -144,19 +144,10 @@ namespace SWLOR.Game.Server.Service
                 }
             }
         
-            PCSkill pcSkill = new PCSkill
-            {
-                SkillID = cachedPCSkill.SkillID,
-                IsLocked = cachedPCSkill.IsLocked,
-                PCSkillID = cachedPCSkill.PCSkillID,
-                PlayerID = cachedPCSkill.PlayerID,
-                Rank = cachedPCSkill.Rank,
-                XP = cachedPCSkill.XP
-            };
             _data.SubmitDataChange(pcSkill, DatabaseActionType.Update);
 
             // Update player and apply stat changes only if a level up occurred.
-            if (originalRank != cachedPCSkill.Rank)
+            if (originalRank != pcSkill.Rank)
             {
                 _playerStat.ApplyStatChanges(oPC, null);
             }
@@ -165,9 +156,8 @@ namespace SWLOR.Game.Server.Service
         public int GetPCSkillRank(NWPlayer player, SkillType skill)
         {
             if (!player.IsPlayer || skill == SkillType.Unknown) return 0;
-            
-            var pcSkill = _cache.PCSkills[player.GlobalID][skill];
-            return pcSkill.Rank;
+
+            return _data.Single<PCSkill>(x => x.PlayerID == player.GlobalID && x.SkillID == (int) skill).Rank;
         }
 
         public int GetPCSkillRank(NWPlayer player, int skillID)
@@ -175,73 +165,62 @@ namespace SWLOR.Game.Server.Service
             return GetPCSkillRank(player, (SkillType) skillID);
         }
 
-        public CachedPCSkill GetPCSkill(NWPlayer player, int skillID)
+        public PCSkill GetPCSkill(NWPlayer player, int skillID)
         {
-            return _cache.PCSkills[player.GlobalID][(SkillType) skillID];
+            return _data.Single<PCSkill>(x => x.PlayerID == player.GlobalID && x.SkillID == skillID);
         }
 
-        public List<CachedPCSkill> GetAllPCSkills(NWPlayer player)
+        public List<PCSkill> GetAllPCSkills(NWPlayer player)
         {
-            return _cache.PCSkills[player.GlobalID].Values.ToList();
+            return _data.Where<PCSkill>(x => x.PlayerID == player.GlobalID).ToList();
         }
 
-        public CachedSkill GetSkill(int skillID)
+        public Skill GetSkill(int skillID)
         {
             return GetSkill((SkillType) skillID);
         }
 
-        public CachedSkill GetSkill(SkillType skillType)
+        public Skill GetSkill(SkillType skillType)
         {
-            return _cache.Skills[skillType];
+            return _data.Get<Skill>((int) skillType);
         }
 
         public int GetPCTotalSkillCount(NWPlayer player)
         {
-            var skills = _cache.Skills
-                .Where(x => x.Value.ContributesToSkillCap)
-                .Select(s => s.Value.SkillID);
+            var skills = _data
+                .Where<Skill>(x => x.ContributesToSkillCap)
+                .Select(s => s.SkillID);
             var pcSkills = GetAllPCSkills(player)
                 .Where(x => skills.Contains(x.SkillID));
             return pcSkills.Sum(x => x.Rank);
         }
         
-        public List<CachedSkillCategory> GetActiveCategories()
+        public List<SkillCategory> GetActiveCategories()
         {
-            return _cache.SkillCategories.ToList();
+            return _data.GetAll<SkillCategory>().ToList();
         }
 
-        public List<CachedPCSkill> GetPCSkillsForCategory(string playerID, int skillCategoryID)
+        public List<PCSkill> GetPCSkillsForCategory(string playerID, int skillCategoryID)
         {
             // Get list of skills part of this category.
-            var skillIDs = _cache
-                .Skills
-                .Where(x => x.Value.SkillCategoryID == skillCategoryID)
-                .Select(s => s.Value.SkillID);
+            var skillIDs = _data
+                .Where<Skill>(x => x.SkillCategoryID == skillCategoryID)
+                .Select(s => s.SkillID);
 
             // Get all PC Skills with a matching category.
-            var pcSkills = _cache.PCSkills[playerID]
-                .Where(x => skillIDs.Contains(x.Value.SkillID))
-                .Select(s => s.Value)
+            var pcSkills = _data.Where<PCSkill>(x => x.PlayerID == playerID && 
+                                                     skillIDs.Contains(x.SkillID))
                 .ToList();
-
+            
             return pcSkills;
         }
         
         public void ToggleSkillLock(string playerID, int skillID)
         {
-            CachedPCSkill pcSkill = _cache.PCSkills[playerID][(SkillType) skillID];
+            PCSkill pcSkill = _data.Get<PCSkill>(playerID);
             pcSkill.IsLocked = !pcSkill.IsLocked;
-
-            PCSkill dbPCSkill = new PCSkill
-            {
-                SkillID = pcSkill.SkillID,
-                IsLocked = pcSkill.IsLocked,
-                PCSkillID = pcSkill.PCSkillID,
-                PlayerID = pcSkill.PlayerID,
-                Rank = pcSkill.Rank,
-                XP = pcSkill.XP
-            };
-            _data.SubmitDataChange(dbPCSkill, DatabaseActionType.Update);
+            
+            _data.SubmitDataChange(pcSkill, DatabaseActionType.Update);
         }
 
         public void OnCreatureDeath(NWCreature creature)
@@ -534,7 +513,7 @@ namespace SWLOR.Game.Server.Service
             return xp;
         }
 
-        private bool ApplySkillDecay(NWPlayer oPC, CachedPCSkill levelingSkill, int xp)
+        private bool ApplySkillDecay(NWPlayer oPC, PCSkill levelingSkill, int xp)
         {
             int totalSkillRanks = GetPCTotalSkillCount(oPC);
             if (totalSkillRanks < SkillCap) return true;
@@ -544,6 +523,8 @@ namespace SWLOR.Game.Server.Service
                 new SqlParameter("PlayerID", oPC.GlobalID),
                 new SqlParameter("SkillID", levelingSkill.SkillID)).ToList();
             
+            // TODO: Remove the above database call and convert it to in-memory calculation.
+
             int aggregateXP = 0;
             foreach (TotalSkillXPResult p in skillTotalXP)
             {
@@ -553,15 +534,19 @@ namespace SWLOR.Game.Server.Service
 
             // We have enough XP to remove. Reduce XP, picking random skills each time we reduce.
             var skillsPossibleToDecay = GetAllPCSkills(oPC)
-                .Where(x => !x.IsLocked &&
-                            x.ContributesToSkillCap &&
-                            x.SkillID != levelingSkill.SkillID &&
-                            (x.XP > 0 || x.Rank > 0)).ToList();
+                .Where(x =>
+                {
+                    var skill = _data.Get<Skill>(x.SkillID);
+                    return !x.IsLocked &&
+                           skill.ContributesToSkillCap &&
+                           x.SkillID != levelingSkill.SkillID &&
+                           (x.XP > 0 || x.Rank > 0);
+                }).ToList();
 
             while (xp > 0)
             {
                 int skillIndex = _random.Random(skillsPossibleToDecay.Count);
-                CachedPCSkill decaySkill = skillsPossibleToDecay[skillIndex];
+                PCSkill decaySkill = skillsPossibleToDecay[skillIndex];
                 int totalDecaySkillXP = skillTotalXP[skillIndex].TotalSkillXP;
 
                 if (totalDecaySkillXP >= xp)
@@ -585,10 +570,10 @@ namespace SWLOR.Game.Server.Service
                 // Otherwise calculate what rank and XP value the skill should now be.
                 else
                 {
-                    CachedSkill skill = GetSkill(decaySkill.SkillID);
-                    List<CachedSkillXPRequirement> reqs = skill.SkillXPRequirements.Where(x => x.SkillID == decaySkill.SkillID && x.Rank <= decaySkill.Rank).ToList();
+                    Skill skill = GetSkill(decaySkill.SkillID);
+                    List<SkillXPRequirement> reqs = skill.SkillXPRequirements.Where(x => x.SkillID == decaySkill.SkillID && x.Rank <= decaySkill.Rank).ToList();
                     int newDecaySkillRank = 0;
-                    foreach (CachedSkillXPRequirement req in reqs)
+                    foreach (SkillXPRequirement req in reqs)
                     {
                         if (totalDecaySkillXP >= req.XP)
                         {

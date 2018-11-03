@@ -191,7 +191,6 @@ namespace SWLOR.Game.Server
                 .SingleInstance();
 
             // Types
-            builder.RegisterType<DataContext>().As<IDataContext>().InstancePerDependency().WithParameter("useCustom", true);
             builder.RegisterType<HttpClient>().SingleInstance();
 
             // Game Objects

@@ -17,18 +17,32 @@ namespace SWLOR.Game.Server.Service
     public class DataService : IDataService
     {
         public ConcurrentQueue<DatabaseAction> DataQueue { get; }
-        private readonly string _connectionString;
+        private string _connectionString;
 
         public DataService()
         {
             DataQueue = new ConcurrentQueue<DatabaseAction>();
+        }
 
+        public void Initialize()
+        {
             _connectionString = new SqlConnectionStringBuilder()
             {
                 DataSource = Environment.GetEnvironmentVariable("SQL_SERVER_IP_ADDRESS"),
                 InitialCatalog = Environment.GetEnvironmentVariable("SQL_SERVER_DATABASE"),
                 UserID = Environment.GetEnvironmentVariable("SQL_SERVER_USERNAME"),
                 Password = Environment.GetEnvironmentVariable("SQL_SERVER_PASSWORD")
+            }.ToString();
+        }
+
+        public void Initialize(string ip, string database, string user, string password)
+        {
+            _connectionString = new SqlConnectionStringBuilder()
+            {
+                DataSource = ip,
+                InitialCatalog = database,
+                UserID = user,
+                Password = password
             }.ToString();
         }
 
@@ -63,7 +77,6 @@ namespace SWLOR.Game.Server.Service
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                connection.Open();
                 return connection.Get<T>(id);
             }
         }
@@ -78,7 +91,6 @@ namespace SWLOR.Game.Server.Service
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                connection.Open();
                 return connection.GetAll<T>();
             }
         }
@@ -88,17 +100,39 @@ namespace SWLOR.Game.Server.Service
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                connection.Open();
                 connection.Execute(BuildSQLQuery(procedureName, args), args);
             }
         }
 
-        public List<T> StoredProcedure<T>(string procedureName, params SqlParameter[] args)
+        public IEnumerable<T> StoredProcedure<T>(string procedureName, params SqlParameter[] args)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                connection.Open();
-                return connection.Query<T>(procedureName, args, commandType: CommandType.StoredProcedure).ToList();
+                return connection.Query<T>(procedureName, args, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public IEnumerable<TResult> StoredProcedure<T1, T2, TResult>(string procedureName, Func<T1, T2, TResult> map, string splitOn, params SqlParameter[] args)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                return connection.Query(procedureName, map, args.Length <= 0 ? null : args, splitOn: splitOn, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public IEnumerable<TResult> StoredProcedure<T1, T2, T3, TResult>(string procedureName, Func<T1, T2, T3, TResult> map, string splitOn, params SqlParameter[] args)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                return connection.Query(procedureName, map, args.Length <= 0 ? null : args, splitOn: splitOn, commandType: CommandType.StoredProcedure);
+            }
+        }
+        
+        public IEnumerable<TResult> StoredProcedure<T1, T2, T3, T4, TResult>(string procedureName, Func<T1, T2, T3, T4, TResult> map, string splitOn, params SqlParameter[] args)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                return connection.Query(procedureName, map, args.Length <= 0 ? null : args, splitOn: splitOn, commandType: CommandType.StoredProcedure);
             }
         }
 
@@ -106,7 +140,6 @@ namespace SWLOR.Game.Server.Service
         {
             using (var connection = new SqlConnection(_connectionString))
             {
-                connection.Open();
                 return connection.Query<T>(procedureName, args, commandType: CommandType.StoredProcedure).SingleOrDefault();
             }
         }
@@ -124,5 +157,7 @@ namespace SWLOR.Game.Server.Service
 
             return sql;
         }
+        
+
     }
 }

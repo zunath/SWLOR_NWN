@@ -541,7 +541,7 @@ namespace SWLOR.Game.Server.Service
             // Find out if we have enough XP to remove. If we don't, make no changes and return false signifying no XP could be removed.
             List<TotalSkillXPResult> skillTotalXP = _data.StoredProcedure<TotalSkillXPResult>("GetTotalXPAmountsForPC",
                 new SqlParameter("PlayerID", oPC.GlobalID),
-                new SqlParameter("SkillID", levelingSkill.SkillID));
+                new SqlParameter("SkillID", levelingSkill.SkillID)).ToList();
             
             int aggregateXP = 0;
             foreach (TotalSkillXPResult p in skillTotalXP)

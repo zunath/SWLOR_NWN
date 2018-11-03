@@ -10,9 +10,6 @@ namespace SWLOR.Game.Server.Data.Validator
                 .NotNull()
                 .NotEmpty()
                 .MaximumLength(64);
-
-            RuleFor(x => x.PCBases)
-                .Empty();
         }
     }
 }

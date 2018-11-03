@@ -26,7 +26,8 @@ namespace SWLOR.Game.Server.Data
 
         public DatabaseMigrationRunner(
             IDataContext db,
-            IErrorService error)
+            IErrorService error,
+            IDataService data)
         {
             _db = db;
             _error = error;
@@ -50,6 +51,7 @@ namespace SWLOR.Game.Server.Data
                 Password = password
             }.ToString();
 
+            data.Initialize(); // todo: move this somewhere more appropriate or change this class to use dapper.
         }
         
         /// <summary>

@@ -44,17 +44,34 @@ namespace SWLOR.Game.Server.Service
             _nwnxPlayer = nwnxPlayer;
         }
 
+        private List<PCPerk> GetPCPerksByExecutionType(NWPlayer oPC, PerkExecutionType executionType)
+        {
+            var pcPerks = _data.Where<PCPerk>(x => x.PlayerID == oPC.GlobalID);
+            return pcPerks.Where(x =>
+            {
+                // Filter on equipment-based execution type.
+                var perk = _data.Get<Data.Entity.Perk>(x.PerkID);
+                bool matchesExecutionType = perk.ExecutionTypeID == (int)executionType;
+                if (!matchesExecutionType) return false;
+
+                // Filter out any perks the PC doesn't meet the requirements for.
+                int effectivePerkLevel = GetPCEffectivePerkLevel(oPC, x.PerkID);
+                if (effectivePerkLevel <= 0) return false;
+
+                // Meets all requirements.
+                return true;
+            }).ToList();
+
+        }
+
         public void OnModuleItemEquipped()
         {
             NWPlayer oPC = (_.GetPCItemLastEquippedBy());
             NWItem oItem = (_.GetPCItemLastEquipped());
             if (!oPC.IsPlayer || !oPC.IsInitializedAsPlayer) return;
-            List<PCPerk> perks = _data.StoredProcedure<PCPerk>("GetPCPerksByExecutionType",
-                new SqlParameter("PlayerID", oPC.GlobalID),
-                new SqlParameter("ExecutionTypeID", (int) PerkExecutionType.EquipmentBased)).ToList();
-            //TODO: Figure out caching for the above query. There's a function in use in the proc that makes it challenging to directly migrate.
 
-            foreach (PCPerk pcPerk in perks)
+            var executionPerks = GetPCPerksByExecutionType(oPC, PerkExecutionType.EquipmentBased);
+            foreach (PCPerk pcPerk in executionPerks)
             {
                 var perk = _data.Get<Data.Entity.Perk>(pcPerk.PerkID);
                 string jsName = perk.ScriptName;
@@ -72,14 +89,9 @@ namespace SWLOR.Game.Server.Service
             NWPlayer oPC = (_.GetPCItemLastUnequippedBy());
             NWItem oItem = (_.GetPCItemLastUnequipped());
             if (!oPC.IsPlayer) return;
-
-            List<PCPerk> perks = _data.StoredProcedure<PCPerk>("GetPCPerksByExecutionType",
-                new SqlParameter("PlayerID", oPC.GlobalID),
-                new SqlParameter("ExecutionTypeID", (int)PerkExecutionType.EquipmentBased))
-                .ToList();
-            //TODO: Figure out caching for the above query. There's a function in use in the proc that makes it challenging to directly migrate.
-
-            foreach (PCPerk pcPerk in perks)
+            
+            var executionPerks = GetPCPerksByExecutionType(oPC, PerkExecutionType.EquipmentBased);
+            foreach (PCPerk pcPerk in executionPerks)
             {
                 var perk = _data.Get<Data.Entity.Perk>(pcPerk.PerkID);
                 string jsName = perk.ScriptName;
@@ -100,13 +112,7 @@ namespace SWLOR.Game.Server.Service
         public int GetPCPerkLevel(NWPlayer player, int perkID)
         {
             if (!player.IsPlayer) return -1;
-            
-            PerkLevel perkLevel = _data.StoredProcedureSingle<PerkLevel>("GetPCSkillAdjustedPerkLevel",
-                new SqlParameter("PlayerID", player.GlobalID),
-                new SqlParameter("PerkID", perkID));
-            //TODO: Figure out caching for the above query. There's a function in use in the proc that makes it challenging to directly migrate.
-
-            return perkLevel?.Level ?? 0;
+            return GetPCEffectivePerkLevel(player, perkID);
         }
 
         public void OnHitCastSpell(NWPlayer oPC)
@@ -114,10 +120,19 @@ namespace SWLOR.Game.Server.Service
             if (!oPC.IsPlayer) return;
             NWItem oItem = (_.GetSpellCastItem());
             int type = oItem.BaseItemType;
-            List<PCPerk> pcPerks = _data.StoredProcedure<PCPerk>("GetPCPerksWithExecutionType",
-                new SqlParameter("PlayerID", oPC.GlobalID))
-                .ToList();
-            //TODO: Figure out caching for the above query. There's a function in use in the proc that makes it challenging to directly migrate.
+            var pcPerks = _data.Where<PCPerk>(x =>
+            {
+                // Only pull back perks which have an execution type.
+                var perk = _data.Get<Data.Entity.Perk>(x.PerkID);
+                if (perk.ExecutionTypeID == (int) PerkExecutionType.None)
+                    return false;
+
+                // If player's effective level is zero, it's not in effect.
+                int effectiveLevel = GetPCEffectivePerkLevel(oPC, x.PerkID);
+                if (effectiveLevel <= 0) return false;
+                
+                return true;
+            });
 
             foreach (PCPerk pcPerk in pcPerks)
             {
@@ -395,5 +410,68 @@ namespace SWLOR.Game.Server.Service
 
             return description;
         }
+
+        /// <summary>
+        /// Returns the EFFECTIVE perk level of a player.
+        /// This takes into account the player's skills. If they are too low to use the perk, the level will be
+        /// reduced to the appropriate level.
+        /// </summary>
+        /// <returns></returns>
+        private int GetPCEffectivePerkLevel(NWPlayer player, int perkID)
+        {
+            var pcSkills = _data.Where<PCSkill>(x => x.PlayerID == player.GlobalID).ToList();
+            // Get the PC's perk information and all of the perk levels at or below their current level.
+            var pcPerk = _data.SingleOrDefault<PCPerk>(x => x.PlayerID == player.GlobalID && x.PerkID == perkID);
+            if (pcPerk == null) return 0;
+
+            // Get all of the perk levels in range, starting with the highest level.
+            var perkLevelsInRange = _data
+                .Where<PerkLevel>(x => x.PerkID == perkID && x.Level <= pcPerk.PerkLevel)
+                .OrderByDescending(o => o.Level);
+
+            // Iterate over each perk level. If player doesn't meet the requirements, the effective level is dropped.
+            // Iteration ends when the player meets that level's requirements. 
+            foreach (var perkLevel in perkLevelsInRange)
+            {
+                var skillRequirements = _data.Where<PerkLevelSkillRequirement>(r => r.PerkLevelID == perkLevel.PerkLevelID);
+                var questRequirements = _data.Where<PerkLevelQuestRequirement>(q => q.PerkLevelID == perkLevel.PerkLevelID);
+                int effectiveLevel = pcPerk.PerkLevel;
+
+                // Check the skill requirements.
+                foreach (var req in skillRequirements)
+                {
+                    var pcSkill = pcSkills.Single(x => x.SkillID == req.SkillID);
+                    if (pcSkill.Rank < req.RequiredRank)
+                    {
+                        effectiveLevel--;
+                        break;
+                    }
+                }
+
+                // Was the effective level reduced during the skill check? No need to check quests.
+                if (effectiveLevel != pcPerk.PerkLevel) continue;
+
+                // Check the quest requirements.
+                foreach (var req in questRequirements)
+                {
+                    var pcQuest = _data.SingleOrDefault<PCQuestStatus>(q => q.QuestID == req.RequiredQuestID);
+                    if(pcQuest == null || pcQuest.CompletionDate == null)
+                    {
+                        effectiveLevel--;
+                        break;
+                    }
+                }
+
+                // Was the effective level reduced during the quest check? Move to the next lowest perk level.
+                if (effectiveLevel != pcPerk.PerkLevel) continue;
+
+                // Otherwise the player meets all requirements. This is their effective perk level.
+                return effectiveLevel;
+            }
+
+            // Player meets none of the requirements for their purchased perk level. Their effective level is 0.
+            return 0;
+        }
+
     }
 }

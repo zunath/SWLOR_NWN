@@ -519,14 +519,16 @@ namespace SWLOR.Game.Server.Service
             if (totalSkillRanks < SkillCap) return true;
 
             // Find out if we have enough XP to remove. If we don't, make no changes and return false signifying no XP could be removed.
-            List<TotalSkillXPResult> skillTotalXP = _data.StoredProcedure<TotalSkillXPResult>("GetTotalXPAmountsForPC",
-                new SqlParameter("PlayerID", oPC.GlobalID),
-                new SqlParameter("SkillID", levelingSkill.SkillID)).ToList();
+            var pcSkills = _data.Where<PCSkill>(x =>x.PlayerID == oPC.GlobalID && x.SkillID != levelingSkill.SkillID);
+            var totalXPs = pcSkills.Select(s =>
+            {
+                var reqXP = _data.Where<SkillXPRequirement>(x => x.SkillID == s.SkillID && (x.Rank < s.Rank || x.Rank == 0 && s.XP > 0));
+                var totalXP = reqXP.Sum(x => x.XP);
+                return new {s.SkillID, TotalSkillXP = totalXP};
+            }).ToList();
             
-            // TODO: Remove the above database call and convert it to in-memory calculation.
-
             int aggregateXP = 0;
-            foreach (TotalSkillXPResult p in skillTotalXP)
+            foreach (var p in totalXPs)
             {
                 aggregateXP += p.TotalSkillXP;
             }
@@ -547,7 +549,7 @@ namespace SWLOR.Game.Server.Service
             {
                 int skillIndex = _random.Random(skillsPossibleToDecay.Count);
                 PCSkill decaySkill = skillsPossibleToDecay[skillIndex];
-                int totalDecaySkillXP = skillTotalXP[skillIndex].TotalSkillXP;
+                int totalDecaySkillXP = totalXPs[skillIndex].TotalSkillXP;
 
                 if (totalDecaySkillXP >= xp)
                 {
@@ -602,9 +604,7 @@ namespace SWLOR.Game.Server.Service
                 _data.SubmitDataChange(dbDecaySkill, DatabaseActionType.Update);
             }
 
-            // TODO: Verify we can get away without applying stat changes at this point.
-            // TODO: I think it should be OK to do it after we've applied XP changes in the calling method.
-            //_playerStat.ApplyStatChanges(oPC, null);
+            _playerStat.ApplyStatChanges(oPC, null);
             return true;
         }
 

@@ -97,20 +97,24 @@ namespace SWLOR.Game.Server.Conversation
 
         private void BuildViewMyPerks()
         {
-            List<PCPerkHeader> perks = _perk.GetPCPerksForMenuHeader(GetPC().GlobalID);
+            List<PCPerk> perks = _data.Where<PCPerk>(x => x.PlayerID == GetPC().GlobalID).ToList();
 
             string header = _color.Green("Perks purchased:") + "\n\n";
-            foreach (PCPerkHeader perk in perks)
+            foreach (PCPerk pcPerk in perks)
             {
-                header += perk.Name + " (Lvl. " + perk.Level + ") \n";
+                var perk = _data.Get<Data.Entity.Perk>(pcPerk.PerkID);
+                header += perk.Name + " (Lvl. " + pcPerk.PerkLevel + ") \n";
             }
 
             SetPageHeader("ViewMyPerksPage", header);
         }
 
+
         private void BuildCategoryList()
         {
-            List<PerkCategory> categories = _perk.GetPerkCategoriesForPC(GetPC().GlobalID);
+            var perksAvailable = _perk.GetPerksAvailableToPC(GetPC());
+            var categoryIDs = perksAvailable.Select(x => x.PerkCategoryID).Distinct();
+            List<PerkCategory> categories = _data.Where<PerkCategory>(x => categoryIDs.Contains(x.PerkCategoryID)).ToList();
 
             ClearPageResponses("CategoryPage");
             foreach (PerkCategory category in categories)
@@ -122,7 +126,8 @@ namespace SWLOR.Game.Server.Conversation
         private void BuildPerkList()
         {
             Model vm = GetDialogCustomData<Model>();
-            List<Data.Entity.Perk> perks = _perk.GetPerksForPC(GetPC().GlobalID, vm.SelectedCategoryID);
+            var perksAvailable = _perk.GetPerksAvailableToPC(GetPC());
+            List<Data.Entity.Perk> perks = perksAvailable.Where(x => x.PerkCategoryID == vm.SelectedCategoryID).ToList();
 
             ClearPageResponses("PerkListPage");
             foreach (Data.Entity.Perk perk in perks)

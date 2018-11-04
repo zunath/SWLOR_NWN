@@ -722,8 +722,7 @@ namespace SWLOR.Game.Server.Data
                 currSetIl.Emit(OpCodes.Ldc_I4_1);
                 currSetIl.Emit(OpCodes.Call, setIsDirtyMethod);
                 currSetIl.Emit(OpCodes.Ret);
-
-                //TODO: Should copy all attributes defined by the interface?
+                
                 if (isIdentity)
                 {
                     var keyAttribute = typeof(KeyAttribute);

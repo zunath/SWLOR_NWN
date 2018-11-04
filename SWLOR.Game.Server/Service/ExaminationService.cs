@@ -68,15 +68,13 @@ namespace SWLOR.Game.Server.Service
             }
 
             description.Append("\n\n").Append(_color.Green("Perks: ")).Append("\n\n");
-
-            List<PCPerkHeader> pcPerks = _data.StoredProcedure<PCPerkHeader>("GetPCPerksForMenuHeader",
-                new SqlParameter("PlayerID", target.GlobalID))
-                .ToList();
-            // TODO: Migrate the above query to in-app query
-
-            foreach (PCPerkHeader perk in pcPerks)
+            
+            var pcPerks = _data.Where<PCPerk>(x => x.PlayerID == target.GlobalID);
+            
+            foreach (PCPerk pcPerk in pcPerks)
             {
-                description.Append(perk.Name).Append(" Lvl. ").Append(perk.Level).AppendLine();
+                var perk = _data.Get<Data.Entity.Perk>(pcPerk.PerkID);
+                description.Append(perk.Name).Append(" Lvl. ").Append(pcPerk.PerkLevel).AppendLine();
             }
             
             description.Append("\n\n").Append(_color.Green("Description: \n\n")).Append(backupDescription).AppendLine();

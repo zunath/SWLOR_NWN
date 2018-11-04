@@ -49,21 +49,46 @@ namespace SWLOR.Game.Server.Service
 
         private const float BaseCraftDelay = 18.0f;
 
+        private List<CraftBlueprint> GetCraftBlueprintsAvailableToPlayer(string playerID)
+        {
+            var pcPerks = _data.Where<PCPerk>(x => x.PlayerID == playerID).ToList();
+            var pcSkills = _data.Where<PCSkill>(x => x.PlayerID == playerID).ToList();
+
+            return _data.Where<CraftBlueprint>(x =>
+            {
+                // ReSharper disable once ReplaceWithSingleAssignment.True
+                bool found = true;
+                
+                // Exclude blueprints which the player doesn't meet the required perk level for.
+                var pcPerk = pcPerks.SingleOrDefault(p => p.PerkID == x.PerkID);
+                int perkLevel = pcPerk == null ? 0 : pcPerk.PerkLevel;
+                if (x.PerkID != null && perkLevel < x.RequiredPerkLevel)
+                    found = false;
+
+                // Exclude blueprints which the player doesn't meet the skill requirements for
+                var pcSkill = pcSkills.Single(s => s.SkillID == x.SkillID);
+                if (x.BaseLevel > pcSkill.Rank + 5)
+                    found = false;
+
+                return found;
+            }).ToList();
+        }
+
         public List<CraftBlueprintCategory> GetCategoriesAvailableToPCByDeviceID(string playerID, int deviceID)
         {
-            return _data.StoredProcedure<CraftBlueprintCategory>("GetCraftCategoriesAvailableToPCByDeviceID",
-                new SqlParameter("DeviceID", deviceID),
-                new SqlParameter("PlayerID", playerID)).ToList();
-            // todo: migrate the above query
+            var blueprints = GetCraftBlueprintsAvailableToPlayer(playerID).Where(x => x.CraftDeviceID == deviceID);
+            var categoryIDs = blueprints.Select(x => x.CraftCategoryID).Distinct();
+
+            var categories = _data.Where<CraftBlueprintCategory>(x => x.IsActive &&
+                                                                      categoryIDs.Contains(x.CraftBlueprintCategoryID));
+            return categories.ToList();
         }
 
         public List<CraftBlueprint> GetPCBlueprintsByDeviceAndCategoryID(string playerID, int deviceID, long categoryID)
         {
-            return _data.StoredProcedure<CraftBlueprint>("GetPCCraftBlueprintsByDeviceAndCategoryID",
-                new SqlParameter("DeviceID", deviceID),
-                new SqlParameter("CraftCategoryID", categoryID),
-                new SqlParameter("PlayerID", playerID)).ToList();
-            // todo: migrate the above query
+            return GetCraftBlueprintsAvailableToPlayer(playerID).Where(x => x.CraftDeviceID == deviceID && 
+                                                                                      x.CraftCategoryID == categoryID)
+                .ToList();
         }
 
         public string BuildBlueprintHeader(NWPlayer player, long blueprintID, bool showAddedComponentList)
@@ -147,17 +172,13 @@ namespace SWLOR.Game.Server.Service
 
         public List<CraftBlueprintCategory> GetCategoriesAvailableToPC(string playerID)
         {
-            return _data.StoredProcedure<CraftBlueprintCategory>("GetCategoriesAvailableToPC",
-                new SqlParameter("PlayerID", playerID)).ToList();
-            // todo: migrate above query
+            var blueprints = GetCraftBlueprintsAvailableToPlayer(playerID).Select(x => x.CraftCategoryID).Distinct();
+            return _data.Where<CraftBlueprintCategory>(x => blueprints.Contains(x.CraftBlueprintCategoryID)).ToList();
         }
 
         public List<CraftBlueprint> GetPCBlueprintsByCategoryID(string playerID, long categoryID)
         {
-            return _data.StoredProcedure<CraftBlueprint>("GetPCBlueprintsByCategoryID",
-                new SqlParameter("PlayerID", playerID),
-                new SqlParameter("CraftCategoryID", categoryID)).ToList();
-            // todo: migrate above query
+            return GetCraftBlueprintsAvailableToPlayer(playerID).Where(x => x.CraftCategoryID == categoryID).ToList();
         }
 
 

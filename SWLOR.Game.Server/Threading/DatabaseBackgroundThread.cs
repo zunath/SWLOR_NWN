@@ -62,7 +62,6 @@ namespace SWLOR.Game.Server.Threading
                             {
                                 connection.Insert(record.GetType(), record);
                             }
-                            //connection.Insert<object>(request.Data);
                         }
                         else if (request.Action == DatabaseActionType.Update)
                         {
@@ -70,7 +69,6 @@ namespace SWLOR.Game.Server.Threading
                             {
                                 connection.Update(record.GetType(), record);
                             }
-                            //connection.Update<object>(request.Data);
                         }
                         else if (request.Action == DatabaseActionType.Delete)
                         {
@@ -78,7 +76,6 @@ namespace SWLOR.Game.Server.Threading
                             {
                                 connection.Delete(record.GetType(), record);
                             }
-                            //connection.Delete<object>(request.Data);
                         }
 
                     }

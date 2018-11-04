@@ -14,9 +14,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         int GetPCPerkLevel(NWPlayer player, PerkType perkType);
         int GetPCPerkLevel(NWPlayer player, int perkTypeID);
         int GetPCTotalPerkCount(string playerID);
-        List<PCPerkHeader> GetPCPerksForMenuHeader(string playerID);
-        List<PerkCategory> GetPerkCategoriesForPC(string playerID);
-        List<Data.Entity.Perk> GetPerksForPC(string playerID, int categoryID);
+        List<Data.Entity.Perk> GetPerksAvailableToPC(NWPlayer player);
         Data.Entity.Perk GetPerkByID(int perkID);
         PCPerk GetPCPerkByID(string playerID, int perkID);
         PerkLevel FindPerkLevel(IEnumerable<PerkLevel> levels, int findLevel);

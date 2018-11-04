@@ -145,28 +145,44 @@ namespace SWLOR.Game.Server.Service
             return _data.GetAll<PCPerk>().Count(x => x.PlayerID == playerID);
         }
 
-        public List<PCPerkHeader> GetPCPerksForMenuHeader(string playerID)
-        {
-            return _data.StoredProcedure<PCPerkHeader>("GetPCPerksForMenuHeader",
-                    new SqlParameter("PlayerID", playerID)).ToList();
-            // TODO: Migrate the above query
-        }
 
-        public List<PerkCategory> GetPerkCategoriesForPC(string playerID)
+        public List<Data.Entity.Perk> GetPerksAvailableToPC(NWPlayer player)
         {
-            return _data.StoredProcedure<PerkCategory>("GetPerkCategoriesForPC",
-                new SqlParameter("PlayerID", playerID)).ToList();
-            // TODO: Migrate the above query
-        }
+            var playerID = player.GlobalID;
+            var pcSkills = _data.Where<PCSkill>(x => x.PlayerID == playerID).ToList();
 
-        public List<Data.Entity.Perk> GetPerksForPC(string playerID, int categoryID)
-        {
-            return _data.StoredProcedure<Data.Entity.Perk>("GetPerksForPC",
-                new SqlParameter("PlayerID", playerID),
-                new SqlParameter("CategoryID", categoryID)).ToList();
-            // TODO: Migrate the above query
-        }
+            return _data.Where<Data.Entity.Perk>(x =>
+            {
+                if (!x.IsActive) return false;
+                // Determination for whether a player can see a perk in the menu is based on whether they meet the
+                // requirements for the first level in that perk.
+                var perkLevel = _data.Single<PerkLevel>(pl => pl.PerkID == x.PerkID && pl.Level == 1);
+                var skillRequirements = _data.Where<PerkLevelSkillRequirement>(sr => sr.PerkLevelID == perkLevel.PerkLevelID);
+                var questRequirements = _data.Where<PerkLevelQuestRequirement>(qr => qr.PerkLevelID == perkLevel.PerkLevelID);
 
+                // Check the player's skill level against the perk requirements.
+                foreach (var skillReq in skillRequirements)
+                {
+                    var pcSkill = pcSkills.Single(s => s.SkillID == skillReq.SkillID);
+
+                    if (pcSkill.Rank < skillReq.RequiredRank)
+                    {
+                        return false;
+                    }
+                }
+
+                // Check the player's quest completion status against the perk requirements.
+                foreach (var questReq in questRequirements)
+                {
+                    var pcQuest = _data.SingleOrDefault<PCQuestStatus>(q => q.QuestID == questReq.RequiredQuestID);
+                    if (pcQuest == null || pcQuest.CompletionDate == null)
+                        return false;
+                }
+
+                return true;
+            }).ToList();
+        }
+        
         public Data.Entity.Perk GetPerkByID(int perkID)
         {
             return _data.Single<Data.Entity.Perk>(x => x.PerkID == perkID);

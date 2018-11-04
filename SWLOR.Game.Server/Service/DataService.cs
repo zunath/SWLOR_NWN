@@ -73,10 +73,10 @@ namespace SWLOR.Game.Server.Service
         {
             if (_cacheInitialized) return;
 
+            Console.WriteLine("Initializing the cache...");
             // Todo: We're caching everything right now to get up and running. Look into optimizations for PC objects and item storage later.
             GetAll<ApartmentBuilding>();
-            GetAll<Area>();
-            GetAll<AreaWalkmesh>();
+            // Note: Area and AreaWalkmesh get cached in the AreaService
             GetAll<Association>();
             GetAll<Attribute>();
             GetAll<AuthorizedDM>();
@@ -156,6 +156,7 @@ namespace SWLOR.Game.Server.Service
             GetAll<Spawn>();
             GetAll<SpawnObject>();
             GetAll<SpawnObjectType>();
+            Console.WriteLine("Cache initialized!");
 
             _cacheInitialized = true;
         }
@@ -181,7 +182,7 @@ namespace SWLOR.Game.Server.Service
 
             DeleteFromCache<PlayerCharacter>(player.GlobalID);
         }
-
+        
         /// <summary>
         /// Sends a request to change data into the database queue. Processing is asynchronous
         /// and you cannot reliably retrieve the data directly from the database immediately afterwards.
@@ -189,6 +190,23 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public void SubmitDataChange(DatabaseAction action)
         {
+            if (action == null) throw new ArgumentNullException(nameof(action));
+            if(action.Data == null) throw new ArgumentNullException(nameof(action.Data));
+
+            var actionType = action.Action;
+
+            foreach(var item in action.Data)
+            {
+                if (actionType == DatabaseActionType.Insert || actionType == DatabaseActionType.Update)
+                {
+                    SetIntoCache(item.GetType(), GetEntityKey(item), item);
+                }
+                else if (actionType == DatabaseActionType.Delete)
+                {
+                    DeleteFromCache(item.GetType(), GetEntityKey(item));
+                }
+            }
+
             DataQueue.Enqueue(action);
         }
 
@@ -201,6 +219,8 @@ namespace SWLOR.Game.Server.Service
         /// <param name="actionType">The type (Insert, Update, Delete, etc.) of change to make.</param>
         public void SubmitDataChange(IEntity data, DatabaseActionType actionType)
         {
+            if(data == null) throw new ArgumentNullException(nameof(data));
+
             if (actionType == DatabaseActionType.Insert || actionType == DatabaseActionType.Update)
             {
                 SetIntoCache(data.GetType(), GetEntityKey(data), data);
@@ -210,7 +230,7 @@ namespace SWLOR.Game.Server.Service
                 DeleteFromCache(data.GetType(), GetEntityKey(data));
             }
 
-            SubmitDataChange(new DatabaseAction(data, actionType));
+            DataQueue.Enqueue(new DatabaseAction(data, actionType));
         }
 
         private T GetFromCache<T>(object key)
@@ -329,14 +349,14 @@ namespace SWLOR.Game.Server.Service
             {
                 results = connection.GetAll<T>();
             }
-
+            
             // Add the records to the cache.
             foreach (var result in results)
             {
                 object id = GetEntityKey(result);
                 SetIntoCache<T>(id, result);
             }
-
+            
             // Send back the results if we know they exist in the cache.
             if (_cache.TryGetValue(typeof(T), out var set))
             {

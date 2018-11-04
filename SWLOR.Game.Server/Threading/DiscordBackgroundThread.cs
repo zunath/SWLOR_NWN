@@ -31,10 +31,6 @@ namespace SWLOR.Game.Server.Threading
             _data = data;
         }
         
-        public void Exit()
-        {
-        }
-
         public void Run()
         {
             List<DiscordChatQueue> discordQueue = _data.Where<DiscordChatQueue>(x => x.DatePosted == null || 

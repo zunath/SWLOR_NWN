@@ -102,7 +102,16 @@ namespace SWLOR.Game.Server
                 typeName = typeName.Replace(assemblyName + ".", string.Empty);
                 string @namespace = assemblyName + "." + typeName;
                 var resolved = scope.ResolveKeyed<T>(@namespace);
-                action.Invoke(resolved);
+
+                try
+                {
+                    action.Invoke(resolved);
+                }
+                catch (Exception ex)
+                {
+                    IErrorService errorService = scope.Resolve<IErrorService>();
+                    errorService.LogError(ex, typeof(T).ToString());
+                }
             }
         }
 
@@ -120,7 +129,17 @@ namespace SWLOR.Game.Server
                 typeName = typeName.Replace(assemblyName + ".", string.Empty);
                 string @namespace = assemblyName + "." + typeName;
                 var resolved = scope.ResolveKeyed<T1>(@namespace);
-                return action.Invoke(resolved);
+
+                try
+                {
+                    return action.Invoke(resolved);
+                }
+                catch (Exception ex)
+                {
+                    IErrorService errorService = scope.Resolve<IErrorService>();
+                    errorService.LogError(ex, typeof(T1).ToString());
+                    throw;
+                }
             }
 
         }
@@ -145,7 +164,17 @@ namespace SWLOR.Game.Server
             using (var scope = _container.BeginLifetimeScope())
             {
                 T resolved = (T)scope.Resolve(typeof(T));
-                action.Invoke(resolved);
+
+                try
+                {
+                    action.Invoke(resolved);
+                }
+                catch(Exception ex)
+                {
+                    IErrorService errorService = scope.Resolve<IErrorService>();
+                    errorService.LogError(ex, typeof(T).ToString());
+                }
+
             }
         }
 
@@ -159,7 +188,16 @@ namespace SWLOR.Game.Server
             using (var scope = _container.BeginLifetimeScope())
             {
                 T1 resolved = (T1)scope.Resolve(typeof(T1));
-                return action.Invoke(resolved);
+                try
+                {
+                    return action.Invoke(resolved);
+                }
+                catch (Exception ex)
+                {
+                    IErrorService errorService = scope.Resolve<IErrorService>();
+                    errorService.LogError(ex, typeof(T1).ToString());
+                    throw;
+                }
             }
         }
 

@@ -3,6 +3,5 @@
     public interface IDiscordThread
     {
         void Run();
-        void Exit();
     }
 }

@@ -17,7 +17,6 @@ namespace SWLOR.Game.Server.Threading
 {
     public class DatabaseBackgroundThread : IDatabaseThread
     {
-        private bool _isExiting;
         private readonly IErrorService _error;
         private readonly IDataService _data;
         private readonly string _connectionString;
@@ -96,50 +95,5 @@ namespace SWLOR.Game.Server.Threading
                 }
             }
         }
-
-        public void Exit()
-        {
-            _isExiting = true;
-        }
-
-        private string GetTableName(Type type)
-        {
-            var tableAttribute = (TableAttribute)type.GetCustomAttributes(typeof(TableAttribute)).First();
-            return tableAttribute.Name;
-        }
-
-        private string BuildInsertSQL(IEntity entity)
-        {
-            var type = entity.GetType();
-            bool isList = false;
-
-            if (type.IsArray)
-            {
-                isList = true;
-                type = type.GetElementType();
-            }
-            else if (type.IsGenericType)
-            {
-                var typeInfo = type.GetTypeInfo();
-                bool implementsGenericIEnumerableOrIsGenericIEnumerable =
-                    typeInfo.ImplementedInterfaces.Any(ti => ti.IsGenericType && ti.GetGenericTypeDefinition() == typeof(IEnumerable<>)) ||
-                    typeInfo.GetGenericTypeDefinition() == typeof(IEnumerable<>);
-
-                if (implementsGenericIEnumerableOrIsGenericIEnumerable)
-                {
-                    isList = true;
-                    type = type.GetGenericArguments()[0];
-                }
-            }
-            
-            var name = GetTableName(type);
-
-            string sql = string.Empty;
-
-            return sql;
-        }
-
-
-
     }
 }

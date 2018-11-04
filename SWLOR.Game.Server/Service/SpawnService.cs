@@ -77,10 +77,12 @@ namespace SWLOR.Game.Server.Service
                     // No resref specified but a table was, look in the database for a random record.
                     if (string.IsNullOrWhiteSpace(spawnResref) && spawnTableID > 0)
                     {
-                        // Pick a random record.
-                        var spawnObjects = _data.Where<SpawnObject>(x => x.SpawnID == spawnTableID);
-                        var dbSpawn = spawnObjects
-                            .OrderBy(o => Guid.NewGuid()).First(); // TODO: Potential issue with getting random records this way now that calls aren't in SQL
+                        // Pick a random record.   
+                        var spawnObjects = _data.Where<SpawnObject>(x => x.SpawnID == spawnTableID).ToList();
+                        int count = spawnObjects.Count;
+                        int index = count <= 0 ? 0 : _random.Random(count);
+                        var dbSpawn = spawnObjects[index];
+
                         if (dbSpawn != null)
                         {
                             spawnResref = dbSpawn.Resref;
@@ -169,11 +171,13 @@ namespace SWLOR.Game.Server.Service
         
         public Location GetRandomSpawnPoint(NWArea area)
         {
-            Area dbArea = _data.GetAll<Area>().Single(x => x.Resref == area.Resref);
+            Area dbArea = _data.Single<Area>(x => x.Resref == area.Resref);
+            var walkmeshes = _data.Where<AreaWalkmesh>(x => x.AreaID == dbArea.AreaID).ToList();
+            int count = walkmeshes.Count;
+            var index = count <= 0 ? 0 : _random.Random(count);
 
-            var spawnPoint = _data.Where<AreaWalkmesh>(x => x.AreaID == dbArea.AreaID)
-                .OrderBy(o => Guid.NewGuid()).First(); // TODO: Potential issue with getting random records this way now that calls aren't in SQL
-
+            var spawnPoint = walkmeshes[index];
+            
             return _.Location(area.Object,
                 _.Vector((float)spawnPoint.LocationX, (float)spawnPoint.LocationY, (float)spawnPoint.LocationZ),
                 _random.RandomFloat(0, 360));

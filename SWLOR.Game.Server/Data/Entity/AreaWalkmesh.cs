@@ -10,8 +10,8 @@ namespace SWLOR.Game.Server.Data.Entity
         [Key] 
         public int AreaWalkmeshID { get; set; }
         public string AreaID { get; set; }
-        public double? LocationX { get; set; }
-        public double? LocationY { get; set; }
+        public double LocationX { get; set; }
+        public double LocationY { get; set; }
         public double LocationZ { get; set; }
     }
 }

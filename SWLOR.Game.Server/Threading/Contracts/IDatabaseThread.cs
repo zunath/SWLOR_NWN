@@ -3,6 +3,5 @@
     public interface IDatabaseThread
     {
         void Run();
-        void Exit();
     }
 }

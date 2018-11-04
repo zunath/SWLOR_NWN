@@ -102,6 +102,10 @@ namespace SWLOR.Game.Server.Service
             {
                 Console.WriteLine("WARNING: Area baking has been disabled. You may encounter errors during normal operations. This should only be disabled for debugging purposes. Please shut down the server and set the AREA_BAKING_ENABLED argument to true for all other scenarios.");
             }
+
+            // Cache both areas and area walkmeshes now that they're built, if they aren't already.
+            _data.GetAll<Area>();
+            _data.GetAll<AreaWalkmesh>();
         }
 
         // Area baking process

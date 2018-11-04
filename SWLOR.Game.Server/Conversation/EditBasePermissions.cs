@@ -125,9 +125,8 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("PlayerDetailsPage");
             var data = _base.GetPlayerTempData(GetPC());
             var pcBase = _data.GetAll<PCBase>().Single(x => x.PlayerID == player.GlobalID);
-            var permission = pcBase
-                .PCBasePermissions.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.PCBaseID == data.PCBaseID);
-
+            var permission = _data.SingleOrDefault<PCBasePermission>(x => x.PlayerID == player.GlobalID && x.PCBaseID == data.PCBaseID);
+            
             // Intentionally excluded permissions: CanAdjustPermissions, CanCancelLease
             bool canPlaceEditStructures = permission?.CanPlaceEditStructures ?? false;
             bool canAccessStructureInventory = permission?.CanAccessStructureInventory ?? false;
@@ -201,8 +200,7 @@ namespace SWLOR.Game.Server.Conversation
         private void TogglePermission(NWPlayer player, BasePermission permission)
         {
             var data = _base.GetPlayerTempData(GetPC());
-            var pcBase = _data.GetAll<PCBase>().Single(x => x.PlayerID == player.GlobalID);
-            var dbPermission = pcBase.PCBasePermissions.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.PCBaseID == data.PCBaseID);
+            var dbPermission = _data.SingleOrDefault<PCBasePermission>(x => x.PlayerID == player.GlobalID && x.PCBaseID == data.PCBaseID);
 
             DatabaseActionType action = DatabaseActionType.Update;
             if (dbPermission == null)

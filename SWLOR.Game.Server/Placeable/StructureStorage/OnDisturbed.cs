@@ -69,8 +69,7 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
                         ItemGlobalID = item.GlobalID,
                         ItemObject = _serialization.Serialize(item)
                     };
-
-                    structure.PCBaseStructureItems.Add(itemEntity);
+                    _data.SubmitDataChange(itemEntity, DatabaseActionType.Insert);
                 }
             }
             else if (disturbType == INVENTORY_DISTURB_TYPE_REMOVED)

@@ -11,7 +11,6 @@ namespace SWLOR.Game.Server.Data.Entity
         public SkillCategory()
         {
             Name = "";
-            Skills = new HashSet<Skill>();
         }
 
         [ExplicitKey]
@@ -19,8 +18,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public string Name { get; set; }
         public bool IsActive { get; set; }
         public int Sequence { get; set; }
-    
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Skill> Skills { get; set; }
     }
 }

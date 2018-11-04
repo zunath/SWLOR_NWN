@@ -51,8 +51,7 @@ namespace SWLOR.Game.Server.Item
             if (lootTableID <= 0) return;
 
             NWArea area = _.GetAreaFromLocation(targetLocation);
-            var lootTable = _data.Single<LootTable>(x => x.LootTableID == lootTableID);
-            var items = lootTable.LootTableItems.OrderByDescending(o => o.Weight);
+            var items = _data.Where<LootTableItem>(x => x.LootTableID == lootTableID).OrderByDescending(o => o.Weight);
             string sector = _base.GetSectorOfLocation(targetLocation);
             string sectorName = "Unknown";
 

@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
             int structureID = chest.GetLocalInt("PC_BASE_STRUCTURE_ID");
             var structure = _data.Single<PCBaseStructure>(x => x.PCBaseStructureID == structureID);
 
-            foreach (var item in structure.PCBaseStructureItems)
+            var items = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structure.PCBaseStructureID);
+            foreach (var item in items)
             {
                 _serialization.DeserializeItem(item.ItemObject, chest);
             }

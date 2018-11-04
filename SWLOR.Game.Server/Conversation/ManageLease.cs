@@ -71,9 +71,13 @@ namespace SWLOR.Game.Server.Conversation
             // Owners are included in this since they automatically get all permissions for their own bases.
             // Apartments are excluded from this list as they are canceled from terminals outside individual apartment buildings.
             var bases = _data
-                .Where<PCBase>(x => x.Sector != "AP" && 
-                            x.PCBasePermissions
-                                .Any(p => p.PlayerID == playerID && (p.CanExtendLease || p.CanCancelLease)))
+                .Where<PCBase>(x =>
+                {
+                    var pcBasePermissions = _data.Where<PCBasePermission>(p => p.PCBaseID == x.PCBaseID);
+                    return x.Sector != "AP" &&
+                           pcBasePermissions
+                               .Any(p => p.PlayerID == playerID && (p.CanExtendLease || p.CanCancelLease));
+                })
                 .ToList();
             
             ClearPageResponses("MainPage");

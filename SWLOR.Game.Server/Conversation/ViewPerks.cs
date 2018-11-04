@@ -137,14 +137,15 @@ namespace SWLOR.Game.Server.Conversation
             Data.Entity.Perk perk = _perk.GetPerkByID(vm.SelectedPerkID);
             PCPerk pcPerk = _perk.GetPCPerkByID(GetPC().GlobalID, perk.PerkID);
             PlayerCharacter player = _player.GetPlayerEntity(GetPC().GlobalID);
+            var perkLevels = _data.Where<PerkLevel>(x => x.PerkID == perk.PerkID).ToList();
 
             int rank = pcPerk?.PerkLevel ?? 0;
-            int maxRank = perk.PerkLevels.Count;
+            int maxRank = perkLevels.Count();
             string currentBonus = "N/A";
             string nextBonus = "N/A";
             string price = "N/A";
-            PerkLevel currentPerkLevel = _perk.FindPerkLevel(perk.PerkLevels, rank);
-            PerkLevel nextPerkLevel = _perk.FindPerkLevel(perk.PerkLevels, rank + 1);
+            PerkLevel currentPerkLevel = _perk.FindPerkLevel(perkLevels, rank);
+            PerkLevel nextPerkLevel = _perk.FindPerkLevel(perkLevels, rank + 1);
 
             SetResponseVisible("PerkDetailsPage", 1, _perk.CanPerkBeUpgraded(perk, pcPerk, player));
 
@@ -179,7 +180,8 @@ namespace SWLOR.Game.Server.Conversation
 
             if (nextPerkLevel != null)
             {
-                List<PerkLevelSkillRequirement> requirements = nextPerkLevel.PerkLevelSkillRequirements.ToList();
+                List<PerkLevelSkillRequirement> requirements = 
+                    _data.Where<PerkLevelSkillRequirement>(x => x.PerkLevelID == nextPerkLevel.PerkLevelID).ToList();
                 if (requirements.Count > 0)
                 {
                     header += "\n" + _color.Green("Next Upgrade Skill Requirements:\n\n");

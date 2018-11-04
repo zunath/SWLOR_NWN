@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
@@ -70,15 +68,13 @@ namespace SWLOR.Game.Server.Placeable.Bank
                         PlayerID = player.GlobalID,
                         DateStored = DateTime.UtcNow
                     };
-
-                    bank.BankItems.Add(itemEntity);
+                    
                     _data.SubmitDataChange(itemEntity, DatabaseActionType.Insert);
                 }
             }
             else if (disturbType == INVENTORY_DISTURB_TYPE_REMOVED)
             {
-                var record = bank.BankItems.Single(x => x.ItemID == item.GlobalID);
-                bank.BankItems.Remove(record);
+                var record = _data.Get<BankItem>(item.GlobalID);
                 _data.SubmitDataChange(record, DatabaseActionType.Delete);
             }
 

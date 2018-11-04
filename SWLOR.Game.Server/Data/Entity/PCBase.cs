@@ -13,8 +13,6 @@ namespace SWLOR.Game.Server.Data.Entity
         public PCBase()
         {
             CustomName = "";
-            PCBasePermissions = new HashSet<PCBasePermission>();
-            PCBaseStructures = new HashSet<PCBaseStructure>();
         }
 
         [Key]
@@ -33,8 +31,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public int? ApartmentBuildingID { get; set; }
         public string CustomName { get; set; }
         public int? BuildingStyleID { get; set; }
-    
-        public virtual ICollection<PCBasePermission> PCBasePermissions { get; set; }
-        public virtual ICollection<PCBaseStructure> PCBaseStructures { get; set; }
     }
 }

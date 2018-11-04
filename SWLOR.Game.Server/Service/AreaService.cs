@@ -156,11 +156,11 @@ namespace SWLOR.Game.Server.Service
 
                     Console.WriteLine("Baking area because its walkmesh has changed since last run: " + area.Name);
 
-                    foreach (var mesh in dbArea.AreaWalkmeshes)
+                    var walkmeshes = _data.Where<AreaWalkmesh>(x => x.AreaID == dbArea.AreaID);
+                    foreach (var mesh in walkmeshes)
                     {
                         _data.SubmitDataChange(mesh, DatabaseActionType.Delete);
                     }
-                    dbArea.AreaWalkmeshes.Clear();
                     
                     Console.WriteLine("Cleared old walkmesh. Adding new one now.");
                     
@@ -183,7 +183,6 @@ namespace SWLOR.Game.Server.Service
                                 LocationZ = z
                             };
 
-                            dbArea.AreaWalkmeshes.Add(mesh);
                             _data.SubmitDataChange(mesh, DatabaseActionType.Insert);
 
                             records++;

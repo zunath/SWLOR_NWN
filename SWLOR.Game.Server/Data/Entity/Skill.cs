@@ -13,7 +13,6 @@ namespace SWLOR.Game.Server.Data.Entity
         {
             Name = "";
             Description = "";
-            SkillXPRequirements = new HashSet<SkillXPRequirement>();
         }
 
         [ExplicitKey]
@@ -27,7 +26,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public int Secondary { get; set; }
         public int Tertiary { get; set; }
         public bool ContributesToSkillCap { get; set; }
-    
-        public virtual ICollection<SkillXPRequirement> SkillXPRequirements { get; set; }
     }
 }

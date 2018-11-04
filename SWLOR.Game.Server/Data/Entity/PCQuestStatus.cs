@@ -12,8 +12,6 @@ namespace SWLOR.Game.Server.Data.Entity
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PCQuestStatus()
         {
-            PCQuestItemProgresses = new HashSet<PCQuestItemProgress>();
-            PCQuestKillTargetProgresses = new HashSet<PCQuestKillTargetProgress>();
         }
 
         [Key]
@@ -23,8 +21,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public int CurrentQuestStateID { get; set; }
         public DateTime? CompletionDate { get; set; }
         public int? SelectedItemRewardID { get; set; }
-    
-        public virtual ICollection<PCQuestItemProgress> PCQuestItemProgresses { get; set; }
-        public virtual ICollection<PCQuestKillTargetProgress> PCQuestKillTargetProgresses { get; set; }
     }
 }

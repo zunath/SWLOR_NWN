@@ -20,14 +20,17 @@ namespace SWLOR.Game.Server.Conversation
         }
         
         private readonly IQuestService _quest;
+        private readonly IDataService _data;
 
         public QuestRewardSelection(
             INWScript script, 
             IDialogService dialog,
-            IQuestService quest) 
+            IQuestService quest,
+            IDataService data) 
             : base(script, dialog)
         {
             _quest = quest;
+            _data = data;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -46,11 +49,12 @@ namespace SWLOR.Game.Server.Conversation
             int questID = GetPC().GetLocalInt("QST_REWARD_SELECTION_QUEST_ID");
             GetPC().DeleteLocalInt("QST_REWARD_SELECTION_QUEST_ID");
             Quest quest = _quest.GetQuestByID(questID);
-            
+            var rewardItems = _data.Where<QuestRewardItem>(x => x.QuestID == quest.QuestID);
+
             Model model = GetDialogCustomData<Model>();
             model.QuestID = questID;
             
-            foreach (QuestRewardItem reward in quest.QuestRewardItems)
+            foreach (QuestRewardItem reward in rewardItems)
             {
                 ItemVO tempItem = _quest.GetTempItemInformation(reward.Resref, reward.Quantity);
                 string rewardName = tempItem.Name;

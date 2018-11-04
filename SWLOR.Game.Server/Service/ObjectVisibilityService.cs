@@ -54,11 +54,11 @@ namespace SWLOR.Game.Server.Service
         {
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
-
-            var dbPlayer = _data.Single<PlayerCharacter>(x => x.PlayerID == player.GlobalID);
+            
+            var visibilities = _data.Where<PCObjectVisibility>(x => x.PlayerID == player.GlobalID).ToList();
 
             // Apply visibilities for player
-            foreach (var visibility in dbPlayer.PCObjectVisibilities)
+            foreach (var visibility in visibilities)
             {
                 if (!_appCache.VisibilityObjects.ContainsKey(visibility.VisibilityObjectID)) continue;
 
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var visibilityObject in _appCache.VisibilityObjects)
             {
                 string visibilityObjectID = visibilityObject.Value.GetLocalString("VISIBILITY_OBJECT_ID");
-                var matchingVisibility = dbPlayer.PCObjectVisibilities.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.VisibilityObjectID == visibilityObjectID);
+                var matchingVisibility = visibilities.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.VisibilityObjectID == visibilityObjectID);
                 if (visibilityObject.Value.GetLocalInt("VISIBILITY_HIDDEN_DEFAULT") == TRUE && matchingVisibility == null)
                 {
                     _nwnxPlayer.SetVisibilityOverride(player, visibilityObject.Value, (int)PlayerVisibilityType.Hidden);

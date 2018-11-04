@@ -222,7 +222,7 @@ namespace SWLOR.Game.Server.Service
                 var skill = _data.Get<Skill>(pcSkill.SkillID);
                 int maxRank = skill.MaxRank;
                 int skillID = skill.SkillID;
-                var xpRecord = skill.SkillXPRequirements.Single(x => x.SkillID == skillID && x.Rank == maxRank);
+                var xpRecord = _data.Single<SkillXPRequirement>(x => x.SkillID == skillID && x.Rank == maxRank);
 
                 pcSkill.Rank = maxRank;
                 pcSkill.XP = xpRecord.XP - 1;

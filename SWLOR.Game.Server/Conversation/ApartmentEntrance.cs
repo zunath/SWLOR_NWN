@@ -105,6 +105,7 @@ namespace SWLOR.Game.Server.Conversation
             NWPlayer oPC = GetPC();
 
             var apartment = _data.Get<PCBase>(pcBaseID);
+            var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == apartment.PCBaseID);
             var buildingStyle = _data.Get<BuildingStyle>(apartment.BuildingStyleID);
             NWArea instance = GetAreaInstance(pcBaseID);
 
@@ -120,7 +121,7 @@ namespace SWLOR.Game.Server.Conversation
                 instance.SetLocalInt("PC_BASE_ID", pcBaseID);
                 instance.SetLocalInt("BUILDING_TYPE", (int)BuildingType.Apartment);
 
-                foreach (var furniture in apartment.PCBaseStructures)
+                foreach (var furniture in structures)
                 {
                     _base.SpawnStructure(instance, furniture.PCBaseStructureID);
                 }

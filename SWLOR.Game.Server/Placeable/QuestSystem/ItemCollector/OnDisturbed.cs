@@ -1,11 +1,8 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.Contracts;
@@ -51,7 +48,7 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
             {
                 int questID = container.GetLocalInt("QUEST_ID");
                 PCQuestStatus status = _data.Single<PCQuestStatus>(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
-                PCQuestItemProgress progress = status.PCQuestItemProgresses.SingleOrDefault(x => x.Resref == item.Resref);
+                PCQuestItemProgress progress = _data.SingleOrDefault<PCQuestItemProgress>(x => x.PCQuestStatusID == status.PCQuestStatusID && x.Resref == item.Resref);
                 DatabaseActionType action = DatabaseActionType.Update;
 
                 if (progress == null)
@@ -86,8 +83,8 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
                 }
                 item.Destroy();
 
-
-                if (status.PCQuestItemProgresses.Count <= 0)
+                var questItemProgresses = _data.Where<PCQuestItemProgress>(x => x.PCQuestStatusID == status.PCQuestStatusID);
+                if ( !questItemProgresses.Any())
                 {
                     string conversation = _.GetLocalString(owner, "CONVERSATION");
                     if (!string.IsNullOrWhiteSpace(conversation))

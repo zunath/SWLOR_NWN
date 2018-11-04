@@ -13,9 +13,6 @@ namespace SWLOR.Game.Server.Data.Entity
         public PCBaseStructure()
         {
             CustomName = "";
-            PCBaseStructureItems = new HashSet<PCBaseStructureItem>();
-            PCBaseStructurePermissions = new HashSet<PCBaseStructurePermission>();
-            ChildStructures = new HashSet<PCBaseStructure>();
         }
 
         [Key]
@@ -33,9 +30,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public string CustomName { get; set; }
         public int StructureBonus { get; set; }
         public DateTime? DateNextActivity { get; set; }
-    
-        public virtual ICollection<PCBaseStructureItem> PCBaseStructureItems { get; set; }
-        public virtual ICollection<PCBaseStructurePermission> PCBaseStructurePermissions { get; set; }
-        public virtual ICollection<PCBaseStructure> ChildStructures { get; set; }
     }
 }

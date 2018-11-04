@@ -110,9 +110,11 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
                     continue;
                 }
 
-                var dbStructure = pcBase.PCBaseStructures.Single(x => x.PCBaseStructureID == structure.PCBaseStructureID);
+                var dbStructure = _data.Get<PCBaseStructure>(structure.PCBaseStructureID);
                 var baseStructure = _data.Get<BaseStructure>(dbStructure.BaseStructureID);
-
+                var items = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structure.PCBaseStructureID).ToList();
+                var children = _data.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == dbStructure.BaseStructureID).ToList();
+                
                 // Explosion effect
                 Location location = structure.Structure.Location;
                 _.ApplyEffectAtLocation(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_FNF_FIREBALL), location);
@@ -125,40 +127,38 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
                 container.Name = baseStructure.Name + " Rubble";
 
                 // Drop item storage into container
-                for (int i = dbStructure.PCBaseStructureItems.Count - 1; i >= 0; i--)
+                for (int i = items.Count - 1; i >= 0; i--)
                 {
-                    var dbItem = dbStructure.PCBaseStructureItems.ElementAt(i);
+                    var dbItem = items.ElementAt(i);
                     _serialization.DeserializeItem(dbItem.ItemObject, container);
                     _data.SubmitDataChange(dbItem, DatabaseActionType.Delete);
                 }
 
                 // Convert child placeables to items and drop into container
-                var children = dbStructure.ChildStructures;
-                if (children != null)
+                for (int f = children.Count - 1; f >= 0; f--)
                 {
-                    
-                    for (int f = dbStructure.ChildStructures.Count - 1; f >= 0; f--)
+                    var child = children.ElementAt(f);
+                    var childItems = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == child.PCBaseStructureID).ToList();
+
+                    // Move child items to container
+                    for (int i = childItems.Count - 1; i >= 0; i++)
                     {
-                        var child = children.ElementAt(f);
-
-                        // Move child items to container
-                        for (int i = child.PCBaseStructureItems.Count - 1; i >= 0; i++)
-                        {
-                            var dbItem = child.PCBaseStructureItems.ElementAt(i);
-                            _serialization.DeserializeItem(dbItem.ItemObject, container);
-                            _data.SubmitDataChange(dbItem, DatabaseActionType.Delete);
-                        }
-
-                        // Convert child structure to item
-                        _base.ConvertStructureToItem(child, container);
-                        _data.SubmitDataChange(child, DatabaseActionType.Delete);
+                        var dbItem = childItems.ElementAt(i);
+                        _serialization.DeserializeItem(dbItem.ItemObject, container);
+                        _data.SubmitDataChange(dbItem, DatabaseActionType.Delete);
                     }
+
+                    // Convert child structure to item
+                    _base.ConvertStructureToItem(child, container);
+                    _data.SubmitDataChange(child, DatabaseActionType.Delete);
                 }
+            
 
                 // Clear structure permissions
-                for (int p = dbStructure.PCBaseStructurePermissions.Count - 1; p >= 0; p--)
+                var structurePermissions = _data.Where<PCBaseStructurePermission>(x => x.PCBaseStructureID == dbStructure.PCBaseStructureID).ToList();
+                for (int p = structurePermissions.Count - 1; p >= 0; p--)
                 {
-                    var permission = dbStructure.PCBaseStructurePermissions.ElementAt(p);
+                    var permission = structurePermissions.ElementAt(p);
                     _data.SubmitDataChange(permission, DatabaseActionType.Delete);
                 }
 
@@ -172,11 +172,12 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             {
                 ((List<AreaStructure>)area.Data["BASE_SERVICE_STRUCTURES"]).Remove(record);
             }
-            
+            var basePermissions = _data.Where<PCBasePermission>(x => x.PCBaseID == pcBase.PCBaseID).ToList();
+
             // Clear base permissions
-            for (int p = pcBase.PCBasePermissions.Count - 1; p >= 0; p--)
+            for (int p = basePermissions.Count - 1; p >= 0; p--)
             {
-                var permission = pcBase.PCBasePermissions.ElementAt(p);
+                var permission = basePermissions.ElementAt(p);
                 _data.SubmitDataChange(permission, DatabaseActionType.Delete);
             }
             

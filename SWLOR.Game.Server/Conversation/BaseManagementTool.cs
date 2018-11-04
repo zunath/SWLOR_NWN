@@ -142,14 +142,16 @@ namespace SWLOR.Game.Server.Conversation
                 var structure = _data.Single<PCBaseStructure>(x => x.PCBaseStructureID == pcBaseStructureID);
                 var baseStructure = _data.Get<BaseStructure>(structure.BaseStructureID);
                 int itemLimit = baseStructure.Storage + structure.StructureBonus;
-                header += _color.Green("Item Limit: ") + structure.ChildStructures.Count + " / " + itemLimit + "\n";
+                var childStructures = _data.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == structure.PCBaseStructureID);
+                header += _color.Green("Item Limit: ") + childStructures.Count() + " / " + itemLimit + "\n";
             }
             else if (buildingType == Enumeration.BuildingType.Apartment)
             {
                 var pcBase = _data.Get<PCBase>(pcBaseID);
                 var buildingStyle = _data.Get<BuildingStyle>(pcBase.BuildingStyleID);
                 int itemLimit = buildingStyle.FurnitureLimit;
-                header += _color.Green("Item Limit: ") + pcBase.PCBaseStructures.Count + " / " + itemLimit + "\n";
+                var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == pcBase.PCBaseID);
+                header += _color.Green("Item Limit: ") + structures.Count() + " / " + itemLimit + "\n";
             }
             else if(buildingType == Enumeration.BuildingType.Exterior)
             {
@@ -538,9 +540,10 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if (structureType == BaseStructureType.Building)
             {
-                for (int x = structure.ChildStructures.Count - 1; x >= 0; x--)
+                var childStructures = _data.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == structure.PCBaseStructureID).ToList();
+                for (int x = childStructures.Count - 1; x >= 0; x--)
                 {
-                    var furniture = structure.ChildStructures.ElementAt(x);
+                    var furniture = childStructures.ElementAt(x);
                     NWItem furnitureItem = _base.ConvertStructureToItem(furniture, tempStorage);
                     _impound.Impound(GetPC().GlobalID, furnitureItem);
                     furnitureItem.Destroy();

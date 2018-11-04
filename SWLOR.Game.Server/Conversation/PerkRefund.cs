@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Conversation
             var model = GetDialogCustomData<Model>();
             var pcPerk = _data.Single<PCPerk>(x => x.PCPerkID == model.PCPerkID);
             var perk = _data.Get<Data.Entity.Perk>(pcPerk.PerkID);
-            int refundAmount = perk.PerkLevels.Where(x => x.Level <= pcPerk.PerkLevel).Sum(x => x.Price);
+            int refundAmount = _data.Where<PerkLevel>(x => x.PerkID == perk.PerkID && x.Level <= pcPerk.PerkLevel).Sum(x => x.Price);
 
             string header = _color.Green("Perk: ") + perk.Name + "\n";
             header += _color.Green("Level: ") + pcPerk.PerkLevel + "\n\n";
@@ -201,7 +201,7 @@ namespace SWLOR.Game.Server.Conversation
             var player = GetPC();
             var pcPerk = _data.Single<PCPerk>(x => x.PCPerkID == model.PCPerkID);
             var perk = _data.Get<Data.Entity.Perk>(pcPerk.PerkID);
-            var refundAmount = perk.PerkLevels.Where(x => x.Level <= pcPerk.PerkLevel).Sum(x => x.Price);
+            var refundAmount = _data.Where<PerkLevel>(x => x.PerkID == perk.PerkID && x.Level <= pcPerk.PerkLevel).Sum(x => x.Price);
             var dbPlayer = _data.Single<PlayerCharacter>(x => x.PlayerID == player.GlobalID);
             var scriptName = perk.ScriptName;
 

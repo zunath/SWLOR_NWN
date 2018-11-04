@@ -72,8 +72,8 @@ namespace SWLOR.Game.Server.Service
 
             Quest quest = _data.Single<Quest>(x => x.QuestID == questID);
             PCQuestStatus pcState = _data.Single<PCQuestStatus>(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
-
-            QuestState finalState = quest.QuestStates.OrderBy(o => o.Sequence).Last();
+            
+            QuestState finalState = _data.GetAll<QuestState>().Where(x => x.QuestID == questID).OrderBy(o => o.Sequence).Last();
 
             if (finalState == null)
             {
@@ -86,7 +86,8 @@ namespace SWLOR.Game.Server.Service
 
             if (selectedItem == null)
             {
-                foreach (QuestRewardItem reward in quest.QuestRewardItems)
+                var rewardItems = _data.Where<QuestRewardItem>(x => x.QuestID == questID);
+                foreach (QuestRewardItem reward in rewardItems)
                 {
                     _.CreateItemOnObject(reward.Resref, player.Object, reward.Quantity);
                 }
@@ -209,14 +210,15 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            if (!DoesPlayerMeetPrerequisites(oPC, quest.QuestPrerequisites))
+            if (!DoesPlayerMeetPrerequisites(oPC, quest.QuestID))
             {
                 if (sendMessage)
                     oPC.SendMessage("You do not meet the prerequisites necessary to accept this quest.");
                 return false;
             }
 
-            if (!DoesPlayerHaveRequiredKeyItems(oPC, quest.QuestStates.ElementAt(0).QuestRequiredKeyItemLists))
+            var questState = _data.Where<QuestState>(x => x.QuestID == quest.QuestID).First();
+            if (!DoesPlayerHaveRequiredKeyItems(oPC, questState.QuestStateID))
             {
                 if (sendMessage)
                     oPC.SendMessage("You do not have the required key items to accept this quest.");
@@ -250,9 +252,10 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            var questState = _data.Single<QuestState>(x => x.QuestID == questID && x.Sequence == 1);
             var status = new PCQuestStatus
             {
-                CurrentQuestStateID = quest.QuestStates.Single(x => x.QuestID == questID && x.Sequence == 1).QuestStateID
+                CurrentQuestStateID = questState.QuestStateID
             };
 
             // Give temporary key item at start of quest.
@@ -303,7 +306,7 @@ namespace SWLOR.Game.Server.Service
 
             Quest quest = _data.Get<Quest>(questStatus.QuestID);
             QuestState currentState = _data.Get<QuestState>(questStatus.CurrentQuestStateID);
-            QuestState nextState = quest.QuestStates.SingleOrDefault(x => x.Sequence == currentState.Sequence + 1);
+            QuestState nextState = _data.SingleOrDefault<QuestState>(x => x.QuestID == quest.QuestID && x.Sequence == currentState.Sequence + 1);
             
             // Either complete the quest or move to the new state.
             if (nextState == null) // We assume this is the last state in the quest, so it must be time to complete it.
@@ -336,10 +339,12 @@ namespace SWLOR.Game.Server.Service
         private void CreateExtendedQuestDataEntries(PCQuestStatus status)
         {
             var quest = _data.Get<Quest>(status.QuestID);
-            var state = quest.QuestStates.Single(x => x.QuestStateID == status.CurrentQuestStateID);
+            var state = _data.Single<QuestState>(x => x.QuestID == quest.QuestID && x.QuestStateID == status.CurrentQuestStateID);
+            var killTargets = _data.Where<QuestKillTargetList>(x => x.QuestStateID == state.QuestStateID);
+            var requiredItems = _data.Where<QuestRequiredItemList>(x => x.QuestStateID == state.QuestStateID);
 
             // Create entries for the PC kill targets.
-            foreach (var kt in state.QuestKillTargetLists)
+            foreach (var kt in killTargets)
             {
                 PCQuestKillTargetProgress pcKT = new PCQuestKillTargetProgress
                 {
@@ -348,12 +353,11 @@ namespace SWLOR.Game.Server.Service
                     PCQuestStatusID = status.PCQuestStatusID,
                     PlayerID = status.PlayerID
                 };
-                status.PCQuestKillTargetProgresses.Add(pcKT);
                 _data.SubmitDataChange(pcKT, DatabaseActionType.Insert);
             }
 
             // Create entries for PC items required.
-            foreach (var item in state.QuestRequiredItemLists)
+            foreach (var item in requiredItems)
             {
                 PCQuestItemProgress itemProgress = new PCQuestItemProgress
                 {
@@ -363,7 +367,6 @@ namespace SWLOR.Game.Server.Service
                     Remaining = item.Quantity,
                     MustBeCraftedByPlayer = item.MustBeCraftedByPlayer
                 };
-                status.PCQuestItemProgresses.Add(itemProgress);
                 _data.SubmitDataChange(itemProgress, DatabaseActionType.Insert);
             }
 
@@ -388,8 +391,10 @@ namespace SWLOR.Game.Server.Service
 
         }
 
-        private bool DoesPlayerMeetPrerequisites(NWPlayer oPC, ICollection<QuestPrerequisite> prereqs)
+        private bool DoesPlayerMeetPrerequisites(NWPlayer oPC, int questID)
         {
+            var prereqs = _data.Where<QuestPrerequisite>(x => x.QuestID == questID).ToList();
+
             if (!oPC.IsPlayer) return false;
             if (prereqs.Count <= 0) return true;
 
@@ -405,8 +410,9 @@ namespace SWLOR.Game.Server.Service
             return completedQuestIDs.ContainsAll(prereqIDs);
         }
 
-        private bool DoesPlayerHaveRequiredKeyItems(NWPlayer oPC, ICollection<QuestRequiredKeyItemList> requiredKeyItems)
+        private bool DoesPlayerHaveRequiredKeyItems(NWPlayer oPC, int questStateID)
         {
+            var requiredKeyItems = _data.Where<QuestRequiredKeyItemList>(x => x.QuestStateID == questStateID).ToList();
             if (!oPC.IsPlayer) return false;
             if (requiredKeyItems.Count <= 0) return true;
 
@@ -599,8 +605,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             QuestState questState = _data.Get<QuestState>(pcStatus.CurrentQuestStateID);
+            var requiredKeyItems = _data.Where<QuestRequiredKeyItemList>(x => x.QuestStateID == pcStatus.CurrentQuestStateID);
 
-            foreach (QuestRequiredKeyItemList ki in questState.QuestRequiredKeyItemLists)
+            foreach (QuestRequiredKeyItemList ki in requiredKeyItems)
             {
                 if (!_keyItem.PlayerHasKeyItem(oPC, ki.KeyItemID))
                 {

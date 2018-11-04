@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Service
             PlayerCharacter player = _data.Get<PlayerCharacter>(oPC.GlobalID);
             Skill skill = GetSkill(skillID);
             PCSkill pcSkill = GetPCSkill(oPC, skillID);
-            SkillXPRequirement req = skill.SkillXPRequirements.Single(x => x.SkillID == skillID && x.Rank == pcSkill.Rank);
+            SkillXPRequirement req = _data.Single<SkillXPRequirement>(x => x.SkillID == skillID && x.Rank == pcSkill.Rank);
             int maxRank = skill.MaxRank;
             int originalRank = pcSkill.Rank;
             xp = CalculateTotalSkillPointsPenalty(player.TotalSPAcquired, xp);
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Service
 
                 pcSkill.Rank++;
                 oPC.FloatingText("Your " + skill.Name + " skill level increased to rank " + pcSkill.Rank + "!");
-                req = skill.SkillXPRequirements.Single(x => x.SkillID == skillID && x.Rank == pcSkill.Rank);
+                req = _data.Single<SkillXPRequirement>(x => x.SkillID == skillID && x.Rank == pcSkill.Rank);
 
                 // Reapply skill penalties on a skill level up.
                 for (int slot = 0; slot < NUM_INVENTORY_SLOTS; slot++)
@@ -571,7 +571,7 @@ namespace SWLOR.Game.Server.Service
                 else
                 {
                     Skill skill = GetSkill(decaySkill.SkillID);
-                    List<SkillXPRequirement> reqs = skill.SkillXPRequirements.Where(x => x.SkillID == decaySkill.SkillID && x.Rank <= decaySkill.Rank).ToList();
+                    List<SkillXPRequirement> reqs = _data.Where<SkillXPRequirement>(x => x.SkillID == decaySkill.SkillID && x.Rank <= decaySkill.Rank).ToList();
                     int newDecaySkillRank = 0;
                     foreach (SkillXPRequirement req in reqs)
                     {

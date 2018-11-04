@@ -9,12 +9,6 @@ namespace SWLOR.Game.Server.Data.Entity
     [Table("Areas")]
     public class Area: IEntity
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Area()
-        {
-            AreaWalkmeshes = new HashSet<AreaWalkmesh>();
-        }
-
         [Key]
         public string AreaID { get; set; }
         public string Resref { get; set; }
@@ -40,7 +34,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public int? SouthwestLootTableID { get; set; }
         public int? SoutheastLootTableID { get; set; }
         public int MaxResourceQuality { get; set; }
-        
-        public virtual ICollection<AreaWalkmesh> AreaWalkmeshes { get; set; }
     }
 }

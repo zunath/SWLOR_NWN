@@ -11,9 +11,6 @@ namespace SWLOR.Game.Server.Data.Validator
                 .NotNull()
                 .NotEmpty()
                 .MaximumLength(64);
-
-            RuleForEach(x => x.LootTableItems)
-                .SetValidator(new LootTableItemValidator());
         }
     }
 }

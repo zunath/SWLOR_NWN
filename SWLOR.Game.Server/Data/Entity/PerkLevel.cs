@@ -12,8 +12,6 @@ namespace SWLOR.Game.Server.Data.Entity
         public PerkLevel()
         {
             Description = "";
-            PerkLevelQuestRequirements = new HashSet<PerkLevelQuestRequirement>();
-            PerkLevelSkillRequirements = new HashSet<PerkLevelSkillRequirement>();
         }
 
         [Key]
@@ -22,8 +20,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public int Level { get; set; }
         public int Price { get; set; }
         public string Description { get; set; }
-    
-        public virtual ICollection<PerkLevelQuestRequirement> PerkLevelQuestRequirements { get; set; }
-        public virtual ICollection<PerkLevelSkillRequirement> PerkLevelSkillRequirements { get; set; }
     }
 }

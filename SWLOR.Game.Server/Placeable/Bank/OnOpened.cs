@@ -55,8 +55,9 @@ namespace SWLOR.Game.Server.Placeable.Bank
                 };
                 _data.SubmitDataChange(entity, DatabaseActionType.Insert);
             }
-
-            foreach (BankItem item in entity.BankItems.Where(x => x.PlayerID == player.GlobalID))
+            
+            var bankItems = _data.Where<BankItem>(x => x.PlayerID == player.GlobalID && x.BankID == entity.BankID);
+            foreach (BankItem item in bankItems.Where(x => x.PlayerID == player.GlobalID))
             {
                 _serialization.DeserializeItem(item.ItemObject, terminal);
             }

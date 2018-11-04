@@ -29,19 +29,20 @@ namespace SWLOR.Game.Server.Service
         public ItemVO PickRandomItemFromLootTable(int lootTableID)
         {
             if (lootTableID <= 0) return null;
+            
+            var lootTableItems = _data.Where<LootTableItem>(x => x.LootTableID == lootTableID).ToList();
 
-            LootTable entity = _data.Single<LootTable>(x => x.LootTableID == lootTableID);
-            if (entity.LootTableItems.Count <= 0) return null;
+            if (lootTableItems.Count <= 0) return null;
 
-            int[] weights = new int[entity.LootTableItems.Count];
+            int[] weights = new int[lootTableItems.Count];
 
-            for (int x = 0; x < entity.LootTableItems.Count; x++)
+            for (int x = 0; x < lootTableItems.Count; x++)
             {
-                weights[x] = entity.LootTableItems.ElementAt(x).Weight;
+                weights[x] = lootTableItems.ElementAt(x).Weight;
             }
             int randomIndex = _random.GetRandomWeightedIndex(weights);
 
-            LootTableItem itemEntity = entity.LootTableItems.ElementAt(randomIndex);
+            LootTableItem itemEntity = lootTableItems.ElementAt(randomIndex);
             int quantity = _random.Random(itemEntity.MaxQuantity) + 1;
 
             ItemVO result = new ItemVO

@@ -19,9 +19,6 @@ namespace SWLOR.Game.Server.Data.Entity
             OnAdvanceArgs = "";
             OnCompleteArgs = "";
             OnKillTargetArgs = "";
-            QuestPrerequisites = new HashSet<QuestPrerequisite>();
-            QuestRewardItems = new HashSet<QuestRewardItem>();
-            QuestStates = new HashSet<QuestState>();
         }
 
         [ExplicitKey]
@@ -46,9 +43,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public string OnAdvanceArgs { get; set; }
         public string OnCompleteArgs { get; set; }
         public string OnKillTargetArgs { get; set; }
-    
-        public virtual ICollection<QuestPrerequisite> QuestPrerequisites { get; set; }
-        public virtual ICollection<QuestRewardItem> QuestRewardItems { get; set; }
-        public virtual ICollection<QuestState> QuestStates { get; set; }
     }
 }

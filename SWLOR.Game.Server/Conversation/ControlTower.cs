@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Conversation
             }
             
             int structureID = tower.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            var structure = _data.Single<PCBaseStructure>(x => x.PCBaseStructureID == structureID);
+            var structureItems = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structureID);
             Location location = oPC.Location;
             bay = _.CreateObject(OBJECT_TYPE_PLACEABLE, "resource_bay", location);
 
@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.Conversation
             bay.SetLocalObject("CONTROL_TOWER_PARENT", tower.Object);
             bay.SetLocalInt("PC_BASE_STRUCTURE_ID", structureID);
 
-            foreach (var item in structure.PCBaseStructureItems)
+            foreach (var item in structureItems)
             {
                 _serialization.DeserializeItem(item.ItemObject, bay);
             }

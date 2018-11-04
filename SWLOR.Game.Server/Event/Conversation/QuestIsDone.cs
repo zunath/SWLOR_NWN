@@ -42,7 +42,8 @@ namespace SWLOR.Game.Server.Event.Conversation
             
             var currentQuestState = _data.Get<QuestState>(status.CurrentQuestStateID);
             var quest = _data.Get<Quest>(currentQuestState.QuestID);
-            return currentQuestState.QuestStateID == quest.QuestStates.OrderBy(o => o.Sequence).Last().QuestStateID &&
+            var states = _data.Where<QuestState>(x => x.QuestID == quest.QuestID);
+            return currentQuestState.QuestStateID == states.OrderBy(o => o.Sequence).Last().QuestStateID &&
                    status.CompletionDate != null;
         }
     }

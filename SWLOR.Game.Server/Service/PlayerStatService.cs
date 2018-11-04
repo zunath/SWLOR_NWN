@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Service
             if (!player.IsInitializedAsPlayer) return;
 
             PlayerCharacter pcEntity = _data.Get<PlayerCharacter>(player.GlobalID);
-            List<PCSkill> skills = pcEntity.PCSkills.Where(x => x.Rank > 0).ToList();
+            List<PCSkill> skills = _data.Where<PCSkill>(x => x.PlayerID == player.GlobalID && x.Rank > 0).ToList();
             var itemBonuses = GetPlayerItemEffectiveStats(player, ignoreItem);
 
             float strBonus = 0.0f;
@@ -388,6 +388,9 @@ namespace SWLOR.Game.Server.Service
 
         public float EffectiveResidencyBonus(NWPlayer player)
         {
+            // Two paths for this. Players can either have a primary residence in an apartment which is considered a "PCBase".
+            // Or they can have a primary residence in a building which is a child structure contained in an actual PCBase.
+            // We grab the furniture objects differently based on the type.
             var dbPlayer = _data.Get<PlayerCharacter>(player.GlobalID);
             var primaryResidencePCBase = _data.Get<PCBase>(dbPlayer.PrimaryResidencePCBaseID);
             var primaryResidenceStructure = _data.Get<PCBaseStructure>(dbPlayer.PrimaryResidencePCBaseStructureID);
@@ -395,13 +398,18 @@ namespace SWLOR.Game.Server.Service
             if (dbPlayer.PrimaryResidencePCBaseStructureID == null &&
                 dbPlayer.PrimaryResidencePCBaseID == null) return 0.0f;
 
+            // Apartments - Pull structures directly from the table based on the PCBaseID
+            var pcApartmentBaseStructures = _data.Where<PCBaseStructure>(x => x.PCBaseID == primaryResidencePCBase.PCBaseID);
+            // Buildings - Get the building's PCBaseID and then grab its children
+            var pcBaseStructures = _data.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == primaryResidencePCBase.PCBaseID);
+
             var atmoStructures = dbPlayer.PrimaryResidencePCBaseID != null ? 
-                primaryResidencePCBase.PCBaseStructures.Where(x =>
+                pcApartmentBaseStructures.Where(x =>
                 {
                     var baseStructure = _data.Get<BaseStructure>(x.BaseStructureID);
                     return baseStructure.HasAtmosphere;
                 }).ToList() : 
-                primaryResidenceStructure.ChildStructures.Where(x =>
+                pcBaseStructures.Where(x =>
                 {
                     var baseStructure = _data.Get<BaseStructure>(x.BaseStructureID);
                     return baseStructure.HasAtmosphere;

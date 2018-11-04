@@ -122,7 +122,8 @@ namespace SWLOR.Game.Server.Conversation
                 instance.SetLocalInt("PC_BASE_STRUCTURE_ID", structureID);
                 instance.SetLocalInt("BUILDING_TYPE", (int)BuildingType.Interior);
 
-                foreach (var child in structure.ChildStructures)
+                var childStructures = _data.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == structure.PCBaseStructureID);
+                foreach (var child in childStructures)
                 {
                     _base.SpawnStructure(instance, child.PCBaseStructureID);
                 }

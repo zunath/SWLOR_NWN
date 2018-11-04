@@ -110,7 +110,8 @@ namespace SWLOR.Game.Server.Service
                 var pcBases = _data.Where<PCBase>(x => x.AreaResref == area.Resref && x.ApartmentBuildingID == null).ToList();
                 foreach (var @base in pcBases)
                 {
-                    foreach (var structure in @base.PCBaseStructures)
+                    var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == @base.PCBaseID);
+                    foreach (var structure in structures)
                     {
                         if (structure.ParentPCBaseStructureID != null) continue; // Don't spawn any structures contained by buildings.
                         SpawnStructure(area, structure.PCBaseStructureID);
@@ -344,9 +345,9 @@ namespace SWLOR.Game.Server.Service
 
         public PCBaseStructure GetBaseControlTower(int pcBaseID)
         {
-            var pcBase = _data.Single<PCBase>(x => x.PCBaseID == pcBaseID);
-            
-            return pcBase.PCBaseStructures.SingleOrDefault(x =>
+            var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == pcBaseID);
+
+            return structures.SingleOrDefault(x =>
             {
                 var baseStructure = _data.Get<BaseStructure>(x.BaseStructureID);
                 return baseStructure.BaseStructureTypeID == (int) BaseStructureType.ControlTower;
@@ -505,7 +506,8 @@ namespace SWLOR.Game.Server.Service
 
             if (buildingType == BuildingType.Exterior)
             {
-                bool hasControlTower = pcBase.PCBaseStructures
+                var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == pcBaseID);
+                bool hasControlTower = structures
                                            .SingleOrDefault(x =>
                                            {
                                                var baseStructure = _data.Get<BaseStructure>(x.BaseStructureID);
@@ -568,6 +570,7 @@ namespace SWLOR.Game.Server.Service
         public void ClearPCBaseByID(int pcBaseID)
         {
             var pcBase = _data.Get<PCBase>(pcBaseID);
+            var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == pcBaseID).ToList();
             var areas = NWModule.Get().Areas;
             var baseArea = areas.Single(x => x.Resref == pcBase.AreaResref);
             List<AreaStructure> areaStructures = baseArea.Data["BASE_SERVICE_STRUCTURES"];
@@ -595,21 +598,24 @@ namespace SWLOR.Game.Server.Service
                 structure.Structure.Destroy();
             }
 
-            for (int x = pcBase.PCBaseStructures.Count-1; x >= 0; x--)
+            for (int x = structures.Count-1; x >= 0; x--)
             {
                 // Impound item storage
-                var pcBaseStructure = pcBase.PCBaseStructures.ElementAt(x);
-                for (int i = pcBaseStructure.PCBaseStructureItems.Count - 1; i >= 0; i--)
+                var pcBaseStructure = structures.ElementAt(x);
+                var items = _data.Where<PCBaseStructureItem>(i => i.PCBaseStructureID == pcBaseStructure.PCBaseStructureID).ToList();
+
+                for (int i = items.Count - 1; i >= 0; i--)
                 {
-                    var item = pcBaseStructure.PCBaseStructureItems.ElementAt(i);
+                    var item = items.ElementAt(i);
                     _impound.Impound(item);
                     _data.SubmitDataChange(item, DatabaseActionType.Delete);
                 }
 
                 // Clear structure permissions
-                for (int p = pcBaseStructure.PCBaseStructurePermissions.Count - 1; p >= 0; p--)
+                var structurePermissions = _data.Where<PCBaseStructurePermission>(p => p.PCBaseStructureID == pcBaseStructure.PCBaseStructureID).ToList();
+                for (int p = structurePermissions.Count - 1; p >= 0; p--)
                 {
-                    var permission = pcBaseStructure.PCBaseStructurePermissions.ElementAt(p);
+                    var permission = structurePermissions.ElementAt(p);
                     _data.SubmitDataChange(permission, DatabaseActionType.Delete);
                 }
 
@@ -621,9 +627,10 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Clear base permissions
-            for (int p = pcBase.PCBasePermissions.Count - 1; p >= 0; p--)
+            var permissions = _data.Where<PCBasePermission>(x => x.PCBaseID == pcBaseID).ToList();
+            for (int p = permissions.Count - 1; p >= 0; p--)
             {
-                var permission = pcBase.PCBasePermissions.ElementAt(p);
+                var permission = permissions.ElementAt(p);
                 _data.SubmitDataChange(permission, DatabaseActionType.Delete);
             }
 

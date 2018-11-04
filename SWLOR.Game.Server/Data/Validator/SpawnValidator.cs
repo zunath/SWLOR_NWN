@@ -20,9 +20,6 @@ namespace SWLOR.Game.Server.Data.Validator
                 .NotEmpty()
                 .Must(x => validObjectTypes.Contains(x))
                 .WithMessage("Spawn object type is invalid.");
-
-            RuleForEach(x => x.SpawnObjects)
-                .SetValidator(new SpawnObjectValidator());
         }
     }
 }

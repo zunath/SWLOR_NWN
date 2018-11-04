@@ -78,7 +78,8 @@ namespace SWLOR.Game.Server.Service
                     if (string.IsNullOrWhiteSpace(spawnResref) && spawnTableID > 0)
                     {
                         // Pick a random record.
-                        var dbSpawn = _data.Get<Spawn>(spawnTableID).SpawnObjects
+                        var spawnObjects = _data.Where<SpawnObject>(x => x.SpawnID == spawnTableID);
+                        var dbSpawn = spawnObjects
                             .OrderBy(o => Guid.NewGuid()).First(); // TODO: Potential issue with getting random records this way now that calls aren't in SQL
                         if (dbSpawn != null)
                         {
@@ -170,7 +171,7 @@ namespace SWLOR.Game.Server.Service
         {
             Area dbArea = _data.GetAll<Area>().Single(x => x.Resref == area.Resref);
 
-            var spawnPoint = dbArea.AreaWalkmeshes
+            var spawnPoint = _data.Where<AreaWalkmesh>(x => x.AreaID == dbArea.AreaID)
                 .OrderBy(o => Guid.NewGuid()).First(); // TODO: Potential issue with getting random records this way now that calls aren't in SQL
 
             return _.Location(area.Object,
@@ -185,8 +186,7 @@ namespace SWLOR.Game.Server.Service
 
             if (dbArea.ResourceSpawnTableID <= 0 ||
                 !dbArea.AutoSpawnResources) return;
-            Spawn table = _data.Single<Spawn>(x => x.SpawnID == dbArea.ResourceSpawnTableID);
-            var possibleSpawns = table.SpawnObjects;
+            var possibleSpawns = _data.Where<SpawnObject>(x => x.SpawnID == dbArea.ResourceSpawnTableID).ToList();
 
             // 1024 size = 32x32
             // 256  size = 16x16
@@ -219,8 +219,8 @@ namespace SWLOR.Game.Server.Service
                 maxSpawns = 50;
             }
 
-            int[] weights = new int[possibleSpawns.Count];
-            for (int x = 0; x < possibleSpawns.Count; x++)
+            int[] weights = new int[possibleSpawns.Count()];
+            for (int x = 0; x < possibleSpawns.Count(); x++)
             {
                 weights[x] = possibleSpawns.ElementAt(x).Weight;
             }

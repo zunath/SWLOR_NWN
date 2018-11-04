@@ -23,18 +23,21 @@ namespace SWLOR.Game.Server.Conversation
         private readonly ISkillService _skill;
         private readonly IColorTokenService _color;
         private readonly IMenuService _menu;
+        private readonly IDataService _data;
 
         public ViewSkills(
             INWScript script, 
             IDialogService dialog,
             ISkillService skill,
             IColorTokenService color,
-            IMenuService menu) 
+            IMenuService menu,
+            IDataService data) 
             : base(script, dialog)
         {
             _skill = skill;
             _color = color;
             _menu = menu;
+            _data = data;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -93,7 +96,7 @@ namespace SWLOR.Game.Server.Conversation
             Model vm = GetDialogCustomData<Model>();
             Skill skill = _skill.GetSkill(vm.SelectedSkillID);
             PCSkill pcSkill = _skill.GetPCSkill(GetPC(), vm.SelectedSkillID);
-            SkillXPRequirement req = skill.SkillXPRequirements.Single(x => x.Rank == pcSkill.Rank && x.SkillID == skill.SkillID); 
+            SkillXPRequirement req = _data.Single<SkillXPRequirement>(x => x.Rank == pcSkill.Rank && x.SkillID == skill.SkillID); 
             string header = CreateSkillDetailsHeader(pcSkill, req);
             SetPageHeader("SkillDetailsPage", header);
 

@@ -13,20 +13,6 @@ namespace SWLOR.Game.Server.Data.Entity
         public PlayerCharacter()
         {
             RespawnAreaResref = "";
-            PCCooldowns = new HashSet<PCCooldown>();
-            PCCraftedBlueprints = new HashSet<PCCraftedBlueprint>();
-            PCCustomEffects = new HashSet<PCCustomEffect>();
-            PCImpoundedItems = new HashSet<PCImpoundedItem>();
-            PCKeyItems = new HashSet<PCKeyItem>();
-            PCMapPins = new HashSet<PCMapPin>();
-            PCMapProgressions = new HashSet<PCMapProgression>();
-            PCObjectVisibilities = new HashSet<PCObjectVisibility>();
-            PCOverflowItems = new HashSet<PCOverflowItem>();
-            PCPerkRefunds = new HashSet<PCPerkRefund>();
-            PCPerks = new HashSet<PCPerk>();
-            PCQuestStatus = new HashSet<PCQuestStatus>();
-            PCRegionalFames = new HashSet<PCRegionalFame>();
-            PCSkills = new HashSet<PCSkill>();
         }
 
         [ExplicitKey]
@@ -70,22 +56,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public int? PrimaryResidencePCBaseID { get; set; }
         public bool IsUsingNovelEmoteStyle { get; set; }
         public bool IsDeleted { get; set; }
-
-
-        public virtual ICollection<PCCooldown> PCCooldowns { get; set; }
-        public virtual ICollection<PCCraftedBlueprint> PCCraftedBlueprints { get; set; }
-        public virtual ICollection<PCCustomEffect> PCCustomEffects { get; set; }
-        public virtual ICollection<PCImpoundedItem> PCImpoundedItems { get; set; }
-        public virtual ICollection<PCKeyItem> PCKeyItems { get; set; }
-        public virtual ICollection<PCMapPin> PCMapPins { get; set; }
-        public virtual ICollection<PCMapProgression> PCMapProgressions { get; set; }
-        public virtual ICollection<PCObjectVisibility> PCObjectVisibilities { get; set; }
-        public virtual PCOutfit PCOutfit { get; set; }
-        public virtual ICollection<PCOverflowItem> PCOverflowItems { get; set; }
-        public virtual ICollection<PCPerkRefund> PCPerkRefunds { get; set; }
-        public virtual ICollection<PCPerk> PCPerks { get; set; }
-        public virtual ICollection<PCQuestStatus> PCQuestStatus { get; set; }
-        public virtual ICollection<PCRegionalFame> PCRegionalFames { get; set; }
-        public virtual ICollection<PCSkill> PCSkills { get; set; }
     }
 }

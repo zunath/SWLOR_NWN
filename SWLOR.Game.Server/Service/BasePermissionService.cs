@@ -47,9 +47,8 @@ namespace SWLOR.Game.Server.Service
 
             // Base permissions take priority over structure permissions. Check those first.
             var dbStructure = _data.GetAll<PCBaseStructure>().Single(x => x.PCBaseStructureID == pcBaseStructureID);
-            var pcBase = _data.Get<PCBase>(dbStructure.PCBaseID);
-            var basePermission = pcBase.PCBasePermissions.SingleOrDefault(x => x.PlayerID == player.GlobalID);
-
+            var basePermission = _data.SingleOrDefault<PCBasePermission>(x => x.PlayerID == player.GlobalID && x.PCBaseID == dbStructure.PCBaseID);
+            
             if (basePermission != null)
             {
                 if (permission == StructurePermission.CanAccessStructureInventory && basePermission.CanAccessStructureInventory) return true;

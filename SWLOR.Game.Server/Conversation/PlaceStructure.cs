@@ -104,15 +104,17 @@ namespace SWLOR.Game.Server.Conversation
             {
                 var buildingStructure = _data.Single<PCBaseStructure>(x => x.PCBaseStructureID == data.ParentStructureID);
                 var baseStructure = _data.Get<BaseStructure>(buildingStructure.BaseStructureID);
+                var childStructures = _data.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == buildingStructure.PCBaseStructureID).ToList();
 
-                header += _color.Green("Structure Limit: ") + buildingStructure.ChildStructures.Count + " / " + baseStructure.Storage + "\n";
+                header += _color.Green("Structure Limit: ") + childStructures.Count + " / " + baseStructure.Storage + "\n";
             }
             else if (data.BuildingType == BuildingType.Apartment)
             {
                 var pcBase = _data.Single<PCBase>(x => x.PCBaseID == data.PCBaseID);
                 var buildingStyle = _data.Get<BuildingStyle>(pcBase.BuildingStyleID);
+                var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == pcBase.PCBaseID).ToList();
 
-                header += _color.Green("Structure Limit: ") + pcBase.PCBaseStructures.Count + " / " + buildingStyle.FurnitureLimit + "\n";
+                header += _color.Green("Structure Limit: ") + structures.Count + " / " + buildingStyle.FurnitureLimit + "\n";
             }
             else if(data.BuildingType == BuildingType.Exterior)
             {

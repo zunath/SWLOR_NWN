@@ -15,7 +15,6 @@ namespace SWLOR.Game.Server.Data.Entity
             Name = "";
             ScriptName = "";
             Description = "";
-            PerkLevels = new HashSet<PerkLevel>();
         }
 
         [ExplicitKey]
@@ -35,7 +34,5 @@ namespace SWLOR.Game.Server.Data.Entity
         public int Enmity { get; set; }
         public int EnmityAdjustmentRuleID { get; set; }
         public int? CastAnimationID { get; set; }
-    
-        public virtual ICollection<PerkLevel> PerkLevels { get; set; }
     }
 }

@@ -292,7 +292,6 @@ BEGIN
 	 JOIN dbo.AreaWalkmesh aw ON aw.AreaID = a.AreaID
 	 WHERE COALESCE(@Key, a.AreaID) = a.AreaID
 END
-GO
 
 
 

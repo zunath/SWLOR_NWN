@@ -38,12 +38,7 @@ namespace SWLOR.Game.Server.Service
             {
                 error = ValidateName(player);
             }
-
-            if (string.IsNullOrWhiteSpace(error))
-            {
-                error = ValidateExistingCharacter(player);
-            }
-
+            
             if (!string.IsNullOrWhiteSpace(error))
             {
                 _.BootPC(player, error);
@@ -94,23 +89,5 @@ namespace SWLOR.Game.Server.Service
             "mical", "mira", "hanharr", "brianna", "visas", "marr", "g0-t0", "go-to", "goto", "zayne", "carrick", "marn", "hierogryph", "jarael", "gorman",
             "vandrayk", "elbee", "rohlan", "dyre", "slyssk", "sion", "nihilus", "general", "zunath", "xephnin", "taelon", "lestat", "dm", "gm"
         };
-
-        private string ValidateExistingCharacter(NWPlayer player)
-        {
-            if (player.IsInitializedAsPlayer) return string.Empty;
-
-            string error = string.Empty;
-            // todo: Figure out a better way to filter player characters without putting them all into cache.
-            PlayerCharacter dbPlayer = _data.GetAll<PlayerCharacter>().FirstOrDefault(x => x.CharacterName == player.Name && x.IsDeleted == false);
-
-            if (dbPlayer != null)
-            {
-                error = "Another player character with the same name already exists. Please create a new character with a unique name.";
-            }
-
-            return error;
-        }
-
-
     }
 }

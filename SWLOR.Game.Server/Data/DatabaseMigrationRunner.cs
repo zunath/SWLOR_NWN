@@ -7,6 +7,8 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Dapper;
+using Dapper.Contrib.Extensions;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 
@@ -52,8 +54,6 @@ namespace SWLOR.Game.Server.Data
                 UserID = user,
                 Password = password
             }.ToString();
-
-            data.Initialize(true); // todo: move this somewhere more appropriate or change this class to use dapper.
         }
         
         /// <summary>
@@ -71,6 +71,7 @@ namespace SWLOR.Game.Server.Data
 
             BuildDatabase();
             ApplyMigrations();
+            _data.Initialize(true);
         }
 
         /// <summary>
@@ -92,11 +93,7 @@ namespace SWLOR.Game.Server.Data
                         string dbName = Environment.GetEnvironmentVariable("SQL_SERVER_DATABASE");
                         string sql = $@"CREATE DATABASE [{dbName}]";
 
-                        var command = connection.CreateCommand();
-                        command.CommandText = sql;
-                        command.ExecuteNonQuery();
-
-                        
+                        connection.Execute(sql);
                     }
                     catch (Exception ex)
                     {
@@ -168,8 +165,14 @@ namespace SWLOR.Game.Server.Data
         /// <returns></returns>
         private IEnumerable<string> GetScriptResources()
         {
-            var currentVersion = _data.GetAll<DatabaseVersion>()
-                .OrderByDescending(o => o.ScriptName).FirstOrDefault();
+            DatabaseVersion currentVersion;
+            using (var connection = new SqlConnection(_swlorConnectionString))
+            {
+                string sql = "select top 1 DatabaseVersionID, ScriptName, DateApplied, VersionDate, VersionNumber FROM DatabaseVersions ORDER BY VersionDate DESC, VersionNumber DESC";
+                currentVersion = connection.QueryFirstOrDefault<DatabaseVersion>(sql);
+            }
+            //var currentVersion = _data.GetAll<DatabaseVersion>()
+            //    .OrderByDescending(o => o.ScriptName).FirstOrDefault();
 
             var executingAssembly = Assembly.GetExecutingAssembly();
 

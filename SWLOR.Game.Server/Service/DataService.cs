@@ -24,8 +24,6 @@ namespace SWLOR.Game.Server.Service
 {
     public class DataService : IDataService
     {
-        private delegate IEnumerable<object> ObjectBuildDelegate(object key = null);
-
         public ConcurrentQueue<DatabaseAction> DataQueue { get; }
         private string _connectionString;
         private readonly Dictionary<Type, Dictionary<object, object>> _cache;

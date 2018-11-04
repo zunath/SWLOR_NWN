@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("PCSearchSites")]
+    [Table("[PCSearchSites]")]
     public class PCSearchSite: IEntity
     {
         [Key]

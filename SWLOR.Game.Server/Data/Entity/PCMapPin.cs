@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("PCMapPins")]
+    [Table("[PCMapPins]")]
     public class PCMapPin: IEntity
     {
         [Key]

@@ -6,14 +6,9 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("CraftBlueprints")]
+    [Table("[CraftBlueprints]")]
     public class CraftBlueprint: IEntity
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public CraftBlueprint()
-        {
-        }
-
         [ExplicitKey]
         public long CraftBlueprintID { get; set; }
         public long CraftCategoryID { get; set; }

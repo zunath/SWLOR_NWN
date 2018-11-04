@@ -6,10 +6,9 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("PCBaseStructures")]
+    [Table("[PCBaseStructures]")]
     public class PCBaseStructure: IEntity
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PCBaseStructure()
         {
             CustomName = "";

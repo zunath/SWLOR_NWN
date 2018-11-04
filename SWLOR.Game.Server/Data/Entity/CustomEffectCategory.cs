@@ -5,14 +5,9 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("CustomEffectCategories")]
+    [Table("[CustomEffectCategory]")]
     public class CustomEffectCategory: IEntity
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public CustomEffectCategory()
-        {
-        }
-
         [ExplicitKey]
         public int CustomEffectCategoryID { get; set; }
         public string Name { get; set; }

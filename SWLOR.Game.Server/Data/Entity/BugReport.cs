@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("BugReports")]
+    [Table("[BugReports]")]
     public class BugReport: IEntity
     {
         [Key]

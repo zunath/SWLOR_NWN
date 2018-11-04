@@ -5,10 +5,9 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("CooldownCategories")]
+    [Table("[CooldownCategories]")]
     public class CooldownCategory: IEntity
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public CooldownCategory()
         {
             Name = "";

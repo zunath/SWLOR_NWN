@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var area in NWModule.Get().Areas)
             {
-                var dbArea = _data.GetAll<Area>().Single(x => x.Resref == area.Resref);
+                var dbArea = _data.Single<Area>(x => x.Resref == area.Resref);
 
                 int arraySizeX = dbArea.Width * (10 / Step);
                 int arraySizeY = dbArea.Height * (10 / Step);

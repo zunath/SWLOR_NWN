@@ -3,9 +3,13 @@ using SWLOR.Game.Server.Threading.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Data.SqlClient;
+using System.Linq;
+using System.Net.Cache;
 using System.Threading;
 using Dapper.Contrib.Extensions;
+using Dapper.Contrib;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Threading
@@ -65,12 +69,20 @@ namespace SWLOR.Game.Server.Threading
                         }
 
                     }
-                    catch(Exception ex)
+                    catch (SqlException ex)
                     {
                         Console.WriteLine("****EXCEPTION ON DATABASE BACKGROUND THREAD****");
                         _error.LogError(ex, request.Action.ToString());
-                    }
 
+                        Thread.Sleep(3000); // todo debug
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("****EXCEPTION ON DATABASE BACKGROUND THREAD****");
+                        _error.LogError(ex, request.Action.ToString());
+                        
+                        Thread.Sleep(3000); // todo debug
+                    }
                 }
             }
         }

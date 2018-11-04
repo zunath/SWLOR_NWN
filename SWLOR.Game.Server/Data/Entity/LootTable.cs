@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("LootTables")]
+    [Table("[LootTables]")]
     public class LootTable: IEntity
     {
         [ExplicitKey]

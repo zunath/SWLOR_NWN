@@ -72,12 +72,16 @@ namespace SWLOR.Game.Server.Service
         {
             if (_cacheInitialized) return;
 
+            // Todo: We're caching everything right now to get up and running. Look into optimizations for PC objects and item storage later.
             GetAll<ApartmentBuilding>();
-            GetAll<Area>(); // Potential size issue due to AreaWalkmeshes (child property)
+            GetAll<Area>();
+            GetAll<AreaWalkmesh>();
             GetAll<Association>();
             GetAll<Attribute>();
             GetAll<AuthorizedDM>();
-            GetAll<Bank>(); // Potential size issue due to BankItems (child property)
+            GetAll<Bank>();
+            GetAll<BankItem>();
+            GetAll<BaseItemType>();
             GetAll<BaseStructure>();
             GetAll<BaseStructureType>();
             GetAll<BuildingStyle>();
@@ -88,6 +92,9 @@ namespace SWLOR.Game.Server.Service
             GetAll<CooldownCategory>();
             GetAll<CraftBlueprint>();
             GetAll<CraftBlueprintCategory>();
+            GetAll<CraftDevice>();
+            GetAll<Data.Entity.CustomEffect>();
+            GetAll<CustomEffectCategory>();
             GetAll<DiscordChatQueue>();
             GetAll<DMRoleDomain>();
             GetAll<EnmityAdjustmentRule>();
@@ -97,19 +104,56 @@ namespace SWLOR.Game.Server.Service
             GetAll<KeyItem>();
             GetAll<KeyItemCategory>();
             GetAll<LootTable>();
+            GetAll<LootTableItem>();
             GetAll<Data.Entity.Mod>();
             GetAll<NPCGroup>();
             GetAll<PCBase>();
+            GetAll<PCBasePermission>();
+            GetAll<PCBaseStructure>();
+            GetAll<PCBaseStructureItem>();
+            GetAll<PCBaseStructurePermission>();
             GetAll<PCBaseType>();
+            GetAll<PCCooldown>();
+            GetAll<PCCraftedBlueprint>();
+            GetAll<PCCustomEffect>();
+            GetAll<PCImpoundedItem>();
+            GetAll<PCKeyItem>();
+            GetAll<PCMapPin>();
+            GetAll<PCMapProgression>();
+            GetAll<PCObjectVisibility>();
+            GetAll<PCOutfit>();
+            GetAll<PCOverflowItem>();
+            GetAll<PCPerk>();
+            GetAll<PCPerkRefund>();
+            GetAll<PCQuestItemProgress>();
+            GetAll<PCQuestKillTargetProgress>();
+            GetAll<PCQuestStatus>();
+            GetAll<PCRegionalFame>();
+            GetAll<PCSearchSite>();
+            GetAll<PCSearchSiteItem>();
+            GetAll<PCSkill>();
             GetAll<Data.Entity.Perk>();
             GetAll<PerkCategory>();
             GetAll<PerkExecutionType>();
+            GetAll<PerkLevel>();
+            GetAll<PerkLevelQuestRequirement>();
+            GetAll<PerkLevelSkillRequirement>();
             GetAll<Plant>();
+            GetAll<PlayerCharacter>(); // todo: temporarily enabled to get up and running. We should *not* be loading all PCs and related data into the cache.
             GetAll<Quest>();
+            GetAll<QuestKillTargetList>();
+            GetAll<QuestPrerequisite>();
+            GetAll<QuestRequiredItemList>();
+            GetAll<QuestRequiredKeyItemList>();
+            GetAll<QuestRewardItem>();
+            GetAll<QuestState>();
+            GetAll<QuestTypeDomain>();
             GetAll<ServerConfiguration>();
             GetAll<Skill>();
             GetAll<SkillCategory>();
+            GetAll<SkillXPRequirement>();
             GetAll<Spawn>();
+            GetAll<SpawnObject>();
             GetAll<SpawnObjectType>();
 
             _cacheInitialized = true;
@@ -158,7 +202,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (actionType == DatabaseActionType.Insert || actionType == DatabaseActionType.Update)
             {
-                SetIntoCache(data.GetType(), data, GetEntityKey(data));
+                SetIntoCache(data.GetType(), GetEntityKey(data), data);
             }
             else if (actionType == DatabaseActionType.Delete)
             {
@@ -181,7 +225,7 @@ namespace SWLOR.Game.Server.Service
             {
                 return (T)cachedObject;
             }
-
+            
             return default(T);
         }
 
@@ -265,26 +309,27 @@ namespace SWLOR.Game.Server.Service
         public IEnumerable<T> GetAll<T>()
             where T : class, IEntity
         {
-            if (typeof(T) == typeof(PlayerCharacter))
-            {
-                throw new ArgumentException("GetAll() is not permitted on PlayerCharacter objects.");
-            }
-
+            // todo: temporarily disabled to get up and running
+            //if (typeof(T) == typeof(PlayerCharacter))
+            //{
+            //    throw new ArgumentException("GetAll() is not permitted on PlayerCharacter objects.");
+            //}
+            
             // Cache already built. Return everything that's cached so far.
             if (_cache.ContainsKey(typeof(T)))
             {
                 var cacheSet = _cache[typeof(T)];
-                return cacheSet.Cast<T>();
+                return cacheSet.Values.Cast<T>();
             }
 
+            // Can't find anything in the cache so pull back the records from the database.
             IEnumerable<T> results;
-
             using (var connection = new SqlConnection(_connectionString))
             {
                 results = connection.GetAll<T>();
             }
 
-
+            // Add the records to the cache.
             foreach (var result in results)
             {
                 object id = GetEntityKey(result);

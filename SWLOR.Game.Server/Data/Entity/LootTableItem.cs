@@ -4,10 +4,9 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("LootTableItems")]
+    [Table("[LootTableItems]")]
     public class LootTableItem: IEntity
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public LootTableItem()
         {
             SpawnRule = "";

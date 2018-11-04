@@ -171,9 +171,7 @@ namespace SWLOR.Game.Server.Data
                 string sql = "select top 1 DatabaseVersionID, ScriptName, DateApplied, VersionDate, VersionNumber FROM DatabaseVersions ORDER BY VersionDate DESC, VersionNumber DESC";
                 currentVersion = connection.QueryFirstOrDefault<DatabaseVersion>(sql);
             }
-            //var currentVersion = _data.GetAll<DatabaseVersion>()
-            //    .OrderByDescending(o => o.ScriptName).FirstOrDefault();
-
+            
             var executingAssembly = Assembly.GetExecutingAssembly();
 
             var fullList = executingAssembly
@@ -289,7 +287,11 @@ namespace SWLOR.Game.Server.Data
                 VersionDate = versionInfo.Item1,
                 VersionNumber = versionInfo.Item2
             };
-            _data.SubmitDataChange(version, DatabaseActionType.Insert);
+
+            using (var connection = new SqlConnection(_swlorConnectionString))
+            {
+                connection.Insert(version);
+            }
         }
 
         // Code I pulled from StackOverflow: https://stackoverflow.com/questions/40814/execute-a-large-sql-script-with-go-commands

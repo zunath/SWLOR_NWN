@@ -5,14 +5,9 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("KeyItems")]
+    [Table("[KeyItems]")]
     public class KeyItem: IEntity
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public KeyItem()
-        {
-        }
-
         [ExplicitKey]
         public int KeyItemID { get; set; }
         public int KeyItemCategoryID { get; set; }

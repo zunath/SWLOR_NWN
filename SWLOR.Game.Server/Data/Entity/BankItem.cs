@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("BankItems")]
+    [Table("[BankItems]")]
     public class BankItem: IEntity
     {
         [Key]

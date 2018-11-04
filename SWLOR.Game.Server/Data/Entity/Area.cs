@@ -1,15 +1,22 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using Dapper.Contrib.Extensions;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("Areas")]
+    [Dapper.Contrib.Extensions.Table("[Areas]")]
     public class Area: IEntity
     {
-        [Key]
+        public Area()
+        {
+            AreaID = Guid.NewGuid().ToString();
+            DateLastBaked = DateTime.UtcNow;
+        }
+
+        [ExplicitKey]
         public string AreaID { get; set; }
         public string Resref { get; set; }
         public string Name { get; set; }

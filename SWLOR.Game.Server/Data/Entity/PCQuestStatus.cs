@@ -6,14 +6,9 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("PCQuestStatus")]
+    [Table("[PCQuestStatus]")]
     public class PCQuestStatus: IEntity
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public PCQuestStatus()
-        {
-        }
-
         [Key]
         public int PCQuestStatusID { get; set; }
         public string PlayerID { get; set; }

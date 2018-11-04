@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("BaseStructureType")]
+    [Table("[BaseStructureType]")]
     public class BaseStructureType: IEntity
     {
 

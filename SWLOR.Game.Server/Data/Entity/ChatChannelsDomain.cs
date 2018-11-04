@@ -4,10 +4,9 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("ChatChannelsDomain")]
+    [Table("[ChatChannelsDomain]")]
     public class ChatChannelsDomain: IEntity
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public ChatChannelsDomain()
         {
             Name = "";

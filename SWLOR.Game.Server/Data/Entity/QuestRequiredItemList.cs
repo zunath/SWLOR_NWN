@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("QuestRequiredItemList")]
+    [Table("[QuestRequiredItemList]")]
     public class QuestRequiredItemList: IEntity
     {
         [Key]

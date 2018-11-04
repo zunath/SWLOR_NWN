@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         Data.Entity.Perk GetPerkByID(int perkID);
         PCPerk GetPCPerkByID(string playerID, int perkID);
         PerkLevel FindPerkLevel(IEnumerable<PerkLevel> levels, int findLevel);
-        bool CanPerkBeUpgraded(Data.Entity.Perk perk, PCPerk pcPerk, PlayerCharacter player);
+        bool CanPerkBeUpgraded(NWPlayer player, int perkID);
         void DoPerkUpgrade(NWPlayer player, int perkID);
         void DoPerkUpgrade(NWPlayer player, PerkType perkType);
         string OnModuleExamine(string existingDescription, NWPlayer examiner, NWObject examinedObject);

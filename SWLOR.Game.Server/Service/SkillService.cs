@@ -8,7 +8,6 @@ using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Skill;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 using static NWN.NWScript;
@@ -197,7 +196,7 @@ namespace SWLOR.Game.Server.Service
         
         public List<SkillCategory> GetActiveCategories()
         {
-            return _data.GetAll<SkillCategory>().ToList();
+            return _data.Where<SkillCategory>(x => x.SkillCategoryID != 0).ToList();
         }
 
         public List<PCSkill> GetPCSkillsForCategory(string playerID, int skillCategoryID)
@@ -217,7 +216,7 @@ namespace SWLOR.Game.Server.Service
         
         public void ToggleSkillLock(string playerID, int skillID)
         {
-            PCSkill pcSkill = _data.Get<PCSkill>(playerID);
+            PCSkill pcSkill = _data.Single<PCSkill>(x => x.PlayerID == playerID && x.SkillID == skillID);
             pcSkill.IsLocked = !pcSkill.IsLocked;
             
             _data.SubmitDataChange(pcSkill, DatabaseActionType.Update);
@@ -390,8 +389,25 @@ namespace SWLOR.Game.Server.Service
             NWPlayer oPC = _.GetEnteringObject();
             if (oPC.IsPlayer)
             {
-                _data.StoredProcedure("InsertAllPCSkillsByID",
-                    new SqlParameter("PlayerID", oPC.GlobalID));
+                // Add any missing skills the player does not have.
+                var skills = _data.Where<Skill>(x =>
+                {
+                    var pcSkill = _data.SingleOrDefault<PCSkill>(s => s.SkillID == x.SkillID && s.PlayerID == oPC.GlobalID);
+                    return pcSkill == null;
+                });
+                foreach (var skill in skills)
+                {
+                    var pcSkill = new PCSkill
+                    {
+                        IsLocked = false,
+                        SkillID = skill.SkillID,
+                        PlayerID = oPC.GlobalID,
+                        Rank = 0,
+                        XP = 0
+                    };
+
+                    _data.SubmitDataChange(pcSkill, DatabaseActionType.Insert);
+                }
                 ForceEquipFistGlove(oPC);
             }
         }

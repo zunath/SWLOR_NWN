@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using SWLOR.Game.Server.Bioware.Contracts;
 using SWLOR.Game.Server.Enumeration;
@@ -11,7 +10,6 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Perk;
 using SWLOR.Game.Server.Service.Contracts;
-using SWLOR.Game.Server.ValueObject;
 using static NWN.NWScript;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
 
@@ -213,32 +211,44 @@ namespace SWLOR.Game.Server.Service
             return levels.FirstOrDefault(lvl => lvl.Level == findLevel);
         }
 
-        public bool CanPerkBeUpgraded(Data.Entity.Perk perk, PCPerk pcPerk, PlayerCharacter player)
+        public bool CanPerkBeUpgraded(NWPlayer player, int perkID)
         {
-            var perkLevels = _data.Where<PerkLevel>(x => x.PerkID == pcPerk.PerkID).ToList();
-            int rank = pcPerk?.PerkLevel ?? 0;
+            var dbPlayer = _data.Get<PlayerCharacter>(player.GlobalID);
+            var perkLevels = _data.Where<PerkLevel>(x => x.PerkID == perkID).ToList();
+            var pcPerk = _data.SingleOrDefault<PCPerk>(x => x.PlayerID == player.GlobalID && x.PerkID == perkID);
+
+            int rank = 0;
+            if (pcPerk != null)
+            {
+                rank = pcPerk.PerkLevel;
+            }
             int maxRank = perkLevels.Count;
             if (rank + 1 > maxRank) return false;
 
             PerkLevel level = FindPerkLevel(perkLevels, rank + 1);
             if (level == null) return false;
 
-            if (player.UnallocatedSP < level.Price) return false;
-            var skillRequirements = _data.Where<PerkLevelSkillRequirement>(x => x.PerkLevelID == level.PerkLevelID);
-            var questRequirements = _data.Where<PerkLevelQuestRequirement>(x => x.PerkLevelID == level.PerkLevelID);
+            if (dbPlayer.UnallocatedSP < level.Price) return false;
+
+            var skillRequirements = _data.Where<PerkLevelSkillRequirement>(x => x.PerkLevelID == level.PerkLevelID).ToList();
+
+            var questRequirements = _data.Where<PerkLevelQuestRequirement>(x => x.PerkLevelID == level.PerkLevelID).ToList();
 
             foreach (var req in skillRequirements)
             {
-                PCSkill pcSkill = _data.Single<PCSkill>(x => x.PlayerID == player.PlayerID && x.SkillID == req.SkillID);
+                PCSkill pcSkill = _data.Single<PCSkill>(x => x.PlayerID == dbPlayer.PlayerID && 
+                                                             x.SkillID == req.SkillID);
+
                 if (pcSkill.Rank < req.RequiredRank) return false;
             }
 
             foreach (var req in questRequirements)
             {
-                var pcQuest = _data.Single<PCQuestStatus>(x => x.PlayerID == player.PlayerID && x.QuestID == req.RequiredQuestID && x.CompletionDate != null);
+                var pcQuest = _data.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == dbPlayer.PlayerID && 
+                                                               x.QuestID == req.RequiredQuestID && 
+                                                               x.CompletionDate != null);
                 if (pcQuest == null) return false;
             }
-
             return true;
         }
 
@@ -249,7 +259,7 @@ namespace SWLOR.Game.Server.Service
             var pcPerk = _data.SingleOrDefault<PCPerk>(x => x.PlayerID == oPC.GlobalID && x.PerkID == perkID);
             var player = _data.Single<PlayerCharacter>(x => x.PlayerID == oPC.GlobalID);
 
-            if (CanPerkBeUpgraded(perk, pcPerk, player))
+            if (CanPerkBeUpgraded(oPC, perkID))
             {
                 DatabaseActionType action = DatabaseActionType.Update;
                 if (pcPerk == null)

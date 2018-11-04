@@ -151,8 +151,7 @@ namespace SWLOR.Game.Server.Conversation
             string price = "N/A";
             PerkLevel currentPerkLevel = _perk.FindPerkLevel(perkLevels, rank);
             PerkLevel nextPerkLevel = _perk.FindPerkLevel(perkLevels, rank + 1);
-
-            SetResponseVisible("PerkDetailsPage", 1, _perk.CanPerkBeUpgraded(perk, pcPerk, player));
+            SetResponseVisible("PerkDetailsPage", 1, _perk.CanPerkBeUpgraded(GetPC(), vm.SelectedPerkID));
 
             if (rank > 0)
             {
@@ -169,9 +168,8 @@ namespace SWLOR.Game.Server.Conversation
                     price = nextPerkLevel.Price + " SP (Available: " + player.UnallocatedSP + " SP)";
                 }
             }
-
             var perkCategory = _data.Get<PerkCategory>(perk.PerkCategoryID);
-            var cooldownCategory = _data.Get<CooldownCategory>(perk.CooldownCategoryID);
+            var cooldownCategory = perk.CooldownCategoryID == null ? null : _data.Get<CooldownCategory>(perk.CooldownCategoryID);
 
             string header = _color.Green("Name: ") + perk.Name + "\n" +
                     _color.Green("Category: ") + perkCategory.Name + "\n" +

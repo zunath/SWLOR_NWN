@@ -1,6 +1,6 @@
 ﻿
 using Dapper;
-using Dapper.Contrib.Extensions;
+
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -14,6 +14,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
+using SWLOR.Game.Server.Data;
 using Attribute = SWLOR.Game.Server.Data.Entity.Attribute;
 using BaseStructureType = SWLOR.Game.Server.Data.Entity.BaseStructureType;
 using ComponentType = SWLOR.Game.Server.Data.Entity.ComponentType;

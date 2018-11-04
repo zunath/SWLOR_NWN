@@ -2,12 +2,13 @@
 using SWLOR.Game.Server.Threading.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Net.Cache;
+using System.Reflection;
 using System.Threading;
-using Dapper.Contrib.Extensions;
-using Dapper.Contrib;
+using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -57,15 +58,27 @@ namespace SWLOR.Game.Server.Threading
                     {
                         if (request.Action == DatabaseActionType.Insert)
                         {
-                            connection.Insert(request.Data);
+                            foreach(var record in request.Data)
+                            {
+                                connection.Insert(record.GetType(), record);
+                            }
+                            //connection.Insert<object>(request.Data);
                         }
                         else if (request.Action == DatabaseActionType.Update)
                         {
-                            connection.Update(request.Data);
+                            foreach (var record in request.Data)
+                            {
+                                connection.Update(record.GetType(), record);
+                            }
+                            //connection.Update<object>(request.Data);
                         }
                         else if (request.Action == DatabaseActionType.Delete)
                         {
-                            connection.Delete(request.Data);
+                            foreach (var record in request.Data)
+                            {
+                                connection.Delete(record.GetType(), record);
+                            }
+                            //connection.Delete<object>(request.Data);
                         }
 
                     }
@@ -91,6 +104,44 @@ namespace SWLOR.Game.Server.Threading
         {
             _isExiting = true;
         }
+
+        private string GetTableName(Type type)
+        {
+            var tableAttribute = (TableAttribute)type.GetCustomAttributes(typeof(TableAttribute)).First();
+            return tableAttribute.Name;
+        }
+
+        private string BuildInsertSQL(IEntity entity)
+        {
+            var type = entity.GetType();
+            bool isList = false;
+
+            if (type.IsArray)
+            {
+                isList = true;
+                type = type.GetElementType();
+            }
+            else if (type.IsGenericType)
+            {
+                var typeInfo = type.GetTypeInfo();
+                bool implementsGenericIEnumerableOrIsGenericIEnumerable =
+                    typeInfo.ImplementedInterfaces.Any(ti => ti.IsGenericType && ti.GetGenericTypeDefinition() == typeof(IEnumerable<>)) ||
+                    typeInfo.GetGenericTypeDefinition() == typeof(IEnumerable<>);
+
+                if (implementsGenericIEnumerableOrIsGenericIEnumerable)
+                {
+                    isList = true;
+                    type = type.GetGenericArguments()[0];
+                }
+            }
+            
+            var name = GetTableName(type);
+
+            string sql = string.Empty;
+
+            return sql;
+        }
+
 
 
     }

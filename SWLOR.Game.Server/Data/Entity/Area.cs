@@ -2,12 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using Dapper.Contrib.Extensions;
+
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Dapper.Contrib.Extensions.Table("[Areas]")]
+    [Table("[Areas]")]
     public class Area: IEntity
     {
         public Area()

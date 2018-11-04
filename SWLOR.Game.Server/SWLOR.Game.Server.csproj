@@ -36,9 +36,6 @@
     <Reference Include="Dapper, Version=1.50.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dapper.1.50.5\lib\net451\Dapper.dll</HintPath>
     </Reference>
-    <Reference Include="Dapper.Contrib, Version=1.50.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dapper.Contrib.1.50.5\lib\net451\Dapper.Contrib.dll</HintPath>
-    </Reference>
     <Reference Include="FluentBehaviourTree, Version=0.0.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\FluentBehaviourTree.0.0.4.0\lib\net35\FluentBehaviourTree.dll</HintPath>
     </Reference>
@@ -340,6 +337,7 @@
     <Compile Include="Data\Processor\SkillCategoryProcessor.cs" />
     <Compile Include="Data\Processor\SkillProcessor.cs" />
     <Compile Include="Data\Processor\SpawnProcessor.cs" />
+    <Compile Include="Data\SqlMapperExtensions.cs" />
     <Compile Include="Data\Validator\ApartmentBuildingValidator.cs" />
     <Compile Include="Data\Validator\BaseStructureValidator.cs" />
     <Compile Include="Data\Validator\BuildingStyleValidator.cs" />

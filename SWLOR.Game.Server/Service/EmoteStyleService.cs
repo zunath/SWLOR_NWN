@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Service
             if (obj.IsPlayer)
             {
                 NWPlayer player = obj.Object;
-                PlayerCharacter pc = _data.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+                PlayerCharacter pc = _data.Single<PlayerCharacter>(x => x.PlayerID == player.GlobalID);
                 novelStyle = pc.IsUsingNovelEmoteStyle;
             }
 
@@ -37,9 +37,9 @@ namespace SWLOR.Game.Server.Service
             if (obj.IsPlayer)
             {
                 NWPlayer player = obj.Object;
-                PlayerCharacter pc = _data.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+                PlayerCharacter pc = _data.Single<PlayerCharacter>(x => x.PlayerID == player.GlobalID);
                 pc.IsUsingNovelEmoteStyle = style == EmoteStyle.Novel;
-                _data.SaveChanges();
+                _data.SubmitDataChange(pc, DatabaseActionType.Update);
             }
         }
     }

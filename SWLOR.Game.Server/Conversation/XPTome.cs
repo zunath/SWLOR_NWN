@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.Service.Contracts;
@@ -54,9 +55,9 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
-            List<CachedSkillCategory> categories = _skill.GetActiveCategories();
+            List<SkillCategory> categories = _skill.GetActiveCategories();
 
-            foreach (CachedSkillCategory category in categories)
+            foreach (SkillCategory category in categories)
             {
                 AddResponseToPage("CategoryPage", category.Name, true, category.SkillCategoryID);
             }
@@ -91,12 +92,12 @@ namespace SWLOR.Game.Server.Conversation
             DialogResponse response = GetResponseByID("CategoryPage", responseID);
             int categoryID = (int)response.CustomData;
             
-            List<CachedPCSkill> pcSkills = _skill.GetPCSkillsForCategory(GetPC().GlobalID, categoryID);
+            List<PCSkill> pcSkills = _skill.GetPCSkillsForCategory(GetPC().GlobalID, categoryID);
 
             ClearPageResponses("SkillListPage");
-            foreach (CachedPCSkill pcSkill in pcSkills)
+            foreach (PCSkill pcSkill in pcSkills)
             {
-                CachedSkill skill = _skill.GetSkill(pcSkill.SkillID);
+                Skill skill = _skill.GetSkill(pcSkill.SkillID);
                 AddResponseToPage("SkillListPage", skill.Name, true, pcSkill.SkillID);
             }
 
@@ -107,7 +108,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             DialogResponse response = GetResponseByID("SkillListPage", responseID);
             int skillID = (int)response.CustomData;
-            CachedSkill skill = _skill.GetSkill(skillID);
+            Skill skill = _skill.GetSkill(skillID);
             string header = "Are you sure you want to improve your " + skill.Name + " skill?";
             SetPageHeader("ConfirmPage", header);
 

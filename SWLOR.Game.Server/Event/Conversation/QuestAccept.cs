@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 
@@ -29,7 +30,7 @@ namespace SWLOR.Game.Server.Event.Conversation
             int questID = talkTo.GetLocalInt("QUEST_ID_" + index);
             if (questID <= 0) questID = talkTo.GetLocalInt("QST_ID_" + index);
 
-            if (!_data.Quests.Any(x => x.QuestID == questID))
+            if (_data.GetAll<Quest>().All(x => x.QuestID != questID))
             {
                 _.SpeakString("ERROR: Quest #" + index + " is improperly configured. Please notify an admin");
                 return false;

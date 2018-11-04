@@ -19,10 +19,7 @@ namespace SWLOR.Game.Server.Data.Entity
             OnAdvanceArgs = "";
             OnCompleteArgs = "";
             OnKillTargetArgs = "";
-            this.QuestKillTargetLists = new HashSet<QuestKillTargetList>();
             QuestPrerequisites = new HashSet<QuestPrerequisite>();
-            this.QuestRequiredItemLists = new HashSet<QuestRequiredItemList>();
-            this.QuestRequiredKeyItemLists = new HashSet<QuestRequiredKeyItemList>();
             QuestRewardItems = new HashSet<QuestRewardItem>();
             QuestStates = new HashSet<QuestState>();
         }

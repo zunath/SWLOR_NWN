@@ -2,6 +2,8 @@
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
@@ -36,7 +38,7 @@ namespace SWLOR.Game.Server.Placeable.ResourceBay
             int disturbType = _.GetInventoryDisturbType();
             NWItem item = _.GetInventoryDisturbItem();
             int structureID = bay.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            var structure = _data.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
+            var structure = _data.Single<PCBaseStructure>(x => x.PCBaseStructureID == structureID);
             var controlTower = _base.GetBaseControlTower(structure.PCBaseID);
 
             if (disturbType == INVENTORY_DISTURB_TYPE_ADDED)
@@ -47,11 +49,10 @@ namespace SWLOR.Game.Server.Placeable.ResourceBay
             }
             else if (disturbType == INVENTORY_DISTURB_TYPE_REMOVED)
             {
-                var removeItem = _data.PCBaseStructureItems.SingleOrDefault(x => x.PCBaseStructureID == controlTower.PCBaseStructureID && x.ItemGlobalID == item.GlobalID);
+                var removeItem = _data.SingleOrDefault<PCBaseStructureItem>(x => x.PCBaseStructureID == controlTower.PCBaseStructureID && x.ItemGlobalID == item.GlobalID);
                 if (removeItem == null) return false;
 
-                _data.PCBaseStructureItems.Remove(removeItem);
-                _data.SaveChanges();
+                _data.SubmitDataChange(removeItem, DatabaseActionType.Delete);
             }
 
             return true;

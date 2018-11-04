@@ -4,6 +4,7 @@ using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
@@ -31,9 +32,9 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
         {
             NWPlaceable tower = Object.OBJECT_SELF;
             int structureID = tower.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            PCBaseStructure structure = _data.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
+            PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.PCBaseStructureID == structureID);
             int maxShieldHP = _base.CalculateMaxShieldHP(structure);
-            var pcBase = structure.PCBase;
+            var pcBase = _data.Get<PCBase>(structure.PCBaseID);
 
             // Regular fuel usage
             if (DateTime.UtcNow >= pcBase.DateFuelEnds && pcBase.Fuel > 0)
@@ -129,7 +130,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             if (pcBase.ShieldHP > maxShieldHP)
                 pcBase.ShieldHP = maxShieldHP;
 
-            _data.SaveChanges();
+            _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
             return true;
         }
     }

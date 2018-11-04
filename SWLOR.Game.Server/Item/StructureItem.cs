@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Item
             // Structure is being placed inside a building.
             else if (parentStructureID > 0)
             {
-                var parentStructure = _data.PCBaseStructures.Single(x => x.PCBaseStructureID == parentStructureID);
+                var parentStructure = _data.Single<PCBaseStructure>(x => x.PCBaseStructureID == parentStructureID);
                 data.PCBaseID = parentStructure.PCBaseID;
                 data.ParentStructureID = parentStructureID;
                 data.BuildingType = BuildingType.Interior;
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Item
             else
             {
                 string sector = _base.GetSectorOfLocation(targetLocation);
-                PCBase pcBase = _data.PCBases.Single(x => x.AreaResref == area.Resref && x.Sector == sector);
+                PCBase pcBase = _data.Single<PCBase>(x => x.AreaResref == area.Resref && x.Sector == sector);
                 data.PCBaseID = pcBase.PCBaseID;
                 data.ParentStructureID = null;
                 data.BuildingType = BuildingType.Exterior;

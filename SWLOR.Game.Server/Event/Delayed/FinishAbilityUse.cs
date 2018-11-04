@@ -1,12 +1,9 @@
 ﻿using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Perk;
 using SWLOR.Game.Server.Service.Contracts;
 using System;
-using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
 
@@ -42,8 +39,8 @@ namespace SWLOR.Game.Server.Event.Delayed
             NWObject target = (NWObject)args[3];
             int pcPerkLevel = (int) args[4];
 
-            Data.Entity.Perk entity = _data.Perks.Single(x => x.PerkID == perkID);
-            CooldownCategory cooldown = _data.CooldownCategories.SingleOrDefault(x => x.CooldownCategoryID == entity.CooldownCategoryID);
+            Data.Entity.Perk entity = _data.Single<Data.Entity.Perk>(x => x.PerkID == perkID);
+            CooldownCategory cooldown = _data.SingleOrDefault<CooldownCategory>(x => x.CooldownCategoryID == entity.CooldownCategoryID);
             PerkExecutionType executionType = (PerkExecutionType) entity.ExecutionTypeID;
 
             return App.ResolveByInterface<IPerk, bool>("Perk." + entity.ScriptName, perk =>
@@ -83,11 +80,11 @@ namespace SWLOR.Game.Server.Event.Delayed
 
 
                 // Adjust FP only if spell cost > 0
-                PlayerCharacter pcEntity = _data.PlayerCharacters.Single(x => x.PlayerID == pc.GlobalID);
+                PlayerCharacter pcEntity = _data.Single<PlayerCharacter>(x => x.PlayerID == pc.GlobalID);
                 if (perk.FPCost(pc, entity.BaseFPCost) > 0)
                 {
                     pcEntity.CurrentFP = pcEntity.CurrentFP - perk.FPCost(pc, entity.BaseFPCost);
-                    _data.SaveChanges();
+                    _data.SubmitDataChange(pcEntity, DatabaseActionType.Update);
                     pc.SendMessage(_color.Custom("FP: " + pcEntity.CurrentFP + " / " + pcEntity.MaxFP, 32, 223, 219));
 
                 }

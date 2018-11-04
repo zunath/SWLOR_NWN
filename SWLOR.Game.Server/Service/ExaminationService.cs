@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Service
             backupDescription = target.IdentifiedDescription;
             target.SetLocalString("BACKUP_DESCRIPTION", backupDescription);
             
-            PlayerCharacter playerEntity = _data.PlayerCharacters.Single(x => x.PlayerID == target.GlobalID);
+            PlayerCharacter playerEntity = _data.Single<PlayerCharacter>(x => x.PlayerID == target.GlobalID);
             NWArea area = NWModule.Get().Areas.Single(x => x.Resref == playerEntity.RespawnAreaResref);
             string respawnAreaName = area.Name;
 
@@ -59,18 +59,20 @@ namespace SWLOR.Game.Server.Service
                     _color.Green("FP: ") + playerEntity.CurrentFP + " / " + playerEntity.MaxFP + "\n" +
                     _color.Green("Skill Levels: ") + "\n\n");
 
-            List<CachedPCSkill> pcSkills = _skill.GetAllPCSkills(target.Object);
+            List<PCSkill> pcSkills = _skill.GetAllPCSkills(target.Object);
 
-            foreach (CachedPCSkill pcSkill in pcSkills)
+            foreach (PCSkill pcSkill in pcSkills)
             {
-                CachedSkill skill = _skill.GetSkill(pcSkill.SkillID);
+                Skill skill = _skill.GetSkill(pcSkill.SkillID);
                 description.Append(skill.Name).Append(" rank ").Append(pcSkill.Rank).AppendLine();
             }
 
             description.Append("\n\n").Append(_color.Green("Perks: ")).Append("\n\n");
 
             List<PCPerkHeader> pcPerks = _data.StoredProcedure<PCPerkHeader>("GetPCPerksForMenuHeader",
-                new SqlParameter("PlayerID", target.GlobalID));
+                new SqlParameter("PlayerID", target.GlobalID))
+                .ToList();
+            // TODO: Migrate the above query to in-app query
 
             foreach (PCPerkHeader perk in pcPerks)
             {

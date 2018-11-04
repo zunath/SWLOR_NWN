@@ -2,6 +2,8 @@
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
@@ -42,7 +44,7 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadMainPage()
         {
             var player = GetPC();
-            var items = _data.PCImpoundedItems.Where(x => x.PlayerID == player.GlobalID && x.DateRetrieved == null).ToList();
+            var items = _data.Where<PCImpoundedItem>(x => x.PlayerID == player.GlobalID && x.DateRetrieved == null).ToList();
 
             ClearPageResponses("MainPage");
             foreach (var item in items)
@@ -61,7 +63,7 @@ namespace SWLOR.Game.Server.Conversation
 
             var response = GetResponseByID("MainPage", responseID);
             int pcImpoundedItemID = (int)response.CustomData;
-            var item = _data.PCImpoundedItems.Single(x => x.PCImpoundedItemID == pcImpoundedItemID);
+            var item = _data.Single<PCImpoundedItem>(x => x.PCImpoundedItemID == pcImpoundedItemID);
 
             if (item.DateRetrieved != null)
             {
@@ -70,8 +72,7 @@ namespace SWLOR.Game.Server.Conversation
             }
 
             item.DateRetrieved = DateTime.UtcNow;
-            _data.SaveChanges();
-
+            _data.SubmitDataChange(item, DatabaseActionType.Update);
             _serialization.DeserializeItem(item.ItemObject, player);
             _.TakeGoldFromCreature(50, player, TRUE);
 

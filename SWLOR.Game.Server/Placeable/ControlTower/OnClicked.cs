@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
                 return false;
             }
             int structureID = tower.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            PCBaseStructure structure = _data.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
+            PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.PCBaseStructureID == structureID);
 
             if (_perm.HasBasePermission(clicker, structure.PCBaseID, BasePermission.CanManageBaseFuel))
             {

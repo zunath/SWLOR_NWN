@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -72,7 +70,7 @@ namespace SWLOR.Game.Server.Perk.LightSide
             var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
             int lightBonus = effectiveStats.LightAbility;
 
-            PCCustomEffect spreadEffect = _data.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CustomEffectID == (int)CustomEffectType.ForceSpread);
+            PCCustomEffect spreadEffect = _data.SingleOrDefault<PCCustomEffect>(x => x.PlayerID == player.GlobalID && x.CustomEffectID == (int)CustomEffectType.ForceSpread);
             string spreadData = spreadEffect?.Data ?? string.Empty;
             int spreadLevel = spreadEffect?.EffectiveLevel ?? 0;
             int spreadUses = spreadEffect == null ? 0 : Convert.ToInt32(spreadData.Split(',')[0]);
@@ -99,7 +97,7 @@ namespace SWLOR.Game.Server.Perk.LightSide
                 {
                     // ReSharper disable once PossibleNullReferenceException
                     spreadEffect.Data = spreadUses + "," + spreadRange;
-                    _data.SaveChanges();
+                    _data.SubmitDataChange(spreadEffect, DatabaseActionType.Update);
                     player.SendMessage("Force Spread uses remaining: " + spreadUses);
                 }
 

@@ -51,9 +51,7 @@ namespace SWLOR.Game.Server.Service
                 PlayerID = oPC.IsDM ? null : oPC.GlobalID,
                 DateOfEvent = now
             };
-            
-            _data.ClientLogEvents.Add(entity);
-            _data.SaveChanges();
+            _data.SubmitDataChange(entity, DatabaseActionType.Insert);
         }
 
         public void OnModuleClientLeave()
@@ -75,9 +73,7 @@ namespace SWLOR.Game.Server.Service
                 PlayerID = oPC.IsDM ? null : oPC.GlobalID,
                 DateOfEvent = now
             };
-
-            _data.ClientLogEvents.Add(entity);
-            _data.SaveChanges();
+            _data.SubmitDataChange(entity, DatabaseActionType.Insert);
         }
 
 
@@ -116,7 +112,7 @@ namespace SWLOR.Game.Server.Service
             int mode = _nwnxChat.GetChannel();
             int channel = ConvertNWNXChatChannelIDToDatabaseID(mode);
             NWObject recipient = _nwnxChat.GetTarget();
-            ChatChannelsDomain channelEntity = _data.ChatChannelsDomains.Single(x => x.ChatChannelID == channel);
+            ChatChannelsDomain channelEntity = _data.Single<ChatChannelsDomain>(x => x.ChatChannelID == channel);
 
             // Sender - should always have this data.
             string senderCDKey = _.GetPCPublicCDKey(sender.Object);
@@ -163,10 +159,7 @@ namespace SWLOR.Game.Server.Service
                 ChatChannelID = channelEntity.ChatChannelID,
                 DateSent = DateTime.UtcNow
             };
-            
-            _data.ChatLogs.Add(entity);
-            _data.SaveChanges();
-
+            _data.SubmitDataChange(entity, DatabaseActionType.Insert);
         }
 
     }

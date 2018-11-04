@@ -6,6 +6,8 @@ using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using System.Linq;
+using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using static NWN.NWScript;
 using Object = NWN.Object;
 
@@ -62,7 +64,8 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
                 }
             }
 
-            var structure = _data.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
+            var structure = _data.Single<PCBaseStructure>(x => x.PCBaseStructureID == structureID);
+            var pcBase = _data.Get<PCBase>(structure.PCBaseID);
 
             int fuelCount = 0;
             foreach (var fuel in bay.InventoryItems)
@@ -81,7 +84,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             int maxFuel;
             if (stronidiumOnly)
             {
-                maxFuel = _base.CalculateMaxReinforcedFuel(structure.PCBase);
+                maxFuel = _base.CalculateMaxReinforcedFuel(pcBase);
                 if (fuelCount > maxFuel)
                 {
                     int returnAmount = fuelCount - maxFuel;
@@ -91,11 +94,11 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
                 }
 
                 firstFuel.StackSize = fuelCount;
-                structure.PCBase.ReinforcedFuel = fuelCount;
+                pcBase.ReinforcedFuel = fuelCount;
             }
             else
             {
-                maxFuel = _base.CalculateMaxFuel(structure.PCBase);
+                maxFuel = _base.CalculateMaxFuel(pcBase);
                 if (fuelCount > maxFuel)
                 {
                     int returnAmount = fuelCount - maxFuel;
@@ -105,10 +108,10 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
                 }
 
                 firstFuel.StackSize = fuelCount;
-                structure.PCBase.Fuel = fuelCount;
+                pcBase.Fuel = fuelCount;
             }
 
-            _data.SaveChanges();
+            _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
 
             TimeSpan timeSpan = TimeSpan.FromMinutes(30.0f * fuelCount);
             player.SendMessage(_color.Gray("Fuel will last for " + 

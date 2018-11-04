@@ -6,6 +6,7 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Service
@@ -29,7 +30,7 @@ namespace SWLOR.Game.Server.Service
             NWItem item = (_.GetPCItemLastEquipped());
             if (item.BaseItemType != NWScript.BASE_ITEM_HELMET) return;
 
-            PlayerCharacter pc = _data.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+            PlayerCharacter pc = _data.Single<PlayerCharacter>(x => x.PlayerID == player.GlobalID);
             _.SetHiddenWhenEquipped(item.Object, !pc.DisplayHelmet == false ? 0 : 1);
         }
 
@@ -41,7 +42,7 @@ namespace SWLOR.Game.Server.Service
             NWItem item = (_.GetPCItemLastUnequipped());
             if (item.BaseItemType != NWScript.BASE_ITEM_HELMET) return;
 
-            PlayerCharacter pc = _data.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+            PlayerCharacter pc = _data.Single<PlayerCharacter>(x => x.PlayerID == player.GlobalID);
             _.SetHiddenWhenEquipped(item.Object, !pc.DisplayHelmet == false ? 0 : 1);
         }
 
@@ -51,10 +52,10 @@ namespace SWLOR.Game.Server.Service
 
             if (!player.IsPlayer) return;
 
-            PlayerCharacter pc = _data.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+            PlayerCharacter pc = _data.Single<PlayerCharacter>(x => x.PlayerID == player.GlobalID);
             pc.DisplayHelmet = !pc.DisplayHelmet;
-            _data.SaveChanges();
-
+            _data.SubmitDataChange(pc, DatabaseActionType.Update);
+            
             _.FloatingTextStringOnCreature(
                 pc.DisplayHelmet ? "Now showing equipped helmet." : "Now hiding equipped helmet.", 
                 player.Object,

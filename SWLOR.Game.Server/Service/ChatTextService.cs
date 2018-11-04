@@ -16,6 +16,7 @@ using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN.NWScript;
 using System.Text;
+using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -322,7 +323,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
 
-            var dbPlayer = _data.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+            var dbPlayer = _data.Single<PlayerCharacter>(x => x.PlayerID == player.GlobalID);
             player.SetLocalInt("DISPLAY_HOLONET", dbPlayer.DisplayHolonet ? TRUE : FALSE);
             player.SetLocalInt("DISPLAY_DISCORD", dbPlayer.DisplayDiscord ? TRUE : FALSE);
         }

@@ -2,9 +2,8 @@
 using System;
 using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
@@ -43,8 +42,8 @@ namespace SWLOR.Game.Server.Placeable.Bank
                 return false;
             }
 
-            Data.Entity.Bank entity = _data.Banks.SingleOrDefault(x => x.BankID == bankID);
-
+            Data.Entity.Bank entity = _data.SingleOrDefault<Data.Entity.Bank>(x => x.BankID == bankID);
+            
             if (entity == null)
             {
                 entity = new Data.Entity.Bank
@@ -54,8 +53,7 @@ namespace SWLOR.Game.Server.Placeable.Bank
                     AreaTag = area.Tag,
                     BankID = bankID
                 };
-                _data.Banks.Add(entity);
-                _data.SaveChanges();
+                _data.SubmitDataChange(entity, DatabaseActionType.Insert);
             }
 
             foreach (BankItem item in entity.BankItems.Where(x => x.PlayerID == player.GlobalID))

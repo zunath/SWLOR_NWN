@@ -6,6 +6,7 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using Object = NWN.Object;
@@ -103,7 +104,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private PCOutfit GetPlayerOutfits(NWPlayer oPC)
         {
-            return _data.PCOutfits.SingleOrDefault(x => x.PlayerID == oPC.GlobalID);
+            return _data.SingleOrDefault<PCOutfit>(x => x.PlayerID == oPC.GlobalID);
         }
 
         private void HandleSaveOutfit(int responseID)
@@ -111,6 +112,7 @@ namespace SWLOR.Game.Server.Conversation
             NWPlayer oPC = GetPC();
             NWItem oClothes = (_.GetItemInSlot(NWScript.INVENTORY_SLOT_CHEST, oPC.Object));
             PCOutfit entity = GetPlayerOutfits(oPC);
+            var action = DatabaseActionType.Update;
 
             if (entity == null)
             {
@@ -118,6 +120,7 @@ namespace SWLOR.Game.Server.Conversation
                 {
                     PlayerID = oPC.GlobalID
                 };
+                action = DatabaseActionType.Insert;
             }
 
             if (!oClothes.IsValid)
@@ -138,8 +141,7 @@ namespace SWLOR.Game.Server.Conversation
             else if (responseID == 9) entity.Outfit9 = clothesData;
             else if (responseID == 10) entity.Outfit10 = clothesData;
 
-            _data.SaveChanges();
-
+            _data.SubmitDataChange(entity, action);
             ShowSaveOutfitOptions();
         }
 

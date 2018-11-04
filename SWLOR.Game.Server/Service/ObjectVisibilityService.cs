@@ -3,6 +3,7 @@ using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWNX.Contracts;
@@ -54,7 +55,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
 
-            var dbPlayer = _data.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+            var dbPlayer = _data.Single<PlayerCharacter>(x => x.PlayerID == player.GlobalID);
 
             // Apply visibilities for player
             foreach (var visibility in dbPlayer.PCObjectVisibilities)
@@ -98,7 +99,7 @@ namespace SWLOR.Game.Server.Service
             
             var players = NWModule.Get().Players.ToList();
             var concatPlayerIDs = players.Select(x => x.GlobalID);
-            var pcVisibilities = _data.PCObjectVisibilities.Where(x => concatPlayerIDs.Contains(x.PlayerID)).ToList();
+            var pcVisibilities = _data.Where<PCObjectVisibility>(x => concatPlayerIDs.Contains(x.PlayerID)).ToList();
 
             foreach (var player in players)
             {
@@ -133,7 +134,9 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var visibility = _data.PCObjectVisibilities.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.VisibilityObjectID == visibilityObjectID);
+            var visibility = _data.SingleOrDefault<PCObjectVisibility>(x => x.PlayerID == player.GlobalID && x.VisibilityObjectID == visibilityObjectID);
+            DatabaseActionType action = DatabaseActionType.Update;
+
             if (visibility == null)
             {
                 visibility = new PCObjectVisibility
@@ -141,11 +144,11 @@ namespace SWLOR.Game.Server.Service
                     PlayerID = player.GlobalID,
                     VisibilityObjectID = visibilityObjectID
                 };
-                _data.PCObjectVisibilities.Add(visibility);
+                action = DatabaseActionType.Insert;
             }
 
             visibility.IsVisible = isVisible;
-            _data.SaveChanges();
+            _data.SubmitDataChange(visibility, action);
 
             if (visibility.IsVisible)
                 _nwnxPlayer.SetVisibilityOverride(player, target, (int)PlayerVisibilityType.Visible);

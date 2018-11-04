@@ -7,6 +7,7 @@ using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN.NWScript;
 using Object = NWN.Object;
@@ -49,8 +50,9 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
             if (disturbType == INVENTORY_DISTURB_TYPE_ADDED)
             {
                 int questID = container.GetLocalInt("QUEST_ID");
-                PCQuestStatus status = _data.PCQuestStatus.Single(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
+                PCQuestStatus status = _data.Single<PCQuestStatus>(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
                 PCQuestItemProgress progress = status.PCQuestItemProgresses.SingleOrDefault(x => x.Resref == item.Resref);
+                DatabaseActionType action = DatabaseActionType.Update;
 
                 if (progress == null)
                 {
@@ -68,14 +70,13 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
 
                     if (progress.Remaining <= 0)
                     {
-                        progress = _data.PCQuestItemProgresses.Single(x => x.PCQuestItemProgressID == progress.PCQuestItemProgressID);
-                        _data.PCQuestItemProgresses.Remove(progress);
+                        progress = _data.Single<PCQuestItemProgress>(x => x.PCQuestItemProgressID == progress.PCQuestItemProgressID);
+                        action = DatabaseActionType.Delete;
                     }
-
-                    _data.SaveChanges();
+                    _data.SubmitDataChange(progress, action);
 
                     // Recalc the remaining items needed.
-                    int remainingCount = _data.PCQuestItemProgresses.Count(x => x.PCQuestStatusID == status.PCQuestStatusID);
+                    int remainingCount = _data.GetAll<PCQuestItemProgress>().Count(x => x.PCQuestStatusID == status.PCQuestStatusID);
                     if (remainingCount <= 0)
                     {
                         _quest.AdvanceQuestState(player, owner, questID);

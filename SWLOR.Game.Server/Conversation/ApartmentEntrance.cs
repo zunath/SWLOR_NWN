@@ -105,6 +105,7 @@ namespace SWLOR.Game.Server.Conversation
             NWPlayer oPC = GetPC();
 
             var apartment = _data.Get<PCBase>(pcBaseID);
+            var buildingStyle = _data.Get<BuildingStyle>(apartment.BuildingStyleID);
             NWArea instance = GetAreaInstance(pcBaseID);
 
             if (instance == null)
@@ -115,7 +116,7 @@ namespace SWLOR.Game.Server.Conversation
                     name = apartment.CustomName;
                 }
 
-                instance = _area.CreateAreaInstance(oPC, apartment.BuildingStyle.Resref, name, "PLAYER_HOME_ENTRANCE");
+                instance = _area.CreateAreaInstance(oPC, buildingStyle.Resref, name, "PLAYER_HOME_ENTRANCE");
                 instance.SetLocalInt("PC_BASE_ID", pcBaseID);
                 instance.SetLocalInt("BUILDING_TYPE", (int)BuildingType.Apartment);
 

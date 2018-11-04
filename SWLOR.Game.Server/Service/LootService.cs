@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (lootTableID <= 0) return null;
 
-            LootTable entity = _data.LootTables.Single(x => x.LootTableID == lootTableID);
+            LootTable entity = _data.Single<LootTable>(x => x.LootTableID == lootTableID);
             if (entity.LootTableItems.Count <= 0) return null;
 
             int[] weights = new int[entity.LootTableItems.Count];

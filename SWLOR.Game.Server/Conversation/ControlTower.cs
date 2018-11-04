@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Conversation
         public override void Initialize()
         {
             int structureID = GetDialogTarget().GetLocalInt("PC_BASE_STRUCTURE_ID");
-            PCBaseStructure structure = _data.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
+            PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.PCBaseStructureID == structureID);
 
             if (!_perm.HasBasePermission(GetPC(), structure.PCBaseID, BasePermission.CanManageBaseFuel))
             {
@@ -108,7 +108,8 @@ namespace SWLOR.Game.Server.Conversation
             }
 
             int structureID = tower.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            var structure = _data.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
+            var structure = _data.Single<PCBaseStructure>(x => x.PCBaseStructureID == structureID);
+            var pcBase = _data.Get<PCBase>(structure.PCBaseID);
             Location location = oPC.Location;
             bay = _.CreateObject(OBJECT_TYPE_PLACEABLE, "fuel_bay", location);
             bay.AssignCommand(() => _.SetFacingPoint(oPC.Position));
@@ -119,15 +120,15 @@ namespace SWLOR.Game.Server.Conversation
 
             if (isStronidium)
             {
-                if(structure.PCBase.ReinforcedFuel > 0)
-                    _.CreateItemOnObject("stronidium", bay.Object, structure.PCBase.ReinforcedFuel);
+                if(pcBase.ReinforcedFuel > 0)
+                    _.CreateItemOnObject("stronidium", bay.Object, pcBase.ReinforcedFuel);
 
                 bay.SetLocalInt("CONTROL_TOWER_FUEL_TYPE", 1);
             }
             else
             {
-                if (structure.PCBase.Fuel > 0)
-                    _.CreateItemOnObject("fuel_cell", bay.Object, structure.PCBase.Fuel);
+                if (pcBase.Fuel > 0)
+                    _.CreateItemOnObject("fuel_cell", bay.Object, pcBase.Fuel);
             }
 
             oPC.AssignCommand(() => _.ActionInteractObject(bay.Object));
@@ -155,7 +156,7 @@ namespace SWLOR.Game.Server.Conversation
             }
             
             int structureID = tower.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            var structure = _data.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
+            var structure = _data.Single<PCBaseStructure>(x => x.PCBaseStructureID == structureID);
             Location location = oPC.Location;
             bay = _.CreateObject(OBJECT_TYPE_PLACEABLE, "resource_bay", location);
 

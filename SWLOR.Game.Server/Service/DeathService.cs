@@ -6,6 +6,7 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN.NWScript;
 
@@ -76,21 +77,20 @@ namespace SWLOR.Game.Server.Service
             if (player == null) throw new ArgumentNullException(nameof(player), nameof(player) + " cannot be null.");
             if (player.Object == null) throw new ArgumentNullException(nameof(player.Object), nameof(player.Object) + " cannot be null.");
 
-            PlayerCharacter pc = _data.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+            PlayerCharacter pc = _data.Single<PlayerCharacter>(x => x.PlayerID == player.GlobalID);
             pc.RespawnLocationX = player.Position.m_X;
             pc.RespawnLocationY = player.Position.m_Y;
             pc.RespawnLocationZ = player.Position.m_Z;
             pc.RespawnLocationOrientation = player.Facing;
             pc.RespawnAreaResref = player.Area.Resref;
-
-            _data.SaveChanges();
+            _data.SubmitDataChange(pc, DatabaseActionType.Update);
             _.FloatingTextStringOnCreature("You will return to this location the next time you die.", player.Object, FALSE);
         }
 
 
         public void TeleportPlayerToBindPoint(NWPlayer pc)
         {
-            PlayerCharacter entity = _data.PlayerCharacters.Single(x => x.PlayerID == pc.GlobalID);
+            PlayerCharacter entity = _data.Single<PlayerCharacter>(x => x.PlayerID == pc.GlobalID);
             TeleportPlayerToBindPoint(pc, entity);
         }
 

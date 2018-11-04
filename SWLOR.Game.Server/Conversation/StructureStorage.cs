@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
@@ -140,7 +141,7 @@ namespace SWLOR.Game.Server.Conversation
                 case 1: // Confirm Change Name
                     string name = GetPC().GetLocalString("NEW_CONTAINER_NAME");
                     int structureID = GetDialogTarget().GetLocalInt("PC_BASE_STRUCTURE_ID");
-                    var structure = _data.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
+                    var structure = _data.Single<PCBaseStructure>(x => x.PCBaseStructureID == structureID);
                     structure.CustomName = name;
                     GetDialogTarget().Name = name;
                     GetPC().DeleteLocalString("NEW_CONTAINER_NAME");

@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Event.Module
         public bool Run(params object[] args)
         {
             string[] playerIDs = NWModule.Get().Players.Where(x => x.IsPlayer).Select(x => x.GlobalID).ToArray();
-            var entities = _data.PlayerCharacters.Where(x => playerIDs.Contains(x.PlayerID));
+            var entities = _data.Where<PlayerCharacter>(x => playerIDs.Contains(x.PlayerID)).ToList();
 
             foreach (var player in NWModule.Get().Players)
             {
@@ -49,9 +49,9 @@ namespace SWLOR.Game.Server.Event.Module
 
                 HandleRegenerationTick(player, entity);
                 HandleFPRegenerationTick(player, entity);
-            }
 
-            _data.SaveChanges();
+                _data.SubmitDataChange(entity, DatabaseActionType.Update);
+            }
             
             SaveCharacters();
             _base.OnModuleHeartbeat();

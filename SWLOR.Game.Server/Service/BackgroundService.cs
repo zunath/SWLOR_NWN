@@ -2,6 +2,7 @@
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.Service
         
         public void ApplyBackgroundBonuses(NWPlayer oPC)
         {
-            var dbPlayer = _data.PlayerCharacters.Single(x => x.PlayerID == oPC.GlobalID);
+            var dbPlayer = _data.Single<PlayerCharacter>(x => x.PlayerID == oPC.GlobalID);
             string pcName = oPC.Name;
             int classID = oPC.Class1;
 
@@ -43,7 +44,7 @@ namespace SWLOR.Game.Server.Service
             {
                 case BackgroundType.Freelancer:
                     dbPlayer.UnallocatedSP = dbPlayer.UnallocatedSP + 3;
-                    _data.SaveChanges();
+                    _data.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
                     break;
                 case BackgroundType.Smuggler:
                     item1Resref = "blaster_s";

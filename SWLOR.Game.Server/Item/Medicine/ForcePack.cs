@@ -2,6 +2,7 @@
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
@@ -142,7 +143,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return "Only players may be targeted with this item.";
             }
 
-            var dbTarget = _data.PlayerCharacters.Single(x => x.PlayerID == target.GlobalID);
+            var dbTarget = _data.Single<PlayerCharacter>(x => x.PlayerID == target.GlobalID);
             if (dbTarget.CurrentFP >= dbTarget.MaxFP)
             {
                 return "Your target's FP is at their maximum.";

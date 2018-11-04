@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Processor.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
@@ -113,7 +114,7 @@ namespace SWLOR.Game.Server.Processor
 
                 if (string.IsNullOrWhiteSpace(resref))
                 {
-                    var dbSpawn = _data.SpawnObjects.Where(x => x.SpawnID == spawn.SpawnTableID)
+                    var dbSpawn = _data.Where<SpawnObject>(x => x.SpawnID == spawn.SpawnTableID)
                         .OrderBy(o => Guid.NewGuid()).First();
 
                     resref = dbSpawn.Resref;

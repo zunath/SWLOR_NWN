@@ -163,8 +163,9 @@ namespace SWLOR.Game.Server.Service
             }
             if (examinedItem.AssociatedSkillType > 0)
             {
-                PCSkill pcSkill = _data.PCSkills.Single(x => x.PlayerID == examiner.GlobalID && x.SkillID == (int) examinedItem.AssociatedSkillType);
-                description += _color.Orange("Associated Skill: ") + pcSkill.Skill.Name + "\n";
+                PCSkill pcSkill = _data.Single<PCSkill>(x => x.PlayerID == examiner.GlobalID && x.SkillID == (int) examinedItem.AssociatedSkillType);
+                Skill skill = _data.Get<Skill>(pcSkill.SkillID);
+                description += _color.Orange("Associated Skill: ") + skill.Name + "\n";
             }
             if (examinedItem.CustomAC > 0)
             {

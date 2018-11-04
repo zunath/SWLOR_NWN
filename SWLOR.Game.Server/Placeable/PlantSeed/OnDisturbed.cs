@@ -84,20 +84,21 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
             Location plantLocation = container.Location;
             int perkBonus = _perk.GetPCPerkLevel(oPC, PerkType.FarmingEfficiency) * 2;
             int ticks = (int)(plant.BaseTicks - ((_perk.GetPCPerkLevel(oPC, PerkType.ExpertFarmer) * 0.05f)) * plant.BaseTicks);
-            Data.Entity.GrowingPlant growingPlant = new Data.Entity.GrowingPlant();
-            growingPlant.PlantID = plant.PlantID;
-            growingPlant.RemainingTicks = ticks;
-            growingPlant.LocationAreaTag = areaTag;
-            growingPlant.LocationOrientation = _.GetFacingFromLocation(plantLocation);
-            growingPlant.LocationX = _.GetPositionFromLocation(plantLocation).m_X;
-            growingPlant.LocationY = _.GetPositionFromLocation(plantLocation).m_Y;
-            growingPlant.LocationZ = _.GetPositionFromLocation(plantLocation).m_Z;
-            growingPlant.IsActive = true;
-            growingPlant.DateCreated = DateTime.UtcNow; 
-            growingPlant.LongevityBonus = perkBonus;
-
-            _data.GrowingPlants.Add(growingPlant);
-            _data.SaveChanges();
+            Data.Entity.GrowingPlant growingPlant = new Data.Entity.GrowingPlant
+            {
+                PlantID = plant.PlantID,
+                RemainingTicks = ticks,
+                LocationAreaTag = areaTag,
+                LocationOrientation = _.GetFacingFromLocation(plantLocation),
+                LocationX = _.GetPositionFromLocation(plantLocation).m_X,
+                LocationY = _.GetPositionFromLocation(plantLocation).m_Y,
+                LocationZ = _.GetPositionFromLocation(plantLocation).m_Z,
+                IsActive = true,
+                DateCreated = DateTime.UtcNow,
+                LongevityBonus = perkBonus
+            };
+            
+            _data.SubmitDataChange(growingPlant, DatabaseActionType.Insert);
             
             NWPlaceable hole = (container.GetLocalObject("FARM_SMALL_HOLE"));
             NWPlaceable plantPlc = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "growing_plant", hole.Location));

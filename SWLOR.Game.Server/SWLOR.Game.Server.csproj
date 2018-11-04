@@ -1180,7 +1180,6 @@
     <Compile Include="Service\Contracts\ILootService.cs" />
     <Compile Include="Service\Contracts\IMapPinService.cs" />
     <Compile Include="Service\Contracts\IMenuService.cs" />
-    <Compile Include="Service\Contracts\IMigrationService.cs" />
     <Compile Include="Service\Contracts\IPerkService.cs" />
     <Compile Include="Service\Contracts\IPlayerDescriptionService.cs" />
     <Compile Include="Service\Contracts\IPlayerService.cs" />
@@ -1229,7 +1228,6 @@
     <Compile Include="Service\MapPinService.cs" />
     <Compile Include="Service\MapService.cs" />
     <Compile Include="Service\MenuService.cs" />
-    <Compile Include="Service\MigrationService.cs" />
     <Compile Include="Service\ObjectProcessingService.cs" />
     <Compile Include="Service\ObjectVisibilityService.cs" />
     <Compile Include="Service\PerkService.cs" />

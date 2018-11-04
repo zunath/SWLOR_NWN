@@ -211,7 +211,6 @@ namespace SWLOR.Game.Server
             builder.RegisterType<BasePermissionService>().As<IBasePermissionService>();
             builder.RegisterType<BaseService>().As<IBaseService>();
             builder.RegisterType<BehaviourService>().As<IBehaviourService>();
-            builder.RegisterType<CachingService>().As<ICachingService>();
             builder.RegisterType<ChatCommandService>().As<IChatCommandService>();
             builder.RegisterType<ChatTextService>().As<IChatTextService>();
             builder.RegisterType<ColorTokenService>().As<IColorTokenService>();
@@ -239,7 +238,6 @@ namespace SWLOR.Game.Server
             builder.RegisterType<MapService>().As<IMapService>();
             builder.RegisterType<MapPinService>().As<IMapPinService>();
             builder.RegisterType<MenuService>().As<IMenuService>();
-            builder.RegisterType<MigrationService>().As<IMigrationService>();
             builder.RegisterType<ModService>().As<IModService>();
             builder.RegisterType<ObjectProcessingService>().As<IObjectProcessingService>();
             builder.RegisterType<ObjectVisibilityService>().As<IObjectVisibilityService>();

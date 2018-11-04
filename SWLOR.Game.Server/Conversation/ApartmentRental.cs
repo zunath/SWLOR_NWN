@@ -291,7 +291,7 @@ namespace SWLOR.Game.Server.Conversation
 
             PCBasePermission permission = new PCBasePermission
             {
-                PCBase = pcApartment,
+                //PCBase = pcApartment,
                 PlayerID = player.GlobalID
             };
             _data.SubmitDataChange(permission, DatabaseActionType.Insert);

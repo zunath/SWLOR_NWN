@@ -6,6 +6,7 @@ using SWLOR.Game.Server.ValueObject.Dialog;
 using System;
 using System.Linq;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.NWNX.Contracts;
 using static NWN.NWScript;
 
@@ -322,10 +323,10 @@ namespace SWLOR.Game.Server.Conversation
             var model = GetDialogCustomData<Model>();
             int association = model.AssociationID;
             var player = GetPC();
-            var dbPlayer = _data.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+            var dbPlayer = _data.Single<PlayerCharacter>(x => x.PlayerID == player.GlobalID);
 
             dbPlayer.AssociationID = association;
-            _data.SaveChanges();
+            _data.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
         }
 
         private void ChangeSkinColorResponses(int responseID)

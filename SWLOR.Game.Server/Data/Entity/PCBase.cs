@@ -15,7 +15,6 @@ namespace SWLOR.Game.Server.Data.Entity
             CustomName = "";
             PCBasePermissions = new HashSet<PCBasePermission>();
             PCBaseStructures = new HashSet<PCBaseStructure>();
-            PrimaryResidencePlayerCharacters = new HashSet<PlayerCharacter>();
         }
 
         [Key]

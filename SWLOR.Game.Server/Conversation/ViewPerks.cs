@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Conversation
         private readonly ISkillService _skill;
         private readonly IPlayerService _player;
         private readonly IColorTokenService _color;
+        private readonly IDataService _data;
 
         public ViewPerks(
             INWScript script, 
@@ -32,13 +33,15 @@ namespace SWLOR.Game.Server.Conversation
             IPerkService perk,
             ISkillService skill,
             IPlayerService player,
-            IColorTokenService color) 
+            IColorTokenService color,
+            IDataService data) 
             : base(script, dialog)
         {
             _perk = perk;
             _skill = skill;
             _player = player;
             _color = color;
+            _data = data;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -161,12 +164,15 @@ namespace SWLOR.Game.Server.Conversation
                 }
             }
 
+            var perkCategory = _data.Get<PerkCategory>(perk.PerkCategoryID);
+            var cooldownCategory = _data.Get<CooldownCategory>(perk.CooldownCategoryID);
+
             string header = _color.Green("Name: ") + perk.Name + "\n" +
-                    _color.Green("Category: ") + perk.PerkCategory.Name + "\n" +
+                    _color.Green("Category: ") + perkCategory.Name + "\n" +
                     _color.Green("Rank: ") + rank + " / " + maxRank + "\n" +
                     _color.Green("Price: ") + price + "\n" +
                     (perk.BaseFPCost > 0 ? _color.Green("FP: ") + perk.BaseFPCost : "") + "\n" +
-                    (perk.CooldownCategory != null && perk.CooldownCategory.BaseCooldownTime > 0 ? _color.Green("Cooldown: ") + perk.CooldownCategory.BaseCooldownTime + "s" : "") + "\n" +
+                    (cooldownCategory != null && cooldownCategory.BaseCooldownTime > 0 ? _color.Green("Cooldown: ") + cooldownCategory.BaseCooldownTime + "s" : "") + "\n" +
                     _color.Green("Description: ") + perk.Description + "\n" +
                     _color.Green("Current Bonus: ") + currentBonus + "\n" +
                     _color.Green("Next Bonus: ") + nextBonus + "\n";
@@ -183,10 +189,12 @@ namespace SWLOR.Game.Server.Conversation
                     {
                         if (req.RequiredRank > 0)
                         {
-                            string detailLine = req.Skill.Name + " Rank " + req.RequiredRank;
+                            PCSkill pcSkill = _skill.GetPCSkill(GetPC(), req.SkillID);
+                            Skill skill = _skill.GetSkill(pcSkill.SkillID);
+
+                            string detailLine = skill.Name + " Rank " + req.RequiredRank;
                             
-                            CachedPCSkill skill = _skill.GetPCSkill(GetPC(), req.SkillID);
-                            if (skill.Rank >= req.RequiredRank)
+                            if (pcSkill.Rank >= req.RequiredRank)
                             {
                                 header += _color.Green(detailLine) + "\n";
                             }

@@ -163,8 +163,8 @@ namespace SWLOR.Game.Server.Service
                         Rank = 0,
                         XP = 0
                     };
-
-                    _data.SubmitDataChange(pcSkill,DatabaseActionType.Insert);
+                    
+                    _data.SubmitDataChange(pcSkill, DatabaseActionType.Insert);
                 }
 
                 _race.ApplyDefaultAppearance(player);

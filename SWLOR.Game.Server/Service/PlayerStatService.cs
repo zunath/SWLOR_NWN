@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!player.IsPlayer) return;
             if (!player.IsInitializedAsPlayer) return;
-
+            
             PlayerCharacter pcEntity = _data.Get<PlayerCharacter>(player.GlobalID);
             List<PCSkill> skills = _data.Where<PCSkill>(x => x.PlayerID == player.GlobalID && x.Rank > 0).ToList();
             var itemBonuses = GetPlayerItemEffectiveStats(player, ignoreItem);

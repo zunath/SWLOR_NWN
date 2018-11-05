@@ -108,8 +108,6 @@ namespace SWLOR.Game.Server.Service
                 oItem2.IsCursed = true;
                 oItem2.Name = pcName + "'s " + oItem2.Name;
             }
-
-            _stat.ApplyStatChanges(oPC, null);
         }
 
     }

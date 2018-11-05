@@ -26,7 +26,6 @@
         PlasmaCell = 21,
         ShieldOath = 22,
         SwordOath = 23,
-        ForcePack = 24,
-        ForceLeech = 25,
+        ForcePack = 24
     }
 }

@@ -52,7 +52,6 @@
     <Reference Include="System.Data.Linq" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
-    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -191,7 +190,6 @@
     <Compile Include="CustomEffect\ElectricCellEffect.cs" />
     <Compile Include="CustomEffect\AcidCellEffect.cs" />
     <Compile Include="CustomEffect\DivineCellEffect.cs" />
-    <Compile Include="CustomEffect\ForceLeechEffect.cs" />
     <Compile Include="CustomEffect\ForcePackEffect.cs" />
     <Compile Include="CustomEffect\ShieldOathEffect.cs" />
     <Compile Include="CustomEffect\SonicCellEffect.cs" />
@@ -948,7 +946,6 @@
     <Compile Include="Perk\DarkSide\DarkHeal.cs" />
     <Compile Include="Perk\DarkSide\DarkSpread.cs" />
     <Compile Include="Perk\DarkSide\DrainLife.cs" />
-    <Compile Include="Perk\DarkSide\ForceLeech.cs" />
     <Compile Include="Perk\DarkSide\ForceLightning.cs" />
     <Compile Include="Perk\Engineering\EngineeringEfficiency.cs" />
     <Compile Include="Perk\Engineering\EngineeringOptimization.cs" />
@@ -1634,7 +1631,6 @@
     <EmbeddedResource Include="Data\Migrations\2018-10-22.3.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-10-22.4.sql" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
-    <EmbeddedResource Include="Data\Migrations\2018-10-25.5.sql" />
     <Content Include="Data\Migrations\Readme.txt" />
     <Content Include="ServerFiles\Database\scripts\AddWeaponCraftBlueprints.sql" />
     <Content Include="ServerFiles\Database\scripts\AddPerkLevels.sql" />
@@ -1652,7 +1648,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)*.*" "C:\Users\jesse\Documents\Neverwinter Nights\mono\" /E /Y /C
+    <PostBuildEvent>xcopy "$(TargetDir)*.*" "C:/NeverwinterNights/NWN/mono" /E /Y /C
 </PostBuildEvent>
   </PropertyGroup>
 </Project>

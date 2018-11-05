@@ -401,7 +401,7 @@ namespace SWLOR.Game.Server.Service
             // Apartments - Pull structures directly from the table based on the PCBaseID
             var pcApartmentBaseStructures = _data.Where<PCBaseStructure>(x => x.PCBaseID == primaryResidencePCBase.PCBaseID);
             // Buildings - Get the building's PCBaseID and then grab its children
-            var pcBaseStructures = _data.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == primaryResidencePCBase.PCBaseID);
+            var pcBaseStructures = _data.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == primaryResidenceStructure.ParentPCBaseStructureID);
 
             var atmoStructures = dbPlayer.PrimaryResidencePCBaseID != null ? 
                 pcApartmentBaseStructures.Where(x =>

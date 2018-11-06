@@ -288,7 +288,7 @@ namespace SWLOR.Game.Server.Service
 
         public Player GetPlayerEntity(Guid playerID)
         {
-            if (playerID == Guid.Empty) throw new ArgumentException("Invalid player ID.", nameof(playerID));
+            if (playerID == null) throw new ArgumentException("Invalid player ID.", nameof(playerID));
             return _data.Get<Player>(playerID);
         }
 

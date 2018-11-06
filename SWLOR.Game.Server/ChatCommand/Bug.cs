@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.ChatCommand
 
             BugReport report = new BugReport
             {
-                SenderPlayerID = user.IsPlayer ? user.GlobalID : Guid.Empty,
+                SenderPlayerID = user.IsPlayer ? new Guid?(user.GlobalID): null,
                 CDKey = _.GetPCPublicCDKey(user),
                 Text = message,
                 TargetName = target.IsValid ? target.Name : string.Empty,

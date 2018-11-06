@@ -388,43 +388,44 @@ namespace SWLOR.Game.Server.Service
 
         public float EffectiveResidencyBonus(NWPlayer player)
         {
+            var dbPlayer = _data.Get<Player>(player.GlobalID);
+
+            // Player doesn't have either kind of residence. Return 0f
+            if (dbPlayer.PrimaryResidencePCBaseID == null &&
+                dbPlayer.PrimaryResidencePCBaseStructureID == null) return 0.0f;
+
             // Two paths for this. Players can either have a primary residence in an apartment which is considered a "PCBase".
             // Or they can have a primary residence in a building which is a child structure contained in an actual PCBase.
             // We grab the furniture objects differently based on the type.
-            var dbPlayer = _data.Get<Player>(player.GlobalID);
-            var primaryResidencePCBase = _data.Get<PCBase>(dbPlayer.PrimaryResidencePCBaseID);
-            var primaryResidenceStructure = _data.Get<PCBaseStructure>(dbPlayer.PrimaryResidencePCBaseStructureID);
-
-            if (dbPlayer.PrimaryResidencePCBaseStructureID == null &&
-                dbPlayer.PrimaryResidencePCBaseID == null) return 0.0f;
+            
+            List<PCBaseStructure> structures;
 
             // Apartments - Pull structures directly from the table based on the PCBaseID
-            var pcApartmentBaseStructures = _data.Where<PCBaseStructure>(x => x.PCBaseID == primaryResidencePCBase.ID);
+            if (dbPlayer.PrimaryResidencePCBaseID != null)
+            {
+                var primaryResidencePCBase = _data.Get<PCBase>(dbPlayer.PrimaryResidencePCBaseID);
+                structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == primaryResidencePCBase.ID).ToList();
+                
+            }
             // Buildings - Get the building's PCBaseID and then grab its children
-            var pcBaseStructures = _data.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == primaryResidenceStructure.ParentPCBaseStructureID);
+            else
+            {
+                var primaryResidenceStructure = _data.Get<PCBaseStructure>(dbPlayer.PrimaryResidencePCBaseStructureID);
+                structures = _data.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == primaryResidenceStructure.ParentPCBaseStructureID).ToList();
+            }
 
-            var atmoStructures = dbPlayer.PrimaryResidencePCBaseID != null ? 
-                pcApartmentBaseStructures.Where(x =>
-                {
-                    var baseStructure = _data.Get<BaseStructure>(x.BaseStructureID);
-                    return baseStructure.HasAtmosphere;
-                }).ToList() : 
-                pcBaseStructures.Where(x =>
-                {
-                    var baseStructure = _data.Get<BaseStructure>(x.BaseStructureID);
-                    return baseStructure.HasAtmosphere;
-                }).ToList();
-
+            var atmoStructures = structures.Where(x =>
+            {
+                var baseStructure = _data.Get<BaseStructure>(x.BaseStructureID);
+                return baseStructure.HasAtmosphere;
+            }).ToList();
+            
             float bonus = atmoStructures.Sum(x => (x.StructureBonus * 0.02f) + 0.02f);
 
             if (bonus >= 1f) bonus = 1f;
-
             return bonus;
         }
-
-
-
-
+        
         private int CalculateBAB(NWPlayer oPC, NWItem ignoreItem)
         {
             NWItem weapon = oPC.RightHand;

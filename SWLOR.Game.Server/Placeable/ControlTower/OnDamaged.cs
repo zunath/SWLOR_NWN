@@ -184,10 +184,10 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             _data.SubmitDataChange(pcBase, DatabaseActionType.Delete);
             
             Area dbArea = _data.Single<Area>(x => x.Resref == pcBase.AreaResref);
-            if (pcBase.Sector == AreaSector.Northeast) dbArea.NortheastOwner = Guid.Empty;
-            else if (pcBase.Sector == AreaSector.Northwest) dbArea.NorthwestOwner = Guid.Empty;
-            else if (pcBase.Sector == AreaSector.Southeast) dbArea.SoutheastOwner = Guid.Empty;
-            else if (pcBase.Sector == AreaSector.Southwest) dbArea.SouthwestOwner = Guid.Empty;
+            if (pcBase.Sector == AreaSector.Northeast) dbArea.NortheastOwner = null;
+            else if (pcBase.Sector == AreaSector.Northwest) dbArea.NorthwestOwner = null;
+            else if (pcBase.Sector == AreaSector.Southeast) dbArea.SoutheastOwner = null;
+            else if (pcBase.Sector == AreaSector.Southwest) dbArea.SouthwestOwner = null;
 
         }
     }

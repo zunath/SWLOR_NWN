@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Data.Entity
         }
         [ExplicitKey]
         public Guid ID { get; set; }
-        public Guid SenderPlayerID { get; set; }
+        public Guid? SenderPlayerID { get; set; }
         public string CDKey { get; set; }
         public string Text { get; set; }
         public string TargetName { get; set; }

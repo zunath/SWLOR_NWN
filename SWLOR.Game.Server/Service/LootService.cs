@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
@@ -28,23 +29,33 @@ namespace SWLOR.Game.Server.Service
 
         public ItemVO PickRandomItemFromLootTable(int lootTableID)
         {
+            Console.WriteLine("Picking a random item from loot table iD = " + lootTableID);
             if (lootTableID <= 0) return null;
-            
+
+
+            Console.WriteLine("looking for a random item");
             var lootTableItems = _data.Where<LootTableItem>(x => x.LootTableID == lootTableID).ToList();
 
             if (lootTableItems.Count <= 0) return null;
 
+            Console.WriteLine("count = " + lootTableItems.Count);
             int[] weights = new int[lootTableItems.Count];
 
             for (int x = 0; x < lootTableItems.Count; x++)
             {
                 weights[x] = lootTableItems.ElementAt(x).Weight;
             }
+
+
+            Console.WriteLine("getting random index");
             int randomIndex = _random.GetRandomWeightedIndex(weights);
+            Console.WriteLine("index = " + randomIndex);
+
 
             LootTableItem itemEntity = lootTableItems.ElementAt(randomIndex);
             int quantity = _random.Random(itemEntity.MaxQuantity) + 1;
 
+            Console.WriteLine("got item resref = " + itemEntity.Resref);
             ItemVO result = new ItemVO
             {
                 Quantity = quantity,
@@ -53,6 +64,7 @@ namespace SWLOR.Game.Server.Service
             };
 
 
+            Console.WriteLine("returning item");
             return result;
         }
 

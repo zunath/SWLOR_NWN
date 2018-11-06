@@ -32,8 +32,12 @@ namespace SWLOR.Game.Server.Service
 
         public void HarvestPlant(NWPlayer player, NWItem shovel, NWPlaceable plant)
         {
-            Guid growingPlantID = new Guid(plant.GetLocalString("GROWING_PLANT_ID"));
-            if (growingPlantID == Guid.Empty) return;
+            string growingPlantID = plant.GetLocalString("GROWING_PLANT_ID");
+            Guid? growingPlantGuid = null;
+            if (!string.IsNullOrWhiteSpace(growingPlantID))
+                growingPlantGuid = new Guid(growingPlantID);
+
+            if (growingPlantGuid == null) return;
 
             int charges = shovel.Charges;
             if (charges <= 0)
@@ -42,7 +46,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            GrowingPlant growingPlant = _data.Single<GrowingPlant>(x => x.ID == growingPlantID);
+            GrowingPlant growingPlant = _data.Single<GrowingPlant>(x => x.ID == growingPlantGuid);
             Plant plantEntity = _data.Get<Plant>(growingPlant.PlantID);
 
             if (string.IsNullOrWhiteSpace(plantEntity.SeedResref))
@@ -99,10 +103,14 @@ namespace SWLOR.Game.Server.Service
         
         public void RemoveGrowingPlant(NWPlaceable plant)
         {
-            Guid growingPlantID = new Guid(plant.GetLocalString("GROWING_PLANT_ID"));
-            if (growingPlantID == Guid.Empty) return;
+            string growingPlantID = plant.GetLocalString("GROWING_PLANT_ID");
+            Guid? growingPlantGuid = null;
+            if(!string.IsNullOrWhiteSpace(growingPlantID))
+                growingPlantGuid = new Guid(growingPlantID);
 
-            GrowingPlant growingPlant = _data.Single<GrowingPlant>(x => x.ID == growingPlantID);
+            if (growingPlantID == null) return;
+
+            GrowingPlant growingPlant = _data.Single<GrowingPlant>(x => x.ID == growingPlantGuid);
             growingPlant.IsActive = false;
             _data.SubmitDataChange(growingPlant, DatabaseActionType.Update);
         }

@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Service
                 AccountName = account,
                 CDKey = cdKey,
                 ClientLogEventTypeID = 1,
-                PlayerID = oPC.IsDM ? Guid.Empty : oPC.GlobalID,
+                PlayerID = oPC.IsDM ? null : (Guid?)oPC.GlobalID,
                 DateOfEvent = now
             };
             _data.SubmitDataChange(entity, DatabaseActionType.Insert);
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Service
                 AccountName = account,
                 CDKey = cdKey,
                 ClientLogEventTypeID = 2,
-                PlayerID = oPC.IsDM ? Guid.Empty : oPC.GlobalID,
+                PlayerID = oPC.IsDM ? null : (Guid?)oPC.GlobalID,
                 DateOfEvent = now
             };
             _data.SubmitDataChange(entity, DatabaseActionType.Insert);
@@ -117,7 +117,7 @@ namespace SWLOR.Game.Server.Service
             // Sender - should always have this data.
             string senderCDKey = _.GetPCPublicCDKey(sender.Object);
             string senderAccountName = sender.Name;
-            Guid senderPlayerID = Guid.Empty;
+            Guid? senderPlayerID = null;
             string senderDMName = null;
 
             // DMs do not have PlayerIDs so store their name in another field.
@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Service
 
             string receiverCDKey = null;
             string receiverAccountName = null;
-            Guid receiverPlayerID = Guid.Empty;
+            Guid? receiverPlayerID = null;
             string receiverDMName = null;
 
             if (recipient.IsValid)

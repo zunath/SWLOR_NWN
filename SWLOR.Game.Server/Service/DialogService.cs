@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Service
 
         public PlayerDialog LoadPlayerDialog(Guid globalID)
         {
-            if (globalID == Guid.Empty) throw new ArgumentException(nameof(globalID), nameof(globalID) + " cannot be null, empty, or whitespace.");
+            if (globalID == null) throw new ArgumentException(nameof(globalID), nameof(globalID) + " cannot be null, empty, or whitespace.");
             if (!_cache.PlayerDialogs.ContainsKey(globalID)) throw new Exception(nameof(globalID) + " '" + globalID + "' could not be found. Be sure to call " + nameof(LoadConversation) + " first.");
 
             return _cache.PlayerDialogs[globalID];
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Service
 
         public void RemovePlayerDialog(Guid globalID)
         {
-            if (globalID == Guid.Empty) throw new ArgumentException(nameof(globalID), nameof(globalID) + " cannot be null, empty, or whitespace.");
+            if (globalID == null) throw new ArgumentException(nameof(globalID), nameof(globalID) + " cannot be null, empty, or whitespace.");
 
             PlayerDialog dialog = _cache.PlayerDialogs[globalID];
             _cache.DialogFilesInUse[dialog.DialogNumber] = false;

@@ -83,14 +83,14 @@ namespace SWLOR.Game.Server.Service
             return categories.ToList();
         }
 
-        public List<CraftBlueprint> GetPCBlueprintsByDeviceAndCategoryID(Guid playerID, int deviceID, long categoryID)
+        public List<CraftBlueprint> GetPCBlueprintsByDeviceAndCategoryID(Guid playerID, int deviceID, int categoryID)
         {
             return GetCraftBlueprintsAvailableToPlayer(playerID).Where(x => x.CraftDeviceID == deviceID && 
                                                                                       x.CraftCategoryID == categoryID)
                 .ToList();
         }
 
-        public string BuildBlueprintHeader(NWPlayer player, long blueprintID, bool showAddedComponentList)
+        public string BuildBlueprintHeader(NWPlayer player, int blueprintID, bool showAddedComponentList)
         {
             var model = GetPlayerCraftingData(player);
             var bp = model.Blueprint;
@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.Service
             return header;
         }
 
-        public CraftBlueprint GetBlueprintByID(long craftBlueprintID)
+        public CraftBlueprint GetBlueprintByID(int craftBlueprintID)
         {
             return _data.SingleOrDefault<CraftBlueprint>(x => x.ID == craftBlueprintID);
         }
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Service
             return _data.Where<CraftBlueprintCategory>(x => blueprints.Contains(x.ID)).ToList();
         }
 
-        public List<CraftBlueprint> GetPCBlueprintsByCategoryID(Guid playerID, long categoryID)
+        public List<CraftBlueprint> GetPCBlueprintsByCategoryID(Guid playerID, int categoryID)
         {
             return GetCraftBlueprintsAvailableToPlayer(playerID).Where(x => x.CraftCategoryID == categoryID).ToList();
         }

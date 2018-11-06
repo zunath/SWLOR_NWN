@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Conversation
             Model vm = GetDialogCustomData<Model>();
             ClearPageResponses("BlueprintListPage");
             DialogResponse response = GetResponseByID("CraftCategoriesPage", responseID);
-            long categoryID = (long) response.CustomData;
+            int categoryID = (int) response.CustomData;
             
             vm.CraftBlueprints = _craft.GetPCBlueprintsByCategoryID(GetPC().GlobalID, categoryID);
 
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Conversation
         private void HandleBlueprintListPageResponse(int responseID)
         {
             DialogResponse response = GetResponseByID("BlueprintListPage", responseID);
-            long blueprintID = (long)response.CustomData;
+            int blueprintID = (int)response.CustomData;
 
             if (blueprintID == -1)
             {

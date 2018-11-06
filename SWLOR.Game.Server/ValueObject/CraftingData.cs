@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.ValueObject
 {
     public class CraftingData
     {
-        public long BlueprintID { get; set; }
+        public int BlueprintID { get; set; }
         public CraftBlueprint Blueprint { get; set; }
         public int MainMinimum { get; set; }
         public int MainMaximum { get; set; }

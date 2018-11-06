@@ -326,7 +326,7 @@ namespace SWLOR.Game.Server.Service
             return pcEffect != null;
         }
 
-        public void RemovePCCustomEffect(NWPlayer oPC, long customEffectID)
+        public void RemovePCCustomEffect(NWPlayer oPC, int customEffectID)
         {
             PCCustomEffect effect = _data.SingleOrDefault<PCCustomEffect>(x => x.PlayerID == oPC.GlobalID && x.CustomEffectID == customEffectID);
             oPC.DeleteLocalInt("CUSTOM_EFFECT_ACTIVE_" + customEffectID);
@@ -343,7 +343,7 @@ namespace SWLOR.Game.Server.Service
 
         public void RemovePCCustomEffect(NWPlayer oPC, CustomEffectType customEffectType)
         {
-            RemovePCCustomEffect(oPC, (long) customEffectType);
+            RemovePCCustomEffect(oPC, (int) customEffectType);
         }
 
         public int GetCustomEffectLevel(NWCreature creature, CustomEffectType customEffectType)

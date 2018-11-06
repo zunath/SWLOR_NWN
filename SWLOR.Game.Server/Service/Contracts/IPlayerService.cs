@@ -7,8 +7,8 @@ namespace SWLOR.Game.Server.Service.Contracts
 {
     public interface IPlayerService
     {
-        PlayerCharacter GetPlayerEntity(NWPlayer player);
-        PlayerCharacter GetPlayerEntity(Guid playerID);
+        Player GetPlayerEntity(NWPlayer player);
+        Player GetPlayerEntity(Guid playerID);
         void InitializePlayer(NWPlayer player);
         void LoadCharacter(NWPlayer player);
         void OnAreaEnter();

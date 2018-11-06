@@ -115,7 +115,7 @@ namespace SWLOR.Game.Server.Conversation
                 string name = structure.CustomName;
                 if (string.IsNullOrWhiteSpace(name))
                 {
-                    PlayerCharacter owner = _player.GetPlayerEntity(pcBase.PlayerID);
+                    Player owner = _player.GetPlayerEntity(pcBase.PlayerID);
                     name = owner.CharacterName + "'s Building";
                 }
 

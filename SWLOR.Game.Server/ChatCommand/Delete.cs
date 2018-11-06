@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.ChatCommand
             }
             else
             {
-                PlayerCharacter dbPlayer = _data.Get<PlayerCharacter>(user.GlobalID);
+                Player dbPlayer = _data.Get<Player>(user.GlobalID);
                 dbPlayer.IsDeleted = true;
                 _data.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
 

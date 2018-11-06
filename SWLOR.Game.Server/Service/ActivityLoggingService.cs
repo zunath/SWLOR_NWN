@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Service
             int mode = _nwnxChat.GetChannel();
             int channel = ConvertNWNXChatChannelIDToDatabaseID(mode);
             NWObject recipient = _nwnxChat.GetTarget();
-            ChatChannelsDomain channelEntity = _data.Single<ChatChannelsDomain>(x => x.ID == channel);
+            ChatChannel channelEntity = _data.Single<ChatChannel>(x => x.ID == channel);
 
             // Sender - should always have this data.
             string senderCDKey = _.GetPCPublicCDKey(sender.Object);

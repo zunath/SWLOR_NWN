@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Service
             if (skillID <= 0 || xp <= 0 || !oPC.IsPlayer) return;
 
             xp = (int)(xp + xp * _playerStat.EffectiveResidencyBonus(oPC));
-            PlayerCharacter player = _data.Get<PlayerCharacter>(oPC.GlobalID);
+            Player player = _data.Get<Player>(oPC.GlobalID);
             Skill skill = GetSkill(skillID);
             PCSkill pcSkill = GetPCSkill(oPC, skillID);
             SkillXPRequirement req = _data.Single<SkillXPRequirement>(x => x.SkillID == skillID && x.Rank == pcSkill.Rank);

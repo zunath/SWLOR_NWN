@@ -13,6 +13,7 @@ using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 using static NWN.NWScript;
 using Quest = SWLOR.Game.Server.Data.Entity.Quest;
+using QuestType = SWLOR.Game.Server.Enumeration.QuestType;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -340,8 +341,8 @@ namespace SWLOR.Game.Server.Service
         {
             var quest = _data.Get<Quest>(status.QuestID);
             var state = _data.Single<QuestState>(x => x.QuestID == quest.ID && x.ID == status.CurrentQuestStateID);
-            var killTargets = _data.Where<QuestKillTargetList>(x => x.QuestStateID == state.ID);
-            var requiredItems = _data.Where<QuestRequiredItemList>(x => x.QuestStateID == state.ID);
+            var killTargets = _data.Where<QuestKillTarget>(x => x.QuestStateID == state.ID);
+            var requiredItems = _data.Where<QuestRequiredItem>(x => x.QuestStateID == state.ID);
 
             // Create entries for the PC kill targets.
             foreach (var kt in killTargets)
@@ -412,7 +413,7 @@ namespace SWLOR.Game.Server.Service
 
         private bool DoesPlayerHaveRequiredKeyItems(NWPlayer oPC, int questStateID)
         {
-            var requiredKeyItems = _data.Where<QuestRequiredKeyItemList>(x => x.QuestStateID == questStateID).ToList();
+            var requiredKeyItems = _data.Where<QuestRequiredKeyItem>(x => x.QuestStateID == questStateID).ToList();
             if (!oPC.IsPlayer) return false;
             if (requiredKeyItems.Count <= 0) return true;
 
@@ -420,7 +421,7 @@ namespace SWLOR.Game.Server.Service
                 .Select(s => s.KeyItemID).ToList();
 
             List<int> requiredKeyItemIDs = new List<int>();
-            foreach (QuestRequiredKeyItemList ki in requiredKeyItems)
+            foreach (QuestRequiredKeyItem ki in requiredKeyItems)
             {
                 requiredKeyItemIDs.Add(ki.KeyItemID);
             }
@@ -605,9 +606,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             QuestState questState = _data.Get<QuestState>(pcStatus.CurrentQuestStateID);
-            var requiredKeyItems = _data.Where<QuestRequiredKeyItemList>(x => x.QuestStateID == pcStatus.CurrentQuestStateID);
+            var requiredKeyItems = _data.Where<QuestRequiredKeyItem>(x => x.QuestStateID == pcStatus.CurrentQuestStateID);
 
-            foreach (QuestRequiredKeyItemList ki in requiredKeyItems)
+            foreach (QuestRequiredKeyItem ki in requiredKeyItems)
             {
                 if (!_keyItem.PlayerHasKeyItem(oPC, ki.KeyItemID))
                 {

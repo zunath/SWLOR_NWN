@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[CraftBlueprints]")]
+    [Table("[CraftBlueprint]")]
     public class CraftBlueprint: IEntity
     {
         [ExplicitKey]

@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private string GetMainPageHeader()
         {
-            PlayerCharacter pcEntity = _player.GetPlayerEntity(GetPC().GlobalID);
+            Player pcEntity = _player.GetPlayerEntity(GetPC().GlobalID);
 
             int totalSP = _skill.GetPCTotalSkillCount(GetPC());
             int totalPerks = _perk.GetPCTotalPerkCount(GetPC().GlobalID);
@@ -141,7 +141,7 @@ namespace SWLOR.Game.Server.Conversation
             Model vm = GetDialogCustomData<Model>();
             Data.Entity.Perk perk = _perk.GetPerkByID(vm.SelectedPerkID);
             PCPerk pcPerk = _perk.GetPCPerkByID(GetPC().GlobalID, perk.ID);
-            PlayerCharacter player = _player.GetPlayerEntity(GetPC().GlobalID);
+            Player player = _player.GetPlayerEntity(GetPC().GlobalID);
             var perkLevels = _data.Where<PerkLevel>(x => x.PerkID == perk.ID).ToList();
 
             int rank = pcPerk?.PerkLevel ?? 0;

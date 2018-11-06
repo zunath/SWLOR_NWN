@@ -20,6 +20,7 @@ using BaseStructureType = SWLOR.Game.Server.Data.Entity.BaseStructureType;
 using ComponentType = SWLOR.Game.Server.Data.Entity.ComponentType;
 using PCBaseType = SWLOR.Game.Server.Data.Entity.PCBaseType;
 using PerkExecutionType = SWLOR.Game.Server.Data.Entity.PerkExecutionType;
+using QuestType = SWLOR.Game.Server.Data.Entity.QuestType;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -87,8 +88,8 @@ namespace SWLOR.Game.Server.Service
             GetAll<BaseStructureType>();
             GetAll<BuildingStyle>();
             GetAll<Data.Entity.BuildingType>();
-            GetAll<ChatChannelsDomain>();
-            GetAll<ClientLogEventTypesDomain>();
+            GetAll<ChatChannel>();
+            GetAll<ClientLogEventType>();
             GetAll<ComponentType>();
             GetAll<CooldownCategory>();
             GetAll<CraftBlueprint>();
@@ -97,7 +98,7 @@ namespace SWLOR.Game.Server.Service
             GetAll<Data.Entity.CustomEffect>();
             GetAll<CustomEffectCategory>();
             GetAll<DiscordChatQueue>();
-            GetAll<DMRoleDomain>();
+            GetAll<DMRole>();
             GetAll<EnmityAdjustmentRule>();
             GetAll<FameRegion>();
             GetAll<GrowingPlant>();
@@ -140,15 +141,15 @@ namespace SWLOR.Game.Server.Service
             GetAll<PerkLevelQuestRequirement>();
             GetAll<PerkLevelSkillRequirement>();
             GetAll<Plant>();
-            GetAll<PlayerCharacter>(); // todo: temporarily enabled to get up and running. We should *not* be loading all PCs and related data into the cache.
+            GetAll<Player>(); // todo: temporarily enabled to get up and running. We should *not* be loading all PCs and related data into the cache.
             GetAll<Quest>();
-            GetAll<QuestKillTargetList>();
+            GetAll<QuestKillTarget>();
             GetAll<QuestPrerequisite>();
-            GetAll<QuestRequiredItemList>();
-            GetAll<QuestRequiredKeyItemList>();
+            GetAll<QuestRequiredItem>();
+            GetAll<QuestRequiredKeyItem>();
             GetAll<QuestRewardItem>();
             GetAll<QuestState>();
-            GetAll<QuestTypeDomain>();
+            GetAll<QuestType>();
             GetAll<ServerConfiguration>();
             GetAll<Skill>();
             GetAll<SkillCategory>();
@@ -169,7 +170,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!player.IsPlayer) return;
 
-            Get<PlayerCharacter>(player.GlobalID);
+            Get<Player>(player.GlobalID);
         }
 
         /// <summary>
@@ -180,7 +181,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!player.IsPlayer) return;
 
-            DeleteFromCache<PlayerCharacter>(player.GlobalID);
+            DeleteFromCache<Player>(player.GlobalID);
         }
         
         /// <summary>
@@ -331,9 +332,9 @@ namespace SWLOR.Game.Server.Service
             where T : class, IEntity
         {
             // todo: temporarily disabled to get up and running
-            //if (typeof(T) == typeof(PlayerCharacter))
+            //if (typeof(T) == typeof(Player))
             //{
-            //    throw new ArgumentException("GetAll() is not permitted on PlayerCharacter objects.");
+            //    throw new ArgumentException("GetAll() is not permitted on Player objects.");
             //}
             
             // Cache already built. Return everything that's cached so far.

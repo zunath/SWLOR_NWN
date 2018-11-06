@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         void OnHitCastSpell(NWPlayer oPC);
         void OnModuleUseFeat();
         void RestoreFP(NWPlayer oPC, int amount);
-        PlayerCharacter RestoreFP(NWPlayer oPC, int amount, PlayerCharacter entity);
+        Player RestoreFP(NWPlayer oPC, int amount, Player entity);
         void OnModuleApplyDamage();
         void ApplyCooldown(NWPlayer pc, CooldownCategory cooldown, IPerk ability);
         void ApplyEnmity(NWPlayer pc, NWCreature target, Data.Entity.Perk perk);

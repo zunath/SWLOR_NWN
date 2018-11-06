@@ -213,7 +213,7 @@ namespace SWLOR.Game.Server.Service
 
         public bool CanPerkBeUpgraded(NWPlayer player, int perkID)
         {
-            var dbPlayer = _data.Get<PlayerCharacter>(player.GlobalID);
+            var dbPlayer = _data.Get<Player>(player.GlobalID);
             var perkLevels = _data.Where<PerkLevel>(x => x.PerkID == perkID).ToList();
             var pcPerk = _data.SingleOrDefault<PCPerk>(x => x.PlayerID == player.GlobalID && x.PerkID == perkID);
 
@@ -257,7 +257,7 @@ namespace SWLOR.Game.Server.Service
             var perk = _data.Single<Data.Entity.Perk>(x => x.ID == perkID);
             var perkLevels = _data.Where<PerkLevel>(x => x.PerkID == perkID);
             var pcPerk = _data.SingleOrDefault<PCPerk>(x => x.PlayerID == oPC.GlobalID && x.PerkID == perkID);
-            var player = _data.Single<PlayerCharacter>(x => x.ID == oPC.GlobalID);
+            var player = _data.Single<Player>(x => x.ID == oPC.GlobalID);
 
             if (CanPerkBeUpgraded(oPC, perkID))
             {

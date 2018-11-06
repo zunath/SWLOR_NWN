@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Service
             if (!player.IsPlayer) return;
             if (!player.IsInitializedAsPlayer) return;
             
-            PlayerCharacter pcEntity = _data.Get<PlayerCharacter>(player.GlobalID);
+            Player pcEntity = _data.Get<Player>(player.GlobalID);
             List<PCSkill> skills = _data.Where<PCSkill>(x => x.PlayerID == player.GlobalID && x.Rank > 0).ToList();
             var itemBonuses = GetPlayerItemEffectiveStats(player, ignoreItem);
 
@@ -391,7 +391,7 @@ namespace SWLOR.Game.Server.Service
             // Two paths for this. Players can either have a primary residence in an apartment which is considered a "PCBase".
             // Or they can have a primary residence in a building which is a child structure contained in an actual PCBase.
             // We grab the furniture objects differently based on the type.
-            var dbPlayer = _data.Get<PlayerCharacter>(player.GlobalID);
+            var dbPlayer = _data.Get<Player>(player.GlobalID);
             var primaryResidencePCBase = _data.Get<PCBase>(dbPlayer.PrimaryResidencePCBaseID);
             var primaryResidenceStructure = _data.Get<PCBaseStructure>(dbPlayer.PrimaryResidencePCBaseStructureID);
 

@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[Perks]")]
+    [Table("[Perk]")]
     public class Perk: IEntity
     {
         public Perk()

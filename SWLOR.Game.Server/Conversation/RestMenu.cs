@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private string BuildMainPageHeader(NWPlayer player)
         {
-            PlayerCharacter playerEntity = _data.Single<PlayerCharacter>(x => x.ID == player.GlobalID);
+            Player playerEntity = _data.Single<Player>(x => x.ID == player.GlobalID);
             var association = _data.Get<Association>(playerEntity.AssociationID);
             int totalSkillCount = _data.Where<PCSkill>(x =>
             {

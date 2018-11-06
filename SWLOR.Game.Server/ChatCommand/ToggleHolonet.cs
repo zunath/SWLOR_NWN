@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.ChatCommand
 
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            var player = _data.Get<PlayerCharacter>(user.GlobalID);
+            var player = _data.Get<Player>(user.GlobalID);
             player.DisplayHolonet = !player.DisplayHolonet;
             user.SetLocalInt("DISPLAY_HOLONET", player.DisplayHolonet ? 1 : 0);
 

@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.ChatCommand
 
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            var player = _data.Get<PlayerCharacter>(user.GlobalID);
+            var player = _data.Get<Player>(user.GlobalID);
             player.DisplayDiscord = !player.DisplayDiscord;
             user.SetLocalInt("DISPLAY_DISCORD", player.DisplayDiscord ? 1 : 0);
             _data.SubmitDataChange(player, DatabaseActionType.Update);

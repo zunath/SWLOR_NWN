@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Service
             if (player == null) throw new ArgumentNullException(nameof(player));
             if (player.Object == null) throw new ArgumentNullException(nameof(player.Object));
 
-            PlayerCharacter pc = _data.Single<PlayerCharacter>(x => x.ID == player.GlobalID);
+            Player pc = _data.Single<Player>(x => x.ID == player.GlobalID);
             DateTime now = DateTime.UtcNow;
 
             return !pc.IsSanctuaryOverrideEnabled && now <= pc.DateSanctuaryEnds;
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Service
             if (player == null) throw new ArgumentNullException(nameof(player));
             if (player.Object == null) throw new ArgumentNullException(nameof(player.Object));
 
-            PlayerCharacter pc = _data.Single<PlayerCharacter>(x => x.ID == player.GlobalID);
+            Player pc = _data.Single<Player>(x => x.ID == player.GlobalID);
             pc.IsSanctuaryOverrideEnabled = overrideStatus;
             _data.SubmitDataChange(pc, DatabaseActionType.Update);
         }

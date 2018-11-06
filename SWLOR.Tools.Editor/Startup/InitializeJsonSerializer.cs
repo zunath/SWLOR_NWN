@@ -91,13 +91,13 @@ namespace SWLOR.Tools.Editor.Startup
                         return Create("PlantID", "Name", "BaseTicks", "Resref", "WaterTicks", "Level", "SeedResref");
                     case nameof(Quest):
                         return Create("QuestID", "Name", "JournalTag", "FameRegionID", "RequiredFameAmount", "AllowRewardSelection", "RewardGold", "RewardKeyItemID", "RewardFame", "IsRepeatable", "MapNoteTag", "StartKeyItemID", "RemoveStartKeyItemAfterCompletion", "OnAcceptRule", "OnAdvanceRule", "OnCompleteRule", "OnKillTargetRule", "OnAcceptArgs", "OnAdvanceArgs", "OnCompleteArgs", "OnKillTargetArgs", "QuestKillTargetLists", "QuestPrerequisites", "QuestRequiredItemLists", "QuestRequiredKeyItemLists", "QuestRewardItems", "QuestStates");
-                    case nameof(QuestKillTargetList):
+                    case nameof(QuestKillTarget):
                         return Create("QuestKillTargetListID", "QuestID", "NPCGroupID", "Quantity", "QuestStateID");
                     case nameof(QuestPrerequisite):
                         return Create("QuestPrerequisiteID", "QuestID", "RequiredQuestID");
-                    case nameof(QuestRequiredItemList):
+                    case nameof(QuestRequiredItem):
                         return Create("QuestRequiredItemListID", "QuestID", "Resref", "Quantity", "QuestStateID", "MustBeCraftedByPlayer");
-                    case nameof(QuestRequiredKeyItemList):
+                    case nameof(QuestRequiredKeyItem):
                         return Create("QuestRequiredKeyItemID", "QuestID", "KeyItemID", "QuestStateID");
                     case nameof(QuestRewardItem):
                         return Create("QuestRewardItemID", "QuestID", "Resref", "Quantity");

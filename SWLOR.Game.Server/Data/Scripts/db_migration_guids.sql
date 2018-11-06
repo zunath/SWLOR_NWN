@@ -5,12 +5,12 @@
 
 USE swlor_migrated
 GO
-/****** Object:  Table [dbo].[ApartmentBuildings]    Script Date: 11/6/2018 12:07:44 PM ******/
+/****** Object:  Table [dbo].[ApartmentBuilding]    Script Date: 11/6/2018 12:07:44 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[ApartmentBuildings](
+CREATE TABLE [dbo].[ApartmentBuilding](
 	[ID] INT NOT NULL,
 	[Name] [nvarchar](64) NOT NULL,
 PRIMARY KEY CLUSTERED 
@@ -19,12 +19,12 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Areas]    Script Date: 11/6/2018 12:07:44 PM ******/
+/****** Object:  Table [dbo].[Area]    Script Date: 11/6/2018 12:07:44 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[Areas](
+CREATE TABLE [dbo].[Area](
 	[ID] UNIQUEIDENTIFIER NOT NULL,
 	[Resref] [nvarchar](16) NOT NULL,
 	[Name] [nvarchar](128) NOT NULL,
@@ -53,7 +53,7 @@ PRIMARY KEY CLUSTERED
 (
 	[ID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY],
- CONSTRAINT [UQ_Areas_Resref] UNIQUE NONCLUSTERED 
+ CONSTRAINT [UQ_Area_Resref] UNIQUE NONCLUSTERED 
 (
 	[Resref] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -76,12 +76,12 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Associations]    Script Date: 11/6/2018 12:07:45 PM ******/
+/****** Object:  Table [dbo].[Association]    Script Date: 11/6/2018 12:07:45 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[Associations](
+CREATE TABLE [dbo].[Association](
 	[ID] INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
 PRIMARY KEY CLUSTERED 
@@ -90,12 +90,12 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Attributes]    Script Date: 11/6/2018 12:07:45 PM ******/
+/****** Object:  Table [dbo].[Attribute]    Script Date: 11/6/2018 12:07:45 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[Attributes](
+CREATE TABLE [dbo].[Attribute](
 	[ID] INT NOT NULL,
 	[NWNValue] [int] NOT NULL,
 	[Name] [nvarchar](3) NOT NULL,
@@ -105,12 +105,12 @@ CREATE TABLE [dbo].[Attributes](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[AuthorizedDMs]    Script Date: 11/6/2018 12:07:45 PM ******/
+/****** Object:  Table [dbo].[AuthorizedDM]    Script Date: 11/6/2018 12:07:45 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[AuthorizedDMs](
+CREATE TABLE [dbo].[AuthorizedDM](
 	ID INT NOT NULL,
 	[Name] [nvarchar](255) NOT NULL,
 	[CDKey] [nvarchar](20) NOT NULL,
@@ -139,12 +139,12 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[BankItems]    Script Date: 11/6/2018 12:07:45 PM ******/
+/****** Object:  Table [dbo].[BankItem]    Script Date: 11/6/2018 12:07:45 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[BankItems](
+CREATE TABLE [dbo].[BankItem](
 	ID UNIQUEIDENTIFIER NOT NULL,
 	[BankID] INT NOT NULL,
 	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
@@ -160,12 +160,12 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Banks]    Script Date: 11/6/2018 12:07:45 PM ******/
+/****** Object:  Table [dbo].[Bank]    Script Date: 11/6/2018 12:07:45 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[Banks](
+CREATE TABLE [dbo].[Bank](
 	ID INT NOT NULL,
 	[AreaName] [nvarchar](255) NOT NULL,
 	[AreaTag] [nvarchar](64) NOT NULL,
@@ -176,12 +176,12 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[BaseItemTypes]    Script Date: 11/6/2018 12:07:45 PM ******/
+/****** Object:  Table [dbo].[BaseItemType]    Script Date: 11/6/2018 12:07:45 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[BaseItemTypes](
+CREATE TABLE [dbo].[BaseItemType](
 	ID INT NOT NULL,
 	[Name] [nvarchar](64) NOT NULL,
  CONSTRAINT [PK__BaseItem__1AC990A1E6B56350] PRIMARY KEY CLUSTERED 
@@ -190,12 +190,12 @@ CREATE TABLE [dbo].[BaseItemTypes](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[BaseStructures]    Script Date: 11/6/2018 12:07:45 PM ******/
+/****** Object:  Table [dbo].[BaseStructure]    Script Date: 11/6/2018 12:07:45 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[BaseStructures](
+CREATE TABLE [dbo].[BaseStructure](
 	ID INT NOT NULL,
 	[BaseStructureTypeID] INT NOT NULL,
 	[Name] [nvarchar](64) NOT NULL,
@@ -234,12 +234,12 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[BugReports]    Script Date: 11/6/2018 12:07:45 PM ******/
+/****** Object:  Table [dbo].[BugReport]    Script Date: 11/6/2018 12:07:45 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[BugReports](
+CREATE TABLE [dbo].[BugReport](
 	ID UNIQUEIDENTIFIER NOT NULL,
 	[SenderPlayerID] UNIQUEIDENTIFIER NULL,
 	[CDKey] [nvarchar](20) NOT NULL,
@@ -257,12 +257,12 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[BuildingStyles]    Script Date: 11/6/2018 12:07:45 PM ******/
+/****** Object:  Table [dbo].[BuildingStyle]    Script Date: 11/6/2018 12:07:45 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[BuildingStyles](
+CREATE TABLE [dbo].[BuildingStyle](
 	ID INT NOT NULL,
 	[Name] [nvarchar](64) NOT NULL,
 	[Resref] [nvarchar](16) NOT NULL,
@@ -280,12 +280,12 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[BuildingTypes]    Script Date: 11/6/2018 12:07:45 PM ******/
+/****** Object:  Table [dbo].[BuildingType]    Script Date: 11/6/2018 12:07:45 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[BuildingTypes](
+CREATE TABLE [dbo].[BuildingType](
 	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
 PRIMARY KEY CLUSTERED 
@@ -294,12 +294,12 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[ChatChannelsDomain]    Script Date: 11/6/2018 12:07:45 PM ******/
+/****** Object:  Table [dbo].[ChatChannel]    Script Date: 11/6/2018 12:07:45 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[ChatChannelsDomain](
+CREATE TABLE [dbo].[ChatChannel](
 	ID INT NOT NULL,
 	[Name] [nvarchar](64) NOT NULL,
  CONSTRAINT [PK__ChatChan__7153E07326A4B168] PRIMARY KEY CLUSTERED 
@@ -332,44 +332,44 @@ CREATE TABLE [dbo].[ChatLog](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[ClientLogEvents]    Script Date: 11/6/2018 12:07:45 PM ******/
+/****** Object:  Table [dbo].[ClientLogEvent]    Script Date: 11/6/2018 12:07:45 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[ClientLogEvents](
+CREATE TABLE [dbo].[ClientLogEvent](
 	ID UNIQUEIDENTIFIER NOT NULL,
 	[ClientLogEventTypeID] INT NOT NULL,
 	[PlayerID] UNIQUEIDENTIFIER NULL,
 	[CDKey] [nvarchar](20) NOT NULL,
 	[AccountName] [nvarchar](1024) NOT NULL,
 	[DateOfEvent] [datetime2](7) NOT NULL,
- CONSTRAINT [PK_ClientLogEvents_ClientLogEventID] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_ClientLogEvent_ClientLogEventID] PRIMARY KEY CLUSTERED 
 (
 	ID ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[ClientLogEventTypesDomain]    Script Date: 11/6/2018 12:07:45 PM ******/
+/****** Object:  Table [dbo].[ClientLogEventType]    Script Date: 11/6/2018 12:07:45 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[ClientLogEventTypesDomain](
+CREATE TABLE [dbo].[ClientLogEventType](
 	ID INT NOT NULL,
 	[Name] [nvarchar](30) NOT NULL,
- CONSTRAINT [PK_ClientLogEventTypesDomain_ClientLogEventTypeID] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_ClientLogEventType_ClientLogEventTypeID] PRIMARY KEY CLUSTERED 
 (
 	ID ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[ComponentTypes]    Script Date: 11/6/2018 12:07:45 PM ******/
+/****** Object:  Table [dbo].[ComponentType]    Script Date: 11/6/2018 12:07:45 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[ComponentTypes](
+CREATE TABLE [dbo].[ComponentType](
 	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
 PRIMARY KEY CLUSTERED 
@@ -378,12 +378,12 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[CooldownCategories]    Script Date: 11/6/2018 12:07:45 PM ******/
+/****** Object:  Table [dbo].[CooldownCategory]    Script Date: 11/6/2018 12:07:45 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[CooldownCategories](
+CREATE TABLE [dbo].[CooldownCategory](
 	ID INT NOT NULL,
 	[Name] [nvarchar](64) NOT NULL,
 	[BaseCooldownTime] [float] NOT NULL,
@@ -393,12 +393,12 @@ CREATE TABLE [dbo].[CooldownCategories](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[CraftBlueprintCategories]    Script Date: 11/6/2018 12:07:46 PM ******/
+/****** Object:  Table [dbo].[CraftBlueprintCategory]    Script Date: 11/6/2018 12:07:46 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[CraftBlueprintCategories](
+CREATE TABLE [dbo].[CraftBlueprintCategory](
 	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
 	[IsActive] [bit] NOT NULL,
@@ -408,12 +408,12 @@ CREATE TABLE [dbo].[CraftBlueprintCategories](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[CraftBlueprints]    Script Date: 11/6/2018 12:07:46 PM ******/
+/****** Object:  Table [dbo].[CraftBlueprint]    Script Date: 11/6/2018 12:07:46 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[CraftBlueprints](
+CREATE TABLE [dbo].[CraftBlueprint](
 	ID INT NOT NULL,
 	[CraftCategoryID] INT NOT NULL,
 	[BaseLevel] [int] NOT NULL,
@@ -442,12 +442,12 @@ CREATE TABLE [dbo].[CraftBlueprints](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[CraftDevices]    Script Date: 11/6/2018 12:07:46 PM ******/
+/****** Object:  Table [dbo].[CraftDevice]    Script Date: 11/6/2018 12:07:46 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[CraftDevices](
+CREATE TABLE [dbo].[CraftDevice](
 	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
  CONSTRAINT [PK__CraftDev__5CCBD473CCCE6D67] PRIMARY KEY CLUSTERED 
@@ -470,12 +470,12 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[CustomEffects]    Script Date: 11/6/2018 12:07:46 PM ******/
+/****** Object:  Table [dbo].[CustomEffect]    Script Date: 11/6/2018 12:07:46 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[CustomEffects](
+CREATE TABLE [dbo].[CustomEffect](
 	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
 	[IconID] [int] NOT NULL,
@@ -490,12 +490,12 @@ CREATE TABLE [dbo].[CustomEffects](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[DatabaseVersions]    Script Date: 11/6/2018 12:07:46 PM ******/
+/****** Object:  Table [dbo].[DatabaseVersion]    Script Date: 11/6/2018 12:07:46 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[DatabaseVersions](
+CREATE TABLE [dbo].[DatabaseVersion](
 	ID UNIQUEIDENTIFIER NOT NULL,
 	[ScriptName] [nvarchar](100) NOT NULL,
 	[DateApplied] [datetime2](7) NOT NULL,
@@ -507,12 +507,12 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[DataPackages]    Script Date: 11/6/2018 12:07:46 PM ******/
+/****** Object:  Table [dbo].[DataPackage]    Script Date: 11/6/2018 12:07:46 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[DataPackages](
+CREATE TABLE [dbo].[DataPackage](
 	ID UNIQUEIDENTIFIER NOT NULL,
 	[DateFound] [datetime2](7) NOT NULL,
 	[DateExported] [datetime2](7) NOT NULL,
@@ -550,12 +550,12 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[DMRoleDomain]    Script Date: 11/6/2018 12:07:46 PM ******/
+/****** Object:  Table [dbo].[DMRole]    Script Date: 11/6/2018 12:07:46 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[DMRoleDomain](
+CREATE TABLE [dbo].[DMRole](
 	ID INT NOT NULL,
 	[Description] [nvarchar](255) NOT NULL,
  CONSTRAINT [PK__DMRoleDo__1EB081302A5E9C2F] PRIMARY KEY CLUSTERED 
@@ -564,18 +564,18 @@ CREATE TABLE [dbo].[DMRoleDomain](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Downloads]    Script Date: 11/6/2018 12:07:46 PM ******/
+/****** Object:  Table [dbo].[Download]    Script Date: 11/6/2018 12:07:46 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[Downloads](
+CREATE TABLE [dbo].[Download](
 	ID INT NOT NULL,
 	[Name] [nvarchar](50) NOT NULL,
 	[Description] [nvarchar](1000) NOT NULL,
 	[Url] [nvarchar](200) NOT NULL,
 	[IsActive] [bit] NOT NULL,
- CONSTRAINT [PK_Downloads_DownloadID] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_Download_DownloadID] PRIMARY KEY CLUSTERED 
 (
 	ID ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -595,26 +595,26 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[FameRegions]    Script Date: 11/6/2018 12:07:46 PM ******/
+/****** Object:  Table [dbo].[FameRegion]    Script Date: 11/6/2018 12:07:46 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[FameRegions](
+CREATE TABLE [dbo].[FameRegion](
 	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
- CONSTRAINT [QuestFameRegions_FameRegionID] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [QuestFameRegion_FameRegionID] PRIMARY KEY CLUSTERED 
 (
 	ID ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[GameTopicCategories]    Script Date: 11/6/2018 12:07:46 PM ******/
+/****** Object:  Table [dbo].[GameTopicCategory]    Script Date: 11/6/2018 12:07:46 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[GameTopicCategories](
+CREATE TABLE [dbo].[GameTopicCategory](
 	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
 PRIMARY KEY CLUSTERED 
@@ -623,12 +623,12 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[GameTopics]    Script Date: 11/6/2018 12:07:46 PM ******/
+/****** Object:  Table [dbo].[GameTopic]    Script Date: 11/6/2018 12:07:46 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[GameTopics](
+CREATE TABLE [dbo].[GameTopic](
 	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
 	[Text] [nvarchar](max) NOT NULL,
@@ -642,12 +642,12 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[GrowingPlants]    Script Date: 11/6/2018 12:07:46 PM ******/
+/****** Object:  Table [dbo].[GrowingPlant]    Script Date: 11/6/2018 12:07:46 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[GrowingPlants](
+CREATE TABLE [dbo].[GrowingPlant](
 	ID UNIQUEIDENTIFIER NOT NULL,
 	[PlantID] INT NOT NULL,
 	[RemainingTicks] [int] NOT NULL,
@@ -667,12 +667,12 @@ CREATE TABLE [dbo].[GrowingPlants](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[ItemTypes]    Script Date: 11/6/2018 12:07:46 PM ******/
+/****** Object:  Table [dbo].[ItemType]    Script Date: 11/6/2018 12:07:46 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[ItemTypes](
+CREATE TABLE [dbo].[ItemType](
 	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
  CONSTRAINT [PK__ItemType__F51540DB3DC6DAE5] PRIMARY KEY CLUSTERED 
@@ -681,12 +681,12 @@ CREATE TABLE [dbo].[ItemTypes](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[KeyItemCategories]    Script Date: 11/6/2018 12:07:46 PM ******/
+/****** Object:  Table [dbo].[KeyItemCategory]    Script Date: 11/6/2018 12:07:46 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[KeyItemCategories](
+CREATE TABLE [dbo].[KeyItemCategory](
 	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
 	[IsActive] [bit] NOT NULL,
@@ -696,28 +696,28 @@ CREATE TABLE [dbo].[KeyItemCategories](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[KeyItems]    Script Date: 11/6/2018 12:07:46 PM ******/
+/****** Object:  Table [dbo].[KeyItem]    Script Date: 11/6/2018 12:07:46 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[KeyItems](
+CREATE TABLE [dbo].[KeyItem](
 	ID INT NOT NULL,
 	[KeyItemCategoryID] INT NOT NULL,
 	[Name] [nvarchar](64) NOT NULL,
 	[Description] [nvarchar](1000) NOT NULL,
- CONSTRAINT [PK__KeyItems__95F54E1C55214D3E] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK__KeyItem__95F54E1C55214D3E] PRIMARY KEY CLUSTERED 
 (
 	ID ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[LootTableItems]    Script Date: 11/6/2018 12:07:46 PM ******/
+/****** Object:  Table [dbo].[LootTableItem]    Script Date: 11/6/2018 12:07:46 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[LootTableItems](
+CREATE TABLE [dbo].[LootTableItem](
 	ID INT IDENTITY NOT NULL,
 	[LootTableID] INT NOT NULL,
 	[Resref] [varchar](16) NOT NULL,
@@ -731,12 +731,12 @@ CREATE TABLE [dbo].[LootTableItems](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[LootTables]    Script Date: 11/6/2018 12:07:47 PM ******/
+/****** Object:  Table [dbo].[LootTable]    Script Date: 11/6/2018 12:07:47 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[LootTables](
+CREATE TABLE [dbo].[LootTable](
 	ID INT NOT NULL,
 	[Name] [nvarchar](64) NOT NULL,
  CONSTRAINT [PK__LootTabl__0DD0313424EBFFBF] PRIMARY KEY CLUSTERED 
@@ -745,12 +745,12 @@ CREATE TABLE [dbo].[LootTables](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Mods]    Script Date: 11/6/2018 12:07:47 PM ******/
+/****** Object:  Table [dbo].[Mod]    Script Date: 11/6/2018 12:07:47 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[Mods](
+CREATE TABLE [dbo].[Mod](
 	ID INT NOT NULL,
 	[Name] [nvarchar](64) NOT NULL,
 	[Script] [nvarchar](100) NOT NULL,
@@ -761,26 +761,26 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[NPCGroups]    Script Date: 11/6/2018 12:07:47 PM ******/
+/****** Object:  Table [dbo].[NPCGroup]    Script Date: 11/6/2018 12:07:47 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[NPCGroups](
+CREATE TABLE [dbo].[NPCGroup](
 	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
- CONSTRAINT [PK_NPCGroups_NPCGroupID] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_NPCGroup_NPCGroupID] PRIMARY KEY CLUSTERED 
 (
 	ID ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PCBasePermissions]    Script Date: 11/6/2018 12:07:47 PM ******/
+/****** Object:  Table [dbo].[PCBasePermission]    Script Date: 11/6/2018 12:07:47 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[PCBasePermissions](
+CREATE TABLE [dbo].[PCBasePermission](
 	ID UNIQUEIDENTIFIER NOT NULL,
 	[PCBaseID] UNIQUEIDENTIFIER NOT NULL,
 	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
@@ -801,12 +801,12 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PCBases]    Script Date: 11/6/2018 12:07:47 PM ******/
+/****** Object:  Table [dbo].[PCBase]    Script Date: 11/6/2018 12:07:47 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[PCBases](
+CREATE TABLE [dbo].[PCBase](
 	ID UNIQUEIDENTIFIER NOT NULL,
 	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
 	[AreaResref] [nvarchar](16) NOT NULL,
@@ -828,14 +828,14 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PCBaseStructureItems]    Script Date: 11/6/2018 12:07:47 PM ******/
+/****** Object:  Table [dbo].[PCBaseStructureItem]    Script Date: 11/6/2018 12:07:47 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[PCBaseStructureItems](
+CREATE TABLE [dbo].[PCBaseStructureItem](
 	ID UNIQUEIDENTIFIER NOT NULL,
-	[PCBaseStructureID] UNIQUEIDENTIFIER NOT NULL,
+	[PCBasetructureID] UNIQUEIDENTIFIER NOT NULL,
 	[ItemGlobalID] NVARCHAR(60) NOT NULL,
 	[ItemName] [nvarchar](max) NOT NULL,
 	[ItemTag] [nvarchar](64) NOT NULL,
@@ -847,14 +847,14 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PCBaseStructurePermissions]    Script Date: 11/6/2018 12:07:47 PM ******/
+/****** Object:  Table [dbo].PCBaseStructurePermission    Script Date: 11/6/2018 12:07:47 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[PCBaseStructurePermissions](
+CREATE TABLE [dbo].PCBaseStructurePermission(
 	ID UNIQUEIDENTIFIER NOT NULL,
-	[PCBaseStructureID] UNIQUEIDENTIFIER NOT NULL,
+	[PCBasetructureID] UNIQUEIDENTIFIER NOT NULL,
 	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
 	[CanPlaceEditStructures] [bit] NOT NULL,
 	[CanAccessStructureInventory] [bit] NOT NULL,
@@ -870,12 +870,12 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PCBaseStructures]    Script Date: 11/6/2018 12:07:47 PM ******/
+/****** Object:  Table [dbo].[PCBaseStructure]    Script Date: 11/6/2018 12:07:47 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[PCBaseStructures](
+CREATE TABLE [dbo].[PCBaseStructure](
 	ID UNIQUEIDENTIFIER NOT NULL,
 	[PCBaseID] UNIQUEIDENTIFIER NOT NULL,
 	[BaseStructureID] INT NOT NULL,
@@ -886,7 +886,7 @@ CREATE TABLE [dbo].[PCBaseStructures](
 	[Durability] [float] NOT NULL,
 	[InteriorStyleID] INT NULL,
 	[ExteriorStyleID] INT NULL,
-	[ParentPCBaseStructureID] UNIQUEIDENTIFIER NULL,
+	[ParentPCBasetructureID] UNIQUEIDENTIFIER NULL,
 	[CustomName] [nvarchar](64) NOT NULL,
 	[StructureBonus] [int] NOT NULL,
 	[DateNextActivity] [datetime2](7) NULL,
@@ -896,12 +896,12 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PCBaseTypes]    Script Date: 11/6/2018 12:07:47 PM ******/
+/****** Object:  Table [dbo].[PCBaseType]    Script Date: 11/6/2018 12:07:47 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[PCBaseTypes](
+CREATE TABLE [dbo].[PCBaseType](
 	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
 PRIMARY KEY CLUSTERED 
@@ -910,12 +910,12 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PCCooldowns]    Script Date: 11/6/2018 12:07:47 PM ******/
+/****** Object:  Table [dbo].[PCCooldown]    Script Date: 11/6/2018 12:07:47 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[PCCooldowns](
+CREATE TABLE [dbo].[PCCooldown](
 	ID UNIQUEIDENTIFIER NOT NULL,
 	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
 	[CooldownCategoryID] INT NOT NULL,
@@ -926,12 +926,12 @@ CREATE TABLE [dbo].[PCCooldowns](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PCCraftedBlueprints]    Script Date: 11/6/2018 12:07:47 PM ******/
+/****** Object:  Table [dbo].[PCCraftedBlueprint]    Script Date: 11/6/2018 12:07:47 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[PCCraftedBlueprints](
+CREATE TABLE [dbo].[PCCraftedBlueprint](
 	ID UNIQUEIDENTIFIER NOT NULL,
 	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
 	[CraftBlueprintID] INT NOT NULL,
@@ -942,12 +942,12 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PCCustomEffects]    Script Date: 11/6/2018 12:07:47 PM ******/
+/****** Object:  Table [dbo].[PCCustomEffect]    Script Date: 11/6/2018 12:07:47 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[PCCustomEffects](
+CREATE TABLE [dbo].[PCCustomEffect](
 	ID UNIQUEIDENTIFIER NOT NULL,
 	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
 	[CustomEffectID] INT NOT NULL,
@@ -962,12 +962,12 @@ CREATE TABLE [dbo].[PCCustomEffects](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PCImpoundedItems]    Script Date: 11/6/2018 12:07:47 PM ******/
+/****** Object:  Table [dbo].[PCImpoundedItem]    Script Date: 11/6/2018 12:07:47 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[PCImpoundedItems](
+CREATE TABLE [dbo].[PCImpoundedItem](
 	ID UNIQUEIDENTIFIER NOT NULL,
 	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
 	[ItemName] [nvarchar](64) NOT NULL,
@@ -982,12 +982,12 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PCKeyItems]    Script Date: 11/6/2018 12:07:47 PM ******/
+/****** Object:  Table [dbo].[PCKeyItem]    Script Date: 11/6/2018 12:07:47 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[PCKeyItems](
+CREATE TABLE [dbo].[PCKeyItem](
 	ID UNIQUEIDENTIFIER NOT NULL,
 	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
 	[KeyItemID] INT NOT NULL,
@@ -998,12 +998,12 @@ CREATE TABLE [dbo].[PCKeyItems](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PCMapPins]    Script Date: 11/6/2018 12:07:47 PM ******/
+/****** Object:  Table [dbo].[PCMapPin]    Script Date: 11/6/2018 12:07:47 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[PCMapPins](
+CREATE TABLE [dbo].[PCMapPin](
 	ID UNIQUEIDENTIFIER NOT NULL,
 	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
 	[AreaTag] [nvarchar](32) NOT NULL,
@@ -1032,38 +1032,6 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PCMigrationItems]    Script Date: 11/6/2018 12:07:47 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[PCMigrationItems](
-	ID UNIQUEIDENTIFIER NOT NULL,
-	[PCMigrationID] UNIQUEIDENTIFIER NOT NULL,
-	[CurrentResref] [nvarchar](16) NOT NULL,
-	[NewResref] [nvarchar](16) NOT NULL,
-	[StripItemProperties] [bit] NOT NULL,
-	[BaseItemTypeID] INT NOT NULL,
- CONSTRAINT [PK__PCMigrat__853DDE73AB544BB1] PRIMARY KEY CLUSTERED 
-(
-	ID ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[PCMigrations]    Script Date: 11/6/2018 12:07:47 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[PCMigrations](
-	ID UNIQUEIDENTIFIER NOT NULL,
-	[Name] [nvarchar](64) NOT NULL,
- CONSTRAINT [PK__PCMigrat__3A08DA1F3966E5FE] PRIMARY KEY CLUSTERED 
-(
-	ID ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
-) ON [PRIMARY]
-GO
 /****** Object:  Table [dbo].[PCObjectVisibility]    Script Date: 11/6/2018 12:07:48 PM ******/
 SET ANSI_NULLS ON
 GO
@@ -1080,12 +1048,12 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PCOutfits]    Script Date: 11/6/2018 12:07:48 PM ******/
+/****** Object:  Table [dbo].[PCOutfit]    Script Date: 11/6/2018 12:07:48 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[PCOutfits](
+CREATE TABLE [dbo].[PCOutfit](
 	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
 	[Outfit1] [varchar](max) NULL,
 	[Outfit2] [varchar](max) NULL,
@@ -1103,12 +1071,12 @@ CREATE TABLE [dbo].[PCOutfits](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PCOverflowItems]    Script Date: 11/6/2018 12:07:48 PM ******/
+/****** Object:  Table [dbo].[PCOverflowItem]    Script Date: 11/6/2018 12:07:48 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[PCOverflowItems](
+CREATE TABLE [dbo].[PCOverflowItem](
 	ID UNIQUEIDENTIFIER NOT NULL,
 	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
 	[ItemName] [nvarchar](max) NOT NULL,
@@ -1121,12 +1089,12 @@ CREATE TABLE [dbo].[PCOverflowItems](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PCPerkRefunds]    Script Date: 11/6/2018 12:07:48 PM ******/
+/****** Object:  Table [dbo].[PCPerkRefund]    Script Date: 11/6/2018 12:07:48 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[PCPerkRefunds](
+CREATE TABLE [dbo].[PCPerkRefund](
 	ID UNIQUEIDENTIFIER NOT NULL,
 	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
 	[PerkID] INT NOT NULL,
@@ -1139,18 +1107,18 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PCPerks]    Script Date: 11/6/2018 12:07:48 PM ******/
+/****** Object:  Table [dbo].[PCPerk]    Script Date: 11/6/2018 12:07:48 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[PCPerks](
+CREATE TABLE [dbo].[PCPerk](
 	ID UNIQUEIDENTIFIER NOT NULL,
 	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
 	[AcquiredDate] [datetime2](7) NOT NULL,
 	[PerkID] INT NOT NULL,
 	[PerkLevel] [int] NOT NULL,
- CONSTRAINT [PK__PCPerks__0BA6BCB6B49FBD5D] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK__PCPerk__0BA6BCB6B49FBD5D] PRIMARY KEY CLUSTERED 
 (
 	ID ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1164,7 +1132,7 @@ GO
 CREATE TABLE [dbo].[PCQuestItemProgress](
 	ID UNIQUEIDENTIFIER NOT NULL,
 	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
-	[PCQuestStatusID] UNIQUEIDENTIFIER NOT NULL,
+	[PCQuesttatusID] UNIQUEIDENTIFIER NOT NULL,
 	[Resref] [nvarchar](16) NOT NULL,
 	[Remaining] [int] NOT NULL,
 	[MustBeCraftedByPlayer] [bit] NOT NULL,
@@ -1182,7 +1150,7 @@ GO
 CREATE TABLE [dbo].[PCQuestKillTargetProgress](
 	ID UNIQUEIDENTIFIER NOT NULL,
 	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
-	[PCQuestStatusID] UNIQUEIDENTIFIER NOT NULL,
+	[PCQuesttatusID] UNIQUEIDENTIFIER NOT NULL,
 	[NPCGroupID] INT NOT NULL,
 	[RemainingToKill] [int] NOT NULL,
  CONSTRAINT [PK_PCQuestKillTargetProgress_PCQuestKillTargetProgressID] PRIMARY KEY CLUSTERED 
@@ -1191,19 +1159,19 @@ CREATE TABLE [dbo].[PCQuestKillTargetProgress](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PCQuestStatus]    Script Date: 11/6/2018 12:07:48 PM ******/
+/****** Object:  Table [dbo].[PCQuesttatus]    Script Date: 11/6/2018 12:07:48 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[PCQuestStatus](
+CREATE TABLE [dbo].[PCQuesttatus](
 	ID UNIQUEIDENTIFIER NOT NULL,
 	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
 	[QuestID] INT NOT NULL,
-	[CurrentQuestStateID] INT NOT NULL,
+	[CurrentQuesttateID] INT NOT NULL,
 	[CompletionDate] [datetime2](7) NULL,
 	[SelectedItemRewardID] INT NULL,
- CONSTRAINT [PK_PCQuestStatus_PCQuestStatusID] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_PCQuesttatus_PCQuesttatusID] PRIMARY KEY CLUSTERED 
 (
 	ID ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1225,12 +1193,12 @@ CREATE TABLE [dbo].[PCRegionalFame](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PCSearchSiteItems]    Script Date: 11/6/2018 12:07:48 PM ******/
+/****** Object:  Table [dbo].[PCSearchSiteItem]    Script Date: 11/6/2018 12:07:48 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[PCSearchSiteItems](
+CREATE TABLE [dbo].[PCSearchSiteItem](
 	ID UNIQUEIDENTIFIER NOT NULL,
 	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
 	[SearchSiteID] INT NOT NULL,
@@ -1241,12 +1209,12 @@ CREATE TABLE [dbo].[PCSearchSiteItems](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PCSearchSites]    Script Date: 11/6/2018 12:07:48 PM ******/
+/****** Object:  Table [dbo].[PCSearchSite]    Script Date: 11/6/2018 12:07:48 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[PCSearchSites](
+CREATE TABLE [dbo].[PCSearchSite](
 	ID UNIQUEIDENTIFIER NOT NULL,
 	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
 	[SearchSiteID] INT NOT NULL,
@@ -1257,30 +1225,30 @@ CREATE TABLE [dbo].[PCSearchSites](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PCSkills]    Script Date: 11/6/2018 12:07:48 PM ******/
+/****** Object:  Table [dbo].[PCSkill]    Script Date: 11/6/2018 12:07:48 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[PCSkills](
+CREATE TABLE [dbo].[PCSkill](
 	ID UNIQUEIDENTIFIER NOT NULL,
 	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
 	[SkillID] INT NOT NULL,
 	[XP] [int] NOT NULL,
 	[Rank] [int] NOT NULL,
 	[IsLocked] [bit] NOT NULL,
- CONSTRAINT [PK__PCSkills__F00838A44ECEB5BD] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK__PCSkill__F00838A44ECEB5BD] PRIMARY KEY CLUSTERED 
 (
 	ID ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PerkCategories]    Script Date: 11/6/2018 12:07:48 PM ******/
+/****** Object:  Table [dbo].[PerkCategory]    Script Date: 11/6/2018 12:07:48 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[PerkCategories](
+CREATE TABLE [dbo].[PerkCategory](
 	ID INT NOT NULL,
 	[Name] [nvarchar](64) NOT NULL,
 	[IsActive] [bit] NOT NULL,
@@ -1291,12 +1259,12 @@ CREATE TABLE [dbo].[PerkCategories](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PerkExecutionTypes]    Script Date: 11/6/2018 12:07:48 PM ******/
+/****** Object:  Table [dbo].[PerkExecutionType]    Script Date: 11/6/2018 12:07:48 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[PerkExecutionTypes](
+CREATE TABLE [dbo].[PerkExecutionType](
 	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
  CONSTRAINT [PK__PerkExec__8133420289767A5A] PRIMARY KEY CLUSTERED 
@@ -1305,12 +1273,12 @@ CREATE TABLE [dbo].[PerkExecutionTypes](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PerkLevelQuestRequirements]    Script Date: 11/6/2018 12:07:48 PM ******/
+/****** Object:  Table [dbo].[PerkLevelQuestRequirement]    Script Date: 11/6/2018 12:07:48 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[PerkLevelQuestRequirements](
+CREATE TABLE [dbo].[PerkLevelQuestRequirement](
 	ID INT IDENTITY NOT NULL,
 	[PerkLevelID] INT NOT NULL,
 	[RequiredQuestID] INT NOT NULL,
@@ -1320,12 +1288,12 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PerkLevels]    Script Date: 11/6/2018 12:07:48 PM ******/
+/****** Object:  Table [dbo].[PerkLevel]    Script Date: 11/6/2018 12:07:48 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[PerkLevels](
+CREATE TABLE [dbo].[PerkLevel](
 	ID INT IDENTITY NOT NULL,
 	[PerkID] INT NOT NULL,
 	[Level] [int] NOT NULL,
@@ -1335,35 +1303,35 @@ CREATE TABLE [dbo].[PerkLevels](
 (
 	ID ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY],
- CONSTRAINT [uq_PerkLevels_PerkIDLevel] UNIQUE NONCLUSTERED 
+ CONSTRAINT [uq_PerkLevel_PerkIDLevel] UNIQUE NONCLUSTERED 
 (
 	[PerkID] ASC,
 	[Level] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PerkLevelSkillRequirements]    Script Date: 11/6/2018 12:07:48 PM ******/
+/****** Object:  Table [dbo].PerkLevelSkillRequirement    Script Date: 11/6/2018 12:07:48 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[PerkLevelSkillRequirements](
+CREATE TABLE [dbo].PerkLevelSkillRequirement(
 	ID INT IDENTITY NOT NULL,
 	[PerkLevelID] INT NOT NULL,
 	[SkillID] INT NOT NULL,
 	[RequiredRank] [int] NOT NULL,
- CONSTRAINT [PK_PerkLevelSkillRequirements_PerkLevelSkillRequirementID] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_PerkLevelkillRequirements_PerkLevelkillRequirementID] PRIMARY KEY CLUSTERED 
 (
 	ID ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Perks]    Script Date: 11/6/2018 12:07:48 PM ******/
+/****** Object:  Table [dbo].[Perk]    Script Date: 11/6/2018 12:07:48 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[Perks](
+CREATE TABLE [dbo].[Perk](
 	ID INT NOT NULL,
 	[Name] [varchar](64) NOT NULL,
 	[FeatID] [int] NULL,
@@ -1380,18 +1348,18 @@ CREATE TABLE [dbo].[Perks](
 	[Enmity] [int] NOT NULL,
 	[EnmityAdjustmentRuleID] INT NOT NULL,
 	[CastAnimationID] [int] NULL,
- CONSTRAINT [PK__Perks__2432566E1A11FD39] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK__Perk__2432566E1A11FD39] PRIMARY KEY CLUSTERED 
 (
 	ID ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Plants]    Script Date: 11/6/2018 12:07:49 PM ******/
+/****** Object:  Table [dbo].[Plant]    Script Date: 11/6/2018 12:07:49 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[Plants](
+CREATE TABLE [dbo].[Plant](
 	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
 	[BaseTicks] [int] NOT NULL,
@@ -1399,18 +1367,18 @@ CREATE TABLE [dbo].[Plants](
 	[WaterTicks] [int] NOT NULL,
 	[Level] [int] NOT NULL,
 	[SeedResref] [nvarchar](16) NOT NULL,
- CONSTRAINT [PK__Plants__98FE46BC83E7C439] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK__Plant__98FE46BC83E7C439] PRIMARY KEY CLUSTERED 
 (
 	ID ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PlayerCharacters]    Script Date: 11/6/2018 12:07:49 PM ******/
+/****** Object:  Table [dbo].[Player]    Script Date: 11/6/2018 12:07:49 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[PlayerCharacters](
+CREATE TABLE [dbo].[Player](
 	ID UNIQUEIDENTIFIER NOT NULL,
 	[CharacterName] [nvarchar](max) NULL,
 	[HitPoints] [int] NOT NULL,
@@ -1443,7 +1411,7 @@ CREATE TABLE [dbo].[PlayerCharacters](
 	[CHABase] [int] NOT NULL,
 	[TotalSPAcquired] [int] NOT NULL,
 	[DisplayHelmet] [bit] NOT NULL,
-	[PrimaryResidencePCBaseStructureID] UNIQUEIDENTIFIER NULL,
+	[PrimaryResidencePCBasetructureID] UNIQUEIDENTIFIER NULL,
 	[DatePerkRefundAvailable] [datetime2](7) NULL,
 	[AssociationID] INT NOT NULL,
 	[DisplayHolonet] [bit] NOT NULL,
@@ -1457,29 +1425,29 @@ CREATE TABLE [dbo].[PlayerCharacters](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[QuestKillTargetList]    Script Date: 11/6/2018 12:07:49 PM ******/
+/****** Object:  Table [dbo].[QuestKillTarget]    Script Date: 11/6/2018 12:07:49 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[QuestKillTargetList](
+CREATE TABLE [dbo].[QuestKillTarget](
 	ID INT IDENTITY NOT NULL,
 	[QuestID] INT NOT NULL,
 	[NPCGroupID] INT NOT NULL,
 	[Quantity] [int] NOT NULL,
-	[QuestStateID] INT NOT NULL,
- CONSTRAINT [PK_QuestKillTargetList_QuestKillTargetListID] PRIMARY KEY CLUSTERED 
+	[QuesttateID] INT NOT NULL,
+ CONSTRAINT [PK_QuestKillTarget_QuestKillTargetID] PRIMARY KEY CLUSTERED 
 (
 	ID ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[QuestPrerequisites]    Script Date: 11/6/2018 12:07:49 PM ******/
+/****** Object:  Table [dbo].[QuestPrerequisite]    Script Date: 11/6/2018 12:07:49 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[QuestPrerequisites](
+CREATE TABLE [dbo].[QuestPrerequisite](
 	ID INT  NOT NULL,
 	[QuestID] int NOT NULL,
 	[RequiredQuestID] int NOT NULL,
@@ -1489,46 +1457,46 @@ CREATE TABLE [dbo].[QuestPrerequisites](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[QuestRequiredItemList]    Script Date: 11/6/2018 12:07:49 PM ******/
+/****** Object:  Table [dbo].[QuestRequiredItem]    Script Date: 11/6/2018 12:07:49 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[QuestRequiredItemList](
+CREATE TABLE [dbo].[QuestRequiredItem](
 	ID INT IDENTITY NOT NULL,
 	[QuestID] int NOT NULL,
 	[Resref] [nvarchar](16) NOT NULL,
 	[Quantity] [int] NOT NULL,
-	[QuestStateID] int NOT NULL,
+	[QuesttateID] int NOT NULL,
 	[MustBeCraftedByPlayer] [bit] NOT NULL,
- CONSTRAINT [PK_QuestRequiredItemList_QuestRequiredItemListID] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_QuestRequiredItem_QuestRequiredItemID] PRIMARY KEY CLUSTERED 
 (
 	ID ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[QuestRequiredKeyItemList]    Script Date: 11/6/2018 12:07:49 PM ******/
+/****** Object:  Table [dbo].[QuestRequiredKeyItem]    Script Date: 11/6/2018 12:07:49 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[QuestRequiredKeyItemList](
+CREATE TABLE [dbo].[QuestRequiredKeyItem](
 	ID INT IDENTITY NOT NULL,
 	[QuestID] int NOT NULL,
 	[KeyItemID] int NOT NULL,
-	[QuestStateID] int NOT NULL,
- CONSTRAINT [PK_QuestRequiredKeyItemList_QuestRequiredKeyItemID] PRIMARY KEY CLUSTERED 
+	[QuesttateID] int NOT NULL,
+ CONSTRAINT [PK_QuestRequiredKeyItem_QuestRequiredKeyItemID] PRIMARY KEY CLUSTERED 
 (
 	ID ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[QuestRewardItems]    Script Date: 11/6/2018 12:07:49 PM ******/
+/****** Object:  Table [dbo].[QuestRewardItem]    Script Date: 11/6/2018 12:07:49 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[QuestRewardItems](
+CREATE TABLE [dbo].[QuestRewardItem](
 	ID INT IDENTITY NOT NULL,
 	[QuestID] int NOT NULL,
 	[Resref] [nvarchar](16) NOT NULL,
@@ -1539,12 +1507,12 @@ CREATE TABLE [dbo].[QuestRewardItems](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Quests]    Script Date: 11/6/2018 12:07:49 PM ******/
+/****** Object:  Table [dbo].[Quest]    Script Date: 11/6/2018 12:07:49 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[Quests](
+CREATE TABLE [dbo].[Quest](
 	ID int NOT NULL,
 	[Name] [nvarchar](100) NOT NULL,
 	[JournalTag] [nvarchar](32) NOT NULL,
@@ -1566,38 +1534,38 @@ CREATE TABLE [dbo].[Quests](
 	[OnAdvanceArgs] [nvarchar](256) NOT NULL,
 	[OnCompleteArgs] [nvarchar](256) NOT NULL,
 	[OnKillTargetArgs] [nvarchar](256) NOT NULL,
- CONSTRAINT [PK_Quests_QuestID] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_Quest_QuestID] PRIMARY KEY CLUSTERED 
 (
 	ID ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[QuestStates]    Script Date: 11/6/2018 12:07:49 PM ******/
+/****** Object:  Table [dbo].[QuestState]    Script Date: 11/6/2018 12:07:49 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[QuestStates](
+CREATE TABLE [dbo].[QuestState](
 	ID INT IDENTITY NOT NULL,
 	[QuestID] int NOT NULL,
 	[Sequence] [int] NOT NULL,
 	[QuestTypeID] int NOT NULL,
 	[JournalStateID] [int] NOT NULL,
- CONSTRAINT [PK_QuestStates_QuestStateID] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_Questtates_QuesttateID] PRIMARY KEY CLUSTERED 
 (
 	ID ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[QuestTypeDomain]    Script Date: 11/6/2018 12:07:49 PM ******/
+/****** Object:  Table [dbo].[QuestType]    Script Date: 11/6/2018 12:07:49 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[QuestTypeDomain](
+CREATE TABLE [dbo].[QuestType](
 	ID INT  NOT NULL,
 	[Name] [nvarchar](30) NOT NULL,
- CONSTRAINT [PK_QuestTypeDomain_QuestTypeID] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_QuestType_QuestTypeID] PRIMARY KEY CLUSTERED 
 (
 	ID ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1619,12 +1587,12 @@ CREATE TABLE [dbo].[ServerConfiguration](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[SkillCategories]    Script Date: 11/6/2018 12:07:49 PM ******/
+/****** Object:  Table [dbo].[SkillCategory]    Script Date: 11/6/2018 12:07:49 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[SkillCategories](
+CREATE TABLE [dbo].[SkillCategory](
 	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
 	[IsActive] [bit] NOT NULL,
@@ -1635,12 +1603,12 @@ CREATE TABLE [dbo].[SkillCategories](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Skills]    Script Date: 11/6/2018 12:07:49 PM ******/
+/****** Object:  Table [dbo].[Skill]    Script Date: 11/6/2018 12:07:49 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[Skills](
+CREATE TABLE [dbo].[Skill](
 	ID INT NOT NULL,
 	[SkillCategoryID] INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
@@ -1651,7 +1619,7 @@ CREATE TABLE [dbo].[Skills](
 	[Secondary] int NOT NULL,
 	[Tertiary] INT NOT NULL,
 	[ContributesToSkillCap] [bit] NOT NULL,
- CONSTRAINT [PK__Skills__DFA091E736021CE5] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK__Skill__DFA091E736021CE5] PRIMARY KEY CLUSTERED 
 (
 	ID ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -1673,12 +1641,12 @@ CREATE TABLE [dbo].[SkillXPRequirement](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[SpawnObjects]    Script Date: 11/6/2018 12:07:49 PM ******/
+/****** Object:  Table [dbo].[SpawnObject]    Script Date: 11/6/2018 12:07:49 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[SpawnObjects](
+CREATE TABLE [dbo].[SpawnObject](
 	ID int NOT NULL,
 	[SpawnID] int NOT NULL,
 	[Resref] [nvarchar](16) NOT NULL,
@@ -1707,12 +1675,12 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Spawns]    Script Date: 11/6/2018 12:07:49 PM ******/
+/****** Object:  Table [dbo].[Spawn]    Script Date: 11/6/2018 12:07:49 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[Spawns](
+CREATE TABLE [dbo].[Spawn](
 	ID int NOT NULL,
 	[Name] [nvarchar](64) NOT NULL,
 	[SpawnObjectTypeID] int NOT NULL,
@@ -1722,12 +1690,12 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Users]    Script Date: 11/6/2018 12:07:49 PM ******/
+/****** Object:  Table [dbo].[User]    Script Date: 11/6/2018 12:07:49 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE TABLE [dbo].[Users](
+CREATE TABLE [dbo].[User](
 	ID INT IDENTITY NOT NULL,
 	[DiscordUserID] [nvarchar](max) NOT NULL,
 	[Username] [nvarchar](32) NOT NULL,
@@ -1736,35 +1704,35 @@ CREATE TABLE [dbo].[Users](
 	[Email] [nvarchar](max) NOT NULL,
 	[RoleID] int NOT NULL,
 	[DateRegistered] [datetime2](7) NOT NULL,
- CONSTRAINT [PK__Users__1788CCAC642F36E9] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK__User__1788CCAC642F36E9] PRIMARY KEY CLUSTERED 
 (
 	ID ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-ALTER TABLE [dbo].[Areas] ADD  DEFAULT ((0)) FOR [Width]
+ALTER TABLE [dbo].[Area] ADD  DEFAULT ((0)) FOR [Width]
 GO
-ALTER TABLE [dbo].[Areas] ADD  DEFAULT ((0)) FOR [Height]
+ALTER TABLE [dbo].[Area] ADD  DEFAULT ((0)) FOR [Height]
 GO
-ALTER TABLE [dbo].[Areas] ADD  DEFAULT ((0)) FOR [IsBuildable]
+ALTER TABLE [dbo].[Area] ADD  DEFAULT ((0)) FOR [IsBuildable]
 GO
-ALTER TABLE [dbo].[Areas] ADD  DEFAULT ((0)) FOR [IsActive]
+ALTER TABLE [dbo].[Area] ADD  DEFAULT ((0)) FOR [IsActive]
 GO
-ALTER TABLE [dbo].[Areas] ADD  DEFAULT ((0)) FOR [PurchasePrice]
+ALTER TABLE [dbo].[Area] ADD  DEFAULT ((0)) FOR [PurchasePrice]
 GO
-ALTER TABLE [dbo].[Areas] ADD  DEFAULT ((0)) FOR [DailyUpkeep]
+ALTER TABLE [dbo].[Area] ADD  DEFAULT ((0)) FOR [DailyUpkeep]
 GO
-ALTER TABLE [dbo].[Areas] ADD  DEFAULT (getutcdate()) FOR [DateLastBaked]
+ALTER TABLE [dbo].[Area] ADD  DEFAULT (getutcdate()) FOR [DateLastBaked]
 GO
-ALTER TABLE [dbo].[Areas] ADD  DEFAULT ((0)) FOR [AutoSpawnResources]
+ALTER TABLE [dbo].[Area] ADD  DEFAULT ((0)) FOR [AutoSpawnResources]
 GO
-ALTER TABLE [dbo].[Areas] ADD  DEFAULT ((0)) FOR [ResourceQuality]
+ALTER TABLE [dbo].[Area] ADD  DEFAULT ((0)) FOR [ResourceQuality]
 GO
-ALTER TABLE [dbo].[Areas] ADD  DEFAULT ((0)) FOR [MaxResourceQuality]
+ALTER TABLE [dbo].[Area] ADD  DEFAULT ((0)) FOR [MaxResourceQuality]
 GO
-ALTER TABLE [dbo].[Attributes] ADD  CONSTRAINT [DF__Attribute__NWNVa__56E8E7AB]  DEFAULT ((0)) FOR [NWNValue]
+ALTER TABLE [dbo].[Attribute] ADD  CONSTRAINT [DF__Attribute__NWNVa__56E8E7AB]  DEFAULT ((0)) FOR [NWNValue]
 GO
-ALTER TABLE [dbo].[Attributes] ADD  CONSTRAINT [DF__Attributes__Name__57DD0BE4]  DEFAULT ('') FOR [Name]
+ALTER TABLE [dbo].[Attribute] ADD  CONSTRAINT [DF__Attribute__Name__57DD0BE4]  DEFAULT ('') FOR [Name]
 GO
 ALTER TABLE [dbo].[Backgrounds] ADD  DEFAULT ('') FOR [Name]
 GO
@@ -1774,33 +1742,33 @@ ALTER TABLE [dbo].[Backgrounds] ADD  DEFAULT ('') FOR [Bonuses]
 GO
 ALTER TABLE [dbo].[Backgrounds] ADD  DEFAULT ((0)) FOR [IsActive]
 GO
-ALTER TABLE [dbo].[BankItems] ADD  DEFAULT (getutcdate()) FOR [DateStored]
+ALTER TABLE [dbo].[BankItem] ADD  DEFAULT (getutcdate()) FOR [DateStored]
 GO
-ALTER TABLE [dbo].[BaseStructures] ADD  DEFAULT ('') FOR [Name]
+ALTER TABLE [dbo].[BaseStructure] ADD  DEFAULT ('') FOR [Name]
 GO
-ALTER TABLE [dbo].[BaseStructures] ADD  DEFAULT ('') FOR [PlaceableResref]
+ALTER TABLE [dbo].[BaseStructure] ADD  DEFAULT ('') FOR [PlaceableResref]
 GO
-ALTER TABLE [dbo].[BaseStructures] ADD  DEFAULT ('') FOR [ItemResref]
+ALTER TABLE [dbo].[BaseStructure] ADD  DEFAULT ('') FOR [ItemResref]
 GO
-ALTER TABLE [dbo].[BaseStructures] ADD  DEFAULT ((0)) FOR [IsActive]
+ALTER TABLE [dbo].[BaseStructure] ADD  DEFAULT ((0)) FOR [IsActive]
 GO
-ALTER TABLE [dbo].[BaseStructures] ADD  DEFAULT ((0.0)) FOR [Power]
+ALTER TABLE [dbo].[BaseStructure] ADD  DEFAULT ((0.0)) FOR [Power]
 GO
-ALTER TABLE [dbo].[BaseStructures] ADD  DEFAULT ((0.0)) FOR [CPU]
+ALTER TABLE [dbo].[BaseStructure] ADD  DEFAULT ((0.0)) FOR [CPU]
 GO
-ALTER TABLE [dbo].[BaseStructures] ADD  DEFAULT ((0.0)) FOR [Durability]
+ALTER TABLE [dbo].[BaseStructure] ADD  DEFAULT ((0.0)) FOR [Durability]
 GO
-ALTER TABLE [dbo].[BaseStructures] ADD  DEFAULT ((0)) FOR [Storage]
+ALTER TABLE [dbo].[BaseStructure] ADD  DEFAULT ((0)) FOR [Storage]
 GO
-ALTER TABLE [dbo].[BaseStructures] ADD  DEFAULT ((0)) FOR [HasAtmosphere]
+ALTER TABLE [dbo].[BaseStructure] ADD  DEFAULT ((0)) FOR [HasAtmosphere]
 GO
-ALTER TABLE [dbo].[BaseStructures] ADD  DEFAULT ((0)) FOR [ReinforcedStorage]
+ALTER TABLE [dbo].[BaseStructure] ADD  DEFAULT ((0)) FOR [ReinforcedStorage]
 GO
-ALTER TABLE [dbo].[BaseStructures] ADD  DEFAULT ((0)) FOR [RequiresBasePower]
+ALTER TABLE [dbo].[BaseStructure] ADD  DEFAULT ((0)) FOR [RequiresBasePower]
 GO
-ALTER TABLE [dbo].[BaseStructures] ADD  DEFAULT ((0)) FOR [ResourceStorage]
+ALTER TABLE [dbo].[BaseStructure] ADD  DEFAULT ((0)) FOR [ResourceStorage]
 GO
-ALTER TABLE [dbo].[BaseStructures] ADD  DEFAULT ((0)) FOR [RetrievalRating]
+ALTER TABLE [dbo].[BaseStructure] ADD  DEFAULT ((0)) FOR [RetrievalRating]
 GO
 ALTER TABLE [dbo].[BaseStructureType] ADD  DEFAULT ('') FOR [Name]
 GO
@@ -1810,25 +1778,25 @@ ALTER TABLE [dbo].[BaseStructureType] ADD  DEFAULT ((0)) FOR [CanPlaceInside]
 GO
 ALTER TABLE [dbo].[BaseStructureType] ADD  DEFAULT ((0)) FOR [CanPlaceOutside]
 GO
-ALTER TABLE [dbo].[BugReports] ADD  DEFAULT (getutcdate()) FOR [DateSubmitted]
+ALTER TABLE [dbo].[BugReport] ADD  DEFAULT (getutcdate()) FOR [DateSubmitted]
 GO
-ALTER TABLE [dbo].[BuildingStyles] ADD  DEFAULT ('') FOR [Name]
+ALTER TABLE [dbo].[BuildingStyle] ADD  DEFAULT ('') FOR [Name]
 GO
-ALTER TABLE [dbo].[BuildingStyles] ADD  DEFAULT ('') FOR [Resref]
+ALTER TABLE [dbo].[BuildingStyle] ADD  DEFAULT ('') FOR [Resref]
 GO
-ALTER TABLE [dbo].[BuildingStyles] ADD  DEFAULT ((0)) FOR [IsDefault]
+ALTER TABLE [dbo].[BuildingStyle] ADD  DEFAULT ((0)) FOR [IsDefault]
 GO
-ALTER TABLE [dbo].[BuildingStyles] ADD  DEFAULT ('') FOR [DoorRule]
+ALTER TABLE [dbo].[BuildingStyle] ADD  DEFAULT ('') FOR [DoorRule]
 GO
-ALTER TABLE [dbo].[BuildingStyles] ADD  DEFAULT ((0)) FOR [IsActive]
+ALTER TABLE [dbo].[BuildingStyle] ADD  DEFAULT ((0)) FOR [IsActive]
 GO
-ALTER TABLE [dbo].[BuildingStyles] ADD  DEFAULT ((0)) FOR [PurchasePrice]
+ALTER TABLE [dbo].[BuildingStyle] ADD  DEFAULT ((0)) FOR [PurchasePrice]
 GO
-ALTER TABLE [dbo].[BuildingStyles] ADD  DEFAULT ((0)) FOR [DailyUpkeep]
+ALTER TABLE [dbo].[BuildingStyle] ADD  DEFAULT ((0)) FOR [DailyUpkeep]
 GO
-ALTER TABLE [dbo].[BuildingStyles] ADD  DEFAULT ((0)) FOR [FurnitureLimit]
+ALTER TABLE [dbo].[BuildingStyle] ADD  DEFAULT ((0)) FOR [FurnitureLimit]
 GO
-ALTER TABLE [dbo].[ChatChannelsDomain] ADD  CONSTRAINT [DF__ChatChanne__Name__58D1301D]  DEFAULT ('') FOR [Name]
+ALTER TABLE [dbo].[ChatChannel] ADD  CONSTRAINT [DF__ChatChanne__Name__58D1301D]  DEFAULT ('') FOR [Name]
 GO
 ALTER TABLE [dbo].[ChatLog] ADD  CONSTRAINT [DF__ChatLog__SenderA__59C55456]  DEFAULT ('') FOR [SenderAccountName]
 GO
@@ -1838,43 +1806,43 @@ ALTER TABLE [dbo].[ChatLog] ADD  CONSTRAINT [DF__ChatLog__Message__5BAD9CC8]  DE
 GO
 ALTER TABLE [dbo].[ChatLog] ADD  CONSTRAINT [DF__ChatLog__DateSen__5CA1C101]  DEFAULT (getutcdate()) FOR [DateSent]
 GO
-ALTER TABLE [dbo].[ClientLogEvents] ADD  CONSTRAINT [DF__ClientLog__DateO__5D95E53A]  DEFAULT (getutcdate()) FOR [DateOfEvent]
+ALTER TABLE [dbo].[ClientLogEvent] ADD  CONSTRAINT [DF__ClientLog__DateO__5D95E53A]  DEFAULT (getutcdate()) FOR [DateOfEvent]
 GO
-ALTER TABLE [dbo].[ComponentTypes] ADD  DEFAULT ('') FOR [Name]
+ALTER TABLE [dbo].[ComponentType] ADD  DEFAULT ('') FOR [Name]
 GO
-ALTER TABLE [dbo].[CooldownCategories] ADD  CONSTRAINT [DF__CooldownCa__Name__5F7E2DAC]  DEFAULT ('') FOR [Name]
+ALTER TABLE [dbo].[CooldownCategory] ADD  CONSTRAINT [DF__CooldownCa__Name__5F7E2DAC]  DEFAULT ('') FOR [Name]
 GO
-ALTER TABLE [dbo].[CooldownCategories] ADD  CONSTRAINT [DF__CooldownC__BaseC__607251E5]  DEFAULT ((0.0)) FOR [BaseCooldownTime]
+ALTER TABLE [dbo].[CooldownCategory] ADD  CONSTRAINT [DF__CooldownC__BaseC__607251E5]  DEFAULT ((0.0)) FOR [BaseCooldownTime]
 GO
-ALTER TABLE [dbo].[CraftBlueprints] ADD  CONSTRAINT [DF__CraftBlue__Requi__6166761E]  DEFAULT ((0)) FOR [RequiredPerkLevel]
+ALTER TABLE [dbo].[CraftBlueprint] ADD  CONSTRAINT [DF__CraftBlue__Requi__6166761E]  DEFAULT ((0)) FOR [RequiredPerkLevel]
 GO
-ALTER TABLE [dbo].[CraftBlueprints] ADD  CONSTRAINT [DF__CraftBlue__IsAct__625A9A57]  DEFAULT ((0)) FOR [IsActive]
+ALTER TABLE [dbo].[CraftBlueprint] ADD  CONSTRAINT [DF__CraftBlue__IsAct__625A9A57]  DEFAULT ((0)) FOR [IsActive]
 GO
-ALTER TABLE [dbo].[CraftBlueprints] ADD  DEFAULT ((0)) FOR [MainMinimum]
+ALTER TABLE [dbo].[CraftBlueprint] ADD  DEFAULT ((0)) FOR [MainMinimum]
 GO
-ALTER TABLE [dbo].[CraftBlueprints] ADD  DEFAULT ((0)) FOR [SecondaryMinimum]
+ALTER TABLE [dbo].[CraftBlueprint] ADD  DEFAULT ((0)) FOR [SecondaryMinimum]
 GO
-ALTER TABLE [dbo].[CraftBlueprints] ADD  DEFAULT ((0)) FOR [TertiaryMinimum]
+ALTER TABLE [dbo].[CraftBlueprint] ADD  DEFAULT ((0)) FOR [TertiaryMinimum]
 GO
-ALTER TABLE [dbo].[CraftBlueprints] ADD  DEFAULT ((0)) FOR [EnhancementSlots]
+ALTER TABLE [dbo].[CraftBlueprint] ADD  DEFAULT ((0)) FOR [EnhancementSlots]
 GO
-ALTER TABLE [dbo].[CraftBlueprints] ADD  DEFAULT ((0)) FOR [MainMaximum]
+ALTER TABLE [dbo].[CraftBlueprint] ADD  DEFAULT ((0)) FOR [MainMaximum]
 GO
-ALTER TABLE [dbo].[CraftBlueprints] ADD  DEFAULT ((0)) FOR [SecondaryMaximum]
+ALTER TABLE [dbo].[CraftBlueprint] ADD  DEFAULT ((0)) FOR [SecondaryMaximum]
 GO
-ALTER TABLE [dbo].[CraftBlueprints] ADD  DEFAULT ((0)) FOR [TertiaryMaximum]
+ALTER TABLE [dbo].[CraftBlueprint] ADD  DEFAULT ((0)) FOR [TertiaryMaximum]
 GO
-ALTER TABLE [dbo].[CraftDevices] ADD  CONSTRAINT [DF__CraftDevic__Name__6442E2C9]  DEFAULT ('') FOR [Name]
+ALTER TABLE [dbo].[CraftDevice] ADD  CONSTRAINT [DF__CraftDevic__Name__6442E2C9]  DEFAULT ('') FOR [Name]
 GO
 ALTER TABLE [dbo].[CustomEffectCategory] ADD  DEFAULT ('') FOR [Name]
 GO
-ALTER TABLE [dbo].[DatabaseVersions] ADD  DEFAULT ('') FOR [ScriptName]
+ALTER TABLE [dbo].[DatabaseVersion] ADD  DEFAULT ('') FOR [ScriptName]
 GO
-ALTER TABLE [dbo].[DatabaseVersions] ADD  DEFAULT (getutcdate()) FOR [DateApplied]
+ALTER TABLE [dbo].[DatabaseVersion] ADD  DEFAULT (getutcdate()) FOR [DateApplied]
 GO
-ALTER TABLE [dbo].[DataPackages] ADD  DEFAULT (getutcdate()) FOR [DateFound]
+ALTER TABLE [dbo].[DataPackage] ADD  DEFAULT (getutcdate()) FOR [DateFound]
 GO
-ALTER TABLE [dbo].[DataPackages] ADD  DEFAULT ('') FOR [ErrorMessage]
+ALTER TABLE [dbo].[DataPackage] ADD  DEFAULT ('') FOR [ErrorMessage]
 GO
 ALTER TABLE [dbo].[DiscordChatQueue] ADD  DEFAULT ('') FOR [Message]
 GO
@@ -1886,131 +1854,131 @@ ALTER TABLE [dbo].[DiscordChatQueue] ADD  DEFAULT ('') FOR [SenderAccountName]
 GO
 ALTER TABLE [dbo].[DiscordChatQueue] ADD  DEFAULT ('') FOR [SenderCDKey]
 GO
-ALTER TABLE [dbo].[Downloads] ADD  CONSTRAINT [DF__Downloads__Name__65370702]  DEFAULT ('') FOR [Name]
+ALTER TABLE [dbo].[Download] ADD  CONSTRAINT [DF__Download__Name__65370702]  DEFAULT ('') FOR [Name]
 GO
-ALTER TABLE [dbo].[Downloads] ADD  CONSTRAINT [DF__Downloads__Descr__662B2B3B]  DEFAULT ('') FOR [Description]
+ALTER TABLE [dbo].[Download] ADD  CONSTRAINT [DF__Download__Descr__662B2B3B]  DEFAULT ('') FOR [Description]
 GO
-ALTER TABLE [dbo].[Downloads] ADD  CONSTRAINT [DF__Downloads__Url__671F4F74]  DEFAULT ('') FOR [Url]
+ALTER TABLE [dbo].[Download] ADD  CONSTRAINT [DF__Download__Url__671F4F74]  DEFAULT ('') FOR [Url]
 GO
-ALTER TABLE [dbo].[Downloads] ADD  CONSTRAINT [DF__Downloads__IsAct__681373AD]  DEFAULT ((0)) FOR [IsActive]
+ALTER TABLE [dbo].[Download] ADD  CONSTRAINT [DF__Download__IsAct__681373AD]  DEFAULT ((0)) FOR [IsActive]
 GO
 ALTER TABLE [dbo].[EnmityAdjustmentRule] ADD  DEFAULT ('') FOR [Name]
 GO
-ALTER TABLE [dbo].[GameTopics] ADD  DEFAULT ((0)) FOR [IsActive]
+ALTER TABLE [dbo].[GameTopic] ADD  DEFAULT ((0)) FOR [IsActive]
 GO
-ALTER TABLE [dbo].[GameTopics] ADD  DEFAULT ((0)) FOR [Sequence]
+ALTER TABLE [dbo].[GameTopic] ADD  DEFAULT ((0)) FOR [Sequence]
 GO
-ALTER TABLE [dbo].[GameTopics] ADD  DEFAULT ('') FOR [Icon]
+ALTER TABLE [dbo].[GameTopic] ADD  DEFAULT ('') FOR [Icon]
 GO
-ALTER TABLE [dbo].[GrowingPlants] ADD  CONSTRAINT [DF__GrowingPl__Remai__690797E6]  DEFAULT ((0)) FOR [RemainingTicks]
+ALTER TABLE [dbo].[GrowingPlant] ADD  CONSTRAINT [DF__GrowingPl__Remai__690797E6]  DEFAULT ((0)) FOR [RemainingTicks]
 GO
-ALTER TABLE [dbo].[GrowingPlants] ADD  CONSTRAINT [DF__GrowingPl__Locat__69FBBC1F]  DEFAULT ('') FOR [LocationAreaTag]
+ALTER TABLE [dbo].[GrowingPlant] ADD  CONSTRAINT [DF__GrowingPl__Locat__69FBBC1F]  DEFAULT ('') FOR [LocationAreaTag]
 GO
-ALTER TABLE [dbo].[GrowingPlants] ADD  CONSTRAINT [df_GrowingPlants_LocationX]  DEFAULT ((0.0)) FOR [LocationX]
+ALTER TABLE [dbo].[GrowingPlant] ADD  CONSTRAINT [df_GrowingPlant_LocationX]  DEFAULT ((0.0)) FOR [LocationX]
 GO
-ALTER TABLE [dbo].[GrowingPlants] ADD  CONSTRAINT [df_GrowingPlants_LocationY]  DEFAULT ((0.0)) FOR [LocationY]
+ALTER TABLE [dbo].[GrowingPlant] ADD  CONSTRAINT [df_GrowingPlant_LocationY]  DEFAULT ((0.0)) FOR [LocationY]
 GO
-ALTER TABLE [dbo].[GrowingPlants] ADD  CONSTRAINT [df_GrowingPlants_LocationZ]  DEFAULT ((0.0)) FOR [LocationZ]
+ALTER TABLE [dbo].[GrowingPlant] ADD  CONSTRAINT [df_GrowingPlant_LocationZ]  DEFAULT ((0.0)) FOR [LocationZ]
 GO
-ALTER TABLE [dbo].[GrowingPlants] ADD  CONSTRAINT [df_GrowingPlants_LocationOrientation]  DEFAULT ((0.0)) FOR [LocationOrientation]
+ALTER TABLE [dbo].[GrowingPlant] ADD  CONSTRAINT [df_GrowingPlant_LocationOrientation]  DEFAULT ((0.0)) FOR [LocationOrientation]
 GO
-ALTER TABLE [dbo].[GrowingPlants] ADD  CONSTRAINT [DF__GrowingPl__DateC__6EC0713C]  DEFAULT (getutcdate()) FOR [DateCreated]
+ALTER TABLE [dbo].[GrowingPlant] ADD  CONSTRAINT [DF__GrowingPl__DateC__6EC0713C]  DEFAULT (getutcdate()) FOR [DateCreated]
 GO
-ALTER TABLE [dbo].[GrowingPlants] ADD  CONSTRAINT [DF__GrowingPl__IsAct__6FB49575]  DEFAULT ((1)) FOR [IsActive]
+ALTER TABLE [dbo].[GrowingPlant] ADD  CONSTRAINT [DF__GrowingPl__IsAct__6FB49575]  DEFAULT ((1)) FOR [IsActive]
 GO
-ALTER TABLE [dbo].[GrowingPlants] ADD  CONSTRAINT [DF__GrowingPl__Total__7869D707]  DEFAULT ((0)) FOR [TotalTicks]
+ALTER TABLE [dbo].[GrowingPlant] ADD  CONSTRAINT [DF__GrowingPl__Total__7869D707]  DEFAULT ((0)) FOR [TotalTicks]
 GO
-ALTER TABLE [dbo].[GrowingPlants] ADD  CONSTRAINT [DF__GrowingPl__Water__7B4643B2]  DEFAULT ((0)) FOR [WaterStatus]
+ALTER TABLE [dbo].[GrowingPlant] ADD  CONSTRAINT [DF__GrowingPl__Water__7B4643B2]  DEFAULT ((0)) FOR [WaterStatus]
 GO
-ALTER TABLE [dbo].[GrowingPlants] ADD  CONSTRAINT [DF__GrowingPl__Longe__7C3A67EB]  DEFAULT ((0)) FOR [LongevityBonus]
+ALTER TABLE [dbo].[GrowingPlant] ADD  CONSTRAINT [DF__GrowingPl__Longe__7C3A67EB]  DEFAULT ((0)) FOR [LongevityBonus]
 GO
-ALTER TABLE [dbo].[ItemTypes] ADD  CONSTRAINT [DF__ItemTypes__Name__7E02B4CC]  DEFAULT ('') FOR [Name]
+ALTER TABLE [dbo].[ItemType] ADD  CONSTRAINT [DF__ItemType__Name__7E02B4CC]  DEFAULT ('') FOR [Name]
 GO
-ALTER TABLE [dbo].[LootTableItems] ADD  DEFAULT ('') FOR [SpawnRule]
+ALTER TABLE [dbo].[LootTableItem] ADD  DEFAULT ('') FOR [SpawnRule]
 GO
-ALTER TABLE [dbo].[Mods] ADD  DEFAULT ('') FOR [Name]
+ALTER TABLE [dbo].[Mod] ADD  DEFAULT ('') FOR [Name]
 GO
-ALTER TABLE [dbo].[Mods] ADD  DEFAULT ('') FOR [Script]
+ALTER TABLE [dbo].[Mod] ADD  DEFAULT ('') FOR [Script]
 GO
-ALTER TABLE [dbo].[Mods] ADD  DEFAULT ((0)) FOR [IsActive]
+ALTER TABLE [dbo].[Mod] ADD  DEFAULT ((0)) FOR [IsActive]
 GO
-ALTER TABLE [dbo].[PCBasePermissions] ADD  DEFAULT ((0)) FOR [CanPlaceEditStructures]
+ALTER TABLE [dbo].[PCBasePermission] ADD  DEFAULT ((0)) FOR [CanPlaceEditStructures]
 GO
-ALTER TABLE [dbo].[PCBasePermissions] ADD  DEFAULT ((0)) FOR [CanAccessStructureInventory]
+ALTER TABLE [dbo].[PCBasePermission] ADD  DEFAULT ((0)) FOR [CanAccessStructureInventory]
 GO
-ALTER TABLE [dbo].[PCBasePermissions] ADD  DEFAULT ((0)) FOR [CanManageBaseFuel]
+ALTER TABLE [dbo].[PCBasePermission] ADD  DEFAULT ((0)) FOR [CanManageBaseFuel]
 GO
-ALTER TABLE [dbo].[PCBasePermissions] ADD  DEFAULT ((0)) FOR [CanExtendLease]
+ALTER TABLE [dbo].[PCBasePermission] ADD  DEFAULT ((0)) FOR [CanExtendLease]
 GO
-ALTER TABLE [dbo].[PCBasePermissions] ADD  DEFAULT ((0)) FOR [CanAdjustPermissions]
+ALTER TABLE [dbo].[PCBasePermission] ADD  DEFAULT ((0)) FOR [CanAdjustPermissions]
 GO
-ALTER TABLE [dbo].[PCBasePermissions] ADD  DEFAULT ((0)) FOR [CanEnterBuildings]
+ALTER TABLE [dbo].[PCBasePermission] ADD  DEFAULT ((0)) FOR [CanEnterBuildings]
 GO
-ALTER TABLE [dbo].[PCBasePermissions] ADD  DEFAULT ((0)) FOR [CanRetrieveStructures]
+ALTER TABLE [dbo].[PCBasePermission] ADD  DEFAULT ((0)) FOR [CanRetrieveStructures]
 GO
-ALTER TABLE [dbo].[PCBasePermissions] ADD  DEFAULT ((0)) FOR [CanCancelLease]
+ALTER TABLE [dbo].[PCBasePermission] ADD  DEFAULT ((0)) FOR [CanCancelLease]
 GO
-ALTER TABLE [dbo].[PCBasePermissions] ADD  DEFAULT ((0)) FOR [CanRenameStructures]
+ALTER TABLE [dbo].[PCBasePermission] ADD  DEFAULT ((0)) FOR [CanRenameStructures]
 GO
-ALTER TABLE [dbo].[PCBasePermissions] ADD  DEFAULT ((0)) FOR [CanEditPrimaryResidence]
+ALTER TABLE [dbo].[PCBasePermission] ADD  DEFAULT ((0)) FOR [CanEditPrimaryResidence]
 GO
-ALTER TABLE [dbo].[PCBasePermissions] ADD  DEFAULT ((0)) FOR [CanRemovePrimaryResidence]
+ALTER TABLE [dbo].[PCBasePermission] ADD  DEFAULT ((0)) FOR [CanRemovePrimaryResidence]
 GO
-ALTER TABLE [dbo].[PCBases] ADD  DEFAULT (getutcdate()) FOR [DateInitialPurchase]
+ALTER TABLE [dbo].[PCBase] ADD  DEFAULT (getutcdate()) FOR [DateInitialPurchase]
 GO
-ALTER TABLE [dbo].[PCBases] ADD  DEFAULT ((0)) FOR [ShieldHP]
+ALTER TABLE [dbo].[PCBase] ADD  DEFAULT ((0)) FOR [ShieldHP]
 GO
-ALTER TABLE [dbo].[PCBases] ADD  DEFAULT ((0)) FOR [IsInReinforcedMode]
+ALTER TABLE [dbo].[PCBase] ADD  DEFAULT ((0)) FOR [IsInReinforcedMode]
 GO
-ALTER TABLE [dbo].[PCBases] ADD  DEFAULT ((0)) FOR [Fuel]
+ALTER TABLE [dbo].[PCBase] ADD  DEFAULT ((0)) FOR [Fuel]
 GO
-ALTER TABLE [dbo].[PCBases] ADD  DEFAULT ((0)) FOR [ReinforcedFuel]
+ALTER TABLE [dbo].[PCBase] ADD  DEFAULT ((0)) FOR [ReinforcedFuel]
 GO
-ALTER TABLE [dbo].[PCBases] ADD  DEFAULT (getutcdate()) FOR [DateFuelEnds]
+ALTER TABLE [dbo].[PCBase] ADD  DEFAULT (getutcdate()) FOR [DateFuelEnds]
 GO
-ALTER TABLE [dbo].[PCBases] ADD  DEFAULT ('') FOR [CustomName]
+ALTER TABLE [dbo].[PCBase] ADD  DEFAULT ('') FOR [CustomName]
 GO
-ALTER TABLE [dbo].[PCBaseStructurePermissions] ADD  DEFAULT ((0)) FOR [CanPlaceEditStructures]
+ALTER TABLE [dbo].PCBaseStructurePermission ADD  DEFAULT ((0)) FOR [CanPlaceEditStructures]
 GO
-ALTER TABLE [dbo].[PCBaseStructurePermissions] ADD  DEFAULT ((0)) FOR [CanAccessStructureInventory]
+ALTER TABLE [dbo].PCBaseStructurePermission ADD  DEFAULT ((0)) FOR [CanAccessStructureInventory]
 GO
-ALTER TABLE [dbo].[PCBaseStructurePermissions] ADD  DEFAULT ((0)) FOR [CanEnterBuilding]
+ALTER TABLE [dbo].PCBaseStructurePermission ADD  DEFAULT ((0)) FOR [CanEnterBuilding]
 GO
-ALTER TABLE [dbo].[PCBaseStructurePermissions] ADD  DEFAULT ((0)) FOR [CanRetrieveStructures]
+ALTER TABLE [dbo].PCBaseStructurePermission ADD  DEFAULT ((0)) FOR [CanRetrieveStructures]
 GO
-ALTER TABLE [dbo].[PCBaseStructurePermissions] ADD  DEFAULT ((0)) FOR [CanAdjustPermissions]
+ALTER TABLE [dbo].PCBaseStructurePermission ADD  DEFAULT ((0)) FOR [CanAdjustPermissions]
 GO
-ALTER TABLE [dbo].[PCBaseStructurePermissions] ADD  DEFAULT ((0)) FOR [CanRenameStructures]
+ALTER TABLE [dbo].PCBaseStructurePermission ADD  DEFAULT ((0)) FOR [CanRenameStructures]
 GO
-ALTER TABLE [dbo].[PCBaseStructurePermissions] ADD  DEFAULT ((0)) FOR [CanEditPrimaryResidence]
+ALTER TABLE [dbo].PCBaseStructurePermission ADD  DEFAULT ((0)) FOR [CanEditPrimaryResidence]
 GO
-ALTER TABLE [dbo].[PCBaseStructurePermissions] ADD  DEFAULT ((0)) FOR [CanRemovePrimaryResidence]
+ALTER TABLE [dbo].PCBaseStructurePermission ADD  DEFAULT ((0)) FOR [CanRemovePrimaryResidence]
 GO
-ALTER TABLE [dbo].[PCBaseStructures] ADD  DEFAULT ((0.0)) FOR [Durability]
+ALTER TABLE [dbo].[PCBaseStructure] ADD  DEFAULT ((0.0)) FOR [Durability]
 GO
-ALTER TABLE [dbo].[PCBaseStructures] ADD  DEFAULT ('') FOR [CustomName]
+ALTER TABLE [dbo].[PCBaseStructure] ADD  DEFAULT ('') FOR [CustomName]
 GO
-ALTER TABLE [dbo].[PCBaseStructures] ADD  DEFAULT ((0)) FOR [StructureBonus]
+ALTER TABLE [dbo].[PCBaseStructure] ADD  DEFAULT ((0)) FOR [StructureBonus]
 GO
-ALTER TABLE [dbo].[PCCraftedBlueprints] ADD  DEFAULT (getutcdate()) FOR [DateFirstCrafted]
+ALTER TABLE [dbo].[PCCraftedBlueprint] ADD  DEFAULT (getutcdate()) FOR [DateFirstCrafted]
 GO
-ALTER TABLE [dbo].[PCCustomEffects] ADD  DEFAULT ((0)) FOR [EffectiveLevel]
+ALTER TABLE [dbo].[PCCustomEffect] ADD  DEFAULT ((0)) FOR [EffectiveLevel]
 GO
-ALTER TABLE [dbo].[PCCustomEffects] ADD  CONSTRAINT [DF_PCCustomEffects_Data]  DEFAULT ('') FOR [Data]
+ALTER TABLE [dbo].[PCCustomEffect] ADD  CONSTRAINT [DF_PCCustomEffect_Data]  DEFAULT ('') FOR [Data]
 GO
-ALTER TABLE [dbo].[PCCustomEffects] ADD  DEFAULT ('') FOR [CasterNWNObjectID]
+ALTER TABLE [dbo].[PCCustomEffect] ADD  DEFAULT ('') FOR [CasterNWNObjectID]
 GO
-ALTER TABLE [dbo].[PCImpoundedItems] ADD  DEFAULT (getutcdate()) FOR [DateImpounded]
+ALTER TABLE [dbo].[PCImpoundedItem] ADD  DEFAULT (getutcdate()) FOR [DateImpounded]
 GO
-ALTER TABLE [dbo].[PCKeyItems] ADD  CONSTRAINT [df_PCKeyItems_AcquiredDate]  DEFAULT (getutcdate()) FOR [AcquiredDate]
+ALTER TABLE [dbo].[PCKeyItem] ADD  CONSTRAINT [df_PCKeyItem_AcquiredDate]  DEFAULT (getutcdate()) FOR [AcquiredDate]
 GO
 ALTER TABLE [dbo].[PCObjectVisibility] ADD  DEFAULT ((0)) FOR [IsVisible]
 GO
-ALTER TABLE [dbo].[PCPerkRefunds] ADD  DEFAULT (getutcdate()) FOR [DateRefunded]
+ALTER TABLE [dbo].[PCPerkRefund] ADD  DEFAULT (getutcdate()) FOR [DateRefunded]
 GO
-ALTER TABLE [dbo].[PCPerks] ADD  CONSTRAINT [DF__PCPerks__Acquire__7FEAFD3E]  DEFAULT (getutcdate()) FOR [AcquiredDate]
+ALTER TABLE [dbo].[PCPerk] ADD  CONSTRAINT [DF__PCPerk__Acquire__7FEAFD3E]  DEFAULT (getutcdate()) FOR [AcquiredDate]
 GO
-ALTER TABLE [dbo].[PCPerks] ADD  CONSTRAINT [DF__PCPerks__PerkLev__00DF2177]  DEFAULT ((0)) FOR [PerkLevel]
+ALTER TABLE [dbo].[PCPerk] ADD  CONSTRAINT [DF__PCPerk__PerkLev__00DF2177]  DEFAULT ((0)) FOR [PerkLevel]
 GO
 ALTER TABLE [dbo].[PCQuestItemProgress] ADD  DEFAULT ((0)) FOR [Remaining]
 GO
@@ -2018,127 +1986,127 @@ ALTER TABLE [dbo].[PCQuestItemProgress] ADD  DEFAULT ((0)) FOR [MustBeCraftedByP
 GO
 ALTER TABLE [dbo].[PCRegionalFame] ADD  CONSTRAINT [DF__PCRegiona__Amoun__01D345B0]  DEFAULT ((0)) FOR [Amount]
 GO
-ALTER TABLE [dbo].[PCSkills] ADD  CONSTRAINT [DF__PCSkills__XP__02C769E9]  DEFAULT ((0)) FOR [XP]
+ALTER TABLE [dbo].[PCSkill] ADD  CONSTRAINT [DF__PCSkill__XP__02C769E9]  DEFAULT ((0)) FOR [XP]
 GO
-ALTER TABLE [dbo].[PCSkills] ADD  CONSTRAINT [DF__PCSkills__Rank__03BB8E22]  DEFAULT ((0)) FOR [Rank]
+ALTER TABLE [dbo].[PCSkill] ADD  CONSTRAINT [DF__PCSkill__Rank__03BB8E22]  DEFAULT ((0)) FOR [Rank]
 GO
-ALTER TABLE [dbo].[PCSkills] ADD  CONSTRAINT [DF__PCSkills__IsLock__04AFB25B]  DEFAULT ((0)) FOR [IsLocked]
+ALTER TABLE [dbo].[PCSkill] ADD  CONSTRAINT [DF__PCSkill__IsLock__04AFB25B]  DEFAULT ((0)) FOR [IsLocked]
 GO
-ALTER TABLE [dbo].[PerkCategories] ADD  CONSTRAINT [DF__PerkCatego__Name__078C1F06]  DEFAULT ('') FOR [Name]
+ALTER TABLE [dbo].[PerkCategory] ADD  CONSTRAINT [DF__PerkCatego__Name__078C1F06]  DEFAULT ('') FOR [Name]
 GO
-ALTER TABLE [dbo].[PerkCategories] ADD  CONSTRAINT [DF__PerkCateg__IsAct__0880433F]  DEFAULT ((0)) FOR [IsActive]
+ALTER TABLE [dbo].[PerkCategory] ADD  CONSTRAINT [DF__PerkCateg__IsAct__0880433F]  DEFAULT ((0)) FOR [IsActive]
 GO
-ALTER TABLE [dbo].[PerkCategories] ADD  CONSTRAINT [DF__PerkCateg__Seque__09746778]  DEFAULT ((0)) FOR [Sequence]
+ALTER TABLE [dbo].[PerkCategory] ADD  CONSTRAINT [DF__PerkCateg__Seque__09746778]  DEFAULT ((0)) FOR [Sequence]
 GO
-ALTER TABLE [dbo].[PerkExecutionTypes] ADD  CONSTRAINT [DF__PerkExecut__Name__0A688BB1]  DEFAULT ('') FOR [Name]
+ALTER TABLE [dbo].[PerkExecutionType] ADD  CONSTRAINT [DF__PerkExecut__Name__0A688BB1]  DEFAULT ('') FOR [Name]
 GO
-ALTER TABLE [dbo].[PerkLevels] ADD  CONSTRAINT [DF__PerkLevel__Level__0B5CAFEA]  DEFAULT ((0)) FOR [Level]
+ALTER TABLE [dbo].[PerkLevel] ADD  CONSTRAINT [DF__PerkLevel__Level__0B5CAFEA]  DEFAULT ((0)) FOR [Level]
 GO
-ALTER TABLE [dbo].[PerkLevels] ADD  CONSTRAINT [DF__PerkLevel__Price__0C50D423]  DEFAULT ((0)) FOR [Price]
+ALTER TABLE [dbo].[PerkLevel] ADD  CONSTRAINT [DF__PerkLevel__Price__0C50D423]  DEFAULT ((0)) FOR [Price]
 GO
-ALTER TABLE [dbo].[PerkLevels] ADD  CONSTRAINT [DF__PerkLevel__Descr__0D44F85C]  DEFAULT ('') FOR [Description]
+ALTER TABLE [dbo].[PerkLevel] ADD  CONSTRAINT [DF__PerkLevel__Descr__0D44F85C]  DEFAULT ('') FOR [Description]
 GO
-ALTER TABLE [dbo].[PerkLevelSkillRequirements] ADD  CONSTRAINT [DF__PerkSkill__Requi__278EDA44]  DEFAULT ((0)) FOR [RequiredRank]
+ALTER TABLE [dbo].PerkLevelSkillRequirement ADD  CONSTRAINT [DF__Perkkill__Requi__278EDA44]  DEFAULT ((0)) FOR [RequiredRank]
 GO
-ALTER TABLE [dbo].[Perks] ADD  CONSTRAINT [DF__Perks__Name__0F2D40CE]  DEFAULT ('') FOR [Name]
+ALTER TABLE [dbo].[Perk] ADD  CONSTRAINT [DF__Perk__Name__0F2D40CE]  DEFAULT ('') FOR [Name]
 GO
-ALTER TABLE [dbo].[Perks] ADD  CONSTRAINT [DF__Perks__FeatID__10216507]  DEFAULT ((0)) FOR [FeatID]
+ALTER TABLE [dbo].[Perk] ADD  CONSTRAINT [DF__Perk__FeatID__10216507]  DEFAULT ((0)) FOR [FeatID]
 GO
-ALTER TABLE [dbo].[Perks] ADD  CONSTRAINT [DF__Perks__IsActive__11158940]  DEFAULT ((0)) FOR [IsActive]
+ALTER TABLE [dbo].[Perk] ADD  CONSTRAINT [DF__Perk__IsActive__11158940]  DEFAULT ((0)) FOR [IsActive]
 GO
-ALTER TABLE [dbo].[Perks] ADD  CONSTRAINT [DF__Perks__JavaScrip__1209AD79]  DEFAULT ('') FOR [ScriptName]
+ALTER TABLE [dbo].[Perk] ADD  CONSTRAINT [DF__Perk__JavaScrip__1209AD79]  DEFAULT ('') FOR [ScriptName]
 GO
-ALTER TABLE [dbo].[Perks] ADD  CONSTRAINT [DF__Perks__BaseFPC__12FDD1B2]  DEFAULT ((0)) FOR [BaseFPCost]
+ALTER TABLE [dbo].[Perk] ADD  CONSTRAINT [DF__Perk__BaseFPC__12FDD1B2]  DEFAULT ((0)) FOR [BaseFPCost]
 GO
-ALTER TABLE [dbo].[Perks] ADD  CONSTRAINT [DF__Perks__BaseCasti__13F1F5EB]  DEFAULT ((0.0)) FOR [BaseCastingTime]
+ALTER TABLE [dbo].[Perk] ADD  CONSTRAINT [DF__Perk__BaseCasti__13F1F5EB]  DEFAULT ((0.0)) FOR [BaseCastingTime]
 GO
-ALTER TABLE [dbo].[Perks] ADD  CONSTRAINT [DF__Perks__Descripti__14E61A24]  DEFAULT ('') FOR [Description]
+ALTER TABLE [dbo].[Perk] ADD  CONSTRAINT [DF__Perk__Descripti__14E61A24]  DEFAULT ('') FOR [Description]
 GO
-ALTER TABLE [dbo].[Perks] ADD  CONSTRAINT [DF__Perks__IsTargetS__16CE6296]  DEFAULT ((0)) FOR [IsTargetSelfOnly]
+ALTER TABLE [dbo].[Perk] ADD  CONSTRAINT [DF__Perk__IsTargetS__16CE6296]  DEFAULT ((0)) FOR [IsTargetSelfOnly]
 GO
-ALTER TABLE [dbo].[Perks] ADD  DEFAULT ((0)) FOR [Enmity]
+ALTER TABLE [dbo].[Perk] ADD  DEFAULT ((0)) FOR [Enmity]
 GO
-ALTER TABLE [dbo].[Plants] ADD  CONSTRAINT [DF__Plants__Name__17C286CF]  DEFAULT ('') FOR [Name]
+ALTER TABLE [dbo].[Plant] ADD  CONSTRAINT [DF__Plant__Name__17C286CF]  DEFAULT ('') FOR [Name]
 GO
-ALTER TABLE [dbo].[Plants] ADD  CONSTRAINT [DF__Plants__BaseTick__18B6AB08]  DEFAULT ((0)) FOR [BaseTicks]
+ALTER TABLE [dbo].[Plant] ADD  CONSTRAINT [DF__Plant__BaseTick__18B6AB08]  DEFAULT ((0)) FOR [BaseTicks]
 GO
-ALTER TABLE [dbo].[Plants] ADD  CONSTRAINT [DF__Plants__Resref__19AACF41]  DEFAULT ('') FOR [Resref]
+ALTER TABLE [dbo].[Plant] ADD  CONSTRAINT [DF__Plant__Resref__19AACF41]  DEFAULT ('') FOR [Resref]
 GO
-ALTER TABLE [dbo].[Plants] ADD  DEFAULT ((0)) FOR [WaterTicks]
+ALTER TABLE [dbo].[Plant] ADD  DEFAULT ((0)) FOR [WaterTicks]
 GO
-ALTER TABLE [dbo].[Plants] ADD  DEFAULT ((0)) FOR [Level]
+ALTER TABLE [dbo].[Plant] ADD  DEFAULT ((0)) FOR [Level]
 GO
-ALTER TABLE [dbo].[Plants] ADD  DEFAULT ('') FOR [SeedResref]
+ALTER TABLE [dbo].[Plant] ADD  DEFAULT ('') FOR [SeedResref]
 GO
-ALTER TABLE [dbo].[PlayerCharacters] ADD  CONSTRAINT [df_PlayerCharacters_CreateTimestamp]  DEFAULT (getutcdate()) FOR [CreateTimestamp]
+ALTER TABLE [dbo].[Player] ADD  CONSTRAINT [df_Player_CreateTimestamp]  DEFAULT (getutcdate()) FOR [CreateTimestamp]
 GO
-ALTER TABLE [dbo].[PlayerCharacters] ADD  CONSTRAINT [DF__PlayerCha__MaxMa__1B9317B3]  DEFAULT ((0)) FOR [MaxFP]
+ALTER TABLE [dbo].[Player] ADD  CONSTRAINT [DF__PlayerCha__MaxMa__1B9317B3]  DEFAULT ((0)) FOR [MaxFP]
 GO
-ALTER TABLE [dbo].[PlayerCharacters] ADD  CONSTRAINT [DF__PlayerCha__Curre__1C873BEC]  DEFAULT ((0)) FOR [CurrentFP]
+ALTER TABLE [dbo].[Player] ADD  CONSTRAINT [DF__PlayerCha__Curre__1C873BEC]  DEFAULT ((0)) FOR [CurrentFP]
 GO
-ALTER TABLE [dbo].[PlayerCharacters] ADD  CONSTRAINT [DF__PlayerCha__Curre__1D7B6025]  DEFAULT ((0)) FOR [CurrentFPTick]
+ALTER TABLE [dbo].[Player] ADD  CONSTRAINT [DF__PlayerCha__Curre__1D7B6025]  DEFAULT ((0)) FOR [CurrentFPTick]
 GO
-ALTER TABLE [dbo].[PlayerCharacters] ADD  CONSTRAINT [DF__PlayerCha__Respa__1F63A897]  DEFAULT ('') FOR [RespawnAreaResref]
+ALTER TABLE [dbo].[Player] ADD  CONSTRAINT [DF__PlayerCha__Respa__1F63A897]  DEFAULT ('') FOR [RespawnAreaResref]
 GO
-ALTER TABLE [dbo].[PlayerCharacters] ADD  CONSTRAINT [DF__PlayerCha__Respa__2057CCD0]  DEFAULT ((0.0)) FOR [RespawnLocationX]
+ALTER TABLE [dbo].[Player] ADD  CONSTRAINT [DF__PlayerCha__Respa__2057CCD0]  DEFAULT ((0.0)) FOR [RespawnLocationX]
 GO
-ALTER TABLE [dbo].[PlayerCharacters] ADD  CONSTRAINT [DF__PlayerCha__Respa__214BF109]  DEFAULT ((0.0)) FOR [RespawnLocationY]
+ALTER TABLE [dbo].[Player] ADD  CONSTRAINT [DF__PlayerCha__Respa__214BF109]  DEFAULT ((0.0)) FOR [RespawnLocationY]
 GO
-ALTER TABLE [dbo].[PlayerCharacters] ADD  CONSTRAINT [DF__PlayerCha__Respa__22401542]  DEFAULT ((0.0)) FOR [RespawnLocationZ]
+ALTER TABLE [dbo].[Player] ADD  CONSTRAINT [DF__PlayerCha__Respa__22401542]  DEFAULT ((0.0)) FOR [RespawnLocationZ]
 GO
-ALTER TABLE [dbo].[PlayerCharacters] ADD  CONSTRAINT [DF__PlayerCha__Respa__2334397B]  DEFAULT ((0.0)) FOR [RespawnLocationOrientation]
+ALTER TABLE [dbo].[Player] ADD  CONSTRAINT [DF__PlayerCha__Respa__2334397B]  DEFAULT ((0.0)) FOR [RespawnLocationOrientation]
 GO
-ALTER TABLE [dbo].[PlayerCharacters] ADD  CONSTRAINT [DF__PlayerCha__DateS__24285DB4]  DEFAULT (dateadd(hour,(72),getutcdate())) FOR [DateSanctuaryEnds]
+ALTER TABLE [dbo].[Player] ADD  CONSTRAINT [DF__PlayerCha__DateS__24285DB4]  DEFAULT (dateadd(hour,(72),getutcdate())) FOR [DateSanctuaryEnds]
 GO
-ALTER TABLE [dbo].[PlayerCharacters] ADD  CONSTRAINT [DF__PlayerCha__IsSan__251C81ED]  DEFAULT ((0)) FOR [IsSanctuaryOverrideEnabled]
+ALTER TABLE [dbo].[Player] ADD  CONSTRAINT [DF__PlayerCha__IsSan__251C81ED]  DEFAULT ((0)) FOR [IsSanctuaryOverrideEnabled]
 GO
-ALTER TABLE [dbo].[PlayerCharacters] ADD  CONSTRAINT [DF__PlayerCha__STRBa__2610A626]  DEFAULT ((0)) FOR [STRBase]
+ALTER TABLE [dbo].[Player] ADD  CONSTRAINT [DF__PlayerCha__STRBa__2610A626]  DEFAULT ((0)) FOR [STRBase]
 GO
-ALTER TABLE [dbo].[PlayerCharacters] ADD  CONSTRAINT [DF__PlayerCha__DEXBa__2704CA5F]  DEFAULT ((0)) FOR [DEXBase]
+ALTER TABLE [dbo].[Player] ADD  CONSTRAINT [DF__PlayerCha__DEXBa__2704CA5F]  DEFAULT ((0)) FOR [DEXBase]
 GO
-ALTER TABLE [dbo].[PlayerCharacters] ADD  CONSTRAINT [DF__PlayerCha__CONBa__27F8EE98]  DEFAULT ((0)) FOR [CONBase]
+ALTER TABLE [dbo].[Player] ADD  CONSTRAINT [DF__PlayerCha__CONBa__27F8EE98]  DEFAULT ((0)) FOR [CONBase]
 GO
-ALTER TABLE [dbo].[PlayerCharacters] ADD  CONSTRAINT [DF__PlayerCha__INTBa__28ED12D1]  DEFAULT ((0)) FOR [INTBase]
+ALTER TABLE [dbo].[Player] ADD  CONSTRAINT [DF__PlayerCha__INTBa__28ED12D1]  DEFAULT ((0)) FOR [INTBase]
 GO
-ALTER TABLE [dbo].[PlayerCharacters] ADD  CONSTRAINT [DF__PlayerCha__WISBa__29E1370A]  DEFAULT ((0)) FOR [WISBase]
+ALTER TABLE [dbo].[Player] ADD  CONSTRAINT [DF__PlayerCha__WISBa__29E1370A]  DEFAULT ((0)) FOR [WISBase]
 GO
-ALTER TABLE [dbo].[PlayerCharacters] ADD  CONSTRAINT [DF__PlayerCha__CHABa__2AD55B43]  DEFAULT ((0)) FOR [CHABase]
+ALTER TABLE [dbo].[Player] ADD  CONSTRAINT [DF__PlayerCha__CHABa__2AD55B43]  DEFAULT ((0)) FOR [CHABase]
 GO
-ALTER TABLE [dbo].[PlayerCharacters] ADD  CONSTRAINT [DF__PlayerCha__Total__2BC97F7C]  DEFAULT ((0)) FOR [TotalSPAcquired]
+ALTER TABLE [dbo].[Player] ADD  CONSTRAINT [DF__PlayerCha__Total__2BC97F7C]  DEFAULT ((0)) FOR [TotalSPAcquired]
 GO
-ALTER TABLE [dbo].[PlayerCharacters] ADD  DEFAULT ((1)) FOR [DisplayHelmet]
+ALTER TABLE [dbo].[Player] ADD  DEFAULT ((1)) FOR [DisplayHelmet]
 GO
-ALTER TABLE [dbo].[PlayerCharacters] ADD  DEFAULT ((1)) FOR [DisplayHolonet]
+ALTER TABLE [dbo].[Player] ADD  DEFAULT ((1)) FOR [DisplayHolonet]
 GO
-ALTER TABLE [dbo].[PlayerCharacters] ADD  DEFAULT ((1)) FOR [DisplayDiscord]
+ALTER TABLE [dbo].[Player] ADD  DEFAULT ((1)) FOR [DisplayDiscord]
 GO
-ALTER TABLE [dbo].[PlayerCharacters] ADD  DEFAULT ((0)) FOR [IsUsingNovelEmoteStyle]
+ALTER TABLE [dbo].[Player] ADD  DEFAULT ((0)) FOR [IsUsingNovelEmoteStyle]
 GO
-ALTER TABLE [dbo].[PlayerCharacters] ADD  DEFAULT ((0)) FOR [IsDeleted]
+ALTER TABLE [dbo].[Player] ADD  DEFAULT ((0)) FOR [IsDeleted]
 GO
-ALTER TABLE [dbo].[QuestRequiredItemList] ADD  DEFAULT ((0)) FOR [MustBeCraftedByPlayer]
+ALTER TABLE [dbo].[QuestRequiredItem] ADD  DEFAULT ((0)) FOR [MustBeCraftedByPlayer]
 GO
-ALTER TABLE [dbo].[Quests] ADD  CONSTRAINT [DF__Quests__AllowRew__2CBDA3B5]  DEFAULT ((0)) FOR [AllowRewardSelection]
+ALTER TABLE [dbo].[Quest] ADD  CONSTRAINT [DF__Quest__AllowRew__2CBDA3B5]  DEFAULT ((0)) FOR [AllowRewardSelection]
 GO
-ALTER TABLE [dbo].[Quests] ADD  CONSTRAINT [DF__Quests__IsRepeat__2DB1C7EE]  DEFAULT ((0)) FOR [IsRepeatable]
+ALTER TABLE [dbo].[Quest] ADD  CONSTRAINT [DF__Quest__IsRepeat__2DB1C7EE]  DEFAULT ((0)) FOR [IsRepeatable]
 GO
-ALTER TABLE [dbo].[Quests] ADD  CONSTRAINT [DF__Quests__RemoveSt__2EA5EC27]  DEFAULT ((0)) FOR [RemoveStartKeyItemAfterCompletion]
+ALTER TABLE [dbo].[Quest] ADD  CONSTRAINT [DF__Quest__RemoveSt__2EA5EC27]  DEFAULT ((0)) FOR [RemoveStartKeyItemAfterCompletion]
 GO
-ALTER TABLE [dbo].[Quests] ADD  DEFAULT ('') FOR [OnAcceptRule]
+ALTER TABLE [dbo].[Quest] ADD  DEFAULT ('') FOR [OnAcceptRule]
 GO
-ALTER TABLE [dbo].[Quests] ADD  DEFAULT ('') FOR [OnAdvanceRule]
+ALTER TABLE [dbo].[Quest] ADD  DEFAULT ('') FOR [OnAdvanceRule]
 GO
-ALTER TABLE [dbo].[Quests] ADD  DEFAULT ('') FOR [OnCompleteRule]
+ALTER TABLE [dbo].[Quest] ADD  DEFAULT ('') FOR [OnCompleteRule]
 GO
-ALTER TABLE [dbo].[Quests] ADD  DEFAULT ('') FOR [OnKillTargetRule]
+ALTER TABLE [dbo].[Quest] ADD  DEFAULT ('') FOR [OnKillTargetRule]
 GO
-ALTER TABLE [dbo].[Quests] ADD  DEFAULT ('') FOR [OnAcceptArgs]
+ALTER TABLE [dbo].[Quest] ADD  DEFAULT ('') FOR [OnAcceptArgs]
 GO
-ALTER TABLE [dbo].[Quests] ADD  DEFAULT ('') FOR [OnAdvanceArgs]
+ALTER TABLE [dbo].[Quest] ADD  DEFAULT ('') FOR [OnAdvanceArgs]
 GO
-ALTER TABLE [dbo].[Quests] ADD  DEFAULT ('') FOR [OnCompleteArgs]
+ALTER TABLE [dbo].[Quest] ADD  DEFAULT ('') FOR [OnCompleteArgs]
 GO
-ALTER TABLE [dbo].[Quests] ADD  DEFAULT ('') FOR [OnKillTargetArgs]
+ALTER TABLE [dbo].[Quest] ADD  DEFAULT ('') FOR [OnKillTargetArgs]
 GO
 ALTER TABLE [dbo].[ServerConfiguration] ADD  CONSTRAINT [DF__ServerCon__Serve__308E3499]  DEFAULT ('') FOR [ServerName]
 GO
@@ -2146,644 +2114,634 @@ ALTER TABLE [dbo].[ServerConfiguration] ADD  CONSTRAINT [DF__ServerCon__Messa__3
 GO
 ALTER TABLE [dbo].[ServerConfiguration] ADD  DEFAULT ((2)) FOR [AreaBakeStep]
 GO
-ALTER TABLE [dbo].[SkillCategories] ADD  CONSTRAINT [DF__SkillCateg__Name__32767D0B]  DEFAULT ('') FOR [Name]
+ALTER TABLE [dbo].[SkillCategory] ADD  CONSTRAINT [DF__SkillCateg__Name__32767D0B]  DEFAULT ('') FOR [Name]
 GO
-ALTER TABLE [dbo].[SkillCategories] ADD  CONSTRAINT [DF__SkillCate__IsAct__336AA144]  DEFAULT ((0)) FOR [IsActive]
+ALTER TABLE [dbo].[SkillCategory] ADD  CONSTRAINT [DF__SkillCate__IsAct__336AA144]  DEFAULT ((0)) FOR [IsActive]
 GO
-ALTER TABLE [dbo].[SkillCategories] ADD  CONSTRAINT [DF__SkillCate__Seque__345EC57D]  DEFAULT ((0)) FOR [Sequence]
+ALTER TABLE [dbo].[SkillCategory] ADD  CONSTRAINT [DF__SkillCate__Seque__345EC57D]  DEFAULT ((0)) FOR [Sequence]
 GO
-ALTER TABLE [dbo].[Skills] ADD  CONSTRAINT [DF__Skills__Name__3552E9B6]  DEFAULT ('') FOR [Name]
+ALTER TABLE [dbo].[Skill] ADD  CONSTRAINT [DF__Skill__Name__3552E9B6]  DEFAULT ('') FOR [Name]
 GO
-ALTER TABLE [dbo].[Skills] ADD  CONSTRAINT [DF__Skills__MaxRank__36470DEF]  DEFAULT ((0)) FOR [MaxRank]
+ALTER TABLE [dbo].[Skill] ADD  CONSTRAINT [DF__Skill__MaxRank__36470DEF]  DEFAULT ((0)) FOR [MaxRank]
 GO
-ALTER TABLE [dbo].[Skills] ADD  CONSTRAINT [DF__Skills__IsActive__373B3228]  DEFAULT ((0)) FOR [IsActive]
+ALTER TABLE [dbo].[Skill] ADD  CONSTRAINT [DF__Skill__IsActive__373B3228]  DEFAULT ((0)) FOR [IsActive]
 GO
-ALTER TABLE [dbo].[Skills] ADD  CONSTRAINT [DF__Skills__Descript__382F5661]  DEFAULT ('') FOR [Description]
+ALTER TABLE [dbo].[Skill] ADD  CONSTRAINT [DF__Skill__Descript__382F5661]  DEFAULT ('') FOR [Description]
 GO
-ALTER TABLE [dbo].[Skills] ADD  CONSTRAINT [DF__Skills__Primary__39237A9A]  DEFAULT ('') FOR [Primary]
+ALTER TABLE [dbo].[Skill] ADD  CONSTRAINT [DF__Skill__Primary__39237A9A]  DEFAULT ('') FOR [Primary]
 GO
-ALTER TABLE [dbo].[Skills] ADD  CONSTRAINT [DF__Skills__Secondar__3A179ED3]  DEFAULT ('') FOR [Secondary]
+ALTER TABLE [dbo].[Skill] ADD  CONSTRAINT [DF__Skill__Secondar__3A179ED3]  DEFAULT ('') FOR [Secondary]
 GO
-ALTER TABLE [dbo].[Skills] ADD  CONSTRAINT [DF__Skills__Tertiary__3B0BC30C]  DEFAULT ('') FOR [Tertiary]
+ALTER TABLE [dbo].[Skill] ADD  CONSTRAINT [DF__Skill__Tertiary__3B0BC30C]  DEFAULT ('') FOR [Tertiary]
 GO
-ALTER TABLE [dbo].[Skills] ADD  DEFAULT ((1)) FOR [ContributesToSkillCap]
+ALTER TABLE [dbo].[Skill] ADD  DEFAULT ((1)) FOR [ContributesToSkillCap]
 GO
-ALTER TABLE [dbo].[SpawnObjects] ADD  DEFAULT ((1)) FOR [Weight]
+ALTER TABLE [dbo].[SpawnObject] ADD  DEFAULT ((1)) FOR [Weight]
 GO
-ALTER TABLE [dbo].[SpawnObjects] ADD  DEFAULT ('') FOR [SpawnRule]
+ALTER TABLE [dbo].[SpawnObject] ADD  DEFAULT ('') FOR [SpawnRule]
 GO
-ALTER TABLE [dbo].[SpawnObjects] ADD  DEFAULT ('') FOR [BehaviourScript]
+ALTER TABLE [dbo].[SpawnObject] ADD  DEFAULT ('') FOR [BehaviourScript]
 GO
-ALTER TABLE [dbo].[SpawnObjects] ADD  DEFAULT ((0)) FOR [DeathVFXID]
+ALTER TABLE [dbo].[SpawnObject] ADD  DEFAULT ((0)) FOR [DeathVFXID]
 GO
-ALTER TABLE [dbo].[Users] ADD  CONSTRAINT [DF__Users__DateRegis__467D75B8]  DEFAULT (getutcdate()) FOR [DateRegistered]
+ALTER TABLE [dbo].[User] ADD  CONSTRAINT [DF__User__DateRegis__467D75B8]  DEFAULT (getutcdate()) FOR [DateRegistered]
 GO
-ALTER TABLE [dbo].[Areas]  WITH CHECK ADD  CONSTRAINT [FK_Areas_NortheastLootTableID] FOREIGN KEY(NortheastLootTableID)
-REFERENCES [dbo].[LootTables] (ID)
+ALTER TABLE [dbo].[Area]  WITH CHECK ADD  CONSTRAINT [FK_Area_NortheastLootTableID] FOREIGN KEY(NortheastLootTableID)
+REFERENCES [dbo].[LootTable] (ID)
 GO
-ALTER TABLE [dbo].[Areas] CHECK CONSTRAINT [FK_Areas_NortheastLootTableID]
+ALTER TABLE [dbo].[Area] CHECK CONSTRAINT [FK_Area_NortheastLootTableID]
 GO
-ALTER TABLE [dbo].[Areas]  WITH CHECK ADD  CONSTRAINT [FK_Areas_NortheastOwner] FOREIGN KEY(NortheastOwner)
-REFERENCES [dbo].[PlayerCharacters] (ID)
+ALTER TABLE [dbo].[Area]  WITH CHECK ADD  CONSTRAINT [FK_Area_NortheastOwner] FOREIGN KEY(NortheastOwner)
+REFERENCES [dbo].[Player] (ID)
 GO
-ALTER TABLE [dbo].[Areas] CHECK CONSTRAINT [FK_Areas_NortheastOwner]
+ALTER TABLE [dbo].[Area] CHECK CONSTRAINT [FK_Area_NortheastOwner]
 GO
-ALTER TABLE [dbo].[Areas]  WITH CHECK ADD  CONSTRAINT [FK_Areas_NorthwestLootTableID] FOREIGN KEY(NorthwestLootTableID)
-REFERENCES [dbo].[LootTables] (ID)
+ALTER TABLE [dbo].[Area]  WITH CHECK ADD  CONSTRAINT [FK_Area_NorthwestLootTableID] FOREIGN KEY(NorthwestLootTableID)
+REFERENCES [dbo].[LootTable] (ID)
 GO
-ALTER TABLE [dbo].[Areas] CHECK CONSTRAINT [FK_Areas_NorthwestLootTableID]
+ALTER TABLE [dbo].[Area] CHECK CONSTRAINT [FK_Area_NorthwestLootTableID]
 GO
-ALTER TABLE [dbo].[Areas]  WITH CHECK ADD  CONSTRAINT [FK_Areas_NorthwestOwner] FOREIGN KEY(NorthwestOwner)
-REFERENCES [dbo].[PlayerCharacters] (ID)
+ALTER TABLE [dbo].[Area]  WITH CHECK ADD  CONSTRAINT [FK_Area_NorthwestOwner] FOREIGN KEY(NorthwestOwner)
+REFERENCES [dbo].[Player] (ID)
 GO
-ALTER TABLE [dbo].[Areas] CHECK CONSTRAINT [FK_Areas_NorthwestOwner]
+ALTER TABLE [dbo].[Area] CHECK CONSTRAINT [FK_Area_NorthwestOwner]
 GO
-ALTER TABLE [dbo].[Areas]  WITH CHECK ADD  CONSTRAINT [FK_Areas_ResourceSpawnTableID] FOREIGN KEY(ResourceSpawnTableID)
-REFERENCES [dbo].[Spawns] (ID)
+ALTER TABLE [dbo].[Area]  WITH CHECK ADD  CONSTRAINT [FK_Area_ResourceSpawnTableID] FOREIGN KEY(ResourceSpawnTableID)
+REFERENCES [dbo].[Spawn] (ID)
 GO
-ALTER TABLE [dbo].[Areas] CHECK CONSTRAINT [FK_Areas_ResourceSpawnTableID]
+ALTER TABLE [dbo].[Area] CHECK CONSTRAINT [FK_Area_ResourceSpawnTableID]
 GO
-ALTER TABLE [dbo].[Areas]  WITH CHECK ADD  CONSTRAINT [FK_Areas_SoutheastLootTableID] FOREIGN KEY(SoutheastLootTableID)
-REFERENCES [dbo].[LootTables] (ID)
+ALTER TABLE [dbo].[Area]  WITH CHECK ADD  CONSTRAINT [FK_Area_SoutheastLootTableID] FOREIGN KEY(SoutheastLootTableID)
+REFERENCES [dbo].[LootTable] (ID)
 GO
-ALTER TABLE [dbo].[Areas] CHECK CONSTRAINT [FK_Areas_SoutheastLootTableID]
+ALTER TABLE [dbo].[Area] CHECK CONSTRAINT [FK_Area_SoutheastLootTableID]
 GO
-ALTER TABLE [dbo].[Areas]  WITH CHECK ADD  CONSTRAINT [FK_Areas_SoutheastOwner] FOREIGN KEY(SoutheastOwner)
-REFERENCES [dbo].[PlayerCharacters] (ID)
+ALTER TABLE [dbo].[Area]  WITH CHECK ADD  CONSTRAINT [FK_Area_SoutheastOwner] FOREIGN KEY(SoutheastOwner)
+REFERENCES [dbo].[Player] (ID)
 GO
-ALTER TABLE [dbo].[Areas] CHECK CONSTRAINT [FK_Areas_SoutheastOwner]
+ALTER TABLE [dbo].[Area] CHECK CONSTRAINT [FK_Area_SoutheastOwner]
 GO
-ALTER TABLE [dbo].[Areas]  WITH CHECK ADD  CONSTRAINT [FK_Areas_SouthwestLootTableID] FOREIGN KEY(SouthwestLootTableID)
-REFERENCES [dbo].[LootTables] (ID)
+ALTER TABLE [dbo].[Area]  WITH CHECK ADD  CONSTRAINT [FK_Area_SouthwestLootTableID] FOREIGN KEY(SouthwestLootTableID)
+REFERENCES [dbo].[LootTable] (ID)
 GO
-ALTER TABLE [dbo].[Areas] CHECK CONSTRAINT [FK_Areas_SouthwestLootTableID]
+ALTER TABLE [dbo].[Area] CHECK CONSTRAINT [FK_Area_SouthwestLootTableID]
 GO
-ALTER TABLE [dbo].[Areas]  WITH CHECK ADD  CONSTRAINT [FK_Areas_SouthwestOwner] FOREIGN KEY(SouthwestOwner)
-REFERENCES [dbo].[PlayerCharacters] (ID)
+ALTER TABLE [dbo].[Area]  WITH CHECK ADD  CONSTRAINT [FK_Area_SouthwestOwner] FOREIGN KEY(SouthwestOwner)
+REFERENCES [dbo].[Player] (ID)
 GO
-ALTER TABLE [dbo].[Areas] CHECK CONSTRAINT [FK_Areas_SouthwestOwner]
+ALTER TABLE [dbo].[Area] CHECK CONSTRAINT [FK_Area_SouthwestOwner]
 GO
 ALTER TABLE [dbo].[AreaWalkmesh]  WITH CHECK ADD  CONSTRAINT [FK_AreaWalkmesh_AreaID] FOREIGN KEY(AreaID)
-REFERENCES [dbo].[Areas] (ID)
+REFERENCES [dbo].[Area] (ID)
 GO
 ALTER TABLE [dbo].[AreaWalkmesh] CHECK CONSTRAINT [FK_AreaWalkmesh_AreaID]
 GO
-ALTER TABLE [dbo].[BankItems]  WITH CHECK ADD  CONSTRAINT [FK_BankItems_BankID] FOREIGN KEY(BankID)
-REFERENCES [dbo].[Banks] (ID)
+ALTER TABLE [dbo].[BankItem]  WITH CHECK ADD  CONSTRAINT [FK_BankItem_BankID] FOREIGN KEY(BankID)
+REFERENCES [dbo].[Bank] (ID)
 GO
-ALTER TABLE [dbo].[BankItems] CHECK CONSTRAINT [FK_BankItems_BankID]
+ALTER TABLE [dbo].[BankItem] CHECK CONSTRAINT [FK_BankItem_BankID]
 GO
-ALTER TABLE [dbo].[BankItems]  WITH CHECK ADD  CONSTRAINT [FK_BankItems_PlayerID] FOREIGN KEY(PlayerID)
-REFERENCES [dbo].[PlayerCharacters] (ID)
+ALTER TABLE [dbo].[BankItem]  WITH CHECK ADD  CONSTRAINT [FK_BankItem_PlayerID] FOREIGN KEY(PlayerID)
+REFERENCES [dbo].[Player] (ID)
 GO
-ALTER TABLE [dbo].[BankItems] CHECK CONSTRAINT [FK_BankItems_PlayerID]
+ALTER TABLE [dbo].[BankItem] CHECK CONSTRAINT [FK_BankItem_PlayerID]
 GO
-ALTER TABLE [dbo].[BaseStructures]  WITH CHECK ADD  CONSTRAINT [FK_BaseStructures_BaseStructureTypeID] FOREIGN KEY(BaseStructureTypeID)
+ALTER TABLE [dbo].[BaseStructure]  WITH CHECK ADD  CONSTRAINT [FK_BaseStructure_BaseStructureTypeID] FOREIGN KEY(BaseStructureTypeID)
 REFERENCES [dbo].[BaseStructureType] (ID)
 GO
-ALTER TABLE [dbo].[BaseStructures] CHECK CONSTRAINT [FK_BaseStructures_BaseStructureTypeID]
+ALTER TABLE [dbo].[BaseStructure] CHECK CONSTRAINT [FK_BaseStructure_BaseStructureTypeID]
 GO
-ALTER TABLE [dbo].[BugReports]  WITH CHECK ADD  CONSTRAINT [FK_BugReports_SenderPlayerID] FOREIGN KEY(SenderPlayerID)
-REFERENCES [dbo].[PlayerCharacters] (ID)
+ALTER TABLE [dbo].[BugReport]  WITH CHECK ADD  CONSTRAINT [FK_BugReport_SenderPlayerID] FOREIGN KEY(SenderPlayerID)
+REFERENCES [dbo].[Player] (ID)
 GO
-ALTER TABLE [dbo].[BugReports] CHECK CONSTRAINT [FK_BugReports_SenderPlayerID]
+ALTER TABLE [dbo].[BugReport] CHECK CONSTRAINT [FK_BugReport_SenderPlayerID]
 GO
-ALTER TABLE [dbo].[BuildingStyles]  WITH CHECK ADD  CONSTRAINT [FK_BuildingStyles_BaseStructureID] FOREIGN KEY([BaseStructureID])
-REFERENCES [dbo].[BaseStructures] (ID)
+ALTER TABLE [dbo].[BuildingStyle]  WITH CHECK ADD  CONSTRAINT [FK_BuildingStyle_BaseStructureID] FOREIGN KEY([BaseStructureID])
+REFERENCES [dbo].[BaseStructure] (ID)
 GO
-ALTER TABLE [dbo].[BuildingStyles] CHECK CONSTRAINT [FK_BuildingStyles_BaseStructureID]
+ALTER TABLE [dbo].[BuildingStyle] CHECK CONSTRAINT [FK_BuildingStyle_BaseStructureID]
 GO
-ALTER TABLE [dbo].[BuildingStyles]  WITH CHECK ADD  CONSTRAINT [FK_BuildingStyles_BuildingTypeID] FOREIGN KEY([BuildingTypeID])
-REFERENCES [dbo].[BuildingTypes] (ID)
+ALTER TABLE [dbo].[BuildingStyle]  WITH CHECK ADD  CONSTRAINT [FK_BuildingStyle_BuildingTypeID] FOREIGN KEY([BuildingTypeID])
+REFERENCES [dbo].[BuildingType] (ID)
 GO
-ALTER TABLE [dbo].[BuildingStyles] CHECK CONSTRAINT [FK_BuildingStyles_BuildingTypeID]
+ALTER TABLE [dbo].[BuildingStyle] CHECK CONSTRAINT [FK_BuildingStyle_BuildingTypeID]
 GO
 ALTER TABLE [dbo].[ChatLog]  WITH CHECK ADD  CONSTRAINT [fk_ChatLog_ChatChannelID] FOREIGN KEY([ChatChannelID])
-REFERENCES [dbo].[ChatChannelsDomain] (ID)
+REFERENCES [dbo].[ChatChannel] (ID)
 GO
 ALTER TABLE [dbo].[ChatLog] CHECK CONSTRAINT [fk_ChatLog_ChatChannelID]
 GO
 ALTER TABLE [dbo].[ChatLog]  WITH CHECK ADD  CONSTRAINT [fk_ChatLog_ReceiverPlayerID] FOREIGN KEY([ReceiverPlayerID])
-REFERENCES [dbo].[PlayerCharacters] (ID)
+REFERENCES [dbo].[Player] (ID)
 GO
 ALTER TABLE [dbo].[ChatLog] CHECK CONSTRAINT [fk_ChatLog_ReceiverPlayerID]
 GO
 ALTER TABLE [dbo].[ChatLog]  WITH CHECK ADD  CONSTRAINT [fk_ChatLog_SenderPlayerID] FOREIGN KEY([SenderPlayerID])
-REFERENCES [dbo].[PlayerCharacters] (ID)
+REFERENCES [dbo].[Player] (ID)
 GO
 ALTER TABLE [dbo].[ChatLog] CHECK CONSTRAINT [fk_ChatLog_SenderPlayerID]
 GO
-ALTER TABLE [dbo].[ClientLogEvents]  WITH CHECK ADD  CONSTRAINT [FK_ClientLogEvents_ClientLogEventTypeID] FOREIGN KEY([ClientLogEventTypeID])
-REFERENCES [dbo].[ClientLogEventTypesDomain] (ID)
+ALTER TABLE [dbo].[ClientLogEvent]  WITH CHECK ADD  CONSTRAINT [FK_ClientLogEvent_ClientLogEventTypeID] FOREIGN KEY([ClientLogEventTypeID])
+REFERENCES [dbo].[ClientLogEventType] (ID)
 GO
-ALTER TABLE [dbo].[ClientLogEvents] CHECK CONSTRAINT [FK_ClientLogEvents_ClientLogEventTypeID]
+ALTER TABLE [dbo].[ClientLogEvent] CHECK CONSTRAINT [FK_ClientLogEvent_ClientLogEventTypeID]
 GO
-ALTER TABLE [dbo].[ClientLogEvents]  WITH CHECK ADD  CONSTRAINT [FK_ClientLogEvents_PlayerID] FOREIGN KEY([PlayerID])
-REFERENCES [dbo].[PlayerCharacters] (ID)
+ALTER TABLE [dbo].[ClientLogEvent]  WITH CHECK ADD  CONSTRAINT [FK_ClientLogEvent_PlayerID] FOREIGN KEY([PlayerID])
+REFERENCES [dbo].[Player] (ID)
 GO
-ALTER TABLE [dbo].[ClientLogEvents] CHECK CONSTRAINT [FK_ClientLogEvents_PlayerID]
+ALTER TABLE [dbo].[ClientLogEvent] CHECK CONSTRAINT [FK_ClientLogEvent_PlayerID]
 GO
-ALTER TABLE [dbo].[CraftBlueprints]  WITH CHECK ADD FOREIGN KEY([BaseStructureID])
-REFERENCES [dbo].[BaseStructures] (ID)
+ALTER TABLE [dbo].[CraftBlueprint]  WITH CHECK ADD FOREIGN KEY([BaseStructureID])
+REFERENCES [dbo].[BaseStructure] (ID)
 GO
-ALTER TABLE [dbo].[CraftBlueprints]  WITH CHECK ADD  CONSTRAINT [fk_CraftBlueprints_CraftCategoryID] FOREIGN KEY([CraftCategoryID])
-REFERENCES [dbo].[CraftBlueprintCategories] (ID)
+ALTER TABLE [dbo].[CraftBlueprint]  WITH CHECK ADD  CONSTRAINT [fk_CraftBlueprint_CraftCategoryID] FOREIGN KEY([CraftCategoryID])
+REFERENCES [dbo].[CraftBlueprintCategory] (ID)
 GO
-ALTER TABLE [dbo].[CraftBlueprints] CHECK CONSTRAINT [fk_CraftBlueprints_CraftCategoryID]
+ALTER TABLE [dbo].[CraftBlueprint] CHECK CONSTRAINT [fk_CraftBlueprint_CraftCategoryID]
 GO
-ALTER TABLE [dbo].[CraftBlueprints]  WITH CHECK ADD  CONSTRAINT [FK_CraftBlueprints_CraftDeviceID] FOREIGN KEY([CraftDeviceID])
-REFERENCES [dbo].[CraftDevices] (ID)
+ALTER TABLE [dbo].[CraftBlueprint]  WITH CHECK ADD  CONSTRAINT [FK_CraftBlueprint_CraftDeviceID] FOREIGN KEY([CraftDeviceID])
+REFERENCES [dbo].[CraftDevice] (ID)
 GO
-ALTER TABLE [dbo].[CraftBlueprints] CHECK CONSTRAINT [FK_CraftBlueprints_CraftDeviceID]
+ALTER TABLE [dbo].[CraftBlueprint] CHECK CONSTRAINT [FK_CraftBlueprint_CraftDeviceID]
 GO
-ALTER TABLE [dbo].[CraftBlueprints]  WITH CHECK ADD  CONSTRAINT [fk_CraftBlueprints_MainComponentTypeID] FOREIGN KEY([MainComponentTypeID])
-REFERENCES [dbo].[ComponentTypes] (ID)
+ALTER TABLE [dbo].[CraftBlueprint]  WITH CHECK ADD  CONSTRAINT [fk_CraftBlueprint_MainComponentTypeID] FOREIGN KEY([MainComponentTypeID])
+REFERENCES [dbo].[ComponentType] (ID)
 GO
-ALTER TABLE [dbo].[CraftBlueprints] CHECK CONSTRAINT [fk_CraftBlueprints_MainComponentTypeID]
+ALTER TABLE [dbo].[CraftBlueprint] CHECK CONSTRAINT [fk_CraftBlueprint_MainComponentTypeID]
 GO
-ALTER TABLE [dbo].[CraftBlueprints]  WITH CHECK ADD  CONSTRAINT [FK_CraftBlueprints_PerkID] FOREIGN KEY([PerkID])
-REFERENCES [dbo].[Perks] (ID)
+ALTER TABLE [dbo].[CraftBlueprint]  WITH CHECK ADD  CONSTRAINT [FK_CraftBlueprint_PerkID] FOREIGN KEY([PerkID])
+REFERENCES [dbo].[Perk] (ID)
 GO
-ALTER TABLE [dbo].[CraftBlueprints] CHECK CONSTRAINT [FK_CraftBlueprints_PerkID]
+ALTER TABLE [dbo].[CraftBlueprint] CHECK CONSTRAINT [FK_CraftBlueprint_PerkID]
 GO
-ALTER TABLE [dbo].[CraftBlueprints]  WITH CHECK ADD  CONSTRAINT [fk_CraftBlueprints_SecondaryComponentTypeID] FOREIGN KEY([SecondaryComponentTypeID])
-REFERENCES [dbo].[ComponentTypes] (ID)
+ALTER TABLE [dbo].[CraftBlueprint]  WITH CHECK ADD  CONSTRAINT [fk_CraftBlueprint_SecondaryComponentTypeID] FOREIGN KEY([SecondaryComponentTypeID])
+REFERENCES [dbo].[ComponentType] (ID)
 GO
-ALTER TABLE [dbo].[CraftBlueprints] CHECK CONSTRAINT [fk_CraftBlueprints_SecondaryComponentTypeID]
+ALTER TABLE [dbo].[CraftBlueprint] CHECK CONSTRAINT [fk_CraftBlueprint_SecondaryComponentTypeID]
 GO
-ALTER TABLE [dbo].[CraftBlueprints]  WITH CHECK ADD  CONSTRAINT [FK_CraftBlueprints_SkillID] FOREIGN KEY([SkillID])
-REFERENCES [dbo].[Skills] (ID)
+ALTER TABLE [dbo].[CraftBlueprint]  WITH CHECK ADD  CONSTRAINT [FK_CraftBlueprint_SkillID] FOREIGN KEY([SkillID])
+REFERENCES [dbo].[Skill] (ID)
 GO
-ALTER TABLE [dbo].[CraftBlueprints] CHECK CONSTRAINT [FK_CraftBlueprints_SkillID]
+ALTER TABLE [dbo].[CraftBlueprint] CHECK CONSTRAINT [FK_CraftBlueprint_SkillID]
 GO
-ALTER TABLE [dbo].[CraftBlueprints]  WITH CHECK ADD  CONSTRAINT [fk_CraftBlueprints_TertiaryComponentTypeID] FOREIGN KEY([TertiaryComponentTypeID])
-REFERENCES [dbo].[ComponentTypes] (ID)
+ALTER TABLE [dbo].[CraftBlueprint]  WITH CHECK ADD  CONSTRAINT [fk_CraftBlueprint_TertiaryComponentTypeID] FOREIGN KEY([TertiaryComponentTypeID])
+REFERENCES [dbo].[ComponentType] (ID)
 GO
-ALTER TABLE [dbo].[CraftBlueprints] CHECK CONSTRAINT [fk_CraftBlueprints_TertiaryComponentTypeID]
+ALTER TABLE [dbo].[CraftBlueprint] CHECK CONSTRAINT [fk_CraftBlueprint_TertiaryComponentTypeID]
 GO
-ALTER TABLE [dbo].[CustomEffects]  WITH CHECK ADD  CONSTRAINT [FK_CustomEffects_CustomEffectCategoryID] FOREIGN KEY([CustomEffectCategoryID])
+ALTER TABLE [dbo].[CustomEffect]  WITH CHECK ADD  CONSTRAINT [FK_CustomEffect_CustomEffectCategoryID] FOREIGN KEY([CustomEffectCategoryID])
 REFERENCES [dbo].[CustomEffectCategory] (ID)
 GO
-ALTER TABLE [dbo].[CustomEffects] CHECK CONSTRAINT [FK_CustomEffects_CustomEffectCategoryID]
+ALTER TABLE [dbo].[CustomEffect] CHECK CONSTRAINT [FK_CustomEffect_CustomEffectCategoryID]
 GO
-ALTER TABLE [dbo].[GameTopics]  WITH CHECK ADD  CONSTRAINT [FK_GameTopics_GameTopicCategoryID] FOREIGN KEY([GameTopicCategoryID])
-REFERENCES [dbo].[GameTopicCategories] (ID)
+ALTER TABLE [dbo].[GameTopic]  WITH CHECK ADD  CONSTRAINT [FK_GameTopic_GameTopicCategoryID] FOREIGN KEY([GameTopicCategoryID])
+REFERENCES [dbo].[GameTopicCategory] (ID)
 GO
-ALTER TABLE [dbo].[GameTopics] CHECK CONSTRAINT [FK_GameTopics_GameTopicCategoryID]
+ALTER TABLE [dbo].[GameTopic] CHECK CONSTRAINT [FK_GameTopic_GameTopicCategoryID]
 GO
-ALTER TABLE [dbo].[GrowingPlants]  WITH CHECK ADD  CONSTRAINT [FK_GrowingPlants_PlantID] FOREIGN KEY([PlantID])
-REFERENCES [dbo].[Plants] (ID)
+ALTER TABLE [dbo].[GrowingPlant]  WITH CHECK ADD  CONSTRAINT [FK_GrowingPlant_PlantID] FOREIGN KEY([PlantID])
+REFERENCES [dbo].[Plant] (ID)
 GO
-ALTER TABLE [dbo].[GrowingPlants] CHECK CONSTRAINT [FK_GrowingPlants_PlantID]
+ALTER TABLE [dbo].[GrowingPlant] CHECK CONSTRAINT [FK_GrowingPlant_PlantID]
 GO
-ALTER TABLE [dbo].[KeyItems]  WITH CHECK ADD  CONSTRAINT [fk_KeyItems_KeyItemCategoryID] FOREIGN KEY([KeyItemCategoryID])
-REFERENCES [dbo].[KeyItemCategories] (ID)
+ALTER TABLE [dbo].[KeyItem]  WITH CHECK ADD  CONSTRAINT [fk_KeyItem_KeyItemCategoryID] FOREIGN KEY([KeyItemCategoryID])
+REFERENCES [dbo].[KeyItemCategory] (ID)
 GO
-ALTER TABLE [dbo].[KeyItems] CHECK CONSTRAINT [fk_KeyItems_KeyItemCategoryID]
+ALTER TABLE [dbo].[KeyItem] CHECK CONSTRAINT [fk_KeyItem_KeyItemCategoryID]
 GO
-ALTER TABLE [dbo].[LootTableItems]  WITH CHECK ADD  CONSTRAINT [fk_LootTableItems_LootTableID] FOREIGN KEY([LootTableID])
-REFERENCES [dbo].[LootTables] (ID)
+ALTER TABLE [dbo].[LootTableItem]  WITH CHECK ADD  CONSTRAINT [fk_LootTableItem_LootTableID] FOREIGN KEY([LootTableID])
+REFERENCES [dbo].[LootTable] (ID)
 GO
-ALTER TABLE [dbo].[LootTableItems] CHECK CONSTRAINT [fk_LootTableItems_LootTableID]
+ALTER TABLE [dbo].[LootTableItem] CHECK CONSTRAINT [fk_LootTableItem_LootTableID]
 GO
-ALTER TABLE [dbo].[PCBasePermissions]  WITH CHECK ADD  CONSTRAINT [FK_PCBasePermissions_PCBaseID] FOREIGN KEY([PCBaseID])
-REFERENCES [dbo].[PCBases] (ID)
+ALTER TABLE [dbo].[PCBasePermission]  WITH CHECK ADD  CONSTRAINT [FK_PCBasePermission_PCBaseID] FOREIGN KEY([PCBaseID])
+REFERENCES [dbo].[PCBase] (ID)
 GO
-ALTER TABLE [dbo].[PCBasePermissions] CHECK CONSTRAINT [FK_PCBasePermissions_PCBaseID]
+ALTER TABLE [dbo].[PCBasePermission] CHECK CONSTRAINT [FK_PCBasePermission_PCBaseID]
 GO
-ALTER TABLE [dbo].[PCBasePermissions]  WITH CHECK ADD  CONSTRAINT [FK_PCBasePermissions_PlayerID] FOREIGN KEY([PlayerID])
-REFERENCES [dbo].[PlayerCharacters] (ID)
+ALTER TABLE [dbo].[PCBasePermission]  WITH CHECK ADD  CONSTRAINT [FK_PCBasePermission_PlayerID] FOREIGN KEY([PlayerID])
+REFERENCES [dbo].[Player] (ID)
 GO
-ALTER TABLE [dbo].[PCBasePermissions] CHECK CONSTRAINT [FK_PCBasePermissions_PlayerID]
+ALTER TABLE [dbo].[PCBasePermission] CHECK CONSTRAINT [FK_PCBasePermission_PlayerID]
 GO
-ALTER TABLE [dbo].[PCBases]  WITH CHECK ADD  CONSTRAINT [FK_PCBases_ApartmentBuildingID] FOREIGN KEY([ApartmentBuildingID])
-REFERENCES [dbo].[ApartmentBuildings] (ID)
+ALTER TABLE [dbo].[PCBase]  WITH CHECK ADD  CONSTRAINT [FK_PCBase_ApartmentBuildingID] FOREIGN KEY([ApartmentBuildingID])
+REFERENCES [dbo].[ApartmentBuilding] (ID)
 GO
-ALTER TABLE [dbo].[PCBases] CHECK CONSTRAINT [FK_PCBases_ApartmentBuildingID]
+ALTER TABLE [dbo].[PCBase] CHECK CONSTRAINT [FK_PCBase_ApartmentBuildingID]
 GO
-ALTER TABLE [dbo].[PCBases]  WITH CHECK ADD  CONSTRAINT [FK_PCBases_AreaResref] FOREIGN KEY([AreaResref])
-REFERENCES [dbo].[Areas] ([Resref])
+ALTER TABLE [dbo].[PCBase]  WITH CHECK ADD  CONSTRAINT [FK_PCBase_AreaResref] FOREIGN KEY([AreaResref])
+REFERENCES [dbo].[Area] ([Resref])
 GO
-ALTER TABLE [dbo].[PCBases] CHECK CONSTRAINT [FK_PCBases_AreaResref]
+ALTER TABLE [dbo].[PCBase] CHECK CONSTRAINT [FK_PCBase_AreaResref]
 GO
-ALTER TABLE [dbo].[PCBases]  WITH CHECK ADD  CONSTRAINT [FK_PCBases_BuildingStyleID] FOREIGN KEY([BuildingStyleID])
-REFERENCES [dbo].[BuildingStyles] (ID)
+ALTER TABLE [dbo].[PCBase]  WITH CHECK ADD  CONSTRAINT [FK_PCBase_BuildingStyleID] FOREIGN KEY([BuildingStyleID])
+REFERENCES [dbo].[BuildingStyle] (ID)
 GO
-ALTER TABLE [dbo].[PCBases] CHECK CONSTRAINT [FK_PCBases_BuildingStyleID]
+ALTER TABLE [dbo].[PCBase] CHECK CONSTRAINT [FK_PCBase_BuildingStyleID]
 GO
-ALTER TABLE [dbo].[PCBases]  WITH CHECK ADD  CONSTRAINT [FK_PCBases_PCBaseTypeID] FOREIGN KEY([PCBaseTypeID])
-REFERENCES [dbo].[PCBaseTypes] (ID)
+ALTER TABLE [dbo].[PCBase]  WITH CHECK ADD  CONSTRAINT [FK_PCBase_PCBaseTypeID] FOREIGN KEY([PCBaseTypeID])
+REFERENCES [dbo].[PCBaseType] (ID)
 GO
-ALTER TABLE [dbo].[PCBases] CHECK CONSTRAINT [FK_PCBases_PCBaseTypeID]
+ALTER TABLE [dbo].[PCBase] CHECK CONSTRAINT [FK_PCBase_PCBaseTypeID]
 GO
-ALTER TABLE [dbo].[PCBases]  WITH CHECK ADD  CONSTRAINT [FK_PCBases_PlayerID] FOREIGN KEY([PlayerID])
-REFERENCES [dbo].[PlayerCharacters] (ID)
+ALTER TABLE [dbo].[PCBase]  WITH CHECK ADD  CONSTRAINT [FK_PCBase_PlayerID] FOREIGN KEY([PlayerID])
+REFERENCES [dbo].[Player] (ID)
 GO
-ALTER TABLE [dbo].[PCBases] CHECK CONSTRAINT [FK_PCBases_PlayerID]
+ALTER TABLE [dbo].[PCBase] CHECK CONSTRAINT [FK_PCBase_PlayerID]
 GO
-ALTER TABLE [dbo].[PCBaseStructureItems]  WITH CHECK ADD  CONSTRAINT [FK_PCBaseStructureItems_PCBaseStructureID] FOREIGN KEY([PCBaseStructureID])
-REFERENCES [dbo].[PCBaseStructures] (ID)
+ALTER TABLE [dbo].[PCBaseStructureItem]  WITH CHECK ADD  CONSTRAINT [FK_PCBaseStructureItem_PCBasetructureID] FOREIGN KEY([PCBasetructureID])
+REFERENCES [dbo].[PCBaseStructure] (ID)
 GO
-ALTER TABLE [dbo].[PCBaseStructureItems] CHECK CONSTRAINT [FK_PCBaseStructureItems_PCBaseStructureID]
+ALTER TABLE [dbo].[PCBaseStructureItem] CHECK CONSTRAINT [FK_PCBaseStructureItem_PCBasetructureID]
 GO
-ALTER TABLE [dbo].[PCBaseStructurePermissions]  WITH CHECK ADD  CONSTRAINT [FK_PCBaseStructurePermissions_PCBaseStructureID] FOREIGN KEY([PCBaseStructureID])
-REFERENCES [dbo].[PCBaseStructures] (ID)
+ALTER TABLE [dbo].PCBaseStructurePermission  WITH CHECK ADD  CONSTRAINT [FK_PCBasetructurePermissions_PCBasetructureID] FOREIGN KEY([PCBasetructureID])
+REFERENCES [dbo].[PCBaseStructure] (ID)
 GO
-ALTER TABLE [dbo].[PCBaseStructurePermissions] CHECK CONSTRAINT [FK_PCBaseStructurePermissions_PCBaseStructureID]
+ALTER TABLE [dbo].PCBaseStructurePermission CHECK CONSTRAINT [FK_PCBasetructurePermissions_PCBasetructureID]
 GO
-ALTER TABLE [dbo].[PCBaseStructurePermissions]  WITH CHECK ADD  CONSTRAINT [FK_PCBaseStructurePermissions_PlayerID] FOREIGN KEY([PlayerID])
-REFERENCES [dbo].[PlayerCharacters] (ID)
+ALTER TABLE [dbo].PCBaseStructurePermission  WITH CHECK ADD  CONSTRAINT [FK_PCBasetructurePermissions_PlayerID] FOREIGN KEY([PlayerID])
+REFERENCES [dbo].[Player] (ID)
 GO
-ALTER TABLE [dbo].[PCBaseStructurePermissions] CHECK CONSTRAINT [FK_PCBaseStructurePermissions_PlayerID]
+ALTER TABLE [dbo].PCBaseStructurePermission CHECK CONSTRAINT [FK_PCBasetructurePermissions_PlayerID]
 GO
-ALTER TABLE [dbo].[PCBaseStructures]  WITH CHECK ADD  CONSTRAINT [FK_PCBaseStructures_BaseStructureID] FOREIGN KEY([BaseStructureID])
-REFERENCES [dbo].[BaseStructures] (ID)
+ALTER TABLE [dbo].[PCBaseStructure]  WITH CHECK ADD  CONSTRAINT [FK_PCBasetructure_BaseStructureID] FOREIGN KEY([BaseStructureID])
+REFERENCES [dbo].[BaseStructure] (ID)
 GO
-ALTER TABLE [dbo].[PCBaseStructures] CHECK CONSTRAINT [FK_PCBaseStructures_BaseStructureID]
+ALTER TABLE [dbo].[PCBaseStructure] CHECK CONSTRAINT [FK_PCBasetructure_BaseStructureID]
 GO
-ALTER TABLE [dbo].[PCBaseStructures]  WITH CHECK ADD  CONSTRAINT [FK_PCBaseStructures_ExteriorStyleID] FOREIGN KEY([ExteriorStyleID])
-REFERENCES [dbo].[BuildingStyles] (ID)
+ALTER TABLE [dbo].[PCBaseStructure]  WITH CHECK ADD  CONSTRAINT [FK_PCBasetructure_ExteriorStyleID] FOREIGN KEY([ExteriorStyleID])
+REFERENCES [dbo].[BuildingStyle] (ID)
 GO
-ALTER TABLE [dbo].[PCBaseStructures] CHECK CONSTRAINT [FK_PCBaseStructures_ExteriorStyleID]
+ALTER TABLE [dbo].[PCBaseStructure] CHECK CONSTRAINT [FK_PCBasetructure_ExteriorStyleID]
 GO
-ALTER TABLE [dbo].[PCBaseStructures]  WITH CHECK ADD  CONSTRAINT [FK_PCBaseStructures_InteriorStyleID] FOREIGN KEY([InteriorStyleID])
-REFERENCES [dbo].[BuildingStyles] (ID)
+ALTER TABLE [dbo].[PCBaseStructure]  WITH CHECK ADD  CONSTRAINT [FK_PCBasetructure_InteriorStyleID] FOREIGN KEY([InteriorStyleID])
+REFERENCES [dbo].[BuildingStyle] (ID)
 GO
-ALTER TABLE [dbo].[PCBaseStructures] CHECK CONSTRAINT [FK_PCBaseStructures_InteriorStyleID]
+ALTER TABLE [dbo].[PCBaseStructure] CHECK CONSTRAINT [FK_PCBasetructure_InteriorStyleID]
 GO
-ALTER TABLE [dbo].[PCBaseStructures]  WITH CHECK ADD  CONSTRAINT [FK_PCBaseStructures_ParentPCBaseStructureID] FOREIGN KEY([ParentPCBaseStructureID])
-REFERENCES [dbo].[PCBaseStructures] (ID)
+ALTER TABLE [dbo].[PCBaseStructure]  WITH CHECK ADD  CONSTRAINT [FK_PCBasetructure_ParentPCBasetructureID] FOREIGN KEY([ParentPCBasetructureID])
+REFERENCES [dbo].[PCBaseStructure] (ID)
 GO
-ALTER TABLE [dbo].[PCBaseStructures] CHECK CONSTRAINT [FK_PCBaseStructures_ParentPCBaseStructureID]
+ALTER TABLE [dbo].[PCBaseStructure] CHECK CONSTRAINT [FK_PCBasetructure_ParentPCBasetructureID]
 GO
-ALTER TABLE [dbo].[PCBaseStructures]  WITH CHECK ADD  CONSTRAINT [FK_PCBaseStructures_PCBaseID] FOREIGN KEY([PCBaseID])
-REFERENCES [dbo].[PCBases] (ID)
+ALTER TABLE [dbo].[PCBaseStructure]  WITH CHECK ADD  CONSTRAINT [FK_PCBasetructure_PCBaseID] FOREIGN KEY([PCBaseID])
+REFERENCES [dbo].[PCBase] (ID)
 GO
-ALTER TABLE [dbo].[PCBaseStructures] CHECK CONSTRAINT [FK_PCBaseStructures_PCBaseID]
+ALTER TABLE [dbo].[PCBaseStructure] CHECK CONSTRAINT [FK_PCBasetructure_PCBaseID]
 GO
-ALTER TABLE [dbo].[PCCooldowns]  WITH CHECK ADD  CONSTRAINT [fk_PCCooldowns_CooldownCategoryID] FOREIGN KEY([CooldownCategoryID])
-REFERENCES [dbo].[CooldownCategories] (ID)
+ALTER TABLE [dbo].[PCCooldown]  WITH CHECK ADD  CONSTRAINT [fk_PCCooldown_CooldownCategoryID] FOREIGN KEY([CooldownCategoryID])
+REFERENCES [dbo].[CooldownCategory] (ID)
 GO
-ALTER TABLE [dbo].[PCCooldowns] CHECK CONSTRAINT [fk_PCCooldowns_CooldownCategoryID]
+ALTER TABLE [dbo].[PCCooldown] CHECK CONSTRAINT [fk_PCCooldown_CooldownCategoryID]
 GO
-ALTER TABLE [dbo].[PCCooldowns]  WITH CHECK ADD  CONSTRAINT [fk_PCCooldowns_PlayerID] FOREIGN KEY([PlayerID])
-REFERENCES [dbo].[PlayerCharacters] (ID)
+ALTER TABLE [dbo].[PCCooldown]  WITH CHECK ADD  CONSTRAINT [fk_PCCooldown_PlayerID] FOREIGN KEY([PlayerID])
+REFERENCES [dbo].[Player] (ID)
 GO
-ALTER TABLE [dbo].[PCCooldowns] CHECK CONSTRAINT [fk_PCCooldowns_PlayerID]
+ALTER TABLE [dbo].[PCCooldown] CHECK CONSTRAINT [fk_PCCooldown_PlayerID]
 GO
-ALTER TABLE [dbo].[PCCraftedBlueprints]  WITH CHECK ADD  CONSTRAINT [FK_PCCraftedBlueprints_CraftBlueprintID] FOREIGN KEY([CraftBlueprintID])
-REFERENCES [dbo].[CraftBlueprints] (ID)
+ALTER TABLE [dbo].[PCCraftedBlueprint]  WITH CHECK ADD  CONSTRAINT [FK_PCCraftedBlueprint_CraftBlueprintID] FOREIGN KEY([CraftBlueprintID])
+REFERENCES [dbo].[CraftBlueprint] (ID)
 GO
-ALTER TABLE [dbo].[PCCraftedBlueprints] CHECK CONSTRAINT [FK_PCCraftedBlueprints_CraftBlueprintID]
+ALTER TABLE [dbo].[PCCraftedBlueprint] CHECK CONSTRAINT [FK_PCCraftedBlueprint_CraftBlueprintID]
 GO
-ALTER TABLE [dbo].[PCCraftedBlueprints]  WITH CHECK ADD  CONSTRAINT [FK_PCCraftedBlueprints_PlayerID] FOREIGN KEY([PlayerID])
-REFERENCES [dbo].[PlayerCharacters] (ID)
+ALTER TABLE [dbo].[PCCraftedBlueprint]  WITH CHECK ADD  CONSTRAINT [FK_PCCraftedBlueprint_PlayerID] FOREIGN KEY([PlayerID])
+REFERENCES [dbo].[Player] (ID)
 GO
-ALTER TABLE [dbo].[PCCraftedBlueprints] CHECK CONSTRAINT [FK_PCCraftedBlueprints_PlayerID]
+ALTER TABLE [dbo].[PCCraftedBlueprint] CHECK CONSTRAINT [FK_PCCraftedBlueprint_PlayerID]
 GO
-ALTER TABLE [dbo].[PCCustomEffects]  WITH CHECK ADD  CONSTRAINT [fk_PCCustomEffects_CustomEffectID] FOREIGN KEY([CustomEffectID])
-REFERENCES [dbo].[CustomEffects] (ID)
+ALTER TABLE [dbo].[PCCustomEffect]  WITH CHECK ADD  CONSTRAINT [fk_PCCustomEffect_CustomEffectID] FOREIGN KEY([CustomEffectID])
+REFERENCES [dbo].[CustomEffect] (ID)
 GO
-ALTER TABLE [dbo].[PCCustomEffects] CHECK CONSTRAINT [fk_PCCustomEffects_CustomEffectID]
+ALTER TABLE [dbo].[PCCustomEffect] CHECK CONSTRAINT [fk_PCCustomEffect_CustomEffectID]
 GO
-ALTER TABLE [dbo].[PCCustomEffects]  WITH CHECK ADD  CONSTRAINT [fk_PCCustomEffects_PlayerID] FOREIGN KEY([PlayerID])
-REFERENCES [dbo].[PlayerCharacters] (ID)
+ALTER TABLE [dbo].[PCCustomEffect]  WITH CHECK ADD  CONSTRAINT [fk_PCCustomEffect_PlayerID] FOREIGN KEY([PlayerID])
+REFERENCES [dbo].[Player] (ID)
 GO
-ALTER TABLE [dbo].[PCCustomEffects] CHECK CONSTRAINT [fk_PCCustomEffects_PlayerID]
+ALTER TABLE [dbo].[PCCustomEffect] CHECK CONSTRAINT [fk_PCCustomEffect_PlayerID]
 GO
-ALTER TABLE [dbo].[PCImpoundedItems]  WITH CHECK ADD  CONSTRAINT [FK_PCItemImpound_PlayerID] FOREIGN KEY([PlayerID])
-REFERENCES [dbo].[PlayerCharacters] (ID)
+ALTER TABLE [dbo].[PCImpoundedItem]  WITH CHECK ADD  CONSTRAINT [FK_PCItemImpound_PlayerID] FOREIGN KEY([PlayerID])
+REFERENCES [dbo].[Player] (ID)
 GO
-ALTER TABLE [dbo].[PCImpoundedItems] CHECK CONSTRAINT [FK_PCItemImpound_PlayerID]
+ALTER TABLE [dbo].[PCImpoundedItem] CHECK CONSTRAINT [FK_PCItemImpound_PlayerID]
 GO
-ALTER TABLE [dbo].[PCKeyItems]  WITH CHECK ADD  CONSTRAINT [fk_PCKeyItems_KeyItemID] FOREIGN KEY([KeyItemID])
-REFERENCES [dbo].[KeyItems] (ID)
+ALTER TABLE [dbo].[PCKeyItem]  WITH CHECK ADD  CONSTRAINT [fk_PCKeyItem_KeyItemID] FOREIGN KEY([KeyItemID])
+REFERENCES [dbo].[KeyItem] (ID)
 GO
-ALTER TABLE [dbo].[PCKeyItems] CHECK CONSTRAINT [fk_PCKeyItems_KeyItemID]
+ALTER TABLE [dbo].[PCKeyItem] CHECK CONSTRAINT [fk_PCKeyItem_KeyItemID]
 GO
-ALTER TABLE [dbo].[PCKeyItems]  WITH CHECK ADD  CONSTRAINT [fk_PCKeyItems_PlayerID] FOREIGN KEY([PlayerID])
-REFERENCES [dbo].[PlayerCharacters] (ID)
+ALTER TABLE [dbo].[PCKeyItem]  WITH CHECK ADD  CONSTRAINT [fk_PCKeyItem_PlayerID] FOREIGN KEY([PlayerID])
+REFERENCES [dbo].[Player] (ID)
 GO
-ALTER TABLE [dbo].[PCKeyItems] CHECK CONSTRAINT [fk_PCKeyItems_PlayerID]
+ALTER TABLE [dbo].[PCKeyItem] CHECK CONSTRAINT [fk_PCKeyItem_PlayerID]
 GO
-ALTER TABLE [dbo].[PCMapPins]  WITH CHECK ADD  CONSTRAINT [FK_PCMapPins_PlayerID] FOREIGN KEY([PlayerID])
-REFERENCES [dbo].[PlayerCharacters] (ID)
+ALTER TABLE [dbo].[PCMapPin]  WITH CHECK ADD  CONSTRAINT [FK_PCMapPin_PlayerID] FOREIGN KEY([PlayerID])
+REFERENCES [dbo].[Player] (ID)
 GO
-ALTER TABLE [dbo].[PCMapPins] CHECK CONSTRAINT [FK_PCMapPins_PlayerID]
+ALTER TABLE [dbo].[PCMapPin] CHECK CONSTRAINT [FK_PCMapPin_PlayerID]
 GO
 ALTER TABLE [dbo].[PCMapProgression]  WITH CHECK ADD  CONSTRAINT [FK_PCMapProgression_PlayerID] FOREIGN KEY([PlayerID])
-REFERENCES [dbo].[PlayerCharacters] (ID)
+REFERENCES [dbo].[Player] (ID)
 GO
 ALTER TABLE [dbo].[PCMapProgression] CHECK CONSTRAINT [FK_PCMapProgression_PlayerID]
 GO
-ALTER TABLE [dbo].[PCMigrationItems]  WITH CHECK ADD  CONSTRAINT [fk_PCMigrationItems_BaseItemTypeID] FOREIGN KEY([BaseItemTypeID])
-REFERENCES [dbo].[BaseItemTypes] (ID)
-GO
-ALTER TABLE [dbo].[PCMigrationItems] CHECK CONSTRAINT [fk_PCMigrationItems_BaseItemTypeID]
-GO
-ALTER TABLE [dbo].[PCMigrationItems]  WITH CHECK ADD  CONSTRAINT [fk_PCMigrationItems_PCMigrationID] FOREIGN KEY([PCMigrationID])
-REFERENCES [dbo].[PCMigrations] (ID)
-GO
-ALTER TABLE [dbo].[PCMigrationItems] CHECK CONSTRAINT [fk_PCMigrationItems_PCMigrationID]
-GO
 ALTER TABLE [dbo].[PCObjectVisibility]  WITH CHECK ADD  CONSTRAINT [FK_PCObjectVisibility_PlayerID] FOREIGN KEY([PlayerID])
-REFERENCES [dbo].[PlayerCharacters] (ID)
+REFERENCES [dbo].[Player] (ID)
 GO
 ALTER TABLE [dbo].[PCObjectVisibility] CHECK CONSTRAINT [FK_PCObjectVisibility_PlayerID]
 GO
-ALTER TABLE [dbo].[PCOutfits]  WITH CHECK ADD  CONSTRAINT [fk_PCOutfits_PlayerID] FOREIGN KEY([PlayerID])
-REFERENCES [dbo].[PlayerCharacters] (ID)
+ALTER TABLE [dbo].[PCOutfit]  WITH CHECK ADD  CONSTRAINT [fk_PCOutfit_PlayerID] FOREIGN KEY([PlayerID])
+REFERENCES [dbo].[Player] (ID)
 GO
-ALTER TABLE [dbo].[PCOutfits] CHECK CONSTRAINT [fk_PCOutfits_PlayerID]
+ALTER TABLE [dbo].[PCOutfit] CHECK CONSTRAINT [fk_PCOutfit_PlayerID]
 GO
-ALTER TABLE [dbo].[PCOverflowItems]  WITH CHECK ADD  CONSTRAINT [fk_PCOverflowItems_PlayerID] FOREIGN KEY([PlayerID])
-REFERENCES [dbo].[PlayerCharacters] (ID)
+ALTER TABLE [dbo].[PCOverflowItem]  WITH CHECK ADD  CONSTRAINT [fk_PCOverflowItem_PlayerID] FOREIGN KEY([PlayerID])
+REFERENCES [dbo].[Player] (ID)
 GO
-ALTER TABLE [dbo].[PCOverflowItems] CHECK CONSTRAINT [fk_PCOverflowItems_PlayerID]
+ALTER TABLE [dbo].[PCOverflowItem] CHECK CONSTRAINT [fk_PCOverflowItem_PlayerID]
 GO
-ALTER TABLE [dbo].[PCPerkRefunds]  WITH CHECK ADD  CONSTRAINT [FK_PCPerkRefunds_PerkID] FOREIGN KEY([PerkID])
-REFERENCES [dbo].[Perks] (ID)
+ALTER TABLE [dbo].[PCPerkRefund]  WITH CHECK ADD  CONSTRAINT [FK_PCPerkRefund_PerkID] FOREIGN KEY([PerkID])
+REFERENCES [dbo].[Perk] (ID)
 GO
-ALTER TABLE [dbo].[PCPerkRefunds] CHECK CONSTRAINT [FK_PCPerkRefunds_PerkID]
+ALTER TABLE [dbo].[PCPerkRefund] CHECK CONSTRAINT [FK_PCPerkRefund_PerkID]
 GO
-ALTER TABLE [dbo].[PCPerkRefunds]  WITH CHECK ADD  CONSTRAINT [FK_PCPerkRefunds_PlayerID] FOREIGN KEY([PlayerID])
-REFERENCES [dbo].[PlayerCharacters] (ID)
+ALTER TABLE [dbo].[PCPerkRefund]  WITH CHECK ADD  CONSTRAINT [FK_PCPerkRefund_PlayerID] FOREIGN KEY([PlayerID])
+REFERENCES [dbo].[Player] (ID)
 GO
-ALTER TABLE [dbo].[PCPerkRefunds] CHECK CONSTRAINT [FK_PCPerkRefunds_PlayerID]
+ALTER TABLE [dbo].[PCPerkRefund] CHECK CONSTRAINT [FK_PCPerkRefund_PlayerID]
 GO
-ALTER TABLE [dbo].[PCPerks]  WITH CHECK ADD  CONSTRAINT [fk_PCPerks_PerkID] FOREIGN KEY([PerkID])
-REFERENCES [dbo].[Perks] (ID)
+ALTER TABLE [dbo].[PCPerk]  WITH CHECK ADD  CONSTRAINT [fk_PCPerk_PerkID] FOREIGN KEY([PerkID])
+REFERENCES [dbo].[Perk] (ID)
 GO
-ALTER TABLE [dbo].[PCPerks] CHECK CONSTRAINT [fk_PCPerks_PerkID]
+ALTER TABLE [dbo].[PCPerk] CHECK CONSTRAINT [fk_PCPerk_PerkID]
 GO
-ALTER TABLE [dbo].[PCPerks]  WITH CHECK ADD  CONSTRAINT [fk_PCPerks_PlayerID] FOREIGN KEY([PlayerID])
-REFERENCES [dbo].[PlayerCharacters] (ID)
+ALTER TABLE [dbo].[PCPerk]  WITH CHECK ADD  CONSTRAINT [fk_PCPerk_PlayerID] FOREIGN KEY([PlayerID])
+REFERENCES [dbo].[Player] (ID)
 GO
-ALTER TABLE [dbo].[PCPerks] CHECK CONSTRAINT [fk_PCPerks_PlayerID]
+ALTER TABLE [dbo].[PCPerk] CHECK CONSTRAINT [fk_PCPerk_PlayerID]
 GO
-ALTER TABLE [dbo].[PCQuestItemProgress]  WITH CHECK ADD  CONSTRAINT [FK_PCQuestItemProgress_PCQuestStatusID] FOREIGN KEY([PCQuestStatusID])
-REFERENCES [dbo].[PCQuestStatus] (ID)
+ALTER TABLE [dbo].[PCQuestItemProgress]  WITH CHECK ADD  CONSTRAINT [FK_PCQuestItemProgress_PCQuesttatusID] FOREIGN KEY([PCQuesttatusID])
+REFERENCES [dbo].[PCQuesttatus] (ID)
 GO
-ALTER TABLE [dbo].[PCQuestItemProgress] CHECK CONSTRAINT [FK_PCQuestItemProgress_PCQuestStatusID]
+ALTER TABLE [dbo].[PCQuestItemProgress] CHECK CONSTRAINT [FK_PCQuestItemProgress_PCQuesttatusID]
 GO
 ALTER TABLE [dbo].[PCQuestItemProgress]  WITH CHECK ADD  CONSTRAINT [FK_PCQuestItemProgress_PlayerID] FOREIGN KEY([PlayerID])
-REFERENCES [dbo].[PlayerCharacters] (ID)
+REFERENCES [dbo].[Player] (ID)
 GO
 ALTER TABLE [dbo].[PCQuestItemProgress] CHECK CONSTRAINT [FK_PCQuestItemProgress_PlayerID]
 GO
 ALTER TABLE [dbo].[PCQuestKillTargetProgress]  WITH CHECK ADD  CONSTRAINT [FK_PCQuestKillTargetProgress_NPCGroupID] FOREIGN KEY([NPCGroupID])
-REFERENCES [dbo].[NPCGroups] (ID)
+REFERENCES [dbo].[NPCGroup] (ID)
 GO
 ALTER TABLE [dbo].[PCQuestKillTargetProgress] CHECK CONSTRAINT [FK_PCQuestKillTargetProgress_NPCGroupID]
 GO
-ALTER TABLE [dbo].[PCQuestKillTargetProgress]  WITH CHECK ADD  CONSTRAINT [FK_PCQuestKillTargetProgress_PCQuestStatusID] FOREIGN KEY([PCQuestStatusID])
-REFERENCES [dbo].[PCQuestStatus] (ID)
+ALTER TABLE [dbo].[PCQuestKillTargetProgress]  WITH CHECK ADD  CONSTRAINT [FK_PCQuestKillTargetProgress_PCQuesttatusID] FOREIGN KEY([PCQuesttatusID])
+REFERENCES [dbo].[PCQuesttatus] (ID)
 GO
-ALTER TABLE [dbo].[PCQuestKillTargetProgress] CHECK CONSTRAINT [FK_PCQuestKillTargetProgress_PCQuestStatusID]
+ALTER TABLE [dbo].[PCQuestKillTargetProgress] CHECK CONSTRAINT [FK_PCQuestKillTargetProgress_PCQuesttatusID]
 GO
 ALTER TABLE [dbo].[PCQuestKillTargetProgress]  WITH CHECK ADD  CONSTRAINT [FK_PCQuestKillTargetProgress_PlayerID] FOREIGN KEY([PlayerID])
-REFERENCES [dbo].[PlayerCharacters] (ID)
+REFERENCES [dbo].[Player] (ID)
 GO
 ALTER TABLE [dbo].[PCQuestKillTargetProgress] CHECK CONSTRAINT [FK_PCQuestKillTargetProgress_PlayerID]
 GO
-ALTER TABLE [dbo].[PCQuestStatus]  WITH CHECK ADD  CONSTRAINT [FK_PCQuestStatus_CurrentQuestStateID] FOREIGN KEY([CurrentQuestStateID])
-REFERENCES [dbo].[QuestStates] (ID)
+ALTER TABLE [dbo].[PCQuesttatus]  WITH CHECK ADD  CONSTRAINT [FK_PCQuesttatus_CurrentQuesttateID] FOREIGN KEY([CurrentQuesttateID])
+REFERENCES [dbo].[QuestState] (ID)
 GO
-ALTER TABLE [dbo].[PCQuestStatus] CHECK CONSTRAINT [FK_PCQuestStatus_CurrentQuestStateID]
+ALTER TABLE [dbo].[PCQuesttatus] CHECK CONSTRAINT [FK_PCQuesttatus_CurrentQuesttateID]
 GO
-ALTER TABLE [dbo].[PCQuestStatus]  WITH CHECK ADD  CONSTRAINT [FK_PCQuestStatus_PlayerID] FOREIGN KEY([PlayerID])
-REFERENCES [dbo].[PlayerCharacters] (ID)
+ALTER TABLE [dbo].[PCQuesttatus]  WITH CHECK ADD  CONSTRAINT [FK_PCQuesttatus_PlayerID] FOREIGN KEY([PlayerID])
+REFERENCES [dbo].[Player] (ID)
 GO
-ALTER TABLE [dbo].[PCQuestStatus] CHECK CONSTRAINT [FK_PCQuestStatus_PlayerID]
+ALTER TABLE [dbo].[PCQuesttatus] CHECK CONSTRAINT [FK_PCQuesttatus_PlayerID]
 GO
-ALTER TABLE [dbo].[PCQuestStatus]  WITH CHECK ADD  CONSTRAINT [FK_PCQuestStatus_QuestID] FOREIGN KEY([QuestID])
-REFERENCES [dbo].[Quests] (ID)
+ALTER TABLE [dbo].[PCQuesttatus]  WITH CHECK ADD  CONSTRAINT [FK_PCQuesttatus_QuestID] FOREIGN KEY([QuestID])
+REFERENCES [dbo].[Quest] (ID)
 GO
-ALTER TABLE [dbo].[PCQuestStatus] CHECK CONSTRAINT [FK_PCQuestStatus_QuestID]
+ALTER TABLE [dbo].[PCQuesttatus] CHECK CONSTRAINT [FK_PCQuesttatus_QuestID]
 GO
-ALTER TABLE [dbo].[PCQuestStatus]  WITH CHECK ADD  CONSTRAINT [FK_PCQuestStatus_SelectedRewardID] FOREIGN KEY([SelectedItemRewardID])
-REFERENCES [dbo].[QuestRewardItems] (ID)
+ALTER TABLE [dbo].[PCQuesttatus]  WITH CHECK ADD  CONSTRAINT [FK_PCQuesttatus_SelectedRewardID] FOREIGN KEY([SelectedItemRewardID])
+REFERENCES [dbo].[QuestRewardItem] (ID)
 GO
-ALTER TABLE [dbo].[PCQuestStatus] CHECK CONSTRAINT [FK_PCQuestStatus_SelectedRewardID]
+ALTER TABLE [dbo].[PCQuesttatus] CHECK CONSTRAINT [FK_PCQuesttatus_SelectedRewardID]
 GO
 ALTER TABLE [dbo].[PCRegionalFame]  WITH CHECK ADD  CONSTRAINT [FK_PCRegionalFame_FameRegionID] FOREIGN KEY([FameRegionID])
-REFERENCES [dbo].[FameRegions] (ID)
+REFERENCES [dbo].[FameRegion] (ID)
 GO
 ALTER TABLE [dbo].[PCRegionalFame] CHECK CONSTRAINT [FK_PCRegionalFame_FameRegionID]
 GO
 ALTER TABLE [dbo].[PCRegionalFame]  WITH CHECK ADD  CONSTRAINT [FK_PCRegionalFame_PlayerID] FOREIGN KEY([PlayerID])
-REFERENCES [dbo].[PlayerCharacters] (ID)
+REFERENCES [dbo].[Player] (ID)
 GO
 ALTER TABLE [dbo].[PCRegionalFame] CHECK CONSTRAINT [FK_PCRegionalFame_PlayerID]
 GO
-ALTER TABLE [dbo].[PCSearchSiteItems]  WITH CHECK ADD  CONSTRAINT [fk_PCSearchSiteItems_PlayerID] FOREIGN KEY([PlayerID])
-REFERENCES [dbo].[PlayerCharacters] (ID)
+ALTER TABLE [dbo].[PCSearchSiteItem]  WITH CHECK ADD  CONSTRAINT [fk_PCSearchSiteItem_PlayerID] FOREIGN KEY([PlayerID])
+REFERENCES [dbo].[Player] (ID)
 GO
-ALTER TABLE [dbo].[PCSearchSiteItems] CHECK CONSTRAINT [fk_PCSearchSiteItems_PlayerID]
+ALTER TABLE [dbo].[PCSearchSiteItem] CHECK CONSTRAINT [fk_PCSearchSiteItem_PlayerID]
 GO
-ALTER TABLE [dbo].[PCSearchSites]  WITH CHECK ADD  CONSTRAINT [fk_PCSearchSites_PlayerID] FOREIGN KEY([PlayerID])
-REFERENCES [dbo].[PlayerCharacters] (ID)
+ALTER TABLE [dbo].[PCSearchSite]  WITH CHECK ADD  CONSTRAINT [fk_PCSearchSite_PlayerID] FOREIGN KEY([PlayerID])
+REFERENCES [dbo].[Player] (ID)
 GO
-ALTER TABLE [dbo].[PCSearchSites] CHECK CONSTRAINT [fk_PCSearchSites_PlayerID]
+ALTER TABLE [dbo].[PCSearchSite] CHECK CONSTRAINT [fk_PCSearchSite_PlayerID]
 GO
-ALTER TABLE [dbo].[PCSkills]  WITH CHECK ADD  CONSTRAINT [FK_PCSkills_PlayerID] FOREIGN KEY([PlayerID])
-REFERENCES [dbo].[PlayerCharacters] (ID)
+ALTER TABLE [dbo].[PCSkill]  WITH CHECK ADD  CONSTRAINT [FK_PCSkill_PlayerID] FOREIGN KEY([PlayerID])
+REFERENCES [dbo].[Player] (ID)
 GO
-ALTER TABLE [dbo].[PCSkills] CHECK CONSTRAINT [FK_PCSkills_PlayerID]
+ALTER TABLE [dbo].[PCSkill] CHECK CONSTRAINT [FK_PCSkill_PlayerID]
 GO
-ALTER TABLE [dbo].[PCSkills]  WITH CHECK ADD  CONSTRAINT [FK_PCSkills_SkillID] FOREIGN KEY([SkillID])
-REFERENCES [dbo].[Skills] (ID)
+ALTER TABLE [dbo].[PCSkill]  WITH CHECK ADD  CONSTRAINT [FK_PCSkill_SkillID] FOREIGN KEY([SkillID])
+REFERENCES [dbo].[Skill] (ID)
 GO
-ALTER TABLE [dbo].[PCSkills] CHECK CONSTRAINT [FK_PCSkills_SkillID]
+ALTER TABLE [dbo].[PCSkill] CHECK CONSTRAINT [FK_PCSkill_SkillID]
 GO
-ALTER TABLE [dbo].[PerkLevelQuestRequirements]  WITH CHECK ADD  CONSTRAINT [FK_PerkLevelQuestRequirements_PerkLevelID] FOREIGN KEY([PerkLevelID])
-REFERENCES [dbo].[PerkLevels] (ID)
+ALTER TABLE [dbo].[PerkLevelQuestRequirement]  WITH CHECK ADD  CONSTRAINT [FK_PerkLevelQuestRequirement_PerkLevelID] FOREIGN KEY([PerkLevelID])
+REFERENCES [dbo].[PerkLevel] (ID)
 GO
-ALTER TABLE [dbo].[PerkLevelQuestRequirements] CHECK CONSTRAINT [FK_PerkLevelQuestRequirements_PerkLevelID]
+ALTER TABLE [dbo].[PerkLevelQuestRequirement] CHECK CONSTRAINT [FK_PerkLevelQuestRequirement_PerkLevelID]
 GO
-ALTER TABLE [dbo].[PerkLevelQuestRequirements]  WITH CHECK ADD  CONSTRAINT [FK_PerkLevelQuestRequirements_RequiredQuestID] FOREIGN KEY([RequiredQuestID])
-REFERENCES [dbo].[Quests] (ID)
+ALTER TABLE [dbo].[PerkLevelQuestRequirement]  WITH CHECK ADD  CONSTRAINT [FK_PerkLevelQuestRequirement_RequiredQuestID] FOREIGN KEY([RequiredQuestID])
+REFERENCES [dbo].[Quest] (ID)
 GO
-ALTER TABLE [dbo].[PerkLevelQuestRequirements] CHECK CONSTRAINT [FK_PerkLevelQuestRequirements_RequiredQuestID]
+ALTER TABLE [dbo].[PerkLevelQuestRequirement] CHECK CONSTRAINT [FK_PerkLevelQuestRequirement_RequiredQuestID]
 GO
-ALTER TABLE [dbo].[PerkLevels]  WITH CHECK ADD  CONSTRAINT [FK_PerkLevels_PerkID] FOREIGN KEY([PerkID])
-REFERENCES [dbo].[Perks] (ID)
+ALTER TABLE [dbo].[PerkLevel]  WITH CHECK ADD  CONSTRAINT [FK_PerkLevel_PerkID] FOREIGN KEY([PerkID])
+REFERENCES [dbo].[Perk] (ID)
 GO
-ALTER TABLE [dbo].[PerkLevels] CHECK CONSTRAINT [FK_PerkLevels_PerkID]
+ALTER TABLE [dbo].[PerkLevel] CHECK CONSTRAINT [FK_PerkLevel_PerkID]
 GO
-ALTER TABLE [dbo].[PerkLevelSkillRequirements]  WITH CHECK ADD  CONSTRAINT [FK_PerkLevelSkillRequirements_PerkLevelID] FOREIGN KEY([PerkLevelID])
-REFERENCES [dbo].[PerkLevels] (ID)
+ALTER TABLE [dbo].PerkLevelSkillRequirement  WITH CHECK ADD  CONSTRAINT [FK_PerkLevelkillRequirements_PerkLevelID] FOREIGN KEY([PerkLevelID])
+REFERENCES [dbo].[PerkLevel] (ID)
 GO
-ALTER TABLE [dbo].[PerkLevelSkillRequirements] CHECK CONSTRAINT [FK_PerkLevelSkillRequirements_PerkLevelID]
+ALTER TABLE [dbo].PerkLevelSkillRequirement CHECK CONSTRAINT [FK_PerkLevelkillRequirements_PerkLevelID]
 GO
-ALTER TABLE [dbo].[PerkLevelSkillRequirements]  WITH CHECK ADD  CONSTRAINT [FK_PerkLevelSkillRequirements_SkillID] FOREIGN KEY([SkillID])
-REFERENCES [dbo].[Skills] (ID)
+ALTER TABLE [dbo].PerkLevelSkillRequirement  WITH CHECK ADD  CONSTRAINT [FK_PerkLevelkillRequirements_SkillID] FOREIGN KEY([SkillID])
+REFERENCES [dbo].[Skill] (ID)
 GO
-ALTER TABLE [dbo].[PerkLevelSkillRequirements] CHECK CONSTRAINT [FK_PerkLevelSkillRequirements_SkillID]
+ALTER TABLE [dbo].PerkLevelSkillRequirement CHECK CONSTRAINT [FK_PerkLevelkillRequirements_SkillID]
 GO
-ALTER TABLE [dbo].[Perks]  WITH CHECK ADD  CONSTRAINT [fk_Perks_CooldownCategoryID] FOREIGN KEY([CooldownCategoryID])
-REFERENCES [dbo].[CooldownCategories] (ID)
+ALTER TABLE [dbo].[Perk]  WITH CHECK ADD  CONSTRAINT [fk_Perk_CooldownCategoryID] FOREIGN KEY([CooldownCategoryID])
+REFERENCES [dbo].[CooldownCategory] (ID)
 GO
-ALTER TABLE [dbo].[Perks] CHECK CONSTRAINT [fk_Perks_CooldownCategoryID]
+ALTER TABLE [dbo].[Perk] CHECK CONSTRAINT [fk_Perk_CooldownCategoryID]
 GO
-ALTER TABLE [dbo].[Perks]  WITH CHECK ADD  CONSTRAINT [fk_Perks_EnmityAdjustmentRuleID] FOREIGN KEY([EnmityAdjustmentRuleID])
+ALTER TABLE [dbo].[Perk]  WITH CHECK ADD  CONSTRAINT [fk_Perk_EnmityAdjustmentRuleID] FOREIGN KEY([EnmityAdjustmentRuleID])
 REFERENCES [dbo].[EnmityAdjustmentRule] (ID)
 GO
-ALTER TABLE [dbo].[Perks] CHECK CONSTRAINT [fk_Perks_EnmityAdjustmentRuleID]
+ALTER TABLE [dbo].[Perk] CHECK CONSTRAINT [fk_Perk_EnmityAdjustmentRuleID]
 GO
-ALTER TABLE [dbo].[Perks]  WITH CHECK ADD  CONSTRAINT [fk_Perks_ExecutionTypeID] FOREIGN KEY([ExecutionTypeID])
-REFERENCES [dbo].[PerkExecutionTypes] (ID)
+ALTER TABLE [dbo].[Perk]  WITH CHECK ADD  CONSTRAINT [fk_Perk_ExecutionTypeID] FOREIGN KEY([ExecutionTypeID])
+REFERENCES [dbo].[PerkExecutionType] (ID)
 GO
-ALTER TABLE [dbo].[Perks] CHECK CONSTRAINT [fk_Perks_ExecutionTypeID]
+ALTER TABLE [dbo].[Perk] CHECK CONSTRAINT [fk_Perk_ExecutionTypeID]
 GO
-ALTER TABLE [dbo].[Perks]  WITH CHECK ADD  CONSTRAINT [fk_Perks_PerkCategoryID] FOREIGN KEY([PerkCategoryID])
-REFERENCES [dbo].[PerkCategories] (ID)
+ALTER TABLE [dbo].[Perk]  WITH CHECK ADD  CONSTRAINT [fk_Perk_PerkCategoryID] FOREIGN KEY([PerkCategoryID])
+REFERENCES [dbo].[PerkCategory] (ID)
 GO
-ALTER TABLE [dbo].[Perks] CHECK CONSTRAINT [fk_Perks_PerkCategoryID]
+ALTER TABLE [dbo].[Perk] CHECK CONSTRAINT [fk_Perk_PerkCategoryID]
 GO
-ALTER TABLE [dbo].[PlayerCharacters]  WITH CHECK ADD  CONSTRAINT [FK_PlayerCharacters_AssociationID] FOREIGN KEY([AssociationID])
-REFERENCES [dbo].[Associations] (ID)
+ALTER TABLE [dbo].[Player]  WITH CHECK ADD  CONSTRAINT [FK_Player_AssociationID] FOREIGN KEY([AssociationID])
+REFERENCES [dbo].[Association] (ID)
 GO
-ALTER TABLE [dbo].[PlayerCharacters] CHECK CONSTRAINT [FK_PlayerCharacters_AssociationID]
+ALTER TABLE [dbo].[Player] CHECK CONSTRAINT [FK_Player_AssociationID]
 GO
-ALTER TABLE [dbo].[PlayerCharacters]  WITH CHECK ADD  CONSTRAINT [FK_PlayerCharacters_PrimaryResidencePCBaseID] FOREIGN KEY([PrimaryResidencePCBaseID])
-REFERENCES [dbo].[PCBases] (ID)
+ALTER TABLE [dbo].[Player]  WITH CHECK ADD  CONSTRAINT [FK_Player_PrimaryResidencePCBaseID] FOREIGN KEY([PrimaryResidencePCBaseID])
+REFERENCES [dbo].[PCBase] (ID)
 GO
-ALTER TABLE [dbo].[PlayerCharacters] CHECK CONSTRAINT [FK_PlayerCharacters_PrimaryResidencePCBaseID]
+ALTER TABLE [dbo].[Player] CHECK CONSTRAINT [FK_Player_PrimaryResidencePCBaseID]
 GO
-ALTER TABLE [dbo].[PlayerCharacters]  WITH CHECK ADD  CONSTRAINT [FK_PlayerCharacters_PrimaryResidencePCBaseStructureID] FOREIGN KEY([PrimaryResidencePCBaseStructureID])
-REFERENCES [dbo].[PCBaseStructures] (ID)
+ALTER TABLE [dbo].[Player]  WITH CHECK ADD  CONSTRAINT [FK_Player_PrimaryResidencePCBasetructureID] FOREIGN KEY([PrimaryResidencePCBasetructureID])
+REFERENCES [dbo].[PCBaseStructure] (ID)
 GO
-ALTER TABLE [dbo].[PlayerCharacters] CHECK CONSTRAINT [FK_PlayerCharacters_PrimaryResidencePCBaseStructureID]
+ALTER TABLE [dbo].[Player] CHECK CONSTRAINT [FK_Player_PrimaryResidencePCBasetructureID]
 GO
-ALTER TABLE [dbo].[QuestKillTargetList]  WITH CHECK ADD  CONSTRAINT [FK_QuestKillTargetList_NPCGroupID] FOREIGN KEY([NPCGroupID])
-REFERENCES [dbo].[NPCGroups] (ID)
+ALTER TABLE [dbo].[QuestKillTarget]  WITH CHECK ADD  CONSTRAINT [FK_QuestKillTarget_NPCGroupID] FOREIGN KEY([NPCGroupID])
+REFERENCES [dbo].[NPCGroup] (ID)
 GO
-ALTER TABLE [dbo].[QuestKillTargetList] CHECK CONSTRAINT [FK_QuestKillTargetList_NPCGroupID]
+ALTER TABLE [dbo].[QuestKillTarget] CHECK CONSTRAINT [FK_QuestKillTarget_NPCGroupID]
 GO
-ALTER TABLE [dbo].[QuestKillTargetList]  WITH CHECK ADD  CONSTRAINT [FK_QuestKillTargetList_QuestID] FOREIGN KEY([QuestID])
-REFERENCES [dbo].[Quests] (ID)
+ALTER TABLE [dbo].[QuestKillTarget]  WITH CHECK ADD  CONSTRAINT [FK_QuestKillTarget_QuestID] FOREIGN KEY([QuestID])
+REFERENCES [dbo].[Quest] (ID)
 GO
-ALTER TABLE [dbo].[QuestKillTargetList] CHECK CONSTRAINT [FK_QuestKillTargetList_QuestID]
+ALTER TABLE [dbo].[QuestKillTarget] CHECK CONSTRAINT [FK_QuestKillTarget_QuestID]
 GO
-ALTER TABLE [dbo].[QuestKillTargetList]  WITH CHECK ADD  CONSTRAINT [FK_QuestKillTargetList_QuestStateID] FOREIGN KEY([QuestStateID])
-REFERENCES [dbo].[QuestStates] (ID)
+ALTER TABLE [dbo].[QuestKillTarget]  WITH CHECK ADD  CONSTRAINT [FK_QuestKillTarget_QuesttateID] FOREIGN KEY([QuesttateID])
+REFERENCES [dbo].[QuestState] (ID)
 GO
-ALTER TABLE [dbo].[QuestKillTargetList] CHECK CONSTRAINT [FK_QuestKillTargetList_QuestStateID]
+ALTER TABLE [dbo].[QuestKillTarget] CHECK CONSTRAINT [FK_QuestKillTarget_QuesttateID]
 GO
-ALTER TABLE [dbo].[QuestPrerequisites]  WITH CHECK ADD  CONSTRAINT [FK_QuestPrerequisites_QuestID] FOREIGN KEY([QuestID])
-REFERENCES [dbo].[Quests] (ID)
+ALTER TABLE [dbo].[QuestPrerequisite]  WITH CHECK ADD  CONSTRAINT [FK_QuestPrerequisite_QuestID] FOREIGN KEY([QuestID])
+REFERENCES [dbo].[Quest] (ID)
 GO
-ALTER TABLE [dbo].[QuestPrerequisites] CHECK CONSTRAINT [FK_QuestPrerequisites_QuestID]
+ALTER TABLE [dbo].[QuestPrerequisite] CHECK CONSTRAINT [FK_QuestPrerequisite_QuestID]
 GO
-ALTER TABLE [dbo].[QuestPrerequisites]  WITH CHECK ADD  CONSTRAINT [FK_QuestPrerequisites_RequiredQuestID] FOREIGN KEY([RequiredQuestID])
-REFERENCES [dbo].[Quests] (ID)
+ALTER TABLE [dbo].[QuestPrerequisite]  WITH CHECK ADD  CONSTRAINT [FK_QuestPrerequisite_RequiredQuestID] FOREIGN KEY([RequiredQuestID])
+REFERENCES [dbo].[Quest] (ID)
 GO
-ALTER TABLE [dbo].[QuestPrerequisites] CHECK CONSTRAINT [FK_QuestPrerequisites_RequiredQuestID]
+ALTER TABLE [dbo].[QuestPrerequisite] CHECK CONSTRAINT [FK_QuestPrerequisite_RequiredQuestID]
 GO
-ALTER TABLE [dbo].[QuestRequiredItemList]  WITH CHECK ADD  CONSTRAINT [FK_QuestRequiredItemList] FOREIGN KEY([QuestStateID])
-REFERENCES [dbo].[QuestStates] (ID)
+ALTER TABLE [dbo].[QuestRequiredItem]  WITH CHECK ADD  CONSTRAINT [FK_QuestRequiredItem] FOREIGN KEY([QuesttateID])
+REFERENCES [dbo].[QuestState] (ID)
 GO
-ALTER TABLE [dbo].[QuestRequiredItemList] CHECK CONSTRAINT [FK_QuestRequiredItemList]
+ALTER TABLE [dbo].[QuestRequiredItem] CHECK CONSTRAINT [FK_QuestRequiredItem]
 GO
-ALTER TABLE [dbo].[QuestRequiredItemList]  WITH CHECK ADD  CONSTRAINT [FK_QuestRequiredItemList_QuestID] FOREIGN KEY([QuestID])
-REFERENCES [dbo].[Quests] (ID)
+ALTER TABLE [dbo].[QuestRequiredItem]  WITH CHECK ADD  CONSTRAINT [FK_QuestRequiredItem_QuestID] FOREIGN KEY([QuestID])
+REFERENCES [dbo].[Quest] (ID)
 GO
-ALTER TABLE [dbo].[QuestRequiredItemList] CHECK CONSTRAINT [FK_QuestRequiredItemList_QuestID]
+ALTER TABLE [dbo].[QuestRequiredItem] CHECK CONSTRAINT [FK_QuestRequiredItem_QuestID]
 GO
-ALTER TABLE [dbo].[QuestRequiredKeyItemList]  WITH CHECK ADD  CONSTRAINT [FK_QuestRequiredKeyItemList] FOREIGN KEY([QuestStateID])
-REFERENCES [dbo].[QuestStates] (ID)
+ALTER TABLE [dbo].[QuestRequiredKeyItem]  WITH CHECK ADD  CONSTRAINT [FK_QuestRequiredKeyItem] FOREIGN KEY([QuesttateID])
+REFERENCES [dbo].[QuestState] (ID)
 GO
-ALTER TABLE [dbo].[QuestRequiredKeyItemList] CHECK CONSTRAINT [FK_QuestRequiredKeyItemList]
+ALTER TABLE [dbo].[QuestRequiredKeyItem] CHECK CONSTRAINT [FK_QuestRequiredKeyItem]
 GO
-ALTER TABLE [dbo].[QuestRequiredKeyItemList]  WITH CHECK ADD  CONSTRAINT [FK_QuestRequiredKeyItemList_KeyItemID] FOREIGN KEY([KeyItemID])
-REFERENCES [dbo].[KeyItems] (ID)
+ALTER TABLE [dbo].[QuestRequiredKeyItem]  WITH CHECK ADD  CONSTRAINT [FK_QuestRequiredKeyItem_KeyItemID] FOREIGN KEY([KeyItemID])
+REFERENCES [dbo].[KeyItem] (ID)
 GO
-ALTER TABLE [dbo].[QuestRequiredKeyItemList] CHECK CONSTRAINT [FK_QuestRequiredKeyItemList_KeyItemID]
+ALTER TABLE [dbo].[QuestRequiredKeyItem] CHECK CONSTRAINT [FK_QuestRequiredKeyItem_KeyItemID]
 GO
-ALTER TABLE [dbo].[QuestRequiredKeyItemList]  WITH CHECK ADD  CONSTRAINT [FK_QuestRequiredKeyItemList_QuestID] FOREIGN KEY([QuestID])
-REFERENCES [dbo].[Quests] (ID)
+ALTER TABLE [dbo].[QuestRequiredKeyItem]  WITH CHECK ADD  CONSTRAINT [FK_QuestRequiredKeyItem_QuestID] FOREIGN KEY([QuestID])
+REFERENCES [dbo].[Quest] (ID)
 GO
-ALTER TABLE [dbo].[QuestRequiredKeyItemList] CHECK CONSTRAINT [FK_QuestRequiredKeyItemList_QuestID]
+ALTER TABLE [dbo].[QuestRequiredKeyItem] CHECK CONSTRAINT [FK_QuestRequiredKeyItem_QuestID]
 GO
-ALTER TABLE [dbo].[QuestRewardItems]  WITH CHECK ADD  CONSTRAINT [FK_QuestRewards_QuestID] FOREIGN KEY([QuestID])
-REFERENCES [dbo].[Quests] (ID)
+ALTER TABLE [dbo].[QuestRewardItem]  WITH CHECK ADD  CONSTRAINT [FK_QuestRewards_QuestID] FOREIGN KEY([QuestID])
+REFERENCES [dbo].[Quest] (ID)
 GO
-ALTER TABLE [dbo].[QuestRewardItems] CHECK CONSTRAINT [FK_QuestRewards_QuestID]
+ALTER TABLE [dbo].[QuestRewardItem] CHECK CONSTRAINT [FK_QuestRewards_QuestID]
 GO
-ALTER TABLE [dbo].[Quests]  WITH CHECK ADD  CONSTRAINT [FK_Quests_FameRegionID] FOREIGN KEY([FameRegionID])
-REFERENCES [dbo].[FameRegions] (ID)
+ALTER TABLE [dbo].[Quest]  WITH CHECK ADD  CONSTRAINT [FK_Quest_FameRegionID] FOREIGN KEY([FameRegionID])
+REFERENCES [dbo].[FameRegion] (ID)
 GO
-ALTER TABLE [dbo].[Quests] CHECK CONSTRAINT [FK_Quests_FameRegionID]
+ALTER TABLE [dbo].[Quest] CHECK CONSTRAINT [FK_Quest_FameRegionID]
 GO
-ALTER TABLE [dbo].[Quests]  WITH CHECK ADD  CONSTRAINT [FK_Quests_RewardKeyItemID] FOREIGN KEY([RewardKeyItemID])
-REFERENCES [dbo].[KeyItems] (ID)
+ALTER TABLE [dbo].[Quest]  WITH CHECK ADD  CONSTRAINT [FK_Quest_RewardKeyItemID] FOREIGN KEY([RewardKeyItemID])
+REFERENCES [dbo].[KeyItem] (ID)
 GO
-ALTER TABLE [dbo].[Quests] CHECK CONSTRAINT [FK_Quests_RewardKeyItemID]
+ALTER TABLE [dbo].[Quest] CHECK CONSTRAINT [FK_Quest_RewardKeyItemID]
 GO
-ALTER TABLE [dbo].[Quests]  WITH CHECK ADD  CONSTRAINT [FK_Quests_TemporaryKeyItemID] FOREIGN KEY([StartKeyItemID])
-REFERENCES [dbo].[KeyItems] (ID)
+ALTER TABLE [dbo].[Quest]  WITH CHECK ADD  CONSTRAINT [FK_Quest_TemporaryKeyItemID] FOREIGN KEY([StartKeyItemID])
+REFERENCES [dbo].[KeyItem] (ID)
 GO
-ALTER TABLE [dbo].[Quests] CHECK CONSTRAINT [FK_Quests_TemporaryKeyItemID]
+ALTER TABLE [dbo].[Quest] CHECK CONSTRAINT [FK_Quest_TemporaryKeyItemID]
 GO
-ALTER TABLE [dbo].[QuestStates]  WITH CHECK ADD  CONSTRAINT [FK_QuestStates_QuestID] FOREIGN KEY([QuestID])
-REFERENCES [dbo].[Quests] (ID)
+ALTER TABLE [dbo].[QuestState]  WITH CHECK ADD  CONSTRAINT [FK_Questtates_QuestID] FOREIGN KEY([QuestID])
+REFERENCES [dbo].[Quest] (ID)
 GO
-ALTER TABLE [dbo].[QuestStates] CHECK CONSTRAINT [FK_QuestStates_QuestID]
+ALTER TABLE [dbo].[QuestState] CHECK CONSTRAINT [FK_Questtates_QuestID]
 GO
-ALTER TABLE [dbo].[QuestStates]  WITH CHECK ADD  CONSTRAINT [FK_QuestStates_QuestTypeID] FOREIGN KEY([QuestTypeID])
-REFERENCES [dbo].[QuestTypeDomain] (ID)
+ALTER TABLE [dbo].[QuestState]  WITH CHECK ADD  CONSTRAINT [FK_Questtates_QuestTypeID] FOREIGN KEY([QuestTypeID])
+REFERENCES [dbo].[QuestType] (ID)
 GO
-ALTER TABLE [dbo].[QuestStates] CHECK CONSTRAINT [FK_QuestStates_QuestTypeID]
+ALTER TABLE [dbo].[QuestState] CHECK CONSTRAINT [FK_Questtates_QuestTypeID]
 GO
-ALTER TABLE [dbo].[Skills]  WITH CHECK ADD  CONSTRAINT [FK_Skills_Primary] FOREIGN KEY([Primary])
-REFERENCES [dbo].[Attributes] (ID)
+ALTER TABLE [dbo].[Skill]  WITH CHECK ADD  CONSTRAINT [FK_Skill_Primary] FOREIGN KEY([Primary])
+REFERENCES [dbo].[Attribute] (ID)
 GO
-ALTER TABLE [dbo].[Skills] CHECK CONSTRAINT [FK_Skills_Primary]
+ALTER TABLE [dbo].[Skill] CHECK CONSTRAINT [FK_Skill_Primary]
 GO
-ALTER TABLE [dbo].[Skills]  WITH CHECK ADD  CONSTRAINT [FK_Skills_Secondary] FOREIGN KEY([Secondary])
-REFERENCES [dbo].[Attributes] (ID)
+ALTER TABLE [dbo].[Skill]  WITH CHECK ADD  CONSTRAINT [FK_Skill_Secondary] FOREIGN KEY([Secondary])
+REFERENCES [dbo].[Attribute] (ID)
 GO
-ALTER TABLE [dbo].[Skills] CHECK CONSTRAINT [FK_Skills_Secondary]
+ALTER TABLE [dbo].[Skill] CHECK CONSTRAINT [FK_Skill_Secondary]
 GO
-ALTER TABLE [dbo].[Skills]  WITH CHECK ADD  CONSTRAINT [FK_Skills_SkillCategoryID] FOREIGN KEY([SkillCategoryID])
-REFERENCES [dbo].[SkillCategories] (ID)
+ALTER TABLE [dbo].[Skill]  WITH CHECK ADD  CONSTRAINT [FK_Skill_SkillCategoryID] FOREIGN KEY([SkillCategoryID])
+REFERENCES [dbo].[SkillCategory] (ID)
 GO
-ALTER TABLE [dbo].[Skills] CHECK CONSTRAINT [FK_Skills_SkillCategoryID]
+ALTER TABLE [dbo].[Skill] CHECK CONSTRAINT [FK_Skill_SkillCategoryID]
 GO
-ALTER TABLE [dbo].[Skills]  WITH CHECK ADD  CONSTRAINT [FK_Skills_Tertiary] FOREIGN KEY([Tertiary])
-REFERENCES [dbo].[Attributes] (ID)
+ALTER TABLE [dbo].[Skill]  WITH CHECK ADD  CONSTRAINT [FK_Skill_Tertiary] FOREIGN KEY([Tertiary])
+REFERENCES [dbo].[Attribute] (ID)
 GO
-ALTER TABLE [dbo].[Skills] CHECK CONSTRAINT [FK_Skills_Tertiary]
+ALTER TABLE [dbo].[Skill] CHECK CONSTRAINT [FK_Skill_Tertiary]
 GO
 ALTER TABLE [dbo].[SkillXPRequirement]  WITH CHECK ADD  CONSTRAINT [FK_SkillXPRequirement_SkillID] FOREIGN KEY([SkillID])
-REFERENCES [dbo].[Skills] (ID)
+REFERENCES [dbo].[Skill] (ID)
 GO
 ALTER TABLE [dbo].[SkillXPRequirement] CHECK CONSTRAINT [FK_SkillXPRequirement_SkillID]
 GO
-ALTER TABLE [dbo].[SpawnObjects]  WITH CHECK ADD  CONSTRAINT [FK_SpawnObjects_NPCGroupID] FOREIGN KEY([NPCGroupID])
-REFERENCES [dbo].[NPCGroups] (ID)
+ALTER TABLE [dbo].[SpawnObject]  WITH CHECK ADD  CONSTRAINT [FK_SpawnObject_NPCGroupID] FOREIGN KEY([NPCGroupID])
+REFERENCES [dbo].[NPCGroup] (ID)
 GO
-ALTER TABLE [dbo].[SpawnObjects] CHECK CONSTRAINT [FK_SpawnObjects_NPCGroupID]
+ALTER TABLE [dbo].[SpawnObject] CHECK CONSTRAINT [FK_SpawnObject_NPCGroupID]
 GO
-ALTER TABLE [dbo].[SpawnObjects]  WITH CHECK ADD  CONSTRAINT [FK_SpawnObjects_SpawnID] FOREIGN KEY([SpawnID])
-REFERENCES [dbo].[Spawns] (ID)
+ALTER TABLE [dbo].[SpawnObject]  WITH CHECK ADD  CONSTRAINT [FK_SpawnObject_SpawnID] FOREIGN KEY([SpawnID])
+REFERENCES [dbo].[Spawn] (ID)
 GO
-ALTER TABLE [dbo].[SpawnObjects] CHECK CONSTRAINT [FK_SpawnObjects_SpawnID]
+ALTER TABLE [dbo].[SpawnObject] CHECK CONSTRAINT [FK_SpawnObject_SpawnID]
 GO
-ALTER TABLE [dbo].[Spawns]  WITH CHECK ADD  CONSTRAINT [FK_Spawns_SpawnObjectTypeID] FOREIGN KEY([SpawnObjectTypeID])
+ALTER TABLE [dbo].[Spawn]  WITH CHECK ADD  CONSTRAINT [FK_Spawn_SpawnObjectTypeID] FOREIGN KEY([SpawnObjectTypeID])
 REFERENCES [dbo].[SpawnObjectType] (ID)
 GO
-ALTER TABLE [dbo].[Spawns] CHECK CONSTRAINT [FK_Spawns_SpawnObjectTypeID]
+ALTER TABLE [dbo].[Spawn] CHECK CONSTRAINT [FK_Spawn_SpawnObjectTypeID]
 GO
-ALTER TABLE [dbo].[Users]  WITH CHECK ADD  CONSTRAINT [fk_Users_RoleID] FOREIGN KEY([RoleID])
-REFERENCES [dbo].[DMRoleDomain] (ID)
+ALTER TABLE [dbo].[User]  WITH CHECK ADD  CONSTRAINT [fk_User_RoleID] FOREIGN KEY([RoleID])
+REFERENCES [dbo].[DMRole] (ID)
 GO
-ALTER TABLE [dbo].[Users] CHECK CONSTRAINT [fk_Users_RoleID]
+ALTER TABLE [dbo].[User] CHECK CONSTRAINT [fk_User_RoleID]
 GO
-ALTER TABLE [dbo].[PCBases]  WITH CHECK ADD  CONSTRAINT [CK_PCBases_Sector] CHECK  (([Sector]='SE' OR [Sector]='SW' OR [Sector]='NE' OR [Sector]='NW' OR [Sector]='AP'))
+ALTER TABLE [dbo].[PCBase]  WITH CHECK ADD  CONSTRAINT [CK_PCBase_Sector] CHECK  (([Sector]='SE' OR [Sector]='SW' OR [Sector]='NE' OR [Sector]='NW' OR [Sector]='AP'))
 GO
-ALTER TABLE [dbo].[PCBases] CHECK CONSTRAINT [CK_PCBases_Sector]
+ALTER TABLE [dbo].[PCBase] CHECK CONSTRAINT [CK_PCBase_Sector]
 GO
 /****** Object:  StoredProcedure [dbo].[ADM_Drop_Column]    Script Date: 11/6/2018 12:07:49 PM ******/
 SET ANSI_NULLS ON

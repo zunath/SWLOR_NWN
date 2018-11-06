@@ -577,7 +577,7 @@ namespace SWLOR.Game.Server.Service
             areaStructures = areaStructures.Where(x => x.PCBaseID == pcBaseID).ToList();
             
             // Remove all players who are a resident of any structure in this base or the base itself.
-            var residents = _data.Where<PlayerCharacter>(x =>
+            var residents = _data.Where<Player>(x =>
             {
                 if (x.PrimaryResidencePCBaseID == pcBaseID) return true;
                 if (x.PrimaryResidencePCBaseStructureID == null) return false;

@@ -6,10 +6,10 @@ using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[PlayerCharacters]")]
-    public class PlayerCharacter : IEntity
+    [Table("[Player]")]
+    public class Player : IEntity
     {
-        public PlayerCharacter()
+        public Player()
         {
             RespawnAreaResref = "";
         }

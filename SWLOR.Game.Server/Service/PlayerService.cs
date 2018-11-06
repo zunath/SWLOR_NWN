@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Service
                     _nwnxCreature.RemoveKnownSpell(player, classID, 0, index);
                 }
 
-                PlayerCharacter entity = CreateDBPCEntity(player);
+                Player entity = CreateDBPCEntity(player);
                 _data.SubmitDataChange(entity, DatabaseActionType.Insert);
                 
                 var skills = _data.GetAll<Skill>();
@@ -182,7 +182,7 @@ namespace SWLOR.Game.Server.Service
 
         }
 
-        private PlayerCharacter CreateDBPCEntity(NWPlayer player)
+        private Player CreateDBPCEntity(NWPlayer player)
         {
             AssociationType assType; 
             int goodEvil = _.GetAlignmentGoodEvil(player);
@@ -234,7 +234,7 @@ namespace SWLOR.Game.Server.Service
                 throw new Exception("Association type not found. GoodEvil = " + goodEvil + ", LawChaos = " + lawChaos);
             }
 
-            PlayerCharacter entity = new PlayerCharacter
+            Player entity = new Player
             {
                 ID = player.GlobalID,
                 CharacterName = player.Name,
@@ -278,18 +278,18 @@ namespace SWLOR.Game.Server.Service
             return entity;
         }
 
-        public PlayerCharacter GetPlayerEntity(NWPlayer player)
+        public Player GetPlayerEntity(NWPlayer player)
         {
             if(player == null) throw new ArgumentNullException(nameof(player));
             if(!player.IsPlayer) throw new ArgumentException(nameof(player) + " must be a player.", nameof(player));
 
-            return _data.Get<PlayerCharacter>(player.GlobalID);
+            return _data.Get<Player>(player.GlobalID);
         }
 
-        public PlayerCharacter GetPlayerEntity(Guid playerID)
+        public Player GetPlayerEntity(Guid playerID)
         {
             if (playerID == Guid.Empty) throw new ArgumentException("Invalid player ID.", nameof(playerID));
-            return _data.Get<PlayerCharacter>(playerID);
+            return _data.Get<Player>(playerID);
         }
 
         public void OnAreaEnter()
@@ -306,7 +306,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!player.IsPlayer) return;
 
-            PlayerCharacter entity = GetPlayerEntity(player.GlobalID);
+            Player entity = GetPlayerEntity(player.GlobalID);
 
             if (entity == null) return;
 
@@ -343,7 +343,7 @@ namespace SWLOR.Game.Server.Service
         public void SaveCharacter(NWPlayer player)
         {
             if (!player.IsPlayer) return;
-            PlayerCharacter entity = GetPlayerEntity(player);
+            Player entity = GetPlayerEntity(player);
             entity.CharacterName = player.Name;
             entity.HitPoints = player.CurrentHP;
 
@@ -357,7 +357,7 @@ namespace SWLOR.Game.Server.Service
             NWArea area = player.Area;
             if (area.Tag != "ooc_area" && area.Tag != "tutorial" && !area.IsInstance)
             {
-                PlayerCharacter entity = GetPlayerEntity(player.GlobalID);
+                Player entity = GetPlayerEntity(player.GlobalID);
                 entity.LocationAreaResref = area.Resref;
                 entity.LocationX = player.Position.m_X;
                 entity.LocationY = player.Position.m_Y;
@@ -384,7 +384,7 @@ namespace SWLOR.Game.Server.Service
 
             if (player.Area.Tag == "ooc_area")
             {
-                PlayerCharacter entity = GetPlayerEntity(player.GlobalID);
+                Player entity = GetPlayerEntity(player.GlobalID);
                 NWArea area = NWModule.Get().Areas.SingleOrDefault(x => x.Resref == entity.LocationAreaResref);
                 if (area == null) return;
 

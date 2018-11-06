@@ -155,10 +155,10 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if(buildingType == Enumeration.BuildingType.Exterior)
             {
-                var northeastOwner = _data.Get<PlayerCharacter>(dbArea.NortheastOwner);
-                var northwestOwner = _data.Get<PlayerCharacter>(dbArea.NorthwestOwner);
-                var southeastOwner = _data.Get<PlayerCharacter>(dbArea.SoutheastOwner);
-                var southwestOwner = _data.Get<PlayerCharacter>(dbArea.SouthwestOwner);
+                var northeastOwner = _data.Get<Player>(dbArea.NortheastOwner);
+                var northwestOwner = _data.Get<Player>(dbArea.NorthwestOwner);
+                var southeastOwner = _data.Get<Player>(dbArea.SoutheastOwner);
+                var southwestOwner = _data.Get<Player>(dbArea.SouthwestOwner);
 
                 if (northeastOwner != null)
                 {

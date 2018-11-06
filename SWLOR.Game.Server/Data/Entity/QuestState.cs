@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[QuestStates]")]
+    [Table("[QuestState]")]
     public class QuestState: IEntity
     {
         [Key]

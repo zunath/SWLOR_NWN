@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[ItemTypes]")]
+    [Table("[ItemType]")]
     public class ItemType: IEntity
     {
         public ItemType()

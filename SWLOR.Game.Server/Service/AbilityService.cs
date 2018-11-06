@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Service
             {
                 if (perkAction == null) return;
 
-                PlayerCharacter playerEntity =  _data.Get<PlayerCharacter>(pc.GlobalID);
+                Player playerEntity =  _data.Get<Player>(pc.GlobalID);
                 int pcPerkLevel = _perk.GetPCPerkLevel(pc, perk.ID);
 
                 // If player is disabling an existing stance, remove that effect.
@@ -368,7 +368,7 @@ namespace SWLOR.Game.Server.Service
             });
         }
 
-        public PlayerCharacter RestoreFP(NWPlayer oPC, int amount, PlayerCharacter entity)
+        public Player RestoreFP(NWPlayer oPC, int amount, Player entity)
         {
             entity.CurrentFP = entity.CurrentFP + amount;
             if (entity.CurrentFP > entity.MaxFP)
@@ -381,7 +381,7 @@ namespace SWLOR.Game.Server.Service
 
         public void RestoreFP(NWPlayer oPC, int amount)
         {
-            PlayerCharacter entity = _data.Get<PlayerCharacter>(oPC.GlobalID);
+            Player entity = _data.Get<Player>(oPC.GlobalID);
             RestoreFP(oPC, amount, entity);
             _data.SubmitDataChange(entity, DatabaseActionType.Update);
         }

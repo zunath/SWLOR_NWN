@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[PCBaseStructures]")]
+    [Table("[PCBaseStructure]")]
     public class PCBaseStructure: IEntity
     {
         public PCBaseStructure()

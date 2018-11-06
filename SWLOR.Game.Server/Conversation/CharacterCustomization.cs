@@ -323,7 +323,7 @@ namespace SWLOR.Game.Server.Conversation
             var model = GetDialogCustomData<Model>();
             int association = model.AssociationID;
             var player = GetPC();
-            var dbPlayer = _data.Single<PlayerCharacter>(x => x.ID == player.GlobalID);
+            var dbPlayer = _data.Single<Player>(x => x.ID == player.GlobalID);
 
             dbPlayer.AssociationID = association;
             _data.SubmitDataChange(dbPlayer, DatabaseActionType.Update);

@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[Skills]")]
+    [Table("[Skill]")]
     public class Skill: IEntity
     {
         public Skill()

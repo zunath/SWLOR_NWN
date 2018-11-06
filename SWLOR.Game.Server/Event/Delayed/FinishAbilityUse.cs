@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Event.Delayed
 
 
                 // Adjust FP only if spell cost > 0
-                PlayerCharacter pcEntity = _data.Single<PlayerCharacter>(x => x.ID == pc.GlobalID);
+                Data.Entity.Player pcEntity = _data.Single<Data.Entity.Player>(x => x.ID == pc.GlobalID);
                 if (perk.FPCost(pc, entity.BaseFPCost) > 0)
                 {
                     pcEntity.CurrentFP = pcEntity.CurrentFP - perk.FPCost(pc, entity.BaseFPCost);

@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[FameRegions]")]
+    [Table("[FameRegion]")]
     public class FameRegion: IEntity
     {
         [ExplicitKey]

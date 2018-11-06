@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Conversation
             var data = _base.GetPlayerTempData(GetPC());
             PCBase pcBase = _data.Single<PCBase>(x => x.ID == data.PCBaseID);
             Area dbArea = _data.Single<Area>(x => x.Resref == pcBase.AreaResref);
-            var owner = _data.Get<PlayerCharacter>(pcBase.PlayerID);
+            var owner = _data.Get<Player>(pcBase.PlayerID);
             bool canExtendLease = _perm.HasBasePermission(GetPC(), pcBase.ID, BasePermission.CanExtendLease);
             bool canCancelLease = _perm.HasBasePermission(GetPC(), pcBase.ID, BasePermission.CanCancelLease);
 

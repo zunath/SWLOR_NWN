@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Event.Module
         public bool Run(params object[] args)
         {
             Guid[] playerIDs = NWModule.Get().Players.Where(x => x.IsPlayer).Select(x => x.GlobalID).ToArray();
-            var entities = _data.Where<PlayerCharacter>(x => playerIDs.Contains(x.ID)).ToList();
+            var entities = _data.Where<Data.Entity.Player>(x => playerIDs.Contains(x.ID)).ToList();
 
             foreach (var player in NWModule.Get().Players)
             {
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Event.Module
             NWModule.Get().SetLocalInt("SAVE_CHARACTERS_TICK", currentTick);
         }
 
-        private void HandleRegenerationTick(NWPlayer oPC, PlayerCharacter entity)
+        private void HandleRegenerationTick(NWPlayer oPC, Data.Entity.Player entity)
         {
             entity.RegenerationTick = entity.RegenerationTick - 1;
             int rate = 20;
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Event.Module
             }
         }
 
-        private void HandleFPRegenerationTick(NWPlayer oPC, PlayerCharacter entity)
+        private void HandleFPRegenerationTick(NWPlayer oPC, Data.Entity.Player entity)
         {
             entity.CurrentFPTick = entity.CurrentFPTick - 1;
             int rate = 20;

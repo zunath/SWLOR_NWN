@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 
@@ -42,13 +43,13 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
             NWPlayer player = _.GetLastDisturbed();
             NWItem item = _.GetInventoryDisturbItem();
             int disturbType = _.GetInventoryDisturbType();
-            string crafterPlayerID = item.GetLocalString("CRAFTER_PLAYER_ID");
+            Guid crafterPlayerID = new Guid(item.GetLocalString("CRAFTER_PLAYER_ID"));
 
             if (disturbType == INVENTORY_DISTURB_TYPE_ADDED)
             {
                 int questID = container.GetLocalInt("QUEST_ID");
                 PCQuestStatus status = _data.Single<PCQuestStatus>(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
-                PCQuestItemProgress progress = _data.SingleOrDefault<PCQuestItemProgress>(x => x.PCQuestStatusID == status.PCQuestStatusID && x.Resref == item.Resref);
+                PCQuestItemProgress progress = _data.SingleOrDefault<PCQuestItemProgress>(x => x.PCQuestStatusID == status.ID && x.Resref == item.Resref);
                 DatabaseActionType action = DatabaseActionType.Update;
 
                 if (progress == null)
@@ -67,13 +68,14 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
 
                     if (progress.Remaining <= 0)
                     {
-                        progress = _data.Single<PCQuestItemProgress>(x => x.PCQuestItemProgressID == progress.PCQuestItemProgressID);
+                        var progressCopy = progress;
+                        progress = _data.Single<PCQuestItemProgress>(x => x.ID == progressCopy.ID);
                         action = DatabaseActionType.Delete;
                     }
                     _data.SubmitDataChange(progress, action);
 
                     // Recalc the remaining items needed.
-                    int remainingCount = _data.GetAll<PCQuestItemProgress>().Count(x => x.PCQuestStatusID == status.PCQuestStatusID);
+                    int remainingCount = _data.GetAll<PCQuestItemProgress>().Count(x => x.PCQuestStatusID == status.ID);
                     if (remainingCount <= 0)
                     {
                         _quest.AdvanceQuestState(player, owner, questID);
@@ -83,7 +85,7 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
                 }
                 item.Destroy();
 
-                var questItemProgresses = _data.Where<PCQuestItemProgress>(x => x.PCQuestStatusID == status.PCQuestStatusID);
+                var questItemProgresses = _data.Where<PCQuestItemProgress>(x => x.PCQuestStatusID == status.ID);
                 if ( !questItemProgresses.Any())
                 {
                     string conversation = _.GetLocalString(owner, "CONVERSATION");

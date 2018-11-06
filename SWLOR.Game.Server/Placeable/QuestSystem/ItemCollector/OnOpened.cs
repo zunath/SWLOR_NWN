@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
 
             string text = "Required Items: \n\n";
 
-            var itemProgress = _data.Where<PCQuestItemProgress>(x => x.PCQuestStatusID == status.PCQuestStatusID);
+            var itemProgress = _data.Where<PCQuestItemProgress>(x => x.PCQuestStatusID == status.ID);
             foreach (PCQuestItemProgress item in itemProgress)
             {
                 ItemVO tempItemModel = _quest.GetTempItemInformation(item.Resref, item.Remaining);

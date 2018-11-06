@@ -155,7 +155,7 @@ namespace SWLOR.Game.Server.Conversation
             NWPlaceable oTempStorage = (_.GetObjectByTag("OUTFIT_BARREL"));
             NWItem oClothes = oPC.Chest;
             NWItem storedClothes = null;
-            oClothes.SetLocalString("TEMP_OUTFIT_UUID", oPC.GlobalID);
+            oClothes.SetLocalString("TEMP_OUTFIT_UUID", oPC.GlobalID.ToString());
 
             if (outfitID == 1) storedClothes = _serialization.DeserializeItem(entity.Outfit1, oTempStorage);
             else if (outfitID == 2) storedClothes = _serialization.DeserializeItem(entity.Outfit2, oTempStorage);
@@ -238,7 +238,7 @@ namespace SWLOR.Game.Server.Conversation
 
             foreach (NWItem item in oTempStorage.InventoryItems)
             {
-                if (item.GetLocalString("TEMP_OUTFIT_UUID") == oPC.GlobalID)
+                if (item.GetLocalString("TEMP_OUTFIT_UUID") == oPC.GlobalID.ToString())
                 {
                     item.Destroy();
                 }

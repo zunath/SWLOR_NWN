@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
@@ -57,7 +58,7 @@ namespace SWLOR.Game.Server.Conversation
         public override void Initialize()
         {
             NWPlaceable container = (NWPlaceable) GetDialogTarget();
-            int structureID = container.GetLocalInt("PC_BASE_STRUCTURE_ID");
+            Guid structureID = new Guid(container.GetLocalString("PC_BASE_STRUCTURE_ID"));
 
             if (!_perm.HasStructurePermission(GetPC(), structureID, StructurePermission.CanAccessStructureInventory))
             {
@@ -140,8 +141,8 @@ namespace SWLOR.Game.Server.Conversation
             {
                 case 1: // Confirm Change Name
                     string name = GetPC().GetLocalString("NEW_CONTAINER_NAME");
-                    int structureID = GetDialogTarget().GetLocalInt("PC_BASE_STRUCTURE_ID");
-                    var structure = _data.Single<PCBaseStructure>(x => x.PCBaseStructureID == structureID);
+                    Guid structureID = new Guid(GetDialogTarget().GetLocalString("PC_BASE_STRUCTURE_ID"));
+                    var structure = _data.Single<PCBaseStructure>(x => x.ID == structureID);
                     structure.CustomName = name;
                     GetDialogTarget().Name = name;
                     GetPC().DeleteLocalString("NEW_CONTAINER_NAME");

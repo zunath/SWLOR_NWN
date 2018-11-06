@@ -1,8 +1,6 @@
 ﻿using System;
 
 using System.Linq;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -19,7 +17,7 @@ namespace SWLOR.Game.Server.Service
             _data = data;
         }
 
-        public bool HasBasePermission(NWPlayer player, int pcBaseID, BasePermission permission)
+        public bool HasBasePermission(NWPlayer player, Guid pcBaseID, BasePermission permission)
         {
             if (player.IsDM) return true;
 
@@ -41,12 +39,12 @@ namespace SWLOR.Game.Server.Service
             return false;
         }
 
-        public bool HasStructurePermission(NWPlayer player, int pcBaseStructureID, StructurePermission permission)
+        public bool HasStructurePermission(NWPlayer player, Guid pcBaseStructureID, StructurePermission permission)
         {
             if (player.IsDM) return true;
 
             // Base permissions take priority over structure permissions. Check those first.
-            var dbStructure = _data.GetAll<PCBaseStructure>().Single(x => x.PCBaseStructureID == pcBaseStructureID);
+            var dbStructure = _data.GetAll<PCBaseStructure>().Single(x => x.ID == pcBaseStructureID);
             var basePermission = _data.SingleOrDefault<PCBasePermission>(x => x.PlayerID == player.GlobalID && x.PCBaseID == dbStructure.PCBaseID);
             
             if (basePermission != null)
@@ -78,7 +76,7 @@ namespace SWLOR.Game.Server.Service
             return false;
         }
 
-        public void GrantBasePermissions(NWPlayer player, int pcBaseID, params BasePermission[] permissions)
+        public void GrantBasePermissions(NWPlayer player, Guid pcBaseID, params BasePermission[] permissions)
         {
             var dbPermission = _data.GetAll<PCBasePermission>().SingleOrDefault(x => x.PCBaseID == pcBaseID && x.PlayerID == player.GlobalID);
             var action = DatabaseActionType.Update;
@@ -138,7 +136,7 @@ namespace SWLOR.Game.Server.Service
             _data.SubmitDataChange(dbPermission, action);
         }
 
-        public void GrantStructurePermissions(NWPlayer player, int pcBaseStructureID, params StructurePermission[] permissions)
+        public void GrantStructurePermissions(NWPlayer player, Guid pcBaseStructureID, params StructurePermission[] permissions)
         {
             var dbPermission = _data.GetAll<PCBaseStructurePermission>().SingleOrDefault(x => x.PCBaseStructureID == pcBaseStructureID && x.PlayerID == player.GlobalID);
             var action = DatabaseActionType.Update;

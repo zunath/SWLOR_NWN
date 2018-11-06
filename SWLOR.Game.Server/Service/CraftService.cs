@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Service
 
         private const float BaseCraftDelay = 18.0f;
 
-        private List<CraftBlueprint> GetCraftBlueprintsAvailableToPlayer(string playerID)
+        private List<CraftBlueprint> GetCraftBlueprintsAvailableToPlayer(Guid playerID)
         {
             var pcPerks = _data.Where<PCPerk>(x => x.PlayerID == playerID).ToList();
             var pcSkills = _data.Where<PCSkill>(x => x.PlayerID == playerID).ToList();
@@ -73,17 +73,17 @@ namespace SWLOR.Game.Server.Service
             }).ToList();
         }
 
-        public List<CraftBlueprintCategory> GetCategoriesAvailableToPCByDeviceID(string playerID, int deviceID)
+        public List<CraftBlueprintCategory> GetCategoriesAvailableToPCByDeviceID(Guid playerID, int deviceID)
         {
             var blueprints = GetCraftBlueprintsAvailableToPlayer(playerID).Where(x => x.CraftDeviceID == deviceID);
             var categoryIDs = blueprints.Select(x => x.CraftCategoryID).Distinct();
 
             var categories = _data.Where<CraftBlueprintCategory>(x => x.IsActive &&
-                                                                      categoryIDs.Contains(x.CraftBlueprintCategoryID));
+                                                                      categoryIDs.Contains(x.ID));
             return categories.ToList();
         }
 
-        public List<CraftBlueprint> GetPCBlueprintsByDeviceAndCategoryID(string playerID, int deviceID, long categoryID)
+        public List<CraftBlueprint> GetPCBlueprintsByDeviceAndCategoryID(Guid playerID, int deviceID, long categoryID)
         {
             return GetCraftBlueprintsAvailableToPlayer(playerID).Where(x => x.CraftDeviceID == deviceID && 
                                                                                       x.CraftCategoryID == categoryID)
@@ -166,16 +166,16 @@ namespace SWLOR.Game.Server.Service
 
         public CraftBlueprint GetBlueprintByID(long craftBlueprintID)
         {
-            return _data.SingleOrDefault<CraftBlueprint>(x => x.CraftBlueprintID == craftBlueprintID);
+            return _data.SingleOrDefault<CraftBlueprint>(x => x.ID == craftBlueprintID);
         }
 
-        public List<CraftBlueprintCategory> GetCategoriesAvailableToPC(string playerID)
+        public List<CraftBlueprintCategory> GetCategoriesAvailableToPC(Guid playerID)
         {
             var blueprints = GetCraftBlueprintsAvailableToPlayer(playerID).Select(x => x.CraftCategoryID).Distinct();
-            return _data.Where<CraftBlueprintCategory>(x => blueprints.Contains(x.CraftBlueprintCategoryID)).ToList();
+            return _data.Where<CraftBlueprintCategory>(x => blueprints.Contains(x.ID)).ToList();
         }
 
-        public List<CraftBlueprint> GetPCBlueprintsByCategoryID(string playerID, long categoryID)
+        public List<CraftBlueprint> GetPCBlueprintsByCategoryID(Guid playerID, long categoryID)
         {
             return GetCraftBlueprintsAvailableToPlayer(playerID).Where(x => x.CraftCategoryID == categoryID).ToList();
         }
@@ -184,7 +184,7 @@ namespace SWLOR.Game.Server.Service
         public void CraftItem(NWPlayer oPC, NWPlaceable device)
         {
             var model = GetPlayerCraftingData(oPC);
-            CraftBlueprint blueprint = _data.Single<CraftBlueprint>(x => x.CraftBlueprintID == model.BlueprintID);
+            CraftBlueprint blueprint = _data.Single<CraftBlueprint>(x => x.ID == model.BlueprintID);
             if (blueprint == null) return;
 
             if (oPC.IsBusy)
@@ -571,7 +571,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            if (renameItem.GetLocalString("CRAFTER_PLAYER_ID") != pc.GlobalID)
+            if (new Guid(renameItem.GetLocalString("CRAFTER_PLAYER_ID")) != pc.GlobalID)
             {
                 pc.SendMessage("You may only rename items which you have personally crafted.");
                 return;

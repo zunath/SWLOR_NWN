@@ -15,8 +15,8 @@ namespace SWLOR.Game.Server.Data.Entity
             SenderCDKey = "";
         }
 
-        [Key]
-        public int DiscordChatQueueID { get; set; }
+        [ExplicitKey]
+        public Guid ID { get; set; }
         public string SenderName { get; set; }
         public string Message { get; set; }
         public DateTime DateSent { get; set; }

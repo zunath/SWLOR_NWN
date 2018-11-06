@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Service
             backupDescription = target.IdentifiedDescription;
             target.SetLocalString("BACKUP_DESCRIPTION", backupDescription);
             
-            PlayerCharacter playerEntity = _data.Single<PlayerCharacter>(x => x.PlayerID == target.GlobalID);
+            PlayerCharacter playerEntity = _data.Single<PlayerCharacter>(x => x.ID == target.GlobalID);
             NWArea area = NWModule.Get().Areas.Single(x => x.Resref == playerEntity.RespawnAreaResref);
             string respawnAreaName = area.Name;
 

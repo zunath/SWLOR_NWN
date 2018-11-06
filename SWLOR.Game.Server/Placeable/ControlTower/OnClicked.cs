@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
@@ -7,6 +8,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.ControlTower
 {
@@ -41,8 +43,8 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
                 clicker.SendMessage("You are too far away to interact with that control tower.");
                 return false;
             }
-            int structureID = tower.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.PCBaseStructureID == structureID);
+            Guid structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
+            PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.ID == structureID);
 
             if (_perm.HasBasePermission(clicker, structure.PCBaseID, BasePermission.CanManageBaseFuel))
             {

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Autofac.Util;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
@@ -11,36 +12,36 @@ namespace SWLOR.Game.Server
 {
     public class AppCache
     {
-        public Dictionary<string, PlayerDialog> PlayerDialogs { get; }
+        public Dictionary<Guid, PlayerDialog> PlayerDialogs { get; }
         public Dictionary<int, bool> DialogFilesInUse { get; }
         public Dictionary<string, int> EffectTicks { get; }
-        public Dictionary<string, CreatureSkillRegistration> CreatureSkillRegistrations;
+        public Dictionary<Guid, CreatureSkillRegistration> CreatureSkillRegistrations;
         public Dictionary<CasterSpellVO, int> NPCEffects { get; }
         public Dictionary<string, ProcessingEvent> ProcessingEvents { get; set; }
         public Queue<string> UnregisterProcessingEvents { get; set; }
-        public Dictionary<string, EnmityTable> NPCEnmityTables { get; set; }
-        public Dictionary<string, CustomData> CustomObjectData { get; set; } 
+        public Dictionary<Guid, EnmityTable> NPCEnmityTables { get; set; }
+        public Dictionary<Guid, CustomData> CustomObjectData { get; set; } 
         public Dictionary<string, NWCreature> NPCBehaviours { get; set; }
         public Dictionary<NWArea, AreaSpawn> AreaSpawns { get; set; }
-        public Dictionary<string, NWObject> VisibilityObjects { get; set; }
-        public List<long> PCEffectsForRemoval { get; set; }
+        public Dictionary<Guid, NWObject> VisibilityObjects { get; set; }
+        public List<Guid> PCEffectsForRemoval { get; set; }
         public List<NWObject> ConnectedDMs { get; set; }
 
         public AppCache()
         {
-            PlayerDialogs = new Dictionary<string, PlayerDialog>();
+            PlayerDialogs = new Dictionary<Guid, PlayerDialog>();
             DialogFilesInUse = new Dictionary<int, bool>();
             EffectTicks = new Dictionary<string, int>();
-            CreatureSkillRegistrations = new Dictionary<string, CreatureSkillRegistration>();
+            CreatureSkillRegistrations = new Dictionary<Guid, CreatureSkillRegistration>();
             NPCEffects = new Dictionary<CasterSpellVO, int>();
             ProcessingEvents = new Dictionary<string, ProcessingEvent>();
             UnregisterProcessingEvents = new Queue<string>();
-            NPCEnmityTables = new Dictionary<string, EnmityTable>();
-            CustomObjectData = new Dictionary<string, CustomData>();
+            NPCEnmityTables = new Dictionary<Guid, EnmityTable>();
+            CustomObjectData = new Dictionary<Guid, CustomData>();
             NPCBehaviours = new Dictionary<string, NWCreature>();
             AreaSpawns = new Dictionary<NWArea, AreaSpawn>();
-            VisibilityObjects = new Dictionary<string, NWObject>();
-            PCEffectsForRemoval = new List<long>();
+            VisibilityObjects = new Dictionary<Guid, NWObject>();
+            PCEffectsForRemoval = new List<Guid>();
             ConnectedDMs = new List<NWObject>();
             
 

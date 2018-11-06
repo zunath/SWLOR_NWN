@@ -107,8 +107,8 @@ namespace SWLOR.Game.Server.Placeable.Drill
 
             var dbItem = new PCBaseStructureItem
             {
-                PCBaseStructureID = controlTower.PCBaseStructureID,
-                ItemGlobalID = item.GlobalID,
+                PCBaseStructureID = controlTower.ID,
+                ItemGlobalID = item.GlobalID.ToString(),
                 ItemName = item.Name,
                 ItemResref = item.Resref,
                 ItemTag = item.Tag,

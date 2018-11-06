@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
@@ -34,13 +35,13 @@ namespace SWLOR.Game.Server.Item
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
 
-            int growingPlantID = target.GetLocalInt("GROWING_PLANT_ID");
-            if (growingPlantID <= 0)
+            string growingPlantID = target.GetLocalString("GROWING_PLANT_ID");
+            if (string.IsNullOrWhiteSpace(growingPlantID))
             {
                 user.SendMessage("Water jugs can only target growing plants.");
                 return;
             }
-            GrowingPlant growingPlant = _data.Single<GrowingPlant>(x => x.GrowingPlantID == growingPlantID);
+            GrowingPlant growingPlant = _data.Single<GrowingPlant>(x => x.ID == new Guid(growingPlantID));
             var plant = _data.Get<Plant>(growingPlant.PlantID);
 
             if (growingPlant.WaterStatus <= 0)

@@ -323,7 +323,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
 
-            var dbPlayer = _data.Single<PlayerCharacter>(x => x.PlayerID == player.GlobalID);
+            var dbPlayer = _data.Single<PlayerCharacter>(x => x.ID == player.GlobalID);
             player.SetLocalInt("DISPLAY_HOLONET", dbPlayer.DisplayHolonet ? TRUE : FALSE);
             player.SetLocalInt("DISPLAY_DISCORD", dbPlayer.DisplayDiscord ? TRUE : FALSE);
         }

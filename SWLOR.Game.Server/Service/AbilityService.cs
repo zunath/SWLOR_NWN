@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Service
                 if (perkAction == null) return;
 
                 PlayerCharacter playerEntity =  _data.Get<PlayerCharacter>(pc.GlobalID);
-                int pcPerkLevel = _perk.GetPCPerkLevel(pc, perk.PerkID);
+                int pcPerkLevel = _perk.GetPCPerkLevel(pc, perk.ID);
 
                 // If player is disabling an existing stance, remove that effect.
                 if (perk.ExecutionTypeID == (int) PerkExecutionType.Stance)
@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Service
                                customEffect.CustomEffectCategoryID == (int) CustomEffectCategoryType.Stance;
                     });
 
-                    if (stanceEffect != null && perk.PerkID == stanceEffect.StancePerkID)
+                    if (stanceEffect != null && perk.ID == stanceEffect.StancePerkID)
                     {
                         if (_customEffect.RemoveStance(pc))
                         {
@@ -299,7 +299,7 @@ namespace SWLOR.Game.Server.Service
 
             _nwnxPlayer.StartGuiTimingBar(pc, (int)activationTime, "");
             
-            int perkID = entity.PerkID;
+            int perkID = entity.ID;
             pc.DelayEvent<FinishAbilityUse>(
                 activationTime + 0.2f,
                 pc,
@@ -315,7 +315,7 @@ namespace SWLOR.Game.Server.Service
             int cooldownSeconds = (int)finalCooldown;
             int cooldownMillis = (int)((finalCooldown - cooldownSeconds) * 100);
 
-            PCCooldown pcCooldown = _data.GetAll<PCCooldown>().Single(x => x.PlayerID == pc.GlobalID && x.CooldownCategoryID == cooldown.CooldownCategoryID);
+            PCCooldown pcCooldown = _data.GetAll<PCCooldown>().Single(x => x.PlayerID == pc.GlobalID && x.CooldownCategoryID == cooldown.ID);
             pcCooldown.DateUnlocked = DateTime.UtcNow.AddSeconds(cooldownSeconds).AddMilliseconds(cooldownMillis);
             _data.SubmitDataChange(pcCooldown, DatabaseActionType.Update);
         }
@@ -350,7 +350,7 @@ namespace SWLOR.Game.Server.Service
         {
             var cooldownCategory = _data.Get<CooldownCategory>(entity.CooldownCategoryID);
             string queueUUID = Guid.NewGuid().ToString("N");
-            pc.SetLocalInt("ACTIVE_WEAPON_SKILL", entity.PerkID);
+            pc.SetLocalInt("ACTIVE_WEAPON_SKILL", entity.ID);
             pc.SetLocalString("ACTIVE_WEAPON_SKILL_UUID", queueUUID);
             pc.SendMessage("Weapon skill '" + entity.Name + "' queued for next attack.");
 

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
@@ -8,6 +9,7 @@ using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN.NWScript;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.StructureStorage
 {
@@ -38,8 +40,8 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
             NWItem item = (_.GetInventoryDisturbItem());
             NWPlaceable container = (Object.OBJECT_SELF);
             int disturbType = _.GetInventoryDisturbType();
-            int structureID = container.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            var structure = _data.Single<PCBaseStructure>(x => x.PCBaseStructureID == structureID);
+            var structureID = new Guid(container.GetLocalString("PC_BASE_STRUCTURE_ID"));
+            var structure = _data.Single<PCBaseStructure>(x => x.ID == structureID);
             var baseStructure = _data.Get<BaseStructure>(structure.BaseStructureID);
             int itemLimit = baseStructure.Storage + structure.StructureBonus;
 
@@ -66,7 +68,7 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
                         ItemResref = itemResref,
                         ItemTag = item.Tag,
                         PCBaseStructureID = structureID,
-                        ItemGlobalID = item.GlobalID,
+                        ItemGlobalID = item.GlobalID.ToString(),
                         ItemObject = _serialization.Serialize(item)
                     };
                     _data.SubmitDataChange(itemEntity, DatabaseActionType.Insert);
@@ -74,7 +76,7 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
             }
             else if (disturbType == INVENTORY_DISTURB_TYPE_REMOVED)
             {
-                var dbItem = _data.Single<PCBaseStructureItem>(x => x.ItemGlobalID == item.GlobalID);
+                var dbItem = _data.Single<PCBaseStructureItem>(x => x.ItemGlobalID == item.GlobalID.ToString());
                 _data.SubmitDataChange(dbItem, DatabaseActionType.Delete);
             }
 

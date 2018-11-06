@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Conversation
 
             foreach (CraftBlueprintCategory category in categories)
             {
-                AddResponseToPage("MainPage", category.Name, category.IsActive, category.CraftBlueprintCategoryID);
+                AddResponseToPage("MainPage", category.Name, category.IsActive, category.ID);
             }
         }
 
@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("BlueprintListPage");
             foreach (CraftBlueprint bp in blueprints)
             {
-                AddResponseToPage("BlueprintListPage", bp.ItemName, bp.IsActive, bp.CraftBlueprintID);
+                AddResponseToPage("BlueprintListPage", bp.ItemName, bp.IsActive, bp.ID);
             }
         }
         

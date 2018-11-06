@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Placeable.OverflowStorage
             foreach (PCOverflowItem item in items)
             {
                 NWItem oItem = _serialization.DeserializeItem(item.ItemObject, container);
-                oItem.SetLocalInt("TEMP_OVERFLOW_ITEM_ID", (int)item.PCOverflowItemID);
+                oItem.SetLocalString("TEMP_OVERFLOW_ITEM_ID", item.ID.ToString());
             }
 
             container.IsUseable = false;

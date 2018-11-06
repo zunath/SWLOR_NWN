@@ -1,5 +1,6 @@
 
 
+using System;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
@@ -7,9 +8,9 @@ namespace SWLOR.Game.Server.Data.Entity
     [Table("[PCMapPins]")]
     public class PCMapPin: IEntity
     {
-        [Key]
-        public int PCMapPinID { get; set; }
-        public string PlayerID { get; set; }
+        [ExplicitKey]
+        public Guid ID { get; set; }
+        public Guid PlayerID { get; set; }
         public string AreaTag { get; set; }
         public double PositionX { get; set; }
         public double PositionY { get; set; }

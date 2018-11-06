@@ -1,5 +1,6 @@
 
 
+using System;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
@@ -8,7 +9,7 @@ namespace SWLOR.Game.Server.Data.Entity
     public class QuestKillTargetList: IEntity
     {
         [Key]
-        public int QuestKillTargetListID { get; set; }
+        public int ID { get; set; }
         public int QuestID { get; set; }
         public int NPCGroupID { get; set; }
         public int Quantity { get; set; }

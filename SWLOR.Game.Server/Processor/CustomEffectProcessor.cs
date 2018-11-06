@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Processor
                 var entry = _cache.NPCEffects.ElementAt(index);
                 CasterSpellVO casterModel = entry.Key;
                 _cache.NPCEffects[entry.Key] = entry.Value - 1;
-                Data.Entity.CustomEffect entity = _data.Single<Data.Entity.CustomEffect>(x => x.CustomEffectID == casterModel.CustomEffectID);
+                Data.Entity.CustomEffect entity = _data.Single<Data.Entity.CustomEffect>(x => x.ID == casterModel.CustomEffectID);
                 App.ResolveByInterface<ICustomEffect>("CustomEffect." + entity.ScriptHandler, (handler) =>
                 {
                     try
@@ -165,7 +165,7 @@ namespace SWLOR.Game.Server.Processor
 
         private void ClearRemovedPCEffects()
         {
-            var records = _data.Where<PCCustomEffect>(x => _cache.PCEffectsForRemoval.Contains(x.PCCustomEffectID)).ToList();
+            var records = _data.Where<PCCustomEffect>(x => _cache.PCEffectsForRemoval.Contains(x.ID)).ToList();
 
             foreach (var record in records)
             {

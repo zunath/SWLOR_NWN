@@ -1,5 +1,6 @@
 
 
+using System;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
@@ -7,10 +8,10 @@ namespace SWLOR.Game.Server.Data.Entity
     [Table("[PCQuestKillTargetProgress]")]
     public class PCQuestKillTargetProgress: IEntity
     {
-        [Key]
-        public int PCQuestKillTargetProgressID { get; set; }
-        public string PlayerID { get; set; }
-        public int PCQuestStatusID { get; set; }
+        [ExplicitKey]
+        public Guid ID { get; set; }
+        public Guid PlayerID { get; set; }
+        public Guid PCQuestStatusID { get; set; }
         public int NPCGroupID { get; set; }
         public int RemainingToKill { get; set; }
     }

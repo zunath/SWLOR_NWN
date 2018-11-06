@@ -1,5 +1,6 @@
 
 
+using System;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
@@ -7,11 +8,11 @@ namespace SWLOR.Game.Server.Data.Entity
     [Table("[DatabaseVersions]")]
     public class DatabaseVersion: IEntity
     {
-        [Key]
-        public int DatabaseVersionID { get; set; }
+        [ExplicitKey]
+        public Guid ID { get; set; }
         public string ScriptName { get; set; }
-        public System.DateTime DateApplied { get; set; }
-        public System.DateTime VersionDate { get; set; }
+        public DateTime DateApplied { get; set; }
+        public DateTime VersionDate { get; set; }
         public int VersionNumber { get; set; }
     }
 }

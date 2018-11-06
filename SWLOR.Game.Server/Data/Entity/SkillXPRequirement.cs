@@ -1,5 +1,6 @@
 
 
+using System;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
@@ -8,7 +9,7 @@ namespace SWLOR.Game.Server.Data.Entity
     public class SkillXPRequirement: IEntity
     {
         [Key]
-        public int SkillXPRequirementID { get; set; }
+        public int ID { get; set; }
         public int SkillID { get; set; }
         public int Rank { get; set; }
         public int XP { get; set; }

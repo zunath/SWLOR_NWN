@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             NWItem item = (_.GetInventoryDisturbItem());
             bool stronidiumOnly = bay.GetLocalInt("CONTROL_TOWER_FUEL_TYPE") == TRUE;
             string allowedResref = stronidiumOnly ? "stronidium" : "fuel_cell";
-            int structureID = bay.GetLocalInt("PC_BASE_STRUCTURE_ID");
+            string structureID = bay.GetLocalString("PC_BASE_STRUCTURE_ID");
             
             if (disturbType == INVENTORY_DISTURB_TYPE_ADDED)
             {
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
                 }
             }
 
-            var structure = _data.Single<PCBaseStructure>(x => x.PCBaseStructureID == structureID);
+            var structure = _data.Single<PCBaseStructure>(x => x.ID == new Guid(structureID));
             var pcBase = _data.Get<PCBase>(structure.PCBaseID);
 
             int fuelCount = 0;

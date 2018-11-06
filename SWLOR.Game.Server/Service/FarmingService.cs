@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
@@ -31,8 +32,8 @@ namespace SWLOR.Game.Server.Service
 
         public void HarvestPlant(NWPlayer player, NWItem shovel, NWPlaceable plant)
         {
-            int growingPlantID = plant.GetLocalInt("GROWING_PLANT_ID");
-            if (growingPlantID <= 0) return;
+            Guid growingPlantID = new Guid(plant.GetLocalString("GROWING_PLANT_ID"));
+            if (growingPlantID == Guid.Empty) return;
 
             int charges = shovel.Charges;
             if (charges <= 0)
@@ -41,7 +42,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            GrowingPlant growingPlant = _data.Single<GrowingPlant>(x => x.GrowingPlantID == growingPlantID);
+            GrowingPlant growingPlant = _data.Single<GrowingPlant>(x => x.ID == growingPlantID);
             Plant plantEntity = _data.Get<Plant>(growingPlant.PlantID);
 
             if (string.IsNullOrWhiteSpace(plantEntity.SeedResref))
@@ -65,7 +66,7 @@ namespace SWLOR.Game.Server.Service
             if (plantID <= 0) return existingDescription;
             if (examinedObject.ObjectType != NWScript.OBJECT_TYPE_ITEM) return existingDescription;
 
-            Plant plant = _data.SingleOrDefault<Plant>(x => x.PlantID == plantID);
+            Plant plant = _data.SingleOrDefault<Plant>(x => x.ID == plantID);
             if (plant == null) return existingDescription;
 
             existingDescription += _color.Orange("This item can be planted. Farming skill required: " + plant.Level) + "\n\n";
@@ -87,7 +88,7 @@ namespace SWLOR.Game.Server.Service
                 Vector position = _.Vector((float)growingPlant.LocationX, (float)growingPlant.LocationY, (float)growingPlant.LocationZ);
                 Location location = _.Location(area.Object, position, (float)growingPlant.LocationOrientation);
                 NWPlaceable plantPlc = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, resref, location));
-                plantPlc.SetLocalInt("GROWING_PLANT_ID", growingPlant.GrowingPlantID);
+                plantPlc.SetLocalString("GROWING_PLANT_ID", growingPlant.ID.ToString());
 
                 if (growingPlant.RemainingTicks > 0)
                 {
@@ -98,22 +99,22 @@ namespace SWLOR.Game.Server.Service
         
         public void RemoveGrowingPlant(NWPlaceable plant)
         {
-            int growingPlantID = plant.GetLocalInt("GROWING_PLANT_ID");
-            if (growingPlantID <= 0) return;
+            Guid growingPlantID = new Guid(plant.GetLocalString("GROWING_PLANT_ID"));
+            if (growingPlantID == Guid.Empty) return;
 
-            GrowingPlant growingPlant = _data.Single<GrowingPlant>(x => x.GrowingPlantID == growingPlantID);
+            GrowingPlant growingPlant = _data.Single<GrowingPlant>(x => x.ID == growingPlantID);
             growingPlant.IsActive = false;
             _data.SubmitDataChange(growingPlant, DatabaseActionType.Update);
         }
 
-        public GrowingPlant GetGrowingPlantByID(int growingPlantID)
+        public GrowingPlant GetGrowingPlantByID(Guid growingPlantID)
         {
-            return _data.Single<GrowingPlant>(x => x.GrowingPlantID == growingPlantID);
+            return _data.Single<GrowingPlant>(x => x.ID == growingPlantID);
         }
 
         public Plant GetPlantByID(int plantID)
         {
-            return _data.Single<Plant>(x => x.PlantID == plantID);
+            return _data.Single<Plant>(x => x.ID == plantID);
         }
 
     }

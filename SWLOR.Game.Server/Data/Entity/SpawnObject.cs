@@ -14,8 +14,8 @@ namespace SWLOR.Game.Server.Data.Entity
             BehaviourScript = "";
         }
 
-        [Key]
-        public int SpawnObjectID { get; set; }
+        [ExplicitKey]
+        public int ID { get; set; }
         public int SpawnID { get; set; }
         public string Resref { get; set; }
         public int Weight { get; set; }

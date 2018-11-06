@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Service
             NWItem item = (_.GetPCItemLastEquipped());
             if (item.BaseItemType != NWScript.BASE_ITEM_HELMET) return;
 
-            PlayerCharacter pc = _data.Single<PlayerCharacter>(x => x.PlayerID == player.GlobalID);
+            PlayerCharacter pc = _data.Single<PlayerCharacter>(x => x.ID == player.GlobalID);
             _.SetHiddenWhenEquipped(item.Object, !pc.DisplayHelmet == false ? 0 : 1);
         }
 
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Service
             NWItem item = (_.GetPCItemLastUnequipped());
             if (item.BaseItemType != NWScript.BASE_ITEM_HELMET) return;
 
-            PlayerCharacter pc = _data.Single<PlayerCharacter>(x => x.PlayerID == player.GlobalID);
+            PlayerCharacter pc = _data.Single<PlayerCharacter>(x => x.ID == player.GlobalID);
             _.SetHiddenWhenEquipped(item.Object, !pc.DisplayHelmet == false ? 0 : 1);
         }
 
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Service
 
             if (!player.IsPlayer) return;
 
-            PlayerCharacter pc = _data.Single<PlayerCharacter>(x => x.PlayerID == player.GlobalID);
+            PlayerCharacter pc = _data.Single<PlayerCharacter>(x => x.ID == player.GlobalID);
             pc.DisplayHelmet = !pc.DisplayHelmet;
             _data.SubmitDataChange(pc, DatabaseActionType.Update);
             

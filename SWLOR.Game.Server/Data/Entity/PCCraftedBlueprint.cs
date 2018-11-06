@@ -8,10 +8,10 @@ namespace SWLOR.Game.Server.Data.Entity
     [Table("[PCCraftedBlueprints]")]
     public class PCCraftedBlueprint: IEntity
     {
-        [Key]
-        public int PCCraftedBlueprintID { get; set; }
-        public string PlayerID { get; set; }
-        public long CraftBlueprintID { get; set; }
+        [ExplicitKey]
+        public Guid ID { get; set; }
+        public Guid PlayerID { get; set; }
+        public int CraftBlueprintID { get; set; }
         public DateTime DateFirstCrafted { get; set; }
     }
 }

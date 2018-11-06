@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Service
             _data.SubmitDataChange(impoundItem, DatabaseActionType.Insert);
         }
 
-        public void Impound(string playerID, NWItem item)
+        public void Impound(Guid playerID, NWItem item)
         {
             PCImpoundedItem structureImpoundedItem = new PCImpoundedItem
             {

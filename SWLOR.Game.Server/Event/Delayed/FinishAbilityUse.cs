@@ -39,8 +39,8 @@ namespace SWLOR.Game.Server.Event.Delayed
             NWObject target = (NWObject)args[3];
             int pcPerkLevel = (int) args[4];
 
-            Data.Entity.Perk entity = _data.Single<Data.Entity.Perk>(x => x.PerkID == perkID);
-            CooldownCategory cooldown = _data.SingleOrDefault<CooldownCategory>(x => x.CooldownCategoryID == entity.CooldownCategoryID);
+            Data.Entity.Perk entity = _data.Single<Data.Entity.Perk>(x => x.ID == perkID);
+            CooldownCategory cooldown = _data.SingleOrDefault<CooldownCategory>(x => x.ID == entity.CooldownCategoryID);
             PerkExecutionType executionType = (PerkExecutionType) entity.ExecutionTypeID;
 
             return App.ResolveByInterface<IPerk, bool>("Perk." + entity.ScriptName, perk =>
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Event.Delayed
 
 
                 // Adjust FP only if spell cost > 0
-                PlayerCharacter pcEntity = _data.Single<PlayerCharacter>(x => x.PlayerID == pc.GlobalID);
+                PlayerCharacter pcEntity = _data.Single<PlayerCharacter>(x => x.ID == pc.GlobalID);
                 if (perk.FPCost(pc, entity.BaseFPCost) > 0)
                 {
                     pcEntity.CurrentFP = pcEntity.CurrentFP - perk.FPCost(pc, entity.BaseFPCost);

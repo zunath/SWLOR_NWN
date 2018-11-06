@@ -14,9 +14,9 @@ namespace SWLOR.Game.Server.Data.Entity
             CustomName = "";
         }
 
-        [Key]
-        public int PCBaseID { get; set; }
-        public string PlayerID { get; set; }
+        [ExplicitKey]
+        public Guid ID { get; set; }
+        public Guid PlayerID { get; set; }
         public string AreaResref { get; set; }
         public string Sector { get; set; }
         public DateTime DateInitialPurchase { get; set; }

@@ -1,5 +1,6 @@
 
 
+using System;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
@@ -13,7 +14,7 @@ namespace SWLOR.Game.Server.Data.Entity
         }
 
         [ExplicitKey]
-        public int GameTopicID { get; set; }
+        public int ID { get; set; }
         public string Name { get; set; }
         public string Text { get; set; }
         public int GameTopicCategoryID { get; set; }

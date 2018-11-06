@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -19,7 +20,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         List<PCSkill> GetAllPCSkills(NWPlayer player);
         Skill GetSkill(int skillID);
         Skill GetSkill(SkillType skillType);
-        List<PCSkill> GetPCSkillsForCategory(string playerID, int skillCategoryID);
+        List<PCSkill> GetPCSkillsForCategory(Guid playerID, int skillCategoryID);
         int GetPCTotalSkillCount(NWPlayer player);
         void GiveSkillXP(NWPlayer oPC, int skillID, int xp);
         void GiveSkillXP(NWPlayer oPC, SkillType skill, int xp);
@@ -31,6 +32,6 @@ namespace SWLOR.Game.Server.Service.Contracts
         void OnModuleItemEquipped();
         void OnModuleItemUnequipped();
         void RegisterPCToAllCombatTargetsForSkill(NWPlayer player, SkillType skillType, NWCreature target);
-        void ToggleSkillLock(string playerID, int skillID);
+        void ToggleSkillLock(Guid playerID, int skillID);
     }
 }

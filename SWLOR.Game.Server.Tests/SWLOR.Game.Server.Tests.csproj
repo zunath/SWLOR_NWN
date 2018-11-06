@@ -76,7 +76,6 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\ColorTokenServiceTests.cs" />
-    <Compile Include="Service\DialogServiceTests.cs" />
     <Compile Include="Service\DurabilityServiceTests.cs" />
     <Compile Include="ValueObject\Dialog\DialogPageTests.cs" />
     <Compile Include="ValueObject\Dialog\DialogResponseTests.cs" />

@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.QuestRule
 
                 if (string.IsNullOrWhiteSpace(visibilityObjectID)) return;
 
-                var obj = _cache.VisibilityObjects.Single(x => x.Key == visibilityObjectID).Value;
+                var obj = _cache.VisibilityObjects.Single(x => x.Key.ToString() == visibilityObjectID).Value;
                 _ovs.AdjustVisibility(player, obj, true);
             }
             

@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections.Generic;
 
 using SWLOR.Game.Server.Data.Contracts;
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.Data.Entity
         }
 
         [ExplicitKey]
-        public int SkillID { get; set; }
+        public int ID { get; set; }
         public int SkillCategoryID { get; set; }
         public string Name { get; set; }
         public int MaxRank { get; set; }

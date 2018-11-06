@@ -8,9 +8,9 @@ namespace SWLOR.Game.Server.Data.Entity
     [Table("[PCKeyItems]")]
     public class PCKeyItem: IEntity
     {
-        [Key]
-        public int PCKeyItemID { get; set; }
-        public string PlayerID { get; set; }
+        [ExplicitKey]
+        public Guid ID { get; set; }
+        public Guid PlayerID { get; set; }
         public int KeyItemID { get; set; }
         public DateTime AcquiredDate { get; set; }
     }

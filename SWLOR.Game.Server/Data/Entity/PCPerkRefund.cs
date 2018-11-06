@@ -1,5 +1,6 @@
 
 
+using System;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
@@ -7,12 +8,12 @@ namespace SWLOR.Game.Server.Data.Entity
     [Table("[PCPerkRefunds]")]
     public class PCPerkRefund: IEntity
     {
-        [Key]
-        public int PCPerkRefundID { get; set; }
-        public string PlayerID { get; set; }
+        [ExplicitKey]
+        public Guid ID { get; set; }
+        public Guid PlayerID { get; set; }
         public int PerkID { get; set; }
         public int Level { get; set; }
-        public System.DateTime DateAcquired { get; set; }
-        public System.DateTime DateRefunded { get; set; }
+        public DateTime DateAcquired { get; set; }
+        public DateTime DateRefunded { get; set; }
     }
 }

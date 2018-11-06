@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Event.Conversation
             int questID = talkTo.GetLocalInt("QUEST_ID_" + index);
             if (questID <= 0) questID = talkTo.GetLocalInt("QST_ID_" + index);
 
-            if (_data.GetAll<Quest>().All(x => x.QuestID != questID))
+            if (_data.GetAll<Quest>().All(x => x.ID != questID))
             {
                 _.SpeakString("ERROR: Quest #" + index + " State #" + state + " is improperly configured. Please notify an admin");
                 return false;

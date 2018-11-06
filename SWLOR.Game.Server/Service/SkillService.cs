@@ -188,7 +188,7 @@ namespace SWLOR.Game.Server.Service
         {
             var skills = _data
                 .Where<Skill>(x => x.ContributesToSkillCap)
-                .Select(s => s.SkillID);
+                .Select(s => s.ID);
             var pcSkills = GetAllPCSkills(player)
                 .Where(x => skills.Contains(x.SkillID));
             return pcSkills.Sum(x => x.Rank);
@@ -196,15 +196,15 @@ namespace SWLOR.Game.Server.Service
         
         public List<SkillCategory> GetActiveCategories()
         {
-            return _data.Where<SkillCategory>(x => x.SkillCategoryID != 0).ToList();
+            return _data.Where<SkillCategory>(x => x.ID != 0).ToList();
         }
 
-        public List<PCSkill> GetPCSkillsForCategory(string playerID, int skillCategoryID)
+        public List<PCSkill> GetPCSkillsForCategory(Guid playerID, int skillCategoryID)
         {
             // Get list of skills part of this category.
             var skillIDs = _data
                 .Where<Skill>(x => x.SkillCategoryID == skillCategoryID)
-                .Select(s => s.SkillID);
+                .Select(s => s.ID);
 
             // Get all PC Skills with a matching category.
             var pcSkills = _data.Where<PCSkill>(x => x.PlayerID == playerID && 
@@ -214,7 +214,7 @@ namespace SWLOR.Game.Server.Service
             return pcSkills;
         }
         
-        public void ToggleSkillLock(string playerID, int skillID)
+        public void ToggleSkillLock(Guid playerID, int skillID)
         {
             PCSkill pcSkill = _data.Single<PCSkill>(x => x.PlayerID == playerID && x.SkillID == skillID);
             pcSkill.IsLocked = !pcSkill.IsLocked;
@@ -392,7 +392,7 @@ namespace SWLOR.Game.Server.Service
                 // Add any missing skills the player does not have.
                 var skills = _data.Where<Skill>(x =>
                 {
-                    var pcSkill = _data.SingleOrDefault<PCSkill>(s => s.SkillID == x.SkillID && s.PlayerID == oPC.GlobalID);
+                    var pcSkill = _data.SingleOrDefault<PCSkill>(s => s.SkillID == x.ID && s.PlayerID == oPC.GlobalID);
                     return pcSkill == null;
                 });
                 foreach (var skill in skills)
@@ -400,7 +400,7 @@ namespace SWLOR.Game.Server.Service
                     var pcSkill = new PCSkill
                     {
                         IsLocked = false,
-                        SkillID = skill.SkillID,
+                        SkillID = skill.ID,
                         PlayerID = oPC.GlobalID,
                         Rank = 0,
                         XP = 0
@@ -612,7 +612,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     SkillID = decaySkill.SkillID, 
                     IsLocked = decaySkill.IsLocked, 
-                    PCSkillID = decaySkill.PCSkillID, 
+                    ID = decaySkill.ID, 
                     PlayerID = decaySkill.PlayerID, 
                     Rank = decaySkill.Rank, 
                     XP = decaySkill.XP
@@ -625,7 +625,7 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        private CreatureSkillRegistration GetCreatureSkillRegistration(string creatureUUID)
+        private CreatureSkillRegistration GetCreatureSkillRegistration(Guid creatureUUID)
         {
             if (_cache.CreatureSkillRegistrations.ContainsKey(creatureUUID))
             {

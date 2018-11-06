@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Data.Entity
         }
 
         [ExplicitKey]
-        public int QuestID { get; set; }
+        public int ID { get; set; }
         public string Name { get; set; }
         public string JournalTag { get; set; }
         public int FameRegionID { get; set; }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -13,10 +14,10 @@ namespace SWLOR.Game.Server.Service.Contracts
         void OnModuleItemUnequipped();
         int GetPCPerkLevel(NWPlayer player, PerkType perkType);
         int GetPCPerkLevel(NWPlayer player, int perkTypeID);
-        int GetPCTotalPerkCount(string playerID);
+        int GetPCTotalPerkCount(Guid playerID);
         List<Data.Entity.Perk> GetPerksAvailableToPC(NWPlayer player);
         Data.Entity.Perk GetPerkByID(int perkID);
-        PCPerk GetPCPerkByID(string playerID, int perkID);
+        PCPerk GetPCPerkByID(Guid playerID, int perkID);
         PerkLevel FindPerkLevel(IEnumerable<PerkLevel> levels, int findLevel);
         bool CanPerkBeUpgraded(NWPlayer player, int perkID);
         void DoPerkUpgrade(NWPlayer player, int perkID);

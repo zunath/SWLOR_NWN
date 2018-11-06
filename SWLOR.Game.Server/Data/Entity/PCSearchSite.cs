@@ -1,5 +1,6 @@
 
 
+using System;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
@@ -7,10 +8,10 @@ namespace SWLOR.Game.Server.Data.Entity
     [Table("[PCSearchSites]")]
     public class PCSearchSite: IEntity
     {
-        [Key]
-        public int PCSearchSiteID { get; set; }
-        public string PlayerID { get; set; }
+        [ExplicitKey]
+        public Guid ID { get; set; }
+        public Guid PlayerID { get; set; }
         public int SearchSiteID { get; set; }
-        public System.DateTime UnlockDateTime { get; set; }
+        public DateTime UnlockDateTime { get; set; }
     }
 }

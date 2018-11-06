@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Data.Entity
     public class ApartmentBuilding: IEntity
     {
         [ExplicitKey]
-        public Guid ApartmentBuildingID { get; set; }
+        public int ID { get; set; }
         public string Name { get; set; }
     }
 }

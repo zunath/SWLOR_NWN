@@ -1,4 +1,5 @@
-﻿using NWN;
+﻿using System;
+using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
@@ -46,27 +47,27 @@ namespace SWLOR.Game.Server.Item
         {
             NWPlayer player = (user.Object);
             NWArea area = (_.GetAreaFromLocation(targetLocation));
-            int parentStructureID = area.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            int pcBaseID = area.GetLocalInt("PC_BASE_ID");
+            string parentStructureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
+            string pcBaseID = area.GetLocalString("PC_BASE_ID");
             var data = _base.GetPlayerTempData(player);
             data.TargetLocation = targetLocation;
             data.TargetArea = area;
-            data.StructureID = item.GetLocalInt("BASE_STRUCTURE_ID");
+            data.BaseStructureID = item.GetLocalInt("BASE_STRUCTURE_ID");
             data.StructureItem = item;
 
             // Structure is being placed inside an apartment.
-            if (pcBaseID > 0)
+            if (!string.IsNullOrWhiteSpace(pcBaseID))
             {
-                data.PCBaseID = pcBaseID;
+                data.PCBaseID = new Guid(pcBaseID);
                 data.ParentStructureID = null;
                 data.BuildingType = BuildingType.Apartment;
             }
             // Structure is being placed inside a building.
-            else if (parentStructureID > 0)
+            else if (!string.IsNullOrWhiteSpace(parentStructureID))
             {
-                var parentStructure = _data.Single<PCBaseStructure>(x => x.PCBaseStructureID == parentStructureID);
+                var parentStructure = _data.Single<PCBaseStructure>(x => x.ID == new Guid(parentStructureID));
                 data.PCBaseID = parentStructure.PCBaseID;
-                data.ParentStructureID = parentStructureID;
+                data.ParentStructureID = new Guid(parentStructureID);
                 data.BuildingType = BuildingType.Interior;
             }
             // Structure is being placed outside of a building.
@@ -74,7 +75,7 @@ namespace SWLOR.Game.Server.Item
             {
                 string sector = _base.GetSectorOfLocation(targetLocation);
                 PCBase pcBase = _data.Single<PCBase>(x => x.AreaResref == area.Resref && x.Sector == sector);
-                data.PCBaseID = pcBase.PCBaseID;
+                data.PCBaseID = pcBase.ID;
                 data.ParentStructureID = null;
                 data.BuildingType = BuildingType.Exterior;
             }

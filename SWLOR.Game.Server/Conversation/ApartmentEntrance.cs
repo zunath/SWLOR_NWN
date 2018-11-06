@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Conversation
                     name = apartment.CustomName;
                 }
 
-                AddResponseToPage("MainPage", name, true, apartment.PCBaseID);
+                AddResponseToPage("MainPage", name, true, apartment.ID);
 
                 count++;
             }
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Conversation
             NWPlayer oPC = GetPC();
 
             var apartment = _data.Get<PCBase>(pcBaseID);
-            var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == apartment.PCBaseID);
+            var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == apartment.ID);
             var buildingStyle = _data.Get<BuildingStyle>(apartment.BuildingStyleID);
             NWArea instance = GetAreaInstance(pcBaseID);
 
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Conversation
 
                 foreach (var furniture in structures)
                 {
-                    _base.SpawnStructure(instance, furniture.PCBaseStructureID);
+                    _base.SpawnStructure(instance, furniture.ID);
                 }
             }
 

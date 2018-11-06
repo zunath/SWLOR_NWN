@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Conversation
 
             foreach (CraftBlueprintCategory category in vm.CraftCategories)
             {
-                AddResponseToPage("CraftCategoriesPage", category.Name, true, category.CraftBlueprintCategoryID);
+                AddResponseToPage("CraftCategoriesPage", category.Name, true, category.ID);
             }
 
             SetDialogCustomData(vm);
@@ -117,7 +117,7 @@ namespace SWLOR.Game.Server.Conversation
 
             foreach (CraftBlueprint bp in vm.CraftBlueprints)
             {
-                AddResponseToPage("BlueprintListPage", bp.ItemName, true, bp.CraftBlueprintID);
+                AddResponseToPage("BlueprintListPage", bp.ItemName, true, bp.ID);
             }
 
             ChangePage("BlueprintListPage");

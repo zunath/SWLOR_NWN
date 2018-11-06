@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Data.Entity
         }
 
         [ExplicitKey]
-        public string PlayerID { get; set; }
+        public Guid ID { get; set; }
         public string CharacterName { get; set; }
         public int HitPoints { get; set; }
         public string LocationAreaResref { get; set; }
@@ -47,12 +47,12 @@ namespace SWLOR.Game.Server.Data.Entity
         public int CHABase { get; set; }
         public int TotalSPAcquired { get; set; }
         public bool DisplayHelmet { get; set; }
-        public int? PrimaryResidencePCBaseStructureID { get; set; }
+        public Guid? PrimaryResidencePCBaseStructureID { get; set; }
         public DateTime? DatePerkRefundAvailable { get; set; }
         public int AssociationID { get; set; }
         public bool DisplayHolonet { get; set; }
         public bool DisplayDiscord { get; set; }
-        public int? PrimaryResidencePCBaseID { get; set; }
+        public Guid? PrimaryResidencePCBaseID { get; set; }
         public bool IsUsingNovelEmoteStyle { get; set; }
         public bool IsDeleted { get; set; }
     }

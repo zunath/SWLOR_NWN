@@ -46,8 +46,8 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             NWPlaceable tower = (Object.OBJECT_SELF);
             NWItem weapon = (_.GetLastWeaponUsed(attacker.Object));
             int damage = _.GetTotalDamageDealt();
-            int structureID = tower.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.PCBaseStructureID == structureID);
+            var structureID = tower.GetLocalString("PC_BASE_STRUCTURE_ID");
+            PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.ID == new Guid(structureID));
             int maxShieldHP = _base.CalculateMaxShieldHP(structure);
             PCBase pcBase = _data.Get<PCBase>(structure.PCBaseID);
             pcBase.ShieldHP -= damage;
@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
         {
             NWArea area = (_.GetArea(Object.OBJECT_SELF));
             List<AreaStructure> cache = area.Data["BASE_SERVICE_STRUCTURES"];
-            cache = cache.Where(x => x.PCBaseID == pcBase.PCBaseID).ToList();
+            cache = cache.Where(x => x.PCBaseID == pcBase.ID).ToList();
             
             foreach (var structure in cache)
             {
@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
                 var dbStructure = _data.Get<PCBaseStructure>(structure.PCBaseStructureID);
                 var baseStructure = _data.Get<BaseStructure>(dbStructure.BaseStructureID);
                 var items = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structure.PCBaseStructureID).ToList();
-                var children = _data.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == dbStructure.BaseStructureID).ToList();
+                var children = _data.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == dbStructure.ParentPCBaseStructureID).ToList();
                 
                 // Explosion effect
                 Location location = structure.Structure.Location;
@@ -138,7 +138,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
                 for (int f = children.Count - 1; f >= 0; f--)
                 {
                     var child = children.ElementAt(f);
-                    var childItems = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == child.PCBaseStructureID).ToList();
+                    var childItems = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == child.ID).ToList();
 
                     // Move child items to container
                     for (int i = childItems.Count - 1; i >= 0; i++)
@@ -155,7 +155,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             
 
                 // Clear structure permissions
-                var structurePermissions = _data.Where<PCBaseStructurePermission>(x => x.PCBaseStructureID == dbStructure.PCBaseStructureID).ToList();
+                var structurePermissions = _data.Where<PCBaseStructurePermission>(x => x.PCBaseStructureID == dbStructure.ID).ToList();
                 for (int p = structurePermissions.Count - 1; p >= 0; p--)
                 {
                     var permission = structurePermissions.ElementAt(p);
@@ -172,7 +172,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             {
                 ((List<AreaStructure>)area.Data["BASE_SERVICE_STRUCTURES"]).Remove(record);
             }
-            var basePermissions = _data.Where<PCBasePermission>(x => x.PCBaseID == pcBase.PCBaseID).ToList();
+            var basePermissions = _data.Where<PCBasePermission>(x => x.PCBaseID == pcBase.ID).ToList();
 
             // Clear base permissions
             for (int p = basePermissions.Count - 1; p >= 0; p--)
@@ -184,10 +184,10 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             _data.SubmitDataChange(pcBase, DatabaseActionType.Delete);
             
             Area dbArea = _data.Single<Area>(x => x.Resref == pcBase.AreaResref);
-            if (pcBase.Sector == AreaSector.Northeast) dbArea.NortheastOwner = null;
-            else if (pcBase.Sector == AreaSector.Northwest) dbArea.NorthwestOwner = null;
-            else if (pcBase.Sector == AreaSector.Southeast) dbArea.SoutheastOwner = null;
-            else if (pcBase.Sector == AreaSector.Southwest) dbArea.SouthwestOwner = null;
+            if (pcBase.Sector == AreaSector.Northeast) dbArea.NortheastOwner = Guid.Empty;
+            else if (pcBase.Sector == AreaSector.Northwest) dbArea.NorthwestOwner = Guid.Empty;
+            else if (pcBase.Sector == AreaSector.Southeast) dbArea.SoutheastOwner = Guid.Empty;
+            else if (pcBase.Sector == AreaSector.Southwest) dbArea.SouthwestOwner = Guid.Empty;
 
         }
     }

@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Event.Conversation
             int questID = talkingTo.GetLocalInt("QUEST_ID_" + index);
             if (questID <= 0) questID = talkingTo.GetLocalInt("QST_ID_" + index);
 
-            if (_data.GetAll<Quest>().All(x => x.QuestID != questID))
+            if (_data.GetAll<Quest>().All(x => x.ID != questID))
             {
                 _.SpeakString("ERROR: Quest #" + index + " is improperly configured. Please notify an admin");
                 return false;
@@ -42,8 +42,8 @@ namespace SWLOR.Game.Server.Event.Conversation
             
             var currentQuestState = _data.Get<QuestState>(status.CurrentQuestStateID);
             var quest = _data.Get<Quest>(currentQuestState.QuestID);
-            var states = _data.Where<QuestState>(x => x.QuestID == quest.QuestID);
-            return currentQuestState.QuestStateID == states.OrderBy(o => o.Sequence).Last().QuestStateID &&
+            var states = _data.Where<QuestState>(x => x.QuestID == quest.ID);
+            return currentQuestState.ID == states.OrderBy(o => o.Sequence).Last().ID &&
                    status.CompletionDate != null;
         }
     }

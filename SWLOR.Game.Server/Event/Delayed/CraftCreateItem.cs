@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Event.Delayed
         {
             var model = _craft.GetPlayerCraftingData(player);
 
-            CraftBlueprint blueprint = _data.Single<CraftBlueprint>(x => x.CraftBlueprintID == model.BlueprintID);
+            CraftBlueprint blueprint = _data.Single<CraftBlueprint>(x => x.ID == model.BlueprintID);
             BaseStructure baseStructure = _data.Get<BaseStructure>(blueprint.BaseStructureID);
             PCSkill pcSkill = _skill.GetPCSkill(player, blueprint.SkillID);
 
@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Event.Delayed
             foreach (var item in craftedItems)
             {
                 item.RecommendedLevel = itemLevel < 0 ? 0 : itemLevel;
-                item.SetLocalString("CRAFTER_PLAYER_ID", player.GlobalID);
+                item.SetLocalString("CRAFTER_PLAYER_ID", player.GlobalID.ToString());
 
                 _base.ApplyCraftedItemLocalVariables(item, baseStructure);
             }
@@ -172,7 +172,7 @@ namespace SWLOR.Game.Server.Event.Delayed
             int baseXP = 250 + successAmount * _random.Random(1, 50);
             float xp = _skill.CalculateRegisteredSkillLevelAdjustedXP(baseXP, model.AdjustedLevel, pcSkill.Rank);
 
-            var pcCraftedBlueprint = _data.SingleOrDefault<PCCraftedBlueprint>(x => x.PlayerID == player.GlobalID && x.CraftBlueprintID == blueprint.CraftBlueprintID);
+            var pcCraftedBlueprint = _data.SingleOrDefault<PCCraftedBlueprint>(x => x.PlayerID == player.GlobalID && x.CraftBlueprintID == blueprint.ID);
             if(pcCraftedBlueprint == null)
             {
                 xp = xp * 1.25f;
@@ -180,7 +180,7 @@ namespace SWLOR.Game.Server.Event.Delayed
 
                 pcCraftedBlueprint = new PCCraftedBlueprint
                 {
-                    CraftBlueprintID = blueprint.CraftBlueprintID,
+                    CraftBlueprintID = blueprint.ID,
                     DateFirstCrafted = DateTime.UtcNow,
                     PlayerID = player.GlobalID
                 };

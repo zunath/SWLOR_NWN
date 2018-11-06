@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Service
                 };
                 _data.SubmitDataChange(entity, DatabaseActionType.Insert);
                 
-                KeyItem keyItem = _data.Single<KeyItem>(x => x.KeyItemID == keyItemID);
+                KeyItem keyItem = _data.Single<KeyItem>(x => x.ID == keyItemID);
                 oPC.SendMessage("You acquired the key item '" + keyItem.Name + "'.");
             }
         }
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Service
 
         public KeyItem GetKeyItemByID(int keyItemID)
         {
-            return _data.Single<KeyItem>(x => x.KeyItemID == keyItemID);
+            return _data.Single<KeyItem>(x => x.ID == keyItemID);
         }
 
         public void OnModuleItemAcquired()

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -12,10 +13,10 @@ namespace SWLOR.Game.Server.Service.Contracts
         string BuildBlueprintHeader(NWPlayer player, long blueprintID, bool showAddedComponentList);
         void CraftItem(NWPlayer oPC, NWPlaceable device);
         CraftBlueprint GetBlueprintByID(long craftBlueprintID);
-        List<CraftBlueprintCategory> GetCategoriesAvailableToPC(string playerID);
-        List<CraftBlueprintCategory> GetCategoriesAvailableToPCByDeviceID(string playerID, int deviceID);
-        List<CraftBlueprint> GetPCBlueprintsByCategoryID(string playerID, long categoryID);
-        List<CraftBlueprint> GetPCBlueprintsByDeviceAndCategoryID(string playerID, int deviceID, long categoryID);
+        List<CraftBlueprintCategory> GetCategoriesAvailableToPC(Guid playerID);
+        List<CraftBlueprintCategory> GetCategoriesAvailableToPCByDeviceID(Guid playerID, int deviceID);
+        List<CraftBlueprint> GetPCBlueprintsByCategoryID(Guid playerID, long categoryID);
+        List<CraftBlueprint> GetPCBlueprintsByDeviceAndCategoryID(Guid playerID, int deviceID, long categoryID);
         string GetIngotResref(string oreResref);
         int GetIngotLevel(string oreResref);
         int GetIngotPerkLevel(string oreResref);

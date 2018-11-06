@@ -41,9 +41,9 @@ namespace SWLOR.Game.Server.GameObject
             _.SetTag(Object, guid);
         }
 
-        public virtual string GlobalID => GetOrAssignGlobalID();
+        public virtual Guid GlobalID => GetOrAssignGlobalID();
 
-        public virtual string GetOrAssignGlobalID()
+        public virtual Guid GetOrAssignGlobalID()
         {
             if (Object == null || Object == OBJECT_TYPE_INVALID)
                 throw new Exception("NWN object has not been set for this wrapper.");
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.GameObject
                 }
             }
 
-            return globalID;
+            return Guid.Parse(globalID);
         }
 
         public virtual string Name

@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
             int ticks = (int)(plant.BaseTicks - ((_perk.GetPCPerkLevel(oPC, PerkType.ExpertFarmer) * 0.05f)) * plant.BaseTicks);
             Data.Entity.GrowingPlant growingPlant = new Data.Entity.GrowingPlant
             {
-                PlantID = plant.PlantID,
+                PlantID = plant.ID,
                 RemainingTicks = ticks,
                 LocationAreaTag = areaTag,
                 LocationOrientation = _.GetFacingFromLocation(plantLocation),
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
             
             NWPlaceable hole = (container.GetLocalObject("FARM_SMALL_HOLE"));
             NWPlaceable plantPlc = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "growing_plant", hole.Location));
-            plantPlc.SetLocalInt("GROWING_PLANT_ID", growingPlant.GrowingPlantID);
+            plantPlc.SetLocalString("GROWING_PLANT_ID", growingPlant.ID.ToString());
             plantPlc.Name = "Growing Plant (" + plant.Name + ")";
 
             container.Destroy();

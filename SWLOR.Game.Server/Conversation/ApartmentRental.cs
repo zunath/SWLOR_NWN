@@ -152,7 +152,7 @@ namespace SWLOR.Game.Server.Conversation
                     name = apartment.CustomName;
                 }
 
-                AddResponseToPage("MainPage", name, true, apartment.PCBaseID);
+                AddResponseToPage("MainPage", name, true, apartment.ID);
 
                 count++;
             }
@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 var data = _base.GetPlayerTempData(GetPC());
                 DialogResponse response = GetResponseByID("MainPage", responseID);
-                data.PCBaseID = (int)response.CustomData;
+                data.PCBaseID = (Guid)response.CustomData;
 
                 LoadDetailsPage();
                 ChangePage("DetailsPage");
@@ -180,7 +180,7 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadLeasePage()
         {
             var data = _base.GetPlayerTempData(GetPC());
-            var apartmentBuilding = _data.Single<ApartmentBuilding>(x => x.ApartmentBuildingID == data.ApartmentBuildingID);
+            var apartmentBuilding = _data.Single<ApartmentBuilding>(x => x.ID == data.ApartmentBuildingID);
             var styles = _data.Where<BuildingStyle>(x => x.BuildingTypeID == (int)Enumeration.BuildingType.Apartment && x.IsActive).ToList();
 
             string header = _color.Green(apartmentBuilding.Name) + "\n\n";
@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.Conversation
 
             foreach (var style in styles)
             {
-                AddResponseToPage("LeasePage", style.Name, true, style.BuildingStyleID);
+                AddResponseToPage("LeasePage", style.Name, true, style.ID);
             }
         }
 
@@ -210,7 +210,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var data = _base.GetPlayerTempData(GetPC());
-            var style = _data.Single<BuildingStyle>(x => x.BuildingStyleID == data.BuildingStyleID);
+            var style = _data.Single<BuildingStyle>(x => x.ID == data.BuildingStyleID);
 
             string header = _color.Green("Style: ") + style.Name + "\n\n";
             header += _color.Green("Purchase Price: ") + style.PurchasePrice + " credits\n";
@@ -254,7 +254,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             NWPlayer player = GetPC();
             var data = _base.GetPlayerTempData(GetPC());
-            var style = _data.Single<BuildingStyle>(x => x.BuildingStyleID == data.BuildingStyleID);
+            var style = _data.Single<BuildingStyle>(x => x.ID == data.BuildingStyleID);
             var area = _area.CreateAreaInstance(player, style.Resref, "APARTMENT PREVIEW: " + style.Name, "PLAYER_HOME_ENTRANCE");
             area.SetLocalInt("IS_BUILDING_PREVIEW", TRUE);
             _base.JumpPCToBuildingInterior(player, area);
@@ -264,7 +264,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var data = _base.GetPlayerTempData(GetPC());
-            var style = _data.Single<BuildingStyle>(x => x.BuildingStyleID == data.BuildingStyleID);
+            var style = _data.Single<BuildingStyle>(x => x.ID == data.BuildingStyleID);
 
             if (player.Gold < style.PurchasePrice)
             {
@@ -275,7 +275,7 @@ namespace SWLOR.Game.Server.Conversation
             PCBase pcApartment = new PCBase
             {
                 PlayerID = player.GlobalID,
-                BuildingStyleID = style.BuildingStyleID,
+                BuildingStyleID = style.ID,
                 PCBaseTypeID = (int)Enumeration.PCBaseType.Apartment,
                 ApartmentBuildingID = data.ApartmentBuildingID,
                 CustomName = string.Empty,
@@ -287,11 +287,9 @@ namespace SWLOR.Game.Server.Conversation
             };
             _data.SubmitDataChange(pcApartment, DatabaseActionType.Insert);
             
-            // todo: Current code expects an ID to be auto-generated. Not sure how to handle this atm.
-
             PCBasePermission permission = new PCBasePermission
             {
-                //PCBase = pcApartment,
+                PCBaseID = pcApartment.ID,
                 PlayerID = player.GlobalID
             };
             _data.SubmitDataChange(permission, DatabaseActionType.Insert);
@@ -299,7 +297,7 @@ namespace SWLOR.Game.Server.Conversation
             
             // Grant all base permissions to owner.
             var allPermissions = Enum.GetValues(typeof(BasePermission)).Cast<BasePermission>().ToArray();
-            _perm.GrantBasePermissions(player, pcApartment.PCBaseID, allPermissions);
+            _perm.GrantBasePermissions(player, pcApartment.ID, allPermissions);
 
             _.TakeGoldFromCreature(style.PurchasePrice, player, TRUE);
             
@@ -313,7 +311,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var data = _base.GetPlayerTempData(player);
-            var pcApartment = _data.Single<PCBase>(x => x.PCBaseID == data.PCBaseID);
+            var pcApartment = _data.Single<PCBase>(x => x.ID == data.PCBaseID);
             var buildingStyle = _data.Get<BuildingStyle>(pcApartment.BuildingStyleID);
             var name = player.Name + "'s Apartment";
 
@@ -363,7 +361,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var data = _base.GetPlayerTempData(player);
-            var pcApartment = _data.Single<PCBase>(x => x.PCBaseID == data.PCBaseID);
+            var pcApartment = _data.Single<PCBase>(x => x.ID == data.PCBaseID);
             var style = _data.Get<BuildingStyle>(pcApartment.BuildingStyleID);
 
             if (data.ExtensionDays != days)

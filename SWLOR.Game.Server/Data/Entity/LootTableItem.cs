@@ -1,5 +1,6 @@
 
 
+using System;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
@@ -13,7 +14,7 @@ namespace SWLOR.Game.Server.Data.Entity
         }
 
         [Key]
-        public int LootTableItemID { get; set; }
+        public int ID { get; set; }
         public int LootTableID { get; set; }
         public string Resref { get; set; }
         public int MaxQuantity { get; set; }

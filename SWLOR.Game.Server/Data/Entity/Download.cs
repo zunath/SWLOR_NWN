@@ -1,5 +1,6 @@
 
 
+using System;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.Data.Entity
         }
 
         [ExplicitKey]
-        public int DownloadID { get; set; }
+        public int ID { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string Url { get; set; }

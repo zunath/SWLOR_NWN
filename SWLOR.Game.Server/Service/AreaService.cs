@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     dbArea = new Area
                     {
-                        AreaID = Guid.NewGuid().ToString("N"),
+                        ID = Guid.NewGuid(),
                         Resref = area.Resref
                     };
                     action = DatabaseActionType.Insert;
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Service
 
                     Console.WriteLine("Baking area because its walkmesh has changed since last run: " + area.Name);
 
-                    var walkmeshes = _data.Where<AreaWalkmesh>(x => x.AreaID == dbArea.AreaID);
+                    var walkmeshes = _data.Where<AreaWalkmesh>(x => x.AreaID == dbArea.ID);
                     foreach (var mesh in walkmeshes)
                     {
                         _data.SubmitDataChange(mesh, DatabaseActionType.Delete);
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Service
                             
                             AreaWalkmesh mesh = new AreaWalkmesh()
                             {
-                                AreaID = dbArea.AreaID,
+                                AreaID = dbArea.ID,
                                 LocationX = x * Step,
                                 LocationY = y * Step,
                                 LocationZ = z
@@ -205,7 +205,7 @@ namespace SWLOR.Game.Server.Service
             string tag = Guid.NewGuid().ToString("N");
             NWArea instance = _.CreateArea(areaResref, tag, areaName);
             
-            instance.SetLocalString("INSTANCE_OWNER", owner.GlobalID);
+            instance.SetLocalString("INSTANCE_OWNER", owner.GlobalID.ToString());
             instance.SetLocalString("ORIGINAL_RESREF", areaResref);
             instance.SetLocalInt("IS_AREA_INSTANCE", TRUE);
             instance.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();

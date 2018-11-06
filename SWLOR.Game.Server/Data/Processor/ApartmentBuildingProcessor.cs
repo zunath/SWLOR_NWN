@@ -17,10 +17,10 @@ namespace SWLOR.Game.Server.Data.Processor
         public DatabaseAction Process(IDataService data, ApartmentBuilding dataObject)
         {
             var action = DatabaseActionType.Update;
-            if(dataObject.ApartmentBuildingID <= 0)
+            if(dataObject.ID <= 0)
             {
                 int id = data.GetAll<ApartmentBuilding>().Count() + 1;
-                dataObject.ApartmentBuildingID = id;
+                dataObject.ID = id;
                 action = DatabaseActionType.Insert;
             }
             

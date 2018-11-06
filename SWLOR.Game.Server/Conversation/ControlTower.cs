@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
@@ -46,8 +47,8 @@ namespace SWLOR.Game.Server.Conversation
         
         public override void Initialize()
         {
-            int structureID = GetDialogTarget().GetLocalInt("PC_BASE_STRUCTURE_ID");
-            PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.PCBaseStructureID == structureID);
+            Guid structureID = new Guid(GetDialogTarget().GetLocalString("PC_BASE_STRUCTURE_ID"));
+            PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.ID == structureID);
 
             if (!_perm.HasBasePermission(GetPC(), structure.PCBaseID, BasePermission.CanManageBaseFuel))
             {
@@ -107,8 +108,8 @@ namespace SWLOR.Game.Server.Conversation
                 }
             }
 
-            int structureID = tower.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            var structure = _data.Single<PCBaseStructure>(x => x.PCBaseStructureID == structureID);
+            var structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
+            var structure = _data.Single<PCBaseStructure>(x => x.ID == structureID);
             var pcBase = _data.Get<PCBase>(structure.PCBaseID);
             Location location = oPC.Location;
             bay = _.CreateObject(OBJECT_TYPE_PLACEABLE, "fuel_bay", location);
@@ -116,7 +117,7 @@ namespace SWLOR.Game.Server.Conversation
 
             tower.SetLocalObject("CONTROL_TOWER_FUEL_BAY", bay.Object);
             bay.SetLocalObject("CONTROL_TOWER_PARENT", tower.Object);
-            bay.SetLocalInt("PC_BASE_STRUCTURE_ID", structureID);
+            bay.SetLocalString("PC_BASE_STRUCTURE_ID", structureID.ToString());
 
             if (isStronidium)
             {
@@ -155,14 +156,14 @@ namespace SWLOR.Game.Server.Conversation
                 }
             }
             
-            int structureID = tower.GetLocalInt("PC_BASE_STRUCTURE_ID");
+            Guid structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
             var structureItems = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structureID);
             Location location = oPC.Location;
             bay = _.CreateObject(OBJECT_TYPE_PLACEABLE, "resource_bay", location);
 
             tower.SetLocalObject("CONTROL_TOWER_RESOURCE_BAY", bay.Object);
             bay.SetLocalObject("CONTROL_TOWER_PARENT", tower.Object);
-            bay.SetLocalInt("PC_BASE_STRUCTURE_ID", structureID);
+            bay.SetLocalString("PC_BASE_STRUCTURE_ID", structureID.ToString());
 
             foreach (var item in structureItems)
             {

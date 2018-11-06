@@ -31,8 +31,8 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
         public bool Run(params object[] args)
         {
             NWPlaceable tower = Object.OBJECT_SELF;
-            int structureID = tower.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.PCBaseStructureID == structureID);
+            Guid structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
+            PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.ID == structureID);
             int maxShieldHP = _base.CalculateMaxShieldHP(structure);
             var pcBase = _data.Get<PCBase>(structure.PCBaseID);
 
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
                     outOfPowerEffect = _.TagEffect(outOfPowerEffect, "CONTROL_TOWER_OUT_OF_POWER");
                     _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, outOfPowerEffect, tower.Object);
 
-                    var instances = NWModule.Get().Areas.Where(x => x.GetLocalInt("PC_BASE_STRUCTURE_ID") == structureID);
+                    var instances = NWModule.Get().Areas.Where(x => x.GetLocalString("PC_BASE_STRUCTURE_ID") == structureID.ToString());
 
                     foreach (var instance in instances)
                     {
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
 
                 if (outOfPowerWasRemoved)
                 {
-                    var instances = NWModule.Get().Areas.Where(x => x.GetLocalInt("PC_BASE_STRUCTURE_ID") == structureID);
+                    var instances = NWModule.Get().Areas.Where(x => x.GetLocalString("PC_BASE_STRUCTURE_ID") == structureID.ToString());
                     foreach (var instance in instances)
                     {
                         _base.ToggleInstanceObjectPower(instance, true);

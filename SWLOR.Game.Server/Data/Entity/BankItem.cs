@@ -8,10 +8,10 @@ namespace SWLOR.Game.Server.Data.Entity
     [Table("[BankItems]")]
     public class BankItem: IEntity
     {
-        [Key]
-        public int BankItemID { get; set; }
+        [ExplicitKey]
+        public Guid ID { get; set; }
         public int BankID { get; set; }
-        public string PlayerID { get; set; }
+        public Guid PlayerID { get; set; }
         public string ItemID { get; set; }
         public string ItemName { get; set; }
         public string ItemTag { get; set; }

@@ -114,12 +114,12 @@ namespace SWLOR.Game.Server.Conversation
         {
             var perksAvailable = _perk.GetPerksAvailableToPC(GetPC());
             var categoryIDs = perksAvailable.Select(x => x.PerkCategoryID).Distinct();
-            List<PerkCategory> categories = _data.Where<PerkCategory>(x => categoryIDs.Contains(x.PerkCategoryID)).ToList();
+            List<PerkCategory> categories = _data.Where<PerkCategory>(x => categoryIDs.Contains(x.ID)).ToList();
 
             ClearPageResponses("CategoryPage");
             foreach (PerkCategory category in categories)
             {
-                AddResponseToPage("CategoryPage", category.Name, true, category.PerkCategoryID);
+                AddResponseToPage("CategoryPage", category.Name, true, category.ID);
             }
         }
 
@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("PerkListPage");
             foreach (Data.Entity.Perk perk in perks)
             {
-                AddResponseToPage("PerkListPage", perk.Name, true, perk.PerkID);
+                AddResponseToPage("PerkListPage", perk.Name, true, perk.ID);
             }
         }
 
@@ -140,9 +140,9 @@ namespace SWLOR.Game.Server.Conversation
         {
             Model vm = GetDialogCustomData<Model>();
             Data.Entity.Perk perk = _perk.GetPerkByID(vm.SelectedPerkID);
-            PCPerk pcPerk = _perk.GetPCPerkByID(GetPC().GlobalID, perk.PerkID);
+            PCPerk pcPerk = _perk.GetPCPerkByID(GetPC().GlobalID, perk.ID);
             PlayerCharacter player = _player.GetPlayerEntity(GetPC().GlobalID);
-            var perkLevels = _data.Where<PerkLevel>(x => x.PerkID == perk.PerkID).ToList();
+            var perkLevels = _data.Where<PerkLevel>(x => x.PerkID == perk.ID).ToList();
 
             int rank = pcPerk?.PerkLevel ?? 0;
             int maxRank = perkLevels.Count();
@@ -184,7 +184,7 @@ namespace SWLOR.Game.Server.Conversation
             if (nextPerkLevel != null)
             {
                 List<PerkLevelSkillRequirement> requirements = 
-                    _data.Where<PerkLevelSkillRequirement>(x => x.PerkLevelID == nextPerkLevel.PerkLevelID).ToList();
+                    _data.Where<PerkLevelSkillRequirement>(x => x.PerkLevelID == nextPerkLevel.ID).ToList();
                 if (requirements.Count > 0)
                 {
                     header += "\n" + _color.Green("Next Upgrade Skill Requirements:\n\n");

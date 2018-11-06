@@ -1,5 +1,6 @@
 
 
+using System;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
@@ -8,12 +9,12 @@ namespace SWLOR.Game.Server.Data.Entity
     public class ClientLogEvent: IEntity
     {
 
-        [Key]
-        public int ClientLogEventID { get; set; }
+        [ExplicitKey]
+        public Guid ID { get; set; }
         public int ClientLogEventTypeID { get; set; }
-        public string PlayerID { get; set; }
+        public Guid PlayerID { get; set; }
         public string CDKey { get; set; }
         public string AccountName { get; set; }
-        public System.DateTime DateOfEvent { get; set; }
+        public DateTime DateOfEvent { get; set; }
     }
 }

@@ -9,9 +9,9 @@ namespace SWLOR.Game.Server.Data.Entity
     [Table("[PCQuestStatus]")]
     public class PCQuestStatus: IEntity
     {
-        [Key]
-        public int PCQuestStatusID { get; set; }
-        public string PlayerID { get; set; }
+        [ExplicitKey]
+        public Guid ID { get; set; }
+        public Guid PlayerID { get; set; }
         public int QuestID { get; set; }
         public int CurrentQuestStateID { get; set; }
         public DateTime? CompletionDate { get; set; }

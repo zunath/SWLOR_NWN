@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("MainPage");
             foreach (var item in items)
             {
-                AddResponseToPage("MainPage", item.ItemName, true, item.PCImpoundedItemID);
+                AddResponseToPage("MainPage", item.ItemName, true, item.ID);
             }
         }
 
@@ -62,8 +62,8 @@ namespace SWLOR.Game.Server.Conversation
             }
 
             var response = GetResponseByID("MainPage", responseID);
-            int pcImpoundedItemID = (int)response.CustomData;
-            var item = _data.Single<PCImpoundedItem>(x => x.PCImpoundedItemID == pcImpoundedItemID);
+            Guid pcImpoundedItemID = (Guid)response.CustomData;
+            var item = _data.Single<PCImpoundedItem>(x => x.ID == pcImpoundedItemID);
 
             if (item.DateRetrieved != null)
             {

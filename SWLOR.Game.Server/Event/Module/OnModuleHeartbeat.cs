@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
@@ -39,12 +40,12 @@ namespace SWLOR.Game.Server.Event.Module
 
         public bool Run(params object[] args)
         {
-            string[] playerIDs = NWModule.Get().Players.Where(x => x.IsPlayer).Select(x => x.GlobalID).ToArray();
-            var entities = _data.Where<PlayerCharacter>(x => playerIDs.Contains(x.PlayerID)).ToList();
+            Guid[] playerIDs = NWModule.Get().Players.Where(x => x.IsPlayer).Select(x => x.GlobalID).ToArray();
+            var entities = _data.Where<PlayerCharacter>(x => playerIDs.Contains(x.ID)).ToList();
 
             foreach (var player in NWModule.Get().Players)
             {
-                var entity = entities.SingleOrDefault(x => x.PlayerID == player.GlobalID);
+                var entity = entities.SingleOrDefault(x => x.ID == player.GlobalID);
                 if (entity == null) continue;
 
                 HandleRegenerationTick(player, entity);

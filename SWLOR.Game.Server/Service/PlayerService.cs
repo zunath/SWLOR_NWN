@@ -158,8 +158,8 @@ namespace SWLOR.Game.Server.Service
                     var pcSkill = new PCSkill
                     {
                         IsLocked = false,
-                        SkillID = skill.SkillID,
-                        PlayerID = entity.PlayerID,
+                        SkillID = skill.ID,
+                        PlayerID = entity.ID,
                         Rank = 0,
                         XP = 0
                     };
@@ -236,7 +236,7 @@ namespace SWLOR.Game.Server.Service
 
             PlayerCharacter entity = new PlayerCharacter
             {
-                PlayerID = player.GlobalID,
+                ID = player.GlobalID,
                 CharacterName = player.Name,
                 HitPoints = player.CurrentHP,
                 LocationAreaResref = _.GetResRef(_.GetAreaFromLocation(player.Location)),
@@ -286,9 +286,9 @@ namespace SWLOR.Game.Server.Service
             return _data.Get<PlayerCharacter>(player.GlobalID);
         }
 
-        public PlayerCharacter GetPlayerEntity(string playerID)
+        public PlayerCharacter GetPlayerEntity(Guid playerID)
         {
-            if (string.IsNullOrWhiteSpace(playerID)) throw new ArgumentException("Invalid player ID.", nameof(playerID));
+            if (playerID == Guid.Empty) throw new ArgumentException("Invalid player ID.", nameof(playerID));
             return _data.Get<PlayerCharacter>(playerID);
         }
 

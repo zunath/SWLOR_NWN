@@ -1,5 +1,6 @@
 
 
+using System;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
@@ -7,10 +8,10 @@ namespace SWLOR.Game.Server.Data.Entity
     [Table("[PCBasePermissions]")]
     public class PCBasePermission: IEntity
     {
-        [Key]
-        public int PCBasePermissionID { get; set; }
-        public int PCBaseID { get; set; }
-        public string PlayerID { get; set; }
+        [ExplicitKey]
+        public Guid ID { get; set; }
+        public Guid PCBaseID { get; set; }
+        public Guid PlayerID { get; set; }
         public bool CanPlaceEditStructures { get; set; }
         public bool CanAccessStructureInventory { get; set; }
         public bool CanManageBaseFuel { get; set; }

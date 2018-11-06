@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -70,12 +67,12 @@ namespace SWLOR.Game.Server.Conversation
             
             if (data.BuildingType == BuildingType.Interior)
             {
-                int structureID = data.StructureID;
+                Guid structureID = data.StructureID;
                 player = _data.SingleOrDefault<PlayerCharacter>(x => x.PrimaryResidencePCBaseStructureID == structureID);
             }
             else if (data.BuildingType == BuildingType.Apartment)
             {
-                int pcBaseID = data.PCBaseID;
+                Guid pcBaseID = data.PCBaseID;
                 player = _data.SingleOrDefault<PlayerCharacter>(x => x.PrimaryResidencePCBaseID == pcBaseID);
             }
             else
@@ -99,7 +96,7 @@ namespace SWLOR.Game.Server.Conversation
             var player = GetPC();
             var data = _base.GetPlayerTempData(player);
 
-            PlayerCharacter dbPlayer = _data.Single<PlayerCharacter>(x => x.PlayerID == player.GlobalID);
+            PlayerCharacter dbPlayer = _data.Single<PlayerCharacter>(x => x.ID == player.GlobalID);
             PlayerCharacter primaryResident;
 
             bool isPrimaryResident;
@@ -108,7 +105,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (data.BuildingType == BuildingType.Interior)
             {
-                int structureID = data.StructureID;
+                Guid structureID = data.StructureID;
                 primaryResident = _data.SingleOrDefault<PlayerCharacter>(x => x.PrimaryResidencePCBaseStructureID == structureID);
 
                 isPrimaryResident = dbPlayer.PrimaryResidencePCBaseStructureID != null && dbPlayer.PrimaryResidencePCBaseStructureID == structureID;
@@ -118,7 +115,7 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if (data.BuildingType == BuildingType.Apartment)
             {
-                int pcBaseID = data.PCBaseID;
+                Guid pcBaseID = data.PCBaseID;
                 primaryResident = _data.SingleOrDefault<PlayerCharacter>(x => x.PrimaryResidencePCBaseID == pcBaseID);
 
                 isPrimaryResident = dbPlayer.PrimaryResidencePCBaseID != null && dbPlayer.PrimaryResidencePCBaseID == pcBaseID;
@@ -198,7 +195,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var data = _base.GetPlayerTempData(player);
-            var newResident = _data.Single<PlayerCharacter>(x => x.PlayerID == player.GlobalID);
+            var newResident = _data.Single<PlayerCharacter>(x => x.ID == player.GlobalID);
             
             PlayerCharacter currentResident;
             bool isPrimaryResident;
@@ -207,7 +204,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (data.BuildingType == BuildingType.Interior)
             {
-                int structureID = data.StructureID;
+                Guid structureID = data.StructureID;
                 currentResident = _data.SingleOrDefault<PlayerCharacter>(x => x.PrimaryResidencePCBaseStructureID == structureID);
 
                 isPrimaryResident = newResident.PrimaryResidencePCBaseStructureID != null && newResident.PrimaryResidencePCBaseStructureID == structureID;
@@ -216,7 +213,7 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if (data.BuildingType == BuildingType.Apartment)
             {
-                int pcBaseID = data.PCBaseID;
+                Guid pcBaseID = data.PCBaseID;
                 currentResident = _data.SingleOrDefault<PlayerCharacter>(x => x.PrimaryResidencePCBaseID == pcBaseID);
 
                 isPrimaryResident = newResident.PrimaryResidencePCBaseID != null && newResident.PrimaryResidencePCBaseID == pcBaseID;
@@ -245,7 +242,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 currentResident.PrimaryResidencePCBaseID = null;
                 currentResident.PrimaryResidencePCBaseStructureID = null;
-                NotifyPlayer(currentResident.PlayerID);
+                NotifyPlayer(currentResident.ID);
             }
 
             if (data.BuildingType == BuildingType.Interior)
@@ -273,12 +270,12 @@ namespace SWLOR.Game.Server.Conversation
 
             if (data.BuildingType == BuildingType.Interior)
             {
-                int structureID = data.StructureID;
+                var structureID = data.StructureID;
                 currentResident = _data.SingleOrDefault<PlayerCharacter>(x => x.PrimaryResidencePCBaseStructureID == structureID);
             }
             else if (data.BuildingType == BuildingType.Apartment)
             {
-                int pcBaseID = data.PCBaseID;
+                var pcBaseID = data.PCBaseID;
                 currentResident = _data.SingleOrDefault<PlayerCharacter>(x => x.PrimaryResidencePCBaseID == pcBaseID);
             }
             else
@@ -292,7 +289,7 @@ namespace SWLOR.Game.Server.Conversation
                 currentResident.PrimaryResidencePCBaseID = null;
                 _data.SubmitDataChange(currentResident, DatabaseActionType.Update);
 
-                NotifyPlayer(currentResident.PlayerID);
+                NotifyPlayer(currentResident.ID);
             }
 
             BuildMainPageHeader();
@@ -301,7 +298,7 @@ namespace SWLOR.Game.Server.Conversation
             ChangePage("MainPage", false);
         }
 
-        private void NotifyPlayer(string playerID)
+        private void NotifyPlayer(Guid playerID)
         {
             foreach (var player in NWModule.Get().Players)
             {

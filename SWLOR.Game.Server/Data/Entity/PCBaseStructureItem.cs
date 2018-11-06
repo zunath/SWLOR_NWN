@@ -1,4 +1,5 @@
 
+using System;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
@@ -6,9 +7,9 @@ namespace SWLOR.Game.Server.Data.Entity
     [Table("[PCBaseStructureItems]")]
     public class PCBaseStructureItem: IEntity
     {
-        [Key]
-        public int PCBaseStructureItemID { get; set; }
-        public int PCBaseStructureID { get; set; }
+        [ExplicitKey]
+        public Guid ID { get; set; }
+        public Guid PCBaseStructureID { get; set; }
         public string ItemGlobalID { get; set; }
         public string ItemName { get; set; }
         public string ItemTag { get; set; }

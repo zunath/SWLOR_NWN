@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Item
             int difficulty = (tier-1) * 10 + _resource.GetDifficultyAdjustment(quality);
             int delta = difficulty - rank;
             int itemHarvestBonus = item.HarvestingBonus;
-            int scanningBonus = user.GetLocalInt(target.GlobalID);
+            int scanningBonus = user.GetLocalInt(target.GlobalID.ToString());
 
             ipBonusChance += itemHarvestBonus * 2 + scanningBonus * 2;
 
@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Item
                 }
 
                 target.Destroy();
-                user.DeleteLocalInt(target.GlobalID);
+                user.DeleteLocalInt(target.GlobalID.ToString());
             }
             else
             {

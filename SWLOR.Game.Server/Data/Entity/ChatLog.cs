@@ -1,5 +1,6 @@
 
 
+using System;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
@@ -14,17 +15,17 @@ namespace SWLOR.Game.Server.Data.Entity
             Message = "";
         }
 
-        [Key]
-        public long ChatLogID { get; set; }
+        [ExplicitKey]
+        public Guid ID { get; set; }
         public int ChatChannelID { get; set; }
-        public string SenderPlayerID { get; set; }
+        public Guid SenderPlayerID { get; set; }
         public string SenderAccountName { get; set; }
         public string SenderCDKey { get; set; }
-        public string ReceiverPlayerID { get; set; }
+        public Guid ReceiverPlayerID { get; set; }
         public string ReceiverAccountName { get; set; }
         public string ReceiverCDKey { get; set; }
         public string Message { get; set; }
-        public System.DateTime DateSent { get; set; }
+        public DateTime DateSent { get; set; }
         public string SenderDMName { get; set; }
         public string ReceiverDMName { get; set; }
     }

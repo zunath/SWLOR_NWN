@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Placeable.Bank
                 return false;
             }
 
-            Data.Entity.Bank entity = _data.SingleOrDefault<Data.Entity.Bank>(x => x.BankID == bankID);
+            Data.Entity.Bank entity = _data.SingleOrDefault<Data.Entity.Bank>(x => x.ID == bankID);
             
             if (entity == null)
             {
@@ -51,12 +51,12 @@ namespace SWLOR.Game.Server.Placeable.Bank
                     AreaName = area.Name,
                     AreaResref = area.Resref,
                     AreaTag = area.Tag,
-                    BankID = bankID
+                    ID = bankID
                 };
                 _data.SubmitDataChange(entity, DatabaseActionType.Insert);
             }
             
-            var bankItems = _data.Where<BankItem>(x => x.PlayerID == player.GlobalID && x.BankID == entity.BankID);
+            var bankItems = _data.Where<BankItem>(x => x.PlayerID == player.GlobalID && x.BankID == entity.ID);
             foreach (BankItem item in bankItems.Where(x => x.PlayerID == player.GlobalID))
             {
                 _serialization.DeserializeItem(item.ItemObject, terminal);

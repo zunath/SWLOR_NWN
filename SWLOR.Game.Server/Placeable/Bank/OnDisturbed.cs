@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Placeable.Bank
             int itemLimit = terminal.GetLocalInt("BANK_LIMIT");
             if (itemLimit <= 0) itemLimit = 20;
 
-            Data.Entity.Bank bank = _data.Single<Data.Entity.Bank>(x => x.BankID == bankID);
+            Data.Entity.Bank bank = _data.Single<Data.Entity.Bank>(x => x.ID == bankID);
 
             if (disturbType == INVENTORY_DISTURB_TYPE_ADDED)
             {
@@ -62,9 +62,9 @@ namespace SWLOR.Game.Server.Placeable.Bank
                         ItemName = item.Name,
                         ItemTag = item.Tag,
                         ItemResref = item.Resref,
-                        ItemID = item.GlobalID,
+                        ItemID = item.GlobalID.ToString(),
                         ItemObject = _serialization.Serialize(item),
-                        BankID = bank.BankID,
+                        BankID = bank.ID,
                         PlayerID = player.GlobalID,
                         DateStored = DateTime.UtcNow
                     };

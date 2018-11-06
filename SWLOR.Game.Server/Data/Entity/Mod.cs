@@ -1,5 +1,6 @@
 
 
+using System;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
@@ -14,7 +15,7 @@ namespace SWLOR.Game.Server.Data.Entity
         }
 
         [ExplicitKey]
-        public int ModID { get; set; }
+        public int ID { get; set; }
         public string Name { get; set; }
         public string Script { get; set; }
         public bool IsActive { get; set; }

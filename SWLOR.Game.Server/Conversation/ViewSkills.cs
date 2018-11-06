@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("CategoryPage");
             foreach (SkillCategory category in categories)
             {
-                AddResponseToPage("CategoryPage", category.Name, true, category.SkillCategoryID);
+                AddResponseToPage("CategoryPage", category.Name, true, category.ID);
             }
         }
 
@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Conversation
             foreach (PCSkill pcSkill in skills)
             {
                 Skill skill = _skill.GetSkill(pcSkill.SkillID);
-                AddResponseToPage("SkillListPage", skill.Name + " (Lvl. " + pcSkill.Rank + ")", true, skill.SkillID);
+                AddResponseToPage("SkillListPage", skill.Name + " (Lvl. " + pcSkill.Rank + ")", true, skill.ID);
             }
         }
 
@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Conversation
             Model vm = GetDialogCustomData<Model>();
             Skill skill = _skill.GetSkill(vm.SelectedSkillID);
             PCSkill pcSkill = _skill.GetPCSkill(GetPC(), vm.SelectedSkillID);
-            SkillXPRequirement req = _data.Single<SkillXPRequirement>(x => x.Rank == pcSkill.Rank && x.SkillID == skill.SkillID); 
+            SkillXPRequirement req = _data.Single<SkillXPRequirement>(x => x.Rank == pcSkill.Rank && x.SkillID == skill.ID); 
             string header = CreateSkillDetailsHeader(pcSkill, req);
             SetPageHeader("SkillDetailsPage", header);
 

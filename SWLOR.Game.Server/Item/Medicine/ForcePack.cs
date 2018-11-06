@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return "Only players may be targeted with this item.";
             }
 
-            var dbTarget = _data.Single<PlayerCharacter>(x => x.PlayerID == target.GlobalID);
+            var dbTarget = _data.Single<PlayerCharacter>(x => x.ID == target.GlobalID);
             if (dbTarget.CurrentFP >= dbTarget.MaxFP)
             {
                 return "Your target's FP is at their maximum.";

@@ -1,4 +1,5 @@
 
+using System;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
@@ -6,10 +7,10 @@ namespace SWLOR.Game.Server.Data.Entity
     [Table("[PCBaseStructurePermissions]")]
     public class PCBaseStructurePermission: IEntity
     {
-        [Key]
-        public int PCBaseStructurePermissionID { get; set; }
-        public int PCBaseStructureID { get; set; }
-        public string PlayerID { get; set; }
+        [ExplicitKey]
+        public Guid ID { get; set; }
+        public Guid PCBaseStructureID { get; set; }
+        public Guid PlayerID { get; set; }
         public bool CanPlaceEditStructures { get; set; }
         public bool CanAccessStructureInventory { get; set; }
         public bool CanEnterBuilding { get; set; }

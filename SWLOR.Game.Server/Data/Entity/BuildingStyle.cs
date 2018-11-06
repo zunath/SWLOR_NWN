@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Data.Entity
         }
 
         [ExplicitKey]
-        public int BuildingStyleID { get; set; }
+        public int ID { get; set; }
         public string Name { get; set; }
         public string Resref { get; set; }
         public int? BaseStructureID { get; set; }

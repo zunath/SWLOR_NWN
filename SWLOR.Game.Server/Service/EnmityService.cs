@@ -34,11 +34,11 @@ namespace SWLOR.Game.Server.Service
             return table[attacker.GlobalID];
         }
 
-        private Dictionary<string, EnmityTable> GetAllNPCEnmityTablesForCreature(NWCreature player)
+        private Dictionary<Guid, EnmityTable> GetAllNPCEnmityTablesForCreature(NWCreature player)
         {
             if (!player.IsPlayer) throw new Exception(nameof(GetAllNPCEnmityTablesForCreature) + " can only be used with players.");
 
-            var npcTables = new Dictionary<string, EnmityTable>();
+            var npcTables = new Dictionary<Guid, EnmityTable>();
 
             foreach (var npcTable in _cache.NPCEnmityTables)
             {

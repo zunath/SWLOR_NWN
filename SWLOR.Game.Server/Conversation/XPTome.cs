@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Conversation
 
             foreach (SkillCategory category in categories)
             {
-                AddResponseToPage("CategoryPage", category.Name, true, category.SkillCategoryID);
+                AddResponseToPage("CategoryPage", category.Name, true, category.ID);
             }
 
             Model vm = GetDialogCustomData<Model>();

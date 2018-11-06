@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.GameObject;
@@ -52,7 +53,7 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
-            string playerID = GetPC().GlobalID;
+            Guid playerID = GetPC().GlobalID;
             long overflowCount = _data.Where<PCOverflowItem>(x => x.PlayerID == playerID).LongCount();
 
             if (overflowCount <= 0)
@@ -122,7 +123,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private string BuildMainPageHeader(NWPlayer player)
         {
-            PlayerCharacter playerEntity = _data.Single<PlayerCharacter>(x => x.PlayerID == player.GlobalID);
+            PlayerCharacter playerEntity = _data.Single<PlayerCharacter>(x => x.ID == player.GlobalID);
             var association = _data.Get<Association>(playerEntity.AssociationID);
             int totalSkillCount = _data.Where<PCSkill>(x =>
             {

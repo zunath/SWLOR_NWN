@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Threading
 
             foreach (var queue in discordQueue)
             {
-                PostAsync(queue.DiscordChatQueueID, queue.SenderName, queue.Message, queue.SenderAccountName);
+                PostAsync(queue.ID, queue.SenderName, queue.Message, queue.SenderAccountName);
                 queue.DatePosted = DateTime.UtcNow;
 
                 // Directly enqueue the update request because we don't want to cache this data.
@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Threading
         }
 
 
-        private async void PostAsync(int queueID, string characterName, string message, string accountName)
+        private async void PostAsync(Guid queueID, string characterName, string message, string accountName)
         {
             string url = Environment.GetEnvironmentVariable("DISCORD_WEBHOOK_URL");
             if (string.IsNullOrWhiteSpace(url)) return;

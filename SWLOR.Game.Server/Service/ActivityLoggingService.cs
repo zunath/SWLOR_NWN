@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Service
                 AccountName = account,
                 CDKey = cdKey,
                 ClientLogEventTypeID = 1,
-                PlayerID = oPC.IsDM ? null : oPC.GlobalID,
+                PlayerID = oPC.IsDM ? Guid.Empty : oPC.GlobalID,
                 DateOfEvent = now
             };
             _data.SubmitDataChange(entity, DatabaseActionType.Insert);
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Service
                 AccountName = account,
                 CDKey = cdKey,
                 ClientLogEventTypeID = 2,
-                PlayerID = oPC.IsDM ? null : oPC.GlobalID,
+                PlayerID = oPC.IsDM ? Guid.Empty : oPC.GlobalID,
                 DateOfEvent = now
             };
             _data.SubmitDataChange(entity, DatabaseActionType.Insert);
@@ -112,12 +112,12 @@ namespace SWLOR.Game.Server.Service
             int mode = _nwnxChat.GetChannel();
             int channel = ConvertNWNXChatChannelIDToDatabaseID(mode);
             NWObject recipient = _nwnxChat.GetTarget();
-            ChatChannelsDomain channelEntity = _data.Single<ChatChannelsDomain>(x => x.ChatChannelID == channel);
+            ChatChannelsDomain channelEntity = _data.Single<ChatChannelsDomain>(x => x.ID == channel);
 
             // Sender - should always have this data.
             string senderCDKey = _.GetPCPublicCDKey(sender.Object);
             string senderAccountName = sender.Name;
-            string senderPlayerID = null;
+            Guid senderPlayerID = Guid.Empty;
             string senderDMName = null;
 
             // DMs do not have PlayerIDs so store their name in another field.
@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Service
 
             string receiverCDKey = null;
             string receiverAccountName = null;
-            string receiverPlayerID = null;
+            Guid receiverPlayerID = Guid.Empty;
             string receiverDMName = null;
 
             if (recipient.IsValid)
@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Service
                 ReceiverAccountName = receiverAccountName,
                 ReceiverPlayerID = receiverPlayerID,
                 ReceiverDMName = receiverDMName,
-                ChatChannelID = channelEntity.ChatChannelID,
+                ChatChannelID = channelEntity.ID,
                 DateSent = DateTime.UtcNow
             };
             _data.SubmitDataChange(entity, DatabaseActionType.Insert);

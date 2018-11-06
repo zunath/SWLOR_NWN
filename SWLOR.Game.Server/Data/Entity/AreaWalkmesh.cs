@@ -7,9 +7,14 @@ namespace SWLOR.Game.Server.Data.Entity
     [Table("[AreaWalkmesh]")]
     public class AreaWalkmesh: IEntity
     {
-        [Key] 
-        public int AreaWalkmeshID { get; set; }
-        public string AreaID { get; set; }
+        public AreaWalkmesh()
+        {
+            ID = Guid.NewGuid();
+        }
+
+        [ExplicitKey] 
+        public Guid ID { get; set; }
+        public Guid AreaID { get; set; }
         public double LocationX { get; set; }
         public double LocationY { get; set; }
         public double LocationZ { get; set; }

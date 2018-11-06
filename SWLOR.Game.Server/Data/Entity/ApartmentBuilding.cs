@@ -1,4 +1,5 @@
 
+using System;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
@@ -7,7 +8,7 @@ namespace SWLOR.Game.Server.Data.Entity
     public class ApartmentBuilding: IEntity
     {
         [ExplicitKey]
-        public int ApartmentBuildingID { get; set; }
+        public Guid ApartmentBuildingID { get; set; }
         public string Name { get; set; }
     }
 }

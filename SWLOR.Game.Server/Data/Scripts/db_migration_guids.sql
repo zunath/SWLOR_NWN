@@ -1,6 +1,7 @@
-
+--USE master
 --DROP DATABASE swlor_migrated
 --CREATE DATABASE swlor_migrated
+ 
 
 USE swlor_migrated
 GO
@@ -10,7 +11,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[ApartmentBuildings](
-	[ID] NVARCHAR(60) NOT NULL,
+	[ID] INT NOT NULL,
 	[Name] [nvarchar](64) NOT NULL,
 PRIMARY KEY CLUSTERED 
 (
@@ -24,18 +25,18 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[Areas](
-	[ID] [nvarchar](60) NOT NULL,
+	[ID] UNIQUEIDENTIFIER NOT NULL,
 	[Resref] [nvarchar](16) NOT NULL,
 	[Name] [nvarchar](128) NOT NULL,
 	[Tag] [nvarchar](32) NOT NULL,
-	[ResourceSpawnTableID] NVARCHAR(60) NOT NULL,
+	[ResourceSpawnTableID] INT NOT NULL,
 	[Width] [int] NOT NULL,
 	[Height] [int] NOT NULL,
 	[IsBuildable] [bit] NOT NULL,
-	[NorthwestOwner] [nvarchar](60) NULL,
-	[NortheastOwner] [nvarchar](60) NULL,
-	[SouthwestOwner] [nvarchar](60) NULL,
-	[SoutheastOwner] [nvarchar](60) NULL,
+	[NorthwestOwner] UNIQUEIDENTIFIER NULL,
+	[NortheastOwner] UNIQUEIDENTIFIER NULL,
+	[SouthwestOwner] UNIQUEIDENTIFIER NULL,
+	[SoutheastOwner] UNIQUEIDENTIFIER NULL,
 	[IsActive] [bit] NOT NULL,
 	[PurchasePrice] [int] NOT NULL,
 	[DailyUpkeep] [int] NOT NULL,
@@ -43,10 +44,10 @@ CREATE TABLE [dbo].[Areas](
 	[DateLastBaked] [datetime2](7) NOT NULL,
 	[AutoSpawnResources] [bit] NOT NULL,
 	[ResourceQuality] [int] NOT NULL,
-	[NorthwestLootTableID] NVARCHAR(60) NULL,
-	[NortheastLootTableID] NVARCHAR(60) NULL,
-	[SouthwestLootTableID] NVARCHAR(60) NULL,
-	[SoutheastLootTableID] NVARCHAR(60) NULL,
+	[NorthwestLootTableID] int NULL,
+	[NortheastLootTableID] int NULL,
+	[SouthwestLootTableID] int NULL,
+	[SoutheastLootTableID] int NULL,
 	[MaxResourceQuality] [int] NOT NULL,
 PRIMARY KEY CLUSTERED 
 (
@@ -64,8 +65,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[AreaWalkmesh](
-	[ID]  NVARCHAR(60) NOT NULL,
-	[AreaID] [nvarchar](60) NOT NULL,
+	[ID]  UNIQUEIDENTIFIER NOT NULL,
+	[AreaID] UNIQUEIDENTIFIER NOT NULL,
 	[LocationX] [float] NULL,
 	[LocationY] [float] NULL,
 	[LocationZ] [float] NOT NULL,
@@ -81,7 +82,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[Associations](
-	[ID] NVARCHAR(60) NOT NULL,
+	[ID] INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
 PRIMARY KEY CLUSTERED 
 (
@@ -95,7 +96,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[Attributes](
-	[ID] NVARCHAR(60) NOT NULL,
+	[ID] INT NOT NULL,
 	[NWNValue] [int] NOT NULL,
 	[Name] [nvarchar](3) NOT NULL,
  CONSTRAINT [PK__Attribut__C189298A024C3D44] PRIMARY KEY CLUSTERED 
@@ -110,7 +111,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[AuthorizedDMs](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[Name] [nvarchar](255) NOT NULL,
 	[CDKey] [nvarchar](20) NOT NULL,
 	[DMRole] [int] NOT NULL,
@@ -127,7 +128,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[Backgrounds](
-	ID NVARCHAR(60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
 	[Name] [nvarchar](64) NOT NULL,
 	[Description] [nvarchar](512) NOT NULL,
 	[Bonuses] [nvarchar](512) NOT NULL,
@@ -144,10 +145,10 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[BankItems](
-	ID NVARCHAR(60) NOT NULL,
-	[BankID] NVARCHAR(60) NOT NULL,
-	[PlayerID] [nvarchar](60) NOT NULL,
-	[ItemID] [nvarchar](60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
+	[BankID] INT NOT NULL,
+	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
+	[ItemID] NVARCHAR(60) NOT NULL,
 	[ItemName] [nvarchar](max) NOT NULL,
 	[ItemTag] [nvarchar](64) NOT NULL,
 	[ItemResref] [nvarchar](16) NOT NULL,
@@ -165,7 +166,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[Banks](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[AreaName] [nvarchar](255) NOT NULL,
 	[AreaTag] [nvarchar](64) NOT NULL,
 	[AreaResref] [nvarchar](16) NOT NULL,
@@ -181,7 +182,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[BaseItemTypes](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[Name] [nvarchar](64) NOT NULL,
  CONSTRAINT [PK__BaseItem__1AC990A1E6B56350] PRIMARY KEY CLUSTERED 
 (
@@ -195,8 +196,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[BaseStructures](
-	ID NVARCHAR(60) NOT NULL,
-	[BaseStructureTypeID] NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
+	[BaseStructureTypeID] INT NOT NULL,
 	[Name] [nvarchar](64) NOT NULL,
 	[PlaceableResref] [nvarchar](16) NOT NULL,
 	[ItemResref] [nvarchar](16) NOT NULL,
@@ -222,7 +223,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[BaseStructureType](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[Name] [nvarchar](64) NOT NULL,
 	[IsActive] [bit] NOT NULL,
 	[CanPlaceInside] [bit] NOT NULL,
@@ -239,8 +240,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[BugReports](
-	ID NVARCHAR(60) NOT NULL,
-	[SenderPlayerID] [nvarchar](60) NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
+	[SenderPlayerID] UNIQUEIDENTIFIER NULL,
 	[CDKey] [nvarchar](20) NOT NULL,
 	[Text] [nvarchar](1000) NOT NULL,
 	[TargetName] [nvarchar](64) NOT NULL,
@@ -262,14 +263,14 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[BuildingStyles](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[Name] [nvarchar](64) NOT NULL,
 	[Resref] [nvarchar](16) NOT NULL,
-	[BaseStructureID] NVARCHAR(60) NULL,
+	[BaseStructureID] INT NULL,
 	[IsDefault] [bit] NOT NULL,
 	[DoorRule] [nvarchar](64) NOT NULL,
 	[IsActive] [bit] NOT NULL,
-	[BuildingTypeID] NVARCHAR(60) NOT NULL,
+	[BuildingTypeID] INT NOT NULL,
 	[PurchasePrice] [int] NOT NULL,
 	[DailyUpkeep] [int] NOT NULL,
 	[FurnitureLimit] [int] NOT NULL,
@@ -285,7 +286,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[BuildingTypes](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
 PRIMARY KEY CLUSTERED 
 (
@@ -299,7 +300,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[ChatChannelsDomain](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[Name] [nvarchar](64) NOT NULL,
  CONSTRAINT [PK__ChatChan__7153E07326A4B168] PRIMARY KEY CLUSTERED 
 (
@@ -313,18 +314,18 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[ChatLog](
-	ID NVARCHAR(60) NOT NULL,
-	[ChatChannelID] NVARCHAR(60) NOT NULL,
-	[SenderPlayerID] [nvarchar](60) NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
+	[ChatChannelID] INT NOT NULL,
+	[SenderPlayerID] UNIQUEIDENTIFIER NULL,
 	[SenderAccountName] [nvarchar](1024) NOT NULL,
 	[SenderCDKey] [nvarchar](20) NOT NULL,
-	[ReceiverPlayerID] [nvarchar](60) NULL,
+	[ReceiverPlayerID] UNIQUEIDENTIFIER NULL,
 	[ReceiverAccountName] [nvarchar](1024) NULL,
 	[ReceiverCDKey] [nvarchar](20) NULL,
 	[Message] [nvarchar](max) NOT NULL,
 	[DateSent] [datetime2](7) NOT NULL,
-	[SenderDMName] [nvarchar](60) NULL,
-	[ReceiverDMName] [nvarchar](60) NULL,
+	[SenderDMName] UNIQUEIDENTIFIER NULL,
+	[ReceiverDMName] UNIQUEIDENTIFIER NULL,
  CONSTRAINT [PK__ChatLog__454604C4BBAF0C10] PRIMARY KEY CLUSTERED 
 (
 	ID ASC
@@ -337,9 +338,9 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[ClientLogEvents](
-	ID NVARCHAR(60) NOT NULL,
-	[ClientLogEventTypeID] NVARCHAR(60) NOT NULL,
-	[PlayerID] [nvarchar](60) NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
+	[ClientLogEventTypeID] INT NOT NULL,
+	[PlayerID] UNIQUEIDENTIFIER NULL,
 	[CDKey] [nvarchar](20) NOT NULL,
 	[AccountName] [nvarchar](1024) NOT NULL,
 	[DateOfEvent] [datetime2](7) NOT NULL,
@@ -355,7 +356,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[ClientLogEventTypesDomain](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[Name] [nvarchar](30) NOT NULL,
  CONSTRAINT [PK_ClientLogEventTypesDomain_ClientLogEventTypeID] PRIMARY KEY CLUSTERED 
 (
@@ -369,7 +370,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[ComponentTypes](
-	ID NVARCHAR(60)NOT NULL,
+	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
 PRIMARY KEY CLUSTERED 
 (
@@ -383,7 +384,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[CooldownCategories](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[Name] [nvarchar](64) NOT NULL,
 	[BaseCooldownTime] [float] NOT NULL,
  CONSTRAINT [PK__Cooldown__049008DC1A120AC0] PRIMARY KEY CLUSTERED 
@@ -398,7 +399,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[CraftBlueprintCategories](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
 	[IsActive] [bit] NOT NULL,
  CONSTRAINT [PK__CraftBlu__0EB197640EC6A590] PRIMARY KEY CLUSTERED 
@@ -413,28 +414,28 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[CraftBlueprints](
-	ID NVARCHAR(60) NOT NULL,
-	[CraftCategoryID] NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
+	[CraftCategoryID] INT NOT NULL,
 	[BaseLevel] [int] NOT NULL,
 	[ItemName] [nvarchar](64) NOT NULL,
 	[ItemResref] [nvarchar](16) NOT NULL,
 	[Quantity] [int] NOT NULL,
-	[SkillID] NVARCHAR(60) NOT NULL,
-	[CraftDeviceID] NVARCHAR(60) NOT NULL,
-	[PerkID] NVARCHAR(60) NULL,
+	[SkillID] INT NOT NULL,
+	[CraftDeviceID] INT NOT NULL,
+	[PerkID] INT NULL,
 	[RequiredPerkLevel] [int] NOT NULL,
 	[IsActive] [bit] NOT NULL,
-	[MainComponentTypeID] NVARCHAR(60) NOT NULL,
+	[MainComponentTypeID] INT NOT NULL,
 	[MainMinimum] [int] NOT NULL,
-	[SecondaryComponentTypeID] NVARCHAR(60) NOT NULL,
+	[SecondaryComponentTypeID] INT NOT NULL,
 	[SecondaryMinimum] [int] NOT NULL,
-	[TertiaryComponentTypeID] NVARCHAR(60) NOT NULL,
+	[TertiaryComponentTypeID] INT NOT NULL,
 	[TertiaryMinimum] [int] NOT NULL,
 	[EnhancementSlots] [int] NOT NULL,
 	[MainMaximum] [int] NOT NULL,
 	[SecondaryMaximum] [int] NOT NULL,
 	[TertiaryMaximum] [int] NOT NULL,
-	[BaseStructureID] NVARCHAR(60) NULL,
+	[BaseStructureID] INT NULL,
  CONSTRAINT [PK__CraftBlu__DE6FED170EBF2383] PRIMARY KEY CLUSTERED 
 (
 	ID ASC
@@ -447,7 +448,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[CraftDevices](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
  CONSTRAINT [PK__CraftDev__5CCBD473CCCE6D67] PRIMARY KEY CLUSTERED 
 (
@@ -461,7 +462,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[CustomEffectCategory](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
 PRIMARY KEY CLUSTERED 
 (
@@ -475,14 +476,14 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[CustomEffects](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
 	[IconID] [int] NOT NULL,
 	[ScriptHandler] [nvarchar](64) NOT NULL,
 	[StartMessage] [nvarchar](64) NOT NULL,
 	[ContinueMessage] [nvarchar](64) NOT NULL,
 	[WornOffMessage] [nvarchar](64) NOT NULL,
-	[CustomEffectCategoryID] NVARCHAR(60) NOT NULL,
+	[CustomEffectCategoryID] INT NOT NULL,
  CONSTRAINT [PK__CustomEf__18502FBA6D986D4A] PRIMARY KEY CLUSTERED 
 (
 	ID ASC
@@ -495,7 +496,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[DatabaseVersions](
-	ID NVARCHAR(60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
 	[ScriptName] [nvarchar](100) NOT NULL,
 	[DateApplied] [datetime2](7) NOT NULL,
 	[VersionDate] [datetime2](7) NOT NULL,
@@ -512,7 +513,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[DataPackages](
-	ID NVARCHAR(60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
 	[DateFound] [datetime2](7) NOT NULL,
 	[DateExported] [datetime2](7) NOT NULL,
 	[FileName] [nvarchar](max) NOT NULL,
@@ -533,7 +534,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[DiscordChatQueue](
-	ID NVARCHAR(60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
 	[SenderName] [nvarchar](255) NOT NULL,
 	[Message] [nvarchar](max) NOT NULL,
 	[DateSent] [datetime2](7) NOT NULL,
@@ -555,7 +556,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[DMRoleDomain](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[Description] [nvarchar](255) NOT NULL,
  CONSTRAINT [PK__DMRoleDo__1EB081302A5E9C2F] PRIMARY KEY CLUSTERED 
 (
@@ -569,7 +570,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[Downloads](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[Name] [nvarchar](50) NOT NULL,
 	[Description] [nvarchar](1000) NOT NULL,
 	[Url] [nvarchar](200) NOT NULL,
@@ -586,7 +587,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[EnmityAdjustmentRule](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
 PRIMARY KEY CLUSTERED 
 (
@@ -600,7 +601,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[FameRegions](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
  CONSTRAINT [QuestFameRegions_FameRegionID] PRIMARY KEY CLUSTERED 
 (
@@ -614,7 +615,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[GameTopicCategories](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
 PRIMARY KEY CLUSTERED 
 (
@@ -628,10 +629,10 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[GameTopics](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
 	[Text] [nvarchar](max) NOT NULL,
-	[GameTopicCategoryID] NVARCHAR(60) NOT NULL,
+	[GameTopicCategoryID] INT NOT NULL,
 	[IsActive] [bit] NOT NULL,
 	[Sequence] [int] NOT NULL,
 	[Icon] [nvarchar](32) NOT NULL,
@@ -647,8 +648,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[GrowingPlants](
-	ID NVARCHAR(60) NOT NULL,
-	[PlantID] NVARCHAR(60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
+	[PlantID] INT NOT NULL,
 	[RemainingTicks] [int] NOT NULL,
 	[LocationAreaTag] [nvarchar](64) NOT NULL,
 	[LocationX] [float] NOT NULL,
@@ -672,7 +673,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[ItemTypes](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
  CONSTRAINT [PK__ItemType__F51540DB3DC6DAE5] PRIMARY KEY CLUSTERED 
 (
@@ -686,7 +687,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[KeyItemCategories](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
 	[IsActive] [bit] NOT NULL,
  CONSTRAINT [PK__KeyItemC__CD3A52E2821EBDCD] PRIMARY KEY CLUSTERED 
@@ -701,8 +702,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[KeyItems](
-	ID NVARCHAR(60) NOT NULL,
-	[KeyItemCategoryID] NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
+	[KeyItemCategoryID] INT NOT NULL,
 	[Name] [nvarchar](64) NOT NULL,
 	[Description] [nvarchar](1000) NOT NULL,
  CONSTRAINT [PK__KeyItems__95F54E1C55214D3E] PRIMARY KEY CLUSTERED 
@@ -717,8 +718,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[LootTableItems](
-	ID NVARCHAR(60) NOT NULL,
-	[LootTableID] NVARCHAR(60) NOT NULL,
+	ID INT IDENTITY NOT NULL,
+	[LootTableID] INT NOT NULL,
 	[Resref] [varchar](16) NOT NULL,
 	[MaxQuantity] [int] NOT NULL,
 	[Weight] [tinyint] NOT NULL,
@@ -736,7 +737,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[LootTables](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[Name] [nvarchar](64) NOT NULL,
  CONSTRAINT [PK__LootTabl__0DD0313424EBFFBF] PRIMARY KEY CLUSTERED 
 (
@@ -750,7 +751,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[Mods](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[Name] [nvarchar](64) NOT NULL,
 	[Script] [nvarchar](100) NOT NULL,
 	[IsActive] [bit] NOT NULL,
@@ -766,7 +767,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[NPCGroups](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
  CONSTRAINT [PK_NPCGroups_NPCGroupID] PRIMARY KEY CLUSTERED 
 (
@@ -780,9 +781,9 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PCBasePermissions](
-	ID NVARCHAR(60) NOT NULL,
-	[PCBaseID] NVARCHAR(60) NOT NULL,
-	[PlayerID] [nvarchar](60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
+	[PCBaseID] UNIQUEIDENTIFIER NOT NULL,
+	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
 	[CanPlaceEditStructures] [bit] NOT NULL,
 	[CanAccessStructureInventory] [bit] NOT NULL,
 	[CanManageBaseFuel] [bit] NOT NULL,
@@ -806,8 +807,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PCBases](
-	ID NVARCHAR(60) NOT NULL,
-	[PlayerID] [nvarchar](60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
+	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
 	[AreaResref] [nvarchar](16) NOT NULL,
 	[Sector] [char](2) NOT NULL,
 	[DateInitialPurchase] [datetime2](7) NOT NULL,
@@ -817,10 +818,10 @@ CREATE TABLE [dbo].[PCBases](
 	[Fuel] [int] NOT NULL,
 	[ReinforcedFuel] [int] NOT NULL,
 	[DateFuelEnds] [datetime2](7) NOT NULL,
-	[PCBaseTypeID] NVARCHAR(60) NOT NULL,
-	[ApartmentBuildingID] NVARCHAR(60) NULL,
+	[PCBaseTypeID] INT NOT NULL,
+	[ApartmentBuildingID] INT NULL,
 	[CustomName] [nvarchar](64) NOT NULL,
-	[BuildingStyleID] NVARCHAR(60) NULL,
+	[BuildingStyleID] INT NULL,
 PRIMARY KEY CLUSTERED 
 (
 	ID ASC
@@ -833,9 +834,9 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PCBaseStructureItems](
-	ID NVARCHAR(60) NOT NULL,
-	[PCBaseStructureID] NVARCHAR(60) NOT NULL,
-	[ItemGlobalID] [nvarchar](60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
+	[PCBaseStructureID] UNIQUEIDENTIFIER NOT NULL,
+	[ItemGlobalID] NVARCHAR(60) NOT NULL,
 	[ItemName] [nvarchar](max) NOT NULL,
 	[ItemTag] [nvarchar](64) NOT NULL,
 	[ItemResref] [nvarchar](16) NOT NULL,
@@ -852,9 +853,9 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PCBaseStructurePermissions](
-	ID NVARCHAR(60) NOT NULL,
-	[PCBaseStructureID] NVARCHAR(60) NOT NULL,
-	[PlayerID] [nvarchar](60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
+	[PCBaseStructureID] UNIQUEIDENTIFIER NOT NULL,
+	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
 	[CanPlaceEditStructures] [bit] NOT NULL,
 	[CanAccessStructureInventory] [bit] NOT NULL,
 	[CanEnterBuilding] [bit] NOT NULL,
@@ -875,17 +876,17 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PCBaseStructures](
-	ID NVARCHAR(60) NOT NULL,
-	[PCBaseID] NVARCHAR(60) NOT NULL,
-	[BaseStructureID] NVARCHAR(60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
+	[PCBaseID] UNIQUEIDENTIFIER NOT NULL,
+	[BaseStructureID] INT NOT NULL,
 	[LocationX] [float] NOT NULL,
 	[LocationY] [float] NOT NULL,
 	[LocationZ] [float] NOT NULL,
 	[LocationOrientation] [float] NOT NULL,
 	[Durability] [float] NOT NULL,
-	[InteriorStyleID] NVARCHAR(60) NULL,
-	[ExteriorStyleID] NVARCHAR(60) NULL,
-	[ParentPCBaseStructureID] NVARCHAR(60) NULL,
+	[InteriorStyleID] INT NULL,
+	[ExteriorStyleID] INT NULL,
+	[ParentPCBaseStructureID] UNIQUEIDENTIFIER NULL,
 	[CustomName] [nvarchar](64) NOT NULL,
 	[StructureBonus] [int] NOT NULL,
 	[DateNextActivity] [datetime2](7) NULL,
@@ -901,7 +902,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PCBaseTypes](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
 PRIMARY KEY CLUSTERED 
 (
@@ -915,9 +916,9 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PCCooldowns](
-	ID NVARCHAR(60) NOT NULL,
-	[PlayerID] [nvarchar](60) NOT NULL,
-	[CooldownCategoryID] NVARCHAR(60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
+	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
+	[CooldownCategoryID] INT NOT NULL,
 	[DateUnlocked] [datetime2](7) NOT NULL,
  CONSTRAINT [PK__PCCooldo__61BCE64547547BE9] PRIMARY KEY CLUSTERED 
 (
@@ -931,9 +932,9 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PCCraftedBlueprints](
-	ID NVARCHAR(60) NOT NULL,
-	[PlayerID] [nvarchar](60) NOT NULL,
-	[CraftBlueprintID] NVARCHAR(60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
+	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
+	[CraftBlueprintID] INT NOT NULL,
 	[DateFirstCrafted] [datetime2](7) NOT NULL,
 PRIMARY KEY CLUSTERED 
 (
@@ -947,14 +948,14 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PCCustomEffects](
-	ID NVARCHAR(60) NOT NULL,
-	[PlayerID] [nvarchar](60) NOT NULL,
-	[CustomEffectID] NVARCHAR(60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
+	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
+	[CustomEffectID] INT NOT NULL,
 	[Ticks] [int] NOT NULL,
 	[EffectiveLevel] [int] NOT NULL,
 	[Data] [nvarchar](max) NOT NULL,
 	[CasterNWNObjectID] [nvarchar](10) NOT NULL,
-	[StancePerkID] NVARCHAR(60) NULL,
+	[StancePerkID] INT NULL,
  CONSTRAINT [PK__PCCustom__40F2132E1A5F30A2] PRIMARY KEY CLUSTERED 
 (
 	ID ASC
@@ -967,8 +968,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PCImpoundedItems](
-	ID NVARCHAR(60) NOT NULL,
-	[PlayerID] [nvarchar](60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
+	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
 	[ItemName] [nvarchar](64) NOT NULL,
 	[ItemTag] [nvarchar](32) NOT NULL,
 	[ItemResref] [nvarchar](16) NOT NULL,
@@ -987,9 +988,9 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PCKeyItems](
-	ID NVARCHAR(60) NOT NULL,
-	[PlayerID] [nvarchar](60) NOT NULL,
-	[KeyItemID] NVARCHAR(60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
+	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
+	[KeyItemID] INT NOT NULL,
 	[AcquiredDate] [datetime2](0) NOT NULL,
  CONSTRAINT [PK__PCKeyIte__36A246562715831F] PRIMARY KEY CLUSTERED 
 (
@@ -1003,8 +1004,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PCMapPins](
-	ID NVARCHAR(60) NOT NULL,
-	[PlayerID] [nvarchar](60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
+	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
 	[AreaTag] [nvarchar](32) NOT NULL,
 	[PositionX] [float] NOT NULL,
 	[PositionY] [float] NOT NULL,
@@ -1021,8 +1022,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PCMapProgression](
-	ID NVARCHAR(60) NOT NULL,
-	[PlayerID] [nvarchar](60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
+	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
 	[AreaResref] [nvarchar](16) NOT NULL,
 	[Progression] [nvarchar](1024) NOT NULL,
 PRIMARY KEY CLUSTERED 
@@ -1037,12 +1038,12 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PCMigrationItems](
-	ID NVARCHAR(60) NOT NULL,
-	[PCMigrationID] NVARCHAR(60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
+	[PCMigrationID] UNIQUEIDENTIFIER NOT NULL,
 	[CurrentResref] [nvarchar](16) NOT NULL,
 	[NewResref] [nvarchar](16) NOT NULL,
 	[StripItemProperties] [bit] NOT NULL,
-	[BaseItemTypeID] NVARCHAR(60) NOT NULL,
+	[BaseItemTypeID] INT NOT NULL,
  CONSTRAINT [PK__PCMigrat__853DDE73AB544BB1] PRIMARY KEY CLUSTERED 
 (
 	ID ASC
@@ -1055,7 +1056,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PCMigrations](
-	ID NVARCHAR(60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
 	[Name] [nvarchar](64) NOT NULL,
  CONSTRAINT [PK__PCMigrat__3A08DA1F3966E5FE] PRIMARY KEY CLUSTERED 
 (
@@ -1069,9 +1070,9 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PCObjectVisibility](
-	ID NVARCHAR(60) NOT NULL,
-	[PlayerID] [nvarchar](60) NOT NULL,
-	[VisibilityObjectID] [nvarchar](60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
+	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
+	[VisibilityObjectID] UNIQUEIDENTIFIER NOT NULL,
 	[IsVisible] [bit] NOT NULL,
 PRIMARY KEY CLUSTERED 
 (
@@ -1085,7 +1086,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PCOutfits](
-	[PlayerID] [nvarchar](60) NOT NULL,
+	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
 	[Outfit1] [varchar](max) NULL,
 	[Outfit2] [varchar](max) NULL,
 	[Outfit3] [varchar](max) NULL,
@@ -1108,8 +1109,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PCOverflowItems](
-	ID NVARCHAR(60) NOT NULL,
-	[PlayerID] [nvarchar](60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
+	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
 	[ItemName] [nvarchar](max) NOT NULL,
 	[ItemTag] [nvarchar](64) NOT NULL,
 	[ItemResref] [nvarchar](16) NOT NULL,
@@ -1126,9 +1127,9 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PCPerkRefunds](
-	ID NVARCHAR(60) NOT NULL,
-	[PlayerID] [nvarchar](60) NOT NULL,
-	[PerkID] NVARCHAR(60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
+	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
+	[PerkID] INT NOT NULL,
 	[Level] [int] NOT NULL,
 	[DateAcquired] [datetime2](7) NOT NULL,
 	[DateRefunded] [datetime2](7) NOT NULL,
@@ -1144,10 +1145,10 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PCPerks](
-	ID NVARCHAR(60) NOT NULL,
-	[PlayerID] [nvarchar](60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
+	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
 	[AcquiredDate] [datetime2](7) NOT NULL,
-	[PerkID] NVARCHAR(60) NOT NULL,
+	[PerkID] INT NOT NULL,
 	[PerkLevel] [int] NOT NULL,
  CONSTRAINT [PK__PCPerks__0BA6BCB6B49FBD5D] PRIMARY KEY CLUSTERED 
 (
@@ -1161,9 +1162,9 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PCQuestItemProgress](
-	ID NVARCHAR(60) NOT NULL,
-	[PlayerID] [nvarchar](60) NOT NULL,
-	[PCQuestStatusID] NVARCHAR(60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
+	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
+	[PCQuestStatusID] UNIQUEIDENTIFIER NOT NULL,
 	[Resref] [nvarchar](16) NOT NULL,
 	[Remaining] [int] NOT NULL,
 	[MustBeCraftedByPlayer] [bit] NOT NULL,
@@ -1179,10 +1180,10 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PCQuestKillTargetProgress](
-	ID NVARCHAR(60) NOT NULL,
-	[PlayerID] [nvarchar](60) NOT NULL,
-	[PCQuestStatusID] NVARCHAR(60) NOT NULL,
-	[NPCGroupID] NVARCHAR(60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
+	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
+	[PCQuestStatusID] UNIQUEIDENTIFIER NOT NULL,
+	[NPCGroupID] INT NOT NULL,
 	[RemainingToKill] [int] NOT NULL,
  CONSTRAINT [PK_PCQuestKillTargetProgress_PCQuestKillTargetProgressID] PRIMARY KEY CLUSTERED 
 (
@@ -1196,12 +1197,12 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PCQuestStatus](
-	ID NVARCHAR(60) NOT NULL,
-	[PlayerID] [nvarchar](60) NOT NULL,
-	[QuestID] NVARCHAR(60) NOT NULL,
-	[CurrentQuestStateID] NVARCHAR(60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
+	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
+	[QuestID] INT NOT NULL,
+	[CurrentQuestStateID] INT NOT NULL,
 	[CompletionDate] [datetime2](7) NULL,
-	[SelectedItemRewardID] NVARCHAR(60) NULL,
+	[SelectedItemRewardID] INT NULL,
  CONSTRAINT [PK_PCQuestStatus_PCQuestStatusID] PRIMARY KEY CLUSTERED 
 (
 	ID ASC
@@ -1214,9 +1215,9 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PCRegionalFame](
-	ID NVARCHAR(60) NOT NULL,
-	[PlayerID] [nvarchar](60) NOT NULL,
-	[FameRegionID] NVARCHAR(60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
+	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
+	[FameRegionID] INT NOT NULL,
 	[Amount] [int] NOT NULL,
  CONSTRAINT [PK_PCRegionalFame_PCRegionalFameID] PRIMARY KEY CLUSTERED 
 (
@@ -1230,9 +1231,9 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PCSearchSiteItems](
-	ID NVARCHAR(60) NOT NULL,
-	[PlayerID] [nvarchar](60) NOT NULL,
-	[SearchSiteID] NVARCHAR(60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
+	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
+	[SearchSiteID] INT NOT NULL,
 	[SearchItem] [varchar](max) NULL,
  CONSTRAINT [PK__PCSearch__001EF3E36436B4F3] PRIMARY KEY CLUSTERED 
 (
@@ -1246,9 +1247,9 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PCSearchSites](
-	ID NVARCHAR(60) NOT NULL,
-	[PlayerID] [nvarchar](60) NOT NULL,
-	[SearchSiteID] NVARCHAR(60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
+	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
+	[SearchSiteID] INT NOT NULL,
 	[UnlockDateTime] [datetime] NOT NULL,
  CONSTRAINT [PK__PCSearch__B988F45255B968F1] PRIMARY KEY CLUSTERED 
 (
@@ -1262,9 +1263,9 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PCSkills](
-	ID NVARCHAR(60) NOT NULL,
-	[PlayerID] [nvarchar](60) NOT NULL,
-	[SkillID] NVARCHAR(60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
+	[PlayerID] UNIQUEIDENTIFIER NOT NULL,
+	[SkillID] INT NOT NULL,
 	[XP] [int] NOT NULL,
 	[Rank] [int] NOT NULL,
 	[IsLocked] [bit] NOT NULL,
@@ -1280,7 +1281,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PerkCategories](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[Name] [nvarchar](64) NOT NULL,
 	[IsActive] [bit] NOT NULL,
 	[Sequence] [int] NOT NULL,
@@ -1296,7 +1297,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PerkExecutionTypes](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
  CONSTRAINT [PK__PerkExec__8133420289767A5A] PRIMARY KEY CLUSTERED 
 (
@@ -1310,9 +1311,9 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PerkLevelQuestRequirements](
-	ID NVARCHAR(60) NOT NULL,
-	[PerkLevelID] NVARCHAR(60) NOT NULL,
-	[RequiredQuestID] NVARCHAR(60) NOT NULL,
+	ID INT IDENTITY NOT NULL,
+	[PerkLevelID] INT NOT NULL,
+	[RequiredQuestID] INT NOT NULL,
 PRIMARY KEY CLUSTERED 
 (
 	ID ASC
@@ -1325,8 +1326,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PerkLevels](
-	ID NVARCHAR(60) NOT NULL,
-	[PerkID] NVARCHAR(60) NOT NULL,
+	ID INT IDENTITY NOT NULL,
+	[PerkID] INT NOT NULL,
 	[Level] [int] NOT NULL,
 	[Price] [int] NOT NULL,
 	[Description] [nvarchar](512) NOT NULL,
@@ -1347,9 +1348,9 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PerkLevelSkillRequirements](
-	ID NVARCHAR(60) NOT NULL,
-	[PerkLevelID] NVARCHAR(60) NOT NULL,
-	[SkillID] NVARCHAR(60) NOT NULL,
+	ID INT IDENTITY NOT NULL,
+	[PerkLevelID] INT NOT NULL,
+	[SkillID] INT NOT NULL,
 	[RequiredRank] [int] NOT NULL,
  CONSTRAINT [PK_PerkLevelSkillRequirements_PerkLevelSkillRequirementID] PRIMARY KEY CLUSTERED 
 (
@@ -1363,7 +1364,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[Perks](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[Name] [varchar](64) NOT NULL,
 	[FeatID] [int] NULL,
 	[IsActive] [bit] NOT NULL,
@@ -1371,13 +1372,13 @@ CREATE TABLE [dbo].[Perks](
 	[BaseFPCost] [int] NOT NULL,
 	[BaseCastingTime] [float] NOT NULL,
 	[Description] [nvarchar](256) NOT NULL,
-	[PerkCategoryID] NVARCHAR(60) NOT NULL,
-	[CooldownCategoryID] NVARCHAR(60) NULL,
-	[ExecutionTypeID] NVARCHAR(60) NOT NULL,
+	[PerkCategoryID] INT NOT NULL,
+	[CooldownCategoryID] INT NULL,
+	[ExecutionTypeID] INT NOT NULL,
 	[ItemResref] [nvarchar](16) NULL,
 	[IsTargetSelfOnly] [bit] NOT NULL,
 	[Enmity] [int] NOT NULL,
-	[EnmityAdjustmentRuleID] NVARCHAR(60) NOT NULL,
+	[EnmityAdjustmentRuleID] INT NOT NULL,
 	[CastAnimationID] [int] NULL,
  CONSTRAINT [PK__Perks__2432566E1A11FD39] PRIMARY KEY CLUSTERED 
 (
@@ -1391,7 +1392,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[Plants](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
 	[BaseTicks] [int] NOT NULL,
 	[Resref] [nvarchar](16) NOT NULL,
@@ -1410,7 +1411,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[PlayerCharacters](
-	ID NVARCHAR(60) NOT NULL,
+	ID UNIQUEIDENTIFIER NOT NULL,
 	[CharacterName] [nvarchar](max) NULL,
 	[HitPoints] [int] NOT NULL,
 	[LocationAreaResref] [nvarchar](16) NULL,
@@ -1442,12 +1443,12 @@ CREATE TABLE [dbo].[PlayerCharacters](
 	[CHABase] [int] NOT NULL,
 	[TotalSPAcquired] [int] NOT NULL,
 	[DisplayHelmet] [bit] NOT NULL,
-	[PrimaryResidencePCBaseStructureID] NVARCHAR(60) NULL,
+	[PrimaryResidencePCBaseStructureID] UNIQUEIDENTIFIER NULL,
 	[DatePerkRefundAvailable] [datetime2](7) NULL,
-	[AssociationID] NVARCHAR(60) NOT NULL,
+	[AssociationID] INT NOT NULL,
 	[DisplayHolonet] [bit] NOT NULL,
 	[DisplayDiscord] [bit] NOT NULL,
-	[PrimaryResidencePCBaseID] NVARCHAR(60) NULL,
+	[PrimaryResidencePCBaseID] UNIQUEIDENTIFIER NULL,
 	[IsUsingNovelEmoteStyle] [bit] NOT NULL,
 	[IsDeleted] [bit] NOT NULL,
  CONSTRAINT [PK__PlayerCh__4A4E74A8046BDEBE] PRIMARY KEY CLUSTERED 
@@ -1462,11 +1463,11 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[QuestKillTargetList](
-	ID NVARCHAR(60) NOT NULL,
-	[QuestID] NVARCHAR(60) NOT NULL,
-	[NPCGroupID] NVARCHAR(60) NOT NULL,
+	ID INT IDENTITY NOT NULL,
+	[QuestID] INT NOT NULL,
+	[NPCGroupID] INT NOT NULL,
 	[Quantity] [int] NOT NULL,
-	[QuestStateID] NVARCHAR(60) NOT NULL,
+	[QuestStateID] INT NOT NULL,
  CONSTRAINT [PK_QuestKillTargetList_QuestKillTargetListID] PRIMARY KEY CLUSTERED 
 (
 	ID ASC
@@ -1479,9 +1480,9 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[QuestPrerequisites](
-	ID NVARCHAR(60) NOT NULL,
-	[QuestID] NVARCHAR(60) NOT NULL,
-	[RequiredQuestID] NVARCHAR(60) NOT NULL,
+	ID INT  NOT NULL,
+	[QuestID] int NOT NULL,
+	[RequiredQuestID] int NOT NULL,
  CONSTRAINT [PK_QuestPreqrequisites_QuestPrerequisiteID] PRIMARY KEY CLUSTERED 
 (
 	ID ASC
@@ -1494,11 +1495,11 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[QuestRequiredItemList](
-	ID NVARCHAR(60) NOT NULL,
-	[QuestID] NVARCHAR(60) NOT NULL,
+	ID INT IDENTITY NOT NULL,
+	[QuestID] int NOT NULL,
 	[Resref] [nvarchar](16) NOT NULL,
 	[Quantity] [int] NOT NULL,
-	[QuestStateID] NVARCHAR(60) NOT NULL,
+	[QuestStateID] int NOT NULL,
 	[MustBeCraftedByPlayer] [bit] NOT NULL,
  CONSTRAINT [PK_QuestRequiredItemList_QuestRequiredItemListID] PRIMARY KEY CLUSTERED 
 (
@@ -1512,10 +1513,10 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[QuestRequiredKeyItemList](
-	ID NVARCHAR(60) NOT NULL,
-	[QuestID] NVARCHAR(60) NOT NULL,
-	[KeyItemID] NVARCHAR(60) NOT NULL,
-	[QuestStateID] NVARCHAR(60) NOT NULL,
+	ID INT IDENTITY NOT NULL,
+	[QuestID] int NOT NULL,
+	[KeyItemID] int NOT NULL,
+	[QuestStateID] int NOT NULL,
  CONSTRAINT [PK_QuestRequiredKeyItemList_QuestRequiredKeyItemID] PRIMARY KEY CLUSTERED 
 (
 	ID ASC
@@ -1528,8 +1529,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[QuestRewardItems](
-	ID NVARCHAR(60) NOT NULL,
-	[QuestID] NVARCHAR(60) NOT NULL,
+	ID INT IDENTITY NOT NULL,
+	[QuestID] int NOT NULL,
 	[Resref] [nvarchar](16) NOT NULL,
 	[Quantity] [int] NOT NULL,
  CONSTRAINT [PK_QuestRewards_QuestRewardID] PRIMARY KEY CLUSTERED 
@@ -1544,18 +1545,18 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[Quests](
-	ID NVARCHAR(60) NOT NULL,
+	ID int NOT NULL,
 	[Name] [nvarchar](100) NOT NULL,
 	[JournalTag] [nvarchar](32) NOT NULL,
-	[FameRegionID] NVARCHAR(60) NOT NULL,
+	[FameRegionID] int NOT NULL,
 	[RequiredFameAmount] [int] NOT NULL,
 	[AllowRewardSelection] [bit] NOT NULL,
 	[RewardGold] [int] NOT NULL,
-	[RewardKeyItemID] NVARCHAR(60) NULL,
+	[RewardKeyItemID] int NULL,
 	[RewardFame] [int] NOT NULL,
 	[IsRepeatable] [bit] NOT NULL,
 	[MapNoteTag] [nvarchar](32) NOT NULL,
-	[StartKeyItemID] NVARCHAR(60) NULL,
+	[StartKeyItemID] int NULL,
 	[RemoveStartKeyItemAfterCompletion] [bit] NOT NULL,
 	[OnAcceptRule] [nvarchar](32) NOT NULL,
 	[OnAdvanceRule] [nvarchar](32) NOT NULL,
@@ -1577,10 +1578,10 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[QuestStates](
-	ID NVARCHAR(60) NOT NULL,
-	[QuestID] NVARCHAR(60) NOT NULL,
+	ID INT IDENTITY NOT NULL,
+	[QuestID] int NOT NULL,
 	[Sequence] [int] NOT NULL,
-	[QuestTypeID] NVARCHAR(60) NOT NULL,
+	[QuestTypeID] int NOT NULL,
 	[JournalStateID] [int] NOT NULL,
  CONSTRAINT [PK_QuestStates_QuestStateID] PRIMARY KEY CLUSTERED 
 (
@@ -1594,7 +1595,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[QuestTypeDomain](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT  NOT NULL,
 	[Name] [nvarchar](30) NOT NULL,
  CONSTRAINT [PK_QuestTypeDomain_QuestTypeID] PRIMARY KEY CLUSTERED 
 (
@@ -1608,7 +1609,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[ServerConfiguration](
-	ID NVARCHAR(60) NOT NULL,
+	ID int NOT NULL,
 	[ServerName] [varchar](50) NOT NULL,
 	[MessageOfTheDay] [varchar](1024) NOT NULL,
 	[AreaBakeStep] [int] NOT NULL,
@@ -1624,7 +1625,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[SkillCategories](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
 	[IsActive] [bit] NOT NULL,
 	[Sequence] [int] NOT NULL,
@@ -1640,15 +1641,15 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[Skills](
-	ID NVARCHAR(60) NOT NULL,
-	[SkillCategoryID] NVARCHAR(60) NOT NULL,
+	ID INT NOT NULL,
+	[SkillCategoryID] INT NOT NULL,
 	[Name] [nvarchar](32) NOT NULL,
 	[MaxRank] [int] NOT NULL,
 	[IsActive] [bit] NOT NULL,
 	[Description] [nvarchar](1024) NOT NULL,
-	[Primary] NVARCHAR(60) NOT NULL,
-	[Secondary] NVARCHAR(60) NOT NULL,
-	[Tertiary] NVARCHAR(60) NOT NULL,
+	[Primary] int NOT NULL,
+	[Secondary] int NOT NULL,
+	[Tertiary] INT NOT NULL,
 	[ContributesToSkillCap] [bit] NOT NULL,
  CONSTRAINT [PK__Skills__DFA091E736021CE5] PRIMARY KEY CLUSTERED 
 (
@@ -1662,8 +1663,8 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[SkillXPRequirement](
-	ID NVARCHAR(60) NOT NULL,
-	[SkillID] NVARCHAR(60) NOT NULL,
+	ID INT IDENTITY NOT NULL,
+	[SkillID] int NOT NULL,
 	[Rank] [int] NOT NULL,
 	[XP] [int] NOT NULL,
  CONSTRAINT [PK__SkillXPR__A06512642D848122] PRIMARY KEY CLUSTERED 
@@ -1678,12 +1679,12 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[SpawnObjects](
-	ID NVARCHAR(60) NOT NULL,
-	[SpawnID] NVARCHAR(60) NOT NULL,
+	ID int NOT NULL,
+	[SpawnID] int NOT NULL,
 	[Resref] [nvarchar](16) NOT NULL,
 	[Weight] [int] NOT NULL,
 	[SpawnRule] [nvarchar](32) NOT NULL,
-	[NPCGroupID] NVARCHAR(60) NULL,
+	[NPCGroupID] int NULL,
 	[BehaviourScript] [nvarchar](64) NOT NULL,
 	[DeathVFXID] [int] NOT NULL,
 PRIMARY KEY CLUSTERED 
@@ -1698,7 +1699,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[SpawnObjectType](
-	ID NVARCHAR(60) NOT NULL,
+	ID int NOT NULL,
 	[Name] [nvarchar](64) NOT NULL,
 PRIMARY KEY CLUSTERED 
 (
@@ -1712,9 +1713,9 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[Spawns](
-	ID NVARCHAR(60) NOT NULL,
+	ID int NOT NULL,
 	[Name] [nvarchar](64) NOT NULL,
-	[SpawnObjectTypeID] NVARCHAR(60) NOT NULL,
+	[SpawnObjectTypeID] int NOT NULL,
 PRIMARY KEY CLUSTERED 
 (
 	ID ASC
@@ -1727,13 +1728,13 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 CREATE TABLE [dbo].[Users](
-	ID NVARCHAR(60) NOT NULL,
+	ID INT IDENTITY NOT NULL,
 	[DiscordUserID] [nvarchar](max) NOT NULL,
 	[Username] [nvarchar](32) NOT NULL,
 	[AvatarHash] [nvarchar](max) NOT NULL,
 	[Discriminator] [nvarchar](4) NOT NULL,
 	[Email] [nvarchar](max) NOT NULL,
-	[RoleID] NVARCHAR(60) NOT NULL,
+	[RoleID] int NOT NULL,
 	[DateRegistered] [datetime2](7) NOT NULL,
  CONSTRAINT [PK__Users__1788CCAC642F36E9] PRIMARY KEY CLUSTERED 
 (

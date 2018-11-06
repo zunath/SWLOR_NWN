@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Service
             var model = GetPlayerCraftingData(player);
             var bp = model.Blueprint;
             int playerEL = CalculatePCEffectiveLevel(player, model.PlayerSkillRank, (SkillType)bp.SkillID);
-            var baseStructure = _data.Get<BaseStructure>(bp.BaseStructureID);
+            var baseStructure = bp.BaseStructureID == null ? null : _data.Get<BaseStructure>(bp.BaseStructureID);
             var mainComponent = _data.Get<ComponentType>(bp.MainComponentTypeID);
             var secondaryComponent = _data.Get<ComponentType>(bp.SecondaryComponentTypeID);
             var tertiaryComponent = _data.Get<ComponentType>(bp.TertiaryComponentTypeID);

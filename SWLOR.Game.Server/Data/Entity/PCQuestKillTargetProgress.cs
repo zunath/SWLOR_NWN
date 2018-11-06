@@ -8,6 +8,10 @@ namespace SWLOR.Game.Server.Data.Entity
     [Table("[PCQuestKillTargetProgress]")]
     public class PCQuestKillTargetProgress: IEntity
     {
+        public PCQuestKillTargetProgress()
+        {
+            ID = Guid.NewGuid();
+        }
         [ExplicitKey]
         public Guid ID { get; set; }
         public Guid PlayerID { get; set; }

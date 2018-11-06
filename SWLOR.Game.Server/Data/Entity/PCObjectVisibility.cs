@@ -8,6 +8,10 @@ namespace SWLOR.Game.Server.Data.Entity
     [Table("[PCObjectVisibility]")]
     public class PCObjectVisibility: IEntity
     {
+        public PCObjectVisibility()
+        {
+            ID = Guid.NewGuid();
+        }
         [ExplicitKey]
         public Guid ID { get; set; }
         public Guid PlayerID { get; set; }

@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Service
 
                 _data.SubmitDataChange(dbArea, action);
             }
-
+            
             string arg = Environment.GetEnvironmentVariable("AREA_BAKING_ENABLED");
             bool bakingEnabled =  arg == null || Convert.ToBoolean(arg);
             
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Service
         
         public NWArea CreateAreaInstance(NWPlayer owner, string areaResref, string areaName, string entranceWaypointTag)
         {
-            string tag = Guid.NewGuid().ToString("N");
+            string tag = Guid.NewGuid().ToString();
             NWArea instance = _.CreateArea(areaResref, tag, areaName);
             
             instance.SetLocalString("INSTANCE_OWNER", owner.GlobalID.ToString());

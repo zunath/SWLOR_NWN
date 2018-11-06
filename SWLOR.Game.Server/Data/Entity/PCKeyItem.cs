@@ -8,6 +8,10 @@ namespace SWLOR.Game.Server.Data.Entity
     [Table("[PCKeyItem]")]
     public class PCKeyItem: IEntity
     {
+        public PCKeyItem()
+        {
+            ID = Guid.NewGuid();
+        }
         [ExplicitKey]
         public Guid ID { get; set; }
         public Guid PlayerID { get; set; }

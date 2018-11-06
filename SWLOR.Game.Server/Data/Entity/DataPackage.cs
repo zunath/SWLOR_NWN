@@ -8,6 +8,10 @@ namespace SWLOR.Game.Server.Data.Entity
     [Table("[DataPackage]")]
     public class DataPackage: IEntity
     {
+        public DataPackage()
+        {
+            ID = Guid.NewGuid();
+        }
         [ExplicitKey]
         public Guid ID { get; set; }
         public DateTime DateFound { get; set; }

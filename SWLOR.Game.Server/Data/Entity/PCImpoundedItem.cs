@@ -8,6 +8,10 @@ namespace SWLOR.Game.Server.Data.Entity
     [Table("[PCImpoundedItem]")]
     public class PCImpoundedItem: IEntity
     {
+        public PCImpoundedItem()
+        {
+            ID = Guid.NewGuid();
+        }
         [ExplicitKey]
         public Guid ID { get; set; }
         public Guid PlayerID { get; set; }

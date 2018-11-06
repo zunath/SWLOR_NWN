@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             if (IsInitializedAsPlayer || !IsPlayer) return;
             
-            string guid = Guid.NewGuid().ToString("N");
+            string guid = Guid.NewGuid().ToString();
             _.SetTag(Object, guid);
         }
 
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.GameObject
                 globalID = _.GetLocalString(Object, "GLOBAL_ID");
                 if (string.IsNullOrWhiteSpace(globalID))
                 {
-                    globalID = Guid.NewGuid().ToString("N");
+                    globalID = Guid.NewGuid().ToString();
                     _.SetLocalString(Object, "GLOBAL_ID", globalID);
                 }
             }

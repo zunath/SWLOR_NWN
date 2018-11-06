@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Data.Entity
     {
         public PCCustomEffect()
         {
+            ID = Guid.NewGuid();
             Data = "";
             CasterNWNObjectID = "";
         }

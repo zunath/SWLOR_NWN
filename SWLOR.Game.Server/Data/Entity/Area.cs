@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Data.Entity
     {
         public Area()
         {
+            ID = Guid.NewGuid();
             DateLastBaked = DateTime.UtcNow;
         }
 
@@ -24,10 +25,10 @@ namespace SWLOR.Game.Server.Data.Entity
         public int Width { get; set; }
         public int Height { get; set; }
         public bool IsBuildable { get; set; }
-        public Guid NorthwestOwner { get; set; }
-        public Guid NortheastOwner { get; set; }
-        public Guid SouthwestOwner { get; set; }
-        public Guid SoutheastOwner { get; set; }
+        public Guid? NorthwestOwner { get; set; }
+        public Guid? NortheastOwner { get; set; }
+        public Guid? SouthwestOwner { get; set; }
+        public Guid? SoutheastOwner { get; set; }
         public bool IsActive { get; set; }
         public int PurchasePrice { get; set; }
         public int DailyUpkeep { get; set; }

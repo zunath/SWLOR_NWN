@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Data.Entity
     {
         public GrowingPlant()
         {
+            ID = Guid.NewGuid();
             LocationAreaTag = "";
         }
 

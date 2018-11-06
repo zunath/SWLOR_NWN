@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Service
         public string RegisterProcessingEvent<T>(params object[] args)
             where T: IEventProcessor
         {
-            string globalID = Guid.NewGuid().ToString("N");
+            string globalID = Guid.NewGuid().ToString();
             ProcessingEvent @event = new ProcessingEvent(typeof(T), args);
             _cache.ProcessingEvents.Add(globalID, @event);
             return globalID;

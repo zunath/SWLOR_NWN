@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Event.Trigger
             string triggerID = _.GetLocalString(Object.OBJECT_SELF, "TRIGGER_ID");
             if (string.IsNullOrWhiteSpace(triggerID))
             {
-                triggerID = Guid.NewGuid().ToString("N");
+                triggerID = Guid.NewGuid().ToString();
                 _.SetLocalString(Object.OBJECT_SELF, "TRIGGER_ID", triggerID);
             }
 

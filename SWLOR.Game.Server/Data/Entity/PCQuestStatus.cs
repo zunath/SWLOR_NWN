@@ -9,6 +9,10 @@ namespace SWLOR.Game.Server.Data.Entity
     [Table("[PCQuestStatus]")]
     public class PCQuestStatus: IEntity
     {
+        public PCQuestStatus()
+        {
+            ID = Guid.NewGuid();
+        }
         [ExplicitKey]
         public Guid ID { get; set; }
         public Guid PlayerID { get; set; }

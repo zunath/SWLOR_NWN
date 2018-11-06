@@ -8,6 +8,10 @@ namespace SWLOR.Game.Server.Data.Entity
     [Table("[PCBasePermission]")]
     public class PCBasePermission: IEntity
     {
+        public PCBasePermission()
+        {
+            ID = Guid.NewGuid();
+        }
         [ExplicitKey]
         public Guid ID { get; set; }
         public Guid PCBaseID { get; set; }

@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         NWPlaceable SpawnStructure(NWArea area, Guid pcBaseStructureID);
         NWPlaceable SpawnBuildingDoor(string doorRule, NWPlaceable building, NWLocation locationOverride = null);
         void JumpPCToBuildingInterior(NWPlayer player, NWArea area);
-        Guid GetPlayerIDOwnerOfSector(Area dbArea, string sector);
+        Guid? GetPlayerIDOwnerOfSector(Area dbArea, string sector);
         void DoPlayerExitBuildingInstance(NWPlayer player, NWPlaceable door = null);
         void OnModuleNWNXChat(NWPlayer sender);
         int CalculateMaxShieldHP(PCBaseStructure controlTower);

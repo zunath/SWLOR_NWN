@@ -8,6 +8,10 @@ namespace SWLOR.Game.Server.Data.Entity
     [Table("[DatabaseVersion]")]
     public class DatabaseVersion: IEntity
     {
+        public DatabaseVersion()
+        {
+            ID = Guid.NewGuid();
+        }
         [ExplicitKey]
         public Guid ID { get; set; }
         public string ScriptName { get; set; }

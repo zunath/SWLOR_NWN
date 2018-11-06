@@ -217,7 +217,7 @@ namespace SWLOR.Game.Server.Service
                                int pcPerkLevel,
                                PerkExecutionType executionType)
         {
-            string uuid = Guid.NewGuid().ToString("N");
+            string uuid = Guid.NewGuid().ToString();
             var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(pc);
             int itemBonus = effectiveStats.CastingSpeed;
             float baseActivationTime = perk.CastingTime(pc, (float)entity.BaseCastingTime);
@@ -349,7 +349,7 @@ namespace SWLOR.Game.Server.Service
         public void HandleQueueWeaponSkill(NWPlayer pc, Data.Entity.Perk entity, IPerk ability)
         {
             var cooldownCategory = _data.Get<CooldownCategory>(entity.CooldownCategoryID);
-            string queueUUID = Guid.NewGuid().ToString("N");
+            string queueUUID = Guid.NewGuid().ToString();
             pc.SetLocalInt("ACTIVE_WEAPON_SKILL", entity.ID);
             pc.SetLocalString("ACTIVE_WEAPON_SKILL_UUID", queueUUID);
             pc.SendMessage("Weapon skill '" + entity.Name + "' queued for next attack.");

@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Data.Entity
     {
         public PCBase()
         {
+            ID = Guid.NewGuid();
             CustomName = "";
         }
 

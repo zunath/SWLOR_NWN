@@ -253,7 +253,7 @@ namespace SWLOR.Game.Server.Service
 
 
             var dbArea = _data.Single<Area>(x => x.Resref == area.Resref);
-            Guid existingOwner = Guid.Empty;
+            Guid? existingOwner = null;
             switch (sector)
             {
                 case AreaSector.Northwest: existingOwner = dbArea.NorthwestOwner; break;
@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Service
                 case AreaSector.Southeast: existingOwner = dbArea.SoutheastOwner; break;
             }
 
-            if (existingOwner != Guid.Empty)
+            if (existingOwner != null)
             {
                 player.SendMessage("Another player already owns that sector.");
                 return;
@@ -663,7 +663,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public Guid GetPlayerIDOwnerOfSector(Area dbArea, string sector)
+        public Guid? GetPlayerIDOwnerOfSector(Area dbArea, string sector)
         {
             switch (sector)
             {

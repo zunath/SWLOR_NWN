@@ -8,6 +8,10 @@ namespace SWLOR.Game.Server.Data.Entity
     [Table("[PCCraftedBlueprint]")]
     public class PCCraftedBlueprint: IEntity
     {
+        public PCCraftedBlueprint()
+        {
+            ID = Guid.NewGuid();
+        }
         [ExplicitKey]
         public Guid ID { get; set; }
         public Guid PlayerID { get; set; }

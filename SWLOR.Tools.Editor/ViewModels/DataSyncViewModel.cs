@@ -216,7 +216,7 @@ namespace SWLOR.Tools.Editor.ViewModels
             {
                 JObject jObj = JObject.FromObject(record);
                 jObj.Add(nameof(DBObjectViewModelBase.InternalEditorID), Guid.NewGuid().ToString(""));
-                string fileName = Guid.NewGuid().ToString("N");
+                string fileName = Guid.NewGuid().ToString();
                 string json = JsonConvert.SerializeObject(jObj);
                 File.WriteAllText("./Data/" + Folder + "/" + fileName + ".json", json);
             }

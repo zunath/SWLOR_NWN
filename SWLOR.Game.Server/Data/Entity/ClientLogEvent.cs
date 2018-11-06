@@ -8,7 +8,10 @@ namespace SWLOR.Game.Server.Data.Entity
     [Table("[ClientLogEvent]")]
     public class ClientLogEvent: IEntity
     {
-
+        public ClientLogEvent()
+        {
+            ID = Guid.NewGuid();
+        }
         [ExplicitKey]
         public Guid ID { get; set; }
         public int ClientLogEventTypeID { get; set; }

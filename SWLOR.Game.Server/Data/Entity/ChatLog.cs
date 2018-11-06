@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Data.Entity
     {
         public ChatLog()
         {
+            ID = Guid.NewGuid();
             SenderAccountName = "";
             SenderCDKey = "";
             Message = "";

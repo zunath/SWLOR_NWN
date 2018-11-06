@@ -167,7 +167,7 @@ namespace SWLOR.Game.Server.Data
             DatabaseVersion currentVersion;
             using (var connection = new SqlConnection(_swlorConnectionString))
             {
-                string sql = "select top 1 DatabaseVersionID, ScriptName, DateApplied, VersionDate, VersionNumber FROM DatabaseVersions ORDER BY VersionDate DESC, VersionNumber DESC";
+                string sql = "select top 1 ID, ScriptName, DateApplied, VersionDate, VersionNumber FROM DatabaseVersion ORDER BY VersionDate DESC, VersionNumber DESC";
                 currentVersion = connection.QueryFirstOrDefault<DatabaseVersion>(sql);
             }
             

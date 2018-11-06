@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Data.Entity
     {
         public DiscordChatQueue()
         {
+            ID = Guid.NewGuid();
             Message = "";
             SenderAccountName = "";
             SenderCDKey = "";

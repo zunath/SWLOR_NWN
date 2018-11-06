@@ -7,6 +7,10 @@ namespace SWLOR.Game.Server.Data.Entity
     [Table("[PCPerk]")]
     public class PCPerk: IEntity
     {
+        public PCPerk()
+        {
+            ID = Guid.NewGuid();
+        }
         [ExplicitKey]
         public Guid ID { get; set; }
         public Guid PlayerID { get; set; }

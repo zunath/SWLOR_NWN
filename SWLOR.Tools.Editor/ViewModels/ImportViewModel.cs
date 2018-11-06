@@ -140,7 +140,7 @@ namespace SWLOR.Tools.Editor.ViewModels
             foreach (var item in source)
             {
                 var vm = Mapper.Map<T1, T2>(item);
-                vm.InternalEditorID = Guid.NewGuid().ToString("N");
+                vm.InternalEditorID = Guid.NewGuid().ToString();
                 sourceCollection.Add(vm);
                 targetCollection.Add(vm);
             }

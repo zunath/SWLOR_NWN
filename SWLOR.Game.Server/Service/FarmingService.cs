@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Service
             if(!string.IsNullOrWhiteSpace(growingPlantID))
                 growingPlantGuid = new Guid(growingPlantID);
 
-            if (growingPlantID == null) return;
+            if (growingPlantGuid == null) return;
 
             GrowingPlant growingPlant = _data.Single<GrowingPlant>(x => x.ID == growingPlantGuid);
             growingPlant.IsActive = false;

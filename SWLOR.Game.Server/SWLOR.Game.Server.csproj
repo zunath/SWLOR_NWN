@@ -1448,11 +1448,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <Content Include="Data\Migrations\Readme.txt" />
     <Content Include="Data\Scripts\AddWeaponCraftBlueprints.sql" />
     <Content Include="Data\Scripts\AddPerkLevels.sql" />
-    <Content Include="Data\Scripts\db_migration_guids.sql" />
-    <Content Include="Data\Scripts\GenerateSWLORDatabaseWithGUIDKeys.sql" />
     <Content Include="Data\Scripts\WipePlayerData.sql" />
     <Content Include="ServerFiles\Reference\ClothAndLeatherColors.jpg" />
     <Content Include="ServerFiles\Reference\HairColors.jpg" />

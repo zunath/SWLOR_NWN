@@ -362,7 +362,7 @@ namespace SWLOR.Game.Server.Conversation
             int[] FemaleZabrakHeads = { 38, 120 };
             int[] FemaleTwilekHeads = { 139, 144, 145, };
             int[] FemaleCyborgHeads = { 41, 109 };
-            int[] FemaleCatharHeads = { 13, 14, 16, 166, 198 };
+            int[] FemaleCatharHeads = { 13, 14 };
             int[] FemaleTrandoshanHeads = { 135, 150, 157 };
 
             CustomRaceType race = (CustomRaceType)GetPC().RacialType;

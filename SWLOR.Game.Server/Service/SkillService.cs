@@ -1,6 +1,5 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Bioware.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
@@ -588,7 +587,6 @@ namespace SWLOR.Game.Server.Service
                 // Otherwise calculate what rank and XP value the skill should now be.
                 else
                 {
-                    Skill skill = GetSkill(decaySkill.SkillID);
                     List<SkillXPRequirement> reqs = _data.Where<SkillXPRequirement>(x => x.SkillID == decaySkill.SkillID && x.Rank <= decaySkill.Rank).ToList();
                     int newDecaySkillRank = 0;
                     foreach (SkillXPRequirement req in reqs)
@@ -673,7 +671,12 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private void RegisterPCToNPCForSkill(NWPlayer pc, NWCreature npc, int skillID)
+        public void RegisterPCToNPCForSkill(NWPlayer pc, NWObject npc, SkillType skill)
+        {
+            RegisterPCToNPCForSkill(pc, npc, (int) skill);
+        }
+
+        private void RegisterPCToNPCForSkill(NWPlayer pc, NWObject npc, int skillID)
         {
             if (!pc.IsPlayer || !pc.IsValid) return;
             if (npc.IsPlayer || npc.IsDM || !npc.IsValid) return;

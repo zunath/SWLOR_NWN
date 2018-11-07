@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         void OnModuleItemEquipped();
         void OnModuleItemUnequipped();
         void RegisterPCToAllCombatTargetsForSkill(NWPlayer player, SkillType skillType, NWCreature target);
+        void RegisterPCToNPCForSkill(NWPlayer pc, NWObject npc, SkillType skillType);
         void ToggleSkillLock(Guid playerID, int skillID);
     }
 }

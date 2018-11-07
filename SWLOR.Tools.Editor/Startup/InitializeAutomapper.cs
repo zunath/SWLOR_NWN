@@ -65,7 +65,7 @@ namespace SWLOR.Tools.Editor.Startup
                 cfg.CreateMap<Quest, QuestViewModel>();
                 cfg.CreateMap<SkillCategory, SkillCategoryViewModel>();
                 cfg.CreateMap<Skill, SkillViewModel>();
-                cfg.CreateMap<SpawnViewModel, Spawn>();
+                cfg.CreateMap<Spawn, SpawnViewModel>();
 
             });
         }

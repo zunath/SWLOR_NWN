@@ -10,6 +10,7 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
     {
         private string _displayName;
 
+        [JsonIgnore]
         public override string DisplayName
         {
             get => _displayName;

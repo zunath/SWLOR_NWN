@@ -1,10 +1,11 @@
 ﻿using Newtonsoft.Json;
 using SWLOR.Tools.Editor.Attributes;
 using System.Collections.ObjectModel;
+using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Tools.Editor.ViewModels.Data
 {
-    [Folder("LootTable")]
+    [Folder(nameof(LootTable))]
     public class LootTableViewModel : DBObjectViewModelBase
     {
         public LootTableViewModel()
@@ -13,7 +14,7 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
             Name = "New Loot Table";
 
             TrackProperty(this, x => x.Name);
-            TrackProperty(this, x => x.LootTableID);
+            TrackProperty(this, x => x.ID);
             TrackProperty(this, x => x.LootTableItems);
         }
 
@@ -30,15 +31,15 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
             }
         }
 
-        private int _lootTableID;
-        [JsonProperty(nameof(LootTableID))]
-        public int LootTableID
+        private int _id;
+        [JsonProperty(nameof(ID))]
+        public int ID
         {
-            get => _lootTableID;
+            get => _id;
             set
             {
-                _lootTableID = value;
-                NotifyOfPropertyChange(() => LootTableID);
+                _id = value;
+                NotifyOfPropertyChange(() => ID);
             }
         }
 

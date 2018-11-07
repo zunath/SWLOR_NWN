@@ -13,7 +13,12 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using AutoMapper;
+using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Tools.Editor.Attributes;
+using ApartmentBuildingViewModel = SWLOR.Tools.Editor.ViewModels.Data.ApartmentBuildingViewModel;
+using LootTableItemViewModel = SWLOR.Tools.Editor.ViewModels.Data.LootTableItemViewModel;
 using Screen = Caliburn.Micro.Screen;
 
 namespace SWLOR.Tools.Editor.ViewModels
@@ -149,34 +154,71 @@ namespace SWLOR.Tools.Editor.ViewModels
             }
         }
 
+        private delegate T MapObjectDelegate<T>(T source);
+
+        private List<T2> BuildViewModel<T1, T2>(IEnumerable<T1> source, MapObjectDelegate<T2> mappingRule = null)
+            where T1: IEntity
+            where T2: DBObjectViewModelBase
+        {
+            var mapped = new List<T2>();
+            foreach (var record in source)
+            {
+                var mappedRecord = Mapper.Map<T1, T2>(record);
+                var finalRecord = mappedRecord;
+                if (mappingRule != null)
+                {
+                    finalRecord = mappingRule.Invoke(mappedRecord);
+                }
+
+                mapped.Add(finalRecord);
+            }
+
+            return mapped;
+        }
+
+        private List<LootTableItem> _lootTableItems;
         private void PerformDataSyncAsync(object sender, DoWorkEventArgs e)
         {
             _progress = 0;
+            _lootTableItems = _data.GetAll<LootTableItem>().ToList();
 
-            WriteDataFileAsync(_data.GetAll<ApartmentBuilding>());
-            WriteDataFileAsync(_data.GetAll<BaseStructure>());
-            WriteDataFileAsync(_data.GetAll<BuildingStyle>());
-            WriteDataFileAsync(_data.GetAll<CooldownCategory>());
-            WriteDataFileAsync(_data.GetAll<CraftBlueprint>());
-            WriteDataFileAsync(_data.GetAll<CraftBlueprintCategory>());
-            WriteDataFileAsync(_data.GetAll<CraftDevice>());
-            WriteDataFileAsync(_data.GetAll<CustomEffect>());
-            WriteDataFileAsync(_data.GetAll<Download>());
-            WriteDataFileAsync(_data.GetAll<FameRegion>());
-            WriteDataFileAsync(_data.GetAll<GameTopic>());
-            WriteDataFileAsync(_data.GetAll<GameTopicCategory>());
-            WriteDataFileAsync(_data.GetAll<KeyItem>());
-            WriteDataFileAsync(_data.GetAll<KeyItemCategory>());
-            WriteDataFileAsync(_data.GetAll<LootTable>());
-            WriteDataFileAsync(_data.GetAll<Mod>());
-            WriteDataFileAsync(_data.GetAll<NPCGroup>());
-            WriteDataFileAsync(_data.GetAll<Perk>());
-            WriteDataFileAsync(_data.GetAll<PerkCategory>());
-            WriteDataFileAsync(_data.GetAll<Plant>());
-            WriteDataFileAsync(_data.GetAll<Quest>());
-            WriteDataFileAsync(_data.GetAll<Skill>());
-            WriteDataFileAsync(_data.GetAll<SkillCategory>());
-            WriteDataFileAsync(_data.GetAll<Spawn>());
+            WriteDataFileAsync(BuildViewModel<ApartmentBuilding, ApartmentBuildingViewModel>(_data.GetAll<ApartmentBuilding>()));
+            WriteDataFileAsync(BuildViewModel<BaseStructure, BaseStructureViewModel>(_data.GetAll<BaseStructure>()));
+            WriteDataFileAsync(BuildViewModel<BuildingStyle, BuildingStyleViewModel>(_data.GetAll<BuildingStyle>()));
+            WriteDataFileAsync(BuildViewModel<CooldownCategory, CooldownCategoryViewModel>(_data.GetAll<CooldownCategory>()));
+            WriteDataFileAsync(BuildViewModel<CraftBlueprint, CraftBlueprintViewModel>(_data.GetAll<CraftBlueprint>()));
+            WriteDataFileAsync(BuildViewModel<CraftBlueprintCategory, CraftBlueprintCategoryViewModel>(_data.GetAll<CraftBlueprintCategory>()));
+            WriteDataFileAsync(BuildViewModel<CraftDevice, CraftDeviceViewModel>(_data.GetAll<CraftDevice>()));
+            WriteDataFileAsync(BuildViewModel<CustomEffect, CustomEffectViewModel>(_data.GetAll<CustomEffect>()));
+            WriteDataFileAsync(BuildViewModel<Download, DownloadViewModel>(_data.GetAll<Download>()));
+            WriteDataFileAsync(BuildViewModel<FameRegion, FameRegionViewModel>(_data.GetAll<FameRegion>()));
+            WriteDataFileAsync(BuildViewModel<GameTopic, GameTopicViewModel>(_data.GetAll<GameTopic>()));
+            WriteDataFileAsync(BuildViewModel<GameTopicCategory, GameTopicCategoryViewModel>(_data.GetAll<GameTopicCategory>()));
+            WriteDataFileAsync(BuildViewModel<KeyItem, KeyItemViewModel>(_data.GetAll<KeyItem>()));
+            WriteDataFileAsync(BuildViewModel<KeyItemCategory, KeyItemCategoryViewModel>(_data.GetAll<KeyItemCategory>()));
+            WriteDataFileAsync(BuildViewModel<LootTable, LootTableViewModel>(_data.GetAll<LootTable>(), LootTableMapping));
+            WriteDataFileAsync(BuildViewModel<Mod, ModViewModel>(_data.GetAll<Mod>()));
+            WriteDataFileAsync(BuildViewModel<NPCGroup, NPCGroupViewModel>(_data.GetAll<NPCGroup>()));
+            WriteDataFileAsync(BuildViewModel<Perk, PerkViewModel>(_data.GetAll<Perk>()));
+            WriteDataFileAsync(BuildViewModel<PerkCategory, PerkCategoryViewModel>(_data.GetAll<PerkCategory>()));
+            WriteDataFileAsync(BuildViewModel<Plant, PlantViewModel>(_data.GetAll<Plant>()));
+            WriteDataFileAsync(BuildViewModel<Quest, QuestViewModel>(_data.GetAll<Quest>()));
+            WriteDataFileAsync(BuildViewModel<Skill, SkillViewModel>(_data.GetAll<Skill>()));
+            WriteDataFileAsync(BuildViewModel<SkillCategory, SkillCategoryViewModel>(_data.GetAll<SkillCategory>()));
+            WriteDataFileAsync(BuildViewModel<Spawn, SpawnViewModel>(_data.GetAll<Spawn>()));
+        }
+
+        private LootTableViewModel LootTableMapping(LootTableViewModel source)
+        {
+            var items = _lootTableItems.Where(x => x.LootTableID == source.ID);
+
+            foreach (var item in items)
+            {
+                var itemVM = Mapper.Map<LootTableItem, LootTableItemViewModel>(item);
+                source.LootTableItems.Add(itemVM);
+            }
+
+            return source;
         }
 
         private void SyncProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -203,7 +245,7 @@ namespace SWLOR.Tools.Editor.ViewModels
 
         private void WriteDataFileAsync<T>(IEnumerable<T> set)
         {
-            string Folder = typeof(T).Name;
+            string Folder = ((FolderAttribute)typeof(T).GetCustomAttributes(typeof(FolderAttribute), false).First()).Folder;
             string path = "./Data/" + Folder + "/";
             string[] files = Directory.GetFiles(path);
 
@@ -215,7 +257,7 @@ namespace SWLOR.Tools.Editor.ViewModels
             foreach (var record in set)
             {
                 JObject jObj = JObject.FromObject(record);
-                jObj.Add(nameof(DBObjectViewModelBase.InternalEditorID), Guid.NewGuid().ToString(""));
+                jObj[nameof(DBObjectViewModelBase.InternalEditorID)] = Guid.NewGuid().ToString();
                 string fileName = Guid.NewGuid().ToString();
                 string json = JsonConvert.SerializeObject(jObj);
                 File.WriteAllText("./Data/" + Folder + "/" + fileName + ".json", json);

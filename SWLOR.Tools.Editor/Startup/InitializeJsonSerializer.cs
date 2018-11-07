@@ -34,85 +34,85 @@ namespace SWLOR.Tools.Editor.Startup
                 switch (type.BaseType == null ? type.Name : type.BaseType.Name)
                 {
                     case nameof(ApartmentBuilding):
-                        return Create("ApartmentBuildingID", "Name");
+                        return Create("ID", "Name");
                     case nameof(BaseStructure):
-                        return Create("BaseStructureID", "BaseStructureTypeID", "Name", "PlaceableResref", "ItemResref", "IsActive", "Power", "CPU", "Durability", "Storage", "HasAtmosphere", "ReinforcedStorage", "RequiresBasePower", "ResourceStorage", "RetrievalRating");
+                        return Create("ID", "BaseStructureTypeID", "Name", "PlaceableResref", "ItemResref", "IsActive", "Power", "CPU", "Durability", "Storage", "HasAtmosphere", "ReinforcedStorage", "RequiresBasePower", "ResourceStorage", "RetrievalRating");
                     case nameof(BaseStructureType):
-                        return Create("BaseStructureTypeID", "Name", "IsActive", "CanPlaceInside", "CanPlaceOutside");
+                        return Create("ID", "Name", "IsActive", "CanPlaceInside", "CanPlaceOutside");
                     case nameof(BuildingStyle):
-                        return Create("BuildingStyleID", "Name", "Resref", "BaseStructureID", "IsDefault", "DoorRule", "IsActive", "BuildingTypeID", "PurchasePrice", "DailyUpkeep", "FurnitureLimit");
+                        return Create("ID", "Name", "Resref", "BaseStructureID", "IsDefault", "DoorRule", "IsActive", "BuildingTypeID", "PurchasePrice", "DailyUpkeep", "FurnitureLimit");
                     case nameof(ComponentType):
-                        return Create("ComponentTypeID", "Name");
+                        return Create("ID", "Name");
                     case nameof(CooldownCategory):
-                        return Create("CooldownCategoryID", "Name", "BaseCooldownTime");
+                        return Create("ID", "Name", "BaseCooldownTime");
                     case nameof(CraftBlueprint):
-                        return Create("CraftBlueprintID", "CraftCategoryID", "BaseLevel", "ItemName", "ItemResref", "Quantity", "SkillID", "CraftDeviceID", "PerkID", "RequiredPerkLevel", "IsActive", "MainComponentTypeID", "MainMinimum", "SecondaryComponentTypeID", "SecondaryMinimum", "TertiaryComponentTypeID", "TertiaryMinimum", "EnhancementSlots", "MainMaximum", "SecondaryMaximum", "TertiaryMaximum", "BaseStructureID");
+                        return Create("ID", "CraftCategoryID", "BaseLevel", "ItemName", "ItemResref", "Quantity", "SkillID", "CraftDeviceID", "PerkID", "RequiredPerkLevel", "IsActive", "MainComponentTypeID", "MainMinimum", "SecondaryComponentTypeID", "SecondaryMinimum", "TertiaryComponentTypeID", "TertiaryMinimum", "EnhancementSlots", "MainMaximum", "SecondaryMaximum", "TertiaryMaximum", "BaseStructureID");
                     case nameof(CraftBlueprintCategory):
-                        return Create("CraftBlueprintCategoryID", "Name", "IsActive");
+                        return Create("ID", "Name", "IsActive");
                     case nameof(CraftDevice):
-                        return Create("CraftDeviceID", "Name");
+                        return Create("ID", "Name");
                     case nameof(CustomEffect):
-                        return Create("CustomEffectID", "Name", "IconID", "ScriptHandler", "StartMessage", "ContinueMessage", "WornOffMessage", "CustomEffectCategoryID");
+                        return Create("ID", "Name", "IconID", "ScriptHandler", "StartMessage", "ContinueMessage", "WornOffMessage", "CustomEffectCategoryID");
                     case nameof(Download):
-                        return Create("DownloadID", "Name", "Description", "Url", "IsActive");
+                        return Create("ID", "Name", "Description", "Url", "IsActive");
                     case nameof(FameRegion):
-                        return Create("FameRegionID", "Name");
+                        return Create("ID", "Name");
                     case nameof(GameTopic):
-                        return Create("GameTopicID", "Name", "Text", "GameTopicCategoryID", "IsActive", "Sequence", "Icon");
+                        return Create("ID", "Name", "Text", "GameTopicCategoryID", "IsActive", "Sequence", "Icon");
                     case nameof(GameTopicCategory):
-                        return Create("GameTopicCategoryID", "Name");
+                        return Create("ID", "Name");
                     case nameof(GrowingPlant):
-                        return Create("GrowingPlantID", "PlantID", "RemainingTicks", "LocationAreaTag", "LocationX", "LocationY", "LocationZ", "LocationOrientation", "DateCreated", "IsActive", "TotalTicks", "WaterStatus", "LongevityBonus");
+                        return Create("ID", "PlantID", "RemainingTicks", "LocationAreaTag", "LocationX", "LocationY", "LocationZ", "LocationOrientation", "DateCreated", "IsActive", "TotalTicks", "WaterStatus", "LongevityBonus");
                     case nameof(ItemType):
-                        return Create("ItemTypeID", "Name");
+                        return Create("ID", "Name");
                     case nameof(KeyItem):
-                        return Create("KeyItemID", "KeyItemCategoryID", "Name", "Description");
+                        return Create("ID", "KeyItemCategoryID", "Name", "Description");
                     case nameof(KeyItemCategory):
-                        return Create("KeyItemCategoryID", "Name", "IsActive");
+                        return Create("ID", "Name", "IsActive");
                     case nameof(LootTable):
-                        return Create("LootTableID", "Name", "LootTableItems");
+                        return Create("ID", "Name", "LootTableItems");
                     case nameof(LootTableItem):
-                        return Create("LootTableItemID", "LootTableID", "Resref", "MaxQuantity", "Weight", "IsActive", "SpawnRule");
+                        return Create("ID", "LootTableID", "Resref", "MaxQuantity", "Weight", "IsActive", "SpawnRule");
                     case nameof(Mod):
-                        return Create("ModID", "Name", "Script", "IsActive");
+                        return Create("ID", "Name", "Script", "IsActive");
                     case nameof(NPCGroup):
-                        return Create("NPCGroupID", "Name");
+                        return Create("ID", "Name");
                     case nameof(Perk):
-                        return Create("PerkID", "Name", "FeatID", "IsActive", "ScriptName", "BaseFPCost", "BaseCastingTime", "Description", "PerkCategoryID", "CooldownCategoryID", "ExecutionTypeID", "ItemResref", "IsTargetSelfOnly", "Enmity", "EnmityAdjustmentRuleID", "CastAnimationID", "PerkLevels");
+                        return Create("ID", "Name", "FeatID", "IsActive", "ScriptName", "BaseFPCost", "BaseCastingTime", "Description", "PerkCategoryID", "CooldownCategoryID", "ExecutionTypeID", "ItemResref", "IsTargetSelfOnly", "Enmity", "EnmityAdjustmentRuleID", "CastAnimationID", "PerkLevels");
                     case nameof(PerkCategory):
-                        return Create("PerkCategoryID", "Name", "IsActive", "Sequence");
+                        return Create("ID", "Name", "IsActive", "Sequence");
                     case nameof(PerkLevel):
-                        return Create("PerkLevelID", "PerkID", "Level", "Price", "Description", "PerkLevelQuestRequirements", "PerkLevelSkillRequirements");
+                        return Create("ID", "PerkID", "Level", "Price", "Description", "PerkLevelQuestRequirements", "PerkLevelSkillRequirements");
                     case nameof(PerkLevelQuestRequirement):
-                        return Create("PerkLevelQuestRequirementID", "PerkLevelID", "RequiredQuestID");
+                        return Create("ID", "PerkLevelID", "RequiredQuestID");
                     case nameof(PerkLevelSkillRequirement):
-                        return Create("PerkLevelSkillRequirementID", "PerkLevelID", "SkillID", "RequiredRank");
+                        return Create("ID", "PerkLevelID", "SkillID", "RequiredRank");
                     case nameof(Plant):
-                        return Create("PlantID", "Name", "BaseTicks", "Resref", "WaterTicks", "Level", "SeedResref");
+                        return Create("ID", "Name", "BaseTicks", "Resref", "WaterTicks", "Level", "SeedResref");
                     case nameof(Quest):
-                        return Create("QuestID", "Name", "JournalTag", "FameRegionID", "RequiredFameAmount", "AllowRewardSelection", "RewardGold", "RewardKeyItemID", "RewardFame", "IsRepeatable", "MapNoteTag", "StartKeyItemID", "RemoveStartKeyItemAfterCompletion", "OnAcceptRule", "OnAdvanceRule", "OnCompleteRule", "OnKillTargetRule", "OnAcceptArgs", "OnAdvanceArgs", "OnCompleteArgs", "OnKillTargetArgs", "QuestKillTargetLists", "QuestPrerequisites", "QuestRequiredItemLists", "QuestRequiredKeyItemLists", "QuestRewardItems", "QuestStates");
+                        return Create("ID", "Name", "JournalTag", "FameRegionID", "RequiredFameAmount", "AllowRewardSelection", "RewardGold", "RewardKeyItemID", "RewardFame", "IsRepeatable", "MapNoteTag", "StartKeyItemID", "RemoveStartKeyItemAfterCompletion", "OnAcceptRule", "OnAdvanceRule", "OnCompleteRule", "OnKillTargetRule", "OnAcceptArgs", "OnAdvanceArgs", "OnCompleteArgs", "OnKillTargetArgs", "QuestKillTargetLists", "QuestPrerequisites", "QuestRequiredItemLists", "QuestRequiredKeyItemLists", "QuestRewardItems", "QuestStates");
                     case nameof(QuestKillTarget):
-                        return Create("QuestKillTargetListID", "QuestID", "NPCGroupID", "Quantity", "QuestStateID");
+                        return Create("ID", "QuestID", "NPCGroupID", "Quantity", "QuestStateID");
                     case nameof(QuestPrerequisite):
-                        return Create("QuestPrerequisiteID", "QuestID", "RequiredQuestID");
+                        return Create("ID", "QuestID", "RequiredQuestID");
                     case nameof(QuestRequiredItem):
-                        return Create("QuestRequiredItemListID", "QuestID", "Resref", "Quantity", "QuestStateID", "MustBeCraftedByPlayer");
+                        return Create("ID", "QuestID", "Resref", "Quantity", "QuestStateID", "MustBeCraftedByPlayer");
                     case nameof(QuestRequiredKeyItem):
-                        return Create("QuestRequiredKeyItemID", "QuestID", "KeyItemID", "QuestStateID");
+                        return Create("ID", "QuestID", "KeyItemID", "QuestStateID");
                     case nameof(QuestRewardItem):
-                        return Create("QuestRewardItemID", "QuestID", "Resref", "Quantity");
+                        return Create("ID", "QuestID", "Resref", "Quantity");
                     case nameof(QuestState):
-                        return Create("QuestStateID", "QuestID", "Sequence", "QuestTypeID", "JournalStateID");
+                        return Create("ID", "QuestID", "Sequence", "QuestTypeID", "JournalStateID");
                     case nameof(Skill):
-                        return Create("SkillID", "SkillCategoryID", "Name", "MaxRank", "IsActive", "Description", "Primary", "Secondary", "Tertiary", "ContributesToSkillCap", "SkillXPRequirements");
+                        return Create("ID", "SkillCategoryID", "Name", "MaxRank", "IsActive", "Description", "Primary", "Secondary", "Tertiary", "ContributesToSkillCap", "SkillXPRequirements");
                     case nameof(SkillCategory):
-                        return Create("SkillCategoryID", "Name", "IsActive", "Sequence");
+                        return Create("ID", "Name", "IsActive", "Sequence");
                     case nameof(SkillXPRequirement):
-                        return Create("SkillXPRequirementID", "SkillID", "Rank", "XP");
+                        return Create("ID", "SkillID", "Rank", "XP");
                     case nameof(Spawn):
-                        return Create("SpawnID", "Name", "SpawnObjectTypeID");
+                        return Create("ID", "Name", "SpawnObjectTypeID");
                     case nameof(SpawnObject):
-                        return Create("SpawnObjectID", "SpawnID", "Resref", "Weight", "SpawnRule", "NPCGroupID", "BehaviourScript", "DeathVFXID");
+                        return Create("ID", "SpawnID", "Resref", "Weight", "SpawnRule", "NPCGroupID", "BehaviourScript", "DeathVFXID");
                     default:
                         return base.CreateProperties(_type, _memberSerialization);
                 }

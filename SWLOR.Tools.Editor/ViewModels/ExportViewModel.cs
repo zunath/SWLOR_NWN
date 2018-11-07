@@ -3,7 +3,9 @@ using System.IO;
 using System.Windows.Forms;
 using AutoMapper;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Tools.Editor.Enumeration;
@@ -79,6 +81,30 @@ namespace SWLOR.Tools.Editor.ViewModels
             TryClose();
         }
 
+        private delegate T MappingDelegate<T>(T source);
+
+        private JObject ProcessViewModel<T1, T2>(T1 input, JObject parent = null, MappingDelegate<T2> mapping = null)
+            where T1: DBObjectViewModelBase
+            where T2: IEntity
+        {
+            var mapped = Mapper.Map<T1, T2>(input);
+            if (mapping != null)
+            {
+                mapped = mapping.Invoke(mapped);
+            }
+
+            var result = JObject.FromObject(mapped);
+            var exportID = Guid.NewGuid().ToString();
+            result.Add("ExportID", exportID);
+
+            if (parent != null)
+            {
+                result.Add("ParentExportID", parent["ExportID"]);
+            }
+
+            return result;
+        }
+
         private DataPackageFile BuildPackage()
         {
             var package = new DataPackageFile(PackageName);
@@ -89,99 +115,103 @@ namespace SWLOR.Tools.Editor.ViewModels
                     switch (group.ResourceType)
                     {
                         case ResourceType.ApartmentBuildings:
-                            var apartmentBuilding = Mapper.Map<ApartmentBuildingViewModel, ApartmentBuilding>(item);
+                            var apartmentBuilding = ProcessViewModel<ApartmentBuildingViewModel, ApartmentBuilding>(item);
                             package.ApartmentBuildings.Add(apartmentBuilding);
                             break;
                         case ResourceType.BaseStructures:
-                            var baseStructure = Mapper.Map<BaseStructureViewModel, BaseStructure>(item);
+                            var baseStructure = ProcessViewModel<BaseStructureViewModel, BaseStructure>(item);
                             package.BaseStructures.Add(baseStructure);
                             break;
                         case ResourceType.BuildingStyles:
-                            var buildingStyle = Mapper.Map<BuildingStyleViewModel, BuildingStyle>(item);
+                            var buildingStyle = ProcessViewModel<BuildingStyleViewModel, BuildingStyle>(item);
                             package.BuildingStyles.Add(buildingStyle);
                             break;
                         case ResourceType.CooldownCategories:
-                            var cooldownCategory = Mapper.Map<CooldownCategoryViewModel, CooldownCategory>(item);
+                            var cooldownCategory = ProcessViewModel<CooldownCategoryViewModel, CooldownCategory>(item);
                             package.CooldownCategories.Add(cooldownCategory);
                             break;
                         case ResourceType.CraftBlueprintCategories:
-                            var craftBlueprintCategory = Mapper.Map<CraftBlueprintCategoryViewModel, CraftBlueprintCategory>(item);
+                            var craftBlueprintCategory = ProcessViewModel<CraftBlueprintCategoryViewModel, CraftBlueprintCategory>(item);
                             package.CraftBlueprintCategories.Add(craftBlueprintCategory);
                             break;
                         case ResourceType.CraftBlueprints:
-                            var craftBlueprint = Mapper.Map<CraftBlueprintViewModel, CraftBlueprint>(item);
+                            var craftBlueprint = ProcessViewModel<CraftBlueprintViewModel, CraftBlueprint>(item);
                             package.CraftBlueprints.Add(craftBlueprint);
                             break;
                         case ResourceType.CraftDevices:
-                            var craftDevice = Mapper.Map<CraftDeviceViewModel, CraftDevice>(item);
+                            var craftDevice = ProcessViewModel<CraftDeviceViewModel, CraftDevice>(item);
                             package.CraftDevices.Add(craftDevice);
                             break;
                         case ResourceType.CustomEffects:
-                            var customEffect = Mapper.Map<CustomEffectViewModel, CustomEffect>(item);
+                            var customEffect = ProcessViewModel<CustomEffectViewModel, CustomEffect>(item);
                             package.CustomEffects.Add(customEffect);
                             break;
                         case ResourceType.Downloads:
-                            var download = Mapper.Map<DownloadViewModel, Download>(item);
+                            var download = ProcessViewModel<DownloadViewModel, Download>(item);
                             package.Downloads.Add(download);
                             break;
                         case ResourceType.FameRegions:
-                            var fameRegion = Mapper.Map<FameRegionViewModel, FameRegion>(item);
+                            var fameRegion = ProcessViewModel<FameRegionViewModel, FameRegion>(item);
                             package.FameRegions.Add(fameRegion);
                             break;
                         case ResourceType.GameTopicCategories:
-                            var gameTopicCategories = Mapper.Map<GameTopicCategoryViewModel, GameTopicCategory>(item);
+                            var gameTopicCategories = ProcessViewModel<GameTopicCategoryViewModel, GameTopicCategory>(item);
                             package.GameTopicCategories.Add(gameTopicCategories);
                             break;
                         case ResourceType.GameTopics:
-                            var gameTopic = Mapper.Map<GameTopicViewModel, GameTopic>(item);
+                            var gameTopic = ProcessViewModel<GameTopicViewModel, GameTopic>(item);
                             package.GameTopics.Add(gameTopic);
                             break;
                         case ResourceType.KeyItemCategories:
-                            var keyItemCategory = Mapper.Map<KeyItemCategoryViewModel, KeyItemCategory>(item);
+                            var keyItemCategory = ProcessViewModel<KeyItemCategoryViewModel, KeyItemCategory>(item);
                             package.KeyItemCategories.Add(keyItemCategory);
                             break;
                         case ResourceType.KeyItems:
-                            var keyItem = Mapper.Map<KeyItemViewModel, KeyItem>(item);
+                            var keyItem = ProcessViewModel<KeyItemViewModel, KeyItem>(item);
                             package.KeyItems.Add(keyItem);
                             break;
-                        case ResourceType.LootTableItems:
-                            var lootTableItem = Mapper.Map<LootTableItemViewModel, LootTableItem>(item);
-                            package.LootTableItems.Add(lootTableItem);
-                            break;
                         case ResourceType.LootTables:
-                            var lootTable = Mapper.Map<LootTableViewModel, LootTable>(item);
+                            JObject lootTable = ProcessViewModel<LootTableViewModel, LootTable>(item);
+                            var vm = (LootTableViewModel) item;
+                            
+                            foreach (var lti in vm.LootTableItems)
+                            {
+                                JObject ltiVM = JObject.FromObject(ProcessViewModel<LootTableItemViewModel, LootTableItem>(lti, lootTable));
+                                package.LootTableItems.Add(ltiVM);
+                            }
+                            
                             package.LootTables.Add(lootTable);
                             break;
                         case ResourceType.Mods:
-                            var mod = Mapper.Map<ModViewModel, Mod>(item);
+                            var mod = ProcessViewModel<ModViewModel, Mod>(item);
                             package.Mods.Add(mod);
                             break;
                         case ResourceType.NPCGroups:
-                            var npcGroup = Mapper.Map<NPCGroupViewModel, NPCGroup>(item);
+                            var npcGroup = ProcessViewModel<NPCGroupViewModel, NPCGroup>(item);
                             package.NPCGroups.Add(npcGroup);
                             break;
                         case ResourceType.PerkCategories:
-                            var perkCategory = Mapper.Map<PerkCategoryViewModel, PerkCategory>(item);
+                            var perkCategory = ProcessViewModel<PerkCategoryViewModel, PerkCategory>(item);
                             package.PerkCategories.Add(perkCategory);
                             break;
                         case ResourceType.Plants:
-                            var plant = Mapper.Map<PlantViewModel, Plant>(item);
+                            var plant = ProcessViewModel<PlantViewModel, Plant>(item);
                             package.Plants.Add(plant);
                             break;
                         case ResourceType.Quests:
-                            var quest = Mapper.Map<QuestViewModel, Quest>(item);
+                            var quest = ProcessViewModel<QuestViewModel, Quest>(item);
                             package.Quests.Add(quest);
                             break;
                         case ResourceType.SkillCategories:
-                            var skillCategory = Mapper.Map<SkillCategoryViewModel, SkillCategory>(item);
+                            var skillCategory = ProcessViewModel<SkillCategoryViewModel, SkillCategory>(item);
                             package.SkillCategories.Add(skillCategory);
                             break;
                         case ResourceType.Skills:
-                            var skill = Mapper.Map<SkillViewModel, Skill>(item);
+                            var skill = ProcessViewModel<SkillViewModel, Skill>(item);
                             package.Skills.Add(skill);
                             break;
                         case ResourceType.Spawns:
-                            var spawn = Mapper.Map<SpawnViewModel, Spawn>(item);
+                            var spawn = ProcessViewModel<SpawnViewModel, Spawn>(item);
                             package.Spawns.Add(spawn);
                             break;
                         default:

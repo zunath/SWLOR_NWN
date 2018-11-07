@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using AutoMapper;
 using Caliburn.Micro;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.ValueObject;
@@ -134,12 +135,13 @@ namespace SWLOR.Tools.Editor.ViewModels
             }
         }
         
-        private void AddMappedResource<T1, T2>(IEnumerable<T1> source, ObservableCollection<dynamic> sourceCollection, ObservableCollection<dynamic> targetCollection)
+        private void AddMappedResource<T1, T2>(IEnumerable<JObject> source, ObservableCollection<dynamic> sourceCollection, ObservableCollection<dynamic> targetCollection)
             where T2: IDBObjectViewModel
         {
             foreach (var item in source)
             {
-                var vm = Mapper.Map<T1, T2>(item);
+                var converted = item.ToObject<T1>();
+                var vm = Mapper.Map<T1, T2>(converted);
                 vm.InternalEditorID = Guid.NewGuid().ToString();
                 sourceCollection.Add(vm);
                 targetCollection.Add(vm);

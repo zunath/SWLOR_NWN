@@ -1,6 +1,8 @@
 ﻿
 using System.Linq;
 using FluentValidation;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Data.Validator;
@@ -14,17 +16,18 @@ namespace SWLOR.Game.Server.Data.Processor
     {
         public IValidator Validator => new ApartmentBuildingValidator();
         
-        public DatabaseAction Process(IDataService data, ApartmentBuilding dataObject)
+        public DatabaseAction Process(IDataService data, JObject dataObject)
         {
+            ApartmentBuilding apartmentBuilding = dataObject.ToObject<ApartmentBuilding>();
             var action = DatabaseActionType.Update;
-            if(dataObject.ID <= 0)
+            if(apartmentBuilding.ID <= 0)
             {
                 int id = data.GetAll<ApartmentBuilding>().Count() + 1;
-                dataObject.ID = id;
+                apartmentBuilding.ID = id;
                 action = DatabaseActionType.Insert;
             }
             
-            return new DatabaseAction(dataObject, action);
+            return new DatabaseAction(apartmentBuilding, action);
         }
     }
 }

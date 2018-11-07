@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 
@@ -152,10 +153,10 @@ namespace SWLOR.Game.Server.Service
                 errors += ValidateAndProcess(new KeyItemCategoryProcessor(), obj) + "\n";
             foreach (var obj in dpf.KeyItems)
                 errors += ValidateAndProcess(new KeyItemProcessor(), obj) + "\n";
-            foreach (var obj in dpf.LootTableItems)
-                errors += ValidateAndProcess(new LootTableItemProcessor(), obj) + "\n";
-            foreach (var obj in dpf.LootTables)
-                errors += ValidateAndProcess(new LootTableProcessor(), obj) + "\n";
+            //foreach (var obj in dpf.LootTableItems)
+            //    errors += ValidateAndProcess(new LootTableItemProcessor(), obj) + "\n";
+            //foreach (var obj in dpf.LootTables)
+            //    errors += ValidateAndProcess(new LootTableProcessor(), obj) + "\n";
             foreach (var obj in dpf.Mods)
                 errors += ValidateAndProcess(new ModProcessor(), obj) + "\n";
             foreach (var obj in dpf.NPCGroups)
@@ -185,7 +186,7 @@ namespace SWLOR.Game.Server.Service
             return errors;
         }
 
-        private string ValidateAndProcess<T>(IDataProcessor<T> processor, T dataObject)
+        private string ValidateAndProcess<T>(IDataProcessor<T> processor, JObject dataObject)
         {
             string errors = string.Empty;
 

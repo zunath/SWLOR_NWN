@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Data.Validator;
@@ -11,7 +12,7 @@ namespace SWLOR.Game.Server.Data.Processor
     {
         public IValidator Validator => new BuildingStyleValidator();
 
-        public DatabaseAction Process(IDataService data, BuildingStyle dataObject)
+        public DatabaseAction Process(IDataService data, JObject dataObject)
         {
             return null;
         }

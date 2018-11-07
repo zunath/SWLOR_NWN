@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Data.Entity
     public class QuestRewardItem: IEntity
     {
         [Key]
-        public int QuestRewardItemID { get; set; }
+        public int ID { get; set; }
         public int QuestID { get; set; }
         public string Resref { get; set; }
         public int Quantity { get; set; }

@@ -2,7 +2,9 @@
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service.Contracts;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Event.Conversation
@@ -10,14 +12,14 @@ namespace SWLOR.Game.Server.Event.Conversation
     public class QuestIsDone : IRegisteredEvent
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
 
         public QuestIsDone(
             INWScript script,
-            IDataContext db)
+            IDataService data)
         {
             _ = script;
-            _db = db;
+            _data = data;
         }
 
         public bool Run(params object[] args)
@@ -28,15 +30,20 @@ namespace SWLOR.Game.Server.Event.Conversation
             int questID = talkingTo.GetLocalInt("QUEST_ID_" + index);
             if (questID <= 0) questID = talkingTo.GetLocalInt("QST_ID_" + index);
 
-            if (!_db.Quests.Any(x => x.QuestID == questID))
+            if (_data.GetAll<Quest>().All(x => x.ID != questID))
             {
                 _.SpeakString("ERROR: Quest #" + index + " is improperly configured. Please notify an admin");
                 return false;
             }
 
-            var status = _db.PCQuestStatus.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
-            return status != null && 
-                   status.CurrentQuestState.QuestStateID == status.CurrentQuestState.Quest.QuestStates.OrderBy(o => o.Sequence).Last().QuestStateID &&
+            var status = _data.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
+            if (status == null) return false;
+
+            
+            var currentQuestState = _data.Get<QuestState>(status.CurrentQuestStateID);
+            var quest = _data.Get<Quest>(currentQuestState.QuestID);
+            var states = _data.Where<QuestState>(x => x.QuestID == quest.ID);
+            return currentQuestState.ID == states.OrderBy(o => o.Sequence).Last().ID &&
                    status.CompletionDate != null;
         }
     }

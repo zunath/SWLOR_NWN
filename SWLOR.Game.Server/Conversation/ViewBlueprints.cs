@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.Service.Contracts;
@@ -68,7 +69,7 @@ namespace SWLOR.Game.Server.Conversation
 
             foreach (CraftBlueprintCategory category in vm.CraftCategories)
             {
-                AddResponseToPage("CraftCategoriesPage", category.Name, true, category.CraftBlueprintCategoryID);
+                AddResponseToPage("CraftCategoriesPage", category.Name, true, category.ID);
             }
 
             SetDialogCustomData(vm);
@@ -110,13 +111,13 @@ namespace SWLOR.Game.Server.Conversation
             Model vm = GetDialogCustomData<Model>();
             ClearPageResponses("BlueprintListPage");
             DialogResponse response = GetResponseByID("CraftCategoriesPage", responseID);
-            long categoryID = (long) response.CustomData;
+            int categoryID = (int) response.CustomData;
             
             vm.CraftBlueprints = _craft.GetPCBlueprintsByCategoryID(GetPC().GlobalID, categoryID);
 
             foreach (CraftBlueprint bp in vm.CraftBlueprints)
             {
-                AddResponseToPage("BlueprintListPage", bp.ItemName, true, bp.CraftBlueprintID);
+                AddResponseToPage("BlueprintListPage", bp.ItemName, true, bp.ID);
             }
 
             ChangePage("BlueprintListPage");
@@ -125,7 +126,7 @@ namespace SWLOR.Game.Server.Conversation
         private void HandleBlueprintListPageResponse(int responseID)
         {
             DialogResponse response = GetResponseByID("BlueprintListPage", responseID);
-            long blueprintID = (long)response.CustomData;
+            int blueprintID = (int)response.CustomData;
 
             if (blueprintID == -1)
             {
@@ -136,7 +137,7 @@ namespace SWLOR.Game.Server.Conversation
             var model = _craft.GetPlayerCraftingData(GetPC());
             model.Blueprint = _craft.GetBlueprintByID(blueprintID);
             model.BlueprintID = blueprintID;
-            model.PlayerSkillRank = _skill.GetPCSkill(GetPC(), model.Blueprint.SkillID).Rank;
+            model.PlayerSkillRank = _skill.GetPCSkillRank(GetPC(), model.Blueprint.SkillID);
             model.MainMinimum = model.Blueprint.MainMinimum;
             model.MainMaximum = model.Blueprint.MainMaximum;
             model.SecondaryMinimum = model.Blueprint.SecondaryMinimum;

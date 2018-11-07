@@ -9,14 +9,14 @@ namespace SWLOR.Game.Server.QuestRule
     public class ShowQuestObjectRule: IQuestRule
     {
         private readonly IObjectVisibilityService _ovs;
-        private readonly AppState _state;
+        private readonly AppCache _cache;
 
         public ShowQuestObjectRule(
             IObjectVisibilityService ovs,
-            AppState state)
+            AppCache cache)
         {
             _ovs = ovs;
-            _state = state;
+            _cache = cache;
         }
 
 
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.QuestRule
 
                 if (string.IsNullOrWhiteSpace(visibilityObjectID)) return;
 
-                var obj = _state.VisibilityObjects.Single(x => x.Key == visibilityObjectID).Value;
+                var obj = _cache.VisibilityObjects.Single(x => x.Key.ToString() == visibilityObjectID).Value;
                 _ovs.AdjustVisibility(player, obj, true);
             }
             

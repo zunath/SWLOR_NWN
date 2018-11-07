@@ -1,7 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.Service.Contracts;
@@ -12,15 +14,15 @@ namespace SWLOR.Game.Server.Service
 {
     public class LootService: ILootService
     {
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IRandomService _random;
         private readonly INWScript _;
 
-        public LootService(IDataContext db,
+        public LootService(IDataService data,
             IRandomService random,
             INWScript script)
         {
-            _db = db;
+            _data = data;
             _random = random;
             _ = script;
         }
@@ -28,29 +30,25 @@ namespace SWLOR.Game.Server.Service
         public ItemVO PickRandomItemFromLootTable(int lootTableID)
         {
             if (lootTableID <= 0) return null;
+            var lootTableItems = _data.Where<LootTableItem>(x => x.LootTableID == lootTableID).ToList();
 
-            LootTable entity = _db.LootTables.Single(x => x.LootTableID == lootTableID);
-            if (entity.LootTableItems.Count <= 0) return null;
-
-            int[] weights = new int[entity.LootTableItems.Count];
-
-            for (int x = 0; x < entity.LootTableItems.Count; x++)
+            if (lootTableItems.Count <= 0) return null;
+            int[] weights = new int[lootTableItems.Count];
+            for (int x = 0; x < lootTableItems.Count; x++)
             {
-                weights[x] = entity.LootTableItems.ElementAt(x).Weight;
+                weights[x] = lootTableItems.ElementAt(x).Weight;
             }
+
             int randomIndex = _random.GetRandomWeightedIndex(weights);
-
-            LootTableItem itemEntity = entity.LootTableItems.ElementAt(randomIndex);
+            LootTableItem itemEntity = lootTableItems.ElementAt(randomIndex);
             int quantity = _random.Random(itemEntity.MaxQuantity) + 1;
-
             ItemVO result = new ItemVO
             {
                 Quantity = quantity,
                 Resref = itemEntity.Resref,
                 SpawnRule = itemEntity.SpawnRule
             };
-
-
+            
             return result;
         }
 

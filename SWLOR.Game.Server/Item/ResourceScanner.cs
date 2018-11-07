@@ -73,11 +73,11 @@ namespace SWLOR.Game.Server.Item
 
             _.ApplyEffectAtLocation(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_FNF_SUMMON_MONSTER_3), effectLocation);
 
-            if (user.IsPlayer && user.GetLocalInt(target.GlobalID) == FALSE)
+            if (user.IsPlayer && user.GetLocalInt(target.GlobalID.ToString()) == FALSE)
             {
                 int scanningBonus = item.ScanningBonus;
                 _skill.GiveSkillXP(player, SkillType.Harvesting, 150);
-                user.SetLocalInt(target.GlobalID, 1 + scanningBonus); 
+                user.SetLocalInt(target.GlobalID.ToString(), 1 + scanningBonus); 
             }
         }
 

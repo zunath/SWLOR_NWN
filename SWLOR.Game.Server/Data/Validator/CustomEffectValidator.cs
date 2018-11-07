@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Data.Validator
 {
-    public class CustomEffectValidator : AbstractValidator<CustomEffect>
+    public class CustomEffectValidator : AbstractValidator<Entity.CustomEffect>
     {
         public CustomEffectValidator()
         {

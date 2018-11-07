@@ -162,7 +162,7 @@ namespace SWLOR.Game.Server.Service
                 NWPlayer player = (damager.Object);
                 int itemLevel = weapon.RecommendedLevel;
                 SkillType skill = _item.GetSkillTypeForItem(weapon);
-                int rank = _skill.GetPCSkill(player, skill).Rank;
+                int rank = _skill.GetPCSkillRank(player, skill);
                 int delta = itemLevel - rank;
                 if (delta >= 1) damageBonus--;
                 damageBonus = damageBonus - delta / 5;

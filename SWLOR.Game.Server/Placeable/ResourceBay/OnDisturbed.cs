@@ -2,6 +2,8 @@
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
@@ -13,18 +15,18 @@ namespace SWLOR.Game.Server.Placeable.ResourceBay
     public class OnDisturbed: IRegisteredEvent
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IItemService _item;
         private readonly IBaseService _base;
 
         public OnDisturbed(
             INWScript script,
-            IDataContext db,
+            IDataService data,
             IItemService item,
             IBaseService @base)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _item = item;
             _base = @base;
         }
@@ -35,8 +37,9 @@ namespace SWLOR.Game.Server.Placeable.ResourceBay
             NWPlaceable bay = Object.OBJECT_SELF;
             int disturbType = _.GetInventoryDisturbType();
             NWItem item = _.GetInventoryDisturbItem();
-            int structureID = bay.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            var structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
+            string structureID = bay.GetLocalString("PC_BASE_STRUCTURE_ID");
+            Guid structureGUID = new Guid(structureID);
+            var structure = _data.Single<PCBaseStructure>(x => x.ID == structureGUID);
             var controlTower = _base.GetBaseControlTower(structure.PCBaseID);
 
             if (disturbType == INVENTORY_DISTURB_TYPE_ADDED)
@@ -47,11 +50,10 @@ namespace SWLOR.Game.Server.Placeable.ResourceBay
             }
             else if (disturbType == INVENTORY_DISTURB_TYPE_REMOVED)
             {
-                var removeItem = _db.PCBaseStructureItems.SingleOrDefault(x => x.PCBaseStructureID == controlTower.PCBaseStructureID && x.ItemGlobalID == item.GlobalID);
+                var removeItem = _data.SingleOrDefault<PCBaseStructureItem>(x => x.PCBaseStructureID == controlTower.ID && x.ItemGlobalID == item.GlobalID.ToString());
                 if (removeItem == null) return false;
 
-                _db.PCBaseStructureItems.Remove(removeItem);
-                _db.SaveChanges();
+                _data.SubmitDataChange(removeItem, DatabaseActionType.Delete);
             }
 
             return true;

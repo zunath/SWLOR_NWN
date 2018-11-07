@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.ValueObject
 {
@@ -16,7 +17,7 @@ namespace SWLOR.Game.Server.ValueObject
         public List<CraftBlueprintCategory> CraftBlueprintCategories { get; set; }
         public List<CraftBlueprint> CraftBlueprints { get; set; }
         public List<CraftDevice> CraftDevices { get; set; }
-        public List<Data.CustomEffect> CustomEffects { get; set; }
+        public List<Data.Entity.CustomEffect> CustomEffects { get; set; }
         public List<Download> Downloads { get; set; }
         public List<FameRegion> FameRegions { get; set; }
         public List<GameTopicCategory> GameTopicCategories { get; set; }
@@ -25,13 +26,13 @@ namespace SWLOR.Game.Server.ValueObject
         public List<KeyItem> KeyItems { get; set; }
         public List<LootTableItem> LootTableItems { get; set; }
         public List<LootTable> LootTables { get; set; }
-        public List<Data.Mod> Mods { get; set; }
+        public List<Data.Entity.Mod> Mods { get; set; }
         public List<NPCGroup> NPCGroups { get; set; }
         public List<PerkCategory> PerkCategories { get; set; }
         public List<Plant> Plants { get; set; }
         public List<Quest> Quests { get; set; }
         public List<SkillCategory> SkillCategories { get; set; }
-        public List<Data.Skill> Skills { get; set; }
+        public List<Data.Entity.Skill> Skills { get; set; }
         public List<Spawn> Spawns { get; set; }
 
         public DataPackageFile(string packageName)
@@ -46,7 +47,7 @@ namespace SWLOR.Game.Server.ValueObject
             CraftBlueprintCategories = new List<CraftBlueprintCategory>();
             CraftBlueprints = new List<CraftBlueprint>();
             CraftDevices = new List<CraftDevice>();
-            CustomEffects = new List<Data.CustomEffect>();
+            CustomEffects = new List<Data.Entity.CustomEffect>();
             Downloads = new List<Download>();
             FameRegions = new List<FameRegion>();
             GameTopicCategories = new List<GameTopicCategory>();
@@ -55,13 +56,13 @@ namespace SWLOR.Game.Server.ValueObject
             KeyItems = new List<KeyItem>();
             LootTableItems = new List<LootTableItem>();
             LootTables = new List<LootTable>();
-            Mods = new List<Data.Mod>();
+            Mods = new List<Data.Entity.Mod>();
             NPCGroups = new List<NPCGroup>();
             PerkCategories = new List<PerkCategory>();
             Plants = new List<Plant>();
             Quests = new List<Quest>();
             SkillCategories = new List<SkillCategory>();
-            Skills = new List<Data.Skill>();
+            Skills = new List<Data.Entity.Skill>();
             Spawns = new List<Spawn>();
         }
     }

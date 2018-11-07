@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.GameObject;
 
@@ -6,13 +7,13 @@ namespace SWLOR.Game.Server.ValueObject.Skill
 {
     public class CreatureSkillRegistration
     {
-        public string CreatureID { get; set; }
-        public Dictionary<string, PlayerSkillRegistration> Registrations { get; set; }
+        public Guid CreatureID { get; set; }
+        public Dictionary<Guid, PlayerSkillRegistration> Registrations { get; set; }
 
-        public CreatureSkillRegistration(string creatureID)
+        public CreatureSkillRegistration(Guid creatureID)
         {
             CreatureID = creatureID;
-            Registrations = new Dictionary<string, PlayerSkillRegistration>();
+            Registrations = new Dictionary<Guid, PlayerSkillRegistration>();
         }
 
         private PlayerSkillRegistration GetRegistration(NWPlayer oPC)

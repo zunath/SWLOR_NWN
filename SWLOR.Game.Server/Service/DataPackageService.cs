@@ -11,17 +11,21 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Service
 {
     public class DataPackageService : IDataPackageService
     {
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         const string PackagesPath = "./DataPackages/";
+        private Queue<DatabaseAction> _queuedDBChanges;
 
-        public DataPackageService(IDataContext db)
+        public DataPackageService(IDataService data)
         {
-            _db = db;
+            _data = data;
+            _queuedDBChanges = new Queue<DatabaseAction>();
         }
 
         public void OnModuleLoad()
@@ -63,9 +67,8 @@ namespace SWLOR.Game.Server.Service
                     package.ImportedSuccessfully = false;
                 }
 
-                _db.DataPackages.Add(package);
-                _db.SaveChanges();
-
+                _data.SubmitDataChange(package, DatabaseActionType.Insert);
+                
                 if (package.ImportedSuccessfully)
                 {
                     Console.WriteLine("Processed package " + package.PackageName + " successfully.");
@@ -81,7 +84,7 @@ namespace SWLOR.Game.Server.Service
         private List<DataPackage> BuildPackageList()
         {
             // Pull back all of the packages we've already attempted to import.
-            var importedPackages = _db.DataPackages.ToList();
+            var importedPackages = _data.GetAll<DataPackage>();
 
             List<DataPackage> packages = new List<DataPackage>();
             string[] files = Directory.GetFiles(PackagesPath, "*.json");
@@ -120,68 +123,69 @@ namespace SWLOR.Game.Server.Service
         private string ProcessDataPackageFile(DataPackageFile dpf)
         {
             string errors = string.Empty;
-            App.Resolve<IDataContext>(db =>
+
+            foreach (var obj in dpf.ApartmentBuildings)
+                errors += ValidateAndProcess(new ApartmentBuildingProcessor(), obj) + "\n";
+            foreach (var obj in dpf.BaseStructures)
+                errors += ValidateAndProcess(new BaseStructureProcessor(), obj) + "\n";
+            foreach (var obj in dpf.BuildingStyles)
+                errors += ValidateAndProcess(new BuildingStyleProcessor(), obj) + "\n";
+            foreach (var obj in dpf.CooldownCategories)
+                errors += ValidateAndProcess(new CooldownCategoryProcessor(), obj) + "\n";
+            foreach (var obj in dpf.CraftBlueprintCategories)
+                errors += ValidateAndProcess(new CraftBlueprintCategoryProcessor(), obj) + "\n";
+            foreach (var obj in dpf.CraftBlueprints)
+                errors += ValidateAndProcess(new CraftBlueprintProcessor(), obj) + "\n";
+            foreach (var obj in dpf.CraftDevices)
+                errors += ValidateAndProcess(new CraftDeviceProcessor(), obj) + "\n";
+            foreach (var obj in dpf.CustomEffects)
+                errors += ValidateAndProcess(new CustomEffectProcessor(), obj) + "\n";
+            foreach (var obj in dpf.Downloads)
+                errors += ValidateAndProcess(new DownloadProcessor(), obj) + "\n";
+            foreach (var obj in dpf.FameRegions)
+                errors += ValidateAndProcess(new FameRegionProcessor(), obj) + "\n";
+            foreach (var obj in dpf.GameTopicCategories)
+                errors += ValidateAndProcess(new GameTopicCategoryProcessor(), obj) + "\n";
+            foreach (var obj in dpf.GameTopics)
+                errors += ValidateAndProcess(new GameTopicProcessor(), obj) + "\n";
+            foreach (var obj in dpf.KeyItemCategories)
+                errors += ValidateAndProcess(new KeyItemCategoryProcessor(), obj) + "\n";
+            foreach (var obj in dpf.KeyItems)
+                errors += ValidateAndProcess(new KeyItemProcessor(), obj) + "\n";
+            foreach (var obj in dpf.LootTableItems)
+                errors += ValidateAndProcess(new LootTableItemProcessor(), obj) + "\n";
+            foreach (var obj in dpf.LootTables)
+                errors += ValidateAndProcess(new LootTableProcessor(), obj) + "\n";
+            foreach (var obj in dpf.Mods)
+                errors += ValidateAndProcess(new ModProcessor(), obj) + "\n";
+            foreach (var obj in dpf.NPCGroups)
+                errors += ValidateAndProcess(new NPCGroupProcessor(), obj) + "\n";
+            foreach (var obj in dpf.PerkCategories)
+                errors += ValidateAndProcess(new PerkCategoryProcessor(), obj) + "\n";
+            foreach (var obj in dpf.Plants)
+                errors += ValidateAndProcess(new PlantProcessor(), obj) + "\n";
+            foreach (var obj in dpf.Quests)
+                errors += ValidateAndProcess(new QuestProcessor(), obj) + "\n";
+            foreach (var obj in dpf.SkillCategories)
+                errors += ValidateAndProcess(new SkillCategoryProcessor(), obj) + "\n";
+            foreach (var obj in dpf.Skills)
+                errors += ValidateAndProcess(new SkillProcessor(), obj) + "\n";
+            foreach (var obj in dpf.Spawns)
+                errors += ValidateAndProcess(new SpawnProcessor(), obj) + "\n";
+
+            // Nothing in the package gets committed to the database if any error occurs.
+            if (string.IsNullOrWhiteSpace(errors))
             {
-                foreach (var obj in dpf.ApartmentBuildings)
-                    errors += ValidateAndProcess(db, new ApartmentBuildingProcessor(), obj) + "\n";
-                foreach (var obj in dpf.BaseStructures)
-                    errors += ValidateAndProcess(db, new BaseStructureProcessor(), obj) + "\n";
-                foreach (var obj in dpf.BuildingStyles)
-                    errors += ValidateAndProcess(db, new BuildingStyleProcessor(), obj) + "\n";
-                foreach (var obj in dpf.CooldownCategories)
-                    errors += ValidateAndProcess(db, new CooldownCategoryProcessor(), obj) + "\n";
-                foreach (var obj in dpf.CraftBlueprintCategories)
-                    errors += ValidateAndProcess(db, new CraftBlueprintCategoryProcessor(), obj) + "\n";
-                foreach (var obj in dpf.CraftBlueprints)
-                    errors += ValidateAndProcess(db, new CraftBlueprintProcessor(), obj) + "\n";
-                foreach (var obj in dpf.CraftDevices)
-                    errors += ValidateAndProcess(db, new CraftDeviceProcessor(), obj) + "\n";
-                foreach (var obj in dpf.CustomEffects)
-                    errors += ValidateAndProcess(db, new CustomEffectProcessor(), obj) + "\n";
-                foreach (var obj in dpf.Downloads)
-                    errors += ValidateAndProcess(db, new DownloadProcessor(), obj) + "\n";
-                foreach (var obj in dpf.FameRegions)
-                    errors += ValidateAndProcess(db, new FameRegionProcessor(), obj) + "\n";
-                foreach (var obj in dpf.GameTopicCategories)
-                    errors += ValidateAndProcess(db, new GameTopicCategoryProcessor(), obj) + "\n";
-                foreach (var obj in dpf.GameTopics)
-                    errors += ValidateAndProcess(db, new GameTopicProcessor(), obj) + "\n";
-                foreach (var obj in dpf.KeyItemCategories)
-                    errors += ValidateAndProcess(db, new KeyItemCategoryProcessor(), obj) + "\n";
-                foreach (var obj in dpf.KeyItems)
-                    errors += ValidateAndProcess(db, new KeyItemProcessor(), obj) + "\n";
-                foreach (var obj in dpf.LootTableItems)
-                    errors += ValidateAndProcess(db, new LootTableItemProcessor(), obj) + "\n";
-                foreach (var obj in dpf.LootTables)
-                    errors += ValidateAndProcess(db, new LootTableProcessor(), obj) + "\n";
-                foreach (var obj in dpf.Mods)
-                    errors += ValidateAndProcess(db, new ModProcessor(), obj) + "\n";
-                foreach (var obj in dpf.NPCGroups)
-                    errors += ValidateAndProcess(db, new NPCGroupProcessor(), obj) + "\n";
-                foreach (var obj in dpf.PerkCategories)
-                    errors += ValidateAndProcess(db, new PerkCategoryProcessor(), obj) + "\n";
-                foreach (var obj in dpf.Plants)
-                    errors += ValidateAndProcess(db, new PlantProcessor(), obj) + "\n";
-                foreach (var obj in dpf.Quests)
-                    errors += ValidateAndProcess(db, new QuestProcessor(), obj) + "\n";
-                foreach (var obj in dpf.SkillCategories)
-                    errors += ValidateAndProcess(db, new SkillCategoryProcessor(), obj) + "\n";
-                foreach (var obj in dpf.Skills)
-                    errors += ValidateAndProcess(db, new SkillProcessor(), obj) + "\n";
-                foreach (var obj in dpf.Spawns)
-                    errors += ValidateAndProcess(db, new SpawnProcessor(), obj) + "\n";
-
-                // Nothing in the package gets committed to the database if any error occurs.
-                if (string.IsNullOrWhiteSpace(errors))
+                while (_queuedDBChanges.Count > 0)
                 {
-                    db.SaveChanges();
+                    var change = _queuedDBChanges.Dequeue();
+                    _data.SubmitDataChange(change);
                 }
-            });
-
+            }
             return errors;
         }
 
-        private string ValidateAndProcess<T>(IDataContext db, IDataProcessor<T> processor, T dataObject)
+        private string ValidateAndProcess<T>(IDataProcessor<T> processor, T dataObject)
         {
             string errors = string.Empty;
 
@@ -198,7 +202,16 @@ namespace SWLOR.Game.Server.Service
             {
                 try
                 {
-                    processor.Process(db, dataObject);
+                    var result = processor.Process(_data, dataObject);
+
+                    if (result == null)
+                    {
+                        errors += "Failed to process object of type: " + dataObject.GetType() + " Reason: Processor failed to return valid DatabaseAction object";
+                    }
+                    else
+                    {
+                        _queuedDBChanges.Enqueue(result);
+                    }
                 }
                 catch (Exception ex)
                 {

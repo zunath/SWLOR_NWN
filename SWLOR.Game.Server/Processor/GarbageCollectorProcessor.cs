@@ -5,28 +5,28 @@ namespace SWLOR.Game.Server.Processor
 {
     public class GarbageCollectorProcessor: IEventProcessor
     {
-        private readonly AppState _state;
+        private readonly AppCache _cache;
 
-        public GarbageCollectorProcessor(AppState state)
+        public GarbageCollectorProcessor(AppCache cache)
         {
-            _state = state;
+            _cache = cache;
         }
 
         public void Run(object[] args)
         {
             Console.WriteLine("======================================================");
-            Console.WriteLine("PlayerDialogs: " + _state.PlayerDialogs.Count);
-            Console.WriteLine("DialogFilesInUse: " + _state.DialogFilesInUse.Count);
-            Console.WriteLine("EffectTicks: " + _state.EffectTicks.Count);
-            Console.WriteLine("CreatureSkillRegistrations: " + _state.CreatureSkillRegistrations.Count);
-            Console.WriteLine("NPCEffects: " + _state.NPCEffects.Count);
-            Console.WriteLine("UnregisterProcessingEvents: " + _state.UnregisterProcessingEvents.Count);
-            Console.WriteLine("NPCEnmityTables: " + _state.NPCEnmityTables.Count);
-            Console.WriteLine("CustomObjectData: " + _state.CustomObjectData.Count);
-            Console.WriteLine("NPCBehaviours: " + _state.NPCBehaviours.Count);
-            Console.WriteLine("AreaSpawns: " + _state.AreaSpawns.Count);
-            Console.WriteLine("VisibilityObjects: " + _state.VisibilityObjects.Count);
-            Console.WriteLine("PCEffectsForRemoval: " + _state.PCEffectsForRemoval.Count);
+            Console.WriteLine("PlayerDialogs: " + _cache.PlayerDialogs.Count);
+            Console.WriteLine("DialogFilesInUse: " + _cache.DialogFilesInUse.Count);
+            Console.WriteLine("EffectTicks: " + _cache.EffectTicks.Count);
+            Console.WriteLine("CreatureSkillRegistrations: " + _cache.CreatureSkillRegistrations.Count);
+            Console.WriteLine("NPCEffects: " + _cache.NPCEffects.Count);
+            Console.WriteLine("UnregisterProcessingEvents: " + _cache.UnregisterProcessingEvents.Count);
+            Console.WriteLine("NPCEnmityTables: " + _cache.NPCEnmityTables.Count);
+            Console.WriteLine("CustomObjectData: " + _cache.CustomObjectData.Count);
+            Console.WriteLine("NPCBehaviours: " + _cache.NPCBehaviours.Count);
+            Console.WriteLine("AreaSpawns: " + _cache.AreaSpawns.Count);
+            Console.WriteLine("VisibilityObjects: " + _cache.VisibilityObjects.Count);
+            Console.WriteLine("PCEffectsForRemoval: " + _cache.PCEffectsForRemoval.Count);
             Console.WriteLine("======================================================");
             long memoryInUse = GC.GetTotalMemory(true);
             Console.WriteLine("Memory In Use = " + memoryInUse);

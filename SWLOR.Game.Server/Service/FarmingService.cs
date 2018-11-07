@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
@@ -6,6 +7,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Service
@@ -13,25 +15,29 @@ namespace SWLOR.Game.Server.Service
     public class FarmingService: IFarmingService
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IRandomService _random;
         private readonly IColorTokenService _color;
 
         public FarmingService(INWScript script, 
-            IDataContext db,
+            IDataService data,
             IRandomService random,
             IColorTokenService color)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _random = random;
             _color = color;
         }
 
         public void HarvestPlant(NWPlayer player, NWItem shovel, NWPlaceable plant)
         {
-            int growingPlantID = plant.GetLocalInt("GROWING_PLANT_ID");
-            if (growingPlantID <= 0) return;
+            string growingPlantID = plant.GetLocalString("GROWING_PLANT_ID");
+            Guid? growingPlantGuid = null;
+            if (!string.IsNullOrWhiteSpace(growingPlantID))
+                growingPlantGuid = new Guid(growingPlantID);
+
+            if (growingPlantGuid == null) return;
 
             int charges = shovel.Charges;
             if (charges <= 0)
@@ -40,8 +46,8 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            GrowingPlant growingPlant = _db.GrowingPlants.Single(x => x.GrowingPlantID == growingPlantID);
-            Plant plantEntity = growingPlant.Plant;
+            GrowingPlant growingPlant = _data.Single<GrowingPlant>(x => x.ID == growingPlantGuid);
+            Plant plantEntity = _data.Get<Plant>(growingPlant.PlantID);
 
             if (string.IsNullOrWhiteSpace(plantEntity.SeedResref))
             {
@@ -50,7 +56,7 @@ namespace SWLOR.Game.Server.Service
             }
             
             growingPlant.IsActive = false;
-            _db.SaveChanges();
+            _data.SubmitDataChange(growingPlant, DatabaseActionType.Update);
 
             _.CreateItemOnObject(plantEntity.SeedResref, player.Object);
             plant.Destroy();
@@ -64,7 +70,7 @@ namespace SWLOR.Game.Server.Service
             if (plantID <= 0) return existingDescription;
             if (examinedObject.ObjectType != NWScript.OBJECT_TYPE_ITEM) return existingDescription;
 
-            Plant plant = _db.Plants.SingleOrDefault(x => x.PlantID == plantID);
+            Plant plant = _data.SingleOrDefault<Plant>(x => x.ID == plantID);
             if (plant == null) return existingDescription;
 
             existingDescription += _color.Orange("This item can be planted. Farming skill required: " + plant.Level) + "\n\n";
@@ -73,45 +79,50 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleLoad()
         {
-            List<GrowingPlant> plants = _db.GrowingPlants.Where(x => x.IsActive).ToList();
+            List<GrowingPlant> plants = _data.Where<GrowingPlant>(x => x.IsActive).ToList();
 
-            foreach (GrowingPlant plant in plants)
+            foreach (GrowingPlant growingPlant in plants)
             {
+                var plant = _data.Get<Plant>(growingPlant.PlantID);
                 string resref = "growing_plant";
-                if (plant.RemainingTicks <= 0)
-                    resref = plant.Plant.Resref;
+                if (growingPlant.RemainingTicks <= 0)
+                    resref = plant.Resref;
 
-                NWArea area = (_.GetObjectByTag(plant.LocationAreaTag));
-                Vector position = _.Vector((float)plant.LocationX, (float)plant.LocationY, (float)plant.LocationZ);
-                Location location = _.Location(area.Object, position, (float)plant.LocationOrientation);
+                NWArea area = (_.GetObjectByTag(growingPlant.LocationAreaTag));
+                Vector position = _.Vector((float)growingPlant.LocationX, (float)growingPlant.LocationY, (float)growingPlant.LocationZ);
+                Location location = _.Location(area.Object, position, (float)growingPlant.LocationOrientation);
                 NWPlaceable plantPlc = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, resref, location));
-                plantPlc.SetLocalInt("GROWING_PLANT_ID", plant.GrowingPlantID);
+                plantPlc.SetLocalString("GROWING_PLANT_ID", growingPlant.ID.ToString());
 
-                if (plant.RemainingTicks > 0)
+                if (growingPlant.RemainingTicks > 0)
                 {
-                    plantPlc.Name = "Growing Plant (" + plant.Plant.Name + ")";
+                    plantPlc.Name = "Growing Plant (" + plant.Name + ")";
                 }
             }
         }
         
         public void RemoveGrowingPlant(NWPlaceable plant)
         {
-            int growingPlantID = plant.GetLocalInt("GROWING_PLANT_ID");
-            if (growingPlantID <= 0) return;
+            string growingPlantID = plant.GetLocalString("GROWING_PLANT_ID");
+            Guid? growingPlantGuid = null;
+            if(!string.IsNullOrWhiteSpace(growingPlantID))
+                growingPlantGuid = new Guid(growingPlantID);
 
-            GrowingPlant growingPlant = _db.GrowingPlants.Single(x => x.GrowingPlantID == growingPlantID);
+            if (growingPlantGuid == null) return;
+
+            GrowingPlant growingPlant = _data.Single<GrowingPlant>(x => x.ID == growingPlantGuid);
             growingPlant.IsActive = false;
-            _db.SaveChanges();
+            _data.SubmitDataChange(growingPlant, DatabaseActionType.Update);
         }
 
-        public GrowingPlant GetGrowingPlantByID(int growingPlantID)
+        public GrowingPlant GetGrowingPlantByID(Guid growingPlantID)
         {
-            return _db.GrowingPlants.Single(x => x.GrowingPlantID == growingPlantID);
+            return _data.Single<GrowingPlant>(x => x.ID == growingPlantID);
         }
 
         public Plant GetPlantByID(int plantID)
         {
-            return _db.Plants.Single(x => x.PlantID == plantID);
+            return _data.Single<Plant>(x => x.ID == plantID);
         }
 
     }

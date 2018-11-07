@@ -12,16 +12,19 @@ namespace SWLOR.Game.Server.Perk.LightSide
         private readonly IPerkService _perk;
         private readonly IRandomService _random;
         private readonly IPlayerStatService _playerStat;
+        private readonly ISkillService _skill;
 
         public ForcePush(INWScript script,
             IPerkService perk,
             IRandomService random,
-            IPlayerStatService playerStat)
+            IPlayerStatService playerStat,
+            ISkillService skill)
         {
             _ = script;
             _perk = perk;
             _random = random;
             _playerStat = playerStat;
+            _skill = skill;
         }
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
@@ -102,6 +105,7 @@ namespace SWLOR.Game.Server.Perk.LightSide
 
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_POSITIVE), target);
             _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectKnockdown(), target, length);
+            _skill.RegisterPCToNPCForSkill(player, target, SkillType.LightSideAbilities);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

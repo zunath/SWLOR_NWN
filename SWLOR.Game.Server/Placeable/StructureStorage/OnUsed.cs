@@ -1,8 +1,10 @@
-﻿using NWN;
+﻿using System;
+using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.StructureStorage
 {
@@ -25,7 +27,7 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
         {
             NWPlayer oPC = (_.GetLastUsedBy());
             NWPlaceable container = (Object.OBJECT_SELF);
-            int structureID = container.GetLocalInt("PC_BASE_STRUCTURE_ID");
+            Guid structureID = new Guid(container.GetLocalString("PC_BASE_STRUCTURE_ID"));
 
             if (!_perm.HasStructurePermission(oPC, structureID, StructurePermission.CanAccessStructureInventory))
             {

@@ -9,6 +9,7 @@ using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.DoorRule.Contracts;
 using static NWN.NWScript;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
@@ -22,7 +23,7 @@ namespace SWLOR.Game.Server.Service
         private readonly INWScript _;
         private readonly INWNXEvents _nwnxEvents;
         private readonly IDialogService _dialog;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IPlayerService _player;
         private readonly IImpoundService _impound;
         private readonly IBasePermissionService _perm;
@@ -34,7 +35,7 @@ namespace SWLOR.Game.Server.Service
             INWScript script,
             INWNXEvents nwnxEvents,
             IDialogService dialog,
-            IDataContext db,
+            IDataService data,
             IPlayerService player,
             IImpoundService impound,
             IBasePermissionService perm,
@@ -45,13 +46,14 @@ namespace SWLOR.Game.Server.Service
             _ = script;
             _nwnxEvents = nwnxEvents;
             _dialog = dialog;
-            _db = db;
+            _data = data;
             _player = player;
             _impound = impound;
             _perm = perm;
             _nwnxChat = nwnxChat;
             _durability = durability;
             _area = area;
+            _data = data;
         }
 
         public PCTempBaseData GetPlayerTempData(NWPlayer player)
@@ -105,40 +107,44 @@ namespace SWLOR.Game.Server.Service
                     area.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();
                 }
 
-                var pcBases = _db.PCBases.Where(x => x.AreaResref == area.Resref && x.ApartmentBuildingID == null).ToList();
+                var pcBases = _data.Where<PCBase>(x => x.AreaResref == area.Resref && x.ApartmentBuildingID == null).ToList();
                 foreach (var @base in pcBases)
                 {
-                    foreach (var structure in @base.PCBaseStructures)
+                    var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == @base.ID);
+                    foreach (var structure in structures)
                     {
                         if (structure.ParentPCBaseStructureID != null) continue; // Don't spawn any structures contained by buildings.
-                        SpawnStructure(area, structure.PCBaseStructureID);
+                        SpawnStructure(area, structure.ID);
                     }
                 }
 
             }
         }
 
-        public NWPlaceable SpawnStructure(NWArea area, int pcBaseStructureID)
+        public NWPlaceable SpawnStructure(NWArea area, Guid pcBaseStructureID)
         {
-            PCBaseStructure structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == pcBaseStructureID);
+            PCBaseStructure pcStructure = _data.Get<PCBaseStructure>(pcBaseStructureID);
+            PCBase pcBase = _data.Get<PCBase>(pcStructure.PCBaseID);
+            BaseStructure baseStructure = _data.Get<BaseStructure>(pcStructure.BaseStructureID);
+            var exteriorStyle = _data.Get<BuildingStyle>(pcStructure.ExteriorStyleID);
 
             NWLocation location = _.Location(area.Object,
-                _.Vector((float)structure.LocationX, (float)structure.LocationY, (float)structure.LocationZ),
-                (float)structure.LocationOrientation);
+                _.Vector((float)pcStructure.LocationX, (float)pcStructure.LocationY, (float)pcStructure.LocationZ),
+                (float)pcStructure.LocationOrientation);
 
-            BaseStructureType structureType = (BaseStructureType)structure.BaseStructure.BaseStructureTypeID;
-            string resref = structure.BaseStructure.PlaceableResref;
+            BaseStructureType structureType = (BaseStructureType)baseStructure.BaseStructureTypeID;
+            string resref = baseStructure.PlaceableResref;
 
             List<AreaStructure> areaStructures = area.Data["BASE_SERVICE_STRUCTURES"];
             if (string.IsNullOrWhiteSpace(resref) &&
                 structureType == BaseStructureType.Building)
             {
-                resref = structure.ExteriorStyle.Resref;
+                resref = exteriorStyle.Resref;
             }
             
             NWPlaceable plc = (_.CreateObject(OBJECT_TYPE_PLACEABLE, resref, location));
-            plc.SetLocalInt("PC_BASE_STRUCTURE_ID", structure.PCBaseStructureID);
-            plc.SetLocalInt("REQUIRES_BASE_POWER", structure.BaseStructure.RequiresBasePower ? 1 : 0);
+            plc.SetLocalString("PC_BASE_STRUCTURE_ID", pcStructure.ID.ToString());
+            plc.SetLocalInt("REQUIRES_BASE_POWER", baseStructure.RequiresBasePower ? 1 : 0);
             plc.SetLocalString("ORIGINAL_SCRIPT_CLOSED", _.GetEventScript(plc.Object, EVENT_SCRIPT_PLACEABLE_ON_CLOSED));
             plc.SetLocalString("ORIGINAL_SCRIPT_DAMAGED", _.GetEventScript(plc.Object, EVENT_SCRIPT_PLACEABLE_ON_DAMAGED));
             plc.SetLocalString("ORIGINAL_SCRIPT_DEATH", _.GetEventScript(plc.Object, EVENT_SCRIPT_PLACEABLE_ON_DEATH));
@@ -157,14 +163,14 @@ namespace SWLOR.Game.Server.Service
             NWPlaceable door = null;
             if (structureType == BaseStructureType.Building)
             {
-                door = SpawnBuildingDoor(structure.ExteriorStyle.DoorRule, plc);
-                areaStructures.Add(new AreaStructure(structure.PCBaseID, structure.PCBaseStructureID, door, false, null));
+                door = SpawnBuildingDoor(exteriorStyle.DoorRule, plc);
+                areaStructures.Add(new AreaStructure(pcStructure.PCBaseID, pcStructure.ID, door, false, null));
             }
-            areaStructures.Add(new AreaStructure(structure.PCBaseID, structure.PCBaseStructureID, plc, true, door));
+            areaStructures.Add(new AreaStructure(pcStructure.PCBaseID, pcStructure.ID, plc, true, door));
 
             if (area.IsInstance && area.GetLocalInt("PC_BASE_STRUCTURE_ID") > 0)
             {
-                if (DateTime.UtcNow > structure.PCBase.DateFuelEnds && structure.PCBase.Fuel <= 0)
+                if (DateTime.UtcNow > pcBase.DateFuelEnds && pcBase.Fuel <= 0)
                 {
                     ToggleInstanceObjectPower(area, false);
                 }
@@ -246,8 +252,8 @@ namespace SWLOR.Game.Server.Service
             if (area.Height < 32) throw new Exception("Area must be at least 32 tiles high.");
 
 
-            var dbArea = _db.Areas.Single(x => x.Resref == area.Resref);
-            string existingOwner = string.Empty;
+            var dbArea = _data.Single<Area>(x => x.Resref == area.Resref);
+            Guid? existingOwner = null;
             switch (sector)
             {
                 case AreaSector.Northwest: existingOwner = dbArea.NorthwestOwner; break;
@@ -256,7 +262,7 @@ namespace SWLOR.Game.Server.Service
                 case AreaSector.Southeast: existingOwner = dbArea.SoutheastOwner; break;
             }
 
-            if (!string.IsNullOrWhiteSpace(existingOwner))
+            if (existingOwner != null)
             {
                 player.SendMessage("Another player already owns that sector.");
                 return;
@@ -288,19 +294,18 @@ namespace SWLOR.Game.Server.Service
                 PCBaseTypeID = (int)Enumeration.PCBaseType.RegularBase,
                 CustomName = string.Empty
             };
-            _db.PCBases.Add(pcBase);
-
+            _data.SubmitDataChange(pcBase, DatabaseActionType.Insert);
+            
             PCBasePermission permission = new PCBasePermission
             {
-                PCBase = pcBase,
+                PCBaseID = pcBase.ID,
                 PlayerID = player.GlobalID
             };
-            _db.PCBasePermissions.Add(permission);
-            _db.SaveChanges();
-
+            _data.SubmitDataChange(permission, DatabaseActionType.Insert);
+            
             // Grant all base permissions to owner.
             var allPermissions = Enum.GetValues(typeof(BasePermission)).Cast<BasePermission>().ToArray();
-            _perm.GrantBasePermissions(player, pcBase.PCBaseID, allPermissions);
+            _perm.GrantBasePermissions(player, pcBase.ID, allPermissions);
 
             player.FloatingText("You purchase " + area.Name + " (" + sector + ") for " + dbArea.PurchasePrice + " credits.");
         }
@@ -313,14 +318,14 @@ namespace SWLOR.Game.Server.Service
 
             if (ticks >= 10)
             {
-                List<Tuple<string, string>> playerIDs = new List<Tuple<string, string>>();
-                var pcBases = _db.PCBases.Where(x => x.DateRentDue <= DateTime.UtcNow).ToList();
+                List<Tuple<Guid, string>> playerIDs = new List<Tuple<Guid, string>>();
+                var pcBases = _data.Where<PCBase>(x => x.DateRentDue <= DateTime.UtcNow).ToList();
                 
                 foreach (var pcBase in pcBases)
                 { 
-                    Area dbArea = _db.Areas.Single(x => x.Resref == pcBase.AreaResref);
-                    playerIDs.Add(new Tuple<string, string>(pcBase.PlayerID, dbArea.Name + " (" + pcBase.Sector + ")"));
-                    ClearPCBaseByID(pcBase.PCBaseID, false);
+                    Area dbArea = _data.Single<Area>(x => x.Resref == pcBase.AreaResref);
+                    playerIDs.Add(new Tuple<Guid, string>(pcBase.PlayerID, dbArea.Name + " (" + pcBase.Sector + ")"));
+                    ClearPCBaseByID(pcBase.ID);
                 }
 
                 var players = module.Players.ToList();
@@ -330,36 +335,59 @@ namespace SWLOR.Game.Server.Service
                     existing?.FloatingText("Your lease on " + removed.Item2 + " has expired. All structures and items have been impounded by the planetary government. Speak with them to pay a fee and retrieve your goods.");
                 }
 
-                _db.SaveChanges();
                 ticks = 0;
             }
 
             module.SetLocalInt("BASE_SERVICE_TICKS", ticks);
         }
 
-        public PCBaseStructure GetBaseControlTower(int pcBaseID)
+        public PCBaseStructure GetBaseControlTower(Guid pcBaseID)
         {
-            var pcBase = _db.PCBases.Single(x => x.PCBaseID == pcBaseID);
-            return pcBase.PCBaseStructures.SingleOrDefault(x =>
-                x.BaseStructure.BaseStructureTypeID == (int) BaseStructureType.ControlTower);
+            var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == pcBaseID);
+
+            return structures.SingleOrDefault(x =>
+            {
+                var baseStructure = _data.Get<BaseStructure>(x.BaseStructureID);
+                return baseStructure.BaseStructureTypeID == (int) BaseStructureType.ControlTower;
+            });
         }
 
-        public double GetPowerInUse(int pcBaseID)
+        public double GetPowerInUse(Guid pcBaseID)
         {
-            int controlTowerID = (int)BaseStructureType.ControlTower;
-            return _db.PCBaseStructures
-                .Where(x => x.PCBaseID == pcBaseID && x.BaseStructure.BaseStructureTypeID != controlTowerID)
+            const int controlTowerID = (int)BaseStructureType.ControlTower;
+
+            return _data.GetAll<PCBaseStructure>()
+                .Where(x =>
+                {
+                    var baseStructure = _data.Get<BaseStructure>(x.BaseStructureID);
+                    return x.PCBaseID == pcBaseID && baseStructure.BaseStructureTypeID != controlTowerID;
+                })
                 .DefaultIfEmpty()
-                .Sum(s => s == null || s.BaseStructure == null ? 0 : s.BaseStructure.Power);
+                .Sum(s =>
+                {
+                    var baseStructure = _data.Get<BaseStructure>(s.BaseStructureID);
+                    return s == null || baseStructure == null ? 0 : baseStructure.Power;
+                });
         }
 
-        public double GetCPUInUse(int pcBaseID)
+        public double GetCPUInUse(Guid pcBaseID)
         {
             int controlTowerID = (int)BaseStructureType.ControlTower;
-            return _db.PCBaseStructures
-                .Where(x => x.PCBaseID == pcBaseID && x != null && x.BaseStructure != null && x.BaseStructure.BaseStructureTypeID != controlTowerID)
+            return _data.GetAll<PCBaseStructure>()
+                .Where(x =>
+                {
+                    if (x == null) return false;
+
+                    var baseStructure = _data.Get<BaseStructure>(x.BaseStructureID);
+                    return x.PCBaseID == pcBaseID && baseStructure != null && baseStructure.BaseStructureTypeID != controlTowerID;
+                })
                 .DefaultIfEmpty()
-                .Sum(s => s == null || s.BaseStructure == null ? 0 : s.BaseStructure.CPU);
+                .Sum(s =>
+                {
+                    if (s == null) return 0;
+                    var baseStructure = _data.Get<BaseStructure>(s.BaseStructureID);
+                    return baseStructure == null ? 0 : baseStructure.CPU;
+                });
         }
 
         public string GetSectorOfLocation(NWLocation targetLocation)
@@ -400,7 +428,7 @@ namespace SWLOR.Game.Server.Service
             return sector;
         }
 
-        public string CanPlaceStructure(NWCreature user, NWItem structureItem, NWLocation targetLocation, int structureID)
+        public string CanPlaceStructure(NWCreature user, NWItem structureItem, NWLocation targetLocation, int baseStructureID)
         {
             NWPlayer player = user.Object;
             string sector = GetSectorOfLocation(targetLocation);
@@ -415,14 +443,16 @@ namespace SWLOR.Game.Server.Service
             }
 
             NWArea area = _.GetAreaFromLocation(targetLocation);
-            int buildingStructureID = area.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            int pcBaseID = area.GetLocalInt("PC_BASE_ID");
+            string buildingStructureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
+            Guid buildingStructureGuid = new Guid(buildingStructureID);
+            string pcBaseID = area.GetLocalString("PC_BASE_ID");
+            Guid pcBaseGUID = new Guid(pcBaseID);
             BuildingType buildingType;
-            if (pcBaseID > 0)
+            if (!string.IsNullOrWhiteSpace(pcBaseID))
             {
                 buildingType = BuildingType.Apartment;
             }
-            else if (buildingStructureID <= 0)
+            else if (string.IsNullOrWhiteSpace(buildingStructureID))
             {
                 buildingType = BuildingType.Exterior;
             }
@@ -431,19 +461,20 @@ namespace SWLOR.Game.Server.Service
                 buildingType = BuildingType.Interior;
             }
 
-            Area dbArea = _db.Areas.SingleOrDefault(x => x.Resref == area.Resref);
+            Area dbArea = _data.SingleOrDefault<Area>(x => x.Resref == area.Resref);
 
             if (dbArea == null || !dbArea.IsBuildable ) return "Structures cannot be placed in this area.";
-            PCBase pcBase = pcBaseID > 0 ?
-                _db.PCBases.Single(x => x.PCBaseID == pcBaseID) :
-                _db.PCBases.SingleOrDefault(x => x.AreaResref == area.Resref && x.Sector == sector);
+            PCBase pcBase = !string.IsNullOrWhiteSpace(pcBaseID) ?
+                _data.Get<PCBase>(pcBaseID) :
+                _data.SingleOrDefault<PCBase>(x => x.AreaResref == area.Resref && x.Sector == sector);
             if (pcBase == null && buildingType == BuildingType.Interior)
             {
-                var parentStructure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == buildingStructureID);
-                pcBase = parentStructure.PCBase;
+                var parentStructure = _data.Single<PCBaseStructure>(x => x.ID == buildingStructureGuid);
+                var parentBaseStructure = _data.Get<BaseStructure>(parentStructure.BaseStructureID);
+                pcBase = _data.Get<PCBase>(parentStructure.PCBaseID);
 
-                int buildingStructureCount = _db.PCBaseStructures.Count(x => x.ParentPCBaseStructureID == parentStructure.PCBaseStructureID) + 1;
-                if(buildingStructureCount > parentStructure.BaseStructure.Storage)
+                int buildingStructureCount = _data.GetAll<PCBaseStructure>().Count(x => x.ParentPCBaseStructureID == parentStructure.ID) + 1;
+                if(buildingStructureCount > parentBaseStructure.Storage)
                 {
                     return "No more structures can be placed inside this building.";
                 }
@@ -454,14 +485,14 @@ namespace SWLOR.Game.Server.Service
                 return "This area is unclaimed but not owned by you. You may purchase a lease on it from the planetary government by using your Base Management Tool (found under feats).";
 
             var canPlaceOrEditStructures = buildingType == BuildingType.Apartment || buildingType == BuildingType.Exterior ? 
-                _perm.HasBasePermission(player, pcBase.PCBaseID, BasePermission.CanPlaceEditStructures) :                 // Bases
-                _perm.HasStructurePermission(player, buildingStructureID, StructurePermission.CanPlaceEditStructures);    // Buildings
+                _perm.HasBasePermission(player, pcBase.ID, BasePermission.CanPlaceEditStructures) :                 // Bases
+                _perm.HasStructurePermission(player, buildingStructureGuid, StructurePermission.CanPlaceEditStructures);    // Buildings
 
             if (!canPlaceOrEditStructures)
                 return "You do not have permission to place or edit structures in this territory.";
-            
-            var structure = _db.BaseStructures.Single(x => x.BaseStructureID == structureID);
-            var structureType = structure.BaseStructureType;
+
+            var structure = _data.Get<BaseStructure>(baseStructureID);
+            var structureType = _data.Get<Data.Entity.BaseStructureType>(structure.BaseStructureTypeID);
             
             if (!structureType.CanPlaceOutside && buildingType == BuildingType.Exterior)
             {
@@ -475,15 +506,20 @@ namespace SWLOR.Game.Server.Service
 
             if (buildingType == BuildingType.Exterior)
             {
-                bool hasControlTower = pcBase.PCBaseStructures
-                                           .SingleOrDefault(x => x.BaseStructure.BaseStructureTypeID == (int)BaseStructureType.ControlTower) != null;
+                var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == pcBaseGUID);
+                bool hasControlTower = structures
+                                           .SingleOrDefault(x =>
+                                           {
+                                               var baseStructure = _data.Get<BaseStructure>(x.BaseStructureID);
+                                               return baseStructure.BaseStructureTypeID == (int) BaseStructureType.ControlTower;
+                                           }) != null;
 
-                if (!hasControlTower && structureType.BaseStructureTypeID != (int)BaseStructureType.ControlTower)
+                if (!hasControlTower && structureType.ID != (int)BaseStructureType.ControlTower)
                 {
                     return "A control tower must be placed down in the sector first.";
                 }
 
-                if (hasControlTower && structureType.BaseStructureTypeID == (int)BaseStructureType.ControlTower)
+                if (hasControlTower && structureType.ID == (int)BaseStructureType.ControlTower)
                 {
                     return "Only one control tower can be placed down per sector.";
                 }
@@ -495,9 +531,10 @@ namespace SWLOR.Game.Server.Service
 
         public NWItem ConvertStructureToItem(PCBaseStructure pcBaseStructure, NWObject target)
         {
-            NWItem item = (_.CreateItemOnObject(pcBaseStructure.BaseStructure.ItemResref, target.Object));
+            var baseStructure = _data.Get<BaseStructure>(pcBaseStructure.BaseStructureID);
+            NWItem item = (_.CreateItemOnObject(baseStructure.ItemResref, target.Object));
             item.SetLocalInt("BASE_STRUCTURE_ID", pcBaseStructure.BaseStructureID);
-            item.Name = pcBaseStructure.BaseStructure.Name;
+            item.Name = baseStructure.Name;
             
             _durability.SetMaxDurability(item, (float)pcBaseStructure.Durability);
             _durability.SetDurability(item, (float)pcBaseStructure.Durability);
@@ -513,10 +550,10 @@ namespace SWLOR.Game.Server.Service
             return item;
         }
 
-        public void BootPlayersOutOfInstance(int pcBaseStructureID)
+        public void BootPlayersOutOfInstance(Guid pcBaseStructureID)
         {
             var areas = NWModule.Get().Areas;
-            var instance = areas.SingleOrDefault(x => x.IsInstance && x.GetLocalInt("PC_BASE_STRUCTURE_ID") == pcBaseStructureID);
+            var instance = areas.SingleOrDefault(x => x.IsInstance && x.GetLocalString("PC_BASE_STRUCTURE_ID") == pcBaseStructureID.ToString());
             if (instance != null)
             {
                 foreach (var player in NWModule.Get().Players)
@@ -530,16 +567,23 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        public void ClearPCBaseByID(int pcBaseID, bool doSave = true)
+        public void ClearPCBaseByID(Guid pcBaseID)
         {
-            var pcBase = _db.PCBases.Single(x => x.PCBaseID == pcBaseID);
+            var pcBase = _data.Get<PCBase>(pcBaseID);
+            var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == pcBaseID).ToList();
             var areas = NWModule.Get().Areas;
             var baseArea = areas.Single(x => x.Resref == pcBase.AreaResref);
             List<AreaStructure> areaStructures = baseArea.Data["BASE_SERVICE_STRUCTURES"];
             areaStructures = areaStructures.Where(x => x.PCBaseID == pcBaseID).ToList();
             
             // Remove all players who are a resident of any structure in this base or the base itself.
-            var residents = _db.PlayerCharacters.Where(x => x.PrimaryResidencePCBaseID == pcBaseID || (x.PrimaryResidencePCBaseStructure != null && x.PrimaryResidencePCBaseStructure.PCBaseID == pcBaseID)).ToList();
+            var residents = _data.Where<Player>(x =>
+            {
+                if (x.PrimaryResidencePCBaseID == pcBaseID) return true;
+                if (x.PrimaryResidencePCBaseStructureID == null) return false;
+                var primaryResidenceStructure = _data.Get<PCBaseStructure>(x.PrimaryResidencePCBaseStructureID);
+                return  primaryResidenceStructure.PCBaseID == pcBaseID;
+            }).ToList();
             foreach (var resident in residents)
             {
                 resident.PrimaryResidencePCBaseID = null;
@@ -554,53 +598,49 @@ namespace SWLOR.Game.Server.Service
                 structure.Structure.Destroy();
             }
 
-            for (int x = pcBase.PCBaseStructures.Count-1; x >= 0; x--)
+            for (int x = structures.Count-1; x >= 0; x--)
             {
                 // Impound item storage
-                var pcBaseStructure = pcBase.PCBaseStructures.ElementAt(x);
-                for (int i = pcBaseStructure.PCBaseStructureItems.Count - 1; i >= 0; i--)
+                var pcBaseStructure = structures.ElementAt(x);
+                var items = _data.Where<PCBaseStructureItem>(i => i.PCBaseStructureID == pcBaseStructure.ID).ToList();
+
+                for (int i = items.Count - 1; i >= 0; i--)
                 {
-                    var item = pcBaseStructure.PCBaseStructureItems.ElementAt(i);
+                    var item = items.ElementAt(i);
                     _impound.Impound(item);
-                    _db.PCBaseStructureItems.Remove(item);
+                    _data.SubmitDataChange(item, DatabaseActionType.Delete);
                 }
 
                 // Clear structure permissions
-                for (int p = pcBaseStructure.PCBaseStructurePermissions.Count - 1; p >= 0; p--)
+                var structurePermissions = _data.Where<PCBaseStructurePermission>(p => p.PCBaseStructureID == pcBaseStructure.ID).ToList();
+                for (int p = structurePermissions.Count - 1; p >= 0; p--)
                 {
-                    var permission = pcBaseStructure.PCBaseStructurePermissions.ElementAt(p);
-                    _db.PCBaseStructurePermissions.Remove(permission);
+                    var permission = structurePermissions.ElementAt(p);
+                    _data.SubmitDataChange(permission, DatabaseActionType.Delete);
                 }
 
                 var tempStorage = (_.GetObjectByTag("TEMP_ITEM_STORAGE"));
                 NWItem copy = ConvertStructureToItem(pcBaseStructure, tempStorage);
                 _impound.Impound(pcBase.PlayerID, copy);
                 copy.Destroy();
-
-                _db.PCBaseStructures.Remove(pcBaseStructure);
+                _data.SubmitDataChange(pcBaseStructure, DatabaseActionType.Delete);
             }
 
             // Clear base permissions
-            for (int p = pcBase.PCBasePermissions.Count - 1; p >= 0; p--)
+            var permissions = _data.Where<PCBasePermission>(x => x.PCBaseID == pcBaseID).ToList();
+            for (int p = permissions.Count - 1; p >= 0; p--)
             {
-                var permission = pcBase.PCBasePermissions.ElementAt(p);
-                _db.PCBasePermissions.Remove(permission);
+                var permission = permissions.ElementAt(p);
+                _data.SubmitDataChange(permission, DatabaseActionType.Delete);
             }
 
-            _db.PCBases.Remove(pcBase);
+            _data.SubmitDataChange(pcBase, DatabaseActionType.Delete);
             
-            Area dbArea = _db.Areas.Single(x => x.Resref == pcBase.AreaResref);
+            Area dbArea = _data.Single<Area>(x => x.Resref == pcBase.AreaResref);
             if (pcBase.Sector == AreaSector.Northeast) dbArea.NortheastOwner = null;
             else if (pcBase.Sector == AreaSector.Northwest) dbArea.NorthwestOwner = null;
             else if (pcBase.Sector == AreaSector.Southeast) dbArea.SoutheastOwner = null;
             else if (pcBase.Sector == AreaSector.Southwest) dbArea.SouthwestOwner = null;
-
-            
-
-            if (doSave)
-            {
-                _db.SaveChanges();
-            }
         }
 
         public void ApplyCraftedItemLocalVariables(NWItem item, BaseStructure structure)
@@ -608,13 +648,13 @@ namespace SWLOR.Game.Server.Service
             // Structure items need an additional local variable and their name set on creation.
             if (structure != null)
             {
-                item.SetLocalInt("BASE_STRUCTURE_ID", structure.BaseStructureID);
+                item.SetLocalInt("BASE_STRUCTURE_ID", structure.ID);
                 item.Name = structure.Name;
 
                 if (structure.BaseStructureTypeID == (int)BaseStructureType.Building)
                 {
-                    var defaultInterior = _db.BuildingStyles.Single(x => x.BaseStructureID == structure.BaseStructureID && x.IsDefault && x.BuildingTypeID == (int)BuildingType.Interior && x.IsActive).BuildingStyleID;
-                    var defaultExterior = _db.BuildingStyles.Single(x => x.BaseStructureID == structure.BaseStructureID && x.IsDefault && x.BuildingTypeID == (int)BuildingType.Exterior && x.IsActive).BuildingStyleID;
+                    var defaultInterior = _data.Single<BuildingStyle>(x => x.BaseStructureID == structure.ID && x.IsDefault && x.BuildingTypeID == (int)BuildingType.Interior && x.IsActive).ID;
+                    var defaultExterior = _data.Single<BuildingStyle>(x => x.BaseStructureID == structure.ID && x.IsDefault && x.BuildingTypeID == (int)BuildingType.Exterior && x.IsActive).ID;
 
                     item.SetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID", defaultInterior);
                     item.SetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID", defaultExterior);
@@ -623,7 +663,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public string GetPlayerIDOwnerOfSector(Area dbArea, string sector)
+        public Guid? GetPlayerIDOwnerOfSector(Area dbArea, string sector)
         {
             switch (sector)
             {
@@ -747,14 +787,23 @@ namespace SWLOR.Game.Server.Service
         public int CalculateMaxFuel(PCBase pcBase)
         {
             const int siloType = (int)BaseStructureType.FuelSilo;
-            PCBaseStructure tower = GetBaseControlTower(pcBase.PCBaseID);
-            float siloBonus = _db.PCBaseStructures
-                                  .Where(x => x.PCBaseID == pcBase.PCBaseID &&
-                                              x.BaseStructure.BaseStructureTypeID == siloType)
-                                  .DefaultIfEmpty()
-                                  .Sum(x => x == null ? 0 : x.BaseStructure.Storage + x.StructureBonus) * 0.01f;
+            PCBaseStructure tower = GetBaseControlTower(pcBase.ID);
+            var towerStructure = _data.Get<BaseStructure>(tower.BaseStructureID);
 
-            var fuelMax = tower.BaseStructure.Storage;
+            float siloBonus = _data.Where<PCBaseStructure>(x =>
+                                  {
+                                      var baseStructure = _data.Get<BaseStructure>(x.BaseStructureID);
+                                      return x.PCBaseID == pcBase.ID && baseStructure.BaseStructureTypeID == siloType;
+                                  })
+                                  .DefaultIfEmpty()
+                                  .Sum(x =>
+                                  {
+                                      if (x == null) return 0;
+                                      var baseStructure = _data.Get<BaseStructure>(x.BaseStructureID);
+                                      return baseStructure.Storage + x.StructureBonus;
+                                  }) * 0.01f;
+
+            var fuelMax = towerStructure.Storage;
 
             return (int)(fuelMax + fuelMax * siloBonus);
         }
@@ -762,14 +811,25 @@ namespace SWLOR.Game.Server.Service
         public int CalculateMaxReinforcedFuel(PCBase pcBase)
         {
             const int siloType = (int) BaseStructureType.StronidiumSilo;
-            PCBaseStructure tower = GetBaseControlTower(pcBase.PCBaseID);
-            float siloBonus = _db.PCBaseStructures
-                                  .Where(x => x.PCBaseID == pcBase.PCBaseID &&
-                                              x.BaseStructure.BaseStructureTypeID == siloType)
+            PCBaseStructure tower = GetBaseControlTower(pcBase.ID);
+            var towerBaseStructure = _data.Get<BaseStructure>(tower.BaseStructureID);
+            float siloBonus = _data.Where<PCBaseStructure>
+                                  (x =>
+                                  {
+                                      var baseStructure = _data.Get<BaseStructure>(x.BaseStructureID);
+                                      return x.PCBaseID == pcBase.ID &&
+                                             baseStructure.BaseStructureTypeID == siloType;
+                                  })
                                   .DefaultIfEmpty()
-                                  .Sum(x => x == null ? 0 : x.BaseStructure.Storage + x.StructureBonus) * 0.01f;
+                                  .Sum(x =>
+                                  {
+                                      if (x == null) return 0;
+                                      var baseStructure = _data.Get<BaseStructure>(x.BaseStructureID);
 
-            var fuelMax = tower.BaseStructure.ReinforcedStorage;
+                                      return baseStructure.Storage + x.StructureBonus;
+                                  }) * 0.01f;
+
+            var fuelMax = towerBaseStructure.ReinforcedStorage;
 
             return (int)(fuelMax + fuelMax * siloBonus);
         }
@@ -777,14 +837,26 @@ namespace SWLOR.Game.Server.Service
         public int CalculateResourceCapacity(PCBase pcBase)
         {
             const int siloType = (int) BaseStructureType.ResourceSilo;
-            PCBaseStructure tower = GetBaseControlTower(pcBase.PCBaseID);
-            float siloBonus = _db.PCBaseStructures
-                                  .Where(x => x.PCBaseID == pcBase.PCBaseID &&
-                                              x.BaseStructure.BaseStructureTypeID == siloType)
-                                  .DefaultIfEmpty()
-                                  .Sum(x => x == null ? 0 : x.BaseStructure.Storage + x.StructureBonus) * 0.01f;
+            PCBaseStructure tower = GetBaseControlTower(pcBase.ID);
+            var towerBaseStructure = _data.Get<BaseStructure>(tower.BaseStructureID);
+            float siloBonus = _data.Where<PCBaseStructure>
+                                  (x =>
+                                  {
+                                      var baseStructure = _data.Get<BaseStructure>(x.BaseStructureID);
 
-            var resourceMax = tower.BaseStructure.ResourceStorage;
+                                      return x.PCBaseID == pcBase.ID &&
+                                             baseStructure.BaseStructureTypeID == siloType;
+                                  })
+                                  .DefaultIfEmpty()
+                                  .Sum(x =>
+                                  {
+                                      if (x == null) return 0;
+                                      var baseStructure = _data.Get<BaseStructure>(x.BaseStructureID);
+
+                                      return baseStructure.Storage + x.StructureBonus;
+                                  }) * 0.01f;
+
+            var resourceMax = towerBaseStructure.ResourceStorage;
 
             return (int) (resourceMax + resourceMax * siloBonus);
         }

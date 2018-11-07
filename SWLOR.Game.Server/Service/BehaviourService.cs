@@ -8,19 +8,19 @@ namespace SWLOR.Game.Server.Service
     public class BehaviourService : IBehaviourService
     {
         private readonly IObjectProcessingService _objProc;
-        private readonly AppState _state;
+        private readonly AppCache _cache;
 
         public BehaviourService(IObjectProcessingService objProc,
-            AppState state)
+            AppCache cache)
         {
             _objProc = objProc;
-            _state = state;
+            _cache = cache;
         }
         
         public void RegisterBehaviour(IBehaviourTreeNode node, NWCreature creature)
         {
             string behaviourID = _objProc.RegisterProcessingEvent<BehaviourProcessor>(node, creature);
-            _state.NPCBehaviours.Add(behaviourID, creature);
+            _cache.NPCBehaviours.Add(behaviourID, creature);
         }
         
     }

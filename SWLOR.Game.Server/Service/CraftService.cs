@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
@@ -8,11 +7,13 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.Delayed;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN.NWScript;
+using ComponentType = SWLOR.Game.Server.Data.Entity.ComponentType;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Service
     public class CraftService : ICraftService
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IPerkService _perk;
         private readonly IColorTokenService _color;
         private readonly INWNXPlayer _nwnxPlayer;
@@ -29,7 +30,7 @@ namespace SWLOR.Game.Server.Service
 
         public CraftService(
             INWScript script,
-            IDataContext db,
+            IDataService data,
             IPerkService perk,
             IColorTokenService color,
             INWNXPlayer nwnxPlayer,
@@ -37,7 +38,7 @@ namespace SWLOR.Game.Server.Service
             INWNXChat nwnxChat)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _perk = perk;
             _color = color;
             _nwnxPlayer = nwnxPlayer;
@@ -47,35 +48,66 @@ namespace SWLOR.Game.Server.Service
 
         private const float BaseCraftDelay = 18.0f;
 
-        public List<CraftBlueprintCategory> GetCategoriesAvailableToPCByDeviceID(string playerID, int deviceID)
+        private List<CraftBlueprint> GetCraftBlueprintsAvailableToPlayer(Guid playerID)
         {
-            return _db.StoredProcedure<CraftBlueprintCategory>("GetCraftCategoriesAvailableToPCByDeviceID",
-                new SqlParameter("DeviceID", deviceID),
-                new SqlParameter("PlayerID", playerID));
+            var pcPerks = _data.Where<PCPerk>(x => x.PlayerID == playerID).ToList();
+            var pcSkills = _data.Where<PCSkill>(x => x.PlayerID == playerID).ToList();
+
+            return _data.Where<CraftBlueprint>(x =>
+            {
+                // ReSharper disable once ReplaceWithSingleAssignment.True
+                bool found = true;
+                
+                // Exclude blueprints which the player doesn't meet the required perk level for.
+                var pcPerk = pcPerks.SingleOrDefault(p => p.PerkID == x.PerkID);
+                int perkLevel = pcPerk == null ? 0 : pcPerk.PerkLevel;
+                if (x.PerkID != null && perkLevel < x.RequiredPerkLevel)
+                    found = false;
+
+                // Exclude blueprints which the player doesn't meet the skill requirements for
+                var pcSkill = pcSkills.Single(s => s.SkillID == x.SkillID);
+                if (x.BaseLevel > pcSkill.Rank + 5)
+                    found = false;
+
+                return found;
+            }).ToList();
         }
 
-        public List<CraftBlueprint> GetPCBlueprintsByDeviceAndCategoryID(string playerID, int deviceID, long categoryID)
+        public List<CraftBlueprintCategory> GetCategoriesAvailableToPCByDeviceID(Guid playerID, int deviceID)
         {
-            return _db.StoredProcedure<CraftBlueprint>("GetPCCraftBlueprintsByDeviceAndCategoryID",
-                new SqlParameter("DeviceID", deviceID),
-                new SqlParameter("CraftCategoryID", categoryID),
-                new SqlParameter("PlayerID", playerID));
+            var blueprints = GetCraftBlueprintsAvailableToPlayer(playerID).Where(x => x.CraftDeviceID == deviceID);
+            var categoryIDs = blueprints.Select(x => x.CraftCategoryID).Distinct();
+
+            var categories = _data.Where<CraftBlueprintCategory>(x => x.IsActive &&
+                                                                      categoryIDs.Contains(x.ID));
+            return categories.ToList();
         }
 
-        public string BuildBlueprintHeader(NWPlayer player, long blueprintID, bool showAddedComponentList)
+        public List<CraftBlueprint> GetPCBlueprintsByDeviceAndCategoryID(Guid playerID, int deviceID, int categoryID)
+        {
+            return GetCraftBlueprintsAvailableToPlayer(playerID).Where(x => x.CraftDeviceID == deviceID && 
+                                                                                      x.CraftCategoryID == categoryID)
+                .ToList();
+        }
+
+        public string BuildBlueprintHeader(NWPlayer player, int blueprintID, bool showAddedComponentList)
         {
             var model = GetPlayerCraftingData(player);
             var bp = model.Blueprint;
             int playerEL = CalculatePCEffectiveLevel(player, model.PlayerSkillRank, (SkillType)bp.SkillID);
+            var baseStructure = bp.BaseStructureID == null ? null : _data.Get<BaseStructure>(bp.BaseStructureID);
+            var mainComponent = _data.Get<ComponentType>(bp.MainComponentTypeID);
+            var secondaryComponent = _data.Get<ComponentType>(bp.SecondaryComponentTypeID);
+            var tertiaryComponent = _data.Get<ComponentType>(bp.TertiaryComponentTypeID);
 
             string header = _color.Green("Blueprint: ") + bp.Quantity + "x " + bp.ItemName + "\n";
             header += _color.Green("Level: ") + (model.AdjustedLevel < 0 ? 0 : model.AdjustedLevel) + " (Base: " + (bp.BaseLevel < 0 ? 0 : bp.BaseLevel) + ")\n";
             header += _color.Green("Difficulty: ") + CalculateDifficultyDescription(playerEL, model.AdjustedLevel) + "\n";
             
-            if (bp.BaseStructure != null)
+            if (baseStructure != null)
             {
                 header += _color.Green("Raises Atmosphere: ");
-                if (bp.BaseStructure.HasAtmosphere)
+                if (baseStructure.HasAtmosphere)
                 {
                     header += _color.Green("Yes");
                 }
@@ -90,17 +122,17 @@ namespace SWLOR.Game.Server.Service
             header += _color.Green("Required Components (Required/Maximum): ") + "\n\n";
 
             string mainCounts = " (" + (model.MainMinimum > 0 ? Convert.ToString(model.MainMinimum) : "Optional") + "/" + model.MainMaximum + ")";
-            header += _color.Green("Main: ") + bp.MainComponentType.Name + mainCounts + "\n";
+            header += _color.Green("Main: ") + mainComponent.Name + mainCounts + "\n";
 
             if (bp.SecondaryMinimum > 0 && bp.SecondaryComponentTypeID > 0)
             {
                 string secondaryCounts = " (" + (model.SecondaryMinimum > 0 ? Convert.ToString(model.SecondaryMinimum) : "Optional") + "/" + model.SecondaryMaximum + ")";
-                header += _color.Green("Secondary: ") + bp.SecondaryComponentType.Name + secondaryCounts + "\n";
+                header += _color.Green("Secondary: ") + secondaryComponent.Name + secondaryCounts + "\n";
             }
             if (bp.TertiaryMinimum > 0 && bp.TertiaryComponentTypeID > 0)
             {
                 string tertiaryCounts = " (" + (model.TertiaryMinimum > 0 ? Convert.ToString(model.TertiaryMinimum) : "Optional") + "/" + model.TertiaryMaximum + ")";
-                header += _color.Green("Tertiary: ") + bp.TertiaryComponentType.Name + tertiaryCounts + "\n";
+                header += _color.Green("Tertiary: ") + tertiaryComponent.Name + tertiaryCounts + "\n";
             }
 
             if (showAddedComponentList)
@@ -132,29 +164,27 @@ namespace SWLOR.Game.Server.Service
             return header;
         }
 
-        public CraftBlueprint GetBlueprintByID(long craftBlueprintID)
+        public CraftBlueprint GetBlueprintByID(int craftBlueprintID)
         {
-            return _db.CraftBlueprints.SingleOrDefault(x => x.CraftBlueprintID == craftBlueprintID);
+            return _data.SingleOrDefault<CraftBlueprint>(x => x.ID == craftBlueprintID);
         }
 
-        public List<CraftBlueprintCategory> GetCategoriesAvailableToPC(string playerID)
+        public List<CraftBlueprintCategory> GetCategoriesAvailableToPC(Guid playerID)
         {
-            return _db.StoredProcedure<CraftBlueprintCategory>("GetCategoriesAvailableToPC",
-                new SqlParameter("PlayerID", playerID));
+            var blueprints = GetCraftBlueprintsAvailableToPlayer(playerID).Select(x => x.CraftCategoryID).Distinct();
+            return _data.Where<CraftBlueprintCategory>(x => blueprints.Contains(x.ID)).ToList();
         }
 
-        public List<CraftBlueprint> GetPCBlueprintsByCategoryID(string playerID, long categoryID)
+        public List<CraftBlueprint> GetPCBlueprintsByCategoryID(Guid playerID, int categoryID)
         {
-            return _db.StoredProcedure<CraftBlueprint>("GetPCBlueprintsByCategoryID",
-                new SqlParameter("PlayerID", playerID),
-                new SqlParameter("CraftCategoryID", categoryID));
+            return GetCraftBlueprintsAvailableToPlayer(playerID).Where(x => x.CraftCategoryID == categoryID).ToList();
         }
 
 
         public void CraftItem(NWPlayer oPC, NWPlaceable device)
         {
             var model = GetPlayerCraftingData(oPC);
-            CraftBlueprint blueprint = _db.CraftBlueprints.Single(x => x.CraftBlueprintID == model.BlueprintID);
+            CraftBlueprint blueprint = _data.Single<CraftBlueprint>(x => x.ID == model.BlueprintID);
             if (blueprint == null) return;
 
             if (oPC.IsBusy)
@@ -541,7 +571,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            if (renameItem.GetLocalString("CRAFTER_PLAYER_ID") != pc.GlobalID)
+            if (new Guid(renameItem.GetLocalString("CRAFTER_PLAYER_ID")) != pc.GlobalID)
             {
                 pc.SendMessage("You may only rename items which you have personally crafted.");
                 return;

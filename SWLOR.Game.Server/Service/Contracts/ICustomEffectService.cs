@@ -1,4 +1,5 @@
 ﻿using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         void OnModuleLoad();
         void OnModuleEnter();
         void RemovePCCustomEffect(NWPlayer oPC, CustomEffectType customEffectType);
-        void RemovePCCustomEffect(NWPlayer oPC, long customEffectID);
+        void RemovePCCustomEffect(NWPlayer oPC, int customEffectID);
         int GetCustomEffectLevel(NWCreature creature, CustomEffectType customEffectType);
         void ApplyStance(NWPlayer player, CustomEffectType customEffect, PerkType perkType, int effectiveLevel, string data);
         bool RemoveStance(NWPlayer player, PCCustomEffect stanceEffect = null, bool sendMessage = true);

@@ -11,16 +11,16 @@ namespace SWLOR.Game.Server.Perk.LightSide
     {
         private readonly INWScript _;
         private readonly ICustomEffectService _customEffect;
-        private readonly IPerkService _perk;
+        private readonly ISkillService _skill;
 
         public ForceAura(
             INWScript script,
             ICustomEffectService customEffect,
-            IPerkService perk)
+            ISkillService skill)
         {
             _ = script;
             _customEffect = customEffect;
-            _perk = perk;
+            _skill = skill;
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -70,6 +70,7 @@ namespace SWLOR.Game.Server.Perk.LightSide
 
             _customEffect.ApplyCustomEffect(player, target.Object, CustomEffectType.ForceAura, ticks, level, null);
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_AC_BONUS), target);
+            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.LightSideAbilities, null);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

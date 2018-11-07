@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Item.Medicine
 
             user.SendMessage("You successfully treat " + target.Name + "'s infection.");
 
-            PCSkill skill = _skill.GetPCSkill((NWPlayer)user, SkillType.Medicine);
-            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, skill.Rank);
+            int rank = _skill.GetPCSkillRank((NWPlayer)user, SkillType.Medicine);
+            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, rank);
             _skill.GiveSkillXP((NWPlayer)user, SkillType.Medicine, xp);
         }
 
@@ -72,8 +72,8 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return 0.1f;
             }
 
-            PCSkill skill = _skill.GetPCSkill(player, SkillType.Medicine);
-            return 12.0f - (skill.Rank + effectiveStats.Medicine / 2) * 0.1f;
+            int rank = _skill.GetPCSkillRank(player, SkillType.Medicine);
+            return 12.0f - (rank + effectiveStats.Medicine / 2) * 0.1f;
         }
 
         public bool FaceTarget()
@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return "This player is not diseased or poisoned.";
             }
 
-            int rank = _skill.GetPCSkill(user.Object, SkillType.Medicine).Rank;
+            int rank = _skill.GetPCSkillRank(user.Object, SkillType.Medicine);
 
             if (rank < item.RecommendedLevel)
             {

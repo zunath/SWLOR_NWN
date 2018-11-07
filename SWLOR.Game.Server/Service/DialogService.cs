@@ -13,23 +13,23 @@ namespace SWLOR.Game.Server.Service
     {
         private readonly INWScript _;
         private const int NumberOfDialogs = 99;
-        private readonly AppState _state;
+        private readonly AppCache _cache;
 
-        public DialogService(INWScript script, AppState state)
+        public DialogService(INWScript script, AppCache cache)
         {
             _ = script;
-            _state = state;
+            _cache = cache;
         }
 
-        private void StorePlayerDialog(string globalID, PlayerDialog dialog)
+        private void StorePlayerDialog(Guid globalID, PlayerDialog dialog)
         {
             if (dialog.DialogNumber <= 0)
             {
                 for (int x = 1; x <= NumberOfDialogs; x++)
                 {
-                    if (!_state.DialogFilesInUse[x])
+                    if (!_cache.DialogFilesInUse[x])
                     {
-                        _state.DialogFilesInUse[x] = true;
+                        _cache.DialogFilesInUse[x] = true;
                         dialog.DialogNumber = x;
                         break;
                     }
@@ -43,27 +43,27 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            _state.PlayerDialogs[globalID] = dialog;
+            _cache.PlayerDialogs[globalID] = dialog;
         }
 
         public int NumberOfResponsesPerPage => 12;
 
-        public PlayerDialog LoadPlayerDialog(string globalID)
+        public PlayerDialog LoadPlayerDialog(Guid globalID)
         {
-            if (string.IsNullOrWhiteSpace(globalID)) throw new ArgumentException(nameof(globalID), nameof(globalID) + " cannot be null, empty, or whitespace.");
-            if (!_state.PlayerDialogs.ContainsKey(globalID)) throw new Exception(nameof(globalID) + " '" + globalID + "' could not be found. Be sure to call " + nameof(LoadConversation) + " first.");
+            if (globalID == null) throw new ArgumentException(nameof(globalID), nameof(globalID) + " cannot be null, empty, or whitespace.");
+            if (!_cache.PlayerDialogs.ContainsKey(globalID)) throw new Exception(nameof(globalID) + " '" + globalID + "' could not be found. Be sure to call " + nameof(LoadConversation) + " first.");
 
-            return _state.PlayerDialogs[globalID];
+            return _cache.PlayerDialogs[globalID];
         }
 
-        public void RemovePlayerDialog(string globalID)
+        public void RemovePlayerDialog(Guid globalID)
         {
-            if (string.IsNullOrWhiteSpace(globalID)) throw new ArgumentException(nameof(globalID), nameof(globalID) + " cannot be null, empty, or whitespace.");
+            if (globalID == null) throw new ArgumentException(nameof(globalID), nameof(globalID) + " cannot be null, empty, or whitespace.");
 
-            PlayerDialog dialog = _state.PlayerDialogs[globalID];
-            _state.DialogFilesInUse[dialog.DialogNumber] = false;
+            PlayerDialog dialog = _cache.PlayerDialogs[globalID];
+            _cache.DialogFilesInUse[dialog.DialogNumber] = false;
 
-            _state.PlayerDialogs.Remove(globalID);
+            _cache.PlayerDialogs.Remove(globalID);
         }
 
         public void LoadConversation(NWPlayer player, NWObject talkTo, string @class, int dialogNumber)
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(@class)) throw new ArgumentException(nameof(@class), nameof(@class) + " cannot be null, empty, or whitespace.");
 
             LoadConversation(player, talkTo, @class, -1);
-            PlayerDialog dialog = _state.PlayerDialogs[player.GlobalID];
+            PlayerDialog dialog = _cache.PlayerDialogs[player.GlobalID];
 
             // NPC conversations
             

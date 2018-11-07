@@ -7,68 +7,55 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using Newtonsoft.Json;
-using SWLOR.Game.Server.Data;
-using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.Threading.Contracts;
+using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Threading
 {
-    public class DiscordBackgroundThread: IBackgroundThread
+    public class DiscordBackgroundThread: IDiscordThread
     {
         private readonly HttpClient _httpClient;
-        private bool _isExiting;
         private readonly IErrorService _error;
+        private readonly IDataService _data;
 
         public DiscordBackgroundThread(
             HttpClient httpClient,
-            IErrorService error)
+            IErrorService error,
+            IDataService data)
         {
             _httpClient = httpClient;
-            _isExiting = false;
             _error = error;
+            _data = data;
         }
-
-        public void Start()
+        
+        public void Run()
         {
-            while (!_isExiting)
+            List<DiscordChatQueue> discordQueue = _data.Where<DiscordChatQueue>(x => x.DatePosted == null || 
+                                                                                     x.DatePosted == null && 
+                                                                                     x.DateForRetry != null && 
+                                                                                     DateTime.UtcNow > x.DateForRetry && 
+                                                                                     x.RetryAttempts < 10)
+                .OrderBy(o => o.DateForRetry)
+                .ThenBy(o => o.DateSent)
+                .ToList();
+
+            foreach (var queue in discordQueue)
             {
-                Run();
+                PostAsync(queue.ID, queue.SenderName, queue.Message, queue.SenderAccountName);
+                queue.DatePosted = DateTime.UtcNow;
+
+                // Directly enqueue the update request because we don't want to cache this data.
+                _data.DataQueue.Enqueue(new DatabaseAction(queue, DatabaseActionType.Update));
             }
-
-            Console.WriteLine("Discord thread shut down successfully!");
-        }
-
-        public void Exit()
-        {
-            _isExiting = true;
-        }
-
-        private void Run()
-        {
-            App.Resolve<IDataContext>(db =>
-            {
-                List<DiscordChatQueue> discordQueue = db
-                    .DiscordChatQueues
-                    .Where(x => x.DatePosted == null || x.DatePosted == null && x.DateForRetry != null && DateTime.UtcNow > x.DateForRetry && x.RetryAttempts < 10)
-                    .OrderBy(o => o.DateForRetry)
-                    .ThenBy(o => o.DateSent)
-                    .ToList();
-
-                foreach (var queue in discordQueue)
-                {
-                    PostAsync(queue.DiscordChatQueueID, queue.SenderName, queue.Message, queue.SenderAccountName);
-                    queue.DatePosted = DateTime.UtcNow;
-                }
-
-                db.SaveChanges();
-            });
 
             Thread.Sleep(6000);
         }
 
 
-        private async void PostAsync(int queueID, string characterName, string message, string accountName)
+        private async void PostAsync(Guid queueID, string characterName, string message, string accountName)
         {
             string url = Environment.GetEnvironmentVariable("DISCORD_WEBHOOK_URL");
             if (string.IsNullOrWhiteSpace(url)) return;
@@ -103,27 +90,26 @@ namespace SWLOR.Game.Server.Threading
 
                     Console.WriteLine(responseContent);
 
-                    App.Resolve<IDataContext>(db =>
+                    var record = _data.Get<DiscordChatQueue>(queueID);
+                    record.DatePosted = null;
+
+                    if (responseContent.Length > 0)
                     {
-                        var record = db.DiscordChatQueues.Single(x => x.DiscordChatQueueID == queueID);
-                        record.DatePosted = null;
+                        record.ResponseContent = responseContent;
+                    }
 
-                        if (responseContent.Length > 0)
-                        {
-                            record.ResponseContent = responseContent;
-                        }
+                    record.RetryAttempts++;
 
-                        record.RetryAttempts++;
+                    int retryMS = 60000; // 1 minute
+                    if (responseData != null && responseData.retry_after != null)
+                    {
+                        retryMS = responseData.retry_after;
+                    }
 
-                        int retryMS = 60000; // 1 minute
-                        if (responseData != null && responseData.retry_after != null)
-                        {
-                            retryMS = responseData.retry_after;
-                        }
+                    record.DateForRetry = DateTime.UtcNow.AddMilliseconds(retryMS);
 
-                        record.DateForRetry = DateTime.UtcNow.AddMilliseconds(retryMS);
-                        db.SaveChanges();
-                    });
+                    // Again, directly enqueue this DB update so the record doesn't get cached.
+                    _data.DataQueue.Enqueue(new DatabaseAction(record, DatabaseActionType.Update));
                 }
             }
             catch (Exception ex)

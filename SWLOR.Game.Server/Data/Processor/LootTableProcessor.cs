@@ -1,6 +1,9 @@
 ﻿using FluentValidation;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Data.Validator;
+using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Data.Processor
 {
@@ -8,8 +11,9 @@ namespace SWLOR.Game.Server.Data.Processor
     {
         public IValidator Validator => new LootTableValidator();
 
-        public void Process(IDataContext db, LootTable dataObject)
+        public DatabaseAction Process(IDataService data, LootTable dataObject)
         {
+            return null;
         }
     }
 }

@@ -11,15 +11,15 @@ namespace SWLOR.Game.Server.Service
     public class EnmityService : IEnmityService
     {
         private readonly INWScript _;
-        private readonly AppState _state;
+        private readonly AppCache _cache;
         private readonly IPlayerStatService _playerStat;
 
         public EnmityService(INWScript script,
-            AppState state,
+            AppCache cache,
             IPlayerStatService playerStat)
         {
             _ = script;
-            _state = state;
+            _cache = cache;
             _playerStat = playerStat;
         }
 
@@ -34,13 +34,13 @@ namespace SWLOR.Game.Server.Service
             return table[attacker.GlobalID];
         }
 
-        private Dictionary<string, EnmityTable> GetAllNPCEnmityTablesForCreature(NWCreature player)
+        private Dictionary<Guid, EnmityTable> GetAllNPCEnmityTablesForCreature(NWCreature player)
         {
             if (!player.IsPlayer) throw new Exception(nameof(GetAllNPCEnmityTablesForCreature) + " can only be used with players.");
 
-            var npcTables = new Dictionary<string, EnmityTable>();
+            var npcTables = new Dictionary<Guid, EnmityTable>();
 
-            foreach (var npcTable in _state.NPCEnmityTables)
+            foreach (var npcTable in _cache.NPCEnmityTables)
             {
                 if (npcTable.Value.ContainsKey(player.GlobalID))
                 {
@@ -158,12 +158,12 @@ namespace SWLOR.Game.Server.Service
         {
             if (!npc.IsNPC) throw new Exception("Only NPCs have enmity tables.");
 
-            if (!_state.NPCEnmityTables.ContainsKey(npc.GlobalID))
+            if (!_cache.NPCEnmityTables.ContainsKey(npc.GlobalID))
             {
-                _state.NPCEnmityTables.Add(npc.GlobalID, new EnmityTable(npc));
+                _cache.NPCEnmityTables.Add(npc.GlobalID, new EnmityTable(npc));
             }
 
-            return _state.NPCEnmityTables[npc.GlobalID];
+            return _cache.NPCEnmityTables[npc.GlobalID];
         }
 
         public bool IsOnEnmityTable(NWCreature npc, NWCreature target)

@@ -1,4 +1,6 @@
-﻿using SWLOR.Game.Server.Data;
+﻿using System;
+using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Service.Contracts
@@ -9,7 +11,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         string OnModuleExamine(string existingDescription, NWObject examinedObject);
         void OnModuleLoad();
         void RemoveGrowingPlant(NWPlaceable plant);
-        GrowingPlant GetGrowingPlantByID(int growingPlantID);
+        GrowingPlant GetGrowingPlantByID(Guid growingPlantID);
         Plant GetPlantByID(int plantID);
     }
 }

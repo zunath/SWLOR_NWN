@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Data.Validator
 {
-    public class ModValidator : AbstractValidator<Mod>
+    public class ModValidator : AbstractValidator<Entity.Mod>
     {
         public ModValidator()
         {

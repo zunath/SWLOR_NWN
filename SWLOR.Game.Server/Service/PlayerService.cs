@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Data.SqlClient;
 using System.Linq;
-using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
@@ -10,15 +8,14 @@ using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN.NWScript;
 using Object = NWN.Object;
-using SWLOR.Game.Server.Data;
-using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Service
 {
     public class PlayerService : IPlayerService
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IColorTokenService _color;
         private readonly INWNXCreature _nwnxCreature;
         private readonly INWNXPlayer _player;
@@ -30,11 +27,10 @@ namespace SWLOR.Game.Server.Service
         private readonly IDurabilityService _durability;
         private readonly IPlayerStatService _stat;
         private readonly ILanguageService _language;
-        private readonly INWNXAdmin _nwnxAdmin;
 
         public PlayerService(
             INWScript script, 
-            IDataContext db, 
+            IDataService data, 
             IColorTokenService color,
             INWNXCreature nwnxCreature,
             INWNXPlayer player,
@@ -45,11 +41,10 @@ namespace SWLOR.Game.Server.Service
             IRaceService race,
             IDurabilityService durability,
             IPlayerStatService stat,
-            ILanguageService language,
-            INWNXAdmin nwnxAdmin)
+            ILanguageService language)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _color = color;
             _nwnxCreature = nwnxCreature;
             _player = player;
@@ -61,7 +56,6 @@ namespace SWLOR.Game.Server.Service
             _durability = durability;
             _stat = stat;
             _language = language;
-            _nwnxAdmin = nwnxAdmin;
         }
 
         public void InitializePlayer(NWPlayer player)
@@ -155,12 +149,23 @@ namespace SWLOR.Game.Server.Service
                     _nwnxCreature.RemoveKnownSpell(player, classID, 0, index);
                 }
 
-                PlayerCharacter entity = CreateDBPCEntity(player);
-                _db.PlayerCharacters.Add(entity);
-                _db.SaveChanges();
-
-                _db.StoredProcedure("InsertAllPCSkillsByID",
-                    new SqlParameter("PlayerID", player.GlobalID));
+                Player entity = CreateDBPCEntity(player);
+                _data.SubmitDataChange(entity, DatabaseActionType.Insert);
+                
+                var skills = _data.GetAll<Skill>();
+                foreach (var skill in skills)
+                {
+                    var pcSkill = new PCSkill
+                    {
+                        IsLocked = false,
+                        SkillID = skill.ID,
+                        PlayerID = entity.ID,
+                        Rank = 0,
+                        XP = 0
+                    };
+                    
+                    _data.SubmitDataChange(pcSkill, DatabaseActionType.Insert);
+                }
 
                 _race.ApplyDefaultAppearance(player);
                 _nwnxCreature.SetAlignmentLawChaos(player, 50);
@@ -177,7 +182,7 @@ namespace SWLOR.Game.Server.Service
 
         }
 
-        private PlayerCharacter CreateDBPCEntity(NWPlayer player)
+        private Player CreateDBPCEntity(NWPlayer player)
         {
             AssociationType assType; 
             int goodEvil = _.GetAlignmentGoodEvil(player);
@@ -229,9 +234,9 @@ namespace SWLOR.Game.Server.Service
                 throw new Exception("Association type not found. GoodEvil = " + goodEvil + ", LawChaos = " + lawChaos);
             }
 
-            PlayerCharacter entity = new PlayerCharacter
+            Player entity = new Player
             {
-                PlayerID = player.GlobalID,
+                ID = player.GlobalID,
                 CharacterName = player.Name,
                 HitPoints = player.CurrentHP,
                 LocationAreaResref = _.GetResRef(_.GetAreaFromLocation(player.Location)),
@@ -273,19 +278,18 @@ namespace SWLOR.Game.Server.Service
             return entity;
         }
 
-        public PlayerCharacter GetPlayerEntity(NWPlayer player)
+        public Player GetPlayerEntity(NWPlayer player)
         {
             if(player == null) throw new ArgumentNullException(nameof(player));
             if(!player.IsPlayer) throw new ArgumentException(nameof(player) + " must be a player.", nameof(player));
 
-            return _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+            return _data.Get<Player>(player.GlobalID);
         }
 
-        public PlayerCharacter GetPlayerEntity(string playerID)
+        public Player GetPlayerEntity(Guid playerID)
         {
-            if (string.IsNullOrWhiteSpace(playerID)) throw new ArgumentException("Invalid player ID.", nameof(playerID));
-
-            return _db.PlayerCharacters.Single(x => x.PlayerID == playerID);
+            if (playerID == null) throw new ArgumentException("Invalid player ID.", nameof(playerID));
+            return _data.Get<Player>(playerID);
         }
 
         public void OnAreaEnter()
@@ -302,7 +306,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!player.IsPlayer) return;
 
-            PlayerCharacter entity = GetPlayerEntity(player.GlobalID);
+            Player entity = GetPlayerEntity(player.GlobalID);
 
             if (entity == null) return;
 
@@ -327,7 +331,7 @@ namespace SWLOR.Game.Server.Service
 
         public void ShowMOTD(NWPlayer player)
         {
-            ServerConfiguration config = _db.ServerConfigurations.First();
+            ServerConfiguration config = _data.GetAll<ServerConfiguration>().First();
             string message = _color.Green("Welcome to " + config.ServerName + "!\n\nMOTD: ") + _color.White(config.MessageOfTheDay);
 
             _.DelayCommand(6.5f, () =>
@@ -339,11 +343,11 @@ namespace SWLOR.Game.Server.Service
         public void SaveCharacter(NWPlayer player)
         {
             if (!player.IsPlayer) return;
-            PlayerCharacter entity = GetPlayerEntity(player);
+            Player entity = GetPlayerEntity(player);
             entity.CharacterName = player.Name;
             entity.HitPoints = player.CurrentHP;
 
-            _db.SaveChanges();
+            _data.SubmitDataChange(entity, DatabaseActionType.Update);
         }
 
         public void SaveLocation(NWPlayer player)
@@ -353,7 +357,7 @@ namespace SWLOR.Game.Server.Service
             NWArea area = player.Area;
             if (area.Tag != "ooc_area" && area.Tag != "tutorial" && !area.IsInstance)
             {
-                PlayerCharacter entity = GetPlayerEntity(player.GlobalID);
+                Player entity = GetPlayerEntity(player.GlobalID);
                 entity.LocationAreaResref = area.Resref;
                 entity.LocationX = player.Position.m_X;
                 entity.LocationY = player.Position.m_Y;
@@ -370,7 +374,7 @@ namespace SWLOR.Game.Server.Service
                     entity.RespawnLocationZ = waypoint.Position.m_Z;
                 }
 
-                _db.SaveChanges();
+                _data.SubmitDataChange(entity, DatabaseActionType.Update);
             }
         }
 
@@ -380,7 +384,7 @@ namespace SWLOR.Game.Server.Service
 
             if (player.Area.Tag == "ooc_area")
             {
-                PlayerCharacter entity = GetPlayerEntity(player.GlobalID);
+                Player entity = GetPlayerEntity(player.GlobalID);
                 NWArea area = NWModule.Get().Areas.SingleOrDefault(x => x.Resref == entity.LocationAreaResref);
                 if (area == null) return;
 

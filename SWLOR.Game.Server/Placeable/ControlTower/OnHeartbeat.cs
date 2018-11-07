@@ -3,6 +3,8 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
@@ -14,25 +16,25 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
     public class OnHeartbeat: IRegisteredEvent
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IBaseService _base;
 
         public OnHeartbeat(
             INWScript script,
-            IDataContext db,
+            IDataService data,
             IBaseService @base)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _base = @base;
         }
         public bool Run(params object[] args)
         {
             NWPlaceable tower = Object.OBJECT_SELF;
-            int structureID = tower.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            PCBaseStructure structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
+            Guid structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
+            PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.ID == structureID);
             int maxShieldHP = _base.CalculateMaxShieldHP(structure);
-            var pcBase = structure.PCBase;
+            var pcBase = _data.Get<PCBase>(structure.PCBaseID);
 
             // Regular fuel usage
             if (DateTime.UtcNow >= pcBase.DateFuelEnds && pcBase.Fuel > 0)
@@ -76,7 +78,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
                     outOfPowerEffect = _.TagEffect(outOfPowerEffect, "CONTROL_TOWER_OUT_OF_POWER");
                     _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, outOfPowerEffect, tower.Object);
 
-                    var instances = NWModule.Get().Areas.Where(x => x.GetLocalInt("PC_BASE_STRUCTURE_ID") == structureID);
+                    var instances = NWModule.Get().Areas.Where(x => x.GetLocalString("PC_BASE_STRUCTURE_ID") == structureID.ToString());
 
                     foreach (var instance in instances)
                     {
@@ -99,7 +101,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
 
                 if (outOfPowerWasRemoved)
                 {
-                    var instances = NWModule.Get().Areas.Where(x => x.GetLocalInt("PC_BASE_STRUCTURE_ID") == structureID);
+                    var instances = NWModule.Get().Areas.Where(x => x.GetLocalString("PC_BASE_STRUCTURE_ID") == structureID.ToString());
                     foreach (var instance in instances)
                     {
                         _base.ToggleInstanceObjectPower(instance, true);
@@ -128,7 +130,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             if (pcBase.ShieldHP > maxShieldHP)
                 pcBase.ShieldHP = maxShieldHP;
 
-            _db.SaveChanges();
+            _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
             return true;
         }
     }

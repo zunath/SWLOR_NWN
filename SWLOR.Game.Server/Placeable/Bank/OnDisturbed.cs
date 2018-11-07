@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
@@ -15,20 +15,20 @@ namespace SWLOR.Game.Server.Placeable.Bank
     {
         private readonly INWScript _;
         private readonly IItemService _item;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IColorTokenService _color;
         private readonly ISerializationService _serialization;
 
         public OnDisturbed(
             INWScript script,
             IItemService item,
-            IDataContext db,
+            IDataService data,
             IColorTokenService color,
             ISerializationService serialization)
         {
             _ = script;
             _item = item;
-            _db = db;
+            _data = data;
             _color = color;
             _serialization = serialization;
         }
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Placeable.Bank
             int itemLimit = terminal.GetLocalInt("BANK_LIMIT");
             if (itemLimit <= 0) itemLimit = 20;
 
-            Data.Bank entity = _db.Banks.Single(x => x.BankID == bankID);
+            Data.Entity.Bank bank = _data.Single<Data.Entity.Bank>(x => x.ID == bankID);
 
             if (disturbType == INVENTORY_DISTURB_TYPE_ADDED)
             {
@@ -62,22 +62,20 @@ namespace SWLOR.Game.Server.Placeable.Bank
                         ItemName = item.Name,
                         ItemTag = item.Tag,
                         ItemResref = item.Resref,
-                        ItemID = item.GlobalID,
+                        ItemID = item.GlobalID.ToString(),
                         ItemObject = _serialization.Serialize(item),
-                        BankID = entity.BankID,
+                        BankID = bank.ID,
                         PlayerID = player.GlobalID,
                         DateStored = DateTime.UtcNow
                     };
-
-                    entity.BankItems.Add(itemEntity);
-                    _db.SaveChanges();
+                    
+                    _data.SubmitDataChange(itemEntity, DatabaseActionType.Insert);
                 }
             }
             else if (disturbType == INVENTORY_DISTURB_TYPE_REMOVED)
             {
-                var record = _db.BankItems.Single(x => x.ItemID == item.GlobalID);
-                _db.BankItems.Remove(record);
-                _db.SaveChanges();
+                var record = _data.Get<BankItem>(item.GlobalID);
+                _data.SubmitDataChange(record, DatabaseActionType.Delete);
             }
 
             player.SendMessage(_color.White("Item Limit: " + (itemCount > itemLimit ? itemLimit : itemCount) + " / ") + _color.Red("" + itemLimit));

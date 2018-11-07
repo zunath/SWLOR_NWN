@@ -2,8 +2,8 @@
 using System;
 using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
@@ -15,16 +15,16 @@ namespace SWLOR.Game.Server.Placeable.Bank
     public class OnOpened : IRegisteredEvent
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly ISerializationService _serialization;
 
         public OnOpened(
             INWScript script,
-            IDataContext db,
+            IDataService data,
             ISerializationService serialization)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _serialization = serialization;
         }
 
@@ -42,22 +42,22 @@ namespace SWLOR.Game.Server.Placeable.Bank
                 return false;
             }
 
-            Data.Bank entity = _db.Banks.SingleOrDefault(x => x.BankID == bankID);
-
+            Data.Entity.Bank entity = _data.SingleOrDefault<Data.Entity.Bank>(x => x.ID == bankID);
+            
             if (entity == null)
             {
-                entity = new Data.Bank
+                entity = new Data.Entity.Bank
                 {
                     AreaName = area.Name,
                     AreaResref = area.Resref,
                     AreaTag = area.Tag,
-                    BankID = bankID
+                    ID = bankID
                 };
-                _db.Banks.Add(entity);
-                _db.SaveChanges();
+                _data.SubmitDataChange(entity, DatabaseActionType.Insert);
             }
-
-            foreach (BankItem item in entity.BankItems.Where(x => x.PlayerID == player.GlobalID))
+            
+            var bankItems = _data.Where<BankItem>(x => x.PlayerID == player.GlobalID && x.BankID == entity.ID);
+            foreach (BankItem item in bankItems.Where(x => x.PlayerID == player.GlobalID))
             {
                 _serialization.DeserializeItem(item.ItemObject, terminal);
             }

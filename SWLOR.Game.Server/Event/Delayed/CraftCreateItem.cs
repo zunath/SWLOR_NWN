@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Event.Delayed
             var model = _craft.GetPlayerCraftingData(player);
 
             CraftBlueprint blueprint = _data.Single<CraftBlueprint>(x => x.ID == model.BlueprintID);
-            BaseStructure baseStructure = _data.Get<BaseStructure>(blueprint.BaseStructureID);
+            BaseStructure baseStructure = blueprint.BaseStructureID == null ? null : _data.Get<BaseStructure>(blueprint.BaseStructureID);
             PCSkill pcSkill = _skill.GetPCSkill(player, blueprint.SkillID);
 
             int pcEffectiveLevel = _craft.CalculatePCEffectiveLevel(player, pcSkill.Rank, (SkillType)blueprint.SkillID);

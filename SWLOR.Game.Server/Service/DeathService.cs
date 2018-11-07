@@ -5,6 +5,8 @@ using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN.NWScript;
 
@@ -12,17 +14,17 @@ namespace SWLOR.Game.Server.Service
 {
     public class DeathService : IDeathService
     {
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly INWScript _;
         private readonly IRandomService _random;
         private readonly IDurabilityService _durability;
 
-        public DeathService(IDataContext db, 
+        public DeathService(IDataService data, 
             INWScript script,
             IRandomService random,
             IDurabilityService durability)
         {
-            _db = db;
+            _data = data;
             _ = script;
             _random = random;
             _durability = durability;
@@ -75,25 +77,24 @@ namespace SWLOR.Game.Server.Service
             if (player == null) throw new ArgumentNullException(nameof(player), nameof(player) + " cannot be null.");
             if (player.Object == null) throw new ArgumentNullException(nameof(player.Object), nameof(player.Object) + " cannot be null.");
 
-            PlayerCharacter pc = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+            Player pc = _data.Single<Player>(x => x.ID == player.GlobalID);
             pc.RespawnLocationX = player.Position.m_X;
             pc.RespawnLocationY = player.Position.m_Y;
             pc.RespawnLocationZ = player.Position.m_Z;
             pc.RespawnLocationOrientation = player.Facing;
             pc.RespawnAreaResref = player.Area.Resref;
-
-            _db.SaveChanges();
+            _data.SubmitDataChange(pc, DatabaseActionType.Update);
             _.FloatingTextStringOnCreature("You will return to this location the next time you die.", player.Object, FALSE);
         }
 
 
         public void TeleportPlayerToBindPoint(NWPlayer pc)
         {
-            PlayerCharacter entity = _db.PlayerCharacters.Single(x => x.PlayerID == pc.GlobalID);
+            Player entity = _data.Single<Player>(x => x.ID == pc.GlobalID);
             TeleportPlayerToBindPoint(pc, entity);
         }
 
-        private void TeleportPlayerToBindPoint(NWObject pc, PlayerCharacter entity)
+        private void TeleportPlayerToBindPoint(NWObject pc, Player entity)
         {
             // Instances
             if (pc.Area.IsInstance)

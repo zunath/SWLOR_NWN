@@ -2,6 +2,7 @@
 using NWN;
 using SWLOR.Game.Server.Bioware.Contracts;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.Item
     {
         private readonly INWScript _;
         private readonly IPerkService _perk;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IBaseService _base;
         private readonly IItemService _item;
         private readonly IRandomService _random;
@@ -24,7 +25,7 @@ namespace SWLOR.Game.Server.Item
         public MineralScanner(
             INWScript script,
             IPerkService perk,
-            IDataContext db,
+            IDataService data,
             IBaseService @base,
             IItemService item,
             IRandomService random,
@@ -32,7 +33,7 @@ namespace SWLOR.Game.Server.Item
         {
             _ = script;
             _perk = perk;
-            _db = db;
+            _data = data;
             _base = @base;
             _item = item;
             _random = random;
@@ -50,8 +51,7 @@ namespace SWLOR.Game.Server.Item
             if (lootTableID <= 0) return;
 
             NWArea area = _.GetAreaFromLocation(targetLocation);
-            var lootTable = _db.LootTables.Single(x => x.LootTableID == lootTableID);
-            var items = lootTable.LootTableItems.OrderByDescending(o => o.Weight);
+            var items = _data.Where<LootTableItem>(x => x.LootTableID == lootTableID).OrderByDescending(o => o.Weight);
             string sector = _base.GetSectorOfLocation(targetLocation);
             string sectorName = "Unknown";
 
@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Item
         private int GetLootTable(Location targetLocation)
         {
             NWArea area = _.GetAreaFromLocation(targetLocation);
-            var dbArea = _db.Areas.Single(x => x.Resref == area.Resref);
+            var dbArea = _data.Single<Area>(x => x.Resref == area.Resref);
             var sector = _base.GetSectorOfLocation(targetLocation);
             int lootTableID = 0;
 

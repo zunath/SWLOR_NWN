@@ -5,6 +5,7 @@ using NWN;
 using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX.Contracts;
@@ -16,24 +17,24 @@ namespace SWLOR.Game.Server.Processor
 {
     public class CustomEffectProcessor: IEventProcessor
     {
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IErrorService _error;
         private readonly INWScript _;
-        private readonly AppState _state;
+        private readonly AppCache _cache;
         private readonly INWNXObject _nwnxObject;
         private readonly ICustomEffectService _customEffect;
 
-        public CustomEffectProcessor(IDataContext db,
+        public CustomEffectProcessor(IDataService data,
             IErrorService error,
             INWScript script,
-            AppState state,
+            AppCache cache,
             INWNXObject nwnxObject,
             ICustomEffectService customEffect)
         {
-            _db = db;
+            _data = data;
             _error = error;
             _ = script;
-            _state = state;
+            _cache = cache;
             _nwnxObject = nwnxObject;
             _customEffect = customEffect;
         }
@@ -51,8 +52,12 @@ namespace SWLOR.Game.Server.Processor
             {
                 if (!player.IsInitializedAsPlayer) continue; // Ignored to prevent a timing issue where new characters would be included in this processing.
 
-                List<PCCustomEffect> effects = _db.PCCustomEffects.Where(x => x.PlayerID == player.GlobalID && 
-                                                                              x.CustomEffect.CustomEffectCategoryID != (int)CustomEffectCategoryType.Stance).ToList();
+                List<PCCustomEffect> effects = _data.Where<PCCustomEffect>(x =>
+                {
+                    var customEffect = _data.Get<Data.Entity.CustomEffect>(x.CustomEffectID);
+                    return x.PlayerID == player.GlobalID &&
+                           customEffect.CustomEffectCategoryID != (int) CustomEffectCategoryType.Stance;
+                }).ToList();
 
                 foreach (var effect in effects)
                 {
@@ -65,37 +70,39 @@ namespace SWLOR.Game.Server.Processor
                     PCCustomEffect result = RunPCCustomEffectProcess(player, effect);
                     if (result == null)
                     {
-                        string message = effect.CustomEffect.WornOffMessage;
-                        string scriptHandler = effect.CustomEffect.ScriptHandler;
+                        var customEffect = _data.Get<Data.Entity.CustomEffect>(effect.CustomEffectID);
+                        string message = customEffect.WornOffMessage;
+                        string scriptHandler = customEffect.ScriptHandler;
                         player.SendMessage(message);
                         player.DeleteLocalInt("CUSTOM_EFFECT_ACTIVE_" + effect.CustomEffectID);
-                        _db.PCCustomEffects.Remove(effect);
-                        _db.SaveChanges();
-
+                        _data.SubmitDataChange(effect, DatabaseActionType.Delete);
+                        
                         App.ResolveByInterface<ICustomEffect>("CustomEffect." + scriptHandler, (handler) =>
                         {
                             handler?.WearOff(null, player, effect.EffectiveLevel, effect.Data);
                         });
                     }
+                    else
+                    {
+                        _data.SubmitDataChange(effect, DatabaseActionType.Update);
+                    }
                 }
             }
-
-            _db.SaveChanges();
         }
 
         private void ProcessNPCCustomEffects()
         {
-            for (int index = _state.NPCEffects.Count - 1; index >= 0; index--)
+            for (int index = _cache.NPCEffects.Count - 1; index >= 0; index--)
             {
-                var entry = _state.NPCEffects.ElementAt(index);
+                var entry = _cache.NPCEffects.ElementAt(index);
                 CasterSpellVO casterModel = entry.Key;
-                _state.NPCEffects[entry.Key] = entry.Value - 1;
-                Data.CustomEffect entity = _db.CustomEffects.Single(x => x.CustomEffectID == casterModel.CustomEffectID);
+                _cache.NPCEffects[entry.Key] = entry.Value - 1;
+                Data.Entity.CustomEffect entity = _data.Single<Data.Entity.CustomEffect>(x => x.ID == casterModel.CustomEffectID);
                 App.ResolveByInterface<ICustomEffect>("CustomEffect." + entity.ScriptHandler, (handler) =>
                 {
                     try
                     {
-                        handler?.Tick(casterModel.Caster, casterModel.Target, _state.NPCEffects[entry.Key], casterModel.EffectiveLevel, casterModel.Data);
+                        handler?.Tick(casterModel.Caster, casterModel.Target, _cache.NPCEffects[entry.Key], casterModel.EffectiveLevel, casterModel.Data);
                     }
                     catch (Exception ex)
                     {
@@ -117,7 +124,7 @@ namespace SWLOR.Game.Server.Processor
 
                         casterModel.Target.DeleteLocalInt("CUSTOM_EFFECT_ACTIVE_" + casterModel.CustomEffectID);
 
-                        _state.NPCEffects.Remove(entry.Key);
+                        _cache.NPCEffects.Remove(entry.Key);
                     }
                 });
 
@@ -140,14 +147,15 @@ namespace SWLOR.Game.Server.Processor
                 effect.Ticks = effect.Ticks - 1;
 
             if (effect.Ticks == 0) return null;
-            
-            if (!string.IsNullOrWhiteSpace(effect.CustomEffect.ContinueMessage) &&
+            var customEffect = _data.Get<Data.Entity.CustomEffect>(effect.CustomEffectID);
+
+            if (!string.IsNullOrWhiteSpace(customEffect.ContinueMessage) &&
                 effect.Ticks % 6 == 0) // Only show the message once every six seconds
             {
-                oPC.SendMessage(effect.CustomEffect.ContinueMessage);
+                oPC.SendMessage(customEffect.ContinueMessage);
             }
 
-            App.ResolveByInterface<ICustomEffect>("CustomEffect." + effect.CustomEffect.ScriptHandler, (handler) =>
+            App.ResolveByInterface<ICustomEffect>("CustomEffect." + customEffect.ScriptHandler, (handler) =>
             {
                 handler?.Tick(caster, oPC, effect.Ticks, effect.EffectiveLevel, effect.Data);
             });
@@ -157,10 +165,13 @@ namespace SWLOR.Game.Server.Processor
 
         private void ClearRemovedPCEffects()
         {
-            var records = _db.PCCustomEffects.Where(x => _state.PCEffectsForRemoval.Contains(x.PCCustomEffectID)).ToList();
-            _db.PCCustomEffects.RemoveRange(records);
-            _db.SaveChanges();
-            _state.PCEffectsForRemoval.Clear();
+            var records = _data.Where<PCCustomEffect>(x => _cache.PCEffectsForRemoval.Contains(x.ID)).ToList();
+
+            foreach (var record in records)
+            {
+                _data.SubmitDataChange(record, DatabaseActionType.Delete);
+            }
+            _cache.PCEffectsForRemoval.Clear();
         }
     }
 }

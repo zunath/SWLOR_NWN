@@ -4,6 +4,7 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
@@ -17,7 +18,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
     public class OnDamaged: IRegisteredEvent
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IRandomService _random;
         private readonly IBaseService _base;
         private readonly ISerializationService _serialization;
@@ -25,14 +26,14 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
 
         public OnDamaged(
             INWScript script,
-            IDataContext db,
+            IDataService data,
             IRandomService random,
             IBaseService @base,
             ISerializationService serialization,
             IDurabilityService durability)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _random = random;
             _base = @base;
             _serialization = serialization;
@@ -45,10 +46,10 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             NWPlaceable tower = (Object.OBJECT_SELF);
             NWItem weapon = (_.GetLastWeaponUsed(attacker.Object));
             int damage = _.GetTotalDamageDealt();
-            int structureID = tower.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            PCBaseStructure structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
+            var structureID = tower.GetLocalString("PC_BASE_STRUCTURE_ID");
+            PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.ID == new Guid(structureID));
             int maxShieldHP = _base.CalculateMaxShieldHP(structure);
-            PCBase pcBase = structure.PCBase;
+            PCBase pcBase = _data.Get<PCBase>(structure.PCBaseID);
             pcBase.ShieldHP -= damage;
             if (pcBase.ShieldHP <= 0) pcBase.ShieldHP = 0;
             float hpPercentage = (float)pcBase.ShieldHP / (float)maxShieldHP * 100.0f;
@@ -82,12 +83,13 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
                 if (structure.Durability <= 0.0f)
                 {
                     structure.Durability = 0.0f;
-                    BlowUpBase(structure.PCBase);
+                    BlowUpBase(pcBase);
+                    return true;
                 }
             }
 
-
-            _db.SaveChanges();
+            _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+            _data.SubmitDataChange(structure, DatabaseActionType.Update);
             return true;
         }
 
@@ -96,7 +98,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
         {
             NWArea area = (_.GetArea(Object.OBJECT_SELF));
             List<AreaStructure> cache = area.Data["BASE_SERVICE_STRUCTURES"];
-            cache = cache.Where(x => x.PCBaseID == pcBase.PCBaseID).ToList();
+            cache = cache.Where(x => x.PCBaseID == pcBase.ID).ToList();
             
             foreach (var structure in cache)
             {
@@ -108,8 +110,11 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
                     continue;
                 }
 
-                var dbStructure = pcBase.PCBaseStructures.Single(x => x.PCBaseStructureID == structure.PCBaseStructureID);
-
+                var dbStructure = _data.Get<PCBaseStructure>(structure.PCBaseStructureID);
+                var baseStructure = _data.Get<BaseStructure>(dbStructure.BaseStructureID);
+                var items = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structure.PCBaseStructureID).ToList();
+                var children = _data.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == dbStructure.ParentPCBaseStructureID).ToList();
+                
                 // Explosion effect
                 Location location = structure.Structure.Location;
                 _.ApplyEffectAtLocation(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_FNF_FIREBALL), location);
@@ -119,48 +124,46 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
 
                 // Spawn container for items
                 NWPlaceable container = (_.CreateObject(OBJECT_TYPE_PLACEABLE, "structure_rubble", structure.Structure.Location));
-                container.Name = dbStructure.BaseStructure.Name + " Rubble";
+                container.Name = baseStructure.Name + " Rubble";
 
                 // Drop item storage into container
-                for (int i = dbStructure.PCBaseStructureItems.Count - 1; i >= 0; i--)
+                for (int i = items.Count - 1; i >= 0; i--)
                 {
-                    var dbItem = dbStructure.PCBaseStructureItems.ElementAt(i);
+                    var dbItem = items.ElementAt(i);
                     _serialization.DeserializeItem(dbItem.ItemObject, container);
-                    _db.PCBaseStructureItems.Remove(dbItem);
+                    _data.SubmitDataChange(dbItem, DatabaseActionType.Delete);
                 }
 
                 // Convert child placeables to items and drop into container
-                var children = dbStructure.ChildStructures;
-                if (children != null)
+                for (int f = children.Count - 1; f >= 0; f--)
                 {
-                    
-                    for (int f = dbStructure.ChildStructures.Count - 1; f >= 0; f--)
+                    var child = children.ElementAt(f);
+                    var childItems = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == child.ID).ToList();
+
+                    // Move child items to container
+                    for (int i = childItems.Count - 1; i >= 0; i++)
                     {
-                        var child = children.ElementAt(f);
-
-                        // Move child items to container
-                        for (int i = child.PCBaseStructureItems.Count - 1; i >= 0; i++)
-                        {
-                            var dbItem = child.PCBaseStructureItems.ElementAt(i);
-                            _serialization.DeserializeItem(dbItem.ItemObject, container);
-                            _db.PCBaseStructureItems.Remove(dbItem);
-                        }
-
-                        // Convert child structure to item
-                        _base.ConvertStructureToItem(child, container);
-                        _db.PCBaseStructures.Remove(child);
+                        var dbItem = childItems.ElementAt(i);
+                        _serialization.DeserializeItem(dbItem.ItemObject, container);
+                        _data.SubmitDataChange(dbItem, DatabaseActionType.Delete);
                     }
+
+                    // Convert child structure to item
+                    _base.ConvertStructureToItem(child, container);
+                    _data.SubmitDataChange(child, DatabaseActionType.Delete);
                 }
+            
 
                 // Clear structure permissions
-                for (int p = dbStructure.PCBaseStructurePermissions.Count - 1; p >= 0; p--)
+                var structurePermissions = _data.Where<PCBaseStructurePermission>(x => x.PCBaseStructureID == dbStructure.ID).ToList();
+                for (int p = structurePermissions.Count - 1; p >= 0; p--)
                 {
-                    var permission = dbStructure.PCBaseStructurePermissions.ElementAt(p);
-                    _db.PCBaseStructurePermissions.Remove(permission);
+                    var permission = structurePermissions.ElementAt(p);
+                    _data.SubmitDataChange(permission, DatabaseActionType.Delete);
                 }
 
                 // Destroy structure placeable
-                _db.PCBaseStructures.Remove(dbStructure);
+                _data.SubmitDataChange(dbStructure, DatabaseActionType.Delete);
                 structure.Structure.Destroy();
             }
 
@@ -169,18 +172,18 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             {
                 ((List<AreaStructure>)area.Data["BASE_SERVICE_STRUCTURES"]).Remove(record);
             }
-            
+            var basePermissions = _data.Where<PCBasePermission>(x => x.PCBaseID == pcBase.ID).ToList();
+
             // Clear base permissions
-            for (int p = pcBase.PCBasePermissions.Count - 1; p >= 0; p--)
+            for (int p = basePermissions.Count - 1; p >= 0; p--)
             {
-                var permission = pcBase.PCBasePermissions.ElementAt(p);
-                _db.PCBasePermissions.Remove(permission);
+                var permission = basePermissions.ElementAt(p);
+                _data.SubmitDataChange(permission, DatabaseActionType.Delete);
             }
             
-            _db.PCBases.Remove(pcBase);
-
-
-            Area dbArea = _db.Areas.Single(x => x.Resref == pcBase.AreaResref);
+            _data.SubmitDataChange(pcBase, DatabaseActionType.Delete);
+            
+            Area dbArea = _data.Single<Area>(x => x.Resref == pcBase.AreaResref);
             if (pcBase.Sector == AreaSector.Northeast) dbArea.NortheastOwner = null;
             else if (pcBase.Sector == AreaSector.Northwest) dbArea.NorthwestOwner = null;
             else if (pcBase.Sector == AreaSector.Southeast) dbArea.SoutheastOwner = null;

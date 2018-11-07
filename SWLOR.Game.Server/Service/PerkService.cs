@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using SWLOR.Game.Server.Bioware.Contracts;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Perk;
 using SWLOR.Game.Server.Service.Contracts;
-using SWLOR.Game.Server.ValueObject;
 using static NWN.NWScript;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
 
@@ -22,7 +19,7 @@ namespace SWLOR.Game.Server.Service
     {
         private readonly INWScript _;
         private readonly IColorTokenService _color;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IBiowareXP2 _biowareXP2;
         private readonly INWNXCreature _nwnxCreature;
         private readonly INWNXPlayerQuickBarSlot _nwnxQBS;
@@ -30,7 +27,7 @@ namespace SWLOR.Game.Server.Service
 
         public PerkService(INWScript script,
             IColorTokenService color,
-            IDataContext db,
+            IDataService data,
             IBiowareXP2 biowareXP2,
             INWNXCreature nwnxCreature,
             INWNXPlayerQuickBarSlot nwnxQBS,
@@ -38,11 +35,31 @@ namespace SWLOR.Game.Server.Service
         {
             _ = script;
             _color = color;
-            _db = db;
+            _data = data;
             _biowareXP2 = biowareXP2;
             _nwnxCreature = nwnxCreature;
             _nwnxQBS = nwnxQBS;
             _nwnxPlayer = nwnxPlayer;
+        }
+
+        private List<PCPerk> GetPCPerksByExecutionType(NWPlayer oPC, PerkExecutionType executionType)
+        {
+            var pcPerks = _data.Where<PCPerk>(x => x.PlayerID == oPC.GlobalID);
+            return pcPerks.Where(x =>
+            {
+                // Filter on equipment-based execution type.
+                var perk = _data.Get<Data.Entity.Perk>(x.PerkID);
+                bool matchesExecutionType = perk.ExecutionTypeID == (int)executionType;
+                if (!matchesExecutionType) return false;
+
+                // Filter out any perks the PC doesn't meet the requirements for.
+                int effectivePerkLevel = GetPCEffectivePerkLevel(oPC, x.PerkID);
+                if (effectivePerkLevel <= 0) return false;
+
+                // Meets all requirements.
+                return true;
+            }).ToList();
+
         }
 
         public void OnModuleItemEquipped()
@@ -50,14 +67,12 @@ namespace SWLOR.Game.Server.Service
             NWPlayer oPC = (_.GetPCItemLastEquippedBy());
             NWItem oItem = (_.GetPCItemLastEquipped());
             if (!oPC.IsPlayer || !oPC.IsInitializedAsPlayer) return;
-            List<PCPerk> perks = _db.StoredProcedure<PCPerk>("GetPCPerksByExecutionType",
-                new SqlParameter("PlayerID", oPC.GlobalID),
-                new SqlParameter("ExecutionTypeID", (int) PerkExecutionType.EquipmentBased));
 
-            foreach (PCPerk pcPerk in perks)
+            var executionPerks = GetPCPerksByExecutionType(oPC, PerkExecutionType.EquipmentBased);
+            foreach (PCPerk pcPerk in executionPerks)
             {
-                pcPerk.Perk = _db.Perks.Single(x => x.PerkID == pcPerk.PerkID);
-                string jsName = pcPerk.Perk.ScriptName;
+                var perk = _data.Get<Data.Entity.Perk>(pcPerk.PerkID);
+                string jsName = perk.ScriptName;
                 if (string.IsNullOrWhiteSpace(jsName)) continue;
 
                 App.ResolveByInterface<IPerk>("Perk." + jsName, (perkAction) =>
@@ -72,17 +87,14 @@ namespace SWLOR.Game.Server.Service
             NWPlayer oPC = (_.GetPCItemLastUnequippedBy());
             NWItem oItem = (_.GetPCItemLastUnequipped());
             if (!oPC.IsPlayer) return;
-
-            List<PCPerk> perks = _db.StoredProcedure<PCPerk>("GetPCPerksByExecutionType",
-                new SqlParameter("PlayerID", oPC.GlobalID),
-                new SqlParameter("ExecutionTypeID", (int)PerkExecutionType.EquipmentBased));
-
-            foreach (PCPerk pcPerk in perks)
+            
+            var executionPerks = GetPCPerksByExecutionType(oPC, PerkExecutionType.EquipmentBased);
+            foreach (PCPerk pcPerk in executionPerks)
             {
-                pcPerk.Perk = _db.Perks.Single(x => x.PerkID == pcPerk.PerkID);
-                string jsName = pcPerk.Perk.ScriptName;
+                var perk = _data.Get<Data.Entity.Perk>(pcPerk.PerkID);
+                string jsName = perk.ScriptName;
                 if (string.IsNullOrWhiteSpace(jsName)) continue;
-                
+
                 App.ResolveByInterface<IPerk>("Perk." + jsName, (perkAction) =>
                 {
                     perkAction?.OnItemUnequipped(oPC, oItem);
@@ -98,12 +110,7 @@ namespace SWLOR.Game.Server.Service
         public int GetPCPerkLevel(NWPlayer player, int perkID)
         {
             if (!player.IsPlayer) return -1;
-            
-            PerkLevel perkLevel = _db.StoredProcedureSingle<PerkLevel>("GetPCSkillAdjustedPerkLevel",
-                new SqlParameter("PlayerID", player.GlobalID),
-                new SqlParameter("PerkID", perkID));
-
-            return perkLevel?.Level ?? 0;
+            return GetPCEffectivePerkLevel(player, perkID);
         }
 
         public void OnHitCastSpell(NWPlayer oPC)
@@ -111,19 +118,30 @@ namespace SWLOR.Game.Server.Service
             if (!oPC.IsPlayer) return;
             NWItem oItem = (_.GetSpellCastItem());
             int type = oItem.BaseItemType;
-            List<PCPerk> pcPerks = _db.StoredProcedure<PCPerk>("GetPCPerksWithExecutionType",
-                new SqlParameter("PlayerID", oPC.GlobalID));
-            
+            var pcPerks = _data.Where<PCPerk>(x =>
+            {
+                // Only pull back perks which have an execution type.
+                var perk = _data.Get<Data.Entity.Perk>(x.PerkID);
+                if (perk.ExecutionTypeID == (int) PerkExecutionType.None)
+                    return false;
+
+                // If player's effective level is zero, it's not in effect.
+                int effectiveLevel = GetPCEffectivePerkLevel(oPC, x.PerkID);
+                if (effectiveLevel <= 0) return false;
+                
+                return true;
+            });
+
             foreach (PCPerk pcPerk in pcPerks)
             {
-                pcPerk.Perk = GetPerkByID(pcPerk.PerkID);
-                if (string.IsNullOrWhiteSpace(pcPerk.Perk.ScriptName) || pcPerk.Perk.ExecutionTypeID == (int)PerkExecutionType.None) continue;
+                var perk = GetPerkByID(pcPerk.PerkID);
+                if (string.IsNullOrWhiteSpace(perk.ScriptName) || perk.ExecutionTypeID == (int)PerkExecutionType.None) continue;
                 
-                if (!App.IsKeyRegistered<IPerk>("Perk." + pcPerk.Perk.ScriptName)) continue;
+                if (!App.IsKeyRegistered<IPerk>("Perk." + perk.ScriptName)) continue;
 
-                App.ResolveByInterface<IPerk>("Perk." +pcPerk.Perk.ScriptName, (perkAction) =>
+                App.ResolveByInterface<IPerk>("Perk." + perk.ScriptName, (perkAction) =>
                 {
-                    if (pcPerk.Perk.ExecutionTypeID == (int)PerkExecutionType.ShieldOnHit)
+                    if (perk.ExecutionTypeID == (int)PerkExecutionType.ShieldOnHit)
                     {
                         if (type == BASE_ITEM_SMALLSHIELD || type == BASE_ITEM_LARGESHIELD || type == BASE_ITEM_TOWERSHIELD)
                         {
@@ -135,38 +153,57 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public int GetPCTotalPerkCount(string playerID)
+        public int GetPCTotalPerkCount(Guid playerID)
         {
-            return _db.PCPerks.Count(x => x.PlayerID == playerID);
+            return _data.GetAll<PCPerk>().Count(x => x.PlayerID == playerID);
         }
 
-        public List<PCPerkHeader> GetPCPerksForMenuHeader(string playerID)
+
+        public List<Data.Entity.Perk> GetPerksAvailableToPC(NWPlayer player)
         {
-            return _db.StoredProcedure<PCPerkHeader>("GetPCPerksForMenuHeader",
-                    new SqlParameter("PlayerID", playerID)); ;
+            var playerID = player.GlobalID;
+            var pcSkills = _data.Where<PCSkill>(x => x.PlayerID == playerID).ToList();
+
+            return _data.Where<Data.Entity.Perk>(x =>
+            {
+                if (!x.IsActive) return false;
+                // Determination for whether a player can see a perk in the menu is based on whether they meet the
+                // requirements for the first level in that perk.
+                var perkLevel = _data.Single<PerkLevel>(pl => pl.PerkID == x.ID && pl.Level == 1);
+                var skillRequirements = _data.Where<PerkLevelSkillRequirement>(sr => sr.PerkLevelID == perkLevel.ID);
+                var questRequirements = _data.Where<PerkLevelQuestRequirement>(qr => qr.PerkLevelID == perkLevel.ID);
+
+                // Check the player's skill level against the perk requirements.
+                foreach (var skillReq in skillRequirements)
+                {
+                    var pcSkill = pcSkills.Single(s => s.SkillID == skillReq.SkillID);
+
+                    if (pcSkill.Rank < skillReq.RequiredRank)
+                    {
+                        return false;
+                    }
+                }
+
+                // Check the player's quest completion status against the perk requirements.
+                foreach (var questReq in questRequirements)
+                {
+                    var pcQuest = _data.SingleOrDefault<PCQuestStatus>(q => q.QuestID == questReq.RequiredQuestID);
+                    if (pcQuest == null || pcQuest.CompletionDate == null)
+                        return false;
+                }
+
+                return true;
+            }).ToList();
+        }
+        
+        public Data.Entity.Perk GetPerkByID(int perkID)
+        {
+            return _data.Single<Data.Entity.Perk>(x => x.ID == perkID);
         }
 
-        public List<PerkCategory> GetPerkCategoriesForPC(string playerID)
+        public PCPerk GetPCPerkByID(Guid playerID, int perkID)
         {
-            return _db.StoredProcedure<PerkCategory>("GetPerkCategoriesForPC",
-                new SqlParameter("PlayerID", playerID));
-        }
-
-        public List<Data.Perk> GetPerksForPC(string playerID, int categoryID)
-        {
-            return _db.StoredProcedure<Data.Perk>("GetPerksForPC",
-                new SqlParameter("PlayerID", playerID),
-                new SqlParameter("CategoryID", categoryID));
-        }
-
-        public Data.Perk GetPerkByID(int perkID)
-        {
-            return _db.Perks.Single(x => x.PerkID == perkID);
-        }
-
-        public PCPerk GetPCPerkByID(string playerID, int perkID)
-        {
-            return _db.PCPerks.SingleOrDefault(x => x.PlayerID == playerID && x.PerkID == perkID);
+            return _data.SingleOrDefault<PCPerk>(x => x.PlayerID == playerID && x.PerkID == perkID);
         }
 
         public PerkLevel FindPerkLevel(IEnumerable<PerkLevel> levels, int findLevel)
@@ -174,54 +211,78 @@ namespace SWLOR.Game.Server.Service
             return levels.FirstOrDefault(lvl => lvl.Level == findLevel);
         }
 
-        public bool CanPerkBeUpgraded(Data.Perk perk, PCPerk pcPerk, PlayerCharacter player)
+        public bool CanPerkBeUpgraded(NWPlayer player, int perkID)
         {
-            int rank = pcPerk?.PerkLevel ?? 0;
-            int maxRank = perk.PerkLevels.Count;
+            var dbPlayer = _data.Get<Player>(player.GlobalID);
+            var perkLevels = _data.Where<PerkLevel>(x => x.PerkID == perkID).ToList();
+            var pcPerk = _data.SingleOrDefault<PCPerk>(x => x.PlayerID == player.GlobalID && x.PerkID == perkID);
+
+            int rank = 0;
+            if (pcPerk != null)
+            {
+                rank = pcPerk.PerkLevel;
+            }
+            int maxRank = perkLevels.Count;
             if (rank + 1 > maxRank) return false;
 
-            PerkLevel level = FindPerkLevel(perk.PerkLevels, rank + 1);
+            PerkLevel level = FindPerkLevel(perkLevels, rank + 1);
             if (level == null) return false;
 
-            if (player.UnallocatedSP < level.Price) return false;
+            if (dbPlayer.UnallocatedSP < level.Price) return false;
 
-            foreach (PerkLevelSkillRequirement req in level.PerkLevelSkillRequirements)
+            var skillRequirements = _data.Where<PerkLevelSkillRequirement>(x => x.PerkLevelID == level.ID).ToList();
+
+            var questRequirements = _data.Where<PerkLevelQuestRequirement>(x => x.PerkLevelID == level.ID).ToList();
+
+            foreach (var req in skillRequirements)
             {
-                PCSkill pcSkill = _db.PCSkills.Single(x => x.PlayerID == player.PlayerID && x.SkillID == req.SkillID);
+                PCSkill pcSkill = _data.Single<PCSkill>(x => x.PlayerID == dbPlayer.ID && 
+                                                             x.SkillID == req.SkillID);
+
                 if (pcSkill.Rank < req.RequiredRank) return false;
             }
 
+            foreach (var req in questRequirements)
+            {
+                var pcQuest = _data.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == dbPlayer.ID && 
+                                                               x.QuestID == req.RequiredQuestID && 
+                                                               x.CompletionDate != null);
+                if (pcQuest == null) return false;
+            }
             return true;
         }
 
         public void DoPerkUpgrade(NWPlayer oPC, int perkID)
         {
-            Data.Perk perk = _db.Perks.Single(x => x.PerkID == perkID);
-            PCPerk pcPerk = _db.PCPerks.SingleOrDefault(x => x.PlayerID == oPC.GlobalID && x.PerkID == perkID);
-            PlayerCharacter player = _db.PlayerCharacters.Single(x => x.PlayerID == oPC.GlobalID);
+            var perk = _data.Single<Data.Entity.Perk>(x => x.ID == perkID);
+            var perkLevels = _data.Where<PerkLevel>(x => x.PerkID == perkID);
+            var pcPerk = _data.SingleOrDefault<PCPerk>(x => x.PlayerID == oPC.GlobalID && x.PerkID == perkID);
+            var player = _data.Single<Player>(x => x.ID == oPC.GlobalID);
 
-            if (CanPerkBeUpgraded(perk, pcPerk, player))
+            if (CanPerkBeUpgraded(oPC, perkID))
             {
+                DatabaseActionType action = DatabaseActionType.Update;
                 if (pcPerk == null)
                 {
                     pcPerk = new PCPerk();
                     DateTime dt = DateTime.UtcNow;
                     pcPerk.AcquiredDate = dt;
-                    pcPerk.PerkID = perk.PerkID;
+                    pcPerk.PerkID = perk.ID;
                     pcPerk.PlayerID = oPC.GlobalID;
                     pcPerk.PerkLevel = 0;
 
-                    _db.PCPerks.Add(pcPerk);
+                    action = DatabaseActionType.Insert;
                 }
 
-                PerkLevel nextPerkLevel = FindPerkLevel(perk.PerkLevels, pcPerk.PerkLevel + 1);
+                PerkLevel nextPerkLevel = FindPerkLevel(perkLevels, pcPerk.PerkLevel + 1);
                 if (nextPerkLevel == null) return;
 
                 pcPerk.PerkLevel++;
                 player.UnallocatedSP -= nextPerkLevel.Price;
 
-                _db.SaveChanges();
-
+                _data.SubmitDataChange(pcPerk, action);
+                _data.SubmitDataChange(player, DatabaseActionType.Update);
+                
                 // If a perk is activatable, create the item on the PC.
                 // Remove any existing cast spell unique power properties and add the correct one based on the DB flag.
                 if (!string.IsNullOrWhiteSpace(perk.ItemResref))
@@ -230,7 +291,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         NWItem spellItem = (_.CreateItemOnObject(perk.ItemResref, oPC.Object));
                         spellItem.IsCursed = true;
-                        spellItem.SetLocalInt("ACTIVATION_PERK_ID", perk.PerkID);
+                        spellItem.SetLocalInt("ACTIVATION_PERK_ID", perk.ID);
 
                         foreach (ItemProperty ipCur in spellItem.ItemProperties)
                         {
@@ -316,13 +377,15 @@ namespace SWLOR.Game.Server.Service
             int perkID = examinedObject.GetLocalInt("ACTIVATION_PERK_ID");
             if (perkID <= 0) return existingDescription;
 
-            Data.Perk perk = _db.Perks.Single(x => x.PerkID == perkID);
+            var perk = _data.Single<Data.Entity.Perk>(x => x.ID == perkID);
+            var executionType = _data.Get<Data.Entity.PerkExecutionType>(perk.ExecutionTypeID);
+            var cooldownCategory = _data.Get<CooldownCategory>(perk.CooldownCategoryID);
             string description = existingDescription;
 
             description += _color.Orange("Name: ") + perk.Name + "\n" +
                 _color.Orange("Description: ") + perk.Description + "\n";
 
-            switch ((PerkExecutionType)perk.PerkExecutionType.PerkExecutionTypeID)
+            switch ((PerkExecutionType)executionType.ID)
             {
                 case PerkExecutionType.CombatAbility:
                     description += _color.Orange("Type: ") + "Combat Ability\n";
@@ -345,9 +408,9 @@ namespace SWLOR.Game.Server.Service
             {
                 description += _color.Orange("Base FP Cost: ") + perk.BaseFPCost + "\n";
             }
-            if (perk.CooldownCategory.BaseCooldownTime > 0.0f)
+            if (cooldownCategory.BaseCooldownTime > 0.0f)
             {
-                description += _color.Orange("Cooldown: ") + perk.CooldownCategory.BaseCooldownTime + "s\n";
+                description += _color.Orange("Cooldown: ") + cooldownCategory.BaseCooldownTime + "s\n";
             }
             if (perk.BaseCastingTime > 0.0f)
             {
@@ -357,5 +420,68 @@ namespace SWLOR.Game.Server.Service
 
             return description;
         }
+
+        /// <summary>
+        /// Returns the EFFECTIVE perk level of a player.
+        /// This takes into account the player's skills. If they are too low to use the perk, the level will be
+        /// reduced to the appropriate level.
+        /// </summary>
+        /// <returns></returns>
+        private int GetPCEffectivePerkLevel(NWPlayer player, int perkID)
+        {
+            var pcSkills = _data.Where<PCSkill>(x => x.PlayerID == player.GlobalID).ToList();
+            // Get the PC's perk information and all of the perk levels at or below their current level.
+            var pcPerk = _data.SingleOrDefault<PCPerk>(x => x.PlayerID == player.GlobalID && x.PerkID == perkID);
+            if (pcPerk == null) return 0;
+
+            // Get all of the perk levels in range, starting with the highest level.
+            var perkLevelsInRange = _data
+                .Where<PerkLevel>(x => x.PerkID == perkID && x.Level <= pcPerk.PerkLevel)
+                .OrderByDescending(o => o.Level);
+
+            // Iterate over each perk level. If player doesn't meet the requirements, the effective level is dropped.
+            // Iteration ends when the player meets that level's requirements. 
+            foreach (var perkLevel in perkLevelsInRange)
+            {
+                var skillRequirements = _data.Where<PerkLevelSkillRequirement>(r => r.PerkLevelID == perkLevel.ID);
+                var questRequirements = _data.Where<PerkLevelQuestRequirement>(q => q.PerkLevelID == perkLevel.ID);
+                int effectiveLevel = pcPerk.PerkLevel;
+
+                // Check the skill requirements.
+                foreach (var req in skillRequirements)
+                {
+                    var pcSkill = pcSkills.Single(x => x.SkillID == req.SkillID);
+                    if (pcSkill.Rank < req.RequiredRank)
+                    {
+                        effectiveLevel--;
+                        break;
+                    }
+                }
+
+                // Was the effective level reduced during the skill check? No need to check quests.
+                if (effectiveLevel != pcPerk.PerkLevel) continue;
+
+                // Check the quest requirements.
+                foreach (var req in questRequirements)
+                {
+                    var pcQuest = _data.SingleOrDefault<PCQuestStatus>(q => q.QuestID == req.RequiredQuestID);
+                    if(pcQuest == null || pcQuest.CompletionDate == null)
+                    {
+                        effectiveLevel--;
+                        break;
+                    }
+                }
+
+                // Was the effective level reduced during the quest check? Move to the next lowest perk level.
+                if (effectiveLevel != pcPerk.PerkLevel) continue;
+
+                // Otherwise the player meets all requirements. This is their effective perk level.
+                return effectiveLevel;
+            }
+
+            // Player meets none of the requirements for their purchased perk level. Their effective level is 0.
+            return 0;
+        }
+
     }
 }

@@ -2,6 +2,7 @@
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.Item.Medicine
     {
 
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly ISkillService _skill;
         private readonly IRandomService _random;
         private readonly IPerkService _perk;
@@ -23,14 +24,14 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public ResuscitationKit(
             INWScript script,
-            IDataContext db,
+            IDataService data,
             ISkillService skill,
             IRandomService random,
             IPerkService perk,
             IPlayerStatService playerStat)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _skill = skill;
             _random = random;
             _perk = perk;
@@ -46,7 +47,7 @@ namespace SWLOR.Game.Server.Item.Medicine
         {
             NWPlayer player = user.Object;
             var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
-            PCSkill skill = _skill.GetPCSkill(player, SkillType.Medicine);
+            int skillRank = _skill.GetPCSkillRank(player, SkillType.Medicine);
             int perkLevel = _perk.GetPCPerkLevel(player, PerkType.ResuscitationDevices);
             int rank = item.GetLocalInt("RANK");
             int baseHeal;
@@ -72,7 +73,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             baseHeal += effectiveStats.Medicine / 2;
             baseHeal += item.MedicineBonus / 2;
 
-            int delta = item.RecommendedLevel - skill.Rank;
+            int delta = item.RecommendedLevel - skillRank;
             float effectivenessPercent = 1.0f;
 
             if (delta > 0)
@@ -82,17 +83,16 @@ namespace SWLOR.Game.Server.Item.Medicine
 
             baseHeal = (int)(baseHeal * effectivenessPercent);
 
-            PlayerCharacter dbPlayer = _db.PlayerCharacters.Single(x => x.PlayerID == user.GlobalID);
+            Player dbPlayer = _data.Single<Player>(x => x.ID == user.GlobalID);
             int hpRecover = (int)(target.MaxHP * (0.01f * baseHeal));
             int fpRecover = (int) (dbPlayer.MaxFP * (0.01f * baseHeal));
 
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectResurrection(), target);
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(hpRecover), target);
             dbPlayer.CurrentFP = fpRecover;
-
-            _db.SaveChanges();
+            _data.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
             player.SendMessage("You successfully resuscitate " + target.Name + "!");
-            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(600, item.RecommendedLevel, skill.Rank);
+            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(600, item.RecommendedLevel, skillRank);
             _skill.GiveSkillXP(player, SkillType.Medicine, xp);
         }
 
@@ -103,8 +103,8 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return 0.1f;
             }
 
-            PCSkill skill = _skill.GetPCSkill((NWPlayer)user, SkillType.Medicine);
-            return 12.0f - (skill.Rank * 0.1f);
+            int rank = _skill.GetPCSkillRank((NWPlayer)user, SkillType.Medicine);
+            return 12.0f - (rank * 0.1f);
         }
 
         public bool FaceTarget()

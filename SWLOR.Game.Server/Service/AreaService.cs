@@ -1,17 +1,13 @@
 ﻿using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
-using System.Data.Entity.Migrations;
-using System.Data.SqlClient;
 using System.Linq;
 using SWLOR.Game.Server.AreaInstance.Contracts;
-using SWLOR.Game.Server.Event;
+using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Service
@@ -19,46 +15,41 @@ namespace SWLOR.Game.Server.Service
     public class AreaService : IAreaService
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
-        private readonly IDataContext _bakeDB;
+        private readonly IDataService _data;
         private readonly ISpawnService _spawn;
-        private readonly AppState _state;
+        private readonly AppCache _cache;
 
         public AreaService(
             INWScript script,
-            IDataContext db,
-            IDataContext bakeDB,
+            IDataService data,
             ISpawnService spawn,
-            AppState state)
+            AppCache cache)
         {
             _ = script;
-            _db = db;
-            _bakeDB = bakeDB;
+            _data = data;
             _spawn = spawn;
-            _state = state;
-
-            // Disable stuff that slows down bulk inserts.
-            _bakeDB.Configuration.AutoDetectChangesEnabled = false;
-            _bakeDB.Configuration.ValidateOnSaveEnabled = false;
+            _cache = cache;
         }
 
         public void OnModuleLoad()
         {
             var areas = NWModule.Get().Areas;
-            var dbAreas = _db.Areas.Where(x => x.IsActive).ToList();
+            var dbAreas = _data.GetAll<Area>().Where(x => x.IsActive).ToList();
             dbAreas.ForEach(x => x.IsActive = false);
 
             foreach (var area in areas)
             {
                 var dbArea = dbAreas.SingleOrDefault(x => x.Resref == area.Resref);
+                var action = DatabaseActionType.Update;
 
                 if (dbArea == null)
                 {
                     dbArea = new Area
                     {
-                        AreaID = Guid.NewGuid().ToString("N"),
+                        ID = Guid.NewGuid(),
                         Resref = area.Resref
                     };
+                    action = DatabaseActionType.Insert;
                 }
 
                 int width = _.GetAreaSize(AREA_WIDTH, area.Object);
@@ -97,11 +88,9 @@ namespace SWLOR.Game.Server.Service
                 if (dbArea.MaxResourceQuality < dbArea.ResourceQuality)
                     dbArea.MaxResourceQuality = dbArea.ResourceQuality;
 
-
-                _db.Areas.AddOrUpdate(dbArea);
+                _data.SubmitDataChange(dbArea, action);
             }
-            _db.SaveChanges();
-
+            
             string arg = Environment.GetEnvironmentVariable("AREA_BAKING_ENABLED");
             bool bakingEnabled =  arg == null || Convert.ToBoolean(arg);
             
@@ -113,6 +102,10 @@ namespace SWLOR.Game.Server.Service
             {
                 Console.WriteLine("WARNING: Area baking has been disabled. You may encounter errors during normal operations. This should only be disabled for debugging purposes. Please shut down the server and set the AREA_BAKING_ENABLED argument to true for all other scenarios.");
             }
+
+            // Cache both areas and area walkmeshes now that they're built, if they aren't already.
+            _data.GetAll<Area>();
+            _data.GetAll<AreaWalkmesh>();
         }
 
         // Area baking process
@@ -123,13 +116,13 @@ namespace SWLOR.Game.Server.Service
         // accuracy I wanted, without too much overhead. Your mileage may vary.
         private void BakeAreas()
         {
-            var config = _db.ServerConfigurations.Single();
+            var config = _data.GetAll<ServerConfiguration>().First();
             int Step = config.AreaBakeStep;
             const float MinDistance = 6.0f;
 
             foreach (var area in NWModule.Get().Areas)
             {
-                var dbArea = _bakeDB.Areas.Single(x => x.Resref == area.Resref);
+                var dbArea = _data.Single<Area>(x => x.Resref == area.Resref);
 
                 int arraySizeX = dbArea.Width * (10 / Step);
                 int arraySizeY = dbArea.Height * (10 / Step);
@@ -163,20 +156,19 @@ namespace SWLOR.Game.Server.Service
                 {
                     dbArea.Walkmesh = walkmesh;
                     dbArea.DateLastBaked = DateTime.UtcNow;
-                    ((DbContext)_bakeDB).Entry(dbArea).State = EntityState.Modified; // Manually mark as changed since AutoDetectChanges is disabled for this context
-                    _bakeDB.SaveChanges();
+                    _data.SubmitDataChange(dbArea, DatabaseActionType.Update);
 
                     Console.WriteLine("Baking area because its walkmesh has changed since last run: " + area.Name);
 
-                    _bakeDB.StoredProcedure("DeleteAreaWalkmeshes",
-                        new SqlParameter("AreaID", dbArea.AreaID));
-
+                    var walkmeshes = _data.Where<AreaWalkmesh>(x => x.AreaID == dbArea.ID);
+                    foreach (var mesh in walkmeshes)
+                    {
+                        _data.SubmitDataChange(mesh, DatabaseActionType.Delete);
+                    }
+                    
                     Console.WriteLine("Cleared old walkmesh. Adding new one now.");
-
-                    const int BatchSize = 5000;
-                    int batchRecords = 0;
-                    string sql = string.Empty;
-
+                    
+                    int records = 0;
                     for (int x = 0; x < arraySizeX; x++)
                     {
                         for (int y = 0; y < arraySizeY; y++)
@@ -186,27 +178,22 @@ namespace SWLOR.Game.Server.Service
                             if (!isWalkable) continue;
 
                             float z = locations[x, y].Item2;
-
-                            // Raw SQL inserts are quicker than using EF.
-                            sql += $@"INSERT INTO dbo.AreaWalkmesh(AreaID, LocationX, LocationY, LocationZ) VALUES('{dbArea.AreaID}', {x * Step}, {y * Step}, {z});";
-
-                            batchRecords++;
-                            if (batchRecords >= BatchSize)
+                            
+                            AreaWalkmesh mesh = new AreaWalkmesh()
                             {
-                                Console.WriteLine("Saving " + BatchSize + " records...");
-                                _bakeDB.Database.ExecuteSqlCommand(sql);
-                                sql = string.Empty;
-                                batchRecords = 0;
-                            }
+                                AreaID = dbArea.ID,
+                                LocationX = x * Step,
+                                LocationY = y * Step,
+                                LocationZ = z
+                            };
 
+                            _data.SubmitDataChange(mesh, DatabaseActionType.Insert);
+
+                            records++;
                         }
                     }
 
-                    if(!string.IsNullOrWhiteSpace(sql))
-                    {
-                        Console.WriteLine("Saving " + batchRecords + " records...");
-                        _bakeDB.Database.ExecuteSqlCommand(sql);
-                    }
+                    Console.WriteLine("Saved " + records + " records.");
                 }
                 Console.WriteLine("Area walkmesh up to date: " + area.Name);
 
@@ -215,10 +202,10 @@ namespace SWLOR.Game.Server.Service
         
         public NWArea CreateAreaInstance(NWPlayer owner, string areaResref, string areaName, string entranceWaypointTag)
         {
-            string tag = Guid.NewGuid().ToString("N");
+            string tag = Guid.NewGuid().ToString();
             NWArea instance = _.CreateArea(areaResref, tag, areaName);
             
-            instance.SetLocalString("INSTANCE_OWNER", owner.GlobalID);
+            instance.SetLocalString("INSTANCE_OWNER", owner.GlobalID.ToString());
             instance.SetLocalString("ORIGINAL_RESREF", areaResref);
             instance.SetLocalInt("IS_AREA_INSTANCE", TRUE);
             instance.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();
@@ -258,9 +245,9 @@ namespace SWLOR.Game.Server.Service
         {
             if (!area.IsInstance) return;
 
-            if (_state.AreaSpawns.ContainsKey(area))
+            if (_cache.AreaSpawns.ContainsKey(area))
             {
-                _state.AreaSpawns.Remove(area);
+                _cache.AreaSpawns.Remove(area);
             }
 
             _.DestroyArea(area);

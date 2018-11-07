@@ -13,13 +13,13 @@ namespace SWLOR.Game.Server.GameObject
     {
         public virtual Object Object { get; }
         protected readonly INWScript _;
-        private readonly AppState _state;
+        private readonly AppCache _cache;
 
         public NWObject(Object nwnObject)
         {
             Object = nwnObject;
             _ = App.GetNWScript();
-            _state = App.GetAppState();
+            _cache = App.GetAppState();
         }
 
         public virtual bool IsInitializedAsPlayer
@@ -37,13 +37,13 @@ namespace SWLOR.Game.Server.GameObject
         {
             if (IsInitializedAsPlayer || !IsPlayer) return;
             
-            string guid = Guid.NewGuid().ToString("N");
+            string guid = Guid.NewGuid().ToString();
             _.SetTag(Object, guid);
         }
 
-        public virtual string GlobalID => GetOrAssignGlobalID();
+        public virtual Guid GlobalID => GetOrAssignGlobalID();
 
-        public virtual string GetOrAssignGlobalID()
+        public virtual Guid GetOrAssignGlobalID()
         {
             if (Object == null || Object == OBJECT_TYPE_INVALID)
                 throw new Exception("NWN object has not been set for this wrapper.");
@@ -63,12 +63,12 @@ namespace SWLOR.Game.Server.GameObject
                 globalID = _.GetLocalString(Object, "GLOBAL_ID");
                 if (string.IsNullOrWhiteSpace(globalID))
                 {
-                    globalID = Guid.NewGuid().ToString("N");
+                    globalID = Guid.NewGuid().ToString();
                     _.SetLocalString(Object, "GLOBAL_ID", globalID);
                 }
             }
 
-            return globalID;
+            return Guid.Parse(globalID);
         }
 
         public virtual string Name
@@ -326,12 +326,12 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                if (!_state.CustomObjectData.ContainsKey(GlobalID))
+                if (!_cache.CustomObjectData.ContainsKey(GlobalID))
                 {
-                    _state.CustomObjectData.Add(GlobalID, new CustomData(this));
+                    _cache.CustomObjectData.Add(GlobalID, new CustomData(this));
                 }
 
-                return _state.CustomObjectData[GlobalID];
+                return _cache.CustomObjectData[GlobalID];
             }
         }
 

@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             NWPlayer player = user.Object;
             int ability = item.GetLocalInt("ABILITY_TYPE");
             int amount = item.GetLocalInt("AMOUNT") + item.MedicineBonus;
-            int rank = player.IsPlayer ? _skill.GetPCSkill(player, SkillType.Medicine).Rank : 0;
+            int rank = player.IsPlayer ? _skill.GetPCSkillRank(player, SkillType.Medicine) : 0;
             int recommendedLevel = item.RecommendedLevel;
             int delta = recommendedLevel - rank;
             int penalty = delta / 2;

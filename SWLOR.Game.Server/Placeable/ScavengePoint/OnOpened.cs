@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Data;
+﻿using System;
+using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
@@ -6,6 +7,7 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.ScavengePoint
 {
@@ -65,12 +67,9 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
             }
 
             if (!oPC.IsPlayer && !oPC.IsDM) return false;
-            PCSkill pcSkill = _skill.GetPCSkill(oPC, SkillType.Scavenging);
-            if (pcSkill == null) return false;
-
+            int rank = _skill.GetPCSkillRank(oPC, SkillType.Scavenging);
             int lootTableID = point.GetLocalInt("SCAVENGE_POINT_LOOT_TABLE_ID");
             int level = point.GetLocalInt("SCAVENGE_POINT_LEVEL");
-            int rank = pcSkill.Rank;
             int delta = level - rank;
 
             if (delta > 8)
@@ -125,10 +124,10 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
             
             // Chance to destroy the scavenge point.
             int chanceToFullyHarvest = baseChanceToFullyHarvest - (_perk.GetPCPerkLevel(oPC, PerkType.CarefulScavenger) * 5);
-            int growingPlantID = point.GetLocalInt("GROWING_PLANT_ID");
-            if (growingPlantID > 0)
+            string growingPlantID = point.GetLocalString("GROWING_PLANT_ID");
+            if (!string.IsNullOrWhiteSpace(growingPlantID))
             {
-                Data.GrowingPlant growingPlant = _farming.GetGrowingPlantByID(growingPlantID);
+                Data.Entity.GrowingPlant growingPlant = _farming.GetGrowingPlantByID(new Guid(growingPlantID));
                 chanceToFullyHarvest = chanceToFullyHarvest - (growingPlant.LongevityBonus);
             }
 
@@ -197,6 +196,10 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
             {
                 numberOfSearches++;
             }
+
+            int background = oPC.Class1;
+            if (background == (int)BackgroundType.Scavenger)
+                numberOfSearches++;
 
             return numberOfSearches;
         }

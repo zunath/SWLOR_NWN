@@ -3,6 +3,7 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
@@ -14,13 +15,13 @@ namespace SWLOR.Game.Server.Service
     public class ActivityLoggingService: IActivityLoggingService
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly INWNXChat _nwnxChat;
 
-        public ActivityLoggingService(INWScript script, IDataContext db, INWNXChat nwnxChat)
+        public ActivityLoggingService(INWScript script, IDataService data, INWNXChat nwnxChat)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _nwnxChat = nwnxChat;
         }
 
@@ -47,12 +48,10 @@ namespace SWLOR.Game.Server.Service
                 AccountName = account,
                 CDKey = cdKey,
                 ClientLogEventTypeID = 1,
-                PlayerID = oPC.IsDM ? null : oPC.GlobalID,
+                PlayerID = oPC.IsDM ? null : (Guid?)oPC.GlobalID,
                 DateOfEvent = now
             };
-            
-            _db.ClientLogEvents.Add(entity);
-            _db.SaveChanges();
+            _data.SubmitDataChange(entity, DatabaseActionType.Insert);
         }
 
         public void OnModuleClientLeave()
@@ -71,12 +70,10 @@ namespace SWLOR.Game.Server.Service
                 AccountName = account,
                 CDKey = cdKey,
                 ClientLogEventTypeID = 2,
-                PlayerID = oPC.IsDM ? null : oPC.GlobalID,
+                PlayerID = oPC.IsDM ? null : (Guid?)oPC.GlobalID,
                 DateOfEvent = now
             };
-
-            _db.ClientLogEvents.Add(entity);
-            _db.SaveChanges();
+            _data.SubmitDataChange(entity, DatabaseActionType.Insert);
         }
 
 
@@ -115,12 +112,12 @@ namespace SWLOR.Game.Server.Service
             int mode = _nwnxChat.GetChannel();
             int channel = ConvertNWNXChatChannelIDToDatabaseID(mode);
             NWObject recipient = _nwnxChat.GetTarget();
-            ChatChannelsDomain channelEntity = _db.ChatChannelsDomains.Single(x => x.ChatChannelID == channel);
+            ChatChannel channelEntity = _data.Single<ChatChannel>(x => x.ID == channel);
 
             // Sender - should always have this data.
             string senderCDKey = _.GetPCPublicCDKey(sender.Object);
             string senderAccountName = sender.Name;
-            string senderPlayerID = null;
+            Guid? senderPlayerID = null;
             string senderDMName = null;
 
             // DMs do not have PlayerIDs so store their name in another field.
@@ -133,7 +130,7 @@ namespace SWLOR.Game.Server.Service
 
             string receiverCDKey = null;
             string receiverAccountName = null;
-            string receiverPlayerID = null;
+            Guid? receiverPlayerID = null;
             string receiverDMName = null;
 
             if (recipient.IsValid)
@@ -159,13 +156,10 @@ namespace SWLOR.Game.Server.Service
                 ReceiverAccountName = receiverAccountName,
                 ReceiverPlayerID = receiverPlayerID,
                 ReceiverDMName = receiverDMName,
-                ChatChannelID = channelEntity.ChatChannelID,
+                ChatChannelID = channelEntity.ID,
                 DateSent = DateTime.UtcNow
             };
-            
-            _db.ChatLogs.Add(entity);
-            _db.SaveChanges();
-
+            _data.SubmitDataChange(entity, DatabaseActionType.Insert);
         }
 
     }

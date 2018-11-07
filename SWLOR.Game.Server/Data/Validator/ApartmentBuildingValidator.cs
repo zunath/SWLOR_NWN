@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Data.Validator
 {
@@ -10,9 +11,6 @@ namespace SWLOR.Game.Server.Data.Validator
                 .NotNull()
                 .NotEmpty()
                 .MaximumLength(64);
-
-            RuleFor(x => x.PCBases)
-                .Empty();
         }
     }
 }

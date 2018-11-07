@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
@@ -16,7 +15,7 @@ namespace SWLOR.Game.Server.Perk.LightSide
         private readonly IPerkService _perk;
         private readonly IRandomService _random;
         private readonly ISkillService _skill;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly ICustomEffectService _customEffect;
         private readonly IPlayerStatService _playerStat;
 
@@ -24,7 +23,7 @@ namespace SWLOR.Game.Server.Perk.LightSide
             IPerkService perk,
             IRandomService random,
             ISkillService skill,
-            IDataContext db,
+            IDataService data,
             ICustomEffectService customEffect,
             IPlayerStatService playerStat)
         {
@@ -32,7 +31,7 @@ namespace SWLOR.Game.Server.Perk.LightSide
             _perk = perk;
             _random = random;
             _skill = skill;
-            _db = db;
+            _data = data;
             _customEffect = customEffect;
             _playerStat = playerStat;
         }
@@ -71,7 +70,7 @@ namespace SWLOR.Game.Server.Perk.LightSide
             var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
             int lightBonus = effectiveStats.LightAbility;
 
-            PCCustomEffect spreadEffect = _db.PCCustomEffects.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CustomEffectID == (int)CustomEffectType.ForceSpread);
+            PCCustomEffect spreadEffect = _data.SingleOrDefault<PCCustomEffect>(x => x.PlayerID == player.GlobalID && x.CustomEffectID == (int)CustomEffectType.ForceSpread);
             string spreadData = spreadEffect?.Data ?? string.Empty;
             int spreadLevel = spreadEffect?.EffectiveLevel ?? 0;
             int spreadUses = spreadEffect == null ? 0 : Convert.ToInt32(spreadData.Split(',')[0]);
@@ -98,7 +97,7 @@ namespace SWLOR.Game.Server.Perk.LightSide
                 {
                     // ReSharper disable once PossibleNullReferenceException
                     spreadEffect.Data = spreadUses + "," + spreadRange;
-                    _db.SaveChanges();
+                    _data.SubmitDataChange(spreadEffect, DatabaseActionType.Update);
                     player.SendMessage("Force Spread uses remaining: " + spreadUses);
                 }
 

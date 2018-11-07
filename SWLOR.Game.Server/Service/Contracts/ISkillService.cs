@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service.Contracts
 {
@@ -11,12 +14,14 @@ namespace SWLOR.Game.Server.Service.Contracts
 
         float CalculateRegisteredSkillLevelAdjustedXP(float xp, int registeredLevel, int skillRank);
         List<SkillCategory> GetActiveCategories();
+        int GetPCSkillRank(NWPlayer player, int skillID);
+        int GetPCSkillRank(NWPlayer player, SkillType skill);
         PCSkill GetPCSkill(NWPlayer player, int skillID);
-        PCSkill GetPCSkill(NWPlayer player, SkillType skill);
-        PCSkill GetPCSkillByID(string playerID, int skillID);
-        List<PCSkill> GetPCSkillsForCategory(string playerID, int skillCategoryID);
-        int GetPCTotalSkillCount(string playerID);
-        SkillXPRequirement GetSkillXPRequirementByRank(int skillID, int rank);
+        List<PCSkill> GetAllPCSkills(NWPlayer player);
+        Skill GetSkill(int skillID);
+        Skill GetSkill(SkillType skillType);
+        List<PCSkill> GetPCSkillsForCategory(Guid playerID, int skillCategoryID);
+        int GetPCTotalSkillCount(NWPlayer player);
         void GiveSkillXP(NWPlayer oPC, int skillID, int xp);
         void GiveSkillXP(NWPlayer oPC, SkillType skill, int xp);
         void OnAreaExit();
@@ -27,6 +32,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         void OnModuleItemEquipped();
         void OnModuleItemUnequipped();
         void RegisterPCToAllCombatTargetsForSkill(NWPlayer player, SkillType skillType, NWCreature target);
-        void ToggleSkillLock(string playerID, int skillID);
+        void RegisterPCToNPCForSkill(NWPlayer pc, NWObject npc, SkillType skillType);
+        void ToggleSkillLock(Guid playerID, int skillID);
     }
 }

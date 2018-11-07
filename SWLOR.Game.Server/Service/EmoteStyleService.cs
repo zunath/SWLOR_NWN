@@ -4,17 +4,18 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using System.Linq;
+using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Service
 {
     public class EmoteStyleService : IEmoteStyleService
     {
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
 
         public EmoteStyleService(
-            IDataContext db)
+            IDataService data)
         {
-            _db = db;
+            _data = data;
         }
 
         public EmoteStyle GetEmoteStyle(NWObject obj)
@@ -24,7 +25,7 @@ namespace SWLOR.Game.Server.Service
             if (obj.IsPlayer)
             {
                 NWPlayer player = obj.Object;
-                PlayerCharacter pc = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+                Player pc = _data.Single<Player>(x => x.ID == player.GlobalID);
                 novelStyle = pc.IsUsingNovelEmoteStyle;
             }
 
@@ -36,9 +37,9 @@ namespace SWLOR.Game.Server.Service
             if (obj.IsPlayer)
             {
                 NWPlayer player = obj.Object;
-                PlayerCharacter pc = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+                Player pc = _data.Single<Player>(x => x.ID == player.GlobalID);
                 pc.IsUsingNovelEmoteStyle = style == EmoteStyle.Novel;
-                _db.SaveChanges();
+                _data.SubmitDataChange(pc, DatabaseActionType.Update);
             }
         }
     }

@@ -16,16 +16,19 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
         private readonly ICraftService _craft;
         private readonly IItemService _item;
         private readonly IDialogService _dialog;
+        private readonly IDataService _data;
 
         public OnDisturbed(INWScript script,
             ICraftService craft,
             IItemService item,
-            IDialogService dialog)
+            IDialogService dialog,
+            IDataService data)
         {
             _ = script;
             _craft = craft;
             _item = item;
             _dialog = dialog;
+            _data = data;
         }
 
         public bool Run(params object[] args)
@@ -57,6 +60,10 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
             }
 
             var model = _craft.GetPlayerCraftingData(oPC);
+            var mainComponent = _data.Get<Data.Entity.ComponentType>(model.Blueprint.MainComponentTypeID);
+            var secondaryComponent = _data.Get<Data.Entity.ComponentType>(model.Blueprint.SecondaryComponentTypeID);
+            var tertiaryComponent = _data.Get<Data.Entity.ComponentType>(model.Blueprint.TertiaryComponentTypeID);
+
             NWPlaceable storage = _.GetObjectByTag("craft_temp_store");
 
             List<NWItem> list = null;
@@ -71,19 +78,19 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
                     allowedType = (ComponentType)model.Blueprint.MainComponentTypeID;
                     reachedCap = model.MainMaximum < model.MainComponents.Count + 1;
                     list = model.MainComponents;
-                    componentName = model.Blueprint.MainComponentType.Name;
+                    componentName = mainComponent.Name;
                     break;
                 case CraftingAccessType.SecondaryComponent:
                     allowedType = (ComponentType)model.Blueprint.SecondaryComponentTypeID;
                     reachedCap = model.SecondaryMaximum < model.SecondaryComponents.Count + 1;
                     list = model.SecondaryComponents;
-                    componentName = model.Blueprint.SecondaryComponentType.Name;
+                    componentName = secondaryComponent.Name;
                     break;
                 case CraftingAccessType.TertiaryComponent:
                     allowedType = (ComponentType)model.Blueprint.TertiaryComponentTypeID;
                     reachedCap = model.TertiaryMaximum < model.TertiaryComponents.Count + 1;
                     list = model.TertiaryComponents;
-                    componentName = model.Blueprint.TertiaryComponentType.Name;
+                    componentName = tertiaryComponent.Name;
                     break;
                 case CraftingAccessType.Enhancement:
                     allowedType = ComponentType.Enhancement;

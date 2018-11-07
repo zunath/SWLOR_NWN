@@ -5,6 +5,8 @@ using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using Object = NWN.Object;
@@ -15,18 +17,18 @@ namespace SWLOR.Game.Server.Conversation
     {
         private readonly IColorTokenService _color;
         private readonly ISerializationService _serialization;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
 
         public Outfit(
             INWScript script, 
             IDialogService dialog,
             IColorTokenService color,
             ISerializationService serialization,
-            IDataContext db) 
+            IDataService data) 
             : base(script, dialog)
         {
             _color = color;
-            _db = db;
+            _data = data;
             _serialization = serialization;
         }
 
@@ -102,7 +104,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private PCOutfit GetPlayerOutfits(NWPlayer oPC)
         {
-            return _db.PCOutfits.SingleOrDefault(x => x.PlayerID == oPC.GlobalID);
+            return _data.SingleOrDefault<PCOutfit>(x => x.PlayerID == oPC.GlobalID);
         }
 
         private void HandleSaveOutfit(int responseID)
@@ -110,6 +112,7 @@ namespace SWLOR.Game.Server.Conversation
             NWPlayer oPC = GetPC();
             NWItem oClothes = (_.GetItemInSlot(NWScript.INVENTORY_SLOT_CHEST, oPC.Object));
             PCOutfit entity = GetPlayerOutfits(oPC);
+            var action = DatabaseActionType.Update;
 
             if (entity == null)
             {
@@ -117,6 +120,7 @@ namespace SWLOR.Game.Server.Conversation
                 {
                     PlayerID = oPC.GlobalID
                 };
+                action = DatabaseActionType.Insert;
             }
 
             if (!oClothes.IsValid)
@@ -137,8 +141,7 @@ namespace SWLOR.Game.Server.Conversation
             else if (responseID == 9) entity.Outfit9 = clothesData;
             else if (responseID == 10) entity.Outfit10 = clothesData;
 
-            _db.SaveChanges();
-
+            _data.SubmitDataChange(entity, action);
             ShowSaveOutfitOptions();
         }
 
@@ -152,7 +155,7 @@ namespace SWLOR.Game.Server.Conversation
             NWPlaceable oTempStorage = (_.GetObjectByTag("OUTFIT_BARREL"));
             NWItem oClothes = oPC.Chest;
             NWItem storedClothes = null;
-            oClothes.SetLocalString("TEMP_OUTFIT_UUID", oPC.GlobalID);
+            oClothes.SetLocalString("TEMP_OUTFIT_UUID", oPC.GlobalID.ToString());
 
             if (outfitID == 1) storedClothes = _serialization.DeserializeItem(entity.Outfit1, oTempStorage);
             else if (outfitID == 2) storedClothes = _serialization.DeserializeItem(entity.Outfit2, oTempStorage);
@@ -235,7 +238,7 @@ namespace SWLOR.Game.Server.Conversation
 
             foreach (NWItem item in oTempStorage.InventoryItems)
             {
-                if (item.GetLocalString("TEMP_OUTFIT_UUID") == oPC.GlobalID)
+                if (item.GetLocalString("TEMP_OUTFIT_UUID") == oPC.GlobalID.ToString())
                 {
                     item.Destroy();
                 }

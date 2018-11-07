@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.Service.Contracts;
@@ -14,15 +14,21 @@ namespace SWLOR.Game.Server.Service
 {
     public class ExaminationService: IExaminationService
     {
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly INWScript _;
         private readonly IColorTokenService _color;
+        private readonly ISkillService _skill;
 
-        public ExaminationService(IDataContext db, INWScript script, IColorTokenService color)
+        public ExaminationService(
+            IDataService data, 
+            INWScript script, 
+            IColorTokenService color,
+            ISkillService skill)
         {
-            _db = db;
+            _data = data;
             _ = script;
             _color = color;
+            _skill = skill;
         }
 
         public bool OnModuleExamine(NWPlayer examiner, NWObject target)
@@ -39,7 +45,7 @@ namespace SWLOR.Game.Server.Service
             backupDescription = target.IdentifiedDescription;
             target.SetLocalString("BACKUP_DESCRIPTION", backupDescription);
             
-            PlayerCharacter playerEntity = _db.PlayerCharacters.Single(x => x.PlayerID == target.GlobalID);
+            Player playerEntity = _data.Single<Player>(x => x.ID == target.GlobalID);
             NWArea area = NWModule.Get().Areas.Single(x => x.Resref == playerEntity.RespawnAreaResref);
             string respawnAreaName = area.Name;
 
@@ -52,21 +58,22 @@ namespace SWLOR.Game.Server.Service
                     _color.Green("FP: ") + playerEntity.CurrentFP + " / " + playerEntity.MaxFP + "\n" +
                     _color.Green("Skill Levels: ") + "\n\n");
 
-            List<PCSkill> pcSkills = _db.PCSkills.Where(x => x.PlayerID == target.GlobalID && x.Skill.IsActive).ToList();
+            List<PCSkill> pcSkills = _skill.GetAllPCSkills(target.Object);
 
-            foreach (PCSkill skill in pcSkills)
+            foreach (PCSkill pcSkill in pcSkills)
             {
-                description.Append(skill.Skill.Name).Append(" rank ").Append(skill.Rank).AppendLine();
+                Skill skill = _skill.GetSkill(pcSkill.SkillID);
+                description.Append(skill.Name).Append(" rank ").Append(pcSkill.Rank).AppendLine();
             }
 
             description.Append("\n\n").Append(_color.Green("Perks: ")).Append("\n\n");
-
-            List<PCPerkHeader> pcPerks = _db.StoredProcedure<PCPerkHeader>("GetPCPerksForMenuHeader",
-                new SqlParameter("PlayerID", target.GlobalID));
-
-            foreach (PCPerkHeader perk in pcPerks)
+            
+            var pcPerks = _data.Where<PCPerk>(x => x.PlayerID == target.GlobalID);
+            
+            foreach (PCPerk pcPerk in pcPerks)
             {
-                description.Append(perk.Name).Append(" Lvl. ").Append(perk.Level).AppendLine();
+                var perk = _data.Get<Data.Entity.Perk>(pcPerk.PerkID);
+                description.Append(perk.Name).Append(" Lvl. ").Append(pcPerk.PerkLevel).AppendLine();
             }
             
             description.Append("\n\n").Append(_color.Green("Description: \n\n")).Append(backupDescription).AppendLine();

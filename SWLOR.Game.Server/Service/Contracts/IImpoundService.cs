@@ -1,4 +1,6 @@
-﻿using SWLOR.Game.Server.Data;
+﻿using System;
+using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Service.Contracts
@@ -6,6 +8,6 @@ namespace SWLOR.Game.Server.Service.Contracts
     public interface IImpoundService
     {
         void Impound(PCBaseStructureItem pcBaseStructureItem);
-        void Impound(string playerID, NWItem item);
+        void Impound(Guid playerID, NWItem item);
     }
 }

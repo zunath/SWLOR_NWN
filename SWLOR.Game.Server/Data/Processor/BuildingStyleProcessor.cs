@@ -1,6 +1,9 @@
 ﻿using FluentValidation;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Data.Validator;
+using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Data.Processor
 {
@@ -8,8 +11,9 @@ namespace SWLOR.Game.Server.Data.Processor
     {
         public IValidator Validator => new BuildingStyleValidator();
 
-        public void Process(IDataContext db, BuildingStyle dataObject)
+        public DatabaseAction Process(IDataService data, BuildingStyle dataObject)
         {
+            return null;
         }
     }
 }

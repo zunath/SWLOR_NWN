@@ -5,18 +5,20 @@ using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
     public class HelmetToggleService: IHelmetToggleService
     {
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly INWScript _;
 
-        public HelmetToggleService(IDataContext db, INWScript script)
+        public HelmetToggleService(IDataService data, INWScript script)
         {
-            _db = db;
+            _data = data;
             _ = script;
         }
 
@@ -28,7 +30,7 @@ namespace SWLOR.Game.Server.Service
             NWItem item = (_.GetPCItemLastEquipped());
             if (item.BaseItemType != NWScript.BASE_ITEM_HELMET) return;
 
-            PlayerCharacter pc = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+            Player pc = _data.Single<Player>(x => x.ID == player.GlobalID);
             _.SetHiddenWhenEquipped(item.Object, !pc.DisplayHelmet == false ? 0 : 1);
         }
 
@@ -40,7 +42,7 @@ namespace SWLOR.Game.Server.Service
             NWItem item = (_.GetPCItemLastUnequipped());
             if (item.BaseItemType != NWScript.BASE_ITEM_HELMET) return;
 
-            PlayerCharacter pc = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+            Player pc = _data.Single<Player>(x => x.ID == player.GlobalID);
             _.SetHiddenWhenEquipped(item.Object, !pc.DisplayHelmet == false ? 0 : 1);
         }
 
@@ -50,10 +52,10 @@ namespace SWLOR.Game.Server.Service
 
             if (!player.IsPlayer) return;
 
-            PlayerCharacter pc = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+            Player pc = _data.Single<Player>(x => x.ID == player.GlobalID);
             pc.DisplayHelmet = !pc.DisplayHelmet;
-            _db.SaveChanges();
-
+            _data.SubmitDataChange(pc, DatabaseActionType.Update);
+            
             _.FloatingTextStringOnCreature(
                 pc.DisplayHelmet ? "Now showing equipped helmet." : "Now hiding equipped helmet.", 
                 player.Object,

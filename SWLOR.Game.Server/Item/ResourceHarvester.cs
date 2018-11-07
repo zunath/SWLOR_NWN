@@ -56,11 +56,11 @@ namespace SWLOR.Game.Server.Item
             string itemResref = target.GetLocalString("RESOURCE_RESREF");
             int ipBonusChance = _resource.CalculateChanceForComponentBonus(player, tier, quality);
             int roll = _random.Random(1, 100);
-            int rank = _skill.GetPCSkill(player, SkillType.Harvesting).Rank;
+            int rank = _skill.GetPCSkillRank(player, SkillType.Harvesting);
             int difficulty = (tier-1) * 10 + _resource.GetDifficultyAdjustment(quality);
             int delta = difficulty - rank;
             int itemHarvestBonus = item.HarvestingBonus;
-            int scanningBonus = user.GetLocalInt(target.GlobalID);
+            int scanningBonus = user.GetLocalInt(target.GlobalID.ToString());
 
             ipBonusChance += itemHarvestBonus * 2 + scanningBonus * 2;
 
@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Item
                 }
 
                 target.Destroy();
-                user.DeleteLocalInt(target.GlobalID);
+                user.DeleteLocalInt(target.GlobalID.ToString());
             }
             else
             {
@@ -174,7 +174,7 @@ namespace SWLOR.Game.Server.Item
             NWPlayer player = (user.Object);
             ResourceQuality quality = (ResourceQuality)qualityID;
             int tier = target.GetLocalInt("RESOURCE_TIER");
-            int rank = _skill.GetPCSkill(player, SkillType.Harvesting).Rank;
+            int rank = _skill.GetPCSkillRank(player, SkillType.Harvesting);
             int difficulty = (tier - 1) * 10 + _resource.GetDifficultyAdjustment(quality);
             int delta = difficulty - rank;
 

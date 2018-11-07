@@ -1,11 +1,14 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.ControlTower
 {
@@ -14,18 +17,18 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
         private readonly INWScript _;
         private readonly IDialogService _dialog;
         private readonly IBasePermissionService _perm;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
 
         public OnClicked(
             INWScript script,
             IDialogService dialog,
             IBasePermissionService perm,
-            IDataContext db)
+            IDataService data)
         {
             _ = script;
             _dialog = dialog;
             _perm = perm;
-            _db = db;
+            _data = data;
         }
 
         public bool Run(params object[] args)
@@ -40,8 +43,8 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
                 clicker.SendMessage("You are too far away to interact with that control tower.");
                 return false;
             }
-            int structureID = tower.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            PCBaseStructure structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
+            Guid structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
+            PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.ID == structureID);
 
             if (_perm.HasBasePermission(clicker, structure.PCBaseID, BasePermission.CanManageBaseFuel))
             {

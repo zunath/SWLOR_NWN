@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 
@@ -10,16 +11,16 @@ namespace SWLOR.Game.Server.Event.Conversation
     {
         private readonly INWScript _;
         private readonly IQuestService _quest;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
 
         public QuestCanAccept(
             INWScript script,
             IQuestService quest,
-            IDataContext db)
+            IDataService data)
         {
             _ = script;
             _quest = quest;
-            _db = db;
+            _data = data;
         }
         public bool Run(params object[] args)
         {
@@ -29,7 +30,7 @@ namespace SWLOR.Game.Server.Event.Conversation
             int questID = talkTo.GetLocalInt("QUEST_ID_" + index);
             if (questID <= 0) questID = talkTo.GetLocalInt("QST_ID_" + index);
 
-            if (!_db.Quests.Any(x => x.QuestID == questID))
+            if (_data.GetAll<Quest>().All(x => x.ID != questID))
             {
                 _.SpeakString("ERROR: Quest #" + index + " is improperly configured. Please notify an admin");
                 return false;

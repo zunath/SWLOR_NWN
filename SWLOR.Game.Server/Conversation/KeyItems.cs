@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.Service.Contracts;
@@ -98,7 +99,8 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("KeyItemsListPage");
             foreach (PCKeyItem item in items)
             {
-                AddResponseToPage("KeyItemsListPage", item.KeyItem.Name, true, item.KeyItemID);
+                var keyItem = _keyItem.GetKeyItemByID(item.KeyItemID);
+                AddResponseToPage("KeyItemsListPage", keyItem.Name, true, item.KeyItemID);
             }
             ChangePage("KeyItemsListPage");
         }

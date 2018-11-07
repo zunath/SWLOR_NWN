@@ -45,12 +45,12 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             
             player.IsBusy = false;
 
-            PCSkill pcSkill = _skill.GetPCSkill(player, SkillType.Engineering);
+            int rank = _skill.GetPCSkillRank(player, SkillType.Engineering);
             int level = _craft.GetIngotLevel(oreResref);
             string ingotResref = _craft.GetIngotResref(oreResref);
-            if (pcSkill == null || level < 0 || string.IsNullOrWhiteSpace(ingotResref)) return false;
+            if (level < 0 || string.IsNullOrWhiteSpace(ingotResref)) return false;
 
-            int delta = pcSkill.Rank - level;
+            int delta = rank - level;
             int count = 2;
 
             if (delta > 2) count = delta;
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             int stronidiumAmount = 2 + effectiveStats.Harvesting;
             _.CreateItemOnObject("stronidium", player.Object, stronidiumAmount);
 
-            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(100, level, pcSkill.Rank);
+            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(100, level, rank);
             _skill.GiveSkillXP(player, SkillType.Engineering, xp);
             return true;
         }

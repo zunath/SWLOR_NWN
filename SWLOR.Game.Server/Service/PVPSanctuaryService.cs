@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.Service.Contracts;
@@ -11,13 +10,13 @@ namespace SWLOR.Game.Server.Service
 {
     public class PVPSanctuaryService: IPVPSanctuaryService
     {
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly INWScript _;
         private readonly IColorTokenService _color;
 
-        public PVPSanctuaryService(IDataContext db, INWScript script, IColorTokenService color)
+        public PVPSanctuaryService(IDataService data, INWScript script, IColorTokenService color)
         {
-            _db = db;
+            _data = data;
             _ = script;
             _color = color;
         }
@@ -27,7 +26,7 @@ namespace SWLOR.Game.Server.Service
             if (player == null) throw new ArgumentNullException(nameof(player));
             if (player.Object == null) throw new ArgumentNullException(nameof(player.Object));
 
-            PlayerCharacter pc = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+            Player pc = _data.Single<Player>(x => x.ID == player.GlobalID);
             DateTime now = DateTime.UtcNow;
 
             return !pc.IsSanctuaryOverrideEnabled && now <= pc.DateSanctuaryEnds;
@@ -38,9 +37,9 @@ namespace SWLOR.Game.Server.Service
             if (player == null) throw new ArgumentNullException(nameof(player));
             if (player.Object == null) throw new ArgumentNullException(nameof(player.Object));
 
-            PlayerCharacter pc = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+            Player pc = _data.Single<Player>(x => x.ID == player.GlobalID);
             pc.IsSanctuaryOverrideEnabled = overrideStatus;
-            _db.SaveChanges();
+            _data.SubmitDataChange(pc, DatabaseActionType.Update);
         }
 
         public bool IsPVPAttackAllowed(NWPlayer attacker, NWPlayer target)

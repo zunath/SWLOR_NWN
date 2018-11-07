@@ -1,8 +1,10 @@
-﻿using SWLOR.Game.Server.Event;
+﻿using System;
+using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Service.Contracts;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.GrowingPlant
 {
@@ -20,11 +22,11 @@ namespace SWLOR.Game.Server.Placeable.GrowingPlant
         public bool Run(params object[] args)
         {
             NWPlaceable plant = (Object.OBJECT_SELF);
-            int growingPlantID = plant.GetLocalInt("GROWING_PLANT_ID");
-            if (growingPlantID <= 0) return false;
+            string growingPlantID = plant.GetLocalString("GROWING_PLANT_ID");
+            if (string.IsNullOrWhiteSpace(growingPlantID)) return false;
 
             NWPlayer oPC = (_.GetLastUsedBy());
-            Data.GrowingPlant growingPlant = _farming.GetGrowingPlantByID(growingPlantID);
+            Data.Entity.GrowingPlant growingPlant = _farming.GetGrowingPlantByID(new Guid(growingPlantID));
             if (growingPlant.WaterStatus <= 0)
             {
                 oPC.SendMessage("This plant doesn't seem to need anything right now.");

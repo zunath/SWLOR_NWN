@@ -102,7 +102,16 @@ namespace SWLOR.Game.Server
                 typeName = typeName.Replace(assemblyName + ".", string.Empty);
                 string @namespace = assemblyName + "." + typeName;
                 var resolved = scope.ResolveKeyed<T>(@namespace);
-                action.Invoke(resolved);
+
+                try
+                {
+                    action.Invoke(resolved);
+                }
+                catch (Exception ex)
+                {
+                    IErrorService errorService = scope.Resolve<IErrorService>();
+                    errorService.LogError(ex, typeof(T).ToString());
+                }
             }
         }
 
@@ -120,7 +129,17 @@ namespace SWLOR.Game.Server
                 typeName = typeName.Replace(assemblyName + ".", string.Empty);
                 string @namespace = assemblyName + "." + typeName;
                 var resolved = scope.ResolveKeyed<T1>(@namespace);
-                return action.Invoke(resolved);
+
+                try
+                {
+                    return action.Invoke(resolved);
+                }
+                catch (Exception ex)
+                {
+                    IErrorService errorService = scope.Resolve<IErrorService>();
+                    errorService.LogError(ex, typeof(T1).ToString());
+                    throw;
+                }
             }
 
         }
@@ -130,9 +149,9 @@ namespace SWLOR.Game.Server
             return _container.Resolve<INWScript>();
         }
 
-        public static AppState GetAppState()
+        public static AppCache GetAppState()
         {
-            return _container.Resolve<AppState>();
+            return _container.Resolve<AppCache>();
         }
 
         public static void Resolve<T>(AppResolveDelegate<T> action)
@@ -145,7 +164,17 @@ namespace SWLOR.Game.Server
             using (var scope = _container.BeginLifetimeScope())
             {
                 T resolved = (T)scope.Resolve(typeof(T));
-                action.Invoke(resolved);
+
+                try
+                {
+                    action.Invoke(resolved);
+                }
+                catch(Exception ex)
+                {
+                    IErrorService errorService = scope.Resolve<IErrorService>();
+                    errorService.LogError(ex, typeof(T).ToString());
+                }
+
             }
         }
 
@@ -159,7 +188,16 @@ namespace SWLOR.Game.Server
             using (var scope = _container.BeginLifetimeScope())
             {
                 T1 resolved = (T1)scope.Resolve(typeof(T1));
-                return action.Invoke(resolved);
+                try
+                {
+                    return action.Invoke(resolved);
+                }
+                catch (Exception ex)
+                {
+                    IErrorService errorService = scope.Resolve<IErrorService>();
+                    errorService.LogError(ex, typeof(T1).ToString());
+                    throw;
+                }
             }
         }
 
@@ -182,7 +220,7 @@ namespace SWLOR.Game.Server
             var builder = new ContainerBuilder();
 
             // Instances
-            builder.RegisterInstance(new AppState());
+            builder.RegisterInstance(new AppCache());
             builder.RegisterType<DatabaseMigrationRunner>()
                 .As<IStartable>()
                 .SingleInstance();
@@ -191,7 +229,6 @@ namespace SWLOR.Game.Server
                 .SingleInstance();
 
             // Types
-            builder.RegisterType<DataContext>().As<IDataContext>().InstancePerDependency().WithParameter("useCustom", true);
             builder.RegisterType<HttpClient>().SingleInstance();
 
             // Game Objects
@@ -219,6 +256,7 @@ namespace SWLOR.Game.Server
             builder.RegisterType<CraftService>().As<ICraftService>();
             builder.RegisterType<CreatureCorpseService>().As<ICreatureCorpseService>();
             builder.RegisterType<CustomEffectService>().As<ICustomEffectService>();
+            builder.RegisterType<DataService>().As<IDataService>().SingleInstance(); // Database processing needs to be a single instance because it holds state.
             builder.RegisterType<DataPackageService>().As<IDataPackageService>();
             builder.RegisterType<DeathService>().As<IDeathService>();
             builder.RegisterType<DialogService>().As<IDialogService>();
@@ -238,7 +276,6 @@ namespace SWLOR.Game.Server
             builder.RegisterType<MapService>().As<IMapService>();
             builder.RegisterType<MapPinService>().As<IMapPinService>();
             builder.RegisterType<MenuService>().As<IMenuService>();
-            builder.RegisterType<MigrationService>().As<IMigrationService>();
             builder.RegisterType<ModService>().As<IModService>();
             builder.RegisterType<ObjectProcessingService>().As<IObjectProcessingService>();
             builder.RegisterType<ObjectVisibilityService>().As<IObjectVisibilityService>();
@@ -259,7 +296,8 @@ namespace SWLOR.Game.Server
             builder.RegisterType<TimeService>().As<ITimeService>();
             
             // Background threads
-            builder.RegisterType<DiscordBackgroundThread>().As<IBackgroundThread>();
+            builder.RegisterType<DiscordBackgroundThread>().As<IDiscordThread>();
+            builder.RegisterType<DatabaseBackgroundThread>().As<IDatabaseThread>();
 
             // Interfaces
             RegisterInterfaceImplementations<IRegisteredEvent>(builder);

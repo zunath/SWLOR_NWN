@@ -16,6 +16,7 @@ using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN.NWScript;
 using System.Text;
+using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -34,7 +35,7 @@ namespace SWLOR.Game.Server.Service
         private readonly INWScript _;
         private readonly IColorTokenService _color;
         private readonly INWNXChat _nwnxChat;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly ILanguageService _language;
         private readonly IEmoteStyleService _emoteStyle;
 
@@ -42,14 +43,14 @@ namespace SWLOR.Game.Server.Service
             INWScript script,
             IColorTokenService color,
             INWNXChat nwnxChat,
-            IDataContext db,
+            IDataService data,
             ILanguageService language,
             IEmoteStyleService emoteStyle)
         {
             _ = script;
             _color = color;
             _nwnxChat = nwnxChat;
-            _db = db;
+            _data = data;
             _language = language;
             _emoteStyle = emoteStyle;
         }
@@ -322,7 +323,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
 
-            var dbPlayer = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
+            var dbPlayer = _data.Single<Player>(x => x.ID == player.GlobalID);
             player.SetLocalInt("DISPLAY_HOLONET", dbPlayer.DisplayHolonet ? TRUE : FALSE);
             player.SetLocalInt("DISPLAY_DISCORD", dbPlayer.DisplayDiscord ? TRUE : FALSE);
         }

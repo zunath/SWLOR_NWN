@@ -1,9 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
 
@@ -11,7 +13,7 @@ namespace SWLOR.Game.Server.Conversation
 {
     internal class RestMenu : ConversationBase
     {
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IColorTokenService _color;
         private readonly ISkillService _skill;
         private readonly IMenuService _menu;
@@ -19,13 +21,13 @@ namespace SWLOR.Game.Server.Conversation
         public RestMenu(INWScript script,
             IDialogService dialog,
             IColorTokenService color,
-            IDataContext db,
+            IDataService data,
             ISkillService skill,
             IMenuService menu)
             : base(script, dialog)
         {
             _color = color;
-            _db = db;
+            _data = data;
             _skill = skill;
             _menu = menu;
         }
@@ -51,8 +53,8 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
-            string playerID = GetPC().GlobalID;
-            long overflowCount = _db.PCOverflowItems.Where(x => x.PlayerID == playerID).LongCount();
+            Guid playerID = GetPC().GlobalID;
+            long overflowCount = _data.Where<PCOverflowItem>(x => x.PlayerID == playerID).LongCount();
 
             if (overflowCount <= 0)
             {
@@ -121,11 +123,16 @@ namespace SWLOR.Game.Server.Conversation
 
         private string BuildMainPageHeader(NWPlayer player)
         {
-            PlayerCharacter playerEntity = _db.PlayerCharacters.Single(x => x.PlayerID == player.GlobalID);
-            int totalSkillCount = _db.PCSkills.Where(x => x.PlayerID == player.GlobalID && x.Skill.ContributesToSkillCap).Sum(s => s.Rank);
+            Player playerEntity = _data.Single<Player>(x => x.ID == player.GlobalID);
+            var association = _data.Get<Association>(playerEntity.AssociationID);
+            int totalSkillCount = _data.Where<PCSkill>(x =>
+            {
+                var skill = _data.Get<Skill>(x.SkillID);
+                return x.PlayerID == player.GlobalID && skill.ContributesToSkillCap;
+            }).Sum(s => s.Rank);
 
             string header = _color.Green("Name: ") + player.Name + "\n";
-            header += _color.Green("Association: ") + playerEntity.Association.Name + "\n\n";
+            header += _color.Green("Association: ") + association.Name + "\n\n";
             header += _color.Green("Skill Points: ") + totalSkillCount + " / " + _skill.SkillCap + "\n";
             header += _color.Green("Unallocated SP: ") + playerEntity.UnallocatedSP + "\n";
             header += _color.Green("FP: ")  + (playerEntity.MaxFP > 0 ? _menu.BuildBar(playerEntity.CurrentFP, playerEntity.MaxFP, 100, _color.TokenStart(32, 223, 219)) : "N/A") + "\n";

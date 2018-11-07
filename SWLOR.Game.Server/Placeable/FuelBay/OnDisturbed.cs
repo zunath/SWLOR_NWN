@@ -6,6 +6,8 @@ using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using System.Linq;
+using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using static NWN.NWScript;
 using Object = NWN.Object;
 
@@ -14,7 +16,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
     public class OnDisturbed : IRegisteredEvent
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IItemService _item;
         private readonly ITimeService _time;
         private readonly IColorTokenService _color;
@@ -22,14 +24,14 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
 
         public OnDisturbed(
             INWScript script,
-            IDataContext db,
+            IDataService data,
             IItemService item,
             ITimeService time,
             IColorTokenService color,
             IBaseService @base)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _item = item;
             _time = time;
             _color = color;
@@ -43,7 +45,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             NWItem item = (_.GetInventoryDisturbItem());
             bool stronidiumOnly = bay.GetLocalInt("CONTROL_TOWER_FUEL_TYPE") == TRUE;
             string allowedResref = stronidiumOnly ? "stronidium" : "fuel_cell";
-            int structureID = bay.GetLocalInt("PC_BASE_STRUCTURE_ID");
+            string structureID = bay.GetLocalString("PC_BASE_STRUCTURE_ID");
             
             if (disturbType == INVENTORY_DISTURB_TYPE_ADDED)
             {
@@ -62,7 +64,8 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
                 }
             }
 
-            var structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
+            var structure = _data.Single<PCBaseStructure>(x => x.ID == new Guid(structureID));
+            var pcBase = _data.Get<PCBase>(structure.PCBaseID);
 
             int fuelCount = 0;
             foreach (var fuel in bay.InventoryItems)
@@ -81,7 +84,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             int maxFuel;
             if (stronidiumOnly)
             {
-                maxFuel = _base.CalculateMaxReinforcedFuel(structure.PCBase);
+                maxFuel = _base.CalculateMaxReinforcedFuel(pcBase);
                 if (fuelCount > maxFuel)
                 {
                     int returnAmount = fuelCount - maxFuel;
@@ -91,11 +94,11 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
                 }
 
                 firstFuel.StackSize = fuelCount;
-                structure.PCBase.ReinforcedFuel = fuelCount;
+                pcBase.ReinforcedFuel = fuelCount;
             }
             else
             {
-                maxFuel = _base.CalculateMaxFuel(structure.PCBase);
+                maxFuel = _base.CalculateMaxFuel(pcBase);
                 if (fuelCount > maxFuel)
                 {
                     int returnAmount = fuelCount - maxFuel;
@@ -105,10 +108,10 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
                 }
 
                 firstFuel.StackSize = fuelCount;
-                structure.PCBase.Fuel = fuelCount;
+                pcBase.Fuel = fuelCount;
             }
 
-            _db.SaveChanges();
+            _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
 
             TimeSpan timeSpan = TimeSpan.FromMinutes(30.0f * fuelCount);
             player.SendMessage(_color.Gray("Fuel will last for " + 

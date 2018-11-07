@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
@@ -12,19 +14,19 @@ namespace SWLOR.Game.Server.Conversation
     public class StructureStorage : ConversationBase
     {
         private readonly IColorTokenService _color;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly IBasePermissionService _perm;
 
         public StructureStorage(
             INWScript script,
             IDialogService dialog,
             IColorTokenService color,
-            IDataContext db,
+            IDataService data,
             IBasePermissionService perm)
             : base(script, dialog)
         {
             _color = color;
-            _db = db;
+            _data = data;
             _perm = perm;
         }
 
@@ -56,7 +58,7 @@ namespace SWLOR.Game.Server.Conversation
         public override void Initialize()
         {
             NWPlaceable container = (NWPlaceable) GetDialogTarget();
-            int structureID = container.GetLocalInt("PC_BASE_STRUCTURE_ID");
+            Guid structureID = new Guid(container.GetLocalString("PC_BASE_STRUCTURE_ID"));
 
             if (!_perm.HasStructurePermission(GetPC(), structureID, StructurePermission.CanAccessStructureInventory))
             {
@@ -139,8 +141,8 @@ namespace SWLOR.Game.Server.Conversation
             {
                 case 1: // Confirm Change Name
                     string name = GetPC().GetLocalString("NEW_CONTAINER_NAME");
-                    int structureID = GetDialogTarget().GetLocalInt("PC_BASE_STRUCTURE_ID");
-                    var structure = _db.PCBaseStructures.Single(x => x.PCBaseStructureID == structureID);
+                    Guid structureID = new Guid(GetDialogTarget().GetLocalString("PC_BASE_STRUCTURE_ID"));
+                    var structure = _data.Single<PCBaseStructure>(x => x.ID == structureID);
                     structure.CustomName = name;
                     GetDialogTarget().Name = name;
                     GetPC().DeleteLocalString("NEW_CONTAINER_NAME");

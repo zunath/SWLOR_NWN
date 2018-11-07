@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.Service.Contracts;
@@ -77,11 +78,11 @@ namespace SWLOR.Game.Server.Conversation
 
             foreach (CraftBlueprintCategory category in categories)
             {
-                AddResponseToPage("MainPage", category.Name, category.IsActive, category.CraftBlueprintCategoryID);
+                AddResponseToPage("MainPage", category.Name, category.IsActive, category.ID);
             }
         }
 
-        private void LoadBlueprintListPage(long categoryID)
+        private void LoadBlueprintListPage(int categoryID)
         {
             NWObject device = GetDialogTarget();
             int deviceID = device.GetLocalInt("CRAFT_DEVICE_ID");
@@ -91,14 +92,14 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("BlueprintListPage");
             foreach (CraftBlueprint bp in blueprints)
             {
-                AddResponseToPage("BlueprintListPage", bp.ItemName, bp.IsActive, bp.CraftBlueprintID);
+                AddResponseToPage("BlueprintListPage", bp.ItemName, bp.IsActive, bp.ID);
             }
         }
         
         private void HandleCategoryResponse(int responseID)
         {
             DialogResponse response = GetResponseByID("MainPage", responseID);
-            long categoryID = (long)response.CustomData;
+            int categoryID = (int)response.CustomData;
             LoadBlueprintListPage(categoryID);
             ChangePage("BlueprintListPage");
         }
@@ -106,7 +107,7 @@ namespace SWLOR.Game.Server.Conversation
         private void HandleBlueprintListResponse(int responseID)
         {
             DialogResponse response = GetResponseByID("BlueprintListPage", responseID);
-            long blueprintID = (long)response.CustomData;
+            int blueprintID = (int)response.CustomData;
             var model = _craft.GetPlayerCraftingData(GetPC());
             model.BlueprintID = blueprintID;
             SwitchConversation("CraftItem");

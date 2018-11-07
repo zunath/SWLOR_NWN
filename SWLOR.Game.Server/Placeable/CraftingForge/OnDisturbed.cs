@@ -93,10 +93,9 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             }
 
             int level = _craft.GetIngotLevel(item.Resref);
-            PCSkill pcSkill = _skill.GetPCSkill(pc, SkillType.Engineering);
-            if (pcSkill == null) return false;
-
-            int delta = pcSkill.Rank - level;
+            int rank = _skill.GetPCSkillRank(pc, SkillType.Engineering);
+            
+            int delta = rank - level;
             if (delta <= -4)
             {
                 ReturnItemToPC(pc, item, "You do not have enough skill to refine this material.");

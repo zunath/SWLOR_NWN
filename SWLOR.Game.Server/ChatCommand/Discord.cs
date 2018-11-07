@@ -3,6 +3,7 @@ using NWN;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX.Contracts;
@@ -15,18 +16,18 @@ namespace SWLOR.Game.Server.ChatCommand
     public class Discord : IChatCommand
     {
         private readonly INWScript _;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
         private readonly INWNXChat _nwnxChat;
         private readonly IColorTokenService _color;
 
         public Discord(
             INWScript script,
-            IDataContext db,
+            IDataService data,
             INWNXChat nwnxChat,
             IColorTokenService color)
         {
             _ = script;
-            _db = db;
+            _data = data;
             _nwnxChat = nwnxChat;
             _color = color;
         }
@@ -50,9 +51,8 @@ namespace SWLOR.Game.Server.ChatCommand
                 SenderCDKey = _.GetPCPublicCDKey(user)
             };
 
-            _db.DiscordChatQueues.Add(chatRecord);
-            _db.SaveChanges();
-
+            _data.SubmitDataChange(chatRecord, DatabaseActionType.Insert);
+            
             _.DelayCommand(0.1f, () =>
             {
                 NWObject chatSender = _.GetObjectByTag("Holonet");

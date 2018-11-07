@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.ValueObject
 {
-    public class EnmityTable: Dictionary<string, Enmity>
+    public class EnmityTable: Dictionary<Guid, Enmity>
     {
         public NWCreature NPCObject { get; }
 

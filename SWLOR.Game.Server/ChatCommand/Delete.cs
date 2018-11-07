@@ -5,9 +5,11 @@ using NWN;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
@@ -16,16 +18,16 @@ namespace SWLOR.Game.Server.ChatCommand
     {
         private readonly INWScript _;
         private readonly INWNXAdmin _admin;
-        private readonly IDataContext _db;
+        private readonly IDataService _data;
 
         public Delete(
             INWScript script,
             INWNXAdmin admin,
-            IDataContext db)
+            IDataService data)
         {
             _ = script;
             _admin = admin;
-            _db = db;
+            _data = data;
         }
 
         /// <summary>
@@ -61,9 +63,9 @@ namespace SWLOR.Game.Server.ChatCommand
             }
             else
             {
-                PlayerCharacter dbPlayer = _db.PlayerCharacters.Single(x => x.PlayerID == user.GlobalID);
+                Player dbPlayer = _data.Get<Player>(user.GlobalID);
                 dbPlayer.IsDeleted = true;
-                _db.SaveChanges();
+                _data.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
 
                 _.BootPC(user, "Your character has been deleted.");
                 _admin.DeletePlayerCharacter(user, true);

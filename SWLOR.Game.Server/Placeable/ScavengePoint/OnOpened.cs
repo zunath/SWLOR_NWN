@@ -197,6 +197,10 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
                 numberOfSearches++;
             }
 
+            int background = oPC.Class1;
+            if (background == (int)BackgroundType.Scavenger)
+                numberOfSearches++;
+
             return numberOfSearches;
         }
     }

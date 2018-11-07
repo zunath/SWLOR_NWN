@@ -377,7 +377,7 @@ namespace SWLOR.Game.Server.Service
         private void RequestRewardSelectionFromPC(NWPlayer oPC, NWObject questOwner, int questID)
         {
             if (!oPC.IsPlayer) return;
-
+            
             Quest quest = _data.Single<Quest>(x => x.ID == questID);
 
             if (quest.AllowRewardSelection)

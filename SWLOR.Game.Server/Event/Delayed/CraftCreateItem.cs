@@ -125,7 +125,7 @@ namespace SWLOR.Game.Server.Event.Delayed
                 _base.ApplyCraftedItemLocalVariables(item, baseStructure);
             }
 
-            if(_random.Random(0, 100) <= luckyBonus)
+            if(_random.Random(1, 100) <= luckyBonus)
             {
                 chance += _random.Random(1, luckyBonus);
             }

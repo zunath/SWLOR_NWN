@@ -178,7 +178,7 @@ namespace SWLOR.Game.Server.Service
             {
                 // Can an NPC use the playerparty channel? I feel this is safe ...
                 NWPlayer player = sender.Object;
-                recipients.AddRange(player.PartyMembers.Cast<NWObject>());
+                recipients.AddRange(player.PartyMembers.Cast<NWObject>().Where(x => x != sender));
                 recipients.AddRange(App.GetAppState().ConnectedDMs);
 
                 needsAreaCheck = true;

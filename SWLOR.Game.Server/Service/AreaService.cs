@@ -160,9 +160,10 @@ namespace SWLOR.Game.Server.Service
 
                     Console.WriteLine("Baking area because its walkmesh has changed since last run: " + area.Name);
 
-                    var walkmeshes = _data.Where<AreaWalkmesh>(x => x.AreaID == dbArea.ID);
-                    foreach (var mesh in walkmeshes)
+                    var walkmeshes = _data.Where<AreaWalkmesh>(x => x.AreaID == dbArea.ID).ToList();
+                    for(int x = walkmeshes.Count-1; x >= 0; x--)
                     {
+                        var mesh = walkmeshes.ElementAt(x);
                         _data.SubmitDataChange(mesh, DatabaseActionType.Delete);
                     }
                     

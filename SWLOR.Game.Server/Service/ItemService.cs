@@ -283,6 +283,11 @@ namespace SWLOR.Game.Server.Service
             {
                 description += _color.Orange("Damage Bonus: ") + examinedItem.DamageBonus + "\n";
             }
+            if (examinedItem.CustomItemType != CustomItemType.None)
+            {
+                string itemTypeProper = string.Concat(examinedItem.CustomItemType.ToString().Select(x => char.IsUpper(x) ? " " + x : x.ToString())).TrimStart(' ');
+                description += _color.Orange("Item Type: ") + itemTypeProper + "\n";
+            }
 
             return existingDescription + "\n" + description;
         }
@@ -298,6 +303,7 @@ namespace SWLOR.Game.Server.Service
                     BASE_ITEM_BELT,
                     BASE_ITEM_CLOAK,
                     BASE_ITEM_HELMET,
+                    BASE_ITEM_BOOTS,
                     BASE_ITEM_LARGESHIELD,
                     BASE_ITEM_SMALLSHIELD,
                     BASE_ITEM_TOWERSHIELD

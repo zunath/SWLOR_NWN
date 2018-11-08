@@ -168,7 +168,7 @@ namespace SWLOR.Game.Server.Service
             }
             areaStructures.Add(new AreaStructure(pcStructure.PCBaseID, pcStructure.ID, plc, true, door));
 
-            if (area.IsInstance && area.GetLocalInt("PC_BASE_STRUCTURE_ID") > 0)
+            if (area.IsInstance && !string.IsNullOrWhiteSpace(area.GetLocalString("PC_BASE_STRUCTURE_ID")))
             {
                 if (DateTime.UtcNow > pcBase.DateFuelEnds && pcBase.Fuel <= 0)
                 {
@@ -234,9 +234,9 @@ namespace SWLOR.Game.Server.Service
             NWArea area = building.Area;
             NWLocation location = locationOverride ?? building.Location;
             
-            int pcBaseStructureID = building.GetLocalInt("PC_BASE_STRUCTURE_ID");
+            string pcBaseStructureID = building.GetLocalString("PC_BASE_STRUCTURE_ID");
             NWPlaceable door = App.ResolveByInterface<IDoorRule, NWPlaceable>("DoorRule." + spawnRule, rule => rule.Run(area, location));
-            door.SetLocalInt("PC_BASE_STRUCTURE_ID", pcBaseStructureID);
+            door.SetLocalString("PC_BASE_STRUCTURE_ID", pcBaseStructureID);
             door.SetLocalInt("IS_DOOR", TRUE);
             
             return door;
@@ -395,11 +395,11 @@ namespace SWLOR.Game.Server.Service
             NWArea area = targetLocation.Area;
             int cellX = (int)(_.GetPositionFromLocation(targetLocation).m_X / 10);
             int cellY = (int)(_.GetPositionFromLocation(targetLocation).m_Y / 10);
-            int pcBaseID = area.GetLocalInt("PC_BASE_ID");
+            string pcBaseID = area.GetLocalString("PC_BASE_ID");
 
             string sector = "INVALID";
 
-            if (pcBaseID > 0)
+            if (!string.IsNullOrWhiteSpace(pcBaseID))
             {
                 sector = "AP";
             }

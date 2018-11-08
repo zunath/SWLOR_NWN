@@ -79,11 +79,11 @@ namespace SWLOR.Game.Server.Perk.Blaster
                 equippedArmor.CustomItemType != CustomItemType.LightArmor ||
                 equippedWeapon.CustomItemType != CustomItemType.BlasterPistol)
             {
-                _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_RAPID_RELOAD);
+                _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_RAPID_SHOT);
                 return;
             }
 
-            _nwnxCreature.AddFeat(oPC, NWScript.FEAT_RAPID_RELOAD);
+            _nwnxCreature.AddFeat(oPC, NWScript.FEAT_RAPID_SHOT);
         }
 
         public bool IsHostile()

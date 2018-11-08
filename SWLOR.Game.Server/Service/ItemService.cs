@@ -689,7 +689,6 @@ namespace SWLOR.Game.Server.Service
                 BASE_ITEM_MORNINGSTAR,
                 BASE_ITEM_RAPIER,
                 BASE_ITEM_SCIMITAR,
-                BASE_ITEM_SHORTSPEAR,
                 BASE_ITEM_SHORTSWORD,
                 BASE_ITEM_SICKLE,
                 BASE_ITEM_WHIP,
@@ -707,7 +706,8 @@ namespace SWLOR.Game.Server.Service
                 BASE_ITEM_QUARTERSTAFF,
                 BASE_ITEM_SCYTHE,
                 BASE_ITEM_TRIDENT,
-                BASE_ITEM_WARHAMMER
+                BASE_ITEM_WARHAMMER,
+                BASE_ITEM_SHORTSPEAR
             };
 
             int[] twinBladeTypes =

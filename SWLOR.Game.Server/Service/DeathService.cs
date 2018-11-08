@@ -36,8 +36,12 @@ namespace SWLOR.Game.Server.Service
         
         public void OnPlayerDeath()
         {
-            NWPlayer player = (_.GetLastPlayerDied());
-            NWObject hostile = (_.GetLastHostileActor(player.Object));
+            NWPlayer player = _.GetLastPlayerDied();
+            NWObject hostile = _.GetLastHostileActor(player.Object);
+
+            _.SetStandardFactionReputation(STANDARD_FACTION_COMMONER, 100, player);
+            _.SetStandardFactionReputation(STANDARD_FACTION_MERCHANT, 100, player);
+            _.SetStandardFactionReputation(STANDARD_FACTION_DEFENDER, 100, player);
 
             var factionMember = _.GetFirstFactionMember(hostile.Object, FALSE);
             while (_.GetIsObjectValid(factionMember) == TRUE)
@@ -62,7 +66,7 @@ namespace SWLOR.Game.Server.Service
         
         public void OnPlayerRespawn()
         {
-            NWPlayer oPC = (_.GetLastRespawnButtonPresser());
+            NWPlayer oPC = _.GetLastRespawnButtonPresser();
 
             int amount = oPC.MaxHP / 2;
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectResurrection(), oPC.Object);
@@ -109,7 +113,7 @@ namespace SWLOR.Game.Server.Service
             // Send player to default respawn point if no bind point is set.
             else if (string.IsNullOrWhiteSpace(entity.RespawnAreaResref))
             {
-                NWObject defaultRespawn = (_.GetWaypointByTag("DEFAULT_RESPAWN_POINT"));
+                NWObject defaultRespawn = _.GetWaypointByTag("DEFAULT_RESPAWN_POINT");
                 Location location = defaultRespawn.Location;
 
                 pc.AssignCommand(() =>

@@ -277,7 +277,7 @@ namespace SWLOR.Game.Server.Service
 
             if (executionType == PerkExecutionType.ForceAbility)
             {
-                vfxID = VFX_DUR_ELEMENTAL_SHIELD;
+                vfxID = VFX_DUR_IOUNSTONE_YELLOW;
                 animationID = ANIMATION_LOOPING_CONJURE1;
             }
             

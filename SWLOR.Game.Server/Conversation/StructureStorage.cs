@@ -173,7 +173,7 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            int structureID = chest.GetLocalInt("PC_BASE_STRUCTURE_ID");
+            string structureID = chest.GetLocalString("PC_BASE_STRUCTURE_ID");
             Location location = oPC.Location;
             NWPlaceable copy = (_.CreateObject(OBJECT_TYPE_PLACEABLE, "str_storage_copy", location));
             copy.Name = chest.Name;
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Conversation
 
             copy.SetLocalObject("STRUCTURE_TEMP_INVENTORY_OPENED", copy.Object);
             copy.SetLocalObject("STRUCTURE_TEMP_PARENT", chest.Object);
-            copy.SetLocalInt("PC_BASE_STRUCTURE_ID", structureID);
+            copy.SetLocalString("PC_BASE_STRUCTURE_ID", structureID);
 
             oPC.AssignCommand(() => _.ActionInteractObject(copy.Object));
         }

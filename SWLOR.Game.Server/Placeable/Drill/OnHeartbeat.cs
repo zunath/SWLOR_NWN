@@ -38,8 +38,9 @@ namespace SWLOR.Game.Server.Placeable.Drill
         public bool Run(params object[] args)
         {
             NWPlaceable drill = Object.OBJECT_SELF;
-            int structureID = drill.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            PCBaseStructure structure = _data.Get<PCBaseStructure>(structureID);
+            string structureID = drill.GetLocalString("PC_BASE_STRUCTURE_ID");
+            Guid structureGUID = new Guid(structureID);
+            PCBaseStructure structure = _data.Get<PCBaseStructure>(structureGUID);
             PCBase pcBase = _data.Get<PCBase>(structure.PCBaseID);
             BaseStructure baseStructure = _data.Get<BaseStructure>(structure.BaseStructureID);
             DateTime now = DateTime.UtcNow;

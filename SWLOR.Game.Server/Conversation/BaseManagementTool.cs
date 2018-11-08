@@ -394,8 +394,8 @@ namespace SWLOR.Game.Server.Conversation
         {
             ClearPageResponses("StructureListPage");
             var data = _base.GetPlayerTempData(GetPC());
-            int pcBaseStructureID = data.TargetArea.GetLocalInt("PC_BASE_STRUCTURE_ID");
-            bool isBuilding = pcBaseStructureID > 0;
+            string pcBaseStructureID = data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID");
+            bool isBuilding = !string.IsNullOrWhiteSpace(pcBaseStructureID);
 
             List<AreaStructure> areaStructures = data.TargetArea.Data["BASE_SERVICE_STRUCTURES"]; ;
             if (!isBuilding)

@@ -1449,6 +1449,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-07.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-08.1.sql" />
@@ -1466,7 +1467,6 @@
     <Content Include="ServerFiles\Reference\SkinColors.jpg" />
     <Content Include="ServerFiles\Reference\TattooColors.jpg" />
     <Content Include="ServerFiles\Star Wars LOR - Builder Module.mod" />
-    <Content Include="ServerFiles\Star Wars LOR.mod" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

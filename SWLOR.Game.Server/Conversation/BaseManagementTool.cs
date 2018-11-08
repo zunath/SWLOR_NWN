@@ -89,8 +89,6 @@ namespace SWLOR.Game.Server.Conversation
             Area dbArea = _data.Single<Area>(x => x.Resref == data.TargetArea.Resref);
             bool hasUnclaimed = false;
             Guid playerID = GetPC().GlobalID;
-            Guid pcBaseID = new Guid(data.TargetArea.GetLocalString("PC_BASE_ID"));
-            Guid pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
             int buildingTypeID = data.TargetArea.GetLocalInt("BUILDING_TYPE");
             Enumeration.BuildingType buildingType = buildingTypeID <= 0 ? Enumeration.BuildingType.Exterior : (Enumeration.BuildingType)buildingTypeID;
             data.BuildingType = buildingType;
@@ -103,6 +101,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (buildingType == Enumeration.BuildingType.Interior)
             {
+                Guid pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
                 canEditStructures = _perm.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanPlaceEditStructures);
                 canEditBuildingPermissions = _perm.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanAdjustPermissions);
                 canEditPrimaryResidence = _perm.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanEditPrimaryResidence);
@@ -111,6 +110,7 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if (buildingType == Enumeration.BuildingType.Apartment)
             {
+                Guid pcBaseID = new Guid(data.TargetArea.GetLocalString("PC_BASE_ID"));
                 canEditStructures = _perm.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanPlaceEditStructures);
                 canEditBasePermissions = _perm.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanAdjustPermissions);
                 canEditPrimaryResidence = _perm.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanEditPrimaryResidence);
@@ -139,6 +139,7 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if(buildingType == Enumeration.BuildingType.Interior)
             {
+                Guid pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
                 var structure = _data.Single<PCBaseStructure>(x => x.ID == pcBaseStructureID);
                 var baseStructure = _data.Get<BaseStructure>(structure.BaseStructureID);
                 int itemLimit = baseStructure.Storage + structure.StructureBonus;
@@ -147,6 +148,7 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if (buildingType == Enumeration.BuildingType.Apartment)
             {
+                Guid pcBaseID = new Guid(data.TargetArea.GetLocalString("PC_BASE_ID"));
                 var pcBase = _data.Get<PCBase>(pcBaseID);
                 var buildingStyle = _data.Get<BuildingStyle>(pcBase.BuildingStyleID);
                 int itemLimit = buildingStyle.FurnitureLimit;
@@ -155,10 +157,10 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if(buildingType == Enumeration.BuildingType.Exterior)
             {
-                var northeastOwner = _data.Get<Player>(dbArea.NortheastOwner);
-                var northwestOwner = _data.Get<Player>(dbArea.NorthwestOwner);
-                var southeastOwner = _data.Get<Player>(dbArea.SoutheastOwner);
-                var southwestOwner = _data.Get<Player>(dbArea.SouthwestOwner);
+                var northeastOwner = dbArea.NortheastOwner == null ? null : _data.Get<Player>(dbArea.NortheastOwner);
+                var northwestOwner = dbArea.NorthwestOwner == null ? null : _data.Get<Player>(dbArea.NorthwestOwner);
+                var southeastOwner = dbArea.SoutheastOwner == null ? null : _data.Get<Player>(dbArea.SoutheastOwner);
+                var southwestOwner = dbArea.SouthwestOwner == null ? null : _data.Get<Player>(dbArea.SouthwestOwner);
 
                 if (northeastOwner != null)
                 {

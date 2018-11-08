@@ -263,7 +263,7 @@ namespace SWLOR.Game.Server.Service
 
             int heavyRank = armorSkills.Single(x => x.SkillID == (int) SkillType.HeavyArmor).Rank;
             int lightRank = armorSkills.Single(x => x.SkillID == (int) SkillType.LightArmor).Rank;
-            int forceRank = armorSkills.Single(x => x.SkillID == (int)SkillType.ForceArmor).Rank;
+            int forceRank = armorSkills.Single(x => x.SkillID == (int) SkillType.ForceArmor).Rank;
 
             int baseAC = 0;
             for (int slot = 0; slot < NUM_INVENTORY_SLOTS; slot++)
@@ -276,28 +276,21 @@ namespace SWLOR.Game.Server.Service
 
                 if (!_item.ArmorBaseItemTypes.Contains(oItem.BaseItemType))
                     continue;
-
-                if (oItem.CustomItemType != CustomItemType.HeavyArmor &&
-                    oItem.CustomItemType != CustomItemType.LightArmor &&
-                    oItem.CustomItemType != CustomItemType.ForceArmor)
-                    continue;
-
-                int skillRankToUse = 0;
-                if (oItem.CustomItemType == CustomItemType.HeavyArmor &&
-                    oItem.RecommendedLevel > heavyRank)
+                
+                int skillRankToUse;
+                if (oItem.CustomItemType == CustomItemType.HeavyArmor)
                 {
                     skillRankToUse = heavyRank;
                 }
-                else if (oItem.CustomItemType == CustomItemType.LightArmor &&
-                    oItem.RecommendedLevel > lightRank)
+                else if (oItem.CustomItemType == CustomItemType.LightArmor)
                 {
                     skillRankToUse = lightRank;
                 }
-                else if (oItem.CustomItemType == CustomItemType.ForceArmor &&
-                         oItem.RecommendedLevel > forceRank)
+                else if (oItem.CustomItemType == CustomItemType.ForceArmor)
                 {
                     skillRankToUse = forceRank;
                 }
+                else continue;
 
                 int itemAC = oItem.CustomAC;
                 itemAC = CalculateAdjustedValue(itemAC, oItem.RecommendedLevel, skillRankToUse, 0);

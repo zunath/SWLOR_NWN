@@ -1450,6 +1450,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-07.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2018-11-08.1.sql" />
     <Content Include="Data\Migrations\Readme.txt" />
     <Content Include="Data\Scripts\AddWeaponCraftBlueprints.sql" />
     <Content Include="Data\Scripts\AddPerkLevels.sql" />

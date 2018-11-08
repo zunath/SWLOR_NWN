@@ -290,6 +290,7 @@ namespace SWLOR.Game.Server.Service
                 PlayerID = player.GlobalID,
                 DateInitialPurchase = DateTime.UtcNow,
                 DateRentDue = DateTime.UtcNow.AddDays(7),
+                DateFuelEnds = DateTime.UtcNow,
                 Sector = sector,
                 PCBaseTypeID = (int)Enumeration.PCBaseType.RegularBase,
                 CustomName = string.Empty

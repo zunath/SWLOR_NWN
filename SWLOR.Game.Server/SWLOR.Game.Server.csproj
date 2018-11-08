@@ -1454,6 +1454,7 @@
     <EmbeddedResource Include="Data\Migrations\2018-11-08.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-08.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-08.3.sql" />
+    <EmbeddedResource Include="Data\Migrations\2018-11-08.4.sql" />
     <Content Include="Data\Migrations\Readme.txt" />
     <Content Include="Data\Scripts\AddWeaponCraftBlueprints.sql" />
     <Content Include="Data\Scripts\AddPerkLevels.sql" />

@@ -178,7 +178,7 @@ Where ItemName = 'Large Structure Frame'
 
 Update dbo.CraftBlueprint 
 Set MainComponentTypeID = 40
-Where ItemName = '%Resourece Drill%'
+Where ItemName = '%Resource Drill%'
 
 Update dbo.CraftBlueprint 
 Set BaseLevel = 5

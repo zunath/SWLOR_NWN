@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
-            NWPlaceable door = (NWPlaceable)GetDialogTarget();
+            NWPlaceable door = GetDialogTarget().Object;
             NWArea area = door.Area;
             
             if (area.GetLocalInt("IS_BUILDING_PREVIEW") == 1)
@@ -72,14 +72,14 @@ namespace SWLOR.Game.Server.Conversation
 
         private void DoExitBuilding()
         {
-            NWPlaceable door = (NWPlaceable)GetDialogTarget();
+            NWPlaceable door = GetDialogTarget().Object;
             _base.DoPlayerExitBuildingInstance(GetPC(), door);
         }
 
         private void DoPeekOutside()
         {
             const float MaxDistance = 2.5f;
-            NWPlaceable door = (NWPlaceable)GetDialogTarget();
+            NWPlaceable door = GetDialogTarget().Object;
             Location location = door.GetLocalLocation("PLAYER_HOME_EXIT_LOCATION");
 
             int numberFound = 0;

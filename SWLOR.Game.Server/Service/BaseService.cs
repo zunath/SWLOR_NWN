@@ -444,9 +444,9 @@ namespace SWLOR.Game.Server.Service
 
             NWArea area = _.GetAreaFromLocation(targetLocation);
             string buildingStructureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
-            Guid buildingStructureGuid = new Guid(buildingStructureID);
+            Guid buildingStructureGuid = string.IsNullOrWhiteSpace(buildingStructureID) ? Guid.Empty : new Guid(buildingStructureID);
             string pcBaseID = area.GetLocalString("PC_BASE_ID");
-            Guid pcBaseGUID = new Guid(pcBaseID);
+            Guid pcBaseGUID = string.IsNullOrWhiteSpace(pcBaseID) ? Guid.Empty : new Guid(pcBaseID);
             BuildingType buildingType;
             if (!string.IsNullOrWhiteSpace(pcBaseID))
             {

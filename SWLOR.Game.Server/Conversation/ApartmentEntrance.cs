@@ -96,11 +96,11 @@ namespace SWLOR.Game.Server.Conversation
         private void MainPageResponses(int responseID)
         {
             var response = GetResponseByID("MainPage", responseID);
-            int pcApartmentID = (int)response.CustomData;
+            Guid pcApartmentID = (Guid)response.CustomData;
             EnterApartment(pcApartmentID);
         }
 
-        private void EnterApartment(int pcBaseID)
+        private void EnterApartment(Guid pcBaseID)
         {
             NWPlayer oPC = GetPC();
 
@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Conversation
                 }
 
                 instance = _area.CreateAreaInstance(oPC, buildingStyle.Resref, name, "PLAYER_HOME_ENTRANCE");
-                instance.SetLocalInt("PC_BASE_ID", pcBaseID);
+                instance.SetLocalString("PC_BASE_ID", pcBaseID.ToString());
                 instance.SetLocalInt("BUILDING_TYPE", (int)BuildingType.Apartment);
 
                 foreach (var furniture in structures)
@@ -132,12 +132,16 @@ namespace SWLOR.Game.Server.Conversation
 
 
 
-        private NWArea GetAreaInstance(int pcApartmentID)
+        private NWArea GetAreaInstance(Guid pcApartmentID)
         {
             NWArea instance = null;
             foreach (var area in NWModule.Get().Areas)
             {
-                if (area.GetLocalInt("PC_BASE_ID") == pcApartmentID)
+                string pcBaseID = area.GetLocalString("PC_BASE_ID");
+                if (string.IsNullOrWhiteSpace(pcBaseID)) continue;
+                
+                Guid pcBaseGuid = new Guid(pcBaseID);
+                if (pcBaseGuid == pcApartmentID)
                 {
                     instance = area;
                     break;

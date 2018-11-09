@@ -20,5 +20,6 @@
         Harvester = 62,
         Scavenger = 63,
         Medic = 64,
+        Mandalorian = 65
     }
 }

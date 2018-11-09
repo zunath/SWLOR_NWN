@@ -9,6 +9,7 @@ using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -51,7 +52,9 @@ namespace SWLOR.Game.Server.Service
                 PlayerID = oPC.IsDM ? null : (Guid?)oPC.GlobalID,
                 DateOfEvent = now
             };
-            _data.SubmitDataChange(entity, DatabaseActionType.Insert);
+
+            // Bypass the caching logic.
+            _data.DataQueue.Enqueue(new DatabaseAction(entity, DatabaseActionType.Insert));
         }
 
         public void OnModuleClientLeave()
@@ -73,7 +76,9 @@ namespace SWLOR.Game.Server.Service
                 PlayerID = oPC.IsDM ? null : (Guid?)oPC.GlobalID,
                 DateOfEvent = now
             };
-            _data.SubmitDataChange(entity, DatabaseActionType.Insert);
+
+            // Bypass the caching logic.
+            _data.DataQueue.Enqueue(new DatabaseAction(entity, DatabaseActionType.Insert));
         }
 
 

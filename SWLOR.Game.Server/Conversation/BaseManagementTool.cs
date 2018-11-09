@@ -496,7 +496,6 @@ namespace SWLOR.Game.Server.Conversation
             var tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
             var pcStructureID = structure.ID;
             int impoundedCount = 0;
-            var structureID = new Guid(data.ManipulatingStructure.Structure.Area.GetLocalString("PC_BASE_STRUCTURE_ID"));
 
             var controlTower = _base.GetBaseControlTower(pcBase.ID);
             int maxShields = _base.CalculateMaxShieldHP(controlTower);
@@ -516,6 +515,7 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if (data.BuildingType == Enumeration.BuildingType.Interior)
             {
+                var structureID = new Guid(data.ManipulatingStructure.Structure.Area.GetLocalString("PC_BASE_STRUCTURE_ID"));
                 canRetrieveStructures = _perm.HasStructurePermission(GetPC(), structureID, StructurePermission.CanRetrieveStructures);
             }
             else

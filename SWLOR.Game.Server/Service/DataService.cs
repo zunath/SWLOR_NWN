@@ -268,6 +268,16 @@ namespace SWLOR.Game.Server.Service
                 _cache.Add(type, cachedSet);
             }
 
+            // Safety check to ensure all key types are the same for a given type.
+            if (cachedSet.Count > 0)
+            {
+                var first = cachedSet.Keys.First();
+                if (first.GetType() != key.GetType())
+                {
+                    throw new Exception("Cannot set key of type " + key.GetType() + " into cache because the established type is already defined as " + first.GetType());
+                }
+            }
+
             if (cachedSet.ContainsKey(key))
             {
                 cachedSet[key] = value;
@@ -276,7 +286,7 @@ namespace SWLOR.Game.Server.Service
             {
                 cachedSet.Add(key, value);
             }
-
+            
         }
 
         private void DeleteFromCache<T>(object key)

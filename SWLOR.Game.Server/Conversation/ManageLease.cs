@@ -129,13 +129,6 @@ namespace SWLOR.Game.Server.Conversation
             var data = _base.GetPlayerTempData(GetPC());
             DialogResponse response = GetResponseByID("MainPage", responseID);
             Guid pcBaseID = (Guid)response.CustomData;
-
-            if (pcBaseID == Guid.Empty)
-            {
-                SwitchConversation("BaseManagementTool");
-                return;
-            }
-
             data.PCBaseID = pcBaseID;
             LoadBaseDetailsPage();
             ChangePage("BaseDetailsPage");

@@ -433,13 +433,14 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("ManageStructureDetailsPage");
             var data = _base.GetPlayerTempData(GetPC());
             var structure = data.ManipulatingStructure.Structure;
-            Guid structureID = new Guid(data.ManipulatingStructure.Structure.Area.GetLocalString("PC_BASE_STRUCTURE_ID"));
+            var pcBaseStructureID = data.ManipulatingStructure.Structure.Area.GetLocalString("PC_BASE_STRUCTURE_ID");
+            Guid? structureID = string.IsNullOrWhiteSpace(pcBaseStructureID) ? null : (Guid?)new Guid(pcBaseStructureID);
             bool canRetrieveStructures;
             bool canPlaceEditStructures;
-            if (structureID != Guid.Empty)
+            if (structureID != null)
             {
-                canRetrieveStructures = _perm.HasStructurePermission(GetPC(), structureID, StructurePermission.CanRetrieveStructures);
-                canPlaceEditStructures = _perm.HasStructurePermission(GetPC(), structureID, StructurePermission.CanPlaceEditStructures);
+                canRetrieveStructures = _perm.HasStructurePermission(GetPC(), (Guid)structureID, StructurePermission.CanRetrieveStructures);
+                canPlaceEditStructures = _perm.HasStructurePermission(GetPC(), (Guid)structureID, StructurePermission.CanPlaceEditStructures);
             }
             else
             {

@@ -89,14 +89,14 @@ namespace SWLOR.Game.Server.Conversation
         {
             NWPlayer oPC = GetPC();
             NWPlaceable door = (NWPlaceable)GetDialogTarget();
-            var structureID = new Guid(door.GetLocalString("PC_BASE_STRUCTURE_ID"));
+            string pcBaseStructureID = door.GetLocalString("PC_BASE_STRUCTURE_ID");
             
-            if (structureID == Guid.Empty)
+            if (string.IsNullOrWhiteSpace(pcBaseStructureID))
             {
                 _.FloatingTextStringOnCreature("ERROR: Door doesn't have a structure ID assigned. Notify an admin about this issue.", oPC.Object, NWScript.FALSE);
                 return;
             }
-
+            var structureID = new Guid(pcBaseStructureID);
             bool canEnterBuilding = _perm.HasStructurePermission(GetPC(), structureID, StructurePermission.CanEnterBuilding);
 
             if (!canEnterBuilding)

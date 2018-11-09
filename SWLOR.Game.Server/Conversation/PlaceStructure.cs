@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Conversation
             var data = _base.GetPlayerTempData(GetPC());
             BaseStructure structure = _data.Single<BaseStructure>(x => x.ID == data.BaseStructureID);
             var tower = _base.GetBaseControlTower(data.PCBaseID);
-            var towerBaseStructure = _data.Get<BaseStructure>(tower.BaseStructureID);
+            var towerBaseStructure = tower == null ? null : _data.Get<BaseStructure>(tower.BaseStructureID);
 
             bool canPlaceStructure = true;
             bool isPlacingTower = structure.BaseStructureTypeID == (int)BaseStructureType.ControlTower;

@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Data.Entity
         {
             ID = Guid.NewGuid();
         }
+
         [ExplicitKey]
         public Guid ID { get; set; }
         public int BankID { get; set; }

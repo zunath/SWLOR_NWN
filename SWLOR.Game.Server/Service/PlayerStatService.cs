@@ -519,7 +519,7 @@ namespace SWLOR.Game.Server.Service
                 case CustomItemType.BlasterRifle:
                     proficiencyPerk = PerkType.BlasterRifleProficiency;
                     proficiencySkill = SkillType.Firearms;
-                    receivesBackgroundBonus = background == BackgroundType.Sharpshooter;
+                    receivesBackgroundBonus = background == BackgroundType.Sharpshooter || background == BackgroundType.Mandalorian;
                     break;
                 case CustomItemType.Throwing:
                     proficiencyPerk = PerkType.ThrowingProficiency;

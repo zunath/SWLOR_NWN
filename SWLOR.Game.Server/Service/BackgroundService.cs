@@ -92,6 +92,9 @@ namespace SWLOR.Game.Server.Service
                 case BackgroundType.Medic:
                     _perk.DoPerkUpgrade(oPC, PerkType.ImmediateImprovement);
                     break;
+                case BackgroundType.Mandalorian:
+                    item1Resref = "man_armor";
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }

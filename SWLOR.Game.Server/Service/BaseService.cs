@@ -124,16 +124,15 @@ namespace SWLOR.Game.Server.Service
         public NWPlaceable SpawnStructure(NWArea area, Guid pcBaseStructureID)
         {
             PCBaseStructure pcStructure = _data.Get<PCBaseStructure>(pcBaseStructureID);
-            PCBase pcBase = _data.Get<PCBase>(pcStructure.PCBaseID);
-            BaseStructure baseStructure = _data.Get<BaseStructure>(pcStructure.BaseStructureID);
-            var exteriorStyle = _data.Get<BuildingStyle>(pcStructure.ExteriorStyleID);
 
             NWLocation location = _.Location(area.Object,
                 _.Vector((float)pcStructure.LocationX, (float)pcStructure.LocationY, (float)pcStructure.LocationZ),
                 (float)pcStructure.LocationOrientation);
 
+            BaseStructure baseStructure = _data.Get<BaseStructure>(pcStructure.BaseStructureID);
             BaseStructureType structureType = (BaseStructureType)baseStructure.BaseStructureTypeID;
             string resref = baseStructure.PlaceableResref;
+            var exteriorStyle = pcStructure.ExteriorStyleID == null ? null : _data.Get<BuildingStyle>(pcStructure.ExteriorStyleID);
 
             List<AreaStructure> areaStructures = area.Data["BASE_SERVICE_STRUCTURES"];
             if (string.IsNullOrWhiteSpace(resref) &&
@@ -170,6 +169,7 @@ namespace SWLOR.Game.Server.Service
 
             if (area.IsInstance && !string.IsNullOrWhiteSpace(area.GetLocalString("PC_BASE_STRUCTURE_ID")))
             {
+                PCBase pcBase = _data.Get<PCBase>(pcStructure.PCBaseID);
                 if (DateTime.UtcNow > pcBase.DateFuelEnds && pcBase.Fuel <= 0)
                 {
                     ToggleInstanceObjectPower(area, false);
@@ -366,8 +366,9 @@ namespace SWLOR.Game.Server.Service
                 .DefaultIfEmpty()
                 .Sum(s =>
                 {
+                    if (s == null) return 0.0f;
                     var baseStructure = _data.Get<BaseStructure>(s.BaseStructureID);
-                    return s == null || baseStructure == null ? 0 : baseStructure.Power;
+                    return baseStructure == null ? 0 : baseStructure.Power;
                 });
         }
 

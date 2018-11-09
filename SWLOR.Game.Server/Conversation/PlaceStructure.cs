@@ -352,7 +352,7 @@ namespace SWLOR.Game.Server.Conversation
 
             var structure = new PCBaseStructure
             {
-                BaseStructureID = data.BaseStructureID,
+                BaseStructureID = data.BaseStructureID, 
                 Durability = _durability.GetDurability(data.StructureItem),
                 LocationOrientation = _.GetFacingFromLocation(data.TargetLocation),
                 LocationX = position.m_X,

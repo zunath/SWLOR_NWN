@@ -464,14 +464,14 @@ namespace SWLOR.Game.Server.Service
             }
 
             Area dbArea = _data.SingleOrDefault<Area>(x => x.Resref == area.Resref);
-
+            
             if (dbArea == null || !dbArea.IsBuildable ) return "Structures cannot be placed in this area.";
             PCBase pcBase = !string.IsNullOrWhiteSpace(pcBaseID) ?
-                _data.Get<PCBase>(pcBaseID) :
+                _data.Get<PCBase>(pcBaseGUID) :
                 _data.SingleOrDefault<PCBase>(x => x.AreaResref == area.Resref && x.Sector == sector);
             if (pcBase == null && buildingType == BuildingType.Interior)
             {
-                var parentStructure = _data.Single<PCBaseStructure>(x => x.ID == buildingStructureGuid);
+                var parentStructure = _data.Get<PCBaseStructure>(buildingStructureGuid);
                 var parentBaseStructure = _data.Get<BaseStructure>(parentStructure.BaseStructureID);
                 pcBase = _data.Get<PCBase>(parentStructure.PCBaseID);
 

@@ -65,9 +65,10 @@ namespace SWLOR.Game.Server.Item
             // Structure is being placed inside a building.
             else if (!string.IsNullOrWhiteSpace(parentStructureID))
             {
-                var parentStructure = _data.Single<PCBaseStructure>(x => x.ID == new Guid(parentStructureID));
+                var parentStructureGuid = new Guid(parentStructureID);
+                var parentStructure = _data.Get<PCBaseStructure>(parentStructureGuid);
                 data.PCBaseID = parentStructure.PCBaseID;
-                data.ParentStructureID = new Guid(parentStructureID);
+                data.ParentStructureID = parentStructureGuid;
                 data.BuildingType = BuildingType.Interior;
             }
             // Structure is being placed outside of a building.
@@ -79,7 +80,7 @@ namespace SWLOR.Game.Server.Item
                 data.ParentStructureID = null;
                 data.BuildingType = BuildingType.Exterior;
             }
-            
+
             _dialog.StartConversation(user, user, "PlaceStructure");
         }
 

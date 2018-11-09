@@ -311,7 +311,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var data = _base.GetPlayerTempData(player);
-            var pcApartment = _data.Single<PCBase>(x => x.ID == data.PCBaseID);
+            var pcApartment = _data.Get<PCBase>(data.PCBaseID);
             var buildingStyle = _data.Get<BuildingStyle>(pcApartment.BuildingStyleID);
             var name = player.Name + "'s Apartment";
 

@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Service
             }
 
         }
-
+        
         private Player CreateDBPCEntity(NWPlayer player)
         {
             AssociationType assType; 
@@ -249,7 +249,7 @@ namespace SWLOR.Game.Server.Service
                 HPRegenerationAmount = 1,
                 RegenerationTick = 20,
                 RegenerationRate = 0,
-                VersionNumber = 1,
+                VersionNumber = 2,
                 MaxFP = 0,
                 CurrentFP = 0,
                 CurrentFPTick = 20,

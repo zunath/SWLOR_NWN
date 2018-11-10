@@ -1287,6 +1287,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Data\Scripts\SWLOR Open Stress Test MIGRATED.rar" />
     <None Include="packages.config" />
     <None Include="ServerFiles\docker-linux-startSWLOR.sh" />
     <None Include="ServerFiles\docker-windows-startSWLOR.cmd" />

@@ -67,8 +67,8 @@ namespace SWLOR.Game.Server.GameObject
                     _.SetLocalString(Object, "GLOBAL_ID", globalID);
                 }
             }
-
-            return Guid.Parse(globalID);
+            
+            return Guid.Parse(globalID.ToUpper());
         }
 
         public virtual string Name

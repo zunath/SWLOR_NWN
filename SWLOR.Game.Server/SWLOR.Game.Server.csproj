@@ -413,6 +413,7 @@
     <Compile Include="Event\Area\OnAreaHeartbeat.cs" />
     <Compile Include="Event\Area\OnAreaExit.cs" />
     <Compile Include="Event\Area\OnAreaEnter.cs" />
+    <Compile Include="Event\Conversation\HasSkillRank.cs" />
     <Compile Include="Event\Conversation\KeyItemCheck.cs" />
     <Compile Include="Event\Conversation\OpenStore.cs" />
     <Compile Include="Event\Conversation\QuestAccept.cs" />
@@ -750,6 +751,15 @@
     <Compile Include="NWN\Events\Conversation\Quest\QuestIsDone\quest_done_7.cs" />
     <Compile Include="NWN\Events\Conversation\Quest\QuestIsDone\quest_done_8.cs" />
     <Compile Include="NWN\Events\Conversation\Quest\QuestIsDone\quest_done_9.cs" />
+    <Compile Include="NWN\Events\Conversation\Skill\has_skill_or_9.cs" />
+    <Compile Include="NWN\Events\Conversation\Skill\has_skill_or_8.cs" />
+    <Compile Include="NWN\Events\Conversation\Skill\has_skill_or_7.cs" />
+    <Compile Include="NWN\Events\Conversation\Skill\has_skill_or_6.cs" />
+    <Compile Include="NWN\Events\Conversation\Skill\has_skill_or_5.cs" />
+    <Compile Include="NWN\Events\Conversation\Skill\has_skill_or_4.cs" />
+    <Compile Include="NWN\Events\Conversation\Skill\has_skill_or_3.cs" />
+    <Compile Include="NWN\Events\Conversation\Skill\has_skill_or_2.cs" />
+    <Compile Include="NWN\Events\Conversation\Skill\has_skill_or_1.cs" />
     <Compile Include="NWN\Events\Conversation\warp_to_wp.cs" />
     <Compile Include="NWN\Events\Dialog\dialog_action_b.cs" />
     <Compile Include="NWN\Events\Dialog\dialog_appears_b.cs" />
@@ -1452,6 +1462,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Data\Migrations\2018-11-09.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-10.1.sql" />
+    <Content Include="Data\Migrations\2018-11-11.1.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-07.1.sql" />

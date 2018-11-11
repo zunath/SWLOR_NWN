@@ -46,6 +46,7 @@ namespace SWLOR.Game.Server.Placeable.WarpDevice
             int keyItemID = self.GetLocalInt("KEY_ITEM_ID");
             string missingKeyItemMessage = self.GetLocalString("MISSING_KEY_ITEM_MESSAGE");
             bool isInstance = self.GetLocalInt("INSTANCE") == TRUE;
+            bool personalInstanceOnly = self.GetLocalInt("PERSONAL_INSTANCE_ONLY") == TRUE;
 
             if (keyItemID > 0)
             {
@@ -84,7 +85,7 @@ namespace SWLOR.Game.Server.Placeable.WarpDevice
 
                 // A party member is in an instance of this type already.
                 // Prompt player to select which instance to enter.
-                if (members.Count >= 1)
+                if (members.Count >= 1 && !personalInstanceOnly)
                 {
                     oPC.SetLocalString("INSTANCE_RESREF", entranceWP.Resref);
                     oPC.SetLocalString("INSTANCE_DESTINATION_TAG", destination);
@@ -92,7 +93,7 @@ namespace SWLOR.Game.Server.Placeable.WarpDevice
                     return false;
                 }
 
-                // Otherwise no instance exists yet. Make a new one for this player.
+                // Otherwise no instance exists yet or this instance only allows one player. Make a new one for this player.
                 NWArea instance = _area.CreateAreaInstance(oPC, entranceWP.Area.Resref, entranceWP.Area.Name, destination);
                 location = instance.GetLocalLocation("INSTANCE_ENTRANCE");
                 _player.SaveLocation(oPC);

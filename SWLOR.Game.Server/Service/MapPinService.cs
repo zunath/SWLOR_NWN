@@ -49,8 +49,10 @@ namespace SWLOR.Game.Server.Service
 
             if (!oPC.IsPlayer) return;
 
-            foreach (var pin in _data.Where<PCMapPin>(x => x.PlayerID == oPC.GlobalID))
+            var mapPins = _data.Where<PCMapPin>(x => x.PlayerID == oPC.GlobalID).ToList();
+            for(int x = mapPins.Count-1; x >= 0; x--)
             {
+                var pin = mapPins.ElementAt(x);
                 _data.SubmitDataChange(pin, DatabaseActionType.Delete);
             }
             

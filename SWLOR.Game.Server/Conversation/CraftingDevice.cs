@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("BlueprintListPage");
             foreach (CraftBlueprint bp in blueprints)
             {
-                AddResponseToPage("BlueprintListPage", bp.ItemName, bp.IsActive, bp.ID);
+                AddResponseToPage("BlueprintListPage", bp.Quantity + "x " + bp.ItemName, bp.IsActive, bp.ID);
             }
         }
         

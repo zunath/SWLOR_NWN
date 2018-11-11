@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
                 case CraftingAccessType.Enhancement:
                     allowedType = ComponentType.Enhancement;
                     reachedCap = model.Blueprint.EnhancementSlots < model.EnhancementComponents.Count + 1;
-                    reachedEnhancementLimit = model.PlayerPerkLevel / 2 <= model.EnhancementComponents.Count + 1;
+                    reachedEnhancementLimit = model.PlayerPerkLevel / 2 < model.EnhancementComponents.Count + 1;
                     list = model.EnhancementComponents;
                     componentName = "Enhancement";
                     break;

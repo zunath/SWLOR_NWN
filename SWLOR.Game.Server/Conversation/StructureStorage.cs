@@ -146,6 +146,7 @@ namespace SWLOR.Game.Server.Conversation
                     structure.CustomName = name;
                     GetDialogTarget().Name = name;
                     GetPC().DeleteLocalString("NEW_CONTAINER_NAME");
+                    _data.SubmitDataChange(structure, DatabaseActionType.Update);
                     EndConversation();
                     break;
             }

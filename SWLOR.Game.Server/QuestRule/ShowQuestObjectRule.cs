@@ -26,11 +26,11 @@ namespace SWLOR.Game.Server.QuestRule
 
             for (int index = 0; index < count; index++)
             {
-                string visibilityObjectID = args[index];
+                if (string.IsNullOrWhiteSpace(args[index])) return;
 
-                if (string.IsNullOrWhiteSpace(visibilityObjectID)) return;
+                Guid visibilityObjectID = new Guid(args[index]);
 
-                var obj = _cache.VisibilityObjects.Single(x => x.Key.ToString() == visibilityObjectID).Value;
+                var obj = _cache.VisibilityObjects.Single(x => x.Key == visibilityObjectID).Value;
                 _ovs.AdjustVisibility(player, obj, true);
             }
             

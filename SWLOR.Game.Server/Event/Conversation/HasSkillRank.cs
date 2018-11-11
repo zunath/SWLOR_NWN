@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Event.Conversation
             int count = 1;
             string varName = "SKILL_" + index + "_REQ_";
             int skillID = talkTo.GetLocalInt(varName + count);
-            
+            bool displayNode = true;
 
             while(skillID > 0)
             {
@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Event.Conversation
                 if (method == "OR")
                 {
                     if (meetsRequirement) return true;
+                    else displayNode = false;
                 }
                 // AND = ALL listed skills must be met in order for the node to appear.
                 else
@@ -53,7 +54,7 @@ namespace SWLOR.Game.Server.Event.Conversation
 
             
 
-            return true;
+            return displayNode;
         }
     }
 }

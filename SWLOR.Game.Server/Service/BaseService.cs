@@ -159,6 +159,11 @@ namespace SWLOR.Game.Server.Service
             plc.SetLocalString("ORIGINAL_SCRIPT_LEFT_CLICK", _.GetEventScript(plc.Object, EVENT_SCRIPT_PLACEABLE_ON_LEFT_CLICK));
             plc.SetLocalString("ORIGINAL_JAVA_SCRIPT_1", _.GetLocalString(plc.Object, "JAVA_SCRIPT_1"));
 
+            if (!string.IsNullOrWhiteSpace(pcStructure.CustomName))
+            {
+                plc.Name = pcStructure.CustomName;
+            }
+
             NWPlaceable door = null;
             if (structureType == BaseStructureType.Building)
             {

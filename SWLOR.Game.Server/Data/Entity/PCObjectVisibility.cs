@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Data.Entity
         [ExplicitKey]
         public Guid ID { get; set; }
         public Guid PlayerID { get; set; }
-        public Guid VisibilityObjectID { get; set; }
+        public string VisibilityObjectID { get; set; }
         public bool IsVisible { get; set; }
     }
 }

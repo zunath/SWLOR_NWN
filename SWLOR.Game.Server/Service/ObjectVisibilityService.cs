@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Service
                     string visibilityObjectID = obj.GetLocalString("VISIBILITY_OBJECT_ID");
                     if (!string.IsNullOrWhiteSpace(visibilityObjectID))
                     {
-                        _appCache.VisibilityObjects.Add(new Guid(visibilityObjectID), obj);
+                        _appCache.VisibilityObjects.Add(visibilityObjectID, obj);
                     }
 
                     obj = _.GetNextObjectInArea(area);
@@ -88,15 +88,14 @@ namespace SWLOR.Game.Server.Service
         {
             string visibilityObjectID = target.GetLocalString("VISIBILITY_OBJECT_ID");
             if (string.IsNullOrWhiteSpace(visibilityObjectID)) return;
-            Guid visibilityGUID = new Guid(visibilityObjectID);
-
-            if (!_appCache.VisibilityObjects.ContainsKey(visibilityGUID))
+            
+            if (!_appCache.VisibilityObjects.ContainsKey(visibilityObjectID))
             {
-                _appCache.VisibilityObjects.Add(visibilityGUID, target);
+                _appCache.VisibilityObjects.Add(visibilityObjectID, target);
             }
             else
             {
-                _appCache.VisibilityObjects[visibilityGUID] = target;
+                _appCache.VisibilityObjects[visibilityObjectID] = target;
             }
             
             var players = NWModule.Get().Players.ToList();
@@ -105,7 +104,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var player in players)
             {
-                var visibility = pcVisibilities.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.VisibilityObjectID == visibilityGUID);
+                var visibility = pcVisibilities.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.VisibilityObjectID == visibilityObjectID);
 
                 if (visibility == null)
                 {
@@ -144,7 +143,7 @@ namespace SWLOR.Game.Server.Service
                 visibility = new PCObjectVisibility
                 {
                     PlayerID = player.GlobalID,
-                    VisibilityObjectID = new Guid(visibilityObjectID)
+                    VisibilityObjectID = visibilityObjectID
                 };
                 action = DatabaseActionType.Insert;
             }
@@ -160,7 +159,7 @@ namespace SWLOR.Game.Server.Service
 
         public void AdjustVisibility(NWPlayer player, string targetGUID, bool isVisible)
         {
-            var obj = _appCache.VisibilityObjects.Single(x => x.Key == new Guid(targetGUID));
+            var obj = _appCache.VisibilityObjects.Single(x => x.Key == targetGUID);
             AdjustVisibility(player, obj.Value, isVisible);
         }
     }

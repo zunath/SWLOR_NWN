@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.Service
                 ChatChannelID = channelEntity.ID,
                 DateSent = DateTime.UtcNow
             };
-
+            
             // Bypass the caching logic
             _data.DataQueue.Enqueue(new DatabaseAction(entity, DatabaseActionType.Insert));
         }

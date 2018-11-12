@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Service
 {
     public class DurabilityService : IDurabilityService
     {
-        private const float DefaultDurability = 5.0f;
+        private const float DefaultDurability = 3.0f;
 
         private readonly INWScript _;
         private readonly IColorTokenService _color;

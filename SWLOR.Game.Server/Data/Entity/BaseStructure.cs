@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public bool RequiresBasePower { get; set; }
         public int ResourceStorage { get; set; }
         public int RetrievalRating { get; set; }
+        public int FuelRating { get; set; }
    
     }
 }

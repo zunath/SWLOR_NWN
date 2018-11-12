@@ -81,16 +81,19 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public void GiveSkillXP(NWPlayer oPC, SkillType skill, int xp)
+        public void GiveSkillXP(NWPlayer oPC, SkillType skill, int xp, bool enableResidencyBonus = true)
         {
-            GiveSkillXP(oPC, (int)skill, xp);
+            GiveSkillXP(oPC, (int)skill, xp, enableResidencyBonus);
         }
 
-        public void GiveSkillXP(NWPlayer oPC, int skillID, int xp)
+        public void GiveSkillXP(NWPlayer oPC, int skillID, int xp, bool enableResidencyBonus = true)
         {
             if (skillID <= 0 || xp <= 0 || !oPC.IsPlayer) return;
 
-            xp = (int)(xp + xp * _playerStat.EffectiveResidencyBonus(oPC));
+            if (enableResidencyBonus)
+            {
+                xp = (int)(xp + xp * _playerStat.EffectiveResidencyBonus(oPC));
+            }
             Player player = _data.Get<Player>(oPC.GlobalID);
             Skill skill = GetSkill(skillID);
             PCSkill pcSkill = GetPCSkill(oPC, skillID);

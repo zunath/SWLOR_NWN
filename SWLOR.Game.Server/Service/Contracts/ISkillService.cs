@@ -22,8 +22,8 @@ namespace SWLOR.Game.Server.Service.Contracts
         Skill GetSkill(SkillType skillType);
         List<PCSkill> GetPCSkillsForCategory(Guid playerID, int skillCategoryID);
         int GetPCTotalSkillCount(NWPlayer player);
-        void GiveSkillXP(NWPlayer oPC, int skillID, int xp);
-        void GiveSkillXP(NWPlayer oPC, SkillType skill, int xp);
+        void GiveSkillXP(NWPlayer oPC, int skillID, int xp, bool enableResidencyBonus = true);
+        void GiveSkillXP(NWPlayer oPC, SkillType skill, int xp, bool enableResidencyBonus = true);
         void OnAreaExit();
         void OnCreatureDeath(NWCreature creature);
         void OnHitCastSpell(NWPlayer oPC);

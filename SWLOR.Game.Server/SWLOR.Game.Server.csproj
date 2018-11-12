@@ -883,7 +883,7 @@
     <Compile Include="Perk\OneHanded\Knockdown.cs" />
     <Compile Include="Perk\TwoHanded\PolearmProficiency.cs" />
     <Compile Include="Perk\Weaponsmith\CraftingModInstallationWeapons.cs" />
-    <Compile Include="Perk\Weaponsmith\LightsaberBlueprints.cs" />
+    <Compile Include="Perk\Engineering\LightsaberBlueprints.cs" />
     <Compile Include="Perk\Weaponsmith\ForceModInstallationWeapons.cs" />
     <Compile Include="Perk\Weaponsmith\CombatModInstallationWeapons.cs" />
     <Compile Include="Perk\Weaponsmith\SpecialModInstallationWeapons.cs" />
@@ -1466,6 +1466,7 @@
     <EmbeddedResource Include="Data\Migrations\2018-11-11.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-12.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-12.2.sql" />
+    <EmbeddedResource Include="Data\Migrations\2018-11-12.3.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-07.1.sql" />

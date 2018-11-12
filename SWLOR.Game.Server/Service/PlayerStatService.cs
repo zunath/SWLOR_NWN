@@ -26,7 +26,6 @@ namespace SWLOR.Game.Server.Service
         private readonly IDataService _data;
         private readonly IPerkService _perk;
         private readonly INWNXCreature _nwnxCreature;
-        private readonly AppCache _cache;
 
         public PlayerStatService(
             INWScript script,
@@ -34,8 +33,7 @@ namespace SWLOR.Game.Server.Service
             INWNXCreature nwnxCreature,
             IItemService item,
             IDataService data,
-            IPerkService perk,
-            AppCache cache)
+            IPerkService perk)
         {
             _ = script;
             _customEffect = customEffect;
@@ -43,7 +41,6 @@ namespace SWLOR.Game.Server.Service
             _data = data;
             _perk = perk;
             _nwnxCreature = nwnxCreature;
-            _cache = cache;
         }
         
         public void ApplyStatChanges(NWPlayer player, NWItem ignoreItem, bool isInitialization = false)
@@ -187,6 +184,7 @@ namespace SWLOR.Game.Server.Service
             int delta = recommendedLevel - skillRank;
             float adjustment = 1.0f - delta * 0.1f;
             if (adjustment <= 0.1f) adjustment = 0.1f;
+            else if (adjustment > 1.0f) adjustment = 1.0f;
 
             float adjustedValue = (float)Math.Round(baseValue * adjustment);
             if (adjustedValue < minimumValue) adjustedValue = minimumValue;

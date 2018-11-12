@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
@@ -19,14 +20,17 @@ namespace SWLOR.Game.Server.Conversation
         }
 
         private readonly ISkillService _skill;
+        private readonly IDataService _data;
 
         public XPTome(
             INWScript script, 
             IDialogService dialog,
-            ISkillService skill) 
+            ISkillService skill,
+            IDataService data) 
             : base(script, dialog)
         {
             _skill = skill;
+            _data = data;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -55,7 +59,11 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
-            List<SkillCategory> categories = _skill.GetActiveCategories();
+            List<SkillCategory> categories = _skill.GetActiveCategories().Where(x =>
+            {
+                var skills = _data.Where<Skill>(s => s.SkillCategoryID == x.ID && s.ContributesToSkillCap);
+                return skills.Any();
+            }).ToList();
 
             foreach (SkillCategory category in categories)
             {
@@ -124,6 +132,13 @@ namespace SWLOR.Game.Server.Conversation
 
             if (vm.Item != null && vm.Item.IsValid)
             {
+                var skill = _data.Get<Skill>(vm.SkillID);
+                if (!skill.ContributesToSkillCap)
+                {
+                    GetPC().FloatingText("You cannot raise that skill with this tome.");
+                    return;
+                }
+
                 int xp = vm.Item.GetLocalInt("XP_TOME_AMOUNT");
                 _skill.GiveSkillXP(GetPC(), vm.SkillID, xp, false);
                 vm.Item.Destroy();

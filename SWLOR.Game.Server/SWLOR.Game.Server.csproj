@@ -1017,6 +1017,7 @@
     <Compile Include="Placeable\ObtainKeyItem.cs" />
     <Compile Include="Placeable\PermanentVisualEffect.cs" />
     <Compile Include="Placeable\QuestSystem\ItemCollector\OnClosed.cs" />
+    <Compile Include="Placeable\Quests\ForceCrystal.cs" />
     <Compile Include="Placeable\ResourceBay\OnClosed.cs" />
     <Compile Include="Placeable\ResourceBay\OnDisturbed.cs" />
     <Compile Include="Placeable\ResourceBay\OnOpened.cs" />
@@ -1467,6 +1468,7 @@
     <EmbeddedResource Include="Data\Migrations\2018-11-12.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-12.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-12.3.sql" />
+    <EmbeddedResource Include="Data\Migrations\2018-11-12.4.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-07.1.sql" />

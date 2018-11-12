@@ -158,5 +158,10 @@ namespace SWLOR.Game.Server.Service
                 _nwnxPlayer.SetVisibilityOverride(player, target, (int)PlayerVisibilityType.Hidden);
         }
 
+        public void AdjustVisibility(NWPlayer player, string targetGUID, bool isVisible)
+        {
+            var obj = _appCache.VisibilityObjects.Single(x => x.Key == new Guid(targetGUID));
+            AdjustVisibility(player, obj.Value, isVisible);
+        }
     }
 }

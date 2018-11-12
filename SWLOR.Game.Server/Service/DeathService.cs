@@ -18,16 +18,19 @@ namespace SWLOR.Game.Server.Service
         private readonly INWScript _;
         private readonly IRandomService _random;
         private readonly IDurabilityService _durability;
+        private readonly IAreaService _area;
 
         public DeathService(IDataService data, 
             INWScript script,
             IRandomService random,
-            IDurabilityService durability)
+            IDurabilityService durability,
+            IAreaService area)
         {
             _data = data;
             _ = script;
             _random = random;
             _durability = durability;
+            _area = area;
         }
         
 
@@ -72,7 +75,23 @@ namespace SWLOR.Game.Server.Service
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectResurrection(), oPC.Object);
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(amount), oPC.Object);
 
+            NWArea area = oPC.Area;
+            
             TeleportPlayerToBindPoint(oPC);
+
+            // If player is the last person in an instance, destroy the instance.
+            if (area.IsInstance)
+            {
+                int playersInArea = NWModule.Get().Players.Count(x => x.Area == oPC.Area && x != oPC);
+
+                if (playersInArea <= 0)
+                {
+                    _.DelayCommand(12.0f, () =>
+                    {
+                        _area.DestroyAreaInstance(area);
+                    }); 
+                }
+            }
         }
         
 

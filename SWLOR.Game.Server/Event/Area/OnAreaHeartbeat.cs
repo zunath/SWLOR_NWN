@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Event.Area
             NWArea area = Object.OBJECT_SELF;
             if(area.GetLocalInt("HIDE_MINIMAP") == NWScript.TRUE)
             {
-                var players = NWModule.Get().Players.Where(x => x.Area.Equals(area));
+                var players = NWModule.Get().Players.Where(x => x.Area.Equals(area) && x.IsPlayer);
 
                 foreach(var player in players)
                 {

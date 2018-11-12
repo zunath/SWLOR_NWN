@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
-            NWPlaceable door = (NWPlaceable)GetDialogTarget();
+            NWPlaceable door = GetDialogTarget().Object;
             var structureID = new Guid(door.GetLocalString("PC_BASE_STRUCTURE_ID"));
             bool canEnterBuilding = _perm.HasStructurePermission(GetPC(), structureID, StructurePermission.CanEnterBuilding);
 
@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Conversation
         private void DoEnterBuilding()
         {
             NWPlayer oPC = GetPC();
-            NWPlaceable door = (NWPlaceable)GetDialogTarget();
+            NWPlaceable door = GetDialogTarget().Object;
             string pcBaseStructureID = door.GetLocalString("PC_BASE_STRUCTURE_ID");
             
             if (string.IsNullOrWhiteSpace(pcBaseStructureID))
@@ -155,7 +155,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void DoKnockOnDoor()
         {
-            NWPlaceable door = (NWPlaceable)GetDialogTarget();
+            NWPlaceable door = GetDialogTarget().Object;
             Guid structureID = new Guid(door.GetLocalString("PC_BASE_STRUCTURE_ID"));
             NWArea instance = GetAreaInstance(structureID);
 

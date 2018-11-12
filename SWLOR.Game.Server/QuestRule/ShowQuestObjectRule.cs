@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.QuestRule
             {
                 if (string.IsNullOrWhiteSpace(args[index])) return;
 
-                Guid visibilityObjectID = new Guid(args[index]);
+                string visibilityObjectID = args[index];
 
                 var obj = _cache.VisibilityObjects.Single(x => x.Key == visibilityObjectID).Value;
                 _ovs.AdjustVisibility(player, obj, true);

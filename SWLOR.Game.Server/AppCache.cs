@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server
         public Dictionary<Guid, CustomData> CustomObjectData { get; set; } 
         public Dictionary<string, NWCreature> NPCBehaviours { get; set; }
         public Dictionary<NWArea, AreaSpawn> AreaSpawns { get; set; }
-        public Dictionary<Guid, NWObject> VisibilityObjects { get; set; }
+        public Dictionary<string, NWObject> VisibilityObjects { get; set; }
         public List<Guid> PCEffectsForRemoval { get; set; }
         public List<NWObject> ConnectedDMs { get; set; }
 
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server
             CustomObjectData = new Dictionary<Guid, CustomData>();
             NPCBehaviours = new Dictionary<string, NWCreature>();
             AreaSpawns = new Dictionary<NWArea, AreaSpawn>();
-            VisibilityObjects = new Dictionary<Guid, NWObject>();
+            VisibilityObjects = new Dictionary<string, NWObject>();
             PCEffectsForRemoval = new List<Guid>();
             ConnectedDMs = new List<NWObject>();
             

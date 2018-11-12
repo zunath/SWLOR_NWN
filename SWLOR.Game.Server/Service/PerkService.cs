@@ -184,7 +184,8 @@ namespace SWLOR.Game.Server.Service
                 // Check the player's quest completion status against the perk requirements.
                 foreach (var questReq in questRequirements)
                 {
-                    var pcQuest = _data.SingleOrDefault<PCQuestStatus>(q => q.QuestID == questReq.RequiredQuestID);
+                    var pcQuest = _data.SingleOrDefault<PCQuestStatus>(q => q.PlayerID == player.GlobalID && 
+                                                                            q.QuestID == questReq.RequiredQuestID);
                     if (pcQuest == null || pcQuest.CompletionDate == null)
                         return false;
                 }

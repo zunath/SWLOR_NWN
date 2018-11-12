@@ -289,6 +289,8 @@ namespace SWLOR.Game.Server.Service
                 case AreaSector.Southeast: dbArea.SoutheastOwner = player.GlobalID; break;
             }
 
+            _data.SubmitDataChange(dbArea, DatabaseActionType.Update);
+
             PCBase pcBase = new PCBase
             {
                 AreaResref = dbArea.Resref,
@@ -513,7 +515,8 @@ namespace SWLOR.Game.Server.Service
 
             if (buildingType == BuildingType.Exterior)
             {
-                var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == pcBaseGUID);
+                var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == pcBase.ID).ToList();
+                
                 bool hasControlTower = structures
                                            .SingleOrDefault(x =>
                                            {
@@ -648,6 +651,8 @@ namespace SWLOR.Game.Server.Service
             else if (pcBase.Sector == AreaSector.Northwest) dbArea.NorthwestOwner = null;
             else if (pcBase.Sector == AreaSector.Southeast) dbArea.SoutheastOwner = null;
             else if (pcBase.Sector == AreaSector.Southwest) dbArea.SouthwestOwner = null;
+
+            _data.SubmitDataChange(dbArea, DatabaseActionType.Update);
         }
 
         public void ApplyCraftedItemLocalVariables(NWItem item, BaseStructure structure)

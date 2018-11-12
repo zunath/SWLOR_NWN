@@ -151,7 +151,6 @@ namespace SWLOR.Game.Server.Service
         
         public string OnModuleExamine(string existingDescription, NWPlayer examiner, NWObject examinedObject)
         {
-            if (!examiner.IsPlayer) return existingDescription;
             if (examinedObject.ObjectType != OBJECT_TYPE_ITEM) return existingDescription;
 
             NWItem examinedItem = (examinedObject.Object);
@@ -163,8 +162,7 @@ namespace SWLOR.Game.Server.Service
             }
             if (examinedItem.AssociatedSkillType > 0)
             {
-                PCSkill pcSkill = _data.Single<PCSkill>(x => x.PlayerID == examiner.GlobalID && x.SkillID == (int) examinedItem.AssociatedSkillType);
-                Skill skill = _data.Get<Skill>(pcSkill.SkillID);
+                Skill skill = _data.Get<Skill>((int)examinedItem.AssociatedSkillType);
                 description += _color.Orange("Associated Skill: ") + skill.Name + "\n";
             }
             if (examinedItem.CustomAC > 0)

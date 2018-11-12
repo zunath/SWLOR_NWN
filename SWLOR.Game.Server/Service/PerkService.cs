@@ -120,9 +120,9 @@ namespace SWLOR.Game.Server.Service
             int type = oItem.BaseItemType;
             var pcPerks = _data.Where<PCPerk>(x =>
             {
-                // Only pull back perks which have an execution type.
+                // Only pull back perks which have a Shield On Hit execution type.
                 var perk = _data.Get<Data.Entity.Perk>(x.PerkID);
-                if (perk.ExecutionTypeID == (int) PerkExecutionType.None)
+                if (perk.ExecutionTypeID != (int) PerkExecutionType.ShieldOnHit)
                     return false;
 
                 // If player's effective level is zero, it's not in effect.
@@ -141,12 +141,9 @@ namespace SWLOR.Game.Server.Service
 
                 App.ResolveByInterface<IPerk>("Perk." + perk.ScriptName, (perkAction) =>
                 {
-                    if (perk.ExecutionTypeID == (int)PerkExecutionType.ShieldOnHit)
+                    if (type == BASE_ITEM_SMALLSHIELD || type == BASE_ITEM_LARGESHIELD || type == BASE_ITEM_TOWERSHIELD)
                     {
-                        if (type == BASE_ITEM_SMALLSHIELD || type == BASE_ITEM_LARGESHIELD || type == BASE_ITEM_TOWERSHIELD)
-                        {
-                            perkAction.OnImpact(oPC, oItem, pcPerk.PerkLevel);
-                        }
+                        perkAction.OnImpact(oPC, oItem, pcPerk.PerkLevel);
                     }
                 });
                 

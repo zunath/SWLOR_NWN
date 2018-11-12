@@ -40,7 +40,26 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             if (DateTime.UtcNow >= pcBase.DateFuelEnds && pcBase.Fuel > 0)
             {
                 pcBase.Fuel--;
-                pcBase.DateFuelEnds = DateTime.UtcNow.AddMinutes(30);
+                BaseStructure towerStructure = _data.Single<BaseStructure>(x => x.ID == structure.BaseStructureID);
+                int fuelRating = towerStructure.FuelRating;
+                int minutes;
+
+                switch (fuelRating)
+                {
+                    case 1: // Small
+                        minutes = 45;
+                        break;
+                    case 2: // Medium
+                        minutes = 15;
+                        break;
+                    case 3: // Large
+                        minutes = 5;
+                        break;
+                    default:
+                        throw new Exception("Invalid fuel rating value: " + fuelRating);
+                }
+
+                pcBase.DateFuelEnds = DateTime.UtcNow.AddMinutes(minutes);
 
                 // If a player is manipulating fuel, look for a fuel item and reduce its stack size or destroy it
                 NWPlaceable bay = tower.GetLocalObject("CONTROL_TOWER_FUEL_BAY");

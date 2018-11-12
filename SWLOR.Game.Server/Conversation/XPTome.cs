@@ -125,7 +125,7 @@ namespace SWLOR.Game.Server.Conversation
             if (vm.Item != null && vm.Item.IsValid)
             {
                 int xp = vm.Item.GetLocalInt("XP_TOME_AMOUNT");
-                _skill.GiveSkillXP(GetPC(), vm.SkillID, xp);
+                _skill.GiveSkillXP(GetPC(), vm.SkillID, xp, false);
                 vm.Item.Destroy();
             }
 

@@ -1,6 +1,6 @@
 ﻿using SWLOR.Game.Server.GameObject;
 
-namespace SWLOR.Game.Server.Perk.Weaponsmith
+namespace SWLOR.Game.Server.Perk.Engineering
 {
     public class LightsaberBlueprints : IPerk
     {

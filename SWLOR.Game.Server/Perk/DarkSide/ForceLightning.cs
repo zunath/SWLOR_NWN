@@ -141,7 +141,7 @@ namespace SWLOR.Game.Server.Perk.DarkSide
 
             player.AssignCommand(() =>
             {
-                Effect damage = _.EffectDamage(amount);
+                Effect damage = _.EffectDamage(amount, DAMAGE_TYPE_ELECTRICAL);
                 _.ApplyEffectToObject(DURATION_TYPE_INSTANT, damage, target);
             });
 
@@ -152,8 +152,11 @@ namespace SWLOR.Game.Server.Perk.DarkSide
 
             _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.DarkSideAbilities, target.Object);
 
-            Effect vfx = _.EffectVisualEffect(VFX_IMP_LIGHTNING_S);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, target);
+            player.AssignCommand(() =>
+            {
+                Effect vfx = _.EffectVisualEffect(VFX_BEAM_LIGHTNING);
+                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, target);
+            });
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

@@ -70,8 +70,8 @@ namespace SWLOR.Game.Server.Service
         
         public void OnModuleUseFeat()
         {
-            NWPlayer pc = (Object.OBJECT_SELF);
-            NWCreature target = (_nwnxEvents.OnFeatUsed_GetTarget().Object);
+            NWPlayer pc = Object.OBJECT_SELF;
+            NWCreature target = _nwnxEvents.OnFeatUsed_GetTarget().Object;
             int featID = _nwnxEvents.OnFeatUsed_GetFeatID();
             Data.Entity.Perk perk = _data.GetAll<Data.Entity.Perk>().SingleOrDefault(x => x.FeatID == featID);
             if (perk == null) return;
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (perkAction.IsHostile() && target.IsPlayer)
                 {
-                    if (!_pvpSanctuary.IsPVPAttackAllowed(pc, (target.Object))) return;
+                    if (!_pvpSanctuary.IsPVPAttackAllowed(pc, target.Object)) return;
                 }
 
                 if (pc.Area.Resref != target.Area.Resref ||
@@ -229,13 +229,13 @@ namespace SWLOR.Game.Server.Service
             if (itemBonus < 0)
             {
                 float activationBonus = Math.Abs(itemBonus) * 0.01f;
-                activationTime = activationTime - (activationTime * activationBonus);
+                activationTime = activationTime - activationTime * activationBonus;
             }
             // Activation Penalty % - Increase activation time.
             else if (itemBonus > 0)
             {
                 float activationPenalty = Math.Abs(itemBonus) * 0.01f;
-                activationTime = activationTime + (activationTime * activationPenalty);
+                activationTime = activationTime + activationTime * activationPenalty;
             }
 
             if (baseActivationTime > 0f && activationTime < 0.5f)
@@ -388,7 +388,7 @@ namespace SWLOR.Game.Server.Service
 
         public void OnHitCastSpell(NWPlayer oPC)
         {
-            NWObject oTarget = (_.GetSpellTargetObject());
+            NWObject oTarget = _.GetSpellTargetObject();
             HandleGrenadeProficiency(oPC, oTarget);
             HandlePlasmaCellPerk(oPC, oTarget);
             int activeWeaponSkillID = oPC.GetLocalInt("ACTIVE_WEAPON_SKILL");
@@ -405,7 +405,7 @@ namespace SWLOR.Game.Server.Service
                     
                     if (oTarget.IsNPC)
                     {
-                        ApplyEnmity(oPC, (oTarget.Object), perk);
+                        ApplyEnmity(oPC, oTarget.Object, perk);
                     }
                 }
                 else oPC.SendMessage(script.CannotCastSpellMessage(oPC, oTarget) ?? "That ability cannot be used at this time.");
@@ -529,12 +529,12 @@ namespace SWLOR.Game.Server.Service
         private void HandleBattlemagePerk()
         {
             DamageData data = _nwnxDamage.GetDamageEventData();
-            NWObject target = (Object.OBJECT_SELF);
+            NWObject target = Object.OBJECT_SELF;
             if (!data.Damager.IsPlayer || !target.IsNPC) return;
             if (_.GetHasFeat((int)CustomFeatType.Battlemage, data.Damager.Object) == FALSE) return;
 
-            NWPlayer player = (data.Damager.Object);
-            NWItem weapon = (_.GetLastWeaponUsed(player.Object));
+            NWPlayer player = data.Damager.Object;
+            NWItem weapon = _.GetLastWeaponUsed(player.Object);
             if (weapon.CustomItemType != CustomItemType.Baton) return;
             if (player.Chest.CustomItemType != CustomItemType.ForceArmor) return;
 
@@ -579,8 +579,8 @@ namespace SWLOR.Game.Server.Service
 
             if (damager.IsPlayer && sneakAttackType > 0)
             {
-                NWPlayer player = (damager.Object);
-                NWCreature target = (Object.OBJECT_SELF);
+                NWPlayer player = damager.Object;
+                NWCreature target = Object.OBJECT_SELF;
                 int perkRank = _perk.GetPCPerkByID(damager.GlobalID, (int)PerkType.SneakAttack).PerkLevel;
                 int perkBonus = 1;
 
@@ -598,7 +598,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
-                float damageRate = 1.0f + perkRate + (effectiveStats.SneakAttack * 0.05f);
+                float damageRate = 1.0f + perkRate + effectiveStats.SneakAttack * 0.05f;
                 data.Base = (int)(data.Base * damageRate);
 
                 if (target.IsNPC)
@@ -641,8 +641,11 @@ namespace SWLOR.Game.Server.Service
             DamageData data = _nwnxDamage.GetDamageEventData();
             NWObject damager = data.Damager;
             bool isActive = damager.GetLocalInt("RECOVERY_BLAST_ACTIVE") == TRUE;
-            if (!isActive) return;
+            damager.DeleteLocalInt("RECOVERY_BLAST_ACTIVE");
+            NWItem weapon = _.GetLastWeaponUsed(damager.Object);
 
+            if (!isActive || weapon.CustomItemType != CustomItemType.BlasterRifle) return;
+            
             data.Bludgeoning = 0;
             data.Pierce = 0;
             data.Slash = 0;

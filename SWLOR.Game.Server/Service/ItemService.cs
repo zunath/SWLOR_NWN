@@ -281,6 +281,10 @@ namespace SWLOR.Game.Server.Service
             {
                 description += _color.Orange("Base Attack Bonus: ") + examinedItem.BaseAttackBonus + "\n";
             }
+            if (examinedItem.SneakAttackBonus > 0)
+            {
+                description += _color.Orange("Sneak Attack Bonus: ") + examinedItem.SneakAttackBonus + "\n";
+            }
             if (examinedItem.DamageBonus > 0)
             {
                 description += _color.Orange("Damage Bonus: ") + examinedItem.DamageBonus + "\n";

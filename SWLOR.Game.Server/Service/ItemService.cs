@@ -715,7 +715,6 @@ namespace SWLOR.Game.Server.Service
                 BASE_ITEM_GREATSWORD,
                 BASE_ITEM_HALBERD,
                 BASE_ITEM_HEAVYFLAIL,
-                BASE_ITEM_QUARTERSTAFF,
                 BASE_ITEM_SCYTHE,
                 BASE_ITEM_TRIDENT,
                 BASE_ITEM_WARHAMMER,
@@ -732,7 +731,8 @@ namespace SWLOR.Game.Server.Service
             int[] martialArtsTypes =
             {
                 BASE_ITEM_BRACER,
-                BASE_ITEM_GLOVES
+                BASE_ITEM_GLOVES,
+                BASE_ITEM_QUARTERSTAFF
             };
 
             int[] firearmTypes =

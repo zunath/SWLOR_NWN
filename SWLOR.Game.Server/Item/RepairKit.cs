@@ -68,8 +68,10 @@ namespace SWLOR.Game.Server.Item
                 case CustomItemType.MartialArtWeapon:
                 case CustomItemType.BlasterPistol:
                 case CustomItemType.BlasterRifle:
-                case CustomItemType.Lightsaber:
                     return SkillType.Weaponsmith;
+                    
+                case CustomItemType.Lightsaber:
+                    return SkillType.Engineering;
             }
 
             return SkillType.Unknown;

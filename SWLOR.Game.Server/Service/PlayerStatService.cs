@@ -525,7 +525,7 @@ namespace SWLOR.Game.Server.Service
                     break;
                 case CustomItemType.Lightsaber:
                     proficiencyPerk = PerkType.LightsaberProficiency;
-                    proficiencySkill = SkillType.OneHanded;
+                    proficiencySkill = SkillType.Lightsaber;
                     break;
             }
 

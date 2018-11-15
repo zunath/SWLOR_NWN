@@ -16,7 +16,7 @@
         ForceArmor = 11,
         Weaponsmith = 12,
         Armorsmith = 13,
-        // 14 is free
+        Lightsaber = 14,
         Fabrication = 15,
         Cooking = 16,
         Medicine = 17,

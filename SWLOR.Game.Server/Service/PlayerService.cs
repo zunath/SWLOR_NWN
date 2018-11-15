@@ -105,10 +105,6 @@ namespace SWLOR.Game.Server.Service
                 _durability.SetMaxDurability(knife, 5);
                 _durability.SetDurability(knife, 5);
                 
-                NWItem darts = (_.CreateItemOnObject("nw_wthdt001", player, 50)); // 50x Dart
-                darts.Name = "Starting Darts";
-                darts.IsCursed = true;
-
                 NWItem book = (_.CreateItemOnObject("player_guide", player));
                 book.Name = player.Name + "'s Player Guide";
                 book.IsCursed = true;

@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Conversation
                 "View Perks",
                 "View Blueprints",
                 "View Key Items",
-                "Modify Clothes",
+                "Modify Item Appearance",
                 "Character Management",
                 "Open Trash Can (Destroy Items)");
 
@@ -91,9 +91,9 @@ namespace SWLOR.Game.Server.Conversation
                         case 5:
                             SwitchConversation("KeyItems");
                             break;
-                        // Modify Clothes
+                        // Modify Item Appearance
                         case 6:
-                            player.AssignCommand(() => _.ActionStartConversation(player.Object, "x0_skill_ctrap", 1, 0));
+                            SwitchConversation("ModifyItemAppearance");
                             break;
                         // Character Management
                         case 7:

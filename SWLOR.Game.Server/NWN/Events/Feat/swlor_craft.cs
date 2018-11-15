@@ -5,13 +5,13 @@ using SWLOR.Game.Server.Event.Feat;
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    internal class rest_menu
+    internal class swlor_craft
 #pragma warning restore IDE1006 // Naming Styles
     {
         // ReSharper disable once UnusedMember.Local
         private static void Main()
         {
-            App.RunEvent<OpenRestMenu>();
+            App.RunEvent<OnUseCraftingFeat>();
         }
     }
 }

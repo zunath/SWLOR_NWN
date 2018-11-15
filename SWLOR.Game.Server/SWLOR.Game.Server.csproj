@@ -176,6 +176,7 @@
     <Compile Include="Conversation\KeyItems.cs" />
     <Compile Include="Conversation\LockedDoor.cs" />
     <Compile Include="Conversation\ManageLease.cs" />
+    <Compile Include="Conversation\ModifyItemAppearance.cs" />
     <Compile Include="Conversation\Outfit.cs" />
     <Compile Include="Conversation\PerkRefund.cs" />
     <Compile Include="Conversation\PlaceStructure.cs" />
@@ -441,6 +442,7 @@
     <Compile Include="Event\Delayed\CraftCreateItem.cs" />
     <Compile Include="Event\Delayed\FinishAbilityUse.cs" />
     <Compile Include="Event\Delayed\FinishActionItem.cs" />
+    <Compile Include="Event\Feat\OnUseCraftingFeat.cs" />
     <Compile Include="Event\Legacy\LegacyJVMItemEvent.cs" />
     <Compile Include="Event\Module\OnModuleApplyDamage.cs" />
     <Compile Include="Event\Module\OnModuleAttack.cs" />
@@ -763,6 +765,7 @@
     <Compile Include="NWN\Events\Conversation\warp_to_wp.cs" />
     <Compile Include="NWN\Events\Dialog\dialog_action_b.cs" />
     <Compile Include="NWN\Events\Dialog\dialog_appears_b.cs" />
+    <Compile Include="NWN\Events\Feat\swlor_craft.cs" />
     <Compile Include="NWN\Events\Module\mod_on_applydmg.cs" />
     <Compile Include="NWN\Events\Module\mod_on_attack.cs" />
     <Compile Include="NWN\Events\Module\mod_on_nwnxchat.cs" />
@@ -910,9 +913,7 @@
     <Compile Include="Event\Dialog\AppearsWhen.cs" />
     <Compile Include="Event\Dialog\DialogEnd.cs" />
     <Compile Include="Event\Dialog\DialogStart.cs" />
-    <Compile Include="Event\Feat\AutoFollow.cs" />
     <Compile Include="Event\Feat\OnHitCastSpell.cs" />
-    <Compile Include="Event\Feat\OpenRestMenu.cs" />
     <Compile Include="Event\IRegisteredEvent.cs" />
     <Compile Include="Event\Legacy\LegacyJVMEvent.cs" />
     <Compile Include="Event\Module\OnModuleAcquireItem.cs" />
@@ -999,7 +1000,6 @@
     <Compile Include="NWN\Events\Dialog\dialog_appears_2.cs" />
     <Compile Include="NWN\Events\Dialog\dialog_appears_3.cs" />
     <Compile Include="NWN\Events\Dialog\dialog_appears_1.cs" />
-    <Compile Include="NWN\Events\Feat\auto_follow.cs" />
     <Compile Include="NWN\Events\Feat\onhit_castspell.cs" />
     <Compile Include="NWN\Events\Legacy\jvm_script_5.cs" />
     <Compile Include="NWN\Events\Legacy\jvm_script_4.cs" />
@@ -1147,7 +1147,6 @@
     <Compile Include="NWN\Events\Dialog\dialog_appears_0.cs" />
     <Compile Include="NWN\Events\Dialog\dialog_end.cs" />
     <Compile Include="NWN\Events\Dialog\dialog_start.cs" />
-    <Compile Include="NWN\Events\Feat\rest_menu.cs" />
     <Compile Include="NWN\Events\Module\mod_on_acquire.cs" />
     <Compile Include="NWN\Events\Module\mod_on_activate.cs" />
     <Compile Include="NWN\Events\Module\mod_on_chat.cs" />

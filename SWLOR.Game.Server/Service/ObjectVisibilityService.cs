@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var visibility = _data.SingleOrDefault<PCObjectVisibility>(x => x.PlayerID == player.GlobalID && x.VisibilityObjectID.ToString() == visibilityObjectID);
+            var visibility = _data.SingleOrDefault<PCObjectVisibility>(x => x.PlayerID == player.GlobalID && x.VisibilityObjectID == visibilityObjectID);
             DatabaseActionType action = DatabaseActionType.Update;
 
             if (visibility == null)

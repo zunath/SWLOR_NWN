@@ -250,14 +250,14 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
-        public void DoPerkUpgrade(NWPlayer oPC, int perkID)
+        public void DoPerkUpgrade(NWPlayer oPC, int perkID, bool freeUpgrade = false)
         {
             var perk = _data.Single<Data.Entity.Perk>(x => x.ID == perkID);
             var perkLevels = _data.Where<PerkLevel>(x => x.PerkID == perkID);
             var pcPerk = _data.SingleOrDefault<PCPerk>(x => x.PlayerID == oPC.GlobalID && x.PerkID == perkID);
             var player = _data.Single<Player>(x => x.ID == oPC.GlobalID);
 
-            if (CanPerkBeUpgraded(oPC, perkID))
+            if (freeUpgrade || CanPerkBeUpgraded(oPC, perkID))
             {
                 DatabaseActionType action = DatabaseActionType.Update;
                 if (pcPerk == null)
@@ -276,10 +276,13 @@ namespace SWLOR.Game.Server.Service
                 if (nextPerkLevel == null) return;
 
                 pcPerk.PerkLevel++;
-                player.UnallocatedSP -= nextPerkLevel.Price;
-
                 _data.SubmitDataChange(pcPerk, action);
-                _data.SubmitDataChange(player, DatabaseActionType.Update);
+
+                if (!freeUpgrade)
+                {
+                    player.UnallocatedSP -= nextPerkLevel.Price;
+                    _data.SubmitDataChange(player, DatabaseActionType.Update);
+                }
                 
                 // If a perk is activatable, create the item on the PC.
                 // Remove any existing cast spell unique power properties and add the correct one based on the DB flag.
@@ -363,9 +366,9 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public void DoPerkUpgrade(NWPlayer player, PerkType perkType)
+        public void DoPerkUpgrade(NWPlayer player, PerkType perkType, bool freeUpgrade = false)
         {
-            DoPerkUpgrade(player, (int)perkType);
+            DoPerkUpgrade(player, (int)perkType, freeUpgrade);
         }
 
         public string OnModuleExamine(string existingDescription, NWPlayer examiner, NWObject examinedObject)

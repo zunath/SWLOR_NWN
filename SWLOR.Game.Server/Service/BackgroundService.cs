@@ -68,29 +68,29 @@ namespace SWLOR.Game.Server.Service
                     item1Resref = "greatsword_s";
                     break;
                 case BackgroundType.Armorsmith:
-                    _perk.DoPerkUpgrade(oPC, PerkType.ArmorBlueprints);
+                    _perk.DoPerkUpgrade(oPC, PerkType.ArmorBlueprints, true);
                     break;
                 case BackgroundType.Weaponsmith:
-                    _perk.DoPerkUpgrade(oPC, PerkType.WeaponBlueprints);
+                    _perk.DoPerkUpgrade(oPC, PerkType.WeaponBlueprints, true);
                     break;
                 case BackgroundType.Chef:
-                    _perk.DoPerkUpgrade(oPC, PerkType.FoodRecipes);
+                    _perk.DoPerkUpgrade(oPC, PerkType.FoodRecipes, true);
                     break;
                 case BackgroundType.Engineer:
-                    _perk.DoPerkUpgrade(oPC, PerkType.EngineeringBlueprints);
+                    _perk.DoPerkUpgrade(oPC, PerkType.EngineeringBlueprints, true);
                     break;
                 case BackgroundType.Fabricator:
-                    _perk.DoPerkUpgrade(oPC, PerkType.FabricationBlueprints);
+                    _perk.DoPerkUpgrade(oPC, PerkType.FabricationBlueprints, true);
                     break;
                 case BackgroundType.Harvester:
                     item1Resref = "scanner_r_h";
                     item2Resref = "harvest_r_h";
                     break;
                 case BackgroundType.Scavenger:
-                    _perk.DoPerkUpgrade(oPC, PerkType.ScavengingExpert);
+                    _perk.DoPerkUpgrade(oPC, PerkType.ScavengingExpert, true);
                     break;
                 case BackgroundType.Medic:
-                    _perk.DoPerkUpgrade(oPC, PerkType.ImmediateImprovement);
+                    _perk.DoPerkUpgrade(oPC, PerkType.ImmediateImprovement, true);
                     break;
                 case BackgroundType.Mandalorian:
                     item1Resref = "man_armor";

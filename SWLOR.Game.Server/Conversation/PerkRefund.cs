@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Conversation
         private readonly ICustomEffectService _customEffect;
         private readonly IPlayerStatService _stat;
         private readonly ITimeService _time;
+        private readonly IBackgroundService _background;
 
         public PerkRefund(
             INWScript script, 
@@ -37,7 +38,8 @@ namespace SWLOR.Game.Server.Conversation
             INWNXCreature nwnxCreature,
             ICustomEffectService customEffect,
             IPlayerStatService stat,
-            ITimeService time)
+            ITimeService time, 
+            IBackgroundService background)
             : base(script, dialog)
         {
             _data = data;
@@ -46,6 +48,7 @@ namespace SWLOR.Game.Server.Conversation
             _customEffect = customEffect;
             _stat = stat;
             _time = time;
+            _background = background;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -131,7 +134,12 @@ namespace SWLOR.Game.Server.Conversation
             var model = GetDialogCustomData<Model>();
             var pcPerk = _data.Single<PCPerk>(x => x.ID == model.PCPerkID);
             var perk = _data.Get<Data.Entity.Perk>(pcPerk.PerkID);
-            int refundAmount = _data.Where<PerkLevel>(x => x.PerkID == perk.ID && x.Level <= pcPerk.PerkLevel).Sum(x => x.Price);
+            var minimumLevel = 1;
+
+            if (IsGrantedByBackground((PerkType) perk.ID))
+                minimumLevel = 2;
+
+            int refundAmount = _data.Where<PerkLevel>(x => x.PerkID == perk.ID && x.Level <= pcPerk.PerkLevel && x.Level >= minimumLevel).Sum(x => x.Price);
 
             string header = _color.Green("Perk: ") + perk.Name + "\n";
             header += _color.Green("Level: ") + pcPerk.PerkLevel + "\n\n";
@@ -201,7 +209,12 @@ namespace SWLOR.Game.Server.Conversation
             var player = GetPC();
             var pcPerk = _data.Single<PCPerk>(x => x.ID == model.PCPerkID);
             var perk = _data.Get<Data.Entity.Perk>(pcPerk.PerkID);
-            var refundAmount = _data.Where<PerkLevel>(x => x.PerkID == perk.ID && x.Level <= pcPerk.PerkLevel).Sum(x => x.Price);
+            var minimumLevel = 1;
+
+            if (IsGrantedByBackground((PerkType) perk.ID))
+                minimumLevel = 2;
+
+            var refundAmount = _data.Where<PerkLevel>(x => x.PerkID == perk.ID && x.Level <= pcPerk.PerkLevel && x.Level >= minimumLevel).Sum(x => x.Price);
             var dbPlayer = _data.Single<Player>(x => x.ID == player.GlobalID);
             var scriptName = perk.ScriptName;
 
@@ -225,6 +238,9 @@ namespace SWLOR.Game.Server.Conversation
             _data.SubmitDataChange(pcPerk, DatabaseActionType.Delete);
             _data.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
 
+            // If perk refunded was one granted by a background bonus, we need to reapply it.
+            ReapplyBackgroundBonus((PerkType)pcPerk.PerkID);
+
             GetPC().FloatingText("Perk refunded! You reclaimed " + refundAmount + " SP.");
             model.TomeItem.Destroy();
 
@@ -232,6 +248,35 @@ namespace SWLOR.Game.Server.Conversation
             {
                 perkAction?.OnRemoved(player);
             });
+        }
+
+        private bool IsGrantedByBackground(PerkType perkType)
+        {
+            var player = GetPC();
+            var background = (BackgroundType)player.Class1;
+
+            if (
+                (background == BackgroundType.Armorsmith && perkType == PerkType.ArmorBlueprints) ||
+                (background == BackgroundType.Weaponsmith && perkType == PerkType.WeaponBlueprints) ||
+                (background == BackgroundType.Chef && perkType == PerkType.FoodRecipes) ||
+                (background == BackgroundType.Engineer && perkType == PerkType.EngineeringBlueprints) ||
+                (background == BackgroundType.Fabricator && perkType == PerkType.FabricationBlueprints) ||
+                (background == BackgroundType.Scavenger && perkType == PerkType.ScavengingExpert) ||
+                (background == BackgroundType.Medic && perkType == PerkType.ImmediateImprovement))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private void ReapplyBackgroundBonus(PerkType perkType)
+        {
+            var player = GetPC();
+            if (IsGrantedByBackground(perkType))
+            {
+                _background.ApplyBackgroundBonuses(player);
+            }
         }
 
         private void RemovePerkItem(Data.Entity.Perk perk)

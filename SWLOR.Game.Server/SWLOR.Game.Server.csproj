@@ -851,7 +851,7 @@
     <Compile Include="Perk\Engineering\SpeedyRefining.cs" />
     <Compile Include="Perk\MartialArts\MartialArtsProficiency.cs" />
     <Compile Include="Perk\OneHanded\BladePowerAttack.cs" />
-    <Compile Include="Perk\OneHanded\LightsaberProficiency.cs" />
+    <Compile Include="Perk\Lightsaber\LightsaberProficiency.cs" />
     <Compile Include="Perk\OneHanded\VibrobladeProficiency.cs" />
     <Compile Include="Perk\OneHanded\BluntPowerAttack.cs" />
     <Compile Include="Perk\OneHanded\BatonProficiency.cs" />
@@ -1472,6 +1472,7 @@
     <EmbeddedResource Include="Data\Migrations\2018-11-12.5.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-12.6.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-13.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2018-11-15.1.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-07.1.sql" />

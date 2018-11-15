@@ -703,8 +703,7 @@ namespace SWLOR.Game.Server.Service
                 BASE_ITEM_SCIMITAR,
                 BASE_ITEM_SHORTSWORD,
                 BASE_ITEM_SICKLE,
-                BASE_ITEM_WHIP,
-                CustomBaseItemType.Lightsaber
+                BASE_ITEM_WHIP
             };
 
             int[] twoHandedTypes =
@@ -724,8 +723,7 @@ namespace SWLOR.Game.Server.Service
             int[] twinBladeTypes =
             {
                 BASE_ITEM_DOUBLEAXE,
-                BASE_ITEM_TWOBLADEDSWORD,
-                CustomBaseItemType.Saberstaff
+                BASE_ITEM_TWOBLADEDSWORD
             };
 
             int[] martialArtsTypes =
@@ -762,12 +760,19 @@ namespace SWLOR.Game.Server.Service
                 BASE_ITEM_TOWERSHIELD
             };
 
+            int[] lightsaberTypes =
+            {
+                CustomBaseItemType.Lightsaber,
+                CustomBaseItemType.Saberstaff
+            };
+
             if (oneHandedTypes.Contains(type)) skillType = SkillType.OneHanded;
             else if (twoHandedTypes.Contains(type)) skillType = SkillType.TwoHanded;
             else if (twinBladeTypes.Contains(type)) skillType = SkillType.TwinBlades;
             else if (martialArtsTypes.Contains(type)) skillType = SkillType.MartialArts;
             else if (firearmTypes.Contains(type)) skillType = SkillType.Firearms;
             else if (throwingTypes.Contains(type)) skillType = SkillType.Throwing;
+            else if (lightsaberTypes.Contains(type)) skillType = SkillType.Lightsaber;
             else if (item.CustomItemType == CustomItemType.HeavyArmor) skillType = SkillType.HeavyArmor;
             else if (item.CustomItemType == CustomItemType.LightArmor) skillType = SkillType.LightArmor;
             else if (item.CustomItemType == CustomItemType.ForceArmor) skillType = SkillType.ForceArmor;

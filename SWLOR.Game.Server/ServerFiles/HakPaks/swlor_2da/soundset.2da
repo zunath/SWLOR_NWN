@@ -920,8 +920,8 @@
 916   Hssiss                   Hssiss         16856931   0        0      
 917   Hutt                     Hutt           16856932   0        0      
 918   Ithorian                 Ithorian       16856933   0        0      
-919   KathHoundA               KathHoundA     16856934   0        0      
-920   KathHoundB               KathHoundB     16856935   0        0      
+919   KathHoundA               KathHoundA     16856934   0        3      
+920   KathHoundB               KathHoundB     16856935   0        3      
 921   RodianMale               MaleRodian     16856936   0        0      
 922   MandalorianA             MandalorianA   16856937   0        0      
 923   MandalorianB             MandalorianB   16856938   0        0      
@@ -934,7 +934,7 @@
 930   SithF                    SithF          16856945   1        0      
 931   SithMale                 SithMale       16856946   0        0      
 932   SithSoldier              SithSoldier    16856947   0        0      
-933   SpaceShip                SpaceShip      16856948   0        0      
+933   SpaceShip                SpaceShip      16856948   0        3      
 934   Sullustan                Sullustan      16856949   0        0      
 935   TankDroid                TankDroid      16856950   0        0      
 936   ToughRodian              ToughRodian    16856951   0        0      

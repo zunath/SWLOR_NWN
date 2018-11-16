@@ -42,6 +42,13 @@ namespace SWLOR.Game.Server.Placeable.Drill
             Guid structureGUID = new Guid(structureID);
             PCBaseStructure structure = _data.Get<PCBaseStructure>(structureGUID);
             PCBase pcBase = _data.Get<PCBase>(structure.PCBaseID);
+            PCBaseStructure tower = _base.GetBaseControlTower(pcBase.ID);
+
+            // Check whether there's space in this tower.
+            int capacity = _base.CalculateResourceCapacity(pcBase.ID);
+            int count = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == tower.ID).Count() + 1;
+            if (count >= capacity) return false;
+
             BaseStructure baseStructure = _data.Get<BaseStructure>(structure.BaseStructureID);
             DateTime now = DateTime.UtcNow;
 
@@ -97,6 +104,13 @@ namespace SWLOR.Game.Server.Placeable.Drill
 
             var tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
             NWItem item = _.CreateItemOnObject(itemDetails.Resref, tempStorage, itemDetails.Quantity);
+
+            // Guard against invalid resrefs and missing items.
+            if (!item.IsValid)
+            {
+                Console.WriteLine("ERROR: Could not create base drill item with resref '" + itemDetails.Resref + "'. Is this item valid?");
+                return false;
+            }
 
             if (!string.IsNullOrWhiteSpace(itemDetails.SpawnRule))
             {

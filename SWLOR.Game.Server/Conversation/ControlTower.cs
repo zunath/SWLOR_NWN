@@ -14,21 +14,30 @@ namespace SWLOR.Game.Server.Conversation
 {
     public class ControlTower: ConversationBase
     {
+        private readonly IBaseService _base;
         private readonly IDataService _data;
         private readonly IBasePermissionService _perm;
         private readonly ISerializationService _serialization;
+        private readonly IColorTokenService _color;
+        private readonly ITimeService _time;
 
         public ControlTower(
             INWScript script, 
             IDialogService dialog,
             IDataService data,
             IBasePermissionService perm,
-            ISerializationService serialization) 
+            ISerializationService serialization,
+            IBaseService @base,
+            IColorTokenService color,
+            ITimeService time) 
             : base(script, dialog)
         {
             _data = data;
             _perm = perm;
             _serialization = serialization;
+            _base = @base;
+            _color = color;
+            _time = time;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -36,7 +45,7 @@ namespace SWLOR.Game.Server.Conversation
             PlayerDialog dialog = new PlayerDialog("MainPage");
 
             DialogPage mainPage = new DialogPage(
-                "What would you like to do with this control tower?",
+                "",
                 "Access Fuel Bay",
                 "Access Stronidium Bay",
                 "Access Resource Bay");
@@ -49,6 +58,46 @@ namespace SWLOR.Game.Server.Conversation
         {
             Guid structureID = new Guid(GetDialogTarget().GetLocalString("PC_BASE_STRUCTURE_ID"));
             PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.ID == structureID);
+            Guid pcBaseID = structure.PCBaseID;
+            PCBase pcBase = _data.Get<PCBase>(pcBaseID);
+
+            double currentCPU = _base.GetCPUInUse(pcBaseID);
+            double currentPower = _base.GetPowerInUse(pcBaseID);
+            double maxCPU = _base.GetMaxBaseCPU(pcBaseID);
+            double maxPower = _base.GetMaxBasePower(pcBaseID);
+
+            int currentReinforcedFuel = pcBase.ReinforcedFuel;
+            int currentFuel = pcBase.Fuel;
+            int currentResources = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structure.ID).Count();
+            int maxReinforcedFuel = _base.CalculateMaxReinforcedFuel(pcBaseID);
+            int maxFuel = _base.CalculateMaxFuel(pcBaseID);
+            int maxResources = _base.CalculateResourceCapacity(pcBaseID);
+
+            string time;
+            if (pcBase.DateFuelEnds > DateTime.UtcNow)
+            {
+                TimeSpan deltaTime = pcBase.DateFuelEnds - DateTime.UtcNow;
+                TimeSpan timeSpan = TimeSpan.FromMinutes(30.0f * currentFuel) + deltaTime;
+                time = _time.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false);
+
+                time = "Fuel will expire in " + time;
+            }
+            else
+            {
+                time = _color.Red("Fuel has expired.");
+            }
+
+             
+
+            string header = _color.Green("Power: ") + currentPower + " / " + maxPower + "\n";
+            header += _color.Green("CPU: ") + currentCPU + " / " + maxCPU + "\n";
+            header += _color.Green("Fuel: ") + currentFuel + " / " + maxFuel + "\n";
+            header += _color.Green("Reinforced Fuel: ") + currentReinforcedFuel + " / " + maxReinforcedFuel + "\n";
+            header += _color.Green("Resource Bay: ") + currentResources + " / " + maxResources + "\n";
+            header += time + "\n";
+            header += "What would you like to do with this control tower?";
+
+            SetPageHeader("MainPage", header);
 
             if (!_perm.HasBasePermission(GetPC(), structure.PCBaseID, BasePermission.CanManageBaseFuel))
             {

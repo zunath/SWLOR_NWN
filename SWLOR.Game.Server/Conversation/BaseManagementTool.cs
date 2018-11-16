@@ -563,8 +563,8 @@ namespace SWLOR.Game.Server.Conversation
             // Impound any fuel that's over the limit.
             if (structureType == BaseStructureType.StronidiumSilo || structureType == BaseStructureType.FuelSilo)
             {
-                int maxFuel = _base.CalculateMaxFuel(pcBase);
-                int maxReinforcedFuel = _base.CalculateMaxReinforcedFuel(pcBase);
+                int maxFuel = _base.CalculateMaxFuel(pcBase.ID);
+                int maxReinforcedFuel = _base.CalculateMaxReinforcedFuel(pcBase.ID);
 
                 if (pcBase.Fuel > maxFuel)
                 {
@@ -588,7 +588,7 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if (structureType == BaseStructureType.ResourceSilo)
             {
-                int maxResources = _base.CalculateResourceCapacity(pcBase);
+                int maxResources = _base.CalculateResourceCapacity(pcBase.ID);
                 var items = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == controlTower.ID).ToList();
 
                 while (items.Count > maxResources)

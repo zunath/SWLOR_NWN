@@ -159,3 +159,15 @@ VALUES ( @ID , -- PerkLevelID - int
          22 , -- SkillID - int
          40   -- RequiredRank - int
     )
+
+
+-- Set minimum resource storage values for small, medium, and large towers.
+UPDATE dbo.BaseStructure
+SET ResourceStorage = 10
+WHERE ID = 1
+UPDATE dbo.BaseStructure
+SET ResourceStorage = 15
+WHERE ID = 2
+UPDATE dbo.BaseStructure
+SET ResourceStorage = 20
+WHERE ID = 3

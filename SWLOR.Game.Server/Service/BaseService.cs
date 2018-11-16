@@ -399,6 +399,22 @@ namespace SWLOR.Game.Server.Service
                 });
         }
 
+        public double GetMaxBaseCPU(Guid pcBaseID)
+        {
+            var tower = GetBaseControlTower(pcBaseID);
+            var structure = _data.Get<BaseStructure>(tower.BaseStructureID);
+
+            return structure.CPU + (tower.StructureBonus * 2);
+        }
+
+        public double GetMaxBasePower(Guid pcBaseID)
+        {
+            var tower = GetBaseControlTower(pcBaseID);
+            var structure = _data.Get<BaseStructure>(tower.BaseStructureID);
+
+            return structure.Power + (tower.StructureBonus * 2);
+        }
+
         public string GetSectorOfLocation(NWLocation targetLocation)
         {
             NWArea area = targetLocation.Area;
@@ -796,16 +812,16 @@ namespace SWLOR.Game.Server.Service
             return (int)(controlTower.Durability * 300);
         }
 
-        public int CalculateMaxFuel(PCBase pcBase)
+        public int CalculateMaxFuel(Guid pcBaseID)
         {
             const int siloType = (int)BaseStructureType.FuelSilo;
-            PCBaseStructure tower = GetBaseControlTower(pcBase.ID);
+            PCBaseStructure tower = GetBaseControlTower(pcBaseID);
             var towerStructure = _data.Get<BaseStructure>(tower.BaseStructureID);
 
             float siloBonus = _data.Where<PCBaseStructure>(x =>
                                   {
                                       var baseStructure = _data.Get<BaseStructure>(x.BaseStructureID);
-                                      return x.PCBaseID == pcBase.ID && baseStructure.BaseStructureTypeID == siloType;
+                                      return x.PCBaseID == pcBaseID && baseStructure.BaseStructureTypeID == siloType;
                                   })
                                   .DefaultIfEmpty()
                                   .Sum(x =>
@@ -820,16 +836,16 @@ namespace SWLOR.Game.Server.Service
             return (int)(fuelMax + fuelMax * siloBonus);
         }
 
-        public int CalculateMaxReinforcedFuel(PCBase pcBase)
+        public int CalculateMaxReinforcedFuel(Guid pcBaseID)
         {
             const int siloType = (int) BaseStructureType.StronidiumSilo;
-            PCBaseStructure tower = GetBaseControlTower(pcBase.ID);
+            PCBaseStructure tower = GetBaseControlTower(pcBaseID);
             var towerBaseStructure = _data.Get<BaseStructure>(tower.BaseStructureID);
             float siloBonus = _data.Where<PCBaseStructure>
                                   (x =>
                                   {
                                       var baseStructure = _data.Get<BaseStructure>(x.BaseStructureID);
-                                      return x.PCBaseID == pcBase.ID &&
+                                      return x.PCBaseID == pcBaseID &&
                                              baseStructure.BaseStructureTypeID == siloType;
                                   })
                                   .DefaultIfEmpty()
@@ -846,17 +862,17 @@ namespace SWLOR.Game.Server.Service
             return (int)(fuelMax + fuelMax * siloBonus);
         }
 
-        public int CalculateResourceCapacity(PCBase pcBase)
+        public int CalculateResourceCapacity(Guid pcBaseID)
         {
             const int siloType = (int) BaseStructureType.ResourceSilo;
-            PCBaseStructure tower = GetBaseControlTower(pcBase.ID);
+            PCBaseStructure tower = GetBaseControlTower(pcBaseID);
             var towerBaseStructure = _data.Get<BaseStructure>(tower.BaseStructureID);
             float siloBonus = _data.Where<PCBaseStructure>
                                   (x =>
                                   {
                                       var baseStructure = _data.Get<BaseStructure>(x.BaseStructureID);
 
-                                      return x.PCBaseID == pcBase.ID &&
+                                      return x.PCBaseID == pcBaseID &&
                                              baseStructure.BaseStructureTypeID == siloType;
                                   })
                                   .DefaultIfEmpty()

@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             int maxFuel;
             if (stronidiumOnly)
             {
-                maxFuel = _base.CalculateMaxReinforcedFuel(pcBase);
+                maxFuel = _base.CalculateMaxReinforcedFuel(pcBase.ID);
                 if (fuelCount > maxFuel)
                 {
                     int returnAmount = fuelCount - maxFuel;
@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             }
             else
             {
-                maxFuel = _base.CalculateMaxFuel(pcBase);
+                maxFuel = _base.CalculateMaxFuel(pcBase.ID);
                 if (fuelCount > maxFuel)
                 {
                     int returnAmount = fuelCount - maxFuel;

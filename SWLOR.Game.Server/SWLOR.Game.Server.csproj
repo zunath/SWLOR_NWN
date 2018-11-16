@@ -788,6 +788,7 @@
     <Compile Include="Perk\DarkSide\DarkSpread.cs" />
     <Compile Include="Perk\DarkSide\DrainLife.cs" />
     <Compile Include="Perk\DarkSide\ForceLightning.cs" />
+    <Compile Include="Perk\Engineering\ElectronicRepair.cs" />
     <Compile Include="Perk\Engineering\EngineeringEfficiency.cs" />
     <Compile Include="Perk\Engineering\EngineeringOptimization.cs" />
     <Compile Include="Perk\Fabrication\FabricationBlueprints.cs" />

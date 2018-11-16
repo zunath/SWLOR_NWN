@@ -152,7 +152,9 @@
         EngineeringOptimization = 147,
         CookingOptimization = 148,
         WeaponRepair = 149,
-        ArmorRepair = 150
+        ArmorRepair = 150,
+        LightsaberBlueprints = 151,
+        ElectronicRepair = 152
     }
 
 }

@@ -66,11 +66,11 @@ namespace SWLOR.Game.Server.Item
                 case CustomItemType.Polearm:
                 case CustomItemType.TwinBlade:
                 case CustomItemType.MartialArtWeapon:
-                case CustomItemType.BlasterPistol:
-                case CustomItemType.BlasterRifle:
                     return SkillType.Weaponsmith;
                     
                 case CustomItemType.Lightsaber:
+                case CustomItemType.BlasterPistol:
+                case CustomItemType.BlasterRifle:
                     return SkillType.Engineering;
             }
 
@@ -149,6 +149,13 @@ namespace SWLOR.Game.Server.Item
                 if (_perk.GetPCPerkLevel(user.Object, PerkType.WeaponRepair) < techLevel)
                 {
                     return "Your level in the 'Weapon Repair' perk is too low to use this repair kit.";
+                }
+            }
+            else if (skillType == SkillType.Engineering)
+            {
+                if(_perk.GetPCPerkLevel(user.Object, PerkType.ElectronicRepair) < techLevel)
+                {
+                    return "Your level in the 'Electronic Repair' perk is too low to use this repair kit.";
                 }
             }
 

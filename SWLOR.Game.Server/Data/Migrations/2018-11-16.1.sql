@@ -28,3 +28,8 @@ WHERE ID IN (
 100, 101, 102
 
 )
+
+-- Move the lightsaber blueprint perk to the engineering perk category.
+UPDATE dbo.Perk
+SET PerkCategoryID = 33
+WHERE ID = 151

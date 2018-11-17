@@ -6,12 +6,12 @@ using SWLOR.Game.Server.NWNX.Contracts;
 
 namespace SWLOR.Game.Server.Perk.MartialArts
 {
-    public class DeflectArrows : IPerk
+    public class EvadeBlasterFire : IPerk
     {
         private readonly INWScript _;
         private readonly INWNXCreature _nwnxCreature;
 
-        public DeflectArrows(INWScript script,
+        public EvadeBlasterFire(INWScript script,
             INWNXCreature nwnxCreature)
         {
             _ = script;

@@ -784,6 +784,7 @@
     <Compile Include="Perk\Blaster\Tranquilizer.cs" />
     <Compile Include="Perk\Cooking\CookingEfficiency.cs" />
     <Compile Include="Perk\Cooking\CookingOptimization.cs" />
+    <Compile Include="Perk\DarkSide\Chainspell.cs" />
     <Compile Include="Perk\DarkSide\DarkHeal.cs" />
     <Compile Include="Perk\DarkSide\DarkSpread.cs" />
     <Compile Include="Perk\DarkSide\DrainLife.cs" />

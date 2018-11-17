@@ -169,3 +169,10 @@ VALUES ( 642 ,    -- ID - int
          0 ,    -- TertiaryMaximum - int
          178      -- BaseStructureID - int
     )
+
+
+-- Rename the Deflect Arrows perk to Evade Blaster Fire
+UPDATE dbo.Perk
+SET Name = 'Evade Blaster Fire',
+	ScriptName = 'MartialArts.EvadeBlasterFire'
+WHERE ID = 35

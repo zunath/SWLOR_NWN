@@ -849,7 +849,7 @@
     <Compile Include="Perk\LightSide\ForceBreach.cs" />
     <Compile Include="Perk\LightSide\ForceHeal.cs" />
     <Compile Include="Perk\MartialArts\CircleKick.cs" />
-    <Compile Include="Perk\MartialArts\DeflectArrows.cs" />
+    <Compile Include="Perk\MartialArts\EvadeBlasterFire.cs" />
     <Compile Include="Perk\Engineering\RefineryManagement.cs" />
     <Compile Include="Perk\Engineering\Refining.cs" />
     <Compile Include="Perk\Engineering\ProcessingEfficiency.cs" />

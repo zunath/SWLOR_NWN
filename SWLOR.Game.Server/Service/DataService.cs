@@ -75,7 +75,6 @@ namespace SWLOR.Game.Server.Service
             if (_cacheInitialized) return;
 
             Console.WriteLine("Initializing the cache...");
-            // Todo: We're caching everything right now to get up and running. Look into optimizations for PC objects and item storage later.
             GetAll<ApartmentBuilding>();
             // Note: Area and AreaWalkmesh get cached in the AreaService
             GetAll<Association>();

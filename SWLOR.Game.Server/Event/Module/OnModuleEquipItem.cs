@@ -47,8 +47,7 @@ namespace SWLOR.Game.Server.Event.Module
 
 
         // Players abuse a bug in NWN which allows them to gain an extra attack.
-        // To work around this I force them to clear all actions. There is a short delay to
-        // account for weapons like guns which auto-equip ammo.
+        // To work around this I force them to clear all actions.
         private void HandleEquipmentSwappingDelay()
         {
             NWPlayer oPC = (_.GetPCItemLastEquippedBy());

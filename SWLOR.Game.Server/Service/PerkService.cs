@@ -67,6 +67,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer oPC = (_.GetPCItemLastEquippedBy());
             NWItem oItem = (_.GetPCItemLastEquipped());
             if (!oPC.IsPlayer || !oPC.IsInitializedAsPlayer) return;
+            if (oPC.GetLocalInt("LOGGED_IN_ONCE") == FALSE) return;
 
             var executionPerks = GetPCPerksByExecutionType(oPC, PerkExecutionType.EquipmentBased);
             foreach (PCPerk pcPerk in executionPerks)

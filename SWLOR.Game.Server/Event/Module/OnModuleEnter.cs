@@ -2,6 +2,7 @@
 
 using NWN;
 using SWLOR.Game.Server.Service.Contracts;
+using static NWN.NWScript;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Event.Module
@@ -70,6 +71,7 @@ namespace SWLOR.Game.Server.Event.Module
             _customEffect.OnModuleEnter();
             _chatText.OnModuleEnter();
 
+            player.SetLocalInt("LOGGED_IN_ONCE", TRUE);
             return true;
         }
 
@@ -86,7 +88,7 @@ namespace SWLOR.Game.Server.Event.Module
 
             Effect eGhostWalk = _.EffectCutsceneGhost();
             eGhostWalk = _.TagEffect(eGhostWalk, "GHOST_WALK");
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_PERMANENT, eGhostWalk, oPC.Object);
+            _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, eGhostWalk, oPC.Object);
 
         }
         
@@ -98,18 +100,18 @@ namespace SWLOR.Game.Server.Event.Module
             // The rest are included here for completeness sake.
 
             //_.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_BLOCKED_BY_DOOR, "pc_on_blocked");
-            _.SetEventScript(oPC.Object, NWScript.EVENT_SCRIPT_CREATURE_ON_DAMAGED, "pc_on_damaged");
+            _.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_DAMAGED, "pc_on_damaged");
             //_.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_DEATH, "pc_on_death");
-            _.SetEventScript(oPC.Object, NWScript.EVENT_SCRIPT_CREATURE_ON_DIALOGUE, "default");
+            _.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_DIALOGUE, "default");
             //_.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_DISTURBED, "pc_on_disturb");
             //_.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_END_COMBATROUND, "pc_on_endround");
-            _.SetEventScript(oPC.Object, NWScript.EVENT_SCRIPT_CREATURE_ON_HEARTBEAT, "pc_on_heartbeat");
+            _.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_HEARTBEAT, "pc_on_heartbeat");
             //_.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_MELEE_ATTACKED, "pc_on_attacked");
             //_.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_NOTICE, "pc_on_notice");
             //_.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_RESTED, "pc_on_rested");
             //_.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_SPAWN_IN, "pc_on_spawn");
             //_.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_SPELLCASTAT, "pc_on_spellcast");
-            _.SetEventScript(oPC.Object, NWScript.EVENT_SCRIPT_CREATURE_ON_USER_DEFINED_EVENT, "pc_on_user");
+            _.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_USER_DEFINED_EVENT, "pc_on_user");
         }
     }
 }

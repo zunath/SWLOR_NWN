@@ -25,6 +25,10 @@
         public int Wisdom { get; set; }
         public int Intelligence { get; set; }
         public int Charisma { get; set; }
+        public int AC { get; set; }
+        public int BAB { get; set; }
+        public int HP { get; set; }
+        public int FP { get; set; }
 
     }
 }

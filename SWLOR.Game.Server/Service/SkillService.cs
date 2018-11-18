@@ -424,6 +424,7 @@ namespace SWLOR.Game.Server.Service
         {
             NWPlayer oPC = _.GetPCItemLastEquippedBy();
             if (!oPC.IsInitializedAsPlayer) return; // Players who log in for the first time don't have an ID yet.
+            if (oPC.GetLocalInt("LOGGED_IN_ONCE") <= 0) return; // Don't fire heavy calculations if this is the player's first log in after a restart.
 
             NWItem oItem = _.GetPCItemLastEquipped();
             _playerStat.ApplyStatChanges(oPC, null);

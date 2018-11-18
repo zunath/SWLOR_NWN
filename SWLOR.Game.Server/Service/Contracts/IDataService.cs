@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service.Contracts
@@ -37,5 +38,7 @@ namespace SWLOR.Game.Server.Service.Contracts
 
         void SubmitDataChange(DatabaseAction action);
         void SubmitDataChange(IEntity data, DatabaseActionType actionType);
+        void CachePlayerData(NWPlayer player);
+        void RemoveCachedPlayerData(NWPlayer player);
     }
 }

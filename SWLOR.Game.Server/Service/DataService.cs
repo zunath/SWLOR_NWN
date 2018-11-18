@@ -115,24 +115,24 @@ namespace SWLOR.Game.Server.Service
             GetAll<PCBaseStructureItem>();
             GetAll<PCBaseStructurePermission>();
             GetAll<PCBaseType>();
-            GetAll<PCCooldown>();
-            GetAll<PCCraftedBlueprint>();
-            GetAll<PCCustomEffect>();
-            GetAll<PCImpoundedItem>();
-            GetAll<PCKeyItem>();
-            GetAll<PCMapPin>();
-            GetAll<PCMapProgression>();
-            GetAll<PCObjectVisibility>();
-            GetAll<PCOutfit>();
-            GetAll<PCOverflowItem>();
-            GetAll<PCPerk>();
-            GetAll<PCPerkRefund>();
-            GetAll<PCQuestItemProgress>();
-            GetAll<PCQuestKillTargetProgress>();
-            GetAll<PCQuestStatus>();
-            GetAll<PCRegionalFame>();
-            GetAll<PCSearchSite>();
-            GetAll<PCSearchSiteItem>();
+            //GetAll<PCCooldown>();
+            //GetAll<PCCraftedBlueprint>();
+            //GetAll<PCCustomEffect>();
+            //GetAll<PCImpoundedItem>();
+            //GetAll<PCKeyItem>();
+            //GetAll<PCMapPin>();
+            //GetAll<PCMapProgression>();
+            //GetAll<PCObjectVisibility>();
+            //GetAll<PCOutfit>();
+            //GetAll<PCOverflowItem>();
+            //GetAll<PCPerk>();
+            //GetAll<PCPerkRefund>();
+            //GetAll<PCQuestItemProgress>();
+            //GetAll<PCQuestKillTargetProgress>();
+            //GetAll<PCQuestStatus>();
+            //GetAll<PCRegionalFame>();
+            //GetAll<PCSearchSite>();
+            //GetAll<PCSearchSiteItem>();
             GetAll<PCSkill>();
             GetAll<Data.Entity.Perk>();
             GetAll<PerkCategory>();
@@ -141,7 +141,7 @@ namespace SWLOR.Game.Server.Service
             GetAll<PerkLevelQuestRequirement>();
             GetAll<PerkLevelSkillRequirement>();
             GetAll<Plant>();
-            GetAll<Player>(); // todo: temporarily enabled to get up and running. We should *not* be loading all PCs and related data into the cache.
+            GetAll<Player>(); // Load all player data as it's referenced in other systems even if player isn't online.
             GetAll<Quest>();
             GetAll<QuestKillTarget>();
             GetAll<QuestPrerequisite>();
@@ -170,6 +170,54 @@ namespace SWLOR.Game.Server.Service
         {
             if (!player.IsPlayer) return;
 
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                using (var multi = connection.QueryMultiple("GetPlayerData", new {PlayerID = player.GlobalID}, commandType: CommandType.StoredProcedure))
+                {
+                    foreach(var item in multi.Read<PCCooldown>().ToList())
+                        SetIntoCache<PCCooldown>(item.ID, item);
+                    foreach (var item in multi.Read<PCCraftedBlueprint>().ToList())
+                        SetIntoCache<PCCraftedBlueprint>(item.ID, item);
+
+                    foreach (var item in multi.Read<PCCustomEffect>().ToList())
+                        SetIntoCache<PCCustomEffect>(item.ID, item);
+                    foreach (var item in multi.Read<PCImpoundedItem>().ToList())
+                        SetIntoCache<PCImpoundedItem>(item.ID, item);
+                    foreach (var item in multi.Read<PCKeyItem>().ToList())
+                        SetIntoCache<PCKeyItem>(item.ID, item);
+                    foreach (var item in multi.Read<PCMapPin>().ToList())
+                        SetIntoCache<PCMapPin>(item.ID, item);
+                    foreach (var item in multi.Read<PCMapProgression>().ToList())
+                        SetIntoCache<PCMapProgression>(item.ID, item);
+                    foreach (var item in multi.Read<PCObjectVisibility>().ToList())
+                        SetIntoCache<PCObjectVisibility>(item.ID, item);
+
+                    var outfit = multi.Read<PCOutfit>().SingleOrDefault();
+
+                    if(outfit != null)
+                        SetIntoCache<PCOutfit>(outfit.PlayerID, outfit);
+
+                    foreach (var item in multi.Read<PCOverflowItem>().ToList())
+                        SetIntoCache<PCOverflowItem>(item.ID, item);
+                    foreach (var item in multi.Read<PCPerk>().ToList())
+                        SetIntoCache<PCPerk>(item.ID, item);
+                    foreach (var item in multi.Read<PCPerkRefund>().ToList())
+                        SetIntoCache<PCPerkRefund>(item.ID, item);
+                    foreach (var item in multi.Read<PCQuestItemProgress>().ToList())
+                        SetIntoCache<PCQuestItemProgress>(item.ID, item);
+                    foreach (var item in multi.Read<PCQuestKillTargetProgress>().ToList())
+                        SetIntoCache<PCQuestKillTargetProgress>(item.ID, item);
+                    foreach (var item in multi.Read<PCQuestStatus>().ToList())
+                        SetIntoCache<PCQuestStatus>(item.ID, item);
+                    foreach (var item in multi.Read<PCRegionalFame>().ToList())
+                        SetIntoCache<PCRegionalFame>(item.ID, item);
+                    foreach (var item in multi.Read<PCSearchSite>().ToList())
+                        SetIntoCache<PCSearchSite>(item.ID, item);
+                    foreach (var item in multi.Read<PCSearchSiteItem>().ToList())
+                        SetIntoCache<PCSearchSiteItem>(item.ID, item);
+                }
+            }
+
             Get<Player>(player.GlobalID);
         }
 
@@ -181,7 +229,44 @@ namespace SWLOR.Game.Server.Service
         {
             if (!player.IsPlayer) return;
 
-            DeleteFromCache<Player>(player.GlobalID);
+            Guid id = player.GlobalID;
+            
+            foreach(var item in Where<PCCooldown>(x => x.PlayerID == id).ToList())
+                DeleteFromCache<PCCooldown>(item.ID);
+            foreach (var item in Where<PCCraftedBlueprint>(x => x.PlayerID == id).ToList())
+                DeleteFromCache<PCCraftedBlueprint>(item.ID);
+            foreach (var item in Where<PCCustomEffect>(x => x.PlayerID == id).ToList())
+                DeleteFromCache<PCCustomEffect>(item.ID);
+            foreach (var item in Where<PCImpoundedItem>(x => x.PlayerID == id).ToList())
+                DeleteFromCache<PCImpoundedItem>(item.ID);
+            foreach (var item in Where<PCKeyItem>(x => x.PlayerID == id).ToList())
+                DeleteFromCache<PCKeyItem>(item.ID);
+            foreach (var item in Where<PCMapPin>(x => x.PlayerID == id).ToList())
+                DeleteFromCache<PCMapPin>(item.ID);
+            foreach (var item in Where<PCMapProgression>(x => x.PlayerID == id).ToList())
+                DeleteFromCache<PCMapProgression>(item.ID);
+            foreach (var item in Where<PCObjectVisibility>(x => x.PlayerID == id).ToList())
+                DeleteFromCache<PCObjectVisibility>(item.ID);
+            foreach (var item in Where<PCOutfit>(x => x.PlayerID == id).ToList())
+                DeleteFromCache<PCOutfit>(item.PlayerID);
+            foreach (var item in Where<PCOverflowItem>(x => x.PlayerID == id).ToList())
+                DeleteFromCache<PCOverflowItem>(item.ID);
+            foreach (var item in Where<PCPerk>(x => x.PlayerID == id).ToList())
+                DeleteFromCache<PCPerk>(item.ID);
+            foreach (var item in Where<PCPerkRefund>(x => x.PlayerID == id).ToList())
+                DeleteFromCache<PCPerkRefund>(item.ID);
+            foreach (var item in Where<PCQuestItemProgress>(x => x.PlayerID == id).ToList())
+                DeleteFromCache<PCQuestItemProgress>(item.ID);
+            foreach (var item in Where<PCQuestKillTargetProgress>(x => x.PlayerID == id).ToList())
+                DeleteFromCache<PCQuestKillTargetProgress>(item.ID);
+            foreach (var item in Where<PCQuestStatus>(x => x.PlayerID == id).ToList())
+                DeleteFromCache<PCQuestStatus>(item.ID);
+            foreach (var item in Where<PCRegionalFame>(x => x.PlayerID == id).ToList())
+                DeleteFromCache<PCRegionalFame>(item.ID);
+            foreach (var item in Where<PCSearchSite>(x => x.PlayerID == id).ToList())
+                DeleteFromCache<PCSearchSite>(item.ID);
+            foreach (var item in Where<PCSearchSiteItem>(x => x.PlayerID == id).ToList())
+                DeleteFromCache<PCSearchSiteItem>(item.ID);
         }
         
         /// <summary>
@@ -341,12 +426,6 @@ namespace SWLOR.Game.Server.Service
         public IEnumerable<T> GetAll<T>()
             where T : class, IEntity
         {
-            // todo: temporarily disabled to get up and running
-            //if (typeof(T) == typeof(Player))
-            //{
-            //    throw new ArgumentException("GetAll() is not permitted on Player objects.");
-            //}
-            
             // Cache already built. Return everything that's cached so far.
             if (_cache.ContainsKey(typeof(T)))
             {

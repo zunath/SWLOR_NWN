@@ -54,3 +54,84 @@ VALUES ( 2 ,   -- ID - int
          N'' , -- BehaviourScript - nvarchar(64)
          0     -- DeathVFXID - int
     )
+
+
+
+INSERT INTO dbo.NPCGroup ( ID ,
+                           Name )
+VALUES ( 14 , -- ID - int
+         N'Viscara Warocas' -- Name - nvarchar(32)
+    )
+
+INSERT INTO dbo.LootTable ( ID ,
+                            Name )
+VALUES ( 48 , -- ID - int
+         N'Viscara - Warocas' -- Name - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTable ( ID ,
+                            Name )
+VALUES ( 49 , -- ID - int
+         N'Viscara - Warocas (Rares)' -- Name - nvarchar(64)
+    )
+	
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 48 ,    -- LootTableID - int
+         'warocas_beak' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         20 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 48 ,    -- LootTableID - int
+         'waro_feathers' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         5 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 49 ,    -- LootTableID - int
+         'waro_leg' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         20 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+
+INSERT INTO dbo.SpawnObject ( ID ,
+                              SpawnID ,
+                              Resref ,
+                              Weight ,
+                              SpawnRule ,
+                              NPCGroupID ,
+                              BehaviourScript ,
+                              DeathVFXID )
+VALUES ( 3 ,   -- ID - int
+         18 ,   -- SpawnID - int
+         N'warocas' , -- Resref - nvarchar(16)
+         40 ,   -- Weight - int
+         N'' , -- SpawnRule - nvarchar(32)
+         14 ,   -- NPCGroupID - int
+         N'SightAggroBehaviour' , -- BehaviourScript - nvarchar(64)
+         0     -- DeathVFXID - int
+    )

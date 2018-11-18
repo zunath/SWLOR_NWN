@@ -55,10 +55,10 @@ namespace SWLOR.Game.Server.Event.Module
                 App.GetAppState().ConnectedDMs.Add(player);
             }
 
-            _data.CachePlayerData(player);
             _.ExecuteScript("x3_mod_def_enter", Object.OBJECT_SELF);
             _playerValidation.OnModuleEnter();
             _player.InitializePlayer(player);
+            _data.CachePlayerData(player);
             _skill.OnModuleEnter();
             _player.LoadCharacter(player);
             _player.ShowMOTD(player);

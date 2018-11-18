@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly ICustomEffectService _customEffect;
         private readonly IChatTextService _chatText;
         private readonly IPlayerValidationService _playerValidation;
+        private readonly IDataService _data;
 
         public OnModuleEnter(INWScript script,
             IPlayerService player,
@@ -28,7 +29,8 @@ namespace SWLOR.Game.Server.Event.Module
             IObjectVisibilityService objectVisibility,
             ICustomEffectService customEffect,
             IChatTextService chatText,
-            IPlayerValidationService playerValidation)
+            IPlayerValidationService playerValidation,
+            IDataService data)
         {
             _ = script;
             _player = player;
@@ -40,6 +42,7 @@ namespace SWLOR.Game.Server.Event.Module
             _customEffect = customEffect;
             _chatText = chatText;
             _playerValidation = playerValidation;
+            _data = data;
         }
 
         public bool Run(params object[] args)
@@ -51,6 +54,7 @@ namespace SWLOR.Game.Server.Event.Module
                 App.GetAppState().ConnectedDMs.Add(player);
             }
 
+            _data.CachePlayerData(player);
             _.ExecuteScript("x3_mod_def_enter", Object.OBJECT_SELF);
             _playerValidation.OnModuleEnter();
             _player.InitializePlayer(player);

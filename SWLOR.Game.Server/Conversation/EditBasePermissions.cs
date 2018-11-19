@@ -124,7 +124,6 @@ namespace SWLOR.Game.Server.Conversation
         {
             ClearPageResponses("PlayerDetailsPage");
             var data = _base.GetPlayerTempData(GetPC());
-            var pcBase = _data.GetAll<PCBase>().Single(x => x.PlayerID == player.GlobalID);
             var permission = _data.SingleOrDefault<PCBasePermission>(x => x.PlayerID == player.GlobalID && x.PCBaseID == data.PCBaseID);
             
             // Intentionally excluded permissions: CanAdjustPermissions, CanCancelLease
@@ -195,6 +194,8 @@ namespace SWLOR.Game.Server.Conversation
                     TogglePermission(player, BasePermission.CanEditPrimaryResidence);
                     break;
             }
+
+            BuildPlayerDetailsPage(player);
         }
 
         private void TogglePermission(NWPlayer player, BasePermission permission)

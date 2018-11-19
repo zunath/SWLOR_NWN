@@ -92,8 +92,11 @@ namespace SWLOR.Game.Server.Item.Medicine
             dbPlayer.CurrentFP = fpRecover;
             _data.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
             player.SendMessage("You successfully resuscitate " + target.Name + "!");
-            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(600, item.RecommendedLevel, skillRank);
-            _skill.GiveSkillXP(player, SkillType.Medicine, xp);
+            
+            if(target.IsPlayer){
+                int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(600, item.RecommendedLevel, skillRank);
+                _skill.GiveSkillXP(player, SkillType.Medicine, xp);
+            }
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
@@ -130,9 +133,9 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            if (_.GetIsPC(target.Object) == FALSE || _.GetIsDM(target.Object) == TRUE)
+             if (target.IsCreature && !target.IsDM)
             {
-                return "Only players may be targeted with this item.";
+                return "Only creatures may be targeted with this item.";
             }
 
             if (target.CurrentHP > -11)

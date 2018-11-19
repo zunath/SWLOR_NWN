@@ -26,3 +26,8 @@ VALUES ( 49 ,    -- LootTableID - int
          1 , -- IsActive - bit
          N''    -- SpawnRule - nvarchar(64)
     )
+
+
+UPDATE dbo.Skill
+SET IsActive = 0
+WHERE ID IN (18, 23)

@@ -68,6 +68,9 @@ namespace SWLOR.Game.Server.Service
                     int spawnTableID = obj.GetLocalInt("SPAWN_TABLE_ID");
                     int npcGroupID = obj.GetLocalInt("SPAWN_NPC_GROUP_ID");
                     string behaviourScript = obj.GetLocalString("SPAWN_BEHAVIOUR_SCRIPT");
+                    if (string.IsNullOrWhiteSpace(behaviourScript))
+                        behaviourScript = obj.GetLocalString("SPAWN_BEHAVIOUR");
+
                     string spawnResref = obj.GetLocalString("SPAWN_RESREF");
                     float respawnTime = obj.GetLocalFloat("SPAWN_RESPAWN_SECONDS");
                     string spawnRule = obj.GetLocalString("SPAWN_RULE");

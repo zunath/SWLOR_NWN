@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.AI
         {
             base.OnConversation();
             string convo = Self.GetLocalString("CONVERSATION");
-
+            
             if (!string.IsNullOrWhiteSpace(convo))
             {
                 NWPlayer player = (_.GetLastSpeaker());

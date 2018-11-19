@@ -125,6 +125,41 @@ namespace SWLOR.Game.Server.Event.Module
             _nwnxEvents.SubscribeEvent(EventType.ExamineObjectBefore, "mod_on_examine");
             _nwnxEvents.SubscribeEvent(EventType.UseFeatBefore, "mod_on_usefeat");
             _nwnxDamage.SetDamageEventScript("mod_on_applydmg");
+
+            // DM Hooks
+            _nwnxEvents.SubscribeEvent(EventType.DMAppearBefore, "dm_appear");
+            _nwnxEvents.SubscribeEvent(EventType.DMChangeDifficultyBefore, "dm_change_diff");
+            _nwnxEvents.SubscribeEvent(EventType.DMDisableTrapBefore, "dm_disab_trap");
+            _nwnxEvents.SubscribeEvent(EventType.DMDisappearBefore, "dm_disappear");
+            _nwnxEvents.SubscribeEvent(EventType.DMForceRestBefore, "dm_force_rest");
+            _nwnxEvents.SubscribeEvent(EventType.DMGetVariableBefore, "dm_get_var");
+            _nwnxEvents.SubscribeEvent(EventType.DMGiveGoldBefore, "dm_give_gold");
+            _nwnxEvents.SubscribeEvent(EventType.DMGiveItemBefore, "dm_give_item");
+            _nwnxEvents.SubscribeEvent(EventType.DMGiveLevelBefore, "dm_give_level");
+            _nwnxEvents.SubscribeEvent(EventType.DMGiveXPBefore, "dm_give_xp");
+            _nwnxEvents.SubscribeEvent(EventType.DMHealBefore, "dm_heal");
+            _nwnxEvents.SubscribeEvent(EventType.DMJumpBefore, "dm_jump");
+            _nwnxEvents.SubscribeEvent(EventType.DMJumpAllPlayersToPointBefore, "dm_jump_all");
+            _nwnxEvents.SubscribeEvent(EventType.DMJumpTargetToPointBefore, "dm_jump_target");
+            _nwnxEvents.SubscribeEvent(EventType.DMKillBefore, "dm_kill");
+            _nwnxEvents.SubscribeEvent(EventType.DMLimboBefore, "dm_limbo");
+            _nwnxEvents.SubscribeEvent(EventType.DMPossessBefore, "dm_possess");
+            _nwnxEvents.SubscribeEvent(EventType.DMSetDateBefore, "dm_set_date");
+            _nwnxEvents.SubscribeEvent(EventType.DMSetStatBefore, "dm_set_stat");
+            _nwnxEvents.SubscribeEvent(EventType.DMSetTimeBefore, "dm_set_time");
+            _nwnxEvents.SubscribeEvent(EventType.DMSetVariableBefore, "dm_set_var");
+            _nwnxEvents.SubscribeEvent(EventType.DMSpawnCreatureBefore, "dm_spawn_crea");
+            _nwnxEvents.SubscribeEvent(EventType.DMSpawnEncounterBefore, "dm_spawn_enco");
+            _nwnxEvents.SubscribeEvent(EventType.DMSpawnItemBefore, "dm_spawn_item");
+            _nwnxEvents.SubscribeEvent(EventType.DMSpawnPlaceableBefore, "dm_spawn_plac");
+            _nwnxEvents.SubscribeEvent(EventType.DMSpawnPortalBefore, "dm_spawn_port");
+            _nwnxEvents.SubscribeEvent(EventType.DMSpawnTrapOnObjectBefore, "dm_spawn_trap");
+            _nwnxEvents.SubscribeEvent(EventType.DMSpawnTriggerBefore, "dm_spawn_trigg");
+            _nwnxEvents.SubscribeEvent(EventType.DMSpawnWaypointBefore, "dm_spawn_wayp");
+            _nwnxEvents.SubscribeEvent(EventType.DMTakeItemBefore, "dm_take_item");
+            _nwnxEvents.SubscribeEvent(EventType.DMToggleImmortalBefore, "dm_togg_immo");
+            _nwnxEvents.SubscribeEvent(EventType.DMToggleAIBefore, "dm_toggle_ai");
+            _nwnxEvents.SubscribeEvent(EventType.DMToggleLockBefore, "dm_toggle_lock");
         }
     }
 }

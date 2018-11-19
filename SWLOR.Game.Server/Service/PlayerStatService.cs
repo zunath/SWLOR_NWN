@@ -223,14 +223,14 @@ namespace SWLOR.Game.Server.Service
             int baseAC = stats.AC + _customEffect.CalculateEffectAC(player);
             int totalAC = _.GetAC(player) - baseAC;
             
-            // Shield Oath and Sword Oath affect a percentage of the TOTAL armor class on a creature.
+            // Shield Oath and Precision Targeting affect a percentage of the TOTAL armor class on a creature.
             var stance = _customEffect.GetCurrentStanceType(player);
             if (stance == CustomEffectType.ShieldOath)
             {
                 int bonus = (int) (totalAC * 0.2f);
                 baseAC = baseAC + bonus;
             }
-            else if (stance == CustomEffectType.SwordOath)
+            else if (stance == CustomEffectType.PrecisionTargeting)
             {
                 int penalty = (int)(totalAC * 0.3f);
                 baseAC = baseAC - penalty;

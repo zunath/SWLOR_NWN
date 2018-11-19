@@ -23,9 +23,9 @@
         AcidCell = 18,
         IceCell = 19,
         DivineCell = 20,
-        PlasmaCell = 21,
+        // 21 is open
         ShieldOath = 22,
-        SwordOath = 23,
+        PrecisionTargeting = 23,
         ForcePack = 24,
         FoodEffect = 25
     }

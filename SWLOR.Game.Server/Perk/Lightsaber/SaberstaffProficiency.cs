@@ -1,6 +1,6 @@
 ﻿using SWLOR.Game.Server.GameObject;
 
-namespace SWLOR.Game.Server.Perk.TwoHanded
+namespace SWLOR.Game.Server.Perk.Lightsaber
 {
     public class SaberstaffProficiency : IPerk
     {

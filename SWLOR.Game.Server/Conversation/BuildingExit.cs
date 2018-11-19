@@ -1,7 +1,9 @@
 ﻿using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -35,12 +37,11 @@ namespace SWLOR.Game.Server.Conversation
         {
             NWPlaceable door = GetDialogTarget().Object;
             NWArea area = door.Area;
-            
-            if (area.GetLocalInt("IS_BUILDING_PREVIEW") == 1)
-            {
-                SetResponseVisible("MainPage", 2, false);
-            }
+            BuildingType type = (BuildingType)area.GetLocalInt("BUILDING_TYPE");
+            bool isPreview = area.GetLocalInt("IS_BUILDING_PREVIEW") == TRUE;
+            bool canPeek = type == BuildingType.Interior && !isPreview;
 
+            SetResponseVisible("MainPage", 2, canPeek);
         }
 
         public override void DoAction(NWPlayer player, string pageName, int responseID)
@@ -84,7 +85,7 @@ namespace SWLOR.Game.Server.Conversation
 
             int numberFound = 0;
             int nth = 1;
-            NWCreature nearest = (_.GetNearestObjectToLocation(NWScript.OBJECT_TYPE_CREATURE, location, nth));
+            NWCreature nearest = (_.GetNearestObjectToLocation(OBJECT_TYPE_CREATURE, location, nth));
             while (nearest.IsValid)
             {
                 if (_.GetDistanceBetweenLocations(location, nearest.Location) > MaxDistance) break;
@@ -95,20 +96,20 @@ namespace SWLOR.Game.Server.Conversation
                 }
 
                 nth++;
-                nearest = (_.GetNearestObjectToLocation(NWScript.OBJECT_TYPE_CREATURE, location, nth));
+                nearest = (_.GetNearestObjectToLocation(OBJECT_TYPE_CREATURE, location, nth));
             }
 
             if (numberFound <= 0)
             {
-                _.FloatingTextStringOnCreature("You don't see anyone outside.", GetPC().Object, NWScript.FALSE);
+                _.FloatingTextStringOnCreature("You don't see anyone outside.", GetPC().Object, FALSE);
             }
             else if (numberFound == 1)
             {
-                _.FloatingTextStringOnCreature("You see one person outside.", GetPC().Object, NWScript.FALSE);
+                _.FloatingTextStringOnCreature("You see one person outside.", GetPC().Object, FALSE);
             }
             else
             {
-                _.FloatingTextStringOnCreature("You see " + numberFound + " people outside.", GetPC().Object, NWScript.FALSE);
+                _.FloatingTextStringOnCreature("You see " + numberFound + " people outside.", GetPC().Object, FALSE);
             }
 
         }

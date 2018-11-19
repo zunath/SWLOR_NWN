@@ -70,11 +70,27 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("MainPage");
 
             var player = GetPC();
+
+            // Get apartments owned by player.
             var apartments = _data.GetAll<PCBase>().Where(x => x.PlayerID == player.GlobalID &&
                                                          x.ApartmentBuildingID == apartmentBuildingID &&
                                                          x.DateRentDue > DateTime.UtcNow)
                                              .OrderBy(o => o.DateInitialPurchase)
                                              .ToList();
+
+            // Get apartments owned by other players and the current player currently has access to.
+            var permissions = _data.GetAll<PCBasePermission>().Where(x => x.PlayerID == player.GlobalID);
+            var permissionedApartments = _data.Where<PCBase>(x =>
+            {
+                if (x.ApartmentBuildingID != apartmentBuildingID ||
+                    x.DateRentDue <= DateTime.UtcNow ||
+                    x.PlayerID == player.GlobalID) return false;
+                
+                var permission = permissions.SingleOrDefault(p => p.PCBaseID == x.ID);
+                return permission != null && permission.CanEnterBuildings;
+            })
+                .OrderBy(o => o.DateInitialPurchase)
+                .ToList();
 
             int count = 1;
             foreach (var apartment in apartments)
@@ -89,6 +105,19 @@ namespace SWLOR.Game.Server.Conversation
                 AddResponseToPage("MainPage", name, true, apartment.ID);
 
                 count++;
+            }
+
+            foreach (var apartment in permissionedApartments)
+            {
+                var owner = _data.Get<Player>(apartment.PlayerID);
+                string name = owner.CharacterName + "'s Apartment [" + owner.CharacterName + "]";
+
+                if (!string.IsNullOrWhiteSpace(apartment.CustomName))
+                {
+                    name = apartment.CustomName + " [" + owner.CharacterName + "]";
+                }
+
+                AddResponseToPage("MainPage", name, true, apartment.ID);
             }
 
         }
@@ -107,11 +136,20 @@ namespace SWLOR.Game.Server.Conversation
             var apartment = _data.Get<PCBase>(pcBaseID);
             var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == apartment.ID);
             var buildingStyle = _data.Get<BuildingStyle>(apartment.BuildingStyleID);
+            var owner = _data.Get<Player>(apartment.PlayerID);
+            var permission = _data.SingleOrDefault<PCBasePermission>(x => x.PlayerID == oPC.GlobalID && x.PCBaseID == pcBaseID);
+
+            if (permission == null || !permission.CanEnterBuildings)
+            {
+                oPC.FloatingText("You do not have permission to enter that apartment.");
+                return;
+            }
+
             NWArea instance = GetAreaInstance(pcBaseID);
 
             if (instance == null)
             {
-                string name = oPC.Name + "'s Apartment";
+                string name = owner.CharacterName + "'s Apartment";
                 if (!string.IsNullOrWhiteSpace(apartment.CustomName))
                 {
                     name = apartment.CustomName;

@@ -192,6 +192,8 @@ namespace SWLOR.Game.Server.Conversation
                     TogglePermission(player, StructurePermission.CanRemovePrimaryResidence);
                     break;
             }
+
+            BuildPlayerDetailsPage(player);
         }
 
         private void TogglePermission(NWPlayer player, StructurePermission permission)

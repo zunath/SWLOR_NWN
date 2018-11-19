@@ -30,3 +30,9 @@ WHERE PerkLevelID IN (
 	WHERE PerkID = 123
 		AND Level = 4 
 )
+
+
+
+UPDATE dbo.GameTopic
+SET Text = 'Enhancements are OPTIONAL items you may use for a blueprint. These are usually obtained from completing quests or looting defeated enemies. Enhancements can be added as part of the crafting process as long as two requirements are met:\n\n1.) The blueprint allows for enhancement slots.\n2.) You have the necessary skill rank and perk level to use the enhancement slot.\n\nIf both requirements are met, an option will appear on the crafting menu allowing you to do so.'
+WHERE ID = 46

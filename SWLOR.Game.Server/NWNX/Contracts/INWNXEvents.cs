@@ -36,5 +36,12 @@ namespace SWLOR.Game.Server.NWNX.Contracts
         NWObject OnCombatRoundStart_GetTarget();
         void SkipEvent();
         void SetEventResult(string data);
+
+        int OnDMGiveXP_GetAmount();
+        NWObject OnDMGiveXP_GetTarget();
+        int OnDMGiveLevels_GetAmount();
+        NWObject OnDMGiveLevels_GetTarget();
+        int OnDMGiveGold_GetAmount();
+        NWObject OnDMGiveGold_GetTarget();
     }
 }

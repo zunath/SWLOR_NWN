@@ -45,7 +45,7 @@
         public const string DMSpawnWaypointAfter = "NWNX_ON_DM_SPAWN_WAYPOINT_AFTER";
 
         public const string DMSpawnEncounterBefore = "NWNX_ON_DM_SPAWN_ENCOUNTER_BEFORE";
-        public const string DMSpawnEncounterAfter = "NWNX_ON_DM_ENCOUNTER_AFTER";
+        public const string DMSpawnEncounterAfter = "NWNX_ON_DM_SPAWN_ENCOUNTER_AFTER";
 
         public const string DMSpawnPortalBefore = "NWNX_ON_DM_SPAWN_PORTAL_BEFORE";
         public const string DMSpawnPortalAfter = "NWNX_ON_DM_SPAWN_PORTAL_AFTER";

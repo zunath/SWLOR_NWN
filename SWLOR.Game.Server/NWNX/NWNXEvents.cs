@@ -80,7 +80,6 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction("NWNX_Events", "EVENT_RESULT");
         }
 
-
         private int GetEventDataInt(string tag)
         {
             string data = GetEventDataString(tag);
@@ -232,6 +231,36 @@ namespace SWLOR.Game.Server.NWNX
         public NWObject OnCombatRoundStart_GetTarget()
         {
             return GetEventDataObject("TARGET_OBJECT_ID");
+        }
+
+        public int OnDMGiveXP_GetAmount()
+        {
+            return GetEventDataInt("AMOUNT");
+        }
+
+        public NWObject OnDMGiveXP_GetTarget()
+        {
+            return GetEventDataObject("TARGET");
+        }
+
+        public int OnDMGiveLevels_GetAmount()
+        {
+            return GetEventDataInt("NUM_LEVELS");
+        }
+
+        public NWObject OnDMGiveLevels_GetTarget()
+        {
+            return GetEventDataObject("TARGET");
+        }
+
+        public int OnDMGiveGold_GetAmount()
+        {
+            return GetEventDataInt("AMOUNT");
+        }
+
+        public NWObject OnDMGiveGold_GetTarget()
+        {
+            return GetEventDataObject("TARGET");
         }
 
     }

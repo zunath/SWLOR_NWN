@@ -5,19 +5,20 @@ namespace SWLOR.Game.Server.Event.Module
     public class OnModuleApplyDamage: IRegisteredEvent
     {
         private readonly IModService _mod;
-        private readonly IAbilityService _ability;
+        private readonly ICombatService _combat;
 
-        public OnModuleApplyDamage(IModService mod,
-            IAbilityService ability)
+        public OnModuleApplyDamage(
+            IModService mod,
+            ICombatService combat)
         {
             _mod = mod;
-            _ability = ability;
+            _combat = combat;
         }
 
         public bool Run(params object[] args)
         {
             _mod.OnModuleApplyDamage();
-            _ability.OnModuleApplyDamage();
+            _combat.OnModuleApplyDamage();
             return true;
         }
     }

@@ -1,31 +1,17 @@
-﻿using NWN;
-using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+﻿using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
     public class PlasmaCell: IPerk
     {
-        private readonly INWScript _;
-        private readonly ICustomEffectService _customEffect;
-
-        public PlasmaCell(
-            INWScript script,
-            ICustomEffectService customEffect)
-        {
-            _ = script;
-            _customEffect = customEffect;
-        }
-
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
-            return oPC.RightHand.CustomItemType == CustomItemType.BlasterPistol;
+            return false;
         }
 
         public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
         {
-            return "Must be equipped with a blaster pistol to use that ability.";
+            return null;
         }
 
         public int FPCost(NWPlayer oPC, int baseFPCost)
@@ -45,7 +31,6 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         public void OnImpact(NWPlayer player, NWObject target, int perkLevel)
         {
-            _customEffect.ApplyCustomEffect(player, target.Object, CustomEffectType.PlasmaCell, 30, perkLevel, null);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

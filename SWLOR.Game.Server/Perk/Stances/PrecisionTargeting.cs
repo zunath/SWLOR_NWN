@@ -4,11 +4,11 @@ using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Perk.Stances
 {
-    public class SwordOath : IPerk
+    public class PrecisionTargeting : IPerk
     {
         private readonly ICustomEffectService _customEffect;
 
-        public SwordOath(ICustomEffectService customEffect)
+        public PrecisionTargeting(ICustomEffectService customEffect)
         {
             _customEffect = customEffect;
         }
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Perk.Stances
         {
             _customEffect.ApplyStance(
                 player,
-                CustomEffectType.SwordOath,
-                PerkType.SwordOath,
+                CustomEffectType.PrecisionTargeting,
+                PerkType.PrecisionTargeting,
                 perkLevel,
                 null);
         }

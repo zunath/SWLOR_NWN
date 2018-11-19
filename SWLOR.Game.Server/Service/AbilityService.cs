@@ -418,14 +418,14 @@ namespace SWLOR.Game.Server.Service
         public void HandlePlasmaCellPerk(NWPlayer player, NWObject target)
         {
             if (!player.IsPlayer) return;
-            if (player.RightHand.CustomItemType != CustomItemType.BlasterPistol) return;
+            if (_.GetHasFeat((int)CustomFeatType.PlasmaCell, player) == FALSE) return;
+            if (player.RightHand.CustomItemType != CustomItemType.BlasterPistol &&
+                player.RightHand.CustomItemType != CustomItemType.BlasterRifle) return;
 
-            PCCustomEffect pcEffect = _data.GetAll<PCCustomEffect>().SingleOrDefault(x => x.PlayerID == player.GlobalID && x.CustomEffectID == (int) CustomEffectType.PlasmaCell);
-            if (pcEffect == null) return;
-
+            int perkLevel = _perk.GetPCPerkLevel(player, PerkType.PlasmaCell);
             int chance;
             CustomEffectType[] damageTypes;
-            switch (pcEffect.EffectiveLevel)
+            switch (perkLevel)
             {
                 case 1:
                     chance = 10;
@@ -475,7 +475,7 @@ namespace SWLOR.Game.Server.Service
             {
                 if (_random.D100(1) <= chance)
                 {
-                    _customEffect.ApplyCustomEffect(player, target.Object, effect, _random.D6(1), pcEffect.EffectiveLevel, null);
+                    _customEffect.ApplyCustomEffect(player, target.Object, effect, _random.D6(1), perkLevel, null);
                 }
             }
 
@@ -513,211 +513,6 @@ namespace SWLOR.Game.Server.Service
             {
                 _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectKnockdown(), target, duration);
             }
-
         }
-
-        public void OnModuleApplyDamage()
-        {
-            HandleStances();
-            HandleApplySneakAttackDamage();
-            HandleBattlemagePerk();
-            HandleAbsorptionFieldEffect();
-            HandleRecoveryBlast();
-            HandleTranquilizerEffect();
-        }
-
-        private void HandleBattlemagePerk()
-        {
-            DamageData data = _nwnxDamage.GetDamageEventData();
-            NWObject target = Object.OBJECT_SELF;
-            if (!data.Damager.IsPlayer || !target.IsNPC) return;
-            if (_.GetHasFeat((int)CustomFeatType.Battlemage, data.Damager.Object) == FALSE) return;
-
-            NWPlayer player = data.Damager.Object;
-            NWItem weapon = _.GetLastWeaponUsed(player.Object);
-            if (weapon.CustomItemType != CustomItemType.Baton) return;
-            if (player.Chest.CustomItemType != CustomItemType.ForceArmor) return;
-
-            int perkRank = _perk.GetPCPerkLevel(player, PerkType.Battlemage);
-
-            int restoreAmount = 0;
-            bool metRoll = _random.Random(100) + 1 <= 50;
-
-            switch (perkRank)
-            {
-                case 1 when metRoll:
-                    restoreAmount = 1;
-                    break;
-                case 2:
-                    restoreAmount = 1;
-                    break;
-                case 3:
-                    restoreAmount = 1;
-                    if (metRoll) restoreAmount++;
-                    break;
-                case 4:
-                    restoreAmount = 2;
-                    break;
-                case 5:
-                    restoreAmount = 2;
-                    if (metRoll) restoreAmount++;
-                    break;
-                case 6:
-                    restoreAmount = 3;
-                    break;
-            }
-
-            if(restoreAmount > 0)
-                RestoreFP(player, restoreAmount);
-        }
-
-        private void HandleApplySneakAttackDamage()
-        {
-            DamageData data = _nwnxDamage.GetDamageEventData();
-            NWObject damager = data.Damager;
-            int sneakAttackType = damager.GetLocalInt("SNEAK_ATTACK_ACTIVE");
-
-            if (damager.IsPlayer && sneakAttackType > 0)
-            {
-                NWPlayer player = damager.Object;
-                NWCreature target = Object.OBJECT_SELF;
-                int perkRank = _perk.GetPCPerkByID(damager.GlobalID, (int)PerkType.SneakAttack).PerkLevel;
-                int perkBonus = 1;
-
-                // Rank 4 increases damage bonus by 2x (total: 3x)
-                if (perkRank == 4) perkBonus = 2;
-
-                float perkRate;
-                if (sneakAttackType == 1) // Player is behind target.
-                {
-                    perkRate = 1.0f * perkBonus;
-                }
-                else // Player is anywhere else.
-                {
-                    perkRate = 0.5f * perkBonus;
-                }
-
-                var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
-                float damageRate = 1.0f + perkRate + effectiveStats.SneakAttack * 0.05f;
-                data.Base = (int)(data.Base * damageRate);
-
-                if (target.IsNPC)
-                {
-                    _enmity.AdjustEnmity(target, player, 5 * data.Base);
-                }
-
-                _nwnxDamage.SetDamageEventData(data);
-            }
-
-            damager.DeleteLocalInt("SNEAK_ATTACK_ACTIVE");
-        }
-
-        private void HandleAbsorptionFieldEffect()
-        {
-            DamageData data = _nwnxDamage.GetDamageEventData();
-            NWObject target = Object.OBJECT_SELF;
-            if (!target.IsPlayer) return;
-
-            NWPlayer player = target.Object;
-            int effectLevel = _customEffect.GetCustomEffectLevel(player, CustomEffectType.AbsorptionField);
-            if (effectLevel <= 0) return;
-
-            // Remove effect if player activates ability and removes the armor.
-            if (player.Chest.CustomItemType != CustomItemType.ForceArmor)
-            {
-                _customEffect.RemovePCCustomEffect(player, CustomEffectType.AbsorptionField);
-            }
-
-            float absorptionRate = effectLevel * 0.1f;
-            int absorbed = (int)(data.Total * absorptionRate);
-
-            if (absorbed < 1) absorbed = 1;
-
-            RestoreFP(player, absorbed);
-        }
-
-        private void HandleRecoveryBlast()
-        {
-            DamageData data = _nwnxDamage.GetDamageEventData();
-            NWObject damager = data.Damager;
-            bool isActive = damager.GetLocalInt("RECOVERY_BLAST_ACTIVE") == TRUE;
-            damager.DeleteLocalInt("RECOVERY_BLAST_ACTIVE");
-            NWItem weapon = _.GetLastWeaponUsed(damager.Object);
-
-            if (!isActive || weapon.CustomItemType != CustomItemType.BlasterRifle) return;
-            
-            data.Bludgeoning = 0;
-            data.Pierce = 0;
-            data.Slash = 0;
-            data.Magical = 0;
-            data.Acid = 0;
-            data.Cold = 0;
-            data.Divine = 0;
-            data.Electrical = 0;
-            data.Fire = 0;
-            data.Negative = 0;
-            data.Positive = 0;
-            data.Sonic = 0;
-            data.Base = 0;
-
-            _nwnxDamage.SetDamageEventData(data);
-        }
-
-        private void HandleTranquilizerEffect()
-        {
-            DamageData data = _nwnxDamage.GetDamageEventData();
-            if (data.Total <= 0) return;
-            NWObject self = Object.OBJECT_SELF;
-
-            // Ignore the first damage because it occurred during the application of the effect.
-            if (self.GetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN") > 0)
-            {
-                self.DeleteLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN");
-                return;
-            }
-            
-            for (Effect effect = _.GetFirstEffect(self.Object); _.GetIsEffectValid(effect) == TRUE; effect = _.GetNextEffect(self.Object))
-            {
-                if (_.GetEffectTag(effect) == "TRANQUILIZER_EFFECT")
-                {
-                    _.RemoveEffect(self, effect);
-                }
-            }
-        }
-
-        private void HandleStances()
-        {
-            DamageData data = _nwnxDamage.GetDamageEventData();
-            NWPlayer damager = data.Damager.Object;
-            NWPlayer receiver = Object.OBJECT_SELF;
-            NWItem damagerWeapon = _.GetLastWeaponUsed(damager);
-
-            if (damager.IsPlayer)
-            {
-                CustomEffectType stance = _customEffect.GetCurrentStanceType(damager);
-
-                switch (stance)
-                {
-                    case CustomEffectType.ShieldOath:
-                        data.AdjustAllByPercent(-0.30f);
-                        break;
-                    case CustomEffectType.SwordOath:
-                        
-                        if (_item.MeleeWeaponTypes.Contains(damagerWeapon.BaseItemType))
-                        {
-                            data.AdjustAllByPercent(0.20f);
-                        }
-                        break;
-                }
-            }
-            
-            if (receiver.IsPlayer)
-            {
-                CustomEffectType stance = _customEffect.GetCurrentStanceType(receiver);
-            }
-
-            _nwnxDamage.SetDamageEventData(data);
-        }
-
     }
 }

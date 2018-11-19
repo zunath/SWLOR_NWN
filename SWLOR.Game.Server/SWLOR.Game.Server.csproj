@@ -214,11 +214,10 @@
     <Compile Include="CustomEffect\DarkSpreadEffect.cs" />
     <Compile Include="CustomEffect\ForceSpreadEffect.cs" />
     <Compile Include="CustomEffect\MeditateEffect.cs" />
-    <Compile Include="CustomEffect\PlasmaCellEffect.cs" />
     <Compile Include="CustomEffect\PoisonEffect.cs" />
     <Compile Include="CustomEffect\RestEffect.cs" />
     <Compile Include="CustomEffect\ShieldBoostEffect.cs" />
-    <Compile Include="CustomEffect\SwordOathEffect.cs" />
+    <Compile Include="CustomEffect\PrecisionTargetingEffect.cs" />
     <Compile Include="Data\Contracts\IDataProcessor.cs" />
     <Compile Include="Data\Contracts\IEntity.cs" />
     <Compile Include="Data\DatabaseMigrationRunner.cs" />
@@ -833,6 +832,7 @@
     <Compile Include="Perk\Fabrication\FabricationOptimization.cs" />
     <Compile Include="Perk\Fabrication\SpeedyFabrication.cs" />
     <Compile Include="Perk\General\Dash.cs" />
+    <Compile Include="Perk\Lightsaber\SaberstaffMastery.cs" />
     <Compile Include="Perk\LightSide\ForceAura.cs" />
     <Compile Include="Perk\LightSide\ForcePush.cs" />
     <Compile Include="Perk\LightSide\ForceSpread.cs" />
@@ -906,7 +906,7 @@
     <Compile Include="Perk\Shields\ExpulsionManeuver.cs" />
     <Compile Include="Perk\Stances\BalancedStance.cs" />
     <Compile Include="Perk\Stances\ShieldOath.cs" />
-    <Compile Include="Perk\Stances\SwordOath.cs" />
+    <Compile Include="Perk\Stances\PrecisionTargeting.cs" />
     <Compile Include="Perk\Survival\ExpertFarmer.cs" />
     <Compile Include="Perk\Survival\FarmingEfficiency.cs" />
     <Compile Include="Perk\Throwing\GrenadeProficiency.cs" />
@@ -920,7 +920,7 @@
     <Compile Include="Perk\OneHanded\Battlemage.cs" />
     <Compile Include="Perk\TwoHanded\Cleave.cs" />
     <Compile Include="Perk\TwoHanded\HeavyVibrobladeProficiency.cs" />
-    <Compile Include="Perk\TwinBlade\SaberstaffProficiency.cs" />
+    <Compile Include="Perk\Lightsaber\SaberstaffProficiency.cs" />
     <Compile Include="Perk\OneHanded\Knockdown.cs" />
     <Compile Include="Perk\TwoHanded\PolearmProficiency.cs" />
     <Compile Include="Perk\Weaponsmith\CraftingModInstallationWeapons.cs" />
@@ -1147,6 +1147,7 @@
     <Compile Include="Service\BehaviourService.cs" />
     <Compile Include="Service\ChatCommandService.cs" />
     <Compile Include="Service\ChatTextService.cs" />
+    <Compile Include="Service\CombatService.cs" />
     <Compile Include="Service\Contracts\IEmoteStyleService.cs" />
     <Compile Include="Service\DataPackageService.cs" />
     <Compile Include="Service\DataService.cs" />
@@ -1154,6 +1155,7 @@
     <Compile Include="Service\Contracts\IPlayerValidationService.cs" />
     <Compile Include="Service\Contracts\IDataPackageService.cs" />
     <Compile Include="Service\Contracts\IDataService.cs" />
+    <Compile Include="Service\Contracts\ICombatService.cs" />
     <Compile Include="Service\LanguageService.cs" />
     <Compile Include="Service\ColorTokenService.cs" />
     <Compile Include="Service\ComponentBonusService.cs" />
@@ -1521,6 +1523,7 @@
     <EmbeddedResource Include="Data\Migrations\2018-11-19.3.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-19.4.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-19.5.sql" />
+    <EmbeddedResource Include="Data\Migrations\2018-11-20.1.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-07.1.sql" />

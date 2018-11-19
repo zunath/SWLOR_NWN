@@ -135,7 +135,7 @@
         SpeedyScanner = 130,
         CrossCut = 131,
         ShieldOath = 132,
-        SwordOath = 133,
+        PrecisionTargeting = 133,
         ResuscitationDevices = 134,
         RangedHealing = 135,
         ImmediateForcePack = 136,
@@ -154,7 +154,8 @@
         WeaponRepair = 149,
         ArmorRepair = 150,
         LightsaberBlueprints = 151,
-        ElectronicRepair = 152
+        ElectronicRepair = 152,
+        SaberstaffMastery = 153
     }
 
 }

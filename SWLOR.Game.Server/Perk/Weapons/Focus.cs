@@ -118,7 +118,6 @@ namespace SWLOR.Game.Server.Perk.Weapons
                 case CustomItemType.FinesseVibroblade: perkType = PerkType.WeaponFocusFinesseVibroblades; break;
                 case CustomItemType.Baton: perkType = PerkType.WeaponFocusBatons; break;
                 case CustomItemType.HeavyVibroblade: perkType = PerkType.WeaponFocusHeavyVibroblades; break;
-                case CustomItemType.Saberstaff: perkType = PerkType.WeaponFocusSaberstaff; break;
                 case CustomItemType.Polearm: perkType = PerkType.WeaponFocusPolearms; break;
                 case CustomItemType.TwinBlade: perkType = PerkType.WeaponFocusTwinVibroblades; break;
                 case CustomItemType.MartialArtWeapon: perkType = PerkType.WeaponFocusMartialArts; break;
@@ -126,6 +125,7 @@ namespace SWLOR.Game.Server.Perk.Weapons
                 case CustomItemType.BlasterRifle: perkType = PerkType.WeaponFocusBlasterRifles; break;
                 case CustomItemType.Throwing: perkType = PerkType.WeaponFocusThrowing; break;
                 case CustomItemType.Lightsaber: perkType = PerkType.WeaponFocusLightsaber; break;
+                case CustomItemType.Saberstaff: perkType = PerkType.WeaponFocusSaberstaff; break;
                 default: return;
             }
             
@@ -273,6 +273,8 @@ namespace SWLOR.Game.Server.Perk.Weapons
                 case (BASE_ITEM_INVALID): feat = FEAT_WEAPON_FOCUS_UNARMED_STRIKE; break;
                 case (BASE_ITEM_WARHAMMER): feat = FEAT_WEAPON_FOCUS_WAR_HAMMER; break;
                 case (BASE_ITEM_WHIP): feat = FEAT_WEAPON_FOCUS_WHIP; break;
+                case (CustomBaseItemType.Lightsaber): feat = FEAT_WEAPON_FOCUS_LONG_SWORD; break;
+                case (CustomBaseItemType.Saberstaff): feat = FEAT_WEAPON_FOCUS_TWO_BLADED_SWORD; break;
                 default: return;
             }
 
@@ -326,6 +328,8 @@ namespace SWLOR.Game.Server.Perk.Weapons
                 case (BASE_ITEM_INVALID): feat = FEAT_WEAPON_SPECIALIZATION_UNARMED_STRIKE; break;
                 case (BASE_ITEM_WARHAMMER): feat = FEAT_WEAPON_SPECIALIZATION_WAR_HAMMER; break;
                 case (BASE_ITEM_WHIP): feat = FEAT_WEAPON_SPECIALIZATION_WHIP; break;
+                case (CustomBaseItemType.Lightsaber): feat = FEAT_WEAPON_SPECIALIZATION_LONG_SWORD; break;
+                case (CustomBaseItemType.Saberstaff): feat = FEAT_WEAPON_SPECIALIZATION_TWO_BLADED_SWORD; break;
                 default: return;
             }
 

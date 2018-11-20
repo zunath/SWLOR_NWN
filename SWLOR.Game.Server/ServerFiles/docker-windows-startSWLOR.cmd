@@ -45,6 +45,7 @@ docker run --rm -it ^
 -e NWNX_THREADWATCHDOG_SKIP=y ^
 -e NWNX_TRACKING_SKIP=y ^
 -e NWNX_TWEAKS_SKIP=n ^
+-e NWNX_WEAPON_SKIP=n ^
 -e NWNX_MONO_ASSEMBLY=/nwn/home/mono/SWLOR.Game.Server.dll ^
 -e NWNX_MONO_BASE_DIRECTORY=/nwn/home/mono ^
 -e NWNX_MONO_APP_CONFIG=/nwn/home/mono/SWLOR.Game.Server.dll.config ^

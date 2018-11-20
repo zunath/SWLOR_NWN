@@ -2,7 +2,7 @@
 {
     public class CustomBaseItemType
     {
-        public static int Saberstaff => 511;
-        public static int Lightsaber => 512;
+        public const int Saberstaff = 511;
+        public const int Lightsaber = 512;
     }
 }

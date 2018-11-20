@@ -481,8 +481,11 @@
     <Compile Include="NWNX\DamageData.cs" />
     <Compile Include="NWNX\Contracts\INWNXDamage.cs" />
     <Compile Include="NWNX\Contracts\INWNXAdmin.cs" />
+    <Compile Include="NWNX\DevastatingCriticalData.cs" />
+    <Compile Include="NWNX\Contracts\INWNXWeapon.cs" />
     <Compile Include="NWNX\NWNXAdmin.cs" />
     <Compile Include="NWNX\NWNXDamage.cs" />
+    <Compile Include="NWNX\NWNXWeapon.cs" />
     <Compile Include="NWNX\PlayerVisibilityType.cs" />
     <Compile Include="NWN\Events\Conversation\KeyItem\AnyKeyItems\any_keyitems_1.cs" />
     <Compile Include="NWN\Events\Conversation\KeyItem\AnyKeyItems\any_keyitems_10.cs" />

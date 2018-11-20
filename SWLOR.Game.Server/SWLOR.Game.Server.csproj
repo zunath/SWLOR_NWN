@@ -835,6 +835,7 @@
     <Compile Include="Perk\Fabrication\FabricationOptimization.cs" />
     <Compile Include="Perk\Fabrication\SpeedyFabrication.cs" />
     <Compile Include="Perk\General\Dash.cs" />
+    <Compile Include="Perk\Lightsaber\DeflectBlasterFire.cs" />
     <Compile Include="Perk\Lightsaber\SaberstaffMastery.cs" />
     <Compile Include="Perk\LightSide\ForceAura.cs" />
     <Compile Include="Perk\LightSide\ForcePush.cs" />

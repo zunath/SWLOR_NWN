@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Globalization;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -21,6 +23,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IPlayerStatService _playerStat;
         private readonly ICustomEffectService _customEffect;
         private readonly IItemService _item;
+        private readonly IColorTokenService _color;
         
         public CombatService(
             INWScript script,
@@ -31,7 +34,8 @@ namespace SWLOR.Game.Server.Service
             IEnmityService enmity,
             IPlayerStatService playerStat,
             ICustomEffectService customEffect,
-            IItemService item)
+            IItemService item,
+            IColorTokenService color)
         {
             _ = script;
             _nwnxDamage = nwnxDamage;
@@ -42,12 +46,14 @@ namespace SWLOR.Game.Server.Service
             _playerStat = playerStat;
             _customEffect = customEffect;
             _item = item;
+            _color = color;
         }
 
         public void OnModuleApplyDamage()
         {
             HandleWeaponStatBonuses();
             HandleStances();
+            HandleEvadeOrDeflectBlasterFire();
             HandleApplySneakAttackDamage();
             HandleBattlemagePerk();
             HandleAbsorptionFieldEffect();
@@ -58,10 +64,11 @@ namespace SWLOR.Game.Server.Service
         private void HandleWeaponStatBonuses()
         {
             DamageData data = _nwnxDamage.GetDamageEventData();
+            if (data.Total <= 0) return;
 
             NWPlayer player = data.Damager.Object;
             NWItem weapon = _.GetLastWeaponUsed(player);
-
+            
             if (weapon.CustomItemType == CustomItemType.BlasterPistol ||
                 weapon.CustomItemType == CustomItemType.BlasterRifle)
             {
@@ -78,9 +85,94 @@ namespace SWLOR.Game.Server.Service
             _nwnxDamage.SetDamageEventData(data);
         }
 
+        private void HandleEvadeOrDeflectBlasterFire()
+        {
+            DamageData data = _nwnxDamage.GetDamageEventData();
+            if (data.Total <= 0) return;
+            NWCreature damager = data.Damager.Object;
+            NWCreature target = Object.OBJECT_SELF;
+
+            NWItem damagerWeapon = _.GetLastWeaponUsed(damager);
+            NWItem targetWeapon = target.RightHand;
+
+            int perkLevel;
+
+            // Attacker isn't using a pistol or rifle. Return.
+            if (damagerWeapon.CustomItemType != CustomItemType.BlasterPistol &&
+                damagerWeapon.CustomItemType != CustomItemType.BlasterRifle)
+            {
+                return;
+            }
+
+            int modifier;
+            string action;
+            // Check target's equipped weapon and perk.
+            if (targetWeapon.CustomItemType == CustomItemType.MartialArtWeapon ||
+                !target.RightHand.IsValid && !target.LeftHand.IsValid)
+            {
+                // Martial Arts (weapon or unarmed) uses the Evade Blaster Fire perk which is primarily DEX based.
+                perkLevel = _perk.GetPCPerkLevel(target.Object, PerkType.EvadeBlasterFire);
+                modifier = target.DexterityModifier;
+                action = "evade";
+            }
+            else if (targetWeapon.CustomItemType == CustomItemType.Lightsaber ||
+                     targetWeapon.CustomItemType == CustomItemType.Saberstaff)
+            {
+                // Lightsabers (lightsaber or saberstaff) uses the Deflect Blaster Fire perk which is primarily CHA based.
+                perkLevel = _perk.GetPCPerkLevel(target.Object, PerkType.DeflectBlasterFire);
+                modifier = target.CharismaModifier;
+                action = "deflect";
+            }
+            else return;
+
+            // Check attacker's DEX against the primary stat of the perk.
+            int delta = damager.DexterityModifier - modifier;
+            if (delta <= 0) return;
+            
+            // Has the delay between block/evade attempts past?
+            DateTime cooldown = DateTime.UtcNow;
+            string lastAttemptVar = target.GetLocalString("EVADE_OR_DEFLECT_BLASTER_FIRE_COOLDOWN");
+            if (!string.IsNullOrWhiteSpace(lastAttemptVar))
+                cooldown = DateTime.Parse(lastAttemptVar);
+
+            // Cooldown hasn't expired yet. Not ready to attempt a deflect.
+            if (cooldown >= DateTime.UtcNow) return;
+
+            // Ready to attempt a deflect. Adjust chance based on the delta of attacker DEX versus primary stat of defender.
+            int chanceToDeflect = 5 * delta;
+            if (chanceToDeflect > 80) chanceToDeflect = 80;
+
+            int delay; // Seconds delay between deflect attempts.
+            switch (perkLevel)
+            {
+                case 1:
+                    delay = 18;
+                    break;
+                case 2:
+                    delay = 12;
+                    break;
+                case 3:
+                    delay = 6;
+                    break;
+                default: throw new Exception("HandleEvadeOrDeflectBlasterFire -> Perk Level " + perkLevel + " unsupported.");
+            }
+
+            cooldown = DateTime.UtcNow.AddSeconds(delay);
+            target.SetLocalString("EVADE_OR_DEFLECT_BLASTER_FIRE_COOLDOWN", cooldown.ToString(CultureInfo.InvariantCulture));
+
+            if (_random.D100(1) <= chanceToDeflect)
+            {
+                target.SendMessage(_color.Gray("You " + action + " a blaster shot."));
+                data.AdjustAllByPercent(-1);
+                _nwnxDamage.SetDamageEventData(data);
+            }
+        }
+
         private void HandleBattlemagePerk()
         {
             DamageData data = _nwnxDamage.GetDamageEventData();
+            if (data.Total <= 0) return;
+
             NWObject target = Object.OBJECT_SELF;
             if (!data.Damager.IsPlayer || !target.IsNPC) return;
             if (_.GetHasFeat((int)CustomFeatType.Battlemage, data.Damager.Object) == FALSE) return;
@@ -126,6 +218,7 @@ namespace SWLOR.Game.Server.Service
         private void HandleApplySneakAttackDamage()
         {
             DamageData data = _nwnxDamage.GetDamageEventData();
+            if (data.Total <= 0) return;
             NWObject damager = data.Damager;
             int sneakAttackType = damager.GetLocalInt("SNEAK_ATTACK_ACTIVE");
 
@@ -167,6 +260,7 @@ namespace SWLOR.Game.Server.Service
         private void HandleAbsorptionFieldEffect()
         {
             DamageData data = _nwnxDamage.GetDamageEventData();
+            if (data.Total <= 0) return;
             NWObject target = Object.OBJECT_SELF;
             if (!target.IsPlayer) return;
 

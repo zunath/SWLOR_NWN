@@ -507,7 +507,7 @@ namespace SWLOR.Game.Server.Service
 
             if (receivesBackgroundBonus)
             {
-                backgroundBAB = 2;
+                backgroundBAB = background == BackgroundType.Mandalorian ? 1 : 2;
             }
             
             return 1 + skillBAB + perkBAB + stats.BAB + backgroundBAB; // Note: Always add 1 to BAB. 0 will cause a crash in NWNX.

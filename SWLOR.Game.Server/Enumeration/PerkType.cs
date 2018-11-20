@@ -37,7 +37,7 @@
         CalledShot = 32,
         CircleKick = 33,
         Cleave = 34,
-        DeflectArrows = 35,
+        EvadeBlasterFire = 35,
         Dodge = 36,
         Expertise = 37,
         ThrowingProficiency = 38,
@@ -155,7 +155,8 @@
         ArmorRepair = 150,
         LightsaberBlueprints = 151,
         ElectronicRepair = 152,
-        SaberstaffMastery = 153
+        SaberstaffMastery = 153,
+        DeflectBlasterFire = 154
     }
 
 }

@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 
 using NWN;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Processor;
 using SWLOR.Game.Server.Service.Contracts;
@@ -27,6 +28,7 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IObjectVisibilityService _objectVisibility;
         private readonly IBackgroundThreadManager _backgroundThreadManager;
         private readonly IDataPackageService _dataPackage;
+        private readonly INWNXWeapon _nwnxWeapon;
 
         public OnModuleLoad(INWScript script,
             INWNXChat nwnxChat,
@@ -40,7 +42,8 @@ namespace SWLOR.Game.Server.Event.Module
             ICustomEffectService customEffect,
             IObjectVisibilityService objectVisibility,
             IBackgroundThreadManager backgroundThreadManager,
-            IDataPackageService dataPackage)
+            IDataPackageService dataPackage,
+            INWNXWeapon nwnxWeapon)
         {
             _ = script;
             _nwnxChat = nwnxChat;
@@ -55,6 +58,7 @@ namespace SWLOR.Game.Server.Event.Module
             _objectVisibility = objectVisibility;
             _backgroundThreadManager = backgroundThreadManager;
             _dataPackage = dataPackage;
+            _nwnxWeapon = nwnxWeapon;
         }
 
         public bool Run(params object[] args)
@@ -68,6 +72,7 @@ namespace SWLOR.Game.Server.Event.Module
             _nwnxChat.RegisterChatScript("mod_on_nwnxchat");
             SetModuleEventScripts();
             SetAreaEventScripts();
+            SetWeaponSettings();
 
             // Bioware default
             _.ExecuteScript("x2_mod_def_load", Object.OBJECT_SELF);
@@ -161,5 +166,18 @@ namespace SWLOR.Game.Server.Event.Module
             _nwnxEvents.SubscribeEvent(EventType.DMToggleAIBefore, "dm_toggle_ai");
             _nwnxEvents.SubscribeEvent(EventType.DMToggleLockBefore, "dm_toggle_lock");
         }
+
+        private void SetWeaponSettings()
+        {
+            _nwnxWeapon.SetWeaponFocusFeat(CustomBaseItemType.Lightsaber, FEAT_WEAPON_FOCUS_LONG_SWORD);
+            _nwnxWeapon.SetWeaponFocusFeat(CustomBaseItemType.Saberstaff, FEAT_WEAPON_FOCUS_TWO_BLADED_SWORD);
+
+            _nwnxWeapon.SetWeaponImprovedCriticalFeat(CustomBaseItemType.Lightsaber, FEAT_IMPROVED_CRITICAL_LONG_SWORD);
+            _nwnxWeapon.SetWeaponImprovedCriticalFeat(CustomBaseItemType.Saberstaff, FEAT_IMPROVED_CRITICAL_TWO_BLADED_SWORD);
+
+            _nwnxWeapon.SetWeaponSpecializationFeat(CustomBaseItemType.Lightsaber, FEAT_WEAPON_SPECIALIZATION_LONG_SWORD);
+            _nwnxWeapon.SetWeaponSpecializationFeat(CustomBaseItemType.Saberstaff, FEAT_WEAPON_SPECIALIZATION_TWO_BLADED_SWORD);
+        }
+
     }
 }

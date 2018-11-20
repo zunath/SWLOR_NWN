@@ -463,7 +463,7 @@ namespace SWLOR.Game.Server.Service
                     break;
                 case CustomItemType.Saberstaff:
                     proficiencyPerk = PerkType.SaberstaffProficiency;
-                    proficiencySkill = SkillType.TwoHanded;
+                    proficiencySkill = SkillType.Lightsaber;
                     break;
                 case CustomItemType.Polearm:
                     proficiencyPerk = PerkType.PolearmProficiency;

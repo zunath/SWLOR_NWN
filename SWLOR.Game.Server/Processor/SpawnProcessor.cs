@@ -108,16 +108,23 @@ namespace SWLOR.Game.Server.Processor
             if (spawn.Timer >= spawn.RespawnTime || forceSpawn)
             {
                 string resref = spawn.Resref;
+                int npcGroupID = spawn.NPCGroupID;
+                int deathVFXID = spawn.DeathVFXID;
+                string behaviour = spawn.BehaviourScript;
                 NWLocation location = spawn.IsStaticSpawnPoint ? spawn.SpawnLocation : null;
 
                 spawn.HasSpawnedOnce = true;
 
+                // Look for a spawn out of the database set. Update spawn data if one is found.
                 if (string.IsNullOrWhiteSpace(resref))
                 {
                     var dbSpawn = _data.Where<SpawnObject>(x => x.SpawnID == spawn.SpawnTableID)
                         .OrderBy(o => Guid.NewGuid()).First();
 
                     resref = dbSpawn.Resref;
+                    npcGroupID = dbSpawn.NPCGroupID ?? 0;
+                    deathVFXID = dbSpawn.DeathVFXID;
+                    behaviour = dbSpawn.BehaviourScript;
 
                     if (!string.IsNullOrWhiteSpace(dbSpawn.SpawnRule))
                     {
@@ -138,15 +145,15 @@ namespace SWLOR.Game.Server.Processor
                     return;
                 }
 
-                if (spawn.NPCGroupID > 0)
-                    spawn.Spawn.SetLocalInt("NPC_GROUP", spawn.NPCGroupID);
+                if (npcGroupID > 0)
+                    spawn.Spawn.SetLocalInt("NPC_GROUP", npcGroupID);
 
-                if (spawn.DeathVFXID > 0)
-                    spawn.Spawn.SetLocalInt("DEATH_VFX", spawn.DeathVFXID);
+                if (deathVFXID > 0)
+                    spawn.Spawn.SetLocalInt("DEATH_VFX", deathVFXID);
 
-                if (!string.IsNullOrWhiteSpace(spawn.BehaviourScript) &&
+                if (!string.IsNullOrWhiteSpace(behaviour) &&
                     string.IsNullOrWhiteSpace(spawn.Spawn.GetLocalString("BEHAVIOUR")))
-                    spawn.Spawn.SetLocalString("BEHAVIOUR", spawn.BehaviourScript);
+                    spawn.Spawn.SetLocalString("BEHAVIOUR", behaviour);
 
                 if (objectType == OBJECT_TYPE_CREATURE)
                     _spawn.AssignScriptEvents(spawn.Spawn.Object);

@@ -20,8 +20,10 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IChatTextService _chatText;
         private readonly IPlayerValidationService _playerValidation;
         private readonly IDataService _data;
+        private readonly IRaceService _race;
 
-        public OnModuleEnter(INWScript script,
+        public OnModuleEnter(
+            INWScript script,
             IPlayerService player,
             ISkillService skill,
             IQuestService quest,
@@ -31,7 +33,8 @@ namespace SWLOR.Game.Server.Event.Module
             ICustomEffectService customEffect,
             IChatTextService chatText,
             IPlayerValidationService playerValidation,
-            IDataService data)
+            IDataService data,
+            IRaceService race)
         {
             _ = script;
             _player = player;
@@ -44,6 +47,7 @@ namespace SWLOR.Game.Server.Event.Module
             _chatText = chatText;
             _playerValidation = playerValidation;
             _data = data;
+            _race = race;
         }
 
         public bool Run(params object[] args)
@@ -70,6 +74,7 @@ namespace SWLOR.Game.Server.Event.Module
             _objectVisibility.OnClientEnter();
             _customEffect.OnModuleEnter();
             _chatText.OnModuleEnter();
+            _race.OnModuleEnter();
 
             player.SetLocalInt("LOGGED_IN_ONCE", TRUE);
             return true;

@@ -16,6 +16,19 @@ namespace SWLOR.Game.Server.Service
             _ = script;
         }
 
+        public void OnModuleEnter()
+        {
+            NWPlayer player = _.GetEnteringObject();
+            if (!player.IsPlayer) return;
+
+            CustomRaceType race = (CustomRaceType) player.RacialType;
+
+            if (race == CustomRaceType.Wookiee)
+            {
+                _.SetObjectVisualTransform(player, OBJECT_VISUAL_TRANSFORM_SCALE, 1.4f);
+            }
+        }
+
         public void ApplyDefaultAppearance(NWPlayer player)
         {
             CustomRaceType race = (CustomRaceType)player.RacialType;

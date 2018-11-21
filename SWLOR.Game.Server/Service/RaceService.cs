@@ -145,6 +145,7 @@ namespace SWLOR.Game.Server.Service
                     break;
                 case CustomRaceType.Wookiee:
 
+                    appearance = APPEARANCE_TYPE_ELF;
                     skinColor = 0;
                     hairColor = 0;
                     maleHead = 192;
@@ -191,7 +192,7 @@ namespace SWLOR.Game.Server.Service
             _.SetCreatureAppearanceType(player, appearance);
             _.SetColor(player, COLOR_CHANNEL_SKIN, skinColor);
             _.SetColor(player, COLOR_CHANNEL_HAIR, hairColor);
-
+            
             if (gender == GENDER_MALE)
             {
                 _.SetCreatureBodyPart(CREATURE_PART_HEAD, maleHead, player);

@@ -143,6 +143,45 @@ namespace SWLOR.Game.Server.Service
                     femaleLeftFoot = 201;
 
                     break;
+                case CustomRaceType.Wookiee:
+
+                    skinColor = 0;
+                    hairColor = 0;
+                    maleHead = 192;
+                    femaleHead = 110;
+                    maleNeck = 1;
+                    maleTorso = 208;
+                    malePelvis = 208;
+                    maleRightBicep = 208;
+                    maleRightForearm = 208;
+                    maleRightHand = 208;
+                    maleRightThigh = 208;
+                    maleRightShin = 208;
+                    maleRightFoot = 208;
+                    maleLeftBicep = 208;
+                    maleLeftForearm = 208;
+                    maleLeftHand = 208;
+                    maleLeftThigh = 208;
+                    maleLeftShin = 208;
+                    maleLeftFoot = 208;
+
+                    femaleNeck = 1;
+                    femaleTorso = 208;
+                    femalePelvis = 208;
+                    femaleRightBicep = 208;
+                    femaleRightForearm = 208;
+                    femaleRightHand = 208;
+                    femaleRightThigh = 208;
+                    femaleRightShin = 208;
+                    femaleRightFoot = 208;
+                    femaleLeftBicep = 208;
+                    femaleLeftForearm = 208;
+                    femaleLeftHand = 208;
+                    femaleLeftThigh = 208;
+                    femaleLeftShin = 208;
+                    femaleLeftFoot = 208;
+
+                    break;
                 default:
                     {
                         _.BootPC(player, "You have selected an invalid race. This could be due to files in your override folder. Ensure these are removed from the folder and then try creating a new character. If you have any problems, visit our website at http://starwarsnwn.com");

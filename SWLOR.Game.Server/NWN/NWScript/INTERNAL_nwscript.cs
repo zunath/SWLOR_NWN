@@ -5661,6 +5661,17 @@ namespace NWN
         public const int EVENT_SCRIPT_ENCOUNTER_ON_USER_DEFINED_EVENT = 13004;
         public const int EVENT_SCRIPT_STORE_ON_OPEN = 14000;
         public const int EVENT_SCRIPT_STORE_ON_CLOSE = 14001;
+        public const int OBJECT_VISUAL_TRANSFORM_SCALE = 10;
+        public const int OBJECT_VISUAL_TRANSFORM_ROTATE_X = 21;
+        public const int OBJECT_VISUAL_TRANSFORM_ROTATE_Y = 22;
+        public const int OBJECT_VISUAL_TRANSFORM_ROTATE_Z = 23;
+        public const int OBJECT_VISUAL_TRANSFORM_TRANSLATE_X = 31;
+        public const int OBJECT_VISUAL_TRANSFORM_TRANSLATE_Y = 32;
+        public const int OBJECT_VISUAL_TRANSFORM_TRANSLATE_Z = 33;
+        public const int OBJECT_VISUAL_TRANSFORM_ANIMATION_SPEED = 40;
+        public const int VIBRATOR_MOTOR_ANY = 0;
+        public const int VIBRATOR_MOTOR_LEFT = 1;
+        public const int VIBRATOR_MOTOR_RIGHT = 2;
         public const string sLanguage = "nwscript";
         //  Get an integer between 0 and nMaxInteger-1.
         //  Return value on error: 0
@@ -11009,10 +11020,10 @@ namespace NWN
             Internal.CallBuiltIn(515);
         }
 
-        //  All clients in oArea will recompute the  lighting.
+        //  All clients in oArea will recompute the static lighting.
         //  This can be used to update the lighting after changing any tile lights or if
         //  placeables with lights have been added/deleted.
-        public void RecomputeLighting(Object oArea)
+        public void RecomputeStaticLighting(Object oArea)
         {
             Internal.StackPushObject(oArea, false);
             Internal.CallBuiltIn(516);
@@ -11299,12 +11310,12 @@ namespace NWN
         //  - oPlaceable
         //  - bIlluminate: if this is TRUE, oPlaceable's illumination will be turned on.
         //    If this is FALSE, oPlaceable's illumination will be turned off.
-        //  Note: You must call RecomputeLighting() after calling this function in
+        //  Note: You must call RecomputeStaticLighting() after calling this function in
         //  order for the changes to occur visually for the players.
         //  SetPlaceableIllumination() buffers the illumination changes, which are then
-        //  sent out to the players once RecomputeLighting() is called.  As such,
+        //  sent out to the players once RecomputeStaticLighting() is called.  As such,
         //  it is best to call SetPlaceableIllumination() for all the placeables you wish
-        //  to set the illumination on, and then call RecomputeLighting() once after
+        //  to set the illumination on, and then call RecomputeStaticLighting() once after
         //  all the placeable illumination has been set.
         //  * If oPlaceable is not a placeable object, or oPlaceable is a placeable that
         //    doesn't have a light, nothing will happen.
@@ -14910,7 +14921,7 @@ namespace NWN
         }
 
         //  Set oPlaceable's useable object status.
-        //  Note: Only works on non- placeables.
+        //  Note: Only works on non-static placeables.
         public void SetUseableFlag(Object oPlaceable, int nUseableFlag)
         {
             Internal.StackPushInteger(nUseableFlag);
@@ -15496,6 +15507,100 @@ namespace NWN
             Internal.StackPushObject(oObject, false);
             Internal.CallBuiltIn(886);
             return Internal.StackPopInteger();
+        }
+
+        //  Gets a visual transform on the given object.
+        //  - oObject can be any valid Creature, Placeable, Item or Door.
+        //  - nTransform is one of OBJECT_VISUAL_TRANSFORM_*
+        //  Returns the current (or default) value.
+        public float GetObjectVisualTransform(Object oObject, int nTransform)
+        {
+            Internal.StackPushInteger(nTransform);
+            Internal.StackPushObject(oObject, false);
+            Internal.CallBuiltIn(887);
+            return Internal.StackPopFloat();
+        }
+
+        //  Sets a visual transform on the given object.
+        //  - oObject can be any valid Creature, Placeable, Item or Door.
+        //  - nTransform is one of OBJECT_VISUAL_TRANSFORM_*
+        //  - fValue depends on the transformation to apply.
+        //  Returns the old/previous value.
+        public float SetObjectVisualTransform(Object oObject, int nTransform, float fValue)
+        {
+            Internal.StackPushFloat(fValue);
+            Internal.StackPushInteger(nTransform);
+            Internal.StackPushObject(oObject, false);
+            Internal.CallBuiltIn(888);
+            return Internal.StackPopFloat();
+        }
+
+        //  Sets an integer material shader uniform override.
+        //  - sMaterial needs to be a material on that object.
+        //  - sParam needs to be a valid shader parameter already defined on the material.
+        public void SetMaterialShaderUniformInt(Object oObject, string sMaterial, string sParam, int nValue)
+        {
+            Internal.StackPushInteger(nValue);
+            Internal.StackPushString(sParam);
+            Internal.StackPushString(sMaterial);
+            Internal.StackPushObject(oObject, false);
+            Internal.CallBuiltIn(889);
+        }
+
+        //  Sets a vec4 material shader uniform override.
+        //  - sMaterial needs to be a material on that object.
+        //  - sParam needs to be a valid shader parameter already defined on the material.
+        //  - You can specify a single float value to set just a float, instead of a vec4.
+        public void SetMaterialShaderUniformVec4(Object oObject, string sMaterial, string sParam, float fValue1, float fValue2 = 0.0f, float fValue3 = 0.0f, float fValue4 = 0.0f)
+        {
+            Internal.StackPushFloat(fValue4);
+            Internal.StackPushFloat(fValue3);
+            Internal.StackPushFloat(fValue2);
+            Internal.StackPushFloat(fValue1);
+            Internal.StackPushString(sParam);
+            Internal.StackPushString(sMaterial);
+            Internal.StackPushObject(oObject, false);
+            Internal.CallBuiltIn(890);
+        }
+
+        //  Resets material shader parameters on the given object:
+        //  - Supply a material to only reset shader uniforms for meshes with that material.
+        //  - Supply a parameter to only reset shader uniforms of that name.
+        //  - Supply both to only reset shader uniforms of that name on meshes with that material.
+        public void ResetMaterialShaderUniforms(Object oObject, string sMaterial = "", string sParam = "")
+        {
+            Internal.StackPushString(sParam);
+            Internal.StackPushString(sMaterial);
+            Internal.StackPushObject(oObject, false);
+            Internal.CallBuiltIn(891);
+        }
+
+        //  Vibrate the player's device or controller. Does nothing if vibration is not supported.
+        //  - nMotor is one of VIBRATOR_MOTOR_*
+        //  - fStrength is between 0.0 and 1.0
+        //  - fSeconds is the number of seconds to vibrate
+        public void Vibrate(Object oPlayer, int nMotor, float fStrength, float fSeconds)
+        {
+            Internal.StackPushFloat(fSeconds);
+            Internal.StackPushFloat(fStrength);
+            Internal.StackPushInteger(nMotor);
+            Internal.StackPushObject(oPlayer, false);
+            Internal.CallBuiltIn(892);
+        }
+
+        //  Unlock an achievement for the given player who must be logged in.
+        //  - sId is the achievement ID on the remote server
+        //  - nLastValue is the previous value of the associated achievement stat
+        //  - nCurValue is the current value of the associated achievement stat
+        //  - nMaxValue is the maximum value of the associate achievement stat
+        public void UnlockAchievement(Object oPlayer, string sId, int nLastValue = 0, int nCurValue = 0, int nMaxValue = 0)
+        {
+            Internal.StackPushInteger(nMaxValue);
+            Internal.StackPushInteger(nCurValue);
+            Internal.StackPushInteger(nLastValue);
+            Internal.StackPushString(sId);
+            Internal.StackPushObject(oPlayer, false);
+            Internal.CallBuiltIn(893);
         }
 
     }

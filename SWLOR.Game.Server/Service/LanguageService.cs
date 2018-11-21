@@ -65,7 +65,10 @@ namespace SWLOR.Game.Server.Service
                     string[] split = snippet.Split(' ');
                     for (int i = 0; i < split.Length; ++i)
                     {
-                        split[i] = new string(split[i].ToCharArray().OrderBy(s => (_randomService.Random(2) % 2) == 0).ToArray());
+                        if (_randomService.Random(100) <= garbledChance)
+                        {
+                            split[i] = new string(split[i].ToCharArray().OrderBy(s => (_randomService.Random(2) % 2) == 0).ToArray());
+                        }
                     }
 
                     snippet = split.Aggregate((a, b) => a + " " + b);

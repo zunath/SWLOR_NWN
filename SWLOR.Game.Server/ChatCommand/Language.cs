@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using SWLOR.Game.Server.ChatCommand.Contracts;
+﻿using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.ChatCommand
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             string command = args[0].ToLower();
+            CustomRaceType race = (CustomRaceType)user.RacialType;
 
             if (command == "help")
             {
@@ -38,6 +39,15 @@ namespace SWLOR.Game.Server.ChatCommand
                 }
 
                 user.SendMessage(commands.Aggregate((a, b) => a + '\n' + b));
+                return;
+            }
+
+            // Wookiees cannot speak any language besides Shyriiwook.
+            if (race == CustomRaceType.Wookiee && 
+                command != SkillType.Shyriiwook.ToString().ToLower())
+            {
+                _language.SetActiveLanguage(user, SkillType.Shyriiwook);
+                user.SendMessage(_color.Red("Wookiees can only speak Shyriiwook."));
                 return;
             }
 

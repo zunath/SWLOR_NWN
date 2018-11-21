@@ -252,6 +252,15 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 SkillType language = _language.GetActiveLanguage(sender);
+                
+                // Wookiees cannot speak any other language (but they can understand them).
+                // Swap their language if they attempt to speak in any other language.
+                CustomRaceType race = (CustomRaceType) _.GetRacialType(sender);
+                if (race == CustomRaceType.Wookiee && language != SkillType.Shyriiwook)
+                {
+                    _language.SetActiveLanguage(sender, SkillType.Shyriiwook);
+                    language = SkillType.Shyriiwook;
+                }
 
                 int colour = _language.GetColour(language);
                 byte r = (byte)(colour >> 24 & 0xFF);

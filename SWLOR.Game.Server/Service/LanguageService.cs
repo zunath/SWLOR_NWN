@@ -185,6 +185,7 @@ namespace SWLOR.Game.Server.Service
         public void InitializePlayerLanguages(NWPlayer player)
         {
             CustomRaceType race = (CustomRaceType)player.RacialType;
+            BackgroundType background = (BackgroundType)player.Class1;
             var languages = new List<SkillType>(new[] { SkillType.Basic });
 
             switch (race)
@@ -209,6 +210,13 @@ namespace SWLOR.Game.Server.Service
                     break;
                 case CustomRaceType.Trandoshan:
                     languages.Add(SkillType.Dosh);
+                    break;
+            }
+
+            switch (background)
+            {
+                case BackgroundType.Mandalorian:
+                    languages.Add(SkillType.Mandoa);
                     break;
             }
 

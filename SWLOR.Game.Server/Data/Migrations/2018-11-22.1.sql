@@ -72,3 +72,9 @@ VALUES ( 68 ,    -- ID - int
          9 ,    -- Sequence - int
          N''    -- Icon - nvarchar(32)
     )
+
+
+-- Disable the cooking perk category
+UPDATE dbo.PerkCategory
+SET IsActive = 0
+WHERE ID = 27

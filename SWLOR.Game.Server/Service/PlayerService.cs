@@ -180,6 +180,7 @@ namespace SWLOR.Game.Server.Service
         
         private Player CreateDBPCEntity(NWPlayer player)
         {
+            CustomRaceType race = (CustomRaceType)player.RacialType;
             AssociationType assType; 
             int goodEvil = _.GetAlignmentGoodEvil(player);
             int lawChaos = _.GetAlignmentLawChaos(player);
@@ -230,6 +231,10 @@ namespace SWLOR.Game.Server.Service
                 throw new Exception("Association type not found. GoodEvil = " + goodEvil + ", LawChaos = " + lawChaos);
             }
 
+            int sp = 5;
+            if (race == CustomRaceType.Human)
+                sp++;
+
             Player entity = new Player
             {
                 ID = player.GlobalID,
@@ -241,7 +246,7 @@ namespace SWLOR.Game.Server.Service
                 LocationZ = player.Position.m_Z,
                 LocationOrientation = player.Facing,
                 CreateTimestamp = DateTime.UtcNow,
-                UnallocatedSP = 5,
+                UnallocatedSP = sp,
                 HPRegenerationAmount = 1,
                 RegenerationTick = 20,
                 RegenerationRate = 0,

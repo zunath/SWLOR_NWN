@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Event.Module
                 App.GetAppState().ConnectedDMs.Add(player);
             }
 
-            _.ExecuteScript("x3_mod_def_enter", Object.OBJECT_SELF);
+            _.ExecuteScript("dmfi_onclienter ", Object.OBJECT_SELF); // DMFI also calls "x3_mod_def_enter"
             _playerValidation.OnModuleEnter();
             _player.InitializePlayer(player);
             _data.CachePlayerData(player);

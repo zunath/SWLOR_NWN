@@ -211,6 +211,9 @@ namespace SWLOR.Game.Server.Service
                 case CustomRaceType.Trandoshan:
                     languages.Add(SkillType.Dosh);
                     break;
+                case CustomRaceType.Cyborg:
+                    languages.Add(SkillType.Droidspeak);
+                    break;
             }
 
             switch (background)

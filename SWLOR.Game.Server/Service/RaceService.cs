@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Service
 
             if (race == CustomRaceType.Wookiee)
             {
-                _.SetObjectVisualTransform(player, OBJECT_VISUAL_TRANSFORM_SCALE, 1.4f);
+                _.SetObjectVisualTransform(player, OBJECT_VISUAL_TRANSFORM_SCALE, 1.2f);
             }
         }
 

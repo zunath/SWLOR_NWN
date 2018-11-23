@@ -339,6 +339,7 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
         {
+            _.SetCommandable(TRUE, GetPC());
         }
 
         public override void EndDialog()

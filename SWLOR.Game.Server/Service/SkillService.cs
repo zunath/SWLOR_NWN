@@ -11,6 +11,7 @@ using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 using static NWN.NWScript;
 using Object = NWN.Object;
+using SWLOR.Game.Server.NWNX.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -27,6 +28,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IItemService _item;
         private readonly IDataService _data;
         private readonly AppCache _cache;
+        private readonly INWNXProfiler _nwnxProfiler;
 
         public SkillService(
             INWScript script,
@@ -36,7 +38,8 @@ namespace SWLOR.Game.Server.Service
             IPlayerStatService playerStat,
             IItemService item,
             IDataService data,
-            AppCache cache)
+            AppCache cache,
+            INWNXProfiler nwnxProfiler)
         {
             _ = script;
             _random = random;
@@ -46,6 +49,7 @@ namespace SWLOR.Game.Server.Service
             _item = item;
             _data = data;
             _cache = cache;
+            _nwnxProfiler = nwnxProfiler;
         }
 
         public int SkillCap => 500;
@@ -422,24 +426,50 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleItemEquipped()
         {
-            NWPlayer oPC = _.GetPCItemLastEquippedBy();
-            if (!oPC.IsInitializedAsPlayer) return; // Players who log in for the first time don't have an ID yet.
-            if (oPC.GetLocalInt("LOGGED_IN_ONCE") <= 0) return; // Don't fire heavy calculations if this is the player's first log in after a restart.
+            _nwnxProfiler.PushPerfScope("SkillService::OnModuleItemEquipped()");
 
-            NWItem oItem = _.GetPCItemLastEquipped();
-            _playerStat.ApplyStatChanges(oPC, null);
-            ApplyWeaponPenalties(oPC, oItem);
-            ApplyEquipmentPenalties(oPC, oItem);
+            try
+            {
+                NWPlayer oPC = _.GetPCItemLastEquippedBy();
+                if (!oPC.IsInitializedAsPlayer) return; // Players who log in for the first time don't have an ID yet.
+                if (oPC.GetLocalInt("LOGGED_IN_ONCE") <= 0) return; // Don't fire heavy calculations if this is the player's first log in after a restart.
+
+                NWItem oItem = _.GetPCItemLastEquipped();
+                _playerStat.ApplyStatChanges(oPC, null);
+                ApplyWeaponPenalties(oPC, oItem);
+                ApplyEquipmentPenalties(oPC, oItem);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                _nwnxProfiler.PopPerfScope();
+            }
         }
 
         public void OnModuleItemUnequipped()
         {
-            NWPlayer oPC = _.GetPCItemLastUnequippedBy();
-            NWItem oItem = _.GetPCItemLastUnequipped();
-            HandleGlovesUnequipEvent();
-            _playerStat.ApplyStatChanges(oPC, oItem);
-            RemoveWeaponPenalties(oItem);
-            RemoveEquipmentPenalties(oItem);
+            _nwnxProfiler.PushPerfScope("SkillService::OnModuleItemUnequipped()");
+
+            try
+            {
+                NWPlayer oPC = _.GetPCItemLastUnequippedBy();
+                NWItem oItem = _.GetPCItemLastUnequipped();
+                HandleGlovesUnequipEvent();
+                _playerStat.ApplyStatChanges(oPC, oItem);
+                RemoveWeaponPenalties(oItem);
+                RemoveEquipmentPenalties(oItem);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                _nwnxProfiler.PopPerfScope();
+            }
         }
 
         public float CalculateRegisteredSkillLevelAdjustedXP(float xp, int registeredLevel, int skillRank)

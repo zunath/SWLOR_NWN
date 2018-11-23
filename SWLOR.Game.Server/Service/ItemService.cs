@@ -24,19 +24,22 @@ namespace SWLOR.Game.Server.Service
         private readonly IColorTokenService _color;
         private readonly INWNXPlayer _nwnxPlayer;
         private readonly IDataService _data;
+        private readonly INWNXProfiler _nwnxProfiler;
 
         public ItemService(
             INWScript script,
             IBiowareXP2 xp2,
             IColorTokenService color,
             INWNXPlayer nwnxPlayer,
-            IDataService data)
+            IDataService data,
+            INWNXProfiler nwnxProfiler)
         {
             _ = script;
             _xp2 = xp2;
             _color = color;
             _nwnxPlayer = nwnxPlayer;
             _data = data;
+            _nwnxProfiler = nwnxProfiler;
         }
 
         public string GetNameByResref(string resref)
@@ -397,110 +400,125 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleEquipItem()
         {
-            int[] validItemTypes = {
-                BASE_ITEM_ARMOR,
-                BASE_ITEM_ARROW,
-                BASE_ITEM_BASTARDSWORD,
-                BASE_ITEM_BATTLEAXE,
-                BASE_ITEM_BELT,
-                BASE_ITEM_BOLT,
-                BASE_ITEM_BOOTS,
-                BASE_ITEM_BRACER,
-                BASE_ITEM_BULLET,
-                BASE_ITEM_CLOAK,
-                BASE_ITEM_CLUB,
-                BASE_ITEM_DAGGER,
-                BASE_ITEM_DART,
-                BASE_ITEM_DIREMACE,
-                BASE_ITEM_DOUBLEAXE,
-                BASE_ITEM_DWARVENWARAXE,
-                BASE_ITEM_GLOVES,
-                BASE_ITEM_GREATAXE,
-                BASE_ITEM_GREATSWORD,
-                BASE_ITEM_GRENADE,
-                BASE_ITEM_HALBERD,
-                BASE_ITEM_HANDAXE,
-                BASE_ITEM_HEAVYCROSSBOW,
-                BASE_ITEM_HEAVYFLAIL,
-                BASE_ITEM_HELMET,
-                BASE_ITEM_KAMA,
-                BASE_ITEM_KATANA,
-                BASE_ITEM_KUKRI,
-                BASE_ITEM_LARGESHIELD,
-                BASE_ITEM_LIGHTCROSSBOW,
-                BASE_ITEM_LIGHTFLAIL,
-                BASE_ITEM_LIGHTHAMMER,
-                BASE_ITEM_LIGHTMACE,
-                BASE_ITEM_LONGBOW,
-                BASE_ITEM_LONGSWORD,
-                BASE_ITEM_MORNINGSTAR,
-                BASE_ITEM_QUARTERSTAFF,
-                BASE_ITEM_RAPIER,
-                BASE_ITEM_SCIMITAR,
-                BASE_ITEM_SCYTHE,
-                BASE_ITEM_SHORTBOW,
-                BASE_ITEM_SHORTSPEAR,
-                BASE_ITEM_SHORTSWORD,
-                BASE_ITEM_SHURIKEN,
-                BASE_ITEM_SICKLE,
-                BASE_ITEM_SLING,
-                BASE_ITEM_SMALLSHIELD,
-                BASE_ITEM_THROWINGAXE,
-                BASE_ITEM_TOWERSHIELD,
-                BASE_ITEM_TRIDENT,
-                BASE_ITEM_TWOBLADEDSWORD,
-                BASE_ITEM_WARHAMMER,
-                BASE_ITEM_WHIP,
-                CustomBaseItemType.Saberstaff,
-                CustomBaseItemType.Lightsaber
+            _nwnxProfiler.PushPerfScope("ItemService::OnModuleEquipItem()");
 
-        };
-
-            NWPlayer player = _.GetPCItemLastEquippedBy();
-            NWItem oItem = (_.GetPCItemLastEquipped());
-            int baseItemType = oItem.BaseItemType;
-
-            // Handle lightsaber sounds
-            if (oItem.CustomItemType == CustomItemType.Lightsaber ||
-                oItem.CustomItemType == CustomItemType.Saberstaff)
+            try
             {
-                player.AssignCommand(() =>
+
+                int[] validItemTypes = {
+                    BASE_ITEM_ARMOR,
+                    BASE_ITEM_ARROW,
+                    BASE_ITEM_BASTARDSWORD,
+                    BASE_ITEM_BATTLEAXE,
+                    BASE_ITEM_BELT,
+                    BASE_ITEM_BOLT,
+                    BASE_ITEM_BOOTS,
+                    BASE_ITEM_BRACER,
+                    BASE_ITEM_BULLET,
+                    BASE_ITEM_CLOAK,
+                    BASE_ITEM_CLUB,
+                    BASE_ITEM_DAGGER,
+                    BASE_ITEM_DART,
+                    BASE_ITEM_DIREMACE,
+                    BASE_ITEM_DOUBLEAXE,
+                    BASE_ITEM_DWARVENWARAXE,
+                    BASE_ITEM_GLOVES,
+                    BASE_ITEM_GREATAXE,
+                    BASE_ITEM_GREATSWORD,
+                    BASE_ITEM_GRENADE,
+                    BASE_ITEM_HALBERD,
+                    BASE_ITEM_HANDAXE,
+                    BASE_ITEM_HEAVYCROSSBOW,
+                    BASE_ITEM_HEAVYFLAIL,
+                    BASE_ITEM_HELMET,
+                    BASE_ITEM_KAMA,
+                    BASE_ITEM_KATANA,
+                    BASE_ITEM_KUKRI,
+                    BASE_ITEM_LARGESHIELD,
+                    BASE_ITEM_LIGHTCROSSBOW,
+                    BASE_ITEM_LIGHTFLAIL,
+                    BASE_ITEM_LIGHTHAMMER,
+                    BASE_ITEM_LIGHTMACE,
+                    BASE_ITEM_LONGBOW,
+                    BASE_ITEM_LONGSWORD,
+                    BASE_ITEM_MORNINGSTAR,
+                    BASE_ITEM_QUARTERSTAFF,
+                    BASE_ITEM_RAPIER,
+                    BASE_ITEM_SCIMITAR,
+                    BASE_ITEM_SCYTHE,
+                    BASE_ITEM_SHORTBOW,
+                    BASE_ITEM_SHORTSPEAR,
+                    BASE_ITEM_SHORTSWORD,
+                    BASE_ITEM_SHURIKEN,
+                    BASE_ITEM_SICKLE,
+                    BASE_ITEM_SLING,
+                    BASE_ITEM_SMALLSHIELD,
+                    BASE_ITEM_THROWINGAXE,
+                    BASE_ITEM_TOWERSHIELD,
+                    BASE_ITEM_TRIDENT,
+                    BASE_ITEM_TWOBLADEDSWORD,
+                    BASE_ITEM_WARHAMMER,
+                    BASE_ITEM_WHIP,
+                    CustomBaseItemType.Saberstaff,
+                    CustomBaseItemType.Lightsaber
+
+            };
+
+                NWPlayer player = _.GetPCItemLastEquippedBy();
+                NWItem oItem = (_.GetPCItemLastEquipped());
+                int baseItemType = oItem.BaseItemType;
+
+                // Handle lightsaber sounds
+                if (oItem.CustomItemType == CustomItemType.Lightsaber ||
+                    oItem.CustomItemType == CustomItemType.Saberstaff)
                 {
-                    _.PlaySound("saberon");
-                });
-            }
-
-            if (!validItemTypes.Contains(baseItemType)) return;
-
-            AddOnHitProperty(oItem);
-
-            // Check ammo every time
-            if(player.Arrows.IsValid)
-            {
-                AddOnHitProperty(player.Arrows);
-                player.Arrows.RecommendedLevel = oItem.RecommendedLevel;
-            }
-
-            if (player.Bolts.IsValid)
-            {
-                AddOnHitProperty(player.Bolts);
-                player.Bolts.RecommendedLevel = oItem.RecommendedLevel;
-            }
-
-            if (player.Bullets.IsValid)
-            {
-                AddOnHitProperty(player.Bullets);
-                player.Bullets.RecommendedLevel = oItem.RecommendedLevel;
-            }
-
-
-            if (baseItemType == BASE_ITEM_TORCH)
-            {
-                int charges = oItem.ReduceCharges();
-                if (charges <= 0)
-                {
-                    oItem.Destroy();
+                    player.AssignCommand(() =>
+                    {
+                        _.PlaySound("saberon");
+                    });
                 }
+
+                if (!validItemTypes.Contains(baseItemType)) return;
+
+                AddOnHitProperty(oItem);
+
+                // Check ammo every time
+                if(player.Arrows.IsValid)
+                {
+                    AddOnHitProperty(player.Arrows);
+                    player.Arrows.RecommendedLevel = oItem.RecommendedLevel;
+                }
+
+                if (player.Bolts.IsValid)
+                {
+                    AddOnHitProperty(player.Bolts);
+                    player.Bolts.RecommendedLevel = oItem.RecommendedLevel;
+                }
+
+                if (player.Bullets.IsValid)
+                {
+                    AddOnHitProperty(player.Bullets);
+                    player.Bullets.RecommendedLevel = oItem.RecommendedLevel;
+                }
+
+
+                if (baseItemType == BASE_ITEM_TORCH)
+                {
+                    int charges = oItem.ReduceCharges();
+                    if (charges <= 0)
+                    {
+                        oItem.Destroy();
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                _nwnxProfiler.PopPerfScope();
             }
         }
 

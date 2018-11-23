@@ -8,6 +8,7 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.NWNX.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -15,35 +16,63 @@ namespace SWLOR.Game.Server.Service
     {
         private readonly IDataService _data;
         private readonly INWScript _;
+        private readonly INWNXProfiler _nwnxProfiler;
 
-        public HelmetToggleService(IDataService data, INWScript script)
+        public HelmetToggleService(IDataService data, INWScript script, INWNXProfiler nwnxProfiler)
         {
             _data = data;
             _ = script;
+            _nwnxProfiler = nwnxProfiler;
         }
 
         public void OnModuleItemEquipped()
         {
-            NWPlayer player = (_.GetPCItemLastEquippedBy());
-            if (!player.IsPlayer || !player.IsInitializedAsPlayer) return;
+            _nwnxProfiler.PushPerfScope("HelmetToggleService::OnModuleItemEquipped()");
 
-            NWItem item = (_.GetPCItemLastEquipped());
-            if (item.BaseItemType != NWScript.BASE_ITEM_HELMET) return;
+            try
+            {
+                NWPlayer player = (_.GetPCItemLastEquippedBy());
+                if (!player.IsPlayer || !player.IsInitializedAsPlayer) return;
 
-            Player pc = _data.Single<Player>(x => x.ID == player.GlobalID);
-            _.SetHiddenWhenEquipped(item.Object, !pc.DisplayHelmet == false ? 0 : 1);
+                NWItem item = (_.GetPCItemLastEquipped());
+                if (item.BaseItemType != NWScript.BASE_ITEM_HELMET) return;
+
+                Player pc = _data.Single<Player>(x => x.ID == player.GlobalID);
+                _.SetHiddenWhenEquipped(item.Object, !pc.DisplayHelmet == false ? 0 : 1);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                _nwnxProfiler.PopPerfScope();
+            }
         }
 
         public void OnModuleItemUnequipped()
         {
-            NWPlayer player = (_.GetPCItemLastUnequippedBy());
-            if (!player.IsPlayer) return;
+            _nwnxProfiler.PushPerfScope("HelmetToggleService::OnModuleItemUnequipped()");
 
-            NWItem item = (_.GetPCItemLastUnequipped());
-            if (item.BaseItemType != NWScript.BASE_ITEM_HELMET) return;
+            try
+            {
+                NWPlayer player = (_.GetPCItemLastUnequippedBy());
+                if (!player.IsPlayer) return;
 
-            Player pc = _data.Single<Player>(x => x.ID == player.GlobalID);
-            _.SetHiddenWhenEquipped(item.Object, !pc.DisplayHelmet == false ? 0 : 1);
+                NWItem item = (_.GetPCItemLastUnequipped());
+                if (item.BaseItemType != NWScript.BASE_ITEM_HELMET) return;
+
+                Player pc = _data.Single<Player>(x => x.ID == player.GlobalID);
+                _.SetHiddenWhenEquipped(item.Object, !pc.DisplayHelmet == false ? 0 : 1);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                _nwnxProfiler.PopPerfScope();
+            }
         }
 
         public void ToggleHelmetDisplay(NWPlayer player)

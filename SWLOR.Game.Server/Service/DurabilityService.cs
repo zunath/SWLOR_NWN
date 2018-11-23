@@ -6,6 +6,7 @@ using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN.NWScript;
+using SWLOR.Game.Server.NWNX.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -15,13 +16,16 @@ namespace SWLOR.Game.Server.Service
 
         private readonly INWScript _;
         private readonly IColorTokenService _color;
+        private readonly INWNXProfiler _nwnxProfiler;
 
         public DurabilityService(
             INWScript script,
-            IColorTokenService color)
+            IColorTokenService color,
+            INWNXProfiler nwnxProfiler)
         {
             _ = script;
             _color = color;
+            _nwnxProfiler = nwnxProfiler;
         }
         
         private void InitializeDurability(NWItem item)
@@ -101,19 +105,32 @@ namespace SWLOR.Game.Server.Service
         
         public void OnModuleEquip()
         {
-            NWPlayer oPC = (_.GetPCItemLastEquippedBy());
-            NWItem oItem = (_.GetPCItemLastEquipped());
-            float durability = GetDurability(oItem);
+            _nwnxProfiler.PushPerfScope("DurabilityService::OnModuleEquip()");
 
-            if (durability <= 0 && durability != -1)
+            try
             {
-                oPC.AssignCommand(() =>
+                NWPlayer oPC = (_.GetPCItemLastEquippedBy());
+                NWItem oItem = (_.GetPCItemLastEquipped());
+                float durability = GetDurability(oItem);
+
+                if (durability <= 0 && durability != -1)
                 {
-                    _.ClearAllActions();
-                    _.ActionUnequipItem(oItem.Object);
-                });
-                
-                oPC.FloatingText(_color.Red("That item is broken and must be repaired before you can use it."));
+                    oPC.AssignCommand(() =>
+                    {
+                        _.ClearAllActions();
+                        _.ActionUnequipItem(oItem.Object);
+                    });
+
+                    oPC.FloatingText(_color.Red("That item is broken and must be repaired before you can use it."));
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                _nwnxProfiler.PopPerfScope();
             }
         }
 

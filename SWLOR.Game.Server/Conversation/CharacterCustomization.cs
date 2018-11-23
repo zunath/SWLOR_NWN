@@ -426,7 +426,7 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("ChangeHairColorPage");
 
             // These IDs are pulled from the HairColors.jpg file found in the ServerFiles/Reference folder.
-            int[] HumanHairColors = { 0, 1, 2, 3, 4, 5, 9, 10, 11, 12, 13, 14, 15, };
+            int[] HumanHairColors = { 0, 1, 2, 3, 4, 5, 9, 10, 11, 12, 13, 14, 15, 23, 167};
             int[] BothanHairColors = { 2, 3, };
             int[] ChissHairColors = { 23, 51, 63 };
             int[] ZabrakHairColors = { 0 };

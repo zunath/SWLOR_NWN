@@ -49,8 +49,7 @@ namespace SWLOR.Game.Server.Service
             if (!player.IsInitializedAsPlayer) return;
             
             Player pcEntity = _data.Get<Player>(player.GlobalID);
-            List<PCSkill> skills = _data.Where<PCSkill>(x => x.PlayerID == player.GlobalID && 
-                                                             x.Rank > 0).ToList();
+            List<PCSkill> skills = _data.Where<PCSkill>(x => x.PlayerID == player.GlobalID && x.Rank > 0).ToList();
             var itemBonuses = GetPlayerItemEffectiveStats(player, ignoreItem);
 
             float strBonus = 0.0f;
@@ -66,7 +65,6 @@ namespace SWLOR.Game.Server.Service
                 CustomAttribute primary = (CustomAttribute)skill.Primary;
                 CustomAttribute secondary = (CustomAttribute)skill.Secondary;
                 CustomAttribute tertiary = (CustomAttribute)skill.Tertiary;
-                if (primary == CustomAttribute.NA && secondary == CustomAttribute.NA && tertiary == CustomAttribute.NA) continue;
 
                 // Primary Bonuses
                 if (primary == CustomAttribute.STR) strBonus += PrimaryIncrease * pcSkill.Rank;

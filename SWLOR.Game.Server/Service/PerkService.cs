@@ -9,13 +9,6 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Perk;
-using SWLOR.Game.Server.Perk.Armor;
-using SWLOR.Game.Server.Perk.Blaster;
-using SWLOR.Game.Server.Perk.MartialArts;
-using SWLOR.Game.Server.Perk.OneHanded;
-using SWLOR.Game.Server.Perk.Throwing;
-using SWLOR.Game.Server.Perk.TwoHanded;
-using SWLOR.Game.Server.Perk.Weapons;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN.NWScript;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
@@ -77,94 +70,16 @@ namespace SWLOR.Game.Server.Service
             if (oPC.GetLocalInt("LOGGED_IN_ONCE") == FALSE) return;
 
             var executionPerks = GetPCPerksByExecutionType(oPC, PerkExecutionType.EquipmentBased);
-
             foreach (PCPerk pcPerk in executionPerks)
             {
-                PerkType perk = (PerkType)pcPerk.PerkID;
+                var perk = _data.Get<Data.Entity.Perk>(pcPerk.PerkID);
+                string jsName = perk.ScriptName;
+                if (string.IsNullOrWhiteSpace(jsName)) continue;
 
-                // Pulling from the IOC container is too slow for this so we're stuck with this nasty case statement.
-                switch (perk)
+                App.ResolveByInterface<IPerk>("Perk." + jsName, (perkAction) =>
                 {
-                    case PerkType.PointBlankShot:
-                        new PointBlankShot(_, _nwnxCreature).OnItemEquipped(oPC, oItem);
-                        break;
-                    case PerkType.DualWielding:
-                        new DualWielding(_, _nwnxCreature, this).OnItemEquipped(oPC, oItem);
-                        break;
-                    case PerkType.BladePowerAttack:
-                        new BladePowerAttack(_, _nwnxCreature, this).OnItemEquipped(oPC, oItem);
-                        break;
-                    case PerkType.BluntPowerAttack:
-                        new BluntPowerAttack(_, _nwnxCreature, this).OnItemEquipped(oPC, oItem);
-                        break;
-                    case PerkType.CalledShot:
-                        new CalledShot(_, _nwnxCreature, this).OnItemEquipped(oPC, oItem);
-                        break;
-                    case PerkType.CircleKick:
-                        new CircleKick(_, _nwnxCreature).OnItemEquipped(oPC, oItem);
-                        break;
-                    case PerkType.Cleave:
-                        new Cleave(_, _nwnxCreature, this).OnItemEquipped(oPC, oItem);
-                        break;
-                    case PerkType.Dodge:
-                        new Dodge(_nwnxCreature).OnItemEquipped(oPC, oItem);
-                        break;
-                    case PerkType.Expertise:
-                        new Expertise(_nwnxCreature).OnItemEquipped(oPC, oItem);
-                        break;
-                    case PerkType.ImprovedCriticalVibroblades:
-                    case PerkType.ImprovedCriticalFinesseVibroblades:
-                    case PerkType.ImprovedCriticalBatons:
-                    case PerkType.ImprovedCriticalHeavyVibroblades:
-                    case PerkType.ImprovedCriticalSaberstaffs:
-                    case PerkType.ImprovedCriticalPolearms:
-                    case PerkType.ImprovedCriticalTwinVibroblades:
-                    case PerkType.ImprovedCriticalMartialArts:
-                    case PerkType.ImprovedCriticalBlasterPistols:
-                    case PerkType.ImprovedCriticalBlasterRifles:
-                    case PerkType.ImprovedCriticalThrowing:
-                    case PerkType.ImprovedCriticalLightsabers:
-                        new ImprovedCritical(_, _nwnxCreature, this).OnItemEquipped(oPC, oItem);
-                        break;
-                    case PerkType.Mobility:
-                        new Mobility(_nwnxCreature).OnItemEquipped(oPC, oItem);
-                        break;
-                    case PerkType.Opportunist:
-                        new Opportunist(_, _nwnxCreature, this).OnItemEquipped(oPC, oItem);
-                        break;
-                    case PerkType.RapidReload:
-                        new RapidReload(_, _nwnxCreature).OnItemEquipped(oPC, oItem);
-                        break;
-                    case PerkType.RapidShot:
-                        new RapidShot(_, _nwnxCreature).OnItemEquipped(oPC, oItem);
-                        break;
-                    case PerkType.RapidToss:
-                        new RapidToss(_, _nwnxCreature).OnItemEquipped(oPC, oItem);
-                        break;
-                    case PerkType.WeaponFinesse:
-                        new WeaponFinesse(_, _nwnxCreature, this).OnItemEquipped(oPC, oItem);
-                        break;
-                    case PerkType.ZenMarksmanship:
-                        new ZenMarksmanship(_, _nwnxCreature).OnItemEquipped(oPC, oItem);
-                        break;
-                    case PerkType.ZenTossing:
-                        new ZenTossing(_, _nwnxCreature).OnItemEquipped(oPC, oItem);
-                        break;
-                    case PerkType.WeaponFocusVibroblades:
-                    case PerkType.WeaponFocusFinesseVibroblades:
-                    case PerkType.WeaponFocusBatons:
-                    case PerkType.WeaponFocusHeavyVibroblades:
-                    case PerkType.WeaponFocusSaberstaff:
-                    case PerkType.WeaponFocusPolearms:
-                    case PerkType.WeaponFocusTwinVibroblades:
-                    case PerkType.WeaponFocusMartialArts:
-                    case PerkType.WeaponFocusBlasterPistols:
-                    case PerkType.WeaponFocusBlasterRifles:
-                    case PerkType.WeaponFocusThrowing:
-                    case PerkType.WeaponFocusLightsaber:
-                        new Focus(_, _nwnxCreature, this).OnItemEquipped(oPC, oItem);
-                        break;
-                }
+                    perkAction?.OnItemEquipped(oPC, oItem);
+                });
             }
         }
 
@@ -175,94 +90,16 @@ namespace SWLOR.Game.Server.Service
             if (!oPC.IsPlayer) return;
             
             var executionPerks = GetPCPerksByExecutionType(oPC, PerkExecutionType.EquipmentBased);
-
             foreach (PCPerk pcPerk in executionPerks)
             {
-                PerkType perk = (PerkType) pcPerk.PerkID;
+                var perk = _data.Get<Data.Entity.Perk>(pcPerk.PerkID);
+                string jsName = perk.ScriptName;
+                if (string.IsNullOrWhiteSpace(jsName)) continue;
 
-                // Pulling from the IOC container is too slow for this so we're stuck with this nasty case statement.
-                switch (perk)
+                App.ResolveByInterface<IPerk>("Perk." + jsName, (perkAction) =>
                 {
-                    case PerkType.PointBlankShot:
-                        new PointBlankShot(_, _nwnxCreature).OnItemUnequipped(oPC, oItem);
-                        break;
-                    case PerkType.DualWielding:
-                        new DualWielding(_, _nwnxCreature, this).OnItemUnequipped(oPC, oItem);
-                        break;
-                    case PerkType.BladePowerAttack:
-                        new BladePowerAttack(_, _nwnxCreature, this).OnItemUnequipped(oPC, oItem);
-                        break;
-                    case PerkType.BluntPowerAttack:
-                        new BluntPowerAttack(_, _nwnxCreature, this).OnItemUnequipped(oPC, oItem);
-                        break;
-                    case PerkType.CalledShot:
-                        new CalledShot(_, _nwnxCreature, this).OnItemUnequipped(oPC, oItem);
-                        break;
-                    case PerkType.CircleKick:
-                        new CircleKick(_, _nwnxCreature).OnItemUnequipped(oPC, oItem);
-                        break;
-                    case PerkType.Cleave:
-                        new Cleave(_, _nwnxCreature, this).OnItemUnequipped(oPC, oItem);
-                        break;
-                    case PerkType.Dodge:
-                        new Dodge(_nwnxCreature).OnItemUnequipped(oPC, oItem);
-                        break;
-                    case PerkType.Expertise:
-                        new Expertise(_nwnxCreature).OnItemUnequipped(oPC, oItem);
-                        break;
-                    case PerkType.ImprovedCriticalVibroblades:
-                    case PerkType.ImprovedCriticalFinesseVibroblades:
-                    case PerkType.ImprovedCriticalBatons:
-                    case PerkType.ImprovedCriticalHeavyVibroblades:
-                    case PerkType.ImprovedCriticalSaberstaffs:
-                    case PerkType.ImprovedCriticalPolearms:
-                    case PerkType.ImprovedCriticalTwinVibroblades:
-                    case PerkType.ImprovedCriticalMartialArts:
-                    case PerkType.ImprovedCriticalBlasterPistols:
-                    case PerkType.ImprovedCriticalBlasterRifles:
-                    case PerkType.ImprovedCriticalThrowing:
-                    case PerkType.ImprovedCriticalLightsabers:
-                        new ImprovedCritical(_, _nwnxCreature, this).OnItemUnequipped(oPC, oItem);
-                        break;
-                    case PerkType.Mobility:
-                        new Mobility(_nwnxCreature).OnItemUnequipped(oPC, oItem);
-                        break;
-                    case PerkType.Opportunist:
-                        new Opportunist(_, _nwnxCreature, this).OnItemUnequipped(oPC, oItem);
-                        break;
-                    case PerkType.RapidReload:
-                        new RapidReload(_, _nwnxCreature).OnItemUnequipped(oPC, oItem);
-                        break;
-                    case PerkType.RapidShot:
-                        new RapidShot(_, _nwnxCreature).OnItemUnequipped(oPC, oItem);
-                        break;
-                    case PerkType.RapidToss:
-                        new RapidToss(_, _nwnxCreature).OnItemUnequipped(oPC, oItem);
-                        break;
-                    case PerkType.WeaponFinesse:
-                        new WeaponFinesse(_, _nwnxCreature, this).OnItemUnequipped(oPC, oItem);
-                        break;
-                    case PerkType.ZenMarksmanship:
-                        new ZenMarksmanship(_, _nwnxCreature).OnItemUnequipped(oPC, oItem);
-                        break;
-                    case PerkType.ZenTossing:
-                        new ZenTossing(_, _nwnxCreature).OnItemUnequipped(oPC, oItem);
-                        break;
-                    case PerkType.WeaponFocusVibroblades:
-                    case PerkType.WeaponFocusFinesseVibroblades:
-                    case PerkType.WeaponFocusBatons:
-                    case PerkType.WeaponFocusHeavyVibroblades:
-                    case PerkType.WeaponFocusSaberstaff:
-                    case PerkType.WeaponFocusPolearms:
-                    case PerkType.WeaponFocusTwinVibroblades:
-                    case PerkType.WeaponFocusMartialArts:
-                    case PerkType.WeaponFocusBlasterPistols:
-                    case PerkType.WeaponFocusBlasterRifles:
-                    case PerkType.WeaponFocusThrowing:
-                    case PerkType.WeaponFocusLightsaber:
-                        new Focus(_, _nwnxCreature, this).OnItemUnequipped(oPC, oItem);
-                        break;
-                }
+                    perkAction?.OnItemUnequipped(oPC, oItem);
+                });
             }
         }
 

@@ -39,8 +39,8 @@ namespace SWLOR.Game.Server.Conversation
                     player.AssignCommand(() =>
                     {
                         _.ActionJumpToLocation(waypoint.Location);
-                        EndConversation();
                     });
+                    EndConversation();
                     break;
             }
         }

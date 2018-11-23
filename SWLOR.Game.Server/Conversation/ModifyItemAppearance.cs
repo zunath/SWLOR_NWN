@@ -324,6 +324,7 @@ namespace SWLOR.Game.Server.Conversation
             int type = model.ItemTypeID;
             int index = model.Index;
 
+            player.SetLocalInt("IS_CUSTOMIZING_ITEM", TRUE);
             NWItem copy = _.CopyItemAndModify(item, type, index, partID, TRUE);
             item.Destroy();
             model.TargetItem = copy;
@@ -333,6 +334,7 @@ namespace SWLOR.Game.Server.Conversation
                 _.SetCommandable(TRUE, player);
                 _.ActionEquipItem(copy, slotID);
                 _.SetCommandable(FALSE, player);
+                player.DeleteLocalInt("IS_CUSTOMIZING_ITEM");
             });
         }
 

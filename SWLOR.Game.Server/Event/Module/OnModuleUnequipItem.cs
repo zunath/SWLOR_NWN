@@ -1,6 +1,8 @@
 ﻿
 using NWN;
+using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Event.Module
 {
@@ -28,8 +30,12 @@ namespace SWLOR.Game.Server.Event.Module
 
         public bool Run(params object[] args)
         {
+            NWObject equipper = Object.OBJECT_SELF;
             // Bioware Default
-            _.ExecuteScript("x2_mod_def_unequ", Object.OBJECT_SELF);
+            _.ExecuteScript("x2_mod_def_unequ", equipper);
+
+            if (equipper.GetLocalInt("IS_CUSTOMIZING_ITEM") == TRUE) return true; // Don't run heavy code when customizing equipment.
+
             _skill.OnModuleItemUnequipped();
             _perk.OnModuleItemUnequipped();
             _helmetToggle.OnModuleItemUnequipped();

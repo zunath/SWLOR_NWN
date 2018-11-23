@@ -92,6 +92,7 @@
     <Compile Include="ChatCommand\Bored.cs" />
     <Compile Include="ChatCommand\Bow.cs" />
     <Compile Include="ChatCommand\Bug.cs" />
+    <Compile Include="ChatCommand\GetCacheStats.cs" />
     <Compile Include="ChatCommand\CDKey.cs" />
     <Compile Include="ChatCommand\CommandDetailsAttribute.cs" />
     <Compile Include="ChatCommand\Contracts\IChatCommand.cs" />

@@ -13,7 +13,7 @@ using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Displays your public CD key.", CommandPermissionType.Player)]
+    [CommandDetails("Permanently deletes your character.", CommandPermissionType.Player)]
     public class Delete : IChatCommand
     {
         private readonly INWScript _;

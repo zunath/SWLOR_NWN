@@ -28,13 +28,14 @@ namespace SWLOR.Game.Server.Service
     {
         public ConcurrentQueue<DatabaseAction> DataQueue { get; }
         private string _connectionString;
-        private readonly Dictionary<Type, Dictionary<object, object>> _cache;
         private bool _cacheInitialized;
+
+        public Dictionary<Type, Dictionary<object, object>> Cache { get; }
 
         public DataService()
         {
             DataQueue = new ConcurrentQueue<DatabaseAction>();
-            _cache = new Dictionary<Type, Dictionary<object, object>>();
+            Cache = new Dictionary<Type, Dictionary<object, object>>();
 
         }
 
@@ -132,7 +133,7 @@ namespace SWLOR.Game.Server.Service
             //GetAll<PCRegionalFame>();
             //GetAll<PCSearchSite>();
             //GetAll<PCSearchSiteItem>();
-            GetAll<PCSkill>();
+            //GetAll<PCSkill>();
             GetAll<Data.Entity.Perk>();
             GetAll<PerkCategory>();
             GetAll<PerkExecutionType>();
@@ -214,6 +215,9 @@ namespace SWLOR.Game.Server.Service
                         SetIntoCache<PCSearchSite>(item.ID, item);
                     foreach (var item in multi.Read<PCSearchSiteItem>().ToList())
                         SetIntoCache<PCSearchSiteItem>(item.ID, item);
+
+                    foreach(var item in multi.Read<PCSkill>().ToList())
+                        SetIntoCache<PCSkill>(item.ID, item);
                 }
             }
 
@@ -266,6 +270,8 @@ namespace SWLOR.Game.Server.Service
                 DeleteFromCache<PCSearchSite>(item.ID);
             foreach (var item in Where<PCSearchSiteItem>(x => x.PlayerID == id).ToList())
                 DeleteFromCache<PCSearchSiteItem>(item.ID);
+            foreach(var item in Where<PCSkill>(x => x.PlayerID == id).ToList())
+                DeleteFromCache<PCSkill>(item.ID);
         }
         
         /// <summary>
@@ -321,10 +327,10 @@ namespace SWLOR.Game.Server.Service
         private T GetFromCache<T>(object key)
             where T : IEntity
         {
-            if (!_cache.TryGetValue(typeof(T), out var cachedSet))
+            if (!Cache.TryGetValue(typeof(T), out var cachedSet))
             {
                 cachedSet = new Dictionary<object, object>();
-                _cache.Add(typeof(T), cachedSet);
+                Cache.Add(typeof(T), cachedSet);
             }
 
             if (cachedSet.TryGetValue(key, out object cachedObject))
@@ -346,10 +352,10 @@ namespace SWLOR.Game.Server.Service
             if (!type.GetInterfaces().Contains(typeof(IEntity)))
                 throw new ArgumentException("Only objects which implement " + nameof(IEntity) + " may be set into the cache.");
 
-            if (!_cache.TryGetValue(type, out var cachedSet))
+            if (!Cache.TryGetValue(type, out var cachedSet))
             {
                 cachedSet = new Dictionary<object, object>();
-                _cache.Add(type, cachedSet);
+                Cache.Add(type, cachedSet);
             }
 
             // Safety check to ensure all key types are the same for a given type.
@@ -381,9 +387,9 @@ namespace SWLOR.Game.Server.Service
 
         private void DeleteFromCache(Type type, object key)
         {
-            if (!_cache.ContainsKey(type)) return;
+            if (!Cache.ContainsKey(type)) return;
 
-            var cachedSet = _cache[type];
+            var cachedSet = Cache[type];
 
             if (cachedSet.ContainsKey(key))
             {
@@ -426,9 +432,9 @@ namespace SWLOR.Game.Server.Service
             where T : class, IEntity
         {
             // Cache already built. Return everything that's cached so far.
-            if (_cache.ContainsKey(typeof(T)))
+            if (Cache.ContainsKey(typeof(T)))
             {
-                var cacheSet = _cache[typeof(T)];
+                var cacheSet = Cache[typeof(T)];
                 return new HashSet<T>(cacheSet.Values.Cast<T>());
             }
 
@@ -447,7 +453,7 @@ namespace SWLOR.Game.Server.Service
             }
             
             // Send back the results if we know they exist in the cache.
-            if (_cache.TryGetValue(typeof(T), out var set))
+            if (Cache.TryGetValue(typeof(T), out var set))
             {
                 return new HashSet<T>(set.Values.Cast<T>());
             }

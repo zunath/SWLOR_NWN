@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Service.Contracts
 {
     public interface IDataService
     {
+        Dictionary<Type, Dictionary<object, object>> Cache { get; }
         ConcurrentQueue<DatabaseAction> DataQueue { get; }
         void Initialize(bool initializeCache);
         void Initialize(string ip, string database, string user, string password, bool initializeCache);

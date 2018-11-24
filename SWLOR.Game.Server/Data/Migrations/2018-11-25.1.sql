@@ -181,6 +181,3 @@ BEGIN
 	 FROM dbo.PCSkill 
 	 WHERE PlayerID = @PlayerID
 END
-
-GO
-

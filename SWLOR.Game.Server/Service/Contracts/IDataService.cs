@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         void Initialize(string ip, string database, string user, string password, bool initializeCache);
 
         T Get<T>(object id) where T : class, IEntity;
-        IEnumerable<T> GetAll<T>() where T : class, IEntity;
+        HashSet<T> GetAll<T>() where T : class, IEntity;
 
         T Single<T>()
             where T : class, IEntity;
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Service.Contracts
             where T : class, IEntity;
         T SingleOrDefault<T>(Func<T, bool> predicate)
             where T : class, IEntity;
-        IEnumerable<T> Where<T>(Func<T, bool> predicate)
+        HashSet<T> Where<T>(Func<T, bool> predicate)
             where T : class, IEntity;
 
         void StoredProcedure(string procedureName, params SqlParameter[] args);

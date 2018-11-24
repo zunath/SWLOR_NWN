@@ -7,6 +7,7 @@ namespace SWLOR.Game.Server.Service.Contracts
     public interface IDialogService
     {
         int NumberOfResponsesPerPage { get; }
+        bool HasPlayerDialog(Guid globalID);
         PlayerDialog LoadPlayerDialog(Guid globalID);
         void RemovePlayerDialog(Guid globalID);
         void LoadConversation(NWPlayer player, NWObject talkTo, string @class, int dialogNumber);

@@ -5,7 +5,7 @@ using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Toggles your emote style between regular and novel.", CommandPermissionType.DM)]
+    [CommandDetails("Returns cache stats information.", CommandPermissionType.DM)]
     public class GetCacheStats: IChatCommand
     {
         private readonly AppCache _cache;

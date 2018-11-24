@@ -24,9 +24,6 @@ namespace SWLOR.Game.Server.Event.Dialog
             int nodeID = (int)args[1];
             
             NWPlayer player = (_.GetPCSpeaker());
-            bool hasDialog = _dialog.HasPlayerDialog(player.GlobalID);
-            if (!hasDialog) return false;
-
             PlayerDialog dialog = _dialog.LoadPlayerDialog(player.GlobalID);
             DialogPage page = dialog.CurrentPage;
             int currentSelectionNumber = nodeID + 1;

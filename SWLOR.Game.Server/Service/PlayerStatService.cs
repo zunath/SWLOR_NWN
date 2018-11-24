@@ -265,14 +265,16 @@ namespace SWLOR.Game.Server.Service
         {
             using (new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats"))
             {
-                int[] armorSkills =
+                List<PCSkill> pcArmorSkills;
+                using (new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::GetPCArmorSkills"))
                 {
-                    (int)SkillType.HeavyArmor, 
-                    (int)SkillType.LightArmor, 
-                    (int)SkillType.ForceArmor
-                };
-                var pcArmorSkills = _data.Where<PCSkill>(x => x.PlayerID == player.GlobalID && 
-                                                              armorSkills.Contains(x.SkillID)).ToList();
+                    pcArmorSkills = _data.Where<PCSkill>(x => x.PlayerID == player.GlobalID && 
+                                                              (x.SkillID == (int)SkillType.HeavyArmor ||
+                                                               x.SkillID == (int)SkillType.LightArmor ||
+                                                               x.SkillID == (int)SkillType.ForceArmor))
+                        .ToList();
+
+                }
 
                 int heavyRank = pcArmorSkills.Single(x => x.SkillID == (int)SkillType.HeavyArmor).Rank;
                 int lightRank = pcArmorSkills.Single(x => x.SkillID == (int)SkillType.LightArmor).Rank;
@@ -289,9 +291,14 @@ namespace SWLOR.Game.Server.Service
                         NWItem item = _.GetItemInSlot(itemSlot, player);
                         if (!item.IsValid || item.Equals(ignoreItem)) continue;
                         SkillType skill = _item.GetSkillTypeForItem(item);
-                        int rank = _data.Single<PCSkill>(x => x.PlayerID == player.GlobalID && x.SkillID == (int) skill).Rank;
+                        int rank; 
+                        
+                        using(new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::ItemLoop::GetRank"))
+                        {
+                            rank = _data.Single<PCSkill>(x => x.PlayerID == player.GlobalID && x.SkillID == (int)skill).Rank;
+                        }
 
-                        using(new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::ItemLoop::StatAdjustments"))
+                        using (new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::ItemLoop::StatAdjustments"))
                         {
                             // Only scale casting speed if it's a bonus. Penalties remain regardless of skill level difference.
                             if (item.CastingSpeed > 0)
@@ -328,60 +335,70 @@ namespace SWLOR.Game.Server.Service
 
                         }
 
-                        // Calculate base attack bonus
-                        int itemLevel = item.RecommendedLevel;
-                        int delta = itemLevel - rank;
-                        int itemBAB = item.BaseAttackBonus;
-                        if (delta >= 1) itemBAB--;
-                        if (delta > 0) itemBAB = itemBAB - delta / 5;
 
-                        if (itemBAB <= 0) itemBAB = 0;
-                        stats.BAB += itemBAB;
-
-                        // Calculate AC
-                        if (ItemService.ArmorBaseItemTypes.Contains(item.BaseItemType))
+                        using(new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::ItemLoop::CalcBAB"))
                         {
-                            int skillRankToUse;
-                            if (item.CustomItemType == CustomItemType.HeavyArmor)
-                            {
-                                skillRankToUse = heavyRank;
-                            }
-                            else if (item.CustomItemType == CustomItemType.LightArmor)
-                            {
-                                skillRankToUse = lightRank;
-                            }
-                            else if (item.CustomItemType == CustomItemType.ForceArmor)
-                            {
-                                skillRankToUse = forceRank;
-                            }
-                            else continue;
+                            // Calculate base attack bonus
+                            int itemLevel = item.RecommendedLevel;
+                            int delta = itemLevel - rank;
+                            int itemBAB = item.BaseAttackBonus;
+                            if (delta >= 1) itemBAB--;
+                            if (delta > 0) itemBAB = itemBAB - delta / 5;
 
-                            int itemAC = item.CustomAC;
-                            itemAC = CalculateAdjustedValue(itemAC, item.RecommendedLevel, skillRankToUse, 0);
-                            stats.AC += itemAC;
+                            if (itemBAB <= 0) itemBAB = 0;
+                            stats.BAB += itemBAB;
+
+                        }
+
+                        using(new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::ItemLoop::CalcAC"))
+                        {
+                            // Calculate AC
+                            if (ItemService.ArmorBaseItemTypes.Contains(item.BaseItemType))
+                            {
+                                int skillRankToUse;
+                                if (item.CustomItemType == CustomItemType.HeavyArmor)
+                                {
+                                    skillRankToUse = heavyRank;
+                                }
+                                else if (item.CustomItemType == CustomItemType.LightArmor)
+                                {
+                                    skillRankToUse = lightRank;
+                                }
+                                else if (item.CustomItemType == CustomItemType.ForceArmor)
+                                {
+                                    skillRankToUse = forceRank;
+                                }
+                                else continue;
+
+                                int itemAC = item.CustomAC;
+                                itemAC = CalculateAdjustedValue(itemAC, item.RecommendedLevel, skillRankToUse, 0);
+                                stats.AC += itemAC;
+                            }
                         }
                     }
                 }
 
-                // Final casting speed adjustments
-                if (stats.CastingSpeed < -99)
-                    stats.CastingSpeed = -99;
-                else if (stats.CastingSpeed > 99)
-                    stats.CastingSpeed = 99;
-
-                // Final enmity adjustments
-                if (stats.EnmityRate < 0.5f) stats.EnmityRate = 0.5f;
-                else if (stats.EnmityRate > 1.5f) stats.EnmityRate = 1.5f;
-
-                var stance = _customEffect.GetCurrentStanceType(player);
-                if (stance == CustomEffectType.ShieldOath)
+                using (new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::FinalAdjustments"))
                 {
-                    stats.EnmityRate = stats.EnmityRate + 0.2f;
-                }
+                    // Final casting speed adjustments
+                    if (stats.CastingSpeed < -99)
+                        stats.CastingSpeed = -99;
+                    else if (stats.CastingSpeed > 99)
+                        stats.CastingSpeed = 99;
 
-                return stats;
+                    // Final enmity adjustments
+                    if (stats.EnmityRate < 0.5f) stats.EnmityRate = 0.5f;
+                    else if (stats.EnmityRate > 1.5f) stats.EnmityRate = 1.5f;
+
+                    var stance = _customEffect.GetCurrentStanceType(player);
+                    if (stance == CustomEffectType.ShieldOath)
+                    {
+                        stats.EnmityRate = stats.EnmityRate + 0.2f;
+                    }
+
+                    return stats;
+                }
             }
-            
         }
 
 

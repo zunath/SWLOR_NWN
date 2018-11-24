@@ -194,14 +194,14 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        private int CalculateAdjustedValue(int baseValue, int recommendedLevel, int skillRank, int minimumValue = 1)
+        private static int CalculateAdjustedValue(int baseValue, int recommendedLevel, int skillRank, int minimumValue)
         {
             int adjustedValue = (int)CalculateAdjustedValue((float)baseValue, recommendedLevel, skillRank, minimumValue);
             if (adjustedValue < minimumValue) adjustedValue = minimumValue;
             return adjustedValue;
         }
 
-        private float CalculateAdjustedValue(float baseValue, int recommendedLevel, int skillRank, float minimumValue = 0.01f)
+        private static float CalculateAdjustedValue(float baseValue, int recommendedLevel, int skillRank, float minimumValue)
         {
             int delta = recommendedLevel - skillRank;
             float adjustment = 1.0f - delta * 0.1f;
@@ -265,8 +265,14 @@ namespace SWLOR.Game.Server.Service
         {
             using (new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats"))
             {
-                int[] armorSkills = { (int)SkillType.HeavyArmor, (int)SkillType.LightArmor, (int)SkillType.ForceArmor };
-                var pcArmorSkills = _data.Where<PCSkill>(x => x.PlayerID == player.GlobalID && armorSkills.Contains(x.SkillID)).ToList();
+                int[] armorSkills =
+                {
+                    (int)SkillType.HeavyArmor, 
+                    (int)SkillType.LightArmor, 
+                    (int)SkillType.ForceArmor
+                };
+                var pcArmorSkills = _data.Where<PCSkill>(x => x.PlayerID == player.GlobalID && 
+                                                              armorSkills.Contains(x.SkillID)).ToList();
 
                 int heavyRank = pcArmorSkills.Single(x => x.SkillID == (int)SkillType.HeavyArmor).Rank;
                 int lightRank = pcArmorSkills.Single(x => x.SkillID == (int)SkillType.LightArmor).Rank;
@@ -275,80 +281,86 @@ namespace SWLOR.Game.Server.Service
                 EffectiveItemStats stats = new EffectiveItemStats();
                 stats.EnmityRate = 1.0f;
 
-                for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
+                using (new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::ItemLoop"))
                 {
-                    NWItem item = _.GetItemInSlot(itemSlot, player);
-                    if (!item.IsValid || item.Equals(ignoreItem)) continue;
-                    SkillType skill = _item.GetSkillTypeForItem(item);
-                    int rank = _data.Single<PCSkill>(x => x.PlayerID == player.GlobalID && x.SkillID == (int)skill).Rank;
 
-                    // Only scale casting speed if it's a bonus. Penalties remain regardless of skill level difference.
-                    if (item.CastingSpeed > 0)
+                    for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                     {
-                        stats.CastingSpeed += CalculateAdjustedValue(item.CastingSpeed, item.RecommendedLevel, rank);
+                        NWItem item = _.GetItemInSlot(itemSlot, player);
+                        if (!item.IsValid || item.Equals(ignoreItem)) continue;
+                        SkillType skill = _item.GetSkillTypeForItem(item);
+                        int rank = _data.Single<PCSkill>(x => x.PlayerID == player.GlobalID && x.SkillID == (int) skill).Rank;
+
+                        using(new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::ItemLoop::StatAdjustments"))
+                        {
+                            // Only scale casting speed if it's a bonus. Penalties remain regardless of skill level difference.
+                            if (item.CastingSpeed > 0)
+                            {
+                                stats.CastingSpeed += CalculateAdjustedValue(item.CastingSpeed, item.RecommendedLevel, rank, 1);
+                            }
+                            else stats.CastingSpeed += item.CastingSpeed;
+
+                            stats.EnmityRate += CalculateAdjustedValue(0.01f * item.EnmityRate, item.RecommendedLevel, rank, 0.00f);
+                            stats.DarkAbility += CalculateAdjustedValue(item.DarkAbilityBonus, item.RecommendedLevel, rank, 0);
+                            stats.LightAbility += CalculateAdjustedValue(item.LightAbilityBonus, item.RecommendedLevel, rank, 0);
+                            stats.Luck += CalculateAdjustedValue(item.LuckBonus, item.RecommendedLevel, rank, 0);
+                            stats.Meditate += CalculateAdjustedValue(item.MeditateBonus, item.RecommendedLevel, rank, 0);
+                            stats.Rest += CalculateAdjustedValue(item.RestBonus, item.RecommendedLevel, rank, 0);
+                            stats.Medicine += CalculateAdjustedValue(item.MedicineBonus, item.RecommendedLevel, rank, 0);
+                            stats.HPRegen += CalculateAdjustedValue(item.HPRegenBonus, item.RecommendedLevel, rank, 0);
+                            stats.FPRegen += CalculateAdjustedValue(item.FPRegenBonus, item.RecommendedLevel, rank, 0);
+                            stats.Weaponsmith += CalculateAdjustedValue(item.CraftBonusWeaponsmith, item.RecommendedLevel, rank, 0);
+                            stats.Cooking += CalculateAdjustedValue(item.CraftBonusCooking, item.RecommendedLevel, rank, 0);
+                            stats.Engineering += CalculateAdjustedValue(item.CraftBonusEngineering, item.RecommendedLevel, rank, 0);
+                            stats.Fabrication += CalculateAdjustedValue(item.CraftBonusFabrication, item.RecommendedLevel, rank, 0);
+                            stats.Armorsmith += CalculateAdjustedValue(item.CraftBonusArmorsmith, item.RecommendedLevel, rank, 0);
+                            stats.Harvesting += CalculateAdjustedValue(item.HarvestingBonus, item.RecommendedLevel, rank, 0);
+                            stats.SneakAttack += CalculateAdjustedValue(item.SneakAttackBonus, item.RecommendedLevel, rank, 0);
+
+                            stats.Strength += CalculateAdjustedValue(item.StrengthBonus, item.RecommendedLevel, rank, 0);
+                            stats.Dexterity += CalculateAdjustedValue(item.DexterityBonus, item.RecommendedLevel, rank, 0);
+                            stats.Constitution += CalculateAdjustedValue(item.ConstitutionBonus, item.RecommendedLevel, rank, 0);
+                            stats.Wisdom += CalculateAdjustedValue(item.WisdomBonus, item.RecommendedLevel, rank, 0);
+                            stats.Intelligence += CalculateAdjustedValue(item.IntelligenceBonus, item.RecommendedLevel, rank, 0);
+                            stats.Charisma += CalculateAdjustedValue(item.CharismaBonus, item.RecommendedLevel, rank, 0);
+                            stats.HP += CalculateAdjustedValue(item.HPBonus, item.RecommendedLevel, rank, 0);
+                            stats.FP += CalculateAdjustedValue(item.FPBonus, item.RecommendedLevel, rank, 0);
+
+                        }
+
+                        // Calculate base attack bonus
+                        int itemLevel = item.RecommendedLevel;
+                        int delta = itemLevel - rank;
+                        int itemBAB = item.BaseAttackBonus;
+                        if (delta >= 1) itemBAB--;
+                        if (delta > 0) itemBAB = itemBAB - delta / 5;
+
+                        if (itemBAB <= 0) itemBAB = 0;
+                        stats.BAB += itemBAB;
+
+                        // Calculate AC
+                        if (_item.ArmorBaseItemTypes.Contains(item.BaseItemType))
+                        {
+                            int skillRankToUse;
+                            if (item.CustomItemType == CustomItemType.HeavyArmor)
+                            {
+                                skillRankToUse = heavyRank;
+                            }
+                            else if (item.CustomItemType == CustomItemType.LightArmor)
+                            {
+                                skillRankToUse = lightRank;
+                            }
+                            else if (item.CustomItemType == CustomItemType.ForceArmor)
+                            {
+                                skillRankToUse = forceRank;
+                            }
+                            else continue;
+
+                            int itemAC = item.CustomAC;
+                            itemAC = CalculateAdjustedValue(itemAC, item.RecommendedLevel, skillRankToUse, 0);
+                            stats.AC += itemAC;
+                        }
                     }
-                    else stats.CastingSpeed += item.CastingSpeed;
-
-                    stats.EnmityRate += CalculateAdjustedValue(0.01f * item.EnmityRate, item.RecommendedLevel, rank, 0.00f);
-                    stats.DarkAbility += CalculateAdjustedValue(item.DarkAbilityBonus, item.RecommendedLevel, rank, 0);
-                    stats.LightAbility += CalculateAdjustedValue(item.LightAbilityBonus, item.RecommendedLevel, rank, 0);
-                    stats.Luck += CalculateAdjustedValue(item.LuckBonus, item.RecommendedLevel, rank, 0);
-                    stats.Meditate += CalculateAdjustedValue(item.MeditateBonus, item.RecommendedLevel, rank, 0);
-                    stats.Rest += CalculateAdjustedValue(item.RestBonus, item.RecommendedLevel, rank, 0);
-                    stats.Medicine += CalculateAdjustedValue(item.MedicineBonus, item.RecommendedLevel, rank, 0);
-                    stats.HPRegen += CalculateAdjustedValue(item.HPRegenBonus, item.RecommendedLevel, rank, 0);
-                    stats.FPRegen += CalculateAdjustedValue(item.FPRegenBonus, item.RecommendedLevel, rank, 0);
-                    stats.Weaponsmith += CalculateAdjustedValue(item.CraftBonusWeaponsmith, item.RecommendedLevel, rank, 0);
-                    stats.Cooking += CalculateAdjustedValue(item.CraftBonusCooking, item.RecommendedLevel, rank, 0);
-                    stats.Engineering += CalculateAdjustedValue(item.CraftBonusEngineering, item.RecommendedLevel, rank, 0);
-                    stats.Fabrication += CalculateAdjustedValue(item.CraftBonusFabrication, item.RecommendedLevel, rank, 0);
-                    stats.Armorsmith += CalculateAdjustedValue(item.CraftBonusArmorsmith, item.RecommendedLevel, rank, 0);
-                    stats.Harvesting += CalculateAdjustedValue(item.HarvestingBonus, item.RecommendedLevel, rank, 0);
-                    stats.SneakAttack += CalculateAdjustedValue(item.SneakAttackBonus, item.RecommendedLevel, rank, 0);
-
-                    stats.Strength += CalculateAdjustedValue(item.StrengthBonus, item.RecommendedLevel, rank, 0);
-                    stats.Dexterity += CalculateAdjustedValue(item.DexterityBonus, item.RecommendedLevel, rank, 0);
-                    stats.Constitution += CalculateAdjustedValue(item.ConstitutionBonus, item.RecommendedLevel, rank, 0);
-                    stats.Wisdom += CalculateAdjustedValue(item.WisdomBonus, item.RecommendedLevel, rank, 0);
-                    stats.Intelligence += CalculateAdjustedValue(item.IntelligenceBonus, item.RecommendedLevel, rank, 0);
-                    stats.Charisma += CalculateAdjustedValue(item.CharismaBonus, item.RecommendedLevel, rank, 0);
-                    stats.HP += CalculateAdjustedValue(item.HPBonus, item.RecommendedLevel, rank, 0);
-                    stats.FP += CalculateAdjustedValue(item.FPBonus, item.RecommendedLevel, rank, 0);
-
-                    // Calculate base attack bonus
-                    int itemLevel = item.RecommendedLevel;
-                    int delta = itemLevel - rank;
-                    int itemBAB = item.BaseAttackBonus;
-                    if (delta >= 1) itemBAB--;
-                    if (delta > 0) itemBAB = itemBAB - delta / 5;
-
-                    if (itemBAB <= 0) itemBAB = 0;
-                    stats.BAB += itemBAB;
-
-                    // Calculate AC
-                    if (_item.ArmorBaseItemTypes.Contains(item.BaseItemType))
-                    {
-                        int skillRankToUse;
-                        if (item.CustomItemType == CustomItemType.HeavyArmor)
-                        {
-                            skillRankToUse = heavyRank;
-                        }
-                        else if (item.CustomItemType == CustomItemType.LightArmor)
-                        {
-                            skillRankToUse = lightRank;
-                        }
-                        else if (item.CustomItemType == CustomItemType.ForceArmor)
-                        {
-                            skillRankToUse = forceRank;
-                        }
-                        else continue;
-
-                        int itemAC = item.CustomAC;
-                        itemAC = CalculateAdjustedValue(itemAC, item.RecommendedLevel, skillRankToUse, 0);
-                        stats.AC += itemAC;
-                    }
-
-
                 }
 
                 // Final casting speed adjustments

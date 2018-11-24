@@ -422,14 +422,14 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <typeparam name="T">The type of entity to retrieve.</typeparam>
         /// <returns></returns>
-        public IEnumerable<T> GetAll<T>()
+        public HashSet<T> GetAll<T>()
             where T : class, IEntity
         {
             // Cache already built. Return everything that's cached so far.
             if (_cache.ContainsKey(typeof(T)))
             {
                 var cacheSet = _cache[typeof(T)];
-                return cacheSet.Values.Cast<T>();
+                return new HashSet<T>(cacheSet.Values.Cast<T>());
             }
 
             // Can't find anything in the cache so pull back the records from the database.
@@ -449,11 +449,11 @@ namespace SWLOR.Game.Server.Service
             // Send back the results if we know they exist in the cache.
             if (_cache.TryGetValue(typeof(T), out var set))
             {
-                return set.Values.Cast<T>();
+                return new HashSet<T>(set.Values.Cast<T>());
             }
 
             // If there's no data in the database for that table, return an empty list.
-            return new List<T>();
+            return new HashSet<T>();
         }
 
         public T Single<T>()
@@ -480,10 +480,10 @@ namespace SWLOR.Game.Server.Service
             return GetAll<T>().SingleOrDefault(predicate);
         }
 
-        public IEnumerable<T> Where<T>(Func<T, bool> predicate)
+        public HashSet<T> Where<T>(Func<T, bool> predicate)
             where T : class, IEntity
         {
-            return GetAll<T>().Where(predicate);
+            return new HashSet<T>(GetAll<T>().Where(predicate));
         }
 
         private object GetEntityKey(IEntity entity)

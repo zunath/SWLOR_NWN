@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Mod.Contracts;
 
 using NWN;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 
@@ -115,11 +116,11 @@ namespace SWLOR.Game.Server.Item
                 modItem.Destroy();
 
                 SkillType skillType;
-                if (_item.ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
+                if (ItemService.ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
                 {
                     skillType = SkillType.Armorsmith;
                 }
-                else if (_item.WeaponBaseItemTypes.Contains(targetItem.BaseItemType))
+                else if (ItemService.WeaponBaseItemTypes.Contains(targetItem.BaseItemType))
                 {
                     skillType = SkillType.Weaponsmith;
                 }
@@ -138,11 +139,11 @@ namespace SWLOR.Game.Server.Item
             NWItem targetItem = (target.Object);
             float perkBonus = 0.0f;
 
-            if (_item.ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
+            if (ItemService.ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
             {
                 perkBonus = _perk.GetPCPerkLevel(userPlayer, PerkType.SpeedyArmorsmith) * 0.1f;
             }
-            else if (_item.WeaponBaseItemTypes.Contains(targetItem.BaseItemType))
+            else if (ItemService.WeaponBaseItemTypes.Contains(targetItem.BaseItemType))
             {
                 perkBonus = _perk.GetPCPerkLevel(userPlayer, PerkType.SpeedyWeaponsmith) * 0.1f;
             }
@@ -201,7 +202,7 @@ namespace SWLOR.Game.Server.Item
             if (modType == CustomItemPropertyType.YellowMod && !modSlots.CanYellowModBeAdded) return "That item has no available yellow mod slots.";
 
             // Get the perk level based on target item type and mod type.
-            if (_item.WeaponBaseItemTypes.Contains(targetItem.BaseItemType))
+            if (ItemService.WeaponBaseItemTypes.Contains(targetItem.BaseItemType))
             {
                 switch (modType)
                 {
@@ -222,7 +223,7 @@ namespace SWLOR.Game.Server.Item
                         break;
                 }
             }
-            else if (_item.ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
+            else if (ItemService.ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
             {
                 switch (modType)
                 {

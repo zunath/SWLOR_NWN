@@ -339,7 +339,7 @@ namespace SWLOR.Game.Server.Service
                         stats.BAB += itemBAB;
 
                         // Calculate AC
-                        if (_item.ArmorBaseItemTypes.Contains(item.BaseItemType))
+                        if (ItemService.ArmorBaseItemTypes.Contains(item.BaseItemType))
                         {
                             int skillRankToUse;
                             if (item.CustomItemType == CustomItemType.HeavyArmor)

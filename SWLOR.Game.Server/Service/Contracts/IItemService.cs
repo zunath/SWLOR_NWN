@@ -8,10 +8,6 @@ namespace SWLOR.Game.Server.Service.Contracts
 {
     public interface IItemService
     {
-        int[] ArmorBaseItemTypes { get; }
-        int[] WeaponBaseItemTypes { get; }
-        int[] MeleeWeaponTypes { get; }
-        int[] RangedWeaponTypes { get; }
         string GetNameByResref(string resref);
         CustomItemType GetCustomItemTypeByResref(string resref);
         void OnModuleActivatedItem();

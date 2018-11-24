@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Perk;
 using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.ValueObject;
 using static NWN.NWScript;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
 
@@ -67,9 +68,7 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleItemEquipped()
         {
-            _nwnxProfiler.PushPerfScope("PerkService::OnModuleItemEquipped()");
-
-            try
+            using (new Profiler("PerkService::OnModuleItemEquipped()"))
             {
                 NWPlayer oPC = (_.GetPCItemLastEquippedBy());
                 NWItem oItem = (_.GetPCItemLastEquipped());
@@ -89,26 +88,16 @@ namespace SWLOR.Game.Server.Service
                     });
                 }
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                _nwnxProfiler.PopPerfScope();
-            }
         }
 
         public void OnModuleItemUnequipped()
         {
-            _nwnxProfiler.PushPerfScope("PerkService::OnModuleItemUnequipped()");
-
-            try
+            using (new Profiler("PerkService::OnModuleItemUnequipped()"))
             {
                 NWPlayer oPC = (_.GetPCItemLastUnequippedBy());
                 NWItem oItem = (_.GetPCItemLastUnequipped());
                 if (!oPC.IsPlayer) return;
-            
+
                 var executionPerks = GetPCPerksByExecutionType(oPC, PerkExecutionType.EquipmentBased);
                 foreach (PCPerk pcPerk in executionPerks)
                 {
@@ -121,14 +110,6 @@ namespace SWLOR.Game.Server.Service
                         perkAction?.OnItemUnequipped(oPC, oItem);
                     });
                 }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                _nwnxProfiler.PopPerfScope();
             }
         }
 

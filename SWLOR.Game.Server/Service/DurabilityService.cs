@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN.NWScript;
 using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -105,9 +106,7 @@ namespace SWLOR.Game.Server.Service
         
         public void OnModuleEquip()
         {
-            _nwnxProfiler.PushPerfScope("DurabilityService::OnModuleEquip()");
-
-            try
+            using (new Profiler("DurabilityService::OnModuleEquip()"))
             {
                 NWPlayer oPC = (_.GetPCItemLastEquippedBy());
                 NWItem oItem = (_.GetPCItemLastEquipped());
@@ -123,14 +122,6 @@ namespace SWLOR.Game.Server.Service
 
                     oPC.FloatingText(_color.Red("That item is broken and must be repaired before you can use it."));
                 }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                _nwnxProfiler.PopPerfScope();
             }
         }
 

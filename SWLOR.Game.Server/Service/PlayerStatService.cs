@@ -42,16 +42,16 @@ namespace SWLOR.Game.Server.Service
             _perk = perk;
             _nwnxCreature = nwnxCreature;
         }
-        
+
         public void ApplyStatChanges(NWPlayer player, NWItem ignoreItem, bool isInitialization = false)
         {
             if (!player.IsPlayer) return;
             if (!player.IsInitializedAsPlayer) return;
-            
+
             Player pcEntity = _data.Get<Player>(player.GlobalID);
             List<PCSkill> skills = _data.Where<PCSkill>(x => x.PlayerID == player.GlobalID && x.Rank > 0).ToList();
-            var itemBonuses = GetPlayerItemEffectiveStats(player, ignoreItem);
-
+            EffectiveItemStats itemBonuses = GetPlayerItemEffectiveStats(player, ignoreItem);
+            
             float strBonus = 0.0f;
             float dexBonus = 0.0f;
             float conBonus = 0.0f;
@@ -59,37 +59,41 @@ namespace SWLOR.Game.Server.Service
             float wisBonus = 0.0f;
             float chaBonus = 0.0f;
 
-            foreach (PCSkill pcSkill in skills)
+            using (new Profiler("PlayerStatService::ApplyStatChanges::AttributeApplication"))
             {
-                Skill skill = _data.Get<Skill>(pcSkill.SkillID);
-                CustomAttribute primary = (CustomAttribute)skill.Primary;
-                CustomAttribute secondary = (CustomAttribute)skill.Secondary;
-                CustomAttribute tertiary = (CustomAttribute)skill.Tertiary;
+                foreach (PCSkill pcSkill in skills)
+                {
+                    Skill skill = _data.Get<Skill>(pcSkill.SkillID);
+                    CustomAttribute primary = (CustomAttribute) skill.Primary;
+                    CustomAttribute secondary = (CustomAttribute) skill.Secondary;
+                    CustomAttribute tertiary = (CustomAttribute) skill.Tertiary;
 
-                // Primary Bonuses
-                if (primary == CustomAttribute.STR) strBonus += PrimaryIncrease * pcSkill.Rank;
-                else if (primary == CustomAttribute.DEX) dexBonus += PrimaryIncrease * pcSkill.Rank;
-                else if (primary == CustomAttribute.CON) conBonus += PrimaryIncrease * pcSkill.Rank;
-                else if (primary == CustomAttribute.INT) intBonus += PrimaryIncrease * pcSkill.Rank;
-                else if (primary == CustomAttribute.WIS) wisBonus += PrimaryIncrease * pcSkill.Rank;
-                else if (primary == CustomAttribute.CHA) chaBonus += PrimaryIncrease * pcSkill.Rank;
+                    // Primary Bonuses
+                    if (primary == CustomAttribute.STR) strBonus += PrimaryIncrease * pcSkill.Rank;
+                    else if (primary == CustomAttribute.DEX) dexBonus += PrimaryIncrease * pcSkill.Rank;
+                    else if (primary == CustomAttribute.CON) conBonus += PrimaryIncrease * pcSkill.Rank;
+                    else if (primary == CustomAttribute.INT) intBonus += PrimaryIncrease * pcSkill.Rank;
+                    else if (primary == CustomAttribute.WIS) wisBonus += PrimaryIncrease * pcSkill.Rank;
+                    else if (primary == CustomAttribute.CHA) chaBonus += PrimaryIncrease * pcSkill.Rank;
 
-                // Secondary Bonuses
-                if (secondary == CustomAttribute.STR) strBonus += SecondaryIncrease * pcSkill.Rank;
-                else if (secondary == CustomAttribute.DEX) dexBonus += SecondaryIncrease * pcSkill.Rank;
-                else if (secondary == CustomAttribute.CON) conBonus += SecondaryIncrease * pcSkill.Rank;
-                else if (secondary == CustomAttribute.INT) intBonus += SecondaryIncrease * pcSkill.Rank;
-                else if (secondary == CustomAttribute.WIS) wisBonus += SecondaryIncrease * pcSkill.Rank;
-                else if (secondary == CustomAttribute.CHA) chaBonus += SecondaryIncrease * pcSkill.Rank;
+                    // Secondary Bonuses
+                    if (secondary == CustomAttribute.STR) strBonus += SecondaryIncrease * pcSkill.Rank;
+                    else if (secondary == CustomAttribute.DEX) dexBonus += SecondaryIncrease * pcSkill.Rank;
+                    else if (secondary == CustomAttribute.CON) conBonus += SecondaryIncrease * pcSkill.Rank;
+                    else if (secondary == CustomAttribute.INT) intBonus += SecondaryIncrease * pcSkill.Rank;
+                    else if (secondary == CustomAttribute.WIS) wisBonus += SecondaryIncrease * pcSkill.Rank;
+                    else if (secondary == CustomAttribute.CHA) chaBonus += SecondaryIncrease * pcSkill.Rank;
 
-                // Tertiary Bonuses
-                if (tertiary == CustomAttribute.STR) strBonus += TertiaryIncrease * pcSkill.Rank;
-                else if (tertiary == CustomAttribute.DEX) dexBonus += TertiaryIncrease * pcSkill.Rank;
-                else if (tertiary == CustomAttribute.CON) conBonus += TertiaryIncrease * pcSkill.Rank;
-                else if (tertiary == CustomAttribute.INT) intBonus += TertiaryIncrease * pcSkill.Rank;
-                else if (tertiary == CustomAttribute.WIS) wisBonus += TertiaryIncrease * pcSkill.Rank;
-                else if (tertiary == CustomAttribute.CHA) chaBonus += TertiaryIncrease * pcSkill.Rank;
+                    // Tertiary Bonuses
+                    if (tertiary == CustomAttribute.STR) strBonus += TertiaryIncrease * pcSkill.Rank;
+                    else if (tertiary == CustomAttribute.DEX) dexBonus += TertiaryIncrease * pcSkill.Rank;
+                    else if (tertiary == CustomAttribute.CON) conBonus += TertiaryIncrease * pcSkill.Rank;
+                    else if (tertiary == CustomAttribute.INT) intBonus += TertiaryIncrease * pcSkill.Rank;
+                    else if (tertiary == CustomAttribute.WIS) wisBonus += TertiaryIncrease * pcSkill.Rank;
+                    else if (tertiary == CustomAttribute.CHA) chaBonus += TertiaryIncrease * pcSkill.Rank;
+                }
             }
+
 
             // Check caps.
             if (strBonus > MaxAttributeBonus) strBonus = MaxAttributeBonus;
@@ -114,44 +118,59 @@ namespace SWLOR.Game.Server.Service
             if (intBonus > 100) intBonus = 100;
             if (wisBonus > 100) wisBonus = 100;
             if (chaBonus > 100) chaBonus = 100;
-            
+
             // Apply attributes
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_STRENGTH, (int)strBonus + pcEntity.STRBase);
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_DEXTERITY, (int)dexBonus + pcEntity.DEXBase);
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_CONSTITUTION, (int)conBonus + pcEntity.CONBase);
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_INTELLIGENCE, (int)intBonus + pcEntity.INTBase);
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_WISDOM, (int)wisBonus + pcEntity.WISBase);
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_CHARISMA, (int)chaBonus + pcEntity.CHABase);
+            _nwnxCreature.SetRawAbilityScore(player, ABILITY_STRENGTH, (int) strBonus + pcEntity.STRBase);
+            _nwnxCreature.SetRawAbilityScore(player, ABILITY_DEXTERITY, (int) dexBonus + pcEntity.DEXBase);
+            _nwnxCreature.SetRawAbilityScore(player, ABILITY_CONSTITUTION, (int) conBonus + pcEntity.CONBase);
+            _nwnxCreature.SetRawAbilityScore(player, ABILITY_INTELLIGENCE, (int) intBonus + pcEntity.INTBase);
+            _nwnxCreature.SetRawAbilityScore(player, ABILITY_WISDOM, (int) wisBonus + pcEntity.WISBase);
+            _nwnxCreature.SetRawAbilityScore(player, ABILITY_CHARISMA, (int) chaBonus + pcEntity.CHABase);
 
             // Apply AC
-            int ac = EffectiveArmorClass(itemBonuses, player);
-            _nwnxCreature.SetBaseAC(player, ac);
+
+            using (new Profiler("PlayerStatService::ApplyStatChanges::CalcAC"))
+            {
+                int ac = EffectiveArmorClass(itemBonuses, player);
+                _nwnxCreature.SetBaseAC(player, ac);
+            }
+
 
             // Apply BAB
-            int bab = CalculateBAB(player, ignoreItem, itemBonuses);
-            _nwnxCreature.SetBaseAttackBonus(player, bab);
+
+            using (new Profiler("PlayerStatService::ApplyStatChanges::CalcBAB"))
+            {
+                int bab = CalculateBAB(player, ignoreItem, itemBonuses);
+                _nwnxCreature.SetBaseAttackBonus(player, bab);
+            }
 
             // Apply HP
-            int hp = EffectiveMaxHitPoints(player, itemBonuses);
-            for (int level = 1; level <= 5; level++)
+
+            using (new Profiler("PlayerStatService::ApplyStatChanges::CalcHP"))
             {
-                hp--;
-                _nwnxCreature.SetMaxHitPointsByLevel(player, level, 1);
+                int hp = EffectiveMaxHitPoints(player, itemBonuses);
+                for (int level = 1; level <= 5; level++)
+                {
+                    hp--;
+                    _nwnxCreature.SetMaxHitPointsByLevel(player, level, 1);
+                }
+
+                for (int level = 1; level <= 5; level++)
+                {
+                    if (hp > 255) // Levels can only contain a max of 255 HP
+                    {
+                        _nwnxCreature.SetMaxHitPointsByLevel(player, level, 255);
+                        hp = hp - 255;
+                    }
+                    else // Remaining value gets set to the level. (<255 hp)
+                    {
+                        _nwnxCreature.SetMaxHitPointsByLevel(player, level, hp + 1);
+                        break;
+                    }
+                }
             }
 
-            for (int level = 1; level <= 5; level++)
-            {
-                if (hp > 255) // Levels can only contain a max of 255 HP
-                {
-                    _nwnxCreature.SetMaxHitPointsByLevel(player, level, 255);
-                    hp = hp - 255;
-                }
-                else // Remaining value gets set to the level. (<255 hp)
-                {
-                    _nwnxCreature.SetMaxHitPointsByLevel(player, level, hp + 1);
-                    break;
-                }
-            }
+
 
             if (player.CurrentHP > player.MaxHP)
             {
@@ -161,14 +180,17 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Apply FP
-            pcEntity.MaxFP = EffectiveMaxFP(player, itemBonuses);
-
-            if (isInitialization)
+            using (new Profiler("PlayerStatService::ApplyStatChanges::CalcFP"))
             {
-                pcEntity.CurrentFP = pcEntity.MaxFP;
-            }
+                pcEntity.MaxFP = EffectiveMaxFP(player, itemBonuses);
 
-            _data.SubmitDataChange(pcEntity, DatabaseActionType.Update);
+                if (isInitialization)
+                {
+                    pcEntity.CurrentFP = pcEntity.MaxFP;
+                }
+
+                _data.SubmitDataChange(pcEntity, DatabaseActionType.Update);
+            }
         }
 
 
@@ -241,109 +263,113 @@ namespace SWLOR.Game.Server.Service
         
         public EffectiveItemStats GetPlayerItemEffectiveStats(NWPlayer player, NWItem ignoreItem = null)
         {
-            int[] armorSkills = { (int)SkillType.HeavyArmor, (int)SkillType.LightArmor, (int)SkillType.ForceArmor };
-            var pcArmorSkills = _data.Where<PCSkill>(x => x.PlayerID == player.GlobalID && armorSkills.Contains(x.SkillID)).ToList();
+            using (new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats"))
+            {
+                int[] armorSkills = { (int)SkillType.HeavyArmor, (int)SkillType.LightArmor, (int)SkillType.ForceArmor };
+                var pcArmorSkills = _data.Where<PCSkill>(x => x.PlayerID == player.GlobalID && armorSkills.Contains(x.SkillID)).ToList();
 
-            int heavyRank = pcArmorSkills.Single(x => x.SkillID == (int)SkillType.HeavyArmor).Rank;
-            int lightRank = pcArmorSkills.Single(x => x.SkillID == (int)SkillType.LightArmor).Rank;
-            int forceRank = pcArmorSkills.Single(x => x.SkillID == (int)SkillType.ForceArmor).Rank;
+                int heavyRank = pcArmorSkills.Single(x => x.SkillID == (int)SkillType.HeavyArmor).Rank;
+                int lightRank = pcArmorSkills.Single(x => x.SkillID == (int)SkillType.LightArmor).Rank;
+                int forceRank = pcArmorSkills.Single(x => x.SkillID == (int)SkillType.ForceArmor).Rank;
+
+                EffectiveItemStats stats = new EffectiveItemStats();
+                stats.EnmityRate = 1.0f;
+
+                for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
+                {
+                    NWItem item = _.GetItemInSlot(itemSlot, player);
+                    if (!item.IsValid || item.Equals(ignoreItem)) continue;
+                    SkillType skill = _item.GetSkillTypeForItem(item);
+                    int rank = _data.Single<PCSkill>(x => x.PlayerID == player.GlobalID && x.SkillID == (int)skill).Rank;
+
+                    // Only scale casting speed if it's a bonus. Penalties remain regardless of skill level difference.
+                    if (item.CastingSpeed > 0)
+                    {
+                        stats.CastingSpeed += CalculateAdjustedValue(item.CastingSpeed, item.RecommendedLevel, rank);
+                    }
+                    else stats.CastingSpeed += item.CastingSpeed;
+
+                    stats.EnmityRate += CalculateAdjustedValue(0.01f * item.EnmityRate, item.RecommendedLevel, rank, 0.00f);
+                    stats.DarkAbility += CalculateAdjustedValue(item.DarkAbilityBonus, item.RecommendedLevel, rank, 0);
+                    stats.LightAbility += CalculateAdjustedValue(item.LightAbilityBonus, item.RecommendedLevel, rank, 0);
+                    stats.Luck += CalculateAdjustedValue(item.LuckBonus, item.RecommendedLevel, rank, 0);
+                    stats.Meditate += CalculateAdjustedValue(item.MeditateBonus, item.RecommendedLevel, rank, 0);
+                    stats.Rest += CalculateAdjustedValue(item.RestBonus, item.RecommendedLevel, rank, 0);
+                    stats.Medicine += CalculateAdjustedValue(item.MedicineBonus, item.RecommendedLevel, rank, 0);
+                    stats.HPRegen += CalculateAdjustedValue(item.HPRegenBonus, item.RecommendedLevel, rank, 0);
+                    stats.FPRegen += CalculateAdjustedValue(item.FPRegenBonus, item.RecommendedLevel, rank, 0);
+                    stats.Weaponsmith += CalculateAdjustedValue(item.CraftBonusWeaponsmith, item.RecommendedLevel, rank, 0);
+                    stats.Cooking += CalculateAdjustedValue(item.CraftBonusCooking, item.RecommendedLevel, rank, 0);
+                    stats.Engineering += CalculateAdjustedValue(item.CraftBonusEngineering, item.RecommendedLevel, rank, 0);
+                    stats.Fabrication += CalculateAdjustedValue(item.CraftBonusFabrication, item.RecommendedLevel, rank, 0);
+                    stats.Armorsmith += CalculateAdjustedValue(item.CraftBonusArmorsmith, item.RecommendedLevel, rank, 0);
+                    stats.Harvesting += CalculateAdjustedValue(item.HarvestingBonus, item.RecommendedLevel, rank, 0);
+                    stats.SneakAttack += CalculateAdjustedValue(item.SneakAttackBonus, item.RecommendedLevel, rank, 0);
+
+                    stats.Strength += CalculateAdjustedValue(item.StrengthBonus, item.RecommendedLevel, rank, 0);
+                    stats.Dexterity += CalculateAdjustedValue(item.DexterityBonus, item.RecommendedLevel, rank, 0);
+                    stats.Constitution += CalculateAdjustedValue(item.ConstitutionBonus, item.RecommendedLevel, rank, 0);
+                    stats.Wisdom += CalculateAdjustedValue(item.WisdomBonus, item.RecommendedLevel, rank, 0);
+                    stats.Intelligence += CalculateAdjustedValue(item.IntelligenceBonus, item.RecommendedLevel, rank, 0);
+                    stats.Charisma += CalculateAdjustedValue(item.CharismaBonus, item.RecommendedLevel, rank, 0);
+                    stats.HP += CalculateAdjustedValue(item.HPBonus, item.RecommendedLevel, rank, 0);
+                    stats.FP += CalculateAdjustedValue(item.FPBonus, item.RecommendedLevel, rank, 0);
+
+                    // Calculate base attack bonus
+                    int itemLevel = item.RecommendedLevel;
+                    int delta = itemLevel - rank;
+                    int itemBAB = item.BaseAttackBonus;
+                    if (delta >= 1) itemBAB--;
+                    if (delta > 0) itemBAB = itemBAB - delta / 5;
+
+                    if (itemBAB <= 0) itemBAB = 0;
+                    stats.BAB += itemBAB;
+
+                    // Calculate AC
+                    if (_item.ArmorBaseItemTypes.Contains(item.BaseItemType))
+                    {
+                        int skillRankToUse;
+                        if (item.CustomItemType == CustomItemType.HeavyArmor)
+                        {
+                            skillRankToUse = heavyRank;
+                        }
+                        else if (item.CustomItemType == CustomItemType.LightArmor)
+                        {
+                            skillRankToUse = lightRank;
+                        }
+                        else if (item.CustomItemType == CustomItemType.ForceArmor)
+                        {
+                            skillRankToUse = forceRank;
+                        }
+                        else continue;
+
+                        int itemAC = item.CustomAC;
+                        itemAC = CalculateAdjustedValue(itemAC, item.RecommendedLevel, skillRankToUse, 0);
+                        stats.AC += itemAC;
+                    }
+
+
+                }
+
+                // Final casting speed adjustments
+                if (stats.CastingSpeed < -99)
+                    stats.CastingSpeed = -99;
+                else if (stats.CastingSpeed > 99)
+                    stats.CastingSpeed = 99;
+
+                // Final enmity adjustments
+                if (stats.EnmityRate < 0.5f) stats.EnmityRate = 0.5f;
+                else if (stats.EnmityRate > 1.5f) stats.EnmityRate = 1.5f;
+
+                var stance = _customEffect.GetCurrentStanceType(player);
+                if (stance == CustomEffectType.ShieldOath)
+                {
+                    stats.EnmityRate = stats.EnmityRate + 0.2f;
+                }
+
+                return stats;
+            }
             
-            EffectiveItemStats stats = new EffectiveItemStats();
-            stats.EnmityRate = 1.0f;
-
-            for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
-            {
-                NWItem item = _.GetItemInSlot(itemSlot, player);
-                if (!item.IsValid || item.Equals(ignoreItem)) continue;
-                SkillType skill = _item.GetSkillTypeForItem(item);
-                int rank = _data.Single<PCSkill>(x => x.PlayerID == player.GlobalID && x.SkillID == (int)skill).Rank;
-
-                // Only scale casting speed if it's a bonus. Penalties remain regardless of skill level difference.
-                if (item.CastingSpeed > 0)
-                {
-                    stats.CastingSpeed += CalculateAdjustedValue(item.CastingSpeed, item.RecommendedLevel, rank);
-                }
-                else stats.CastingSpeed += item.CastingSpeed;
-
-                stats.EnmityRate += CalculateAdjustedValue(0.01f * item.EnmityRate, item.RecommendedLevel, rank, 0.00f);
-                stats.DarkAbility += CalculateAdjustedValue(item.DarkAbilityBonus, item.RecommendedLevel, rank, 0);
-                stats.LightAbility += CalculateAdjustedValue(item.LightAbilityBonus, item.RecommendedLevel, rank, 0);
-                stats.Luck += CalculateAdjustedValue(item.LuckBonus, item.RecommendedLevel, rank, 0);
-                stats.Meditate += CalculateAdjustedValue(item.MeditateBonus, item.RecommendedLevel, rank, 0);
-                stats.Rest += CalculateAdjustedValue(item.RestBonus, item.RecommendedLevel, rank, 0);
-                stats.Medicine += CalculateAdjustedValue(item.MedicineBonus, item.RecommendedLevel, rank, 0);
-                stats.HPRegen += CalculateAdjustedValue(item.HPRegenBonus, item.RecommendedLevel, rank, 0);
-                stats.FPRegen += CalculateAdjustedValue(item.FPRegenBonus, item.RecommendedLevel, rank, 0);
-                stats.Weaponsmith += CalculateAdjustedValue(item.CraftBonusWeaponsmith, item.RecommendedLevel, rank, 0);
-                stats.Cooking += CalculateAdjustedValue(item.CraftBonusCooking, item.RecommendedLevel, rank, 0);
-                stats.Engineering += CalculateAdjustedValue(item.CraftBonusEngineering, item.RecommendedLevel, rank, 0);
-                stats.Fabrication += CalculateAdjustedValue(item.CraftBonusFabrication, item.RecommendedLevel, rank, 0);
-                stats.Armorsmith += CalculateAdjustedValue(item.CraftBonusArmorsmith, item.RecommendedLevel, rank, 0);
-                stats.Harvesting += CalculateAdjustedValue(item.HarvestingBonus, item.RecommendedLevel, rank, 0);
-                stats.SneakAttack += CalculateAdjustedValue(item.SneakAttackBonus, item.RecommendedLevel, rank, 0);
-
-                stats.Strength += CalculateAdjustedValue(item.StrengthBonus, item.RecommendedLevel, rank, 0);
-                stats.Dexterity += CalculateAdjustedValue(item.DexterityBonus, item.RecommendedLevel, rank, 0);
-                stats.Constitution += CalculateAdjustedValue(item.ConstitutionBonus, item.RecommendedLevel, rank, 0);
-                stats.Wisdom += CalculateAdjustedValue(item.WisdomBonus, item.RecommendedLevel, rank, 0);
-                stats.Intelligence += CalculateAdjustedValue(item.IntelligenceBonus, item.RecommendedLevel, rank, 0);
-                stats.Charisma += CalculateAdjustedValue(item.CharismaBonus, item.RecommendedLevel, rank, 0);
-                stats.HP += CalculateAdjustedValue(item.HPBonus, item.RecommendedLevel, rank, 0);
-                stats.FP += CalculateAdjustedValue(item.FPBonus, item.RecommendedLevel, rank, 0);
-
-                // Calculate base attack bonus
-                int itemLevel = item.RecommendedLevel;
-                int delta = itemLevel - rank; 
-                int itemBAB = item.BaseAttackBonus;
-                if (delta >= 1) itemBAB--;
-                if (delta > 0) itemBAB = itemBAB - delta / 5;
-
-                if (itemBAB <= 0) itemBAB = 0;
-                stats.BAB += itemBAB;
-                
-                // Calculate AC
-                if (_item.ArmorBaseItemTypes.Contains(item.BaseItemType))
-                {
-                    int skillRankToUse;
-                    if (item.CustomItemType == CustomItemType.HeavyArmor)
-                    {
-                        skillRankToUse = heavyRank;
-                    }
-                    else if (item.CustomItemType == CustomItemType.LightArmor)
-                    {
-                        skillRankToUse = lightRank;
-                    }
-                    else if (item.CustomItemType == CustomItemType.ForceArmor)
-                    {
-                        skillRankToUse = forceRank;
-                    }
-                    else continue;
-
-                    int itemAC = item.CustomAC;
-                    itemAC = CalculateAdjustedValue(itemAC, item.RecommendedLevel, skillRankToUse, 0);
-                    stats.AC += itemAC;
-                }
-                
-
-            }
-
-            // Final casting speed adjustments
-            if (stats.CastingSpeed < -99)
-                stats.CastingSpeed = -99;
-            else if (stats.CastingSpeed > 99)
-                stats.CastingSpeed = 99;
-
-            // Final enmity adjustments
-            if (stats.EnmityRate < 0.5f) stats.EnmityRate = 0.5f;
-            else if (stats.EnmityRate > 1.5f) stats.EnmityRate = 1.5f;
-
-            var stance = _customEffect.GetCurrentStanceType(player);
-            if (stance == CustomEffectType.ShieldOath)
-            {
-                stats.EnmityRate = stats.EnmityRate + 0.2f;
-            }
-
-            return stats;
         }
 
 

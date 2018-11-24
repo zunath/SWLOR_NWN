@@ -409,7 +409,7 @@ namespace SWLOR.Game.Server.Service
             
             float bonus = atmoStructures.Sum(x => (x.StructureBonus * 0.02f) + 0.02f);
 
-            if (bonus >= 1f) bonus = 1f;
+            if (bonus >= 0.5f) bonus = 0.5f;
             return bonus;
         }
         

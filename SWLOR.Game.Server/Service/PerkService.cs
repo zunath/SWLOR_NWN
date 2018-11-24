@@ -131,6 +131,8 @@ namespace SWLOR.Game.Server.Service
             int type = oItem.BaseItemType;
             var pcPerks = _data.Where<PCPerk>(x =>
             {
+                if (oPC.GlobalID != x.PlayerID) return false;
+
                 // Only pull back perks which have a Shield On Hit execution type.
                 var perk = _data.Get<Data.Entity.Perk>(x.PerkID);
                 if (perk.ExecutionTypeID != (int) PerkExecutionType.ShieldOnHit)

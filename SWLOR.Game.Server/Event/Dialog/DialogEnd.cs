@@ -21,6 +21,8 @@ namespace SWLOR.Game.Server.Event.Dialog
         public bool Run(params object[] args)
         {
             NWPlayer player = (_.GetPCSpeaker());
+            if (!_dialog.HasPlayerDialog(player.GlobalID)) return false;
+
             PlayerDialog dialog = _dialog.LoadPlayerDialog(player.GlobalID);
             
             App.ResolveByInterface<IConversation>("Conversation." + dialog.ActiveDialogName, convo =>

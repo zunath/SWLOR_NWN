@@ -24,22 +24,19 @@ namespace SWLOR.Game.Server.Service
         private readonly IColorTokenService _color;
         private readonly INWNXPlayer _nwnxPlayer;
         private readonly IDataService _data;
-        private readonly INWNXProfiler _nwnxProfiler;
 
         public ItemService(
             INWScript script,
             IBiowareXP2 xp2,
             IColorTokenService color,
             INWNXPlayer nwnxPlayer,
-            IDataService data,
-            INWNXProfiler nwnxProfiler)
+            IDataService data)
         {
             _ = script;
             _xp2 = xp2;
             _color = color;
             _nwnxPlayer = nwnxPlayer;
             _data = data;
-            _nwnxProfiler = nwnxProfiler;
         }
 
         public string GetNameByResref(string resref)
@@ -400,9 +397,7 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleEquipItem()
         {
-            _nwnxProfiler.PushPerfScope("ItemService::OnModuleEquipItem()");
-
-            try
+            using(new Profiler("ItemService::OnModuleEquipItem()"))
             {
 
                 int[] validItemTypes = {
@@ -483,7 +478,7 @@ namespace SWLOR.Game.Server.Service
                 AddOnHitProperty(oItem);
 
                 // Check ammo every time
-                if(player.Arrows.IsValid)
+                if (player.Arrows.IsValid)
                 {
                     AddOnHitProperty(player.Arrows);
                     player.Arrows.RecommendedLevel = oItem.RecommendedLevel;
@@ -510,15 +505,6 @@ namespace SWLOR.Game.Server.Service
                         oItem.Destroy();
                     }
                 }
-
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                _nwnxProfiler.PopPerfScope();
             }
         }
 

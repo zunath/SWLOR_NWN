@@ -426,9 +426,7 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleItemEquipped()
         {
-            _nwnxProfiler.PushPerfScope("SkillService::OnModuleItemEquipped()");
-
-            try
+            using(new Profiler("SkillService::OnModuleItemEquipped()"))
             {
                 NWPlayer oPC = _.GetPCItemLastEquippedBy();
                 if (!oPC.IsInitializedAsPlayer) return; // Players who log in for the first time don't have an ID yet.
@@ -439,21 +437,11 @@ namespace SWLOR.Game.Server.Service
                 ApplyWeaponPenalties(oPC, oItem);
                 ApplyEquipmentPenalties(oPC, oItem);
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                _nwnxProfiler.PopPerfScope();
-            }
         }
 
         public void OnModuleItemUnequipped()
         {
-            _nwnxProfiler.PushPerfScope("SkillService::OnModuleItemUnequipped()");
-
-            try
+            using (new Profiler("SkillService::OnModuleItemUnequipped()"))
             {
                 NWPlayer oPC = _.GetPCItemLastUnequippedBy();
                 NWItem oItem = _.GetPCItemLastUnequipped();
@@ -461,14 +449,6 @@ namespace SWLOR.Game.Server.Service
                 _playerStat.ApplyStatChanges(oPC, oItem);
                 RemoveWeaponPenalties(oItem);
                 RemoveEquipmentPenalties(oItem);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                _nwnxProfiler.PopPerfScope();
             }
         }
 

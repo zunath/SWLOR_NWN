@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -27,9 +28,7 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleItemEquipped()
         {
-            _nwnxProfiler.PushPerfScope("HelmetToggleService::OnModuleItemEquipped()");
-
-            try
+            using (new Profiler("HelmetToggleService::OnModuleItemEquipped()"))
             {
                 NWPlayer player = (_.GetPCItemLastEquippedBy());
                 if (!player.IsPlayer || !player.IsInitializedAsPlayer) return;
@@ -40,21 +39,11 @@ namespace SWLOR.Game.Server.Service
                 Player pc = _data.Single<Player>(x => x.ID == player.GlobalID);
                 _.SetHiddenWhenEquipped(item.Object, !pc.DisplayHelmet == false ? 0 : 1);
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                _nwnxProfiler.PopPerfScope();
-            }
         }
 
         public void OnModuleItemUnequipped()
         {
-            _nwnxProfiler.PushPerfScope("HelmetToggleService::OnModuleItemUnequipped()");
-
-            try
+            using(new Profiler("HelmetToggleService::OnModuleItemUnequipped()"))
             {
                 NWPlayer player = (_.GetPCItemLastUnequippedBy());
                 if (!player.IsPlayer) return;
@@ -64,14 +53,6 @@ namespace SWLOR.Game.Server.Service
 
                 Player pc = _data.Single<Player>(x => x.ID == player.GlobalID);
                 _.SetHiddenWhenEquipped(item.Object, !pc.DisplayHelmet == false ? 0 : 1);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                _nwnxProfiler.PopPerfScope();
             }
         }
 

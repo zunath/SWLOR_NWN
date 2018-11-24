@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Service
     public class DialogService: IDialogService
     {
         private readonly INWScript _;
-        private const int NumberOfDialogs = 255;
+        public const int NumberOfDialogs = 255;
         private readonly AppCache _cache;
 
         public DialogService(INWScript script, AppCache cache)
@@ -24,13 +24,6 @@ namespace SWLOR.Game.Server.Service
 
         private void StorePlayerDialog(Guid globalID, PlayerDialog dialog)
         {
-            // Reuse the existing player dialog if it exists.
-            if (HasPlayerDialog(globalID))
-            {
-                _cache.PlayerDialogs[globalID] = dialog;
-                return;
-            }
-
             if (dialog.DialogNumber <= 0)
             {
                 for (int x = 1; x <= NumberOfDialogs; x++)

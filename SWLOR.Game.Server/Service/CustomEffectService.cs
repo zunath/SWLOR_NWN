@@ -208,9 +208,10 @@ namespace SWLOR.Game.Server.Service
         {
             var stanceEffect = _data.SingleOrDefault<PCCustomEffect>(x =>
             {
+                if (x.PlayerID != player.GlobalID) return false;
+
                 var customEffect = _data.Get<Data.Entity.CustomEffect>(x.CustomEffectID);
-                return x.PlayerID == player.GlobalID &&
-                       customEffect.CustomEffectCategoryID == (int) CustomEffectCategoryType.Stance;
+                return customEffect.CustomEffectCategoryID == (int) CustomEffectCategoryType.Stance;
             });
             if (stanceEffect == null) return CustomEffectType.None;
 

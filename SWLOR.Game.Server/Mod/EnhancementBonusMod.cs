@@ -6,6 +6,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Mod.Contracts;
 
 using NWN;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Mod
@@ -28,7 +29,7 @@ namespace SWLOR.Game.Server.Mod
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            if (!_item.WeaponBaseItemTypes.Contains(target.BaseItemType))
+            if (!ItemService.WeaponBaseItemTypes.Contains(target.BaseItemType))
                 return "This mod can only be applied to weapons.";
 
             int existingEnhancementBonus = GetExistingEnhancementBonus(target);

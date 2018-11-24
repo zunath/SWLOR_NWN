@@ -2,6 +2,7 @@
 using System.Linq;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Mod.Contracts;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Mod
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Mod
             if (target.CustomAC >= 50)
                 return "You cannot improve that item's AC any further.";
 
-            if (!_item.ArmorBaseItemTypes.Contains(target.BaseItemType))
+            if (!ItemService.ArmorBaseItemTypes.Contains(target.BaseItemType))
                 return "This mod can only be applied to armors.";
 
             return null;

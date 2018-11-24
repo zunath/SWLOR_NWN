@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using SWLOR.Game.Server.Conversation.Contracts;
 using SWLOR.Game.Server.GameObject;
 
@@ -26,6 +27,7 @@ namespace SWLOR.Game.Server.Service
             // Reuse the existing player dialog if it exists.
             if (HasPlayerDialog(globalID))
             {
+                _cache.PlayerDialogs[globalID] = dialog;
                 return;
             }
 
@@ -33,7 +35,8 @@ namespace SWLOR.Game.Server.Service
             {
                 for (int x = 1; x <= NumberOfDialogs; x++)
                 {
-                    if (!_cache.DialogFilesInUse[x])
+                    var existingDialog = _cache.PlayerDialogs.SingleOrDefault(d => d.Value.DialogNumber == x);
+                    if (!_cache.DialogFilesInUse[x] || existingDialog.Value == null)
                     {
                         _cache.DialogFilesInUse[x] = true;
                         dialog.DialogNumber = x;

@@ -748,8 +748,12 @@ namespace SWLOR.Game.Server.Service
             using (new Profiler("ItemService::GetSkillTypeForItem"))
             {
                 int type = item.BaseItemType;
-                if (!_skillTypeMappings.ContainsKey(type)) return SkillType.Unknown;
-                else return _skillTypeMappings[type];
+
+                if (!_skillTypeMappings.TryGetValue(type, out var result))
+                {
+                    return SkillType.Unknown;
+                }
+                return result;
             }
         }
     }

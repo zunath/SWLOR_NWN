@@ -149,7 +149,6 @@
     <Compile Include="ChatCommand\Victory1.cs" />
     <Compile Include="ChatCommand\Victory2.cs" />
     <Compile Include="ChatCommand\Victory3.cs" />
-    <Compile Include="Constants.cs" />
     <Compile Include="Conversation\ApartmentEntrance.cs" />
     <Compile Include="Conversation\ApartmentRental.cs" />
     <Compile Include="Conversation\BaseManagementTool.cs" />

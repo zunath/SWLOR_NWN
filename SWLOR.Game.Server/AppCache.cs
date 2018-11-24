@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Autofac.Util;
-using SWLOR.Game.Server.Data;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using SWLOR.Game.Server.ValueObject.Skill;
@@ -45,7 +43,7 @@ namespace SWLOR.Game.Server
             ConnectedDMs = new List<NWObject>();
             
 
-            for (int x = 1; x <= Constants.NumberOfDialogs; x++)
+            for (int x = 1; x <= DialogService.NumberOfDialogs; x++)
             {
                 DialogFilesInUse.Add(x, false);
             }

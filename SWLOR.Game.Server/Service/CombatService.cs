@@ -127,6 +127,9 @@ namespace SWLOR.Game.Server.Service
             }
             else return;
 
+            // Don't have the perk. Return.
+            if (perkLevel <= 0) return;
+
             // Check attacker's DEX against the primary stat of the perk.
             int delta = damager.DexterityModifier - modifier;
             if (delta <= 0) return;

@@ -441,58 +441,65 @@ namespace SWLOR.Game.Server.Service
         /// <returns></returns>
         private int GetPCEffectivePerkLevel(NWPlayer player, int perkID)
         {
-            var pcSkills = _data.Where<PCSkill>(x => x.PlayerID == player.GlobalID).ToList();
-            // Get the PC's perk information and all of the perk levels at or below their current level.
-            var pcPerk = _data.SingleOrDefault<PCPerk>(x => x.PlayerID == player.GlobalID && x.PerkID == perkID);
-            if (pcPerk == null) return 0;
-
-            // Get all of the perk levels in range, starting with the highest level.
-            var perkLevelsInRange = _data
-                .Where<PerkLevel>(x => x.PerkID == perkID && x.Level <= pcPerk.PerkLevel)
-                .OrderByDescending(o => o.Level);
-
-            // Iterate over each perk level. If player doesn't meet the requirements, the effective level is dropped.
-            // Iteration ends when the player meets that level's requirements. 
-            foreach (var perkLevel in perkLevelsInRange)
+            using(new Profiler("PerkService::GetPCEffectivePerkLevel"))
             {
-                var skillRequirements = _data.Where<PerkLevelSkillRequirement>(r => r.PerkLevelID == perkLevel.ID);
-                var questRequirements = _data.Where<PerkLevelQuestRequirement>(q => q.PerkLevelID == perkLevel.ID);
-                int effectiveLevel = pcPerk.PerkLevel;
+                var pcSkills = _data.Where<PCSkill>(x => x.PlayerID == player.GlobalID).ToList();
+                // Get the PC's perk information and all of the perk levels at or below their current level.
+                var pcPerk = _data.SingleOrDefault<PCPerk>(x => x.PlayerID == player.GlobalID && x.PerkID == perkID);
+                if (pcPerk == null) return 0;
 
-                // Check the skill requirements.
-                foreach (var req in skillRequirements)
+                // Get all of the perk levels in range, starting with the highest level.
+                var perkLevelsInRange = _data
+                    .Where<PerkLevel>(x => x.PerkID == perkID && x.Level <= pcPerk.PerkLevel)
+                    .OrderByDescending(o => o.Level);
+
+                using (new Profiler("PerkService::GetPCEffectivePerkLevel::PerkLevelIteration"))
                 {
-                    var pcSkill = pcSkills.Single(x => x.SkillID == req.SkillID);
-                    if (pcSkill.Rank < req.RequiredRank)
+
+                    // Iterate over each perk level. If player doesn't meet the requirements, the effective level is dropped.
+                    // Iteration ends when the player meets that level's requirements. 
+                    foreach (var perkLevel in perkLevelsInRange)
                     {
-                        effectiveLevel--;
-                        break;
+                        var skillRequirements = _data.Where<PerkLevelSkillRequirement>(r => r.PerkLevelID == perkLevel.ID);
+                        var questRequirements = _data.Where<PerkLevelQuestRequirement>(q => q.PerkLevelID == perkLevel.ID);
+                        int effectiveLevel = pcPerk.PerkLevel;
+
+                        // Check the skill requirements.
+                        foreach (var req in skillRequirements)
+                        {
+                            var pcSkill = pcSkills.Single(x => x.SkillID == req.SkillID);
+                            if (pcSkill.Rank < req.RequiredRank)
+                            {
+                                effectiveLevel--;
+                                break;
+                            }
+                        }
+
+                        // Was the effective level reduced during the skill check? No need to check quests.
+                        if (effectiveLevel != pcPerk.PerkLevel) continue;
+
+                        // Check the quest requirements.
+                        foreach (var req in questRequirements)
+                        {
+                            var pcQuest = _data.SingleOrDefault<PCQuestStatus>(q => q.QuestID == req.RequiredQuestID);
+                            if (pcQuest == null || pcQuest.CompletionDate == null)
+                            {
+                                effectiveLevel--;
+                                break;
+                            }
+                        }
+
+                        // Was the effective level reduced during the quest check? Move to the next lowest perk level.
+                        if (effectiveLevel != pcPerk.PerkLevel) continue;
+
+                        // Otherwise the player meets all requirements. This is their effective perk level.
+                        return effectiveLevel;
                     }
                 }
 
-                // Was the effective level reduced during the skill check? No need to check quests.
-                if (effectiveLevel != pcPerk.PerkLevel) continue;
-
-                // Check the quest requirements.
-                foreach (var req in questRequirements)
-                {
-                    var pcQuest = _data.SingleOrDefault<PCQuestStatus>(q => q.QuestID == req.RequiredQuestID);
-                    if(pcQuest == null || pcQuest.CompletionDate == null)
-                    {
-                        effectiveLevel--;
-                        break;
-                    }
-                }
-
-                // Was the effective level reduced during the quest check? Move to the next lowest perk level.
-                if (effectiveLevel != pcPerk.PerkLevel) continue;
-
-                // Otherwise the player meets all requirements. This is their effective perk level.
-                return effectiveLevel;
+                // Player meets none of the requirements for their purchased perk level. Their effective level is 0.
+                return 0;
             }
-
-            // Player meets none of the requirements for their purchased perk level. Their effective level is 0.
-            return 0;
         }
 
     }

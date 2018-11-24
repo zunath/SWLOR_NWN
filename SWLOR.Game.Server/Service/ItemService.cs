@@ -1,18 +1,16 @@
-﻿using System;
-using System.Linq;
+﻿using NWN;
 using SWLOR.Game.Server.Bioware.Contracts;
-using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.Delayed;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
-
-using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data.Entity;
-using SWLOR.Game.Server.Event.Delayed;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Service
@@ -66,14 +64,14 @@ namespace SWLOR.Game.Server.Service
             item.Destroy();
             return itemType;
         }
-        
+
         public void OnModuleActivatedItem()
         {
             NWPlayer user = (_.GetItemActivator());
             NWItem oItem = (_.GetItemActivated());
             NWObject target = (_.GetItemActivatedTarget());
             Location targetLocation = _.GetItemActivatedTargetLocation();
-            
+
             string className = oItem.GetLocalString("JAVA_SCRIPT");
             if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("ACTIVATE_JAVA_SCRIPT");
             if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("JAVA_ACTION_SCRIPT");
@@ -148,7 +146,7 @@ namespace SWLOR.Game.Server.Service
             });
 
         }
-        
+
         public string OnModuleExamine(string existingDescription, NWPlayer examiner, NWObject examinedObject)
         {
             if (examinedObject.ObjectType != OBJECT_TYPE_ITEM) return existingDescription;
@@ -235,7 +233,7 @@ namespace SWLOR.Game.Server.Service
             }
             if (examinedItem.EnmityRate != 0)
             {
-                description += _color.Orange("Enmity: ") + examinedItem.EnmityRate +  "%\n";
+                description += _color.Orange("Enmity: ") + examinedItem.EnmityRate + "%\n";
             }
             if (examinedItem.DarkAbilityBonus > 0)
             {
@@ -370,7 +368,7 @@ namespace SWLOR.Game.Server.Service
                     BASE_ITEM_TWOBLADEDSWORD,
                     BASE_ITEM_WARHAMMER,
                     BASE_ITEM_WHIP,
-                    CustomBaseItemType.Saberstaff, 
+                    CustomBaseItemType.Saberstaff,
                     CustomBaseItemType.Lightsaber
                 };
 
@@ -397,7 +395,7 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleEquipItem()
         {
-            using(new Profiler("ItemService::OnModuleEquipItem()"))
+            using (new Profiler("ItemService::OnModuleEquipItem()"))
             {
 
                 int[] validItemTypes = {
@@ -538,7 +536,7 @@ namespace SWLOR.Game.Server.Service
                 _.RemoveItemProperty(item.Object, ip);
             }
         }
-        
+
         public void FinishActionItem(IActionItem actionItem, NWPlayer user, NWItem item, NWObject target, Location targetLocation, Vector userStartPosition, CustomData customData)
         {
             user.IsBusy = false;
@@ -592,7 +590,7 @@ namespace SWLOR.Game.Server.Service
                 else item.Destroy();
             }
         }
-        
+
         public ItemProperty GetCustomItemPropertyByItemTag(string tag)
         {
             NWPlaceable container = (_.GetObjectByTag("item_props"));
@@ -682,109 +680,77 @@ namespace SWLOR.Game.Server.Service
                 return rangedTypes;
             }
         }
-
+        
+        private static readonly Dictionary<int, SkillType> _skillTypeMappings = new Dictionary<int, SkillType>()
+        {
+            // One-Handed Skills
+            {BASE_ITEM_BASTARDSWORD, SkillType.OneHanded},
+            {BASE_ITEM_BATTLEAXE, SkillType.OneHanded},
+            {BASE_ITEM_CLUB, SkillType.OneHanded},
+            {BASE_ITEM_DAGGER, SkillType.OneHanded},
+            {BASE_ITEM_HANDAXE, SkillType.OneHanded},
+            {BASE_ITEM_KAMA, SkillType.OneHanded},
+            {BASE_ITEM_KATANA, SkillType.OneHanded},
+            {BASE_ITEM_KUKRI, SkillType.OneHanded},
+            {BASE_ITEM_LIGHTFLAIL, SkillType.OneHanded},
+            {BASE_ITEM_LIGHTHAMMER, SkillType.OneHanded},
+            {BASE_ITEM_LIGHTMACE, SkillType.OneHanded},
+            {BASE_ITEM_LONGSWORD, SkillType.OneHanded},
+            {BASE_ITEM_MORNINGSTAR, SkillType.OneHanded},
+            {BASE_ITEM_RAPIER, SkillType.OneHanded},
+            {BASE_ITEM_SCIMITAR, SkillType.OneHanded},
+            {BASE_ITEM_SHORTSWORD, SkillType.OneHanded},
+            {BASE_ITEM_SICKLE, SkillType.OneHanded},
+            {BASE_ITEM_WHIP, SkillType.OneHanded},
+            // Two-Handed Skills
+            {BASE_ITEM_DIREMACE, SkillType.TwoHanded}     ,
+            {BASE_ITEM_DWARVENWARAXE, SkillType.TwoHanded},
+            {BASE_ITEM_GREATAXE, SkillType.TwoHanded}     ,
+            {BASE_ITEM_GREATSWORD, SkillType.TwoHanded}   ,
+            {BASE_ITEM_HALBERD, SkillType.TwoHanded}      ,
+            {BASE_ITEM_HEAVYFLAIL, SkillType.TwoHanded}   ,
+            {BASE_ITEM_SCYTHE, SkillType.TwoHanded}       ,
+            {BASE_ITEM_TRIDENT, SkillType.TwoHanded}      ,
+            {BASE_ITEM_WARHAMMER, SkillType.TwoHanded}    ,
+            {BASE_ITEM_SHORTSPEAR, SkillType.TwoHanded}   ,
+            // Twin Blades Skills
+            {BASE_ITEM_TWOBLADEDSWORD, SkillType.TwinBlades },
+            {BASE_ITEM_DOUBLEAXE, SkillType.TwinBlades },
+            // Martial Arts Skills
+            {BASE_ITEM_BRACER, SkillType.MartialArts},
+            {BASE_ITEM_GLOVES, SkillType.MartialArts},
+            {BASE_ITEM_QUARTERSTAFF, SkillType.MartialArts},
+            {BASE_ITEM_HEAVYCROSSBOW, SkillType.Firearms},
+            {BASE_ITEM_LIGHTCROSSBOW, SkillType.Firearms},
+            // Firearms Skills
+            {BASE_ITEM_LONGBOW, SkillType.Firearms},
+            {BASE_ITEM_SHORTBOW, SkillType.Firearms},
+            {BASE_ITEM_ARROW, SkillType.Firearms},
+            {BASE_ITEM_BOLT, SkillType.Firearms},
+            // Throwing Skills
+            {BASE_ITEM_GRENADE, SkillType.Throwing},
+            {BASE_ITEM_SHURIKEN, SkillType.Throwing},
+            {BASE_ITEM_SLING, SkillType.Throwing},
+            {BASE_ITEM_THROWINGAXE, SkillType.Throwing},
+            {BASE_ITEM_BULLET, SkillType.Throwing},
+            {BASE_ITEM_DART, SkillType.Throwing},
+            // Shield Skills
+            {BASE_ITEM_SMALLSHIELD, SkillType.Shields },
+            {BASE_ITEM_LARGESHIELD, SkillType.Shields },
+            {BASE_ITEM_TOWERSHIELD, SkillType.Shields },
+            // Lightsabers
+            {CustomBaseItemType.Lightsaber, SkillType.Lightsaber},
+            {CustomBaseItemType.Saberstaff, SkillType.Lightsaber}
+        };
 
         public SkillType GetSkillTypeForItem(NWItem item)
         {
-            SkillType skillType = SkillType.Unknown;
-            int type = item.BaseItemType;
-            int[] oneHandedTypes =
+            using (new Profiler("ItemService::GetSkillTypeForItem"))
             {
-                BASE_ITEM_BASTARDSWORD,
-                BASE_ITEM_BATTLEAXE,
-                BASE_ITEM_CLUB,
-                BASE_ITEM_DAGGER,
-                BASE_ITEM_HANDAXE,
-                BASE_ITEM_KAMA,
-                BASE_ITEM_KATANA,
-                BASE_ITEM_KUKRI,
-                BASE_ITEM_LIGHTFLAIL,
-                BASE_ITEM_LIGHTHAMMER,
-                BASE_ITEM_LIGHTMACE,
-                BASE_ITEM_LONGSWORD,
-                BASE_ITEM_MORNINGSTAR,
-                BASE_ITEM_RAPIER,
-                BASE_ITEM_SCIMITAR,
-                BASE_ITEM_SHORTSWORD,
-                BASE_ITEM_SICKLE,
-                BASE_ITEM_WHIP
-            };
-
-            int[] twoHandedTypes =
-            {
-                BASE_ITEM_DIREMACE,
-                BASE_ITEM_DWARVENWARAXE,
-                BASE_ITEM_GREATAXE,
-                BASE_ITEM_GREATSWORD,
-                BASE_ITEM_HALBERD,
-                BASE_ITEM_HEAVYFLAIL,
-                BASE_ITEM_SCYTHE,
-                BASE_ITEM_TRIDENT,
-                BASE_ITEM_WARHAMMER,
-                BASE_ITEM_SHORTSPEAR
-            };
-
-            int[] twinBladeTypes =
-            {
-                BASE_ITEM_DOUBLEAXE,
-                BASE_ITEM_TWOBLADEDSWORD
-            };
-
-            int[] martialArtsTypes =
-            {
-                BASE_ITEM_BRACER,
-                BASE_ITEM_GLOVES,
-                BASE_ITEM_QUARTERSTAFF
-            };
-
-            int[] firearmTypes =
-            {
-                BASE_ITEM_HEAVYCROSSBOW,
-                BASE_ITEM_LIGHTCROSSBOW,
-                BASE_ITEM_LONGBOW,
-                BASE_ITEM_SHORTBOW,
-                BASE_ITEM_ARROW,
-                BASE_ITEM_BOLT
-            };
-
-            int[] throwingTypes =
-            {
-                BASE_ITEM_GRENADE,
-                BASE_ITEM_SHURIKEN,
-                BASE_ITEM_SLING,
-                BASE_ITEM_THROWINGAXE,
-                BASE_ITEM_BULLET,
-                BASE_ITEM_DART
-            };
-
-            int[] shieldTypes =
-            {
-                BASE_ITEM_SMALLSHIELD,
-                BASE_ITEM_LARGESHIELD,
-                BASE_ITEM_TOWERSHIELD
-            };
-
-            int[] lightsaberTypes =
-            {
-                CustomBaseItemType.Lightsaber,
-                CustomBaseItemType.Saberstaff
-            };
-
-            if (oneHandedTypes.Contains(type)) skillType = SkillType.OneHanded;
-            else if (twoHandedTypes.Contains(type)) skillType = SkillType.TwoHanded;
-            else if (twinBladeTypes.Contains(type)) skillType = SkillType.TwinBlades;
-            else if (martialArtsTypes.Contains(type)) skillType = SkillType.MartialArts;
-            else if (firearmTypes.Contains(type)) skillType = SkillType.Firearms;
-            else if (throwingTypes.Contains(type)) skillType = SkillType.Throwing;
-            else if (lightsaberTypes.Contains(type)) skillType = SkillType.Lightsaber;
-            else if (item.CustomItemType == CustomItemType.HeavyArmor) skillType = SkillType.HeavyArmor;
-            else if (item.CustomItemType == CustomItemType.LightArmor) skillType = SkillType.LightArmor;
-            else if (item.CustomItemType == CustomItemType.ForceArmor) skillType = SkillType.ForceArmor;
-            else if (shieldTypes.Contains(type)) skillType = SkillType.Shields;
-
-            return skillType;
+                int type = item.BaseItemType;
+                if (!_skillTypeMappings.ContainsKey(type)) return SkillType.Unknown;
+                else return _skillTypeMappings[type];
+            }
         }
-
-
     }
 }

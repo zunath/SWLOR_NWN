@@ -400,6 +400,8 @@ namespace SWLOR.Game.Server.Service
         public void OnModuleClientLeave()
         {
             NWPlayer oPC = _.GetExitingObject();
+            if (!oPC.IsPlayer) return;
+
             RemovePlayerFromRegistrations(oPC);
         }
 

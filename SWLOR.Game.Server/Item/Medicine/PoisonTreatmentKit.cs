@@ -9,7 +9,7 @@ using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Item.Medicine
 {
-    public class TreatmentKit: IActionItem
+    public class PoisonTreatmentKit: IActionItem
     {
         private readonly INWScript _;
         private readonly ISkillService _skill;
@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Item.Medicine
         private readonly IPerkService _perk;
         private readonly IPlayerStatService _playerStat;
 
-        public TreatmentKit(INWScript script,
+        public PoisonTreatmentKit(INWScript script,
             ISkillService skill,
             ICustomEffectService customEffect,
             IRandomService random,

@@ -59,6 +59,7 @@ namespace SWLOR.Game.Server.Event.Module
                 App.GetAppState().ConnectedDMs.Add(player);
             }
 
+            player.DeleteLocalInt("IS_CUSTOMIZING_ITEM");
             _.ExecuteScript("dmfi_onclienter ", Object.OBJECT_SELF); // DMFI also calls "x3_mod_def_enter"
             _playerValidation.OnModuleEnter();
             _player.InitializePlayer(player);

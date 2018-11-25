@@ -62,6 +62,20 @@ namespace SWLOR.Game.Server.Item
 
             int difficulty = (tier-1) * 10 + _resource.GetDifficultyAdjustment(quality);
             int delta = difficulty - rank;
+
+            int baseXP = 0;
+            if (delta >= 6) baseXP = 400;
+            else if (delta == 5) baseXP = 350;
+            else if (delta == 4) baseXP = 325;
+            else if (delta == 3) baseXP = 300;
+            else if (delta == 2) baseXP = 250;
+            else if (delta == 1) baseXP = 225;
+            else if (delta == 0) baseXP = 200;
+            else if (delta == -1) baseXP = 150;
+            else if (delta == -2) baseXP = 100;
+            else if (delta == -3) baseXP = 50;
+            else if (delta == -4) baseXP = 25;
+
             int itemHarvestBonus = item.HarvestingBonus;
             int scanningBonus = user.GetLocalInt(target.GlobalID.ToString());
 
@@ -102,7 +116,7 @@ namespace SWLOR.Game.Server.Item
 
             user.SendMessage("You harvest " + resource.Name + ".");
             _durability.RunItemDecay(player, item, _random.RandomFloat(decayMinimum, decayMaximum));
-            int xp = 350 + delta * 50;
+            int xp = baseXP;
             _skill.GiveSkillXP(player, SkillType.Harvesting, xp);
 
             if (remaining <= 0)

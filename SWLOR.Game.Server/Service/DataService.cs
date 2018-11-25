@@ -201,8 +201,6 @@ namespace SWLOR.Game.Server.Service
                         SetIntoCache<PCOverflowItem>(item.ID, item);
                     foreach (var item in multi.Read<PCPerk>().ToList())
                         SetIntoCache<PCPerk>(item.ID, item);
-                    foreach (var item in multi.Read<PCPerkRefund>().ToList())
-                        SetIntoCache<PCPerkRefund>(item.ID, item);
                     foreach (var item in multi.Read<PCQuestItemProgress>().ToList())
                         SetIntoCache<PCQuestItemProgress>(item.ID, item);
                     foreach (var item in multi.Read<PCQuestKillTargetProgress>().ToList())

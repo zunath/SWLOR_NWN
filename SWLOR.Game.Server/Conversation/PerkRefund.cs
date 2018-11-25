@@ -9,6 +9,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Perk;
 using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
@@ -234,7 +235,9 @@ namespace SWLOR.Game.Server.Conversation
                 Level = pcPerk.PerkLevel,
                 PerkID = pcPerk.PerkID
             };
-            _data.SubmitDataChange(refundAudit, DatabaseActionType.Insert);
+            
+            // Bypass caching for perk refunds.
+            _data.DataQueue.Enqueue(new DatabaseAction(refundAudit, DatabaseActionType.Insert));
             _data.SubmitDataChange(pcPerk, DatabaseActionType.Delete);
             _data.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
 

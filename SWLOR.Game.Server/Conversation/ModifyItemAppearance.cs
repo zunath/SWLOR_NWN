@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Conversation
             PlayerDialog dialog = new PlayerDialog("MainPage");
             DialogPage mainPage = new DialogPage(
                 "What would you like to modify?",
+                "Save/Load Outfits",
                 "Main Weapon",
                 "Off-Hand Weapon",
                 "Armor");
@@ -141,9 +142,9 @@ namespace SWLOR.Game.Server.Conversation
         {
             // Currently disabling weapons as we need to do some work to identify valid models.
             // Only armor will be working for now.
-            SetResponseVisible("MainPage", 1, false);
             SetResponseVisible("MainPage", 2, false);
-            SetResponseVisible("MainPage", 3, IsArmorValid());
+            SetResponseVisible("MainPage", 3, false);
+            SetResponseVisible("MainPage", 4, IsArmorValid());
         }
 
         private void MainResponses(int responseID)
@@ -153,7 +154,11 @@ namespace SWLOR.Game.Server.Conversation
 
             switch (responseID)
             {
-                case 1: // Main Hand
+                case 1: // Save/Load Outfits
+                    _.SetCommandable(TRUE, player);
+                    SwitchConversation("Outfit");
+                    break;
+                case 2: // Main Hand
 
                     if (!IsMainValid())
                     {
@@ -168,7 +173,7 @@ namespace SWLOR.Game.Server.Conversation
                     }
                     
                     break;
-                case 2: // Off Hand
+                case 3: // Off Hand
 
                     if (!IsOffHandValid())
                     {
@@ -183,7 +188,7 @@ namespace SWLOR.Game.Server.Conversation
                     }
 
                     break;
-                case 3: // Armor
+                case 4: // Armor
                     if (!IsArmorValid())
                     {
                         player.FloatingText("Invalid armor equipped.");

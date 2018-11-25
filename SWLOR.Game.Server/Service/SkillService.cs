@@ -243,19 +243,17 @@ namespace SWLOR.Game.Server.Service
             int delta = enemyLevel - partyLevel;
             float baseXP = 0;
 
-            if (delta >= 6) baseXP = 500;
-            else if (delta == 5) baseXP = 450;
-            else if (delta == 4) baseXP = 425;
-            else if (delta == 3) baseXP = 400;
-            else if (delta == 2) baseXP = 350;
-            else if (delta == 1) baseXP = 325;
-            else if (delta == 0) baseXP = 300;
-            else if (delta == -1) baseXP = 250;
-            else if (delta == -2) baseXP = 200;
-            else if (delta == -3) baseXP = 150;
-            else if (delta == -4) baseXP = 100;
-            else if (delta == -5) baseXP = 90;
-            else if (delta == -6) baseXP = 70;
+            if (delta >= 6) baseXP = 400;
+            else if (delta == 5) baseXP = 350;
+            else if (delta == 4) baseXP = 325;
+            else if (delta == 3) baseXP = 300;
+            else if (delta == 2) baseXP = 250;
+            else if (delta == 1) baseXP = 225;
+            else if (delta == 0) baseXP = 200;
+            else if (delta == -1) baseXP = 150;
+            else if (delta == -2) baseXP = 100;
+            else if (delta == -3) baseXP = 50;
+            else if (delta == -4) baseXP = 25;
 
             float bonusXPPercentage = creature.GetLocalFloat("BONUS_XP_PERCENTAGE");
             if (bonusXPPercentage > 1) bonusXPPercentage = 1;

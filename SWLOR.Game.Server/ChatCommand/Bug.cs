@@ -7,6 +7,7 @@ using SWLOR.Game.Server.GameObject;
 using System;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
@@ -53,7 +54,8 @@ namespace SWLOR.Game.Server.ChatCommand
                 DateSubmitted = DateTime.UtcNow
             };
 
-            _data.SubmitDataChange(report, DatabaseActionType.Insert);
+            // Bypass the cache and save directly to the DB.
+            _data.DataQueue.Enqueue(new DatabaseAction(report, DatabaseActionType.Insert));
 
             user.SendMessage("Bug report submitted! Thank you for your report.");
         }

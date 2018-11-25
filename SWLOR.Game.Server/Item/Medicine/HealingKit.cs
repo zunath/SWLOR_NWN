@@ -79,8 +79,10 @@ namespace SWLOR.Game.Server.Item.Medicine
             _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, regeneration, target.Object, duration);
             player.SendMessage("You successfully treat " + target.Name + "'s wounds.");
 
-            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, rank);
-            _skill.GiveSkillXP(player, SkillType.Medicine, xp);
+            if(target.IsPlayer){
+                int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, rank);
+                _skill.GiveSkillXP(player, SkillType.Medicine, xp);
+            }
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
@@ -125,9 +127,9 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            if (_.GetIsPC(target.Object) == FALSE || _.GetIsDM(target.Object) == TRUE)
+            if (target.IsCreature && !target.IsDM)
             {
-                return "Only players may be targeted with this item.";
+                return "Only creatures may be targeted with this item.";
             }
 
             if (target.CurrentHP >= target.MaxHP)

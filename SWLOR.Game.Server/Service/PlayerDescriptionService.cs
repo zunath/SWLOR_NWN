@@ -35,8 +35,8 @@ namespace SWLOR.Game.Server.Service
             if (player.Object == null) throw new ArgumentNullException(nameof(player.Object));
 
             string newDescription = player.GetLocalString("NEW_DESCRIPTION_TO_SET");
-            _.SetDescription(player.Object, newDescription, NWScript.FALSE);
             _.SetDescription(player.Object, newDescription);
+            _.SetDescription(player.Object, newDescription, NWScript.FALSE);
 
             _.FloatingTextStringOnCreature("New description set!", player.Object, NWScript.FALSE);
         }

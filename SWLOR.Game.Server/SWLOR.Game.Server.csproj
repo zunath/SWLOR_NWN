@@ -993,7 +993,7 @@
     <Compile Include="GameObject\NWPlayer.cs" />
     <Compile Include="Item\Medicine\Bandages.cs" />
     <Compile Include="Item\Medicine\HealingKit.cs" />
-    <Compile Include="Item\Medicine\TreatmentKit.cs" />
+    <Compile Include="Item\Medicine\PoisonTreatmentKit.cs" />
     <Compile Include="Item\GenericStartConversation.cs" />
     <Compile Include="Item\Contracts\IActionItem.cs" />
     <Compile Include="Item\RepairKit.cs" />

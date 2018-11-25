@@ -57,6 +57,9 @@ namespace SWLOR.Game.Server.Item
             int ipBonusChance = _resource.CalculateChanceForComponentBonus(player, tier, quality);
             int roll = _random.Random(1, 100);
             int rank = _skill.GetPCSkillRank(player, SkillType.Harvesting);
+            if (item.RecommendedLevel < rank)
+                rank = item.RecommendedLevel;
+
             int difficulty = (tier-1) * 10 + _resource.GetDifficultyAdjustment(quality);
             int delta = difficulty - rank;
             int itemHarvestBonus = item.HarvestingBonus;
@@ -91,10 +94,10 @@ namespace SWLOR.Game.Server.Item
             float decayMinimum = 0.03f;
             float decayMaximum = 0.07f;
 
-            if(difficulty > 0)
+            if(delta > 0)
             {
-                decayMinimum += difficulty * 0.1f;
-                decayMaximum += difficulty * 0.1f;
+                decayMinimum += delta * 0.1f;
+                decayMaximum += delta * 0.1f;
             }
 
             user.SendMessage("You harvest " + resource.Name + ".");

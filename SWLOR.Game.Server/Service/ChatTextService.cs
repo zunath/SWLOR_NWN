@@ -145,16 +145,16 @@ namespace SWLOR.Game.Server.Service
                 {
                     chatComponents = SplitMessageIntoComponents_Novel(message);
                 }
-            }
 
-            // For any components with colour, set the emote colour.
-            foreach (ChatComponent component in chatComponents)
-            {
-                if (component.m_CustomColour)
+                // For any components with colour, set the emote colour.
+                foreach (ChatComponent component in chatComponents)
                 {
-                    component.m_ColourRed = 0;
-                    component.m_ColourGreen = 255;
-                    component.m_ColourBlue = 0;
+                    if (component.m_CustomColour)
+                    {
+                        component.m_ColourRed = 0;
+                        component.m_ColourGreen = 255;
+                        component.m_ColourBlue = 0;
+                    }
                 }
             }
 

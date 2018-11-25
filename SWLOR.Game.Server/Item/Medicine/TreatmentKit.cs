@@ -58,8 +58,11 @@ namespace SWLOR.Game.Server.Item.Medicine
             user.SendMessage("You successfully treat " + target.Name + "'s infection.");
 
             int rank = _skill.GetPCSkillRank((NWPlayer)user, SkillType.Medicine);
-            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, rank);
-            _skill.GiveSkillXP((NWPlayer)user, SkillType.Medicine, xp);
+            
+            if(target.IsPlayer){
+                int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, rank);
+                _skill.GiveSkillXP((NWPlayer)user, SkillType.Medicine, xp);
+            }
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
@@ -99,9 +102,9 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            if (!target.IsPlayer)
+             if (target.IsCreature && !target.IsDM)
             {
-                return "Only players may be targeted with this item.";
+                return "Only creatures may be targeted with this item.";
             }
 
             bool hasEffect = false;

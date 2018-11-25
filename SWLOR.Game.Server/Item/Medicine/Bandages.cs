@@ -55,9 +55,10 @@ namespace SWLOR.Game.Server.Item.Medicine
             {
                 _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(healAmount), target);
             }
-
-            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(100, item.RecommendedLevel, rank);
-            _skill.GiveSkillXP(player, SkillType.Medicine, xp);
+            if(target.IsPlayer){
+                int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(100, item.RecommendedLevel, rank);
+                _skill.GiveSkillXP(player, SkillType.Medicine, xp);
+            }
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
@@ -95,9 +96,9 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            if (!user.IsPlayer)
+            if (target.IsCreature && !target.IsDM)
             {
-                return "Only players may be targeted with this item.";
+                return "Only creatures may be targeted with this item.";
             }
 
             if (!_customEffect.DoesPCHaveCustomEffect(target.Object, CustomEffectType.Bleeding))

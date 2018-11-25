@@ -209,7 +209,7 @@ namespace SWLOR.Game.Server.Service
         {
             // Get list of skills part of this category.
             var skillIDs = _data
-                .Where<Skill>(x => x.SkillCategoryID == skillCategoryID)
+                .Where<Skill>(x => x.SkillCategoryID == skillCategoryID && x.IsActive)
                 .Select(s => s.ID);
 
             // Get all PC Skills with a matching category.

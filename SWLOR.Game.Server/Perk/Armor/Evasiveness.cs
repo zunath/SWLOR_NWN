@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Perk.Armor
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             NWItem armor = oPC.Chest;
-            return armor.CustomItemType == CustomItemType.HeavyArmor;
+            return armor.CustomItemType == CustomItemType.LightArmor;
         }
 
         public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)

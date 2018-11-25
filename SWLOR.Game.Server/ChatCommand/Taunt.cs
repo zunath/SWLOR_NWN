@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.ChatCommand
 
         public string ValidateArguments(NWPlayer user, params string[] args)
         {
-            throw new System.NotImplementedException();
+            return string.Empty;
         }
 
         public bool RequiresTarget => false;

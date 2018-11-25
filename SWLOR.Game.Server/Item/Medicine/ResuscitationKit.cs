@@ -133,7 +133,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-             if (target.IsCreature && !target.IsDM)
+            if (!target.IsCreature || target.IsDM)
             {
                 return "Only creatures may be targeted with this item.";
             }

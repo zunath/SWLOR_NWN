@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Service
             if (red > 255) throw new ArgumentOutOfRangeException(nameof(red), "Red must be between 0 and 255.");
             if (green > 255) throw new ArgumentOutOfRangeException(nameof(green), "Green must be between 0 and 255.");
             if (blue > 255) throw new ArgumentOutOfRangeException(nameof(blue), "Blue must be between 0 and 255.");
-            if(string.IsNullOrWhiteSpace(text)) throw new ArgumentException("Text must not be null, empty, or white space.", nameof(text));
+            if (text == null) text = string.Empty;
 
             return TokenStart(red, green, blue) + text + TokenEnd();
         }

@@ -277,8 +277,7 @@ namespace SWLOR.Game.Server.Service
 
                 List<Tuple<int, PlayerSkillPointTracker>> skillRegs = preg.GetSkillRegistrationPoints();
                 int totalPoints = preg.GetTotalSkillRegistrationPoints();
-                bool receivesMartialArtsPenalty = CheckForMartialArtsPenalty(skillRegs);
-
+                
                 // Retrieve all necessary PC skills up front
                 int[] skillIDsToSearchFor = skillRegs.Select(x => x.Item2.SkillID).ToArray();
 
@@ -301,11 +300,7 @@ namespace SWLOR.Game.Server.Service
                     float skillLDP = CalculatePartyLevelDifferencePenalty(partyLevel, skillRank);
                     float adjustedXP = baseXP * percentage * skillLDP;
                     adjustedXP = CalculateRegisteredSkillLevelAdjustedXP(adjustedXP, itemLevel, skillRank);
-
-                    // Penalty to martial arts XP for using a shield.
-                    if (skillID == (int)SkillType.MartialArts && receivesMartialArtsPenalty)
-                        adjustedXP = adjustedXP * 0.4f;
-
+                    
                     GiveSkillXP(preg.Player, skillID, (int)adjustedXP);
                 }
 
@@ -369,21 +364,7 @@ namespace SWLOR.Game.Server.Service
 
             return levelDifferencePenalty;
         }
-
-        private bool CheckForMartialArtsPenalty(List<Tuple<int, PlayerSkillPointTracker>> skillRegs)
-        {
-            bool usedShield = false;
-            bool usedMartialArts = false;
-            foreach (Tuple<int, PlayerSkillPointTracker> sreg in skillRegs)
-            {
-                if (sreg.Item1 == (int)SkillType.Shields) usedShield = true;
-                else if (sreg.Item1 == (int)SkillType.MartialArts) usedMartialArts = true;
-
-                if (usedMartialArts && usedShield) return true;
-            }
-
-            return false;
-        }
+        
         public void OnAreaExit()
         {
             NWPlayer oPC = _.GetExitingObject();

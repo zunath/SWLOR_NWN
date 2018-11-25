@@ -277,7 +277,9 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual bool IsDM =>  _.GetIsDM(Object) == 1 || _.GetIsDMPossessed(Object) == 1;
 
-        public virtual bool IsNPC => !IsPlayer && !IsDM;
+        public virtual bool IsNPC => !IsPlayer && !IsDM && IsCreature;
+        
+        public virtual bool IsCreature => _.GetObjectType(Object) == 1;
 
         public virtual IEnumerable<NWItem> InventoryItems
         {

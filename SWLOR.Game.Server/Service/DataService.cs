@@ -426,14 +426,14 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <typeparam name="T">The type of entity to retrieve.</typeparam>
         /// <returns></returns>
-        public HashSet<T> GetAll<T>()
+        public IEnumerable<T> GetAll<T>()
             where T : class, IEntity
         {
             // Cache already built. Return everything that's cached so far.
             if (Cache.ContainsKey(typeof(T)))
             {
                 var cacheSet = Cache[typeof(T)];
-                return new HashSet<T>(cacheSet.Values.Cast<T>());
+                return cacheSet.Values.Cast<T>();
             }
 
             // Can't find anything in the cache so pull back the records from the database.

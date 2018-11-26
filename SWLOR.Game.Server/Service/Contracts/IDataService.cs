@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         void Initialize(string ip, string database, string user, string password, bool initializeCache);
 
         T Get<T>(object id) where T : class, IEntity;
-        HashSet<T> GetAll<T>() where T : class, IEntity;
+        IEnumerable<T> GetAll<T>() where T : class, IEntity;
 
         T Single<T>()
             where T : class, IEntity;

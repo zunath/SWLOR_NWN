@@ -59,11 +59,17 @@ namespace SWLOR.Game.Server.Perk.Throwing
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
         {
+            if (oItem.CustomItemType != CustomItemType.LightArmor &&
+                oItem.CustomItemType != CustomItemType.Throwing) return;
+
             ApplyFeatChanges(oPC, null);
         }
 
         public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
         {
+            if (oItem.CustomItemType != CustomItemType.LightArmor &&
+                oItem.CustomItemType != CustomItemType.Throwing) return;
+
             ApplyFeatChanges(oPC, oItem);
         }
 

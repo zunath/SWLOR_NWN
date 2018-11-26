@@ -63,11 +63,16 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
         {
+            if (oItem.CustomItemType != CustomItemType.FinesseVibroblade) return;
+
             ApplyFeatChanges(oPC, null);
         }
 
         public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
         {
+            if (oItem.CustomItemType != CustomItemType.FinesseVibroblade) return;
+            if (oItem == oPC.LeftHand) return;
+
             ApplyFeatChanges(oPC, oItem);
         }
 

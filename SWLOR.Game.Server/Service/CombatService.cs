@@ -165,11 +165,17 @@ namespace SWLOR.Game.Server.Service
             cooldown = DateTime.UtcNow.AddSeconds(delay);
             target.SetLocalString("EVADE_OR_DEFLECT_BLASTER_FIRE_COOLDOWN", cooldown.ToString(CultureInfo.InvariantCulture));
 
-            if (_random.D100(1) <= chanceToDeflect)
+            int roll = _random.D100(1);
+
+            if (roll <= chanceToDeflect)
             {
                 target.SendMessage(_color.Gray("You " + action + " a blaster shot."));
                 data.AdjustAllByPercent(-1);
                 _nwnxDamage.SetDamageEventData(data);
+            }
+            else
+            {
+                target.SendMessage(_color.Gray("You fail to " + action + " a blaster shot. (" + roll + " vs " + chanceToDeflect + ")"));
             }
         }
 

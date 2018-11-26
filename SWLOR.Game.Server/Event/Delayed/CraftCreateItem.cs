@@ -80,6 +80,14 @@ namespace SWLOR.Game.Server.Event.Delayed
         
         private void RunCreateItem(NWPlayer player)
         {
+            foreach (var effect in player.Effects)
+            {
+                if (_.GetEffectTag(effect) == "CRAFTING_IMMOBILIZATION")
+                {
+                    _.RemoveEffect(player, effect);
+                }
+            }
+
             var model = _craft.GetPlayerCraftingData(player);
 
             CraftBlueprint blueprint = _data.Single<CraftBlueprint>(x => x.ID == model.BlueprintID);

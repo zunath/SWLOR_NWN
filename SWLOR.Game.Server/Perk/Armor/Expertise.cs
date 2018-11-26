@@ -55,11 +55,15 @@ namespace SWLOR.Game.Server.Perk.Armor
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
         {
+            if (oItem.CustomItemType != CustomItemType.HeavyArmor) return;
+
             ApplyFeatChanges(oPC, null);
         }
 
         public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
         {
+            if (oItem.CustomItemType != CustomItemType.HeavyArmor) return;
+
             ApplyFeatChanges(oPC, oItem);
         }
 

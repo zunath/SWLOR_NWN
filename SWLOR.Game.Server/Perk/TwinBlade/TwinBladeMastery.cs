@@ -63,11 +63,13 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
         {
+            if (oItem.CustomItemType != CustomItemType.TwinBlade) return;
             ApplyFeatChanges(oPC, null);
         }
 
         public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
         {
+            if (oItem.CustomItemType != CustomItemType.TwinBlade) return;
             ApplyFeatChanges(oPC, oItem);
         }
 
@@ -82,11 +84,11 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
             _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
         }
 
-        private void ApplyFeatChanges(NWPlayer oPC, NWItem oItem)
+        private void ApplyFeatChanges(NWPlayer oPC, NWItem unequippedItem)
         {
-            NWItem equipped = oItem ?? oPC.RightHand;
+            NWItem equipped = unequippedItem ?? oPC.RightHand;
 
-            if (Equals(equipped, oItem) || equipped.CustomItemType != CustomItemType.TwinBlade)
+            if (Equals(equipped, unequippedItem) || equipped.CustomItemType != CustomItemType.TwinBlade)
             {
                 RemoveFeats(oPC);
                 return;

@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Perk.Lightsaber
 {
@@ -63,11 +64,13 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
         {
+            if (oItem.CustomItemType != CustomItemType.Saberstaff) return;
             ApplyFeatChanges(oPC, null);
         }
 
         public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
         {
+            if (oItem.CustomItemType != CustomItemType.Saberstaff) return;
             ApplyFeatChanges(oPC, oItem);
         }
 
@@ -77,31 +80,31 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
 
         private void RemoveFeats(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_TWO_WEAPON_FIGHTING);
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_AMBIDEXTERITY);
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
+            _nwnxCreature.RemoveFeat(oPC, FEAT_TWO_WEAPON_FIGHTING);
+            _nwnxCreature.RemoveFeat(oPC, FEAT_AMBIDEXTERITY);
+            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
         }
 
-        private void ApplyFeatChanges(NWPlayer oPC, NWItem oItem)
+        private void ApplyFeatChanges(NWPlayer oPC, NWItem unequippedItem)
         {
-            NWItem equipped = oItem ?? oPC.RightHand;
+            NWItem equipped = unequippedItem ?? oPC.RightHand;
 
-            if (Equals(equipped, oItem) || equipped.CustomItemType != CustomItemType.Saberstaff)
+            if (Equals(equipped, unequippedItem) || equipped.CustomItemType != CustomItemType.Saberstaff)
             {
                 RemoveFeats(oPC);
                 return;
             }
 
             int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.SaberstaffMastery);
-            _nwnxCreature.AddFeat(oPC, NWScript.FEAT_TWO_WEAPON_FIGHTING);
+            _nwnxCreature.AddFeat(oPC, FEAT_TWO_WEAPON_FIGHTING);
 
             if (perkLevel >= 2)
             {
-                _nwnxCreature.AddFeat(oPC, NWScript.FEAT_AMBIDEXTERITY);
+                _nwnxCreature.AddFeat(oPC, FEAT_AMBIDEXTERITY);
             }
             if (perkLevel >= 3)
             {
-                _nwnxCreature.AddFeat(oPC, NWScript.FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
+                _nwnxCreature.AddFeat(oPC, FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
             }
         }
 

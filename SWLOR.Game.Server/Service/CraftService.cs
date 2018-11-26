@@ -202,8 +202,6 @@ namespace SWLOR.Game.Server.Service
             oPC.IsBusy = true;
 
             float modifiedCraftDelay = CalculateCraftingDelay(oPC, blueprint.SkillID);
-
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectCutsceneImmobilize(), oPC.Object, modifiedCraftDelay + 0.1f);
             oPC.AssignCommand(() =>
             {
                 _.ClearAllActions();
@@ -213,6 +211,9 @@ namespace SWLOR.Game.Server.Service
             {
                 _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_COM_BLOOD_SPARK_MEDIUM), device.Object);
             });
+            Effect immobilize = _.EffectCutsceneImmobilize();
+            immobilize = _.TagEffect(immobilize, "CRAFTING_IMMOBILIZATION");
+            _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, immobilize, oPC.Object);
 
             _nwnxPlayer.StartGuiTimingBar(oPC, modifiedCraftDelay, "");
 

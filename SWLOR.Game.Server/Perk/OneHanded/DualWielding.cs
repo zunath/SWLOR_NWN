@@ -107,9 +107,11 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             if (mainEquipped.CustomItemType != CustomItemType.Vibroblade ||
                 mainEquipped.CustomItemType != CustomItemType.Baton ||
                 mainEquipped.CustomItemType != CustomItemType.FinesseVibroblade || 
+                mainEquipped.CustomItemType != CustomItemType.Lightsaber ||
                 offEquipped.CustomItemType != CustomItemType.Vibroblade || 
                 offEquipped.CustomItemType != CustomItemType.Baton || 
-                offEquipped.CustomItemType != CustomItemType.FinesseVibroblade)
+                offEquipped.CustomItemType != CustomItemType.FinesseVibroblade ||
+                offEquipped.CustomItemType != CustomItemType.Lightsaber)
             {
                 RemoveFeats(oPC);
                 return;

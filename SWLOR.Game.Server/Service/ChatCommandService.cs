@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Service
                 }
                 else
                 {
-                    string error = chatCommand.ValidateArguments(sender, args);
+                    string error = chatCommand.ValidateArguments(sender, split.ToArray());
                     if (!string.IsNullOrWhiteSpace(error))
                     {
                         sender.SendMessage(error);

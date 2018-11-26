@@ -134,6 +134,7 @@ namespace SWLOR.Game.Server.Service
             RegisterEmptyCacheSet<PCSearchSite>();
             RegisterEmptyCacheSet<PCSearchSiteItem>();
             RegisterEmptyCacheSet<PCSkill>();
+            RegisterEmptyCacheSet<PCPerkRefund>();
 
             GetAll<Data.Entity.Perk>();
             GetAll<PerkCategory>();

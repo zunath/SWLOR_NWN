@@ -115,25 +115,26 @@ namespace SWLOR.Game.Server.Service
             GetAll<PCBaseStructureItem>();
             GetAll<PCBaseStructurePermission>();
             GetAll<PCBaseType>();
-            //GetAll<PCCooldown>();
-            //GetAll<PCCraftedBlueprint>();
-            //GetAll<PCCustomEffect>();
-            //GetAll<PCImpoundedItem>();
-            //GetAll<PCKeyItem>();
-            //GetAll<PCMapPin>();
-            //GetAll<PCMapProgression>();
-            //GetAll<PCObjectVisibility>();
-            //GetAll<PCOutfit>();
-            //GetAll<PCOverflowItem>();
-            //GetAll<PCPerk>();
-            //GetAll<PCPerkRefund>();
-            //GetAll<PCQuestItemProgress>();
-            //GetAll<PCQuestKillTargetProgress>();
-            //GetAll<PCQuestStatus>();
-            //GetAll<PCRegionalFame>();
-            //GetAll<PCSearchSite>();
-            //GetAll<PCSearchSiteItem>();
-            //GetAll<PCSkill>();
+
+            RegisterEmptyCacheSet<PCCooldown>();
+            RegisterEmptyCacheSet<PCCraftedBlueprint>();
+            RegisterEmptyCacheSet<PCCustomEffect>();
+            RegisterEmptyCacheSet<PCImpoundedItem>();
+            RegisterEmptyCacheSet<PCKeyItem>();
+            RegisterEmptyCacheSet<PCMapPin>();
+            RegisterEmptyCacheSet<PCMapProgression>();
+            RegisterEmptyCacheSet<PCObjectVisibility>();
+            RegisterEmptyCacheSet<PCOutfit>();
+            RegisterEmptyCacheSet<PCOverflowItem>();
+            RegisterEmptyCacheSet<PCPerk>();
+            RegisterEmptyCacheSet<PCQuestItemProgress>();
+            RegisterEmptyCacheSet<PCQuestKillTargetProgress>();
+            RegisterEmptyCacheSet<PCQuestStatus>();
+            RegisterEmptyCacheSet<PCRegionalFame>();
+            RegisterEmptyCacheSet<PCSearchSite>();
+            RegisterEmptyCacheSet<PCSearchSiteItem>();
+            RegisterEmptyCacheSet<PCSkill>();
+
             GetAll<Data.Entity.Perk>();
             GetAll<PerkCategory>();
             GetAll<PerkExecutionType>();
@@ -416,6 +417,18 @@ namespace SWLOR.Game.Server.Service
             }
 
             return cached;
+        }
+
+        private void RegisterEmptyCacheSet<T>()
+            where T: class, IEntity
+        {
+            if (Cache.ContainsKey(typeof(T)))
+            {
+                throw new Exception("Cannot register an empty cacheset because it already exists! Did you call " + nameof(RegisterEmptyCacheSet) + " more than once? Type = " + typeof(T));
+            }
+
+            var cachedSet = new Dictionary<object, object>();
+            Cache.Add(typeof(T), cachedSet);
         }
 
         /// <summary>

@@ -1,9 +1,11 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using System;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
@@ -58,17 +60,21 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_POWER_ATTACK);
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_IMPROVED_POWER_ATTACK);
+            _nwnxCreature.RemoveFeat(oPC, FEAT_POWER_ATTACK);
+            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_POWER_ATTACK);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
         {
+            if (oItem.CustomItemType != CustomItemType.Vibroblade) return;
             ApplyFeatChanges(oPC, null);
         }
 
         public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
         {
+            if (oItem.CustomItemType != CustomItemType.Vibroblade) return;
+            if (oItem == oPC.LeftHand) return;
+
             ApplyFeatChanges(oPC, oItem);
         }
 
@@ -79,20 +85,20 @@ namespace SWLOR.Game.Server.Perk.OneHanded
         private void ApplyFeatChanges(NWPlayer oPC, NWItem oItem)
         {
             NWItem equipped = oItem ?? oPC.RightHand;
-            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.BladePowerAttack);
-
+            
             if (Equals(equipped, oItem) || equipped.CustomItemType != CustomItemType.Vibroblade)
             {
-                _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_POWER_ATTACK);
-                _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_IMPROVED_POWER_ATTACK);
+                _nwnxCreature.RemoveFeat(oPC, FEAT_POWER_ATTACK);
+                _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_POWER_ATTACK);
                 return;
             }
-            
-            _nwnxCreature.AddFeat(oPC, NWScript.FEAT_POWER_ATTACK);
+
+            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.BladePowerAttack);
+            _nwnxCreature.AddFeat(oPC, FEAT_POWER_ATTACK);
 
             if (perkLevel >= 2)
             {
-                _nwnxCreature.AddFeat(oPC, NWScript.FEAT_IMPROVED_POWER_ATTACK);
+                _nwnxCreature.AddFeat(oPC, FEAT_IMPROVED_POWER_ATTACK);
             }
         }
 

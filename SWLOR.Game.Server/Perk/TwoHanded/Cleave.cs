@@ -63,11 +63,15 @@ namespace SWLOR.Game.Server.Perk.TwoHanded
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
         {
+            if (oItem.CustomItemType != CustomItemType.HeavyVibroblade) return;
+
             ApplyFeatChanges(oPC, null);
         }
 
         public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
         {
+            if (oItem.CustomItemType != CustomItemType.HeavyVibroblade) return;
+
             ApplyFeatChanges(oPC, oItem);
         }
 

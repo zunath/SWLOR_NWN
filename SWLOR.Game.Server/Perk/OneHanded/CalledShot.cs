@@ -4,6 +4,7 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
@@ -58,16 +59,20 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_CALLED_SHOT);
+            _nwnxCreature.RemoveFeat(oPC, FEAT_CALLED_SHOT);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
         {
+            if (oItem.CustomItemType != CustomItemType.FinesseVibroblade) return;
             ApplyFeatChanges(oPC, null);
         }
 
         public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
         {
+            if (oItem.CustomItemType != CustomItemType.FinesseVibroblade) return;
+            if (oItem == oPC.LeftHand) return;
+
             ApplyFeatChanges(oPC, oItem);
         }
 
@@ -81,11 +86,11 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             
             if (Equals(equipped, oItem) || equipped.CustomItemType != CustomItemType.FinesseVibroblade)
             {
-                _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_CALLED_SHOT);
+                _nwnxCreature.RemoveFeat(oPC, FEAT_CALLED_SHOT);
                 return;
             }
 
-            _nwnxCreature.AddFeat(oPC, NWScript.FEAT_CALLED_SHOT);
+            _nwnxCreature.AddFeat(oPC, FEAT_CALLED_SHOT);
         }
 
         public bool IsHostile()

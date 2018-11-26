@@ -201,11 +201,11 @@ namespace SWLOR.Game.Server.Service
             }
             if (examinedItem.CastingSpeed > 0)
             {
-                description += _color.Orange("Casting Speed: +") + examinedItem.CastingSpeed + "%\n";
+                description += _color.Orange("Activation Speed: +") + examinedItem.CastingSpeed + "%\n";
             }
             else if (examinedItem.CastingSpeed < 0)
             {
-                description += _color.Orange("Casting Penalty: -") + examinedItem.CastingSpeed + "%\n";
+                description += _color.Orange("Activation Penalty: -") + examinedItem.CastingSpeed + "%\n";
             }
             if (examinedItem.HarvestingBonus > 0)
             {

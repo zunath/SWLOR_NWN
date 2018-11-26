@@ -58,11 +58,17 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
         {
+            if (oItem.CustomItemType != CustomItemType.BlasterPistol &&
+                oItem.CustomItemType != CustomItemType.BlasterRifle) return;
+
             ApplyFeatChanges(oPC, null);
         }
 
         public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
         {
+            if (oItem.CustomItemType != CustomItemType.BlasterPistol &&
+                oItem.CustomItemType != CustomItemType.BlasterRifle) return;
+
             ApplyFeatChanges(oPC, oItem);
         }
 

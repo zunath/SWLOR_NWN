@@ -167,3 +167,14 @@ VALUES ( @PerkLevelID , -- PerkLevelID - int
 UPDATE dbo.GameTopic
 SET Text = 'This is a time of despair.\n\nAfter more than a decade of conflict, the Mandalorian Wars have finally ended. The Mandalorian clans are now scattered across the Outer Rim. They patiently wait for the right time to reunite and rise again.\n\nThis is a time of uncertainty.\n\nMillions died during the conflict and the Republic has begun to rebuild. Their stability is threatened by the numerous criminal groups and bounty hunters who aim to extend their control throughout the Outer Rim. The Republic struggles to preserve its order.\n\nThis is a time of disturbance.\n\nThe Sith Empire, secretly involved in the Mandalorian Wars, has risen again. Darth Revan and Darth Malak, former members of the Jedi Order, have turned to the Dark Side. With the help of the Star Forge, an automated factory and battle dreadnought, they have assembled a powerful army and taken control of Korriban. The Sith aim to conquer the galaxy.\n\nThis is a time of choice.\n\nWill you join the Jedi Order and attempt to preserve peace and balance in the galaxy? Or will you side with the Sith and harness the powers of the Dark Side? Perhaps you''ll play both sides as a smuggler working with the Hutt Cartel? Or maybe you''ll work as a freelancer, serving no one but yourself.\n\nIt''s time to make a choice and navigate your own way through the galaxy...'
 WHERE ID = 62
+
+
+-- Reduce base levels for medium towers
+UPDATE dbo.CraftBlueprint
+SET BaseLevel = 10
+WHERE ID = 312
+
+-- Reduce base levels for large towers
+UPDATE dbo.CraftBlueprint
+SET BaseLevel = 20
+WHERE ID = 313

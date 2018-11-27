@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             int count = 2;
 
             if (delta > 2) count = delta;
-            if (count > 6) count = 6;
+            if (count > 4) count = 4;
 
             if (_random.Random(100) + 1 <= _perk.GetPCPerkLevel(player, PerkType.Lucky))
             {

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
@@ -10,6 +11,7 @@ using NWN;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Item
 {
@@ -120,9 +122,13 @@ namespace SWLOR.Game.Server.Item
                 {
                     skillType = SkillType.Armorsmith;
                 }
-                else if (ItemService.WeaponBaseItemTypes.Contains(targetItem.BaseItemType))
+                else if (WeaponsmithBaseItemTypes.Contains(targetItem.BaseItemType))
                 {
                     skillType = SkillType.Weaponsmith;
+                }
+                else if (EngineeringBaseItemTypes.Contains(targetItem.BaseItemType))
+                {
+                    skillType = SkillType.Engineering;
                 }
                 else return;
 
@@ -143,10 +149,15 @@ namespace SWLOR.Game.Server.Item
             {
                 perkBonus = _perk.GetPCPerkLevel(userPlayer, PerkType.SpeedyArmorsmith) * 0.1f;
             }
-            else if (ItemService.WeaponBaseItemTypes.Contains(targetItem.BaseItemType))
+            else if (WeaponsmithBaseItemTypes.Contains(targetItem.BaseItemType))
             {
                 perkBonus = _perk.GetPCPerkLevel(userPlayer, PerkType.SpeedyWeaponsmith) * 0.1f;
             }
+            else if (EngineeringBaseItemTypes.Contains(targetItem.BaseItemType))
+            {
+                perkBonus = _perk.GetPCPerkLevel(userPlayer, PerkType.SpeedyEngineering) * 0.1f;
+            }
+            
 
             float seconds = 18.0f - (18.0f * perkBonus);
             if (seconds <= 0.1f) seconds = 0.1f;
@@ -160,7 +171,7 @@ namespace SWLOR.Game.Server.Item
 
         public int AnimationID()
         {
-            return NWScript.ANIMATION_LOOPING_GET_MID;
+            return ANIMATION_LOOPING_GET_MID;
         }
 
         public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)
@@ -175,7 +186,7 @@ namespace SWLOR.Game.Server.Item
 
         public string IsValidTarget(NWCreature user, NWItem mod, NWObject target, Location targetLocation)
         {
-            if (target.ObjectType != NWScript.OBJECT_TYPE_ITEM) return "Only items may be targeted by mods.";
+            if (target.ObjectType != OBJECT_TYPE_ITEM) return "Only items may be targeted by mods.";
             if (!user.IsPlayer) return "Only players may use mods.";
             NWPlayer player = (user.Object);
             NWItem targetItem = (target.Object);
@@ -202,7 +213,7 @@ namespace SWLOR.Game.Server.Item
             if (modType == CustomItemPropertyType.YellowMod && !modSlots.CanYellowModBeAdded) return "That item has no available yellow mod slots.";
 
             // Get the perk level based on target item type and mod type.
-            if (ItemService.WeaponBaseItemTypes.Contains(targetItem.BaseItemType))
+            if (WeaponsmithBaseItemTypes.Contains(targetItem.BaseItemType))
             {
                 switch (modType)
                 {
@@ -244,9 +255,30 @@ namespace SWLOR.Game.Server.Item
                         break;
                 }
             }
+            else if (EngineeringBaseItemTypes.Contains(targetItem.BaseItemType))
+            {
+                switch (modType)
+                {
+                    case CustomItemPropertyType.RedMod:
+                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.CombatModInstallationElectronics);
+                        break;
+                    case CustomItemPropertyType.BlueMod:
+                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.MagicModInstallationElectronics);
+                        break;
+                    case CustomItemPropertyType.GreenMod:
+                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.CraftingModInstallationElectronics);
+                        break;
+                    case CustomItemPropertyType.YellowMod:
+                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.SpecialModInstallationElectronics);
+                        break;
+                    default:
+                        perkLevel = 0;
+                        break;
+                }
+            }
 
             // Ensure item isn't equipped.
-            for (int slot = 0; slot < NWScript.NUM_INVENTORY_SLOTS; slot++)
+            for (int slot = 0; slot < NUM_INVENTORY_SLOTS; slot++)
             {
                 if (_.GetItemInSlot(slot, user.Object) == targetItem.Object)
                 {
@@ -281,5 +313,63 @@ namespace SWLOR.Game.Server.Item
         {
             return false;
         }
+
+
+        private static readonly HashSet<int> WeaponsmithBaseItemTypes = new HashSet<int>()
+        {
+            BASE_ITEM_BASTARDSWORD,
+            BASE_ITEM_BATTLEAXE,
+            BASE_ITEM_BRACER,
+            BASE_ITEM_CLUB,
+            BASE_ITEM_DAGGER,
+            BASE_ITEM_DART,
+            BASE_ITEM_DIREMACE,
+            BASE_ITEM_DOUBLEAXE,
+            BASE_ITEM_DWARVENWARAXE,
+            BASE_ITEM_GLOVES,
+            BASE_ITEM_GREATAXE,
+            BASE_ITEM_GREATSWORD,
+            BASE_ITEM_GRENADE,
+            BASE_ITEM_HALBERD,
+            BASE_ITEM_HANDAXE,
+            BASE_ITEM_HEAVYFLAIL,
+            BASE_ITEM_KAMA,
+            BASE_ITEM_KATANA,
+            BASE_ITEM_KUKRI,
+            BASE_ITEM_LIGHTFLAIL,
+            BASE_ITEM_LIGHTHAMMER,
+            BASE_ITEM_LIGHTMACE,
+            BASE_ITEM_LONGSWORD,
+            BASE_ITEM_MORNINGSTAR,
+            BASE_ITEM_QUARTERSTAFF,
+            BASE_ITEM_RAPIER,
+            BASE_ITEM_SCIMITAR,
+            BASE_ITEM_SCYTHE,
+            BASE_ITEM_SHORTSPEAR,
+            BASE_ITEM_SHORTSWORD,
+            BASE_ITEM_SHURIKEN,
+            BASE_ITEM_SICKLE,
+            BASE_ITEM_THROWINGAXE,
+            BASE_ITEM_TRIDENT,
+            BASE_ITEM_TWOBLADEDSWORD,
+            BASE_ITEM_WARHAMMER,
+            BASE_ITEM_WHIP,
+        };
+
+        private static readonly HashSet<int> EngineeringBaseItemTypes = new HashSet<int>()
+        {
+            BASE_ITEM_ARROW,
+            BASE_ITEM_BOLT,
+            BASE_ITEM_BULLET,
+            BASE_ITEM_HEAVYCROSSBOW,
+            BASE_ITEM_LIGHTCROSSBOW,
+            BASE_ITEM_LONGBOW,
+            BASE_ITEM_SHORTBOW,
+            BASE_ITEM_SLING,
+            CustomBaseItemType.Saberstaff,
+            CustomBaseItemType.Lightsaber
+
+        };
+
     }
 }

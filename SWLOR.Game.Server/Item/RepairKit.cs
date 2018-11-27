@@ -39,6 +39,8 @@ namespace SWLOR.Game.Server.Item
                 repairAmount += item.CraftBonusArmorsmith;
             else if (skillType == SkillType.Weaponsmith)
                 repairAmount += item.CraftBonusWeaponsmith;
+            else if (skillType == SkillType.Engineering)
+                repairAmount += item.CraftBonusEngineering;
 
             float minReduction = 0.05f * tech;
             float maxReduction = 0.15f * tech;
@@ -62,7 +64,6 @@ namespace SWLOR.Game.Server.Item
                 case CustomItemType.FinesseVibroblade:
                 case CustomItemType.Baton:
                 case CustomItemType.HeavyVibroblade:
-                case CustomItemType.Saberstaff:
                 case CustomItemType.Polearm:
                 case CustomItemType.TwinBlade:
                 case CustomItemType.MartialArtWeapon:
@@ -71,6 +72,7 @@ namespace SWLOR.Game.Server.Item
                 case CustomItemType.Lightsaber:
                 case CustomItemType.BlasterPistol:
                 case CustomItemType.BlasterRifle:
+                case CustomItemType.Saberstaff:
                     return SkillType.Engineering;
             }
 

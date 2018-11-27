@@ -31,7 +31,7 @@
         Evasiveness = 26,
         DeflectDamage = 27,
         PointBlankShot = 28,
-        DualWielding = 29,
+        OneHandedDualWielding = 29,
         BladePowerAttack = 30,
         BluntPowerAttack = 31,
         CalledShot = 32,
@@ -156,7 +156,8 @@
         LightsaberBlueprints = 151,
         ElectronicRepair = 152,
         SaberstaffMastery = 153,
-        DeflectBlasterFire = 154
+        DeflectBlasterFire = 154,
+        LightsaberDualWielding = 155
     }
 
 }

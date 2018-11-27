@@ -106,19 +106,17 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             // Main or offhand is not acceptable item type.
             if (mainEquipped.CustomItemType != CustomItemType.Vibroblade ||
                 mainEquipped.CustomItemType != CustomItemType.Baton ||
-                mainEquipped.CustomItemType != CustomItemType.FinesseVibroblade || 
-                mainEquipped.CustomItemType != CustomItemType.Lightsaber ||
+                mainEquipped.CustomItemType != CustomItemType.FinesseVibroblade ||
                 offEquipped.CustomItemType != CustomItemType.Vibroblade || 
                 offEquipped.CustomItemType != CustomItemType.Baton || 
-                offEquipped.CustomItemType != CustomItemType.FinesseVibroblade ||
-                offEquipped.CustomItemType != CustomItemType.Lightsaber)
+                offEquipped.CustomItemType != CustomItemType.FinesseVibroblade)
             {
                 RemoveFeats(oPC);
                 return;
             }
 
 
-            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.DualWielding);
+            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.OneHandedDualWielding);
             _nwnxCreature.AddFeat(oPC, NWScript.FEAT_TWO_WEAPON_FIGHTING);
 
             if (perkLevel >= 2)

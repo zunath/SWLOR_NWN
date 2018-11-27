@@ -70,7 +70,10 @@ namespace SWLOR.Game.Server.Perk.General
                 default: return;
             }
 
-            duration = duration + player.DexterityModifier * 5;
+            if (player.DexterityModifier > 0)
+            {
+                duration = duration + player.DexterityModifier * 5;
+            }
 
             Effect movement = _.EffectMovementSpeedIncrease(speed);
             movement = _.TagEffect(movement, "DASH");

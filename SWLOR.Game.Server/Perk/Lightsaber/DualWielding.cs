@@ -1,11 +1,10 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using NWN;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 
-namespace SWLOR.Game.Server.Perk.OneHanded
+namespace SWLOR.Game.Server.Perk.Lightsaber
 {
     public class DualWielding : IPerk
     {
@@ -88,7 +87,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
         {
             NWItem mainEquipped = oItem ?? oPC.RightHand;
             NWItem offEquipped = oItem ?? oPC.LeftHand;
-            
+
             // oItem was unequipped.
             if (Equals(mainEquipped, oItem) || Equals(offEquipped, oItem))
             {
@@ -104,19 +103,15 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             }
 
             // Main or offhand is not acceptable item type.
-            if (mainEquipped.CustomItemType != CustomItemType.Vibroblade ||
-                mainEquipped.CustomItemType != CustomItemType.Baton ||
-                mainEquipped.CustomItemType != CustomItemType.FinesseVibroblade ||
-                offEquipped.CustomItemType != CustomItemType.Vibroblade || 
-                offEquipped.CustomItemType != CustomItemType.Baton || 
-                offEquipped.CustomItemType != CustomItemType.FinesseVibroblade)
+            if (mainEquipped.CustomItemType != CustomItemType.Lightsaber ||
+                offEquipped.CustomItemType != CustomItemType.Lightsaber)
             {
                 RemoveFeats(oPC);
                 return;
             }
 
 
-            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.OneHandedDualWielding);
+            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.LightsaberDualWielding);
             _nwnxCreature.AddFeat(oPC, NWScript.FEAT_TWO_WEAPON_FIGHTING);
 
             if (perkLevel >= 2)

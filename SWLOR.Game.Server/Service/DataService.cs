@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Service
             GetAll<Attribute>();
             GetAll<AuthorizedDM>();
             GetAll<Bank>();
-            GetAll<BankItem>();
+            RegisterEmptyCacheSet<BankItem>();
             GetAll<BaseItemType>();
             GetAll<BaseStructure>();
             GetAll<BaseStructureType>();
@@ -218,6 +218,8 @@ namespace SWLOR.Game.Server.Service
 
                     foreach(var item in multi.Read<PCSkill>().ToList())
                         SetIntoCache<PCSkill>(item.ID, item);
+                    foreach(var item in multi.Read<BankItem>().ToList())
+                        SetIntoCache<BankItem>(item.ID, item);
                 }
             }
 
@@ -272,8 +274,10 @@ namespace SWLOR.Game.Server.Service
                 DeleteFromCache<PCSearchSiteItem>(item.ID);
             foreach(var item in Where<PCSkill>(x => x.PlayerID == id).ToList())
                 DeleteFromCache<PCSkill>(item.ID);
+            foreach(var item in Where<BankItem>(x => x.PlayerID == id).ToList())
+                DeleteFromCache<BankItem>(item.ID);
         }
-        
+
         /// <summary>
         /// Sends a request to change data into the database queue. Processing is asynchronous
         /// and you cannot reliably retrieve the data directly from the database immediately afterwards.

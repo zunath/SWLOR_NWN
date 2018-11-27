@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            _customEffect.RemovePCCustomEffect((NWPlayer)target, CustomEffectType.Poison);
+            _customEffect.RemovePCCustomEffect(target.Object, CustomEffectType.Poison);
 
             foreach (Effect effect in target.Effects)
             {
@@ -57,11 +57,11 @@ namespace SWLOR.Game.Server.Item.Medicine
 
             user.SendMessage("You successfully treat " + target.Name + "'s infection.");
 
-            int rank = _skill.GetPCSkillRank((NWPlayer)user, SkillType.Medicine);
+            int rank = _skill.GetPCSkillRank(user.Object, SkillType.Medicine);
             
             if(target.IsPlayer){
                 int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, rank);
-                _skill.GiveSkillXP((NWPlayer)user, SkillType.Medicine, xp);
+                _skill.GiveSkillXP(user.Object, SkillType.Medicine, xp);
             }
         }
 
@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public bool ReducesItemCharge(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            int consumeChance = _perk.GetPCPerkLevel((NWPlayer)user, PerkType.FrugalMedic) * 10;
+            int consumeChance = _perk.GetPCPerkLevel(user.Object, PerkType.FrugalMedic) * 10;
             return _random.Random(100) + 1 > consumeChance;
         }
 
@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 }
             }
 
-            if (_customEffect.DoesPCHaveCustomEffect((NWPlayer)target, CustomEffectType.Poison))
+            if (_customEffect.DoesPCHaveCustomEffect(target.Object, CustomEffectType.Poison))
             {
                 hasEffect = true;
             }

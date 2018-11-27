@@ -1548,6 +1548,7 @@
     <EmbeddedResource Include="Data\Migrations\2018-11-26.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-27.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-27.2.sql" />
+    <EmbeddedResource Include="Data\Migrations\2018-11-27.3.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-07.1.sql" />

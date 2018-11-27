@@ -157,7 +157,11 @@
         ElectronicRepair = 152,
         SaberstaffMastery = 153,
         DeflectBlasterFire = 154,
-        LightsaberDualWielding = 155
+        LightsaberDualWielding = 155,
+        CombatModInstallationElectronics = 156,
+        MagicModInstallationElectronics = 157,
+        CraftingModInstallationElectronics = 158,
+        SpecialModInstallationElectronics = 159
     }
 
 }

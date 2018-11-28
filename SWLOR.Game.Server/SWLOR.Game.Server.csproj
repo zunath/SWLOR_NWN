@@ -832,9 +832,13 @@
     <Compile Include="Perk\DarkSide\DarkSpread.cs" />
     <Compile Include="Perk\DarkSide\DrainLife.cs" />
     <Compile Include="Perk\DarkSide\ForceLightning.cs" />
+    <Compile Include="Perk\Engineering\CombatModInstallationWeapons.cs" />
+    <Compile Include="Perk\Engineering\CraftingModInstallationWeapons.cs" />
     <Compile Include="Perk\Engineering\ElectronicRepair.cs" />
     <Compile Include="Perk\Engineering\EngineeringEfficiency.cs" />
     <Compile Include="Perk\Engineering\EngineeringOptimization.cs" />
+    <Compile Include="Perk\Engineering\ForceModInstallationWeapons.cs" />
+    <Compile Include="Perk\Engineering\SpecialModInstallationWeapons.cs" />
     <Compile Include="Perk\Fabrication\FabricationBlueprints.cs" />
     <Compile Include="Perk\Fabrication\FabricationEfficiency.cs" />
     <Compile Include="Perk\Fabrication\FabricationOptimization.cs" />

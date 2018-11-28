@@ -572,7 +572,8 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            if (new Guid(renameItem.GetLocalString("CRAFTER_PLAYER_ID")) != pc.GlobalID)
+            string crafterPlayerID = renameItem.GetLocalString("CRAFTER_PLAYER_ID");
+            if(string.IsNullOrWhiteSpace(crafterPlayerID) || new Guid(crafterPlayerID) != pc.GlobalID)
             {
                 pc.SendMessage("You may only rename items which you have personally crafted.");
                 return;

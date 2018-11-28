@@ -290,14 +290,11 @@ namespace SWLOR.Game.Server.Service
                     int skillRank = pcSkills.Single(x => x.SkillID == skillID).Rank;
 
                     int points = skreg.Item2.Points;
-                    int itemLevel = skreg.Item2.RegisteredLevel;
-                    if (itemLevel > skillRank) itemLevel = skillRank - 5;
-                    if (itemLevel < 0) itemLevel = 0;
-
+                    
                     float percentage = points / (float)totalPoints;
                     float skillLDP = CalculatePartyLevelDifferencePenalty(partyLevel, skillRank);
                     float adjustedXP = baseXP * percentage * skillLDP;
-                    adjustedXP = CalculateRegisteredSkillLevelAdjustedXP(adjustedXP, itemLevel, skillRank);
+                    adjustedXP = CalculateRegisteredSkillLevelAdjustedXP(adjustedXP, skillRank, skillRank);
                     
                     GiveSkillXP(preg.Player, skillID, (int)adjustedXP);
                 }

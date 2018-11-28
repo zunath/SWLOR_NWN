@@ -82,6 +82,9 @@ namespace SWLOR.Game.Server.Threading
                         _error.LogError(ex, request.Action.ToString());
                     }
                 }
+
+                connection.Close();
+                connection.Dispose();
             }
         }
     }

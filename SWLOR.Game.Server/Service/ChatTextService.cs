@@ -126,9 +126,9 @@ namespace SWLOR.Game.Server.Service
                 {
                     m_Text = message,
                     m_CustomColour = true,
-                    m_ColourRed = 64,
-                    m_ColourGreen = 64,
-                    m_ColourBlue = 64,
+                    m_ColourRed = 255,
+                    m_ColourGreen = 0,
+                    m_ColourBlue = 255,
                     m_Translatable = false
                 };
 

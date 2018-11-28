@@ -100,9 +100,9 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return "Only players may be targeted with this item.";
             }
 
-            if (!_customEffect.DoesPCHaveCustomEffect(target.Object, CustomEffectType.Bleeding))
+            if (target.CurrentHP >= 40)
             {
-                return "Your target is not bleeding.";
+                return "Bandages cannot be used on targets with more than 40 HP.";
             }
 
             int rank = _skill.GetPCSkillRank(user.Object, SkillType.Medicine);

@@ -149,7 +149,6 @@ namespace SWLOR.Game.Server.Service
             {
                 "compbon_ac2",
                 "compbon_arm2",
-                "compbon_bab1",
                 "compbon_cspd2",
                 "compbon_charges3",
                 "compbon_cooking2",
@@ -187,7 +186,6 @@ namespace SWLOR.Game.Server.Service
             {
                 "compbon_ac3",
                 "compbon_arm3",
-                "compbon_bab2",
                 "compbon_cspd3",
                 "compbon_cooking3",
                 "compbon_dmg3",
@@ -220,7 +218,6 @@ namespace SWLOR.Game.Server.Service
 
             string[] ultraRareIP =
             {
-                "compbon_bab3",
                 "compbon_luck3",
                 "compbon_hpregen3",
                 "compbon_fpregen3",

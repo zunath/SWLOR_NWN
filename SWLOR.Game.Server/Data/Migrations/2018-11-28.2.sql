@@ -258,3 +258,13 @@ VALUES ( 37 ,    -- LootTableID - int
          1 , -- IsActive - bit
          N''    -- SpawnRule - nvarchar(64)
     )
+
+
+
+UPDATE dbo.PerkLevelSkillRequirement
+SET SkillID = 4
+WHERE PerkLevelID IN (
+	SELECT ID 
+	FROM dbo.PerkLevel  
+	WHERE PerkID = 93
+)

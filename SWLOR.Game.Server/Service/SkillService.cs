@@ -270,7 +270,7 @@ namespace SWLOR.Game.Server.Service
                 // Player must be within 30 meters of the creature that just died.
                 if (!preg.Player.IsValid ||
                     preg.Player.Area.Resref != creature.Area.Resref ||
-                        _.GetDistanceBetween(preg.Player.Object, creature.Object) > 30.0f)
+                        _.GetDistanceBetween(preg.Player.Object, creature.Object) > 40.0f)
                     continue;
 
                 List<Tuple<int, PlayerSkillPointTracker>> skillRegs = preg.GetSkillRegistrationPoints();

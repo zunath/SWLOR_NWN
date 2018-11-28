@@ -126,8 +126,19 @@ namespace SWLOR.Game.Server.Data
             {
                 using (var command = new SqlCommand($"SELECT db_id('{databaseName}')", connection))
                 {
+                    bool result;
                     connection.Open();
-                    return (command.ExecuteScalar() != DBNull.Value);
+                    try
+                    {
+                        result = (command.ExecuteScalar() != DBNull.Value);
+                    }
+                    finally
+                    {
+                        connection.Close();
+                        connection.Dispose();
+                    }
+                    
+                    return result;
                 }
             }
         }

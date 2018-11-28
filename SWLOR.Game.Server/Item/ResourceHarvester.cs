@@ -78,8 +78,9 @@ namespace SWLOR.Game.Server.Item
 
             int itemHarvestBonus = item.HarvestingBonus;
             int scanningBonus = user.GetLocalInt(target.GlobalID.ToString());
-
             ipBonusChance += itemHarvestBonus * 2 + scanningBonus * 2;
+
+            baseXP = baseXP + scanningBonus * 5;
 
             NWItem resource = _.CreateItemOnObject(itemResref, player.Object);
 

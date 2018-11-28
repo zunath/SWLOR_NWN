@@ -60,9 +60,9 @@ namespace SWLOR.Game.Server.Placeable.Drill
             BaseStructure baseStructure = _data.Get<BaseStructure>(pcStructure.BaseStructureID);
             DateTime now = DateTime.UtcNow;
 
+            var outOfPowerEffect = drill.Effects.SingleOrDefault(x => _.GetEffectTag(x) == "CONTROL_TOWER_OUT_OF_POWER");
             if (now >= pcBase.DateFuelEnds)
             {
-                var outOfPowerEffect = drill.Effects.SingleOrDefault(x => _.GetEffectTag(x) == "CONTROL_TOWER_OUT_OF_POWER");
                 if (outOfPowerEffect == null)
                 {
                     outOfPowerEffect = _.EffectVisualEffect(VFX_DUR_AURA_RED);
@@ -71,6 +71,10 @@ namespace SWLOR.Game.Server.Placeable.Drill
                 }
 
                 return true;
+            }
+            else if (now < pcBase.DateFuelEnds && outOfPowerEffect != null)
+            {
+                _.RemoveEffect(drill, outOfPowerEffect);
             }
 
             int minuteReduce = 2 * pcStructure.StructureBonus;

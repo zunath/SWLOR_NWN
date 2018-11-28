@@ -64,6 +64,15 @@ namespace SWLOR.Game.Server.Service
             if (player.Object == null) throw new ArgumentNullException(nameof(player.Object));
             if (!player.IsPlayer) return;
 
+            // Player is initialized but not in the DB. Wipe the tag and rerun them through initialization - something went wrong before.
+            if (player.IsInitializedAsPlayer)
+            {
+                if (_data.GetAll<Player>().SingleOrDefault(x => x.ID == player.GlobalID) == null)
+                {
+                    _.SetTag(player, string.Empty);
+                }
+            }
+
             if (!player.IsInitializedAsPlayer)
             {
                 player.DestroyAllInventoryItems();

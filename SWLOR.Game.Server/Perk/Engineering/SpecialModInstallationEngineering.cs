@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.Engineering
 {
-    public class SpecialModInstallationElectronics : IPerk
+    public class SpecialModInstallationEngineering : IPerk
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

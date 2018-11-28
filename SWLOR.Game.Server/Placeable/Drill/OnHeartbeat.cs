@@ -39,9 +39,17 @@ namespace SWLOR.Game.Server.Placeable.Drill
         {
             NWPlaceable drill = Object.OBJECT_SELF;
             string structureID = drill.GetLocalString("PC_BASE_STRUCTURE_ID");
+
+            if (string.IsNullOrWhiteSpace(structureID))
+            {
+                string areaName = drill.Area.Name;
+                Console.WriteLine("There was an error retrieving the PC_BASE_STRUCTURE_ID variable on drill in area: " + areaName);
+                return false;
+            }
+
             Guid structureGUID = new Guid(structureID);
-            PCBaseStructure structure = _data.Get<PCBaseStructure>(structureGUID);
-            PCBase pcBase = _data.Get<PCBase>(structure.PCBaseID);
+            PCBaseStructure pcStructure = _data.Get<PCBaseStructure>(structureGUID);
+            PCBase pcBase = _data.Get<PCBase>(pcStructure.PCBaseID);
             PCBaseStructure tower = _base.GetBaseControlTower(pcBase.ID);
 
             // Check whether there's space in this tower.
@@ -49,7 +57,7 @@ namespace SWLOR.Game.Server.Placeable.Drill
             int count = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == tower.ID).Count() + 1;
             if (count >= capacity) return false;
 
-            BaseStructure baseStructure = _data.Get<BaseStructure>(structure.BaseStructureID);
+            BaseStructure baseStructure = _data.Get<BaseStructure>(pcStructure.BaseStructureID);
             DateTime now = DateTime.UtcNow;
 
             if (now >= pcBase.DateFuelEnds)
@@ -65,18 +73,18 @@ namespace SWLOR.Game.Server.Placeable.Drill
                 return true;
             }
 
-            int minuteReduce = 2 * structure.StructureBonus;
+            int minuteReduce = 2 * pcStructure.StructureBonus;
             int increaseMinutes = 60 - minuteReduce;
             int retrievalRating = baseStructure.RetrievalRating;
 
             if (increaseMinutes <= 20) increaseMinutes = 20;
-            if (structure.DateNextActivity == null)
+            if (pcStructure.DateNextActivity == null)
             {
-                structure.DateNextActivity = now.AddMinutes(increaseMinutes);
-                _data.SubmitDataChange(structure, DatabaseActionType.Update);
+                pcStructure.DateNextActivity = now.AddMinutes(increaseMinutes);
+                _data.SubmitDataChange(pcStructure, DatabaseActionType.Update);
             }
 
-            if (!(now >= structure.DateNextActivity)) return true;
+            if (!(now >= pcStructure.DateNextActivity)) return true;
 
             // Time to spawn a new item and reset the timer.
             var dbArea = _data.Single<Area>(x => x.Resref == pcBase.AreaResref);
@@ -97,9 +105,9 @@ namespace SWLOR.Game.Server.Placeable.Drill
                 return false;
             }
             
-            structure.DateNextActivity = now.AddMinutes(increaseMinutes);
+            pcStructure.DateNextActivity = now.AddMinutes(increaseMinutes);
 
-            var controlTower = _base.GetBaseControlTower(structure.PCBaseID);
+            var controlTower = _base.GetBaseControlTower(pcStructure.PCBaseID);
             var itemDetails = _loot.PickRandomItemFromLootTable(lootTableID);
 
             var tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
@@ -130,7 +138,7 @@ namespace SWLOR.Game.Server.Placeable.Drill
                 ItemObject = _serialization.Serialize(item)
             };
 
-            _data.SubmitDataChange(structure, DatabaseActionType.Update);
+            _data.SubmitDataChange(pcStructure, DatabaseActionType.Update);
             _data.SubmitDataChange(dbItem, DatabaseActionType.Insert);
             item.Destroy();
             return true;

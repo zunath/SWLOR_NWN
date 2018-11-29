@@ -48,6 +48,14 @@ namespace SWLOR.Game.Server.Placeable.Bank
             
             if (disturbType == INVENTORY_DISTURB_TYPE_ADDED)
             {
+                if (_.GetHasInventory(item) == TRUE)
+                {
+                    item.SetLocalInt("RETURNING_ITEM", TRUE);
+                    _item.ReturnItem(player, item);
+                    player.SendMessage(_color.Red("Containers cannot currently be stored inside banks."));
+                    return false;
+                }
+
                 if (itemCount > itemLimit)
                 {
                     _item.ReturnItem(player, item);
@@ -72,8 +80,15 @@ namespace SWLOR.Game.Server.Placeable.Bank
             }
             else if (disturbType == INVENTORY_DISTURB_TYPE_REMOVED)
             {
-                var record = _data.Single<BankItem>(x => x.ItemID == item.GlobalID.ToString());
-                _data.SubmitDataChange(record, DatabaseActionType.Delete);
+                if (item.GetLocalInt("RETURNING_ITEM") == TRUE)
+                {
+                    item.DeleteLocalInt("RETURNING_ITEM");
+                }
+                else
+                {
+                    var record = _data.Single<BankItem>(x => x.ItemID == item.GlobalID.ToString());
+                    _data.SubmitDataChange(record, DatabaseActionType.Delete);
+                }
             }
 
             player.SendMessage(_color.White("Item Limit: " + (itemCount > itemLimit ? itemLimit : itemCount) + " / ") + _color.Red("" + itemLimit));

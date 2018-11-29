@@ -334,7 +334,6 @@ namespace SWLOR.Game.Server.Service
 
             var dbPlayer = _data.Single<Player>(x => x.ID == player.GlobalID);
             player.SetLocalInt("DISPLAY_HOLONET", dbPlayer.DisplayHolonet ? TRUE : FALSE);
-            player.SetLocalInt("DISPLAY_DISCORD", dbPlayer.DisplayDiscord ? TRUE : FALSE);
         }
         
         private enum WorkingOnEmoteStyle

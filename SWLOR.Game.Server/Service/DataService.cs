@@ -97,7 +97,6 @@ namespace SWLOR.Game.Server.Service
             GetAll<CraftDevice>();
             GetAll<Data.Entity.CustomEffect>();
             GetAll<CustomEffectCategory>();
-            GetAll<DiscordChatQueue>();
             GetAll<DMRole>();
             GetAll<EnmityAdjustmentRule>();
             GetAll<FameRegion>();

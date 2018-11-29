@@ -297,7 +297,6 @@ namespace SWLOR.Game.Server
             builder.RegisterType<TimeService>().As<ITimeService>();
             
             // Background threads
-            builder.RegisterType<DiscordBackgroundThread>().As<IDiscordThread>();
             builder.RegisterType<DatabaseBackgroundThread>().As<IDatabaseThread>();
 
             // Interfaces

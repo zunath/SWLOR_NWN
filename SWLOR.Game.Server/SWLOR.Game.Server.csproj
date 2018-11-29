@@ -103,7 +103,6 @@
     <Compile Include="ChatCommand\DeadFront.cs" />
     <Compile Include="ChatCommand\Delete.cs" />
     <Compile Include="ChatCommand\Dice.cs" />
-    <Compile Include="ChatCommand\Discord.cs" />
     <Compile Include="ChatCommand\Drink.cs" />
     <Compile Include="ChatCommand\Drunk.cs" />
     <Compile Include="ChatCommand\Duck.cs" />
@@ -145,7 +144,6 @@
     <Compile Include="ChatCommand\Day.cs" />
     <Compile Include="ChatCommand\Taunt.cs" />
     <Compile Include="ChatCommand\Tired.cs" />
-    <Compile Include="ChatCommand\ToggleDiscord.cs" />
     <Compile Include="ChatCommand\ToggleHolonet.cs" />
     <Compile Include="ChatCommand\TpWp.cs" />
     <Compile Include="ChatCommand\Victory1.cs" />
@@ -1315,9 +1313,7 @@
     <Compile Include="Threading\BackgroundThreadManager.cs" />
     <Compile Include="Threading\Contracts\IBackgroundThreadManager.cs" />
     <Compile Include="Threading\Contracts\IDatabaseThread.cs" />
-    <Compile Include="Threading\Contracts\IDiscordThread.cs" />
     <Compile Include="Threading\DatabaseBackgroundThread.cs" />
-    <Compile Include="Threading\DiscordBackgroundThread.cs" />
     <Compile Include="Trigger\QuestTrigger.cs" />
     <Compile Include="ValueObject\AreaSpawn.cs" />
     <Compile Include="ValueObject\AreaStructure.cs" />

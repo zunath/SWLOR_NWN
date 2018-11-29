@@ -451,7 +451,7 @@ namespace SWLOR.Game.Server.Service
             
             float bonus = atmoStructures.Sum(x => (x.StructureBonus * 0.02f) + 0.02f);
 
-            if (bonus >= 0.5f) bonus = 0.5f;
+            if (bonus >= 1.5f) bonus = 1.5f; // Maximum = 250% XP (+150% bonus from residency)
             return bonus;
         }
         

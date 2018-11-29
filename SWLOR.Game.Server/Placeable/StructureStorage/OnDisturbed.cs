@@ -50,14 +50,22 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
 
             if (disturbType == INVENTORY_DISTURB_TYPE_ADDED)
             {
+                if (_.GetHasInventory(item) == TRUE)
+                {
+                    item.SetLocalInt("RETURNING_ITEM", TRUE);
+                    _item.ReturnItem(oPC, item);
+                    oPC.SendMessage(_color.Red("Containers cannot currently be stored inside banks."));
+                    return false;
+                }
+                
                 if (itemCount > itemLimit)
                 {
-                    ReturnItem(oPC, item);
+                    _item.ReturnItem(oPC, item);
                     oPC.SendMessage(_color.Red("No more items can be placed inside."));
                 }
                 else if (item.BaseItemType == BASE_ITEM_GOLD)
                 {
-                    ReturnItem(oPC, item);
+                    _item.ReturnItem(oPC, item);
                     oPC.SendMessage(_color.Red("Credits cannot be placed inside."));
                 }
                 else
@@ -76,20 +84,20 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
             }
             else if (disturbType == INVENTORY_DISTURB_TYPE_REMOVED)
             {
-                var dbItem = _data.Single<PCBaseStructureItem>(x => x.ItemGlobalID == item.GlobalID.ToString());
-                _data.SubmitDataChange(dbItem, DatabaseActionType.Delete);
+                if (item.GetLocalInt("RETURNING_ITEM") == TRUE)
+                {
+                    item.DeleteLocalInt("RETURNING_ITEM");
+                }
+                else
+                {
+                    var dbItem = _data.Single<PCBaseStructureItem>(x => x.ItemGlobalID == item.GlobalID.ToString());
+                    _data.SubmitDataChange(dbItem, DatabaseActionType.Delete);
+                }
             }
 
             oPC.SendMessage(_color.White("Item Limit: " + itemCount + " / ") + _color.Red(itemLimit.ToString()));
 
             return true;
         }
-
-        private void ReturnItem(NWPlayer oPC, NWItem oItem)
-        {
-            _.CopyItem(oItem.Object, oPC.Object, TRUE);
-            oItem.Destroy();
-        }
-
     }
 }

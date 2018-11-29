@@ -514,8 +514,19 @@ namespace SWLOR.Game.Server.Service
 
         public void ReturnItem(NWObject target, NWItem item)
         {
-            _.CopyItem(item.Object, target.Object, TRUE);
-            item.Destroy();
+            if (_.GetHasInventory(item) == TRUE)
+            {
+                NWObject possessor = item.Possessor;
+                possessor.AssignCommand(() =>
+                {
+                    _.ActionGiveItem(item, target);
+                });
+            }
+            else
+            {
+                _.CopyItem(item.Object, target.Object, TRUE);
+                item.Destroy();
+            }
         }
 
         public void StripAllItemProperties(NWItem item)

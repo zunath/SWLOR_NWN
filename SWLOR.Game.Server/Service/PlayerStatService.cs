@@ -48,6 +48,12 @@ namespace SWLOR.Game.Server.Service
             if (!player.IsPlayer) return;
             if (!player.IsInitializedAsPlayer) return;
 
+            // Don't fire for ammo as it reapplies bonuses **just** removed from blasters.
+            if (ignoreItem != null &&
+                (ignoreItem.BaseItemType == BASE_ITEM_BOLT ||
+                 ignoreItem.BaseItemType == BASE_ITEM_ARROW ||
+                 ignoreItem.BaseItemType == BASE_ITEM_BULLET)) return;
+
             Player pcEntity = _data.Get<Player>(player.GlobalID);
             List<PCSkill> skills = _data.Where<PCSkill>(x => x.PlayerID == player.GlobalID && x.Rank > 0).ToList();
             EffectiveItemStats itemBonuses = GetPlayerItemEffectiveStats(player, ignoreItem);
@@ -285,13 +291,20 @@ namespace SWLOR.Game.Server.Service
 
                 using (new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::ItemLoop"))
                 {
-
+                    HashSet<NWItem> processed = new HashSet<NWItem>();
                     for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
                     {
                         NWItem item = _.GetItemInSlot(itemSlot, player);
+
                         if (!item.IsValid || item.Equals(ignoreItem)) continue;
                         SkillType skill = _item.GetSkillTypeForItem(item);
-                        int rank; 
+                        int rank;
+
+                        // Have we already processed this particular item? Skip over it.
+                        // NWN likes to include the same weapon in multiple slots for some reasons, so this works around that.
+                        // If someone has a better solution to this please feel free to change it.
+                        if (processed.Contains(item)) continue;
+                        processed.Add(item);
                         
                         using(new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::ItemLoop::GetRank"))
                         {

@@ -36,8 +36,6 @@ namespace SWLOR.Game.Server.Threading
 
             using (var connection = new SqlConnection(_connectionString))
             {
-                connection.Open();
-
                 while (!_data.DataQueue.IsEmpty)
                 {
                     if (!_data.DataQueue.TryDequeue(out DatabaseAction request))
@@ -82,9 +80,6 @@ namespace SWLOR.Game.Server.Threading
                         _error.LogError(ex, request.Action.ToString());
                     }
                 }
-
-                connection.Close();
-                connection.Dispose();
             }
         }
     }

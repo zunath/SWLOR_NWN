@@ -227,10 +227,7 @@ namespace SWLOR.Game.Server
             builder.RegisterType<BackgroundThreadManager>()
                 .As<IBackgroundThreadManager>()
                 .SingleInstance();
-
-            // Types
-            builder.RegisterType<HttpClient>().SingleInstance();
-
+            
             // Game Objects
             builder.RegisterType<NWObject>();
             builder.RegisterType<NWCreature>();

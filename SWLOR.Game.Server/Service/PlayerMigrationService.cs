@@ -22,6 +22,8 @@ namespace SWLOR.Game.Server.Service
         public void OnModuleEnter()
         {
             NWPlayer player = _.GetEnteringObject();
+            if (!player.IsPlayer) return;
+
             var dbPlayer = _data.Get<Player>(player.GlobalID);
 
             // Background items are no longer plot because item level no longer dictates your skill XP gain.

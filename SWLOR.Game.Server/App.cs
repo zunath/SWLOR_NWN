@@ -200,11 +200,6 @@ namespace SWLOR.Game.Server
                 }
             }
         }
-
-        public static ILifetimeScope BeginContainerScope()
-        {
-            return _container.BeginLifetimeScope();
-        }
         
         public static bool IsKeyRegistered<T>(string key)
         {

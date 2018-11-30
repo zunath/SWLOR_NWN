@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IPlayerValidationService _playerValidation;
         private readonly IDataService _data;
         private readonly IRaceService _race;
+        private readonly IPlayerMigrationService _migration;
 
         public OnModuleEnter(
             INWScript script,
@@ -34,7 +35,8 @@ namespace SWLOR.Game.Server.Event.Module
             IChatTextService chatText,
             IPlayerValidationService playerValidation,
             IDataService data,
-            IRaceService race)
+            IRaceService race,
+            IPlayerMigrationService migration)
         {
             _ = script;
             _player = player;
@@ -48,6 +50,7 @@ namespace SWLOR.Game.Server.Event.Module
             _playerValidation = playerValidation;
             _data = data;
             _race = race;
+            _migration = migration;
         }
 
         public bool Run(params object[] args)
@@ -66,6 +69,7 @@ namespace SWLOR.Game.Server.Event.Module
             _data.CachePlayerData(player);
             _skill.OnModuleEnter();
             _player.LoadCharacter(player);
+            _migration.OnModuleEnter();
             _player.ShowMOTD(player);
             ApplyGhostwalk();
             _quest.OnClientEnter();

@@ -259,7 +259,7 @@ namespace SWLOR.Game.Server.Service
                 HPRegenerationAmount = 1,
                 RegenerationTick = 20,
                 RegenerationRate = 0,
-                VersionNumber = 2,
+                VersionNumber = 1,
                 MaxFP = 0,
                 CurrentFP = 0,
                 CurrentFPTick = 20,

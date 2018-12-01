@@ -56,5 +56,6 @@ namespace SWLOR.Game.Server.Data.Entity
         public Guid? PrimaryResidencePCBaseID { get; set; }
         public bool IsUsingNovelEmoteStyle { get; set; }
         public bool IsDeleted { get; set; }
+        public int XPBonus { get; set; }
     }
 }

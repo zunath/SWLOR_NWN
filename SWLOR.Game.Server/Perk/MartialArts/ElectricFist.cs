@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Perk.MartialArts
                 default: return;
             }
             
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectParalyze(), target, duration);
+            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectStunned(), target, duration);
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_ELECTRICAL), target);
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_SUNSTRIKE), target);
         }

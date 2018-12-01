@@ -1,0 +1,3 @@
+﻿
+ALTER TABLE dbo.Player
+ADD XPBonus INT NOT NULL DEFAULT 0

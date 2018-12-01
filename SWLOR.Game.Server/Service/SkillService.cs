@@ -104,7 +104,14 @@ namespace SWLOR.Game.Server.Service
             SkillXPRequirement req = _data.Single<SkillXPRequirement>(x => x.SkillID == skillID && x.Rank == pcSkill.Rank);
             int maxRank = skill.MaxRank;
             int originalRank = pcSkill.Rank;
+            float xpBonusModifier = player.XPBonus * 0.01f;
+            
+            // Guard against XP bonuses being too high.
+            if (xpBonusModifier > 0.25)
+                xpBonusModifier = 0.25f;
+
             xp = CalculateTotalSkillPointsPenalty(player.TotalSPAcquired, xp);
+            xp = xp + (int)(xp * xpBonusModifier);
 
             // Run the skill decay rules.
             // If the method returns false, that means all skills are locked.
@@ -113,6 +120,7 @@ namespace SWLOR.Game.Server.Service
             {
                 return;
             }
+
 
             pcSkill.XP = pcSkill.XP + xp;
             oPC.SendMessage("You earned " + skill.Name + " skill experience. (" + xp + ")");

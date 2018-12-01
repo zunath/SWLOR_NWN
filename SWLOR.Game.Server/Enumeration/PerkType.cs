@@ -88,7 +88,7 @@
         CombatModInstallationWeapons = 83,
         WeaponBlueprints = 84,
         ScavengingExpert = 85,
-        MagicModInstallationWeapons = 86,
+        ForceModInstallationWeapons = 86,
         WeaponFocusLightsaber = 87,
         CraftingModInstallationWeapons = 88,
         Dash = 89,
@@ -112,7 +112,7 @@
         TwinVibrobladeMastery = 107,
         BalancedStance = 108,
         CombatModInstallationArmors = 109,
-        MagicModInstallationArmors = 110,
+        ForceModInstallationArmors = 110,
         CraftingModInstallationArmors = 111,
         SpecialModInstallationArmors = 112,
         VibrobladeProficiency = 113,
@@ -159,7 +159,7 @@
         DeflectBlasterFire = 154,
         LightsaberDualWielding = 155,
         CombatModInstallationElectronics = 156,
-        MagicModInstallationElectronics = 157,
+        ForceModInstallationElectronics = 157,
         CraftingModInstallationElectronics = 158,
         SpecialModInstallationElectronics = 159
     }

@@ -1,9 +1,11 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using System;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
@@ -63,11 +65,25 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
         {
+            if (oItem.CustomItemType != CustomItemType.Vibroblade &&
+                oItem.CustomItemType != CustomItemType.Baton &&
+                oItem.CustomItemType != CustomItemType.FinesseVibroblade)
+            {
+                return;
+            }
+
             ApplyFeatChanges(oPC, null);
         }
 
         public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
         {
+            if (oItem.CustomItemType != CustomItemType.Vibroblade &&
+                oItem.CustomItemType != CustomItemType.Baton &&
+                oItem.CustomItemType != CustomItemType.FinesseVibroblade)
+            {
+                return;
+            }
+            
             ApplyFeatChanges(oPC, oItem);
         }
 
@@ -78,9 +94,9 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         private void RemoveFeats(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_TWO_WEAPON_FIGHTING);
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_AMBIDEXTERITY);
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
+            _nwnxCreature.RemoveFeat(oPC, FEAT_TWO_WEAPON_FIGHTING);
+            _nwnxCreature.RemoveFeat(oPC, FEAT_AMBIDEXTERITY);
+            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
         }
 
 
@@ -104,11 +120,11 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             }
 
             // Main or offhand is not acceptable item type.
-            if (mainEquipped.CustomItemType != CustomItemType.Vibroblade ||
-                mainEquipped.CustomItemType != CustomItemType.Baton ||
+            if (mainEquipped.CustomItemType != CustomItemType.Vibroblade &&
+                mainEquipped.CustomItemType != CustomItemType.Baton &&
                 mainEquipped.CustomItemType != CustomItemType.FinesseVibroblade ||
-                offEquipped.CustomItemType != CustomItemType.Vibroblade || 
-                offEquipped.CustomItemType != CustomItemType.Baton || 
+                offEquipped.CustomItemType != CustomItemType.Vibroblade && 
+                offEquipped.CustomItemType != CustomItemType.Baton && 
                 offEquipped.CustomItemType != CustomItemType.FinesseVibroblade)
             {
                 RemoveFeats(oPC);
@@ -117,15 +133,15 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
 
             int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.OneHandedDualWielding);
-            _nwnxCreature.AddFeat(oPC, NWScript.FEAT_TWO_WEAPON_FIGHTING);
+            _nwnxCreature.AddFeat(oPC, FEAT_TWO_WEAPON_FIGHTING);
 
             if (perkLevel >= 2)
             {
-                _nwnxCreature.AddFeat(oPC, NWScript.FEAT_AMBIDEXTERITY);
+                _nwnxCreature.AddFeat(oPC, FEAT_AMBIDEXTERITY);
             }
             if (perkLevel >= 3)
             {
-                _nwnxCreature.AddFeat(oPC, NWScript.FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
+                _nwnxCreature.AddFeat(oPC, FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
             }
         }
 

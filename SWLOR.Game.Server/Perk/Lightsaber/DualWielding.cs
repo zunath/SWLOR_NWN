@@ -62,11 +62,17 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
         {
+            if (oItem.CustomItemType != CustomItemType.Lightsaber) 
+                return;
+
             ApplyFeatChanges(oPC, null);
         }
 
         public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
         {
+            if (oItem.CustomItemType != CustomItemType.Lightsaber)
+                return;
+
             ApplyFeatChanges(oPC, oItem);
         }
 

@@ -77,7 +77,28 @@ namespace SWLOR.Game.Server.Conversation
             if (pcBase.DateFuelEnds > DateTime.UtcNow)
             {
                 TimeSpan deltaTime = pcBase.DateFuelEnds - DateTime.UtcNow;
-                TimeSpan timeSpan = TimeSpan.FromMinutes(30.0f * currentFuel) + deltaTime;
+
+                var tower = _base.GetBaseControlTower(pcBaseID);
+                var towerStructure = _data.Single<BaseStructure>(x => x.ID == tower.BaseStructureID);
+                int fuelRating = towerStructure.FuelRating;
+                int minutes;
+
+                switch (fuelRating)
+                {
+                    case 1: // Small
+                        minutes = 45;
+                        break;
+                    case 2: // Medium
+                        minutes = 15;
+                        break;
+                    case 3: // Large
+                        minutes = 5;
+                        break;
+                    default:
+                        throw new Exception("Invalid fuel rating value: " + fuelRating);
+                }
+                
+                TimeSpan timeSpan = TimeSpan.FromMinutes(minutes * currentFuel) + deltaTime;
                 time = _time.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false);
 
                 time = "Fuel will expire in " + time;

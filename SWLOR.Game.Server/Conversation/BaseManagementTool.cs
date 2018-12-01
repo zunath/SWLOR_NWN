@@ -397,7 +397,7 @@ namespace SWLOR.Game.Server.Conversation
             string pcBaseStructureID = data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID");
             bool isBuilding = !string.IsNullOrWhiteSpace(pcBaseStructureID);
 
-            List<AreaStructure> areaStructures = data.TargetArea.Data["BASE_SERVICE_STRUCTURES"]; ;
+            IEnumerable<AreaStructure> areaStructures = data.TargetArea.Data["BASE_SERVICE_STRUCTURES"];
             if (!isBuilding)
             {
                 string targetSector = _base.GetSectorOfLocation(data.TargetLocation);
@@ -405,11 +405,10 @@ namespace SWLOR.Game.Server.Conversation
                 areaStructures = areaStructures
                     .Where(x => _base.GetSectorOfLocation(x.Structure.Location) == targetSector &&
                                 x.IsEditable &&
-                                _.GetDistanceBetweenLocations(x.Structure.Location, data.TargetLocation) <= 15.0f)
-                    .OrderBy(o => _.GetDistanceBetweenLocations(o.Structure.Location, data.TargetLocation))
-                    .ToList();
-
+                                _.GetDistanceBetweenLocations(x.Structure.Location, data.TargetLocation) <= 15.0f);
             }
+
+            areaStructures = areaStructures.OrderBy(o => _.GetDistanceBetweenLocations(o.Structure.Location, data.TargetLocation));
 
             foreach (var structure in areaStructures)
             {

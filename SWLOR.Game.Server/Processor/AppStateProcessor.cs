@@ -31,8 +31,8 @@ namespace SWLOR.Game.Server.Processor
                 var npcBehaviour = _cache.NPCBehaviours.ElementAt(x);
                 if (!npcBehaviour.Value.IsValid)
                 {
-                    _cache.NPCBehaviours.Remove(npcBehaviour.Key);
                     _ops.UnregisterProcessingEvent(npcBehaviour.Key);
+                    _cache.NPCBehaviours.Remove(npcBehaviour.Key);
                 }
             }
             foreach (var customData in _cache.CustomObjectData.ToArray())

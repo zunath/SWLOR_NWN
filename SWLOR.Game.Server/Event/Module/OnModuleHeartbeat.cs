@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
@@ -56,6 +57,33 @@ namespace SWLOR.Game.Server.Event.Module
             
             SaveCharacters();
             _base.OnModuleHeartbeat();
+
+            // todo: use for debugging the memleak issue. Leave in for now - will remove after it's been fixed.
+
+            //System.Diagnostics.Process ThisProcess = System.Diagnostics.Process.GetCurrentProcess();
+
+            //int nullThreadCount = 0;
+            //foreach (System.Diagnostics.ProcessThread OneThread in ThisProcess.Threads)
+            //{
+            //    if (OneThread != null)
+            //    {
+            //        Console.WriteLine(OneThread.Id + ": " +
+            //                          OneThread.ThreadState + ": " +
+            //                          OneThread.StartTime + ": " +
+            //                          OneThread.TotalProcessorTime + "<BR>");
+            //    }
+            //    else
+            //    {
+
+            //        nullThreadCount++;
+            //    }
+            //}
+
+            //ThreadPool.GetMaxThreads(out int workers, out int completionPort);
+            //Console.WriteLine("Max threads: " + workers + " workers, " + completionPort + " completionPorts" );
+            //Console.WriteLine("Null thread count: " + nullThreadCount);
+
+
 
             return true;
         }

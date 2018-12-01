@@ -15,6 +15,13 @@ namespace SWLOR.Game.Server.Threading
         public BackgroundThreadManager(
             IDatabaseThread databaseThread)
         {
+            const int MaxThreads = 50;
+            bool success = ThreadPool.SetMaxThreads(MaxThreads, MaxThreads);
+            if (!success)
+            {
+                throw new Exception("Failed to set max threads to " + MaxThreads + ".");
+            }
+
             _dbThread = databaseThread;
             _dbWorker = new Thread(x => ProcessDatabaseThread());
             _dbWorker.IsBackground = true;

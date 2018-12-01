@@ -36,12 +36,11 @@ namespace SWLOR.Game.Server.Item
             int repairAmount = tech * 2;
 
             if (skillType == SkillType.Armorsmith)
-                repairAmount += item.CraftBonusArmorsmith;
+                repairAmount += item.CraftBonusArmorsmith + (_perk.GetPcPerkLevel(user.Object,PerkType.ArmorRepair) * 5);
             else if (skillType == SkillType.Weaponsmith)
-                repairAmount += item.CraftBonusWeaponsmith;
+                repairAmount += item.CraftBonusWeaponsmith + (_perk.GetPcPerkLevel(user.Object,PerkType.Weaponsmith) * 5);
             else if (skillType == SkillType.Engineering)
-                repairAmount += item.CraftBonusEngineering;
-
+                repairAmount += item.CraftBonusEngineering + (_perk.GetPcPerkLevel(user.Object,PerkType.Engineering) * 5);
             float minReduction = 0.05f * tech;
             float maxReduction = 0.15f * tech;
             float reductionAmount = _random.RandomFloat(minReduction, maxReduction);
@@ -138,29 +137,6 @@ namespace SWLOR.Game.Server.Item
 
             SkillType skillType = GetSkillType(item);
             int techLevel = item.GetLocalInt("TECH_LEVEL");
-
-            if (skillType == SkillType.Armorsmith)
-            {
-                if (_perk.GetPCPerkLevel(user.Object, PerkType.ArmorRepair) < techLevel)
-                {
-                    return "Your level in the 'Armor Repair' perk is too low to use this repair kit.";
-                }
-            }
-            else if (skillType == SkillType.Weaponsmith)
-            {
-                if (_perk.GetPCPerkLevel(user.Object, PerkType.WeaponRepair) < techLevel)
-                {
-                    return "Your level in the 'Weapon Repair' perk is too low to use this repair kit.";
-                }
-            }
-            else if (skillType == SkillType.Engineering)
-            {
-                if(_perk.GetPCPerkLevel(user.Object, PerkType.ElectronicRepair) < techLevel)
-                {
-                    return "Your level in the 'Electronic Repair' perk is too low to use this repair kit.";
-                }
-            }
-
             return null;
         }
 

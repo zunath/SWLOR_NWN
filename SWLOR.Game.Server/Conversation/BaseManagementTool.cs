@@ -562,7 +562,15 @@ namespace SWLOR.Game.Server.Conversation
                     _data.SubmitDataChange(furniture, DatabaseActionType.Delete);
                     impoundedCount++;
                 }
+                
+                var primaryOwner = _data.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseStructureID == structure.ID);
+                if (primaryOwner != null)
+                {
+                    primaryOwner.PrimaryResidencePCBaseStructureID = null;
+                    _data.SubmitDataChange(primaryOwner, DatabaseActionType.Update);
+                }
             }
+
 
             _base.ConvertStructureToItem(structure, GetPC());
             _data.SubmitDataChange(structure, DatabaseActionType.Delete);

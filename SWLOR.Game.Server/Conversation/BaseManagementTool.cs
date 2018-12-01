@@ -533,13 +533,21 @@ namespace SWLOR.Game.Server.Conversation
             if (structureType == BaseStructureType.ControlTower)
             {
                 var structureCount = _data.GetAll<PCBaseStructure>().Count(x => x.PCBaseID == structure.PCBaseID);
-
+                
                 if (structureCount > 1)
                 {
                     GetPC().FloatingText("You must remove all structures in this sector before picking up the control tower.");
                     return;
                 }
 
+                // Impound resources retrieved by drills.
+                var items = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structure.ID).ToList();
+                foreach(var item in items)
+                {
+                    _impound.Impound(item);
+                    _data.SubmitDataChange(item, DatabaseActionType.Delete);
+                    impoundedCount++;
+                }
             }
             else if (structureType == BaseStructureType.Building)
             {

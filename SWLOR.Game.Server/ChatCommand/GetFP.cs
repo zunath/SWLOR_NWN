@@ -10,7 +10,7 @@ using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Gets the Current FP of player.", CommandPermissionType.Player)]
+    [CommandDetails("Gets the current FP of player.", CommandPermissionType.Player)]
     public class FP : IChatCommand
     {
         private readonly INWScript _;

@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Service
             if (perkLevel <= 0) return;
 
             // Check attacker's DEX against the primary stat of the perk.
-            int delta = damager.DexterityModifier - modifier;
+            int delta = modifier - damager.DexterityModifier;
             if (delta <= 0) return;
             
             // Has the delay between block/evade attempts past?

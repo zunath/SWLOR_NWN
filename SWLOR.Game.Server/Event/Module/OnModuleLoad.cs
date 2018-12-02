@@ -77,6 +77,7 @@ namespace SWLOR.Game.Server.Event.Module
             // Bioware default
             _.ExecuteScript("x2_mod_def_load", Object.OBJECT_SELF);
             _objectProcessing.RegisterProcessingEvent<AppStateProcessor>();
+            _objectProcessing.RegisterProcessingEvent<ServerRestartProcessor>();
             _objectProcessing.OnModuleLoad();
             _dataPackage.OnModuleLoad();
             _farming.OnModuleLoad();

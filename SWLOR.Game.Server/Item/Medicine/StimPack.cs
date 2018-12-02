@@ -35,8 +35,6 @@ namespace SWLOR.Game.Server.Item.Medicine
             int amount = item.GetLocalInt("AMOUNT") + item.MedicineBonus;
             int rank = player.IsPlayer ? _skill.GetPCSkillRank(player, SkillType.Medicine) : 0;
             int recommendedLevel = item.RecommendedLevel;
-           // int delta = recommendedLevel - rank;
-           // int penalty = delta / 2; Remove Penalties from being below recommended level(XP penalty should be enough)
             float duration = 30.0f;
             int perkLevel = player.IsPlayer ? _perk.GetPCPerkLevel(player, PerkType.StimFiend) : 0;
             float percentIncrease = perkLevel * 0.25f;

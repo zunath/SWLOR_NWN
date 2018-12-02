@@ -24,13 +24,20 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleLoad()
         {
-            RunProcessor();
+            Events.MainLoopTick += Events_MainLoopTick;
+        }
+
+        private void Events_MainLoopTick(ulong frame)
+        {
+            RunProcessor(frame);
         }
 
         public float ProcessingTickInterval => 1f;
 
-        private void RunProcessor()
+        private void RunProcessor(ulong frame)
         {
+            if (frame % 60 != 0) return;
+
             foreach (var toUnregister in _cache.UnregisterProcessingEvents)
             {
                 _cache.ProcessingEvents.Remove(toUnregister);
@@ -50,10 +57,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     _error.LogError(ex, "ObjectProcessingService. EventID = " + @event.Key);
                 }
-                
             }
-
-            _.DelayCommand(ProcessingTickInterval, RunProcessor);
         }
 
         public string RegisterProcessingEvent<T>(params object[] args)

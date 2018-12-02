@@ -36,11 +36,11 @@ namespace SWLOR.Game.Server.Item
             int repairAmount = tech * 2;
 
             if (skillType == SkillType.Armorsmith)
-                repairAmount += item.CraftBonusArmorsmith + (_perk.GetPCPerkLevel(user.Object,PerkType.ArmorRepair) * 5);
+                repairAmount += item.CraftBonusArmorsmith + (_perk.GetPCPerkLevel(user.Object,PerkType.ArmorRepair) * 2);
             else if (skillType == SkillType.Weaponsmith)
-                repairAmount += item.CraftBonusWeaponsmith + (_perk.GetPCPerkLevel(user.Object,PerkType.WeaponRepair) * 5);
+                repairAmount += item.CraftBonusWeaponsmith + (_perk.GetPCPerkLevel(user.Object,PerkType.WeaponRepair) * 2);
             else if (skillType == SkillType.Engineering)
-                repairAmount += item.CraftBonusEngineering + (_perk.GetPCPerkLevel(user.Object,PerkType.ElectronicRepair) * 5);
+                repairAmount += item.CraftBonusEngineering + (_perk.GetPCPerkLevel(user.Object,PerkType.ElectronicRepair) * 2);
             float minReduction = 0.05f * tech;
             float maxReduction = 0.15f * tech;
             float reductionAmount = _random.RandomFloat(minReduction, maxReduction);

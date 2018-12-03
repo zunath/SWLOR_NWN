@@ -154,8 +154,7 @@ namespace SWLOR.Game.Server.Perk.DarkSide
 
             player.AssignCommand(() =>
             {
-                Effect vfx = _.EffectVisualEffect(VFX_BEAM_LIGHTNING);
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, target);
+                _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_BEAM_LIGHTNING), target, 1.0f);
             });
         }
 

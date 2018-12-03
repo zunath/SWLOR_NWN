@@ -18,7 +18,6 @@ namespace SWLOR.Game.Server.Event.Module
 
         public bool Run(params object[] args)
         {
-            _.ExecuteScript("dmfi_onplychat", Object.OBJECT_SELF);
             _playerDescription.OnModuleChat();
             return true;
 

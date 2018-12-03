@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Service
                     item1Resref = "powerglove_t";
                     break;
                 case BackgroundType.SecurityOfficer:
-                    item1Resref = "baton_s";
+                    item1Resref = "club_s";
                     break;
                 case BackgroundType.Berserker:
                     item1Resref = "doubleaxe_z";

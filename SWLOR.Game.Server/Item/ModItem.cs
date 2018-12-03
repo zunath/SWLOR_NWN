@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
+﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
@@ -221,7 +219,7 @@ namespace SWLOR.Game.Server.Item
                         perkLevel = _perk.GetPCPerkLevel(player, PerkType.CombatModInstallationWeapons);
                         break;
                     case CustomItemPropertyType.BlueMod:
-                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.MagicModInstallationWeapons);
+                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.ForceModInstallationWeapons);
                         break;
                     case CustomItemPropertyType.GreenMod:
                         perkLevel = _perk.GetPCPerkLevel(player, PerkType.CraftingModInstallationWeapons);
@@ -242,7 +240,7 @@ namespace SWLOR.Game.Server.Item
                         perkLevel = _perk.GetPCPerkLevel(player, PerkType.CombatModInstallationArmors);
                         break;
                     case CustomItemPropertyType.BlueMod:
-                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.MagicModInstallationArmors);
+                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.ForceModInstallationArmors);
                         break;
                     case CustomItemPropertyType.GreenMod:
                         perkLevel = _perk.GetPCPerkLevel(player, PerkType.CraftingModInstallationArmors);
@@ -263,7 +261,7 @@ namespace SWLOR.Game.Server.Item
                         perkLevel = _perk.GetPCPerkLevel(player, PerkType.CombatModInstallationElectronics);
                         break;
                     case CustomItemPropertyType.BlueMod:
-                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.MagicModInstallationElectronics);
+                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.ForceModInstallationElectronics);
                         break;
                     case CustomItemPropertyType.GreenMod:
                         perkLevel = _perk.GetPCPerkLevel(player, PerkType.CraftingModInstallationElectronics);
@@ -287,7 +285,7 @@ namespace SWLOR.Game.Server.Item
             }
 
             // Check for perk level requirement
-            if (perkLevel < requiredPerkLevel) return "You do not have the necessary perk rank required. (Required: " + requiredPerkLevel + ")";
+            if (perkLevel < requiredPerkLevel) return "You do not have the necessary perk rank required. (Required: " + requiredPerkLevel + ", Your level: " + perkLevel + ")";
 
             // Can't modify items above perk level * 10
             if (itemLevel > perkLevel * 10) return "Your current perks allow you to add mods to items up to level " + perkLevel * 10 + ". This item is level " + itemLevel + " so you can't install a mod into it.";

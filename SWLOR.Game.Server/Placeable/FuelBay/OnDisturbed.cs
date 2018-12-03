@@ -113,7 +113,30 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
 
             _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
 
-            TimeSpan timeSpan = TimeSpan.FromMinutes(30.0f * fuelCount);
+            var tower = _base.GetBaseControlTower(structure.PCBaseID);
+            var towerStructure = _data.Single<BaseStructure>(x => x.ID == tower.BaseStructureID);
+            int fuelRating = towerStructure.FuelRating;
+            int minutes = 30; // Stronidium is always 30 minutes
+
+            if (!stronidiumOnly)
+            {
+                switch (fuelRating)
+                {
+                    case 1: // Small
+                        minutes = 45;
+                        break;
+                    case 2: // Medium
+                        minutes = 15;
+                        break;
+                    case 3: // Large
+                        minutes = 5;
+                        break;
+                    default:
+                        throw new Exception("Invalid fuel rating value: " + fuelRating);
+                }
+            }
+
+            TimeSpan timeSpan = TimeSpan.FromMinutes(minutes * fuelCount);
             player.SendMessage(_color.Gray("Fuel will last for " + 
                                _time.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false) + 
                                " (" + fuelCount + " / " + maxFuel + " units)"));

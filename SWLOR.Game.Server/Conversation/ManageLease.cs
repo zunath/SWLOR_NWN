@@ -143,11 +143,13 @@ namespace SWLOR.Game.Server.Conversation
             bool canExtendLease = _perm.HasBasePermission(GetPC(), pcBase.ID, BasePermission.CanExtendLease);
             bool canCancelLease = _perm.HasBasePermission(GetPC(), pcBase.ID, BasePermission.CanCancelLease);
 
+            int dailyUpkeep = dbArea.DailyUpkeep + (int)(dbArea.DailyUpkeep * (owner.LeaseRate * 0.01f));
+
             string header = _color.Green("Location: ") + dbArea.Name + " (" + pcBase.Sector + ")\n\n";
             header += _color.Green("Owned By: ") + owner.CharacterName + "\n";
             header += _color.Green("Purchased: ") + pcBase.DateInitialPurchase + "\n";
             header += _color.Green("Rent Due: ") + pcBase.DateRentDue + "\n";
-            header += _color.Green("Daily Upkeep: ") + dbArea.DailyUpkeep + " credits\n\n";
+            header += _color.Green("Daily Upkeep: ") + dailyUpkeep + " credits\n\n";
             header += "Daily upkeep may be paid up to 30 days in advance.\n";
            
 
@@ -189,6 +191,7 @@ namespace SWLOR.Game.Server.Conversation
             PCBase pcBase = _data.Single<PCBase>(x => x.ID == data.PCBaseID);
             Area dbArea = _data.Single<Area>(x => x.Resref == pcBase.AreaResref);
             bool canExtendLease = _perm.HasBasePermission(GetPC(), pcBase.ID, BasePermission.CanExtendLease);
+            var owner = _data.Get<Player>(pcBase.PlayerID);
 
             if (!canExtendLease)
             {
@@ -196,7 +199,9 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            if (GetPC().Gold < dbArea.DailyUpkeep * days)
+            int dailyUpkeep = dbArea.DailyUpkeep + (int)(dbArea.DailyUpkeep * (owner.LeaseRate * 0.01f));
+
+            if (GetPC().Gold < dailyUpkeep * days)
             {
                 GetPC().SendMessage("You don't have enough credits to extend your lease.");
                 data.IsConfirming = false;
@@ -206,7 +211,7 @@ namespace SWLOR.Game.Server.Conversation
             
             if (data.IsConfirming)
             {
-                _.TakeGoldFromCreature(dbArea.DailyUpkeep * days, GetPC(), TRUE);
+                _.TakeGoldFromCreature(dailyUpkeep * days, GetPC(), TRUE);
                 data.IsConfirming = false;
                 SetResponseText("BaseDetailsPage", responseID, optionText);
                 pcBase.DateRentDue = pcBase.DateRentDue.AddDays(days);

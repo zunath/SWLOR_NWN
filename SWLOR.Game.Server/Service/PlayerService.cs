@@ -282,7 +282,9 @@ namespace SWLOR.Game.Server.Service
                 PrimaryResidencePCBaseID = null,
                 AssociationID = (int)assType,
                 DisplayHolonet = true,
-                DisplayDiscord = true
+                DisplayDiscord = true, 
+                XPBonus = 0,
+                LeaseRate = 0
             };
 
             return entity;

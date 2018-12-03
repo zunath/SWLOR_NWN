@@ -8,38 +8,38 @@ UPDATE dbo.Perk
 SET Description = 'Provides a bonus to repairs when using weapon repair kits'
 WHERE ID = 149
 UPDATE dbo.PerkLevel
-SET Description = 'Gains +2 to the repair of armor when using an armor repair kit'
-WHERE ID = 2066
+SET Description = 'Gain +2 to armor repair when using an armor repair kit.'
+WHERE PerkID = 150 AND Level = 1
 UPDATE dbo.PerkLevel
-SET Description = 'Gains +4 to the repair of armor when using an armor repair kit'
-WHERE ID = 2067
+SET Description = 'Gains +4 to armor repair when using an armor repair kit'
+WHERE PerkID = 150 AND Level = 2
 UPDATE dbo.PerkLevel
-SET Description = 'Gains +6 to the repair of armor when using an armor repair kit'
-WHERE ID = 2068
+SET Description = 'Gains +6 to armor repair when using an armor repair kit'
+WHERE PerkID = 150 AND Level = 3
 UPDATE dbo.PerkLevel
-SET Description = 'Gains +8 to the repair of armor when using an armor repair kit'
-WHERE ID = 2069
+SET Description = 'Gains +8 to armor repair when using an armor repair kit'
+WHERE PerkID = 150 AND Level = 4
 UPDATE dbo.PerkLevel
-SET Description = 'Gains +2 to the repair of weapon when using an weapon repair kit'
-WHERE ID = 2062
+SET Description = 'Gains +2 to weapon repair when using an weapon repair kit'
+WHERE PerkID = 149 AND Level = 1
 UPDATE dbo.PerkLevel
-SET Description = 'Gains +4 to the repair of weapon when using an weapon repair kit'
-WHERE ID = 2063
+SET Description = 'Gains +4 to weapon repair when using an weapon repair kit'
+WHERE PerkID = 149 AND Level = 2
 UPDATE dbo.PerkLevel
-SET Description = 'Gains +6 to the repair of weapon when using an weapon repair kit'
-WHERE ID = 2064
+SET Description = 'Gains +6 to weapon repair when using an weapon repair kit'
+WHERE PerkID = 149 AND Level = 3
 UPDATE dbo.PerkLevel
-SET Description = 'Gains +8 to the repair of weapon when using an weapon repair kit'
-WHERE ID = 2065
+SET Description = 'Gains +8 to weapon repair when using an weapon repair kit'
+WHERE PerkID = 149 AND Level = 4
 UPDATE dbo.PerkLevel
-SET Description = 'Gains +2 to the repair of item when using an electronic repair kit'
-WHERE ID = 1957
+SET Description = 'Gains +2 to electronic repair when using an electronic repair kit'
+WHERE PerkID = 152 AND Level = 1
 UPDATE dbo.PerkLevel
-SET Description = 'Gains +4 to the repair of item when using an electronic repair kit'
-WHERE ID = 1958
+SET Description = 'Gains +4 to electronic repair when using an electronic repair kit'
+WHERE PerkID = 152 AND Level = 2
 UPDATE dbo.PerkLevel
-SET Description = 'Gains +6 to the repair of item when using an electronic repair kit'
-WHERE ID = 1959
+SET Description = 'Gains +6 to electronic repair when using an electronic repair kit'
+WHERE PerkID = 152 AND Level = 3
 UPDATE dbo.PerkLevel
-SET Description = 'Gains +8 to the repair of item when using an electronic repair kit'
-WHERE ID = 1960
+SET Description = 'Gains +8 to electronic repair when using an electronic repair kit'
+WHERE PerkID = 152 AND Level = 1

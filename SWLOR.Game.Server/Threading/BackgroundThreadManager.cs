@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Threading
         {
             // Temporarily double thread limit to try to get us running for longer than 8 hours.
             // Not a long-term solution, but we'll see if it works in the meantime.
-            const int MaxThreads = 400;
+            const int MaxThreads = 250;
             bool success = ThreadPool.SetMaxThreads(MaxThreads, MaxThreads);
             if (!success)
             {

@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Processor
         private static DateTime _restartTime;
         private static DateTime _nextNotification;
         private static bool _isLoaded;
-        private const int RestartMinutes = 480;
+        private const int RestartMinutes = 300;
         private const int NotificationIntervalMinutes = 60;
         private readonly INWScript _;
         private readonly INWNXAdmin _nwnxAdmin;

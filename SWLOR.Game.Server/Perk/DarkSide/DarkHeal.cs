@@ -186,17 +186,20 @@ namespace SWLOR.Game.Server.Perk.DarkSide
                 oPC.SendMessage("Lucky heal!");
             }
 
-            Effect heal = _.EffectHeal(amount);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, heal, oTarget.Object);
-
-            if (length > 0.0f && regenAmount > 0)
+            oPC.AssignCommand(() =>
             {
-                Effect regen = _.EffectRegenerate(regenAmount, 1.0f);
-                _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, regen, oTarget.Object, length + 0.1f);
-            }
+                Effect heal = _.EffectHeal(amount);
+                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, heal, oTarget);
 
-            Effect vfx = _.EffectVisualEffect(VFX_IMP_HEALING_M);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, oTarget.Object);
+                if (length > 0.0f && regenAmount > 0)
+                {
+                    Effect regen = _.EffectRegenerate(regenAmount, 1.0f);
+                    _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, regen, oTarget, length + 0.1f);
+                }
+
+                Effect vfx = _.EffectVisualEffect(VFX_IMP_HEALING_M);
+                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, oTarget.Object);
+            });            
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

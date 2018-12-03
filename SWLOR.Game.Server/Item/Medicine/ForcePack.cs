@@ -90,7 +90,9 @@ namespace SWLOR.Game.Server.Item.Medicine
             string data = (int)interval + ", " + restoreAmount;
             _customEffect.ApplyCustomEffect(user, target.Object, CustomEffectType.ForcePack, (int)duration, restoreAmount, data);
 
-            player.SendMessage("You successfully apply a force pack to " + target.Name + ".");
+            player.SendMessage("You successfully apply a force pack to " + target.Name + ". The force pack will expire in " + duration + " seconds.");
+
+            _.DelayCommand(duration + 0.5f, () => { player.SendMessage("The force pack that you applied to " + target.Name + " has expired."); });
 
             int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, rank);
             _skill.GiveSkillXP(player, SkillType.Medicine, xp);

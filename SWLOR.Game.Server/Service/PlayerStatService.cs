@@ -366,7 +366,7 @@ namespace SWLOR.Game.Server.Service
                         using(new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::ItemLoop::CalcAC"))
                         {
                             // Calculate AC
-                            if (ItemService.ArmorBaseItemTypes.Contains(item.BaseItemType))
+                            if (ACBaseItemTypes.Contains(item.BaseItemType))
                             {
                                 int skillRankToUse;
                                 if (item.CustomItemType == CustomItemType.HeavyArmor)
@@ -414,6 +414,20 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        private static readonly HashSet<int> ACBaseItemTypes = new HashSet<int>()
+        {
+            BASE_ITEM_AMULET,
+            BASE_ITEM_ARMOR,
+            BASE_ITEM_BELT,
+            BASE_ITEM_CLOAK,
+            BASE_ITEM_HELMET,
+            BASE_ITEM_GLOVES,
+            BASE_ITEM_BRACER,
+            BASE_ITEM_BOOTS,
+            BASE_ITEM_LARGESHIELD,
+            BASE_ITEM_SMALLSHIELD,
+            BASE_ITEM_TOWERSHIELD
+        };
 
         public float EffectiveResidencyBonus(NWPlayer player)
         {

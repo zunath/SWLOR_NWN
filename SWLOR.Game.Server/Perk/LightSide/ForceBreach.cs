@@ -139,8 +139,11 @@ namespace SWLOR.Game.Server.Perk.LightSide
                 player.SendMessage("Lucky force breach!");
             }
 
-            Effect damage = _.EffectDamage(amount);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, damage, target.Object);
+            player.AssignCommand(() =>
+            {
+                Effect damage = _.EffectDamage(amount);
+                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, damage, target);
+            });
             
             if (length > 0.0f && dotAmount > 0)
             {
@@ -149,8 +152,12 @@ namespace SWLOR.Game.Server.Perk.LightSide
 
             _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.LightSideAbilities, target.Object);
 
-            Effect vfx = _.EffectVisualEffect(VFX_IMP_DOMINATE_S);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, target.Object);
+            player.AssignCommand(() =>
+            {
+                Effect vfx = _.EffectVisualEffect(VFX_IMP_DOMINATE_S);
+                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, target);
+            });
+            
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

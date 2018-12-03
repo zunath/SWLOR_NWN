@@ -81,13 +81,13 @@ namespace SWLOR.Game.Server.Placeable.WarpDevice
 
             if (isInstance)
             {
-                var members = oPC.PartyMembers.Where(x => x.GetLocalString("ORIGINAL_RESREF") == entranceWP.Area.Resref).ToList();
+                var members = oPC.PartyMembers.Where(x => x.Area.GetLocalString("ORIGINAL_RESREF") == entranceWP.Area.Resref).ToList();
 
                 // A party member is in an instance of this type already.
                 // Prompt player to select which instance to enter.
                 if (members.Count >= 1 && !personalInstanceOnly)
                 {
-                    oPC.SetLocalString("INSTANCE_RESREF", entranceWP.Resref);
+                    oPC.SetLocalString("INSTANCE_RESREF", entranceWP.Area.Resref);
                     oPC.SetLocalString("INSTANCE_DESTINATION_TAG", destination);
                     _dialog.StartConversation(oPC, self, "InstanceSelection");
                     return false;

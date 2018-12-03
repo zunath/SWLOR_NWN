@@ -51,7 +51,9 @@ namespace SWLOR.Game.Server.Item.Medicine
 
             _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, effect, target, duration);
 
-            user.SendMessage("You inject " + target.Name + " with a stim pack.");
+            user.SendMessage("You inject " + target.Name + " with a stim pack. The stim pack will expire in " + duration + " seconds.");
+
+            _.DelayCommand(duration + 0.5f, () => { player.SendMessage("The stim pack that you applied to " + target.Name + " has expired."); });
 
             if (!Equals(user, target))
             {

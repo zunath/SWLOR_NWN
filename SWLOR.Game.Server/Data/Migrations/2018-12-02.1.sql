@@ -42,4 +42,4 @@ SET Description = 'Gains +6 to electronic repair when using an electronic repair
 WHERE PerkID = 152 AND Level = 3
 UPDATE dbo.PerkLevel
 SET Description = 'Gains +8 to electronic repair when using an electronic repair kit'
-WHERE PerkID = 152 AND Level = 1
+WHERE PerkID = 152 AND Level = 4

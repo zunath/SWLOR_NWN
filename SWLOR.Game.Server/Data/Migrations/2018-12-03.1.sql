@@ -27,3 +27,15 @@ VALUES ( 48 ,    -- LootTableID - int
          1 , -- IsActive - bit
          N''    -- SpawnRule - nvarchar(64)
     )
+
+
+
+UPDATE dbo.LootTableItem
+SET Weight = 50
+WHERE LootTableID = 23
+	AND Resref = 'elec_flawed'
+
+UPDATE dbo.LootTableItem
+SET Weight = 40
+WHERE LootTableID = 23
+	AND Resref = 'elec_poor'

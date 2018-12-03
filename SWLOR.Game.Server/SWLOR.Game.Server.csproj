@@ -61,6 +61,7 @@
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
     </Reference>
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -1562,6 +1563,7 @@
     <EmbeddedResource Include="Data\Migrations\2018-11-30.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-12-01.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-12-01.2.sql" />
+    <EmbeddedResource Include="Data\Migrations\2018-12-02.1.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-07.1.sql" />

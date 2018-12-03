@@ -273,13 +273,16 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            if (player.Gold < dbArea.PurchasePrice)
+            var dbPlayer = _data.Get<Player>(player.GlobalID);
+            int purchasePrice = dbArea.PurchasePrice + (int)(dbArea.PurchasePrice * (dbPlayer.LeaseRate * 0.01f));
+
+            if (player.Gold < purchasePrice)
             {
                 player.SendMessage("You do not have enough credits to purchase that sector.");
                 return;
             }
 
-            player.AssignCommand(() => _.TakeGoldFromCreature(dbArea.PurchasePrice, player.Object, TRUE));
+            player.AssignCommand(() => _.TakeGoldFromCreature(purchasePrice, player.Object, TRUE));
 
             switch (sector)
             {
@@ -315,7 +318,7 @@ namespace SWLOR.Game.Server.Service
             var allPermissions = Enum.GetValues(typeof(BasePermission)).Cast<BasePermission>().ToArray();
             _perm.GrantBasePermissions(player, pcBase.ID, allPermissions);
 
-            player.FloatingText("You purchase " + area.Name + " (" + sector + ") for " + dbArea.PurchasePrice + " credits.");
+            player.FloatingText("You purchase " + area.Name + " (" + sector + ") for " + purchasePrice + " credits.");
         }
 
         public void OnModuleHeartbeat()

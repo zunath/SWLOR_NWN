@@ -12,7 +12,8 @@ namespace SWLOR.Game.Server.Processor
         private static DateTime _restartTime;
         private static DateTime _nextNotification;
         private static bool _isLoaded;
-        private const int RestartMinutes = 300;
+        private static bool _isDisabled;
+        private const int DefaultRestartMinutes = 300; // 300 = 5 hours
         private const int NotificationIntervalMinutes = 60;
         private readonly INWScript _;
         private readonly INWNXAdmin _nwnxAdmin;
@@ -29,14 +30,37 @@ namespace SWLOR.Game.Server.Processor
 
             if (!_isLoaded)
             {
-                _isLoaded = true;
-                _restartTime = DateTime.UtcNow.AddMinutes(RestartMinutes);
-                _nextNotification = DateTime.UtcNow.AddMinutes(NotificationIntervalMinutes);
+                string autoRebootMinutes = Environment.GetEnvironmentVariable("AUTO_REBOOT_MINUTES");
+                if(!int.TryParse(autoRebootMinutes, out int minutes))
+                {
+                    minutes = DefaultRestartMinutes;
+                }
+
+                if (minutes <= 0)
+                {
+                    _isDisabled = true;
+                    _isLoaded = true;
+                    Console.WriteLine("Server auto-reboot is DISABLED. You can enable this with the AUTO_REBOOT_MINUTES environment variable.");
+                }
+                else
+                {
+                    _isLoaded = true;
+                    _restartTime = DateTime.UtcNow.AddMinutes(minutes);
+                    _nextNotification = DateTime.UtcNow.AddMinutes(minutes < NotificationIntervalMinutes ? 1 : NotificationIntervalMinutes);
+
+                    Console.WriteLine("Server will reboot in " + minutes + " minutes at: " + _restartTime);
+                }
+
             }
         }
 
         public void Run(object[] args)
         {
+            if (_isDisabled)
+            {
+                return;
+            }
+
             var now = DateTime.UtcNow;
             if (now >= _restartTime)
             {
@@ -59,9 +83,14 @@ namespace SWLOR.Game.Server.Processor
                     player.FloatingText(message);
                 }
                 Console.WriteLine(message);
-
+                
+                // We're in the last hour before rebooting. Schedule the next notification 45 minutes from now.
+                if (delta.TotalHours <= 1 && delta.TotalMinutes >= 45)
+                {
+                    _nextNotification = DateTime.UtcNow.AddMinutes(45);
+                }
                 // Notify every minute when it comes close to the reboot time.
-                if (delta.TotalMinutes <= 15)
+                else if (delta.TotalMinutes <= 15)
                 {
                     _nextNotification = DateTime.UtcNow.AddMinutes(1);
                 }

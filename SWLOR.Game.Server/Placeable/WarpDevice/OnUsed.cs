@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Placeable.WarpDevice
                 // Prompt player to select which instance to enter.
                 if (members.Count >= 1 && !personalInstanceOnly)
                 {
-                    oPC.SetLocalString("INSTANCE_RESREF", entranceWP.Resref);
+                    oPC.SetLocalString("INSTANCE_RESREF", entranceWP.Area.Resref);
                     oPC.SetLocalString("INSTANCE_DESTINATION_TAG", destination);
                     _dialog.StartConversation(oPC, self, "InstanceSelection");
                     return false;

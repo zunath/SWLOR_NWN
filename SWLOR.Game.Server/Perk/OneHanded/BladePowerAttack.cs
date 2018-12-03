@@ -90,6 +90,14 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             {
                 _nwnxCreature.RemoveFeat(oPC, FEAT_POWER_ATTACK);
                 _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_POWER_ATTACK);
+                if (_.GetActionMode(oPC, ACTION_MODE_POWER_ATTACK) == TRUE)
+                {
+                    _.SetActionMode(oPC, ACTION_MODE_POWER_ATTACK, FALSE);
+                }
+                if (_.GetActionMode(oPC, ACTION_MODE_IMPROVED_POWER_ATTACK) == TRUE)
+                {
+                    _.SetActionMode(oPC, ACTION_MODE_IMPROVED_POWER_ATTACK, FALSE);
+                }
                 return;
             }
 

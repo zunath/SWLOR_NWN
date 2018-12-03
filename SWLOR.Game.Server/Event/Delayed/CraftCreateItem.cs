@@ -215,7 +215,7 @@ namespace SWLOR.Game.Server.Event.Delayed
                 string bonusName = _.GetStringByStrRef(tlkID) + " " + amount;
                 float random = _random.RandomFloat() * 100.0f;
 
-                if (random + equipmentBonus <= chance)
+                if (random <= chance + equipmentBonus)
                 {
                     foreach (var item in itemSet)
                     {

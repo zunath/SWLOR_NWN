@@ -301,9 +301,13 @@ namespace SWLOR.Game.Server.Conversation
         {
             var data = _base.GetPlayerTempData(GetPC());
             Area dbArea = _data.Single<Area>(x => x.Resref == data.TargetArea.Resref);
+            var player = _data.Get<Player>(GetPC().GlobalID);
+            int purchasePrice = dbArea.PurchasePrice + (int)(dbArea.PurchasePrice * (player.LeaseRate * 0.01f));
+            int dailyUpkeep = dbArea.DailyUpkeep + (int) (dbArea.DailyUpkeep * (player.LeaseRate * 0.01f));
+
             string header = _color.Green("Purchase Territory Menu\n\n");
-            header += "Land leases in this sector cost an initial price of " + dbArea.PurchasePrice + " credits.\n\n";
-            header += "You will also be billed " + dbArea.DailyUpkeep + " credits per day (real world time). Your initial payment covers the cost of the first week.\n\n";
+            header += "Land leases in this sector cost an initial price of " + purchasePrice + " credits.\n\n";
+            header += "You will also be billed " + dailyUpkeep + " credits per day (real world time). Your initial payment covers the cost of the first week.\n\n";
             header += "Purchasing territory gives you the ability to place a control tower, drill for raw materials, construct buildings, build starships, and much more.\n\n";
             header += "You will have a chance to review your purchase before confirming.";
 

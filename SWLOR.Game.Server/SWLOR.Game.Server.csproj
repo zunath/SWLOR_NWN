@@ -114,6 +114,7 @@
     <Compile Include="ChatCommand\GetLocalInt.cs" />
     <Compile Include="ChatCommand\GetLocalString.cs" />
     <Compile Include="ChatCommand\GetPlot.cs" />
+    <Compile Include="ChatCommand\GetXPBonus - Copy.cs" />
     <Compile Include="ChatCommand\GetXPBonus.cs" />
     <Compile Include="ChatCommand\Greet.cs" />
     <Compile Include="ChatCommand\Help.cs" />
@@ -136,6 +137,7 @@
     <Compile Include="ChatCommand\Salute.cs" />
     <Compile Include="ChatCommand\Save.cs" />
     <Compile Include="ChatCommand\ScratchHead.cs" />
+    <Compile Include="ChatCommand\SetLeaseRate.cs" />
     <Compile Include="ChatCommand\SetLocalFloat.cs" />
     <Compile Include="ChatCommand\SetLocalInt.cs" />
     <Compile Include="ChatCommand\SetLocalString.cs" />
@@ -1564,6 +1566,7 @@
     <EmbeddedResource Include="Data\Migrations\2018-12-01.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-12-01.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-12-02.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2018-12-03.1.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-07.1.sql" />

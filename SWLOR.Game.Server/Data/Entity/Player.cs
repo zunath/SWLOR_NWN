@@ -57,5 +57,6 @@ namespace SWLOR.Game.Server.Data.Entity
         public bool IsUsingNovelEmoteStyle { get; set; }
         public bool IsDeleted { get; set; }
         public int XPBonus { get; set; }
+        public int LeaseRate { get; set; }
     }
 }

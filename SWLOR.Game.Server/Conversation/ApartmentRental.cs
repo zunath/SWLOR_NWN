@@ -211,15 +211,18 @@ namespace SWLOR.Game.Server.Conversation
             var player = GetPC();
             var data = _base.GetPlayerTempData(GetPC());
             var style = _data.Single<BuildingStyle>(x => x.ID == data.BuildingStyleID);
+            var dbPlayer = _data.Get<Player>(player.GlobalID);
+            int purchasePrice = style.PurchasePrice + (int) (style.PurchasePrice * (dbPlayer.LeaseRate * 0.01f));
+            int dailyUpkeep = style.DailyUpkeep + (int) (style.DailyUpkeep * (dbPlayer.LeaseRate * 0.01f));
 
             string header = _color.Green("Style: ") + style.Name + "\n\n";
-            header += _color.Green("Purchase Price: ") + style.PurchasePrice + " credits\n";
-            header += _color.Green("Daily Upkeep: ") + style.DailyUpkeep + " credits\n\n";
+            header += _color.Green("Purchase Price: ") + purchasePrice + " credits\n";
+            header += _color.Green("Daily Upkeep: ") + dailyUpkeep + " credits\n\n";
             header += "Purchasing an apartment will grant you 7 days on your lease. Leases can be extended for up to 30 days (real world time) in advance.";
 
             SetPageHeader("PurchaseDetailsPage", header);
 
-            if (player.Gold < style.PurchasePrice)
+            if (player.Gold < purchasePrice)
             {
                 SetResponseVisible("PurchaseDetailsPage", 1, false);
             }
@@ -265,8 +268,10 @@ namespace SWLOR.Game.Server.Conversation
             var player = GetPC();
             var data = _base.GetPlayerTempData(GetPC());
             var style = _data.Single<BuildingStyle>(x => x.ID == data.BuildingStyleID);
+            var dbPlayer = _data.Get<Player>(player.GlobalID);
+            int purchasePrice = style.PurchasePrice + (int)(style.PurchasePrice * (dbPlayer.LeaseRate * 0.01f));
 
-            if (player.Gold < style.PurchasePrice)
+            if (player.Gold < purchasePrice)
             {
                 player.SendMessage("You don't have enough credits to purchase that apartment.");
                 return;
@@ -299,7 +304,7 @@ namespace SWLOR.Game.Server.Conversation
             var allPermissions = Enum.GetValues(typeof(BasePermission)).Cast<BasePermission>().ToArray();
             _perm.GrantBasePermissions(player, pcApartment.ID, allPermissions);
 
-            _.TakeGoldFromCreature(style.PurchasePrice, player, TRUE);
+            _.TakeGoldFromCreature(purchasePrice, player, TRUE);
             
             LoadMainPage();
             ClearNavigationStack();
@@ -313,7 +318,10 @@ namespace SWLOR.Game.Server.Conversation
             var data = _base.GetPlayerTempData(player);
             var pcApartment = _data.Get<PCBase>(data.PCBaseID);
             var buildingStyle = _data.Get<BuildingStyle>(pcApartment.BuildingStyleID);
+            var dbPlayer = _data.Get<Player>(player.GlobalID);
             var name = player.Name + "'s Apartment";
+            int dailyUpkeep = buildingStyle.DailyUpkeep + (int)(buildingStyle.DailyUpkeep * (dbPlayer.LeaseRate * 0.01f));
+
 
             if (!string.IsNullOrWhiteSpace(pcApartment.CustomName))
             {
@@ -323,7 +331,7 @@ namespace SWLOR.Game.Server.Conversation
             string header = _color.Green(name) + "\n\n";
             header += _color.Green("Purchased: ") + pcApartment.DateInitialPurchase + "\n";
             header += _color.Green("Rent Due: ") + pcApartment.DateRentDue + "\n";
-            header += _color.Green("Daily Upkeep: ") + buildingStyle.DailyUpkeep + " credits\n\n";
+            header += _color.Green("Daily Upkeep: ") + dailyUpkeep + " credits\n\n";
             header += "Daily upkeep may be paid up to 30 days in advance.\n";
 
             SetPageHeader("DetailsPage", header);
@@ -362,7 +370,9 @@ namespace SWLOR.Game.Server.Conversation
             var player = GetPC();
             var data = _base.GetPlayerTempData(player);
             var pcApartment = _data.Single<PCBase>(x => x.ID == data.PCBaseID);
+            var dbPlayer = _data.Get<Player>(player.GlobalID);
             var style = _data.Get<BuildingStyle>(pcApartment.BuildingStyleID);
+            int dailyUpkeep = style.DailyUpkeep + (int)(style.DailyUpkeep * (dbPlayer.LeaseRate * 0.01f));
 
             if (data.ExtensionDays != days)
             {
@@ -372,7 +382,7 @@ namespace SWLOR.Game.Server.Conversation
             }
             data.ExtensionDays = days;
 
-            if (player.Gold < style.DailyUpkeep * days)
+            if (player.Gold < dailyUpkeep * days)
             {
                 player.SendMessage("You don't have enough credits to extend your lease.");
                 data.IsConfirming = false;
@@ -382,7 +392,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (data.IsConfirming)
             {
-                _.TakeGoldFromCreature(style.DailyUpkeep * days, GetPC(), TRUE);
+                _.TakeGoldFromCreature(dailyUpkeep * days, GetPC(), TRUE);
                 data.IsConfirming = false;
                 SetResponseText("DetailsPage", responseID, optionText);
                 pcApartment.DateRentDue = pcApartment.DateRentDue.AddDays(days);

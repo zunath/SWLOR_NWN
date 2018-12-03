@@ -10,13 +10,13 @@ using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Sets the XP bonus on a particular player.", CommandPermissionType.DM)]
-    public class SetXPBonus : IChatCommand
+    [CommandDetails("Sets the lease bonus or penalty on a particular player. Range must be between -99 and 500.", CommandPermissionType.DM)]
+    public class SetLeaseRate : IChatCommand
     {
         private readonly INWScript _;
         private readonly IDataService _data;
 
-        public SetXPBonus(
+        public SetLeaseRate(
             INWScript script,
             IDataService data)
         {
@@ -34,33 +34,45 @@ namespace SWLOR.Game.Server.ChatCommand
 
             NWPlayer player = target.Object;
             var dbPlayer = _data.Get<Player>(player.GlobalID);
-            int xpBonus = int.Parse(args[0]);
-            dbPlayer.XPBonus = xpBonus;
+            int leaseRate = int.Parse(args[0]);
+            dbPlayer.LeaseRate = leaseRate;
             _data.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
 
-            user.SendMessage(player.Name + ": XP Bonus set to " + dbPlayer.XPBonus);
-            player.FloatingText("You have received a permanent +" + xpBonus + "% XP increase from a DM!");
+            user.SendMessage(player.Name + ": Lease rate set to " + dbPlayer.LeaseRate + "%");
+
+            if (leaseRate == 0)
+            {
+                player.FloatingText("Your lease rate has returned to normal.");
+            }
+            else if (leaseRate > 0)
+            {
+                player.FloatingText("Your lease rate has increased to " + dbPlayer.LeaseRate + "% of normal.");
+            }
+            else if (leaseRate < 0)
+            {
+                player.FloatingText("Your lease rate has decreased to " + dbPlayer.LeaseRate + "% of normal.");
+            }
         }
 
         public string ValidateArguments(NWPlayer user, params string[] args)
         {
             if (args.Length < 1)
             {
-                return "Please enter a value. Example: /setxpbonus 5";
+                return "Please enter a value. Example: /setleaserate 5";
             }
 
             if (!int.TryParse(args[0], out int result))
             {
-                return "Invalid number set for command. Values should be between 0-25.";
+                return "Invalid number set for command. Values should be between -99 and 500.";
             }
 
-            if(result > 25)
+            if (result > 500)
             {
-                return "Bonuses cannot be set higher than 25%. Please rerun the command using a number between 0-25.";
+                return "Lease rate penalties cannot be set higher than 500%. Please rerun the command using a number between -99 and 500.";
             }
-            else if (result < 0)
+            else if (result < 99)
             {
-                return "Bonuses cannot be set lower than 0%. Please rerun the command using a number between 0-25.";
+                return "Lease rate bonuses cannot be set lower than -99%. Please rerun the command using a number between -99 and 500.";
             }
 
 

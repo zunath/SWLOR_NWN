@@ -39,19 +39,26 @@ namespace SWLOR.Game.Server.Item
             int repairAmount = tech * 2;
             int skillrank;
             int Level = targetitem.RecommendedLevel;
-            int delta;
+            int delta = 0;
+            int baseXP = 0;
             if (skillType == SkillType.Armorsmith)
-                skillrank = (_skill.GetPCSkillRank(user,skillType))
-                repairAmount += item.CraftBonusArmorsmith + (_perk.GetPCPerkLevel(user.Object,PerkType.ArmorRepair) * 2);
+            {
+                skillrank = (_skill.GetPCSkillRank((NWPlayer)user, skillType));
+                repairAmount += item.CraftBonusArmorsmith + (_perk.GetPCPerkLevel(user.Object, PerkType.ArmorRepair) * 2);
                 delta = Level - skillrank;
+            }
             else if (skillType == SkillType.Weaponsmith)
-                skillrank = (_skill.GetPCSkillRank(user,skillType))
-                repairAmount += item.CraftBonusWeaponsmith + (_perk.GetPCPerkLevel(user.Object,PerkType.WeaponRepair) * 2);
+            {
+                skillrank = (_skill.GetPCSkillRank((NWPlayer)user, skillType));
+                repairAmount += item.CraftBonusWeaponsmith + (_perk.GetPCPerkLevel(user.Object, PerkType.WeaponRepair) * 2);
                 delta = Level - skillrank;
+            }
             else if (skillType == SkillType.Engineering)
-                skillrank = (_skill.GetPCSkillRank(user,skillType))
-                repairAmount += item.CraftBonusEngineering + (_perk.GetPCPerkLevel(user.Object,PerkType.ElectronicRepair) * 2);
+            {
+                skillrank = (_skill.GetPCSkillRank((NWPlayer)user, skillType));
+                repairAmount += item.CraftBonusEngineering + (_perk.GetPCPerkLevel(user.Object, PerkType.ElectronicRepair) * 2);
                 delta = Level - skillrank;
+            }
             float minReduction = 0.05f * tech;
             float maxReduction = 0.15f * tech;
             float reductionAmount = _random.RandomFloat(minReduction, maxReduction);
@@ -66,7 +73,7 @@ namespace SWLOR.Game.Server.Item
             else if (delta == -2) baseXP = 100;
             else if (delta == -3) baseXP = 50;
             else if (delta == -4) baseXP = 25;
-            GiveSkillXP(user,SkillType,baseXP,true);
+            _skill.GiveSkillXP((NWPlayer)user,skillType,baseXP,true);
             _durability.RunItemRepair(user.Object, target.Object, repairAmount, reductionAmount + maxDurabilityReductionPenalty);
         }
 

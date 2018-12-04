@@ -26,10 +26,6 @@ namespace SWLOR.Game.Server.SpawnRule
             ResourceQuality quality = ResourceQuality.Low;
             string qualityName = "Low Quality";
 
-            const int NormalQualityChance = 20;
-            const int HighQualityChance = 10;
-            const int VeryHighQualityChance = 2;
-
             var dbArea = _data.Single<Area>(x => x.Resref == target.Area.Resref);
             int tier = dbArea.ResourceQuality;
             int maxTier = dbArea.MaxResourceQuality;
@@ -39,6 +35,51 @@ namespace SWLOR.Game.Server.SpawnRule
                 Console.WriteLine("WARNING: Area '" + target.Area.Name + "' has resources but the RESOURCE_QUALITY variable is not set. Edit the area properties and add this value to set up resources.");
                 return;
             }
+
+
+            int NormalQualityChance;
+            int HighQualityChance;
+            int VeryHighQualityChance;
+
+            switch (tier)
+            {
+                case 1:
+                    NormalQualityChance = 20;
+                    HighQualityChance = 0;
+                    VeryHighQualityChance = 0;
+                    break;
+                case 2:
+                    NormalQualityChance = 20;
+                    HighQualityChance = 2;
+                    VeryHighQualityChance = 0;
+                    break;
+                case 3:
+                case 4:
+                case 5:
+                    NormalQualityChance = 20;
+                    HighQualityChance = 2;
+                    VeryHighQualityChance = 1;
+                    break;
+                case 6:
+                case 7:
+                case 8:
+                    NormalQualityChance = 20;
+                    HighQualityChance = 10;
+                    VeryHighQualityChance = 3;
+                    break;
+                case 9:
+                case 10:
+                    NormalQualityChance = 20;
+                    HighQualityChance = 12;
+                    VeryHighQualityChance = 5;
+                    break;
+                default:
+                    NormalQualityChance = 0;
+                    HighQualityChance = 0;
+                    VeryHighQualityChance = 0;
+                    break;
+            }
+
 
             if (roll <= VeryHighQualityChance)
             {

@@ -76,9 +76,15 @@ namespace SWLOR.Game.Server.Conversation
 
             ClearPageResponses("MainPage");
 
+            var lastBlueprintId = GetPC().GetLocalInt("LAST_CRAFTED_BLUEPRINT_ID_" + deviceID);
+            var bp = _craft.GetBlueprintByID(lastBlueprintId);
+
+            if(bp != null)
+                AddResponseToPage("MainPage", bp.Quantity + "x " + bp.ItemName, bp.IsActive, new Tuple<int, Type>(bp.ID, typeof(CraftBlueprint)));
+
             foreach (CraftBlueprintCategory category in categories)
             {
-                AddResponseToPage("MainPage", category.Name, category.IsActive, category.ID);
+                AddResponseToPage("MainPage", category.Name, category.IsActive, new Tuple<int, Type>(category.ID, typeof(CraftBlueprintCategory)));
             }
         }
 
@@ -99,15 +105,26 @@ namespace SWLOR.Game.Server.Conversation
         private void HandleCategoryResponse(int responseID)
         {
             DialogResponse response = GetResponseByID("MainPage", responseID);
-            int categoryID = (int)response.CustomData;
-            LoadBlueprintListPage(categoryID);
-            ChangePage("BlueprintListPage");
+            var customData = (Tuple<int,Type>)response.CustomData;
+
+            if (customData.Item2 == typeof(CraftBlueprint))
+                LoadCraftPage(customData.Item1);
+            else
+            {
+                LoadBlueprintListPage(customData.Item1);
+                ChangePage("BlueprintListPage");
+            }
         }
 
         private void HandleBlueprintListResponse(int responseID)
         {
             DialogResponse response = GetResponseByID("BlueprintListPage", responseID);
             int blueprintID = (int)response.CustomData;
+            LoadCraftPage(blueprintID);
+        }
+
+        private void LoadCraftPage(int blueprintID)
+        {
             var model = _craft.GetPlayerCraftingData(GetPC());
             model.BlueprintID = blueprintID;
             SwitchConversation("CraftItem");

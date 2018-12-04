@@ -7,7 +7,7 @@ using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Item
 {
-    public class RepairKit: IActionItem
+    public class RepairKit : IActionItem
     {
         private readonly IDurabilityService _durability;
         private readonly IPerkService _perk;
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Item
             else if (delta == -2) baseXP = 100;
             else if (delta == -3) baseXP = 50;
             else if (delta == -4) baseXP = 25;
-            _skill.GiveSkillXP((NWPlayer)user,skillType,baseXP,true);
+            _skill.GiveSkillXP(user.Object, skillType, baseXP);
             _durability.RunItemRepair(user.Object, target.Object, repairAmount, reductionAmount + maxDurabilityReductionPenalty);
         }
 
@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Item
                 case CustomItemType.TwinBlade:
                 case CustomItemType.MartialArtWeapon:
                     return SkillType.Weaponsmith;
-                    
+
                 case CustomItemType.Lightsaber:
                 case CustomItemType.BlasterPistol:
                 case CustomItemType.BlasterRifle:

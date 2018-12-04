@@ -733,6 +733,12 @@ namespace SWLOR.Game.Server.Service
             {
                 int type = item.BaseItemType;
 
+                // Training lightsabers are katana weapons with special local variables.
+                if(item.GetLocalInt("LIGHTSABER") == TRUE)
+                {
+                    return SkillType.Lightsaber;
+                }
+                
                 if (!_skillTypeMappings.TryGetValue(type, out var result))
                 {
                     return SkillType.Unknown;

@@ -76,7 +76,8 @@ namespace SWLOR.Game.Server.Service
                 data.Base += statBonus;
             }
             else if (weapon.CustomItemType == CustomItemType.Lightsaber ||
-                     weapon.CustomItemType == CustomItemType.Saberstaff)
+                     weapon.CustomItemType == CustomItemType.Saberstaff ||
+                     weapon.GetLocalInt("LIGHTSABER") == TRUE)
             {
                 int statBonus = (int) (player.CharismaModifier * 0.25f);
                 data.Base += statBonus;
@@ -118,7 +119,8 @@ namespace SWLOR.Game.Server.Service
             }
             else if (target.Chest.CustomItemType == CustomItemType.ForceArmor &&
                      (targetWeapon.CustomItemType == CustomItemType.Lightsaber ||
-                     targetWeapon.CustomItemType == CustomItemType.Saberstaff))
+                     targetWeapon.CustomItemType == CustomItemType.Saberstaff ||
+                      targetWeapon.GetLocalInt("LIGHTSABER") == TRUE))
             {
                 // Lightsabers (lightsaber or saberstaff) uses the Deflect Blaster Fire perk which is primarily CHA based.
                 perkLevel = _perk.GetPCPerkLevel(target.Object, PerkType.DeflectBlasterFire);

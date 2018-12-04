@@ -579,6 +579,12 @@ namespace SWLOR.Game.Server.Service
                     break;
             }
 
+            if (weapon.GetLocalInt("LIGHTSABER") == TRUE)
+            {
+                proficiencyPerk = PerkType.LightsaberProficiency;
+                proficiencySkill = SkillType.Lightsaber;
+            }
+
             if (proficiencyPerk != PerkType.Unknown &&
                 proficiencySkill != SkillType.Unknown)
             {

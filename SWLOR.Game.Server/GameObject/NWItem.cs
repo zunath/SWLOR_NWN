@@ -128,6 +128,11 @@ namespace SWLOR.Game.Server.GameObject
 
         private CustomItemType GetCustomItemType(NWItem item)
         {
+            if (item.GetLocalInt("LIGHTSABER") == TRUE)
+            {
+                return CustomItemType.Lightsaber;
+            }
+
             int[] vibroblades =
             {
                 BASE_ITEM_BASTARDSWORD,

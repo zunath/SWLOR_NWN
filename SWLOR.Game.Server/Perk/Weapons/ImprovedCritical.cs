@@ -122,6 +122,11 @@ namespace SWLOR.Game.Server.Perk.Weapons
                 case CustomItemType.Saberstaff: perkType = PerkType.ImprovedCriticalSaberstaffs; break;
                 default: return;
             }
+
+            if (equipped.GetLocalInt("LIGHTSABER") == TRUE)
+            {
+                perkType = PerkType.ImprovedCriticalLightsabers;
+            }
             
             int perkLevel = _perk.GetPCPerkLevel(oPC, perkType);
             int type = equipped.BaseItemType;

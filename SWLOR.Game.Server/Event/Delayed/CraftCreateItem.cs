@@ -198,6 +198,7 @@ namespace SWLOR.Game.Server.Event.Delayed
 
             _skill.GiveSkillXP(player, blueprint.SkillID, (int)xp);
             _craft.ClearPlayerCraftingData(player, true);
+            player.SetLocalInt("LAST_CRAFTED_BLUEPRINT_ID_" + blueprint.CraftDeviceID, blueprint.ID);
         }
 
 

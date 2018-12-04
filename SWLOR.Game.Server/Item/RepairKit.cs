@@ -37,27 +37,27 @@ namespace SWLOR.Game.Server.Item
             int tech = item.GetLocalInt("TECH_LEVEL");
             float maxDurabilityReductionPenalty = item.GetLocalFloat("MAX_DURABILITY_REDUCTION_PENALTY");
             int repairAmount = tech * 2;
-            int skillrank;
+            int skillRank;
             int level = targetitem.RecommendedLevel;
             int delta = 0;
             int baseXP = 0;
             if (skillType == SkillType.Armorsmith)
             {
-                skillrank = (_skill.GetPCSkillRank(user.Object skillType));
+                skillRank = (_skill.GetPCSkillRank(user.Object, skillType));
                 repairAmount += item.CraftBonusArmorsmith + (_perk.GetPCPerkLevel(user.Object, PerkType.ArmorRepair) * 2);
-                delta = level - skillrank;
+                delta = level - skillRank;
             }
             else if (skillType == SkillType.Weaponsmith)
             {
-                skillrank = (_skill.GetPCSkillRank(user.Object, skillType));
+                skillRank = (_skill.GetPCSkillRank(user.Object, skillType));
                 repairAmount += item.CraftBonusWeaponsmith + (_perk.GetPCPerkLevel(user.Object, PerkType.WeaponRepair) * 2);
-                delta = level - skillrank;
+                delta = level - skillRank;
             }
             else if (skillType == SkillType.Engineering)
             {
-                skillrank = (_skill.GetPCSkillRank(user.Object, skillType));
+                skillRank = (_skill.GetPCSkillRank(user.Object, skillType));
                 repairAmount += item.CraftBonusEngineering + (_perk.GetPCPerkLevel(user.Object, PerkType.ElectronicRepair) * 2);
-                delta = level - skillrank;
+                delta = level - skillRank;
             }
             float minReduction = 0.05f * tech;
             float maxReduction = 0.15f * tech;

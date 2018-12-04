@@ -16,7 +16,8 @@ namespace SWLOR.Game.Server.Perk.DarkSide
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
-            return false;
+            NWItem armor = oPC.Chest;
+            return armor.CustomItemType == CustomItemType.ForceArmor;
         }
 
         public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)

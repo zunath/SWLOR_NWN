@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Conversation
             player.DeleteLocalString("INSTANCE_RESREF");
             player.DeleteLocalLocation("INSTANCE_ORIGINAL_ENTRANCE_LOCATION");
 
-            var members = player.PartyMembers.Where(x => x.GetLocalString("ORIGINAL_RESREF") == model.AreaResref).ToList();
+            var members = player.PartyMembers.Where(x => x.Area.GetLocalString("ORIGINAL_RESREF") == model.AreaResref).ToList();
 
             ClearPageResponses("MainPage");
             AddResponseToPage("MainPage", "Enter new instance");

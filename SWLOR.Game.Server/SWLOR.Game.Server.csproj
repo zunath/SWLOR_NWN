@@ -61,6 +61,7 @@
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
     </Reference>
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -113,6 +114,7 @@
     <Compile Include="ChatCommand\GetLocalInt.cs" />
     <Compile Include="ChatCommand\GetLocalString.cs" />
     <Compile Include="ChatCommand\GetPlot.cs" />
+    <Compile Include="ChatCommand\GetXPBonus - Copy.cs" />
     <Compile Include="ChatCommand\GetXPBonus.cs" />
     <Compile Include="ChatCommand\Greet.cs" />
     <Compile Include="ChatCommand\Help.cs" />
@@ -135,6 +137,7 @@
     <Compile Include="ChatCommand\Salute.cs" />
     <Compile Include="ChatCommand\Save.cs" />
     <Compile Include="ChatCommand\ScratchHead.cs" />
+    <Compile Include="ChatCommand\SetLeaseRate.cs" />
     <Compile Include="ChatCommand\SetLocalFloat.cs" />
     <Compile Include="ChatCommand\SetLocalInt.cs" />
     <Compile Include="ChatCommand\SetLocalString.cs" />
@@ -1146,6 +1149,7 @@
     <Compile Include="Processor\Contracts\IEventProcessor.cs" />
     <Compile Include="Processor\CustomEffectProcessor.cs" />
     <Compile Include="Processor\GarbageCollectorProcessor.cs" />
+    <Compile Include="Processor\ServerRestartProcessor.cs" />
     <Compile Include="Processor\SpawnProcessor.cs" />
     <Compile Include="QuestRule\Contracts\IQuestRule.cs" />
     <Compile Include="QuestRule\CreditBonusRule.cs" />
@@ -1561,6 +1565,8 @@
     <EmbeddedResource Include="Data\Migrations\2018-11-30.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-12-01.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-12-01.2.sql" />
+    <EmbeddedResource Include="Data\Migrations\2018-12-02.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2018-12-03.1.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-07.1.sql" />

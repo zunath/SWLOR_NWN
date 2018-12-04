@@ -214,8 +214,9 @@ namespace SWLOR.Game.Server.Event.Delayed
                 int amount = _.GetItemPropertyCostTableValue(ip);
                 string bonusName = _.GetStringByStrRef(tlkID) + " " + amount;
                 float random = _random.RandomFloat() * 100.0f;
+                float modifiedEquipmentBonus = equipmentBonus * 0.25f;
 
-                if (random + equipmentBonus <= chance)
+                if (random <= chance + modifiedEquipmentBonus)
                 {
                     foreach (var item in itemSet)
                     {
@@ -230,8 +231,8 @@ namespace SWLOR.Game.Server.Event.Delayed
 
                     }
                     player.SendMessage(_color.Green("Successfully applied component property: " + bonusName));
-
-                    chance -= _random.Random(1, 5);
+                    
+                    chance -= _random.Random(1, 8);
                     if (chance < 1) chance = 1;
 
                     successAmount++;

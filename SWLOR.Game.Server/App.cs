@@ -48,11 +48,13 @@ namespace SWLOR.Game.Server
         {
             try
             {
+                bool success;
                 using (var scope = _container.BeginLifetimeScope())
                 {
                     IRegisteredEvent @event = scope.ResolveKeyed<IRegisteredEvent>(typeof(T).ToString());
-                    return @event.Run(args);
+                    success = @event.Run(args);
                 }
+                return success;
             }
             catch (Exception ex)
             {
@@ -70,11 +72,14 @@ namespace SWLOR.Game.Server
         {
             try
             {
+                bool success;
                 using (var scope = _container.BeginLifetimeScope())
                 {
                     IRegisteredEvent @event = scope.ResolveKeyed<IRegisteredEvent>(type.ToString());
-                    return @event.Run(args);
+                    success = @event.Run(args);
                 }
+
+                return success;
             }
             catch (Exception ex)
             {
@@ -118,6 +123,7 @@ namespace SWLOR.Game.Server
         public delegate T2 AppResolveDelegate<in T1, out T2>(T1 obj);
         public static T2 ResolveByInterface<T1, T2>(string typeName, AppResolveDelegate<T1, T2> action)
         {
+            T2 result;
             if (!typeof(T1).IsInterface)
             {
                 throw new Exception(nameof(T1) + " must be an interface.");
@@ -129,10 +135,10 @@ namespace SWLOR.Game.Server
                 typeName = typeName.Replace(assemblyName + ".", string.Empty);
                 string @namespace = assemblyName + "." + typeName;
                 var resolved = scope.ResolveKeyed<T1>(@namespace);
-
+                
                 try
                 {
-                    return action.Invoke(resolved);
+                    result = action.Invoke(resolved);
                 }
                 catch (Exception ex)
                 {
@@ -142,6 +148,7 @@ namespace SWLOR.Game.Server
                 }
             }
 
+            return result;
         }
 
         public static INWScript GetNWScript()
@@ -180,6 +187,7 @@ namespace SWLOR.Game.Server
 
         public static T2 Resolve<T1, T2>(AppResolveDelegate<T1, T2> action)
         {
+            T2 result;
             if (action == null)
             {
                 throw new NullReferenceException(nameof(action));
@@ -190,7 +198,7 @@ namespace SWLOR.Game.Server
                 T1 resolved = (T1)scope.Resolve(typeof(T1));
                 try
                 {
-                    return action.Invoke(resolved);
+                    result = action.Invoke(resolved);
                 }
                 catch (Exception ex)
                 {
@@ -199,15 +207,20 @@ namespace SWLOR.Game.Server
                     throw;
                 }
             }
+
+            return result;
         }
         
         public static bool IsKeyRegistered<T>(string key)
         {
+            bool isRegistered;
             using (var scope = _container.BeginLifetimeScope())
             {
                 string @namespace = Assembly.GetExecutingAssembly().GetName().Name + "." + key;
-                return scope.IsRegisteredWithKey<T>(@namespace);
+                isRegistered = scope.IsRegisteredWithKey<T>(@namespace);
             }
+
+            return isRegistered;
         }
         
         private static void BuildIOCContainer()
@@ -233,95 +246,95 @@ namespace SWLOR.Game.Server
             builder.RegisterType<NWPlaceable>();
 
             // Services
-            builder.RegisterType<AbilityService>().As<IAbilityService>();
-            builder.RegisterType<ActivityLoggingService>().As<IActivityLoggingService>();
-            builder.RegisterType<AreaService>().As<IAreaService>();
-            builder.RegisterType<AuthorizationService>().As<IAuthorizationService>();
-            builder.RegisterType<BackgroundService>().As<IBackgroundService>();
-            builder.RegisterType<BasePermissionService>().As<IBasePermissionService>();
-            builder.RegisterType<BaseService>().As<IBaseService>();
-            builder.RegisterType<BehaviourService>().As<IBehaviourService>();
-            builder.RegisterType<ChatCommandService>().As<IChatCommandService>();
-            builder.RegisterType<ChatTextService>().As<IChatTextService>();
-            builder.RegisterType<ColorTokenService>().As<IColorTokenService>();
-            builder.RegisterType<CombatService>().As<ICombatService>();
-            builder.RegisterType<ComponentBonusService>().As<IComponentBonusService>();
-            builder.RegisterType<CraftService>().As<ICraftService>();
-            builder.RegisterType<CreatureCorpseService>().As<ICreatureCorpseService>();
-            builder.RegisterType<CustomEffectService>().As<ICustomEffectService>();
+            builder.RegisterType<AbilityService>().As<IAbilityService>().SingleInstance();
+            builder.RegisterType<ActivityLoggingService>().As<IActivityLoggingService>().SingleInstance();
+            builder.RegisterType<AreaService>().As<IAreaService>().SingleInstance();
+            builder.RegisterType<AuthorizationService>().As<IAuthorizationService>().SingleInstance();
+            builder.RegisterType<BackgroundService>().As<IBackgroundService>().SingleInstance();
+            builder.RegisterType<BasePermissionService>().As<IBasePermissionService>().SingleInstance();
+            builder.RegisterType<BaseService>().As<IBaseService>().SingleInstance();
+            builder.RegisterType<BehaviourService>().As<IBehaviourService>().SingleInstance();
+            builder.RegisterType<ChatCommandService>().As<IChatCommandService>().SingleInstance();
+            builder.RegisterType<ChatTextService>().As<IChatTextService>().SingleInstance();
+            builder.RegisterType<ColorTokenService>().As<IColorTokenService>().SingleInstance();
+            builder.RegisterType<CombatService>().As<ICombatService>().SingleInstance();
+            builder.RegisterType<ComponentBonusService>().As<IComponentBonusService>().SingleInstance();
+            builder.RegisterType<CraftService>().As<ICraftService>().SingleInstance();
+            builder.RegisterType<CreatureCorpseService>().As<ICreatureCorpseService>().SingleInstance();
+            builder.RegisterType<CustomEffectService>().As<ICustomEffectService>().SingleInstance();
             builder.RegisterType<DataService>().As<IDataService>().SingleInstance(); // Database processing needs to be a single instance because it holds state.
-            builder.RegisterType<DataPackageService>().As<IDataPackageService>();
-            builder.RegisterType<DeathService>().As<IDeathService>();
-            builder.RegisterType<DialogService>().As<IDialogService>();
-            builder.RegisterType<DurabilityService>().As<IDurabilityService>();
-            builder.RegisterType<EmoteStyleService>().As<IEmoteStyleService>();
-            builder.RegisterType<EnmityService>().As<IEnmityService>();
-            builder.RegisterType<ErrorService>().As<IErrorService>();
-            builder.RegisterType<ExaminationService>().As<IExaminationService>();
-            builder.RegisterType<FarmingService>().As<IFarmingService>();
-            builder.RegisterType<HelmetToggleService>().As<IHelmetToggleService>();
-            builder.RegisterType<ImpoundService>().As<IImpoundService>();
-            builder.RegisterType<ItemService>().As<IItemService>();
-            builder.RegisterType<KeyItemService>().As<IKeyItemService>();
-            builder.RegisterType<LanguageService>().As<ILanguageService>();
-            builder.RegisterType<LocalVariableService>().As<ILocalVariableService>();
-            builder.RegisterType<LootService>().As<ILootService>();
-            builder.RegisterType<MapService>().As<IMapService>();
-            builder.RegisterType<MapPinService>().As<IMapPinService>();
-            builder.RegisterType<MenuService>().As<IMenuService>();
-            builder.RegisterType<ModService>().As<IModService>();
-            builder.RegisterType<ObjectProcessingService>().As<IObjectProcessingService>();
-            builder.RegisterType<ObjectVisibilityService>().As<IObjectVisibilityService>();
-            builder.RegisterType<PerkService>().As<IPerkService>();
-            builder.RegisterType<PlayerDescriptionService>().As<IPlayerDescriptionService>();
-            builder.RegisterType<PlayerMigrationService>().As<IPlayerMigrationService>();
-            builder.RegisterType<PlayerValidationService>().As<IPlayerValidationService>();
-            builder.RegisterType<PlayerService>().As<IPlayerService>();
-            builder.RegisterType<PlayerStatService>().As<IPlayerStatService>();
-            builder.RegisterType<PVPSanctuaryService>().As<IPVPSanctuaryService>();
-            builder.RegisterType<QuestService>().As<IQuestService>();
-            builder.RegisterType<RaceService>().As<IRaceService>();
+            builder.RegisterType<DataPackageService>().As<IDataPackageService>().SingleInstance();
+            builder.RegisterType<DeathService>().As<IDeathService>().SingleInstance();
+            builder.RegisterType<DialogService>().As<IDialogService>().SingleInstance();
+            builder.RegisterType<DurabilityService>().As<IDurabilityService>().SingleInstance();
+            builder.RegisterType<EmoteStyleService>().As<IEmoteStyleService>().SingleInstance();
+            builder.RegisterType<EnmityService>().As<IEnmityService>().SingleInstance();
+            builder.RegisterType<ErrorService>().As<IErrorService>().SingleInstance();
+            builder.RegisterType<ExaminationService>().As<IExaminationService>().SingleInstance();
+            builder.RegisterType<FarmingService>().As<IFarmingService>().SingleInstance();
+            builder.RegisterType<HelmetToggleService>().As<IHelmetToggleService>().SingleInstance();
+            builder.RegisterType<ImpoundService>().As<IImpoundService>().SingleInstance();
+            builder.RegisterType<ItemService>().As<IItemService>().SingleInstance();
+            builder.RegisterType<KeyItemService>().As<IKeyItemService>().SingleInstance();
+            builder.RegisterType<LanguageService>().As<ILanguageService>().SingleInstance();
+            builder.RegisterType<LocalVariableService>().As<ILocalVariableService>().SingleInstance();
+            builder.RegisterType<LootService>().As<ILootService>().SingleInstance();
+            builder.RegisterType<MapService>().As<IMapService>().SingleInstance();
+            builder.RegisterType<MapPinService>().As<IMapPinService>().SingleInstance();
+            builder.RegisterType<MenuService>().As<IMenuService>().SingleInstance();
+            builder.RegisterType<ModService>().As<IModService>().SingleInstance();
+            builder.RegisterType<ObjectProcessingService>().As<IObjectProcessingService>().SingleInstance();
+            builder.RegisterType<ObjectVisibilityService>().As<IObjectVisibilityService>().SingleInstance();
+            builder.RegisterType<PerkService>().As<IPerkService>().SingleInstance();
+            builder.RegisterType<PlayerDescriptionService>().As<IPlayerDescriptionService>().SingleInstance();
+            builder.RegisterType<PlayerMigrationService>().As<IPlayerMigrationService>().SingleInstance();
+            builder.RegisterType<PlayerValidationService>().As<IPlayerValidationService>().SingleInstance();
+            builder.RegisterType<PlayerService>().As<IPlayerService>().SingleInstance();
+            builder.RegisterType<PlayerStatService>().As<IPlayerStatService>().SingleInstance();
+            builder.RegisterType<PVPSanctuaryService>().As<IPVPSanctuaryService>().SingleInstance();
+            builder.RegisterType<QuestService>().As<IQuestService>().SingleInstance();
+            builder.RegisterType<RaceService>().As<IRaceService>().SingleInstance();
             builder.RegisterType<RandomService>().As<IRandomService>().SingleInstance(); // Must be single instance to avoid RNG issues
-            builder.RegisterType<ResourceService>().As<IResourceService>();
-            builder.RegisterType<SearchService>().As<ISearchService>();
-            builder.RegisterType<SerializationService>().As<ISerializationService>();
-            builder.RegisterType<SkillService>().As<ISkillService>();
-            builder.RegisterType<SpawnService>().As<ISpawnService>();
-            builder.RegisterType<TimeService>().As<ITimeService>();
+            builder.RegisterType<ResourceService>().As<IResourceService>().SingleInstance();
+            builder.RegisterType<SearchService>().As<ISearchService>().SingleInstance();
+            builder.RegisterType<SerializationService>().As<ISerializationService>().SingleInstance();
+            builder.RegisterType<SkillService>().As<ISkillService>().SingleInstance();
+            builder.RegisterType<SpawnService>().As<ISpawnService>().SingleInstance();
+            builder.RegisterType<TimeService>().As<ITimeService>().SingleInstance();
             
             // Background threads
-            builder.RegisterType<DatabaseBackgroundThread>().As<IDatabaseThread>();
+            builder.RegisterType<DatabaseBackgroundThread>().As<IDatabaseThread>().SingleInstance();
 
             // Interfaces
             RegisterInterfaceImplementations<IRegisteredEvent>(builder);
-            RegisterInterfaceImplementations<ICustomEffect>(builder);
-            RegisterInterfaceImplementations<IChatCommand>(builder, true);
+            RegisterInterfaceImplementations<ICustomEffect>(builder, false, true);
+            RegisterInterfaceImplementations<IChatCommand>(builder, true, true);
             RegisterInterfaceImplementations<IConversation>(builder);
-            RegisterInterfaceImplementations<IActionItem>(builder);
-            RegisterInterfaceImplementations<IPerk>(builder);
+            RegisterInterfaceImplementations<IActionItem>(builder, false, true);
+            RegisterInterfaceImplementations<IPerk>(builder, false, true);
             RegisterInterfaceImplementations<IBehaviour>(builder);
-            RegisterInterfaceImplementations<IMod>(builder);
-            RegisterInterfaceImplementations<ISpawnRule>(builder);
-            RegisterInterfaceImplementations<IQuestRule>(builder);
-            RegisterInterfaceImplementations<IEventProcessor>(builder);
-            RegisterInterfaceImplementations<IDoorRule>(builder);
-            RegisterInterfaceImplementations<IAreaInstance>(builder);
+            RegisterInterfaceImplementations<IMod>(builder, false, true);
+            RegisterInterfaceImplementations<ISpawnRule>(builder, false, true);
+            RegisterInterfaceImplementations<IQuestRule>(builder, false, true);
+            RegisterInterfaceImplementations<IEventProcessor>(builder, false, true);
+            RegisterInterfaceImplementations<IDoorRule>(builder, false, true);
+            RegisterInterfaceImplementations<IAreaInstance>(builder, false, true);
 
             // Third Party
-            builder.RegisterType<BiowarePosition>().As<IBiowarePosition>();
-            builder.RegisterType<BiowareXP2>().As<IBiowareXP2>();
-            builder.RegisterType<NWNXAdmin>().As<INWNXAdmin>();
-            builder.RegisterType<NWNXChat>().As<INWNXChat>();
-            builder.RegisterType<NWNXCreature>().As<INWNXCreature>();
-            builder.RegisterType<NWNXDamage>().As<INWNXDamage>();
-            builder.RegisterType<NWNXEvents>().As<INWNXEvents>();
-            builder.RegisterType<NWNXItem>().As<INWNXItem>();
-            builder.RegisterType<NWNXObject>().As<INWNXObject>();
-            builder.RegisterType<NWNXItem>().As<INWNXItem>();
-            builder.RegisterType<NWNXPlayer>().As<INWNXPlayer>();
-            builder.RegisterType<NWNXPlayerQuickBarSlot>().As<INWNXPlayerQuickBarSlot>();
-            builder.RegisterType<NWNXProfiler>().As<INWNXProfiler>();
-            builder.RegisterType<NWNXWeapon>().As<INWNXWeapon>();
+            builder.RegisterType<BiowarePosition>().As<IBiowarePosition>().SingleInstance();
+            builder.RegisterType<BiowareXP2>().As<IBiowareXP2>().SingleInstance();
+            builder.RegisterType<NWNXAdmin>().As<INWNXAdmin>().SingleInstance();
+            builder.RegisterType<NWNXChat>().As<INWNXChat>().SingleInstance();
+            builder.RegisterType<NWNXCreature>().As<INWNXCreature>().SingleInstance();
+            builder.RegisterType<NWNXDamage>().As<INWNXDamage>().SingleInstance();
+            builder.RegisterType<NWNXEvents>().As<INWNXEvents>().SingleInstance();
+            builder.RegisterType<NWNXItem>().As<INWNXItem>().SingleInstance();
+            builder.RegisterType<NWNXObject>().As<INWNXObject>().SingleInstance();
+            builder.RegisterType<NWNXItem>().As<INWNXItem>().SingleInstance();
+            builder.RegisterType<NWNXPlayer>().As<INWNXPlayer>().SingleInstance();
+            builder.RegisterType<NWNXPlayerQuickBarSlot>().As<INWNXPlayerQuickBarSlot>().SingleInstance();
+            builder.RegisterType<NWNXProfiler>().As<INWNXProfiler>().SingleInstance();
+            builder.RegisterType<NWNXWeapon>().As<INWNXWeapon>().SingleInstance();
             builder.RegisterType<NWScript>().As<INWScript>().SingleInstance();
             builder.RegisterType<BehaviourTreeBuilder>().SingleInstance();
             
@@ -329,7 +342,7 @@ namespace SWLOR.Game.Server
         }
 
 
-        private static void RegisterInterfaceImplementations<T>(ContainerBuilder builder, bool lowerCaseKey = false)
+        private static void RegisterInterfaceImplementations<T>(ContainerBuilder builder, bool lowerCaseKey = false, bool isSingleInstance = false)
         {
             if (!typeof(T).IsInterface)
             {
@@ -344,8 +357,11 @@ namespace SWLOR.Game.Server
                 string key = type.Namespace;
                 if (lowerCaseKey) key = key + "." + type.Name.ToLower();
                 else key = key + "." + type.Name;
-                
-                builder.RegisterType(type).As<T>().Keyed<T>(key);
+
+                if (isSingleInstance)
+                    builder.RegisterType(type).As<T>().Keyed<T>(key).SingleInstance();
+                else
+                    builder.RegisterType(type).As<T>().Keyed<T>(key).InstancePerLifetimeScope();
             }
         }
     }

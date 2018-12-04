@@ -114,7 +114,6 @@
     <Compile Include="ChatCommand\GetLocalInt.cs" />
     <Compile Include="ChatCommand\GetLocalString.cs" />
     <Compile Include="ChatCommand\GetPlot.cs" />
-    <Compile Include="ChatCommand\GetXPBonus - Copy.cs" />
     <Compile Include="ChatCommand\GetXPBonus.cs" />
     <Compile Include="ChatCommand\Greet.cs" />
     <Compile Include="ChatCommand\Help.cs" />

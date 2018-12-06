@@ -617,8 +617,10 @@ namespace SWLOR.Game.Server.Service
             {
                 resident.PrimaryResidencePCBaseID = null;
                 resident.PrimaryResidencePCBaseStructureID = null;
-            }
 
+                _data.SubmitDataChange(resident, DatabaseActionType.Update);
+            }
+            
             foreach (var structure in areaStructures)
             {
                 BootPlayersOutOfInstance(structure.PCBaseStructureID);

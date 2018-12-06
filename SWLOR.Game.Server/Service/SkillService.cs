@@ -151,9 +151,9 @@ namespace SWLOR.Game.Server.Service
                 {
                     NWItem item = _.GetItemInSlot(slot, oPC.Object);
                     RemoveWeaponPenalties(item);
-                    ApplyWeaponPenalties(oPC, new Object());
+                    ApplyWeaponPenalties(oPC, item);
                     RemoveEquipmentPenalties(item);
-                    ApplyEquipmentPenalties(oPC, new Object());
+                    ApplyEquipmentPenalties(oPC, item);
                 }
             }
         

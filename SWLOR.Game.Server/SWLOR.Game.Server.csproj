@@ -126,6 +126,7 @@
     <Compile Include="ChatCommand\Look.cs" />
     <Compile Include="ChatCommand\LoopingAnimationCommand.cs" />
     <Compile Include="ChatCommand\MoveDoor.cs" />
+    <Compile Include="ChatCommand\Name.cs" />
     <Compile Include="ChatCommand\Night.cs" />
     <Compile Include="ChatCommand\Perks.cs" />
     <Compile Include="ChatCommand\PickUp.cs" />

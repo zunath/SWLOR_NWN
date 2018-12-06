@@ -166,7 +166,7 @@ namespace SWLOR.Game.Server.Service
                     if (hp > 255) // Levels can only contain a max of 255 HP
                     {
                         _nwnxCreature.SetMaxHitPointsByLevel(player, level, 255);
-                        hp = hp - 255;
+                        hp = hp - 254;
                     }
                     else // Remaining value gets set to the level. (<255 hp)
                     {

@@ -69,9 +69,34 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             for (int x = 1; x <= count; x++)
             {
                 var item = (_.CreateItemOnObject(ingotResref, player.Object));
+                int chance;
+
+                switch (x)
+                {
+                    case 1:
+                    case 2:
+                        chance = 100;
+                        break;
+                    case 3:
+                        chance = 70;
+                        break;
+                    case 4:
+                        chance = 60;
+                        break;
+                    case 5:
+                        chance = 50;
+                        break;
+                    default:
+                        chance = 30;
+                        break;
+                }
+
                 foreach (var ip in itemProperties)
                 {
-                    _biowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
+                    if(_random.D100(1) <= chance)
+                    {
+                        _biowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
+                    }
                 }
             }
 

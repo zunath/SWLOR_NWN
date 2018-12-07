@@ -43,7 +43,6 @@ namespace SWLOR.Game.Server.Service
 
             backupDescription = target.IdentifiedDescription;
             target.SetLocalString("BACKUP_DESCRIPTION", backupDescription);
-            backupDescription += _.GetRacialType(target);
             Player playerEntity = _data.Single<Player>(x => x.ID == target.GlobalID);
             NWArea area = NWModule.Get().Areas.Single(x => x.Resref == playerEntity.RespawnAreaResref);
             string respawnAreaName = area.Name;
@@ -77,7 +76,6 @@ namespace SWLOR.Game.Server.Service
             
             description.Append("\n\n").Append(_color.Green("Description: \n\n")).Append(backupDescription).AppendLine();
             target.UnidentifiedDescription = description.ToString();
-            target.UnidentifiedDescription += _.GetRacialType(target);
 
             return true;
         }

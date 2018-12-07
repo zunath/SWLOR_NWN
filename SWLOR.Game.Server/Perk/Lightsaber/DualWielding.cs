@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Perk.Lightsaber
 {
@@ -62,7 +63,8 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
         {
-            if (oItem.CustomItemType != CustomItemType.Lightsaber) 
+            if (oItem.CustomItemType != CustomItemType.Lightsaber &&
+                oItem.GetLocalInt("LIGHTSABER") == FALSE) 
                 return;
 
             ApplyFeatChanges(oPC, null);
@@ -70,7 +72,8 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
 
         public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
         {
-            if (oItem.CustomItemType != CustomItemType.Lightsaber)
+            if (oItem.CustomItemType != CustomItemType.Lightsaber &&
+                oItem.GetLocalInt("LIGHTSABER") == FALSE)
                 return;
 
             ApplyFeatChanges(oPC, oItem);
@@ -83,9 +86,9 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
 
         private void RemoveFeats(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_TWO_WEAPON_FIGHTING);
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_AMBIDEXTERITY);
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
+            _nwnxCreature.RemoveFeat(oPC, FEAT_TWO_WEAPON_FIGHTING);
+            _nwnxCreature.RemoveFeat(oPC, FEAT_AMBIDEXTERITY);
+            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
         }
 
 
@@ -109,8 +112,10 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
             }
 
             // Main or offhand is not acceptable item type.
-            if (mainEquipped.CustomItemType != CustomItemType.Lightsaber ||
-                offEquipped.CustomItemType != CustomItemType.Lightsaber)
+            if ((mainEquipped.CustomItemType != CustomItemType.Lightsaber &&
+                 mainEquipped.GetLocalInt("LIGHTSABER") == FALSE) ||
+                (offEquipped.CustomItemType != CustomItemType.Lightsaber &&
+                 offEquipped.GetLocalInt("LIGHTSABER") == FALSE))
             {
                 RemoveFeats(oPC);
                 return;
@@ -118,15 +123,15 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
 
 
             int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.LightsaberDualWielding);
-            _nwnxCreature.AddFeat(oPC, NWScript.FEAT_TWO_WEAPON_FIGHTING);
+            _nwnxCreature.AddFeat(oPC, FEAT_TWO_WEAPON_FIGHTING);
 
             if (perkLevel >= 2)
             {
-                _nwnxCreature.AddFeat(oPC, NWScript.FEAT_AMBIDEXTERITY);
+                _nwnxCreature.AddFeat(oPC, FEAT_AMBIDEXTERITY);
             }
             if (perkLevel >= 3)
             {
-                _nwnxCreature.AddFeat(oPC, NWScript.FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
+                _nwnxCreature.AddFeat(oPC, FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
             }
         }
 

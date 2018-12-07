@@ -733,6 +733,18 @@ namespace SWLOR.Game.Server.Service
             {
                 int type = item.BaseItemType;
 
+                // Armor has to specifically be set on the item in order to count.
+                // Look for an item type property first.
+                if (item.CustomItemType == CustomItemType.LightArmor) return SkillType.LightArmor;
+                else if (item.CustomItemType == CustomItemType.HeavyArmor) return SkillType.HeavyArmor;
+                else if (item.CustomItemType == CustomItemType.ForceArmor) return SkillType.ForceArmor;
+                
+                // Training lightsabers are katana weapons with special local variables.
+                if (item.GetLocalInt("LIGHTSABER") == TRUE)
+                {
+                    return SkillType.Lightsaber;
+                }
+                
                 if (!_skillTypeMappings.TryGetValue(type, out var result))
                 {
                     return SkillType.Unknown;

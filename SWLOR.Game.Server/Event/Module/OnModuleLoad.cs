@@ -178,6 +178,9 @@ namespace SWLOR.Game.Server.Event.Module
 
             _nwnxWeapon.SetWeaponSpecializationFeat(CustomBaseItemType.Lightsaber, FEAT_WEAPON_SPECIALIZATION_LONG_SWORD);
             _nwnxWeapon.SetWeaponSpecializationFeat(CustomBaseItemType.Saberstaff, FEAT_WEAPON_SPECIALIZATION_TWO_BLADED_SWORD);
+
+            _nwnxWeapon.SetWeaponFinesseSize(CustomBaseItemType.Lightsaber, CREATURE_SIZE_MEDIUM);
+            _nwnxWeapon.SetWeaponFinesseSize(CustomBaseItemType.Saberstaff, CREATURE_SIZE_MEDIUM);
         }
 
     }

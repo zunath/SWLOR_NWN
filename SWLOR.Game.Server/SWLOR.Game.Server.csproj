@@ -1386,6 +1386,7 @@
     <None Include="ServerFiles\HakPaks\swlor_2da\creaturespeed.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\dgt04_edge.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\doortypes.2da" />
+    <None Include="ServerFiles\HakPaks\swlor_2da\encumbrance.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\fcx01_edge.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\feat.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\footstepsounds.2da" />

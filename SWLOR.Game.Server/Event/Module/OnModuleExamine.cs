@@ -4,6 +4,8 @@ using NWN;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using Object = NWN.Object;
+using SWLOR.Game.Server.Enumeration;
+using System;
 
 namespace SWLOR.Game.Server.Event.Module
 {
@@ -17,7 +19,7 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly INWNXEvents _nwnxEvents;
         private readonly IExaminationService _examination;
         private readonly IModService _mod;
-
+        private readonly IColorTokenService _color;
         public OnModuleExamine(
             INWScript script,
             IFarmingService farming,
@@ -26,7 +28,8 @@ namespace SWLOR.Game.Server.Event.Module
             IItemService item,
             INWNXEvents nwnxEvents,
             IExaminationService examination,
-            IModService mod)
+            IModService mod,
+            IColorTokenService color)
         {
             _ = script;
             _farming = farming;
@@ -36,6 +39,7 @@ namespace SWLOR.Game.Server.Event.Module
             _nwnxEvents = nwnxEvents;
             _examination = examination;
             _mod = mod;
+            _color = color;
         }
 
         public bool Run(params object[] args)
@@ -50,6 +54,10 @@ namespace SWLOR.Game.Server.Event.Module
             description = _perk.OnModuleExamine(description, examiner, examinedObject);
             description = _durability.OnModuleExamine(description, examinedObject);
             description = _farming.OnModuleExamine(description, examinedObject);
+            int racialID = Convert.ToInt32(_.Get2DAString("racialtypes", "Name", _.GetRacialType(examinedObject)));
+            string racialtype = _.GetStringByStrRef(racialID);
+            description += _color.Green("Racial Type: ") + racialtype;
+            
 
             if (string.IsNullOrWhiteSpace(description)) return false;
             _.SetDescription(examinedObject.Object, description, NWScript.FALSE);

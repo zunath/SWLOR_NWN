@@ -58,14 +58,12 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
 
         public void OnRemoved(NWPlayer oPC)
         {
-            System.Console.WriteLine("OnRemoved");
             _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_WEAPON_FINESSE);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
         {
             if (oItem.CustomItemType != CustomItemType.Lightsaber && oItem.CustomItemType != CustomItemType.Saberstaff) return;
-            System.Console.WriteLine("Equip");
             ApplyFeatChanges(oPC, null);
         }
 
@@ -73,7 +71,6 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
         {
             if (oItem.CustomItemType != CustomItemType.Lightsaber && oItem.CustomItemType != CustomItemType.Saberstaff) return;
             if (oItem == oPC.LeftHand) return;
-            System.Console.WriteLine("UnEquip");
             ApplyFeatChanges(oPC, oItem);
         }
 
@@ -84,14 +81,11 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
         private void ApplyFeatChanges(NWPlayer oPC, NWItem oItem)
         {
             NWItem equipped = oItem ?? oPC.RightHand;
-            System.Console.WriteLine("Applying");
             if (Equals(equipped, oItem) || (equipped.CustomItemType != CustomItemType.Lightsaber && equipped.CustomItemType != CustomItemType.Saberstaff))
             {
-                System.Console.WriteLine("Removing");
                 _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_WEAPON_FINESSE);
                 return;
             }
-            System.Console.WriteLine("Adding");
             _nwnxCreature.AddFeat(oPC, NWScript.FEAT_WEAPON_FINESSE);
         }
 

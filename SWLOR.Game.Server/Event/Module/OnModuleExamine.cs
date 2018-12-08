@@ -49,16 +49,20 @@ namespace SWLOR.Game.Server.Event.Module
             if (_examination.OnModuleExamine(examiner, examinedObject)) return true;
 
             string description = _.GetDescription(examinedObject.Object, NWScript.TRUE) + "\n\n";
+
+            if (examinedObject.IsCreature)
+            {
+                int racialID = Convert.ToInt32(_.Get2DAString("racialtypes", "Name", _.GetRacialType(examinedObject)));
+                string racialtype = _.GetStringByStrRef(racialID);
+                description += _color.Green("Racial Type: ") + racialtype;
+            }
+
             description = _mod.OnModuleExamine(description, examiner, examinedObject);
             description = _item.OnModuleExamine(description, examiner, examinedObject);
             description = _perk.OnModuleExamine(description, examiner, examinedObject);
             description = _durability.OnModuleExamine(description, examinedObject);
             description = _farming.OnModuleExamine(description, examinedObject);
-            int racialID = Convert.ToInt32(_.Get2DAString("racialtypes", "Name", _.GetRacialType(examinedObject)));
-            string racialtype = _.GetStringByStrRef(racialID);
-            description += _color.Green("Racial Type: ") + racialtype;
             
-
             if (string.IsNullOrWhiteSpace(description)) return false;
             _.SetDescription(examinedObject.Object, description, NWScript.FALSE);
             _.SetDescription(examinedObject.Object, description);

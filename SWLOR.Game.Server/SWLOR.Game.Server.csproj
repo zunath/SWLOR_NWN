@@ -1100,6 +1100,9 @@
     <Compile Include="Placeable\QuestSystem\OnUsed.cs" />
     <Compile Include="Placeable\Resource\OnHeartbeat.cs" />
     <Compile Include="Placeable\Resource\OnUsed.cs" />
+    <Compile Include="Placeable\Scrapper\OnDisturbed.cs" />
+    <Compile Include="Placeable\Scrapper\OnClosed.cs" />
+    <Compile Include="Placeable\Scrapper\OnOpened.cs" />
     <Compile Include="Placeable\SearchContainer\OnClosed.cs" />
     <Compile Include="Placeable\SearchContainer\OnDisturbed.cs" />
     <Compile Include="Placeable\SearchContainer\OnOpened.cs" />

@@ -7,6 +7,7 @@ using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -82,6 +83,8 @@ namespace SWLOR.Game.Server.Conversation
             if(bp != null)
                 AddResponseToPage("MainPage", bp.Quantity + "x " + bp.ItemName, bp.IsActive, new Tuple<int, Type>(bp.ID, typeof(CraftBlueprint)));
 
+            AddResponseToPage("MainPage", "Scrap Item");
+
             foreach (CraftBlueprintCategory category in categories)
             {
                 AddResponseToPage("MainPage", category.Name, category.IsActive, new Tuple<int, Type>(category.ID, typeof(CraftBlueprintCategory)));
@@ -105,11 +108,20 @@ namespace SWLOR.Game.Server.Conversation
         private void HandleCategoryResponse(int responseID)
         {
             DialogResponse response = GetResponseByID("MainPage", responseID);
+            
+            if (response.CustomData == null) // 2 = Scrap Item
+            {
+                OpenScrapperInventory();
+                return;
+            }
+
             var customData = (Tuple<int,Type>)response.CustomData;
 
-            if (customData.Item2 == typeof(CraftBlueprint))
+            if (customData.Item2 == typeof(CraftBlueprint)) // Craft last item
+            {
                 LoadCraftPage(customData.Item1);
-            else
+            }
+            else // Blueprint List
             {
                 LoadBlueprintListPage(customData.Item1);
                 ChangePage("BlueprintListPage");
@@ -129,6 +141,19 @@ namespace SWLOR.Game.Server.Conversation
             model.BlueprintID = blueprintID;
             SwitchConversation("CraftItem");
         }
-        
+
+
+        private void OpenScrapperInventory()
+        {
+            var model = _craft.GetPlayerCraftingData(GetPC());
+            NWPlaceable container = _.CreateObject(OBJECT_TYPE_PLACEABLE, "cft_scrapper", GetPC().Location);
+            container.IsLocked = false;
+            model.IsAccessingStorage = true;
+            
+            GetPC().AssignCommand(() => _.ActionInteractObject(container.Object));
+            EndConversation();
+        }
+
+
     }
 }

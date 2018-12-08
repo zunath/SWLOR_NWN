@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Service
             // Reduce XP to required amount minus 1 XP
             if (pcSkill.Rank >= maxRank && pcSkill.XP > req.XP)
             {
-                pcSkill.XP = pcSkill.XP - 1;
+                pcSkill.XP = req.XP - 1;
             }
         
             while (pcSkill.XP >= req.XP)

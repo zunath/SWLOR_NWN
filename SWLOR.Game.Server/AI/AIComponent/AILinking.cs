@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.AI.AIComponent
             NWCreature self = (NWCreature)args[0];
 
             if (!self.IsInCombat) return false;
-
+            Console.WriteLine(self + "Is in Combat! Attempting to link");
             float aggroRange = self.GetLocalFloat("AGGRO_RANGE");
             if (aggroRange <= 0.0f) aggroRange = 10.0f;
             Location targetLocation = _.Location(

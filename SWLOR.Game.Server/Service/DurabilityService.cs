@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Service
                 NWItem oItem = (_.GetPCItemLastEquipped());
                 float durability = GetDurability(oItem);
 
-                if (durability <= 0 && durability != -1)
+                if (durability <= 0 && durability != -1 && oItem.IsValid)
                 {
                     oPC.AssignCommand(() =>
                     {

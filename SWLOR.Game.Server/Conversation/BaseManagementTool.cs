@@ -84,7 +84,6 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
-            GetPC().SetLocalInt("LISTENING_FOR_DESCRIPTION", 1);
             LoadMainPage();
         }
 
@@ -272,6 +271,7 @@ namespace SWLOR.Game.Server.Conversation
         }
         private void RenameResponses(int responseID)
         {
+            GetPC().SetLocalInt("LISTENING_FOR_DESCRIPTION", 1);
             switch(responseID)
             {
                 case 1:

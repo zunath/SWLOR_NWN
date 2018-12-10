@@ -39,12 +39,9 @@ namespace SWLOR.Game.Server.Conversation
 
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            NWPlaceable door = GetDialogTarget().Object;
-            var structureID = new Guid(door.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            PCBase structure = _data.Get<PCBase>(structureID);
             PlayerDialog dialog = new PlayerDialog("MainPage");
             DialogPage mainPage = new DialogPage(
-                structure.CustomName,
+                "Please select an option.",
                 "Enter the building",
                 "Knock on the door");
 
@@ -57,13 +54,26 @@ namespace SWLOR.Game.Server.Conversation
             NWPlaceable door = GetDialogTarget().Object;
             var structureID = new Guid(door.GetLocalString("PC_BASE_STRUCTURE_ID"));
             bool canEnterBuilding = _perm.HasStructurePermission(GetPC(), structureID, StructurePermission.CanEnterBuilding);
-            PCBase structure = _data.Get<PCBase>(structureID);
-            Player owner = _player.GetPlayerEntity(structure.PlayerID);
-            if (structure.CustomName == null)
-            {
-                structure.CustomName = owner.CharacterName + "'s Building";
-            }
+
+            SetHeader();
             SetResponseVisible("MainPage", 1, canEnterBuilding);
+        }
+
+        private void SetHeader()
+        {
+            NWPlaceable door = GetDialogTarget().Object;
+            var structureID = new Guid(door.GetLocalString("PC_BASE_STRUCTURE_ID"));
+            PCBaseStructure structure = _data.Get<PCBaseStructure>(structureID);
+            PCBase pcBase = _data.Get<PCBase>(structure.PCBaseID);
+            Player owner = _player.GetPlayerEntity(pcBase.PlayerID);
+            string buildingName = owner.CharacterName + "'s Building";
+            if (!string.IsNullOrWhiteSpace(structure.CustomName))
+            {
+                buildingName = structure.CustomName;
+            }
+
+            string header = buildingName + "\n\nPlease select an option.";
+            SetPageHeader("MainPage", header);
         }
 
         public override void DoAction(NWPlayer player, string pageName, int responseID)
@@ -98,7 +108,7 @@ namespace SWLOR.Game.Server.Conversation
             NWPlayer oPC = GetPC();
             NWPlaceable door = GetDialogTarget().Object;
             string pcBaseStructureID = door.GetLocalString("PC_BASE_STRUCTURE_ID");
-            
+
             if (string.IsNullOrWhiteSpace(pcBaseStructureID))
             {
                 _.FloatingTextStringOnCreature("ERROR: Door doesn't have a structure ID assigned. Notify an admin about this issue.", oPC.Object, NWScript.FALSE);
@@ -138,7 +148,7 @@ namespace SWLOR.Game.Server.Conversation
                 }
 
             }
-            
+
             _base.JumpPCToBuildingInterior(oPC, instance);
         }
 

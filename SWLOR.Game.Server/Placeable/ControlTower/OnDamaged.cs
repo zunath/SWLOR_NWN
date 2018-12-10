@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             {
                 foreach(NWPlayer player in toNotify)
                 {
-                    player.SendMessage("Your base in " + attacker.Area + " " + sector + "Is under Attack!");
+                    player.SendMessage("Your base in " + attacker.Area.Name + " " + sector + "Is under Attack!");
                 }
             }
             pcBase.ShieldHP -= damage;

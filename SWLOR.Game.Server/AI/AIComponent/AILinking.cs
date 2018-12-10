@@ -12,7 +12,7 @@ using System;
 namespace SWLOR.Game.Server.AI.AIComponent
 {
     /// <summary>
-    /// This component causes the creature to target a player by sight.
+    /// This component causes the AI to link to each other.
     /// </summary>
     public class AILinking : IRegisteredEvent
     {
@@ -34,31 +34,28 @@ namespace SWLOR.Game.Server.AI.AIComponent
             NWCreature self = (NWCreature)args[0];
 
             if (!self.IsInCombat) return false;
-            Console.WriteLine(self + "Is in Combat! Attempting to link");
             float aggroRange = self.GetLocalFloat("AGGRO_RANGE");
-            if (aggroRange <= 0.0f) aggroRange = 10.0f;
+            if (aggroRange <= 0.0f) aggroRange = 30.0f;
             Location targetLocation = _.Location(
                 self.Area.Object,
                 _biowarePos.GetChangedPosition(self.Position, aggroRange, self.Facing),
                 self.Facing + 180.0f);
-
-            NWCreature creature = _.GetFirstObjectInShape(SHAPE_SPELLCYLINDER, aggroRange, targetLocation, TRUE, OBJECT_TYPE_CREATURE, self.Position);
-            Console.WriteLine(creature + "Is being linked");
-            while (creature.IsValid)
+            int nth = 1;
+            NWCreature creature = _.GetNearestObject(OBJECT_TYPE_CREATURE, self.Object, nth);
+            while (creature.IsValid && !creature.IsDead)
             {
                 if (_.GetIsEnemy(creature.Object, self.Object) == FALSE &&
                     !_enmity.IsOnEnmityTable(self, creature) &&
                     _.GetDistanceBetween(self.Object, creature.Object) <= aggroRange &&
-                    self.RacialType == creature.RacialType)
+                    self.RacialType == creature.RacialType &&
+                    creature.IsPlayer == false)
                 {
-                    Console.WriteLine("AI is attacking" + _.GetAttackTarget(self) + "!");
-                    creature.AssignCommand(() =>
-                    {
-                        _.ActionAttack(_.GetAttackTarget(self));
-                    });
-                }
+                    _enmity.AdjustEnmity(creature, _.GetAttackTarget(self), 0, 1);
+                    _.SendMessageToPC(_.GetAttackTarget(self), _.GetName(creature) + " #" + nth.ToString() + " is attacking " + _.GetName(_.GetAttackTarget(self.Object)) + " !");
 
-                creature = _.GetNextObjectInShape(SHAPE_SPELLCYLINDER, aggroRange, targetLocation, TRUE, OBJECT_TYPE_CREATURE, self.Position);
+                }
+                nth++;
+                creature = _.GetNearestObject(OBJECT_TYPE_CREATURE, self.Object, nth);
             }
 
             return true;

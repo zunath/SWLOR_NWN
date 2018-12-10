@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
 
             clicker.ClearAllActions();
             if (!clicker.IsPlayer) return false;
-            if (_.GetDistanceBetween(clicker.Object, tower.Object) > 5.0f)
+            if (_.GetDistanceBetween(clicker.Object, tower.Object) > 10.0f)
             {
                 clicker.SendMessage("You are too far away to interact with that control tower.");
                 return false;

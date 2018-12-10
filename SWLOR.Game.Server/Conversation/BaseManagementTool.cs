@@ -289,6 +289,10 @@ namespace SWLOR.Game.Server.Conversation
                     SetPageHeader("ConfirmRenamePage", header);
                     ChangePage("ConfirmRenamePage");
                     break;
+                case 2:
+                    GetPC().DeleteLocalInt("LISTENING_FOR_DESCRIPTION");
+                    GetPC().DeleteLocalString("NEW_DESCRIPTION_TO_SET");
+                    break;
             }
         }
         private void HandleConfirmSetNameResponse(int responseID)
@@ -306,6 +310,7 @@ namespace SWLOR.Game.Server.Conversation
                         Guid pcBaseID = new Guid(data.TargetArea.GetLocalString("PC_BASE_ID"));
                         var pcBase = _data.Get<PCBase>(pcBaseID);
                         pcBase.CustomName = GetPC().GetLocalString("NEW_DESCRIPTION_TO_SET");
+                        _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
                         sender.SendMessage("Name is now set to " + pcBase.CustomName);
                     }
                     else if (buildingType == Enumeration.BuildingType.Interior)
@@ -313,6 +318,7 @@ namespace SWLOR.Game.Server.Conversation
                         Guid pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
                         var structure = _data.Single<PCBaseStructure>(x => x.ID == pcBaseStructureID);
                         structure.CustomName = GetPC().GetLocalString("NEW_DESCRIPTION_TO_SET");
+                        _data.SubmitDataChange(structure, DatabaseActionType.Update);
                         sender.SendMessage("Name is now set to" + structure.CustomName);
                     }
                     EndConversation();
@@ -839,9 +845,9 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void EndDialog()
         {
-            _base.ClearPlayerTempData(GetPC());
             GetPC().DeleteLocalInt("LISTENING_FOR_DESCRIPTION");
             GetPC().DeleteLocalString("NEW_DESCRIPTION_TO_SET");
+            _base.ClearPlayerTempData(GetPC());     
         }
     }
 }

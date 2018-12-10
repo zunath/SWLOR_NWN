@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN.NWScript;
 using Object = NWN.Object;
+using System.Globalization;
 
 namespace SWLOR.Game.Server.Placeable.ControlTower
 {
@@ -55,14 +56,15 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             PCBase pcBase = _data.Get<PCBase>(structure.PCBaseID);
             var playerIDs = _data.Where<PCBasePermission>(x => x.PCBaseID == structure.PCBaseID).Select(s => s.PlayerID);
             var toNotify = NWModule.Get().Players.Where(x => playerIDs.Contains(x.GlobalID));
-            bool alerted = false;
-            if (alerted == false)
+            DateTime timer = DateTime.UtcNow.AddSeconds(30);
+            string clock = timer.ToString(CultureInfo.InvariantCulture);
+            string sector = _base.GetSectorOfLocation(attacker.Location);
+            if (DateTime.UtcNow <= DateTime.Parse(clock))
             {
                 foreach(NWPlayer player in toNotify)
                 {
-                    player.SendMessage("One of your bases is under attack!");
+                    player.SendMessage("Your base in " + attacker.Area + " " + sector + "Is under Attack!");
                 }
-                alerted = true;
             }
             pcBase.ShieldHP -= damage;
             if (pcBase.ShieldHP <= 0) pcBase.ShieldHP = 0;
@@ -103,7 +105,6 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
 
             _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
             _data.SubmitDataChange(structure, DatabaseActionType.Update);
-            alerted = false;
             return true;
         }
 

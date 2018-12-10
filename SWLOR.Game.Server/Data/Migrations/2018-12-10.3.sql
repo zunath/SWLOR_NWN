@@ -77,3 +77,42 @@ GO
 UPDATE dbo.BaseStructure
 SET DefaultStructureModeID = 1
 WHERE ID IN (153, 154, 155)
+
+
+
+INSERT INTO dbo.BaseStructureType ( ID ,
+                                    Name ,
+                                    IsActive ,
+                                    CanPlaceInside ,
+                                    CanPlaceOutside )
+VALUES ( 11 ,    -- ID - int
+         N'Crafting Device' ,  -- Name - nvarchar(64)
+         1 , -- IsActive - bit
+         1 , -- CanPlaceInside - bit
+         0   -- CanPlaceOutside - bit
+    )
+
+INSERT INTO dbo.BaseStructureType ( ID ,
+                                    Name ,
+                                    IsActive ,
+                                    CanPlaceInside ,
+                                    CanPlaceOutside )
+VALUES ( 12 ,    -- ID - int
+         N'Persistent Storage' ,  -- Name - nvarchar(64)
+         1 , -- IsActive - bit
+         1 , -- CanPlaceInside - bit
+         0   -- CanPlaceOutside - bit
+    )
+
+-- Move crafting devices to Crafting Device type
+UPDATE dbo.BaseStructure
+SET BaseStructureTypeID = 11
+WHERE ID IN (
+	147, 149, 150, 176, 177, 148, 146
+)
+
+-- Move containers to Persistent Storage type
+UPDATE dbo.BaseStructure
+SET BaseStructureTypeID = 12
+WHERE BaseStructureTypeID = 8
+	AND Storage > 0

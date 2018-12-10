@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
+using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -158,7 +162,7 @@ namespace SWLOR.Game.Server.Conversation
                     warning = "- All primary residents will be removed and their XP bonuses will cease.\n- Items inside persistent storage will be sent to the planetary impound and you will need to pay to retrieve them.\n";
                     break;
                 case StructureModeType.Workshop:
-                    warning = "- All crafting bonuses will cease.\n- All prices set on workbenches will be removed.";
+                    warning = "- All crafting bonuses will cease.\n- All prices set on workbenches will be removed.\n- Workbenches will be sent to the planetary impound and you will need to pay to retrieve them.";
                     break;
                 case StructureModeType.Storefront:
                     warning = "- All hired NPCs will be fired and no refund for their salary will be given.\n- Items which were being sold will be sent to the planetary impound and you will need to pay to retrieve them.\n";
@@ -187,6 +191,10 @@ namespace SWLOR.Game.Server.Conversation
             var data = _base.GetPlayerTempData(player);
             var pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
             var structure = _data.Get<PCBaseStructure>(pcBaseStructureID);
+            var pcBase = _data.Get<PCBase>(structure.PCBaseID);
+            var ownerID = pcBase.PlayerID;
+            var impoundedItems = 0;
+            var areaStructures = (List<AreaStructure>)data.TargetArea.Data["BASE_SERVICE_STRUCTURES"];
 
             // Remove primary residents
             var primaryResident = _data.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseStructureID == pcBaseStructureID);
@@ -205,14 +213,38 @@ namespace SWLOR.Game.Server.Conversation
                 {
                     _impound.Impound(item);
                     _data.SubmitDataChange(item, DatabaseActionType.Delete);
+                    impoundedItems++;
                 }
+            }
+
+            // Impound any crafting devices.
+            var tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
+            var craftingDevices = childStructures.Where(x =>
+            {
+                var baseStructure = _data.Get<BaseStructure>(x.BaseStructureID);
+                return baseStructure.BaseStructureTypeID == (int)BaseStructureType.CraftingDevice;
+            });
+            foreach (var device in craftingDevices)
+            {
+                // Convert the structure to an item and impound it.
+                var item = _base.ConvertStructureToItem(device, tempStorage);
+                _impound.Impound(ownerID, item);
+                item.Destroy();
+
+                // Remove the placeable from the area.
+                var plc = areaStructures.SingleOrDefault(x => x.PCBaseStructureID == device.ID);
+                plc?.Structure.Destroy();
+
+                // Submit change to DB
+                _data.SubmitDataChange(device, DatabaseActionType.Delete);
+                impoundedItems++;
             }
 
             // Change mode
             structure.StructureModeID = (int)model.Mode;
             _data.SubmitDataChange(structure, DatabaseActionType.Update);
 
-            player.FloatingText("Building mode updated!");
+            player.FloatingText("Building mode updated! " + impoundedItems + " item(s) were impounded.");
             EndConversation();
         }
 

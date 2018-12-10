@@ -65,8 +65,8 @@ namespace SWLOR.Game.Server.Conversation
                 "75 degrees",
                 "90 degrees",
                 "180 degrees");
-            DialogPage renamePage = new DialogPage("Type a name into the chat box. Once you are done select confirm.",
-                "Confirm");
+            DialogPage renamePage = new DialogPage("Type a name into the chat box. Once you are done select next.",
+                "Next");
             DialogPage confirmRenamePage = new DialogPage(
     "<SET LATER>",
     "Confirm Name Change"

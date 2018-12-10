@@ -32,7 +32,6 @@ namespace SWLOR.Game.Server.AI.AIComponent
         public bool Run(object[] args)
         {
             NWCreature self = (NWCreature)args[0];
-
             if (!self.IsInCombat) return false;
             float aggroRange = self.GetLocalFloat("AGGRO_RANGE");
             if (aggroRange <= 0.0f) aggroRange = 30.0f;

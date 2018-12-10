@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public bool CanEditPrimaryResidence { get; set; }
         public bool CanRemovePrimaryResidence { get; set; }
         public bool CanChangeStructureMode { get; set; }
-    
+        public bool IsPublicPermission { get; set; }
+        public bool CanAdjustPublicPermissions { get; set; }
     }
 }

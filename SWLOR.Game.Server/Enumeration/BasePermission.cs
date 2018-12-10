@@ -13,6 +13,7 @@
         CanRenameStructures = 9,
         CanEditPrimaryResidence = 10,
         CanRemovePrimaryResidence = 11,
-        CanChangeStructureMode = 12
+        CanChangeStructureMode = 12,
+        CanAdjustPublicPermissions = 13
     }
 }

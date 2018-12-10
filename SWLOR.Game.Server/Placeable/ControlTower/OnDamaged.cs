@@ -54,7 +54,9 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.ID == new Guid(structureID));
             int maxShieldHP = _base.CalculateMaxShieldHP(structure);
             PCBase pcBase = _data.Get<PCBase>(structure.PCBaseID);
-            var playerIDs = _data.Where<PCBasePermission>(x => x.PCBaseID == structure.PCBaseID).Select(s => s.PlayerID);
+            var playerIDs = _data.Where<PCBasePermission>(x => x.PCBaseID == structure.PCBaseID && 
+                                                               !x.IsPublicPermission)
+                                 .Select(s => s.PlayerID);
             var toNotify = NWModule.Get().Players.Where(x => playerIDs.Contains(x.GlobalID));
             DateTime timer = DateTime.UtcNow.AddSeconds(30);
             string clock = timer.ToString(CultureInfo.InvariantCulture);

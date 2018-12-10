@@ -21,7 +21,11 @@ namespace SWLOR.Game.Server.Service
         {
             if (player.IsDM) return true;
 
-            var dbPermission = _data.GetAll<PCBasePermission>().SingleOrDefault(x => x.PCBaseID == pcBaseID && x.PlayerID == player.GlobalID);
+            var dbPermission = _data.GetAll<PCBasePermission>()
+                .SingleOrDefault(x => x.PCBaseID == pcBaseID && 
+                                      x.PlayerID == player.GlobalID &&
+                                      !x.IsPublicPermission);
+            
             if (dbPermission == null) return false;
 
             if (permission == BasePermission.CanPlaceEditStructures && dbPermission.CanPlaceEditStructures) return true;
@@ -36,6 +40,7 @@ namespace SWLOR.Game.Server.Service
             if (permission == BasePermission.CanEditPrimaryResidence && dbPermission.CanEditPrimaryResidence) return true;
             if (permission == BasePermission.CanRemovePrimaryResidence && dbPermission.CanRemovePrimaryResidence) return true;
             if (permission == BasePermission.CanChangeStructureMode && dbPermission.CanChangeStructureMode) return true;
+            if (permission == BasePermission.CanAdjustPublicPermissions && dbPermission.CanAdjustPublicPermissions) return true;
 
             return false;
         }
@@ -46,7 +51,9 @@ namespace SWLOR.Game.Server.Service
 
             // Base permissions take priority over structure permissions. Check those first.
             var dbStructure = _data.GetAll<PCBaseStructure>().Single(x => x.ID == pcBaseStructureID);
-            var basePermission = _data.SingleOrDefault<PCBasePermission>(x => x.PlayerID == player.GlobalID && x.PCBaseID == dbStructure.PCBaseID);
+            var basePermission = _data.SingleOrDefault<PCBasePermission>(x => x.PlayerID == player.GlobalID && 
+                                                                              x.PCBaseID == dbStructure.PCBaseID &&
+                                                                              !x.IsPublicPermission);
             
             if (basePermission != null)
             {
@@ -59,10 +66,14 @@ namespace SWLOR.Game.Server.Service
                 if (permission == StructurePermission.CanEditPrimaryResidence && basePermission.CanEditPrimaryResidence) return true;
                 if (permission == StructurePermission.CanRemovePrimaryResidence && basePermission.CanRemovePrimaryResidence) return true;
                 if (permission == StructurePermission.CanChangeStructureMode && basePermission.CanChangeStructureMode) return true;
+                if (permission == StructurePermission.CanAdjustPublicPermissions && basePermission.CanAdjustPublicPermissions) return true;
             }
 
             // Didn't find a base permission. Check the structure permissions.
-            var structurePermission = _data.GetAll<PCBaseStructurePermission>().SingleOrDefault(x => x.PCBaseStructureID == pcBaseStructureID && x.PlayerID == player.GlobalID);
+            var structurePermission = _data.GetAll<PCBaseStructurePermission>()
+                .SingleOrDefault(x => x.PCBaseStructureID == pcBaseStructureID && 
+                                      x.PlayerID == player.GlobalID &&
+                                      !x.IsPublicPermission);
             if (structurePermission == null) return false;
 
             if (permission == StructurePermission.CanAccessStructureInventory && structurePermission.CanAccessStructureInventory) return true;
@@ -74,6 +85,7 @@ namespace SWLOR.Game.Server.Service
             if (permission == StructurePermission.CanEditPrimaryResidence && structurePermission.CanEditPrimaryResidence) return true;
             if (permission == StructurePermission.CanRemovePrimaryResidence && structurePermission.CanRemovePrimaryResidence) return true;
             if (permission == StructurePermission.CanChangeStructureMode && structurePermission.CanChangeStructureMode) return true;
+            if (permission == StructurePermission.CanAdjustPublicPermissions && structurePermission.CanAdjustPublicPermissions) return true;
 
             // Player doesn't have permission.
             return false;
@@ -81,7 +93,10 @@ namespace SWLOR.Game.Server.Service
 
         public void GrantBasePermissions(NWPlayer player, Guid pcBaseID, params BasePermission[] permissions)
         {
-            var dbPermission = _data.GetAll<PCBasePermission>().SingleOrDefault(x => x.PCBaseID == pcBaseID && x.PlayerID == player.GlobalID);
+            var dbPermission = _data.GetAll<PCBasePermission>()
+                .SingleOrDefault(x => x.PCBaseID == pcBaseID && 
+                                      x.PlayerID == player.GlobalID &&
+                                      !x.IsPublicPermission);
             var action = DatabaseActionType.Update;
 
             if (dbPermission == null)
@@ -134,6 +149,9 @@ namespace SWLOR.Game.Server.Service
                     case BasePermission.CanChangeStructureMode:
                         dbPermission.CanChangeStructureMode = true;
                         break;
+                    case BasePermission.CanAdjustPublicPermissions:
+                        dbPermission.CanAdjustPublicPermissions = true;
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -144,7 +162,9 @@ namespace SWLOR.Game.Server.Service
 
         public void GrantStructurePermissions(NWPlayer player, Guid pcBaseStructureID, params StructurePermission[] permissions)
         {
-            var dbPermission = _data.GetAll<PCBaseStructurePermission>().SingleOrDefault(x => x.PCBaseStructureID == pcBaseStructureID && x.PlayerID == player.GlobalID);
+            var dbPermission = _data.SingleOrDefault<PCBaseStructurePermission>(x => x.PCBaseStructureID == pcBaseStructureID && 
+                                                                                     x.PlayerID == player.GlobalID && 
+                                                                                     !x.IsPublicPermission);
             var action = DatabaseActionType.Update;
 
             if (dbPermission == null)
@@ -187,6 +207,9 @@ namespace SWLOR.Game.Server.Service
                         break;
                     case StructurePermission.CanChangeStructureMode:
                         dbPermission.CanChangeStructureMode = true;
+                        break;
+                    case StructurePermission.CanAdjustPublicPermissions:
+                        dbPermission.CanAdjustPublicPermissions = true;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

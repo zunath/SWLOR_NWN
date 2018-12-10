@@ -116,3 +116,97 @@ UPDATE dbo.BaseStructure
 SET BaseStructureTypeID = 12
 WHERE BaseStructureTypeID = 8
 	AND Storage > 0
+
+
+
+ALTER TABLE dbo.PCBasePermission
+ADD IsPublicPermission BIT NOT NULL DEFAULT 0
+
+ALTER TABLE dbo.PCBaseStructurePermission
+ADD IsPublicPermission BIT NOT NULL DEFAULT 0
+
+GO
+
+
+INSERT INTO dbo.PCBasePermission ( ID ,
+                                   PCBaseID ,
+                                   PlayerID ,
+                                   CanPlaceEditStructures ,
+                                   CanAccessStructureInventory ,
+                                   CanManageBaseFuel ,
+                                   CanExtendLease ,
+                                   CanAdjustPermissions ,
+                                   CanEnterBuildings ,
+                                   CanRetrieveStructures ,
+                                   CanCancelLease ,
+                                   CanRenameStructures ,
+                                   CanEditPrimaryResidence ,
+                                   CanRemovePrimaryResidence,
+								   IsPublicPermission )
+SELECT NEWID(),
+	PCBaseID,
+	PlayerID,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	0,
+	1
+FROM dbo.PCBasePermission
+WHERE CanAdjustPermissions = 1 
+
+
+
+
+INSERT INTO dbo.PCBaseStructurePermission ( ID ,
+                                            PCBaseStructureID ,
+                                            PlayerID ,
+                                            CanPlaceEditStructures ,
+                                            CanAccessStructureInventory ,
+                                            CanEnterBuilding ,
+                                            CanRetrieveStructures ,
+                                            CanAdjustPermissions ,
+                                            CanRenameStructures ,
+                                            CanEditPrimaryResidence ,
+                                            CanRemovePrimaryResidence,
+											IsPublicPermission )
+SELECT NEWID(),
+	 PCBaseStructureID,
+	 PlayerID,
+	 0,
+	 0,
+	 0,
+	 0,
+	 0,
+	 0,
+	 0,
+	 0,
+	 1
+FROM dbo.PCBaseStructurePermission 
+WHERE CanAdjustPermissions = 1
+
+
+GO
+
+
+ALTER TABLE dbo.PCBasePermission
+ADD CanAdjustPublicPermissions BIT NOT NULL DEFAULT 0
+
+ALTER TABLE dbo.PCBaseStructurePermission
+ADD CanAdjustPublicPermissions BIT NOT NULL DEFAULT 0
+
+GO
+
+UPDATE dbo.PCBasePermission
+SET CanAdjustPublicPermissions = 1
+WHERE CanAdjustPermissions = 1
+
+UPDATE dbo.PCBaseStructurePermission
+SET CanAdjustPublicPermissions = 1
+WHERE CanAdjustPermissions = 1

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -124,7 +121,9 @@ namespace SWLOR.Game.Server.Conversation
         {
             ClearPageResponses("PlayerDetailsPage");
             var data = _base.GetPlayerTempData(GetPC());
-            var permission = _data.SingleOrDefault<PCBasePermission>(x => x.PlayerID == player.GlobalID && x.PCBaseID == data.PCBaseID);
+            var permission = _data.SingleOrDefault<PCBasePermission>(x => x.PlayerID == player.GlobalID && 
+                                                                          x.PCBaseID == data.PCBaseID &&
+                                                                          !x.IsPublicPermission);
             
             // Intentionally excluded permissions: CanAdjustPermissions, CanCancelLease
             bool canPlaceEditStructures = permission?.CanPlaceEditStructures ?? false;
@@ -137,6 +136,7 @@ namespace SWLOR.Game.Server.Conversation
             bool canEditPrimaryResidence = permission?.CanEditPrimaryResidence ?? false;
             bool canRemovePrimaryResidence = permission?.CanRemovePrimaryResidence ?? false;
             bool canChangeStructureMode = permission?.CanChangeStructureMode ?? false;
+            bool canAdjustPublicPermissions = permission?.CanAdjustPublicPermissions ?? false;
 
             string header = _color.Green("Name: ") + player.Name + "\n\n";
 
@@ -151,6 +151,7 @@ namespace SWLOR.Game.Server.Conversation
             header += "Can Edit Primary Residence: " + (canEditPrimaryResidence ? _color.Green("YES") : _color.Red("NO")) + "\n";
             header += "Can Remove Primary Residence: " + (canRemovePrimaryResidence ? _color.Green("YES") : _color.Red("NO")) + "\n";
             header += "Can Change Structure Mode: " + (canChangeStructureMode ? _color.Green("YES") : _color.Red("NO")) + "\n";
+            header += "Can Adjust PUBLIC Permissions: " + (canAdjustPublicPermissions ? _color.Green("YES") : _color.Red("NO")) + "\n";
 
             SetPageHeader("PlayerDetailsPage", header);
 
@@ -163,6 +164,7 @@ namespace SWLOR.Game.Server.Conversation
             AddResponseToPage("PlayerDetailsPage", "Toggle: Can Rename Structures", true, player);
             AddResponseToPage("PlayerDetailsPage", "Toggle: Can Edit Primary Residence", true, player);
             AddResponseToPage("PlayerDetailsPage", "Toggle: Can Change Structure Mode", true, player);
+            AddResponseToPage("PlayerDetailsPage", "Toggle: Can Adjust PUBLIC Permissions", true, player);
         }
 
         private void PlayerDetailsResponses(int responseID)
@@ -199,6 +201,9 @@ namespace SWLOR.Game.Server.Conversation
                 case 9: // Can Change Structure Mode
                     TogglePermission(player, BasePermission.CanChangeStructureMode);
                     break;
+                case 10: // Can Adjust PUBLIC Permissions
+                    TogglePermission(player, BasePermission.CanAdjustPublicPermissions);
+                    break;
             }
 
             BuildPlayerDetailsPage(player);
@@ -207,7 +212,9 @@ namespace SWLOR.Game.Server.Conversation
         private void TogglePermission(NWPlayer player, BasePermission permission)
         {
             var data = _base.GetPlayerTempData(GetPC());
-            var dbPermission = _data.SingleOrDefault<PCBasePermission>(x => x.PlayerID == player.GlobalID && x.PCBaseID == data.PCBaseID);
+            var dbPermission = _data.SingleOrDefault<PCBasePermission>(x => x.PlayerID == player.GlobalID && 
+                                                                            x.PCBaseID == data.PCBaseID &&
+                                                                            !x.IsPublicPermission);
 
             DatabaseActionType action = DatabaseActionType.Update;
             if (dbPermission == null)
@@ -251,6 +258,9 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case BasePermission.CanChangeStructureMode:
                     dbPermission.CanChangeStructureMode = !dbPermission.CanChangeStructureMode;
+                    break;
+                case BasePermission.CanAdjustPublicPermissions:
+                    dbPermission.CanAdjustPublicPermissions = !dbPermission.CanAdjustPublicPermissions;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(permission), permission, null);

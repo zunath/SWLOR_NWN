@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IDataService _data;
         private readonly IImpoundService _impound;
         private readonly IBasePermissionService _perm;
-        private readonly IPlayerDescriptionService _playerdescription;
+        private readonly IPlayerDescriptionService _playerDescription;
 
         public BaseManagementTool(
             INWScript script,
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Conversation
             IDataService data,
             IImpoundService impound,
             IBasePermissionService perm,
-            IPlayerDescriptionService playerdescription)
+            IPlayerDescriptionService playerDescription)
             : base(script, dialog)
         {
             _base = @base;
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Conversation
             _data = data;
             _impound = impound;
             _perm = perm;
-            _playerdescription = playerdescription;
+            _playerDescription = playerDescription;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)

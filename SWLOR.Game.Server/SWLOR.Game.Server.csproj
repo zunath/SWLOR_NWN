@@ -325,6 +325,7 @@
     <Compile Include="Data\Entity\Spawn.cs" />
     <Compile Include="Data\Entity\SpawnObject.cs" />
     <Compile Include="Data\Entity\SpawnObjectType.cs" />
+    <Compile Include="Data\Entity\StructureMode.cs" />
     <Compile Include="Data\Entity\User.cs" />
     <Compile Include="Data\Processor\ApartmentBuildingProcessor.cs" />
     <Compile Include="Data\Processor\BaseStructureProcessor.cs" />

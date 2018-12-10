@@ -65,3 +65,15 @@ WHERE CanAdjustPermissions = 1
 UPDATE dbo.PCBaseStructurePermission
 SET CanChangeStructureMode = 1
 WHERE CanAdjustPermissions = 1
+
+-- Add default structure mode ID to existing building structures
+ALTER TABLE dbo.BaseStructure
+ADD DefaultStructureModeID INT NOT NULL DEFAULT 0
+CONSTRAINT FK_BaseStructure_DefaultStructureModeID FOREIGN KEY(DefaultStructureModeID)
+	REFERENCES dbo.StructureMode(ID)
+
+GO
+
+UPDATE dbo.BaseStructure
+SET DefaultStructureModeID = 1
+WHERE ID IN (153, 154, 155)

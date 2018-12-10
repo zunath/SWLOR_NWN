@@ -319,30 +319,6 @@ namespace SWLOR.Game.Server.Conversation
                     break;
             }
         }
-        private void DoRename()
-        {
-            var data = _base.GetPlayerTempData(GetPC());
-            int buildingTypeID = data.TargetArea.GetLocalInt("BUILDING_TYPE");
-            Enumeration.BuildingType buildingType = buildingTypeID <= 0 ? Enumeration.BuildingType.Exterior : (Enumeration.BuildingType)buildingTypeID;
-            data.BuildingType = buildingType;
-            NWPlayer sender = (_.GetPCSpeaker());
-            string text = _.GetPCChatMessage().Trim();
-            _.SetPCChatMessage(string.Empty); // Skip the message
-            _.SendMessageToPC(sender.Object, "New name received. Please press the 'Next' button in the conversation window.");
-                    if (buildingType == Enumeration.BuildingType.Apartment)
-                    {
-                        Guid pcBaseID = new Guid(data.TargetArea.GetLocalString("PC_BASE_ID"));
-                        var pcBase = _data.Get<PCBase>(pcBaseID);
-                        pcBase.CustomName = text;
-                    } 
-                    else if (buildingType == Enumeration.BuildingType.Interior)
-                    {
-                        Guid pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
-                        var structure = _data.Single<PCBaseStructure>(x => x.ID == pcBaseStructureID);
-                        structure.CustomName = text;
-                    }
-            _.SendMessageToPC(sender.Object, "New name set to " + text);
-        }
         public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
         {
             var data = _base.GetPlayerTempData(GetPC());

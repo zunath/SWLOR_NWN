@@ -165,6 +165,7 @@
     <Compile Include="Conversation\CloningTerminal.cs" />
     <Compile Include="Conversation\ControlTower.cs" />
     <Compile Include="Conversation\CoxxionTerminal.cs" />
+    <Compile Include="Conversation\EditBuildingMode.cs" />
     <Compile Include="Conversation\EditBuildingPermissions.cs" />
     <Compile Include="Conversation\EditBasePermissions.cs" />
     <Compile Include="Conversation\BuildingEntrance.cs" />

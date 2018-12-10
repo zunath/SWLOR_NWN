@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.AI.AIComponent
                 self.Facing + 180.0f);
             int nth = 1;
             NWCreature creature = _.GetNearestObject(OBJECT_TYPE_CREATURE, self.Object, nth);
-            while (creature.IsValid && !creature.IsDead)
+            while (creature.IsValid)
             {
                 if (_.GetIsEnemy(creature.Object, self.Object) == FALSE &&
                     !_enmity.IsOnEnmityTable(self, creature) &&

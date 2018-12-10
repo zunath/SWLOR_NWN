@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Conversation
             dialog.AddPage("MainPage", mainPage);
             dialog.AddPage("RevokePage", revokePage);
             dialog.AddPage("SetAsResidencePage", setAsResidence);
-            dialog.AddPage("setRespawnPoint", setRespawnPoint);
+            dialog.AddPage("SetRespawnPoint", setRespawnPoint);
             return dialog;
         }
 

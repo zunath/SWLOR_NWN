@@ -262,6 +262,7 @@ namespace SWLOR.Game.Server.Conversation
                     RotateResponses(responseID);
                     break;
                 case "RenamePage":
+                    GetPC().SetLocalInt("LISTENING_FOR_DESCRIPTION", 1);
                     RenameResponses(responseID);
                     break;
                 case "ConfirmRenamePage":
@@ -271,7 +272,6 @@ namespace SWLOR.Game.Server.Conversation
         }
         private void RenameResponses(int responseID)
         {
-            GetPC().SetLocalInt("LISTENING_FOR_DESCRIPTION", 1);
             switch(responseID)
             {
                 case 1:

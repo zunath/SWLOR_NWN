@@ -12,6 +12,7 @@
         CanCancelLease = 8,
         CanRenameStructures = 9,
         CanEditPrimaryResidence = 10,
-        CanRemovePrimaryResidence = 11
+        CanRemovePrimaryResidence = 11,
+        CanChangeStructureMode = 12
     }
 }

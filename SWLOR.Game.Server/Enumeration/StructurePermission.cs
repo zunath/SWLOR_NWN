@@ -9,6 +9,7 @@
         CanAdjustPermissions = 5,
         CanRenameStructures = 6,
         CanEditPrimaryResidence = 7,
-        CanRemovePrimaryResidence = 8
+        CanRemovePrimaryResidence = 8,
+        CanChangeStructureMode = 9
     }
 }

@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public bool CanRenameStructures { get; set; }
         public bool CanEditPrimaryResidence { get; set; }
         public bool CanRemovePrimaryResidence { get; set; }
+        public bool CanChangeStructureMode { get; set; }
     
     }
 }

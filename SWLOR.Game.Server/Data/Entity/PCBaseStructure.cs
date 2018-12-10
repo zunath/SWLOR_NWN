@@ -30,5 +30,6 @@ namespace SWLOR.Game.Server.Data.Entity
         public string CustomName { get; set; }
         public int StructureBonus { get; set; }
         public DateTime? DateNextActivity { get; set; }
+        public int StructureModeID { get; set; }
     }
 }

@@ -35,6 +35,7 @@ namespace SWLOR.Game.Server.Service
             if (permission == BasePermission.CanRenameStructures && dbPermission.CanRenameStructures) return true;
             if (permission == BasePermission.CanEditPrimaryResidence && dbPermission.CanEditPrimaryResidence) return true;
             if (permission == BasePermission.CanRemovePrimaryResidence && dbPermission.CanRemovePrimaryResidence) return true;
+            if (permission == BasePermission.CanChangeStructureMode && dbPermission.CanChangeStructureMode) return true;
 
             return false;
         }
@@ -57,6 +58,7 @@ namespace SWLOR.Game.Server.Service
                 if (permission == StructurePermission.CanRenameStructures && basePermission.CanRenameStructures) return true;
                 if (permission == StructurePermission.CanEditPrimaryResidence && basePermission.CanEditPrimaryResidence) return true;
                 if (permission == StructurePermission.CanRemovePrimaryResidence && basePermission.CanRemovePrimaryResidence) return true;
+                if (permission == StructurePermission.CanChangeStructureMode && basePermission.CanChangeStructureMode) return true;
             }
 
             // Didn't find a base permission. Check the structure permissions.
@@ -71,6 +73,7 @@ namespace SWLOR.Game.Server.Service
             if (permission == StructurePermission.CanRenameStructures && structurePermission.CanRenameStructures) return true;
             if (permission == StructurePermission.CanEditPrimaryResidence && structurePermission.CanEditPrimaryResidence) return true;
             if (permission == StructurePermission.CanRemovePrimaryResidence && structurePermission.CanRemovePrimaryResidence) return true;
+            if (permission == StructurePermission.CanChangeStructureMode && structurePermission.CanChangeStructureMode) return true;
 
             // Player doesn't have permission.
             return false;
@@ -128,6 +131,9 @@ namespace SWLOR.Game.Server.Service
                     case BasePermission.CanRemovePrimaryResidence:
                         dbPermission.CanRemovePrimaryResidence = true;
                         break;
+                    case BasePermission.CanChangeStructureMode:
+                        dbPermission.CanChangeStructureMode = true;
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -178,6 +184,9 @@ namespace SWLOR.Game.Server.Service
                         break;
                     case StructurePermission.CanRemovePrimaryResidence:
                         dbPermission.CanRemovePrimaryResidence = true;
+                        break;
+                    case StructurePermission.CanChangeStructureMode:
+                        dbPermission.CanChangeStructureMode = true;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

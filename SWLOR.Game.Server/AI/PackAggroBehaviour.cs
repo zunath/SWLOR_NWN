@@ -11,9 +11,9 @@ namespace SWLOR.Game.Server.AI
     /// <summary>
     /// Generic behaviour for creatures who aggro by sight.
     /// </summary>
-    public class SightAggroBehaviour : StandardBehaviour
+    public class PackAggroBehaviour : StandardBehaviour
     {
-        public SightAggroBehaviour(
+        public PackAggroBehaviour(
             BehaviourTreeBuilder builder,
             INWScript script,
             IEnmityService enmity,
@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.AI
                 .Do<EquipBestMelee>(Self)
                 .Do<EquipBestRanged>(Self)
                 .Do<AggroTargetBySight>(Self)
-                .Do<RandomWalk>(Self);
+                .Do<RandomWalk>(Self)
+                .Do<AILinking>(Self);
     }
 }

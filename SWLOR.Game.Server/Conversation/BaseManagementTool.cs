@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IDataService _data;
         private readonly IImpoundService _impound;
         private readonly IBasePermissionService _perm;
+        private readonly IPlayerDescriptionService _playerdescription;
 
         public BaseManagementTool(
             INWScript script,
@@ -30,7 +31,8 @@ namespace SWLOR.Game.Server.Conversation
             IColorTokenService color,
             IDataService data,
             IImpoundService impound,
-            IBasePermissionService perm)
+            IBasePermissionService perm,
+            IPlayerDescriptionService playerdescription)
             : base(script, dialog)
         {
             _base = @base;
@@ -38,6 +40,7 @@ namespace SWLOR.Game.Server.Conversation
             _data = data;
             _impound = impound;
             _perm = perm;
+            _playerdescription = playerdescription;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -62,19 +65,26 @@ namespace SWLOR.Game.Server.Conversation
                 "75 degrees",
                 "90 degrees",
                 "180 degrees");
-            
-
+            DialogPage renamePage = new DialogPage("Type a name, Once you are done select confirm.",
+                "Confirm");
+            DialogPage confirmRenamePage = new DialogPage(
+    "<SET LATER>",
+    "Confirm Name Change"
+);
             dialog.AddPage("MainPage", mainPage);
             dialog.AddPage("PurchaseTerritoryPage", purchaseTerritoryPage);
             dialog.AddPage("StructureListPage", structureListPage);
             dialog.AddPage("ManageStructureDetailsPage", manageStructureDetailsPage);
             dialog.AddPage("RetrieveStructurePage", retrievePage);
             dialog.AddPage("RotatePage", rotatePage);
+            dialog.AddPage("RenamePage",renamePage);
+            dialog.AddPage("ConfirmRenamePage", confirmRenamePage);
             return dialog;
         }
 
         public override void Initialize()
         {
+            GetPC().SetLocalInt("LISTENING_FOR_DESCRIPTION", 1);
             LoadMainPage();
         }
 
@@ -92,12 +102,12 @@ namespace SWLOR.Game.Server.Conversation
             int buildingTypeID = data.TargetArea.GetLocalInt("BUILDING_TYPE");
             Enumeration.BuildingType buildingType = buildingTypeID <= 0 ? Enumeration.BuildingType.Exterior : (Enumeration.BuildingType)buildingTypeID;
             data.BuildingType = buildingType;
-
             bool canEditBasePermissions = false;
             bool canEditBuildingPermissions = false;
             bool canEditStructures;
             bool canEditPrimaryResidence = false;
             bool canRemovePrimaryResidence = false;
+            bool canRenameStructure = false;
 
             if (buildingType == Enumeration.BuildingType.Interior)
             {
@@ -106,6 +116,7 @@ namespace SWLOR.Game.Server.Conversation
                 canEditBuildingPermissions = _perm.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanAdjustPermissions);
                 canEditPrimaryResidence = _perm.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanEditPrimaryResidence);
                 canRemovePrimaryResidence = _perm.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanRemovePrimaryResidence);
+                canRenameStructure = _perm.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanRenameStructures);
                 data.StructureID = pcBaseStructureID;
             }
             else if (buildingType == Enumeration.BuildingType.Apartment)
@@ -115,6 +126,7 @@ namespace SWLOR.Game.Server.Conversation
                 canEditBasePermissions = _perm.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanAdjustPermissions);
                 canEditPrimaryResidence = _perm.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanEditPrimaryResidence);
                 canRemovePrimaryResidence = _perm.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanRemovePrimaryResidence);
+                canRenameStructure = _perm.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanRenameStructures);
                 data.PCBaseID = pcBaseID;
             }
             else if(buildingType == Enumeration.BuildingType.Exterior)
@@ -218,7 +230,6 @@ namespace SWLOR.Game.Server.Conversation
             SetPageHeader("MainPage", header);
 
             bool showManage = _data.GetAll<PCBase>().Count(x => x.PlayerID == playerID) > 0;
-            
 
             AddResponseToPage("MainPage", "Manage My Leases", showManage);
             AddResponseToPage("MainPage", "Purchase Territory", hasUnclaimed && dbArea.IsBuildable);
@@ -226,6 +237,7 @@ namespace SWLOR.Game.Server.Conversation
             AddResponseToPage("MainPage", "Edit Base Permissions", canEditBasePermissions);
             AddResponseToPage("MainPage", "Edit Building Permissions", canEditBuildingPermissions);
             AddResponseToPage("MainPage", "Edit Primary Residence", canEditPrimaryResidence || canRemovePrimaryResidence);
+            AddResponseToPage("MainPage", "Rename Building", canRenameStructure);
         }
 
         public override void DoAction(NWPlayer player, string pageName, int responseID)
@@ -250,9 +262,87 @@ namespace SWLOR.Game.Server.Conversation
                 case "RotatePage":
                     RotateResponses(responseID);
                     break;
+                case "RenamePage":
+                    RenameResponses(responseID);
+                    break;
+                case "ConfirmRenamePage":
+                    HandleConfirmSetNameResponse(responseID);
+                    break;
             }
         }
+        private void RenameResponses(int responseID)
+        {
+            switch(responseID)
+            {
+                case 1:
+                    string newDescription = GetPC().GetLocalString("NEW_DESCRIPTION_TO_SET");
 
+                    if (string.IsNullOrWhiteSpace(newDescription))
+                    {
+                        _.FloatingTextStringOnCreature("Type in a new name to the chat bar and then press 'Next'.", GetPC().Object, NWScript.FALSE);
+                        return;
+                    }
+
+                    string header = "Your new name follows. If you need to make a change, click 'Back', type in a new description, and then hit 'Next' again.\n\n";
+                    header += _color.Green("New Description: ") + "\n\n";
+                    header += newDescription;
+                    SetPageHeader("ConfirmRenamePage", header);
+                    ChangePage("ConfirmRenamePage");
+                    break;
+            }
+        }
+        private void HandleConfirmSetNameResponse(int responseID)
+        {
+            switch (responseID)
+            {
+                case 1: // Confirm Description Change
+                    var data = _base.GetPlayerTempData(GetPC());
+                    int buildingTypeID = data.TargetArea.GetLocalInt("BUILDING_TYPE");
+                    Enumeration.BuildingType buildingType = buildingTypeID <= 0 ? Enumeration.BuildingType.Exterior : (Enumeration.BuildingType)buildingTypeID;
+                    data.BuildingType = buildingType;
+                    NWPlayer sender = (_.GetPCSpeaker());
+                    if (buildingType == Enumeration.BuildingType.Apartment)
+                    {
+                        Guid pcBaseID = new Guid(data.TargetArea.GetLocalString("PC_BASE_ID"));
+                        var pcBase = _data.Get<PCBase>(pcBaseID);
+                        pcBase.CustomName = GetPC().GetLocalString("NEW_DESCRIPTION_TO_SET");
+                        sender.SendMessage("Name is now set to " + pcBase.CustomName);
+                    }
+                    else if (buildingType == Enumeration.BuildingType.Interior)
+                    {
+                        Guid pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
+                        var structure = _data.Single<PCBaseStructure>(x => x.ID == pcBaseStructureID);
+                        structure.CustomName = GetPC().GetLocalString("NEW_DESCRIPTION_TO_SET");
+                        sender.SendMessage("Name is now set to" + structure.CustomName);
+                    }
+                    EndConversation();
+                    break;
+            }
+        }
+        private void DoRename()
+        {
+            var data = _base.GetPlayerTempData(GetPC());
+            int buildingTypeID = data.TargetArea.GetLocalInt("BUILDING_TYPE");
+            Enumeration.BuildingType buildingType = buildingTypeID <= 0 ? Enumeration.BuildingType.Exterior : (Enumeration.BuildingType)buildingTypeID;
+            data.BuildingType = buildingType;
+            NWPlayer sender = (_.GetPCSpeaker());
+            string text = _.GetPCChatMessage().Trim();
+            _.SetPCChatMessage(string.Empty); // Skip the message
+            _.SendMessageToPC(sender.Object, "New name received. Please press the 'Next' button in the conversation window.");
+                    if (buildingType == Enumeration.BuildingType.Apartment)
+                    {
+                        Guid pcBaseID = new Guid(data.TargetArea.GetLocalString("PC_BASE_ID"));
+                        var pcBase = _data.Get<PCBase>(pcBaseID);
+                        pcBase.CustomName = text;
+                    } 
+                    else if (buildingType == Enumeration.BuildingType.Interior)
+                    {
+                        Guid pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
+                        var structure = _data.Single<PCBaseStructure>(x => x.ID == pcBaseStructureID);
+                        structure.CustomName = text;
+                    }
+            _.SendMessageToPC(sender.Object, "New name set to " + text);
+        }
         public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
         {
             var data = _base.GetPlayerTempData(GetPC());
@@ -293,6 +383,9 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case 6: // Edit primary residence
                     SwitchConversation("EditPrimaryResidence");
+                    break;
+                case 7: // Rename Building/Apartment
+                    ChangePage("RenamePage");
                     break;
             }
         }
@@ -771,6 +864,8 @@ namespace SWLOR.Game.Server.Conversation
         public override void EndDialog()
         {
             _base.ClearPlayerTempData(GetPC());
+            GetPC().DeleteLocalInt("LISTENING_FOR_DESCRIPTION");
+            GetPC().DeleteLocalString("NEW_DESCRIPTION_TO_SET");
         }
     }
 }

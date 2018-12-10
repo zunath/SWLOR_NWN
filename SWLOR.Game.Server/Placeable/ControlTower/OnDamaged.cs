@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
         private readonly IBaseService _base;
         private readonly ISerializationService _serialization;
         private readonly IDurabilityService _durability;
+        private readonly IPlayerService _player;
 
         public OnDamaged(
             INWScript script,
@@ -30,7 +31,8 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             IRandomService random,
             IBaseService @base,
             ISerializationService serialization,
-            IDurabilityService durability)
+            IDurabilityService durability,
+            IPlayerService player)
         {
             _ = script;
             _data = data;
@@ -38,6 +40,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             _base = @base;
             _serialization = serialization;
             _durability = durability;
+            _player = player;
         }
 
         public bool Run(params object[] args)
@@ -50,10 +53,20 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.ID == new Guid(structureID));
             int maxShieldHP = _base.CalculateMaxShieldHP(structure);
             PCBase pcBase = _data.Get<PCBase>(structure.PCBaseID);
+            var playerIDs = _data.Where<PCBasePermission>(x => x.PCBaseID == structure.PCBaseID).Select(s => s.PlayerID);
+            var toNotify = NWModule.Get().Players.Where(x => playerIDs.Contains(x.GlobalID));
+            bool alerted = false;
+            if (alerted == false)
+            {
+                foreach(NWPlayer player in toNotify)
+                {
+                    player.SendMessage("One of your bases is under attack!");
+                }
+                alerted = true;
+            }
             pcBase.ShieldHP -= damage;
             if (pcBase.ShieldHP <= 0) pcBase.ShieldHP = 0;
             float hpPercentage = (float)pcBase.ShieldHP / (float)maxShieldHP * 100.0f;
-
             if (hpPercentage <= 25.0f && pcBase.ReinforcedFuel > 0)
             {
                 pcBase.IsInReinforcedMode = true;
@@ -90,6 +103,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
 
             _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
             _data.SubmitDataChange(structure, DatabaseActionType.Update);
+            alerted = false;
             return true;
         }
 

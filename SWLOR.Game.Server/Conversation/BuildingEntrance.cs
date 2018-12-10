@@ -39,9 +39,12 @@ namespace SWLOR.Game.Server.Conversation
 
         public override PlayerDialog SetUp(NWPlayer player)
         {
+            NWPlaceable door = GetDialogTarget().Object;
+            var structureID = new Guid(door.GetLocalString("PC_BASE_STRUCTURE_ID"));
+            PCBase structure = _data.Get<PCBase>(structureID);
             PlayerDialog dialog = new PlayerDialog("MainPage");
             DialogPage mainPage = new DialogPage(
-                "Please select an option.",
+                structure.CustomName,
                 "Enter the building",
                 "Knock on the door");
 
@@ -54,7 +57,12 @@ namespace SWLOR.Game.Server.Conversation
             NWPlaceable door = GetDialogTarget().Object;
             var structureID = new Guid(door.GetLocalString("PC_BASE_STRUCTURE_ID"));
             bool canEnterBuilding = _perm.HasStructurePermission(GetPC(), structureID, StructurePermission.CanEnterBuilding);
-
+            PCBase structure = _data.Get<PCBase>(structureID);
+            Player owner = _player.GetPlayerEntity(structure.PlayerID);
+            if (structure.CustomName == null)
+            {
+                structure.CustomName = owner.CharacterName + "'s Building";
+            }
             SetResponseVisible("MainPage", 1, canEnterBuilding);
         }
 

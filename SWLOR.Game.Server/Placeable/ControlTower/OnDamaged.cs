@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN.NWScript;
 using Object = NWN.Object;
+using System.Globalization;
 
 namespace SWLOR.Game.Server.Placeable.ControlTower
 {
@@ -23,6 +24,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
         private readonly IBaseService _base;
         private readonly ISerializationService _serialization;
         private readonly IDurabilityService _durability;
+        private readonly IPlayerService _player;
 
         public OnDamaged(
             INWScript script,
@@ -30,7 +32,8 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             IRandomService random,
             IBaseService @base,
             ISerializationService serialization,
-            IDurabilityService durability)
+            IDurabilityService durability,
+            IPlayerService player)
         {
             _ = script;
             _data = data;
@@ -38,6 +41,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             _base = @base;
             _serialization = serialization;
             _durability = durability;
+            _player = player;
         }
 
         public bool Run(params object[] args)
@@ -50,10 +54,21 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.ID == new Guid(structureID));
             int maxShieldHP = _base.CalculateMaxShieldHP(structure);
             PCBase pcBase = _data.Get<PCBase>(structure.PCBaseID);
+            var playerIDs = _data.Where<PCBasePermission>(x => x.PCBaseID == structure.PCBaseID).Select(s => s.PlayerID);
+            var toNotify = NWModule.Get().Players.Where(x => playerIDs.Contains(x.GlobalID));
+            DateTime timer = DateTime.UtcNow.AddSeconds(30);
+            string clock = timer.ToString(CultureInfo.InvariantCulture);
+            string sector = _base.GetSectorOfLocation(attacker.Location);
+            if (DateTime.UtcNow <= DateTime.Parse(clock))
+            {
+                foreach(NWPlayer player in toNotify)
+                {
+                    player.SendMessage("Your base in " + attacker.Area.Name + " " + sector + " is under attack!");
+                }
+            }
             pcBase.ShieldHP -= damage;
             if (pcBase.ShieldHP <= 0) pcBase.ShieldHP = 0;
             float hpPercentage = (float)pcBase.ShieldHP / (float)maxShieldHP * 100.0f;
-
             if (hpPercentage <= 25.0f && pcBase.ReinforcedFuel > 0)
             {
                 pcBase.IsInReinforcedMode = true;

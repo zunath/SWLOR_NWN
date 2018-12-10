@@ -157,7 +157,7 @@ namespace SWLOR.Game.Server.Conversation
                 case "SetAsResidencePage":
                     SetAsResidenceResponses(responseID);
                     break;
-                case "setRespawnPoint":
+                case "SetRespawnPoint":
                     SetRespawnPointResponses(responseID);
                     break;
             }
@@ -178,7 +178,7 @@ namespace SWLOR.Game.Server.Conversation
                     ChangePage("RevokePage");
                     break;
                 case 3: // Set as Respawn Point
-                    ChangePage("setRespawnPoint");
+                    ChangePage("SetRespawnPoint");
                     break;
             }
         }

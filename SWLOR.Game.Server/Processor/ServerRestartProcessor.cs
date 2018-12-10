@@ -9,10 +9,10 @@ namespace SWLOR.Game.Server.Processor
 {
     public class ServerRestartProcessor: IEventProcessor
     {
-        private static DateTime _restartTime;
+        public static DateTime RestartTime { get; private set; }
         private static DateTime _nextNotification;
         private static bool _isLoaded;
-        private static bool _isDisabled;
+        public static bool IsDisabled { get; private set; }
         private const int DefaultRestartMinutes = 300; // 300 = 5 hours
         private const int NotificationIntervalMinutes = 60;
         private readonly INWScript _;
@@ -38,17 +38,17 @@ namespace SWLOR.Game.Server.Processor
 
                 if (minutes <= 0)
                 {
-                    _isDisabled = true;
+                    IsDisabled = true;
                     _isLoaded = true;
                     Console.WriteLine("Server auto-reboot is DISABLED. You can enable this with the AUTO_REBOOT_MINUTES environment variable.");
                 }
                 else
                 {
                     _isLoaded = true;
-                    _restartTime = DateTime.UtcNow.AddMinutes(minutes);
+                    RestartTime = DateTime.UtcNow.AddMinutes(minutes);
                     _nextNotification = DateTime.UtcNow.AddMinutes(minutes < NotificationIntervalMinutes ? 1 : NotificationIntervalMinutes);
 
-                    Console.WriteLine("Server will reboot in " + minutes + " minutes at: " + _restartTime);
+                    Console.WriteLine("Server will reboot in " + minutes + " minutes at: " + RestartTime);
                 }
 
             }
@@ -56,13 +56,13 @@ namespace SWLOR.Game.Server.Processor
 
         public void Run(object[] args)
         {
-            if (_isDisabled)
+            if (IsDisabled)
             {
                 return;
             }
 
             var now = DateTime.UtcNow;
-            if (now >= _restartTime)
+            if (now >= RestartTime)
             {
                 _.ExportAllCharacters();
 
@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Processor
             }
             else if(now >= _nextNotification)
             {
-                var delta = _restartTime - now;
+                var delta = RestartTime - now;
                 string rebootString = _time.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
                 string message = "Server will automatically reboot in " + rebootString;
                 foreach (var player in NWModule.Get().Players)

@@ -70,6 +70,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AI\AIComponent\AILinking.cs" />
     <Compile Include="AI\AIComponent\WarpToTargetIfStuck.cs" />
     <Compile Include="AI\SoundAggroBehaviour.cs" />
     <Compile Include="AI\SoundAggroRandomWalkBehaviour.cs" />

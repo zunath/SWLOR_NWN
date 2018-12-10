@@ -4,7 +4,7 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
-
+using static NWN.NWScript;
 namespace SWLOR.Game.Server.Perk.Lightsaber
 {
     public class WeaponFinesse : IPerk
@@ -63,13 +63,13 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
         {
-            if (oItem.CustomItemType != CustomItemType.Lightsaber && oItem.CustomItemType != CustomItemType.Saberstaff) return;
+            if (oItem.CustomItemType != CustomItemType.Lightsaber && oItem.CustomItemType != CustomItemType.Saberstaff && oItem.GetLocalInt("LIGHTSABER") == FALSE) return;
             ApplyFeatChanges(oPC, null);
         }
 
         public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
         {
-            if (oItem.CustomItemType != CustomItemType.Lightsaber && oItem.CustomItemType != CustomItemType.Saberstaff) return;
+            if (oItem.CustomItemType != CustomItemType.Lightsaber && oItem.CustomItemType != CustomItemType.Saberstaff && oItem.GetLocalInt("LIGHTSABER") == FALSE) return;
             if (oItem == oPC.LeftHand) return;
             ApplyFeatChanges(oPC, oItem);
         }
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
         private void ApplyFeatChanges(NWPlayer oPC, NWItem oItem)
         {
             NWItem equipped = oItem ?? oPC.RightHand;
-            if (Equals(equipped, oItem) || (equipped.CustomItemType != CustomItemType.Lightsaber && equipped.CustomItemType != CustomItemType.Saberstaff))
+            if (Equals(equipped, oItem) || (equipped.CustomItemType != CustomItemType.Lightsaber && equipped.CustomItemType != CustomItemType.Saberstaff && equipped.GetLocalInt("LIGHTSABER") == FALSE))
             {
                 _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_WEAPON_FINESSE);
                 return;

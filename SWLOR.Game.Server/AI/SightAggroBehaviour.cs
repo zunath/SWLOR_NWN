@@ -30,7 +30,8 @@ namespace SWLOR.Game.Server.AI
                 .Do<EquipBestMelee>(Self)
                 .Do<EquipBestRanged>(Self)
                 .Do<AggroTargetBySight>(Self)
-                .Do<RandomWalk>(Self);
+                .Do<RandomWalk>(Self)
+                .Do<AILinking>(Self);
 
     }
 }

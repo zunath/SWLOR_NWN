@@ -134,6 +134,7 @@
     <Compile Include="ChatCommand\Pos.cs" />
     <Compile Include="ChatCommand\Read.cs" />
     <Compile Include="ChatCommand\Rest.cs" />
+    <Compile Include="ChatCommand\RestartTime.cs" />
     <Compile Include="ChatCommand\Rez.cs" />
     <Compile Include="ChatCommand\Salute.cs" />
     <Compile Include="ChatCommand\Save.cs" />

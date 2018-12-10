@@ -51,8 +51,6 @@ namespace SWLOR.Game.Server.AI.AIComponent
                     creature.IsPlayer == false)
                 {
                     _enmity.AdjustEnmity(creature, _.GetAttackTarget(self), 0, 1);
-                    _.SendMessageToPC(_.GetAttackTarget(self), _.GetName(creature) + " #" + nth.ToString() + " is attacking " + _.GetName(_.GetAttackTarget(self.Object)) + " !");
-
                 }
                 nth++;
                 creature = _.GetNearestObject(OBJECT_TYPE_CREATURE, self.Object, nth);

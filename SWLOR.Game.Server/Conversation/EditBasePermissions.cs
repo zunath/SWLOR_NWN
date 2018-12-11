@@ -100,7 +100,15 @@ namespace SWLOR.Game.Server.Conversation
                     ChangePage("PlayerListPage");
                     break;
                 case 2: // Change Public Permissions
-                    if(!_perm.HasBasePermission(GetPC(), data.PCBaseID, BasePermission.CanAdjustPublicPermissions))
+                    var pcBase = _data.Get<PCBase>(data.PCBaseID);
+                    
+                    if (pcBase.Sector == "AP")
+                    {
+                        GetPC().FloatingText("Public permissions cannot be adjusted inside apartments.");
+                        return;
+                    }
+
+                    if (!_perm.HasBasePermission(GetPC(), data.PCBaseID, BasePermission.CanAdjustPublicPermissions))
                     {
                         GetPC().FloatingText("You do not have permission to change this base's public permissions.");
                         return;

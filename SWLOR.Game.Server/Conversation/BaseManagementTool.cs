@@ -122,7 +122,7 @@ namespace SWLOR.Game.Server.Conversation
                 var baseStructure = _data.Get<BaseStructure>(structure.BaseStructureID);
                 int itemLimit = baseStructure.Storage + structure.StructureBonus;
                 var childStructures = _data.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == structure.ID);
-                header += _color.Green("Item Limit: ") + childStructures.Count() + " / " + itemLimit + "\n";
+                header += _color.Green("Structure Limit: ") + childStructures.Count() + " / " + itemLimit + "\n";
                 
                 // The building must be set to the "Residence" mode in order for a primary resident to be selected.
                 if (structure.StructureModeID == (int)StructureModeType.Residence)
@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Conversation
                 var buildingStyle = _data.Get<BuildingStyle>(pcBase.BuildingStyleID);
                 int itemLimit = buildingStyle.FurnitureLimit;
                 var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == pcBase.ID);
-                header += _color.Green("Item Limit: ") + structures.Count() + " / " + itemLimit + "\n";
+                header += _color.Green("Structure Limit: ") + structures.Count() + " / " + itemLimit + "\n";
 
                 canEditStructures = _perm.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanPlaceEditStructures);
                 canEditBasePermissions = _perm.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanAdjustPermissions);

@@ -629,7 +629,7 @@ namespace SWLOR.Game.Server.Service
             var pcBase = _data.Get<PCBase>(pcBaseID);
             var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == pcBaseID).ToList();
             var areas = NWModule.Get().Areas;
-            var baseArea = areas.Single(x => x.Resref == pcBase.AreaResref);
+            var baseArea = areas.Single(x => x.Resref == pcBase.AreaResref && !x.IsInstance);
             List<AreaStructure> areaStructures = baseArea.Data["BASE_SERVICE_STRUCTURES"];
             areaStructures = areaStructures.Where(x => x.PCBaseID == pcBaseID).ToList();
             

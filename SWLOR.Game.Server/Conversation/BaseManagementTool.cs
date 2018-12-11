@@ -62,8 +62,8 @@ namespace SWLOR.Game.Server.Conversation
                 "75 degrees",
                 "90 degrees",
                 "180 degrees");
-            DialogPage renamePage = new DialogPage("Type a name into the chat box. Once you are done select confirm.",
-                "Confirm");
+            DialogPage renamePage = new DialogPage("Type a name into the chat box. Once you are done select next.",
+                "Next");
             DialogPage confirmRenamePage = new DialogPage(
                 "<SET LATER>",
                 "Confirm Name Change"
@@ -267,6 +267,7 @@ namespace SWLOR.Game.Server.Conversation
                     RotateResponses(responseID);
                     break;
                 case "RenamePage":
+                    GetPC().SetLocalInt("LISTENING_FOR_DESCRIPTION", 1);
                     RenameResponses(responseID);
                     break;
                 case "ConfirmRenamePage":
@@ -276,7 +277,6 @@ namespace SWLOR.Game.Server.Conversation
         }
         private void RenameResponses(int responseID)
         {
-            GetPC().SetLocalInt("LISTENING_FOR_DESCRIPTION", 1);
             switch(responseID)
             {
                 case 1:
@@ -321,10 +321,10 @@ namespace SWLOR.Game.Server.Conversation
                     else if (buildingType == Enumeration.BuildingType.Interior)
                     {
                         Guid pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
-                        var structure = _data.Single<PCBaseStructure>(x => x.ID == pcBaseStructureID);
+                        var structure = _data.Get<PCBaseStructure>(pcBaseStructureID);
                         structure.CustomName = GetPC().GetLocalString("NEW_DESCRIPTION_TO_SET");
                         _data.SubmitDataChange(structure, DatabaseActionType.Update);
-                        sender.SendMessage("Name is now set to" + structure.CustomName);
+                        sender.SendMessage("Name is now set to " + structure.CustomName);
                     }
                     EndConversation();
                     break;

@@ -95,6 +95,7 @@ namespace SWLOR.Game.Server.Conversation
             else if (modeType == StructureModeType.Storefront)
                 SetResponseVisible("MainPage", 3, false);
 
+            SetResponseVisible("MainPage", 3, false); // Temporarily hide the Storefront option until it's implemented.
             SetPageHeader("MainPage", header);
         }
 

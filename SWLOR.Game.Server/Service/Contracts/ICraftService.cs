@@ -28,5 +28,6 @@ namespace SWLOR.Game.Server.Service.Contracts
         void OnModuleUseFeat();
         int CalculateAreaAtmosphereBonus(NWArea area);
         string GetAreaAtmosphereBonusText(NWArea area);
+        void OnAreaEnter();
     }
 }

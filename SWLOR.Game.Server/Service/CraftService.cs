@@ -665,10 +665,17 @@ namespace SWLOR.Game.Server.Service
                 equipmentBonus = "Equipment with +Crafting bonuses grant an additional +0.1% per stat.\n";
             }
 
-            var text = "Workshop Crafting Bonuses:\n\n";
-            text += craftingSpeedBonus;
-            text += propertyTransferBonus;
-            text += equipmentBonus;
+            var text = string.Empty;
+
+            if (!string.IsNullOrWhiteSpace(craftingSpeedBonus) &&
+                !string.IsNullOrWhiteSpace(propertyTransferBonus) &&
+                !string.IsNullOrWhiteSpace(equipmentBonus))
+            {
+                text = "Workshop Crafting Bonuses:\n\n";
+                text += craftingSpeedBonus;
+                text += propertyTransferBonus;
+                text += equipmentBonus;
+            }
 
             return text;
         }

@@ -32,27 +32,13 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
             NWPlayer oPC = (_.GetLastUsedBy());
             NWPlaceable container = (Object.OBJECT_SELF);
             Guid structureID = new Guid(container.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            var structure = _data.Get<PCBaseStructure>(structureID);
             
             if (!_perm.HasStructurePermission(oPC, structureID, StructurePermission.CanAccessStructureInventory))
             {
                 oPC.FloatingText("You do not have permission to access this structure.");
                 return false;
             }
-
-            // Parent structure is a building.
-            if (structure.ParentPCBaseStructureID != null)
-            {
-                var buildingStructure = _data.Get<PCBaseStructure>(structure.ParentPCBaseStructureID);
-                var buildingModeType = (StructureModeType)buildingStructure.StructureModeID;
-
-                if (buildingModeType != StructureModeType.Residence)
-                {
-                    oPC.FloatingText("Persistent storage may only be accessed when the building is in 'Residence' mode.");
-                    return false;
-                }
-            }
-
+            
             _dialog.StartConversation(oPC, container, "StructureStorage");
             return true;
         }

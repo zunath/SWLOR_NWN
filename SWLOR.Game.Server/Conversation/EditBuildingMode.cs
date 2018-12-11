@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Conversation
                     header = "Setting this building to a Residence enables you or another player to set it as a primary residence. This grants an overall XP bonus to that player based on the number of furniture structures placed inside of the building. Persistent storage structures may also be placed inside of a residence. Crafting structures may NOT be used inside of residences.";
                     break;
                 case StructureModeType.Workshop:
-                    header = "Setting this building to a Workshop enables you to place crafting devices and workbenches down. All workbenches inside the building receive a bonus based on the number of furniture structures placed inside of the building. Persistent storage structures may NOT be placed inside of a workshop. Players may NOT set a workshop as a primary residence.";
+                    header = "Setting this building to a Workshop enables you to place crafting devices and workbenches down. All workbenches inside the building receive a bonus based on the number of furniture structures placed inside of the building. Persistent storage structures may also be placed inside of a workshop. Players may NOT set a workshop as a primary residence.";
                     break;
                 case StructureModeType.Storefront:
                     header = "Setting this building to a Storefront enables you to hire NPCs to sell your wares. Persistent storage structures cannot store items but they will increase the number of items you may sell at a time. The daily salary of your merchants will reduce based on the number of furniture structures placed inside of the building. Crafting structures may NOT be used inside storefronts. Players may NOT set a storefront as a primary residence.";
@@ -159,10 +159,10 @@ namespace SWLOR.Game.Server.Conversation
             switch (modeType)
             {
                 case StructureModeType.Residence:
-                    warning = "- All primary residents will be removed and their XP bonuses will cease.\n- Items inside persistent storage will be sent to the planetary impound and you will need to pay to retrieve them.\n";
+                    warning = "- All primary residents will be removed and their XP bonuses will cease.\n";
                     break;
                 case StructureModeType.Workshop:
-                    warning = "- All crafting bonuses will cease.\n- All prices set on workbenches will be removed.\n- Workbenches will be sent to the planetary impound and you will need to pay to retrieve them.";
+                    warning = "- All crafting bonuses will cease.\n- All prices set on workbenches will be removed.\n";
                     break;
                 case StructureModeType.Storefront:
                     warning = "- All hired NPCs will be fired and no refund for their salary will be given.\n- Items which were being sold will be sent to the planetary impound and you will need to pay to retrieve them.\n";
@@ -191,10 +191,7 @@ namespace SWLOR.Game.Server.Conversation
             var data = _base.GetPlayerTempData(player);
             var pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
             var structure = _data.Get<PCBaseStructure>(pcBaseStructureID);
-            var pcBase = _data.Get<PCBase>(structure.PCBaseID);
-            var ownerID = pcBase.PlayerID;
             var impoundedItems = 0;
-            var areaStructures = (List<AreaStructure>)data.TargetArea.Data["BASE_SERVICE_STRUCTURES"];
 
             // Remove primary residents
             var primaryResident = _data.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseStructureID == pcBaseStructureID);
@@ -203,43 +200,7 @@ namespace SWLOR.Game.Server.Conversation
                 primaryResident.PrimaryResidencePCBaseStructureID = null;
                 _data.SubmitDataChange(primaryResident, DatabaseActionType.Update);
             }
-
-            // Impound any persistent storage items
-            var childStructures = _data.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == pcBaseStructureID);
-            foreach (var child in childStructures)
-            {
-                var items = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == child.ID);
-                foreach (var item in items)
-                {
-                    _impound.Impound(item);
-                    _data.SubmitDataChange(item, DatabaseActionType.Delete);
-                    impoundedItems++;
-                }
-            }
-
-            // Impound any crafting devices.
-            var tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
-            var craftingDevices = childStructures.Where(x =>
-            {
-                var baseStructure = _data.Get<BaseStructure>(x.BaseStructureID);
-                return baseStructure.BaseStructureTypeID == (int)BaseStructureType.CraftingDevice;
-            });
-            foreach (var device in craftingDevices)
-            {
-                // Convert the structure to an item and impound it.
-                var item = _base.ConvertStructureToItem(device, tempStorage);
-                _impound.Impound(ownerID, item);
-                item.Destroy();
-
-                // Remove the placeable from the area.
-                var plc = areaStructures.SingleOrDefault(x => x.PCBaseStructureID == device.ID);
-                plc?.Structure.Destroy();
-
-                // Submit change to DB
-                _data.SubmitDataChange(device, DatabaseActionType.Delete);
-                impoundedItems++;
-            }
-
+            
             // Change mode
             structure.StructureModeID = (int)model.Mode;
             _data.SubmitDataChange(structure, DatabaseActionType.Update);

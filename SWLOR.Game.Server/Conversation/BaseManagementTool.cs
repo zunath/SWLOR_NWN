@@ -100,11 +100,13 @@ namespace SWLOR.Game.Server.Conversation
             data.BuildingType = buildingType;
             bool canEditBasePermissions = false;
             bool canEditBuildingPermissions = false;
+            bool canEditBuildingPublicPermissions = false;
             bool canEditStructures = false;
             bool canEditPrimaryResidence = false;
             bool canRemovePrimaryResidence = false;
             bool canRenameStructure = false;
             bool canChangeStructureMode = false;
+            bool canEditPublicBasePermissions = false;
 
             string header = _color.Green("Base Management Menu\n\n");
             header += _color.Green("Area: ") + data.TargetArea.Name + " (" + cellX + ", " + cellY + ")\n\n";
@@ -133,6 +135,7 @@ namespace SWLOR.Game.Server.Conversation
                 canRenameStructure = _perm.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanRenameStructures);
                 canEditStructures = _perm.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanPlaceEditStructures);
                 canEditBuildingPermissions = _perm.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanAdjustPermissions);
+                canEditBuildingPublicPermissions = _perm.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanAdjustPublicPermissions);
                 canChangeStructureMode = _perm.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanChangeStructureMode);
                 data.StructureID = pcBaseStructureID;
             }
@@ -219,6 +222,7 @@ namespace SWLOR.Game.Server.Conversation
 
                 canEditStructures = pcBase != null && _perm.HasBasePermission(GetPC(), pcBase.ID, BasePermission.CanPlaceEditStructures);
                 canEditBasePermissions = pcBase != null && _perm.HasBasePermission(GetPC(), pcBase.ID, BasePermission.CanAdjustPermissions);
+                canEditPublicBasePermissions = pcBase != null && _perm.HasBasePermission(GetPC(), pcBase.ID, BasePermission.CanAdjustPublicPermissions);
                 if (pcBase != null)
                     data.PCBaseID = pcBase.ID;
             }
@@ -233,8 +237,8 @@ namespace SWLOR.Game.Server.Conversation
             AddResponseToPage("MainPage", "Manage My Leases", showManage);
             AddResponseToPage("MainPage", "Purchase Territory", hasUnclaimed && dbArea.IsBuildable);
             AddResponseToPage("MainPage", "Edit Nearby Structures", canEditStructures);
-            AddResponseToPage("MainPage", "Edit Base Permissions", canEditBasePermissions);
-            AddResponseToPage("MainPage", "Edit Building Permissions", canEditBuildingPermissions);
+            AddResponseToPage("MainPage", "Edit Base Permissions", canEditBasePermissions || canEditPublicBasePermissions);
+            AddResponseToPage("MainPage", "Edit Building Permissions", canEditBuildingPermissions || canEditBuildingPublicPermissions);
             AddResponseToPage("MainPage", "Edit Primary Residence", canEditPrimaryResidence || canRemovePrimaryResidence);
             AddResponseToPage("MainPage", "Rename Building", canRenameStructure);
             AddResponseToPage("MainPage", "Edit Building Mode", canChangeStructureMode);

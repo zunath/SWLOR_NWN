@@ -166,6 +166,7 @@
     <Compile Include="Conversation\CloningTerminal.cs" />
     <Compile Include="Conversation\ControlTower.cs" />
     <Compile Include="Conversation\CoxxionTerminal.cs" />
+    <Compile Include="Conversation\EditBuildingMode.cs" />
     <Compile Include="Conversation\EditBuildingPermissions.cs" />
     <Compile Include="Conversation\EditBasePermissions.cs" />
     <Compile Include="Conversation\BuildingEntrance.cs" />
@@ -324,6 +325,7 @@
     <Compile Include="Data\Entity\Spawn.cs" />
     <Compile Include="Data\Entity\SpawnObject.cs" />
     <Compile Include="Data\Entity\SpawnObjectType.cs" />
+    <Compile Include="Data\Entity\StructureMode.cs" />
     <Compile Include="Data\Entity\User.cs" />
     <Compile Include="Data\Processor\ApartmentBuildingProcessor.cs" />
     <Compile Include="Data\Processor\BaseStructureProcessor.cs" />
@@ -420,6 +422,7 @@
     <Compile Include="Enumeration\ResourceType.cs" />
     <Compile Include="Enumeration\SkillType.cs" />
     <Compile Include="Enumeration\SpellStatusType.cs" />
+    <Compile Include="Enumeration\StructureModeType.cs" />
     <Compile Include="Enumeration\StructurePermission.cs" />
     <Compile Include="Event\Area\OnAreaUserDefined.cs" />
     <Compile Include="Event\Area\OnAreaHeartbeat.cs" />
@@ -1579,6 +1582,7 @@
     <EmbeddedResource Include="Data\Migrations\2018-12-06.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-12-10.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-12-10.2.sql" />
+    <EmbeddedResource Include="Data\Migrations\2018-12-10.3.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-07.1.sql" />

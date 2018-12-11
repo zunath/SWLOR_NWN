@@ -11,6 +11,8 @@
         StarshipProduction = 7,
         Furniture = 8,
         StronidiumSilo = 9,
-        FuelSilo = 10
+        FuelSilo = 10,
+        CraftingDevice = 11,
+        PersistentStorage = 12
     }
 }

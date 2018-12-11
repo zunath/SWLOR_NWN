@@ -96,7 +96,8 @@ namespace SWLOR.Game.Server.Event.Delayed
 
             int pcEffectiveLevel = _craft.CalculatePCEffectiveLevel(player, pcSkill.Rank, (SkillType)blueprint.SkillID);
             int itemLevel = model.AdjustedLevel;
-            float chance = CalculateBaseChanceToAddProperty(pcEffectiveLevel, itemLevel);
+            int atmosphereBonus = _craft.CalculateAreaAtmosphereBonus(player.Area);
+            float chance = CalculateBaseChanceToAddProperty(pcEffectiveLevel, itemLevel, atmosphereBonus);
             float equipmentBonus = CalculateEquipmentBonus(player, (SkillType)blueprint.SkillID);
 
             if (chance <= 1.0f)
@@ -250,8 +251,19 @@ namespace SWLOR.Game.Server.Event.Delayed
 
         private float CalculateEquipmentBonus(NWPlayer player, SkillType skillType)
         {
-            int equipmentBonus = 0;
             var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
+            int equipmentBonus = 0;
+            float multiplier = 0.5f;
+            int atmosphere = _craft.CalculateAreaAtmosphereBonus(player.Area);
+
+            if (atmosphere >= 75)
+            {
+                multiplier = 0.7f;
+            }
+            else if (atmosphere >= 25)
+            {
+                multiplier = 0.6f;
+            }
 
             switch (skillType)
             {
@@ -263,10 +275,10 @@ namespace SWLOR.Game.Server.Event.Delayed
                 case SkillType.Medicine: equipmentBonus = effectiveStats.Medicine; break;
             }
 
-            return equipmentBonus * 0.5f; // +0.5% per equipment bonus
+            return equipmentBonus * multiplier; // +0.5%, +0.6%, or +0.7% per equipment bonus
         }
 
-        private float CalculateBaseChanceToAddProperty(int pcLevel, int blueprintLevel)
+        private float CalculateBaseChanceToAddProperty(int pcLevel, int blueprintLevel, int atmosphereBonus)
         {
             int delta = pcLevel - blueprintLevel;
             float percentage = 0.0f;
@@ -310,7 +322,18 @@ namespace SWLOR.Game.Server.Event.Delayed
                 }
             }
 
+            if (atmosphereBonus >= 60)
+            {
+                percentage += 4;
+            }
+            else if(atmosphereBonus >= 15)
+            {
+                percentage += 2;
+            }
 
+            if (percentage > 90)
+                percentage = 90;
+            
             return percentage;
         }
     }

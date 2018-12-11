@@ -158,6 +158,7 @@ namespace SWLOR.Game.Server.Service
             GetAll<Spawn>();
             GetAll<SpawnObject>();
             GetAll<SpawnObjectType>();
+            GetAll<StructureMode>();
             Console.WriteLine("Cache initialized!");
 
             _cacheInitialized = true;

@@ -38,13 +38,8 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
                 var structure = _data.Get<PCBaseStructure>(structureGuid);
 
                 // Workbenches and crafting devices can only be used inside 
-                // buildings set to "Workshop" mode. Apartments will not work for this.
-                if(structure.ParentPCBaseStructureID == null)
-                {
-                    player.FloatingText("Workbenches and crafting devices may only be used inside buildings in the 'Workshop' mode. These cannot be used in Apartments due to safety codes.");
-                    return false;
-                }
-                else
+                // buildings set to "Workshop" mode.
+                if(structure.ParentPCBaseStructureID != null)
                 {
                     var buildingStructure = _data.Get<PCBaseStructure>(structure.ParentPCBaseStructureID);
                     var modeType = (StructureModeType) buildingStructure.StructureModeID;

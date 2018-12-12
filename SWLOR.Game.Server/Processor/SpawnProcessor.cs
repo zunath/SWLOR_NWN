@@ -59,6 +59,12 @@ namespace SWLOR.Game.Server.Processor
 
                         foreach(var plc in areaSpawn.Placeables)
                         {
+                            NWPlaceable prop = plc.Spawn.GetLocalObject("RESOURCE_PROP_OBJ");
+                            if (prop.IsValid)
+                            {
+                                prop.Destroy();
+                            }
+                            
                             if(plc.Spawn.IsValid)
                             {
                                 plc.Spawn.Destroy();

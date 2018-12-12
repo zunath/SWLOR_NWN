@@ -267,7 +267,6 @@ namespace SWLOR.Game.Server.Conversation
                     RotateResponses(responseID);
                     break;
                 case "RenamePage":
-                    GetPC().SetLocalInt("LISTENING_FOR_DESCRIPTION", 1);
                     RenameResponses(responseID);
                     break;
                 case "ConfirmRenamePage":
@@ -344,6 +343,14 @@ namespace SWLOR.Game.Server.Conversation
                     data.ManipulatingStructure = null;
                     break;
             }
+
+            switch (afterMovePage)
+            {
+                case "MainPage":
+                    GetPC().DeleteLocalInt("LISTENING_FOR_DESCRIPTION");
+                    GetPC().DeleteLocalString("NEW_DESCRIPTION_TO_SET");
+                    break;
+            }
         }
 
         private void MainResponses(int responseID)
@@ -372,6 +379,8 @@ namespace SWLOR.Game.Server.Conversation
                     SwitchConversation("EditPrimaryResidence");
                     break;
                 case 7: // Rename Building/Apartment
+                    GetPC().SetLocalInt("LISTENING_FOR_DESCRIPTION", 1);
+                    _.FloatingTextStringOnCreature("Type in a new name to the chat bar and then press 'Next'.", GetPC().Object, NWScript.FALSE);
                     ChangePage("RenamePage");
                     break;
                 case 8: // Edit Building Mode

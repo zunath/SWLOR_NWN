@@ -233,7 +233,7 @@ namespace SWLOR.Game.Server.Conversation
             
             SetPageHeader("MainPage", header);
 
-            bool showManage = _data.GetAll<PCBase>().Count(x => x.PlayerID == playerID) > 0;
+            bool showManage = _data.Where<PCBasePermission>(x => x.CanExtendLease).Count > 0;
             AddResponseToPage("MainPage", "Manage My Leases", showManage);
             AddResponseToPage("MainPage", "Purchase Territory", hasUnclaimed && dbArea.IsBuildable);
             AddResponseToPage("MainPage", "Edit Nearby Structures", canEditStructures);

@@ -1,10 +1,13 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN.NWScript;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.Scrapper
 {
@@ -12,13 +15,16 @@ namespace SWLOR.Game.Server.Placeable.Scrapper
     {
         private readonly INWScript _;
         private readonly IItemService _item;
+        private readonly INWNXObject _nwnxObject;
 
         public OnDisturbed(
             INWScript script,
-            IItemService item)
+            IItemService item,
+            INWNXObject nwnxObject)
         {
             _ = script;
             _item = item;
+            _nwnxObject = nwnxObject;
         }
 
         public bool Run(params object[] args)
@@ -38,12 +44,44 @@ namespace SWLOR.Game.Server.Placeable.Scrapper
                 return false;
             }
 
+            // Remove the item properties
             foreach (var ip in item.ItemProperties)
             {
                 var ipType = _.GetItemPropertyType(ip);
                 if (ipType != (int)CustomItemPropertyType.ComponentType)
                 {
                     _.RemoveItemProperty(item, ip);
+                }
+            }
+            
+            // Remove local variables (except the global ID)
+            int varCount = _nwnxObject.GetLocalVariableCount(item);
+            for (int index = varCount-1; index >= 0; index--)
+            {
+                var localVar = _nwnxObject.GetLocalVariable(item, index);
+
+                if (localVar.Key != "GLOBAL_ID")
+                {
+                    switch (localVar.Type)
+                    {
+                        case LocalVariableType.Int:
+                            item.DeleteLocalInt(localVar.Key);
+                            break;
+                        case LocalVariableType.Float:
+                            item.DeleteLocalFloat(localVar.Key);
+                            break;
+                        case LocalVariableType.String:
+                            item.DeleteLocalString(localVar.Key);
+                            break;
+                        case LocalVariableType.Object:
+                            item.DeleteLocalObject(localVar.Key);
+                            break;
+                        case LocalVariableType.Location:
+                            item.DeleteLocalLocation(localVar.Key);
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
                 }
             }
 

@@ -435,6 +435,7 @@ namespace SWLOR.Game.Server.Conversation
                 Preview();
             }
 
+            LoadStylePage(type);
         }
 
         private void DoInteriorPreview()

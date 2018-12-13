@@ -1,8 +1,8 @@
 2DA V2.0                                                                                   
                                                                                            
            label              Model           ShotSound         ImpactSound                
-0          arrow              wamar_001       cb_sh_ahandgun    ****             
-1          bolt               wambo_001       cb_sh_alongarm    ****             
+0          arrow              wamar_001       cb_sh_blstrfire1   ****             
+1          bolt               wambo_001       cb_sh_blstrfire3   ****             
 2          bullet             wambu_001       cb_sh_ahandgun    ****              
 3          dart               wthdt_001       ****              cb_ht_dart1                
 4          shuriken           wthsh_001       ****              cb_ht_dart1                

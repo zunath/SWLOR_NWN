@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
 
             _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, _.EffectDamage(damage, NWScript.DAMAGE_TYPE_POSITIVE), target);
             _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, _.EffectKnockdown(), target, length);
-            _skill.RegisterPCToNPCForSkill(player, target, SkillType.LightSideAbilities);
+            _skill.RegisterPCToNPCForSkill(player, target, SkillType.ForceCombat);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
                 }
 
             }
-            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.DarkSideAbilities, target.Object);
+            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceSupport, target.Object);
         }
 
 

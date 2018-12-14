@@ -148,7 +148,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
                 _customEffect.ApplyCustomEffect(player, target.Object, CustomEffectType.ForceBreach, length, level, null);
             }
 
-            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.LightSideAbilities, target.Object);
+            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceCombat, target.Object);
 
             player.AssignCommand(() =>
             {

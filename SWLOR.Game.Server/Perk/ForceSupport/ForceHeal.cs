@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
 
             }
 
-            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.LightSideAbilities, target.Object);
+            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceSupport, target.Object);
         }
 
 

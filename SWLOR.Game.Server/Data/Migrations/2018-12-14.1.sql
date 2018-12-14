@@ -372,3 +372,12 @@ VALUES ( 180 ,    -- ID - int
          0 ,    -- TertiaryMaximum - int
          NULL      -- BaseStructureID - int
     )
+
+
+
+-- Change Force Armor to CON/CHA/WIS
+UPDATE dbo.Skill
+SET [Primary] = 3,
+	Secondary = 6,
+	Tertiary = 5
+WHERE ID = 11

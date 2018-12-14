@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
                 _customEffect.ApplyCustomEffect(player, target.Object, CustomEffectType.ForceShock, length, level, dotAmount.ToString());
             }
 
-            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.DarkSideAbilities, target.Object);
+            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceCombat, target.Object);
 
             player.AssignCommand(() =>
             {

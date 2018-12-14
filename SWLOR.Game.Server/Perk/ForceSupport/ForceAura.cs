@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
 
             _customEffect.ApplyCustomEffect(player, target.Object, CustomEffectType.ForceAura, ticks, level, null);
             _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, _.EffectVisualEffect(NWScript.VFX_IMP_AC_BONUS), target);
-            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.LightSideAbilities, null);
+            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceSupport, null);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

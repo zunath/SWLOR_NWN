@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
                 _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(NWScript.VFX_BEAM_MIND), target, 1.0f);
             });
             
-            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.DarkSideAbilities, target.Object);
+            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceCombat, target.Object);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

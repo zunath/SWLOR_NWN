@@ -93,13 +93,26 @@ namespace SWLOR.Game.Server.Service
         public void GiveSkillXP(NWPlayer oPC, int skillID, int xp, bool enableResidencyBonus = true)
         {
             if (skillID <= 0 || xp <= 0 || !oPC.IsPlayer) return;
-
+            
             if (enableResidencyBonus)
             {
                 xp = (int)(xp + xp * _playerStat.EffectiveResidencyBonus(oPC));
             }
             Player player = _data.Get<Player>(oPC.GlobalID);
             Skill skill = GetSkill(skillID);
+
+            // Check if the player has any undistributed skill ranks for this skill category.
+            // If they haven't been distributed yet, the player CANNOT gain XP for this skill.
+            var pool = _data.SingleOrDefault<PCSkillPool>(x => x.PlayerID == oPC.GlobalID && 
+                                                               x.SkillCategoryID == skill.SkillCategoryID &&
+                                                               x.Levels > 0);
+            if (pool != null)
+            {
+                oPC.FloatingText("You must distribute all pooled skill ranks before you can gain any new XP in the '" + skill.Name + "' skill. Access this menu from the 'View Skills' section of your rest menu.");
+                return;
+            }
+
+
             PCSkill pcSkill = GetPCSkill(oPC, skillID);
             SkillXPRequirement req = _data.Single<SkillXPRequirement>(x => x.SkillID == skillID && x.Rank == pcSkill.Rank);
             int maxRank = skill.MaxRank;

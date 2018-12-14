@@ -133,6 +133,7 @@ namespace SWLOR.Game.Server.Service
             RegisterEmptyCacheSet<PCSearchSite>();
             RegisterEmptyCacheSet<PCSearchSiteItem>();
             RegisterEmptyCacheSet<PCSkill>();
+            RegisterEmptyCacheSet<PCSkillPool>();
             RegisterEmptyCacheSet<PCPerkRefund>();
 
             GetAll<Data.Entity.Perk>();
@@ -215,11 +216,12 @@ namespace SWLOR.Game.Server.Service
                         SetIntoCache<PCSearchSite>(item.ID, item);
                     foreach (var item in multi.Read<PCSearchSiteItem>().ToList())
                         SetIntoCache<PCSearchSiteItem>(item.ID, item);
-
                     foreach(var item in multi.Read<PCSkill>().ToList())
                         SetIntoCache<PCSkill>(item.ID, item);
                     foreach(var item in multi.Read<BankItem>().ToList())
                         SetIntoCache<BankItem>(item.ID, item);
+                    foreach(var item in multi.Read<PCSkillPool>().ToList())
+                        SetIntoCache<PCSkillPool>(item.ID, item);
                 }
             }
 
@@ -276,6 +278,8 @@ namespace SWLOR.Game.Server.Service
                 DeleteFromCache<PCSkill>(item.ID);
             foreach(var item in Where<BankItem>(x => x.PlayerID == id).ToList())
                 DeleteFromCache<BankItem>(item.ID);
+            foreach(var item in Where<PCSkillPool>(x => x.PlayerID == id).ToList())
+                DeleteFromCache<PCSkillPool>(item.ID);
         }
 
         /// <summary>

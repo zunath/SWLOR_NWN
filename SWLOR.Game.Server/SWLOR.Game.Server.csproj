@@ -166,6 +166,7 @@
     <Compile Include="Conversation\CloningTerminal.cs" />
     <Compile Include="Conversation\ControlTower.cs" />
     <Compile Include="Conversation\CoxxionTerminal.cs" />
+    <Compile Include="Conversation\DistributeSkillRanks.cs" />
     <Compile Include="Conversation\EditBuildingMode.cs" />
     <Compile Include="Conversation\EditBuildingPermissions.cs" />
     <Compile Include="Conversation\EditBasePermissions.cs" />
@@ -301,6 +302,7 @@
     <Compile Include="Data\Entity\PCSearchSite.cs" />
     <Compile Include="Data\Entity\PCSearchSiteItem.cs" />
     <Compile Include="Data\Entity\PCSkill.cs" />
+    <Compile Include="Data\Entity\PCSkillPool.cs" />
     <Compile Include="Data\Entity\Perk.cs" />
     <Compile Include="Data\Entity\PerkCategory.cs" />
     <Compile Include="Data\Entity\PerkExecutionType.cs" />

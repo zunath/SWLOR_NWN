@@ -70,8 +70,12 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadCategoryResponses()
         {
             List<SkillCategory> categories = _skill.GetActiveCategories();
-
             ClearPageResponses("CategoryPage");
+
+            // If player has skill levels to distribute, display the option to distribute them.
+            var showDistribution = _data.Where<PCSkillPool>(x => x.PlayerID == GetPC().GlobalID && x.Levels > 0).Count > 0;
+            AddResponseToPage("CategoryPage", _color.Green("Distribute Skill Ranks"), showDistribution);
+            
             foreach (SkillCategory category in categories)
             {
                 AddResponseToPage("CategoryPage", category.Name, true, category.ID);
@@ -170,6 +174,13 @@ namespace SWLOR.Game.Server.Conversation
 
         private void HandleCategoryResponse(int responseID)
         {
+            // Selected the "Distribute Skill Ranks" option. Send player to that menu.
+            if (responseID == 1)
+            {
+                SwitchConversation("DistributeSkillRanks");
+                return;
+            }
+
             Model vm = GetDialogCustomData<Model>();
             DialogResponse response = GetResponseByID("CategoryPage", responseID);
             int categoryID = (int)response.CustomData;

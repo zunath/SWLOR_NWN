@@ -387,3 +387,20 @@ WHERE ID = 11
 UPDATE dbo.Perk
 SET Description = 'Deals damage to a single target and heals the user by a portion of damage dealt. Target must be organic.'
 WHERE ID = 78
+
+
+
+-- Remove the Dark Spread perk.
+DELETE FROM dbo.PerkLevelSkillRequirement
+WHERE PerkLevelID IN (
+	SELECT pl.ID 
+	FROM dbo.PerkLevel pl
+	WHERE PerkID = 14 
+)
+
+DELETE FROM dbo.PerkLevel
+WHERE PerkID = 14
+
+DELETE FROM dbo.Perk
+WHERE ID = 14
+

@@ -840,7 +840,6 @@
     <Compile Include="Perk\Cooking\CookingOptimization.cs" />
     <Compile Include="Perk\ForceUtility\Chainspell.cs" />
     <Compile Include="Perk\ForceSupport\DarkHeal.cs" />
-    <Compile Include="Perk\ForceUtility\DarkSpread.cs" />
     <Compile Include="Perk\ForceCombat\DrainLife.cs" />
     <Compile Include="Perk\ForceCombat\ForceLightning.cs" />
     <Compile Include="Perk\Engineering\CombatModInstallationEngineering.cs" />

@@ -22,8 +22,8 @@
         FPUp = 17,
         EnmityUp = 18,
         EnmityDown = 19,
-        DarkAbilityUp = 20,
-        LightAbilityUp = 21,
+        ForceCombatUp = 20,
+        ForceSupportUp = 21,
         LuckUp = 22,
         MeditateUp = 23,
         MedicineUp = 24,
@@ -32,8 +32,8 @@
         BaseAttackBonusUp = 27,
         SneakAttackUp = 28,
         DamageUp = 29,
-        DarkAbilityDown = 30,
-        LightAbilityDown = 31,
+        ForceCombatDown = 30,
+        ForceSupportDown = 31,
         FabricationUp = 32,
         StructureBonusUp = 33,
         ScanningUp = 34,
@@ -44,7 +44,9 @@
         IntelligenceUp = 39,
         CharismaUp = 40,
         AttackBonusUp = 41,
-        DurationUp = 42
+        DurationUp = 42,
+        ForceUtilityUp = 43,
+        ForceUtilityDown = 44
         
 
     }

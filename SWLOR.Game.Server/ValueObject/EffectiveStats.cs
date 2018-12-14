@@ -4,8 +4,9 @@
     {
         public int CastingSpeed { get; set; }
         public float EnmityRate { get; set; }
-        public int DarkAbility { get; set; }
-        public int LightAbility { get; set; }
+        public int ForceCombat { get; set; }
+        public int ForceSupport { get; set; }
+        public int ForceUtility { get; set; }
         public int Luck { get; set; }
         public int Meditate { get; set; }
         public int Rest { get; set; }

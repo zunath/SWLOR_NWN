@@ -239,17 +239,17 @@ namespace SWLOR.Game.Server.Service
             {
                 description += _color.Orange("Enmity: ") + examinedItem.EnmityRate + "%\n";
             }
-            if (examinedItem.DarkAbilityBonus > 0)
+            if (examinedItem.ForceCombatBonus > 0)
             {
-                description += _color.Orange("Dark Ability Bonus: ") + examinedItem.DarkAbilityBonus + "\n";
+                description += _color.Orange("Dark Ability Bonus: ") + examinedItem.ForceCombatBonus + "\n";
             }
-            if (examinedItem.LightAbilityBonus > 0)
+            if (examinedItem.ForceSupportBonus > 0)
             {
-                description += _color.Orange("Light Ability Bonus: ") + examinedItem.LightAbilityBonus + "\n";
+                description += _color.Orange("Light Ability Bonus: ") + examinedItem.ForceSupportBonus + "\n";
             }
-            if (examinedItem.SummoningBonus > 0)
+            if (examinedItem.ForceUtilityBonus > 0)
             {
-                description += _color.Orange("Summoning Bonus: ") + examinedItem.SummoningBonus + "\n";
+                description += _color.Orange("Summoning Bonus: ") + examinedItem.ForceUtilityBonus + "\n";
             }
             if (examinedItem.LuckBonus > 0)
             {

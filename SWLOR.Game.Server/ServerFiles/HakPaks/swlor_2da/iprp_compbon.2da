@@ -21,8 +21,8 @@
 17    16857989   FPUp                 
 18    16857990   EnmityUp             
 19    16857991   EnmityDown           
-20    16857992   DarkAbilityUp        
-21    16857993   LightAbilityUp       
+20    16857992   ForceCombatUp        
+21    16857993   ForceSupportUp       
 22    16857994   LuckUp               
 23    16857995   MeditateUp           
 24    16857996   FirstAidUp           
@@ -31,8 +31,8 @@
 27    16857999   BABUp                
 28    16858000   SneakAttackUp        
 29    16858001   DamageUp             
-30    16858002   DarkAbilityDown      
-31    16858003   LightAbilityDown     
+30    16858002   ForceCombatDown      
+31    16858003   ForceSupportDown     
 32    16858031   FabricationUp        
 33    16858040   StructureBonusUp     
 34    16858042   ScanningUp           
@@ -44,3 +44,5 @@
 40    16858242   CharismaUp           
 41    16858243   ABUp                 
 42    16858244   Duration             
+43    16858260   ForceUtilityUp       
+44    16858261   ForceUtilityDown     

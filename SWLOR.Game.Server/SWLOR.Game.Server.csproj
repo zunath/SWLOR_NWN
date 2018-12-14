@@ -838,11 +838,11 @@
     <Compile Include="Perk\Blaster\Tranquilizer.cs" />
     <Compile Include="Perk\Cooking\CookingEfficiency.cs" />
     <Compile Include="Perk\Cooking\CookingOptimization.cs" />
-    <Compile Include="Perk\DarkSide\Chainspell.cs" />
-    <Compile Include="Perk\DarkSide\DarkHeal.cs" />
-    <Compile Include="Perk\DarkSide\DarkSpread.cs" />
-    <Compile Include="Perk\DarkSide\DrainLife.cs" />
-    <Compile Include="Perk\DarkSide\ForceLightning.cs" />
+    <Compile Include="Perk\ForceUtility\Chainspell.cs" />
+    <Compile Include="Perk\ForceSupport\DarkHeal.cs" />
+    <Compile Include="Perk\ForceUtility\DarkSpread.cs" />
+    <Compile Include="Perk\ForceCombat\DrainLife.cs" />
+    <Compile Include="Perk\ForceCombat\ForceLightning.cs" />
     <Compile Include="Perk\Engineering\CombatModInstallationEngineering.cs" />
     <Compile Include="Perk\Engineering\CraftingModInstallationEngineering.cs" />
     <Compile Include="Perk\Engineering\ElectronicRepair.cs" />
@@ -859,9 +859,9 @@
     <Compile Include="Perk\Lightsaber\DualWielding.cs" />
     <Compile Include="Perk\Lightsaber\SaberstaffMastery.cs" />
     <Compile Include="Perk\Lightsaber\WeaponFinesse.cs" />
-    <Compile Include="Perk\LightSide\ForceAura.cs" />
-    <Compile Include="Perk\LightSide\ForcePush.cs" />
-    <Compile Include="Perk\LightSide\ForceSpread.cs" />
+    <Compile Include="Perk\ForceSupport\ForceAura.cs" />
+    <Compile Include="Perk\ForceCombat\ForcePush.cs" />
+    <Compile Include="Perk\ForceUtility\ForceSpread.cs" />
     <Compile Include="Perk\MartialArts\Chi.cs" />
     <Compile Include="Perk\MartialArts\ElectricFist.cs" />
     <Compile Include="Perk\Medicine\ImmediateForcePack.cs" />
@@ -908,8 +908,8 @@
     <Compile Include="Perk\General\FP.cs" />
     <Compile Include="Perk\General\Meditate.cs" />
     <Compile Include="Perk\Harvesting\SpeedyHarvester.cs" />
-    <Compile Include="Perk\LightSide\ForceBreach.cs" />
-    <Compile Include="Perk\LightSide\ForceHeal.cs" />
+    <Compile Include="Perk\ForceCombat\ForceBreach.cs" />
+    <Compile Include="Perk\ForceSupport\ForceHeal.cs" />
     <Compile Include="Perk\MartialArts\CircleKick.cs" />
     <Compile Include="Perk\MartialArts\EvadeBlasterFire.cs" />
     <Compile Include="Perk\Engineering\RefineryManagement.cs" />
@@ -1152,7 +1152,7 @@
     <Compile Include="Mod\MeditateMod.cs" />
     <Compile Include="Mod\HarvestingMod.cs" />
     <Compile Include="Mod\SneakAttackMod.cs" />
-    <Compile Include="Mod\SummoningMagicMod.cs" />
+    <Compile Include="Mod\ForceUtilityMod.cs" />
     <Compile Include="Mod\WeaponsmithMod.cs" />
     <Compile Include="Processor\AppStateProcessor.cs" />
     <Compile Include="Processor\BehaviourProcessor.cs" />
@@ -1585,6 +1585,7 @@
     <EmbeddedResource Include="Data\Migrations\2018-12-10.3.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-12-13.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-12-13.2.sql" />
+    <Content Include="Data\Migrations\2018-12-14.1.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-07.1.sql" />

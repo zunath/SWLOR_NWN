@@ -103,11 +103,14 @@ namespace SWLOR.Game.Server.Service
                     case ComponentBonusType.EnmityDown:
                         product.EnmityRate -= amount;
                         break;
-                    case ComponentBonusType.DarkAbilityUp:
-                        product.DarkAbilityBonus += amount;
+                    case ComponentBonusType.ForceCombatUp:
+                        product.ForceCombatBonus += amount;
                         break;
-                    case ComponentBonusType.LightAbilityUp:
-                        product.LightAbilityBonus += amount;
+                    case ComponentBonusType.ForceSupportUp:
+                        product.ForceSupportBonus += amount;
+                        break;
+                    case ComponentBonusType.ForceUtilityUp:
+                        product.ForceUtilityBonus += amount;
                         break;
                     case ComponentBonusType.LuckUp:
                         product.LuckBonus += amount;
@@ -136,11 +139,11 @@ namespace SWLOR.Game.Server.Service
                     case ComponentBonusType.DamageUp:
                         product.DamageBonus += amount;
                         break;
-                    case ComponentBonusType.DarkAbilityDown:
-                        product.DarkAbilityBonus -= amount;
+                    case ComponentBonusType.ForceCombatDown:
+                        product.ForceCombatBonus -= amount;
                         break;
-                    case ComponentBonusType.LightAbilityDown:
-                        product.LightAbilityBonus -= amount;
+                    case ComponentBonusType.ForceSupportDown:
+                        product.ForceSupportBonus -= amount;
                         break;
                     case ComponentBonusType.StructureBonusUp:
                         product.StructureBonus += amount;

@@ -430,38 +430,55 @@ namespace SWLOR.Game.Server.GameObject
             set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_ENMITY_RATE", CustomItemPropertyType.EnmityRate, value);
         }
 
-        public virtual int DarkAbilityBonus
+        public virtual int ForceCombatBonus
         {
             get
             {
-                int darkAbilityBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.DarkAbilityBonus);
-                if (darkAbilityBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_DARK_ABILITY_BONUS");
-                DarkAbilityBonus = darkAbilityBonus;
-                return darkAbilityBonus;
+                int forceCombatBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.ForceCombatBonus);
+                if (forceCombatBonus <= -1)
+                {
+                    // Property changed from "Dark Ability Bonus" to "Force Combat Bonus". Look for the new property first,
+                    // and if it's zero use the old value.
+                    int bonus = _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_FORCE_COMBAT_BONUS");
+                    if (bonus == 0)
+                        bonus = _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_DARK_ABILITY_BONUS");
+                    return bonus;
+                }
+                ForceCombatBonus = forceCombatBonus;
+                return forceCombatBonus;
             }
-            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_DARK_ABILITY_BONUS", CustomItemPropertyType.DarkAbilityBonus, value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_DARK_ABILITY_BONUS", CustomItemPropertyType.ForceCombatBonus, value);
         }
-        public virtual int LightAbilityBonus
+        public virtual int ForceSupportBonus
         {
             get
             {
-                int lightAbilityBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.LightAbilityBonus);
-                if (lightAbilityBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_LIGHT_ABILITY_BONUS");
-                LightAbilityBonus = lightAbilityBonus;
-                return lightAbilityBonus;
+                int forceSupportBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.ForceSupportBonus);
+                if (forceSupportBonus <= -1)
+                {
+                    // Property changed from "Light Ability Bonus" to "Force Support Bonus". Look for the new property first,
+                    // and if it's zero use the old value.
+                    int bonus = _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_FORCE_SUPPORT_BONUS");
+                    if(bonus == 0)
+                        bonus = _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_LIGHT_ABILITY_BONUS");
+
+                    return bonus;
+                }
+                ForceSupportBonus = forceSupportBonus;
+                return forceSupportBonus;
             }
-            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_LIGHT_ABILITY_BONUS", CustomItemPropertyType.LightAbilityBonus, value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_FORCE_SUPPORT_BONUS", CustomItemPropertyType.ForceSupportBonus, value);
         }
-        public virtual int SummoningBonus
+        public virtual int ForceUtilityBonus
         {
             get
             {
-                int summoningBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.SummoningBonus);
-                if (summoningBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_SUMMONING_BONUS");
-                SummoningBonus = summoningBonus;
-                return summoningBonus;
+                int forceUtilityBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.ForceUtilityBonus);
+                if (forceUtilityBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_FORCE_UTILITY_BONUS");
+                ForceUtilityBonus = forceUtilityBonus;
+                return forceUtilityBonus;
             }
-            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_SUMMONING_BONUS", CustomItemPropertyType.SummoningBonus, value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_FORCE_UTILITY_BONUS", CustomItemPropertyType.ForceUtilityBonus, value);
         }
         public virtual int LuckBonus
         {

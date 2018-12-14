@@ -321,8 +321,9 @@ namespace SWLOR.Game.Server.Service
                             else stats.CastingSpeed += item.CastingSpeed;
 
                             stats.EnmityRate += CalculateAdjustedValue(0.01f * item.EnmityRate, item.RecommendedLevel, rank, 0.00f);
-                            stats.DarkAbility += CalculateAdjustedValue(item.DarkAbilityBonus, item.RecommendedLevel, rank, 0);
-                            stats.LightAbility += CalculateAdjustedValue(item.LightAbilityBonus, item.RecommendedLevel, rank, 0);
+                            stats.ForceCombat += CalculateAdjustedValue(item.ForceCombatBonus, item.RecommendedLevel, rank, 0);
+                            stats.ForceSupport += CalculateAdjustedValue(item.ForceSupportBonus, item.RecommendedLevel, rank, 0);
+                            stats.ForceUtility += CalculateAdjustedValue(item.ForceUtilityBonus, item.RecommendedLevel, rank, 0);
                             stats.Luck += CalculateAdjustedValue(item.LuckBonus, item.RecommendedLevel, rank, 0);
                             stats.Meditate += CalculateAdjustedValue(item.MeditateBonus, item.RecommendedLevel, rank, 0);
                             stats.Rest += CalculateAdjustedValue(item.RestBonus, item.RecommendedLevel, rank, 0);

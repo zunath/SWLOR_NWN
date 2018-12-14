@@ -390,6 +390,12 @@ namespace SWLOR.Game.Server.Service
         {
             PCCustomEffect spreadEffect = _data.SingleOrDefault<PCCustomEffect>(x => x.PlayerID == player.GlobalID && x.CustomEffectID == (int)CustomEffectType.ForceSpread);
             if (spreadEffect == null) return;
+
+            if (uses <= 0)
+            {
+                RemovePCCustomEffect(player, CustomEffectType.ForceSpread);
+            }
+
             string spreadData = spreadEffect.Data ?? string.Empty;
 
             float range = Convert.ToSingle(spreadData.Split(',')[1]);

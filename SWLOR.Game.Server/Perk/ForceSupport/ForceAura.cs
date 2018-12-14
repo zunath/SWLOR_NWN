@@ -1,4 +1,5 @@
-﻿using NWN;
+﻿using System.Linq;
+using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
@@ -54,6 +55,7 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
         public void OnImpact(NWPlayer player, NWObject target, int level)
         {
             int ticks;
+            var spread = _customEffect.GetForceSpreadDetails(player);
 
             switch (level)
             {
@@ -66,9 +68,28 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
                     break;
             }
 
+            // Force Spread isn't active. This is a single target cast.
+            if (spread.Level <= 0)
+            {
+                _customEffect.ApplyCustomEffect(player, target.Object, CustomEffectType.ForceAura, ticks, level, null);
+                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_AC_BONUS), target);
+            }
+            // Force Spread is active. Target nearby party members.
+            else
+            {
+                spread.Uses--;
+                var members = player.PartyMembers.Where(x => _.GetDistanceBetween(x, target) <= spread.Range ||
+                                                             Equals(x, target));
 
-            _customEffect.ApplyCustomEffect(player, target.Object, CustomEffectType.ForceAura, ticks, level, null);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_AC_BONUS), target);
+                foreach (var member in members)
+                {
+                    _customEffect.ApplyCustomEffect(member, target.Object, CustomEffectType.ForceAura, ticks, level, null);
+                    _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_AC_BONUS), member);
+                }
+
+                _customEffect.SetForceSpreadUses(player, spread.Uses);
+            }
+            
             _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceSupport, null);
         }
 

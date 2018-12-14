@@ -404,3 +404,122 @@ WHERE PerkID = 14
 DELETE FROM dbo.Perk
 WHERE ID = 14
 
+
+-- Remove the Dark Spread custom effect
+DELETE FROM dbo.PCCustomEffect
+WHERE CustomEffectID = 10
+
+DELETE FROM dbo.CustomEffect
+WHERE ID = 10
+
+
+-- Remove the Dark Heal perk
+DELETE FROM dbo.PerkLevelSkillRequirement
+WHERE PerkLevelID IN (
+	SELECT pl.ID 
+	FROM dbo.PerkLevel pl 
+	WHERE pl.PerkID = 6
+)
+
+DELETE FROM dbo.PerkLevel
+WHERE PerkID = 6
+
+DELETE FROM dbo.Perk
+WHERE ID = 6
+
+
+
+
+-- Update Force Spread to affect multiple other perks.
+UPDATE dbo.Perk
+SET Description = 'Several force abilities will affect all party members within range while the effect is active.'
+WHERE ID = 13
+
+-- Level 1
+UPDATE dbo.PerkLevel
+SET Description = '1 use, 10m range, lasts 30 seconds. Perks Affected: Force Heal'
+WHERE PerkID = 13 AND Level = 1
+
+UPDATE dbo.PerkLevelSkillRequirement
+SET RequiredRank = 5
+WHERE PerkLevelID = (
+	SELECT TOP(1) ID 
+	FROM dbo.PerkLevel pl
+	WHERE pl.PerkID = 13 AND pl.Level = 1
+	ORDER BY pl.ID
+)
+
+
+-- Level 2
+UPDATE dbo.PerkLevel
+SET Description = '1 use, 15m range, lasts 1 minute. Perks Affected: Force Heal'
+WHERE PerkID = 13 AND Level = 2
+
+UPDATE dbo.PerkLevelSkillRequirement
+SET RequiredRank = 10
+WHERE PerkLevelID = (
+	SELECT TOP(1) ID 
+	FROM dbo.PerkLevel pl
+	WHERE pl.PerkID = 13 AND pl.Level = 2
+	ORDER BY pl.ID
+)
+
+-- Level 3
+UPDATE dbo.PerkLevel
+SET Description = '2 uses, 15m range, lasts 1 minute. Perks Affected: Force Heal, Force Aura'
+WHERE PerkID = 13 AND Level = 3
+
+UPDATE dbo.PerkLevelSkillRequirement
+SET RequiredRank = 15
+WHERE PerkLevelID = (
+	SELECT TOP(1) ID 
+	FROM dbo.PerkLevel pl
+	WHERE pl.PerkID = 13 AND pl.Level = 3
+	ORDER BY pl.ID
+)
+
+
+-- Level 4
+UPDATE dbo.PerkLevel
+SET Description = '2 uses, 20m range, lasts 2 minutes. Perks Affected: Force Heal, Force Aura'
+WHERE PerkID = 13 AND Level = 4
+
+UPDATE dbo.PerkLevelSkillRequirement
+SET RequiredRank = 20
+WHERE PerkLevelID = (
+	SELECT TOP(1) ID 
+	FROM dbo.PerkLevel pl
+	WHERE pl.PerkID = 13 AND pl.Level = 4
+	ORDER BY pl.ID
+)
+
+
+
+-- Level 5
+UPDATE dbo.PerkLevel
+SET Description = '3 uses, 20m range, lasts 2 minutes. Perks Affected: Force Heal, Force Aura'
+WHERE PerkID = 13 AND Level = 5
+
+UPDATE dbo.PerkLevelSkillRequirement
+SET RequiredRank = 25
+WHERE PerkLevelID = (
+	SELECT TOP(1) ID 
+	FROM dbo.PerkLevel pl
+	WHERE pl.PerkID = 13 AND pl.Level = 5
+	ORDER BY pl.ID
+)
+
+
+-- Level 6
+UPDATE dbo.PerkLevel
+SET Description = '4 uses, 20m range, lasts 2 minutes. Perks Affected: Force Heal, Force Aura'
+WHERE PerkID = 13 AND Level = 6
+
+UPDATE dbo.PerkLevelSkillRequirement
+SET RequiredRank = 30
+WHERE PerkLevelID = (
+	SELECT TOP(1) ID 
+	FROM dbo.PerkLevel pl
+	WHERE pl.PerkID = 13 AND pl.Level = 6
+	ORDER BY pl.ID
+)

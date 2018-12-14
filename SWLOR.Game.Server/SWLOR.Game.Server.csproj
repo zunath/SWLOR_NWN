@@ -222,7 +222,6 @@
     <Compile Include="CustomEffect\Contracts\ICustomEffect.cs" />
     <Compile Include="CustomEffect\ForceBreachEffect.cs" />
     <Compile Include="CustomEffect\ForceShockEffect.cs" />
-    <Compile Include="CustomEffect\DarkSpreadEffect.cs" />
     <Compile Include="CustomEffect\ForceSpreadEffect.cs" />
     <Compile Include="CustomEffect\MeditateEffect.cs" />
     <Compile Include="CustomEffect\PoisonEffect.cs" />
@@ -839,7 +838,6 @@
     <Compile Include="Perk\Cooking\CookingEfficiency.cs" />
     <Compile Include="Perk\Cooking\CookingOptimization.cs" />
     <Compile Include="Perk\ForceUtility\Chainspell.cs" />
-    <Compile Include="Perk\ForceSupport\DarkHeal.cs" />
     <Compile Include="Perk\ForceCombat\DrainLife.cs" />
     <Compile Include="Perk\ForceCombat\ForceLightning.cs" />
     <Compile Include="Perk\Engineering\CombatModInstallationEngineering.cs" />

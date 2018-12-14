@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Perk.ForceSupport
 {
@@ -83,15 +84,7 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
                     HealTarget(player, member, lightBonus, level);
                 }
 
-                if (spread.Uses <= 0)
-                {
-                    _customEffect.RemovePCCustomEffect(player, CustomEffectType.ForceSpread);
-                }
-                else
-                {
-                    _customEffect.SetForceSpreadUses(player, spread.Uses);
-                }
-
+                _customEffect.SetForceSpreadUses(player, spread.Uses);
             }
 
             _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceSupport, target.Object);
@@ -180,16 +173,16 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
             oPC.AssignCommand(() =>
             {
                 Effect heal = _.EffectHeal(amount);
-                _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, heal, oTarget);
+                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, heal, oTarget);
 
                 if (length > 0.0f && regenAmount > 0)
                 {
                     Effect regen = _.EffectRegenerate(regenAmount, 1.0f);
-                    _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, regen, oTarget, length + 0.1f);
+                    _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, regen, oTarget, length + 0.1f);
                 }
 
-                Effect vfx = _.EffectVisualEffect(NWScript.VFX_IMP_HEALING_M);
-                _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, vfx, oTarget.Object);
+                Effect vfx = _.EffectVisualEffect(VFX_IMP_HEALING_M);
+                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, oTarget.Object);
             });            
         }
 

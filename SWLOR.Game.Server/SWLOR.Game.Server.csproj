@@ -1342,6 +1342,7 @@
     <Compile Include="ValueObject\DataPackageFile.cs" />
     <Compile Include="ValueObject\DialogNavigation.cs" />
     <Compile Include="ValueObject\EffectiveStats.cs" />
+    <Compile Include="ValueObject\ForceSpreadDetails.cs" />
     <Compile Include="ValueObject\ObjectSpawn.cs" />
     <Compile Include="ValueObject\PCTempBaseData.cs" />
     <Compile Include="ValueObject\CraftingData.cs" />

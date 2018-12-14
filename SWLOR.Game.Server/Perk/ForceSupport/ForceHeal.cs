@@ -68,36 +68,28 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
         {
             var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
             int lightBonus = effectiveStats.ForceSupport;
+            var spread = _customEffect.GetForceSpreadDetails(player);
 
-            PCCustomEffect spreadEffect = _data.SingleOrDefault<PCCustomEffect>(x => x.PlayerID == player.GlobalID && x.CustomEffectID == (int)CustomEffectType.ForceSpread);
-            string spreadData = spreadEffect?.Data ?? string.Empty;
-            int spreadLevel = spreadEffect?.EffectiveLevel ?? 0;
-            int spreadUses = spreadEffect == null ? 0 : Convert.ToInt32(spreadData.Split(',')[0]);
-            float spreadRange = spreadEffect == null ? 0 : Convert.ToSingle(spreadData.Split(',')[1]);
-            
-            if (spreadLevel <= 0)
+            if (spread.Level <= 0)
                 HealTarget(player, target, lightBonus, level);
             else
             {
-                var members = player.PartyMembers.Where(x => _.GetDistanceBetween(x, target) <= spreadRange ||
+                var members = player.PartyMembers.Where(x => _.GetDistanceBetween(x, target) <= spread.Range ||
                                                                Equals(x, target));
-                spreadUses--;
+                spread.Uses--;
 
                 foreach (var member in members)
                 {
                     HealTarget(player, member, lightBonus, level);
                 }
 
-                if (spreadUses <= 0)
+                if (spread.Uses <= 0)
                 {
                     _customEffect.RemovePCCustomEffect(player, CustomEffectType.ForceSpread);
                 }
                 else
                 {
-                    // ReSharper disable once PossibleNullReferenceException
-                    spreadEffect.Data = spreadUses + "," + spreadRange;
-                    _data.SubmitDataChange(spreadEffect, DatabaseActionType.Update);
-                    player.SendMessage("Force Spread uses remaining: " + spreadUses);
+                    _customEffect.SetForceSpreadUses(player, spread.Uses);
                 }
 
             }

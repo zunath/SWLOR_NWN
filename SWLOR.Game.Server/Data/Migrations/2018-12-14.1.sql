@@ -523,3 +523,21 @@ WHERE PerkLevelID = (
 	WHERE pl.PerkID = 13 AND pl.Level = 6
 	ORDER BY pl.ID
 )
+
+
+
+
+-- Remove Dark Heal from cooldown category
+UPDATE dbo.CooldownCategory
+SET Name = 'Force Heal'
+WHERE ID = 6
+
+-- Increase Force Aura FP price
+UPDATE dbo.Perk
+SET BaseFPCost = 8
+WHERE ID = 76
+
+-- Remove Dark Spread from cooldown category
+UPDATE dbo.CooldownCategory
+SET Name = 'Force Spread'
+WHERE ID = 20

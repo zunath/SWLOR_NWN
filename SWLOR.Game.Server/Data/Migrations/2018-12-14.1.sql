@@ -381,3 +381,9 @@ SET [Primary] = 3,
 	Secondary = 6,
 	Tertiary = 5
 WHERE ID = 11
+
+
+-- Add Organic requirement to the description of Drain Life perk.
+UPDATE dbo.Perk
+SET Description = 'Deals damage to a single target and heals the user by a portion of damage dealt. Target must be organic.'
+WHERE ID = 78

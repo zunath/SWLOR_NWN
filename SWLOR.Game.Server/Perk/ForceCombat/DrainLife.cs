@@ -29,12 +29,39 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
             if (_.GetDistanceBetween(oPC, oTarget) > 15.0f)
                 return false;
 
+            // Must be used on creatures which are organic.
+            if (oTarget.IsCreature)
+            {
+                NWCreature creature = oTarget.Object;
+
+                if (creature.RacialType == (int) CustomRaceType.Robot)
+                {
+                    return false;
+                }
+            }
+            else return false;
+
             return true;
         }
 
         public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
         {
-            return "Target out of range.";
+            if (_.GetDistanceBetween(oPC, oTarget) > 15.0f)
+                return "Target out of range.";
+
+            // Must be used on creatures which are organic.
+            if (oTarget.IsCreature)
+            {
+                NWCreature creature = oTarget.Object;
+
+                if (creature.RacialType == (int) CustomRaceType.Robot)
+                {
+                    return "This force ability may only be used on organic targets.";
+                }
+            }
+            else return "This force ability may only be used on organic targets.";
+
+            return string.Empty;
         }
 
 

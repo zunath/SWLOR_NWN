@@ -362,7 +362,8 @@ namespace SWLOR.Game.Server.Conversation
                 ExteriorStyleID = exteriorStyleID,
                 CustomName = string.Empty,
                 ParentPCBaseStructureID = data.ParentStructureID,
-                StructureBonus = data.StructureItem.StructureBonus
+                StructureBonus = data.StructureItem.StructureBonus, 
+                StructureModeID = baseStructure.DefaultStructureModeID
             };
             _data.SubmitDataChange(structure, DatabaseActionType.Insert);
             
@@ -434,6 +435,7 @@ namespace SWLOR.Game.Server.Conversation
                 Preview();
             }
 
+            LoadStylePage(type);
         }
 
         private void DoInteriorPreview()

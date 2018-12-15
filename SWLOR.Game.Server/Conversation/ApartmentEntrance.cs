@@ -137,7 +137,9 @@ namespace SWLOR.Game.Server.Conversation
             var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == apartment.ID);
             var buildingStyle = _data.Get<BuildingStyle>(apartment.BuildingStyleID);
             var owner = _data.Get<Player>(apartment.PlayerID);
-            var permission = _data.SingleOrDefault<PCBasePermission>(x => x.PlayerID == oPC.GlobalID && x.PCBaseID == pcBaseID);
+            var permission = _data.SingleOrDefault<PCBasePermission>(x => x.PlayerID == oPC.GlobalID && 
+                                                                          x.PCBaseID == pcBaseID &&
+                                                                          !x.IsPublicPermission);
 
             if (permission == null || !permission.CanEnterBuildings)
             {

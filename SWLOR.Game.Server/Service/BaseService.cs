@@ -460,11 +460,14 @@ namespace SWLOR.Game.Server.Service
         {
             NWPlayer player = user.Object;
             string sector = GetSectorOfLocation(targetLocation);
+
+            // Picked an invalid sector
             if (sector == "INVALID")
             {
                 return "Invalid location selected.";
             }
 
+            // Can't find the structure item for some reason.
             if (structureItem == null || !structureItem.IsValid || !Equals(structureItem.Possessor, user))
             {
                 return "Unable to locate structure item.";
@@ -475,6 +478,8 @@ namespace SWLOR.Game.Server.Service
             Guid buildingStructureGuid = string.IsNullOrWhiteSpace(buildingStructureID) ? Guid.Empty : new Guid(buildingStructureID);
             string pcBaseID = area.GetLocalString("PC_BASE_ID");
             Guid pcBaseGUID = string.IsNullOrWhiteSpace(pcBaseID) ? Guid.Empty : new Guid(pcBaseID);
+            
+            // Identify the building type.
             BuildingType buildingType;
             if (!string.IsNullOrWhiteSpace(pcBaseID))
             {
@@ -491,10 +496,13 @@ namespace SWLOR.Game.Server.Service
 
             Area dbArea = _data.SingleOrDefault<Area>(x => x.Resref == area.Resref);
             
+            // Can't build in this area.
             if (dbArea == null || !dbArea.IsBuildable ) return "Structures cannot be placed in this area.";
             PCBase pcBase = !string.IsNullOrWhiteSpace(pcBaseID) ?
                 _data.Get<PCBase>(pcBaseGUID) :
                 _data.SingleOrDefault<PCBase>(x => x.AreaResref == area.Resref && x.Sector == sector);
+            
+            // Check and see if the player has hit the structure limit.
             if (pcBase == null && buildingType == BuildingType.Interior)
             {
                 var parentStructure = _data.Get<PCBaseStructure>(buildingStructureGuid);
@@ -509,29 +517,35 @@ namespace SWLOR.Game.Server.Service
 
             }
 
+            // Area is unclaimed but PC doesn't own it.
             if (pcBase == null)
                 return "This area is unclaimed but not owned by you. You may purchase a lease on it from the planetary government by using your Base Management Tool (found under feats).";
 
+            // Check whether player has permission to place or edit structures.
             var canPlaceOrEditStructures = buildingType == BuildingType.Apartment || buildingType == BuildingType.Exterior ? 
                 _perm.HasBasePermission(player, pcBase.ID, BasePermission.CanPlaceEditStructures) :                 // Bases
                 _perm.HasStructurePermission(player, buildingStructureGuid, StructurePermission.CanPlaceEditStructures);    // Buildings
 
+            // Don't have permission.
             if (!canPlaceOrEditStructures)
                 return "You do not have permission to place or edit structures in this territory.";
 
-            var structure = _data.Get<BaseStructure>(baseStructureID);
-            var structureType = _data.Get<Data.Entity.BaseStructureType>(structure.BaseStructureTypeID);
+            var baseStructure = _data.Get<BaseStructure>(baseStructureID);
+            var baseStructureType = _data.Get<Data.Entity.BaseStructureType>(baseStructure.BaseStructureTypeID);
             
-            if (!structureType.CanPlaceOutside && buildingType == BuildingType.Exterior)
+            // Can only place this structure inside buildings and the player is currently outside.
+            if (!baseStructureType.CanPlaceOutside && buildingType == BuildingType.Exterior)
             {
                 return "That structure can only be placed inside buildings.";
             }
 
-            if (!structureType.CanPlaceInside && (buildingType == BuildingType.Interior || buildingType == BuildingType.Apartment))
+            // Can only place this structure outside
+            if (!baseStructureType.CanPlaceInside && (buildingType == BuildingType.Interior || buildingType == BuildingType.Apartment))
             {
                 return "That structure can only be placed outside of buildings.";
             }
 
+            // Check for control tower requirements.
             if (buildingType == BuildingType.Exterior)
             {
                 var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == pcBase.ID).ToList();
@@ -539,20 +553,34 @@ namespace SWLOR.Game.Server.Service
                 bool hasControlTower = structures
                                            .SingleOrDefault(x =>
                                            {
-                                               var baseStructure = _data.Get<BaseStructure>(x.BaseStructureID);
-                                               return baseStructure.BaseStructureTypeID == (int) BaseStructureType.ControlTower;
+                                               var bs = _data.Get<BaseStructure>(x.BaseStructureID);
+                                               return bs.BaseStructureTypeID == (int) BaseStructureType.ControlTower;
                                            }) != null;
 
-                if (!hasControlTower && structureType.ID != (int)BaseStructureType.ControlTower)
+                if (!hasControlTower && baseStructureType.ID != (int)BaseStructureType.ControlTower)
                 {
                     return "A control tower must be placed down in the sector first.";
                 }
 
-                if (hasControlTower && structureType.ID == (int)BaseStructureType.ControlTower)
+                if (hasControlTower && baseStructureType.ID == (int)BaseStructureType.ControlTower)
                 {
                     return "Only one control tower can be placed down per sector.";
                 }
+            }
 
+            // Crafting devices may only be placed inside buildings set to the 'Workshop' mode.
+            if (baseStructureType.ID == (int) BaseStructureType.CraftingDevice)
+            {
+                if (buildingType == BuildingType.Interior)
+                {
+                    var parentBuilding = _data.Get<PCBaseStructure>(buildingStructureGuid);
+                    var mode = (StructureModeType)parentBuilding.StructureModeID;
+
+                    if (mode != StructureModeType.Workshop)
+                    {
+                        return "Crafting devices may only be placed inside buildings set to the 'Workshop' mode.";
+                    }
+                }
             }
             
             return null;
@@ -601,7 +629,7 @@ namespace SWLOR.Game.Server.Service
             var pcBase = _data.Get<PCBase>(pcBaseID);
             var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == pcBaseID).ToList();
             var areas = NWModule.Get().Areas;
-            var baseArea = areas.Single(x => x.Resref == pcBase.AreaResref);
+            var baseArea = areas.Single(x => x.Resref == pcBase.AreaResref && !x.IsInstance);
             List<AreaStructure> areaStructures = baseArea.Data["BASE_SERVICE_STRUCTURES"];
             areaStructures = areaStructures.Where(x => x.PCBaseID == pcBaseID).ToList();
             

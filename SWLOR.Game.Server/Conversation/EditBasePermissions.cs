@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -39,15 +36,17 @@ namespace SWLOR.Game.Server.Conversation
 
             DialogPage mainPage = new DialogPage(
                 "Settings adjusted here will affect your entire base. If you want to adjust individual structures, such as buildings, use their individual menus to do so.",
-                "Change Permissions");
+                "Change Player Permissions",
+                "Change Public Permissions");
 
             DialogPage playerListPage = new DialogPage("Please select a player.");
-
             DialogPage playerDetailsPage = new DialogPage();
+            DialogPage publicPermissionsPage = new DialogPage();
 
             dialog.AddPage("MainPage", mainPage);
             dialog.AddPage("PlayerListPage", playerListPage);
             dialog.AddPage("PlayerDetailsPage", playerDetailsPage);
+            dialog.AddPage("PublicPermissionsPage", publicPermissionsPage);
             return dialog;
         }
 
@@ -68,6 +67,9 @@ namespace SWLOR.Game.Server.Conversation
                 case "PlayerDetailsPage":
                     PlayerDetailsResponses(responseID);
                     break;
+                case "PublicPermissionsPage":
+                    PublicPermissionsResponses(responseID);
+                    break;
             }
         }
 
@@ -83,10 +85,11 @@ namespace SWLOR.Game.Server.Conversation
 
         private void MainResponses(int responseID)
         {
+            var data = _base.GetPlayerTempData(GetPC());
+            
             switch (responseID)
             {
                 case 1: // Change Permissions
-                    var data = _base.GetPlayerTempData(GetPC());
                     if (!_perm.HasBasePermission(GetPC(), data.PCBaseID, BasePermission.CanAdjustPermissions))
                     {
                         GetPC().FloatingText("You do not have permission to change other players' permissions.");
@@ -95,6 +98,24 @@ namespace SWLOR.Game.Server.Conversation
 
                     BuildPlayerListPage();
                     ChangePage("PlayerListPage");
+                    break;
+                case 2: // Change Public Permissions
+                    var pcBase = _data.Get<PCBase>(data.PCBaseID);
+                    
+                    if (pcBase.Sector == "AP")
+                    {
+                        GetPC().FloatingText("Public permissions cannot be adjusted inside apartments.");
+                        return;
+                    }
+
+                    if (!_perm.HasBasePermission(GetPC(), data.PCBaseID, BasePermission.CanAdjustPublicPermissions))
+                    {
+                        GetPC().FloatingText("You do not have permission to change this base's public permissions.");
+                        return;
+                    }
+
+                    BuildPublicPermissionsPage();
+                    ChangePage("PublicPermissionsPage");
                     break;
             }
         }
@@ -124,7 +145,9 @@ namespace SWLOR.Game.Server.Conversation
         {
             ClearPageResponses("PlayerDetailsPage");
             var data = _base.GetPlayerTempData(GetPC());
-            var permission = _data.SingleOrDefault<PCBasePermission>(x => x.PlayerID == player.GlobalID && x.PCBaseID == data.PCBaseID);
+            var permission = _data.SingleOrDefault<PCBasePermission>(x => x.PlayerID == player.GlobalID && 
+                                                                          x.PCBaseID == data.PCBaseID &&
+                                                                          !x.IsPublicPermission);
             
             // Intentionally excluded permissions: CanAdjustPermissions, CanCancelLease
             bool canPlaceEditStructures = permission?.CanPlaceEditStructures ?? false;
@@ -136,6 +159,8 @@ namespace SWLOR.Game.Server.Conversation
             bool canRenameStructures = permission?.CanRenameStructures ?? false;
             bool canEditPrimaryResidence = permission?.CanEditPrimaryResidence ?? false;
             bool canRemovePrimaryResidence = permission?.CanRemovePrimaryResidence ?? false;
+            bool canChangeStructureMode = permission?.CanChangeStructureMode ?? false;
+            bool canAdjustPublicPermissions = permission?.CanAdjustPublicPermissions ?? false;
 
             string header = _color.Green("Name: ") + player.Name + "\n\n";
 
@@ -149,6 +174,8 @@ namespace SWLOR.Game.Server.Conversation
             header += "Can Rename Structures: " + (canRenameStructures ? _color.Green("YES") : _color.Red("NO")) + "\n";
             header += "Can Edit Primary Residence: " + (canEditPrimaryResidence ? _color.Green("YES") : _color.Red("NO")) + "\n";
             header += "Can Remove Primary Residence: " + (canRemovePrimaryResidence ? _color.Green("YES") : _color.Red("NO")) + "\n";
+            header += "Can Change Structure Mode: " + (canChangeStructureMode ? _color.Green("YES") : _color.Red("NO")) + "\n";
+            header += "Can Adjust PUBLIC Permissions: " + (canAdjustPublicPermissions ? _color.Green("YES") : _color.Red("NO")) + "\n";
 
             SetPageHeader("PlayerDetailsPage", header);
 
@@ -160,48 +187,62 @@ namespace SWLOR.Game.Server.Conversation
             AddResponseToPage("PlayerDetailsPage", "Toggle: Can Retrieve Structures", true, player);
             AddResponseToPage("PlayerDetailsPage", "Toggle: Can Rename Structures", true, player);
             AddResponseToPage("PlayerDetailsPage", "Toggle: Can Edit Primary Residence", true, player);
+            AddResponseToPage("PlayerDetailsPage", "Toggle: Can Change Structure Mode", true, player);
+            AddResponseToPage("PlayerDetailsPage", "Toggle: Can Adjust PUBLIC Permissions", true, player);
         }
 
         private void PlayerDetailsResponses(int responseID)
         {
             var response = GetResponseByID("PlayerDetailsPage", responseID);
             NWPlayer player = (NWPlayer)response.CustomData;
+            Guid playerID = player.GlobalID;
 
             switch (responseID)
             {
                 case 1: // Can Place/Edit Structures
-                    TogglePermission(player, BasePermission.CanPlaceEditStructures);
+                    TogglePermission(playerID, BasePermission.CanPlaceEditStructures, false);
                     break;
                 case 2: // Can Access Structure Inventory
-                    TogglePermission(player, BasePermission.CanAccessStructureInventory);
+                    TogglePermission(playerID, BasePermission.CanAccessStructureInventory, false);
                     break;
                 case 3: // Can Manage Base Fuel
-                    TogglePermission(player, BasePermission.CanManageBaseFuel);
+                    TogglePermission(playerID, BasePermission.CanManageBaseFuel, false);
                     break;
                 case 4: // Can Extend Lease
-                    TogglePermission(player, BasePermission.CanExtendLease);
+                    TogglePermission(playerID, BasePermission.CanExtendLease, false);
                     break;
                 case 5: // Can Enter Buildings
-                    TogglePermission(player, BasePermission.CanEnterBuildings);
+                    TogglePermission(playerID, BasePermission.CanEnterBuildings, false);
                     break;
                 case 6: // Can Retrieve Structures
-                    TogglePermission(player, BasePermission.CanRetrieveStructures);
+                    TogglePermission(playerID, BasePermission.CanRetrieveStructures, false);
                     break;
                 case 7: // Can Rename Structures
-                    TogglePermission(player, BasePermission.CanRenameStructures);
+                    TogglePermission(playerID, BasePermission.CanRenameStructures, false);
                     break;
                 case 8: // Can Edit Primary Residence
-                    TogglePermission(player, BasePermission.CanEditPrimaryResidence);
+                    TogglePermission(playerID, BasePermission.CanEditPrimaryResidence, false);
+                    break;
+                case 9: // Can Change Structure Mode
+                    TogglePermission(playerID, BasePermission.CanChangeStructureMode, false);
+                    break;
+                case 10: // Can Adjust PUBLIC Permissions
+                    TogglePermission(playerID, BasePermission.CanAdjustPublicPermissions, false);
                     break;
             }
 
             BuildPlayerDetailsPage(player);
         }
 
-        private void TogglePermission(NWPlayer player, BasePermission permission)
+        private void TogglePermission(Guid playerID, BasePermission permission, bool isPublicPermission)
         {
             var data = _base.GetPlayerTempData(GetPC());
-            var dbPermission = _data.SingleOrDefault<PCBasePermission>(x => x.PlayerID == player.GlobalID && x.PCBaseID == data.PCBaseID);
+            var dbPermission = isPublicPermission ?
+                _data.SingleOrDefault<PCBasePermission>(x => x.PCBaseID == data.PCBaseID &&
+                                                             x.IsPublicPermission) :
+                _data.SingleOrDefault<PCBasePermission>(x => x.PlayerID == playerID && 
+                                                             x.PCBaseID == data.PCBaseID &&
+                                                             !x.IsPublicPermission);
 
             DatabaseActionType action = DatabaseActionType.Update;
             if (dbPermission == null)
@@ -209,7 +250,8 @@ namespace SWLOR.Game.Server.Conversation
                 dbPermission = new PCBasePermission
                 {
                     PCBaseID = data.PCBaseID,
-                    PlayerID = player.GlobalID
+                    PlayerID = playerID,
+                    IsPublicPermission = isPublicPermission
                 };
                 action = DatabaseActionType.Insert;
             }
@@ -243,12 +285,57 @@ namespace SWLOR.Game.Server.Conversation
                 case BasePermission.CanRemovePrimaryResidence:
                     dbPermission.CanRemovePrimaryResidence = !dbPermission.CanRemovePrimaryResidence;
                     break;
+                case BasePermission.CanChangeStructureMode:
+                    dbPermission.CanChangeStructureMode = !dbPermission.CanChangeStructureMode;
+                    break;
+                case BasePermission.CanAdjustPublicPermissions:
+                    dbPermission.CanAdjustPublicPermissions = !dbPermission.CanAdjustPublicPermissions;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(permission), permission, null);
             }
 
             _data.SubmitDataChange(dbPermission, action);
         }
+
+
+        private void BuildPublicPermissionsPage()
+        {
+            ClearPageResponses("PublicPermissionsPage");
+            var data = _base.GetPlayerTempData(GetPC());
+            var permission = _data.SingleOrDefault<PCBasePermission>(x => x.PCBaseID == data.PCBaseID &&
+                                                                          x.IsPublicPermission);
+
+            // Intentionally excluded permissions:
+            // CanAdjustPermissions, CanCancelLease, CanPlaceEditStructures, CanAccessStructureInventory, CanAdjustPermissions,
+            // CanRetrieveStructures, CanRenameStructures, CanEditPrimaryResidence, CanRemovePrimaryResidence, CanChangeStructureMode,
+            // CanAdjustPublicPermissions
+            bool canEnterBuildings = permission?.CanEnterBuildings ?? false;
+
+            string header = _color.Green("Public Permissions: ") + "\n\n";
+            header += "Can Enter Buildings: " + (canEnterBuildings ? _color.Green("YES") : _color.Red("NO")) + "\n";
+
+            SetPageHeader("PublicPermissionsPage", header);
+
+            AddResponseToPage("PublicPermissionsPage", "Toggle: Can Enter Buildings");
+        }
+
+        private void PublicPermissionsResponses(int responseID)
+        {
+            var data = _base.GetPlayerTempData(GetPC());
+            var pcBase = _data.Get<PCBase>(data.PCBaseID);
+            var ownerPlayerID = pcBase.PlayerID;
+
+            switch (responseID)
+            {
+                case 1: // Can Enter Buildings
+                    TogglePermission(ownerPlayerID, BasePermission.CanEnterBuildings, true);
+                    break;
+            }
+
+            BuildPublicPermissionsPage();
+        }
+
 
         public override void EndDialog()
         {

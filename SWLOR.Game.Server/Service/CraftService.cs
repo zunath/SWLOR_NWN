@@ -201,7 +201,8 @@ namespace SWLOR.Game.Server.Service
 
             oPC.IsBusy = true;
 
-            float modifiedCraftDelay = CalculateCraftingDelay(oPC, blueprint.SkillID);
+            int atmosphere = CalculateAreaAtmosphereBonus(oPC.Area);
+            float modifiedCraftDelay = CalculateCraftingDelay(oPC, blueprint.SkillID, atmosphere);
             oPC.AssignCommand(() =>
             {
                 _.ClearAllActions();
@@ -223,12 +224,13 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        private float CalculateCraftingDelay(NWPlayer oPC, int skillID)
+        private float CalculateCraftingDelay(NWPlayer oPC, int skillID, int atmosphere)
         {
             PerkType perkType;
             float adjustedSpeed = 1.0f;
             SkillType skillType = (SkillType)skillID;
 
+            // Identify which perk to use for this skill.
             if (skillType == SkillType.Weaponsmith) perkType = PerkType.SpeedyWeaponsmith;
             else if (skillType == SkillType.Armorsmith) perkType = PerkType.SpeedyArmorsmith;
             else if (skillType == SkillType.Cooking) perkType = PerkType.SpeedyCooking;
@@ -239,6 +241,7 @@ namespace SWLOR.Game.Server.Service
 
             int perkLevel = _perk.GetPCPerkLevel(oPC, perkType);
 
+            // Each perk level reduces crafting speed by 10%.
             switch (perkLevel)
             {
                 case 1: adjustedSpeed = 0.9f; break;
@@ -251,6 +254,22 @@ namespace SWLOR.Game.Server.Service
                 case 8: adjustedSpeed = 0.2f; break;
                 case 9: adjustedSpeed = 0.1f; break;
                 case 10: adjustedSpeed = 0.01f; break;
+            }
+
+            // Workshops with an atmosphere bonus decrease crafting time.
+            if (atmosphere >= 45)
+            {
+                adjustedSpeed -= 0.2f;
+            }
+            else if (atmosphere >= 5)
+            {
+                adjustedSpeed -= 0.1f;
+            }
+
+            // Never fall below 1% of overall crafting time.
+            if (adjustedSpeed <= 0.01f)
+            {
+                adjustedSpeed = 0.01f;
             }
 
             return BaseCraftDelay * adjustedSpeed;
@@ -583,5 +602,94 @@ namespace SWLOR.Game.Server.Service
             pc.SetLocalObject("CRAFT_RENAMING_ITEM_OBJECT", renameItem);
             pc.SendMessage("Please enter in a name for this item. Length should be between 3 and 64 characters. Use this feat again to cancel this procedure.");
         }
+
+        public int CalculateAreaAtmosphereBonus(NWArea area)
+        {
+            // Building IDs are stored on the instanced area's local variables.
+            string pcStructureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
+            if (string.IsNullOrWhiteSpace(pcStructureID)) return 0;
+
+            // Pull the building structure from the database.
+            Guid buildingID = new Guid(pcStructureID);
+            var building = _data.Get<PCBaseStructure>(buildingID);
+
+            // Building must be in "Workshop" mode in order for the atmosphere bonuses to take effect.
+            if (building.StructureModeID != (int) StructureModeType.Workshop) return 0;
+
+            // Get all child structures contained by this building which improve atmosphere.
+            var structures = _data.Where<PCBaseStructure>(x =>
+            {
+                if (x.ParentPCBaseStructureID != buildingID) return false;
+                var baseStructure = _data.Get<BaseStructure>(x.BaseStructureID);
+                return baseStructure.HasAtmosphere;
+            });
+
+            // Add up the total atmosphere rating, being careful not to go over the cap.
+            int bonus = structures.Sum(x => 1 + x.StructureBonus);
+            if (bonus > 75) bonus = 75;
+
+            return bonus;
+        }
+
+        public string GetAreaAtmosphereBonusText(NWArea area)
+        {
+            int bonus = CalculateAreaAtmosphereBonus(area);
+
+            string craftingSpeedBonus = string.Empty;
+            string propertyTransferBonus = string.Empty;
+            string equipmentBonus = string.Empty;
+
+            if (bonus >= 5)
+            {
+                craftingSpeedBonus = "Crafting speed increased by 10%\n";
+            }
+            if (bonus >= 15)
+            {
+                propertyTransferBonus = "Property transfer chance increased by 2%\n";
+            }
+            if (bonus >= 25)
+            {
+                equipmentBonus = "Equipment with +Crafting bonuses grant an additional +0.1% per stat.\n";
+            }
+            if (bonus >= 45)
+            {
+                craftingSpeedBonus = "Crafting speed increased by 20%\n";
+            }
+            if (bonus >= 60)
+            {
+                propertyTransferBonus = "Property transfer chance increased by 4%\n";
+            }
+
+            if (bonus >= 75)
+            {
+                equipmentBonus = "Equipment with +Crafting bonuses grant an additional +0.1% per stat.\n";
+            }
+
+            var text = string.Empty;
+
+            if (!string.IsNullOrWhiteSpace(craftingSpeedBonus) &&
+                !string.IsNullOrWhiteSpace(propertyTransferBonus) &&
+                !string.IsNullOrWhiteSpace(equipmentBonus))
+            {
+                text = "Workshop Crafting Bonuses:\n\n";
+                text += craftingSpeedBonus;
+                text += propertyTransferBonus;
+                text += equipmentBonus;
+            }
+
+            return text;
+        }
+
+        public void OnAreaEnter()
+        {
+            NWArea area = Object.OBJECT_SELF;
+            string bonuses = GetAreaAtmosphereBonusText(area);
+
+            if (string.IsNullOrWhiteSpace(bonuses)) return;
+            NWCreature entering = _.GetEnteringObject();
+
+            entering.SendMessage(bonuses);
+        }
+
     }
 }

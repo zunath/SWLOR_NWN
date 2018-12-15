@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int ResourceStorage { get; set; }
         public int RetrievalRating { get; set; }
         public int FuelRating { get; set; }
-   
+        public int DefaultStructureModeID { get; set; }
+
     }
 }

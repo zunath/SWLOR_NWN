@@ -26,5 +26,8 @@ namespace SWLOR.Game.Server.Service.Contracts
         int CalculatePCEffectiveLevel(NWPlayer player, int skillRank, SkillType skill);
         void OnNWNXChat();
         void OnModuleUseFeat();
+        int CalculateAreaAtmosphereBonus(NWArea area);
+        string GetAreaAtmosphereBonusText(NWArea area);
+        void OnAreaEnter();
     }
 }

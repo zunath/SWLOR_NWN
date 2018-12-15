@@ -5,10 +5,11 @@ using NWN;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
-
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
+using Attribute = SWLOR.Game.Server.Data.Entity.Attribute;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -143,13 +144,25 @@ namespace SWLOR.Game.Server.Conversation
                 noContributeMessage = _color.Green("This skill does not contribute to your cumulative skill cap.") + "\n\n";
             }
 
-            return
+            Attribute primaryAttribute = _data.Get<Attribute>(skill.Primary);
+            Attribute secondaryAttribute = _data.Get<Attribute>(skill.Secondary);
+            Attribute tertiaryAttribute = _data.Get<Attribute>(skill.Tertiary);
+            string primary = _color.Green("Primary (+" + PlayerStatService.PrimaryIncrease + "): ") + primaryAttribute.Name + "\n";
+            string secondary = _color.Green("Secondary (+" + PlayerStatService.SecondaryIncrease + "): ") + secondaryAttribute.Name + "\n";
+            string tertiary = _color.Green("Tertiary (+" + PlayerStatService.TertiaryIncrease + "): ") + tertiaryAttribute.Name + "\n";
+
+            string header =
                     _color.Green("Skill: ") + skill.Name + "\n" +
                     _color.Green("Rank: ") + title + "\n" +
                     _color.Green("Exp: ") + _menu.BuildBar(pcSkill.XP, req.XP, 100, _color.TokenStart(255, 127, 0)) + "\n" +
+                    primary +
+                    secondary +
+                    tertiary +
                     noContributeMessage +
                     decayLock + "\n\n" +
                     _color.Green("Description: ") + skill.Description + "\n";
+
+            return header;
         }
 
         public override void DoAction(NWPlayer player, string pageName, int responseID)

@@ -28,8 +28,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IItemService _item;
         private readonly IDataService _data;
         private readonly AppCache _cache;
-        private readonly INWNXProfiler _nwnxProfiler;
-
+        
         public SkillService(
             INWScript script,
             IRandomService random,
@@ -38,8 +37,7 @@ namespace SWLOR.Game.Server.Service
             IPlayerStatService playerStat,
             IItemService item,
             IDataService data,
-            AppCache cache,
-            INWNXProfiler nwnxProfiler)
+            AppCache cache)
         {
             _ = script;
             _random = random;
@@ -49,7 +47,6 @@ namespace SWLOR.Game.Server.Service
             _item = item;
             _data = data;
             _cache = cache;
-            _nwnxProfiler = nwnxProfiler;
         }
 
         public int SkillCap => 500;

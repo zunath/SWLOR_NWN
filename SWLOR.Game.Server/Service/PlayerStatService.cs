@@ -15,9 +15,9 @@ namespace SWLOR.Game.Server.Service
 {
     public class PlayerStatService : IPlayerStatService
     {
-        private const float PrimaryIncrease = 0.2f;
-        private const float SecondaryIncrease = 0.1f;
-        private const float TertiaryIncrease = 0.05f;
+        public const float PrimaryIncrease = 0.2f;
+        public const float SecondaryIncrease = 0.1f;
+        public const float TertiaryIncrease = 0.05f;
         private const int MaxAttributeBonus = 70;
 
         private readonly INWScript _;

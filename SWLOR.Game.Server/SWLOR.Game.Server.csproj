@@ -410,6 +410,7 @@
     <Compile Include="Enumeration\EmoteStyle.cs" />
     <Compile Include="Enumeration\EnmityAdjustmentRuleType.cs" />
     <Compile Include="Enumeration\EventType.cs" />
+    <Compile Include="Enumeration\ForceAbilityType.cs" />
     <Compile Include="Enumeration\LocalVariableType.cs" />
     <Compile Include="Enumeration\MovementRate.cs" />
     <Compile Include="Enumeration\MovementType.cs" />
@@ -1618,12 +1619,18 @@
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_damagecost.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_damagetype.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_damvulcost.2da" />
+    <None Include="ServerFiles\HakPaks\swlor_2da\iprp_ddefbon.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_dura.2da" />
+    <None Include="ServerFiles\HakPaks\swlor_2da\iprp_edefbon.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_enmrate.2da" />
+    <None Include="ServerFiles\HakPaks\swlor_2da\iprp_epotbon.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_evobon.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_fabbon.2da" />
+    <None Include="ServerFiles\HakPaks\swlor_2da\iprp_faccbon.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_faidbon.2da" />
+    <None Include="ServerFiles\HakPaks\swlor_2da\iprp_fdefbon.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_feats.2da" />
+    <None Include="ServerFiles\HakPaks\swlor_2da\iprp_fpotbon.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_harbonus.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_hpbonus.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_hpregbon.2da" />
@@ -1631,6 +1638,7 @@
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_immunity.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_itmtype.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_kitcost.2da" />
+    <None Include="ServerFiles\HakPaks\swlor_2da\iprp_ldefbon.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_lightcost.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_logbonus.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_luckbon.2da" />
@@ -1642,6 +1650,7 @@
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_matcost.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_material.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_maxdura.2da" />
+    <None Include="ServerFiles\HakPaks\swlor_2da\iprp_mdefbon.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_medbon.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_meleecost.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_metbonus.2da" />

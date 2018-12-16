@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
         public void OnImpact(NWPlayer player, NWObject target, int level)
         {
             var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
-            int lightBonus = effectiveStats.ForceSupport;
+            int lightBonus = effectiveStats.LightPotency;
             var spread = _customEffect.GetForceSpreadDetails(player);
 
             if (spread.Level <= 0)

@@ -21,9 +21,9 @@
         EnmityRate = 115,
         ItemType = 116,
         ArmorClass = 117,
-        ForceCombatBonus = 118,
-        ForceSupportBonus = 119,
-        ForceUtilityBonus = 120,
+        DarkPotencyBonus = 118,
+        LightPotencyBonus = 119,
+        MindPotencyBonus = 120,
         LuckBonus = 121,
         MeditateBonus = 122,
         MedicineBonus = 123,
@@ -44,6 +44,14 @@
         ComponentItemTypeRestriction = 138,
         CraftBonusFabrication = 139,
         StructureBonus = 140,
-        ScanningBonus = 141
+        ScanningBonus = 141,
+        ElectricalPotencyBonus = 142,
+        ForcePotencyBonus = 143,
+        ForceAccuracyBonus = 144,
+        ForceDefenseBonus = 145,
+        ElectricalDefenseBonus = 146,
+        MindDefenseBonus = 147,
+        LightDefenseBonus = 148,
+        DarkDefenseBonus = 149
     }
 }

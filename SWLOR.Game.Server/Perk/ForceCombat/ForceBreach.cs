@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
         public void OnImpact(NWPlayer player, NWObject target, int level)
         {
             var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
-            int forceSupportBonus = effectiveStats.ForceSupport;
+            int forceSupportBonus = effectiveStats.LightPotency;
             int amount;
             int length;
             int dotAmount;

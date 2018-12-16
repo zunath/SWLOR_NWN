@@ -321,9 +321,21 @@ namespace SWLOR.Game.Server.Service
                             else stats.CastingSpeed += item.CastingSpeed;
 
                             stats.EnmityRate += CalculateAdjustedValue(0.01f * item.EnmityRate, item.RecommendedLevel, rank, 0.00f);
-                            stats.ForceCombat += CalculateAdjustedValue(item.ForceCombatBonus, item.RecommendedLevel, rank, 0);
-                            stats.ForceSupport += CalculateAdjustedValue(item.ForceSupportBonus, item.RecommendedLevel, rank, 0);
-                            stats.ForceUtility += CalculateAdjustedValue(item.ForceUtilityBonus, item.RecommendedLevel, rank, 0);
+                            
+                            stats.ForcePotency += CalculateAdjustedValue(item.ForcePotencyBonus, item.RecommendedLevel, rank, 0);
+                            stats.ForceDefense += CalculateAdjustedValue(item.ForceDefenseBonus, item.RecommendedLevel, rank, 0);
+                            stats.ForceAccuracy += CalculateAdjustedValue(item.ForceAccuracyBonus, item.RecommendedLevel, rank, 0);
+                            
+                            stats.ElectricalPotency += CalculateAdjustedValue(item.ElectricalPotencyBonus, item.RecommendedLevel, rank, 0);
+                            stats.MindPotency += CalculateAdjustedValue(item.MindPotencyBonus, item.RecommendedLevel, rank, 0);
+                            stats.LightPotency += CalculateAdjustedValue(item.LightPotencyBonus, item.RecommendedLevel, rank, 0);
+                            stats.DarkPotency += CalculateAdjustedValue(item.DarkPotencyBonus, item.RecommendedLevel, rank, 0);
+                            
+                            stats.ElectricalDefense += CalculateAdjustedValue(item.ElectricalDefenseBonus, item.RecommendedLevel, rank, 0);
+                            stats.MindDefense += CalculateAdjustedValue(item.MindDefenseBonus, item.RecommendedLevel, rank, 0);
+                            stats.LightDefense += CalculateAdjustedValue(item.LightDefenseBonus, item.RecommendedLevel, rank, 0);
+                            stats.DarkDefense += CalculateAdjustedValue(item.DarkDefenseBonus, item.RecommendedLevel, rank, 0);
+                            
                             stats.Luck += CalculateAdjustedValue(item.LuckBonus, item.RecommendedLevel, rank, 0);
                             stats.Meditate += CalculateAdjustedValue(item.MeditateBonus, item.RecommendedLevel, rank, 0);
                             stats.Rest += CalculateAdjustedValue(item.RestBonus, item.RecommendedLevel, rank, 0);

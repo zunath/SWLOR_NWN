@@ -239,17 +239,49 @@ namespace SWLOR.Game.Server.Service
             {
                 description += _color.Orange("Enmity: ") + examinedItem.EnmityRate + "%\n";
             }
-            if (examinedItem.ForceCombatBonus > 0)
+            if (examinedItem.ForcePotencyBonus > 0)
             {
-                description += _color.Orange("Dark Ability Bonus: ") + examinedItem.ForceCombatBonus + "\n";
+                description += _color.Orange("Force Potency Bonus: ") + examinedItem.ForcePotencyBonus + "\n";
             }
-            if (examinedItem.ForceSupportBonus > 0)
+            if (examinedItem.ForceAccuracyBonus > 0)
             {
-                description += _color.Orange("Light Ability Bonus: ") + examinedItem.ForceSupportBonus + "\n";
+                description += _color.Orange("Force Accuracy Bonus: ") + examinedItem.ForceAccuracyBonus + "\n";
             }
-            if (examinedItem.ForceUtilityBonus > 0)
+            if (examinedItem.ForceDefenseBonus > 0)
             {
-                description += _color.Orange("Summoning Bonus: ") + examinedItem.ForceUtilityBonus + "\n";
+                description += _color.Orange("Force Defense Bonus: ") + examinedItem.ForceDefenseBonus + "\n";
+            }
+            if (examinedItem.ElectricalPotencyBonus > 0)
+            {
+                description += _color.Orange("Electrical Potency Bonus: ") + examinedItem.ElectricalPotencyBonus + "\n";
+            }
+            if (examinedItem.MindPotencyBonus > 0)
+            {
+                description += _color.Orange("Mind Potency Bonus: ") + examinedItem.MindPotencyBonus + "\n";
+            }
+            if (examinedItem.LightPotencyBonus > 0)
+            {
+                description += _color.Orange("Light Potency Bonus: ") + examinedItem.LightPotencyBonus + "\n";
+            }
+            if (examinedItem.DarkPotencyBonus > 0)
+            {
+                description += _color.Orange("Dark Potency Bonus: ") + examinedItem.DarkPotencyBonus + "\n";
+            }
+            if (examinedItem.ElectricalDefenseBonus > 0)
+            {
+                description += _color.Orange("Electrical Defense Bonus: ") + examinedItem.ElectricalDefenseBonus + "\n";
+            }
+            if (examinedItem.MindDefenseBonus > 0)
+            {
+                description += _color.Orange("Mind Defense Bonus: ") + examinedItem.MindDefenseBonus + "\n";
+            }
+            if (examinedItem.LightDefenseBonus > 0)
+            {
+                description += _color.Orange("Light Defense Bonus: ") + examinedItem.LightDefenseBonus + "\n";
+            }
+            if (examinedItem.DarkDefenseBonus > 0)
+            {
+                description += _color.Orange("Dark Defense Bonus: ") + examinedItem.DarkDefenseBonus + "\n";
             }
             if (examinedItem.LuckBonus > 0)
             {

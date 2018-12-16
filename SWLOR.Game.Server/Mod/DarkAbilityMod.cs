@@ -9,8 +9,8 @@ namespace SWLOR.Game.Server.Mod
     {
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            if (target.ForceCombatBonus >= 50)
-                return "You cannot improve that item's force combat bonus any further.";
+            if (target.DarkPotencyBonus >= 50)
+                return "You cannot improve that item's dark potency bonus any further.";
 
             return null;
         }
@@ -18,15 +18,15 @@ namespace SWLOR.Game.Server.Mod
         public void Apply(NWPlayer player, NWItem target, params string[] args)
         {
             int value = Convert.ToInt32(args[0]);
-            int newValue = target.ForceCombatBonus + value;
+            int newValue = target.DarkPotencyBonus + value;
             if (newValue > 50) newValue = 50;
-            target.ForceCombatBonus = newValue;
+            target.DarkPotencyBonus = newValue;
         }
 
         public string Description(NWPlayer player, NWItem target, params string[] args)
         {
             int value = Convert.ToInt32(args[0]);
-            return "Force Combat +" + value;
+            return "Dark Potency +" + value;
         }
     }
 }

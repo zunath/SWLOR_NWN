@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
         {
             var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
             int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
-            int lightBonus = effectiveStats.ForceSupport;
+            int lightBonus = effectiveStats.LightPotency;
             int min = 1;
             float length;
             int damage;

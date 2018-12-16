@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
         public void OnImpact(NWPlayer player, NWObject target, int level)
         {
             var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
-            int darkBonus = effectiveStats.ForceCombat;
+            int darkBonus = effectiveStats.DarkPotency;
             int amount;
             int length;
             int dotAmount;

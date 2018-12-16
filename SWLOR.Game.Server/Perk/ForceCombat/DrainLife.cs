@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
             int damage;
             float recoveryPercent;
             var effectiveStats = _stat.GetPlayerItemEffectiveStats(player);
-            int darkBonus = effectiveStats.ForceCombat;
+            int darkBonus = effectiveStats.DarkPotency;
             int min = 1;
             int wisdom = player.WisdomModifier;
             int intelligence = player.IntelligenceModifier;

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Globalization;
-using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.ValueObject;
 using static NWN.NWScript;
 using Object = NWN.Object;
 
@@ -22,7 +22,6 @@ namespace SWLOR.Game.Server.Service
         private readonly IEnmityService _enmity;
         private readonly IPlayerStatService _playerStat;
         private readonly ICustomEffectService _customEffect;
-        private readonly IItemService _item;
         private readonly IColorTokenService _color;
         
         public CombatService(
@@ -34,7 +33,6 @@ namespace SWLOR.Game.Server.Service
             IEnmityService enmity,
             IPlayerStatService playerStat,
             ICustomEffectService customEffect,
-            IItemService item,
             IColorTokenService color)
         {
             _ = script;
@@ -45,7 +43,6 @@ namespace SWLOR.Game.Server.Service
             _enmity = enmity;
             _playerStat = playerStat;
             _customEffect = customEffect;
-            _item = item;
             _color = color;
         }
 
@@ -372,5 +369,76 @@ namespace SWLOR.Game.Server.Service
             
             _nwnxDamage.SetDamageEventData(data);
         }
+
+        public int CalculateForceAccuracy(
+            NWCreature caster, 
+            NWCreature target,
+            ForceAbilityType abilityType, 
+            CustomAttribute primaryAttribute)
+        {
+
+            EffectiveItemStats casterItemStats = caster.IsPlayer ? _playerStat.GetPlayerItemEffectiveStats(caster.Object) : null;
+            float casterPrimary;
+            float casterSecondary;
+            float casterItemAccuracy = casterItemStats?.ForceAccuracy ?? 0;
+
+            EffectiveItemStats targetItemStats = target.IsPlayer ? _playerStat.GetPlayerItemEffectiveStats(target.Object) : null;
+            float targetPrimary;
+            float targetSecondary;
+            float targetItemDefense;
+
+            switch (abilityType)
+            {
+                case ForceAbilityType.Electrical:
+                    casterPrimary = caster.Intelligence;
+                    casterSecondary = caster.Wisdom;
+                    targetPrimary = target.Wisdom;
+                    targetSecondary = target.Intelligence;
+                    targetItemDefense = targetItemStats?.ElectricalDefense ?? 0;
+                    break;
+                case ForceAbilityType.Dark:
+                    casterPrimary = caster.Intelligence;
+                    casterSecondary = caster.Wisdom;
+                    targetPrimary = target.Wisdom;
+                    targetSecondary = target.Intelligence;
+                    targetItemDefense = targetItemStats?.DarkDefense ?? 0;
+                    break;
+                case ForceAbilityType.Mind:
+                    casterPrimary = caster.Wisdom;
+                    casterSecondary = caster.Intelligence;
+                    targetPrimary = target.Intelligence;
+                    targetSecondary = target.Wisdom;
+                    targetItemDefense = targetItemStats?.MindDefense ?? 0;
+                    break;
+                case ForceAbilityType.Light:
+                    casterPrimary = caster.Wisdom;
+                    casterSecondary = caster.Intelligence;
+                    targetPrimary = target.Intelligence;
+                    targetSecondary = target.Wisdom;
+                    targetItemDefense = targetItemStats?.ElectricalDefense ?? 0;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(abilityType), abilityType, null);
+            }
+
+            // Calculate accuracy based on the caster's primary and secondary stats. Add modifiers for overall item accuracy.
+            float baseAccuracy = caster.Charisma * 0.25f + casterPrimary * 0.75f + casterSecondary * 0.5f + casterItemAccuracy * 0.15f;
+
+            // Calculate defense based on target's primary and secondary stats. Add modifiers for specific defense types.
+            float baseDefense = target.Charisma * 0.25f + targetPrimary * 0.75f + targetSecondary * 0.5f + targetItemDefense * 0.15f;
+            float delta = baseAccuracy - baseDefense;
+            float finalAccuracy = delta < 0 ?
+                50 + (float)Math.Floor(delta / 2.0f) :
+                50 + delta;
+
+            // Accuracy cannot go above 95% or below 0%
+            if (finalAccuracy > 95)
+                finalAccuracy = 95;
+            else if (finalAccuracy < 0)
+                finalAccuracy = 0;
+
+            return (int)finalAccuracy;
+        }
+
     }
 }

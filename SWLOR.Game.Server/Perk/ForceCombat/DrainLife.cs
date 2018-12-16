@@ -2,26 +2,27 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Perk.ForceCombat
 {
     public class DrainLife: IPerk
     {
         private readonly INWScript _;
-        private readonly IRandomService _random;
-        private readonly IPlayerStatService _stat;
         private readonly ISkillService _skill;
+        private readonly ICombatService _combat;
+        private readonly IColorTokenService _color;
 
         public DrainLife(
             INWScript script,
-            IRandomService random,
-            IPlayerStatService stat,
-            ISkillService skill)
+            ISkillService skill,
+            ICombatService combat,
+            IColorTokenService color)
         {
             _ = script;
-            _random = random;
-            _stat = stat;
             _skill = skill;
+            _combat = combat;
+            _color = color;
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -82,52 +83,58 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
 
         public void OnImpact(NWPlayer player, NWObject target, int perkLevel)
         {
-            int damage;
             float recoveryPercent;
-            var effectiveStats = _stat.GetPlayerItemEffectiveStats(player);
-            int darkBonus = effectiveStats.DarkPotency;
-            int min = 1;
-            int wisdom = player.WisdomModifier;
-            int intelligence = player.IntelligenceModifier;
-            min += darkBonus / 3 + intelligence / 2 + wisdom / 3;
-            
+            int basePotency;
+            const float Tier1Modifier = 2;
+            const float Tier2Modifier = 1;
+            const float Tier3Modifier = 0;
+            const float Tier4Modifier = 0;
+
             switch (perkLevel)
             {
                 case 1:
-                    damage = _random.D6(3, min);
+                    basePotency = 10;
                     recoveryPercent = 0.2f;
                     break;
                 case 2:
-                    damage = _random.D6(5, min);
+                    basePotency = 25;
                     recoveryPercent = 0.2f;
                     break;
                 case 3:
-                    damage = _random.D6(5, min);
+                    basePotency = 40;
                     recoveryPercent = 0.4f;
                     break;
                 case 4:
-                    damage = _random.D6(6, min);
+                    basePotency = 55;
                     recoveryPercent = 0.4f;
                     break;
                 case 5:
-                    damage = _random.D6(6, min);
-                    recoveryPercent = 0.5f;
-                    break;
-                case 6: // Only available with background bonus
-                    damage = _random.D6(7, min);
+                    basePotency = 70;
                     recoveryPercent = 0.5f;
                     break;
                 default: return;
             }
-            
+
+            var calc = _combat.CalculateForceDamage(
+                player, 
+                target.Object, 
+                ForceAbilityType.Dark, 
+                basePotency,
+                Tier1Modifier,
+                Tier2Modifier,
+                Tier3Modifier,
+                Tier4Modifier);
+
+            //player.SendMessage(_color.Combat("Resistance: " + calc.Resistance + ", Damage: " + calc.Damage + ", Item Bonus: " + calc.ItemBonus));
+
             _.AssignCommand(player, () =>
             {
-                int heal = (int)(damage * recoveryPercent);
+                int heal = (int)(calc.Damage * recoveryPercent);
                 if (heal > target.CurrentHP) heal = target.CurrentHP;
 
-                _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, _.EffectDamage(damage), target);
-                _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, _.EffectHeal(heal), player);
-                _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(NWScript.VFX_BEAM_MIND), target, 1.0f);
+                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(calc.Damage), target);
+                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(heal), player);
+                _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_BEAM_MIND), target, 1.0f);
             });
             
             _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceCombat, target.Object);

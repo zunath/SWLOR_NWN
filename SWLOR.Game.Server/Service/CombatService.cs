@@ -370,19 +370,21 @@ namespace SWLOR.Game.Server.Service
             _nwnxDamage.SetDamageEventData(data);
         }
 
-        public int CalculateForceAccuracy(
+        private int CalculateForceAccuracy(
             NWCreature caster, 
             NWCreature target,
-            ForceAbilityType abilityType, 
-            CustomAttribute primaryAttribute)
+            ForceAbilityType abilityType)
         {
-
-            EffectiveItemStats casterItemStats = caster.IsPlayer ? _playerStat.GetPlayerItemEffectiveStats(caster.Object) : null;
+            EffectiveItemStats casterItemStats = caster.IsPlayer ? 
+                _playerStat.GetPlayerItemEffectiveStats(caster.Object) : 
+                null;
             float casterPrimary;
             float casterSecondary;
             float casterItemAccuracy = casterItemStats?.ForceAccuracy ?? 0;
 
-            EffectiveItemStats targetItemStats = target.IsPlayer ? _playerStat.GetPlayerItemEffectiveStats(target.Object) : null;
+            EffectiveItemStats targetItemStats = target.IsPlayer ? 
+                _playerStat.GetPlayerItemEffectiveStats(target.Object) : 
+                null;
             float targetPrimary;
             float targetSecondary;
             float targetItemDefense;
@@ -438,6 +440,145 @@ namespace SWLOR.Game.Server.Service
                 finalAccuracy = 0;
 
             return (int)finalAccuracy;
+        }
+
+        private float CalculateResistanceRating(
+            NWCreature caster,
+            NWCreature target,
+            ForceAbilityType forceAbility)
+        {
+            int accuracy = CalculateForceAccuracy(caster, target, forceAbility);
+            
+            // First resistance check - Zero resistance
+            if (_random.D100(1) <= accuracy) return 1.0f;
+
+            // Second resistance check - 1/2 resistance
+            if (_random.D100(1) <= accuracy) return 0.5f;
+
+            // Third resistance check - 1/4 resistance
+            if (_random.D100(1) <= accuracy) return 0.25f;
+
+            // Fourth resistance check - 1/8 resistance
+            if (_random.D100(1) <= accuracy) return 0.125f;
+
+            // Failed all resistance checks. 100% resistance
+            return 0f;
+        }
+
+        private int CalculateItemPotencyBonus(NWCreature caster, ForceAbilityType abilityType)
+        {
+            if (!caster.IsPlayer) return 0;
+            EffectiveItemStats itemStats = _playerStat.GetPlayerItemEffectiveStats(caster.Object);
+            
+            int itemBonus = itemStats.ForcePotency;
+            switch (abilityType)
+            {
+                case ForceAbilityType.Electrical:
+                    itemBonus += itemStats.ElectricalPotency;
+                    break;
+                case ForceAbilityType.Mind:
+                    itemBonus += itemStats.MindPotency;
+                    break;
+                case ForceAbilityType.Light:
+                    itemBonus += itemStats.LightPotency;
+                    break;
+                case ForceAbilityType.Dark:
+                    itemBonus += itemStats.DarkPotency;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(abilityType), abilityType, null);
+            }
+
+            return itemBonus;
+        }
+
+        public ForceDamageResult CalculateForceDamage(
+            NWCreature caster,
+            NWCreature target,
+            ForceAbilityType abilityType,
+            int basePotency,
+            float tier1Modifier,
+            float tier2Modifier,
+            float tier3Modifier,
+            float tier4Modifier)
+        {
+            float resistanceMultiplier = CalculateResistanceRating(caster, target, abilityType);
+            int itemBonus = CalculateItemPotencyBonus(caster, abilityType);
+
+            int casterPrimary = 0;
+            int casterSecondary = 0;
+            int targetPrimary = 0;
+            int targetSecondary = 0;
+            switch (abilityType)
+            {
+                case ForceAbilityType.Electrical:
+                    casterPrimary = caster.Intelligence;
+                    casterSecondary = caster.Wisdom;
+                    targetPrimary = target.Intelligence;
+                    targetSecondary = target.Wisdom;
+                    break;
+                case ForceAbilityType.Mind:
+                    casterPrimary = caster.Wisdom;
+                    casterSecondary = caster.Intelligence;
+                    targetPrimary = target.Wisdom;
+                    targetSecondary = target.Intelligence;
+                    break;
+                case ForceAbilityType.Light:
+                    casterPrimary = caster.Wisdom;
+                    casterSecondary = caster.Intelligence;
+                    targetPrimary = target.Intelligence;
+                    targetSecondary = target.Wisdom;
+                    break;
+                case ForceAbilityType.Dark:
+                    casterPrimary = caster.Intelligence;
+                    casterSecondary = caster.Wisdom;
+                    targetPrimary = target.Wisdom;
+                    targetSecondary = target.Intelligence;
+                    break;
+            }
+
+            // Calculate delta between caster's primary/secondary stats and target's primary and secondary stats
+            int delta = (int)((casterPrimary + casterSecondary * 0.5f) - (targetPrimary + targetSecondary * 0.5f));
+
+            float multiplier;
+            // Not every ability will have tiers 2-4. Default to the lowest one if it's missing.
+            if (delta <= 49 || tier2Modifier <= 0.0f)
+            {
+                multiplier = tier1Modifier;
+            }
+            else if (delta <= 99 || tier3Modifier <= 0.0f)
+            {
+                multiplier = tier2Modifier;
+            }
+            else if (delta <= 199 || tier4Modifier <= 0.0f) 
+            {
+                multiplier = tier3Modifier;
+            }
+            else
+            {
+                multiplier = tier4Modifier;
+            }
+
+            //caster.SendMessage("casterPrimary = " + casterPrimary + ", casterSecondary = " + casterSecondary + ", targetPrimary = " + targetPrimary + ", targetSecondary = " + targetSecondary);
+            //caster.SendMessage("itemBonus = " + itemBonus + ", basePotency = " + basePotency + ", delta = " + delta + ", multiplier = " + multiplier + ", resistanceMultiplier = " + resistanceMultiplier);
+
+            // Combine everything together to get the damage result.
+            int damage = (int)((itemBonus + basePotency + (delta * multiplier)) * resistanceMultiplier);
+
+            if (damage > 0)
+                damage += _random.D8(1);
+
+            if (damage <= 1)
+                damage = 1;
+
+            ForceDamageResult result = new ForceDamageResult
+            {
+                Damage = damage,
+                Resistance = resistanceMultiplier,
+                ItemBonus = itemBonus
+            };
+
+            return result;
         }
 
     }

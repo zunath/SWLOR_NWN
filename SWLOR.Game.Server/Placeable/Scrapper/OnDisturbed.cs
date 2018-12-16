@@ -44,6 +44,13 @@ namespace SWLOR.Game.Server.Placeable.Scrapper
                 return false;
             }
 
+            // Item is a component but it was crafted. Cannot scrap crafted items.
+            if (!string.IsNullOrWhiteSpace(item.GetLocalString("CRAFTER_PLAYER_ID")))
+            {
+                player.FloatingText("You cannot scrap crafted items.");
+                return false;
+            }
+
             // Remove the item properties
             foreach (var ip in item.ItemProperties)
             {

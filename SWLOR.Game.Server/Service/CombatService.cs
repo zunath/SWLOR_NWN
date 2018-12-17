@@ -442,7 +442,7 @@ namespace SWLOR.Game.Server.Service
             return (int)finalAccuracy;
         }
 
-        private float CalculateResistanceRating(
+        public float CalculateResistanceRating(
             NWCreature caster,
             NWCreature target,
             ForceAbilityType forceAbility)

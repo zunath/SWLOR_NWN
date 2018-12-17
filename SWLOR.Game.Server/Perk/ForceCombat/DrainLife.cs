@@ -12,17 +12,26 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
         private readonly ISkillService _skill;
         private readonly ICombatService _combat;
         private readonly IColorTokenService _color;
+        private readonly IPerkService _perk;
+        private readonly IRandomService _random;
+        private readonly IPlayerStatService _stat;
 
         public DrainLife(
             INWScript script,
             ISkillService skill,
             ICombatService combat,
-            IColorTokenService color)
+            IColorTokenService color,
+            IPerkService perk,
+            IRandomService random,
+            IPlayerStatService stat)
         {
             _ = script;
             _skill = skill;
             _combat = combat;
             _color = color;
+            _perk = perk;
+            _random = random;
+            _stat = stat;
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -97,22 +106,30 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
                     recoveryPercent = 0.2f;
                     break;
                 case 2:
-                    basePotency = 25;
+                    basePotency = 15;
                     recoveryPercent = 0.2f;
                     break;
                 case 3:
-                    basePotency = 40;
+                    basePotency = 20;
                     recoveryPercent = 0.4f;
                     break;
                 case 4:
-                    basePotency = 55;
+                    basePotency = 25;
                     recoveryPercent = 0.4f;
                     break;
                 case 5:
-                    basePotency = 70;
+                    basePotency = 30;
                     recoveryPercent = 0.5f;
                     break;
                 default: return;
+            }
+
+            var effectiveStats = _stat.GetPlayerItemEffectiveStats(player);
+            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
+            if (_random.Random(100) + 1 <= luck)
+            {
+                recoveryPercent = 1.0f;
+                player.SendMessage("Lucky drain life!");
             }
 
             var calc = _combat.CalculateForceDamage(

@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Perk.ForceCombat
 {
@@ -12,18 +13,22 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
         private readonly IRandomService _random;
         private readonly IPlayerStatService _playerStat;
         private readonly ISkillService _skill;
+        private readonly ICombatService _combat;
 
-        public ForcePush(INWScript script,
+        public ForcePush(
+            INWScript script,
             IPerkService perk,
             IRandomService random,
             IPlayerStatService playerStat,
-            ISkillService skill)
+            ISkillService skill,
+            ICombatService combat)
         {
             _ = script;
             _perk = perk;
             _random = random;
             _playerStat = playerStat;
             _skill = skill;
+            _combat = combat;
         }
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
@@ -56,55 +61,57 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
 
         public void OnImpact(NWPlayer player, NWObject target, int level)
         {
-            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
-            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
-            int lightBonus = effectiveStats.LightPotency;
-            int min = 1;
             float length;
             int damage;
-            int wisdom = player.WisdomModifier;
-            int intelligence = player.IntelligenceModifier;
-            min += lightBonus / 4 + wisdom / 3 + intelligence / 4;
-
+            
             switch (level)
             {
                 case 1:
-                    damage = _random.D4(1, min);
+                    damage = _random.D4(1);
                     length = 3;
                     break;
                 case 2:
-                    damage = _random.D4(1, min);
+                    damage = _random.D4(1);
                     length = 6;
                     break;
                 case 3:
-                    damage = _random.D6(1, min);
+                    damage = _random.D6(1);
                     length = 6;
                     break;
                 case 4:
-                    damage = _random.D8(1, min);
+                    damage = _random.D8(1);
                     length = 6;
                     break;
                 case 5:
-                    damage = _random.D8(1, min);
-                    length = 9;
-                    break;
-                case 6: // Only available with background perk
-                    damage = _random.D12(1, min);
+                    damage = _random.D8(1);
                     length = 9;
                     break;
 
                 default: return;
             }
+            _skill.RegisterPCToNPCForSkill(player, target, SkillType.ForceCombat);
             
+            // Resistance affects length for this perk.
+            float resistance = _combat.CalculateResistanceRating(player, target.Object, ForceAbilityType.Mind);
+            length = length * resistance;
+
+            if (length <= 0.0f)
+            {
+                player.SendMessage("Your Force Push effect was resisted.");
+                return;
+            }
+
+            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
+            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
             if (_random.Random(100) + 1 <= luck)
             {
                 length = length * 2;
                 player.SendMessage("Lucky force push!");
             }
 
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, _.EffectDamage(damage, NWScript.DAMAGE_TYPE_POSITIVE), target);
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, _.EffectKnockdown(), target, length);
-            _skill.RegisterPCToNPCForSkill(player, target, SkillType.ForceCombat);
+            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_POSITIVE), target);
+            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectKnockdown(), target, length);
+            
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

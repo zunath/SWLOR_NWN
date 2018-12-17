@@ -785,3 +785,186 @@ WHERE SkillID IN (19, 20)
 
 
 
+-- Update Force Breach descripions
+UPDATE dbo.Perk
+SET Description = 'Deals Light damage to a single target. Also inflicts the Force Breach effect at higher levels. This effect deals Mind damage over time for a limited time.'
+WHERE ID = 3
+
+UPDATE dbo.PerkLevel
+SET Description = 'Potency: 15'
+WHERE PerkID = 3
+	AND Level = 1
+	
+UPDATE dbo.PerkLevel
+SET Description = 'Potency: 20, Damage Over Time: 4, Length: 6s'
+WHERE PerkID = 3
+	AND Level = 2
+	
+UPDATE dbo.PerkLevel
+SET Description = 'Potency: 25, Damage Over Time: 6, Length: 6s'
+WHERE PerkID = 3
+	AND Level = 3
+	
+UPDATE dbo.PerkLevel
+SET Description = 'Potency: 40, Damage Over Time: 6, Length: 12s'
+WHERE PerkID = 3
+	AND Level = 4
+	
+UPDATE dbo.PerkLevel
+SET Description = 'Potency: 50, Damage Over Time: 6, Length: 12s'
+WHERE PerkID = 3
+	AND Level = 5
+	
+UPDATE dbo.PerkLevel
+SET Description = 'Potency: 60, Damage Over Time: 6, Length: 12s'
+WHERE PerkID = 3
+	AND Level = 6
+	
+UPDATE dbo.PerkLevel
+SET Description = 'Potency: 70, Damage Over Time: 6, Length: 12s'
+WHERE PerkID = 3
+	AND Level = 7
+	
+UPDATE dbo.PerkLevel
+SET Description = 'Potency: 80, Damage Over Time: 8, Length: 12s'
+WHERE PerkID = 3
+	AND Level = 8
+	
+UPDATE dbo.PerkLevel
+SET Description = 'Potency: 90, Damage Over Time: 8, Length: 12s'
+WHERE PerkID = 3
+	AND Level = 9
+	
+UPDATE dbo.PerkLevel
+SET Description = 'Potency: 100, Damage Over Time: 10, Length: 12s'
+WHERE PerkID = 3
+	AND Level = 10
+
+-- Move skill requirement to Force Combat
+UPDATE dbo.PerkLevelSkillRequirement
+SET SkillID = 19
+WHERE ID IN (
+	SELECT ps.ID 
+	FROM dbo.PerkLevelSkillRequirement ps
+	JOIN dbo.PerkLevel pl ON pl.ID = ps.PerkLevelID
+	WHERE pl.PerkID = 3 
+)
+
+
+
+-- Update Drain Life descriptions
+UPDATE dbo.Perk
+SET Description = 'Deals Dark damage to a single target and heals the user by a portion of damage dealt. Target must be organic.'
+WHERE ID = 78
+
+UPDATE dbo.PerkLevel
+SET Description = 'Potency: 10, Recovery: 20%'
+WHERE PerkID = 78
+	AND Level = 1
+
+	
+UPDATE dbo.PerkLevel
+SET Description = 'Potency: 15, Recovery: 20%'
+WHERE PerkID = 78
+	AND Level = 2
+	
+UPDATE dbo.PerkLevel
+SET Description = 'Potency: 20, Recovery: 40%'
+WHERE PerkID = 78
+	AND Level = 3
+	
+UPDATE dbo.PerkLevel
+SET Description = 'Potency: 25, Recovery: 40%'
+WHERE PerkID = 78
+	AND Level = 4
+	
+UPDATE dbo.PerkLevel
+SET Description = 'Potency: 30, Recovery: 50%'
+WHERE PerkID = 78
+	AND Level = 5
+
+
+
+
+
+-- Update Force Lightning descripions
+UPDATE dbo.Perk
+SET Description = 'Deals Electrical damage to a single target. Also inflicts the Force Shock effect at higher levels. This effect deals Electrical damage over time for a limited time.'
+WHERE ID = 4
+
+UPDATE dbo.PerkLevel
+SET Description = 'Potency: 15'
+WHERE PerkID = 4
+	AND Level = 1
+	
+UPDATE dbo.PerkLevel
+SET Description = 'Potency: 20, Damage Over Time: 4, Length: 6s'
+WHERE PerkID = 4
+	AND Level = 2
+	
+UPDATE dbo.PerkLevel
+SET Description = 'Potency: 25, Damage Over Time: 6, Length: 6s'
+WHERE PerkID = 4
+	AND Level = 3
+	
+UPDATE dbo.PerkLevel
+SET Description = 'Potency: 40, Damage Over Time: 6, Length: 12s'
+WHERE PerkID = 4
+	AND Level = 4
+	
+UPDATE dbo.PerkLevel
+SET Description = 'Potency: 50, Damage Over Time: 6, Length: 12s'
+WHERE PerkID = 4
+	AND Level = 5
+	
+UPDATE dbo.PerkLevel
+SET Description = 'Potency: 60, Damage Over Time: 6, Length: 12s'
+WHERE PerkID = 4
+	AND Level = 6
+	
+UPDATE dbo.PerkLevel
+SET Description = 'Potency: 70, Damage Over Time: 6, Length: 12s'
+WHERE PerkID = 4
+	AND Level = 7
+	
+UPDATE dbo.PerkLevel
+SET Description = 'Potency: 80, Damage Over Time: 8, Length: 12s'
+WHERE PerkID = 4
+	AND Level = 8
+	
+UPDATE dbo.PerkLevel
+SET Description = 'Potency: 90, Damage Over Time: 8, Length: 12s'
+WHERE PerkID = 4
+	AND Level = 9
+	
+UPDATE dbo.PerkLevel
+SET Description = 'Potency: 100, Damage Over Time: 10, Length: 12s'
+WHERE PerkID = 4
+	AND Level = 10
+
+-- Move skill requirement to Force Combat
+UPDATE dbo.PerkLevelSkillRequirement
+SET SkillID = 19
+WHERE ID IN (
+	SELECT ps.ID 
+	FROM dbo.PerkLevelSkillRequirement ps
+	JOIN dbo.PerkLevel pl ON pl.ID = ps.PerkLevelID
+	WHERE pl.PerkID = 4
+)
+
+
+-- Update Force Push descripions
+UPDATE dbo.Perk
+SET Description = 'Deals Mind damage to target and knocks them down for a short period of time.'
+WHERE ID = 19
+
+
+-- Move skill requirement to Force Combat
+UPDATE dbo.PerkLevelSkillRequirement
+SET SkillID = 19
+WHERE ID IN (
+	SELECT ps.ID 
+	FROM dbo.PerkLevelSkillRequirement ps
+	JOIN dbo.PerkLevel pl ON pl.ID = ps.PerkLevelID
+	WHERE pl.PerkID = 19
+)

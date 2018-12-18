@@ -580,6 +580,5 @@ namespace SWLOR.Game.Server.Service
 
             return result;
         }
-
     }
 }

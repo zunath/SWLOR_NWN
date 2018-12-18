@@ -8,10 +8,14 @@ namespace SWLOR.Game.Server.Perk.ForceUtility
     public class Chainspell: IPerk
     {
         private readonly ICustomEffectService _customEffect;
+        private readonly ISkillService _skill;
 
-        public Chainspell(ICustomEffectService customEffect)
+        public Chainspell(
+            ICustomEffectService customEffect,
+            ISkillService skill)
         {
             _customEffect = customEffect;
+            _skill = skill;
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -59,6 +63,7 @@ namespace SWLOR.Game.Server.Perk.ForceUtility
             }
 
             _customEffect.ApplyCustomEffect(player, player, CustomEffectType.Chainspell, duration, perkLevel, null);
+            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceUtility, null);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

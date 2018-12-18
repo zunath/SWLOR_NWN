@@ -9,15 +9,16 @@ namespace SWLOR.Game.Server.Perk.ForceUtility
     {
         private readonly INWScript _;
         private readonly ICustomEffectService _customEffect;
-        private readonly IPerkService _perk;
+        private readonly ISkillService _skill;
 
-        public ForceSpread(INWScript script,
+        public ForceSpread(
+            INWScript script,
             ICustomEffectService customEffect,
-            IPerkService perk)
+            ISkillService skill)
         {
             _ = script;
             _customEffect = customEffect;
-            _perk = perk;
+            _skill = skill;
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -85,14 +86,10 @@ namespace SWLOR.Game.Server.Perk.ForceUtility
                     uses = 5;
                     range = 20f;
                     break;
-                case 7: // Only available with background bonus
-                    duration = 90;
-                    uses = 5;
-                    range = 20f;
-                    break;
                 default: return;
             }
             _customEffect.ApplyCustomEffect(player, targetCreature, CustomEffectType.ForceSpread, duration, perkLevel, uses + "," + range);
+            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceUtility, null);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

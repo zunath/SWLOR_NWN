@@ -97,6 +97,7 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
                 }
 
                 _customEffect.SetForceSpreadUses(player, spread.Uses);
+                _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceUtility, null);
             }
             
             _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceSupport, null);

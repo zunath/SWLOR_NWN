@@ -465,7 +465,7 @@ namespace SWLOR.Game.Server.Service
             return 0f;
         }
 
-        private int CalculateItemPotencyBonus(NWCreature caster, ForceAbilityType abilityType)
+        public int CalculateItemPotencyBonus(NWCreature caster, ForceAbilityType abilityType)
         {
             if (!caster.IsPlayer) return 0;
             EffectiveItemStats itemStats = _playerStat.GetPlayerItemEffectiveStats(caster.Object);

@@ -12,15 +12,18 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
         private readonly INWScript _;
         private readonly ICustomEffectService _customEffect;
         private readonly ISkillService _skill;
+        private readonly ICombatService _combat;
 
         public ForceAura(
             INWScript script,
             ICustomEffectService customEffect,
-            ISkillService skill)
+            ISkillService skill,
+            ICombatService combat)
         {
             _ = script;
             _customEffect = customEffect;
             _skill = skill;
+            _combat = combat;
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -67,6 +70,12 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
                     ticks = 600;
                     break;
             }
+
+            int itemPotency = _combat.CalculateItemPotencyBonus(player.Object, ForceAbilityType.Light);
+            int basePotency = (int) (player.Wisdom + player.Intelligence * 0.5f + player.Charisma * 0.25f);
+            int finalPotency = itemPotency + basePotency;
+            ticks += finalPotency * 10; // +10 seconds per potency
+
 
             // Force Spread isn't active. This is a single target cast.
             if (spread.Level <= 0)

@@ -7,6 +7,7 @@ namespace SWLOR.Game.Server.Service.Contracts
     public interface ICombatService
     {
         void OnModuleApplyDamage();
+        int CalculateItemPotencyBonus(NWCreature caster, ForceAbilityType abilityType);
         ForceDamageResult CalculateForceDamage(
             NWCreature caster,
             NWCreature target,

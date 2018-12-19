@@ -968,3 +968,61 @@ WHERE ID IN (
 	JOIN dbo.PerkLevel pl ON pl.ID = ps.PerkLevelID
 	WHERE pl.PerkID = 19
 )
+
+
+
+-- Update Force Heal descripions
+UPDATE dbo.Perk
+SET Description = 'Restores HP of a single target. Higher tier healing abilities unlock at higher ranks.'
+WHERE ID = 5
+
+UPDATE dbo.PerkLevel
+SET Description = 'Force Heal: Potency: 10~15'
+WHERE PerkID = 5
+	AND Level = 1
+
+UPDATE dbo.PerkLevel
+SET Description = 'Force Heal: Potency: 30~40'
+WHERE PerkID = 5
+	AND Level = 2
+	
+UPDATE dbo.PerkLevel
+SET Description = 'Force Heal: Potency: 45~65'
+WHERE PerkID = 5
+	AND Level = 3
+	
+UPDATE dbo.PerkLevel
+SET Description = 'Force Heal: Potency: 45~65, Force Heal II: Potency: 60~90'
+WHERE PerkID = 5
+	AND Level = 4
+	
+UPDATE dbo.PerkLevel
+SET Description = 'Force Heal: Potency: 45~65, Force Heal II: Potency: 100~110'
+WHERE PerkID = 5
+	AND Level = 5
+	
+UPDATE dbo.PerkLevel
+SET Description = 'Force Heal: Potency: 45~65, Force Heal II: Potency: 130~145'
+WHERE PerkID = 5
+	AND Level = 6
+	
+UPDATE dbo.PerkLevel
+SET Description = 'Force Heal: Potency: 45~65, Force Heal II: Potency: 130~145, Force Heal III: Potency 130~155'
+WHERE PerkID = 5
+	AND Level = 7
+	
+UPDATE dbo.PerkLevel
+SET Description = 'Force Heal: Potency: 45~65, Force Heal II: Potency: 130~145, Force Heal III: Potency: 220~340'
+WHERE PerkID = 5
+	AND Level = 8
+	
+UPDATE dbo.PerkLevel
+SET Description = 'Force Heal: Potency: 45~65, Force Heal II: Potency: 130~145, Force Heal III: Potency: 220~340, Force Heal IV: Potency: 270~400'
+WHERE PerkID = 5
+	AND Level = 9
+
+UPDATE dbo.PerkLevel
+SET Description = 'Force Heal: Potency: 45~65, Force Heal II: Potency: 130~145, Force Heal III: Potency: 220~340, Force Heal IV: Potency: 450~520'
+WHERE PerkID = 5
+	AND Level = 10
+

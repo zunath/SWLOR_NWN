@@ -244,8 +244,8 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
                     {
                         powerFloor = 700;
                         rate = 5f;
-                        basePotency = 640;
-                        hardCap = 640;
+                        basePotency = 340;
+                        hardCap = 340;
                     }
                     break;
                 // Ranks 9-10: Force Heal IV

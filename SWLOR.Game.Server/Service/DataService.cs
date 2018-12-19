@@ -137,6 +137,7 @@ namespace SWLOR.Game.Server.Service
             RegisterEmptyCacheSet<PCPerkRefund>();
 
             GetAll<Data.Entity.Perk>();
+            GetAll<PerkFeat>();
             GetAll<PerkCategory>();
             GetAll<PerkExecutionType>();
             GetAll<PerkLevel>();

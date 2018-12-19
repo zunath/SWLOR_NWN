@@ -1026,3 +1026,30 @@ SET Description = 'Force Heal: Potency: 45~65, Force Heal II: Potency: 130~145, 
 WHERE PerkID = 5
 	AND Level = 10
 
+GO
+
+-- Set up a one-to-many table for Perk Feats.
+CREATE TABLE PerkFeat(
+	ID INT IDENTITY PRIMARY KEY NOT NULL,
+	PerkID INT NOT NULL,
+	FeatID INT NOT NULL,
+
+	CONSTRAINT FK_PerkFeat_PerkID FOREIGN KEY(PerkID)
+		REFERENCES dbo.Perk(ID),
+	CONSTRAINT UQ_PerkFeat_FeatID UNIQUE(FeatID)
+)
+GO
+
+-- Migrate the existing data over to the new table.
+INSERT INTO dbo.PerkFeat ( PerkID ,
+                           FeatID )
+SELECT ID,
+	FeatID 
+FROM dbo.Perk
+WHERE FeatID IS NOT NULL 
+GO
+
+-- Drop the old FeatID column from the Perk table.
+EXEC dbo.ADM_Drop_Column @TableName = N'Perk' , -- nvarchar(200)
+                         @ColumnName = N'FeatID'  -- nvarchar(200)
+

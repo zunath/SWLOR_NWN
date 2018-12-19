@@ -73,7 +73,9 @@ namespace SWLOR.Game.Server.Service
             NWPlayer pc = Object.OBJECT_SELF;
             NWCreature target = _nwnxEvents.OnFeatUsed_GetTarget().Object;
             int featID = _nwnxEvents.OnFeatUsed_GetFeatID();
-            Data.Entity.Perk perk = _data.GetAll<Data.Entity.Perk>().SingleOrDefault(x => x.FeatID == featID);
+            var perkFeat = _data.SingleOrDefault<PerkFeat>(x => x.FeatID == featID);
+            if (perkFeat == null) return;
+            Data.Entity.Perk perk = _data.GetAll<Data.Entity.Perk>().SingleOrDefault(x => x.ID == perkFeat.PerkID);
             if (perk == null) return;
 
             App.ResolveByInterface<IPerk>("Perk." + perk.ScriptName, (perkAction) =>

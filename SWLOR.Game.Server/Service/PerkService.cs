@@ -269,6 +269,7 @@ namespace SWLOR.Game.Server.Service
             var perkLevels = _data.Where<PerkLevel>(x => x.PerkID == perkID);
             var pcPerk = _data.SingleOrDefault<PCPerk>(x => x.PlayerID == oPC.GlobalID && x.PerkID == perkID);
             var player = _data.Single<Player>(x => x.ID == oPC.GlobalID);
+            var perkFeats = _data.Where<PerkFeat>(x => x.PerkID == perkID);
 
             if (freeUpgrade || CanPerkBeUpgraded(oPC, perkID))
             {
@@ -329,38 +330,42 @@ namespace SWLOR.Game.Server.Service
 
                     _.SetName(_.GetItemPossessedBy(oPC.Object, perk.ItemResref), perk.Name + " (Lvl. " + pcPerk.PerkLevel + ")");
                 }
-                // If a feat ID is assigned, add the feat to the player if it doesn't exist yet.
-                else if (perk.FeatID != null && 
-                         perk.FeatID > 0 && 
-                         _.GetHasFeat((int)perk.FeatID, oPC.Object) == FALSE)
+                // If at least one feat ID is assigned, add the feat(s) to the player if it doesn't exist yet.
+                else if (perkFeats.Count > 0)
                 {
-                    _nwnxCreature.AddFeatByLevel(oPC, (int)perk.FeatID, 1);
-                    
-                    var qbs = _nwnxQBS.UseFeat((int) perk.FeatID);
+                    foreach (var perkFeat in perkFeats)
+                    {
+                        if (_.GetHasFeat(perkFeat.FeatID, oPC.Object) == TRUE) continue;
 
-                    // Try to add the new feat to the player's hotbar.
-                    if (_nwnxPlayer.GetQuickBarSlot(oPC, 0).ObjectType == QuickBarSlotType.Empty)
-                        _nwnxPlayer.SetQuickBarSlot(oPC, 0, qbs);
-                    else if (_nwnxPlayer.GetQuickBarSlot(oPC, 1).ObjectType == QuickBarSlotType.Empty)
-                        _nwnxPlayer.SetQuickBarSlot(oPC, 1, qbs);
-                    else if (_nwnxPlayer.GetQuickBarSlot(oPC, 2).ObjectType == QuickBarSlotType.Empty)
-                        _nwnxPlayer.SetQuickBarSlot(oPC, 2, qbs);
-                    else if (_nwnxPlayer.GetQuickBarSlot(oPC, 3).ObjectType == QuickBarSlotType.Empty)
-                        _nwnxPlayer.SetQuickBarSlot(oPC, 3, qbs);
-                    else if (_nwnxPlayer.GetQuickBarSlot(oPC, 4).ObjectType == QuickBarSlotType.Empty)
-                        _nwnxPlayer.SetQuickBarSlot(oPC, 4, qbs);
-                    else if (_nwnxPlayer.GetQuickBarSlot(oPC, 5).ObjectType == QuickBarSlotType.Empty)
-                        _nwnxPlayer.SetQuickBarSlot(oPC, 5, qbs);
-                    else if (_nwnxPlayer.GetQuickBarSlot(oPC, 6).ObjectType == QuickBarSlotType.Empty)
-                        _nwnxPlayer.SetQuickBarSlot(oPC, 6, qbs);
-                    else if (_nwnxPlayer.GetQuickBarSlot(oPC, 7).ObjectType == QuickBarSlotType.Empty)
-                        _nwnxPlayer.SetQuickBarSlot(oPC, 7, qbs);
-                    else if (_nwnxPlayer.GetQuickBarSlot(oPC, 8).ObjectType == QuickBarSlotType.Empty)
-                        _nwnxPlayer.SetQuickBarSlot(oPC, 8, qbs);
-                    else if (_nwnxPlayer.GetQuickBarSlot(oPC, 9).ObjectType == QuickBarSlotType.Empty)
-                        _nwnxPlayer.SetQuickBarSlot(oPC, 9, qbs);
-                    else if (_nwnxPlayer.GetQuickBarSlot(oPC, 10).ObjectType == QuickBarSlotType.Empty)
-                        _nwnxPlayer.SetQuickBarSlot(oPC, 10, qbs);
+                        _nwnxCreature.AddFeatByLevel(oPC, perkFeat.FeatID, 1);
+
+                        var qbs = _nwnxQBS.UseFeat(perkFeat.FeatID);
+
+                        // Try to add the new feat to the player's hotbar.
+                        if (_nwnxPlayer.GetQuickBarSlot(oPC, 0).ObjectType == QuickBarSlotType.Empty)
+                            _nwnxPlayer.SetQuickBarSlot(oPC, 0, qbs);
+                        else if (_nwnxPlayer.GetQuickBarSlot(oPC, 1).ObjectType == QuickBarSlotType.Empty)
+                            _nwnxPlayer.SetQuickBarSlot(oPC, 1, qbs);
+                        else if (_nwnxPlayer.GetQuickBarSlot(oPC, 2).ObjectType == QuickBarSlotType.Empty)
+                            _nwnxPlayer.SetQuickBarSlot(oPC, 2, qbs);
+                        else if (_nwnxPlayer.GetQuickBarSlot(oPC, 3).ObjectType == QuickBarSlotType.Empty)
+                            _nwnxPlayer.SetQuickBarSlot(oPC, 3, qbs);
+                        else if (_nwnxPlayer.GetQuickBarSlot(oPC, 4).ObjectType == QuickBarSlotType.Empty)
+                            _nwnxPlayer.SetQuickBarSlot(oPC, 4, qbs);
+                        else if (_nwnxPlayer.GetQuickBarSlot(oPC, 5).ObjectType == QuickBarSlotType.Empty)
+                            _nwnxPlayer.SetQuickBarSlot(oPC, 5, qbs);
+                        else if (_nwnxPlayer.GetQuickBarSlot(oPC, 6).ObjectType == QuickBarSlotType.Empty)
+                            _nwnxPlayer.SetQuickBarSlot(oPC, 6, qbs);
+                        else if (_nwnxPlayer.GetQuickBarSlot(oPC, 7).ObjectType == QuickBarSlotType.Empty)
+                            _nwnxPlayer.SetQuickBarSlot(oPC, 7, qbs);
+                        else if (_nwnxPlayer.GetQuickBarSlot(oPC, 8).ObjectType == QuickBarSlotType.Empty)
+                            _nwnxPlayer.SetQuickBarSlot(oPC, 8, qbs);
+                        else if (_nwnxPlayer.GetQuickBarSlot(oPC, 9).ObjectType == QuickBarSlotType.Empty)
+                            _nwnxPlayer.SetQuickBarSlot(oPC, 9, qbs);
+                        else if (_nwnxPlayer.GetQuickBarSlot(oPC, 10).ObjectType == QuickBarSlotType.Empty)
+                            _nwnxPlayer.SetQuickBarSlot(oPC, 10, qbs);
+
+                    }
 
                 }
 

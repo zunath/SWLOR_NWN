@@ -9,5 +9,6 @@ namespace SWLOR.Game.Server.Data.Entity
         public int ID { get; set; }
         public int PerkID { get; set; }
         public int FeatID { get; set; }
+        public int PerkLevelUnlocked { get; set; }
     }
 }

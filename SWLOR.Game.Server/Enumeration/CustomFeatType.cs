@@ -28,6 +28,9 @@
         Rest = 1139,
         PlasmaCell = 1155,
         RenameCraftedItem = 1160,
-        ChatCommandTargeter = 1161
+        ChatCommandTargeter = 1161,
+        ForceHeal2 = 1162,
+        ForceHeal3 = 1163,
+        ForceHeal4 = 1164
     }
 }

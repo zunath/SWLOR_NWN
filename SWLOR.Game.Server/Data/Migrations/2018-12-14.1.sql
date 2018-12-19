@@ -1033,23 +1033,78 @@ CREATE TABLE PerkFeat(
 	ID INT IDENTITY PRIMARY KEY NOT NULL,
 	PerkID INT NOT NULL,
 	FeatID INT NOT NULL,
+	PerkLevelUnlocked INT NOT NULL,
 
 	CONSTRAINT FK_PerkFeat_PerkID FOREIGN KEY(PerkID)
-		REFERENCES dbo.Perk(ID),
-	CONSTRAINT UQ_PerkFeat_FeatID UNIQUE(FeatID)
+		REFERENCES dbo.Perk(ID)
 )
 GO
 
 -- Migrate the existing data over to the new table.
 INSERT INTO dbo.PerkFeat ( PerkID ,
-                           FeatID )
+                           FeatID,
+						   PerkLevelUnlocked)
 SELECT ID,
-	FeatID 
+	FeatID,
+	1
 FROM dbo.Perk
 WHERE FeatID IS NOT NULL 
 GO
+
+
+INSERT INTO dbo.PerkFeat ( PerkID ,
+                           FeatID ,
+                           PerkLevelUnlocked )
+VALUES ( 5 , -- PerkID - int
+         1162 , -- FeatID - int
+         4   -- PerkLevelUnlocked - int
+    )
+INSERT INTO dbo.PerkFeat ( PerkID ,
+                           FeatID ,
+                           PerkLevelUnlocked )
+VALUES ( 5 , -- PerkID - int
+         1163 , -- FeatID - int
+         7   -- PerkLevelUnlocked - int
+    )
+INSERT INTO dbo.PerkFeat ( PerkID ,
+                           FeatID ,
+                           PerkLevelUnlocked )
+VALUES ( 5 , -- PerkID - int
+         1164 , -- FeatID - int
+         9   -- PerkLevelUnlocked - int
+    )
 
 -- Drop the old FeatID column from the Perk table.
 EXEC dbo.ADM_Drop_Column @TableName = N'Perk' , -- nvarchar(200)
                          @ColumnName = N'FeatID'  -- nvarchar(200)
 
+
+-- Drop the unused ItemResref column from the Perk table.
+EXEC dbo.ADM_Drop_Column @TableName = N'Perk' , -- nvarchar(200)
+                         @ColumnName = N'ItemResref'  -- nvarchar(200)
+
+
+-- Add the new force heal cooldown categories						 
+INSERT INTO dbo.CooldownCategory ( ID ,
+                                   Name ,
+                                   BaseCooldownTime )
+VALUES ( 34 ,   -- ID - int
+         N'Force Heal II' , -- Name - nvarchar(64)
+         5.5   -- BaseCooldownTime - float
+    )
+	
+INSERT INTO dbo.CooldownCategory ( ID ,
+                                   Name ,
+                                   BaseCooldownTime )
+VALUES ( 35 ,   -- ID - int
+         N'Force Heal III' , -- Name - nvarchar(64)
+         6   -- BaseCooldownTime - float
+    )
+	
+INSERT INTO dbo.CooldownCategory ( ID ,
+                                   Name ,
+                                   BaseCooldownTime )
+VALUES ( 36 ,   -- ID - int
+         N'Force Heal IV' , -- Name - nvarchar(64)
+         8   -- BaseCooldownTime - float
+    )

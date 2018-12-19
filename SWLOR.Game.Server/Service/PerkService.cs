@@ -25,7 +25,6 @@ namespace SWLOR.Game.Server.Service
         private readonly INWNXCreature _nwnxCreature;
         private readonly INWNXPlayerQuickBarSlot _nwnxQBS;
         private readonly INWNXPlayer _nwnxPlayer;
-        private readonly INWNXProfiler _nwnxProfiler;
 
         public PerkService(INWScript script,
             IColorTokenService color,
@@ -33,8 +32,7 @@ namespace SWLOR.Game.Server.Service
             IBiowareXP2 biowareXP2,
             INWNXCreature nwnxCreature,
             INWNXPlayerQuickBarSlot nwnxQBS,
-            INWNXPlayer nwnxPlayer,
-            INWNXProfiler nwnxProfiler)
+            INWNXPlayer nwnxPlayer)
         {
             _ = script;
             _color = color;
@@ -43,7 +41,6 @@ namespace SWLOR.Game.Server.Service
             _nwnxCreature = nwnxCreature;
             _nwnxQBS = nwnxQBS;
             _nwnxPlayer = nwnxPlayer;
-            _nwnxProfiler = nwnxProfiler;
         }
 
         private List<PCPerk> GetPCPerksByExecutionType(NWPlayer oPC, PerkExecutionType executionType)
@@ -149,14 +146,16 @@ namespace SWLOR.Game.Server.Service
             {
                 var perk = GetPerkByID(pcPerk.PerkID);
                 if (string.IsNullOrWhiteSpace(perk.ScriptName) || perk.ExecutionTypeID == (int)PerkExecutionType.None) continue;
-                
+                var perkFeat = _data.SingleOrDefault<PerkFeat>(x => x.PerkID == pcPerk.PerkID);
+                int featID = perkFeat == null ? -1 : perkFeat.FeatID;
+
                 if (!App.IsKeyRegistered<IPerk>("Perk." + perk.ScriptName)) continue;
 
                 App.ResolveByInterface<IPerk>("Perk." + perk.ScriptName, (perkAction) =>
                 {
                     if (type == BASE_ITEM_SMALLSHIELD || type == BASE_ITEM_LARGESHIELD || type == BASE_ITEM_TOWERSHIELD)
                     {
-                        perkAction.OnImpact(oPC, oItem, pcPerk.PerkLevel);
+                        perkAction.OnImpact(oPC, oItem, pcPerk.PerkLevel, featID);
                     }
                 });
                 
@@ -269,7 +268,6 @@ namespace SWLOR.Game.Server.Service
             var perkLevels = _data.Where<PerkLevel>(x => x.PerkID == perkID);
             var pcPerk = _data.SingleOrDefault<PCPerk>(x => x.PlayerID == oPC.GlobalID && x.PerkID == perkID);
             var player = _data.Single<Player>(x => x.ID == oPC.GlobalID);
-            var perkFeats = _data.Where<PerkFeat>(x => x.PerkID == perkID);
 
             if (freeUpgrade || CanPerkBeUpgraded(oPC, perkID))
             {
@@ -297,43 +295,14 @@ namespace SWLOR.Game.Server.Service
                     player.UnallocatedSP -= nextPerkLevel.Price;
                     _data.SubmitDataChange(player, DatabaseActionType.Update);
                 }
+
+                // Look for any perk levels to grant.
+                var perkFeatsToGrant = _data.Where<PerkFeat>(x => x.PerkID == perkID && x.PerkLevelUnlocked == pcPerk.PerkLevel);
                 
-                // If a perk is activatable, create the item on the PC.
-                // Remove any existing cast spell unique power properties and add the correct one based on the DB flag.
-                if (!string.IsNullOrWhiteSpace(perk.ItemResref))
-                {
-                    if (_.GetIsObjectValid(_.GetItemPossessedBy(oPC.Object, perk.ItemResref)) == FALSE)
-                    {
-                        NWItem spellItem = (_.CreateItemOnObject(perk.ItemResref, oPC.Object));
-                        spellItem.IsCursed = true;
-                        spellItem.SetLocalInt("ACTIVATION_PERK_ID", perk.ID);
-
-                        foreach (ItemProperty ipCur in spellItem.ItemProperties)
-                        {
-                            int ipType = _.GetItemPropertyType(ipCur);
-                            int ipSubType = _.GetItemPropertySubType(ipCur);
-                            if (ipType == ITEM_PROPERTY_CAST_SPELL &&
-                                    (ipSubType == IP_CONST_CASTSPELL_UNIQUE_POWER ||
-                                            ipSubType == IP_CONST_CASTSPELL_UNIQUE_POWER_SELF_ONLY ||
-                                            ipSubType == IP_CONST_CASTSPELL_ACTIVATE_ITEM))
-                            {
-                                _.RemoveItemProperty(spellItem.Object, ipCur);
-                            }
-                        }
-                        
-                        ItemProperty ip;
-                        if (perk.IsTargetSelfOnly) ip = _.ItemPropertyCastSpell(IP_CONST_CASTSPELL_UNIQUE_POWER_SELF_ONLY, IP_CONST_CASTSPELL_NUMUSES_UNLIMITED_USE);
-                        else ip = _.ItemPropertyCastSpell(IP_CONST_CASTSPELL_UNIQUE_POWER, IP_CONST_CASTSPELL_NUMUSES_UNLIMITED_USE);
-
-                        _biowareXP2.IPSafeAddItemProperty(spellItem, ip, 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-                    }
-
-                    _.SetName(_.GetItemPossessedBy(oPC.Object, perk.ItemResref), perk.Name + " (Lvl. " + pcPerk.PerkLevel + ")");
-                }
                 // If at least one feat ID is assigned, add the feat(s) to the player if it doesn't exist yet.
-                else if (perkFeats.Count > 0)
+                if (perkFeatsToGrant.Count > 0)
                 {
-                    foreach (var perkFeat in perkFeats)
+                    foreach (var perkFeat in perkFeatsToGrant)
                     {
                         if (_.GetHasFeat(perkFeat.FeatID, oPC.Object) == TRUE) continue;
 
@@ -388,58 +357,7 @@ namespace SWLOR.Game.Server.Service
         {
             DoPerkUpgrade(player, (int)perkType, freeUpgrade);
         }
-
-        public string OnModuleExamine(string existingDescription, NWPlayer examiner, NWObject examinedObject)
-        {
-            if (!examiner.IsPlayer && !examiner.IsDM) return existingDescription;
-            if (examinedObject.ObjectType != OBJECT_TYPE_ITEM) return existingDescription;
-            int perkID = examinedObject.GetLocalInt("ACTIVATION_PERK_ID");
-            if (perkID <= 0) return existingDescription;
-
-            var perk = _data.Single<Data.Entity.Perk>(x => x.ID == perkID);
-            var executionType = _data.Get<Data.Entity.PerkExecutionType>(perk.ExecutionTypeID);
-            var cooldownCategory = _data.Get<CooldownCategory>(perk.CooldownCategoryID);
-            string description = existingDescription;
-
-            description += _color.Orange("Name: ") + perk.Name + "\n" +
-                _color.Orange("Description: ") + perk.Description + "\n";
-
-            switch ((PerkExecutionType)executionType.ID)
-            {
-                case PerkExecutionType.CombatAbility:
-                    description += _color.Orange("Type: ") + "Combat Ability\n";
-                    break;
-                case PerkExecutionType.ForceAbility:
-                    description += _color.Orange("Type: ") + "Spell\n";
-                    break;
-                case PerkExecutionType.ShieldOnHit:
-                    description += _color.Orange("Type: ") + "Reactive\n";
-                    break;
-                case PerkExecutionType.QueuedWeaponSkill:
-                    description += _color.Orange("Type: ") + "Queued Attack\n";
-                    break;
-                case PerkExecutionType.Stance:
-                    description += _color.Orange("Type: ") + "Stance\n";
-                    break;
-            }
-
-            if (perk.BaseFPCost > 0)
-            {
-                description += _color.Orange("Base FP Cost: ") + perk.BaseFPCost + "\n";
-            }
-            if (cooldownCategory.BaseCooldownTime > 0.0f)
-            {
-                description += _color.Orange("Cooldown: ") + cooldownCategory.BaseCooldownTime + "s\n";
-            }
-            if (perk.BaseCastingTime > 0.0f)
-            {
-                description += _color.Orange("Base Casting Time: ") + perk.BaseCastingTime + "s\n";
-            }
-
-
-            return description;
-        }
-
+        
         /// <summary>
         /// Returns the EFFECTIVE perk level of a player.
         /// This takes into account the player's skills. If they are too low to use the perk, the level will be

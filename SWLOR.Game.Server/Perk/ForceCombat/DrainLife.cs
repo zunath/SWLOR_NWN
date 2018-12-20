@@ -11,7 +11,6 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
         private readonly INWScript _;
         private readonly ISkillService _skill;
         private readonly ICombatService _combat;
-        private readonly IColorTokenService _color;
         private readonly IPerkService _perk;
         private readonly IRandomService _random;
         private readonly IPlayerStatService _stat;
@@ -20,7 +19,6 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
             INWScript script,
             ISkillService skill,
             ICombatService combat,
-            IColorTokenService color,
             IPerkService perk,
             IRandomService random,
             IPlayerStatService stat)
@@ -28,7 +26,6 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
             _ = script;
             _skill = skill;
             _combat = combat;
-            _color = color;
             _perk = perk;
             _random = random;
             _stat = stat;
@@ -146,9 +143,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
                 Tier2Modifier,
                 Tier3Modifier,
                 Tier4Modifier);
-
-            //player.SendMessage(_color.Combat("Resistance: " + calc.Resistance + ", Damage: " + calc.Damage + ", Item Bonus: " + calc.ItemBonus));
-
+            
             _.AssignCommand(player, () =>
             {
                 int heal = (int)(calc.Damage * recoveryPercent);
@@ -160,6 +155,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
             });
             
             _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceCombat, target.Object);
+            _combat.AddTemporaryForceDefense(target.Object, ForceAbilityType.Dark);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

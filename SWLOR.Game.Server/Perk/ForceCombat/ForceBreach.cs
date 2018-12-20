@@ -170,7 +170,8 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
                 Effect vfx = _.EffectVisualEffect(VFX_IMP_DOMINATE_S);
                 _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, target);
             });
-            
+
+            _combat.AddTemporaryForceDefense(target.Object, ForceAbilityType.Light);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

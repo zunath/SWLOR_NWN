@@ -169,6 +169,8 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
             {
                 _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_BEAM_LIGHTNING), target, 1.0f);
             });
+
+            _combat.AddTemporaryForceDefense(target.Object, ForceAbilityType.Electrical);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

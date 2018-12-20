@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
 
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_POSITIVE), target);
             _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectKnockdown(), target, length);
-            
+            _combat.AddTemporaryForceDefense(target.Object, ForceAbilityType.Light);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

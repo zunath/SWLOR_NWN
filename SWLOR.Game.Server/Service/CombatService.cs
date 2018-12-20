@@ -428,6 +428,16 @@ namespace SWLOR.Game.Server.Service
 
             // Calculate defense based on target's primary and secondary stats. Add modifiers for specific defense types.
             float baseDefense = target.Charisma * 0.25f + targetPrimary * 0.75f + targetSecondary * 0.5f + targetItemDefense * 0.15f;
+
+            // Temp defense increases whenever a hostile force ability is used. This is primarily a deterrant towards spamming the same ability over and over.
+            string expiration = target.GetLocalString("TEMP_FORCE_DEFENSE_" + (int) abilityType);
+            if(DateTime.TryParse(expiration, out var unused))
+            {
+                int tempDefense = target.GetLocalInt("TEMP_FORCE_DEFENSE_" + (int)abilityType);
+                baseDefense += tempDefense;
+            }
+
+
             float delta = baseAccuracy - baseDefense;
             float finalAccuracy = delta < 0 ?
                 50 + (float)Math.Floor(delta / 2.0f) :
@@ -440,6 +450,23 @@ namespace SWLOR.Game.Server.Service
                 finalAccuracy = 0;
 
             return (int)finalAccuracy;
+        }
+
+        public void AddTemporaryForceDefense(NWCreature target, ForceAbilityType forceAbility, int amount = 20, int length = 5)
+        {
+            if (amount <= 0) amount = 1;
+            string variable = "TEMP_FORCE_DEFENSE_" + (int) forceAbility;
+            int tempDefense = target.GetLocalInt(variable) + amount;
+            string tempDateExpires = target.GetLocalString(variable);
+            DateTime expirationDate = DateTime.UtcNow;
+            if (!string.IsNullOrWhiteSpace(tempDateExpires))
+            {
+                expirationDate = DateTime.Parse(tempDateExpires);
+            }
+
+            expirationDate = expirationDate.AddSeconds(length);
+            target.SetLocalString(variable, expirationDate.ToString(CultureInfo.InvariantCulture));
+            target.SetLocalInt(variable, tempDefense);
         }
 
         public float CalculateResistanceRating(

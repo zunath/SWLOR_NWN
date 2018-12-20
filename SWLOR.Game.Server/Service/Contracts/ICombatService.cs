@@ -18,5 +18,6 @@ namespace SWLOR.Game.Server.Service.Contracts
             float tier3Modifier,
             float tier4Modifier);
         float CalculateResistanceRating(NWCreature caster, NWCreature target, ForceAbilityType forceAbility);
+        void AddTemporaryForceDefense(NWCreature target, ForceAbilityType forceAbility, int amount = 20, int length = 5);
     }
 }

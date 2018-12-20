@@ -1131,3 +1131,17 @@ WHERE ID IN (
 	JOIN dbo.PerkLevel pl ON pl.ID = ps.PerkLevelID
 	WHERE pl.PerkID = 13
 )
+
+
+
+UPDATE dbo.CraftBlueprint
+SET ItemName = 'Harvesting I'
+WHERE ID = 133
+
+UPDATE dbo.CraftBlueprint
+SET ItemName = 'Harvesting II'
+WHERE ID = 166
+
+UPDATE dbo.CraftBlueprint
+SET ItemName = 'Harvesting III'
+WHERE ID = 196

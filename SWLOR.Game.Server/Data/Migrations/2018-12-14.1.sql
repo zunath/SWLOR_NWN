@@ -1108,3 +1108,26 @@ VALUES ( 36 ,   -- ID - int
          N'Force Heal IV' , -- Name - nvarchar(64)
          8   -- BaseCooldownTime - float
     )
+
+
+
+-- Move Chainspell requirements to Force Utility
+UPDATE dbo.PerkLevelSkillRequirement
+SET SkillID = 21
+WHERE ID IN (
+	SELECT ps.ID
+	FROM dbo.PerkLevelSkillRequirement ps
+	JOIN dbo.PerkLevel pl ON pl.ID = ps.PerkLevelID
+	WHERE pl.PerkID = 126
+)
+
+
+-- Move Force Spread requirements to Force Utility
+UPDATE dbo.PerkLevelSkillRequirement
+SET SkillID = 21
+WHERE ID IN (
+	SELECT ps.ID
+	FROM dbo.PerkLevelSkillRequirement ps
+	JOIN dbo.PerkLevel pl ON pl.ID = ps.PerkLevelID
+	WHERE pl.PerkID = 13
+)

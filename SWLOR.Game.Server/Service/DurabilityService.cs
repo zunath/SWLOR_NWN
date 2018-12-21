@@ -168,6 +168,7 @@ namespace SWLOR.Game.Server.Service
             // I.E: Dropping from 29.001 to 29.
             // Note that players only see two decimal places in-game on purpose.
             durability -= reduceAmount;
+            int apr;
             bool displayMessage = Math.Abs(durability % 1) < 0.05f;
 
             if (displayMessage)

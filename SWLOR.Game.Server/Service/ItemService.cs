@@ -305,11 +305,12 @@ namespace SWLOR.Game.Server.Service
         {
             BASE_ITEM_AMULET,
             BASE_ITEM_ARMOR,
-            BASE_ITEM_GLOVES,
+            BASE_ITEM_BRACER,
             BASE_ITEM_BELT,
-            BASE_ITEM_CLOAK,
-            BASE_ITEM_HELMET,
             BASE_ITEM_BOOTS,
+            BASE_ITEM_CLOAK,
+            BASE_ITEM_GLOVES,
+            BASE_ITEM_HELMET,
             BASE_ITEM_LARGESHIELD,
             BASE_ITEM_SMALLSHIELD,
             BASE_ITEM_TOWERSHIELD

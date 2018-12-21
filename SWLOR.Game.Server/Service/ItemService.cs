@@ -305,6 +305,7 @@ namespace SWLOR.Game.Server.Service
         {
             BASE_ITEM_AMULET,
             BASE_ITEM_ARMOR,
+            BASE_ITEM_GLOVES,
             BASE_ITEM_BELT,
             BASE_ITEM_CLOAK,
             BASE_ITEM_HELMET,
@@ -328,7 +329,6 @@ namespace SWLOR.Game.Server.Service
             BASE_ITEM_DIREMACE,
             BASE_ITEM_DOUBLEAXE,
             BASE_ITEM_DWARVENWARAXE,
-            BASE_ITEM_GLOVES,
             BASE_ITEM_GREATAXE,
             BASE_ITEM_GREATSWORD,
             BASE_ITEM_GRENADE,

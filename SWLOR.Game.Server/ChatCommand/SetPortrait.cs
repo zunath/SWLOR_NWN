@@ -43,9 +43,9 @@ namespace SWLOR.Game.Server.ChatCommand
 
         public string ValidateArguments(NWPlayer user, params string[] args)
         {
-            if (args.Length > 15)
+            if (args[0].Length > 15)
             {
-                return "The string is too long.";
+                return "The portrait you entered is too long. Portrait names should be between 1 and 16 characters.";
             }
 
 

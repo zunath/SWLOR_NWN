@@ -317,6 +317,7 @@ namespace SWLOR.Game.Server.Item
         {
             BASE_ITEM_BASTARDSWORD,
             BASE_ITEM_BATTLEAXE,
+            BASE_ITEM_BRACER,
             BASE_ITEM_CLUB,
             BASE_ITEM_DAGGER,
             BASE_ITEM_DART,
@@ -326,6 +327,7 @@ namespace SWLOR.Game.Server.Item
             BASE_ITEM_GREATAXE,
             BASE_ITEM_GREATSWORD,
             BASE_ITEM_GRENADE,
+            BASE_ITEM_GLOVES,
             BASE_ITEM_HALBERD,
             BASE_ITEM_HANDAXE,
             BASE_ITEM_HEAVYFLAIL,

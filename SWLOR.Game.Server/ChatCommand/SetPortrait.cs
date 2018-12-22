@@ -11,7 +11,7 @@ using SWLOR.Game.Server.NWNX.Contracts;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Sets portrait of the target player using the string specified. (Remember to add po_ to the portrait)xxx", CommandPermissionType.DM)]
+    [CommandDetails("Sets portrait of the target player using the string specified. (Remember to add po_ to the portrait)", CommandPermissionType.DM)]
     public class SetPortrait : IChatCommand
     {
         private readonly INWScript _;

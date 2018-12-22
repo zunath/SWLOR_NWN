@@ -30,9 +30,9 @@ namespace SWLOR.Game.Server.ChatCommand
 
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            if (!target.IsPlayer)
+            if (!target.IsValid)
             {
-                user.SendMessage("Only players may be targeted with this command.");
+                user.SendMessage("Only creatures may be targeted with this command.");
                 return;
             }
 

@@ -492,6 +492,10 @@
     <Compile Include="Language\TranslatorShyriiwook.cs" />
     <Compile Include="Language\TranslatorTwileki.cs" />
     <Compile Include="Language\TranslatorZabraki.cs" />
+    <Compile Include="Mod\ElectricalDefenseMod.cs" />
+    <Compile Include="Mod\MindDefenseMod.cs" />
+    <Compile Include="Mod\LightDefenseMod.cs" />
+    <Compile Include="Mod\DarkDefenseMod.cs" />
     <Compile Include="Mod\ElectricalPotencyMod.cs" />
     <Compile Include="Mod\FabricationMod.cs" />
     <Compile Include="Mod\RestMod.cs" />

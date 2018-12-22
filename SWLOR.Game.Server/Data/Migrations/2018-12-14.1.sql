@@ -1297,3 +1297,610 @@ VALUES ( 29 ,   -- ID - int
         1  -- IsActive - bit
     )
  
+
+ -- Add defense mod categories
+ INSERT INTO dbo.Mod ( ID ,
+                       Name ,
+                       Script ,
+                       IsActive )
+ VALUES ( 30 ,   -- ID - int
+          N'Dark Defense' , -- Name - nvarchar(64)
+          N'DarkDefenseMod' , -- Script - nvarchar(100)
+          1  -- IsActive - bit
+     )
+ INSERT INTO dbo.Mod ( ID ,
+                       Name ,
+                       Script ,
+                       IsActive )
+ VALUES ( 31 ,   -- ID - int
+          N'Light Defense' , -- Name - nvarchar(64)
+          N'LightDefenseMod' , -- Script - nvarchar(100)
+          1  -- IsActive - bit
+     )
+ INSERT INTO dbo.Mod ( ID ,
+                       Name ,
+                       Script ,
+                       IsActive )
+ VALUES ( 32 ,   -- ID - int
+          N'Mind Defense' , -- Name - nvarchar(64)
+          N'MindDefenseMod' , -- Script - nvarchar(100)
+          1  -- IsActive - bit
+     )
+ INSERT INTO dbo.Mod ( ID ,
+                       Name ,
+                       Script ,
+                       IsActive )
+ VALUES ( 33 ,   -- ID - int
+          N'Electrical Defense' , -- Name - nvarchar(64)
+          N'ElectricalDefenseMod' , -- Script - nvarchar(100)
+          1  -- IsActive - bit
+     )
+
+
+-- Add blueprints for the force defenses
+
+INSERT INTO dbo.CraftBlueprint ( ID ,
+                                 CraftCategoryID ,
+                                 BaseLevel ,
+                                 ItemName ,
+                                 ItemResref ,
+                                 Quantity ,
+                                 SkillID ,
+                                 CraftDeviceID ,
+                                 PerkID ,
+                                 RequiredPerkLevel ,
+                                 IsActive ,
+                                 MainComponentTypeID ,
+                                 MainMinimum ,
+                                 SecondaryComponentTypeID ,
+                                 SecondaryMinimum ,
+                                 TertiaryComponentTypeID ,
+                                 TertiaryMinimum ,
+                                 EnhancementSlots ,
+                                 MainMaximum ,
+                                 SecondaryMaximum ,
+                                 TertiaryMaximum ,
+                                 BaseStructureID )
+VALUES ( 333 ,    -- ID - int
+         15 ,    -- CraftCategoryID - int
+         16 ,    -- BaseLevel - int
+         N'Dark Defense I' ,  -- ItemName - nvarchar(64)
+         N'rune_ddef1' ,  -- ItemResref - nvarchar(16)
+         1 ,    -- Quantity - int
+         22 ,    -- SkillID - int
+         4 ,    -- CraftDeviceID - int
+         96 ,    -- PerkID - int
+         1 ,    -- RequiredPerkLevel - int
+         1 , -- IsActive - bit
+         28 ,    -- MainComponentTypeID - int
+         1 ,    -- MainMinimum - int
+         0 ,    -- SecondaryComponentTypeID - int
+         0 ,    -- SecondaryMinimum - int
+         0 ,    -- TertiaryComponentTypeID - int
+         0 ,    -- TertiaryMinimum - int
+         0 ,    -- EnhancementSlots - int
+         2 ,    -- MainMaximum - int
+         0 ,    -- SecondaryMaximum - int
+         0 ,    -- TertiaryMaximum - int
+         NULL      -- BaseStructureID - int
+    )
+
+	
+INSERT INTO dbo.CraftBlueprint ( ID ,
+                                 CraftCategoryID ,
+                                 BaseLevel ,
+                                 ItemName ,
+                                 ItemResref ,
+                                 Quantity ,
+                                 SkillID ,
+                                 CraftDeviceID ,
+                                 PerkID ,
+                                 RequiredPerkLevel ,
+                                 IsActive ,
+                                 MainComponentTypeID ,
+                                 MainMinimum ,
+                                 SecondaryComponentTypeID ,
+                                 SecondaryMinimum ,
+                                 TertiaryComponentTypeID ,
+                                 TertiaryMinimum ,
+                                 EnhancementSlots ,
+                                 MainMaximum ,
+                                 SecondaryMaximum ,
+                                 TertiaryMaximum ,
+                                 BaseStructureID )
+VALUES ( 334 ,    -- ID - int
+         15 ,    -- CraftCategoryID - int
+         31 ,    -- BaseLevel - int
+         N'Dark Defense II' ,  -- ItemName - nvarchar(64)
+         N'rune_ddef2' ,  -- ItemResref - nvarchar(16)
+         1 ,    -- Quantity - int
+         22 ,    -- SkillID - int
+         4 ,    -- CraftDeviceID - int
+         96 ,    -- PerkID - int
+         5 ,    -- RequiredPerkLevel - int
+         1 , -- IsActive - bit
+         28 ,    -- MainComponentTypeID - int
+         3 ,    -- MainMinimum - int
+         0 ,    -- SecondaryComponentTypeID - int
+         0 ,    -- SecondaryMinimum - int
+         0 ,    -- TertiaryComponentTypeID - int
+         0 ,    -- TertiaryMinimum - int
+         0 ,    -- EnhancementSlots - int
+         4 ,    -- MainMaximum - int
+         0 ,    -- SecondaryMaximum - int
+         0 ,    -- TertiaryMaximum - int
+         NULL      -- BaseStructureID - int
+    )
+
+	
+INSERT INTO dbo.CraftBlueprint ( ID ,
+                                 CraftCategoryID ,
+                                 BaseLevel ,
+                                 ItemName ,
+                                 ItemResref ,
+                                 Quantity ,
+                                 SkillID ,
+                                 CraftDeviceID ,
+                                 PerkID ,
+                                 RequiredPerkLevel ,
+                                 IsActive ,
+                                 MainComponentTypeID ,
+                                 MainMinimum ,
+                                 SecondaryComponentTypeID ,
+                                 SecondaryMinimum ,
+                                 TertiaryComponentTypeID ,
+                                 TertiaryMinimum ,
+                                 EnhancementSlots ,
+                                 MainMaximum ,
+                                 SecondaryMaximum ,
+                                 TertiaryMaximum ,
+                                 BaseStructureID )
+VALUES ( 352 ,    -- ID - int
+         15 ,    -- CraftCategoryID - int
+         46 ,    -- BaseLevel - int
+         N'Dark Defense III' ,  -- ItemName - nvarchar(64)
+         N'rune_ddef3' ,  -- ItemResref - nvarchar(16)
+         1 ,    -- Quantity - int
+         22 ,    -- SkillID - int
+         4 ,    -- CraftDeviceID - int
+         96 ,    -- PerkID - int
+         7 ,    -- RequiredPerkLevel - int
+         1 , -- IsActive - bit
+         28 ,    -- MainComponentTypeID - int
+         4 ,    -- MainMinimum - int
+         0 ,    -- SecondaryComponentTypeID - int
+         0 ,    -- SecondaryMinimum - int
+         0 ,    -- TertiaryComponentTypeID - int
+         0 ,    -- TertiaryMinimum - int
+         0 ,    -- EnhancementSlots - int
+         5 ,    -- MainMaximum - int
+         0 ,    -- SecondaryMaximum - int
+         0 ,    -- TertiaryMaximum - int
+         NULL      -- BaseStructureID - int
+    )
+
+
+	
+INSERT INTO dbo.CraftBlueprint ( ID ,
+                                 CraftCategoryID ,
+                                 BaseLevel ,
+                                 ItemName ,
+                                 ItemResref ,
+                                 Quantity ,
+                                 SkillID ,
+                                 CraftDeviceID ,
+                                 PerkID ,
+                                 RequiredPerkLevel ,
+                                 IsActive ,
+                                 MainComponentTypeID ,
+                                 MainMinimum ,
+                                 SecondaryComponentTypeID ,
+                                 SecondaryMinimum ,
+                                 TertiaryComponentTypeID ,
+                                 TertiaryMinimum ,
+                                 EnhancementSlots ,
+                                 MainMaximum ,
+                                 SecondaryMaximum ,
+                                 TertiaryMaximum ,
+                                 BaseStructureID )
+VALUES ( 364 ,    -- ID - int
+         15 ,    -- CraftCategoryID - int
+         16 ,    -- BaseLevel - int
+         N'Light Defense I' ,  -- ItemName - nvarchar(64)
+         N'rune_ldef1' ,  -- ItemResref - nvarchar(16)
+         1 ,    -- Quantity - int
+         22 ,    -- SkillID - int
+         4 ,    -- CraftDeviceID - int
+         96 ,    -- PerkID - int
+         1 ,    -- RequiredPerkLevel - int
+         1 , -- IsActive - bit
+         28 ,    -- MainComponentTypeID - int
+         1 ,    -- MainMinimum - int
+         0 ,    -- SecondaryComponentTypeID - int
+         0 ,    -- SecondaryMinimum - int
+         0 ,    -- TertiaryComponentTypeID - int
+         0 ,    -- TertiaryMinimum - int
+         0 ,    -- EnhancementSlots - int
+         2 ,    -- MainMaximum - int
+         0 ,    -- SecondaryMaximum - int
+         0 ,    -- TertiaryMaximum - int
+         NULL      -- BaseStructureID - int
+    )
+
+	
+INSERT INTO dbo.CraftBlueprint ( ID ,
+                                 CraftCategoryID ,
+                                 BaseLevel ,
+                                 ItemName ,
+                                 ItemResref ,
+                                 Quantity ,
+                                 SkillID ,
+                                 CraftDeviceID ,
+                                 PerkID ,
+                                 RequiredPerkLevel ,
+                                 IsActive ,
+                                 MainComponentTypeID ,
+                                 MainMinimum ,
+                                 SecondaryComponentTypeID ,
+                                 SecondaryMinimum ,
+                                 TertiaryComponentTypeID ,
+                                 TertiaryMinimum ,
+                                 EnhancementSlots ,
+                                 MainMaximum ,
+                                 SecondaryMaximum ,
+                                 TertiaryMaximum ,
+                                 BaseStructureID )
+VALUES ( 367 ,    -- ID - int
+         15 ,    -- CraftCategoryID - int
+         31 ,    -- BaseLevel - int
+         N'Light Defense II' ,  -- ItemName - nvarchar(64)
+         N'rune_ldef2' ,  -- ItemResref - nvarchar(16)
+         1 ,    -- Quantity - int
+         22 ,    -- SkillID - int
+         4 ,    -- CraftDeviceID - int
+         96 ,    -- PerkID - int
+         5 ,    -- RequiredPerkLevel - int
+         1 , -- IsActive - bit
+         28 ,    -- MainComponentTypeID - int
+         3 ,    -- MainMinimum - int
+         0 ,    -- SecondaryComponentTypeID - int
+         0 ,    -- SecondaryMinimum - int
+         0 ,    -- TertiaryComponentTypeID - int
+         0 ,    -- TertiaryMinimum - int
+         0 ,    -- EnhancementSlots - int
+         4 ,    -- MainMaximum - int
+         0 ,    -- SecondaryMaximum - int
+         0 ,    -- TertiaryMaximum - int
+         NULL      -- BaseStructureID - int
+    )
+
+	
+INSERT INTO dbo.CraftBlueprint ( ID ,
+                                 CraftCategoryID ,
+                                 BaseLevel ,
+                                 ItemName ,
+                                 ItemResref ,
+                                 Quantity ,
+                                 SkillID ,
+                                 CraftDeviceID ,
+                                 PerkID ,
+                                 RequiredPerkLevel ,
+                                 IsActive ,
+                                 MainComponentTypeID ,
+                                 MainMinimum ,
+                                 SecondaryComponentTypeID ,
+                                 SecondaryMinimum ,
+                                 TertiaryComponentTypeID ,
+                                 TertiaryMinimum ,
+                                 EnhancementSlots ,
+                                 MainMaximum ,
+                                 SecondaryMaximum ,
+                                 TertiaryMaximum ,
+                                 BaseStructureID )
+VALUES ( 368 ,    -- ID - int
+         15 ,    -- CraftCategoryID - int
+         46 ,    -- BaseLevel - int
+         N'Light Defense III' ,  -- ItemName - nvarchar(64)
+         N'rune_ldef3' ,  -- ItemResref - nvarchar(16)
+         1 ,    -- Quantity - int
+         22 ,    -- SkillID - int
+         4 ,    -- CraftDeviceID - int
+         96 ,    -- PerkID - int
+         7 ,    -- RequiredPerkLevel - int
+         1 , -- IsActive - bit
+         28 ,    -- MainComponentTypeID - int
+         4 ,    -- MainMinimum - int
+         0 ,    -- SecondaryComponentTypeID - int
+         0 ,    -- SecondaryMinimum - int
+         0 ,    -- TertiaryComponentTypeID - int
+         0 ,    -- TertiaryMinimum - int
+         0 ,    -- EnhancementSlots - int
+         5 ,    -- MainMaximum - int
+         0 ,    -- SecondaryMaximum - int
+         0 ,    -- TertiaryMaximum - int
+         NULL      -- BaseStructureID - int
+    )
+
+
+	
+INSERT INTO dbo.CraftBlueprint ( ID ,
+                                 CraftCategoryID ,
+                                 BaseLevel ,
+                                 ItemName ,
+                                 ItemResref ,
+                                 Quantity ,
+                                 SkillID ,
+                                 CraftDeviceID ,
+                                 PerkID ,
+                                 RequiredPerkLevel ,
+                                 IsActive ,
+                                 MainComponentTypeID ,
+                                 MainMinimum ,
+                                 SecondaryComponentTypeID ,
+                                 SecondaryMinimum ,
+                                 TertiaryComponentTypeID ,
+                                 TertiaryMinimum ,
+                                 EnhancementSlots ,
+                                 MainMaximum ,
+                                 SecondaryMaximum ,
+                                 TertiaryMaximum ,
+                                 BaseStructureID )
+VALUES ( 371 ,    -- ID - int
+         15 ,    -- CraftCategoryID - int
+         16 ,    -- BaseLevel - int
+         N'Mind Defense I' ,  -- ItemName - nvarchar(64)
+         N'rune_mdef1' ,  -- ItemResref - nvarchar(16)
+         1 ,    -- Quantity - int
+         22 ,    -- SkillID - int
+         4 ,    -- CraftDeviceID - int
+         96 ,    -- PerkID - int
+         1 ,    -- RequiredPerkLevel - int
+         1 , -- IsActive - bit
+         28 ,    -- MainComponentTypeID - int
+         1 ,    -- MainMinimum - int
+         0 ,    -- SecondaryComponentTypeID - int
+         0 ,    -- SecondaryMinimum - int
+         0 ,    -- TertiaryComponentTypeID - int
+         0 ,    -- TertiaryMinimum - int
+         0 ,    -- EnhancementSlots - int
+         2 ,    -- MainMaximum - int
+         0 ,    -- SecondaryMaximum - int
+         0 ,    -- TertiaryMaximum - int
+         NULL      -- BaseStructureID - int
+    )
+
+	
+INSERT INTO dbo.CraftBlueprint ( ID ,
+                                 CraftCategoryID ,
+                                 BaseLevel ,
+                                 ItemName ,
+                                 ItemResref ,
+                                 Quantity ,
+                                 SkillID ,
+                                 CraftDeviceID ,
+                                 PerkID ,
+                                 RequiredPerkLevel ,
+                                 IsActive ,
+                                 MainComponentTypeID ,
+                                 MainMinimum ,
+                                 SecondaryComponentTypeID ,
+                                 SecondaryMinimum ,
+                                 TertiaryComponentTypeID ,
+                                 TertiaryMinimum ,
+                                 EnhancementSlots ,
+                                 MainMaximum ,
+                                 SecondaryMaximum ,
+                                 TertiaryMaximum ,
+                                 BaseStructureID )
+VALUES ( 381 ,    -- ID - int
+         15 ,    -- CraftCategoryID - int
+         31 ,    -- BaseLevel - int
+         N'Mind Defense II' ,  -- ItemName - nvarchar(64)
+         N'rune_mdef2' ,  -- ItemResref - nvarchar(16)
+         1 ,    -- Quantity - int
+         22 ,    -- SkillID - int
+         4 ,    -- CraftDeviceID - int
+         96 ,    -- PerkID - int
+         5 ,    -- RequiredPerkLevel - int
+         1 , -- IsActive - bit
+         28 ,    -- MainComponentTypeID - int
+         3 ,    -- MainMinimum - int
+         0 ,    -- SecondaryComponentTypeID - int
+         0 ,    -- SecondaryMinimum - int
+         0 ,    -- TertiaryComponentTypeID - int
+         0 ,    -- TertiaryMinimum - int
+         0 ,    -- EnhancementSlots - int
+         4 ,    -- MainMaximum - int
+         0 ,    -- SecondaryMaximum - int
+         0 ,    -- TertiaryMaximum - int
+         NULL      -- BaseStructureID - int
+    )
+
+	
+INSERT INTO dbo.CraftBlueprint ( ID ,
+                                 CraftCategoryID ,
+                                 BaseLevel ,
+                                 ItemName ,
+                                 ItemResref ,
+                                 Quantity ,
+                                 SkillID ,
+                                 CraftDeviceID ,
+                                 PerkID ,
+                                 RequiredPerkLevel ,
+                                 IsActive ,
+                                 MainComponentTypeID ,
+                                 MainMinimum ,
+                                 SecondaryComponentTypeID ,
+                                 SecondaryMinimum ,
+                                 TertiaryComponentTypeID ,
+                                 TertiaryMinimum ,
+                                 EnhancementSlots ,
+                                 MainMaximum ,
+                                 SecondaryMaximum ,
+                                 TertiaryMaximum ,
+                                 BaseStructureID )
+VALUES ( 384 ,    -- ID - int
+         15 ,    -- CraftCategoryID - int
+         46 ,    -- BaseLevel - int
+         N'Mind Defense III' ,  -- ItemName - nvarchar(64)
+         N'rune_mdef3' ,  -- ItemResref - nvarchar(16)
+         1 ,    -- Quantity - int
+         22 ,    -- SkillID - int
+         4 ,    -- CraftDeviceID - int
+         96 ,    -- PerkID - int
+         7 ,    -- RequiredPerkLevel - int
+         1 , -- IsActive - bit
+         28 ,    -- MainComponentTypeID - int
+         4 ,    -- MainMinimum - int
+         0 ,    -- SecondaryComponentTypeID - int
+         0 ,    -- SecondaryMinimum - int
+         0 ,    -- TertiaryComponentTypeID - int
+         0 ,    -- TertiaryMinimum - int
+         0 ,    -- EnhancementSlots - int
+         5 ,    -- MainMaximum - int
+         0 ,    -- SecondaryMaximum - int
+         0 ,    -- TertiaryMaximum - int
+         NULL      -- BaseStructureID - int
+    )
+
+
+	
+INSERT INTO dbo.CraftBlueprint ( ID ,
+                                 CraftCategoryID ,
+                                 BaseLevel ,
+                                 ItemName ,
+                                 ItemResref ,
+                                 Quantity ,
+                                 SkillID ,
+                                 CraftDeviceID ,
+                                 PerkID ,
+                                 RequiredPerkLevel ,
+                                 IsActive ,
+                                 MainComponentTypeID ,
+                                 MainMinimum ,
+                                 SecondaryComponentTypeID ,
+                                 SecondaryMinimum ,
+                                 TertiaryComponentTypeID ,
+                                 TertiaryMinimum ,
+                                 EnhancementSlots ,
+                                 MainMaximum ,
+                                 SecondaryMaximum ,
+                                 TertiaryMaximum ,
+                                 BaseStructureID )
+VALUES ( 389 ,    -- ID - int
+         15 ,    -- CraftCategoryID - int
+         16 ,    -- BaseLevel - int
+         N'Electrical Defense I' ,  -- ItemName - nvarchar(64)
+         N'rune_edef1' ,  -- ItemResref - nvarchar(16)
+         1 ,    -- Quantity - int
+         22 ,    -- SkillID - int
+         4 ,    -- CraftDeviceID - int
+         96 ,    -- PerkID - int
+         1 ,    -- RequiredPerkLevel - int
+         1 , -- IsActive - bit
+         28 ,    -- MainComponentTypeID - int
+         1 ,    -- MainMinimum - int
+         0 ,    -- SecondaryComponentTypeID - int
+         0 ,    -- SecondaryMinimum - int
+         0 ,    -- TertiaryComponentTypeID - int
+         0 ,    -- TertiaryMinimum - int
+         0 ,    -- EnhancementSlots - int
+         2 ,    -- MainMaximum - int
+         0 ,    -- SecondaryMaximum - int
+         0 ,    -- TertiaryMaximum - int
+         NULL      -- BaseStructureID - int
+    )
+
+	
+INSERT INTO dbo.CraftBlueprint ( ID ,
+                                 CraftCategoryID ,
+                                 BaseLevel ,
+                                 ItemName ,
+                                 ItemResref ,
+                                 Quantity ,
+                                 SkillID ,
+                                 CraftDeviceID ,
+                                 PerkID ,
+                                 RequiredPerkLevel ,
+                                 IsActive ,
+                                 MainComponentTypeID ,
+                                 MainMinimum ,
+                                 SecondaryComponentTypeID ,
+                                 SecondaryMinimum ,
+                                 TertiaryComponentTypeID ,
+                                 TertiaryMinimum ,
+                                 EnhancementSlots ,
+                                 MainMaximum ,
+                                 SecondaryMaximum ,
+                                 TertiaryMaximum ,
+                                 BaseStructureID )
+VALUES ( 405 ,    -- ID - int
+         15 ,    -- CraftCategoryID - int
+         31 ,    -- BaseLevel - int
+         N'Electrical Defense II' ,  -- ItemName - nvarchar(64)
+         N'rune_edef2' ,  -- ItemResref - nvarchar(16)
+         1 ,    -- Quantity - int
+         22 ,    -- SkillID - int
+         4 ,    -- CraftDeviceID - int
+         96 ,    -- PerkID - int
+         5 ,    -- RequiredPerkLevel - int
+         1 , -- IsActive - bit
+         28 ,    -- MainComponentTypeID - int
+         3 ,    -- MainMinimum - int
+         0 ,    -- SecondaryComponentTypeID - int
+         0 ,    -- SecondaryMinimum - int
+         0 ,    -- TertiaryComponentTypeID - int
+         0 ,    -- TertiaryMinimum - int
+         0 ,    -- EnhancementSlots - int
+         4 ,    -- MainMaximum - int
+         0 ,    -- SecondaryMaximum - int
+         0 ,    -- TertiaryMaximum - int
+         NULL      -- BaseStructureID - int
+    )
+
+	
+INSERT INTO dbo.CraftBlueprint ( ID ,
+                                 CraftCategoryID ,
+                                 BaseLevel ,
+                                 ItemName ,
+                                 ItemResref ,
+                                 Quantity ,
+                                 SkillID ,
+                                 CraftDeviceID ,
+                                 PerkID ,
+                                 RequiredPerkLevel ,
+                                 IsActive ,
+                                 MainComponentTypeID ,
+                                 MainMinimum ,
+                                 SecondaryComponentTypeID ,
+                                 SecondaryMinimum ,
+                                 TertiaryComponentTypeID ,
+                                 TertiaryMinimum ,
+                                 EnhancementSlots ,
+                                 MainMaximum ,
+                                 SecondaryMaximum ,
+                                 TertiaryMaximum ,
+                                 BaseStructureID )
+VALUES ( 412 ,    -- ID - int
+         15 ,    -- CraftCategoryID - int
+         46 ,    -- BaseLevel - int
+         N'Electrical Defense III' ,  -- ItemName - nvarchar(64)
+         N'rune_edef3' ,  -- ItemResref - nvarchar(16)
+         1 ,    -- Quantity - int
+         22 ,    -- SkillID - int
+         4 ,    -- CraftDeviceID - int
+         96 ,    -- PerkID - int
+         7 ,    -- RequiredPerkLevel - int
+         1 , -- IsActive - bit
+         28 ,    -- MainComponentTypeID - int
+         4 ,    -- MainMinimum - int
+         0 ,    -- SecondaryComponentTypeID - int
+         0 ,    -- SecondaryMinimum - int
+         0 ,    -- TertiaryComponentTypeID - int
+         0 ,    -- TertiaryMinimum - int
+         0 ,    -- EnhancementSlots - int
+         5 ,    -- MainMaximum - int
+         0 ,    -- SecondaryMaximum - int
+         0 ,    -- TertiaryMaximum - int
+         NULL      -- BaseStructureID - int
+    )

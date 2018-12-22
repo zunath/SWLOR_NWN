@@ -184,7 +184,7 @@ namespace SWLOR.Game.Server.Service
         private void HandleBattlemagePerk()
         {
             DamageData data = _nwnxDamage.GetDamageEventData();
-            if (data.Total <= 0) return;
+            if (data.Base <= 0) return;
 
             NWObject target = Object.OBJECT_SELF;
             if (!data.Damager.IsPlayer || !target.IsNPC) return;

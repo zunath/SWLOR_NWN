@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.ChatCommand
 
             NWPlayer player = target.Object;
             _object.SetPortrait(player, args[0]);
-            player.FloatingText("Your portrait has been changed");
+            player.FloatingText("Your portrait has been changed.");
         }
 
         public string ValidateArguments(NWPlayer user, params string[] args)

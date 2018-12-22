@@ -193,44 +193,44 @@ WHERE ID = 126
 
 
 UPDATE dbo.Mod
-SET Name = 'Force Support'
+SET Name = 'Light Potency'
 WHERE ID = 7
 
 UPDATE dbo.Mod
-SET Name = 'Force Combat'
+SET Name = 'Dark Potency'
 WHERE ID = 8
 
 UPDATE dbo.Mod
-SET Name = 'Force Utility',
-	Script = 'ForceUtilityMod'
+SET Name = 'Mind Potency',
+	Script = 'MindPotencyMod'
 WHERE ID = 9
 
 
 
 
 UPDATE dbo.CraftBlueprint
-SET ItemName = 'Force Support I'
+SET ItemName = 'Light Potency I'
 WHERE ID = 128
 
 UPDATE dbo.CraftBlueprint
-SET ItemName = 'Force Support II'
+SET ItemName = 'Light Potency II'
 WHERE ID = 161
 
 UPDATE dbo.CraftBlueprint
-SET ItemName = 'Force Support III'
+SET ItemName = 'Light Potency III'
 WHERE ID = 191
 
 
 UPDATE dbo.CraftBlueprint
-SET ItemName = 'Force Combat I'
+SET ItemName = 'Dark Potency I'
 WHERE ID = 129
 
 UPDATE dbo.CraftBlueprint
-SET ItemName = 'Force Combat II'
+SET ItemName = 'Dark Potency II'
 WHERE ID = 162
 
 UPDATE dbo.CraftBlueprint
-SET ItemName = 'Force Combat III'
+SET ItemName = 'Dark Potency III'
 WHERE ID = 192
 
 INSERT INTO dbo.CraftBlueprint ( ID ,
@@ -258,7 +258,7 @@ INSERT INTO dbo.CraftBlueprint ( ID ,
 VALUES ( 132 ,    -- ID - int
          15 ,    -- CraftCategoryID - int
          15 ,    -- BaseLevel - int
-         N'Force Utility I' ,  -- ItemName - nvarchar(64)
+         N'Mind Potency I' ,  -- ItemName - nvarchar(64)
          N'rune_sum1' ,  -- ItemResref - nvarchar(16)
          1 ,    -- Quantity - int
          22 ,    -- SkillID - int
@@ -305,7 +305,7 @@ INSERT INTO dbo.CraftBlueprint ( ID ,
 VALUES ( 165 ,    -- ID - int
          15 ,    -- CraftCategoryID - int
          30 ,    -- BaseLevel - int
-         N'Force Utility II' ,  -- ItemName - nvarchar(64)
+         N'Mind Potency II' ,  -- ItemName - nvarchar(64)
          N'rune_sum2' ,  -- ItemResref - nvarchar(16)
          1 ,    -- Quantity - int
          22 ,    -- SkillID - int
@@ -352,7 +352,7 @@ INSERT INTO dbo.CraftBlueprint ( ID ,
 VALUES ( 180 ,    -- ID - int
          15 ,    -- CraftCategoryID - int
          45 ,    -- BaseLevel - int
-         N'Force Utility III' ,  -- ItemName - nvarchar(64)
+         N'Mind Potency III' ,  -- ItemName - nvarchar(64)
          N'rune_sum3' ,  -- ItemResref - nvarchar(16)
          1 ,    -- Quantity - int
          22 ,    -- SkillID - int
@@ -373,7 +373,146 @@ VALUES ( 180 ,    -- ID - int
          NULL      -- BaseStructureID - int
     )
 
+	
+INSERT INTO dbo.CraftBlueprint ( ID ,
+                                 CraftCategoryID ,
+                                 BaseLevel ,
+                                 ItemName ,
+                                 ItemResref ,
+                                 Quantity ,
+                                 SkillID ,
+                                 CraftDeviceID ,
+                                 PerkID ,
+                                 RequiredPerkLevel ,
+                                 IsActive ,
+                                 MainComponentTypeID ,
+                                 MainMinimum ,
+                                 SecondaryComponentTypeID ,
+                                 SecondaryMinimum ,
+                                 TertiaryComponentTypeID ,
+                                 TertiaryMinimum ,
+                                 EnhancementSlots ,
+                                 MainMaximum ,
+                                 SecondaryMaximum ,
+                                 TertiaryMaximum ,
+                                 BaseStructureID )
+VALUES ( 195 ,    -- ID - int
+         15 ,    -- CraftCategoryID - int
+         15 ,    -- BaseLevel - int
+         N'Electrical Potency I' ,  -- ItemName - nvarchar(64)
+         N'rune_ele1' ,  -- ItemResref - nvarchar(16)
+         1 ,    -- Quantity - int
+         22 ,    -- SkillID - int
+         4 ,    -- CraftDeviceID - int
+         96 ,    -- PerkID - int
+         1 ,    -- RequiredPerkLevel - int
+         1 , -- IsActive - bit
+         28 ,    -- MainComponentTypeID - int
+         1 ,    -- MainMinimum - int
+         0 ,    -- SecondaryComponentTypeID - int
+         0 ,    -- SecondaryMinimum - int
+         0 ,    -- TertiaryComponentTypeID - int
+         0 ,    -- TertiaryMinimum - int
+         0 ,    -- EnhancementSlots - int
+         2 ,    -- MainMaximum - int
+         0 ,    -- SecondaryMaximum - int
+         0 ,    -- TertiaryMaximum - int
+         NULL      -- BaseStructureID - int
+    )
 
+	
+INSERT INTO dbo.CraftBlueprint ( ID ,
+                                 CraftCategoryID ,
+                                 BaseLevel ,
+                                 ItemName ,
+                                 ItemResref ,
+                                 Quantity ,
+                                 SkillID ,
+                                 CraftDeviceID ,
+                                 PerkID ,
+                                 RequiredPerkLevel ,
+                                 IsActive ,
+                                 MainComponentTypeID ,
+                                 MainMinimum ,
+                                 SecondaryComponentTypeID ,
+                                 SecondaryMinimum ,
+                                 TertiaryComponentTypeID ,
+                                 TertiaryMinimum ,
+                                 EnhancementSlots ,
+                                 MainMaximum ,
+                                 SecondaryMaximum ,
+                                 TertiaryMaximum ,
+                                 BaseStructureID )
+VALUES ( 323 ,    -- ID - int
+         15 ,    -- CraftCategoryID - int
+         30 ,    -- BaseLevel - int
+         N'Electrical Potency II' ,  -- ItemName - nvarchar(64)
+         N'rune_ele2' ,  -- ItemResref - nvarchar(16)
+         1 ,    -- Quantity - int
+         22 ,    -- SkillID - int
+         4 ,    -- CraftDeviceID - int
+         96 ,    -- PerkID - int
+         5 ,    -- RequiredPerkLevel - int
+         1 , -- IsActive - bit
+         28 ,    -- MainComponentTypeID - int
+         3 ,    -- MainMinimum - int
+         0 ,    -- SecondaryComponentTypeID - int
+         0 ,    -- SecondaryMinimum - int
+         0 ,    -- TertiaryComponentTypeID - int
+         0 ,    -- TertiaryMinimum - int
+         0 ,    -- EnhancementSlots - int
+         4 ,    -- MainMaximum - int
+         0 ,    -- SecondaryMaximum - int
+         0 ,    -- TertiaryMaximum - int
+         NULL      -- BaseStructureID - int
+    )
+
+	
+INSERT INTO dbo.CraftBlueprint ( ID ,
+                                 CraftCategoryID ,
+                                 BaseLevel ,
+                                 ItemName ,
+                                 ItemResref ,
+                                 Quantity ,
+                                 SkillID ,
+                                 CraftDeviceID ,
+                                 PerkID ,
+                                 RequiredPerkLevel ,
+                                 IsActive ,
+                                 MainComponentTypeID ,
+                                 MainMinimum ,
+                                 SecondaryComponentTypeID ,
+                                 SecondaryMinimum ,
+                                 TertiaryComponentTypeID ,
+                                 TertiaryMinimum ,
+                                 EnhancementSlots ,
+                                 MainMaximum ,
+                                 SecondaryMaximum ,
+                                 TertiaryMaximum ,
+                                 BaseStructureID )
+VALUES ( 329 ,    -- ID - int
+         15 ,    -- CraftCategoryID - int
+         45 ,    -- BaseLevel - int
+         N'Electrical Potency III' ,  -- ItemName - nvarchar(64)
+         N'rune_ele3' ,  -- ItemResref - nvarchar(16)
+         1 ,    -- Quantity - int
+         22 ,    -- SkillID - int
+         4 ,    -- CraftDeviceID - int
+         96 ,    -- PerkID - int
+         7 ,    -- RequiredPerkLevel - int
+         1 , -- IsActive - bit
+         28 ,    -- MainComponentTypeID - int
+         4 ,    -- MainMinimum - int
+         0 ,    -- SecondaryComponentTypeID - int
+         0 ,    -- SecondaryMinimum - int
+         0 ,    -- TertiaryComponentTypeID - int
+         0 ,    -- TertiaryMinimum - int
+         0 ,    -- EnhancementSlots - int
+         5 ,    -- MainMaximum - int
+         0 ,    -- SecondaryMaximum - int
+         0 ,    -- TertiaryMaximum - int
+         NULL      -- BaseStructureID - int
+    )
 
 -- Change Force Armor to CON/CHA/WIS
 UPDATE dbo.Skill
@@ -1133,7 +1272,7 @@ WHERE ID IN (
 )
 
 
-
+-- Fix name on the "Mining" mods to read "Harvesting"
 UPDATE dbo.CraftBlueprint
 SET ItemName = 'Harvesting I'
 WHERE ID = 133
@@ -1145,3 +1284,16 @@ WHERE ID = 166
 UPDATE dbo.CraftBlueprint
 SET ItemName = 'Harvesting III'
 WHERE ID = 196
+
+
+-- Add the Electrical Potency mod category.
+INSERT INTO dbo.Mod ( ID ,
+                    Name ,
+                    Script ,
+                    IsActive )
+VALUES ( 29 ,   -- ID - int
+        N'Electrical Potency' , -- Name - nvarchar(64)
+        N'ElectricalPotencyMod' , -- Script - nvarchar(100)
+        1  -- IsActive - bit
+    )
+ 

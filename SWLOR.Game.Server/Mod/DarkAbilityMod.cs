@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
-    // This is the Force Combat Mod class. The class name is maintained for backwards compatibility purposes.
+    // This is the Dark Potency Mod class. The class name is maintained for backwards compatibility purposes.
     public class DarkAbilityMod : IMod
     {
         public string CanApply(NWPlayer player, NWItem target, params string[] args)

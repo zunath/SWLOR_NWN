@@ -492,6 +492,7 @@
     <Compile Include="Language\TranslatorShyriiwook.cs" />
     <Compile Include="Language\TranslatorTwileki.cs" />
     <Compile Include="Language\TranslatorZabraki.cs" />
+    <Compile Include="Mod\ElectricalPotencyMod.cs" />
     <Compile Include="Mod\FabricationMod.cs" />
     <Compile Include="Mod\RestMod.cs" />
     <Compile Include="NWNX\Contracts\INWNXProfiler.cs" />
@@ -1153,7 +1154,7 @@
     <Compile Include="Mod\MeditateMod.cs" />
     <Compile Include="Mod\HarvestingMod.cs" />
     <Compile Include="Mod\SneakAttackMod.cs" />
-    <Compile Include="Mod\ForceUtilityMod.cs" />
+    <Compile Include="Mod\MindPotencyMod.cs" />
     <Compile Include="Mod\WeaponsmithMod.cs" />
     <Compile Include="Processor\AppStateProcessor.cs" />
     <Compile Include="Processor\BehaviourProcessor.cs" />

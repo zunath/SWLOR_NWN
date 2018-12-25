@@ -84,9 +84,9 @@ namespace SWLOR.Game.Server.Item.Medicine
             baseHeal = (int)(baseHeal * effectivenessPercent);
             if (target.IsPlayer){
             Player dbPlayer = _data.Single<Player>(x => x.ID == target.GlobalID);
+            int fpRecover = (int) (dbPlayer.MaxFP * (0.01f * baseHeal));
             }
             int hpRecover = (int)(target.MaxHP * (0.01f * baseHeal));
-            int fpRecover = (int) (dbPlayer.MaxFP * (0.01f * baseHeal));
 
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectResurrection(), target);
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(hpRecover), target);

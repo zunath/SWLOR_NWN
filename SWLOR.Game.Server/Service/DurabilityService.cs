@@ -168,7 +168,7 @@ namespace SWLOR.Game.Server.Service
             int apr = _creature.GetAttacksPerRound(player, 1);
             // Reduce by 0.001 each time it's run. Player only receives notifications when it drops a full point.
             // I.E: Dropping from 29.001 to 29.
-            // Note that players only see two decimal places in-game on purpose.w
+            // Note that players only see two decimal places in-game on purpose.
             durability -= reduceAmount / apr;
             bool displayMessage = Math.Abs(durability % 1) < 0.05f;
 

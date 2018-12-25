@@ -82,7 +82,8 @@ namespace SWLOR.Game.Server.Item.Medicine
             }
 
             baseHeal = (int)(baseHeal * effectivenessPercent);
-            if (target.IsPlayer){
+            if (target.IsPlayer)
+            {
             Player dbPlayer = _data.Single<Player>(x => x.ID == target.GlobalID);
             int fpRecover = (int) (dbPlayer.MaxFP * (0.01f * baseHeal));
             }

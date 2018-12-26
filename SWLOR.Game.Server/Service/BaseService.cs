@@ -510,7 +510,7 @@ namespace SWLOR.Game.Server.Service
                 pcBase = _data.Get<PCBase>(parentStructure.PCBaseID);
 
                 int buildingStructureCount = _data.GetAll<PCBaseStructure>().Count(x => x.ParentPCBaseStructureID == parentStructure.ID) + 1;
-                if(buildingStructureCount > parentBaseStructure.Storage)
+                if(buildingStructureCount > parentBaseStructure.Storage + parentStructure.StructureBonus)
                 {
                     return "No more structures can be placed inside this building.";
                 }

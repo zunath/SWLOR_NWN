@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Conversation
                 var baseStructure = _data.Get<BaseStructure>(buildingStructure.BaseStructureID);
                 var childStructures = _data.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == buildingStructure.ID).ToList();
 
-                header += _color.Green("Structure Limit: ") + childStructures.Count + " / " + baseStructure.Storage + "\n";
+                header += _color.Green("Structure Limit: ") + childStructures.Count + " / " + (baseStructure.Storage + buildingStructure.StructureBonus) + "\n";
             }
             else if (data.BuildingType == BuildingType.Apartment)
             {

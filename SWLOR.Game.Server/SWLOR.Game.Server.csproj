@@ -140,6 +140,7 @@
     <Compile Include="ChatCommand\Salute.cs" />
     <Compile Include="ChatCommand\Save.cs" />
     <Compile Include="ChatCommand\ScratchHead.cs" />
+    <Compile Include="ChatCommand\SetPortrait.cs" />
     <Compile Include="ChatCommand\SetLeaseRate.cs" />
     <Compile Include="ChatCommand\SetLocalFloat.cs" />
     <Compile Include="ChatCommand\SetLocalInt.cs" />

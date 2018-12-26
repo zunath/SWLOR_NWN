@@ -1904,3 +1904,13 @@ VALUES ( 412 ,    -- ID - int
          0 ,    -- TertiaryMaximum - int
          NULL      -- BaseStructureID - int
     )
+
+
+-- Add language to Rest and Meditate explaining that they share a cooldown.
+UPDATE dbo.Perk
+SET Description = 'Restores HP quickly as long as you stay in one place. Must be out of combat to use. Moving or combat will interrupt the ability. Shares a cooldown with the Meditate perk.'
+WHERE ID = 7
+
+UPDATE dbo.Perk
+SET Description = 'Restores FP quickly as long as you stay in one place. Must be out of combat to use. Moving or combat will interrupt the ability. Shares a cooldown with the Rest perk.'
+WHERE ID = 103

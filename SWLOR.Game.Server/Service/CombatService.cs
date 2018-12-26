@@ -630,10 +630,31 @@ namespace SWLOR.Game.Server.Service
             // If this ability was resisted in any way, notify the caster.
             if (resistance.Type != ResistanceType.Zero)
             {
-                caster.SendMessage("Your force ability was resisted.");
+                string name = GetForceResistanceName(resistance.Type);
+                caster.SendMessage("Your force ability was resisted. " + name);
             }
 
             return result;
         }
+
+        private string GetForceResistanceName(ResistanceType type)
+        {
+            switch (type)
+            {
+                case ResistanceType.Zero:
+                    return string.Empty;
+                case ResistanceType.Half:
+                    return "(1/2)";
+                case ResistanceType.Fourth:
+                    return "(1/4)";
+                case ResistanceType.Eighth:
+                    return "(1/8)";
+                case ResistanceType.Full:
+                    return "(Fully Resisted)";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
+        }
+
     }
 }

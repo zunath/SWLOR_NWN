@@ -422,6 +422,7 @@
     <Compile Include="Enumeration\PerkType.cs" />
     <Compile Include="Enumeration\QuestType.cs" />
     <Compile Include="Enumeration\QuickBarSlotType.cs" />
+    <Compile Include="Enumeration\ResistanceType.cs" />
     <Compile Include="Enumeration\ResourceQuality.cs" />
     <Compile Include="Enumeration\ResourceType.cs" />
     <Compile Include="Enumeration\SkillType.cs" />
@@ -1350,6 +1351,7 @@
     <Compile Include="ValueObject\DialogNavigation.cs" />
     <Compile Include="ValueObject\EffectiveStats.cs" />
     <Compile Include="ValueObject\ForceDamageResult.cs" />
+    <Compile Include="ValueObject\ForceResistanceResult.cs" />
     <Compile Include="ValueObject\ForceSpreadDetails.cs" />
     <Compile Include="ValueObject\ObjectSpawn.cs" />
     <Compile Include="ValueObject\PCTempBaseData.cs" />

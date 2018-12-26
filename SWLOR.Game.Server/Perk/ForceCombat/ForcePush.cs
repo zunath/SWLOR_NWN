@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.ValueObject;
 using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Perk.ForceCombat
@@ -97,10 +98,10 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
             _skill.RegisterPCToNPCForSkill(player, target, SkillType.ForceCombat);
             
             // Resistance affects length for this perk.
-            float resistance = _combat.CalculateResistanceRating(player, target.Object, ForceAbilityType.Mind);
-            length = length * resistance;
+            ForceResistanceResult resistance = _combat.CalculateResistanceRating(player, target.Object, ForceAbilityType.Mind);
+            length = length * resistance.Amount;
 
-            if (length <= 0.0f)
+            if (length <= 0.0f || resistance.Type != ResistanceType.Zero)
             {
                 player.SendMessage("Your Force Push effect was resisted.");
                 return;

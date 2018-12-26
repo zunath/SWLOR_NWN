@@ -469,27 +469,49 @@ namespace SWLOR.Game.Server.Service
             target.SetLocalInt(variable, tempDefense);
         }
 
-        public float CalculateResistanceRating(
+        public ForceResistanceResult CalculateResistanceRating(
             NWCreature caster,
             NWCreature target,
             ForceAbilityType forceAbility)
         {
             int accuracy = CalculateForceAccuracy(caster, target, forceAbility);
+            ForceResistanceResult result = new ForceResistanceResult();
             
             // First resistance check - Zero resistance
-            if (_random.D100(1) <= accuracy) return 1.0f;
+            if (_random.D100(1) <= accuracy)
+            {
+                result.Amount = 1.0f;
+                result.Type = ResistanceType.Zero;
+            }
 
             // Second resistance check - 1/2 resistance
-            if (_random.D100(1) <= accuracy) return 0.5f;
+            if (_random.D100(1) <= accuracy)
+            {
+                result.Amount = 0.5f;
+                result.Type = ResistanceType.Half;
+            }
 
             // Third resistance check - 1/4 resistance
-            if (_random.D100(1) <= accuracy) return 0.25f;
+            if (_random.D100(1) <= accuracy)
+            {
+                result.Amount = 0.25f;
+                result.Type = ResistanceType.Fourth;
+            }
 
             // Fourth resistance check - 1/8 resistance
-            if (_random.D100(1) <= accuracy) return 0.125f;
-
+            if (_random.D100(1) <= accuracy)
+            {
+                result.Amount = 0.125f;
+                result.Type = ResistanceType.Eighth;
+            }
             // Failed all resistance checks. 100% resistance
-            return 0f;
+            else
+            {
+                result.Amount = 0f;
+                result.Type = ResistanceType.Full;
+            }
+
+            return result;
         }
 
         public int CalculateItemPotencyBonus(NWCreature caster, ForceAbilityType abilityType)
@@ -529,7 +551,7 @@ namespace SWLOR.Game.Server.Service
             float tier3Modifier,
             float tier4Modifier)
         {
-            float resistanceMultiplier = CalculateResistanceRating(caster, target, abilityType);
+            ForceResistanceResult resistance = CalculateResistanceRating(caster, target, abilityType);
             int itemBonus = CalculateItemPotencyBonus(caster, abilityType);
 
             int casterPrimary = 0;
@@ -590,7 +612,7 @@ namespace SWLOR.Game.Server.Service
             //caster.SendMessage("itemBonus = " + itemBonus + ", basePotency = " + basePotency + ", delta = " + delta + ", multiplier = " + multiplier + ", resistanceMultiplier = " + resistanceMultiplier);
 
             // Combine everything together to get the damage result.
-            int damage = (int)((itemBonus + basePotency + (delta * multiplier)) * resistanceMultiplier);
+            int damage = (int)((itemBonus + basePotency + (delta * multiplier)) * resistance.Amount);
 
             if (damage > 0)
                 damage += _random.D8(1);
@@ -601,9 +623,15 @@ namespace SWLOR.Game.Server.Service
             ForceDamageResult result = new ForceDamageResult
             {
                 Damage = damage,
-                Resistance = resistanceMultiplier,
+                Resistance = resistance,
                 ItemBonus = itemBonus
             };
+
+            // If this ability was resisted in any way, notify the caster.
+            if (resistance.Type != ResistanceType.Zero)
+            {
+                caster.SendMessage("Your force ability was resisted.");
+            }
 
             return result;
         }

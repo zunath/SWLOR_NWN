@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.ChatCommand
 
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            if (!target.IsValid && !ObjectType == NWScript.OBJECT_TYPE_CREATURE)
+            if (!target.IsValid || target.ObjectType != NWScript.OBJECT_TYPE_CREATURE)
             {
                 user.SendMessage("Only creatures may be targeted with this command.");
                 return;

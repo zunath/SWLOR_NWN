@@ -18,7 +18,8 @@ namespace SWLOR.Game.Server.Tests.Service
             INWScript script = Substitute.For<INWScript>();
             IColorTokenService color = Substitute.For<IColorTokenService>();
             INWNXProfiler nwnxProfiler = Substitute.For<INWNXProfiler>();
-            DurabilityService service = new DurabilityService(script, color, nwnxProfiler);
+            INWNXCreature creature = Substitute.For<INWNXCreature>();
+            DurabilityService service = new DurabilityService(script, color, nwnxProfiler,creature);
 
             Assert.Throws(typeof(ArgumentNullException), () =>
             {
@@ -32,7 +33,8 @@ namespace SWLOR.Game.Server.Tests.Service
             INWScript script = Substitute.For<INWScript>();
             IColorTokenService color = Substitute.For<IColorTokenService>();
             INWNXProfiler nwnxProfiler = Substitute.For<INWNXProfiler>();
-            DurabilityService service = new DurabilityService(script, color, nwnxProfiler);
+            INWNXCreature creature = Substitute.For<INWNXCreature>();
+            DurabilityService service = new DurabilityService(script, color, nwnxProfiler, creature);
 
             Assert.Throws(typeof(ArgumentNullException), () =>
             {
@@ -46,7 +48,8 @@ namespace SWLOR.Game.Server.Tests.Service
             INWScript script = Substitute.For<INWScript>();
             IColorTokenService color = Substitute.For<IColorTokenService>();
             INWNXProfiler nwnxProfiler = Substitute.For<INWNXProfiler>();
-            DurabilityService service = new DurabilityService(script, color, nwnxProfiler);
+            INWNXCreature creature = Substitute.For<INWNXCreature>();
+            DurabilityService service = new DurabilityService(script, color, nwnxProfiler, creature);
 
             Assert.Throws(typeof(ArgumentNullException), () =>
             {
@@ -60,7 +63,8 @@ namespace SWLOR.Game.Server.Tests.Service
             INWScript script = Substitute.For<INWScript>();
             IColorTokenService color = Substitute.For<IColorTokenService>();
             INWNXProfiler nwnxProfiler = Substitute.For<INWNXProfiler>();
-            DurabilityService service = new DurabilityService(script, color, nwnxProfiler);
+            INWNXCreature creature = Substitute.For<INWNXCreature>();
+            DurabilityService service = new DurabilityService(script, color, nwnxProfiler, creature);
 
             Assert.Throws(typeof(ArgumentNullException), () =>
             {
@@ -74,7 +78,8 @@ namespace SWLOR.Game.Server.Tests.Service
             INWScript script = Substitute.For<INWScript>();
             IColorTokenService color = Substitute.For<IColorTokenService>();
             INWNXProfiler nwnxProfiler = Substitute.For<INWNXProfiler>();
-            DurabilityService service = new DurabilityService(script, color, nwnxProfiler);
+            INWNXCreature creature = Substitute.For<INWNXCreature>();
+            DurabilityService service = new DurabilityService(script, color, nwnxProfiler, creature);
             NWItem item = Substitute.For<NWItem>(script, service);
             item.BaseItemType.Returns(x => NWScript.BASE_ITEM_BLANK_SCROLL);
 
@@ -88,7 +93,8 @@ namespace SWLOR.Game.Server.Tests.Service
             INWScript script = Substitute.For<INWScript>();
             IColorTokenService color = Substitute.For<IColorTokenService>();
             INWNXProfiler nwnxProfiler = Substitute.For<INWNXProfiler>();
-            DurabilityService service = new DurabilityService(script, color, nwnxProfiler);
+            INWNXCreature creature = Substitute.For<INWNXCreature>();
+            DurabilityService service = new DurabilityService(script, color, nwnxProfiler, creature);
             NWItem item = Substitute.For<NWItem>(script, service);
             item.BaseItemType.Returns(x => NWScript.BASE_ITEM_LONGSWORD);
 
@@ -102,7 +108,8 @@ namespace SWLOR.Game.Server.Tests.Service
             INWScript script = Substitute.For<INWScript>();
             IColorTokenService color = Substitute.For<IColorTokenService>();
             INWNXProfiler nwnxProfiler = Substitute.For<INWNXProfiler>();
-            DurabilityService service = new DurabilityService(script, color, nwnxProfiler);
+            INWNXCreature creature = Substitute.For<INWNXCreature>();
+            DurabilityService service = new DurabilityService(script, color, nwnxProfiler, creature);
             NWItem item = Substitute.For<NWItem>(script, service);
             item.BaseItemType.Returns(x => NWScript.BASE_ITEM_LONGSWORD);
             item.GetLocalInt(Arg.Any<string>()).Returns(4);
@@ -117,7 +124,8 @@ namespace SWLOR.Game.Server.Tests.Service
             INWScript script = Substitute.For<INWScript>();
             IColorTokenService color = Substitute.For<IColorTokenService>();
             INWNXProfiler nwnxProfiler = Substitute.For<INWNXProfiler>();
-            DurabilityService service = new DurabilityService(script, color, nwnxProfiler);
+            INWNXCreature creature = Substitute.For<INWNXCreature>();
+            DurabilityService service = new DurabilityService(script, color, nwnxProfiler, creature);
             NWItem item = Substitute.For<NWItem>(script, service);
             item.BaseItemType.Returns(x => NWScript.BASE_ITEM_LONGSWORD);
             item.GetLocalFloat(Arg.Any<string>()).Returns(6.23f);
@@ -132,7 +140,8 @@ namespace SWLOR.Game.Server.Tests.Service
             INWScript script = Substitute.For<INWScript>();
             IColorTokenService color = Substitute.For<IColorTokenService>();
             INWNXProfiler nwnxProfiler = Substitute.For<INWNXProfiler>();
-            DurabilityService service = new DurabilityService(script, color, nwnxProfiler);
+            INWNXCreature creature = Substitute.For<INWNXCreature>();
+            DurabilityService service = new DurabilityService(script, color, nwnxProfiler, creature);
             bool ranOnce = false;
             NWItem item = Substitute.For<NWItem>(script, service);
             item.BaseItemType.Returns(x => NWScript.BASE_ITEM_BLANK_SCROLL);
@@ -149,7 +158,8 @@ namespace SWLOR.Game.Server.Tests.Service
             INWScript script = Substitute.For<INWScript>();
             IColorTokenService color = Substitute.For<IColorTokenService>();
             INWNXProfiler nwnxProfiler = Substitute.For<INWNXProfiler>();
-            DurabilityService service = new DurabilityService(script, color, nwnxProfiler);
+            INWNXCreature creature = Substitute.For<INWNXCreature>();
+            DurabilityService service = new DurabilityService(script, color, nwnxProfiler, creature);
             float value = 0.0f;
             NWItem item = Substitute.For<NWItem>(script, service);
             item.BaseItemType.Returns(x => NWScript.BASE_ITEM_LONGSWORD);
@@ -166,7 +176,8 @@ namespace SWLOR.Game.Server.Tests.Service
             INWScript script = Substitute.For<INWScript>();
             IColorTokenService color = Substitute.For<IColorTokenService>();
             INWNXProfiler nwnxProfiler = Substitute.For<INWNXProfiler>();
-            DurabilityService service = new DurabilityService(script, color, nwnxProfiler);
+            INWNXCreature creature = Substitute.For<INWNXCreature>();
+            DurabilityService service = new DurabilityService(script, color, nwnxProfiler, creature);
             float value = 0.0f;
             NWItem item = Substitute.For<NWItem>(script, service);
             item.BaseItemType.Returns(x => NWScript.BASE_ITEM_LONGSWORD);
@@ -184,7 +195,8 @@ namespace SWLOR.Game.Server.Tests.Service
             INWScript script = Substitute.For<INWScript>();
             IColorTokenService color = Substitute.For<IColorTokenService>();
             INWNXProfiler nwnxProfiler = Substitute.For<INWNXProfiler>();
-            DurabilityService service = new DurabilityService(script, color, nwnxProfiler);
+            INWNXCreature creature = Substitute.For<INWNXCreature>();
+            DurabilityService service = new DurabilityService(script, color, nwnxProfiler, creature);
             bool ranOnce = false;
             NWItem item = Substitute.For<NWItem>(script, service);
             item.BaseItemType.Returns(x => NWScript.BASE_ITEM_BLANK_SCROLL);
@@ -201,7 +213,8 @@ namespace SWLOR.Game.Server.Tests.Service
             INWScript script = Substitute.For<INWScript>();
             IColorTokenService color = Substitute.For<IColorTokenService>();
             INWNXProfiler nwnxProfiler = Substitute.For<INWNXProfiler>();
-            DurabilityService service = new DurabilityService(script, color, nwnxProfiler);
+            INWNXCreature creature = Substitute.For<INWNXCreature>();
+            DurabilityService service = new DurabilityService(script, color, nwnxProfiler, creature);
             float value = 0.0f;
             NWItem item = Substitute.For<NWItem>(script, service);
             item.BaseItemType.Returns(x => NWScript.BASE_ITEM_LONGSWORD);
@@ -218,7 +231,8 @@ namespace SWLOR.Game.Server.Tests.Service
             INWScript script = Substitute.For<INWScript>();
             IColorTokenService color = Substitute.For<IColorTokenService>();
             INWNXProfiler nwnxProfiler = Substitute.For<INWNXProfiler>();
-            DurabilityService service = new DurabilityService(script, color, nwnxProfiler);
+            INWNXCreature creature = Substitute.For<INWNXCreature>();
+            DurabilityService service = new DurabilityService(script, color, nwnxProfiler, creature);
             float value = 0.0f;
             NWItem item = Substitute.For<NWItem>(script, service);
             item.BaseItemType.Returns(x => NWScript.BASE_ITEM_LONGSWORD);

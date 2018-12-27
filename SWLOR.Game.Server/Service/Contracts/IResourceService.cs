@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Service.Contracts
     public interface IResourceService
     {
         Tuple<ItemProperty, int> GetRandomComponentBonusIP(ResourceQuality quality);
-        int CalculateChanceForComponentBonus(NWPlayer player, int tier, ResourceQuality quality);
+        int CalculateChanceForComponentBonus(NWPlayer player, int tier, ResourceQuality quality, bool scavenging = false);
         int GetDifficultyAdjustment(ResourceQuality quality);
         string GetResourceDescription(NWPlaceable resource);
     }

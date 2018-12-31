@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.ChatCommand
             if (user.GetLocalInt("PLASMA_CELL_TOGGLE_OFF") == NWScript.FALSE)
             {
                 user.SetLocalInt("PLASMA_CELL_TOGGLE_OFF", 1);
-                user.SendMessage(_color.Green("Plasma Cell is now toggled off."));
+                user.SendMessage(_color.Red("Plasma Cell is now toggled off."));
                 return;
             }
 
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.ChatCommand
             else if (user.GetLocalInt("PLASMA_CELL_TOGGLE_OFF") > 0)
             {
                 user.DeleteLocalInt("PLASMA_CELL_TOGGLE_OFF");
-                user.SendMessage(_color.Green("PLasma Cell is now toggled on!"));
+                user.SendMessage(_color.Green("Plasma Cell is now toggled on!"));
                 return;
             }
 

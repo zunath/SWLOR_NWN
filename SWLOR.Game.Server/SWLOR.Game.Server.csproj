@@ -132,6 +132,7 @@
     <Compile Include="ChatCommand\Night.cs" />
     <Compile Include="ChatCommand\Perks.cs" />
     <Compile Include="ChatCommand\PickUp.cs" />
+    <Compile Include="ChatCommand\PlasmaCell.cs" />
     <Compile Include="ChatCommand\Pos.cs" />
     <Compile Include="ChatCommand\Read.cs" />
     <Compile Include="ChatCommand\Rest.cs" />

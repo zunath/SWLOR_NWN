@@ -1611,7 +1611,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)*.*" "C:/NeverwinterNights/NWN/mono" /E /Y /C
+    <PostBuildEvent>xcopy "$(TargetDir)*.*" "$(UserProfile)\Documents\Neverwinter Nights" /E /Y /C
 </PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -78,9 +78,9 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public int CalculateChanceForComponentBonus(NWPlayer player, int tier, ResourceQuality quality)
+        public int CalculateChanceForComponentBonus(NWPlayer player, int tier, ResourceQuality quality, bool scavenging = false)
         {
-            int rank = _skill.GetPCSkillRank(player, SkillType.Harvesting);
+            int rank = (scavenging ? _skill.GetPCSkillRank(player, SkillType.Scavenging) : _skill.GetPCSkillRank(player, SkillType.Harvesting));
             int difficulty = (tier - 1) * 10 + GetDifficultyAdjustment(quality);
             int delta = difficulty - rank;
 
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
-            int itemBonus = effectiveStats.Harvesting / 2;
+            int itemBonus = (scavenging ? effectiveStats.Scavenging : effectiveStats.Harvesting) / 2;
             if (itemBonus > 30) itemBonus = 30;
             chance += itemBonus;
 

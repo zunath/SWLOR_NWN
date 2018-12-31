@@ -44,6 +44,7 @@
         ComponentItemTypeRestriction = 138,
         CraftBonusFabrication = 139,
         StructureBonus = 140,
-        ScanningBonus = 141
+        ScanningBonus = 141,
+        ScavengingBonus = 142
     }
 }

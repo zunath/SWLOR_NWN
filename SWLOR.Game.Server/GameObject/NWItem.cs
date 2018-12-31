@@ -296,6 +296,18 @@ namespace SWLOR.Game.Server.GameObject
             set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_SCANNING_BONUS", CustomItemPropertyType.ScanningBonus, value);
         }
 
+        public virtual int ScavengingBonus
+        {
+            get
+            {
+                int craftBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.ScavengingBonus);
+                if (craftBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_SCAVENGING_BONUS");
+                ScavengingBonus = craftBonus;
+                return craftBonus;
+            }
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_SCAVENGING_BONUS", CustomItemPropertyType.ScavengingBonus, value);
+        }
+
         public virtual int CastingSpeed
         {
             get

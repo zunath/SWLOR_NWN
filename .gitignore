@@ -6,6 +6,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+SWLOR.Game.Server/SWLOR.Game.Server.csproj
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

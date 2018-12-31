@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IDataService _data;
         private readonly IImpoundService _impound;
         private readonly IBasePermissionService _perm;
+        private readonly ICraftService _craft;
         
         public BaseManagementTool(
             INWScript script,
@@ -30,7 +31,8 @@ namespace SWLOR.Game.Server.Conversation
             IColorTokenService color,
             IDataService data,
             IImpoundService impound,
-            IBasePermissionService perm)
+            IBasePermissionService perm,
+            ICraftService craft)
             : base(script, dialog)
         {
             _base = @base;
@@ -38,6 +40,7 @@ namespace SWLOR.Game.Server.Conversation
             _data = data;
             _impound = impound;
             _perm = perm;
+            _craft = craft;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)

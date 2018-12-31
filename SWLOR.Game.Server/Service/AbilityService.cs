@@ -426,6 +426,7 @@ namespace SWLOR.Game.Server.Service
             if (_.GetHasFeat((int)CustomFeatType.PlasmaCell, player) == FALSE) return;
             if (player.RightHand.CustomItemType != CustomItemType.BlasterPistol &&
                 player.RightHand.CustomItemType != CustomItemType.BlasterRifle) return;
+            if (target.GetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN") == NWScript.TRUE) return;
 
             int perkLevel = _perk.GetPCPerkLevel(player, PerkType.PlasmaCell);
             int chance;

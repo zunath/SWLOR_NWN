@@ -9,6 +9,7 @@ using NWN;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using Object = NWN.Object;
+using System.Linq;
 
 namespace SWLOR.Game.Server.Placeable.ScavengePoint
 {
@@ -114,31 +115,43 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
                     if (!string.IsNullOrWhiteSpace(spawnItem.Resref) && spawnItem.Quantity > 0)
                     {
                         NWItem resource = _.CreateItemOnObject(spawnItem.Resref, point.Object, spawnItem.Quantity);
-						
-						// Add properties to the item based on Scavenging skill.  Similar logic to the resource harvester.
-						int ipBonusChance = _resource.CalculateChanceForComponentBonus(oPC, (level/10 + 1), ResourceQuality.Normal, true);
-						
-						if (_random.Random(1, 100) <= ipBonusChance)
-						{
-							var ip = _resource.GetRandomComponentBonusIP(ResourceQuality.Normal);
-							_biowareXP2.IPSafeAddItemProperty(resource, ip.Item1, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
 
-							switch (ip.Item2)
-							{
-								case 0:
-									resource.Name = _color.Green(resource.Name);
-									break;
-								case 1:
-									resource.Name = _color.Blue(resource.Name);
-									break;
-								case 2:
-									resource.Name = _color.Purple(resource.Name);
-									break;
-								case 3:
-									resource.Name = _color.Orange(resource.Name);
-									break;
-							}
-						}
+                        var componentIP = resource.ItemProperties.FirstOrDefault(x => _.GetItemPropertyType(x) == (int)CustomItemPropertyType.ComponentType);                        
+                        if (componentIP != null)
+                        {
+                            // Add properties to the item based on Scavenging skill.  Similar logic to the resource harvester.
+                            var chance = _random.Random(1, 100) + _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + effectiveStats.Luck;
+                            ResourceQuality quality;
+
+                            if (chance < 50) quality = ResourceQuality.Low;
+                            else if (chance < 75) quality = ResourceQuality.Normal;
+                            else if (chance < 95) quality = ResourceQuality.High;
+                            else quality = ResourceQuality.VeryHigh;
+
+                            int ipBonusChance = _resource.CalculateChanceForComponentBonus(oPC, (level / 10 + 1), quality, true);
+
+                            if (_random.Random(1, 100) <= ipBonusChance)
+                            {
+                                var ip = _resource.GetRandomComponentBonusIP(ResourceQuality.Normal);
+                                _biowareXP2.IPSafeAddItemProperty(resource, ip.Item1, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
+
+                                switch (ip.Item2)
+                                {
+                                    case 0:
+                                        resource.Name = _color.Green(resource.Name);
+                                        break;
+                                    case 1:
+                                        resource.Name = _color.Blue(resource.Name);
+                                        break;
+                                    case 2:
+                                        resource.Name = _color.Purple(resource.Name);
+                                        break;
+                                    case 3:
+                                        resource.Name = _color.Orange(resource.Name);
+                                        break;
+                                }
+                            }
+                        }
                     }
 
                     float xp = _skill.CalculateRegisteredSkillLevelAdjustedXP(200, level, rank);

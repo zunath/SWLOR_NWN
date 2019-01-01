@@ -136,9 +136,9 @@ namespace SWLOR.Game.Server.Conversation
                 });
 
                 // Add up the total atmosphere rating, being careful not to go over the cap.
-                int bonus = structures.Sum(x => 1 + x.StructureBonus);
-                if (bonus > 75) bonus = 75;
-                header += _color.Green("Atmosphere Bonus: ") + (bonus * 2) + "% / " + "150%";
+                int bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;
+                if (bonus > 150) bonus = 150;
+                header += _color.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
                 header += "\n";
                 // The building must be set to the "Residence" mode in order for a primary resident to be selected.
                 if (structure.StructureModeID == (int)StructureModeType.Residence)
@@ -164,9 +164,9 @@ namespace SWLOR.Game.Server.Conversation
                 var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == pcBase.ID);
                 header += _color.Green("Structure Limit: ") + structures.Count() + " / " + itemLimit + "\n";
                 // Add up the total atmosphere rating, being careful not to go over the cap.
-                int bonus = structures.Sum(x => 1 + x.StructureBonus);
-                if (bonus > 75) bonus = 75;
-                header += _color.Green("Atmosphere Bonus: ") + (bonus * 2) + "% / " + "150%";
+                int bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;
+                if (bonus > 150) bonus = 150;
+                header += _color.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
                 header += "\n";
                 canEditStructures = _perm.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanPlaceEditStructures);
                 canEditBasePermissions = _perm.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanAdjustPermissions);

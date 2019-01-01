@@ -117,9 +117,9 @@ namespace SWLOR.Game.Server.Conversation
                 });
 
                 // Add up the total atmosphere rating, being careful not to go over the cap.
-                int bonus = structures.Sum(x => 1 + x.StructureBonus);
-                if (bonus > 75) bonus = 75;
-                header += _color.Green("Atmosphere Bonus: ") + (bonus * 2) + "% / " + "150%";
+                int bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;
+                if (bonus > 150) bonus = 150;
+                header += _color.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
                 header += "\n";
             }
             else if (data.BuildingType == BuildingType.Apartment)
@@ -128,9 +128,9 @@ namespace SWLOR.Game.Server.Conversation
                 var buildingStyle = _data.Get<BuildingStyle>(pcBase.BuildingStyleID);
                 var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == pcBase.ID).ToList();
                 header += _color.Green("Structure Limit: ") + structures.Count + " / " + buildingStyle.FurnitureLimit + "\n";
-                int bonus = structures.Sum(x => 1 + x.StructureBonus);
-                if (bonus > 75) bonus = 75;
-                header += _color.Green("Atmosphere Bonus: ") + (bonus * 2) + "% / " + "150%";
+                int bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;
+                if (bonus > 150) bonus = 150;
+                header += _color.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
                 header += "\n";
             }
             else if(data.BuildingType == BuildingType.Exterior)

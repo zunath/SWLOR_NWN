@@ -128,7 +128,9 @@ namespace SWLOR.Game.Server.Conversation
                 int itemLimit = baseStructure.Storage + structure.StructureBonus;
                 var childStructures = _data.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == structure.ID);
                 header += _color.Green("Structure Limit: ") + childStructures.Count() + " / " + itemLimit + "\n";
-                
+                int bonus = (_craft.CalculateAreaAtmosphereBonus(GetPC().Area) * 2);
+                header += _color.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
+                header += "\n";
                 // The building must be set to the "Residence" mode in order for a primary resident to be selected.
                 if (structure.StructureModeID == (int)StructureModeType.Residence)
                 {
@@ -152,7 +154,9 @@ namespace SWLOR.Game.Server.Conversation
                 int itemLimit = buildingStyle.FurnitureLimit;
                 var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == pcBase.ID);
                 header += _color.Green("Structure Limit: ") + structures.Count() + " / " + itemLimit + "\n";
-
+                int bonus = (_craft.CalculateAreaAtmosphereBonus(GetPC().Area) * 2);
+                header += _color.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
+                header += "\n";
                 canEditStructures = _perm.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanPlaceEditStructures);
                 canEditBasePermissions = _perm.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanAdjustPermissions);
                 canEditPrimaryResidence = _perm.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanEditPrimaryResidence);
@@ -233,7 +237,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 throw new Exception("BaseManagementTool -> Cannot locate building type with ID " + buildingTypeID);
             }
-            
+
             SetPageHeader("MainPage", header);
 
             bool showManage = _data.Where<PCBasePermission>(x => x.CanExtendLease).Count > 0;

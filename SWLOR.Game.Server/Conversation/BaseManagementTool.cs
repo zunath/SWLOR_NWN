@@ -128,8 +128,17 @@ namespace SWLOR.Game.Server.Conversation
                 int itemLimit = baseStructure.Storage + structure.StructureBonus;
                 var childStructures = _data.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == structure.ID);
                 header += _color.Green("Structure Limit: ") + childStructures.Count() + " / " + itemLimit + "\n";
-                int bonus = (_craft.CalculateAreaAtmosphereBonus(GetPC().Area) * 2);
-                header += _color.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
+                // Get all child structures contained by this building which improve atmosphere.
+                var structures = _data.Where<PCBaseStructure>(x =>
+                {
+                    if (x.ParentPCBaseStructureID != pcBaseStructureID) return false;
+                    return baseStructure.HasAtmosphere;
+                });
+
+                // Add up the total atmosphere rating, being careful not to go over the cap.
+                int bonus = structures.Sum(x => 1 + x.StructureBonus);
+                if (bonus > 75) bonus = 75;
+                header += _color.Green("Atmosphere Bonus: ") + (bonus * 2) + "% / " + "150%";
                 header += "\n";
                 // The building must be set to the "Residence" mode in order for a primary resident to be selected.
                 if (structure.StructureModeID == (int)StructureModeType.Residence)
@@ -154,8 +163,10 @@ namespace SWLOR.Game.Server.Conversation
                 int itemLimit = buildingStyle.FurnitureLimit;
                 var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == pcBase.ID);
                 header += _color.Green("Structure Limit: ") + structures.Count() + " / " + itemLimit + "\n";
-                int bonus = (_craft.CalculateAreaAtmosphereBonus(GetPC().Area) * 2);
-                header += _color.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
+                // Add up the total atmosphere rating, being careful not to go over the cap.
+                int bonus = structures.Sum(x => 1 + x.StructureBonus);
+                if (bonus > 75) bonus = 75;
+                header += _color.Green("Atmosphere Bonus: ") + (bonus * 2) + "% / " + "150%";
                 header += "\n";
                 canEditStructures = _perm.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanPlaceEditStructures);
                 canEditBasePermissions = _perm.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanAdjustPermissions);

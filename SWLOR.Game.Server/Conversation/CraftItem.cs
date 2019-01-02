@@ -83,6 +83,10 @@ namespace SWLOR.Game.Server.Conversation
                         model.EfficiencyLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.MedicineEfficiency);
                         model.OptimizationLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.MedicineOptimization);
                         break;
+                    case SkillType.Lightsaber:
+                        model.PlayerPerkLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.LightsaberBlueprints);
+						// Lightsabers do not have Optimisation or Efficiency perks. 
+                        break;
                     default:
                         model.PlayerPerkLevel = 0;
                         break;

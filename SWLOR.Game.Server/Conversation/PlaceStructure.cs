@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IColorTokenService _color;
         private readonly IAreaService _area;
         private readonly IDurabilityService _durability;
+        private readonly ICraftService _craft;
 
         public PlaceStructure(
             INWScript script,
@@ -29,7 +30,8 @@ namespace SWLOR.Game.Server.Conversation
             IBaseService @base,
             IColorTokenService color,
             IAreaService area,
-            IDurabilityService durability)
+            IDurabilityService durability,
+            ICraftService craft)
             : base(script, dialog)
         {
             _data = data;
@@ -37,6 +39,7 @@ namespace SWLOR.Game.Server.Conversation
             _color = color;
             _area = area;
             _durability = durability;
+            _craft = craft;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -107,6 +110,17 @@ namespace SWLOR.Game.Server.Conversation
                 var childStructures = _data.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == buildingStructure.ID).ToList();
 
                 header += _color.Green("Structure Limit: ") + childStructures.Count + " / " + (baseStructure.Storage + buildingStructure.StructureBonus) + "\n";
+                var structures = _data.Where<PCBaseStructure>(x =>
+                {
+                    if (x.ParentPCBaseStructureID != buildingStructure.ID) return false;
+                    return baseStructure.HasAtmosphere;
+                });
+
+                // Add up the total atmosphere rating, being careful not to go over the cap.
+                int bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;
+                if (bonus > 150) bonus = 150;
+                header += _color.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
+                header += "\n";
             }
             else if (data.BuildingType == BuildingType.Apartment)
             {
@@ -114,6 +128,10 @@ namespace SWLOR.Game.Server.Conversation
                 var buildingStyle = _data.Get<BuildingStyle>(pcBase.BuildingStyleID);
                 var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == pcBase.ID).ToList();
                 header += _color.Green("Structure Limit: ") + structures.Count + " / " + buildingStyle.FurnitureLimit + "\n";
+                int bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;
+                if (bonus > 150) bonus = 150;
+                header += _color.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
+                header += "\n";
             }
             else if(data.BuildingType == BuildingType.Exterior)
             {

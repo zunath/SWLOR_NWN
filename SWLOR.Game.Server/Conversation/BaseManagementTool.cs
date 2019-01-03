@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IDataService _data;
         private readonly IImpoundService _impound;
         private readonly IBasePermissionService _perm;
+        private readonly ICraftService _craft;
         
         public BaseManagementTool(
             INWScript script,
@@ -30,7 +31,8 @@ namespace SWLOR.Game.Server.Conversation
             IColorTokenService color,
             IDataService data,
             IImpoundService impound,
-            IBasePermissionService perm)
+            IBasePermissionService perm,
+            ICraftService craft)
             : base(script, dialog)
         {
             _base = @base;
@@ -38,6 +40,7 @@ namespace SWLOR.Game.Server.Conversation
             _data = data;
             _impound = impound;
             _perm = perm;
+            _craft = craft;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -125,7 +128,18 @@ namespace SWLOR.Game.Server.Conversation
                 int itemLimit = baseStructure.Storage + structure.StructureBonus;
                 var childStructures = _data.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == structure.ID);
                 header += _color.Green("Structure Limit: ") + childStructures.Count() + " / " + itemLimit + "\n";
-                
+                // Get all child structures contained by this building which improve atmosphere.
+                var structures = _data.Where<PCBaseStructure>(x =>
+                {
+                    if (x.ParentPCBaseStructureID != pcBaseStructureID) return false;
+                    return baseStructure.HasAtmosphere;
+                });
+
+                // Add up the total atmosphere rating, being careful not to go over the cap.
+                int bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;
+                if (bonus > 150) bonus = 150;
+                header += _color.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
+                header += "\n";
                 // The building must be set to the "Residence" mode in order for a primary resident to be selected.
                 if (structure.StructureModeID == (int)StructureModeType.Residence)
                 {
@@ -149,7 +163,11 @@ namespace SWLOR.Game.Server.Conversation
                 int itemLimit = buildingStyle.FurnitureLimit;
                 var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == pcBase.ID);
                 header += _color.Green("Structure Limit: ") + structures.Count() + " / " + itemLimit + "\n";
-
+                // Add up the total atmosphere rating, being careful not to go over the cap.
+                int bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;
+                if (bonus > 150) bonus = 150;
+                header += _color.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
+                header += "\n";
                 canEditStructures = _perm.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanPlaceEditStructures);
                 canEditBasePermissions = _perm.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanAdjustPermissions);
                 canEditPrimaryResidence = _perm.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanEditPrimaryResidence);
@@ -230,7 +248,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 throw new Exception("BaseManagementTool -> Cannot locate building type with ID " + buildingTypeID);
             }
-            
+
             SetPageHeader("MainPage", header);
 
             bool showManage = _data.Where<PCBasePermission>(x => x.CanExtendLease).Count > 0;

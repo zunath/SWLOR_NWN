@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using SWLOR.Game.Server.Bioware.Contracts;
 using SWLOR.Game.Server.Enumeration;
@@ -423,6 +423,8 @@ namespace SWLOR.Game.Server.Service
                 player.RightHand.CustomItemType != CustomItemType.BlasterRifle) return; //Checks if player has the right weapons
             if (target.GetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN") == NWScript.TRUE) return;   //Checks if Tranquilizer is on to avoid conflict
             if (player.GetLocalInt("PLASMA_CELL_TOGGLE_OFF") == NWScript.TRUE) return;  //Checks if Plasma Cell toggle is on or off
+                player.RightHand.CustomItemType != CustomItemType.BlasterRifle) return;
+            if (target.GetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN") == NWScript.TRUE) return;
 
             int perkLevel = _perk.GetPCPerkLevel(player, PerkType.PlasmaCell);
             int chance;

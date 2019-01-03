@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.ChatCommand
             {
                 return "Lease rate penalties cannot be set higher than 500%. Please rerun the command using a number between -99 and 500.";
             }
-            else if (result < 99)
+            else if (result < -99)
             {
                 return "Lease rate bonuses cannot be set lower than -99%. Please rerun the command using a number between -99 and 500.";
             }

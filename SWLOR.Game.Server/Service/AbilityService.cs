@@ -418,12 +418,11 @@ namespace SWLOR.Game.Server.Service
         public void HandlePlasmaCellPerk(NWPlayer player, NWObject target)
         {
             if (!player.IsPlayer) return;
-            if (_.GetHasFeat((int)CustomFeatType.PlasmaCell, player) == FALSE) return;  //Checks if player has the perk
+            if (_.GetHasFeat((int)CustomFeatType.PlasmaCell, player) == FALSE) return;  // Check if player has the perk
             if (player.RightHand.CustomItemType != CustomItemType.BlasterPistol &&
-                player.RightHand.CustomItemType != CustomItemType.BlasterRifle) return; //Checks if player has the right weapons
-            if (target.GetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN") == NWScript.TRUE) return;   //Checks if Tranquilizer is on to avoid conflict
-            if (player.GetLocalInt("PLASMA_CELL_TOGGLE_OFF") == NWScript.TRUE) return;  //Checks if Plasma Cell toggle is on or off
-                player.RightHand.CustomItemType != CustomItemType.BlasterRifle) return;
+                player.RightHand.CustomItemType != CustomItemType.BlasterRifle) return; // Check if player has the right weapons
+            if (target.GetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN") == NWScript.TRUE) return;   // Check if Tranquilizer is on to avoid conflict
+            if (player.GetLocalInt("PLASMA_CELL_TOGGLE_OFF") == NWScript.TRUE) return;  // Check if Plasma Cell toggle is on or off
             if (target.GetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN") == NWScript.TRUE) return;
 
             int perkLevel = _perk.GetPCPerkLevel(player, PerkType.PlasmaCell);

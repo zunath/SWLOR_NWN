@@ -307,7 +307,7 @@ namespace SWLOR.Game.Server.Service
                     GiveSkillXP(preg.Player, skillID, (int)adjustedXP);
                 }
 
-                float armorXP = baseXP * 0.20f;
+                float armorXP = baseXP;
                 int lightArmorPoints = 0;
                 int heavyArmorPoints = 0;
                 int forceArmorPoints = 0;

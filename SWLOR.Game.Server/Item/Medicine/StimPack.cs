@@ -30,6 +30,12 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
+            if (target.ObjectType != NWScript.OBJECT_TYPE_CREATURE)
+            {
+                user.SendMessage("You may only use stim packs on creatures!");
+                return;
+            }
+
             NWPlayer player = user.Object;
             int ability = item.GetLocalInt("ABILITY_TYPE");
             int amount = item.GetLocalInt("AMOUNT") + item.MedicineBonus;

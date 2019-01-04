@@ -516,6 +516,15 @@ namespace SWLOR.Game.Server.Service
                 }
 
             }
+            else if (buildingType == BuildingType.Apartment)
+            {
+                var buildingStyle = _data.Get<BuildingStyle>(pcBase.BuildingStyleID);
+                var buildingStructureCount = _data.Where<PCBaseStructure>(x => x.PCBaseID == pcBase.ID).ToList().Count();
+                if (buildingStructureCount > buildingStyle.FurnitureLimit)
+                {
+                    return "No more structures can be placed inside this building.";
+                }
+            }
 
             // Area is unclaimed but PC doesn't own it.
             if (pcBase == null)

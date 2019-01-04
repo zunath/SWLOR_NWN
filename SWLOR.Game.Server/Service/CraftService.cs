@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Service
             {
                 // ReSharper disable once ReplaceWithSingleAssignment.True
                 bool found = true;
-                
+
                 // Exclude blueprints which the player doesn't meet the required perk level for.
                 var pcPerk = pcPerks.SingleOrDefault(p => p.PerkID == x.PerkID);
                 int perkLevel = pcPerk == null ? 0 : pcPerk.PerkLevel;
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Service
 
         public List<CraftBlueprint> GetPCBlueprintsByDeviceAndCategoryID(Guid playerID, int deviceID, int categoryID)
         {
-            return GetCraftBlueprintsAvailableToPlayer(playerID).Where(x => x.CraftDeviceID == deviceID && 
+            return GetCraftBlueprintsAvailableToPlayer(playerID).Where(x => x.CraftDeviceID == deviceID &&
                                                                                       x.CraftCategoryID == categoryID)
                 .ToList();
         }
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Service
             string header = _color.Green("Blueprint: ") + bp.Quantity + "x " + bp.ItemName + "\n";
             header += _color.Green("Level: ") + (model.AdjustedLevel < 0 ? 0 : model.AdjustedLevel) + " (Base: " + (bp.BaseLevel < 0 ? 0 : bp.BaseLevel) + ")\n";
             header += _color.Green("Difficulty: ") + CalculateDifficultyDescription(playerEL, model.AdjustedLevel) + "\n";
-            
+
             if (baseStructure != null)
             {
                 header += _color.Green("Raises Atmosphere: ");
@@ -133,6 +133,21 @@ namespace SWLOR.Game.Server.Service
             {
                 string tertiaryCounts = " (" + (model.TertiaryMinimum > 0 ? Convert.ToString(model.TertiaryMinimum) : "Optional") + "/" + model.TertiaryMaximum + ")";
                 header += _color.Green("Tertiary: ") + tertiaryComponent.Name + tertiaryCounts + "\n";
+            }
+            if (bp.EnhancementSlots > 0)
+            {
+                int nSlots = bp.EnhancementSlots;
+                if (model.IsInitialized)
+                {
+                    // We have the player's stats, so tell them how many they can actually add.
+                    if (model.PlayerPerkLevel / 2 < nSlots)
+                    {
+                        nSlots = model.PlayerPerkLevel / 2;
+                    }
+                }
+
+                string enhancementSlots = " (0/" + Convert.ToString(nSlots) + ")";
+                header += _color.Green("Enhancement slots: ") + enhancementSlots + "\n";
             }
 
             if (showAddedComponentList)
@@ -274,7 +289,7 @@ namespace SWLOR.Game.Server.Service
 
             return BaseCraftDelay * adjustedSpeed;
         }
-        
+
         public string CalculateDifficultyDescription(int pcLevel, int blueprintLevel)
         {
             int delta = pcLevel - blueprintLevel;
@@ -328,7 +343,7 @@ namespace SWLOR.Game.Server.Service
         {
             int effectiveLevel = skillRank;
             BackgroundType background = (BackgroundType)player.Class1;
-            
+
             switch (skill)
             {
                 case SkillType.Armorsmith:
@@ -348,7 +363,7 @@ namespace SWLOR.Game.Server.Service
                         effectiveLevel++;
                     break;
                 case SkillType.Fabrication:
-                    if (background ==  BackgroundType.Fabricator)
+                    if (background == BackgroundType.Fabricator)
                         effectiveLevel++;
                     break;
             }
@@ -506,7 +521,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var item in model.MainComponents)
             {
-                if(!destroyComponents)
+                if (!destroyComponents)
                     _.CopyItem(item.Object, player.Object, TRUE);
                 item.Destroy();
             }
@@ -592,7 +607,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             string crafterPlayerID = renameItem.GetLocalString("CRAFTER_PLAYER_ID");
-            if(string.IsNullOrWhiteSpace(crafterPlayerID) || new Guid(crafterPlayerID) != pc.GlobalID)
+            if (string.IsNullOrWhiteSpace(crafterPlayerID) || new Guid(crafterPlayerID) != pc.GlobalID)
             {
                 pc.SendMessage("You may only rename items which you have personally crafted.");
                 return;
@@ -614,7 +629,7 @@ namespace SWLOR.Game.Server.Service
             var building = _data.Get<PCBaseStructure>(buildingID);
 
             // Building must be in "Workshop" mode in order for the atmosphere bonuses to take effect.
-            if (building.StructureModeID != (int) StructureModeType.Workshop) return 0;
+            if (building.StructureModeID != (int)StructureModeType.Workshop) return 0;
 
             // Get all child structures contained by this building which improve atmosphere.
             var structures = _data.Where<PCBaseStructure>(x =>

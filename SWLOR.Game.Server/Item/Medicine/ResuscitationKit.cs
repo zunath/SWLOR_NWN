@@ -1,7 +1,4 @@
-﻿using System.Linq;
-using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
+﻿using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -12,7 +9,7 @@ using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Item.Medicine
 {
-    public class ResuscitationKit: IActionItem
+    public class ResuscitationKit : IActionItem
     {
 
         private readonly INWScript _;
@@ -82,17 +79,17 @@ namespace SWLOR.Game.Server.Item.Medicine
             }
             if (target.IsPlayer)
             {
-             baseHeal = (int)(baseHeal * effectivenessPercent);
-            Player dbPlayer = _data.Single<Player>(x => x.ID == target.GlobalID);
-            int fpRecover = (int) (dbPlayer.MaxFP * (0.01f * baseHeal));
-            int hpRecover = (int)(target.MaxHP * (0.01f * baseHeal));
+                baseHeal = (int)(baseHeal * effectivenessPercent);
+                Player dbPlayer = _data.Single<Player>(x => x.ID == target.GlobalID);
+                int fpRecover = (int)(dbPlayer.MaxFP * (0.01f * baseHeal));
+                int hpRecover = (int)(target.MaxHP * (0.01f * baseHeal));
 
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectResurrection(), target);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(hpRecover), target);
-            dbPlayer.CurrentFP = fpRecover;
-            _data.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
-            player.SendMessage("You successfully resuscitate " + target.Name + "!");
-            
+                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectResurrection(), target);
+                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(hpRecover), target);
+                dbPlayer.CurrentFP = fpRecover;
+                _data.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+                player.SendMessage("You successfully resuscitate " + target.Name + "!");
+
                 int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(600, item.RecommendedLevel, skillRank);
                 _skill.GiveSkillXP(player, SkillType.Medicine, xp);
             }

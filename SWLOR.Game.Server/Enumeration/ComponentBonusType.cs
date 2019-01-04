@@ -62,7 +62,8 @@
         LightDefenseUp = 57,
         LightDefenseDown = 58,
         DarkDefenseUp = 59,
-        DarkDefenseDown = 60
+        DarkDefenseDown = 60,
+        ScavengingUp = 61
         
 
     }

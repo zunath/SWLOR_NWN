@@ -76,3 +76,4 @@
 72    IPRP_MDEFBON       MindDefenseBonus               0            
 73    IPRP_LDEFBON       LightDefenseBonus              0            
 74    IPRP_DDEFBON       DarkDefenseBonus               0            
+75    IPRP_SCAVBON       ScavengingBonus                0            

@@ -206,7 +206,8 @@ namespace SWLOR.Game.Server.Service
                 "compbon_wis1",
                 "compbon_int1",
                 "compbon_cha1",
-                "compbon_ab2"
+                "compbon_ab2",
+                "compbon_scavup1"
 
             };
 
@@ -255,7 +256,8 @@ namespace SWLOR.Game.Server.Service
                 "compbon_wis2",
                 "compbon_int2",
                 "compbon_cha2",
-                "compbon_ab3"
+                "compbon_ab3",
+                "compbon_scavup2"
             };
 
             string[] ultraRareIP =
@@ -272,7 +274,8 @@ namespace SWLOR.Game.Server.Service
                 "compbon_cha3",
                 "compbon_fpup1",
                 "compbon_faup1",
-                "compbon_fdup1"
+                "compbon_fdup1",
+                "compbon_scavup3"
             };
 
             // Order: Common, Uncommon, Rare, Ultra Rare

@@ -175,6 +175,9 @@ namespace SWLOR.Game.Server.Service
                     case ComponentBonusType.ScanningUp:
                         product.ScanningBonus += amount;
                         break;
+                    case ComponentBonusType.ScavengingUp:
+                        product.ScavengingBonus += amount;
+                        break;
                     case ComponentBonusType.MindPotencyDown:
                         product.MindPotencyBonus -= amount;
                         break;

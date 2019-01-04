@@ -1689,6 +1689,7 @@
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_saveelement.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_savingthrow.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_scanbon.2da" />
+    <None Include="ServerFiles\HakPaks\swlor_2da\iprp_scavbon.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_skillcost.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_slotscost.2da" />
     <None Include="ServerFiles\HakPaks\swlor_2da\iprp_soakcost.2da" />
@@ -2169,7 +2170,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)*.*" "$(UserProfile)\Documents\Neverwinter Nights" /E /Y /C
+    <PostBuildEvent>xcopy "$(TargetDir)*.*" "C:/NeverwinterNights/nwn/mono" /E /Y /C
 </PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -299,6 +299,10 @@ namespace SWLOR.Game.Server.Service
             {
                 description += _color.Orange("Scanning Bonus: ") + examinedItem.ScanningBonus + "\n";
             }
+            if (examinedItem.ScavengingBonus > 0)
+            {
+                description += _color.Orange("Scavenging Bonus: ") + examinedItem.ScavengingBonus + "\n";
+            }
             if (examinedItem.MedicineBonus > 0)
             {
                 description += _color.Orange("Medicine Bonus: ") + examinedItem.MedicineBonus + "\n";

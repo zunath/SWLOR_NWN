@@ -45,16 +45,19 @@ namespace SWLOR.Game.Server.Service
 
         public void Trace(string component, string log)
         {
-            NWObject mod = _.GetModule();
-            if (mod.GetLocalInt("TRACE") == 0)
+            // Usually I would do this by looking at variables on the module.  But variables set on the module
+            // are apparently not queryable via _.GetModule().GetLocalxxx in C#.  So using a different approach.
+
+            NWObject oDebug = _.GetObjectByTag("DEBUG_ON");
+            if (_.GetIsObjectValid(oDebug) == 0)
             {
                 // Trace disabled globally.
                 return;
             }
 
-            if(mod.GetLocalInt("TRACE_" + component) == 1)
+            if(component == "" || oDebug.GetLocalInt(component) == 1)
             {
-                _.WriteTimestampedLogEntry(component + " -- " + log);
+                Console.WriteLine(component + " -- " + log);
             }
         }
     }

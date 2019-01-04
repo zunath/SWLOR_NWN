@@ -9,37 +9,42 @@ using System.Collections.Generic;
 using System.Text;
 using Object = NWN.Object;
 /*
-Name: WeatherService
-Author: Mithreas
-Date: 29 May 08, ported to cs 1 Jan 2019
-Description:  Implements a module wide weather system.
+    Name: WeatherService
+    Author: Mithreas
+    Date: 29 May 08, ported to cs 1 Jan 2019
+    Description:  Implements a module wide weather system.
 
-Integration:
-* Call OnModuleHeartbeat() from heartbeat script.  Calls:
-* Call OnAreaEnter from area entry script.
-* Call OnCombatRoundEnd() for each PC or NPC in combat, each round
-* Call OnCreatureSpawn() in the creature spawn script. 
-* Optional: set all areas to 0% rain/snow (their weather will be overridden)
-* Optional: place area property objects as follows.
-* Climate: Wet or Climate: Dry for especially damp/dry areas
-* Climate: Hot or Climate: Cold for especially warm/cool areas
-* Climate: Sheltered or Climate: Exposed ...etc.
+    Integration:
+    * Call OnModuleHeartbeat() from heartbeat script.  Calls:
+    * Call OnAreaEnter from area entry script.
+    * Call OnCombatRoundEnd() for each PC or NPC in combat, each round
+    * Call OnCreatureSpawn() in the creature spawn script. 
+    * Optional: set all areas to 0% rain/snow (their weather will be overridden)
+    * Optional: place area property objects as follows.
+    * Climate: Wet or Climate: Dry for especially damp/dry areas
+    * Climate: Hot or Climate: Cold for especially warm/cool areas
+    * Climate: Sheltered or Climate: Exposed ...etc.
 
-Functionality:
-All three scales range from a score of 1 to 10.  Depending on the score
-different effects occur as follows.
-Heat
-rain turns to snow when heat < 4
-Humidity
-water rate drops by additional 0.5 per humidity point under 5
-rain/snow happens if humidity > 7
-Wind
-All creatures get 10% speed reduction when wind > 8
-Characters in combat must pass a discipline check or reflex save vs a DC
-of 10 + character level every round or be KD'd when wind == 10.
-Weather changes faster when wind is higher.
+    Functionality:
+    All three scales range from a score of 1 to 10.  Depending on the score
+    different effects occur as follows.
+    Heat
+    rain turns to snow when heat < 4
+    Humidity
+    water rate drops by additional 0.5 per humidity point under 5
+    rain/snow happens if humidity > 7
+    Wind
+    All creatures get 10% speed reduction when wind > 8
+    Characters in combat must pass a discipline check or reflex save vs a DC
+    of 10 + character level every round or be KD'd when wind == 10.
+    Weather changes faster when wind is higher.
 
-Weather changes every 11 game hours minus the wind score.
+    Weather changes every 11 game hours minus the wind score.
+
+    Multiple planet support
+    - Areas are named PlanetName - areaname
+    - Planets have distinct climates, implemented as +/- on each scale
+    - Different climates can have different hazards - acid rain, sandstorms etc.
 */
 namespace SWLOR.Game.Server.Service
 {
@@ -51,24 +56,27 @@ namespace SWLOR.Game.Server.Service
 
         // Feedback texts.
         const string FB_T_WEATHER_LIGHTNING = "You were hit by the bolt of lightning!";
-        const string FB_T_WEATHER_MESSAGE_CLOUDY = "There are a fair few clouds overhead, and it is quite windy.";
-        const string FB_T_WEATHER_MESSAGE_COLD_CLOUDY = "It is cold out, and clouds are prominent overhead. Wrapping up warm is advised.";
-        const string FB_T_WEATHER_MESSAGE_COLD_FOGGY = "The wind is strong, and pretty cold. Make sure you are warm enough, and be wary of rain.";
+        const string FB_T_WEATHER_MESSAGE_CLOUDY = "Clouds move across the sky at a brisk pace, driven by strong wind.";
+        const string FB_T_WEATHER_MESSAGE_COLD_CLOUDY = "Cold air is punctuated by an overcast sky, the clouds thick and dark.";
+        const string FB_T_WEATHER_MESSAGE_COLD_WINDY = "A chill wind is in the air, cutting like a knife.";
         const string FB_T_WEATHER_MESSAGE_COLD_MILD = "It is quite cold out. Wrap up warm by wearing winter clothing.";
         const string FB_T_WEATHER_MESSAGE_FREEZING = "The air is bitingly cold right now. Make sure you are wrapped up warm and have plenty of rations.";
-        const string FB_T_WEATHER_MESSAGE_FOGGY = "The wind is very strong, and there are many clouds in the sky. It is likely to rain soon.";
         const string FB_T_WEATHER_MESSAGE_MILD = "It is lovely and sunny here.";
         const string FB_T_WEATHER_MESSAGE_MILD_NIGHT = "The weather is fine tonight.";
         const string FB_T_WEATHER_MESSAGE_MIST = "It is still and very humid, the mist hangs in the air about you.";
         const string FB_T_WEATHER_MESSAGE_WARM_CLOUDY = "It is hot, and clouds are dotted around. Travels will be tiring - you should wear light clothing.";
-        const string FB_T_WEATHER_MESSAGE_WARM_FOGGY = "Warm gusts of wind ripple the air here, and there are a worrying number of clouds casting shadows over the earth. We might experience thunderstorms, so be careful.";
         const string FB_T_WEATHER_MESSAGE_WARM_MILD = "It is warm and calm here. Make sure you have enough to drink in the extra heat, and wear light clothing.";
+        const string FB_T_WEATHER_MESSAGE_WARM_WINDY = "Warm gusts of wind ripple the air here, and there are a worrying number of clouds casting shadows over the earth. We might experience thunderstorms, so be careful.";
         const string FB_T_WEATHER_MESSAGE_RAIN_NORMAL = "It is raining. Your travels will be a little difficult because of it.";
         const string FB_T_WEATHER_MESSAGE_RAIN_WARM = "It is raining, and the air is humid. Thunderstorms are likely, and it will be more difficult to make progress on your journey.";
         const string FB_T_WEATHER_MESSAGE_SCORCHING = "The heat is blazing here! You should wear something to protect your face and hands, if you can.";
         const string FB_T_WEATHER_MESSAGE_SNOW = "It is snowing right now! Remember to wrap up warm and pack extra provisions.";
         const string FB_T_WEATHER_MESSAGE_STORM = "There is a thunderstorm at the moment. It will be quite dangerous out.";
-        
+        const string FB_T_WEATHER_MESSAGE_WINDY = "The wind is very strong, and there are many clouds in the sky. The weather could shift at any time.";
+
+        const string FB_T_WEATHER_DUST_STORM = "There is a dust storm!  Visibility is drastically reduced.";
+        const string FB_T_WEATHER_SAND_STORM = "There is a sand storm! Take cover immediately, these storms are very dangerous!";
+
         // Module and area variables.
         const string VAR_WEATHER_CHANGE = "VAR_WEATHER_CHANGE";
         const string VAR_WEATHER_HEAT = "VAR_WEATHER_HEAT";
@@ -116,8 +124,90 @@ namespace SWLOR.Game.Server.Service
             _ = script;
             _error = error;
         }
+       
+        struct PlanetaryClimate
+        {
+            public int Heat_Modifier;
+            public int Humidity_Modifier;
+            public int Wind_Modifier;
 
-        public void AdjustWeather()
+            // Does the planet suffer from unusual weather?
+            public bool Acid_Rain;
+            public bool Dust_Storm;
+            public bool Sand_Storm;
+
+            // Allow overrides of text on different planets.
+            public string special_cloudy;
+            public string special_cold_cloudy;
+            public string special_cold_mild;
+            public string special_cold_windy;
+            public string special_freezing;
+            public string special_mild;
+            public string special_mild_night;
+            public string special_mist;
+            public string special_warm_cloudy;
+            public string special_warm_mild;
+            public string special_warm_windy;
+            public string special_rain_normal;
+            public string special_rain_warm;
+            public string special_scorching;
+            public string special_snow;
+            public string special_storm;
+            public string special_windy;
+        }
+
+        private PlanetaryClimate _GetClimate(NWObject oArea)
+        {
+            PlanetaryClimate climate = new PlanetaryClimate();
+
+            //--------------------------------------------------------------------------
+            // This line depends on the naming scheme PlanetName - AreaName.  Change it
+            // if the area naming scheme changes!
+            //--------------------------------------------------------------------------
+            int index = _.GetName(oArea).IndexOf("-");
+            if (index <= 0) return climate;
+            string planetName = _.GetName(oArea).Substring(0, index - 1);
+
+            if (planetName == "Viscara")
+            {
+                _error.Trace(WEATHER, "Planet is Viscara.");
+                climate.Heat_Modifier = -2;
+                climate.Humidity_Modifier = +2;
+            }
+            else if (planetName == "Tattooine")
+            {
+                _error.Trace(WEATHER, "Planet is Tattooine.");
+                climate.Heat_Modifier = +5;
+                climate.Humidity_Modifier = -8;
+
+                climate.Sand_Storm = true;
+
+                climate.special_cloudy = "A dusty wind sweeps through the desert; sparse clouds speed overhead.";
+                climate.special_mild = "The sun shines brilliantly, but not oppressively, over the desert; the sky is clear.";
+                climate.special_mild_night = "A clear night sky casts the desert in pale hues.";
+                climate.special_warm_cloudy = "The shade of an overcast sky provides only minor relief to the sweltering temperatures.";
+                climate.special_scorching = "The desert is baked with pervasive, inescapable heat; a haze blurs the horizon.";
+                climate.special_warm_windy = "The hot wind wears at your face like a sandblaster.  A sand storm seems likely.";
+                climate.special_windy = "A scouring wind sweeps across the desert, a sand storm cannot be far away.";
+            }
+            else if (planetName == "Druzer IX")
+            {
+                _error.Trace(WEATHER, "Planet is Druxer IX.");
+                climate.Humidity_Modifier = -6;
+                climate.Wind_Modifier = +2;
+
+                climate.Dust_Storm = true;
+
+                climate.special_scorching = "The hard-baked mud parches under the intense glare of the local sun.";
+                climate.special_cold_windy = "A chill wind sweeps over the land.";
+                climate.special_warm_windy = "The wind is strong and dusty. A dust storm may not be far away.";
+                climate.special_windy = "A scouring wind sweeps across the planet surface, a dust storm cannot be far away.";
+            }
+
+            return climate;
+        }
+
+        public bool AdjustWeather()
         {
             _error.Trace(WEATHER, "Adjusting module weather");
             NWObject oMod = _.GetModule();
@@ -133,7 +223,7 @@ namespace SWLOR.Game.Server.Service
             else if (_.GetTimeHour() != oMod.GetLocalInt(VAR_WEATHER_CHANGE))
             {
                 _error.Trace(WEATHER, "No change needed... yet.");
-                return;
+                return false;
             }
 
             //--------------------------------------------------------------------------
@@ -185,6 +275,8 @@ namespace SWLOR.Game.Server.Service
                 SetWeather(_.GetArea(oPC));
                 oPC = _.GetNextPC();
             }
+
+            return true;
         }
 
         public void SetWeather()
@@ -212,12 +304,8 @@ namespace SWLOR.Game.Server.Service
             int nHumidity = GetHumidity(oArea);
             int nWind = GetWindStrength(oArea);
             bool bStormy = _.GetSkyBox(oArea) == NWScript.SKYBOX_GRASS_STORM;
-
-            _error.Trace(WEATHER, "Area weather settings for area: " + _.GetName(oArea) +
-                                                  ", heat - " + _.IntToString(nHeat) +
-                                              ", humidity - " + _.IntToString(nHumidity) +
-                                                  ", wind - " + _.IntToString(nWind) +
-                                                 ", storm - " + bStormy.ToString());
+            bool bDustStorm = (oArea.GetLocalInt("DUST_STORM") == 1);
+            bool bSandStorm = (oArea.GetLocalInt("SAND_STORM") == 1);
 
             //--------------------------------------------------------------------------
             // Process weather rules for this area.
@@ -245,30 +333,61 @@ namespace SWLOR.Game.Server.Service
                 _.SetSkyBox(NWScript.SKYBOX_GRASS_STORM, oArea);
                 Thunderstorm(oArea);
                 oArea.SetLocalInt("GS_AM_SKY_OVERRIDE", 1);
+                bStormy = true;
             }
             else
             {
                 _.SetSkyBox(oArea.GetLocalInt(VAR_SKYBOX), oArea);
                 oArea.DeleteLocalInt("GS_AM_SKY_OVERRIDE");
+                bStormy = false;
             }
 
-            // Replaced by code in a_enter to spawn mist placeables. TODO (and rescale them)
-            /*	
-            if (bFoggy)
+            // Does this area suffer from dust or sand storms?
+            if (!bStormy && nWind >= 9 && _.d3() == 1)
             {
-                SetFogAmount(FOG_TYPE_ALL, 35, oArea);
-                SetFogColor(FOG_TYPE_ALL, 0xEEEEEE, oArea);
-                SetLocalInt(oArea, "GS_AM_FOG_OVERRIDE", TRUE);
+                // Dust storm - low visibility but no damage.
+                if (_GetClimate(oArea).Dust_Storm)
+                {
+                    _.SetFogColor(NWScript.FOG_TYPE_SUN, NWScript.FOG_COLOR_BROWN, oArea);
+                    _.SetFogColor(NWScript.FOG_TYPE_MOON, NWScript.FOG_COLOR_BROWN, oArea);
+                    _.SetFogAmount(NWScript.FOG_TYPE_SUN, 80, oArea);
+                    _.SetFogAmount(NWScript.FOG_TYPE_MOON, 80, oArea);
+
+                    oArea.SetLocalInt("DUST_STORM", 1);
+                    bDustStorm = true;
+                }
+                else if (_GetClimate(oArea).Sand_Storm)
+                {
+                    _.SetFogColor(NWScript.FOG_TYPE_SUN, NWScript.FOG_COLOR_ORANGE_DARK, oArea);
+                    _.SetFogColor(NWScript.FOG_TYPE_MOON, NWScript.FOG_COLOR_ORANGE_DARK, oArea);
+                    _.SetFogAmount(NWScript.FOG_TYPE_SUN, 80, oArea);
+                    _.SetFogAmount(NWScript.FOG_TYPE_MOON, 80, oArea);
+
+                    oArea.SetLocalInt("SAND_STORM", 1);
+                    bSandStorm = true;
+                }
             }
-            else
+            else if (bDustStorm || bSandStorm)
             {
-                SetFogAmount(FOG_TYPE_SUN, GetLocalInt(oArea,VAR_FOG_SUN), oArea);
-                SetFogAmount(FOG_TYPE_MOON, GetLocalInt(oArea,VAR_FOG_MOON), oArea);
-                SetFogColor(FOG_TYPE_SUN, GetLocalInt(oArea,VAR_FOG_C_SUN), oArea);
-                SetFogColor(FOG_TYPE_MOON, GetLocalInt(oArea,VAR_FOG_C_MOON), oArea);
-                DeleteLocalInt(oArea, "GS_AM_FOG_OVERRIDE");
+                // End the storm.
+                oArea.DeleteLocalInt("DUST_STORM");
+                oArea.DeleteLocalInt("SAND_STORM");
+
+                _.SetFogColor(NWScript.FOG_TYPE_SUN, oArea.GetLocalInt(VAR_FOG_C_SUN), oArea);
+                _.SetFogColor(NWScript.FOG_TYPE_MOON, oArea.GetLocalInt(VAR_FOG_C_MOON), oArea);
+                _.SetFogAmount(NWScript.FOG_TYPE_SUN, oArea.GetLocalInt(VAR_FOG_SUN), oArea);
+                _.SetFogAmount(NWScript.FOG_TYPE_MOON, oArea.GetLocalInt(VAR_FOG_MOON), oArea);
+                bSandStorm = false;
+                bDustStorm = false;
             }
-            */
+
+            _error.Trace(WEATHER, "Area weather settings for area: " + _.GetName(oArea) +
+                                                  ", heat - " + _.IntToString(nHeat) +
+                                              ", humidity - " + _.IntToString(nHumidity) +
+                                                  ", wind - " + _.IntToString(nWind) +
+                                                 ", thunderstorm - " + bStormy.ToString() +
+                                                 ", sand storm - " + bSandStorm.ToString() +
+                                                 ", dust storm - " + bDustStorm.ToString());
         }
 
         public int GetWeather()
@@ -278,6 +397,8 @@ namespace SWLOR.Game.Server.Service
 
         public int GetWeather(NWObject oArea)
         {
+            _error.Trace(WEATHER, "Getting current weather for area: " + _.GetName(oArea));
+
             if (_.GetIsAreaInterior(oArea) == 1 || _.GetIsAreaAboveGround(oArea) == 0)
             {
                 return NWScript.WEATHER_INVALID;
@@ -292,7 +413,8 @@ namespace SWLOR.Game.Server.Service
                 return WEATHER_FOGGY;
             }
 
-            return GetWeather(oArea);
+            // Rather unfortunately, the default method is also called GetWeather. 
+            return _.GetWeather(oArea);
         }
 
         public void OnCombatRoundEnd(NWObject oCreature)
@@ -325,33 +447,42 @@ namespace SWLOR.Game.Server.Service
             _.DelayCommand(6.0f, () => { ApplyAcid(oTarget, oArea); });
         }
 
+        public void ApplySandstorm(NWObject oTarget, NWObject oArea)
+        {
+            if ((NWObject)_.GetArea(oTarget) != oArea) return;
+            if (_.GetIsDead(oTarget) == 1) return;
+            if (_.GetIsPC(oTarget) == 1 && _.GetIsPC(_.GetMaster(oTarget)) == 0) return;
+
+            //apply
+            Effect eEffect =
+                _.EffectLinkEffects(
+                    _.EffectVisualEffect(NWScript.VFX_IMP_FLAME_S),
+                    _.EffectDamage(
+                        _.d6(2),
+                        NWScript.DAMAGE_TYPE_BLUDGEONING));
+
+            _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, eEffect, oTarget);
+
+            _.DelayCommand(6.0f, () => { ApplySandstorm(oTarget, oArea); });
+        }
+
         public void DoWeatherEffects(NWObject oCreature)
         {
             NWObject oArea = _.GetArea(oCreature);
             if (_.GetIsAreaInterior(oArea) == 1 || _.GetIsAreaAboveGround(oArea) == 0) return;
 
-            if (oArea.GetLocalInt(VAR_INITIALIZED) == 0)
-            {
-                _DoWeatherEffects(oCreature);
-            }
             int nHeat = GetHeatIndex(oArea);
             int nHumidity = GetHumidity(oArea);
             int nWind = GetWindStrength(oArea);
             bool bStormy = _.GetSkyBox(oArea) == NWScript.SKYBOX_GRASS_STORM;
+            bool bIsPC  = (_.GetIsPC(oCreature) == 1);
+            string sMessage = "";
 
             //--------------------------------------------------------------------------
-            // Apply bonuses/penalties based on clothing
-            //--------------------------------------------------------------------------
-            //object oBoots = GetItemInSlot(INVENTORY_SLOT_BOOTS, oCreature);
-            //object oCloak = GetItemInSlot(INVENTORY_SLOT_CLOAK, oCreature);
-            //if (GetIsObjectValid(oCloak))
-            //    nHeat += 1;
-            //if (!GetIsObjectValid(oBoots))
-            //    nHeat -= 1;
-
             // Apply acid rain, if applicable.  Stolen shamelessly from the Melf's Acid
             // Arrow spell.
-            if (_.GetWeather(oArea) == NWScript.WEATHER_RAIN && oArea.GetLocalInt(VAR_WEATHER_ACID_RAIN) == 1)
+            //--------------------------------------------------------------------------
+            if (bIsPC && _.GetWeather(oArea) == NWScript.WEATHER_RAIN && oArea.GetLocalInt(VAR_WEATHER_ACID_RAIN) == 1)
             {
                 Effect eEffect =
                   _.EffectLinkEffects(
@@ -364,43 +495,26 @@ namespace SWLOR.Game.Server.Service
 
                 _.DelayCommand(6.0f, () => { ApplyAcid(oCreature, oArea); });
             }
-
-            int bIsPC = _.GetIsPC(oCreature);
-
-            //--------------------------------------------------------------------------
-            // Apply modifiers to this creature.
-            //--------------------------------------------------------------------------
-            if (nWind > 8)
+            else if (bIsPC && oArea.GetLocalInt("DUST_STORM") == 1)
             {
-                oCreature.SetLocalString(VAR_EFFECTOR, _.GetTag(oArea));
-                //----------------------------------------------------------------------
-                // Apply move penalty - removed - too buggy. e.g. stacks.
-                //----------------------------------------------------------------------
-                //ApplyEffectToObject(DURATION_TYPE_PERMANENT,
-                //                    SupernaturalEffect(EffectMovementSpeedDecrease(10)),
-                //                    oCreature);
+                sMessage = FB_T_WEATHER_DUST_STORM;
             }
-            else
+            else if (bIsPC && oArea.GetLocalInt("SAND_STORM") == 1)
             {
-                _DoWeatherEffects(oCreature);
-            }
+                sMessage = FB_T_WEATHER_SAND_STORM;
+                Effect eEffect =
+                    _.EffectLinkEffects(
+                        _.EffectVisualEffect(NWScript.VFX_IMP_FLAME_S),
+                        _.EffectDamage(
+                            _.d6(2),
+                            NWScript.DAMAGE_TYPE_BLUDGEONING));
 
-            if (nHeat > 8)
-            {
-                //ApplyEffectToObject(DURATION_TYPE_INSTANT,
-                //                    EffectDamage(nHeat - 8, DAMAGE_TYPE_FIRE),
-                //                    oCreature);
-            }
-            else if (nHeat < 3)
-            {
-                //ApplyEffectToObject(DURATION_TYPE_INSTANT,
-                //                    EffectDamage(3 - nHeat, DAMAGE_TYPE_COLD),
-                //                    oCreature);
-            }
+                _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, eEffect, oCreature);
 
-            if (bIsPC == 1)
+                _.DelayCommand(6.0f, () => { ApplySandstorm(oCreature, oArea); });
+            }                                    
+            else if (bIsPC)
             {
-                string sMessage = "";
                 // Stormy weather
                 if (bStormy)
                 {
@@ -444,14 +558,14 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (nWind < 5) sMessage = FB_T_WEATHER_MESSAGE_COLD_MILD;
                     else if (nWind < 8) sMessage = FB_T_WEATHER_MESSAGE_COLD_CLOUDY;
-                    else sMessage = FB_T_WEATHER_MESSAGE_COLD_FOGGY;
+                    else sMessage = FB_T_WEATHER_MESSAGE_COLD_WINDY;
                 }
                 // Hot
                 else if (nHeat > 6)
                 {
                     if (nWind < 5) sMessage = FB_T_WEATHER_MESSAGE_WARM_MILD;
                     else if (nWind < 8) sMessage = FB_T_WEATHER_MESSAGE_WARM_CLOUDY;
-                    else sMessage = FB_T_WEATHER_MESSAGE_WARM_FOGGY;
+                    else sMessage = FB_T_WEATHER_MESSAGE_WARM_WINDY;
                 }
                 else if (nWind < 5)
                 {
@@ -459,30 +573,12 @@ namespace SWLOR.Game.Server.Service
                     else sMessage = FB_T_WEATHER_MESSAGE_MILD_NIGHT;
                 }
                 else if (nWind < 8) sMessage = FB_T_WEATHER_MESSAGE_CLOUDY;
-                else sMessage = FB_T_WEATHER_MESSAGE_FOGGY;
+                else sMessage = FB_T_WEATHER_MESSAGE_WINDY;
 
                 _.SendMessageToPC(oCreature, sMessage);
             }
         }
-
-        void _DoWeatherEffects(NWObject oCreature)
-        {
-            //----------------------------------------------------------------------
-            // Remove all previous penalties
-            //----------------------------------------------------------------------
-            NWObject oOldArea = _.GetObjectByTag(oCreature.GetLocalString(VAR_EFFECTOR));
-            if (_.GetIsObjectValid(oOldArea) == 1)
-            {
-                Effect eBad = _.GetFirstEffect(oCreature);
-                while (_.GetIsEffectValid(eBad) == 1)
-                {
-                    if ((NWObject)_.GetEffectCreator(eBad) == oOldArea)
-                        _.RemoveEffect(oCreature, eBad);
-                    eBad = _.GetNextEffect(oCreature);
-                }
-            }
-        }
-
+        
         public int GetHeatIndex()
         {
             return GetHeatIndex(Object.OBJECT_SELF);
@@ -491,12 +587,21 @@ namespace SWLOR.Game.Server.Service
         public int GetHeatIndex(NWObject oArea)
         {
             //--------------------------------------------------------------------------
-            // Areas will have one of the CLIMATE_* values stored in each weather var.
+            // Areas may have one of the CLIMATE_* values stored in each weather var.
             //--------------------------------------------------------------------------
             NWObject oMod = _.GetModule();
             int nHeat = oMod.GetLocalInt(VAR_WEATHER_HEAT);
-            nHeat += oArea.GetLocalInt(VAR_WEATHER_HEAT);
-            nHeat = (_.GetIsNight() == 1) ? nHeat - 1 : nHeat + 1;
+            if (oArea.IsValid)
+            {
+                nHeat += oArea.GetLocalInt(VAR_WEATHER_HEAT);
+                nHeat += _GetClimate(oArea).Heat_Modifier;
+            }
+
+            nHeat = (_.GetIsNight() == 1) ? nHeat - 2 : nHeat + 2;
+
+            if (nHeat > 10) nHeat = 10;
+            if (nHeat < 1) nHeat = 1;
+
             return nHeat;
         }
 
@@ -508,11 +613,19 @@ namespace SWLOR.Game.Server.Service
         public int GetHumidity(NWObject oArea)
         {
             //--------------------------------------------------------------------------
-            // Areas will have one of the CLIMATE_* values stored in each weather var.
+            // Areas may have one of the CLIMATE_* values stored in each weather var.
             //--------------------------------------------------------------------------
             NWObject oMod = _.GetModule();
             int nHumidity = oMod.GetLocalInt(VAR_WEATHER_HUMIDITY);
-            nHumidity += oArea.GetLocalInt(VAR_WEATHER_HUMIDITY);
+            if (oArea.IsValid)
+            {
+                nHumidity += oArea.GetLocalInt(VAR_WEATHER_HUMIDITY);
+                nHumidity += _GetClimate(oArea).Humidity_Modifier;
+            }
+
+            if (nHumidity > 10) nHumidity = 10;
+            if (nHumidity < 1) nHumidity = 1;
+
             return nHumidity;
         }
 
@@ -528,12 +641,21 @@ namespace SWLOR.Game.Server.Service
             //--------------------------------------------------------------------------
             NWObject oMod = _.GetModule();
             int nWind = oMod.GetLocalInt(VAR_WEATHER_WIND);
-            nWind += oArea.GetLocalInt(VAR_WEATHER_WIND);
-            //--------------------------------------------------------------------------
-            // Automatic cover bonus for artificial areas such as cities (lots of
-            // buildings).
-            //--------------------------------------------------------------------------
-            if (_.GetIsAreaNatural(oArea) == 0) nWind -= 1;
+            if (oArea.IsValid)
+            {
+                nWind += oArea.GetLocalInt(VAR_WEATHER_WIND);
+                nWind += _GetClimate(oArea).Wind_Modifier;
+
+                //----------------------------------------------------------------------
+                // Automatic cover bonus for artificial areas such as cities (lots of
+                // buildings).
+                //----------------------------------------------------------------------
+                if (_.GetIsAreaNatural(oArea) == 0) nWind -= 1;
+            }
+
+            if (nWind > 10) nWind = 10;
+            if (nWind < 1) nWind = 1;
+
             return nWind;
         }
 
@@ -646,20 +768,24 @@ namespace SWLOR.Game.Server.Service
         public void OnAreaEnter()
         {
             SetWeather();
+
+            _error.Trace(WEATHER, "Applying weather to creature: " + _.GetName(_.GetEnteringObject()));
+
             DoWeatherEffects(_.GetEnteringObject());
 
-            NWObject oArea = Object.OBJECT_SELF;
+            NWArea oArea = (Object.OBJECT_SELF);
             int nHour = _.GetTimeHour();
             int nLastHour = oArea.GetLocalInt("WEATHER_LAST_HOUR");
 
             if (nHour != nLastHour)
-
             {
+                _error.Trace(WEATHER, "Cleaning up old weather");
+
                 // Clean up any old weather placeables.
-                NWObject oPlaceable = _.GetFirstObjectInArea(oArea);
-                while (_.GetIsObjectValid(oPlaceable) == 1)
+                foreach (NWObject oPlaceable in oArea.Objects)
                 {
-                    if(oPlaceable.GetLocalInt("WEATHER") == 1)
+                    if (oPlaceable.ObjectType == NWScript.OBJECT_TYPE_PLACEABLE && 
+                        oPlaceable.GetLocalInt("WEATHER") == 1)
                     {
                         _.DestroyObject(oPlaceable);
                     }
@@ -667,24 +793,32 @@ namespace SWLOR.Game.Server.Service
 
                 // Create new ones depending on the current weather.
                 int nWeather = GetWeather();
-
+                _error.Trace(WEATHER, "Current weather: " + nWeather.ToString());
+                
                 if (nWeather == WEATHER_FOGGY)
                 {
-                    for (int nCount = _.d6() ; nCount < 9; nCount++)
+                    // Get the size in tiles.
+                    int nSizeX = _.GetAreaSize(NWScript.AREA_WIDTH, oArea);
+                    int nSizeY = _.GetAreaSize(NWScript.AREA_HEIGHT, oArea);
+
+                    // We want one placeable per 8 tiles.
+                    int nMax = (nSizeX * nSizeY) / 8;
+                    _error.Trace(WEATHER, "Creating up to " + nMax.ToString() + " mist objects.");
+
+                    for (int nCount = _.d6() ; nCount < nMax; nCount++)
                     {
-                        int nSizeX = _.GetAreaSize(NWScript.AREA_WIDTH, oArea);
-                        int nSizeY = _.GetAreaSize(NWScript.AREA_HEIGHT, oArea);
                         Vector vPosition = _.GetPosition(_.GetEnteringObject());
 
-                        vPosition.m_X = _.IntToFloat(_.Random(nSizeX));
-                        vPosition.m_Y = _.IntToFloat(_.Random(nSizeY));
+                        // Vectors are in meters - 10 meters to a tile. 
+                        vPosition.m_X = _.IntToFloat(_.Random(nSizeX * 10));
+                        vPosition.m_Y = _.IntToFloat(_.Random(nSizeY * 10));
 
                         float fFacing = _.IntToFloat(_.Random(360));
 
                         string sResRef = "x3_plc_mist";
 
-                        oPlaceable = _.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, sResRef, _.Location(oArea, vPosition, fFacing));
-                        _.SetObjectVisualTransform(oPlaceable, NWScript.OBJECT_VISUAL_TRANSFORM_SCALE, _.IntToFloat(100 + _.Random(300)) / 100.0f);
+                        NWObject oPlaceable = _.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, sResRef, _.Location(oArea, vPosition, fFacing));
+                        _.SetObjectVisualTransform(oPlaceable, NWScript.OBJECT_VISUAL_TRANSFORM_SCALE, _.IntToFloat(200 + _.Random(200)) / 100.0f);
                         oPlaceable.SetLocalInt("WEATHER", 1);
                     }
                 }
@@ -701,12 +835,14 @@ namespace SWLOR.Game.Server.Service
 
             if (nHour != nLastHour)
             {
-                AdjustWeather();
-
-                foreach (var player in NWModule.Get().Players)
+                if (AdjustWeather())
                 {
-                    DoWeatherEffects(player);
+                    foreach (var player in NWModule.Get().Players)
+                    {
+                        DoWeatherEffects(player);
+                    }
                 }
+
                 oMod.SetLocalInt("WEATHER_LAST_HOUR", nHour);
             }
         }

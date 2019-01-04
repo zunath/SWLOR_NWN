@@ -4,9 +4,9 @@ namespace SWLOR.Game.Server.Event.Area
 {
     internal class OnAreaEnter: IRegisteredEvent
     {
-        private readonly IPlayerService _player;
-        private readonly IMapService _map;
         private readonly ICraftService _craft;
+        private readonly IMapService _map;
+        private readonly IPlayerService _player;
         private readonly IWeatherService _weather;
 
         public OnAreaEnter(

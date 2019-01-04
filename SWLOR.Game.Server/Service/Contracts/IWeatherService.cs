@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Service.Contracts
     {
         // Call every hour in module heartbeat.  Updates the global weather settings
         // and sets the appropriate weather in all areas with PCs in.
-        void AdjustWeather();
+        bool AdjustWeather();
         // If the builder sets climate modifiers in the area, set them here.
         void SetAreaHeatModifier(NWObject oArea, int nModifier);
         // If the builder sets climate modifiers in the area, set them here.

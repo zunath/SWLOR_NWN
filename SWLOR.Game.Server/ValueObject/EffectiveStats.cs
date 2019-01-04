@@ -34,6 +34,7 @@
         public int Fabrication { get; set; }
         public int Armorsmith { get; set; }
         public int Harvesting { get; set; }
+        public int Scavenging { get; set; }
         public int SneakAttack { get; set; }
         public int Strength { get; set; }
         public int Dexterity { get; set; }

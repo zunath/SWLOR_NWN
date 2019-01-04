@@ -3,6 +3,7 @@
     public enum CustomItemPropertyType
     {
         Unknown = -1,
+        ScavengingBonus = 99,
         RecommendedLevel = 100,
         RestBonus = 101,
         HarvestingBonus = 102,

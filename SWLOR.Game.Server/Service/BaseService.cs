@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Service
         private readonly INWNXChat _nwnxChat;
         private readonly IDurabilityService _durability;
         private readonly IAreaService _area;
+        private readonly IErrorService _error;
 
         public BaseService(
             INWScript script,
@@ -41,7 +42,8 @@ namespace SWLOR.Game.Server.Service
             IBasePermissionService perm,
             INWNXChat nwnxChat,
             IDurabilityService durability,
-            IAreaService area)
+            IAreaService area,
+            IErrorService error)
         {
             _ = script;
             _nwnxEvents = nwnxEvents;
@@ -54,6 +56,7 @@ namespace SWLOR.Game.Server.Service
             _durability = durability;
             _area = area;
             _data = data;
+            _error = error;
         }
 
         public PCTempBaseData GetPlayerTempData(NWPlayer player)
@@ -954,8 +957,7 @@ namespace SWLOR.Game.Server.Service
             }
             catch (Exception e)
             {
-                Console.Write("Failed to convert GUID: " + sTowerID);
-                Console.Write(e.Message);
+                _error.LogError(e, "Failed to convert GUID: " + sTowerID);
                 return "System error - target had invalid GUID.  Please report this error.";
             }
 
@@ -1009,7 +1011,8 @@ namespace SWLOR.Game.Server.Service
             item.Destroy();
 
             //--------------------------------------------------------------------------
-            // Check whether we have more fuel or resources than we're allowed.
+            // Note - we may have more fuel or resources than the new tower allows.  
+            // That's okay - means we can't add more but won't break anything.
             //--------------------------------------------------------------------------
             return "Control tower upgraded.";
         }

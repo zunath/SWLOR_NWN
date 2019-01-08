@@ -153,25 +153,26 @@ namespace SWLOR.Game.Server.Service
         public void OnModuleApplyDamage()
         {
             var data = _nwnxDamage.GetDamageEventData();
+            if (data.Base <= 0) return;
+
             NWObject damager = data.Damager;
+            if (!damager.IsPlayer) return;
+
             NWItem weapon = (_.GetLastWeaponUsed(damager.Object));
             int damageBonus = weapon.DamageBonus;
 
-            if (damager.IsPlayer)
-            {
-                NWPlayer player = (damager.Object);
-                int itemLevel = weapon.RecommendedLevel;
-                SkillType skill = _item.GetSkillTypeForItem(weapon);
-                if (skill == SkillType.Unknown) return;
+            NWPlayer player = (damager.Object);
+            int itemLevel = weapon.RecommendedLevel;
+            SkillType skill = _item.GetSkillTypeForItem(weapon);
+            if (skill == SkillType.Unknown) return;
 
-                int rank = _skill.GetPCSkillRank(player, skill);
-                int delta = itemLevel - rank;
-                if (delta >= 1) damageBonus--;
-                damageBonus = damageBonus - delta / 5;
+            int rank = _skill.GetPCSkillRank(player, skill);
+            int delta = itemLevel - rank;
+            if (delta >= 1) damageBonus--;
+            damageBonus = damageBonus - delta / 5;
 
-                if (damageBonus <= 0) damageBonus = 0;
-            }
-
+            if (damageBonus <= 0) damageBonus = 0;
+            
             data.Base += damageBonus;
             _nwnxDamage.SetDamageEventData(data);
         }

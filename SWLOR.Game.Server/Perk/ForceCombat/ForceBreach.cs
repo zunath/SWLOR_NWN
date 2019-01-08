@@ -4,9 +4,9 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN.NWScript;
 
-namespace SWLOR.Game.Server.Perk.DarkSide
+namespace SWLOR.Game.Server.Perk.ForceCombat
 {
-    public class ForceLightning : IPerk
+    public class ForceBreach : IPerk
     {
         private readonly INWScript _;
         private readonly IPerkService _perk;
@@ -14,13 +14,16 @@ namespace SWLOR.Game.Server.Perk.DarkSide
         private readonly ISkillService _skill;
         private readonly ICustomEffectService _customEffect;
         private readonly IPlayerStatService _playerStat;
+        private readonly ICombatService _combat;
 
-        public ForceLightning(INWScript script,
+        public ForceBreach(
+            INWScript script,
             IPerkService perk,
             IRandomService random,
             ISkillService skill,
             ICustomEffectService customEffect,
-            IPlayerStatService playerStat)
+            IPlayerStatService playerStat,
+            ICombatService combat)
         {
             _ = script;
             _perk = perk;
@@ -28,6 +31,7 @@ namespace SWLOR.Game.Server.Perk.DarkSide
             _skill = skill;
             _customEffect = customEffect;
             _playerStat = playerStat;
+            _combat = combat;
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -44,90 +48,89 @@ namespace SWLOR.Game.Server.Perk.DarkSide
         }
 
 
-        public int FPCost(NWPlayer oPC, int baseFPCost)
+        public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime)
+        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellFeatID)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime)
+        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellFeatID)
         {
             return baseCooldownTime;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int level)
+        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellFeatID)
+        {
+            return baseCooldownCategoryID;
+        }
+
+        public void OnImpact(NWPlayer player, NWObject target, int level, int spellFeatID)
         {
             var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
-            int darkBonus = effectiveStats.DarkAbility;
-            int amount;
             int length;
             int dotAmount;
-            int min = 1;
-
-            int wisdom = player.WisdomModifier;
-            int intelligence = player.IntelligenceModifier;
-            min += darkBonus / 3 + intelligence / 2 + wisdom / 3;
+            
+            int basePotency;
+            const float Tier1Modifier = 2.2f;
+            const float Tier2Modifier = 1.6f;
+            const float Tier3Modifier = 1.0f;
+            const float Tier4Modifier = 0;
 
             switch (level)
             {
                 case 1:
-                    amount = _random.D6(2, min);
+                    basePotency = 15;
                     length = 0;
                     dotAmount = 0;
                     break;
                 case 2:
-                    amount = _random.D6(2, min);
+                    basePotency = 20;
                     length = 6;
-                    dotAmount = 1;
+                    dotAmount = 4;
                     break;
                 case 3:
-                    amount = _random.D12(2, min);
+                    basePotency = 25;
                     length = 6;
-                    dotAmount = 1;
+                    dotAmount = 6;
                     break;
                 case 4:
-                    amount = _random.D12(2, min);
+                    basePotency = 40;
                     length = 12;
-                    dotAmount = 1;
+                    dotAmount = 6;
                     break;
                 case 5:
-                    amount = _random.D12(2, min);
-                    length = 6;
-                    dotAmount = 2;
+                    basePotency = 50;
+                    length = 12;
+                    dotAmount = 6;
                     break;
                 case 6:
-                    amount = _random.D12(2, min);
+                    basePotency = 60;
                     length = 12;
-                    dotAmount = 2;
+                    dotAmount = 6;
                     break;
                 case 7:
-                    amount = _random.D12(3, min);
+                    basePotency = 70;
                     length = 12;
-                    dotAmount = 2;
+                    dotAmount = 6;
                     break;
                 case 8:
-                    amount = _random.D12(3, min);
-                    length = 6;
-                    dotAmount = 4;
+                    basePotency = 80;
+                    length = 12;
+                    dotAmount = 8;
                     break;
                 case 9:
-                    amount = _random.D12(4, min);
-                    length = 6;
-                    dotAmount = 4;
+                    basePotency = 90;
+                    length = 12;
+                    dotAmount = 8;
                     break;
                 case 10:
-                    amount = _random.D12(4, min);
+                    basePotency = 100;
                     length = 12;
-                    dotAmount = 4;
-                    break;
-                case 11: // Only attainable with background bonus
-                    amount = _random.D12(5, min);
-                    length = 12;
-                    dotAmount = 4;
+                    dotAmount = 10;
                     break;
                 default: return;
             }
@@ -136,26 +139,39 @@ namespace SWLOR.Game.Server.Perk.DarkSide
             if (_random.Random(100) + 1 <= luck)
             {
                 length = length * 2;
-                player.SendMessage("Lucky force lightning!");
+                player.SendMessage("Lucky force breach!");
             }
+
+            var calc = _combat.CalculateForceDamage(
+                player,
+                target.Object,
+                ForceAbilityType.Light,
+                basePotency,
+                Tier1Modifier,
+                Tier2Modifier,
+                Tier3Modifier,
+                Tier4Modifier);
 
             player.AssignCommand(() =>
             {
-                Effect damage = _.EffectDamage(amount, DAMAGE_TYPE_ELECTRICAL);
+                Effect damage = _.EffectDamage(calc.Damage);
                 _.ApplyEffectToObject(DURATION_TYPE_INSTANT, damage, target);
             });
-
+            
             if (length > 0.0f && dotAmount > 0)
             {
-                _customEffect.ApplyCustomEffect(player, target.Object, CustomEffectType.ForceShock, length, level, dotAmount.ToString());
+                _customEffect.ApplyCustomEffect(player, target.Object, CustomEffectType.ForceBreach, length, level, null);
             }
 
-            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.DarkSideAbilities, target.Object);
+            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceCombat, target.Object);
 
             player.AssignCommand(() =>
             {
-                _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_BEAM_LIGHTNING), target, 1.0f);
+                Effect vfx = _.EffectVisualEffect(VFX_IMP_DOMINATE_S);
+                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, target);
             });
+
+            _combat.AddTemporaryForceDefense(target.Object, ForceAbilityType.Light);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

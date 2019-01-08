@@ -4,6 +4,8 @@
     public enum CustomRaceType
     {
         Human = 6,
+        Robot = 150,
+        Alien = 151,
         Bothan = 152,
         Chiss = 153,
         Zabrak = 154,

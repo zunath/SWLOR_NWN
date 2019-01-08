@@ -59,7 +59,6 @@ namespace SWLOR.Game.Server.Event.Module
 
             description = _mod.OnModuleExamine(description, examiner, examinedObject);
             description = _item.OnModuleExamine(description, examiner, examinedObject);
-            description = _perk.OnModuleExamine(description, examiner, examinedObject);
             description = _durability.OnModuleExamine(description, examinedObject);
             description = _farming.OnModuleExamine(description, examinedObject);
             

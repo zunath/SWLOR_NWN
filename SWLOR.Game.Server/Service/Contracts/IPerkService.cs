@@ -22,7 +22,6 @@ namespace SWLOR.Game.Server.Service.Contracts
         bool CanPerkBeUpgraded(NWPlayer player, int perkID);
         void DoPerkUpgrade(NWPlayer player, int perkID, bool freeUpgrade = false);
         void DoPerkUpgrade(NWPlayer player, PerkType perkType, bool freeUpgrade = false);
-        string OnModuleExamine(string existingDescription, NWPlayer examiner, NWObject examinedObject);
         void OnHitCastSpell(NWPlayer oPC);
     }
 }

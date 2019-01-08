@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.Data.Contracts;
@@ -370,6 +371,38 @@ namespace SWLOR.Game.Server.Service
             }
             else return 0;
             return effectLevel;
+        }
+
+        public ForceSpreadDetails GetForceSpreadDetails(NWPlayer player)
+        {
+            PCCustomEffect spreadEffect = _data.SingleOrDefault<PCCustomEffect>(x => x.PlayerID == player.GlobalID && x.CustomEffectID == (int)CustomEffectType.ForceSpread);
+            ForceSpreadDetails details = new ForceSpreadDetails();
+            string spreadData = spreadEffect?.Data ?? string.Empty;
+
+            details.Level = spreadEffect?.EffectiveLevel ?? 0;
+            details.Uses = spreadEffect == null ? 0 : Convert.ToInt32(spreadData.Split(',')[0]);
+            details.Range = spreadEffect == null ? 0 : Convert.ToSingle(spreadData.Split(',')[1]);
+
+            return details;
+        }
+
+        public void SetForceSpreadUses(NWPlayer player, int uses)
+        {
+            PCCustomEffect spreadEffect = _data.SingleOrDefault<PCCustomEffect>(x => x.PlayerID == player.GlobalID && x.CustomEffectID == (int)CustomEffectType.ForceSpread);
+            if (spreadEffect == null) return;
+
+            if (uses <= 0)
+            {
+                RemovePCCustomEffect(player, CustomEffectType.ForceSpread);
+            }
+
+            string spreadData = spreadEffect.Data ?? string.Empty;
+
+            float range = Convert.ToSingle(spreadData.Split(',')[1]);
+            spreadEffect.Data = uses + "," + range;
+            _data.SubmitDataChange(spreadEffect, DatabaseActionType.Update);
+            player.SendMessage("Force Spread uses remaining: " + uses);
+
         }
 
     }

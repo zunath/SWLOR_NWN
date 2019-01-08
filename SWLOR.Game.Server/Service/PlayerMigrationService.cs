@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Service
@@ -10,13 +11,16 @@ namespace SWLOR.Game.Server.Service
     {
         private readonly INWScript _;
         private readonly IDataService _data;
+        private readonly INWNXCreature _nwnxCreature;
 
         public PlayerMigrationService(
             INWScript script,
-            IDataService data)
+            IDataService data,
+            INWNXCreature nwnxCreature)
         {
             _ = script;
             _data = data;
+            _nwnxCreature = nwnxCreature;
         }
 
         public void OnModuleEnter()
@@ -26,8 +30,8 @@ namespace SWLOR.Game.Server.Service
 
             var dbPlayer = _data.Get<Player>(player.GlobalID);
 
-            // Background items are no longer plot because item level no longer dictates your skill XP gain.
-            if (dbPlayer.VersionNumber <= 1) 
+            // VERSION 2: Background items are no longer plot because item level no longer dictates your skill XP gain.
+            if (dbPlayer.VersionNumber < 2) 
             {
                 string[] resrefs =
                 {
@@ -55,7 +59,28 @@ namespace SWLOR.Game.Server.Service
                 dbPlayer.VersionNumber = 2;
             }
 
+            // VERSION 3: Force feats need to be removed since force powers were reworked.
+            if (dbPlayer.VersionNumber < 3)
+            {
+                // These IDs come from the Feat.2da file.
+                _nwnxCreature.RemoveFeat(player, 1135); // Force Breach
+                _nwnxCreature.RemoveFeat(player, 1136); // Force Lightning
+                _nwnxCreature.RemoveFeat(player, 1137); // Force Heal
+                _nwnxCreature.RemoveFeat(player, 1138); // Dark Heal
+                _nwnxCreature.RemoveFeat(player, 1143); // Force Spread
+                _nwnxCreature.RemoveFeat(player, 1144); // Dark Spread
+                _nwnxCreature.RemoveFeat(player, 1145); // Force Push
+                _nwnxCreature.RemoveFeat(player, 1125); // Force Aura
+                _nwnxCreature.RemoveFeat(player, 1152); // Drain Life
+                _nwnxCreature.RemoveFeat(player, 1134); // Chainspell
+
+                dbPlayer.VersionNumber = 3;
+            }
+
             _data.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
         }
+
+        
+
     }
 }

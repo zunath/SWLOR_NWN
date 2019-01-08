@@ -3,6 +3,7 @@
     public enum CustomItemPropertyType
     {
         Unknown = -1,
+        ScavengingBonus = 99,
         RecommendedLevel = 100,
         RestBonus = 101,
         HarvestingBonus = 102,
@@ -21,9 +22,9 @@
         EnmityRate = 115,
         ItemType = 116,
         ArmorClass = 117,
-        DarkAbilityBonus = 118,
-        LightAbilityBonus = 119,
-        SummoningBonus = 120,
+        DarkPotencyBonus = 118,
+        LightPotencyBonus = 119,
+        MindPotencyBonus = 120,
         LuckBonus = 121,
         MeditateBonus = 122,
         MedicineBonus = 123,
@@ -45,6 +46,13 @@
         CraftBonusFabrication = 139,
         StructureBonus = 140,
         ScanningBonus = 141,
-        ScavengingBonus = 142
+        ElectricalPotencyBonus = 142,
+        ForcePotencyBonus = 143,
+        ForceAccuracyBonus = 144,
+        ForceDefenseBonus = 145,
+        ElectricalDefenseBonus = 146,
+        MindDefenseBonus = 147,
+        LightDefenseBonus = 148,
+        DarkDefenseBonus = 149
     }
 }

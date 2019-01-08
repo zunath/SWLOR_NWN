@@ -21,9 +21,9 @@
         Cooking = 16,
         Medicine = 17,
         // 18 is free
-        DarkSideAbilities = 19,
-        LightSideAbilities = 20,
-        // 21 is open
+        ForceCombat = 19,
+        ForceSupport = 20,
+        ForceUtility = 21,
         Engineering = 22,
         Farming = 23,
         Scavenging = 24,

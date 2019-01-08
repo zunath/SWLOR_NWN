@@ -33,22 +33,27 @@ namespace SWLOR.Game.Server.Perk.Blaster
             return "Must be equipped with a blaster rifle to use that ability.";
         }
 
-        public int FPCost(NWPlayer oPC, int baseFPCost)
+        public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime)
+        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellFeatID)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime)
+        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellFeatID)
         {
             return baseCooldownTime;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel)
+        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellFeatID)
+        {
+            return baseCooldownCategoryID;
+        }
+
+        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
         {
             int massLevel = _perk.GetPCPerkLevel(player, PerkType.MassTranquilizer);
             int tranqLevel = _perk.GetPCPerkLevel(player, PerkType.Tranquilizer);

@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.DoorRule
         public NWPlaceable Run(NWArea area, Location location, float orientationOverride = -1f, float sqrtValue = -1f)
         {
             float orientationAdjustment = orientationOverride != 0f ? orientationOverride : 90f;
-            float sqrtAdjustment = sqrtValue != 0f ? sqrtValue : 30f;
+            float sqrtAdjustment = sqrtValue != 0f ? sqrtValue : 34f;
 
             Vector position = _.GetPositionFromLocation(location);
             float orientation = _.GetFacingFromLocation(location);

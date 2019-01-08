@@ -301,9 +301,12 @@ namespace SWLOR.Game.Server.Conversation
 
         private void RemovePerkFeat(Data.Entity.Perk perk)
         {
-            if (perk.FeatID == null || perk.FeatID <= 0) return;
+            var feats = _data.Where<PerkFeat>(x => x.PerkID == perk.ID);
 
-            _nwnxCreature.RemoveFeat(GetPC(), (int)perk.FeatID);
+            foreach (var feat in feats)
+            {
+                _nwnxCreature.RemoveFeat(GetPC(), feat.FeatID);
+            }
         }
 
         public override void EndDialog()

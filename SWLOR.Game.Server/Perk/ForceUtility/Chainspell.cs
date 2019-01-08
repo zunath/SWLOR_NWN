@@ -1,76 +1,74 @@
-﻿using NWN;
-using SWLOR.Game.Server.CustomEffect.Contracts;
+﻿using System;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
 
-namespace SWLOR.Game.Server.Perk.LightSide
+namespace SWLOR.Game.Server.Perk.ForceUtility
 {
-    public class ForceAura: IPerk
+    public class Chainspell: IPerk
     {
-        private readonly INWScript _;
         private readonly ICustomEffectService _customEffect;
         private readonly ISkillService _skill;
 
-        public ForceAura(
-            INWScript script,
+        public Chainspell(
             ICustomEffectService customEffect,
             ISkillService skill)
         {
-            _ = script;
             _customEffect = customEffect;
             _skill = skill;
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
-            if (_.GetDistanceBetween(oPC, oTarget) > 15.0f)
-                return false;
-
-            return true;
+            NWItem armor = oPC.Chest;
+            return armor.CustomItemType == CustomItemType.ForceArmor;
         }
 
         public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
         {
-            return "Target out of range.";
+            return null;
         }
 
-
-        public int FPCost(NWPlayer oPC, int baseFPCost)
+        public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime)
+        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellFeatID)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime)
+        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellFeatID)
         {
             return baseCooldownTime;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int level)
+        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellFeatID)
         {
-            int ticks;
+            return baseCooldownCategoryID;
+        }
 
-            switch (level)
+        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
+        {
+            int duration;
+
+            switch (perkLevel)
             {
-                default:
-                    ticks = 300;
+                case 1:
+                    duration = 24;
                     break;
-                case 5:
-                case 6:
-                    ticks = 600;
+                case 2:
+                    duration = 48;
                     break;
+                case 3:
+                    duration = 72;
+                    break;
+                default: throw new ArgumentOutOfRangeException();
             }
 
-
-            _customEffect.ApplyCustomEffect(player, target.Object, CustomEffectType.ForceAura, ticks, level, null);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_AC_BONUS), target);
-            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.LightSideAbilities, null);
+            _customEffect.ApplyCustomEffect(player, player, CustomEffectType.Chainspell, duration, perkLevel, null);
+            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceUtility, null);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

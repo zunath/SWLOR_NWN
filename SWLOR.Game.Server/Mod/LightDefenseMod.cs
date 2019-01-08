@@ -4,12 +4,12 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class SummoningMagicMod : IMod
+    public class LightDefenseMod : IMod
     {
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            if (target.SummoningBonus >= 50)
-                return "You cannot improve that item's summoning magic bonus any further.";
+            if (target.LightDefenseBonus >= 20)
+                return "You cannot improve that item's light defense bonus any further.";
 
             return null;
         }
@@ -17,15 +17,15 @@ namespace SWLOR.Game.Server.Mod
         public void Apply(NWPlayer player, NWItem target, params string[] args)
         {
             int value = Convert.ToInt32(args[0]);
-            int newValue = target.SummoningBonus + value;
-            if (newValue > 50) newValue = 50;
-            target.SummoningBonus = newValue;
+            int newValue = target.LightDefenseBonus + value;
+            if (newValue > 20) newValue = 20;
+            target.LightDefenseBonus = newValue;
         }
 
         public string Description(NWPlayer player, NWItem target, params string[] args)
         {
             int value = Convert.ToInt32(args[0]);
-            return "Summoning Magic +" + value;
+            return "Light Defense +" + value;
         }
     }
 }

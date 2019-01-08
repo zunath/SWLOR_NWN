@@ -34,17 +34,17 @@ namespace SWLOR.Game.Server.Perk.General
             return "You cannot meditate while you or a party member are in combat.";
         }
 
-        public int FPCost(NWPlayer oPC, int baseFPCost)
+        public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime)
+        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellFeatID)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime)
+        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellFeatID)
         {
             int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.Meditate);
 
@@ -64,7 +64,12 @@ namespace SWLOR.Game.Server.Perk.General
             }
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel)
+        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellFeatID)
+        {
+            return baseCooldownCategoryID;
+        }
+
+        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
         {
             _customEffect.ApplyCustomEffect(player, player, CustomEffectType.Meditate, -1, 0, null);
         }

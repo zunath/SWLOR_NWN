@@ -3,21 +3,22 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 
-namespace SWLOR.Game.Server.Perk.DarkSide
+namespace SWLOR.Game.Server.Perk.ForceUtility
 {
-    public class DarkSpread : IPerk
+    public class ForceSpread: IPerk
     {
         private readonly INWScript _;
         private readonly ICustomEffectService _customEffect;
-        private readonly IPerkService _perk;
+        private readonly ISkillService _skill;
 
-        public DarkSpread(INWScript script,
+        public ForceSpread(
+            INWScript script,
             ICustomEffectService customEffect,
-            IPerkService perk)
+            ISkillService skill)
         {
             _ = script;
             _customEffect = customEffect;
-            _perk = perk;
+            _skill = skill;
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -30,22 +31,27 @@ namespace SWLOR.Game.Server.Perk.DarkSide
             return null;
         }
 
-        public int FPCost(NWPlayer oPC, int baseFPCost)
+        public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime)
+        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellFeatID)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime)
+        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellFeatID)
         {
             return baseCooldownTime;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel)
+        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellFeatID)
+        {
+            return baseCooldownCategoryID;
+        }
+
+        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
         {
             NWCreature targetCreature = target.Object;
 
@@ -85,14 +91,10 @@ namespace SWLOR.Game.Server.Perk.DarkSide
                     uses = 5;
                     range = 20f;
                     break;
-                case 7: // Only available with background bonus
-                    duration = 90;
-                    uses = 5;
-                    range = 20f;
-                    break;
                 default: return;
             }
-            _customEffect.ApplyCustomEffect(player, targetCreature, CustomEffectType.DarkSpread, duration, perkLevel, uses + "," + range);
+            _customEffect.ApplyCustomEffect(player, targetCreature, CustomEffectType.ForceSpread, duration, perkLevel, uses + "," + range);
+            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceUtility, null);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

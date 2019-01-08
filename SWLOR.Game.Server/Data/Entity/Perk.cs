@@ -19,7 +19,6 @@ namespace SWLOR.Game.Server.Data.Entity
         [ExplicitKey]
         public int ID { get; set; }
         public string Name { get; set; }
-        public int? FeatID { get; set; }
         public bool IsActive { get; set; }
         public string ScriptName { get; set; }
         public int BaseFPCost { get; set; }

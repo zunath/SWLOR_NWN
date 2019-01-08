@@ -12,7 +12,7 @@
         ForceShock = 7,
         AbsorptionField = 8,
         ForceSpread = 9,
-        DarkSpread = 10,
+        // 10 is open
         ShieldBoost = 11,
         Meditate = 12,
         Rest = 13,

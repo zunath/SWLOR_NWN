@@ -169,7 +169,9 @@ namespace SWLOR.Game.Server.Conversation
                 }
             }
             var perkCategory = _data.Get<PerkCategory>(perk.PerkCategoryID);
-            var cooldownCategory = perk.CooldownCategoryID == null ? null : _data.Get<CooldownCategory>(perk.CooldownCategoryID);
+            var cooldownCategory = perk.CooldownCategoryID == null ? 
+                null : 
+                _data.Get<CooldownCategory>(perk.CooldownCategoryID);
 
             string header = _color.Green("Name: ") + perk.Name + "\n" +
                     _color.Green("Category: ") + perkCategory.Name + "\n" +

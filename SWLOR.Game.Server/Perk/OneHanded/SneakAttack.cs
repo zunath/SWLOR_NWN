@@ -27,17 +27,17 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             return "You must be equipped with a finesse blade and light armor to use that ability.";
         }
 
-        public int FPCost(NWPlayer oPC, int baseFPCost)
+        public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime)
+        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellFeatID)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime)
+        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellFeatID)
         {
             int perkRank = _perk.GetPCPerkLevel(oPC, PerkType.SneakAttack);
             float cooldown = baseCooldownTime;
@@ -54,7 +54,12 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             return cooldown;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel)
+        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellFeatID)
+        {
+            return baseCooldownCategoryID;
+        }
+
+        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
         {
             float minimum = player.Facing - 20;
             float maximum = player.Facing + 20;

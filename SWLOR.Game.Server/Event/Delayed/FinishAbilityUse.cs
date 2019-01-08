@@ -38,13 +38,18 @@ namespace SWLOR.Game.Server.Event.Delayed
             int perkID = (int)args[2];
             NWObject target = (NWObject)args[3];
             int pcPerkLevel = (int) args[4];
+            int featID = (int) args[5];
 
             Data.Entity.Perk entity = _data.Single<Data.Entity.Perk>(x => x.ID == perkID);
-            CooldownCategory cooldown = _data.SingleOrDefault<CooldownCategory>(x => x.ID == entity.CooldownCategoryID);
             PerkExecutionType executionType = (PerkExecutionType) entity.ExecutionTypeID;
 
             return App.ResolveByInterface<IPerk, bool>("Perk." + entity.ScriptName, perk =>
             {
+                int? cooldownID = perk.CooldownCategoryID(pc, entity.CooldownCategoryID, featID);
+                CooldownCategory cooldown = cooldownID == null ? 
+                    null : 
+                    _data.SingleOrDefault<CooldownCategory>(x => x.ID == cooldownID);
+
                 if (pc.GetLocalInt(spellUUID) == (int)SpellStatusType.Interrupted || // Moved during casting
                         pc.CurrentHP < 0 || pc.IsDead) // Or is dead/dying
                 {
@@ -58,7 +63,7 @@ namespace SWLOR.Game.Server.Event.Delayed
                     executionType == PerkExecutionType.CombatAbility ||
                     executionType == PerkExecutionType.Stance)
                 {
-                    perk.OnImpact(pc, target, pcPerkLevel);
+                    perk.OnImpact(pc, target, pcPerkLevel, featID);
                     
                     if (entity.CastAnimationID != null && entity.CastAnimationID > 0)
                     {
@@ -75,15 +80,17 @@ namespace SWLOR.Game.Server.Event.Delayed
                 }
                 else if(executionType == PerkExecutionType.QueuedWeaponSkill)
                 {
-                    _ability.HandleQueueWeaponSkill(pc, entity, perk);
+                    _ability.HandleQueueWeaponSkill(pc, entity, perk, featID);
                 }
 
 
                 // Adjust FP only if spell cost > 0
                 Data.Entity.Player pcEntity = _data.Single<Data.Entity.Player>(x => x.ID == pc.GlobalID);
-                if (perk.FPCost(pc, entity.BaseFPCost) > 0)
+                int fpCost = perk.FPCost(pc, entity.BaseFPCost, featID);
+
+                if (fpCost > 0)
                 {
-                    pcEntity.CurrentFP = pcEntity.CurrentFP - perk.FPCost(pc, entity.BaseFPCost);
+                    pcEntity.CurrentFP = pcEntity.CurrentFP - fpCost;
                     _data.SubmitDataChange(pcEntity, DatabaseActionType.Update);
                     pc.SendMessage(_color.Custom("FP: " + pcEntity.CurrentFP + " / " + pcEntity.MaxFP, 32, 223, 219));
 
@@ -92,10 +99,10 @@ namespace SWLOR.Game.Server.Event.Delayed
                 bool hasChainspell = _customEffect.DoesPCHaveCustomEffect(pc, CustomEffectType.Chainspell) &&
                     executionType == PerkExecutionType.ForceAbility;
 
-                if(!hasChainspell)
+                if(!hasChainspell && cooldown != null)
                 {
                     // Mark cooldown on category
-                    _ability.ApplyCooldown(pc, cooldown, perk);
+                    _ability.ApplyCooldown(pc, cooldown, perk, featID);
                 }
                 pc.IsBusy = false;
                 pc.SetLocalInt(spellUUID, (int)SpellStatusType.Completed);

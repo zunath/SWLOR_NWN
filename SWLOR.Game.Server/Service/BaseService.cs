@@ -922,6 +922,96 @@ namespace SWLOR.Game.Server.Service
             return (int) (resourceMax + resourceMax * siloBonus);
         }
 
+        public string UpgradeControlTower(NWCreature user, NWItem item, NWObject target)
+        {
+            //--------------------------------------------------------------------------
+            // Called when a PC uses a structure item on a placed object.
+            // Returns "" if either the item or the target are not control towers.
+            // Returns a success or failure message otherwise.
+            //--------------------------------------------------------------------------
+            NWPlayer player = user.Object;
 
+            //--------------------------------------------------------------------------
+            // Check that the item is a control tower.
+            //--------------------------------------------------------------------------
+            int newTowerStructureID = item.GetLocalInt("BASE_STRUCTURE_ID");
+            BaseStructure newTower = _data.Single<BaseStructure>(x => x.ID == newTowerStructureID);
+            if (newTower.BaseStructureTypeID != (int)BaseStructureType.ControlTower)
+            {
+                return "";
+            }
+
+            //--------------------------------------------------------------------------
+            // Check that the target is a control tower.
+            //--------------------------------------------------------------------------
+            string sTowerID = target.GetLocalString("PC_BASE_STRUCTURE_ID");
+            if (string.IsNullOrWhiteSpace(sTowerID)) return "";
+            Guid towerGuid;
+
+            try
+            {
+                towerGuid = new Guid(sTowerID);
+            }
+            catch (Exception e)
+            {
+                Console.Write("Failed to convert GUID: " + sTowerID);
+                Console.Write(e.Message);
+                return "System error - target had invalid GUID.  Please report this error.";
+            }
+
+            PCBaseStructure towerStructure = _data.Get<PCBaseStructure>(towerGuid);
+            BaseStructure oldTower = _data.Get<BaseStructure>(towerStructure.BaseStructureID);
+            if (oldTower.BaseStructureTypeID != (int)BaseStructureType.ControlTower)
+            {
+                return "";
+            }
+
+            //--------------------------------------------------------------------------
+            // Check that the PC has permission to manage structures. 
+            // Check whether player has permission to place or edit structures.
+            //--------------------------------------------------------------------------
+            var canPlaceOrEditStructures = _perm.HasBasePermission(player, towerStructure.PCBaseID, BasePermission.CanPlaceEditStructures);
+
+            // Don't have permission.
+            if (!canPlaceOrEditStructures)
+                return "You do not have permission to place or edit structures in this territory.";
+
+            //--------------------------------------------------------------------------
+            // Check that the current CPU and power usage of the base is not more than
+            // the new tower can handle.
+            //--------------------------------------------------------------------------
+            double powerInUse = GetPowerInUse(towerStructure.PCBaseID);
+            double cpuInUse = GetCPUInUse(towerStructure.PCBaseID);
+
+            double towerPower = newTower.Power + (item.StructureBonus * 3);
+            double towerCPU = newTower.CPU + (item.StructureBonus * 2);
+
+            if (towerPower < powerInUse) return "The new tower does not have enough power to handle this base.";
+            if (towerCPU < cpuInUse) return "The new tower does not have enough CPU to handle this base.";
+
+            //--------------------------------------------------------------------------
+            // Change the old tower for the new tower.
+            // Create the old tower as as item on the PC. 
+            // Update the tower model and bonus to the new values, and save the change.
+            //--------------------------------------------------------------------------
+            ConvertStructureToItem(towerStructure, user);
+            towerStructure.BaseStructureID = newTowerStructureID;
+            towerStructure.StructureBonus = item.StructureBonus;
+
+            _data.SubmitDataChange(towerStructure, DatabaseActionType.Update);
+
+            //--------------------------------------------------------------------------
+            // Actually create/destroy the NWN objects.
+            //--------------------------------------------------------------------------
+            NWArea area = (_.GetAreaFromLocation(_.GetLocation(target)));
+            SpawnStructure(area, towerStructure.ID);
+            target.Destroy();
+            item.Destroy();
+
+            //--------------------------------------------------------------------------
+            // Check whether we have more fuel or resources than we're allowed.
+            //--------------------------------------------------------------------------
+            return "Control tower upgraded.";
+        }
     }
 }

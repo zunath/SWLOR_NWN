@@ -37,5 +37,6 @@ namespace SWLOR.Game.Server.Service.Contracts
         int CalculateResourceCapacity(Guid pcBaseID);
         double GetMaxBaseCPU(Guid pcBaseID);
         double GetMaxBasePower(Guid pcBaseID);
+        string UpgradeControlTower(NWCreature user, NWItem item, NWObject target);
     }
 }

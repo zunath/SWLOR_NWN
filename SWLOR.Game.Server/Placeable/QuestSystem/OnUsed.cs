@@ -8,7 +8,6 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem
 {
     public class OnUsed: IRegisteredEvent
     {
-        private readonly INWScript _;
         private readonly IQuestService _quest;
 
         public OnUsed(IQuestService quest)

@@ -1156,6 +1156,7 @@
     <Compile Include="Mod\SneakAttackMod.cs" />
     <Compile Include="Mod\SummoningMagicMod.cs" />
     <Compile Include="Mod\WeaponsmithMod.cs" />
+    <Compile Include="Placeable\WeatherModifier\OnHeartbeat.cs" />
     <Compile Include="Processor\AppStateProcessor.cs" />
     <Compile Include="Processor\BehaviourProcessor.cs" />
     <Compile Include="Processor\Contracts\IEventProcessor.cs" />
@@ -1181,6 +1182,7 @@
     <Compile Include="Service\ChatTextService.cs" />
     <Compile Include="Service\CombatService.cs" />
     <Compile Include="Service\Contracts\IEmoteStyleService.cs" />
+    <Compile Include="Service\Contracts\IWeatherService.cs" />
     <Compile Include="Service\DataPackageService.cs" />
     <Compile Include="Service\DataService.cs" />
     <Compile Include="Service\EmoteStyleService.cs" />
@@ -1325,6 +1327,7 @@
     <Compile Include="Service\SpawnService.cs" />
     <Compile Include="Service\AreaService.cs" />
     <Compile Include="Service\TimeService.cs" />
+    <Compile Include="Service\WeatherService.cs" />
     <Compile Include="SpawnRule\Contracts\ISpawnRule.cs" />
     <Compile Include="DoorRule\OldHouseRule.cs" />
     <Compile Include="SpawnRule\DrillSpawnRule.cs" />

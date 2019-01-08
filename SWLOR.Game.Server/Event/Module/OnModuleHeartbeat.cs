@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IPerkService _perk;
         private readonly IBaseService _base;
         private readonly IPlayerStatService _playerStat;
+        private readonly IWeatherService _weather;
         
         public OnModuleHeartbeat(INWScript script,
             IDataService data,
@@ -28,7 +29,8 @@ namespace SWLOR.Game.Server.Event.Module
             IAbilityService ability,
             IPerkService perk,
             IBaseService @base,
-            IPlayerStatService playerStat)
+            IPlayerStatService playerStat,
+            IWeatherService weather)
         {
             _ = script;
             _data = data;
@@ -37,6 +39,7 @@ namespace SWLOR.Game.Server.Event.Module
             _perk = perk;
             _base = @base;
             _playerStat = playerStat;
+            _weather = weather;
         }
 
         public bool Run(params object[] args)
@@ -57,6 +60,7 @@ namespace SWLOR.Game.Server.Event.Module
             
             SaveCharacters();
             _base.OnModuleHeartbeat();
+            _weather.OnModuleHeartbeat();
 
             // todo: use for debugging the memleak issue. Leave in for now - will remove after it's been fixed.
 

@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Item
                 modItem.Destroy();
 
                 SkillType skillType;
-                if (ItemService.ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
+                if (ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
                 {
                     skillType = SkillType.Armorsmith;
                 }
@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.Item
             NWItem targetItem = (target.Object);
             float perkBonus = 0.0f;
 
-            if (ItemService.ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
+            if (ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
             {
                 perkBonus = _perk.GetPCPerkLevel(userPlayer, PerkType.SpeedyArmorsmith) * 0.1f;
             }
@@ -232,7 +232,7 @@ namespace SWLOR.Game.Server.Item
                         break;
                 }
             }
-            else if (ItemService.ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
+            else if (ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
             {
                 switch (modType)
                 {
@@ -312,12 +312,31 @@ namespace SWLOR.Game.Server.Item
             return false;
         }
 
+        //------------------------------------------------------------------------------------------------------------
+        // Note - these are very similar to the lists in ItemService.  However, there are some  differences
+        // based on where items are crafted.  For example, gloves are only in ArmorBaseItems here but are also in
+        // WeaponBaseItems in ItemService, and engineering items are in their own list here.  These lists are only 
+        // used for the purpose of mod perks, the lists in ItemService are used for "is this item a weapon/armor/etc". 
+        //------------------------------------------------------------------------------------------------------------
+        public static HashSet<int> ArmorBaseItemTypes = new HashSet<int>()
+        {
+            BASE_ITEM_AMULET,
+            BASE_ITEM_ARMOR,
+            BASE_ITEM_BRACER,
+            BASE_ITEM_BELT,
+            BASE_ITEM_BOOTS,
+            BASE_ITEM_CLOAK,
+            BASE_ITEM_GLOVES,
+            BASE_ITEM_HELMET,
+            BASE_ITEM_LARGESHIELD,
+            BASE_ITEM_SMALLSHIELD,
+            BASE_ITEM_TOWERSHIELD
+        };
 
         private static readonly HashSet<int> WeaponsmithBaseItemTypes = new HashSet<int>()
         {
             BASE_ITEM_BASTARDSWORD,
             BASE_ITEM_BATTLEAXE,
-            BASE_ITEM_BRACER,
             BASE_ITEM_CLUB,
             BASE_ITEM_DAGGER,
             BASE_ITEM_DART,
@@ -327,7 +346,6 @@ namespace SWLOR.Game.Server.Item
             BASE_ITEM_GREATAXE,
             BASE_ITEM_GREATSWORD,
             BASE_ITEM_GRENADE,
-            BASE_ITEM_GLOVES,
             BASE_ITEM_HALBERD,
             BASE_ITEM_HANDAXE,
             BASE_ITEM_HEAVYFLAIL,

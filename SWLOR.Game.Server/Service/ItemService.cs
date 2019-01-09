@@ -366,6 +366,7 @@ namespace SWLOR.Game.Server.Service
             BASE_ITEM_DIREMACE,
             BASE_ITEM_DOUBLEAXE,
             BASE_ITEM_DWARVENWARAXE,
+            BASE_ITEM_GLOVES,
             BASE_ITEM_GREATAXE,
             BASE_ITEM_GREATSWORD,
             BASE_ITEM_GRENADE,

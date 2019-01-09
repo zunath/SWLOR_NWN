@@ -4,12 +4,13 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
+    // This is the Light Potency Mod class. The class name is maintained for backwards compatibility purposes.
     public class LightAbilityMod: IMod
     {
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            if (target.LightAbilityBonus >= 50)
-                return "You cannot improve that item's light ability bonus any further.";
+            if (target.LightPotencyBonus >= 50)
+                return "You cannot improve that item's Light Potency bonus any further.";
 
             return null;
         }
@@ -17,15 +18,15 @@ namespace SWLOR.Game.Server.Mod
         public void Apply(NWPlayer player, NWItem target, params string[] args)
         {
             int value = Convert.ToInt32(args[0]);
-            int newValue = target.LightAbilityBonus + value;
+            int newValue = target.LightPotencyBonus + value;
             if (newValue > 50) newValue = 50;
-            target.LightAbilityBonus = newValue;
+            target.LightPotencyBonus = newValue;
         }
 
         public string Description(NWPlayer player, NWItem target, params string[] args)
         {
             int value = Convert.ToInt32(args[0]);
-            return "Light Ability +" + value;
+            return "Light Potency +" + value;
         }
     }
 }

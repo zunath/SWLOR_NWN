@@ -28,8 +28,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IItemService _item;
         private readonly IDataService _data;
         private readonly AppCache _cache;
-        private readonly INWNXProfiler _nwnxProfiler;
-
+        
         public SkillService(
             INWScript script,
             IRandomService random,
@@ -38,8 +37,7 @@ namespace SWLOR.Game.Server.Service
             IPlayerStatService playerStat,
             IItemService item,
             IDataService data,
-            AppCache cache,
-            INWNXProfiler nwnxProfiler)
+            AppCache cache)
         {
             _ = script;
             _random = random;
@@ -49,7 +47,6 @@ namespace SWLOR.Game.Server.Service
             _item = item;
             _data = data;
             _cache = cache;
-            _nwnxProfiler = nwnxProfiler;
         }
 
         public int SkillCap => 500;
@@ -93,13 +90,26 @@ namespace SWLOR.Game.Server.Service
         public void GiveSkillXP(NWPlayer oPC, int skillID, int xp, bool enableResidencyBonus = true)
         {
             if (skillID <= 0 || xp <= 0 || !oPC.IsPlayer) return;
-
+            
             if (enableResidencyBonus)
             {
                 xp = (int)(xp + xp * _playerStat.EffectiveResidencyBonus(oPC));
             }
             Player player = _data.Get<Player>(oPC.GlobalID);
             Skill skill = GetSkill(skillID);
+
+            // Check if the player has any undistributed skill ranks for this skill category.
+            // If they haven't been distributed yet, the player CANNOT gain XP for this skill.
+            var pool = _data.SingleOrDefault<PCSkillPool>(x => x.PlayerID == oPC.GlobalID && 
+                                                               x.SkillCategoryID == skill.SkillCategoryID &&
+                                                               x.Levels > 0);
+            if (pool != null)
+            {
+                oPC.FloatingText("You must distribute all pooled skill ranks before you can gain any new XP in the '" + skill.Name + "' skill. Access this menu from the 'View Skills' section of your rest menu.");
+                return;
+            }
+
+
             PCSkill pcSkill = GetPCSkill(oPC, skillID);
             SkillXPRequirement req = _data.Single<SkillXPRequirement>(x => x.SkillID == skillID && x.Rank == pcSkill.Rank);
             int maxRank = skill.MaxRank;
@@ -307,7 +317,7 @@ namespace SWLOR.Game.Server.Service
                     GiveSkillXP(preg.Player, skillID, (int)adjustedXP);
                 }
 
-                float armorXP = baseXP * 0.20f;
+                float armorXP = baseXP;
                 int lightArmorPoints = 0;
                 int heavyArmorPoints = 0;
                 int forceArmorPoints = 0;

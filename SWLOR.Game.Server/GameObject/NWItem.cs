@@ -442,39 +442,157 @@ namespace SWLOR.Game.Server.GameObject
             set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_ENMITY_RATE", CustomItemPropertyType.EnmityRate, value);
         }
 
-        public virtual int DarkAbilityBonus
+
+        public virtual int ForcePotencyBonus
         {
             get
             {
-                int darkAbilityBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.DarkAbilityBonus);
-                if (darkAbilityBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_DARK_ABILITY_BONUS");
-                DarkAbilityBonus = darkAbilityBonus;
-                return darkAbilityBonus;
+                int forcePotencyBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.ForcePotencyBonus);
+                if (forcePotencyBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_FORCE_POTENCY_BONUS");
+                ForcePotencyBonus = forcePotencyBonus;
+                return forcePotencyBonus;
             }
-            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_DARK_ABILITY_BONUS", CustomItemPropertyType.DarkAbilityBonus, value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_FORCE_POTENCY_BONUS", CustomItemPropertyType.ForcePotencyBonus, value);
         }
-        public virtual int LightAbilityBonus
+
+        public virtual int ForceAccuracyBonus
         {
             get
             {
-                int lightAbilityBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.LightAbilityBonus);
-                if (lightAbilityBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_LIGHT_ABILITY_BONUS");
-                LightAbilityBonus = lightAbilityBonus;
-                return lightAbilityBonus;
+                int forceAccuracyBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.ForceAccuracyBonus);
+                if (forceAccuracyBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_FORCE_ACCURACY_BONUS");
+                ForceAccuracyBonus = forceAccuracyBonus;
+                return forceAccuracyBonus;
             }
-            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_LIGHT_ABILITY_BONUS", CustomItemPropertyType.LightAbilityBonus, value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_FORCE_ACCURACY_BONUS", CustomItemPropertyType.ForceAccuracyBonus, value);
         }
-        public virtual int SummoningBonus
+
+        public virtual int ForceDefenseBonus
         {
             get
             {
-                int summoningBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.SummoningBonus);
-                if (summoningBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_SUMMONING_BONUS");
-                SummoningBonus = summoningBonus;
-                return summoningBonus;
+                int forceDefenseBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.ForceDefenseBonus);
+                if (forceDefenseBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_FORCE_DEFENSE_BONUS");
+                ForceDefenseBonus = forceDefenseBonus;
+                return forceDefenseBonus;
             }
-            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_SUMMONING_BONUS", CustomItemPropertyType.SummoningBonus, value);
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_FORCE_DEFENSE_BONUS", CustomItemPropertyType.ForceDefenseBonus, value);
         }
+
+        public virtual int ElectricalPotencyBonus
+        {
+            get
+            {
+                int electricalPotencyBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.ElectricalPotencyBonus);
+                if (electricalPotencyBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_ELECTRICAL_POTENCY_BONUS");
+                ElectricalPotencyBonus = electricalPotencyBonus;
+                return electricalPotencyBonus;
+            }
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_ELECTRICAL_POTENCY_BONUS", CustomItemPropertyType.ElectricalPotencyBonus, value);
+        }
+
+        public virtual int MindPotencyBonus
+        {
+            get
+            {
+                int mindPotencyBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.MindPotencyBonus);
+                if (mindPotencyBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_MIND_POTENCY_BONUS");
+                MindPotencyBonus = mindPotencyBonus;
+                return mindPotencyBonus;
+            }
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_MIND_POTENCY_BONUS", CustomItemPropertyType.MindPotencyBonus, value);
+        }
+
+        public virtual int LightPotencyBonus
+        {
+            get
+            {
+                int lightPotencyBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.LightPotencyBonus);
+                if (lightPotencyBonus <= -1)
+                {
+                    // Property changed from "Light Ability Bonus" to "Light Potency Bonus". Look for the new property first,
+                    // and if it's zero use the old value.
+                    int bonus = _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_LIGHT_POTENCY_BONUS");
+                    if (bonus == 0)
+                        bonus = _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_LIGHT_ABILITY_BONUS");
+
+                    return bonus;
+                }
+                LightPotencyBonus = lightPotencyBonus;
+                return lightPotencyBonus;
+            }
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_LIGHT_POTENCY_BONUS", CustomItemPropertyType.LightPotencyBonus, value);
+        }
+        public virtual int DarkPotencyBonus
+        {
+            get
+            {
+                int darkPotencyBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.DarkPotencyBonus);
+                if (darkPotencyBonus <= -1)
+                {
+                    // Property changed from "Dark Ability Bonus" to "Dark Potency Bonus". Look for the new property first,
+                    // and if it's zero use the old value.
+                    int bonus = _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_DARK_POTENCY_BONUS");
+                    if (bonus == 0)
+                        bonus = _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_DARK_ABILITY_BONUS");
+                    return bonus;
+                }
+                DarkPotencyBonus = darkPotencyBonus;
+                return darkPotencyBonus;
+            }
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_DARK_POTENCY_BONUS", CustomItemPropertyType.DarkPotencyBonus, value);
+        }
+
+
+        public virtual int ElectricalDefenseBonus
+        {
+            get
+            {
+                int electricalDefenseBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.ElectricalDefenseBonus);
+                if (electricalDefenseBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_ELECTRICAL_DEFENSE_BONUS");
+                ElectricalDefenseBonus = electricalDefenseBonus;
+                return electricalDefenseBonus;
+            }
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_ELECTRICAL_DEFENSE_BONUS", CustomItemPropertyType.ElectricalDefenseBonus, value);
+        }
+
+        public virtual int MindDefenseBonus
+        {
+            get
+            {
+                int mindDefenseBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.MindDefenseBonus);
+                if (mindDefenseBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_MIND_DEFENSE_BONUS");
+                MindDefenseBonus = mindDefenseBonus;
+                return mindDefenseBonus;
+            }
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_MIND_DEFENSE_BONUS", CustomItemPropertyType.MindDefenseBonus, value);
+        }
+
+        public virtual int LightDefenseBonus
+        {
+            get
+            {
+                int lightDefenseBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.LightDefenseBonus);
+                if (lightDefenseBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_LIGHT_DEFENSE_BONUS");
+                LightDefenseBonus = lightDefenseBonus;
+                return lightDefenseBonus;
+            }
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_LIGHT_DEFENSE_BONUS", CustomItemPropertyType.LightDefenseBonus, value);
+        }
+
+
+        public virtual int DarkDefenseBonus
+        {
+            get
+            {
+                int darkDefenseBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.DarkDefenseBonus);
+                if (darkDefenseBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_DARK_DEFENSE_BONUS");
+                DarkDefenseBonus = darkDefenseBonus;
+                return darkDefenseBonus;
+            }
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_DARK_DEFENSE_BONUS", CustomItemPropertyType.DarkDefenseBonus, value);
+        }
+
         public virtual int LuckBonus
         {
             get

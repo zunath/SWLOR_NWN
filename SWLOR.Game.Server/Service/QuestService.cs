@@ -227,15 +227,13 @@ namespace SWLOR.Game.Server.Service
             }
 
             PCRegionalFame fame = _data.SingleOrDefault<PCRegionalFame>(x => x.PlayerID == oPC.GlobalID && x.FameRegionID == quest.FameRegionID);
+            int fameAmount = fame == null ? 0 : fame.Amount;
 
-            if (fame != null)
+            if (fameAmount < quest.RequiredFameAmount)
             {
-                if (fame.Amount < quest.RequiredFameAmount)
-                {
-                    if (sendMessage)
-                        oPC.SendMessage("You do not have enough fame to accept this quest.");
-                    return false;
-                }
+                if (sendMessage)
+                    oPC.SendMessage("You do not have enough fame to accept this quest.");
+                return false;               
             }
 
             return true;

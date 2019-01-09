@@ -8,7 +8,7 @@
         ForceBreach = 3,
         ForceLightning = 4,
         ForceHeal = 5,
-        DarkHeal = 6,
+        // 6 is open
         Rest = 7,
         StimFiend = 8,
         MedicalBlueprints = 9,
@@ -16,7 +16,7 @@
         AbsorptionField = 11,
         Hide = 12,
         ForceSpread = 13,
-        DarkSpread = 14,
+        // 14 is open
         Lucky = 15,
         Health = 16,
         FP = 17,

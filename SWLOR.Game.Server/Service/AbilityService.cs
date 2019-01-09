@@ -30,10 +30,8 @@ namespace SWLOR.Game.Server.Service
         private readonly IRandomService _random;
         private readonly IEnmityService _enmity;
         private readonly INWNXEvents _nwnxEvents;
-        private readonly INWNXDamage _nwnxDamage;
         private readonly ICustomEffectService _customEffect;
         private readonly IPlayerStatService _playerStat;
-        private readonly IItemService _item;
 
         public AbilityService(INWScript script, 
             IDataService data,
@@ -46,10 +44,8 @@ namespace SWLOR.Game.Server.Service
             IRandomService random,
             IEnmityService enmity,
             INWNXEvents nwnxEvents,
-            INWNXDamage nwnxDamage,
             ICustomEffectService customEffect,
-            IPlayerStatService playerStat,
-            IItemService item)
+            IPlayerStatService playerStat)
         {
             _ = script;
             _data = data;
@@ -62,10 +58,8 @@ namespace SWLOR.Game.Server.Service
             _random = random;
             _enmity = enmity;
             _nwnxEvents = nwnxEvents;
-            _nwnxDamage = nwnxDamage;
             _customEffect = customEffect;
             _playerStat = playerStat;
-            _item = item;
         }
         
         public void OnModuleUseFeat()
@@ -73,7 +67,9 @@ namespace SWLOR.Game.Server.Service
             NWPlayer pc = Object.OBJECT_SELF;
             NWCreature target = _nwnxEvents.OnFeatUsed_GetTarget().Object;
             int featID = _nwnxEvents.OnFeatUsed_GetFeatID();
-            Data.Entity.Perk perk = _data.GetAll<Data.Entity.Perk>().SingleOrDefault(x => x.FeatID == featID);
+            var perkFeat = _data.SingleOrDefault<PerkFeat>(x => x.FeatID == featID);
+            if (perkFeat == null) return;
+            Data.Entity.Perk perk = _data.GetAll<Data.Entity.Perk>().SingleOrDefault(x => x.ID == perkFeat.PerkID);
             if (perk == null) return;
 
             App.ResolveByInterface<IPerk>("Perk." + perk.ScriptName, (perkAction) =>
@@ -127,7 +123,7 @@ namespace SWLOR.Game.Server.Service
                     return;
                 }
 
-                int fpCost = perkAction.FPCost(pc, perkAction.FPCost(pc, perk.BaseFPCost));
+                int fpCost = perkAction.FPCost(pc, perkAction.FPCost(pc, perk.BaseFPCost, featID), featID);
                 if (playerEntity.CurrentFP < fpCost)
                 {
                     pc.SendMessage("You do not have enough FP. (Required: " + fpCost + ". You have: " + playerEntity.CurrentFP + ")");
@@ -141,12 +137,14 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 // Check cooldown
-                PCCooldown pcCooldown = _data.GetAll<PCCooldown>().SingleOrDefault(x => x.PlayerID == pc.GlobalID && x.CooldownCategoryID == perk.CooldownCategoryID);
+                int? cooldownCategoryID = perkAction.CooldownCategoryID(pc, perk.CooldownCategoryID, featID);
+                PCCooldown pcCooldown = _data.GetAll<PCCooldown>().SingleOrDefault(x => x.PlayerID == pc.GlobalID && 
+                                                                                        x.CooldownCategoryID == cooldownCategoryID);
                 if (pcCooldown == null)
                 {
                     pcCooldown = new PCCooldown
                     {
-                        CooldownCategoryID = Convert.ToInt32(perk.CooldownCategoryID),
+                        CooldownCategoryID = Convert.ToInt32(cooldownCategoryID),
                         DateUnlocked = DateTime.UtcNow.AddSeconds(-1),
                         PlayerID = pc.GlobalID
                     };
@@ -167,22 +165,22 @@ namespace SWLOR.Game.Server.Service
                 // Force Abilities (aka Spells)
                 if (perk.ExecutionTypeID== (int)PerkExecutionType.ForceAbility)
                 {
-                    ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.ForceAbility);
+                    ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.ForceAbility, featID);
                 }
                 // Combat Abilities
                 else if (perk.ExecutionTypeID == (int)PerkExecutionType.CombatAbility)
                 {
-                    ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.CombatAbility);
+                    ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.CombatAbility, featID);
                 }
                 // Queued Weapon Skills
                 else if (perk.ExecutionTypeID == (int)PerkExecutionType.QueuedWeaponSkill)
                 {
-                    HandleQueueWeaponSkill(pc, perk, perkAction);
+                    HandleQueueWeaponSkill(pc, perk, perkAction, featID);
                 }
                 // Stances
                 else if (perk.ExecutionTypeID == (int) PerkExecutionType.Stance)
                 {
-                    ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.Stance);
+                    ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.Stance, featID);
                 }
             });
             
@@ -215,12 +213,13 @@ namespace SWLOR.Game.Server.Service
                                Data.Entity.Perk entity,
                                IPerk perk,
                                int pcPerkLevel,
-                               PerkExecutionType executionType)
+                               PerkExecutionType executionType,
+                               int spellFeatID)
         {
             string uuid = Guid.NewGuid().ToString();
             var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(pc);
             int itemBonus = effectiveStats.CastingSpeed;
-            float baseActivationTime = perk.CastingTime(pc, (float)entity.BaseCastingTime);
+            float baseActivationTime = perk.CastingTime(pc, (float)entity.BaseCastingTime, spellFeatID);
             float activationTime = baseActivationTime;
             int vfxID = -1;
             int animationID = -1;
@@ -300,18 +299,18 @@ namespace SWLOR.Game.Server.Service
             _nwnxPlayer.StartGuiTimingBar(pc, (int)activationTime, "");
             
             int perkID = entity.ID;
-            pc.DelayEvent<FinishAbilityUse>(
-                activationTime + 0.2f,
+            pc.DelayEvent<FinishAbilityUse>(activationTime + 0.2f,
                 pc,
                 uuid,
                 perkID,
                 target,
-                pcPerkLevel);
+                pcPerkLevel,
+                spellFeatID);
         }
         
-        public void ApplyCooldown(NWPlayer pc, CooldownCategory cooldown, IPerk ability)
+        public void ApplyCooldown(NWPlayer pc, CooldownCategory cooldown, IPerk ability, int spellFeatID)
         {
-            float finalCooldown = ability.CooldownTime(pc, (float)cooldown.BaseCooldownTime);
+            float finalCooldown = ability.CooldownTime(pc, (float)cooldown.BaseCooldownTime, spellFeatID);
             int cooldownSeconds = (int)finalCooldown;
             int cooldownMillis = (int)((finalCooldown - cooldownSeconds) * 100);
 
@@ -346,15 +345,17 @@ namespace SWLOR.Game.Server.Service
             _.DelayCommand(0.5f, () => { CheckForSpellInterruption(pc, spellUUID, position); });
         }
 
-        public void HandleQueueWeaponSkill(NWPlayer pc, Data.Entity.Perk entity, IPerk ability)
+        public void HandleQueueWeaponSkill(NWPlayer pc, Data.Entity.Perk entity, IPerk ability, int spellFeatID)
         {
-            var cooldownCategory = _data.Get<CooldownCategory>(entity.CooldownCategoryID);
+            int? cooldownCategoryID = ability.CooldownCategoryID(pc, entity.CooldownCategoryID, spellFeatID);
+            var cooldownCategory = _data.Get<CooldownCategory>(cooldownCategoryID);
             string queueUUID = Guid.NewGuid().ToString();
             pc.SetLocalInt("ACTIVE_WEAPON_SKILL", entity.ID);
             pc.SetLocalString("ACTIVE_WEAPON_SKILL_UUID", queueUUID);
+            pc.SetLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID", spellFeatID);
             pc.SendMessage("Weapon skill '" + entity.Name + "' queued for next attack.");
 
-            ApplyCooldown(pc, cooldownCategory, ability);
+            ApplyCooldown(pc, cooldownCategory, ability, spellFeatID);
 
             // Player must attack within 30 seconds after queueing or else it wears off.
             _.DelayCommand(30f, () =>
@@ -363,6 +364,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     pc.DeleteLocalInt("ACTIVE_WEAPON_SKILL");
                     pc.DeleteLocalString("ACTIVE_WEAPON_SKILL_UUID");
+                    pc.DeleteLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID");
                     pc.SendMessage("Your weapon skill '" + entity.Name + "' is no longer queued.");
                 }
             });
@@ -393,15 +395,17 @@ namespace SWLOR.Game.Server.Service
             HandlePlasmaCellPerk(oPC, oTarget);
             int activeWeaponSkillID = oPC.GetLocalInt("ACTIVE_WEAPON_SKILL");
             if (activeWeaponSkillID <= 0) return;
+            int activeWeaponSkillFeatID = oPC.GetLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID");
+            if (activeWeaponSkillFeatID < 0) activeWeaponSkillFeatID = -1;
 
             PCPerk entity = _data.GetAll<PCPerk>().Single(x => x.PlayerID == oPC.GlobalID && x.PerkID == activeWeaponSkillID);
             var perk = _data.Get<Data.Entity.Perk>(entity.PerkID);
-
+            
             App.ResolveByInterface<IPerk>("Perk." + perk.ScriptName, (script) =>
             {
                 if (script.CanCastSpell(oPC, oTarget))
                 {
-                    script.OnImpact(oPC, oTarget, entity.PerkLevel);
+                    script.OnImpact(oPC, oTarget, entity.PerkLevel, activeWeaponSkillFeatID);
                     
                     if (oTarget.IsNPC)
                     {
@@ -412,6 +416,7 @@ namespace SWLOR.Game.Server.Service
 
                 oPC.DeleteLocalString("ACTIVE_WEAPON_SKILL_UUID");
                 oPC.DeleteLocalInt("ACTIVE_WEAPON_SKILL");
+                oPC.DeleteLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID");
             });
         }
 

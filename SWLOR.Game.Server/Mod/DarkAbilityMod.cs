@@ -4,12 +4,13 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
+    // This is the Dark Potency Mod class. The class name is maintained for backwards compatibility purposes.
     public class DarkAbilityMod : IMod
     {
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            if (target.DarkAbilityBonus >= 50)
-                return "You cannot improve that item's dark ability bonus any further.";
+            if (target.DarkPotencyBonus >= 50)
+                return "You cannot improve that item's dark potency bonus any further.";
 
             return null;
         }
@@ -17,15 +18,15 @@ namespace SWLOR.Game.Server.Mod
         public void Apply(NWPlayer player, NWItem target, params string[] args)
         {
             int value = Convert.ToInt32(args[0]);
-            int newValue = target.DarkAbilityBonus + value;
+            int newValue = target.DarkPotencyBonus + value;
             if (newValue > 50) newValue = 50;
-            target.DarkAbilityBonus = newValue;
+            target.DarkPotencyBonus = newValue;
         }
 
         public string Description(NWPlayer player, NWItem target, params string[] args)
         {
             int value = Convert.ToInt32(args[0]);
-            return "Dark Ability +" + value;
+            return "Dark Potency +" + value;
         }
     }
 }

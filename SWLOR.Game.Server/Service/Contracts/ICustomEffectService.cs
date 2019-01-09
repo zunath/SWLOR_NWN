@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service.Contracts
 {
@@ -22,5 +23,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         bool RemoveStance(NWPlayer player, PCCustomEffect stanceEffect = null, bool sendMessage = true);
         CustomEffectType GetCurrentStanceType(NWPlayer player);
         bool DoesPCHaveCustomEffectByCategory(NWPlayer player, CustomEffectCategoryType category);
+        ForceSpreadDetails GetForceSpreadDetails(NWPlayer player);
+        void SetForceSpreadUses(NWPlayer player, int uses);
     }
 }

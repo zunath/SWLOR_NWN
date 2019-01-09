@@ -478,28 +478,28 @@ namespace SWLOR.Game.Server.Service
             ForceResistanceResult result = new ForceResistanceResult();
             
             // First resistance check - Zero resistance
-            if (_random.D100(1) <= accuracy)
+            if (_random.D100(1) >= accuracy)
             {
                 result.Amount = 1.0f;
                 result.Type = ResistanceType.Zero;
             }
 
             // Second resistance check - 1/2 resistance
-            if (_random.D100(1) <= accuracy)
+            if (_random.D100(1) >= accuracy)
             {
                 result.Amount = 0.5f;
                 result.Type = ResistanceType.Half;
             }
 
             // Third resistance check - 1/4 resistance
-            if (_random.D100(1) <= accuracy)
+            if (_random.D100(1) >= accuracy)
             {
                 result.Amount = 0.25f;
                 result.Type = ResistanceType.Fourth;
             }
 
             // Fourth resistance check - 1/8 resistance
-            if (_random.D100(1) <= accuracy)
+            if (_random.D100(1) >= accuracy)
             {
                 result.Amount = 0.125f;
                 result.Type = ResistanceType.Eighth;

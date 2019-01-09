@@ -394,8 +394,8 @@ namespace SWLOR.Game.Server.Service
                 case ForceAbilityType.Electrical:
                     casterPrimary = caster.Intelligence;
                     casterSecondary = caster.Wisdom;
-                    targetPrimary = target.Wisdom;
-                    targetSecondary = target.Intelligence;
+                    targetPrimary = target.Intelligence;
+                    targetSecondary = target.Wisdom;
                     targetItemDefense = targetItemStats?.ElectricalDefense ?? 0;
                     break;
                 case ForceAbilityType.Dark:
@@ -408,8 +408,8 @@ namespace SWLOR.Game.Server.Service
                 case ForceAbilityType.Mind:
                     casterPrimary = caster.Wisdom;
                     casterSecondary = caster.Intelligence;
-                    targetPrimary = target.Intelligence;
-                    targetSecondary = target.Wisdom;
+                    targetPrimary = target.Wisdom;
+                    targetSecondary = target.Intelligence;
                     targetItemDefense = targetItemStats?.MindDefense ?? 0;
                     break;
                 case ForceAbilityType.Light:

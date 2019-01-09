@@ -92,9 +92,21 @@ namespace SWLOR.Game.Server.Item
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
             int structureID = item.GetLocalInt("BASE_STRUCTURE_ID");
-            return target.IsValid ? 
-                "You must select an empty location to use that item." : 
-                _base.CanPlaceStructure(user, item, targetLocation, structureID);
+
+            // Intercept here to handle control tower upgrades.
+            string upgrade = _base.UpgradeControlTower(user, item, target);
+            if (upgrade != "")
+            {
+                return upgrade;
+            }
+            else if (target.IsValid)
+            {
+                return "You must select an empty location to use that item.";
+            }
+            else
+            {
+                return _base.CanPlaceStructure(user, item, targetLocation, structureID);
+            }
         }
 
         public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)

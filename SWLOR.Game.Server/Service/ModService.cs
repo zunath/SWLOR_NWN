@@ -3,6 +3,8 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.NWNX.Contracts;
+
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 
@@ -157,6 +159,10 @@ namespace SWLOR.Game.Server.Service
 
             NWObject damager = data.Damager;
             if (!damager.IsPlayer) return;
+            NWCreature target = Object.OBJECT_SELF;
+
+            // Check that this was a normal attack, and not (say) a damage over time effect.
+            if (target.GetLocalInt(AbilityService.LAST_ATTACK + damager.GlobalID) != AbilityService.ATTACK_PHYSICAL) return;
 
             NWItem weapon = (_.GetLastWeaponUsed(damager.Object));
             int damageBonus = weapon.DamageBonus;

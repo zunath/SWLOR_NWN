@@ -20,6 +20,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IRandomService _random;
         private readonly IAbilityService _ability;
         private readonly IEnmityService _enmity;
+        private readonly IErrorService _error;
         private readonly IPlayerStatService _playerStat;
         private readonly ICustomEffectService _customEffect;
         private readonly IColorTokenService _color;
@@ -31,6 +32,7 @@ namespace SWLOR.Game.Server.Service
             IRandomService random,
             IAbilityService ability,
             IEnmityService enmity,
+            IErrorService error,
             IPlayerStatService playerStat,
             ICustomEffectService customEffect,
             IColorTokenService color)
@@ -41,6 +43,7 @@ namespace SWLOR.Game.Server.Service
             _random = random;
             _ability = ability;
             _enmity = enmity;
+            _error = error;
             _playerStat = playerStat;
             _customEffect = customEffect;
             _color = color;
@@ -48,14 +51,28 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleApplyDamage()
         {
-            HandleWeaponStatBonuses();
-            HandleStances();
-            HandleEvadeOrDeflectBlasterFire();
-            HandleApplySneakAttackDamage();
-            HandleBattlemagePerk();
+            DamageData data = _nwnxDamage.GetDamageEventData();
+
+            NWPlayer player = data.Damager.Object;
+            NWCreature target = Object.OBJECT_SELF;
+
+            int attackType = target.GetLocalInt(AbilityService.LAST_ATTACK + player.GlobalID);
+
+            _error.Trace(AbilityService.LAST_ATTACK, "Last attack from " + player.GlobalID + " on " + _.GetName(target) + " was type " + attackType.ToString());
+
+            if (attackType == AbilityService.ATTACK_PHYSICAL)
+            {
+                // Only apply bonus damage from physical attacks. 
+                HandleWeaponStatBonuses();
+                HandleEvadeOrDeflectBlasterFire();
+                HandleApplySneakAttackDamage();
+                HandleBattlemagePerk();
+            }
+
             HandleAbsorptionFieldEffect();
             HandleRecoveryBlast();
             HandleTranquilizerEffect();
+            HandleStances();
         }
 
         private void HandleWeaponStatBonuses()
@@ -394,8 +411,8 @@ namespace SWLOR.Game.Server.Service
                 case ForceAbilityType.Electrical:
                     casterPrimary = caster.Intelligence;
                     casterSecondary = caster.Wisdom;
-                    targetPrimary = target.Wisdom;
-                    targetSecondary = target.Intelligence;
+                    targetPrimary = target.Intelligence;
+                    targetSecondary = target.Wisdom;
                     targetItemDefense = targetItemStats?.ElectricalDefense ?? 0;
                     break;
                 case ForceAbilityType.Dark:
@@ -408,8 +425,8 @@ namespace SWLOR.Game.Server.Service
                 case ForceAbilityType.Mind:
                     casterPrimary = caster.Wisdom;
                     casterSecondary = caster.Intelligence;
-                    targetPrimary = target.Intelligence;
-                    targetSecondary = target.Wisdom;
+                    targetPrimary = target.Wisdom;
+                    targetSecondary = target.Intelligence;
                     targetItemDefense = targetItemStats?.MindDefense ?? 0;
                     break;
                 case ForceAbilityType.Light:
@@ -478,28 +495,28 @@ namespace SWLOR.Game.Server.Service
             ForceResistanceResult result = new ForceResistanceResult();
             
             // First resistance check - Zero resistance
-            if (_random.D100(1) <= accuracy)
+            if (_random.D100(1) >= accuracy)
             {
                 result.Amount = 1.0f;
                 result.Type = ResistanceType.Zero;
             }
 
             // Second resistance check - 1/2 resistance
-            if (_random.D100(1) <= accuracy)
+            if (_random.D100(1) >= accuracy)
             {
                 result.Amount = 0.5f;
                 result.Type = ResistanceType.Half;
             }
 
             // Third resistance check - 1/4 resistance
-            if (_random.D100(1) <= accuracy)
+            if (_random.D100(1) >= accuracy)
             {
                 result.Amount = 0.25f;
                 result.Type = ResistanceType.Fourth;
             }
 
             // Fourth resistance check - 1/8 resistance
-            if (_random.D100(1) <= accuracy)
+            if (_random.D100(1) >= accuracy)
             {
                 result.Amount = 0.125f;
                 result.Type = ResistanceType.Eighth;

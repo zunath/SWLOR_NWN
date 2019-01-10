@@ -29,9 +29,21 @@ namespace SWLOR.Game.Server.Service
         private readonly IColorTokenService _color;
         private readonly IRandomService _random;
         private readonly IEnmityService _enmity;
+        private readonly IErrorService _error;
         private readonly INWNXEvents _nwnxEvents;
         private readonly ICustomEffectService _customEffect;
         private readonly IPlayerStatService _playerStat;
+
+        // These variables are used throughout the engine to flag the type of damage being done to 
+        // a creature.  The damage code reads this to determine what bonus effects to apply.
+        // The LAST_ATTACK variable name should be appended with the GlobalID of the attacking
+        // (N)PC so that attacks from different creatures are treated correctly. 
+        public static string LAST_ATTACK = "LAST_ATTACK_";
+
+        public static int ATTACK_PHYSICAL = 1;  // Weapon attacks and weapon skills
+        public static int ATTACK_FORCE = 2;  // Force effects
+        public static int ATTACK_COMBATABILITY = 3; // Combat tricks like Provoke
+        public static int ATTACK_DOT = 4; // Subsequent damage effects
 
         public AbilityService(INWScript script, 
             IDataService data,
@@ -43,6 +55,7 @@ namespace SWLOR.Game.Server.Service
             IColorTokenService color,
             IRandomService random,
             IEnmityService enmity,
+            IErrorService error,
             INWNXEvents nwnxEvents,
             ICustomEffectService customEffect,
             IPlayerStatService playerStat)
@@ -57,6 +70,7 @@ namespace SWLOR.Game.Server.Service
             _color = color;
             _random = random;
             _enmity = enmity;
+            _error = error;
             _nwnxEvents = nwnxEvents;
             _customEffect = customEffect;
             _playerStat = playerStat;
@@ -165,21 +179,25 @@ namespace SWLOR.Game.Server.Service
                 // Force Abilities (aka Spells)
                 if (perk.ExecutionTypeID== (int)PerkExecutionType.ForceAbility)
                 {
+                    target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_FORCE);
                     ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.ForceAbility, featID);
                 }
                 // Combat Abilities
                 else if (perk.ExecutionTypeID == (int)PerkExecutionType.CombatAbility)
                 {
+                    target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_PHYSICAL);
                     ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.CombatAbility, featID);
                 }
                 // Queued Weapon Skills
                 else if (perk.ExecutionTypeID == (int)PerkExecutionType.QueuedWeaponSkill)
                 {
+                    target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_PHYSICAL);
                     HandleQueueWeaponSkill(pc, perk, perkAction, featID);
                 }
                 // Stances
                 else if (perk.ExecutionTypeID == (int) PerkExecutionType.Stance)
                 {
+                    target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_COMBATABILITY);
                     ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.Stance, featID);
                 }
             });
@@ -391,6 +409,11 @@ namespace SWLOR.Game.Server.Service
         public void OnHitCastSpell(NWPlayer oPC)
         {
             NWObject oTarget = _.GetSpellTargetObject();
+
+            // Flag this attack as physical so that the damage scripts treat it properly.
+            _error.Trace(AbilityService.LAST_ATTACK, "Setting attack type from " + oPC.GlobalID + " against " + _.GetName(oTarget) + " to physical (" + ATTACK_PHYSICAL.ToString() + ")");
+            oTarget.SetLocalInt(LAST_ATTACK + oPC.GlobalID, ATTACK_PHYSICAL);
+
             HandleGrenadeProficiency(oPC, oTarget);
             HandlePlasmaCellPerk(oPC, oTarget);
             int activeWeaponSkillID = oPC.GetLocalInt("ACTIVE_WEAPON_SKILL");

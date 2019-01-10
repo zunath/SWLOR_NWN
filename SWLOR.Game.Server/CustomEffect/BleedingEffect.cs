@@ -3,6 +3,7 @@ using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.CustomEffect
 {
@@ -34,6 +35,8 @@ namespace SWLOR.Game.Server.CustomEffect
             {
                 amount = Convert.ToInt32(data);
             }
+
+            oTarget.SetLocalInt(AbilityService.LAST_ATTACK + oCaster.GlobalID, AbilityService.ATTACK_DOT);
 
             oCaster.AssignCommand(() =>
             {

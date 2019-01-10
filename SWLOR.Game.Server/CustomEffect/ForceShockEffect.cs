@@ -1,6 +1,7 @@
 ﻿using NWN;
 using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using System;
 using static NWN.NWScript;
 
@@ -23,6 +24,8 @@ namespace SWLOR.Game.Server.CustomEffect
         public void Tick(NWCreature oCaster, NWObject oTarget, int currentTick, int effectiveLevel, string data)
         {
             int damage = Convert.ToInt32(data);
+            oTarget.SetLocalInt(AbilityService.LAST_ATTACK + oCaster.GlobalID, AbilityService.ATTACK_DOT);
+
             oCaster.AssignCommand(() =>
             {
                 Effect effect = _.EffectDamage(damage, DAMAGE_TYPE_ELECTRICAL);

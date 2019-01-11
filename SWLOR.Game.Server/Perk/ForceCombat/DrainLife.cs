@@ -96,8 +96,8 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
         {
             float recoveryPercent;
             int basePotency;
-            const float Tier1Modifier = 2;
-            const float Tier2Modifier = 1;
+            const float Tier1Modifier = 1;
+            const float Tier2Modifier = 2;
             const float Tier3Modifier = 0;
             const float Tier4Modifier = 0;
 

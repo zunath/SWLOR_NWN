@@ -74,9 +74,9 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
             int dotAmount;
 
             int basePotency;
-            const float Tier1Modifier = 2.2f;
+            const float Tier1Modifier = 1.0f;
             const float Tier2Modifier = 1.6f;
-            const float Tier3Modifier = 1.0f;
+            const float Tier3Modifier = 2.2f;
             const float Tier4Modifier = 0;
 
             switch (level)

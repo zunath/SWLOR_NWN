@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
             
             if (length > 0.0f && dotAmount > 0)
             {
-                _customEffect.ApplyCustomEffect(player, target.Object, CustomEffectType.ForceBreach, length, level, null);
+                _customEffect.ApplyCustomEffect(player, target.Object, CustomEffectType.ForceBreach, length, level, dotAmount.ToString());
             }
 
             _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceCombat, target.Object);

@@ -277,7 +277,8 @@ namespace SWLOR.Game.Server.Service
                     pcArmorSkills = _data.Where<PCSkill>(x => x.PlayerID == player.GlobalID && 
                                                               (x.SkillID == (int)SkillType.HeavyArmor ||
                                                                x.SkillID == (int)SkillType.LightArmor ||
-                                                               x.SkillID == (int)SkillType.ForceArmor))
+                                                               x.SkillID == (int)SkillType.ForceArmor ||
+                                                               x.SkillID == (int)SkillType.MartialArts))
                         .ToList();
 
                 }

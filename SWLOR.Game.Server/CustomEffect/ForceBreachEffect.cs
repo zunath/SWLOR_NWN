@@ -23,32 +23,12 @@ namespace SWLOR.Game.Server.CustomEffect
 
         public void Tick(NWCreature oCaster, NWObject oTarget, int currentTick, int effectiveLevel, string data)
         {
-            int damage = 0;
-            switch (effectiveLevel)
-            {
-                case 2:
-                case 3:
-                case 4:
-                    damage = 1;
-                    break;
-                case 5:
-                case 6:
-                case 7:
-                    damage = 2;
-                    break;
-                case 8:
-                case 9:
-                case 10:
-                case 11:
-                    damage = 4;
-                    break;
-            }
-            
+            int damage = Convert.ToInt32(data);
+            oTarget.SetLocalInt(AbilityService.LAST_ATTACK + oCaster.GlobalID, AbilityService.ATTACK_DOT);
+
             oCaster.AssignCommand(() =>
             {
                 Effect effect = _.EffectDamage(damage, DAMAGE_TYPE_SONIC);
-                oTarget.SetLocalInt(AbilityService.LAST_ATTACK + oCaster.GlobalID, AbilityService.ATTACK_DOT);
-
                 _.ApplyEffectToObject(DURATION_TYPE_INSTANT, effect, oTarget);
             });
         }

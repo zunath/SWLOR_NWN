@@ -285,6 +285,7 @@ namespace SWLOR.Game.Server.Service
                 int heavyRank = pcArmorSkills.Single(x => x.SkillID == (int)SkillType.HeavyArmor).Rank;
                 int lightRank = pcArmorSkills.Single(x => x.SkillID == (int)SkillType.LightArmor).Rank;
                 int forceRank = pcArmorSkills.Single(x => x.SkillID == (int)SkillType.ForceArmor).Rank;
+                int martialRank = pcArmorSkills.Single(x => x.SkillID == (int)SkillType.MartialArts).Rank;
 
                 EffectiveItemStats stats = new EffectiveItemStats();
                 stats.EnmityRate = 1.0f;
@@ -394,6 +395,10 @@ namespace SWLOR.Game.Server.Service
                                 else if (item.CustomItemType == CustomItemType.ForceArmor)
                                 {
                                     skillRankToUse = forceRank;
+                                }
+                                else if (item.CustomItemType == CustomItemType.MartialArtWeapon)
+                                {
+                                    skillRankToUse = martialRank;
                                 }
                                 else continue;
 

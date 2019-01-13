@@ -469,7 +469,7 @@ namespace SWLOR.Game.Server.Service
             return (int)finalAccuracy;
         }
 
-        public void AddTemporaryForceDefense(NWCreature target, ForceAbilityType forceAbility, int amount = 20, int length = 5)
+        public void AddTemporaryForceDefense(NWCreature target, ForceAbilityType forceAbility, int amount = 5, int length = 5)
         {
             if (amount <= 0) amount = 1;
             string variable = "TEMP_FORCE_DEFENSE_" + (int) forceAbility;

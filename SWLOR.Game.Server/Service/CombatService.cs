@@ -457,8 +457,8 @@ namespace SWLOR.Game.Server.Service
 
             float delta = baseAccuracy - baseDefense;
             float finalAccuracy = delta < 0 ?
-                50 + (float)Math.Floor(delta / 2.0f) :
-                50 + delta;
+                75 + (float)Math.Floor(delta / 2.0f) :
+                75 + delta;
 
             // Accuracy cannot go above 95% or below 0%
             if (finalAccuracy > 95)

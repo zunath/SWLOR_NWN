@@ -3,15 +3,15 @@
            Label              PrimaryRange   SecondaryRange   Name      
 0          SpellRngPers       0              ****             ****      
 1          SpellRngTouch      2.25           ****             ****      
-2          SpellRngShrt       40             ****             ****      
-3          SpellRngMed        40             ****             ****      
-4          SpellRngLng        255            ****             ****      
-5          WeaponRngShrt      400            ****             ****      
-6          WeaponRngMed       400            ****             ****      
-7          WeaponRngLng       400            ****             ****      
-8          PercepRngShrt      300            250              6668
-9          PercepRngMed       400            60               6669
-10         PercepRngLng       500            400              6670
+2          SpellRngShrt       8              ****             ****      
+3          SpellRngMed        20             ****             ****      
+4          SpellRngLng        40             ****             ****      
+5          WeaponRngShrt      10             ****             ****      
+6          WeaponRngMed       30             ****             ****      
+7          WeaponRngLng       50             ****             ****      
+8          PercepRngShrt      10             10               6668
+9          PercepRngMed       20             20               6669
+10         PercepRngLng       35             20               6670
 11         PercepRngDefault   ****           ****             6671
-12         PercepRngPlayer    500            400              ****
-13         PercepRngMonster   84             45               ****
+12         PercepRngPlayer    35             20               ****
+13         PercepRngMonster   28             15               ****

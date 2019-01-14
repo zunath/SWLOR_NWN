@@ -132,7 +132,8 @@ namespace SWLOR.Game.Server.Conversation
                 var structures = _data.Where<PCBaseStructure>(x =>
                 {
                     if (x.ParentPCBaseStructureID != pcBaseStructureID) return false;
-                    return baseStructure.HasAtmosphere;
+                    var childStructure = _data.Get<BaseStructure>(x.BaseStructureID);
+                    return childStructure.HasAtmosphere;
                 });
 
                 // Add up the total atmosphere rating, being careful not to go over the cap.

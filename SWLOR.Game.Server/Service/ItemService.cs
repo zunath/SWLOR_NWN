@@ -175,6 +175,10 @@ namespace SWLOR.Game.Server.Service
             {
                 description += _color.Orange("FP Bonus: ") + examinedItem.FPBonus + "\n";
             }
+            if (examinedItem.StructureBonus > 0)
+            {
+                description += _color.Orange("Structure Bonus: ") + examinedItem.StructureBonus + "\n";
+            }
             if (examinedItem.StrengthBonus > 0)
             {
                 description += _color.Orange("Strength Bonus: ") + examinedItem.StrengthBonus + "\n";

@@ -226,6 +226,60 @@ namespace SWLOR.Game.Server.Service
                 decayItem = oTarget.RightHand;
             }
 
+            if (oSpellOrigin.BaseItemType == BASE_ITEM_ARMOR)
+            {
+                // Distribute durability hits across items in all clothing slots.
+                // PCs could have any number of these filled. Pick one at random, 
+                // defaulting to armor. 
+                //
+                // Because randomising from a huge possible number of combinations
+                // isn't simple, just do a % check for each item in turn.  Items
+                // are broadly in order of "most likely to get hit" as items near
+                // the top have a slightly higher chance of being chosen.                
+                if (oTarget.Chest.IsValid && _.d100() > 85)
+                {
+                    decayItem = oTarget.Chest;
+                }
+                else if (oTarget.Cloak.IsValid && _.d100() > 85)
+                {
+                    decayItem = oTarget.Cloak;
+                }
+                else if (oTarget.Head.IsValid && _.d100() > 85)
+                {
+                    decayItem = oTarget.Head;
+                }
+                // Gloves only decay from this code if they are not being used as a weapon.
+                else if (oTarget.Arms.IsValid && oTarget.RightHand.IsValid && _.d100() > 85)
+                {
+                    decayItem = oTarget.Arms;
+                }
+                else if (oTarget.Boots.IsValid && _.d100() > 85)
+                {
+                    decayItem = oTarget.Boots;
+                }
+                else if (oTarget.Belt.IsValid && _.d100() > 85)
+                {
+                    decayItem = oTarget.Belt;
+                }
+                else if (oTarget.Neck.IsValid && _.d100() > 85)
+                {
+                    decayItem = oTarget.Neck;
+                }
+                // Rings are very small, so less likely. 
+                else if (oTarget.LeftRing.IsValid && _.d100() > 95)
+                {
+                    decayItem = oTarget.LeftRing;
+                }
+                else if (oTarget.RightRing.IsValid && _.d100() > 95)
+                {
+                    decayItem = oTarget.RightRing;
+                }
+                else
+                {
+                    // Do nothing, leave it as default (chest). 
+                }
+            }
+
             RunItemDecay(oTarget, decayItem);
         }
 

@@ -209,7 +209,7 @@ namespace SWLOR.Game.Server.Event.Delayed
 
             // Note - this line MUST be outside the foreach loop, as inspecting component properties will reset the component.ItemProperties counter.
             int componentLevel = component.LevelIncrease > 0 ? component.LevelIncrease : component.RecommendedLevel;
-
+            if (componentLevel < 1) componentLevel = 1;
             foreach (var ip in component.ItemProperties)
             {
                 int ipType = _.GetItemPropertyType(ip);

@@ -666,7 +666,7 @@ INSERT INTO dbo.CraftBlueprint ( ID ,
                                  SecondaryMaximum ,
                                  TertiaryMaximum ,
                                  BaseStructureID )
-VALUES ( 657 ,    -- ID - int
+VALUES ( 658 ,    -- ID - int
          18 ,    -- CraftCategoryID - int
          20 ,    -- BaseLevel - int
          N'Light Helmet 4' ,  -- ItemName - nvarchar(64)

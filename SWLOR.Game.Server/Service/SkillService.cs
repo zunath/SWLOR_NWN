@@ -574,7 +574,7 @@ namespace SWLOR.Game.Server.Service
             {
                 int skillIndex = _random.Random(skillsPossibleToDecay.Count);
                 PCSkill decaySkill = skillsPossibleToDecay[skillIndex];
-                int totalDecaySkillXP = totalXPs[skillIndex].TotalSkillXP;
+                int totalDecaySkillXP = totalXPs.Find(x => x.SkillID == decaySkill.SkillID).TotalSkillXP; 
 
                 if (totalDecaySkillXP >= xp)
                 {
@@ -597,8 +597,11 @@ namespace SWLOR.Game.Server.Service
                 // Otherwise calculate what rank and XP value the skill should now be.
                 else
                 {
-                    List<SkillXPRequirement> reqs = _data.Where<SkillXPRequirement>(x => x.SkillID == decaySkill.SkillID && x.Rank <= decaySkill.Rank).ToList();
-                    int newDecaySkillRank = 0;
+                    // Get the XP amounts required per level, in ascending order, so we can see how many levels we're now meant to have. 
+                    List<SkillXPRequirement> reqs = _data.Where<SkillXPRequirement>(x => x.SkillID == decaySkill.SkillID && x.Rank <= decaySkill.Rank).OrderBy(o => o.Rank).ToList();
+
+                    // The first entry in the database is for rank 0, and if passed, will raise us to 1.  So start our count at 0.
+                    int newDecaySkillRank = 0; 
                     foreach (SkillXPRequirement req in reqs)
                     {
                         if (totalDecaySkillXP >= req.XP)
@@ -613,7 +616,7 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     decaySkill.Rank = newDecaySkillRank;
-                    decaySkill.XP = totalDecaySkillXP;
+                    decaySkill.XP = totalDecaySkillXP; 
                 }
 
                 PCSkill dbDecaySkill = new PCSkill

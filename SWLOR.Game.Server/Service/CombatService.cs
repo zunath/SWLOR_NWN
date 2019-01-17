@@ -457,8 +457,8 @@ namespace SWLOR.Game.Server.Service
 
             float delta = baseAccuracy - baseDefense;
             float finalAccuracy = delta < 0 ?
-                50 + (float)Math.Floor(delta / 2.0f) :
-                50 + delta;
+                75 + (float)Math.Floor(delta / 2.0f) :
+                75 + delta;
 
             // Accuracy cannot go above 95% or below 0%
             if (finalAccuracy > 95)
@@ -469,7 +469,7 @@ namespace SWLOR.Game.Server.Service
             return (int)finalAccuracy;
         }
 
-        public void AddTemporaryForceDefense(NWCreature target, ForceAbilityType forceAbility, int amount = 20, int length = 5)
+        public void AddTemporaryForceDefense(NWCreature target, ForceAbilityType forceAbility, int amount = 5, int length = 5)
         {
             if (amount <= 0) amount = 1;
             string variable = "TEMP_FORCE_DEFENSE_" + (int) forceAbility;
@@ -493,39 +493,53 @@ namespace SWLOR.Game.Server.Service
         {
             int accuracy = CalculateForceAccuracy(caster, target, forceAbility);
             ForceResistanceResult result = new ForceResistanceResult();
+
+            // Do four checks to see if the attacker overcomes the defender's
+            // resistance.  The more checks you succeed, the lower the resistance. 
+            int successes = 0;
             
-            // First resistance check - Zero resistance
-            if (_random.D100(1) >= accuracy)
+            if (_random.D100(1) <= accuracy)
             {
-                result.Amount = 1.0f;
-                result.Type = ResistanceType.Zero;
+                successes++;
+
+                if (_random.D100(1) <= accuracy)
+                {
+                    successes++;
+
+                    if (_random.D100(1) <= accuracy)
+                    {
+                        successes++;
+
+                        if (_random.D100(1) <= accuracy)
+                        {
+                            successes++;
+                        }
+                    }
+                }
             }
 
-            // Second resistance check - 1/2 resistance
-            if (_random.D100(1) >= accuracy)
+            switch (successes)
             {
-                result.Amount = 0.5f;
-                result.Type = ResistanceType.Half;
-            }
-
-            // Third resistance check - 1/4 resistance
-            if (_random.D100(1) >= accuracy)
-            {
-                result.Amount = 0.25f;
-                result.Type = ResistanceType.Fourth;
-            }
-
-            // Fourth resistance check - 1/8 resistance
-            if (_random.D100(1) >= accuracy)
-            {
-                result.Amount = 0.125f;
-                result.Type = ResistanceType.Eighth;
-            }
-            // Failed all resistance checks. 100% resistance
-            else
-            {
-                result.Amount = 0f;
-                result.Type = ResistanceType.Full;
+                case 0:
+                    result.Amount = 0f;
+                    result.Type = ResistanceType.Full;
+                    break;
+                case 1:
+                    result.Amount = 0.125f;
+                    result.Type = ResistanceType.Eighth;
+                    break;
+                case 2:
+                    result.Amount = 0.25f;
+                    result.Type = ResistanceType.Fourth;
+                    break;
+                case 3:
+                    result.Amount = 0.5f;
+                    result.Type = ResistanceType.Half;
+                    break;
+                case 4:
+                    result.Amount = 1.0f;
+                    result.Type = ResistanceType.Zero;
+                    break;
             }
 
             return result;
@@ -607,7 +621,7 @@ namespace SWLOR.Game.Server.Service
             int delta = (int)((casterPrimary + casterSecondary * 0.5f) - (targetPrimary + targetSecondary * 0.5f));
 
             float multiplier;
-            // Not every ability will have tiers 2-4. Default to the lowest one if it's missing.
+            // Not every ability will have tiers 2-4. Default to the next lowest one if it's missing.
             if (delta <= 49 || tier2Modifier <= 0.0f)
             {
                 multiplier = tier1Modifier;

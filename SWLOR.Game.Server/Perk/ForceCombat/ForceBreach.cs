@@ -75,9 +75,9 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
             int dotAmount;
             
             int basePotency;
-            const float Tier1Modifier = 2.2f;
+            const float Tier1Modifier = 1.0f;
             const float Tier2Modifier = 1.6f;
-            const float Tier3Modifier = 1.0f;
+            const float Tier3Modifier = 2.2f;
             const float Tier4Modifier = 0;
 
             switch (level)
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
             
             if (length > 0.0f && dotAmount > 0)
             {
-                _customEffect.ApplyCustomEffect(player, target.Object, CustomEffectType.ForceBreach, length, level, null);
+                _customEffect.ApplyCustomEffect(player, target.Object, CustomEffectType.ForceBreach, length, level, dotAmount.ToString());
             }
 
             _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceCombat, target.Object);

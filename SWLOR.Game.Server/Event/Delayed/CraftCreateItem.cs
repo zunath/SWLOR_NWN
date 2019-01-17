@@ -233,9 +233,18 @@ namespace SWLOR.Game.Server.Event.Delayed
 
                     }
                     player.SendMessage(_color.Green("Successfully applied component property: " + bonusName));
-                    
-                    chance -= _random.Random(1, 8);
-                    if (chance < 1) chance = 1;
+
+                    ComponentBonusType bonusType = (ComponentBonusType)_.GetItemPropertySubType(ip);
+                    if (bonusType != ComponentBonusType.DurabilityUp)
+                    {
+                        // Durability bonuses don't increase the penalty.  Higher level components transfer multiple
+                        // properties more easily (to balance the fact that you can fit fewer of them on an item).                        
+                        int max = component.LevelIncrease > 0 ? component.LevelIncrease : component.RecommendedLevel;
+                        max = (9 - max);
+                        if (max < 1) max = 1;
+                        chance -= _random.Random(1, max);
+                        if (chance < 1) chance = 1;
+                    }
 
                     successAmount++;
                 }

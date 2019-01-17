@@ -206,6 +206,10 @@ namespace SWLOR.Game.Server.Event.Delayed
         private Tuple<int, float> RunComponentBonusAttempt(NWPlayer player, NWItem component, float equipmentBonus, float chance, List<NWItem> itemSet)
         {
             int successAmount = 0;
+
+            // Note - this line MUST be outside the foreach loop, as inspecting component properties will reset the component.ItemProperties counter.
+            int componentLevel = component.LevelIncrease > 0 ? component.LevelIncrease : component.RecommendedLevel;
+
             foreach (var ip in component.ItemProperties)
             {
                 int ipType = _.GetItemPropertyType(ip);
@@ -238,11 +242,8 @@ namespace SWLOR.Game.Server.Event.Delayed
                     if (bonusType != ComponentBonusType.DurabilityUp)
                     {
                         // Durability bonuses don't increase the penalty.  Higher level components transfer multiple
-                        // properties more easily (to balance the fact that you can fit fewer of them on an item).                        
-                        int max = component.LevelIncrease > 0 ? component.LevelIncrease : component.RecommendedLevel;
-                        max = (9 - max);
-                        if (max < 1) max = 1;
-                        chance -= _random.Random(1, max);
+                        // properties more easily (to balance the fact that you can fit fewer of them on an item).                                                
+                        chance -= _random.Random(1, 12)/componentLevel;
                         if (chance < 1) chance = 1;
                     }
 

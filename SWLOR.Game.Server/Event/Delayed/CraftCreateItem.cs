@@ -242,8 +242,27 @@ namespace SWLOR.Game.Server.Event.Delayed
                     if (bonusType != ComponentBonusType.DurabilityUp)
                     {
                         // Durability bonuses don't increase the penalty.  Higher level components transfer multiple
-                        // properties more easily (to balance the fact that you can fit fewer of them on an item).                                                
-                        chance -= _random.Random(1, 12)/componentLevel;
+                        // properties more easily (to balance the fact that you can fit fewer of them on an item).     
+                        int penalty;
+                        switch (componentLevel)
+                        {
+                            case 1:
+                                penalty = _random.Random(1, 19);
+                                break;
+                            case 2:
+                                penalty = _random.Random(1, 9);
+                                break;
+                            case 3:
+                                penalty = _random.Random(1, 6);
+                                break;
+                            case 4:
+                                penalty = _random.Random(1, 4);
+                                break;
+                            default:
+                                penalty = _random.Random(1, 3);
+                                break;
+                        }
+                        chance -=  penalty;
                         if (chance < 1) chance = 1;
                     }
 

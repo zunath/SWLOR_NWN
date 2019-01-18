@@ -1126,6 +1126,7 @@
     <Compile Include="Placeable\Bank\OnDisturbed.cs" />
     <Compile Include="Placeable\Bank\OnOpened.cs" />
     <Compile Include="Placeable\Stores\GenericStore.cs" />
+    <Compile Include="Placeable\StructureRubble\OnClosed.cs" />
     <Compile Include="Placeable\StructureRubble\OnDisturbed.cs" />
     <Compile Include="Placeable\StructureStorage\OnClosed.cs" />
     <Compile Include="Placeable\StructureStorage\OnDisturbed.cs" />

@@ -671,8 +671,8 @@ namespace SWLOR.Game.Server.Service
 
                 _data.SubmitDataChange(resident, DatabaseActionType.Update);
             }
-            
-            
+
+            Dictionary<Guid, NWPlaceable> rubbleContainers = new Dictionary<Guid, NWPlaceable>();
             for (int x = structures.Count-1; x >= 0; x--)
             {
                 var pcBaseStructure = structures.ElementAt(x);
@@ -689,15 +689,25 @@ namespace SWLOR.Game.Server.Service
                     //
                     // Regarding the s.ChildStructure section: For buildings there are two placeables stored - one for the building placeable and another for the door.
                     // In this scenario we only want one of them so we ignore the structure which has a door. There's room for improvement here because this isn't intuitive.
-                    var cachedStructure = 
+                    Guid structureKey = (Guid)(
                         pcBaseStructure.ParentPCBaseStructureID == null ? // If the structure has a parent, it can be assumed to be inside of a building.
-                        areaStructures.Single(s => s.PCBaseStructureID == pcBaseStructure.ID && s.ChildStructure == null) : // "Outside" structures
-                        areaStructures.Single(s => s.PCBaseStructureID == pcBaseStructure.ParentPCBaseStructureID && s.ChildStructure == null); // "Inside" structures (furniture, etc.)
+                            pcBaseStructure.ID : // "Outside" structures
+                            pcBaseStructure.ParentPCBaseStructureID); // "Inside" structures (furniture, etc.)
 
-                    rubbleContainer = _.CreateObject(OBJECT_TYPE_PLACEABLE, "structure_rubble", cachedStructure.Structure.Location);
+                    if (rubbleContainers.ContainsKey(structureKey))
+                    {
+                        // Get the existing container.
+                        rubbleContainer = rubbleContainers[structureKey];
+                    }
+                    else
+                    {
+                        // Container doesn't exist yet. Create a new one and add it to the dictionary.
+                        var cachedStructure = areaStructures.Single(s => s.PCBaseStructureID == structureKey && s.ChildStructure == null);
+                        rubbleContainer = _.CreateObject(OBJECT_TYPE_PLACEABLE, "structure_rubble", cachedStructure.Structure.Location);
+                        rubbleContainers.Add(structureKey, rubbleContainer);
+                    }
                 }
-
-
+                
                 // If impoundItems is true, all structures and their contents will be transferred to the owner's item impound.
                 // Otherwise, the items will drop to a placeable at the location of each structure.
                 // Child items will drop to the parent's container.

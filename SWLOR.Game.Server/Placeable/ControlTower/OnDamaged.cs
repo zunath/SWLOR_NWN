@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using SWLOR.Game.Server.ValueObject;
 using static NWN.NWScript;
 using Object = NWN.Object;
 using System.Globalization;
@@ -22,26 +18,20 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
         private readonly IDataService _data;
         private readonly IRandomService _random;
         private readonly IBaseService _base;
-        private readonly ISerializationService _serialization;
         private readonly IDurabilityService _durability;
-        private readonly IPlayerService _player;
 
         public OnDamaged(
             INWScript script,
             IDataService data,
             IRandomService random,
             IBaseService @base,
-            ISerializationService serialization,
-            IDurabilityService durability,
-            IPlayerService player)
+            IDurabilityService durability)
         {
             _ = script;
             _data = data;
             _random = random;
             _base = @base;
-            _serialization = serialization;
             _durability = durability;
-            _player = player;
         }
 
         public bool Run(params object[] args)
@@ -100,7 +90,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
                 if (structure.Durability <= 0.0f)
                 {
                     structure.Durability = 0.0f;
-                    BlowUpBase(pcBase);
+                    _base.ClearPCBaseByID(pcBase.ID, true, false);
                     return true;
                 }
             }
@@ -108,104 +98,6 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
             _data.SubmitDataChange(structure, DatabaseActionType.Update);
             return true;
-        }
-
-
-        private void BlowUpBase(PCBase pcBase)
-        {
-            NWArea area = (_.GetArea(Object.OBJECT_SELF));
-            List<AreaStructure> cache = area.Data["BASE_SERVICE_STRUCTURES"];
-            cache = cache.Where(x => x.PCBaseID == pcBase.ID).ToList();
-            
-            foreach (var structure in cache)
-            {
-                // Child structures will be picked up later on in the process.
-                // Just destroy the structure and continue on.
-                if (structure.ChildStructure != null)
-                {
-                    structure.Structure.Destroy();
-                    continue;
-                }
-
-                var dbStructure = _data.Get<PCBaseStructure>(structure.PCBaseStructureID);
-                var baseStructure = _data.Get<BaseStructure>(dbStructure.BaseStructureID);
-                var items = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structure.PCBaseStructureID).ToList();
-                var children = _data.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == dbStructure.ParentPCBaseStructureID).ToList();
-                
-                // Explosion effect
-                Location location = structure.Structure.Location;
-                _.ApplyEffectAtLocation(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_FNF_FIREBALL), location);
-
-                // Boot from instance, if any
-                _base.BootPlayersOutOfInstance(structure.PCBaseStructureID);
-
-                // Spawn container for items
-                NWPlaceable container = (_.CreateObject(OBJECT_TYPE_PLACEABLE, "structure_rubble", structure.Structure.Location));
-                container.Name = baseStructure.Name + " Rubble";
-
-                // Drop item storage into container
-                for (int i = items.Count - 1; i >= 0; i--)
-                {
-                    var dbItem = items.ElementAt(i);
-                    _serialization.DeserializeItem(dbItem.ItemObject, container);
-                    _data.SubmitDataChange(dbItem, DatabaseActionType.Delete);
-                }
-
-                // Convert child placeables to items and drop into container
-                for (int f = children.Count - 1; f >= 0; f--)
-                {
-                    var child = children.ElementAt(f);
-                    var childItems = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == child.ID).ToList();
-
-                    // Move child items to container
-                    for (int i = childItems.Count - 1; i >= 0; i++)
-                    {
-                        var dbItem = childItems.ElementAt(i);
-                        _serialization.DeserializeItem(dbItem.ItemObject, container);
-                        _data.SubmitDataChange(dbItem, DatabaseActionType.Delete);
-                    }
-
-                    // Convert child structure to item
-                    _base.ConvertStructureToItem(child, container);
-                    _data.SubmitDataChange(child, DatabaseActionType.Delete);
-                }
-            
-
-                // Clear structure permissions
-                var structurePermissions = _data.Where<PCBaseStructurePermission>(x => x.PCBaseStructureID == dbStructure.ID).ToList();
-                for (int p = structurePermissions.Count - 1; p >= 0; p--)
-                {
-                    var permission = structurePermissions.ElementAt(p);
-                    _data.SubmitDataChange(permission, DatabaseActionType.Delete);
-                }
-
-                // Destroy structure placeable
-                _data.SubmitDataChange(dbStructure, DatabaseActionType.Delete);
-                structure.Structure.Destroy();
-            }
-
-            // Remove from cache
-            foreach (var record in cache)
-            {
-                ((List<AreaStructure>)area.Data["BASE_SERVICE_STRUCTURES"]).Remove(record);
-            }
-            var basePermissions = _data.Where<PCBasePermission>(x => x.PCBaseID == pcBase.ID).ToList();
-
-            // Clear base permissions
-            for (int p = basePermissions.Count - 1; p >= 0; p--)
-            {
-                var permission = basePermissions.ElementAt(p);
-                _data.SubmitDataChange(permission, DatabaseActionType.Delete);
-            }
-            
-            _data.SubmitDataChange(pcBase, DatabaseActionType.Delete);
-            
-            Area dbArea = _data.Single<Area>(x => x.Resref == pcBase.AreaResref);
-            if (pcBase.Sector == AreaSector.Northeast) dbArea.NortheastOwner = null;
-            else if (pcBase.Sector == AreaSector.Northwest) dbArea.NorthwestOwner = null;
-            else if (pcBase.Sector == AreaSector.Southeast) dbArea.SoutheastOwner = null;
-            else if (pcBase.Sector == AreaSector.Southwest) dbArea.SouthwestOwner = null;
-
         }
     }
 }

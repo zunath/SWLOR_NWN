@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IDurabilityService _durability;
         private readonly IAreaService _area;
         private readonly IErrorService _error;
+        private readonly ISerializationService _serialization;
 
         public BaseService(
             INWScript script,
@@ -43,7 +44,8 @@ namespace SWLOR.Game.Server.Service
             INWNXChat nwnxChat,
             IDurabilityService durability,
             IAreaService area,
-            IErrorService error)
+            IErrorService error,
+            ISerializationService serialization)
         {
             _ = script;
             _nwnxEvents = nwnxEvents;
@@ -57,6 +59,7 @@ namespace SWLOR.Game.Server.Service
             _area = area;
             _data = data;
             _error = error;
+            _serialization = serialization;
         }
 
         public PCTempBaseData GetPlayerTempData(NWPlayer player)
@@ -634,12 +637,19 @@ namespace SWLOR.Game.Server.Service
                 }
             }
         }
-
-
-        public void ClearPCBaseByID(Guid pcBaseID)
+        
+        public void ClearPCBaseByID(Guid pcBaseID, bool displayExplosion = false, bool impoundItems = true)
         {
             var pcBase = _data.Get<PCBase>(pcBaseID);
-            var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == pcBaseID).ToList();
+            
+            // Pull back all structures associated with a PC's base. 
+            // The order here is important because we want to remove child structures first otherwise we'll get foreign key issues when the DB persists.
+            // For this reason, we want to order by ParentPCBaseStructureID which will give us those with an ID followed by those with no ID (i.e null).
+            var structures = _data
+                .Where<PCBaseStructure>(x => x.PCBaseID == pcBaseID)
+                .OrderBy(o => o.ParentPCBaseStructureID) 
+                .ToList();
+            
             var areas = NWModule.Get().Areas;
             var baseArea = areas.Single(x => x.Resref == pcBase.AreaResref && !x.IsInstance);
             List<AreaStructure> areaStructures = baseArea.Data["BASE_SERVICE_STRUCTURES"];
@@ -653,6 +663,7 @@ namespace SWLOR.Game.Server.Service
                 var primaryResidenceStructure = _data.Get<PCBaseStructure>(x.PrimaryResidencePCBaseStructureID);
                 return  primaryResidenceStructure.PCBaseID == pcBaseID;
             }).ToList();
+
             foreach (var resident in residents)
             {
                 resident.PrimaryResidencePCBaseID = null;
@@ -661,24 +672,47 @@ namespace SWLOR.Game.Server.Service
                 _data.SubmitDataChange(resident, DatabaseActionType.Update);
             }
             
-            foreach (var structure in areaStructures)
-            {
-                BootPlayersOutOfInstance(structure.PCBaseStructureID);
-
-                ((List<AreaStructure>) baseArea.Data["BASE_SERVICE_STRUCTURES"]).Remove(structure);
-                structure.Structure.Destroy();
-            }
-
+            
             for (int x = structures.Count-1; x >= 0; x--)
             {
-                // Impound item storage
                 var pcBaseStructure = structures.ElementAt(x);
                 var items = _data.Where<PCBaseStructureItem>(i => i.PCBaseStructureID == pcBaseStructure.ID).ToList();
+                NWPlaceable rubbleContainer = null;
 
+                if (!impoundItems)
+                {
+                    // Pull the area structure from the cache and create a new container at the same location.
+                    // This new placeable will be used later on to store items since the impoundItems flag has been set.
+                    // 
+                    // Note: We're iterating over both objects which are in the tower area as well as the objects contained inside buildings.
+                    // In the case of contained items, we need to locate the parent structure (i.e the building) instead of the structure itself.
+                    //
+                    // Regarding the s.ChildStructure section: For buildings there are two placeables stored - one for the building placeable and another for the door.
+                    // In this scenario we only want one of them so we ignore the structure which has a door. There's room for improvement here because this isn't intuitive.
+                    var cachedStructure = 
+                        pcBaseStructure.ParentPCBaseStructureID == null ? // If the structure has a parent, it can be assumed to be inside of a building.
+                        areaStructures.Single(s => s.PCBaseStructureID == pcBaseStructure.ID && s.ChildStructure == null) : // "Outside" structures
+                        areaStructures.Single(s => s.PCBaseStructureID == pcBaseStructure.ParentPCBaseStructureID && s.ChildStructure == null); // "Inside" structures (furniture, etc.)
+
+                    rubbleContainer = _.CreateObject(OBJECT_TYPE_PLACEABLE, "structure_rubble", cachedStructure.Structure.Location);
+                }
+
+
+                // If impoundItems is true, all structures and their contents will be transferred to the owner's item impound.
+                // Otherwise, the items will drop to a placeable at the location of each structure.
+                // Child items will drop to the parent's container.
                 for (int i = items.Count - 1; i >= 0; i--)
                 {
                     var item = items.ElementAt(i);
-                    _impound.Impound(item);
+
+                    if (impoundItems)
+                    {
+                        _impound.Impound(item);
+                    }
+                    else
+                    {
+                        _serialization.DeserializeItem(item.ItemObject, rubbleContainer);
+                    }
                     _data.SubmitDataChange(item, DatabaseActionType.Delete);
                 }
 
@@ -689,11 +723,20 @@ namespace SWLOR.Game.Server.Service
                     var permission = structurePermissions.ElementAt(p);
                     _data.SubmitDataChange(permission, DatabaseActionType.Delete);
                 }
-
-                var tempStorage = (_.GetObjectByTag("TEMP_ITEM_STORAGE"));
-                NWItem copy = ConvertStructureToItem(pcBaseStructure, tempStorage);
-                _impound.Impound(pcBase.PlayerID, copy);
-                copy.Destroy();
+                
+                if (impoundItems)
+                {
+                    // Build the structure's item in-world and then impound it. Destroy the copy after we're done.
+                    var tempStorage = (_.GetObjectByTag("TEMP_ITEM_STORAGE"));
+                    NWItem copy = ConvertStructureToItem(pcBaseStructure, tempStorage);
+                    _impound.Impound(pcBase.PlayerID, copy);
+                    copy.Destroy();
+                }
+                else
+                {
+                    // We aren't impounding items, so convert the structure into the world and leave it in the rubble container.
+                    ConvertStructureToItem(pcBaseStructure, rubbleContainer);
+                }
                 _data.SubmitDataChange(pcBaseStructure, DatabaseActionType.Delete);
             }
 
@@ -714,6 +757,23 @@ namespace SWLOR.Game.Server.Service
             else if (pcBase.Sector == AreaSector.Southwest) dbArea.SouthwestOwner = null;
 
             _data.SubmitDataChange(dbArea, DatabaseActionType.Update);
+
+
+            // Boot players from instances and remove all structures from the area's cache.
+            foreach (var structure in areaStructures)
+            {
+                BootPlayersOutOfInstance(structure.PCBaseStructureID);
+
+                ((List<AreaStructure>)baseArea.Data["BASE_SERVICE_STRUCTURES"]).Remove(structure);
+                structure.Structure.Destroy();
+
+                // Display explosion on each structure if necessary.
+                if (displayExplosion)
+                {
+                    Location location = structure.Structure.Location;
+                    _.ApplyEffectAtLocation(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_FNF_FIREBALL), location);
+                }
+            }
         }
 
         public void ApplyCraftedItemLocalVariables(NWItem item, BaseStructure structure)

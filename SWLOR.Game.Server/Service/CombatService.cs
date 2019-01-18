@@ -404,7 +404,7 @@ namespace SWLOR.Game.Server.Service
                 null;
             float targetPrimary;
             float targetSecondary;
-            float targetItemDefense;
+            float targetItemDefense = targetItemStats?.ForceDefense ?? 0;
 
             switch (abilityType)
             {
@@ -413,28 +413,28 @@ namespace SWLOR.Game.Server.Service
                     casterSecondary = caster.Wisdom;
                     targetPrimary = target.Intelligence;
                     targetSecondary = target.Wisdom;
-                    targetItemDefense = targetItemStats?.ElectricalDefense ?? 0;
+                    targetItemDefense = targetItemDefense + targetItemStats?.ElectricalDefense ?? 0;
                     break;
                 case ForceAbilityType.Dark:
                     casterPrimary = caster.Intelligence;
                     casterSecondary = caster.Wisdom;
                     targetPrimary = target.Wisdom;
                     targetSecondary = target.Intelligence;
-                    targetItemDefense = targetItemStats?.DarkDefense ?? 0;
+                    targetItemDefense = targetItemDefense + targetItemStats?.DarkDefense ?? 0;
                     break;
                 case ForceAbilityType.Mind:
                     casterPrimary = caster.Wisdom;
                     casterSecondary = caster.Intelligence;
                     targetPrimary = target.Wisdom;
                     targetSecondary = target.Intelligence;
-                    targetItemDefense = targetItemStats?.MindDefense ?? 0;
+                    targetItemDefense = targetItemDefense + targetItemStats?.MindDefense ?? 0;
                     break;
                 case ForceAbilityType.Light:
                     casterPrimary = caster.Wisdom;
                     casterSecondary = caster.Intelligence;
                     targetPrimary = target.Intelligence;
                     targetSecondary = target.Wisdom;
-                    targetItemDefense = targetItemStats?.ElectricalDefense ?? 0;
+                    targetItemDefense = targetItemDefense + targetItemStats?.ElectricalDefense ?? 0;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(abilityType), abilityType, null);

@@ -775,6 +775,9 @@ namespace SWLOR.Game.Server.Service
             {
                 int type = item.BaseItemType;
 
+                // Check for explicit override.
+                if (item.AssociatedSkillType > 0) return (SkillType)item.AssociatedSkillType;
+
                 // Armor has to specifically be set on the item in order to count.
                 // Look for an item type property first.
                 if (item.CustomItemType == CustomItemType.LightArmor) return SkillType.LightArmor;

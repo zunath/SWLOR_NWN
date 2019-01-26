@@ -161,11 +161,13 @@
     <Compile Include="ChatCommand\Victory1.cs" />
     <Compile Include="ChatCommand\Victory2.cs" />
     <Compile Include="ChatCommand\Victory3.cs" />
+    <Compile Include="Conversation\PublicStarport.cs" />
     <Compile Include="Conversation\ApartmentEntrance.cs" />
     <Compile Include="Conversation\ApartmentRental.cs" />
     <Compile Include="Conversation\BaseManagementTool.cs" />
     <Compile Include="Conversation\CharacterCustomization.cs" />
     <Compile Include="Conversation\CloningTerminal.cs" />
+    <Compile Include="Conversation\ShipComputer.cs" />
     <Compile Include="Conversation\ControlTower.cs" />
     <Compile Include="Conversation\CoxxionTerminal.cs" />
     <Compile Include="Conversation\DistributeSkillRanks.cs" />
@@ -268,6 +270,8 @@
     <Compile Include="Data\Entity\Download.cs" />
     <Compile Include="Data\Entity\EnmityAdjustmentRule.cs" />
     <Compile Include="Data\Entity\Error.cs" />
+    <Compile Include="Data\Entity\SpaceEncounter.cs" />
+    <Compile Include="Data\Entity\SpaceStarport.cs" />
     <Compile Include="Data\Entity\FameRegion.cs" />
     <Compile Include="Data\Entity\GameTopic.cs" />
     <Compile Include="Data\Entity\GameTopicCategory.cs" />
@@ -384,7 +388,10 @@
     <Compile Include="DoorRule\Contracts\IDoorRule.cs" />
     <Compile Include="DoorRule\LargeSquareBuildingRule.cs" />
     <Compile Include="DoorRule\MediumRoundBuildingRule.cs" />
+    <Compile Include="DoorRule\Spaceship2Rule.cs" />
+    <Compile Include="DoorRule\Spaceship1Rule.cs" />
     <Compile Include="DoorRule\SmallRoundBuildingRule.cs" />
+    <Compile Include="Enumeration\Planet.cs" />
     <Compile Include="Enumeration\AddItemPropertyPolicy.cs" />
     <Compile Include="Enumeration\AreaSector.cs" />
     <Compile Include="Enumeration\AssociationType.cs" />
@@ -481,6 +488,7 @@
     <Compile Include="Item\ModItem.cs" />
     <Compile Include="Item\PerkRefund.cs" />
     <Compile Include="Item\ResourceHarvester.cs" />
+    <Compile Include="Item\StarchartDisk.cs" />
     <Compile Include="Item\ResourceScanner.cs" />
     <Compile Include="Item\StructureItem.cs" />
     <Compile Include="Language\TranslatorCatharese.cs" />
@@ -1189,6 +1197,7 @@
     <Compile Include="Service\ChatTextService.cs" />
     <Compile Include="Service\CombatService.cs" />
     <Compile Include="Service\Contracts\IEmoteStyleService.cs" />
+    <Compile Include="Service\Contracts\ISpaceService.cs" />
     <Compile Include="Service\Contracts\IWeatherService.cs" />
     <Compile Include="Service\DataPackageService.cs" />
     <Compile Include="Service\DataService.cs" />
@@ -1331,6 +1340,7 @@
     <Compile Include="Service\SearchService.cs" />
     <Compile Include="Service\SerializationService.cs" />
     <Compile Include="Service\SkillService.cs" />
+    <Compile Include="Service\SpaceService.cs" />
     <Compile Include="Service\SpawnService.cs" />
     <Compile Include="Service\AreaService.cs" />
     <Compile Include="Service\TimeService.cs" />
@@ -2154,6 +2164,7 @@
     <EmbeddedResource Include="Data\Migrations\2019-01-09.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-01-16.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-01-16.2.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-01-19.1.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-07.1.sql" />

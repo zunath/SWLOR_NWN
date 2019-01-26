@@ -38,5 +38,9 @@ namespace SWLOR.Game.Server.Service.Contracts
         double GetMaxBaseCPU(Guid pcBaseID);
         double GetMaxBasePower(Guid pcBaseID);
         string UpgradeControlTower(NWCreature user, NWItem item, NWObject target);
+        NWPlaceable FindPlaceableFromStructureID(string pcBaseStructureID);
+        NWArea GetAreaInstance(Guid instanceID, bool isBase);
+        NWArea CreateAreaInstance(NWPlayer player, Guid instanceID, bool isBase);
+        void OnAreaEnter();
     }
 }

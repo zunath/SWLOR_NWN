@@ -114,6 +114,8 @@ namespace SWLOR.Game.Server.Service
             GetAll<PCBaseStructureItem>();
             GetAll<PCBaseStructurePermission>();
             GetAll<PCBaseType>();
+            GetAll<SpaceStarport>();
+            GetAll<SpaceEncounter>();
 
             RegisterEmptyCacheSet<PCCooldown>();
             RegisterEmptyCacheSet<PCCraftedBlueprint>();

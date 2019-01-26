@@ -31,5 +31,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int? ApartmentBuildingID { get; set; }
         public string CustomName { get; set; }
         public int? BuildingStyleID { get; set; }
+        public string ShipLocation { get; set; }
+        public int? Starcharts { get; set; }
     }
 }

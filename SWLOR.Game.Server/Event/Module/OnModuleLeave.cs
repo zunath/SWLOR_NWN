@@ -48,6 +48,7 @@ namespace SWLOR.Game.Server.Event.Module
             }
 
             _player.SaveCharacter(pc);
+            _player.SaveLocation(pc);
             _activityLogging.OnModuleClientLeave();
             _skill.OnModuleClientLeave();
             _mapPin.OnModuleClientLeave();

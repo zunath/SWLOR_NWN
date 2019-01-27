@@ -96,6 +96,7 @@
     <Compile Include="ChatCommand\Bow.cs" />
     <Compile Include="ChatCommand\Bug.cs" />
     <Compile Include="ChatCommand\CopyItem.cs" />
+    <Compile Include="ChatCommand\Exit.cs" />
     <Compile Include="ChatCommand\GetCacheStats.cs" />
     <Compile Include="ChatCommand\CDKey.cs" />
     <Compile Include="ChatCommand\CommandDetailsAttribute.cs" />
@@ -198,6 +199,7 @@
     <Compile Include="Conversation\PlaceStructure.cs" />
     <Compile Include="Conversation\QuestRewardSelection.cs" />
     <Compile Include="Conversation\RestMenu.cs" />
+    <Compile Include="Conversation\ShipGunControls.cs" />
     <Compile Include="Conversation\Shovel.cs" />
     <Compile Include="Conversation\SliceTerminal.cs" />
     <Compile Include="Conversation\StructureStorage.cs" />
@@ -487,6 +489,7 @@
     <Compile Include="Item\MineralScanner.cs" />
     <Compile Include="Item\ModItem.cs" />
     <Compile Include="Item\PerkRefund.cs" />
+    <Compile Include="Item\SSRepairKit.cs" />
     <Compile Include="Item\ResourceHarvester.cs" />
     <Compile Include="Item\StarchartDisk.cs" />
     <Compile Include="Item\ResourceScanner.cs" />
@@ -1356,6 +1359,7 @@
     <Compile Include="Threading\Contracts\IBackgroundThreadManager.cs" />
     <Compile Include="Threading\Contracts\IDatabaseThread.cs" />
     <Compile Include="Threading\DatabaseBackgroundThread.cs" />
+    <Compile Include="Trigger\SpaceEncounter.cs" />
     <Compile Include="Trigger\QuestTrigger.cs" />
     <Compile Include="ValueObject\AreaSpawn.cs" />
     <Compile Include="ValueObject\AreaStructure.cs" />

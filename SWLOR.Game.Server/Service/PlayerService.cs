@@ -341,6 +341,14 @@ namespace SWLOR.Game.Server.Service
             }
 
             player.IsBusy = false; // Just in case player logged out in the middle of an action.
+
+            // Cleanup code in case people log out as spaceships.
+            int appearance = player.Chest.GetLocalInt("APPEARANCE");
+            if (appearance > 0 && appearance != _.GetAppearanceType(player))
+            {
+                _.SetCreatureAppearanceType(player, appearance);
+                _.SetObjectVisualTransform(player, OBJECT_VISUAL_TRANSFORM_SCALE, 1.0f);
+            }
         }
 
         public void ShowMOTD(NWPlayer player)
@@ -367,7 +375,9 @@ namespace SWLOR.Game.Server.Service
         public void SaveLocation(NWPlayer player)
         {
             if (!player.IsPlayer) return;
-
+            if (player.GetLocalInt("IS_SHIP") == 1) return;
+            if (player.GetLocalInt("IS_GUNNER") == 1) return;
+            
             NWArea area = player.Area;
             _error.Trace("SPACE", "Saving location in area " + _.GetName(area));
             if (area.Tag != "ooc_area" && area.Tag != "tutorial" && !area.IsInstance)

@@ -72,9 +72,14 @@ namespace SWLOR.Game.Server.Conversation
 
             if (bSpace && _perm.HasBasePermission(player, structure.PCBaseID, BasePermission.CanFlyStarship))
             {
-                options.Add("Land");
+                // See if we are near enough to the planet to land.
+                if (_space.CanLandOnPlanet(player.Area))
+                {
+                    options.Add("Land");
+                }
+
+                options.Add("Pilot Ship");
                 options.Add("Hyperspace Jump");
-                options.Add("Scan Nearby Space");
             }
             else if ( _perm.HasBasePermission(player, structure.PCBaseID, BasePermission.CanFlyStarship))
             {
@@ -173,32 +178,16 @@ namespace SWLOR.Game.Server.Conversation
                 {
                     ChangePage("LandingDestPage");
                 }
+                else if (response.Text == "Pilot Ship")
+                {
+                    _space.CreateShipInSpace(player.Area); // In case we logged in here.
+                    _space.DoFlyShip(GetPC(), GetPC().Area);
+                    EndConversation();
+                }
                 else if (response.Text == "Hyperspace Jump")
                 {
                     // Build the list of destinations.
                     ChangePage("HyperDestPage");
-                }
-                else if (response.Text == "Scan Nearby Space")
-                {
-                    // If we are in an encounter, describe the encounter.
-                    // @@@ TODO
-
-                    // If we are not in an encounter, check for other ships. 
-                    // Note - SpaceService.CanDetect will call more _data queries.  Check whether these can clash and break this search. 
-                    HashSet<PCBase> ships = _data.Where<PCBase>(x => x.ShipLocation == pcBase.ShipLocation && _space.CanDetect(x, pcBase));
-
-                    if (ships.Count > 1)
-                    {
-                        // We are not alone!
-                        foreach (var ship in ships)
-                        {
-                            PCBaseStructure shipStructure = _data.SingleOrDefault<PCBaseStructure>(x => x.PCBaseID == ship.ID && x.ExteriorStyleID != null);
-                        }
-                    }
-                    else
-                    {
-                        _.AssignCommand(GetDialogTarget(), () => { _.SpeakString("No other ships nearby."); });
-                    }
                 }
                 else if (response.Text == "Take Off")
                 {
@@ -229,6 +218,8 @@ namespace SWLOR.Game.Server.Conversation
                         pcBase.DateRentDue = DateTime.UtcNow.AddDays(99);
                         pcBase.ShipLocation = _space.GetPlanetFromLocation(pcBase.ShipLocation) + " - Orbit";
                         _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+
+                        _space.CreateShipInSpace(player.Area);
 
                         // Give the impression of movement
                         foreach (var creature in player.Area.Objects)
@@ -321,11 +312,17 @@ namespace SWLOR.Game.Server.Conversation
                         return;
                     }
 
+                    // Move the ship out of the old orbit.
+                    _space.RemoveShipInSpace(player.Area);
+
                     // Fade to black for hyperspace.
                     EndConversation();
                     pcBase.Fuel -= 50;
                     pcBase.ShipLocation = response.Text + " - Orbit";
                     _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+
+                    // Put the ship in its new orbit.
+                    _space.CreateShipInSpace(player.Area);
 
                     // Give the impression of movement - would be great to have the actual hyperspace jump graphics here.
                     foreach (var creature in player.Area.Objects)
@@ -444,10 +441,12 @@ namespace SWLOR.Game.Server.Conversation
                 {
                     if (creature.IsPC || creature.IsDM)
                     {
-                        _.FloatingTextStringOnCreature("The ship is landing", creature);
+                        _.FloatingTextStringOnCreature("The ship is landing.", creature);
                     }
                 }
+
                 _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, _.EffectVisualEffect(356), player);
+                _space.RemoveShipInSpace(player.Area);
 
                 EndConversation();
             }

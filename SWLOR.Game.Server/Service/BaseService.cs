@@ -1428,7 +1428,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = (_.GetEnteringObject());
             if (!player.IsPlayer) return;
 
-            if (player.Area.Tag == "ooc_area")
+            if (player.Area.Tag == "ooc_area" || (player.Area.Name.StartsWith("Space - " ) && player.GetLocalInt("IS_SHIP") == 0))
             {
                 Player entity = _player.GetPlayerEntity(player.GlobalID);
                 NWArea area = null;

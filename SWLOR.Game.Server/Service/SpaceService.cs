@@ -1,8 +1,11 @@
 ﻿using NWN;
+using SWLOR.Game.Server.Bioware.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections;
@@ -18,15 +21,14 @@ namespace SWLOR.Game.Server.Service
 {
     public class SpaceService : ISpaceService
     {
-        private const int _SCANNING = 1;
-        private const int _SHIELDS = 2;
-        private const int _STEALTH = 3;
-        private const int _WEAPONS = 4;
-
         private readonly INWScript _;
         private readonly IBasePermissionService _perm;
+        private readonly IBiowarePosition _biowarePos;
         private readonly IDataService _data;
         private readonly IErrorService _error;
+        private readonly ILootService _loot;
+        private readonly INWNXChat _nwnxChat;
+        private readonly INWNXCreature _nwnxCreature;
         private readonly IPlayerService _player;
         private readonly IPlayerStatService _playerStat;
         private readonly ISerializationService _serialization;
@@ -36,21 +38,259 @@ namespace SWLOR.Game.Server.Service
 
         public SpaceService(INWScript script,
                             IBasePermissionService perm,
+                            IBiowarePosition biowarePos,
                             IDataService data,
                             IErrorService error,
+                            ILootService loot,
+                            INWNXChat nwnxChat,
+                            INWNXCreature nwnxCreature,
                             IPlayerService player,
                             IPlayerStatService playerStat,
                             ISerializationService serial,
                             ISkillService skill)
         {
-            _ = script;            
+            _ = script;
+            _biowarePos = biowarePos;
             _data = data;
             _error = error;
+            _loot = loot;
+            _nwnxChat = nwnxChat;
+            _nwnxCreature = nwnxCreature;
             _perm = perm;
             _player = player;
             _playerStat = playerStat;
             _serialization = serial;
             _skill = skill;
+        }
+
+        struct ShipStats
+        {
+            public int weapons;
+            public int shields;
+            public int stealth;
+            public int scanning;
+            public int speed;
+            public int stronidium;
+            public float scale;
+            public float range;
+        }
+
+        private ShipStats GetShipStatsByAppearance(int appearance)
+        {
+            ShipStats stats = new ShipStats();
+
+            switch (appearance)
+            {
+                case 870: //Tiefightersm
+                    stats.weapons = 3;
+                    stats.shields = 2;
+                    stats.stealth = 0;
+                    stats.scanning = 1;
+                    stats.speed = 100;
+                    stats.stronidium = 250;
+                    stats.scale = 1.0f;
+                    stats.range = 10.0f;
+                    break;
+                case 893: //b_SmallCargoShip
+                    stats.weapons = 0;
+                    stats.shields = 2;
+                    stats.stealth = 0;
+                    stats.scanning = 0;
+                    stats.speed = 40;
+                    stats.stronidium = 150;
+                    stats.scale = 1.0f;
+                    stats.range = 10.0f;
+                    break;
+                case 895: //b_SmallShuttle3
+                    stats.weapons = 0;
+                    stats.shields = 2;
+                    stats.stealth = 2;
+                    stats.scanning = 2;
+                    stats.speed = 80;
+                    stats.stronidium = 75;
+                    stats.scale = 1.0f;
+                    stats.range = 10.0f;
+                    break;
+                case 896: //b_SmallShuttle4
+                    stats.weapons = 0;
+                    stats.shields = 2;
+                    stats.stealth = 2;
+                    stats.scanning = 2;
+                    stats.speed = 80;
+                    stats.stronidium = 250;
+                    stats.scale = 1.0f;
+                    stats.range = 10.0f;
+                    break;
+                case 897: //b_SmallFighter1
+                    stats.weapons = 3;
+                    stats.shields = 2;
+                    stats.stealth = 0;
+                    stats.scanning = 1;
+                    stats.speed = 100;
+                    stats.stronidium = 300;
+                    stats.scale = 1.0f;
+                    stats.range = 10.0f;
+                    break;
+                case 898: //b_SmallFighter2
+                    stats.weapons = 3;
+                    stats.shields = 2;
+                    stats.stealth = 0;
+                    stats.scanning = 1;
+                    stats.speed = 100;
+                    stats.stronidium = 300;
+                    stats.scale = 1.0f;
+                    stats.range = 10.0f;
+                    break;
+                case 899: //b_SmallFighter3
+                    stats.weapons = 3;
+                    stats.shields = 2;
+                    stats.stealth = 0;
+                    stats.scanning = 1;
+                    stats.stronidium = 300;
+                    stats.speed = 100;
+                    stats.scale = 1.0f;
+                    stats.range = 10.0f;
+                    break;
+                case 964: //XWingSmall
+                    stats.weapons = 3;
+                    stats.shields = 2;
+                    stats.stealth = 0;
+                    stats.scanning = 1;
+                    stats.stronidium = 250;
+                    stats.speed = 100;
+                    stats.range = 10.0f;
+                    break;
+                case 965: //AWingSmall
+                    stats.weapons = 3;
+                    stats.shields = 2;
+                    stats.stealth = 0;
+                    stats.scanning = 2;
+                    stats.speed = 120;
+                    stats.stronidium = 150;
+                    stats.scale = 1.0f;
+                    stats.range = 10.0f;
+                    break;
+
+                // Appearances that are one scale up, and need to be scaled down. 
+                case 872: //Impshuttlesm
+                    stats.weapons = 0;
+                    stats.shields = 2;
+                    stats.stealth = 0;
+                    stats.scanning = 1;
+                    stats.speed = 80;
+                    stats.stronidium = 75;
+                    stats.scale = 0.25f;
+                    stats.range = 10.0f;
+                    break;
+                case 894: //b_SmallCargoShip2
+                    stats.weapons = 0;
+                    stats.shields = 2;
+                    stats.stealth = 0;
+                    stats.scanning = 0;
+                    stats.speed = 40;
+                    stats.stronidium = 300;
+                    stats.scale = 0.25f;
+                    stats.range = 10.0f;
+                    break;
+                case 969: //d_SmallScoutship
+                    stats.weapons = 0;
+                    stats.shields = 2;
+                    stats.stealth = 2;
+                    stats.scanning = 3;
+                    stats.speed = 120;
+                    stats.stronidium = 150;
+                    stats.scale = 0.25f;
+                    stats.range = 10.0f;
+                    break;
+                case 973: //b_SmallFirefly
+                    stats.weapons = 1;
+                    stats.shields = 3;
+                    stats.stealth = 0;
+                    stats.scanning = 0;
+                    stats.speed = 60;
+                    stats.stronidium = 200;
+                    stats.scale = 0.25f;
+                    stats.range = 10.0f;
+                    break;
+
+                //Appearances that are one scale down, and need to be scaled up.
+                case 966: //BWingSmall
+                    stats.weapons = 4;
+                    stats.shields = 2;
+                    stats.stealth = 0;
+                    stats.scanning = 1;
+                    stats.speed = 60;
+                    stats.stronidium = 300;
+                    stats.scale = 4.0f;
+                    stats.range = 20.0f;
+                    break;
+                case 967: //FreighterSmall
+                    stats.weapons = 1;
+                    stats.shields = 2;
+                    stats.stealth = 0;
+                    stats.scanning = 0;
+                    stats.speed = 60;
+                    stats.stronidium = 100;
+                    stats.scale = 4.0f;
+                    stats.range = 10.0f;
+                    break;
+                case 968: //CorvetteSmall
+                    stats.weapons = 6;
+                    stats.shields = 5;
+                    stats.stealth = 0;
+                    stats.scanning = 0;
+                    stats.speed = 50;
+                    stats.stronidium = 600;
+                    stats.scale = 4.0f;
+                    stats.range = 20.0f;
+                    break;
+                case 2002: //v_lambda
+                    stats.weapons = 0;
+                    stats.shields = 2;
+                    stats.stealth = 0;
+                    stats.scanning = 0;
+                    stats.speed = 100;
+                    stats.stronidium = 75;
+                    stats.scale = 4.0f;
+                    stats.range = 10.0f;
+                    break;
+                case 2003: //v_ewing
+                    stats.weapons = 3;
+                    stats.shields = 3;
+                    stats.stealth = 0;
+                    stats.scanning = 1;
+                    stats.speed = 100;
+                    stats.scale = 4.0f;
+                    stats.range = 10.0f;
+                    break;
+                case 2005: //v_ywing
+                    stats.weapons = 4;
+                    stats.shields = 2;
+                    stats.stealth = 0;
+                    stats.scanning = 0;
+                    stats.speed = 60;
+                    stats.stronidium = 400;
+                    stats.scale = 4.0f;
+                    stats.range = 15.0f;
+                    break;
+            }
+
+            return stats;
+        }
+
+        int GetPCShipAppearanceByStyleID(int style)
+        {
+            switch (style)
+            {
+                case 20:
+                case 22:
+                    return 967;
+                case 21:
+                case 23:
+                    return 898;
+            }
+
+            return 895;
         }
 
         // Utility methods.
@@ -117,42 +357,6 @@ namespace SWLOR.Game.Server.Service
             return location.Substring(0, hyphen);            
         }
 
-        public int GetShipBaseStat(int BaseStructureID, int Stat)
-        {
-            switch (BaseStructureID)
-            {
-                case 156: // Light Transport 1
-                    switch (Stat)
-                    {
-                        case _SCANNING:
-                            return 0;
-                        case _SHIELDS:
-                            return 2;
-                        case _STEALTH:
-                            return 0;
-                        case _WEAPONS:
-                            return 1;
-                    }
-                    break;
-
-                case 157: // Light Escort 1
-                    switch (Stat)
-                    {
-                        case _SCANNING:
-                            return 1;
-                        case _SHIELDS:
-                            return 3;
-                        case _STEALTH:
-                            return 0;
-                        case _WEAPONS:
-                            return 3;
-
-                    }
-                    break;
-            }
-            return 0;
-        }
-
         public NWPlaceable GetCargoBay(NWArea starship, NWPlayer player)
         {
             NWPlaceable bay = starship.GetLocalObject("STARSHIP_RESOURCE_BAY");
@@ -166,7 +370,7 @@ namespace SWLOR.Game.Server.Service
                 }
                 else
                 {
-                    player.FloatingText("Someone else is already accessing that structure's inventory. Please wait.");
+                    if (player.IsValid) player.FloatingText("Someone else is already accessing that structure's inventory. Please wait.");
                     return null;
                 }
             }
@@ -188,29 +392,34 @@ namespace SWLOR.Game.Server.Service
             return bay;
         }
 
-        public int GetCargoBonus(PCBase pcBase, int Stat)
+        private void UpdateCargoBonus(NWArea area, NWCreature ship)
         {
-            // Get the structure ID of the starship.
-            PCBaseStructure structure = _data.SingleOrDefault<PCBaseStructure>(x => x.PCBaseID == pcBase.ID && x.ExteriorStyleID != null);
+            ShipStats stats = GetShipStatsByAppearance(_.GetAppearanceType(ship));
 
-            // Find the area.
-            foreach (var area in NWModule.Get().Areas)
+            string baseStructureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
+
+            if (string.IsNullOrWhiteSpace(baseStructureID))
             {
-                if (area.GetLocalString("PC_BASE_STRUCTURE_ID") == structure.ID.ToString())
-                {
-                    return GetCargoBonus(area, Stat);
-                }
+                _error.Trace(SPACE, "UpdateCargoBonus called for non-ship area.");
+                return;
             }
 
-            _error.Trace(SPACE, "Unable to find starship to check cargo bonus: " + pcBase.ID.ToString());
-            return 0;
+            PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.ID.ToString() == baseStructureID);
+            PCBase pcBase = _data.Single<PCBase>(x => x.ID == structure.PCBaseID);
+            NWPlaceable bay = GetCargoBay(area, null);
+
+            ship.SetLocalInt("WEAPONS", stats.weapons + GetCargoBonus(bay, 0));
+            ship.SetLocalInt("SHIELDS", stats.shields + GetCargoBonus(bay, 1));
+            ship.SetLocalInt("STEALTH", stats.stealth + GetCargoBonus(bay, 2));
+            ship.SetLocalInt("SCANNING", stats.scanning + GetCargoBonus(bay, 3));
+            ship.SetLocalInt("SPEED", stats.speed + GetCargoBonus(bay, 4));
+            ship.SetLocalInt("STRONIDIUM", pcBase.ReinforcedFuel);
+            ship.SetLocalFloat("RANGE", stats.range + GetCargoBonus(bay, 5));
         }
 
-        public int GetCargoBonus (NWArea starship, int Stat)
+        private int GetCargoBonus (NWPlaceable bay, int Stat)
         { 
             // Get the starship's cargo inventory and look for enhancement items. 
-            NWPlaceable bay = GetCargoBay(starship, null);
-
             foreach (var item in bay.InventoryItems)
             {
                 // Find any items with the right properties to improve starship abilities.
@@ -218,13 +427,6 @@ namespace SWLOR.Game.Server.Service
             }
 
             return 0;
-        }
-
-        public void OnModuleHeartbeat()
-        {
-            // Fire every minute (count to 10)
-            // Find all occupied spaceship areas (areas whose base ID is part of a base in a space location)
-
         }
 
         public void SetShipLocation(NWArea area, string location)
@@ -386,22 +588,6 @@ namespace SWLOR.Game.Server.Service
             return landingSpots;
         }
 
-        public bool CanDetect(PCBase scanningShip, PCBase otherShip)
-        {
-            // Returns true if the first ship is capable of detecting the second
-            // (i.e. scanning on scanningShip >= stealth on otherShip).
-            BuildingStyle scanner = _data.SingleOrDefault<BuildingStyle>(x => x.ID == scanningShip.BuildingStyleID);
-            BuildingStyle stealther = _data.SingleOrDefault<BuildingStyle>(x => x.ID == otherShip.BuildingStyleID);
-
-            if (GetShipBaseStat((int)scanner.BaseStructureID, _SCANNING) + GetCargoBonus(scanningShip, _SCANNING) <
-                GetShipBaseStat((int)stealther.BaseStructureID, _STEALTH + GetCargoBonus(otherShip, _STEALTH)))
-            {
-                return false;
-            }
-
-            return true;
-        }
-
         public bool DoPilotingSkillCheck(NWPlayer player, int DC)
         {
             // Get the player's piloting skill (including gear bonuses).
@@ -429,6 +615,776 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        
+        public void CreateShipInSpace(NWArea ship, NWLocation location = null)
+        {
+            // check that we are not already flying.
+            if (((NWObject)ship.GetLocalObject("CREATURE")).IsValid)
+            {
+                _error.Trace(SPACE, "Ship already exists.");
+                return;
+            }
+
+            // Creates the ship instance in space.
+            string shipID = ship.GetLocalString("PC_BASE_STRUCTURE_ID");
+
+            if (string.IsNullOrWhiteSpace(shipID))
+            {
+                _error.Trace(SPACE, "Error - tried to create a ship but can't find its structure ID.");
+                return;
+            }
+
+            PCBaseStructure shipStructure = _data.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == shipID);
+            PCBase shipBase = _data.Get<PCBase>(shipStructure.PCBaseID);
+
+            if (location == null)
+            {
+                string planet = GetPlanetFromLocation(shipBase.ShipLocation);
+                NWObject waypoint = _.GetObjectByTag(planet + "_Orbit");
+                _error.Trace(SPACE, "Found space waypoint " + waypoint.Name + " in " + waypoint.Area.Name);
+
+                if (!waypoint.IsValid)
+                {
+                    // Uh oh.
+                    _error.Trace(SPACE, "Could not find orbit waypoint for planet " + planet);
+                    return;
+                }
+
+                location = waypoint.Location;
+            }
+
+            NWCreature shipCreature = _.CreateObject(NWScript.OBJECT_TYPE_CREATURE, "starship" + shipBase.BuildingStyleID.ToString(), location, 0, shipID);
+
+            shipCreature.SetLocalObject("AREA", ship);
+            ship.SetLocalObject("CREATURE", shipCreature);
+
+            shipCreature.Name = ship.Name;
+            _error.Trace(SPACE, "Created ship " + shipCreature.Name + " in area " + shipCreature.Area.Name);
+
+            // Ship creatures are set up with Max HP = base durability of the ship structures.  But apply damage here.
+            if (shipCreature.CurrentHP != shipStructure.Durability)
+            {
+                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage((int)(shipCreature.CurrentHP - shipStructure.Durability), DAMAGE_TYPE_MAGICAL), shipCreature);
+            }
+
+            // Once the ship has spawned (and had its base stats set), adjust them for any mods we have on board.
+            _.AssignCommand(shipCreature, () => { UpdateCargoBonus(ship, shipCreature); });
+        }
+
+        public void RemoveShipInSpace(NWArea ship)
+        {
+            NWCreature shipCreature = ship.GetLocalObject("CREATURE");
+            if (shipCreature.IsValid)
+            {
+                string shipID = ship.GetLocalString("PC_BASE_STRUCTURE_ID");
+                PCBaseStructure shipStructure = _data.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == shipID);
+                PCBase shipBase = _data.Get<PCBase>(shipStructure.PCBaseID);
+
+                if (shipStructure.Durability != shipCreature.CurrentHP)
+                {
+                    // Save any damage on the ship. 
+                    shipStructure.Durability = shipCreature.CurrentHP;
+                    _data.SubmitDataChange(shipStructure, DatabaseActionType.Update);
+                }
+
+                // Remove the ship object.
+                _error.Trace(SPACE, "Removing ship " + shipCreature.Name + " from " + shipCreature.Area.Name);
+                shipCreature.Destroy();
+            }
+            else
+            {
+                _error.Trace(SPACE, "Could not find ship to remove from space.");
+            }
+        }
+
+        public bool CanLandOnPlanet(NWArea ship)
+        {
+            string shipID = ship.GetLocalString("PC_BASE_STRUCTURE_ID");
+            PCBaseStructure shipStructure = _data.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == shipID);
+            PCBase shipBase = _data.Get<PCBase>(shipStructure.PCBaseID);
+            string planet = GetPlanetFromLocation(shipBase.ShipLocation);
+
+            NWCreature shipCreature = ship.GetLocalObject("CREATURE");
+            NWObject waypoint = _.GetObjectByTag(planet + "_Orbit");
+
+            if (!shipCreature.IsValid || !waypoint.IsValid || _.GetDistanceBetween(shipCreature, waypoint) < 10.0f)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public void DoFlyShip(NWPlayer player, NWArea ship)
+        {
+            NWCreature shipCreature = ship.GetLocalObject("CREATURE");
+            if (shipCreature.IsPC)
+            {
+                player.SendMessage("Sorry, this ship already has a pilot.");
+                return;
+            }
+
+            // Retrieve information about the ship.
+            string shipID = ship.GetLocalString("PC_BASE_STRUCTURE_ID");
+
+            if (string.IsNullOrWhiteSpace(shipID))
+            {
+                _error.Trace(SPACE, "Error - tried to fly a ship but can't find its structure ID.");
+                player.SendMessage("Sorry, we hit a problem.  Please report this message.");
+                return;
+            }
+
+            // Save our location so we come back to the computer if we disconnect in space.
+            _player.SaveLocation(player);
+
+            PCBaseStructure shipStructure = _data.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == shipID);
+            PCBase shipBase = _data.Get<PCBase>(shipStructure.PCBaseID);
+
+            int shipAppearance = GetPCShipAppearanceByStyleID((int) shipBase.BuildingStyleID);
+
+            int shipSpeed = GetShipStatsByAppearance(shipAppearance).speed + GetCargoBonus(GetCargoBay(ship, null), 4);
+
+            NWPlaceable chair = _.GetNearestObjectByTag("pilot_chair", player);
+
+            ClonePCAndSit(player, chair);
+
+            // Find the dummy ship - swap the PC and the dummy ship.
+            // Note that the PC is currently invisible thanks to the clone method.
+            player.Chest.SetLocalInt("APPEARANCE", _.GetAppearanceType(player));
+            player.SetLocalInt("IS_SHIP", 1);
+            _.SetCreatureAppearanceType(player, shipAppearance);
+
+            _.SetObjectVisualTransform(player, OBJECT_VISUAL_TRANSFORM_SCALE, GetShipStatsByAppearance(shipAppearance).scale);
+
+            // Make immune to physical damage.
+            _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, _.EffectDamageImmunityIncrease(DAMAGE_TYPE_BLUDGEONING, 100), player);
+
+            player.AssignCommand(() => { _.ActionUnequipItem(player.LeftHand); });
+            player.AssignCommand(() => { _.ActionUnequipItem(player.RightHand); });
+
+            // Set the player's movement speed. 
+            shipSpeed += _skill.GetPCSkillRank(player, SkillType.Piloting) + _playerStat.GetPlayerItemEffectiveStats(player).Piloting;
+            if (shipSpeed > 100)
+            {
+                _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, _.EffectMovementSpeedIncrease(shipSpeed - 100), player);
+            }
+            else
+            {
+                _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, _.EffectMovementSpeedDecrease(100 - shipSpeed), player);
+            }
+
+            // Adjust max and current HP.
+            int hp = shipCreature.MaxHP;
+            _nwnxCreature.SetRawAbilityScore(player, ABILITY_CONSTITUTION, 10);
+
+            for (int level = 1; level <= 5; level++)
+            {
+                hp--;
+                _nwnxCreature.SetMaxHitPointsByLevel(player, level, 1);
+            }
+
+            for (int level = 1; level <= 5; level++)
+            {
+                if (hp > 255) // Levels can only contain a max of 255 HP
+                {
+                    _nwnxCreature.SetMaxHitPointsByLevel(player, level, 255);
+                    hp = hp - 254;
+                }
+                else // Remaining value gets set to the level. (<255 hp)
+                {
+                    _nwnxCreature.SetMaxHitPointsByLevel(player, level, hp + 1);
+                    break;
+                }
+            }
+
+            if (shipCreature.MaxHP > shipCreature.CurrentHP)
+            {
+                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(shipCreature.MaxHP - shipCreature.CurrentHP, DAMAGE_TYPE_MAGICAL), player);
+            }
+
+            // Clean up the ship model.
+            player.AssignCommand(() => { _.ActionJumpToLocation(shipCreature.Location); });
+            RemoveShipInSpace(ship);
+            ship.SetLocalObject("CREATURE", player);
+            player.SetLocalObject("SHIP", ship);
+
+            // Update the ship's stats for any mods we have on board.
+            UpdateCargoBonus(ship, player);
+        }
+
+        public void DoStopFlyShip(NWPlayer player)
+        {
+            NWCreature copy = player.GetLocalObject("COPY");
+
+            // This might be called when a player disconnects in space.  If so, save their location as
+            // being on board the ship so we can send them back to the right place afterwards.
+            Player entity = _player.GetPlayerEntity(player.GlobalID);
+            entity.LocationAreaResref = copy.Area.Resref;
+            entity.LocationX = copy.Position.m_X;
+            entity.LocationY = copy.Position.m_Y;
+            entity.LocationZ = copy.Position.m_Z;
+            entity.LocationOrientation = (copy.Facing);
+            entity.LocationInstanceID = new Guid(copy.Area.GetLocalString("PC_BASE_STRUCTURE_ID"));
+
+            _data.SubmitDataChange(entity, DatabaseActionType.Update);
+
+            // Apply ghost effects so we can stand on each other's heads, and create the ship again.
+            Effect eGhost = _.EffectCutsceneGhost();
+            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eGhost, player, 3.5f);
+            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eGhost, copy, 3.5f);
+            copy.Area.DeleteLocalObject("CREATURE");
+            CreateShipInSpace(copy.Area, player.Location);
+            player.AssignCommand(() => { _.ClearAllActions(); _.ActionJumpToLocation(copy.Location); });
+
+            // Make ourselves invisible for 2.5s and destroy the copy at the same time.  
+            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_DUR_CUTSCENE_INVISIBILITY), player, 2.5f);
+            copy.Destroy(2.5f);
+
+            // Set our appearance back to normal (now that we're invisible) and clear up our stats. 
+            _.SetCreatureAppearanceType(player, player.Chest.GetLocalInt("APPEARANCE"));
+            _.SetObjectVisualTransform(player, OBJECT_VISUAL_TRANSFORM_SCALE, 1.0f);
+            player.DeleteLocalInt("IS_SHIP");
+            player.DeleteLocalObject("COPY");
+            player.DeleteLocalObject("SHIP");
+            _playerStat.ApplyStatChanges(player, null);
+            player.RemoveEffect(EFFECT_TYPE_MOVEMENT_SPEED_INCREASE);
+            player.RemoveEffect(EFFECT_TYPE_MOVEMENT_SPEED_DECREASE);
+            player.RemoveEffect(EFFECT_TYPE_DAMAGE_IMMUNITY_INCREASE);
+
+            _.ExportSingleCharacter(player);
+        }
+
+        public void DoCrewGuns(NWPlayer player, NWArea ship)
+        {
+            if (((NWObject)ship.GetLocalObject("GUNNER")).IsValid)
+            {
+                player.SendMessage("Someone is already crewing the guns.  Only one gunner per ship!");
+                return; 
+            }
+
+            NWPlaceable chair = _.GetNearestObjectByTag("gunner_chair", player);
+            ClonePCAndSit(player, chair);
+
+            NWCreature shipCreature = ship.GetLocalObject("CREATURE");
+            player.Chest.SetLocalInt("APPEARANCE", _.GetAppearanceType(player));
+            _.SetCreatureAppearanceType(player, APPEARANCE_TYPE_INVISIBLE_HUMAN_MALE);
+            player.SetLocalInt("IS_GUNNER", 1);
+
+            // Apply effects so we can't be seen or hit.
+            _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, _.EffectCutsceneGhost(), player);
+            _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, _.EffectInvisibility(INVISIBILITY_TYPE_NORMAL), player);
+
+            ship.SetLocalObject("GUNNER", player);
+            player.SetLocalObject("SHIP", ship);
+
+            player.AssignCommand(() => 
+            {
+                _.ActionJumpToLocation(shipCreature.Location);
+                _.ActionForceFollowObject(shipCreature);
+                _.SetCommandable(0, player);
+            });
+
+        }
+
+        public void DoStopCrewGuns(NWPlayer player)
+        {
+            _.SetCommandable(1, player);
+
+            NWCreature copy = player.GetLocalObject("COPY");
+
+            // Apply ghost effect so we can stand on each other's heads.
+            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectCutsceneGhost(), copy, 3.5f);
+            player.AssignCommand(() => { _.ClearAllActions();  _.ActionJumpToLocation(copy.Location); });
+
+            // Return our appearance to normal.
+            _.SetCreatureAppearanceType(player, player.Chest.GetLocalInt("APPEARANCE"));
+            player.DeleteLocalInt("IS_GUNNER");
+            player.DeleteLocalObject("COPY");
+
+            _.DelayCommand(2.5f, () => 
+            {
+                player.RemoveEffect(EFFECT_TYPE_CUTSCENEGHOST);
+                player.RemoveEffect(EFFECT_TYPE_INVISIBILITY);
+            });
+
+            copy.Area.DeleteLocalObject("GUNNER");
+            player.DeleteLocalObject("SHIP");
+
+            copy.Destroy(2.5f);
+        }
+
+        private void ClonePCAndSit(NWPlayer player, NWPlaceable chair)
+        {
+            // Create a copy of the PC and link the two. 
+            NWObject copy = _.CopyObject(player, player.Location, NWN.Object.OBJECT_INVALID, "spaceship_copy");
+            _.ChangeToStandardFaction(copy, STANDARD_FACTION_DEFENDER);
+
+            Effect eInv = _.EffectVisualEffect(VFX_DUR_CUTSCENE_INVISIBILITY);
+            Effect eGhost = _.EffectCutsceneGhost();
+
+            player.SetLocalObject("COPY", copy);
+            copy.SetLocalObject("OWNER", player);
+
+            // Make the player invisible for a short period of time, and allow the two to move through each other. 
+            _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, eGhost, copy);
+            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eInv, player, 2.5f);
+            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eGhost, player, 3.5f);
+
+            // Clear the copy's inventory and gold. (This won't clear equipped items). 
+            _.TakeGoldFromCreature(_.GetGold(copy), copy, 1);
+            NWItem item = _.GetFirstItemInInventory(copy);
+            while (item.IsValid)
+            {
+                _.SetDroppableFlag(item, FALSE);
+                item.Destroy();
+                item = _.GetNextItemInInventory(copy);
+            }
+
+            // Make sure the clone isn't doing anything silly (like walking waypoints).
+            // Then sit in the chair. 
+            _.AssignCommand(copy, () => { _.ClearAllActions(); });
+            _.DelayCommand(1.0f, ()=> { _.AssignCommand(copy, () => { _.ActionSit(chair); } ); });
+        }
+
+        public void OnModuleLeave(NWPlayer player)
+        {
+            // If a player logs out in space, clean things up. 
+            if (player.GetLocalInt("IS_SHIP") == 1)
+            {
+                DoStopFlyShip(player);
+            }
+
+            if (player.GetLocalInt("IS_GUNNER") == 1)
+            {
+                DoStopCrewGuns(player);
+            }
+        }
+
+        public void OnNWNXChat()
+        {
+            // Is the speaker a pilot or gunner?
+            NWPlayer speaker = NWN.Object.OBJECT_SELF;
+            if (!speaker.IsPlayer) return;
+
+            string message = _nwnxChat.GetMessage().Trim();
+
+            if (speaker.GetLocalInt("IS_SHIP") == 1 || speaker.GetLocalInt("IS_GUNNER") == 1)
+            {
+                _nwnxChat.SkipMessage();
+
+                // Are we doing a special command?
+                if (message == "/exit")
+                {
+                    if (speaker.GetLocalInt("IS_SHIP") == 1)
+                    {
+                        DoStopFlyShip(speaker);
+                    }
+                    else
+                    {
+                        DoStopCrewGuns(speaker);
+                    }
+                }
+                else
+                {
+                    _.AssignCommand(speaker.GetLocalObject("COPY"), () => { _.SpeakString(message); });
+                }
+
+                return;
+            }
+
+            // Can a clone of a pilot or gunner hear the speaker?
+            int nNth = 1;
+            NWCreature copy = _.GetNearestObjectByTag("spaceship_copy", speaker, nNth);
+
+            while (copy.IsValid)
+            {
+                ((NWPlayer)copy.GetLocalObject("OWNER")).SendMessage(speaker.Name + ": " + message);
+                nNth++;
+                copy = _.GetNearestObjectByTag("spaceship_copy", speaker, nNth);
+            }
+        }
+
+        private void DoImpactFeedback(NWArea ship, string message)
+        {
+            foreach (var creature in ship.Objects)
+            {
+                if (creature.IsPC || creature.IsDM)
+                {
+                    _.FloatingTextStringOnCreature(message, creature);
+                    _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_FNF_SCREEN_BUMP), creature);
+                    // TODO - play sound.
+                }
+            }
+        }
+
+        public void CreateSpaceEncounter (NWObject trigger, NWPlayer player)
+        {
+            // Called in the OnEnter of encounter triggers.
+            // Get the location of the player's ship.
+            if (!player.IsPC || player.GetLocalInt("IS_SHIP") == 0) return;            
+            NWArea ship = player.GetLocalObject("SHIP");
+
+            string shipID = ship.GetLocalString("PC_BASE_STRUCTURE_ID");
+            PCBaseStructure shipStructure = _data.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == shipID);
+            PCBase shipBase = _data.Get<PCBase>(shipStructure.PCBaseID);
+            string planet = GetPlanetFromLocation(shipBase.ShipLocation);
+
+            _error.Trace(SPACE, "Creating space encounter for " + player.Name + " near planet " + planet);
+
+            HashSet<SpaceEncounter> encounters = _data.Where<SpaceEncounter>(x => x.Planet == planet);
+            int totalChance = 0;
+
+            foreach (var encounter in encounters)
+            {
+                _error.Trace(SPACE, "Found encounter: " + encounter.Type);
+                totalChance += encounter.Chance;
+                // TODO - add perks here to alter the chance.
+                // Hunter - increase chance of pirates
+                // Sneak - decrease chance of pirates
+                // Scavenger - increase chance of salvage
+            }
+
+            int random = _.Random(totalChance - 1);
+
+            foreach (var encounter in encounters)
+            {
+                if (random < encounter.Chance)
+                {
+                    // Process the encounter.
+                    if (encounter.Type == 1 || encounter.Type == 4)
+                    {
+                        // For now, do pirates (4) instead of customs (1).
+                        string resref = _.d2() == 1 ? "pirate_fighter_1" : "pirate_fighter_2";
+                        NWCreature pirate = _.CreateObject(OBJECT_TYPE_CREATURE, resref, trigger.Location);
+                        pirate.SetLocalInt("DC", encounter.Difficulty);
+                        // TODO - play proximity alert sound.
+                    }
+                    else if (encounter.Type == 2)
+                    {
+                        // Asteroid!
+                        if (DoPilotingSkillCheck(player, encounter.Difficulty))
+                        {
+                            player.SendMessage("You dodge an asteroid.  Good piloting!");
+                        }
+                        else
+                        {
+                            player.SendMessage("The asteroid hits your ship!");
+                            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(_.d6(3), DAMAGE_TYPE_PIERCING), player);
+
+                            DoImpactFeedback(ship, "Something hit the hull!");
+                        }
+                    }
+                    else if (encounter.Type == 3)
+                    { 
+                        // Salvage.
+                        if (DoPilotingSkillCheck(player, encounter.Difficulty))
+                        {
+                            player.SendMessage("You found some salvage!");
+
+                            BaseStructure structure = _data.Get<BaseStructure>(shipStructure.BaseStructureID);
+                            int count = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == shipStructure.ID).Count() + 1;
+                            if (count > (structure.ResourceStorage + shipStructure.StructureBonus))
+                            {
+                                player.SendMessage("Your cargo bay is full!  You weren't able to collect the salvage.");
+                                return;
+                            }
+
+                            var itemDetails = _loot.PickRandomItemFromLootTable(encounter.LootTable);
+
+                            var tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
+                            NWItem item = _.CreateItemOnObject(itemDetails.Resref, tempStorage, itemDetails.Quantity);
+
+                            // Guard against invalid resrefs and missing items.
+                            if (!item.IsValid)
+                            {
+                                Console.WriteLine("ERROR: Could not create salvage item with resref '" + itemDetails.Resref + "'. Is this item valid?");
+                                return;
+                            }
+
+                            if (!string.IsNullOrWhiteSpace(itemDetails.SpawnRule))
+                            {
+                                App.ResolveByInterface<ISpawnRule>("SpawnRule." + itemDetails.SpawnRule, action =>
+                                {
+                                    action.Run(item);
+                                });
+                            }
+
+                            var dbItem = new PCBaseStructureItem
+                            {
+                                PCBaseStructureID = shipStructure.ID,
+                                ItemGlobalID = item.GlobalID.ToString(),
+                                ItemName = item.Name,
+                                ItemResref = item.Resref,
+                                ItemTag = item.Tag,
+                                ItemObject = _serialization.Serialize(item)
+                            };
+
+                            _data.SubmitDataChange(dbItem, DatabaseActionType.Insert);
+                            player.SendMessage(item.Name + " was successfully brought into your cargo bay.");
+                            item.Destroy();
+                        }
+                        else
+                        {
+                            player.SendMessage("There is some debris here, but you find nothing salvageable.");
+                        }
+                    }
+
+                    break;
+                }
+                else
+                {
+                    random -= encounter.Chance;
+                }
+            }
+        }
+
+        private void DoSpaceAttack(NWCreature attacker, NWCreature target, bool gunner)
+        {
+            // Figure out whether either party is a PC ship.  If they are, the relevant area will be the starship interior area.  Else null.
+            NWArea attackerArea = attacker.IsPC ? ((NWObject)attacker.GetLocalObject("COPY")).Area : ((NWArea)attacker.GetLocalObject("AREA"));
+            NWArea defenderArea = target.IsPC ? ((NWObject)target.GetLocalObject("COPY")).Area : ((NWArea)target.GetLocalObject("AREA"));
+
+            // Get the current stronidium reserves of the attacker and defender.
+            int attackStron = attacker.GetLocalInt("STRONIDIUM");
+            int defendStron = target.GetLocalInt("STRONIDIUM");
+
+            if (attackStron == 0)
+            {
+                attacker.FloatingText("Out of fuel!");
+                _error.Trace(SPACE, attacker.Name + " is out of stronidium");
+                return;
+            }
+
+            // Get the current weapon and shield strength of attacker and defender.
+            int attackWeapons = attacker.GetLocalInt("WEAPONS");
+            if (attackWeapons > attackStron) attackWeapons = attackStron;
+            int defendShields = target.GetLocalInt("SHIELDS");
+            if (defendShields > defendStron) defendShields = defendStron;
+
+            _error.Trace(SPACE, "Attacker weapons: " + attackWeapons + ", defender shields " + defendShields);
+
+            // Get the piloting skill of the attacker and defender
+            int attackerPiloting = 0;
+            int defenderPiloting = 0;
+            
+            NWPlayer pcGunner = null;
+            if (gunner && attackerArea != null) // Should always have an area in this case but doesn't hurt to check.
+            {
+                pcGunner = attackerArea.GetLocalObject("GUNNER");
+                EffectiveItemStats effectiveStats = _playerStat.GetPlayerItemEffectiveStats(pcGunner);
+                attackerPiloting += _skill.GetPCSkillRank(pcGunner, SkillType.Piloting) + effectiveStats.Piloting;
+            }
+
+            if (attacker.IsPC)
+            {
+                EffectiveItemStats effectiveStats = _playerStat.GetPlayerItemEffectiveStats(new NWPlayer(attacker));
+                attackerPiloting += _skill.GetPCSkillRank(new NWPlayer(attacker), SkillType.Piloting) + effectiveStats.Piloting;
+            }
+            else
+            {
+                attackerPiloting += attacker.GetLocalInt("DC") > 0 ? attacker.GetLocalInt("DC") : 10;
+            }
+            
+            if (target.IsPC)
+            {
+                EffectiveItemStats effectiveStats = _playerStat.GetPlayerItemEffectiveStats(new NWPlayer(target));
+                defenderPiloting += _skill.GetPCSkillRank(new NWPlayer(target), SkillType.Piloting) + effectiveStats.Piloting;
+            }
+            else
+            {
+                defenderPiloting += target.GetLocalInt("DC") > 0 ? target.GetLocalInt("DC") : 10;
+            }
+
+            _error.Trace(SPACE, "Attacker skill " + attackerPiloting + ", defender skill " + defenderPiloting);
+
+            // Make the shot... preparing some VFX.
+            int damage = 0;
+            /*
+             * TODO - improve the VFX here by using a custom spell and a miss vector.  Miss vectors on EffectBeam are... not very good.
+            Vector vAttacker = _.GetPosition(attacker);
+            Vector vDiff = _.Vector(vTarget.m_X - vAttacker.m_X, vTarget.m_Y - vAttacker.m_Y, vAttacker.m_Z - vTarget.m_Z);            
+            float fAngle = _.VectorToAngle(vDiff) - _.GetFacing(attacker);
+            float fTargetDistance = _.GetDistanceBetween(attacker, target);*/
+
+            int check = _.d100();
+            _error.Trace(SPACE, "Check result " + check);
+
+            if (check < (100 * attackerPiloting) / (attackerPiloting + defenderPiloting))
+            {
+                // Hit!
+                if (attacker.IsPC) _skill.GiveSkillXP(new NWPlayer(attacker), SkillType.Piloting, (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(100, defenderPiloting, attackerPiloting));
+                if (target.IsPC) _skill.GiveSkillXP(new NWPlayer(target), SkillType.Piloting, (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(25, attackerPiloting, defenderPiloting));
+                if (gunner) _skill.GiveSkillXP(pcGunner, SkillType.Piloting, (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(100, defenderPiloting, attackerPiloting));
+
+                Effect eBeam = _.EffectBeam(447, attacker, BODY_NODE_CHEST);
+                _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eBeam, target, 0.5f);
+
+                // Reduce the attacker's Stronidium by their weapon strength.
+                attackStron -= attackWeapons;
+                attacker.SetLocalInt("STRONIDIUM", attackStron);
+
+                // Reduce the defender's Stronidium by their shield strength.
+                defendStron -= defendShields;
+                target.SetLocalInt("STRONIDIUM", defendStron);
+
+                // Calculate damage.  TODO - add perks that help here.
+                int overkill = (100 * attackerPiloting) / (attackerPiloting + defenderPiloting) - check; // how much we beat the check by.
+                float bonus = (float)overkill / 100.0f;
+                _error.Trace(SPACE, "Hit! Bonus % damage: " + bonus);
+
+                damage = (int)((float)attackWeapons * (1.0f + bonus)) - defendShields;
+                if (damage < 0) damage = 0;
+
+                // Apply the damage even if it's zero.
+                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_MAGICAL), target);
+
+                // Feedback.
+                if (defenderArea.IsValid) DoImpactFeedback(defenderArea, "Your ship was hit!");
+            }
+            else
+            {
+                // Miss!
+                if (attacker.IsPC) _skill.GiveSkillXP(new NWPlayer(attacker), SkillType.Piloting, (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(25, defenderPiloting, attackerPiloting));
+                if (target.IsPC) _skill.GiveSkillXP(new NWPlayer(target), SkillType.Piloting, (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(100, attackerPiloting, defenderPiloting));
+                if (gunner) _skill.GiveSkillXP(pcGunner, SkillType.Piloting, (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(25, defenderPiloting, attackerPiloting));
+
+                // Get a miss location near the target.
+                Effect eBeam = _.EffectBeam(447, attacker, BODY_NODE_CHEST, 1);
+                _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eBeam, target, 0.5f);
+
+                /* See amove comment about making a custom spell that uses this.
+                Vector vTarget = _.GetPosition(target);
+                NWLocation missLoc = _.Location(target.Location.Area, 
+                                                _.Vector(vTarget.m_X + 1.0f - _.IntToFloat(_.Random(200))/100.0f,
+                                                         vTarget.m_Y + 1.0f - _.IntToFloat(_.Random(200)) / 100.0f,
+                                                         vTarget.m_Z),
+                                                target.Location.Orientation);
+
+                -- This doesn't work, EffectBeams can't be fired at locations.
+                _.ApplyEffectAtLocation(DURATION_TYPE_TEMPORARY, eBeam, missLoc, 0.5f);*/
+
+                // Reduce the attacker's Stronidium by their weapon strength.
+                attackStron -= attackWeapons;
+                attacker.SetLocalInt("STRONIDIUM", attackStron);
+            }
+
+            // If either ship is part of a base, update the base stronidium reserve and the structure durability.
+            if (attackerArea.IsValid)
+            {
+                string baseStructureID = attackerArea.GetLocalString("PC_BASE_STRUCTURE_ID");
+                PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.ID.ToString() == baseStructureID);
+                PCBase pcBase = _data.Single<PCBase>(x => x.ID == structure.PCBaseID);
+
+                pcBase.ReinforcedFuel = attackStron;
+                _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+
+            }
+
+            if (defenderArea.IsValid)
+            {
+                string baseStructureID = defenderArea.GetLocalString("PC_BASE_STRUCTURE_ID");
+                PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.ID.ToString() == baseStructureID);
+                PCBase pcBase = _data.Single<PCBase>(x => x.ID == structure.PCBaseID);
+
+                if (pcBase.ReinforcedFuel != defendStron)
+                {
+                    pcBase.ReinforcedFuel = defendStron;
+                    _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                }
+
+                if (damage > 0)
+                {
+                    structure.Durability -= damage;
+
+                    if (structure.Durability <= 0)
+                    {
+                        // Boom.
+                        // TODO - call base destruction.  Can't include the base service here as it would make a 
+                        // circular dependency. 
+                        // Besides, let's make sure there aren't any significant combat bugs before blowing things up...
+                    }
+                    else
+                    {
+                        _data.SubmitDataChange(structure, DatabaseActionType.Update);
+                    }
+                }
+            }
+        }
+
+        public void OnCreatureSpawn(NWCreature creature)
+        {
+            // Only do things for ships. 
+            ShipStats stats = GetShipStatsByAppearance(_.GetAppearanceType(creature));
+            if (stats.scale == default(float)) return;
+
+            _.SetObjectVisualTransform(creature, OBJECT_VISUAL_TRANSFORM_SCALE, stats.scale);
+
+            // Save off our stats.
+            creature.SetLocalInt("WEAPONS", stats.weapons);
+            creature.SetLocalInt("SHIELDS", stats.shields);
+            creature.SetLocalInt("STEALTH", stats.stealth);
+            creature.SetLocalInt("SCANNING", stats.scanning);
+            creature.SetLocalInt("SPEED", stats.speed);
+            creature.SetLocalInt("STRONIDIUM", stats.stronidium);
+            creature.SetLocalFloat("RANGE", stats.range);
+
+            // Make immune to physical damage.
+            _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, _.EffectDamageImmunityIncrease(DAMAGE_TYPE_BLUDGEONING, 100), creature);
+        }
+
+        public void OnCreatureHeartbeat(NWCreature creature)
+        {
+            // Only do things for armed ships. 
+            if (creature.IsDead) return;
+            ShipStats stats = GetShipStatsByAppearance(_.GetAppearanceType(creature));
+            if (stats.scale == default(float)) return;
+            if (creature.GetLocalInt("WEAPONS") == 0) return;
+            
+            // Fire weapons.
+            bool hasGunner = false;
+            int shape = SHAPE_SPELLCYLINDER;
+            float range = stats.range;
+
+            Location targetLocation = _.Location(
+                creature.Area.Object,
+                _biowarePos.GetChangedPosition(creature.Position, range, creature.Facing),
+                creature.Facing + 180.0f);
+
+            // If we have a gunner, we can fire in any direction.  If we don't, we can only fire in front of us. 
+            NWArea area = creature.GetLocalObject("AREA");
+            if ((area.IsValid && ((NWObject)area.GetLocalObject("GUNNER")).IsValid) || creature.GetLocalInt("HAS_GUNNER") > 0)                
+            {
+                hasGunner = true;
+                shape = SHAPE_SPHERE;
+                targetLocation = creature.Location;
+            }
+
+            NWCreature target = _.GetFirstObjectInShape(shape, range, targetLocation, TRUE, OBJECT_TYPE_CREATURE, creature.Position);
+            while (target.IsValid)
+            {
+
+                if (_.GetIsEnemy(target, creature) == TRUE &&
+                    !target.IsDead && 
+                    _.GetDistanceBetween(creature, target) <= range &&
+                    !target.HasAnyEffect(EFFECT_TYPE_INVISIBILITY, EFFECT_TYPE_SANCTUARY))
+                {
+                    _error.Trace(SPACE, "Found valid target: " + target.Name);
+                    DoSpaceAttack(creature, target, hasGunner);
+                    break;
+                }
+
+                target = _.GetNextObjectInShape(shape, range, targetLocation, TRUE, OBJECT_TYPE_CREATURE, creature.Position);
+            }
+        }
+
+        public void OnModuleItemEquipped()
+        {
+            NWPlayer equipper = _.GetPCItemLastEquippedBy();
+            if (equipper.GetLocalInt("IS_SHIP") > 0)
+            {
+                NWItem item = _.GetPCItemLastEquipped();
+                equipper.AssignCommand(() => { _.ClearAllActions(); _.ActionUnequipItem(item); });
+                equipper.SendMessage("You cannot equip items while flying a ship.");
+            }
+        }
     }
 }

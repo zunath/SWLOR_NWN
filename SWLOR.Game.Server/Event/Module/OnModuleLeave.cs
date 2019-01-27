@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IMapPinService _mapPin;
         private readonly IMapService _map;
         private readonly IDataService _data;
+        private readonly ISpaceService _space;
 
         public OnModuleLeave(
             INWScript script,
@@ -22,7 +23,8 @@ namespace SWLOR.Game.Server.Event.Module
             ISkillService skill,
             IMapPinService mapPin,
             IMapService map,
-            IDataService data)
+            IDataService data,
+            ISpaceService space)
         {
             _ = script;
             _player = player;
@@ -31,6 +33,7 @@ namespace SWLOR.Game.Server.Event.Module
             _mapPin = mapPin;
             _map = map;
             _data = data;
+            _space = space;
         }
 
         public bool Run(params object[] args)
@@ -53,6 +56,7 @@ namespace SWLOR.Game.Server.Event.Module
             _skill.OnModuleClientLeave();
             _mapPin.OnModuleClientLeave();
             _map.OnModuleLeave();
+            _space.OnModuleLeave(pc);
 
             _data.RemoveCachedPlayerData(pc); // Ensure this is called LAST.
             return true;

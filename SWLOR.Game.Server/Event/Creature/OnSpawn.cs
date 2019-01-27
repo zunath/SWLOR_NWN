@@ -8,15 +8,20 @@ namespace SWLOR.Game.Server.Event.Creature
     public class OnSpawn : IRegisteredEvent
     {
         private readonly IBehaviourService _behaviour;
+        private readonly ISpaceService _space;
 
-        public OnSpawn(IBehaviourService behaviour)
+        public OnSpawn(IBehaviourService behaviour,
+                       ISpaceService space)
         {
             _behaviour = behaviour;
+            _space = space;
         }
 
         public bool Run(params object[] args)
         {
             NWCreature self = Object.OBJECT_SELF;
+
+            _space.OnCreatureSpawn(self);
 
             string creatureScript = self.GetLocalString("BEHAVIOUR");
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");

@@ -47,6 +47,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!player.IsPlayer) return;
             if (!player.IsInitializedAsPlayer) return;
+            if (player.GetLocalInt("IS_SHIP") == 1) return;
 
             // Don't fire for ammo as it reapplies bonuses **just** removed from blasters.
             if (ignoreItem != null &&

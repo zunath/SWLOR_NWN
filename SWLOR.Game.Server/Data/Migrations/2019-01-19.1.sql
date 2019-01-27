@@ -32,7 +32,8 @@ INSERT INTO dbo.CraftBlueprint (ID, CraftCategoryID, BaseLevel, ItemName, ItemRe
   (661, 46, 7, 'Light Starship Blaster', 'ship_blaster_1', 1, 22, 4, 96, 7, 1, 19, 3, 6, 32, 4, 8, 0, 0, 0, 4, NULL),
   (662, 46, 10, 'Starship Dock', 'silo', 1, 15, 5, 2, 5, 1, 41, 1, 2, 43, 6, 12, 45, 1, 2, 4, 179),
   (663, 46, 0, 'Starship 1 (Light Transport 1)', 'starship', 1, 15, 5, 2, 7, 1, 63, 1, 1, 64, 4, 6, 65, 1, 1, 4, 180),
-  (664, 46, 0, 'Starship 2 (Light Escort 1)', 'starship', 1, 15, 5, 2, 7, 1, 63, 1, 1, 64, 2, 6, 65, 4, 5, 4, 181);
+  (664, 46, 0, 'Starship 2 (Light Escort 1)', 'starship', 1, 15, 5, 2, 7, 1, 63, 1, 1, 64, 2, 6, 65, 4, 5, 4, 181),
+  (665, 45, 30, 'Starship Repair Kit', 'ss_rep', 1, 15, 5, 2, 5, 1, 2, 3, 6, 42, 2, 4, 32, 1, 3, 0, NULL);
 
 -- New Location and Starcharts fields for bases.
 ALTER TABLE dbo.PCBase ADD ShipLocation nVarChar(64), Starcharts int;
@@ -41,20 +42,65 @@ ALTER TABLE dbo.PCBase ADD ShipLocation nVarChar(64), Starcharts int;
 alter table dbo.PCBase drop constraint CK_PCBase_Sector;
 alter table dbo.PCBase WITH CHECK ADD  CONSTRAINT [CK_PCBase_Sector] CHECK  (([Sector]='SE' OR [Sector]='SW' OR [Sector]='NE' OR [Sector]='NW' OR [Sector]='AP' OR [Sector]='SS'))
 
+-- Insert data into Loot and LootTable tables.
+INSERT INTO dbo.LootTable (ID, Name) VALUES (51, 'Space - Basic Loot');
+INSERT INTO dbo.LootTableItem (LootTableID, Resref, MaxQuantity, Weight, IsActive) VALUES
+ ( 51, 'rruchi', 1, 3, 1),
+ ( 51, 'stalluchi', 1, 3, 1),
+ ( 51, 'tinnuchi', 1, 3, 1),
+ ( 51, 'plexite_gem', 1, 2, 1),
+ ( 51, 'ultranio', 1, 1, 1),
+ ( 51, 'coonlank_yellow', 1, 1, 1),
+ ( 51, 'coonlank_red', 1, 1, 1),
+ ( 51, 'coonlank_blue', 1, 1, 1),
+ ( 51, 'coonlank_green', 1, 1, 1),
+ ( 51, 'vendusii_gem', 1, 1, 1),
+ ( 51, 'hzzuntil', 1, 1, 1),
+ ( 51, 'corylus', 1, 2, 1),
+ ( 51, 'porlang', 1, 3, 1),
+ ( 51, 'harvino', 1, 3, 1),
+ ( 51, 'arvvina', 1, 2, 1),
+ ( 51, 'engina', 1, 2, 1),
+ ( 51, 'fabrina', 1, 2, 1),
+ ( 51, 'coqina', 1, 2, 1),
+ ( 51, 'weevina', 1, 2, 1),
+ ( 51, 'medcina', 1, 2, 1),
+ ( 51, 'uunichi', 1, 3, 1),
+ ( 51, 'pawisis', 1, 5, 1),
+ ( 51, 'pefoate', 1, 5, 1),
+ ( 51, 'sygium_gem', 1, 1, 1),
+ ( 51, 'regvis_gem', 1, 1, 1),
+ ( 51, 'hollinium', 1, 3, 1),
+ ( 51, 'omedia', 1, 5, 1),
+ ( 51, 'nibullan', 1, 3, 1);
+ 
 -- New Events table for space encounters
 CREATE TABLE SpaceEncounter (
+ ID int IDENTITY(1,1) NOT NULL,
   Planet nVarChar(32), 
   Type int,
   Chance int,
-  Difficulty int);
+  Difficulty int,
+  LootTable int);
 
 -- Commit the table creation, so that we can load data into it below.  
  GO
 
 -- Insert data into Events table. 
-INSERT INTO dbo.SpaceEncounter (Planet, Type, Chance, Difficulty) VALUES ('Viscara', 1, 20, 10), ('Viscara', 1, 5, 20), ('Viscara', 2, 1, 5), ('Viscara', 3, 5, 15);
-INSERT INTO dbo.SpaceEncounter (Planet, Type, Chance, Difficulty) VALUES ('Tattooine', 4, 20, 10), ('Tattooine', 4, 5, 20),  ('Tattooine', 4, 1, 30), ('Tattooine', 2, 1, 15), ('Tattooine', 3, 5, 15), ('Tattooine', 3, 3, 25), ('Tattooine', 3, 2, 35);
-
+INSERT INTO dbo.SpaceEncounter (Planet, Type, Chance, Difficulty, LootTable) VALUES 
+ ('Viscara', 1, 15, 10, 51), 
+ ('Viscara', 1, 4, 20, 51), 
+ ('Viscara', 2, 1, 5, 0), 
+ ('Viscara', 3, 20, 15, 51);
+INSERT INTO dbo.SpaceEncounter (Planet, Type, Chance, Difficulty, LootTable) VALUES 
+ ('Tattooine', 4, 20, 10, 51), 
+ ('Tattooine', 4, 5, 20, 51),  
+ ('Tattooine', 4, 1, 30, 51), 
+ ('Tattooine', 2, 1, 15, 0), 
+ ('Tattooine', 3, 15, 15, 51), 
+ ('Tattooine', 3, 5, 25, 51), 
+ ('Tattooine', 3, 3, 35, 51);
+ 
 -- Create the table for public starports. 
 CREATE TABLE SpaceStarport (
   ID UniqueIdentifier,

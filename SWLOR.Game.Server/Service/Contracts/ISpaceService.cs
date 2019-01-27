@@ -11,11 +11,9 @@ namespace SWLOR.Game.Server.Service.Contracts
 {
     public interface ISpaceService
     {
-        int GetShipBaseStat(int BaseStructureID, int Stat);
-        int GetCargoBonus(PCBase pcBase, int Stat);
-        int GetCargoBonus(NWArea starship, int Stat);
         NWPlaceable GetCargoBay(NWArea starship, NWPlayer player);
-        void OnModuleHeartbeat();
+        void OnNWNXChat();
+        void OnModuleLeave(NWPlayer player);
         void SetShipLocation(NWArea area, string Location);
         string GetShipLocation(NWArea area);
         bool IsLocationSpace(string location);
@@ -25,7 +23,17 @@ namespace SWLOR.Game.Server.Service.Contracts
         string DestinationToPlanet(int destination);
         string[] GetHyperspaceDestinationList(PCBase pcBase);
         Hashtable GetLandingDestinationList(NWPlayer player, PCBase pcBase);
-        bool CanDetect(PCBase scanningShip, PCBase otherShip);
         bool DoPilotingSkillCheck(NWPlayer player, int DC);
+        void DoFlyShip(NWPlayer player, NWArea ship);
+        void DoStopFlyShip(NWPlayer player);
+        void DoCrewGuns(NWPlayer player, NWArea ship);
+        void DoStopCrewGuns(NWPlayer player);
+        void CreateShipInSpace(NWArea ship, NWLocation location = null);
+        void RemoveShipInSpace(NWArea ship);
+        bool CanLandOnPlanet(NWArea ship);
+        void CreateSpaceEncounter(NWObject trigger, NWPlayer player);
+        void OnCreatureSpawn(NWCreature creature);
+        void OnCreatureHeartbeat(NWCreature creature);
+        void OnModuleItemEquipped();
     }
 }

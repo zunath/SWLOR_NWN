@@ -96,6 +96,17 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
 
                 firstFuel.StackSize = fuelCount;
                 pcBase.ReinforcedFuel = fuelCount;
+
+                if (bay.Area.GetLocalInt("BUILDING_TYPE") == (int)Enumeration.BuildingType.Starship)
+                {
+                    // This is a starship. Update the creature object, if any, with the new fuel count. 
+                    NWCreature ship = bay.Area.GetLocalObject("CREATURE");
+
+                    if (ship.IsValid)
+                    {
+                        ship.SetLocalInt("STRONIDIUM", fuelCount);
+                    }
+                }
             }
             else
             {

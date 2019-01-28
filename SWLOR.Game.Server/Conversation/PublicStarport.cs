@@ -12,13 +12,13 @@ using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Conversation
 {
-    public class ApartmentEntrance : ConversationBase
+    public class PublicStarport : ConversationBase
     {
         private readonly IDataService _data;
         private readonly IAreaService _area;
         private readonly IBaseService _base;
 
-        public ApartmentEntrance(
+        public PublicStarport(
             INWScript script,
             IDialogService dialog,
             IDataService data,
@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
 
-            DialogPage mainPage = new DialogPage("Please select which apartment you would like to enter from the list below. If you do not have an apartment but would like to rent one please use the nearby Apartment Terminal.");
+            DialogPage mainPage = new DialogPage("Please select which ship you would like to enter from the list below. Ships must be built on a base, but once built they can be berthed here for a fee.");
 
             dialog.AddPage("MainPage", mainPage);
             return dialog;
@@ -59,11 +59,11 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadMainPage()
         {
             NWPlaceable door = Object.OBJECT_SELF;
-            int apartmentBuildingID = door.GetLocalInt("APARTMENT_BUILDING_ID");
+            string starportID = door.GetLocalString("STARPORT_ID");
 
-            if (apartmentBuildingID <= 0)
+            if (string.IsNullOrWhiteSpace(starportID))
             {
-                _.SpeakString("APARTMENT_BUILDING_ID is not set. Please inform an admin.");
+                _.SpeakString("STARPORT_ID is not set. Please inform an admin.");
                 return;
             }
 
@@ -71,18 +71,18 @@ namespace SWLOR.Game.Server.Conversation
 
             var player = GetPC();
 
-            // Get apartments owned by player.
-            var apartments = _data.GetAll<PCBase>().Where(x => x.PlayerID == player.GlobalID &&
-                                                         x.ApartmentBuildingID == apartmentBuildingID &&
+            // Get starships owned by player and docked at this starport.
+            var ships = _data.GetAll<PCBase>().Where(x => x.PlayerID == player.GlobalID &&
+                                                         x.ShipLocation == starportID.ToLower() &&
                                                          x.DateRentDue > DateTime.UtcNow)
                                              .OrderBy(o => o.DateInitialPurchase)
                                              .ToList();
 
             // Get apartments owned by other players and the current player currently has access to.
             var permissions = _data.GetAll<PCBasePermission>().Where(x => x.PlayerID == player.GlobalID);
-            var permissionedApartments = _data.Where<PCBase>(x =>
+            var permissionedShips = _data.Where<PCBase>(x =>
             {
-                if (x.ApartmentBuildingID != apartmentBuildingID ||
+                if (x.ShipLocation != starportID.ToLower() ||
                     x.DateRentDue <= DateTime.UtcNow ||
                     x.PlayerID == player.GlobalID) return false;
                 
@@ -93,31 +93,32 @@ namespace SWLOR.Game.Server.Conversation
                 .ToList();
 
             int count = 1;
-            foreach (var apartment in apartments)
+            foreach (var ship in ships)
             {
-                string name = "Apartment #" + count;
+                string name = "Starship #" + count;
 
-                if (!string.IsNullOrWhiteSpace(apartment.CustomName))
+                if (!string.IsNullOrWhiteSpace(ship.CustomName))
                 {
-                    name = apartment.CustomName;
+                    // Custom names are probably set at the base structure level, so this likely needs reworking.
+                    name = ship.CustomName;
                 }
 
-                AddResponseToPage("MainPage", name, true, apartment.ID);
+                AddResponseToPage("MainPage", name, true, ship.ID);
 
                 count++;
             }
 
-            foreach (var apartment in permissionedApartments)
+            foreach (var ship in permissionedShips)
             {
-                var owner = _data.Get<Player>(apartment.PlayerID);
-                string name = owner.CharacterName + "'s Apartment [" + owner.CharacterName + "]";
+                var owner = _data.Get<Player>(ship.PlayerID);
+                string name = owner.CharacterName + "'s Starship [" + owner.CharacterName + "]";
 
-                if (!string.IsNullOrWhiteSpace(apartment.CustomName))
+                if (!string.IsNullOrWhiteSpace(ship.CustomName))
                 {
-                    name = apartment.CustomName + " [" + owner.CharacterName + "]";
+                    name = ship.CustomName + " [" + owner.CharacterName + "]";
                 }
 
-                AddResponseToPage("MainPage", name, true, apartment.ID);
+                AddResponseToPage("MainPage", name, true, ship.ID);
             }
 
         }
@@ -126,32 +127,32 @@ namespace SWLOR.Game.Server.Conversation
         {
             var response = GetResponseByID("MainPage", responseID);
             Guid pcApartmentID = (Guid)response.CustomData;
-            EnterApartment(pcApartmentID);
+            EnterShip(pcApartmentID);
         }
 
-        private void EnterApartment(Guid pcBaseID)
+        private void EnterShip(Guid pcBaseID)
         {
             NWPlayer oPC = GetPC();
 
-            var apartment = _data.Get<PCBase>(pcBaseID);
-            var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == apartment.ID);
-            var buildingStyle = _data.Get<BuildingStyle>(apartment.BuildingStyleID);
-            var owner = _data.Get<Player>(apartment.PlayerID);
+            var shipBase = _data.Get<PCBase>(pcBaseID);
+            var ship = _data.SingleOrDefault<PCBaseStructure>(x => x.PCBaseID == shipBase.ID && x.InteriorStyleID != null);
+
+            var owner = _data.Get<Player>(shipBase.PlayerID);
             var permission = _data.SingleOrDefault<PCBasePermission>(x => x.PlayerID == oPC.GlobalID && 
                                                                           x.PCBaseID == pcBaseID &&
                                                                           !x.IsPublicPermission);
 
             if (permission == null || !permission.CanEnterBuildings)
             {
-                oPC.FloatingText("You do not have permission to enter that apartment.");
+                oPC.FloatingText("You do not have permission to enter that starship.");
                 return;
             }
 
-            NWArea instance = _base.GetAreaInstance(pcBaseID, true);
+            NWArea instance = _base.GetAreaInstance(ship.ID, false);
 
             if (instance == null)
             {
-                instance = _base.CreateAreaInstance(oPC, pcBaseID, true);
+                instance = _base.CreateAreaInstance(oPC, ship.ID, false);
             }
 
             _base.JumpPCToBuildingInterior(oPC, instance);

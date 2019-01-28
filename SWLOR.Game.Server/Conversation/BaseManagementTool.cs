@@ -114,8 +114,40 @@ namespace SWLOR.Game.Server.Conversation
             string header = _color.Green("Base Management Menu\n\n");
             header += _color.Green("Area: ") + data.TargetArea.Name + " (" + cellX + ", " + cellY + ")\n\n";
 
+            // Are we in a starship?
+            if (buildingType == Enumeration.BuildingType.Starship)
+            {
+                Guid pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
+                var structure = _data.Single<PCBaseStructure>(x => x.ID == pcBaseStructureID);
+                var buildingStyle = _data.Get<BuildingStyle>(structure.InteriorStyleID);
+                int itemLimit = buildingStyle.FurnitureLimit + structure.StructureBonus;
+                var childStructures = _data.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == structure.ID);
+                header += _color.Green("Structure Limit: ") + childStructures.Count() + " / " + itemLimit + "\n";
+                // Get all child structures contained by this building which improve atmosphere.
+                var structures = _data.Where<PCBaseStructure>(x =>
+                {
+                    if (x.ParentPCBaseStructureID != pcBaseStructureID) return false;
+                    var childStructure = _data.Get<BaseStructure>(x.BaseStructureID);
+                    return childStructure.HasAtmosphere;
+                });
+
+                // Add up the total atmosphere rating, being careful not to go over the cap.
+                int bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;
+                if (bonus > 150) bonus = 150;
+                header += _color.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
+                header += "\n";
+
+                canEditPrimaryResidence = _perm.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanEditPrimaryResidence);
+                canRemovePrimaryResidence = _perm.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanRemovePrimaryResidence);
+                canRenameStructure = _perm.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanRenameStructures);
+                canEditStructures = _perm.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanPlaceEditStructures);
+                canEditBuildingPermissions = _perm.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanAdjustPermissions);
+                canEditBuildingPublicPermissions = _perm.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanAdjustPublicPermissions);
+                canChangeStructureMode = false; // Starships cannot be workshops.
+                data.StructureID = pcBaseStructureID;
+            }
             // Area is not buildable.
-            if (!dbArea.IsBuildable)
+            else if (!dbArea.IsBuildable)
             {
                 header += "Land in this area cannot be claimed. However, you can still manage any leases you own from the list below.";
             }
@@ -328,9 +360,11 @@ namespace SWLOR.Game.Server.Conversation
                     int buildingTypeID = data.TargetArea.GetLocalInt("BUILDING_TYPE");
                     Enumeration.BuildingType buildingType = buildingTypeID <= 0 ? Enumeration.BuildingType.Exterior : (Enumeration.BuildingType)buildingTypeID;
                     data.BuildingType = buildingType;
-                    NWPlayer sender = (_.GetPCSpeaker());
+                    NWPlayer sender = _.GetPCSpeaker();
+
                     if (buildingType == Enumeration.BuildingType.Apartment)
                     {
+                        // Update the base name. 
                         Guid pcBaseID = new Guid(data.TargetArea.GetLocalString("PC_BASE_ID"));
                         var pcBase = _data.Get<PCBase>(pcBaseID);
                         pcBase.CustomName = GetPC().GetLocalString("NEW_DESCRIPTION_TO_SET");
@@ -339,12 +373,28 @@ namespace SWLOR.Game.Server.Conversation
                     }
                     else if (buildingType == Enumeration.BuildingType.Interior)
                     {
+                        // Update the structure name.
                         Guid pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
                         var structure = _data.Get<PCBaseStructure>(pcBaseStructureID);
                         structure.CustomName = GetPC().GetLocalString("NEW_DESCRIPTION_TO_SET");
                         _data.SubmitDataChange(structure, DatabaseActionType.Update);
                         sender.SendMessage("Name is now set to " + structure.CustomName);
                     }
+                    else if (buildingType == Enumeration.BuildingType.Starship)
+                    {
+                        // Note - starships need to record the name in both the base and the structure entries.
+                        Guid pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
+                        var structure = _data.Get<PCBaseStructure>(pcBaseStructureID);
+                        structure.CustomName = GetPC().GetLocalString("NEW_DESCRIPTION_TO_SET");
+                        _data.SubmitDataChange(structure, DatabaseActionType.Update);
+
+                        var pcBase = _data.Get<PCBase>(structure.PCBaseID);
+                        pcBase.CustomName = GetPC().GetLocalString("NEW_DESCRIPTION_TO_SET");
+                        _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+
+                        sender.SendMessage("Name is now set to " + structure.CustomName);
+                    }
+
                     EndConversation();
                     break;
             }
@@ -615,7 +665,13 @@ namespace SWLOR.Game.Server.Conversation
             var controlTower = _base.GetBaseControlTower(pcBase.ID);
             int maxShields = _base.CalculateMaxShieldHP(controlTower);
 
-            if (pcBase.ShieldHP < maxShields && structureType != BaseStructureType.ControlTower)
+            if (structureType == BaseStructureType.Starship)
+            {
+                GetPC().SendMessage("You cannot pick up starships once they are built.  You can only fly them away.");
+                return;
+            }
+
+            if (pcBase.PCBaseTypeID != (int) Enumeration.PCBaseType.Starship && pcBase.ShieldHP < maxShields && structureType != BaseStructureType.ControlTower)
             {
                 GetPC().FloatingText("You cannot retrieve any structures because the control tower has less than 100% shields.");
                 return;
@@ -628,7 +684,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 canRetrieveStructures = _perm.HasBasePermission(GetPC(), data.ManipulatingStructure.PCBaseID, BasePermission.CanRetrieveStructures);
             }
-            else if (data.BuildingType == Enumeration.BuildingType.Interior)
+            else if (data.BuildingType == Enumeration.BuildingType.Interior || data.BuildingType == Enumeration.BuildingType.Starship)
             {
                 var structureID = new Guid(data.ManipulatingStructure.Structure.Area.GetLocalString("PC_BASE_STRUCTURE_ID"));
                 canRetrieveStructures = _perm.HasStructurePermission(GetPC(), structureID, StructurePermission.CanRetrieveStructures);
@@ -643,7 +699,6 @@ namespace SWLOR.Game.Server.Conversation
                 GetPC().FloatingText("You don't have permission to retrieve structures.");
                 return;
             }
-
 
             if (structureType == BaseStructureType.ControlTower)
             {
@@ -685,7 +740,11 @@ namespace SWLOR.Game.Server.Conversation
                     _data.SubmitDataChange(primaryOwner, DatabaseActionType.Update);
                 }
             }
-
+            else if (structureType == BaseStructureType.StarshipProduction && data.ManipulatingStructure.Structure.GetLocalInt("DOCKED_STARSHIP") == 1)
+            {
+                GetPC().SendMessage("You cannot move a dock that has a starship docked in it.  Fly the ship away first.");
+                return;
+            }
 
             _base.ConvertStructureToItem(structure, GetPC());
             _data.SubmitDataChange(structure, DatabaseActionType.Delete);

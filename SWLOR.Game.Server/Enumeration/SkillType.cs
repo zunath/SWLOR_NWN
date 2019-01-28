@@ -37,6 +37,7 @@
         Droidspeak = 32,
         Basic = 33,
         Mandoa = 34,
-        Huttese = 35
+        Huttese = 35,
+        Piloting = 36
     }
 }

@@ -40,6 +40,8 @@ namespace SWLOR.Game.Server.Service
                 if (permission == BasePermission.CanRemovePrimaryResidence && publicBasePermission.CanRemovePrimaryResidence) return true;
                 if (permission == BasePermission.CanChangeStructureMode && publicBasePermission.CanChangeStructureMode) return true;
                 if (permission == BasePermission.CanAdjustPublicPermissions && publicBasePermission.CanAdjustPublicPermissions) return true;
+                if (permission == BasePermission.CanDockStarship && publicBasePermission.CanDockStarship) return true;
+                if (permission == BasePermission.CanFlyStarship && publicBasePermission.CanFlyStarship) return true;
 
             }
 
@@ -64,6 +66,8 @@ namespace SWLOR.Game.Server.Service
             if (permission == BasePermission.CanRemovePrimaryResidence && dbPermission.CanRemovePrimaryResidence) return true;
             if (permission == BasePermission.CanChangeStructureMode && dbPermission.CanChangeStructureMode) return true;
             if (permission == BasePermission.CanAdjustPublicPermissions && dbPermission.CanAdjustPublicPermissions) return true;
+            if (permission == BasePermission.CanDockStarship && dbPermission.CanDockStarship) return true;
+            if (permission == BasePermission.CanFlyStarship && dbPermission.CanFlyStarship) return true;
 
             return false;
         }
@@ -212,6 +216,12 @@ namespace SWLOR.Game.Server.Service
                         break;
                     case BasePermission.CanAdjustPublicPermissions:
                         dbPermission.CanAdjustPublicPermissions = true;
+                        break;
+                    case BasePermission.CanDockStarship:
+                        dbPermission.CanDockStarship = true;
+                        break;
+                    case BasePermission.CanFlyStarship:
+                        dbPermission.CanFlyStarship = true;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

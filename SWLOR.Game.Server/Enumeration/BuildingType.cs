@@ -5,6 +5,7 @@
         Unknown = 0,
         Exterior = 1,
         Interior = 2,
-        Apartment = 3
+        Apartment = 3,
+        Starship = 4
     }
 }

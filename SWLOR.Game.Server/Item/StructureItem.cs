@@ -62,14 +62,22 @@ namespace SWLOR.Game.Server.Item
                 data.ParentStructureID = null;
                 data.BuildingType = BuildingType.Apartment;
             }
-            // Structure is being placed inside a building.
+            // Structure is being placed inside a building or starship.
             else if (!string.IsNullOrWhiteSpace(parentStructureID))
             {
                 var parentStructureGuid = new Guid(parentStructureID);
                 var parentStructure = _data.Get<PCBaseStructure>(parentStructureGuid);
                 data.PCBaseID = parentStructure.PCBaseID;
                 data.ParentStructureID = parentStructureGuid;
-                data.BuildingType = BuildingType.Interior;
+
+                if (area.GetLocalInt("BUILDING_TYPE") == (int) BuildingType.Starship)
+                {
+                    data.BuildingType = BuildingType.Starship;
+                }
+                else
+                {
+                    data.BuildingType = BuildingType.Interior;
+                }
             }
             // Structure is being placed outside of a building.
             else

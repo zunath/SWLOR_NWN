@@ -47,6 +47,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!player.IsPlayer) return;
             if (!player.IsInitializedAsPlayer) return;
+            if (player.GetLocalInt("IS_SHIP") == 1) return;
 
             // Don't fire for ammo as it reapplies bonuses **just** removed from blasters.
             if (ignoreItem != null &&
@@ -350,6 +351,7 @@ namespace SWLOR.Game.Server.Service
                             stats.Fabrication += CalculateAdjustedValue(item.CraftBonusFabrication, item.RecommendedLevel, rank, 0);
                             stats.Armorsmith += CalculateAdjustedValue(item.CraftBonusArmorsmith, item.RecommendedLevel, rank, 0);
                             stats.Harvesting += CalculateAdjustedValue(item.HarvestingBonus, item.RecommendedLevel, rank, 0);
+                            stats.Piloting += CalculateAdjustedValue(item.PilotingBonus, item.RecommendedLevel, rank, 0);
                             stats.Scavenging += CalculateAdjustedValue(item.ScavengingBonus, item.RecommendedLevel, rank, 0);
                             stats.SneakAttack += CalculateAdjustedValue(item.SneakAttackBonus, item.RecommendedLevel, rank, 0);
 

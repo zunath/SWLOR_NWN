@@ -53,6 +53,7 @@
         ElectricalDefenseBonus = 146,
         MindDefenseBonus = 147,
         LightDefenseBonus = 148,
-        DarkDefenseBonus = 149
+        DarkDefenseBonus = 149,
+        PilotingBonus = 150
     }
 }

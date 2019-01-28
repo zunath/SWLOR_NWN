@@ -113,7 +113,28 @@ namespace SWLOR.Game.Server.Conversation
                 var structures = _data.Where<PCBaseStructure>(x =>
                 {
                     if (x.ParentPCBaseStructureID != buildingStructure.ID) return false;
-                    return baseStructure.HasAtmosphere;
+                    var childStructure = _data.Get<BaseStructure>(x.BaseStructureID);
+                    return childStructure.HasAtmosphere;
+                });
+
+                // Add up the total atmosphere rating, being careful not to go over the cap.
+                int bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;
+                if (bonus > 150) bonus = 150;
+                header += _color.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
+                header += "\n";
+            }
+            else if (data.BuildingType == BuildingType.Starship)
+            {
+                var buildingStructure = _data.Get<PCBaseStructure>(data.ParentStructureID);
+                var buildingStyle = _data.Get<BuildingStyle>(buildingStructure.InteriorStyleID);
+                var childStructures = _data.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == buildingStructure.ID).ToList();
+
+                header += _color.Green("Structure Limit: ") + childStructures.Count + " / " + (buildingStyle.FurnitureLimit + buildingStructure.StructureBonus) + "\n";
+                var structures = _data.Where<PCBaseStructure>(x =>
+                {
+                    if (x.ParentPCBaseStructureID != buildingStructure.ID) return false;
+                    var childStructure = _data.Get<BaseStructure>(x.BaseStructureID);
+                    return childStructure.HasAtmosphere;
                 });
 
                 // Add up the total atmosphere rating, being careful not to go over the cap.

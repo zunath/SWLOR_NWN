@@ -13,6 +13,7 @@
         StronidiumSilo = 9,
         FuelSilo = 10,
         CraftingDevice = 11,
-        PersistentStorage = 12
+        PersistentStorage = 12,
+        Starship = 13
     }
 }

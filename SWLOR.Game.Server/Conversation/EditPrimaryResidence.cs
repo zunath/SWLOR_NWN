@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Conversation
             
             Player player;
             
-            if (data.BuildingType == BuildingType.Interior)
+            if (data.BuildingType == BuildingType.Interior || data.BuildingType == BuildingType.Starship)
             {
                 Guid structureID = data.StructureID;
                 player = _data.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseStructureID == structureID);
@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Conversation
             bool canEditPrimaryResidence;
             bool canRemovePrimaryResidence;
 
-            if (data.BuildingType == BuildingType.Interior)
+            if (data.BuildingType == BuildingType.Interior || data.BuildingType == BuildingType.Starship) 
             {
                 Guid structureID = data.StructureID;
                 primaryResident = _data.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseStructureID == structureID);
@@ -225,7 +225,7 @@ namespace SWLOR.Game.Server.Conversation
             bool canEditPrimaryResidence;
             bool canRemovePrimaryResidence;
 
-            if (data.BuildingType == BuildingType.Interior)
+            if (data.BuildingType == BuildingType.Interior || data.BuildingType == BuildingType.Starship)
             {
                 Guid structureID = data.StructureID;
                 currentResident = _data.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseStructureID == structureID);
@@ -268,7 +268,7 @@ namespace SWLOR.Game.Server.Conversation
                 NotifyPlayer(currentResident.ID);
             }
 
-            if (data.BuildingType == BuildingType.Interior)
+            if (data.BuildingType == BuildingType.Interior || data.BuildingType == BuildingType.Starship)
             {
                 newResident.PrimaryResidencePCBaseStructureID = data.StructureID;
                 newResident.PrimaryResidencePCBaseID = null;

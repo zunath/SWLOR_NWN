@@ -15,8 +15,9 @@ namespace SWLOR.Game.Server.Service
     public class PlayerService : IPlayerService
     {
         private readonly INWScript _;
-        private readonly IDataService _data;
         private readonly IColorTokenService _color;
+        private readonly IDataService _data;
+        private readonly IErrorService _error;
         private readonly INWNXCreature _nwnxCreature;
         private readonly INWNXPlayer _player;
         private readonly INWNXPlayerQuickBarSlot _qbs;
@@ -29,9 +30,10 @@ namespace SWLOR.Game.Server.Service
         private readonly ILanguageService _language;
 
         public PlayerService(
-            INWScript script, 
-            IDataService data, 
+            INWScript script,
             IColorTokenService color,
+            IDataService data, 
+            IErrorService error,
             INWNXCreature nwnxCreature,
             INWNXPlayer player,
             INWNXPlayerQuickBarSlot qbs,
@@ -44,8 +46,9 @@ namespace SWLOR.Game.Server.Service
             ILanguageService language)
         {
             _ = script;
-            _data = data;
             _color = color;
+            _data = data;
+            _error = error;
             _nwnxCreature = nwnxCreature;
             _player = player;
             _qbs = qbs;
@@ -308,7 +311,6 @@ namespace SWLOR.Game.Server.Service
         {
             NWPlayer player = (_.GetEnteringObject());
 
-            LoadLocation(player);
             SaveLocation(player);
             if(player.IsPlayer)
                 _.ExportSingleCharacter(player);
@@ -339,6 +341,14 @@ namespace SWLOR.Game.Server.Service
             }
 
             player.IsBusy = false; // Just in case player logged out in the middle of an action.
+
+            // Cleanup code in case people log out as spaceships.
+            int appearance = player.Chest.GetLocalInt("APPEARANCE");
+            if (appearance > 0 && appearance != _.GetAppearanceType(player))
+            {
+                _.SetCreatureAppearanceType(player, appearance);
+                _.SetObjectVisualTransform(player, OBJECT_VISUAL_TRANSFORM_SCALE, 1.0f);
+            }
         }
 
         public void ShowMOTD(NWPlayer player)
@@ -365,8 +375,11 @@ namespace SWLOR.Game.Server.Service
         public void SaveLocation(NWPlayer player)
         {
             if (!player.IsPlayer) return;
-
+            if (player.GetLocalInt("IS_SHIP") == 1) return;
+            if (player.GetLocalInt("IS_GUNNER") == 1) return;
+            
             NWArea area = player.Area;
+            _error.Trace("SPACE", "Saving location in area " + _.GetName(area));
             if (area.Tag != "ooc_area" && area.Tag != "tutorial" && !area.IsInstance)
             {
                 Player entity = GetPlayerEntity(player.GlobalID);
@@ -375,6 +388,7 @@ namespace SWLOR.Game.Server.Service
                 entity.LocationY = player.Position.m_Y;
                 entity.LocationZ = player.Position.m_Z;
                 entity.LocationOrientation = (player.Facing);
+                entity.LocationInstanceID = null;
 
                 if (string.IsNullOrWhiteSpace(entity.RespawnAreaResref))
                 {
@@ -388,27 +402,31 @@ namespace SWLOR.Game.Server.Service
 
                 _data.SubmitDataChange(entity, DatabaseActionType.Update);
             }
-        }
-
-        private void LoadLocation(NWPlayer player)
-        {
-            if (!player.IsPlayer) return;
-
-            if (player.Area.Tag == "ooc_area")
+            else if (area.IsInstance)
             {
-                Player entity = GetPlayerEntity(player.GlobalID);
-                NWArea area = NWModule.Get().Areas.SingleOrDefault(x => x.Resref == entity.LocationAreaResref);
-                if (area == null) return;
+                string instanceID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
+                if (string.IsNullOrWhiteSpace(instanceID))
+                {
+                    instanceID = area.GetLocalString("PC_BASE_ID");
+                }
 
-                Vector position = _.Vector((float)entity.LocationX, (float)entity.LocationY, (float)entity.LocationZ);
-                Location location = _.Location(area.Object,
-                    position,
-                    (float)entity.LocationOrientation);
+                _error.Trace("SPACE", "Saving character in instance ID: " + instanceID);
 
-                player.AssignCommand(() => _.ActionJumpToLocation(location));
+                if (!string.IsNullOrWhiteSpace(instanceID))
+                {
+                    Player entity = GetPlayerEntity(player.GlobalID);
+                    entity.LocationAreaResref = area.Resref;
+                    entity.LocationX = player.Position.m_X;
+                    entity.LocationY = player.Position.m_Y;
+                    entity.LocationZ = player.Position.m_Z;
+                    entity.LocationOrientation = (player.Facing);
+                    entity.LocationInstanceID = new Guid(instanceID);
+
+                    _data.SubmitDataChange(entity, DatabaseActionType.Update);
+                }
             }
         }
-        
+                
         private void InitializeHotBar(NWPlayer player)
         {
             var openRestMenu = _qbs.UseFeat((int)CustomFeatType.OpenRestMenu);

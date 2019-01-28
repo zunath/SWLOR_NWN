@@ -299,6 +299,7 @@ namespace SWLOR.Game.Server
             builder.RegisterType<SearchService>().As<ISearchService>().SingleInstance();
             builder.RegisterType<SerializationService>().As<ISerializationService>().SingleInstance();
             builder.RegisterType<SkillService>().As<ISkillService>().SingleInstance();
+            builder.RegisterType<SpaceService>().As<ISpaceService>().SingleInstance();
             builder.RegisterType<SpawnService>().As<ISpawnService>().SingleInstance();
             builder.RegisterType<TimeService>().As<ITimeService>().SingleInstance();
             builder.RegisterType<WeatherService>().As<IWeatherService>().SingleInstance();

@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Event.Module
             _customEffect.OnModuleEnter();
             _chatText.OnModuleEnter();
             _race.OnModuleEnter();
-
+            
             player.SetLocalInt("LOGGED_IN_ONCE", TRUE);
             return true;
         }

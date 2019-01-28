@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         string GetSectorOfLocation(NWLocation targetLocation);
         NWItem ConvertStructureToItem(PCBaseStructure pcBaseStructure, NWObject target);
         void BootPlayersOutOfInstance(Guid pcBaseStructureID);
-        void ClearPCBaseByID(Guid pcBaseID);
+        void ClearPCBaseByID(Guid pcBaseID, bool displayExplosion = false, bool impoundItems = true);
         void ApplyCraftedItemLocalVariables(NWItem item, BaseStructure structure);
         double GetPowerInUse(Guid pcBaseID);
         double GetCPUInUse(Guid pcBaseID);

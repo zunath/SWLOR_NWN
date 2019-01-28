@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Service
             IDurabilityService durability,
             IAreaService area,
             ISpaceService space,
-            IErrorService error
+            IErrorService error,
             ISerializationService serialization)
         {
             _ = script;

@@ -1,0 +1,172 @@
+﻿<UserControl x:Class="SWLOR.Tools.Editor.Views.KeyItemEditorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SWLOR.Tools.Editor.Views"
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"></ColumnDefinition>
+            <ColumnDefinition Width="5"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <local:ObjectListView 
+            Grid.Column="0" 
+            Grid.Row="0" 
+            cal:View.Model="{Binding ObjectListVM}">
+
+        </local:ObjectListView>
+
+        <GridSplitter Grid.Column="1" ShowsPreview="True" HorizontalAlignment="Stretch">
+        </GridSplitter>
+
+        <Grid Grid.Column="2">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="5"></RowDefinition>
+                <RowDefinition Height="32"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="32"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <Grid Column="0"
+                  Row="0"
+                  ColumnSpan="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="32"></RowDefinition>
+                    <RowDefinition Height="32"></RowDefinition>
+                    <RowDefinition Height="32"></RowDefinition>
+                    <RowDefinition Height="32"></RowDefinition>
+                    <RowDefinition Height="32"></RowDefinition>
+                    <RowDefinition Height="32"></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="128"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <Label Content="Key Item Category:" 
+                       Grid.Column="0"
+                       Grid.Row="0"></Label>
+
+                <TextBox Grid.Column="1"
+                         Grid.Row="0"
+                         TabIndex="0"
+                         IsEnabled="{Binding IsCategorySelected}"
+                         Text="{Binding Path=ActiveCategory.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+
+                </TextBox>
+
+                <Label Content="Key Item Name:"
+                       Grid.Column="0"
+                       Grid.Row="1">
+                </Label>
+
+                <TextBox Grid.Row="1"
+                         Grid.Column="1"
+                         TabIndex="1"
+                         MaxLength="16"
+                         IsEnabled="{Binding IsKeyItemSelected}"
+                         Text="{Binding Path=SelectedKeyItem.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                </TextBox>
+
+                <Label Content="Key Item Description:"
+                       Grid.Column="0"
+                       Grid.Row="2">
+                </Label>
+
+                <TextBlock Grid.Row="2"
+                           Grid.RowSpan="3"
+                           Grid.Column="1"
+                           IsEnabled="{Binding IsKeyItemSelected}"
+                           Text="{Binding SelectedKeyItem.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <Label Content="Is Active:"
+                       Grid.Column="0"
+                       Grid.Row="5">
+                </Label>
+
+                <CheckBox Grid.Row="5"
+                         Grid.Column="1"
+                          TabIndex="5"
+                          IsEnabled="{Binding IsKeyItemSelected}"
+                         IsChecked="{Binding Path=SelectedKeyItem.IsActive, Mode=TwoWay}">
+                </CheckBox>
+            </Grid>
+
+
+            <GridSplitter Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Stretch"></GridSplitter>
+
+            <Grid Grid.Row="2"
+                  Grid.Column="0"
+                  Grid.ColumnSpan="3">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Row="0"
+                        Grid.Column="0"
+                        TabIndex="6"
+                        Content="New Item"
+                        x:Name="NewItem"
+                        IsEnabled="{Binding IsCategorySelected}">
+
+                </Button>
+
+                <Button Grid.Row="0"
+                        Grid.Column="1"
+                        TabIndex="7"
+                        Content="Delete Item"
+                        x:Name="DeleteItem"
+                        IsEnabled="{Binding IsKeyItemSelected}">
+
+                </Button>
+            </Grid>
+            <ListBox Grid.Row="3" 
+                     Grid.Column="0"
+                     Grid.ColumnSpan="3"
+                     ItemsSource="{Binding Path=ActiveCategory.KeyItems}"
+                     SelectedItem="{Binding SelectedKeyItem}"
+                     DisplayMemberPath="Resref">
+
+            </ListBox>
+
+            <Grid Grid.Row="4"
+                  Grid.Column="0"
+                  Grid.ColumnSpan="3">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+
+                <Button 
+                    Grid.Column="0" 
+                    Content="Save Changes"
+                    x:Name="SaveChanges"
+                    IsEnabled="{Binding CanSaveOrDiscardChanges}"/>
+                <Button 
+                    Grid.Column="1" 
+                    Content="Discard Changes"
+                    x:Name="DiscardChanges"
+                    IsEnabled="{Binding CanSaveOrDiscardChanges}"/>
+            </Grid>
+
+        </Grid>
+
+    </Grid>
+</UserControl>

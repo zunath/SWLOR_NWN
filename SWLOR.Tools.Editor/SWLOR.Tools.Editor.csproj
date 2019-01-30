@@ -153,6 +153,7 @@
     <Compile Include="ViewModels\Contracts\IDownloadEditorViewModel.cs" />
     <Compile Include="ViewModels\Contracts\IExportViewModel.cs" />
     <Compile Include="ViewModels\Contracts\IImportViewModel.cs" />
+    <Compile Include="ViewModels\Contracts\IKeyItemEditorViewModel.cs" />
     <Compile Include="ViewModels\Contracts\IPlantEditorViewModel.cs" />
     <Compile Include="ViewModels\CustomEffectEditorViewModel.cs" />
     <Compile Include="ViewModels\ApartmentBuildingEditorViewModel.cs" />
@@ -200,6 +201,7 @@
     <Compile Include="ViewModels\ExportViewModel.cs" />
     <Compile Include="ViewModels\ImportExportViewModelBase.cs" />
     <Compile Include="ViewModels\ImportViewModel.cs" />
+    <Compile Include="ViewModels\KeyItemEditorViewModel.cs" />
     <Compile Include="ViewModels\LootEditorViewModel.cs" />
     <Compile Include="ViewModels\ObjectListViewModel.cs" />
     <Compile Include="ViewModels\PlantEditorViewModel.cs" />
@@ -213,6 +215,9 @@
     </Compile>
     <Compile Include="Views\DownloadEditorView.xaml.cs">
       <DependentUpon>DownloadEditorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\KeyItemEditorView.xaml.cs">
+      <DependentUpon>KeyItemEditorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\PlantEditorView.xaml.cs">
       <DependentUpon>PlantEditorView.xaml</DependentUpon>
@@ -273,6 +278,10 @@
     <Page Include="Views\DownloadEditorView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\KeyItemEditorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\PlantEditorView.xaml">
       <Generator>MSBuild:Compile</Generator>

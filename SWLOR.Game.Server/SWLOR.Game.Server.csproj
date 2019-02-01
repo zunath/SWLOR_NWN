@@ -1138,6 +1138,7 @@
     <Compile Include="Placeable\Bank\OnDisturbed.cs" />
     <Compile Include="Placeable\Bank\OnOpened.cs" />
     <Compile Include="Placeable\Stores\GenericStore.cs" />
+    <Compile Include="Placeable\StructureRubble\OnClosed.cs" />
     <Compile Include="Placeable\StructureRubble\OnDisturbed.cs" />
     <Compile Include="Placeable\StructureStorage\OnClosed.cs" />
     <Compile Include="Placeable\StructureStorage\OnDisturbed.cs" />
@@ -2169,6 +2170,7 @@
     <EmbeddedResource Include="Data\Migrations\2019-01-09.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-01-16.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-01-16.2.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-01-18.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-01-19.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-01.1.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />

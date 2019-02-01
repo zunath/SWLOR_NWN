@@ -116,6 +116,10 @@ namespace SWLOR.Game.Server.Service
                 var pcBases = _data.Where<PCBase>(x => x.AreaResref == area.Resref && x.ApartmentBuildingID == null).ToList();
                 foreach (var @base in pcBases)
                 {
+                    // Migration code : ensure owner has all permissions.
+                    var allPermissions = Enum.GetValues(typeof(BasePermission)).Cast<BasePermission>().ToArray();
+                    _perm.GrantBasePermissions(@base.PlayerID, @base.ID, allPermissions);
+
                     var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == @base.ID);
                     foreach (var structure in structures)
                     {
@@ -588,13 +592,19 @@ namespace SWLOR.Game.Server.Service
                 _perm.HasBasePermission(player, pcBase.ID, BasePermission.CanPlaceEditStructures) :                 // Bases
                 _perm.HasStructurePermission(player, buildingStructureGuid, StructurePermission.CanPlaceEditStructures);    // Buildings
 
+            var baseStructure = _data.Get<BaseStructure>(baseStructureID);
+            var baseStructureType = _data.Get<Data.Entity.BaseStructureType>(baseStructure.BaseStructureTypeID);
+
+            if (baseStructureType.ID == (int)BaseStructureType.Starship)
+            {
+                canPlaceOrEditStructures = _perm.HasBasePermission(player, pcBase.ID, BasePermission.CanDockStarship); 
+            }
+
             // Don't have permission.
             if (!canPlaceOrEditStructures)
                 return "You do not have permission to place or edit structures in this territory.";
 
-            var baseStructure = _data.Get<BaseStructure>(baseStructureID);
-            var baseStructureType = _data.Get<Data.Entity.BaseStructureType>(baseStructure.BaseStructureTypeID);
-            
+
             // Can only place this structure inside buildings and the player is currently outside.
             if (!baseStructureType.CanPlaceOutside && buildingType == BuildingType.Exterior)
             {

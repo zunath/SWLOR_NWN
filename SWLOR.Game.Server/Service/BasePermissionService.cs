@@ -21,6 +21,11 @@ namespace SWLOR.Game.Server.Service
         {
             if (player.IsDM) return true;
 
+            return HasBasePermission(player.GlobalID, pcBaseID, permission);
+        }
+
+        public bool HasBasePermission(Guid player, Guid pcBaseID, BasePermission permission)
+        {
             // Public permissions take priority over all other permissions. Check those first.
             var publicBasePermission = _data.SingleOrDefault<PCBasePermission>(x => x.PCBaseID == pcBaseID &&
                                                                                 x.IsPublicPermission);
@@ -41,14 +46,13 @@ namespace SWLOR.Game.Server.Service
                 if (permission == BasePermission.CanChangeStructureMode && publicBasePermission.CanChangeStructureMode) return true;
                 if (permission == BasePermission.CanAdjustPublicPermissions && publicBasePermission.CanAdjustPublicPermissions) return true;
                 if (permission == BasePermission.CanDockStarship && publicBasePermission.CanDockStarship) return true;
-                if (permission == BasePermission.CanFlyStarship && publicBasePermission.CanFlyStarship) return true;
 
             }
 
             // No matching public permissions. Now check the base permissions for this player.
             var dbPermission = _data.GetAll<PCBasePermission>()
                 .SingleOrDefault(x => x.PCBaseID == pcBaseID && 
-                                      x.PlayerID == player.GlobalID &&
+                                      x.PlayerID == player &&
                                       !x.IsPublicPermission);
             
             if (dbPermission == null) return false;
@@ -67,7 +71,6 @@ namespace SWLOR.Game.Server.Service
             if (permission == BasePermission.CanChangeStructureMode && dbPermission.CanChangeStructureMode) return true;
             if (permission == BasePermission.CanAdjustPublicPermissions && dbPermission.CanAdjustPublicPermissions) return true;
             if (permission == BasePermission.CanDockStarship && dbPermission.CanDockStarship) return true;
-            if (permission == BasePermission.CanFlyStarship && dbPermission.CanFlyStarship) return true;
 
             return false;
         }
@@ -94,6 +97,7 @@ namespace SWLOR.Game.Server.Service
                 if (permission == StructurePermission.CanRemovePrimaryResidence && publicBasePermission.CanRemovePrimaryResidence) return true;
                 if (permission == StructurePermission.CanChangeStructureMode && publicBasePermission.CanChangeStructureMode) return true;
                 if (permission == StructurePermission.CanAdjustPublicPermissions && publicBasePermission.CanAdjustPublicPermissions) return true;
+                if (permission == StructurePermission.CanFlyStarship && publicBasePermission.CanFlyStarship) return true;
             }
 
             // Public structure permissions are the next thing we check.
@@ -112,6 +116,7 @@ namespace SWLOR.Game.Server.Service
                 if (permission == StructurePermission.CanRemovePrimaryResidence && publicStructurePermission.CanRemovePrimaryResidence) return true;
                 if (permission == StructurePermission.CanChangeStructureMode && publicStructurePermission.CanChangeStructureMode) return true;
                 if (permission == StructurePermission.CanAdjustPublicPermissions && publicStructurePermission.CanAdjustPublicPermissions) return true;
+                if (permission == StructurePermission.CanFlyStarship && publicStructurePermission.CanFlyStarship) return true;
             }
 
             // Base permissions take priority over structure permissions. Check those next.
@@ -132,6 +137,7 @@ namespace SWLOR.Game.Server.Service
                 if (permission == StructurePermission.CanRemovePrimaryResidence && basePermission.CanRemovePrimaryResidence) return true;
                 if (permission == StructurePermission.CanChangeStructureMode && basePermission.CanChangeStructureMode) return true;
                 if (permission == StructurePermission.CanAdjustPublicPermissions && basePermission.CanAdjustPublicPermissions) return true;
+                if (permission == StructurePermission.CanFlyStarship && basePermission.CanFlyStarship) return true;
             }
 
             // Didn't find a base permission. Check the structure permissions.
@@ -151,6 +157,7 @@ namespace SWLOR.Game.Server.Service
             if (permission == StructurePermission.CanRemovePrimaryResidence && structurePermission.CanRemovePrimaryResidence) return true;
             if (permission == StructurePermission.CanChangeStructureMode && structurePermission.CanChangeStructureMode) return true;
             if (permission == StructurePermission.CanAdjustPublicPermissions && structurePermission.CanAdjustPublicPermissions) return true;
+            if (permission == StructurePermission.CanFlyStarship && structurePermission.CanFlyStarship) return true;
 
             // Player doesn't have permission.
             return false;
@@ -158,9 +165,14 @@ namespace SWLOR.Game.Server.Service
 
         public void GrantBasePermissions(NWPlayer player, Guid pcBaseID, params BasePermission[] permissions)
         {
+            GrantBasePermissions(player.GlobalID, pcBaseID, permissions);
+        }
+
+        public void GrantBasePermissions(Guid player, Guid pcBaseID, params BasePermission[] permissions)
+        {
             var dbPermission = _data.GetAll<PCBasePermission>()
                 .SingleOrDefault(x => x.PCBaseID == pcBaseID && 
-                                      x.PlayerID == player.GlobalID &&
+                                      x.PlayerID == player &&
                                       !x.IsPublicPermission);
             var action = DatabaseActionType.Update;
 
@@ -169,7 +181,7 @@ namespace SWLOR.Game.Server.Service
                 dbPermission = new PCBasePermission
                 {
                     PCBaseID = pcBaseID,
-                    PlayerID = player.GlobalID
+                    PlayerID = player
                 };
                 action = DatabaseActionType.Insert;
             }
@@ -281,6 +293,9 @@ namespace SWLOR.Game.Server.Service
                         break;
                     case StructurePermission.CanAdjustPublicPermissions:
                         dbPermission.CanAdjustPublicPermissions = true;
+                        break;
+                    case StructurePermission.CanFlyStarship:
+                        dbPermission.CanFlyStarship = true;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

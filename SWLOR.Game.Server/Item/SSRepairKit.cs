@@ -56,7 +56,8 @@ namespace SWLOR.Game.Server.Item
 
             if (ship.IsValid)
             {
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(repair), ship);
+                ship.SetLocalInt("HP", ship.GetLocalInt("HP") + repair);
+                ship.FloatingText("Hull repaired: " + ship.GetLocalInt("HP") + "/" + ship.MaxHP);
             }
 
             pcbs.Durability += repair;

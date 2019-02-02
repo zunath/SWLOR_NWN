@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Conversation
 
             List<string> options = new List<string>();
 
-            if (bSpace && _perm.HasBasePermission(player, structure.PCBaseID, BasePermission.CanFlyStarship))
+            if (bSpace && _perm.HasStructurePermission(player, structure.ID, StructurePermission.CanFlyStarship))
             {
                 // See if we are near enough to the planet to land.
                 if (_space.CanLandOnPlanet(player.Area))
@@ -81,12 +81,12 @@ namespace SWLOR.Game.Server.Conversation
                 options.Add("Pilot Ship");
                 options.Add("Hyperspace Jump");
             }
-            else if ( _perm.HasBasePermission(player, structure.PCBaseID, BasePermission.CanFlyStarship))
+            else if ( _perm.HasStructurePermission(player, structure.ID, StructurePermission.CanFlyStarship))
             {
                 options.Add("Take Off");
             }
 
-            if (_perm.HasBasePermission(player, structure.PCBaseID, BasePermission.CanManageBaseFuel))
+            if (!bSpace && _perm.HasBasePermission(player, structure.PCBaseID, BasePermission.CanManageBaseFuel))
             {
                 options.Add("Access Fuel Bay");
                 options.Add("Access Stronidium Bay");
@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (_perm.HasBasePermission(player, structure.PCBaseID, BasePermission.CanAccessStructureInventory))
             {
-                options.Add("Access Resource Bay");
+                if (!bSpace) options.Add("Access Resource Bay");
                 options.Add("Export Starcharts");
             }
 

@@ -414,6 +414,7 @@ namespace SWLOR.Game.Server.Service
             ship.SetLocalInt("SCANNING", stats.scanning + GetCargoBonus(bay, 3));
             ship.SetLocalInt("SPEED", stats.speed + GetCargoBonus(bay, 4));
             ship.SetLocalInt("STRONIDIUM", pcBase.ReinforcedFuel);
+            ship.SetLocalInt("HP", (int) structure.Durability);
             ship.SetLocalFloat("RANGE", stats.range + GetCargoBonus(bay, 5));
         }
 
@@ -660,12 +661,6 @@ namespace SWLOR.Game.Server.Service
             shipCreature.Name = ship.Name;
             _error.Trace(SPACE, "Created ship " + shipCreature.Name + " in area " + shipCreature.Area.Name);
 
-            // Ship creatures are set up with Max HP = base durability of the ship structures.  But apply damage here.
-            if (shipCreature.CurrentHP != shipStructure.Durability)
-            {
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage((int)(shipCreature.CurrentHP - shipStructure.Durability), DAMAGE_TYPE_MAGICAL), shipCreature);
-            }
-
             // Once the ship has spawned (and had its base stats set), adjust them for any mods we have on board.
             _.AssignCommand(shipCreature, () => { UpdateCargoBonus(ship, shipCreature); });
         }
@@ -678,14 +673,7 @@ namespace SWLOR.Game.Server.Service
                 string shipID = ship.GetLocalString("PC_BASE_STRUCTURE_ID");
                 PCBaseStructure shipStructure = _data.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == shipID);
                 PCBase shipBase = _data.Get<PCBase>(shipStructure.PCBaseID);
-
-                if (shipStructure.Durability != shipCreature.CurrentHP)
-                {
-                    // Save any damage on the ship. 
-                    shipStructure.Durability = shipCreature.CurrentHP;
-                    _data.SubmitDataChange(shipStructure, DatabaseActionType.Update);
-                }
-
+                
                 // Remove the ship object.
                 _error.Trace(SPACE, "Removing ship " + shipCreature.Name + " from " + shipCreature.Area.Name);
                 shipCreature.Destroy();
@@ -744,7 +732,6 @@ namespace SWLOR.Game.Server.Service
             int shipSpeed = GetShipStatsByAppearance(shipAppearance).speed + GetCargoBonus(GetCargoBay(ship, null), 4);
 
             NWPlaceable chair = _.GetNearestObjectByTag("pilot_chair", player);
-
             ClonePCAndSit(player, chair);
 
             // Find the dummy ship - swap the PC and the dummy ship.
@@ -771,44 +758,18 @@ namespace SWLOR.Game.Server.Service
             {
                 _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, _.EffectMovementSpeedDecrease(100 - shipSpeed), player);
             }
-
-            // Adjust max and current HP.
-            int hp = shipCreature.MaxHP;
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_CONSTITUTION, 10);
-
-            for (int level = 1; level <= 5; level++)
-            {
-                hp--;
-                _nwnxCreature.SetMaxHitPointsByLevel(player, level, 1);
-            }
-
-            for (int level = 1; level <= 5; level++)
-            {
-                if (hp > 255) // Levels can only contain a max of 255 HP
-                {
-                    _nwnxCreature.SetMaxHitPointsByLevel(player, level, 255);
-                    hp = hp - 254;
-                }
-                else // Remaining value gets set to the level. (<255 hp)
-                {
-                    _nwnxCreature.SetMaxHitPointsByLevel(player, level, hp + 1);
-                    break;
-                }
-            }
-
-            if (shipCreature.MaxHP > shipCreature.CurrentHP)
-            {
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(shipCreature.MaxHP - shipCreature.CurrentHP, DAMAGE_TYPE_MAGICAL), player);
-            }
-
+            
             // Clean up the ship model.
             player.AssignCommand(() => { _.ActionJumpToLocation(shipCreature.Location); });
+            player.SetLocalInt("MAX_HP", shipCreature.MaxHP);
             RemoveShipInSpace(ship);
             ship.SetLocalObject("CREATURE", player);
             player.SetLocalObject("SHIP", ship);
 
-            // Update the ship's stats for any mods we have on board.
+            // Update the ship's stats for any mods we have on board (and current stronidium/HP).
             UpdateCargoBonus(ship, player);
+
+            player.SendMessage("Type /exit to exit pilot mode.");
         }
 
         public void DoStopFlyShip(NWPlayer player)
@@ -839,13 +800,12 @@ namespace SWLOR.Game.Server.Service
             _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_DUR_CUTSCENE_INVISIBILITY), player, 2.5f);
             copy.Destroy(2.5f);
 
-            // Set our appearance back to normal (now that we're invisible) and clear up our stats. 
+            // Set our appearance back to normal (now that we're invisible). 
             _.SetCreatureAppearanceType(player, player.Chest.GetLocalInt("APPEARANCE"));
             _.SetObjectVisualTransform(player, OBJECT_VISUAL_TRANSFORM_SCALE, 1.0f);
             player.DeleteLocalInt("IS_SHIP");
             player.DeleteLocalObject("COPY");
             player.DeleteLocalObject("SHIP");
-            _playerStat.ApplyStatChanges(player, null);
             player.RemoveEffect(EFFECT_TYPE_MOVEMENT_SPEED_INCREASE);
             player.RemoveEffect(EFFECT_TYPE_MOVEMENT_SPEED_DECREASE);
             player.RemoveEffect(EFFECT_TYPE_DAMAGE_IMMUNITY_INCREASE);
@@ -870,6 +830,8 @@ namespace SWLOR.Game.Server.Service
             player.SetLocalInt("IS_GUNNER", 1);
 
             // Apply effects so we can't be seen or hit.
+            player.AssignCommand(() => { _.ActionUnequipItem(player.LeftHand); });
+            player.AssignCommand(() => { _.ActionUnequipItem(player.RightHand); });
             _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, _.EffectCutsceneGhost(), player);
             _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, _.EffectInvisibility(INVISIBILITY_TYPE_NORMAL), player);
 
@@ -883,6 +845,7 @@ namespace SWLOR.Game.Server.Service
                 _.SetCommandable(0, player);
             });
 
+            player.SendMessage("Type /exit to exit gunner mode.");
         }
 
         public void DoStopCrewGuns(NWPlayer player)
@@ -1068,9 +1031,25 @@ namespace SWLOR.Game.Server.Service
                         else
                         {
                             player.SendMessage("The asteroid hits your ship!");
-                            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(_.d6(3), DAMAGE_TYPE_PIERCING), player);
+                            int damage = _.d6(3);
 
-                            DoImpactFeedback(ship, "Something hit the hull!");
+                            // Apply the damage.
+                            int targetHP = player.GetLocalInt("HP") - damage;
+
+                            // Feedback.
+                            if (targetHP <= 0)
+                            {
+                                // Boom!
+                                _.ApplyEffectAtLocation(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_FNF_IMPLOSION), player.Location, 2.0f);
+                                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDeath(), player);
+                            }
+                            else
+                            {
+                                player.SetLocalInt("HP", targetHP);
+                                player.FloatingText("Hull points: " + targetHP + "/" + player.GetLocalInt("MAX_HP"));
+                            }
+
+                            DoImpactFeedback(ship, "Something hit the hull! Hull points: " + (targetHP) + "/" + player.GetLocalInt("MAX_HP"));
                         }
                     }
                     else if (encounter.Type == 3)
@@ -1149,7 +1128,7 @@ namespace SWLOR.Game.Server.Service
 
             if (attackStron == 0)
             {
-                attacker.FloatingText("Out of fuel!");
+                attacker.FloatingText("Out of Stronidium!");
                 _error.Trace(SPACE, attacker.Name + " is out of stronidium");
                 return;
             }
@@ -1218,12 +1197,12 @@ namespace SWLOR.Game.Server.Service
                 Effect eBeam = _.EffectBeam(447, attacker, BODY_NODE_CHEST);
                 _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, eBeam, target, 0.5f);
 
-                // Reduce the attacker's Stronidium by their weapon strength.
-                attackStron -= attackWeapons;
+                // Reduce the attacker's Stronidium by half their weapon strength.
+                attackStron -= attackWeapons/2;
                 attacker.SetLocalInt("STRONIDIUM", attackStron);
 
-                // Reduce the defender's Stronidium by their shield strength.
-                defendStron -= defendShields;
+                // Reduce the defender's Stronidium by half their shield strength.
+                defendStron -= defendShields/2;
                 target.SetLocalInt("STRONIDIUM", defendStron);
 
                 // Calculate damage.  TODO - add perks that help here.
@@ -1234,11 +1213,23 @@ namespace SWLOR.Game.Server.Service
                 damage = (int)((float)attackWeapons * (1.0f + bonus)) - defendShields;
                 if (damage < 0) damage = 0;
 
-                // Apply the damage even if it's zero.
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_MAGICAL), target);
+                // Apply the damage.
+                int targetHP = target.GetLocalInt("HP") - damage;
 
                 // Feedback.
-                if (defenderArea.IsValid) DoImpactFeedback(defenderArea, "Your ship was hit!");
+                if (targetHP <= 0)
+                {
+                    // Boom!
+                    _.ApplyEffectAtLocation(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_FNF_IMPLOSION), target.Location, 2.0f);
+                    _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDeath(), target);
+                }
+                else
+                {
+                    target.SetLocalInt("HP", targetHP);
+                    attacker.FloatingText(target.Name + ": " + targetHP + "/" + target.GetLocalInt("MAX_HP"));
+                    target.FloatingText("Hull points: " + targetHP + "/" + target.GetLocalInt("MAX_HP"));
+                    if (defenderArea.IsValid && damage > 0) DoImpactFeedback(defenderArea, "Your ship was hit!  Hull points " + (targetHP) + "/" + target.GetLocalInt("MAX_HP"));
+                }
             }
             else
             {
@@ -1262,8 +1253,8 @@ namespace SWLOR.Game.Server.Service
                 -- This doesn't work, EffectBeams can't be fired at locations.
                 _.ApplyEffectAtLocation(DURATION_TYPE_TEMPORARY, eBeam, missLoc, 0.5f);*/
 
-                // Reduce the attacker's Stronidium by their weapon strength.
-                attackStron -= attackWeapons;
+                // Reduce the attacker's Stronidium by half their weapon strength.
+                attackStron -= attackWeapons/2;
                 attacker.SetLocalInt("STRONIDIUM", attackStron);
             }
 
@@ -1317,8 +1308,11 @@ namespace SWLOR.Game.Server.Service
             if (stats.scale == default(float)) return;
 
             _.SetObjectVisualTransform(creature, OBJECT_VISUAL_TRANSFORM_SCALE, stats.scale);
+            if (String.IsNullOrWhiteSpace(creature.GetLocalString("BEHAVIOUR"))) creature.SetLocalString("BEHAVIOUR", "StarshipBehaviour");
 
             // Save off our stats.
+            creature.SetLocalInt("HP", creature.MaxHP);
+            creature.SetLocalInt("MAX_HP", creature.MaxHP);
             creature.SetLocalInt("WEAPONS", stats.weapons);
             creature.SetLocalInt("SHIELDS", stats.shields);
             creature.SetLocalInt("STEALTH", stats.stealth);
@@ -1385,6 +1379,59 @@ namespace SWLOR.Game.Server.Service
                 equipper.AssignCommand(() => { _.ClearAllActions(); _.ActionUnequipItem(item); });
                 equipper.SendMessage("You cannot equip items while flying a ship.");
             }
+        }
+
+        public void OnPhysicalAttacked(NWCreature creature, NWCreature attacker)
+        {
+            ShipStats stats = GetShipStatsByAppearance(_.GetAppearanceType(creature));
+
+            if (stats.scale == default(float)) return;
+
+            if (_.GetDistanceBetween(creature, attacker) < stats.range)
+            {
+                _.AssignCommand(creature, () => { _.SetFacingPoint(attacker.Position); });
+            }
+            else
+            {
+                _.AssignCommand(creature, () => { _.ActionMoveToObject(attacker); });
+            }
+        }
+
+        public void OnPerception(NWCreature creature, NWCreature perceived)
+        {
+            ShipStats stats = GetShipStatsByAppearance(_.GetAppearanceType(creature));
+
+            if (stats.scale == default(float)) return;
+
+            if (_.GetIsEnemy(perceived, creature) == 0) return;
+
+            // TODO - respect turning circles and only turn the ship a bit at a time. 
+            if (_.GetDistanceBetween(creature, perceived) < stats.range)
+            {
+                _.AssignCommand(creature, () => { _.ClearAllActions(); _.SetFacingPoint(perceived.Position); });
+
+                // 33% chance of immediately firing if within range.
+                if (_.d3() == 3) OnCreatureHeartbeat(creature);
+            }
+            else
+            {
+                _.AssignCommand(creature, () => { _.ActionMoveToObject(perceived); });
+            }
+        }
+
+        // Note - this method is called by the ship behaviour method.  It's different from the generic
+        // attack method above which is called for all creatures.  Thus allowing for future ships to 
+        // use different AI. 
+        public void OnHeartbeat(NWCreature creature)
+        {
+            // Turn to face the nearest enemy if they are within range.
+            // Really ought to improve this a bunch to do proper dogfighting but it will do for now.
+            ShipStats stats = GetShipStatsByAppearance(_.GetAppearanceType(creature));
+            if (stats.scale == default(float)) return;
+
+            NWCreature enemy = _.GetNearestCreature(CREATURE_TYPE_REPUTATION, REPUTATION_TYPE_ENEMY, creature);
+
+            if (enemy.IsValid) OnPerception(creature, enemy);            
         }
     }
 }

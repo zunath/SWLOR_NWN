@@ -35,5 +35,8 @@ namespace SWLOR.Game.Server.Service.Contracts
         void OnCreatureSpawn(NWCreature creature);
         void OnCreatureHeartbeat(NWCreature creature);
         void OnModuleItemEquipped();
+        void OnPhysicalAttacked(NWCreature creature, NWCreature attacker);
+        void OnPerception(NWCreature creature, NWCreature perceived);
+        void OnHeartbeat(NWCreature creature);
     }
 }

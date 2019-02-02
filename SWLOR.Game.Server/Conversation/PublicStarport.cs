@@ -78,18 +78,18 @@ namespace SWLOR.Game.Server.Conversation
                                              .OrderBy(o => o.DateInitialPurchase)
                                              .ToList();
 
-            // Get apartments owned by other players and the current player currently has access to.
-            var permissions = _data.GetAll<PCBasePermission>().Where(x => x.PlayerID == player.GlobalID);
+            // Get starships owned by other players and the current player currently has access to.
+            var permissions = _data.GetAll<PCBaseStructurePermission>().Where(x => x.PlayerID == player.GlobalID);
             var permissionedShips = _data.Where<PCBase>(x =>
             {
                 if (x.ShipLocation != starportID.ToLower() ||
                     x.DateRentDue <= DateTime.UtcNow ||
                     x.PlayerID == player.GlobalID) return false;
-                
-                var permission = permissions.SingleOrDefault(p => p.PCBaseID == x.ID);
-                return permission != null && permission.CanEnterBuildings;
+
+                PCBaseStructure ship = _data.Single<PCBaseStructure>(s => s.PCBaseID == x.ID && s.ExteriorStyleID > 0);
+                var permission = permissions.SingleOrDefault(p => p.PCBaseStructureID == ship.ID);
+                return permission != null && permission.CanEnterBuilding;
             })
-                .OrderBy(o => o.DateInitialPurchase)
                 .ToList();
 
             int count = 1;
@@ -136,17 +136,6 @@ namespace SWLOR.Game.Server.Conversation
 
             var shipBase = _data.Get<PCBase>(pcBaseID);
             var ship = _data.SingleOrDefault<PCBaseStructure>(x => x.PCBaseID == shipBase.ID && x.InteriorStyleID != null);
-
-            var owner = _data.Get<Player>(shipBase.PlayerID);
-            var permission = _data.SingleOrDefault<PCBasePermission>(x => x.PlayerID == oPC.GlobalID && 
-                                                                          x.PCBaseID == pcBaseID &&
-                                                                          !x.IsPublicPermission);
-
-            if (permission == null || !permission.CanEnterBuildings)
-            {
-                oPC.FloatingText("You do not have permission to enter that starship.");
-                return;
-            }
 
             NWArea instance = _base.GetAreaInstance(ship.ID, false);
 

@@ -11,6 +11,7 @@
         CanEditPrimaryResidence = 7,
         CanRemovePrimaryResidence = 8,
         CanChangeStructureMode = 9,
-        CanAdjustPublicPermissions = 10
+        CanAdjustPublicPermissions = 10,
+        CanFlyStarship = 11
     }
 }

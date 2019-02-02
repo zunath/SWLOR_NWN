@@ -155,6 +155,9 @@ namespace SWLOR.Game.Server.Conversation
             bool canRemovePrimaryResidence = permission?.CanRemovePrimaryResidence ?? false;
             bool canChangeStructureMode = permission?.CanChangeStructureMode ?? false;
             bool canAdjustPublicPermissions = permission?.CanAdjustPublicPermissions ?? false;
+            bool canFlyStarship = permission?.CanFlyStarship ?? false;
+
+            bool isStarship = player.Area.GetLocalInt("BUILDING_TYPE") == (int)Enumeration.BuildingType.Starship;
 
             string header = _color.Green("Name: ") + player.Name + "\n\n";
 
@@ -170,6 +173,8 @@ namespace SWLOR.Game.Server.Conversation
             header += "Can Change Structure Mode: " + (canChangeStructureMode ? _color.Green("YES") : _color.Red("NO")) + "\n";
             header += "Can Adjust PUBLIC Permissions: " + (canAdjustPublicPermissions ? _color.Green("YES") : _color.Red("NO")) + "\n";
 
+            if (isStarship) header += "Can Fly Starship: " + (canFlyStarship ? _color.Green("YES") :_color.Red("NO")) + "\n";
+
             SetPageHeader("PlayerDetailsPage", header);
 
             AddResponseToPage("PlayerDetailsPage", "Toggle: Can Place/Edit Structures", true, player);
@@ -182,6 +187,8 @@ namespace SWLOR.Game.Server.Conversation
             AddResponseToPage("PlayerDetailsPage", "Toggle: Can Remove Primary Residence", true, player);
             AddResponseToPage("PlayerDetailsPage", "Toggle: Can Change Structure Mode", true, player);
             AddResponseToPage("PlayerDetailsPage", "Toggle: Can Adjust PUBLIC Permissions", true, player);
+            // Add new non-conditional responses here to avoid confusing the response handling logic.
+            if (isStarship) AddResponseToPage("PlayerDetailsPage", "Toggle: Can Fly Starship", true, player);
         }
 
         private void PlayerDetailsResponses(int responseID)
@@ -221,6 +228,9 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case 10: // Can Adjust PUBLIC Permissions
                     TogglePermission(playerID, StructurePermission.CanAdjustPublicPermissions, false);
+                    break;
+                case 11: // Can fly starship
+                    TogglePermission(playerID, StructurePermission.CanFlyStarship, false);
                     break;
             }
 
@@ -280,6 +290,9 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case StructurePermission.CanAdjustPublicPermissions:
                     dbPermission.CanAdjustPublicPermissions = !dbPermission.CanAdjustPublicPermissions;
+                    break;
+                case StructurePermission.CanFlyStarship:
+                    dbPermission.CanFlyStarship = !dbPermission.CanFlyStarship;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(permission), permission, null);

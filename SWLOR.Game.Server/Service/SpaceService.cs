@@ -875,6 +875,20 @@ namespace SWLOR.Game.Server.Service
             copy.Destroy(2.5f);
         }
 
+        public void LandCrew(NWArea ship)
+        {
+            // Called on landing to get the gunner and pilot (if any) back on board.
+            NWPlayer gunner = ship.GetLocalObject("GUNNER");
+            if (gunner.IsValid) DoStopCrewGuns(gunner);
+
+            NWCreature pilot = ship.GetLocalObject("CREATURE");
+            if (pilot.IsValid && pilot.IsPC)
+            {
+                NWPlayer pilotPlayer = ship.GetLocalObject("CREATURE");
+                DoStopFlyShip(pilotPlayer);
+            }
+        }
+
         private void ClonePCAndSit(NWPlayer player, NWPlaceable chair)
         {
             // Create a copy of the PC and link the two. 

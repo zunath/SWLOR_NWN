@@ -46,7 +46,6 @@ namespace SWLOR.Game.Server.Service
                 if (permission == BasePermission.CanChangeStructureMode && publicBasePermission.CanChangeStructureMode) return true;
                 if (permission == BasePermission.CanAdjustPublicPermissions && publicBasePermission.CanAdjustPublicPermissions) return true;
                 if (permission == BasePermission.CanDockStarship && publicBasePermission.CanDockStarship) return true;
-
             }
 
             // No matching public permissions. Now check the base permissions for this player.

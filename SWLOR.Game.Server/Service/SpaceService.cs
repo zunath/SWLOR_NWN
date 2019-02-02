@@ -738,6 +738,7 @@ namespace SWLOR.Game.Server.Service
             // Note that the PC is currently invisible thanks to the clone method.
             player.Chest.SetLocalInt("APPEARANCE", _.GetAppearanceType(player));
             player.SetLocalInt("IS_SHIP", 1);
+            player.SetLocalObject("AREA", ship);
             _.SetCreatureAppearanceType(player, shipAppearance);
 
             _.SetObjectVisualTransform(player, OBJECT_VISUAL_TRANSFORM_SCALE, GetShipStatsByAppearance(shipAppearance).scale);
@@ -764,7 +765,6 @@ namespace SWLOR.Game.Server.Service
             player.SetLocalInt("MAX_HP", shipCreature.MaxHP);
             RemoveShipInSpace(ship);
             ship.SetLocalObject("CREATURE", player);
-            player.SetLocalObject("SHIP", ship);
 
             // Update the ship's stats for any mods we have on board (and current stronidium/HP).
             UpdateCargoBonus(ship, player);
@@ -804,8 +804,8 @@ namespace SWLOR.Game.Server.Service
             _.SetCreatureAppearanceType(player, player.Chest.GetLocalInt("APPEARANCE"));
             _.SetObjectVisualTransform(player, OBJECT_VISUAL_TRANSFORM_SCALE, 1.0f);
             player.DeleteLocalInt("IS_SHIP");
+            player.DeleteLocalObject("AREA");
             player.DeleteLocalObject("COPY");
-            player.DeleteLocalObject("SHIP");
             player.RemoveEffect(EFFECT_TYPE_MOVEMENT_SPEED_INCREASE);
             player.RemoveEffect(EFFECT_TYPE_MOVEMENT_SPEED_DECREASE);
             player.RemoveEffect(EFFECT_TYPE_DAMAGE_IMMUNITY_INCREASE);
@@ -834,9 +834,9 @@ namespace SWLOR.Game.Server.Service
             player.AssignCommand(() => { _.ActionUnequipItem(player.RightHand); });
             _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, _.EffectCutsceneGhost(), player);
             _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, _.EffectInvisibility(INVISIBILITY_TYPE_NORMAL), player);
+            _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, _.EffectMovementSpeedIncrease(200), player);
 
             ship.SetLocalObject("GUNNER", player);
-            player.SetLocalObject("SHIP", ship);
 
             player.AssignCommand(() => 
             {
@@ -862,6 +862,7 @@ namespace SWLOR.Game.Server.Service
             _.SetCreatureAppearanceType(player, player.Chest.GetLocalInt("APPEARANCE"));
             player.DeleteLocalInt("IS_GUNNER");
             player.DeleteLocalObject("COPY");
+            player.RemoveEffect(EFFECT_TYPE_MOVEMENT_SPEED_INCREASE);
 
             _.DelayCommand(2.5f, () => 
             {
@@ -870,7 +871,6 @@ namespace SWLOR.Game.Server.Service
             });
 
             copy.Area.DeleteLocalObject("GUNNER");
-            player.DeleteLocalObject("SHIP");
 
             copy.Destroy(2.5f);
         }
@@ -990,6 +990,10 @@ namespace SWLOR.Game.Server.Service
                     _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_FNF_SCREEN_BUMP), creature);
                     // TODO - play sound.
                 }
+                else if (creature.Tag == "spaceship_copy")
+                {
+                    ((NWPlayer)creature.GetLocalObject("OWNER")).SendMessage(message);
+                }
             }
         }
 
@@ -998,7 +1002,7 @@ namespace SWLOR.Game.Server.Service
             // Called in the OnEnter of encounter triggers.
             // Get the location of the player's ship.
             if (!player.IsPC || player.GetLocalInt("IS_SHIP") == 0) return;            
-            NWArea ship = player.GetLocalObject("SHIP");
+            NWArea ship = player.GetLocalObject("AREA");
 
             string shipID = ship.GetLocalString("PC_BASE_STRUCTURE_ID");
             PCBaseStructure shipStructure = _data.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == shipID);
@@ -1061,6 +1065,10 @@ namespace SWLOR.Game.Server.Service
                             {
                                 player.SetLocalInt("HP", targetHP);
                                 player.FloatingText("Hull points: " + targetHP + "/" + player.GetLocalInt("MAX_HP"));
+
+                                shipStructure.Durability = targetHP;
+                                _data.SubmitDataChange(shipStructure, DatabaseActionType.Update);
+
                             }
 
                             DoImpactFeedback(ship, "Something hit the hull! Hull points: " + (targetHP) + "/" + player.GetLocalInt("MAX_HP"));
@@ -1240,8 +1248,8 @@ namespace SWLOR.Game.Server.Service
                 else
                 {
                     target.SetLocalInt("HP", targetHP);
-                    attacker.FloatingText(target.Name + ": " + targetHP + "/" + target.GetLocalInt("MAX_HP"));
-                    target.FloatingText("Hull points: " + targetHP + "/" + target.GetLocalInt("MAX_HP"));
+                    attacker.FloatingText(target.Name + ": " + targetHP + "/" + target.GetLocalInt("MAX_HP"), true);
+                    target.FloatingText("Hull points: " + targetHP + "/" + target.GetLocalInt("MAX_HP"), true);
                     if (defenderArea.IsValid && damage > 0) DoImpactFeedback(defenderArea, "Your ship was hit!  Hull points " + (targetHP) + "/" + target.GetLocalInt("MAX_HP"));
                 }
             }

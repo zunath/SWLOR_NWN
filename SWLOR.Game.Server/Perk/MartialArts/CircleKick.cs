@@ -1,20 +1,21 @@
 ﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
+
 using NWN;
+
 using SWLOR.Game.Server.NWNX.Contracts;
 
 namespace SWLOR.Game.Server.Perk.MartialArts
 {
     public class CircleKick : IPerk
     {
-        private readonly INWScript _;
+       // private readonly INWScript _;
         private readonly INWNXCreature _nwnxCreature;
 
-        public CircleKick(INWScript script,
-            INWNXCreature nwnxCreature)
+        public CircleKick(INWNXCreature nwnxCreature)
         {
-            _ = script;
+            //_ = script;
             _nwnxCreature = nwnxCreature;
         }
 
@@ -83,6 +84,11 @@ namespace SWLOR.Game.Server.Perk.MartialArts
             CustomItemType mainType = mainHand.CustomItemType;
             CustomItemType offType = offHand.CustomItemType;
             bool receivesFeat = true;
+
+            
+
+            //_nwnxCreature.AddFeat(oPC, NWScript.FEAT_CIRCLE_KICK);
+            System.Console.WriteLine("it's being fired dumbass");
 
             if (unequippingItem != null && Equals(unequippingItem, mainHand))
             {

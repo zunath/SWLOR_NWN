@@ -434,6 +434,7 @@
     <Compile Include="Event\Area\OnAreaHeartbeat.cs" />
     <Compile Include="Event\Area\OnAreaExit.cs" />
     <Compile Include="Event\Area\OnAreaEnter.cs" />
+    <Compile Include="Event\Conversation\HasCredits.cs" />
     <Compile Include="Event\Conversation\HasSkillRank.cs" />
     <Compile Include="Event\Conversation\KeyItemCheck.cs" />
     <Compile Include="Event\Conversation\OpenStore.cs" />
@@ -445,6 +446,7 @@
     <Compile Include="Event\Conversation\QuestCollectItem.cs" />
     <Compile Include="Event\Conversation\QuestComplete.cs" />
     <Compile Include="Event\Conversation\QuestIsDone.cs" />
+    <Compile Include="Event\Conversation\Tatooine GoCorp Transport\tp_gocorp_mos.cs" />
     <Compile Include="Event\Conversation\WarpToWaypoint.cs" />
     <Compile Include="Event\Creature\OnBlocked.cs" />
     <Compile Include="Event\Creature\OnCombatRoundEnd.cs" />
@@ -513,6 +515,7 @@
     <Compile Include="NWNX\NWNXProfiler.cs" />
     <Compile Include="NWNX\NWNXWeapon.cs" />
     <Compile Include="NWNX\PlayerVisibilityType.cs" />
+    <Compile Include="NWN\Events\Conversation\credit_check.cs" />
     <Compile Include="NWN\Events\Conversation\KeyItem\AnyKeyItems\any_keyitems_1.cs" />
     <Compile Include="NWN\Events\Conversation\KeyItem\AnyKeyItems\any_keyitems_10.cs" />
     <Compile Include="NWN\Events\Conversation\KeyItem\AnyKeyItems\any_keyitems_2.cs" />
@@ -2180,7 +2183,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)*.*" "C:/NeverwinterNights/nwn/mono" /E /Y /C
+    <PostBuildEvent>xcopy "$(TargetDir)*.*" "E:\Documents\Projects\SWLOR_NWN\mono" /E /Y /C
 </PostBuildEvent>
   </PropertyGroup>
 </Project>

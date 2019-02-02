@@ -9,11 +9,11 @@ using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Event.Conversation
 {
-    public class tp_gocorp_mos : IRegisteredEvent
+    public class TransportToMosEisley : IRegisteredEvent
     {
         private readonly INWScript _;
 
-        public tp_gocorp_mos(INWScript script)
+        public TransportToMosEisley(INWScript script)
         {
             _ = script;
         }
@@ -22,15 +22,14 @@ namespace SWLOR.Game.Server.Event.Conversation
         {
             NWPlayer oPC = _.GetPCSpeaker();
             NWObject oNPC = Object.OBJECT_SELF;
-
-                oPC = _.GetPCSpeaker();
-
-                NWObject oWay01 = _.GetWaypointByTag("landspeeder_anc_mos");
-                _.SetLocalString(oPC, "oDest", "");
-                _.TakeGoldFromCreature(100, oPC);
-                _.AssignCommand(oPC,()=> {
-                    _.ActionJumpToObject(oWay01);
-                });
+            oPC = _.GetPCSpeaker();
+            NWObject oWay01 = _.GetWaypointByTag("landspeeder_anc_mos");
+            _.SetLocalString(oPC, "oDest", "");
+            _.TakeGoldFromCreature(100, oPC);
+            _.AssignCommand(oPC,()=> 
+            {
+                _.ActionJumpToObject(oWay01);
+            });
             return true;
         }
         

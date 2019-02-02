@@ -456,7 +456,7 @@
     <Compile Include="Event\Conversation\QuestCollectItem.cs" />
     <Compile Include="Event\Conversation\QuestComplete.cs" />
     <Compile Include="Event\Conversation\QuestIsDone.cs" />
-    <Compile Include="Event\Conversation\Tatooine GoCorp Transport\tp_gocorp_mos.cs" />
+    <Compile Include="Event\Conversation\Tatooine GoCorp Transport\TransportToMosEisley.cs" />
     <Compile Include="Event\Conversation\WarpToWaypoint.cs" />
     <Compile Include="Event\Creature\OnBlocked.cs" />
     <Compile Include="Event\Creature\OnCombatRoundEnd.cs" />
@@ -2199,7 +2199,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)*.*" "E:\Documents\Projects\SWLOR_NWN\mono" /E /Y /C
+    <PostBuildEvent>xcopy "$(TargetDir)*.*" "E:\Documents\Neverwinter Nights\mono" /E /Y /C
 </PostBuildEvent>
   </PropertyGroup>
 </Project>

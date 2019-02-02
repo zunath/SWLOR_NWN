@@ -1,6 +1,6 @@
-﻿namespace SWLOR.Game.Server.Enumeration
+﻿namespace SWLOR.Game.Server.NWNX
 {
-    public enum MovementType
+    public enum CreatureMovementType
     {
         Stationary = 0,
         Walk = 1,

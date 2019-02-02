@@ -14,7 +14,11 @@ namespace SWLOR.Game.Server.NWNX
 
         private const string NWNX_Creature = "NWNX_Creature";
 
-        // Gives the provided creature the provided feat.
+        /// <summary>
+        /// Gives the provided creature the provided feat.
+        /// </summary>
+        /// <param name="creature"></param>
+        /// <param name="feat"></param>
         public void AddFeat(NWCreature creature, int feat)
         {
             string sFunc = "AddFeat";
@@ -24,8 +28,13 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Creature, sFunc);
         }
 
-        // Gives the provided creature the provided feat.
-        // Adds the feat to the stat list at the provided level.
+        /// <summary>
+        /// Gives the provided creature the provided feat.
+        /// Adds the feat to the stat list at the provided level.
+        /// </summary>
+        /// <param name="creature"></param>
+        /// <param name="feat"></param>
+        /// <param name="level"></param>
         public void AddFeatByLevel(NWCreature creature, int feat, int level)
         {
             string sFunc = "AddFeatByLevel";

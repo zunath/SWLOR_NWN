@@ -147,48 +147,14 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            NWArea instance = GetAreaInstance(pcBaseID);
+            NWArea instance = _base.GetAreaInstance(pcBaseID, true);
 
             if (instance == null)
             {
-                string name = owner.CharacterName + "'s Apartment";
-                if (!string.IsNullOrWhiteSpace(apartment.CustomName))
-                {
-                    name = apartment.CustomName;
-                }
-
-                instance = _area.CreateAreaInstance(oPC, buildingStyle.Resref, name, "PLAYER_HOME_ENTRANCE");
-                instance.SetLocalString("PC_BASE_ID", pcBaseID.ToString());
-                instance.SetLocalInt("BUILDING_TYPE", (int)BuildingType.Apartment);
-
-                foreach (var furniture in structures)
-                {
-                    _base.SpawnStructure(instance, furniture.ID);
-                }
+                instance = _base.CreateAreaInstance(oPC, pcBaseID, true);
             }
 
             _base.JumpPCToBuildingInterior(oPC, instance);
-        }
-
-
-
-        private NWArea GetAreaInstance(Guid pcApartmentID)
-        {
-            NWArea instance = null;
-            foreach (var area in NWModule.Get().Areas)
-            {
-                string pcBaseID = area.GetLocalString("PC_BASE_ID");
-                if (string.IsNullOrWhiteSpace(pcBaseID)) continue;
-                
-                Guid pcBaseGuid = new Guid(pcBaseID);
-                if (pcBaseGuid == pcApartmentID)
-                {
-                    instance = area;
-                    break;
-                }
-            }
-
-            return instance;
         }
 
         public override void EndDialog()

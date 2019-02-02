@@ -11,25 +11,29 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IBaseService _base;
         private readonly IChatTextService _chatText;
         private readonly ICraftService _craft;
+        private readonly ISpaceService _space;
 
         public OnModuleNWNXChat(
             IActivityLoggingService activityLogging,
             IChatCommandService chatCommand,
             IBaseService @base,
             IChatTextService chatText,
-            ICraftService craft)
+            ICraftService craft,
+            ISpaceService space)
         {
             _activityLogging = activityLogging;
             _chatCommand = chatCommand;
             _base = @base;
             _chatText = chatText;
             _craft = craft;
+            _space = space;
         }
 
         public bool Run(params object[] args)
         {
             NWPlayer player = (Object.OBJECT_SELF);
             _activityLogging.OnModuleNWNXChat(player);
+            _space.OnNWNXChat();
             _chatCommand.OnModuleNWNXChat(player);
             _base.OnModuleNWNXChat(player);
             _chatText.OnNWNXChat();

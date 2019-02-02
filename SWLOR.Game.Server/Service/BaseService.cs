@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IDurabilityService _durability;
         private readonly IAreaService _area;
         private readonly IErrorService _error;
+        private readonly ISpaceService _space;
         private readonly ISerializationService _serialization;
 
         public BaseService(
@@ -42,6 +43,7 @@ namespace SWLOR.Game.Server.Service
             INWNXChat nwnxChat,
             IDurabilityService durability,
             IAreaService area,
+            ISpaceService space,
             IErrorService error,
             ISerializationService serialization)
         {
@@ -57,6 +59,7 @@ namespace SWLOR.Game.Server.Service
             _area = area;
             _data = data;
             _error = error;
+            _space = space;
             _serialization = serialization;
         }
 
@@ -114,6 +117,10 @@ namespace SWLOR.Game.Server.Service
                 var pcBases = _data.Where<PCBase>(x => x.AreaResref == area.Resref && x.ApartmentBuildingID == null).ToList();
                 foreach (var @base in pcBases)
                 {
+                    // Migration code : ensure owner has all permissions.
+                    var allPermissions = Enum.GetValues(typeof(BasePermission)).Cast<BasePermission>().ToArray();
+                    _perm.GrantBasePermissions(@base.PlayerID, @base.ID, allPermissions);
+
                     var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == @base.ID);
                     foreach (var structure in structures)
                     {
@@ -169,7 +176,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             NWPlaceable door = null;
-            if (structureType == BaseStructureType.Building)
+            if (structureType == BaseStructureType.Building || structureType == BaseStructureType.Starship)
             {
                 door = SpawnBuildingDoor(exteriorStyle.DoorRule, plc);
                 areaStructures.Add(new AreaStructure(pcStructure.PCBaseID, pcStructure.ID, door, false, null));
@@ -182,6 +189,39 @@ namespace SWLOR.Game.Server.Service
                 if (DateTime.UtcNow > pcBase.DateFuelEnds && pcBase.Fuel <= 0)
                 {
                     ToggleInstanceObjectPower(area, false);
+                }
+            }
+
+            // Starship structures don't count as part of the base they are docked in.  Instead, the starship has its
+            // own base entry, with a ShipLocation field that can be set to the structure ID of a docking bay in
+            // someone else's base.
+            if (structureType == BaseStructureType.StarshipProduction)
+            {
+                _error.Trace("SPACE", "Found starship dock.");
+
+                // See whether any starship is docked here.
+                PCBase starship = _data.SingleOrDefault<PCBase>(x => x.ShipLocation == pcStructure.ID.ToString());
+
+                if (starship != null)
+                {
+                    _error.Trace("SPACE", "Found a starship docked in this dock.");
+
+                    // Find the PCBaseStructure in the starship base that has an exterior listed.  This will be the actual
+                    // starship. 
+                    PCBaseStructure shipExterior = _data.SingleOrDefault<PCBaseStructure>(x => x.PCBaseID == starship.ID && x.ExteriorStyleID > 0);
+
+                    if (shipExterior == null)
+                    {
+                        // We have a starship PCBase with no accompanying PCBaseStructure.  This is a bug (and crashes NWNX
+                        // if we try to continue). 
+                        _error.Trace("SPACE", "Found PCBase " + starship.ID.ToString() + " with missing PCBaseStructure!");
+                    }
+                    else
+                    {
+                        _error.Trace("SPACE", "Spawning starship with ID: " + shipExterior.ID.ToString());
+                        SpawnStructure(area, shipExterior.ID);
+                        plc.SetLocalInt("DOCKED_STARSHIP", 1);
+                    }
                 }
             }
 
@@ -358,12 +398,13 @@ namespace SWLOR.Game.Server.Service
 
         public PCBaseStructure GetBaseControlTower(Guid pcBaseID)
         {
+            // Note - if this is a starship base, then the "control tower" is the starship object. 
             var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == pcBaseID);
 
             return structures.SingleOrDefault(x =>
             {
                 var baseStructure = _data.Get<BaseStructure>(x.BaseStructureID);
-                return baseStructure.BaseStructureTypeID == (int)BaseStructureType.ControlTower;
+                return (baseStructure.BaseStructureTypeID == (int) BaseStructureType.ControlTower || baseStructure.BaseStructureTypeID == (int) BaseStructureType.Starship);
             });
         }
 
@@ -495,7 +536,9 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                buildingType = BuildingType.Interior;
+                // Starship or building - check the variable to tell which. 
+                int buildingTypeID = area.GetLocalInt("BUILDING_TYPE");
+                buildingType = (BuildingType)buildingTypeID;
             }
 
             Area dbArea = _data.SingleOrDefault<Area>(x => x.Resref == area.Resref);
@@ -518,7 +561,18 @@ namespace SWLOR.Game.Server.Service
                 {
                     return "No more structures can be placed inside this building.";
                 }
+            }
+            else if (pcBase == null && buildingType == BuildingType.Starship)
+            {
+                var parentStructure = _data.Get<PCBaseStructure>(buildingStructureGuid);
+                var buildingStyle = _data.Get<BuildingStyle>(parentStructure.InteriorStyleID);
+                pcBase = _data.Get<PCBase>(parentStructure.PCBaseID);
 
+                int buildingStructureCount = _data.GetAll<PCBaseStructure>().Count(x => x.ParentPCBaseStructureID == parentStructure.ID) + 1;
+                if (buildingStructureCount > buildingStyle.FurnitureLimit + parentStructure.StructureBonus)
+                {
+                    return "No more structures can be placed inside this starship.";
+                }
             }
             else if (buildingType == BuildingType.Apartment)
             {
@@ -539,12 +593,17 @@ namespace SWLOR.Game.Server.Service
                 _perm.HasBasePermission(player, pcBase.ID, BasePermission.CanPlaceEditStructures) :                 // Bases
                 _perm.HasStructurePermission(player, buildingStructureGuid, StructurePermission.CanPlaceEditStructures);    // Buildings
 
+            var baseStructure = _data.Get<BaseStructure>(baseStructureID);
+            var baseStructureType = _data.Get<Data.Entity.BaseStructureType>(baseStructure.BaseStructureTypeID);
+
+            if (baseStructureType.ID == (int)BaseStructureType.Starship)
+            {
+                canPlaceOrEditStructures = _perm.HasBasePermission(player, pcBase.ID, BasePermission.CanDockStarship); 
+            }
+
             // Don't have permission.
             if (!canPlaceOrEditStructures)
                 return "You do not have permission to place or edit structures in this territory.";
-
-            var baseStructure = _data.Get<BaseStructure>(baseStructureID);
-            var baseStructureType = _data.Get<Data.Entity.BaseStructureType>(baseStructure.BaseStructureTypeID);
 
             // Can only place this structure inside buildings and the player is currently outside.
             if (!baseStructureType.CanPlaceOutside && buildingType == BuildingType.Exterior)
@@ -553,7 +612,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Can only place this structure outside
-            if (!baseStructureType.CanPlaceInside && (buildingType == BuildingType.Interior || buildingType == BuildingType.Apartment))
+            if (!baseStructureType.CanPlaceInside && (buildingType == BuildingType.Interior || buildingType == BuildingType.Apartment || buildingType == BuildingType.Starship))
             {
                 return "That structure can only be placed outside of buildings.";
             }
@@ -596,6 +655,102 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            // Starships may only be placed on an empty bay.
+            if (baseStructureType.ID == (int) BaseStructureType.Starship)
+            {
+                int nNth = 1;
+                NWObject dock = _.GetNearestObjectToLocation(OBJECT_TYPE_PLACEABLE, targetLocation, nNth);
+
+                while (true)
+                {
+                    // Not close enough. 
+                    if (_.GetDistanceBetweenLocations(targetLocation, dock.Location) > 10.0f) break;
+
+                    // Ship already docked here.
+                    if (dock.GetLocalInt("DOCKED_STARSHIP") == 1)
+                    {
+                        nNth++;
+                        dock = _.GetNearestObjectToLocation(OBJECT_TYPE_PLACEABLE, targetLocation, nNth);
+                        continue;
+                    }
+
+                    string dockPCBaseStructureID = dock.GetLocalString("PC_BASE_STRUCTURE_ID");
+
+                    if (!string.IsNullOrWhiteSpace(dockPCBaseStructureID))
+                    {
+                        PCBaseStructure dockStructure = _data.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == dockPCBaseStructureID);
+                        BaseStructure dockBaseStructure = _data.SingleOrDefault<BaseStructure>(x => x.ID == dockStructure.BaseStructureID);
+
+                        if (dockBaseStructure.BaseStructureTypeID == (int) BaseStructureType.StarshipProduction)
+                        {
+                            // We've found a dock!
+                            dock.SetLocalInt("DOCKED_STARSHIP", 1);
+
+                            // Create a new base for the starship and mark its location as dockPCBaseStructureID 
+                            BuildingStyle style = _data.SingleOrDefault<BuildingStyle>(x => x.BaseStructureID == baseStructureID && x.BuildingTypeID == (int)BuildingType.Starship);
+
+                            PCBase starkillerBase = new PCBase
+                            {
+                                PlayerID = player.GlobalID,
+                                DateInitialPurchase = DateTime.UtcNow,
+                                DateFuelEnds = DateTime.UtcNow,
+                                DateRentDue = DateTime.UtcNow.AddDays(999),
+                                PCBaseTypeID = (int)Enumeration.PCBaseType.Starship,
+                                Sector = "SS",
+                                BuildingStyleID = style.ID,
+                                AreaResref = style.Resref,
+                                CustomName = string.Empty,
+                                ShipLocation = dockPCBaseStructureID
+                            };
+                            _data.SubmitDataChange(starkillerBase, DatabaseActionType.Insert);
+                            
+                            PCBasePermission permission = new PCBasePermission
+                            {
+                                PCBaseID = starkillerBase.ID,
+                                PlayerID = player.GlobalID
+                            };
+                            _data.SubmitDataChange(permission, DatabaseActionType.Insert);
+
+                            // Grant all base permissions to owner.
+                            var allPermissions = Enum.GetValues(typeof(BasePermission)).Cast<BasePermission>().ToArray();
+                            _perm.GrantBasePermissions(player, starkillerBase.ID, allPermissions);
+                            var position = _.GetPositionFromLocation(targetLocation);
+                            BuildingStyle extStyle = _data.SingleOrDefault<BuildingStyle>(x => x.BaseStructureID == baseStructureID && x.BuildingTypeID == (int)BuildingType.Exterior);
+
+                            // Create the PC base structure entry, and call SpawnStructure to manifest it.
+                            PCBaseStructure starshipStructure = new PCBaseStructure
+                            {
+                                BaseStructureID = baseStructureID,
+                                Durability = _durability.GetDurability(structureItem),
+                                LocationOrientation = _.GetFacingFromLocation(targetLocation),
+                                LocationX = position.m_X,
+                                LocationY = position.m_Y,
+                                LocationZ = position.m_Z,
+                                PCBaseID = starkillerBase.ID,
+                                InteriorStyleID = style.ID,
+                                ExteriorStyleID = extStyle.ID,
+                                CustomName = string.Empty,
+                                StructureBonus = structureItem.StructureBonus,
+                                StructureModeID = baseStructure.DefaultStructureModeID
+                            };
+                            _data.SubmitDataChange(starshipStructure, DatabaseActionType.Insert);
+
+                            SpawnStructure(area, starshipStructure.ID);
+
+                            // Delete the item from the PC's inventory.
+                            structureItem.Destroy();
+
+                            return "Starship successfully docked.";
+                        }
+                    }
+
+                    nNth++;
+                    dock = _.GetNearestObjectToLocation(OBJECT_TYPE_PLACEABLE, targetLocation, nNth);
+                }
+
+                return "Unable to dock starship.  Starships must be docked on a vacant docking bay.";
+            }
+            
             return null;
         }
 
@@ -638,6 +793,8 @@ namespace SWLOR.Game.Server.Service
 
         public void ClearPCBaseByID(Guid pcBaseID, bool displayExplosion = false, bool impoundItems = true)
         {
+            _error.Trace("BASE", "Destroying base with base ID: " + pcBaseID.ToString());
+
             var pcBase = _data.Get<PCBase>(pcBaseID);
 
             // Pull back all structures associated with a PC's base. 
@@ -669,7 +826,23 @@ namespace SWLOR.Game.Server.Service
 
                 _data.SubmitDataChange(resident, DatabaseActionType.Update);
             }
+            
+            foreach (var structure in areaStructures)
+            {
+                BootPlayersOutOfInstance(structure.PCBaseStructureID);
 
+                if (structure.Structure.GetLocalInt("DOCKED_STARSHIP") == 1)
+                {
+                    // This is a dock with a starship parked.  Clear the docked starship base entry as well.
+                    PCBase starkillerBase = _data.SingleOrDefault<PCBase>(x => x.ShipLocation == structure.PCBaseStructureID.ToString());
+                    _error.Trace("BASE", "Destroying child starship with base ID: " + starkillerBase.ID.ToString());
+                    ClearPCBaseByID(starkillerBase.ID);
+                }
+
+                ((List<AreaStructure>) baseArea.Data["BASE_SERVICE_STRUCTURES"]).Remove(structure);
+                structure.Structure.Destroy();
+            }
+            
             Dictionary<Guid, NWPlaceable> rubbleContainers = new Dictionary<Guid, NWPlaceable>();
             for (int x = structures.Count - 1; x >= 0; x--)
             {
@@ -845,9 +1018,7 @@ namespace SWLOR.Game.Server.Service
                 player.FloatingText("ERROR: Couldn't find the building interior's exit. Inform an admin of this issue.");
                 return;
             }
-
-            _player.SaveLocation(player);
-
+            
             exit.SetLocalLocation("PLAYER_HOME_EXIT_LOCATION", player.Location);
             exit.SetLocalInt("IS_BUILDING_DOOR", 1);
 
@@ -855,6 +1026,7 @@ namespace SWLOR.Game.Server.Service
             player.AssignCommand(() =>
             {
                 _.ActionJumpToLocation(location);
+                _.ActionDoCommand(()=> { _player.SaveLocation(player); });
             });
         }
 
@@ -882,7 +1054,144 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            Location location = door.GetLocalLocation("PLAYER_HOME_EXIT_LOCATION");
+            NWLocation location = door.GetLocalLocation("PLAYER_HOME_EXIT_LOCATION");
+
+            string structureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
+            if (!String.IsNullOrWhiteSpace(structureID))
+            {
+                PCBaseStructure baseStructure = _data.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == structureID);
+                if (baseStructure != null)
+                {
+                    PCBase pcBase = _data.SingleOrDefault<PCBase>(x => x.ID == baseStructure.PCBaseID);
+                    if (pcBase != null && pcBase.PCBaseTypeID == (int) Enumeration.PCBaseType.Starship)
+                    {
+                        // This is a starship.  Exit should be based on location, not based on the door variable.
+                        if (_space.IsLocationPublicStarport(pcBase.ShipLocation))
+                        {
+                            // Retrieve the dock waypoint and jump to it.  
+                            SpaceStarport starport = _data.SingleOrDefault<SpaceStarport>(x => x.ID.ToString() == pcBase.ShipLocation);
+
+                            NWObject waypoint = _.GetWaypointByTag(starport.Waypoint);
+
+                            if (!waypoint.IsValid)
+                            {
+                                player.SendMessage("Could not find waypoint " + starport.Waypoint + ". This is a bug, please report it.");
+                                _error.Trace("SPACE", "Failed to find waypoint: " + starport.Waypoint);
+                                return; 
+                            }
+
+                            player.AssignCommand(() => _.ActionJumpToObject(waypoint));
+
+                        }
+                        else if (_space.IsLocationSpace(pcBase.ShipLocation))
+                        {
+                            // Cannot exit!
+                            // TODO - allow moving between starships that have docked to each other. 
+                            player.SendMessage("You are in space! You cannot leave now.");
+                        }
+                        else
+                        {
+                            // This is a PC dock.  Find it. 
+                            NWPlaceable dock = FindPlaceableFromStructureID(pcBase.ShipLocation);
+
+                            if (!dock.IsValid)
+                            {
+                                player.SendMessage("Could not find dock " + pcBase.ShipLocation + ". This is a bug, please report it.");
+                                _error.Trace("SPACE", "Failed to find dock: " + pcBase.ShipLocation);
+                                return;
+                            }
+
+                            player.AssignCommand(() => _.ActionJumpToObject(dock));
+                        }
+
+                        return; 
+                    }
+                }
+            }
+
+            if (!location.Area.IsValid)
+            {
+                // This is a building structure or apartment, but we don't have a stored location to exit from.  
+                // This is probably because we logged in in this instance, so the entrance isn't connected.
+                // Fix that now.
+                if (!String.IsNullOrWhiteSpace(structureID))
+                {
+                    // Building
+                    // Find the door placeable and get its location.  It will have the same ID as the actual 
+                    // building, but will have the DOOR variable set.  
+                    PCBaseStructure pcbs = _data.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == structureID);
+                    PCBase pcBase = _data.SingleOrDefault<PCBase>(x => x.ID == pcbs.PCBaseID);
+
+                    IEnumerable<NWArea> areas = NWModule.Get().Areas;
+                    NWArea baseArea = new NWArea(_.GetFirstArea());
+
+                    foreach (var checkArea in areas)
+                    {
+                        if (_.GetResRef(checkArea) == pcBase.AreaResref)
+                        {
+                            baseArea = checkArea;
+                        }
+                    }
+
+                    List<AreaStructure> areaStructures = baseArea.Data["BASE_SERVICE_STRUCTURES"];
+                    foreach (var plc in areaStructures)
+                    {
+                        _error.Trace("SPACE", "Found area structure in " + _.GetName(plc.Structure.Location.Area) + " with name " + _.GetName(plc.Structure) + " and pcbs " + plc.PCBaseStructureID.ToString() + " and door " + plc.Structure.GetLocalInt("IS_DOOR").ToString());
+                        if (plc.PCBaseStructureID == pcbs.ID && plc.Structure.GetLocalInt("IS_DOOR") == 1)
+                        {
+                            location = plc.Structure.Location;
+                            break;
+                        }
+                    }
+
+                    if (!location.Area.IsValid)
+                    {
+                        _error.Trace("", "Player tried to exit from building, but we couldn't find its door placeable.");
+                        player.SendMessage("Sorry, we can't find the exit to this building.  Please report this as a bug, thank you.");
+                    }
+                }
+                else
+                {
+                    structureID = area.GetLocalString("PC_BASE_ID");
+                    if (!String.IsNullOrWhiteSpace(structureID))
+                    {
+                        // Apartment.  
+                        // Apartment entrances have the tag apartment_ent and the int variable APARTMENT_BUILDING_ID that matches 
+                        // pcBase.ApartmentBuildingID
+                        PCBase pcBase = _data.SingleOrDefault<PCBase>(x => x.ID.ToString() == structureID);
+                        int nNth = 0;
+                        NWObject entrance = _.GetObjectByTag("apartment_ent", nNth);
+
+                        while (entrance.IsValid)
+                        {
+                            _error.Trace("SPACE", "Found apartment entrance in " + _.GetName(entrance.Location.Area) + " with ID " + entrance.GetLocalInt("APARTMENT_BUILDING_ID").ToString());
+                            if (entrance.GetLocalInt("APARTMENT_BUILDING_ID") == pcBase.ApartmentBuildingID)
+                            {
+                                // Found it!
+                                location = entrance.Location;
+                                break;
+                            }
+
+                            nNth++;
+                            entrance = _.GetObjectByTag("apartment_ent", nNth);
+                        }
+
+                        if (!location.Area.IsValid)
+                        {
+                            _error.Trace("", "Player tried to exit from apartment, but we couldn't find its door placeable.");
+                            player.SendMessage("Sorry, we can't find the exit to this apartment.  Please report this as a bug, thank you.");
+                        }
+                    }
+                    else
+                    {
+                        // Unknown type!
+                        _error.Trace("", "Player tried to exit from an instance that has neither PC_BASE_ID nor PC_BASE_STRUCTURE_ID defined!");
+                        player.SendMessage("Sorry, we don't know where this door goes to.  Please report this as a bug, thank you.");
+                        return;
+                    }
+                }
+            }
+
             player.AssignCommand(() => _.ActionJumpToLocation(location));
 
             _.DelayCommand(1.0f, () =>
@@ -896,6 +1205,35 @@ namespace SWLOR.Game.Server.Service
 
                 _area.DestroyAreaInstance(area);
             });
+        }
+
+        public NWPlaceable FindPlaceableFromStructureID(string pcBaseStructureID)
+        {
+            // Find the placeable and get its location.
+            PCBaseStructure pcbs = _data.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == pcBaseStructureID);
+            PCBase pcBase = _data.SingleOrDefault<PCBase>(x => x.ID == pcbs.PCBaseID);
+
+            IEnumerable<NWArea> areas = NWModule.Get().Areas;
+            NWArea baseArea = new NWArea(_.GetFirstArea());
+
+            foreach (var area in areas)
+            {
+                if (_.GetResRef(area) == pcBase.AreaResref)
+                {
+                    baseArea = area;
+                }
+            }
+
+            List<AreaStructure> areaStructures = baseArea.Data["BASE_SERVICE_STRUCTURES"];
+            foreach (var plc in areaStructures)
+            {
+                if (plc.PCBaseStructureID == pcbs.ID)
+                {
+                    return plc.Structure;
+                }
+            }
+
+            return null;
         }
 
         public static bool CanHandleChat(NWObject sender, string message)
@@ -1100,5 +1438,146 @@ namespace SWLOR.Game.Server.Service
             //--------------------------------------------------------------------------
             return "Control tower upgraded.";
         }
+
+        public NWArea GetAreaInstance(Guid instanceID, bool isBase)
+        {
+            NWArea instance = null;
+            string varName = isBase ? "PC_BASE_ID" : "PC_BASE_STRUCTURE_ID";
+            foreach (var area in NWModule.Get().Areas)
+            {
+                if (area.GetLocalString(varName) == instanceID.ToString())
+                {
+                    instance = area;
+                    break;
+                }
+            }
+
+            return instance;
+        }
+
+        public NWArea CreateAreaInstance(NWPlayer player, Guid instanceID, bool isBase)
+        {
+            PCBase pcBase = null;
+            PCBaseStructure structure = null;
+            BuildingStyle style = null;
+            HashSet<PCBaseStructure> furnitureStructures = null;
+            string name = "";
+            int type = 0;
+
+            if (isBase)
+            {
+                pcBase = _data.Get<PCBase>(instanceID);
+                furnitureStructures = _data.Where<PCBaseStructure>(x => x.PCBaseID == pcBase.ID);
+                style = _data.Get<BuildingStyle>(pcBase.BuildingStyleID);
+                type = (int)BuildingType.Apartment;
+                name = pcBase.CustomName;
+
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    Player owner = _data.Get<Player>(pcBase.PlayerID);
+                    name = owner.CharacterName + "'s Apartment";
+                }
+            }
+            else
+            {
+                structure = _data.Get<PCBaseStructure>(instanceID);
+                pcBase = _data.Get<PCBase>(structure.PCBaseID);
+                furnitureStructures = _data.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == structure.ID);
+                style = _data.Get<BuildingStyle>(structure.InteriorStyleID);
+                name = structure.CustomName;
+
+                bool starship = pcBase.PCBaseTypeID == 3;
+                type = starship ? (int)BuildingType.Starship : (int)BuildingType.Interior;
+
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    Player owner = _player.GetPlayerEntity(pcBase.PlayerID);
+                    name = owner.CharacterName + (starship ? "'s Starship" : "'s Building");
+                }
+            }
+
+            NWArea instance = _area.CreateAreaInstance(player, style.Resref, name, "PLAYER_HOME_ENTRANCE");
+            instance.SetLocalInt("BUILDING_TYPE", type);
+
+            if (isBase) instance.SetLocalString("PC_BASE_ID", instanceID.ToString());
+            else instance.SetLocalString("PC_BASE_STRUCTURE_ID", instanceID.ToString());
+
+            foreach (var furniture in furnitureStructures)
+            {
+                SpawnStructure(instance, furniture.ID);
+            }
+
+            _error.Trace("SPACE", "Created instance with ID " + instanceID.ToString() + ", name " + instance.Name);
+
+            return instance;
+        }
+
+        public void OnAreaEnter()
+        {
+            //--------------------------------------------------------------------------------
+            // Code moved from the PlayerService once respawning in bases was implemented, as
+            // it created a circular dependency between the two libraries.
+            //--------------------------------------------------------------------------------
+            NWPlayer player = (_.GetEnteringObject());
+            if (!player.IsPlayer) return;
+
+            if (player.Area.Tag == "ooc_area" || (player.Area.Name.StartsWith("Space - " ) && player.GetLocalInt("IS_SHIP") == 0))
+            {
+                Player entity = _player.GetPlayerEntity(player.GlobalID);
+                NWArea area = null;
+
+                //--------------------------------------------------------------------------
+                // Check for instances.
+                //--------------------------------------------------------------------------
+                Guid? locationInstanceID = entity.LocationInstanceID;
+                if (locationInstanceID != null)
+                {
+                    _error.Trace("", "Player logging in to an instance, ID " + locationInstanceID.ToString());
+
+                    //--------------------------------------------------------------------------
+                    // Find out whether this instance is an area, a base, or neither.
+                    //--------------------------------------------------------------------------
+                    if (_data.SingleOrDefault<PCBase>(x => x.ID == locationInstanceID) != null)
+                    {
+                        //--------------------------------------------------------------------------
+                        // This is a base (i.e. apartment).
+                        //--------------------------------------------------------------------------
+                        _error.Trace("", "Player logging in to an apartment.");
+    
+                        area = GetAreaInstance((Guid)locationInstanceID, true);
+                        if (area == null) area = CreateAreaInstance(player, (Guid)locationInstanceID, true);                        
+                    }
+                    else if (_data.SingleOrDefault<PCBaseStructure>(x => x.ID == locationInstanceID) != null)
+                    {
+                        //--------------------------------------------------------------------------
+                        // Not a base - building or starship.
+                        //--------------------------------------------------------------------------
+                        _error.Trace("", "Player logging in to a building or starship.");
+                        area = GetAreaInstance((Guid)locationInstanceID, false);
+                        if (area == null) area = CreateAreaInstance(player, (Guid)locationInstanceID, false);
+                    }
+                    else
+                    {
+                        //--------------------------------------------------------------------------
+                        // ID specified, but not present
+                        // This probably means we were on a destroyed starship.  Do respawn. 
+                        //--------------------------------------------------------------------------
+                        player.SendMessage("The ship you were on was destroyed.");
+                        _.ExecuteScript("OnModuleRespawn", player);
+                    }
+                }
+
+                if (area == null) area = NWModule.Get().Areas.SingleOrDefault(x => x.Resref == entity.LocationAreaResref);
+                if (area == null) return;
+
+                Vector position = _.Vector((float)entity.LocationX, (float)entity.LocationY, (float)entity.LocationZ);
+                Location location = _.Location(area.Object,
+                    position,
+                    (float)entity.LocationOrientation);
+
+                player.AssignCommand(() => _.ActionJumpToLocation(location));
+            }
+        }
     }
+
 }

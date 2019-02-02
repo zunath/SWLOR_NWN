@@ -284,6 +284,18 @@ namespace SWLOR.Game.Server.GameObject
             set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_HARVESTING_BONUS", CustomItemPropertyType.HarvestingBonus, value);
         }
 
+        public virtual int PilotingBonus
+        {
+            get
+            {
+                int craftBonus = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.PilotingBonus);
+                if (craftBonus <= -1) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_PILOTING_BONUS");
+                PilotingBonus = craftBonus;
+                return craftBonus;
+            }
+            set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_PILOTING_BONUS", CustomItemPropertyType.PilotingBonus, value);
+        }
+
         public virtual int ScanningBonus
         {
             get

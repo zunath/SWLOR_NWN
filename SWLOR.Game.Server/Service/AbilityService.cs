@@ -86,6 +86,13 @@ namespace SWLOR.Game.Server.Service
             Data.Entity.Perk perk = _data.GetAll<Data.Entity.Perk>().SingleOrDefault(x => x.ID == perkFeat.PerkID);
             if (perk == null) return;
 
+            // Check to see if we are a spaceship.  Spaceships can't use abilities...
+            if (pc.GetLocalInt("IS_SHIP") > 0)
+            {
+                pc.SendMessage("You cannot use that ability while piloting a ship.");
+                return;
+            }
+
             App.ResolveByInterface<IPerk>("Perk." + perk.ScriptName, (perkAction) =>
             {
                 if (perkAction == null) return;

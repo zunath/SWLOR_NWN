@@ -126,56 +126,23 @@ namespace SWLOR.Game.Server.Conversation
             var structure = _data.Single<PCBaseStructure>(x => x.ID == structureID);
             var pcBase = _data.Get<PCBase>(structure.PCBaseID);
             var interiorStyle = _data.Get<BuildingStyle>(structure.InteriorStyleID);
-            NWArea instance = GetAreaInstance(structureID);
+
+            bool starship = pcBase.PCBaseTypeID == 3;
+            NWArea instance = _base.GetAreaInstance(structureID, false);
 
             if (instance == null)
             {
-                string name = structure.CustomName;
-                if (string.IsNullOrWhiteSpace(name))
-                {
-                    Player owner = _player.GetPlayerEntity(pcBase.PlayerID);
-                    name = owner.CharacterName + "'s Building";
-                }
-
-                instance = _area.CreateAreaInstance(oPC, interiorStyle.Resref, name, "PLAYER_HOME_ENTRANCE");
-                instance.SetLocalString("PC_BASE_STRUCTURE_ID", structureID.ToString());
-                instance.SetLocalInt("BUILDING_TYPE", (int)BuildingType.Interior);
-
-                var childStructures = _data.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == structure.ID);
-                foreach (var child in childStructures)
-                {
-                    _base.SpawnStructure(instance, child.ID);
-                }
-
+                instance = _base.CreateAreaInstance(oPC, structureID, false);
             }
 
             _base.JumpPCToBuildingInterior(oPC, instance);
         }
 
-
-
-        private NWArea GetAreaInstance(Guid pcBuildingStructureID)
-        {
-            NWArea instance = null;
-            foreach(var area in NWModule.Get().Areas)
-            {
-                if (area.GetLocalString("PC_BASE_STRUCTURE_ID") == pcBuildingStructureID.ToString())
-                {
-                    instance = area;
-                    break;
-                }
-            }
-
-            return instance;
-        }
-
-
-
         private void DoKnockOnDoor()
         {
             NWPlaceable door = GetDialogTarget().Object;
             Guid structureID = new Guid(door.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            NWArea instance = GetAreaInstance(structureID);
+            NWArea instance = _base.GetAreaInstance(structureID, false);
 
             _.FloatingTextStringOnCreature("You knock on the door.", GetPC().Object, NWScript.FALSE);
 

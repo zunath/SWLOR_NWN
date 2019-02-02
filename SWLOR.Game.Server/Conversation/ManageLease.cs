@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IColorTokenService _color;
         private readonly IDataService _data;
         private readonly IBasePermissionService _perm;
+        private readonly ISpaceService _space;
 
         public ManageLease(
             INWScript script, 
@@ -25,13 +26,15 @@ namespace SWLOR.Game.Server.Conversation
             IBaseService @base,
             IColorTokenService color,
             IDataService data,
-            IBasePermissionService perm) 
+            IBasePermissionService perm,
+            ISpaceService space) 
             : base(script, dialog)
         {
             _base = @base;
             _color = color;
             _data = data;
             _perm = perm;
+            _space = space;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -151,7 +154,26 @@ namespace SWLOR.Game.Server.Conversation
             header += _color.Green("Rent Due: ") + pcBase.DateRentDue + "\n";
             header += _color.Green("Daily Upkeep: ") + dailyUpkeep + " credits\n\n";
             header += "Daily upkeep may be paid up to 30 days in advance.\n";
-           
+
+            // Starships have slightly different setups.  They only pay rent when in a public starport and
+            // the cost is set by the starport.
+            if (pcBase.PCBaseTypeID == (int)Enumeration.PCBaseType.Starship)
+            {
+                canCancelLease = false;
+
+                if (_space.IsLocationPublicStarport(pcBase.ShipLocation))
+                {
+                    SpaceStarport starport = _data.SingleOrDefault<SpaceStarport>(x => x.ID.ToString() == pcBase.ShipLocation);
+                    header = _color.Green("Location: ") + starport.Name + " (" + starport.Planet + ")\n";
+                    header += _color.Green("Rent Due: ") + pcBase.DateRentDue + "\n";
+                    header += _color.Green("Daily Upkeep: ") + starport.Cost + " credits\n\n";
+                }
+                else
+                {
+                    header = "This ship has no lease currently.  You only need to pay when in a starport.";
+                    canExtendLease = false;
+                }
+            }
 
             SetPageHeader("BaseDetailsPage", header);
 
@@ -200,6 +222,13 @@ namespace SWLOR.Game.Server.Conversation
             }
 
             int dailyUpkeep = dbArea.DailyUpkeep + (int)(dbArea.DailyUpkeep * (owner.LeaseRate * 0.01f));
+
+            // Starship override.
+            if (pcBase.PCBaseTypeID == (int)Enumeration.PCBaseType.Starship)
+            {
+                SpaceStarport starport = _data.SingleOrDefault<SpaceStarport>(x => x.ID.ToString() == pcBase.ShipLocation);
+                dailyUpkeep = starport.Cost + (int)(starport.Cost * (owner.LeaseRate * 0.01f));
+            }
 
             if (GetPC().Gold < dailyUpkeep * days)
             {

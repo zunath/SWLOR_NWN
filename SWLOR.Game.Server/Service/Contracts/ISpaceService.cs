@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         void DoStopFlyShip(NWPlayer player);
         void DoCrewGuns(NWPlayer player, NWArea ship);
         void DoStopCrewGuns(NWPlayer player);
+        void LandCrew(NWArea ship);
         void CreateShipInSpace(NWArea ship, NWLocation location = null);
         void RemoveShipInSpace(NWArea ship);
         bool CanLandOnPlanet(NWArea ship);

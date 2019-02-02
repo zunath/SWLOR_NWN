@@ -157,7 +157,7 @@ namespace SWLOR.Game.Server.Conversation
             bool canAdjustPublicPermissions = permission?.CanAdjustPublicPermissions ?? false;
             bool canFlyStarship = permission?.CanFlyStarship ?? false;
 
-            bool isStarship = player.Area.GetLocalInt("BUILDING_TYPE") == (int)Enumeration.BuildingType.Starship;
+            bool isStarship = GetPC().Area.GetLocalInt("BUILDING_TYPE") == (int)Enumeration.BuildingType.Starship;
 
             string header = _color.Green("Name: ") + player.Name + "\n\n";
 

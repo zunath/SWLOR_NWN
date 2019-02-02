@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Item
             pcbs.Durability += repair;
             _data.SubmitDataChange(pcbs, DatabaseActionType.Update);
 
-            player.SendMessage("Ship repaired for " + repair + " points.");
+            player.SendMessage("Ship repaired for " + repair + " points. (Hull points: " + pcbs.Durability + "/" + structure.Durability + ")");
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)

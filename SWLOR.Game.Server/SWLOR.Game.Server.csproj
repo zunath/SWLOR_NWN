@@ -2104,7 +2104,6 @@
     <None Include="ServerFiles\HakPaks\swlor_gui\cg_main.gui" />
     <None Include="ServerFiles\HakPaks\swlor_gui\cg_package.gui" />
     <None Include="ServerFiles\HakPaks\swlor_gui\cg_race.gui" />
-    <None Include="ServerFiles\HakPaks\swlor_tlk.tlk" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

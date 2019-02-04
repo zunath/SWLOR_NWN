@@ -1,4 +1,5 @@
 ﻿using SWLOR.Game.Server.GameObject;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.NWNX.Contracts
 {
@@ -28,6 +29,7 @@ namespace SWLOR.Game.Server.NWNX.Contracts
         int GetMovementType(NWCreature creature);
         int GetRawAbilityScore(NWCreature creature, int ability);
         int GetRemainingSpellSlots(NWCreature creature, int classId, int level);
+        void ClearMemorisedKnownSpells(NWCreature creature, int classId, int spellId);
         int GetSkillPointsRemaining(NWCreature creature);
         int GetSoundset(NWCreature creature);
         SpecialAbilitySlot GetSpecialAbility(NWCreature creature, int index);
@@ -43,7 +45,6 @@ namespace SWLOR.Game.Server.NWNX.Contracts
         void RestoreItems(NWCreature creature);
         void RestoreSpecialAbilities(NWCreature creature);
         void RestoreSpells(NWCreature creature, int level);
-        void SetAbilityScore(NWCreature creature, int ability, int value);
         void SetAlignmentGoodEvil(NWCreature creature, int value);
         void SetAlignmentLawChaos(NWCreature creature, int value);
         void SetBaseAC(NWCreature creature, int ac);
@@ -68,6 +69,21 @@ namespace SWLOR.Game.Server.NWNX.Contracts
         void SetSpecialAbility(NWCreature creature, int index, SpecialAbilitySlot ability);
         void SetWalkRateCap(NWCreature creature, float fWalkRate);
         void SetWizardSpecialization(NWCreature creature, int school);
+        int GetAttackBonus(NWCreature creature, int isMelee = -1, int isTouchAttack = FALSE, int isOffhand = FALSE, int includeBaseAttackBonus = TRUE);
+        int GetFeatRemainingUses(NWCreature creature, int feat);
+        int GetFeatTotalUses(NWCreature creature, int feat);
+        void SetFeatRemainingUses(NWCreature creature, int feat, int uses);
+
+        int GetTotalEffectBonus(NWCreature creature,
+            CreatureBonusType bonusType,
+            NWObject target,
+            int isElemental = 0,
+            int isForceMax = 0,
+            int savetype = -1,
+            int saveSpecificType = -1,
+            int skill = -1,
+            int abilityScore = -1,
+            int isOffhand = FALSE);
     }
 
 }

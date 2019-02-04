@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Enumeration
+﻿namespace SWLOR.Game.Server.NWNX
 {
     public enum ClericDomain
     {

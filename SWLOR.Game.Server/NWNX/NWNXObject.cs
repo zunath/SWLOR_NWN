@@ -16,7 +16,11 @@ namespace SWLOR.Game.Server.NWNX
 
         private const string NWNX_Object = "NWNX_Object";
 
-        // Gets the count of all local variables on the provided object.
+        /// <summary>
+        /// Gets the count of all local variables on the provided object.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public int GetLocalVariableCount(NWObject obj)
         {
             string sFunc = "GetLocalVariableCount";
@@ -27,8 +31,13 @@ namespace SWLOR.Game.Server.NWNX
             return NWNX_GetReturnValueInt(NWNX_Object, sFunc);
         }
 
-        //Gets the local variable at the provided index of the provided object.
-        // Index bounds: 0 >= index < GetLocalVariableCount(obj).
+        /// <summary>
+        /// Gets the local variable at the provided index of the provided object.
+        /// Index bounds: 0 >= index "less than" GetLocalVariableCount(obj).
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public LocalVariable GetLocalVariable(NWObject obj, int index)
         {
             string sFunc = "GetLocalVariable";
@@ -43,8 +52,12 @@ namespace SWLOR.Game.Server.NWNX
             return var;
         }
 
-        // Returns an NWObject from the provided NWObject ID.
-        // This is the counterpart to ObjectToString.
+        /// <summary>
+        /// Returns an NWObject from the provided NWObject ID.
+        /// This is the counterpart to ObjectToString.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public NWObject StringToObject(string id)
         {
             string sFunc = "StringToObject";
@@ -54,7 +67,11 @@ namespace SWLOR.Game.Server.NWNX
             return (NWNX_GetReturnValueObject(NWNX_Object, sFunc));
         }
 
-        // Set the provided object's position to the provided vector.
+        /// <summary>
+        /// Set the provided object's position to the provided vector.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="pos"></param>
         public void SetPosition(NWObject obj, Vector pos)
         {
             string sFunc = "SetPosition";
@@ -67,7 +84,11 @@ namespace SWLOR.Game.Server.NWNX
 
         }
 
-        // Sets the provided object's current hit points to the provided value.
+        /// <summary>
+        /// Sets the provided object's current hit points to the provided value.
+        /// </summary>
+        /// <param name="creature"></param>
+        /// <param name="hp"></param>
         public void SetCurrentHitPoints(NWCreature creature, int hp)
         {
             string sFunc = "SetCurrentHitPoints";
@@ -78,7 +99,11 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Object, sFunc);
         }
 
-        // Set object's maximum hit points; will not work on PCs.
+        /// <summary>
+        /// Set object's maximum hit points; will not work on PCs.
+        /// </summary>
+        /// <param name="creature"></param>
+        /// <param name="hp"></param>
         public void SetMaxHitPoints(NWObject creature, int hp)
         {
             string sFunc = "SetMaxHitPoints";
@@ -89,7 +114,11 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Object, sFunc);
         }
 
-        // Get the name of the portrait NWObject is using.
+        /// <summary>
+        /// Get the name of the portrait NWObject is using.
+        /// </summary>
+        /// <param name="creature"></param>
+        /// <returns></returns>
         public string GetPortrait(NWObject creature)
         {
             string sFunc = "GetPortrait";
@@ -100,7 +129,11 @@ namespace SWLOR.Game.Server.NWNX
             return NWNX_GetReturnValueString(NWNX_Object, sFunc);
         }
 
-        // Set the portrait NWObject is using. The portrait String must be no more than 15 characters long.
+        /// <summary>
+        /// Set the portrait NWObject is using. The portrait String must be no more than 15 characters long.
+        /// </summary>
+        /// <param name="creature"></param>
+        /// <param name="portrait"></param>
         public void SetPortrait(NWObject creature, string portrait)
         {
             string sFunc = "SetPortrait";
@@ -110,10 +143,13 @@ namespace SWLOR.Game.Server.NWNX
 
             NWNX_CallFunction(NWNX_Object, sFunc);
         }
-
-
-        // Serialize the full NWObject (including locals, inventory, etc) to base64 string
-        // Only works on Creatures and Items currently.
+        
+        /// <summary>
+        /// Serialize the full NWObject (including locals, inventory, etc) to base64 string
+        /// Only works on Creatures and Items currently.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public string Serialize(Object obj)
         {
             string sFunc = "Serialize";
@@ -124,8 +160,12 @@ namespace SWLOR.Game.Server.NWNX
             return NWNX_GetReturnValueString(NWNX_Object, sFunc);
         }
 
-        // Deserialize the object. The NWObject will be created outside of the world and
-        // needs to be manually positioned at a location/inventory.
+        /// <summary>
+        /// Deserialize the object. The NWObject will be created outside of the world and
+        /// needs to be manually positioned at a location/inventory.
+        /// </summary>
+        /// <param name="serialized"></param>
+        /// <returns></returns>
         public Object Deserialize(string serialized)
         {
             string sFunc = "Deserialize";
@@ -137,7 +177,11 @@ namespace SWLOR.Game.Server.NWNX
         }
 
 
-        // Returns the dialog resref of the object.
+        /// <summary>
+        /// Returns the dialog resref of the object.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public string GetDialogResref(NWObject obj)
         {
             string sFunc = "GetDialogResref";
@@ -148,7 +192,11 @@ namespace SWLOR.Game.Server.NWNX
             return NWNX_GetReturnValueString(NWNX_Object, sFunc);
         }
 
-
+        /// <summary>
+        /// Sets the dialog resref of the object
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="dialog"></param>
         public void SetDialogResref(NWObject obj, string dialog)
         {
             string sFunc = "SetDialogResref";
@@ -159,8 +207,12 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Object, sFunc);
         }
 
-        // Set obj's appearance. Will not update for PCs until they
-        // re-enter the area.
+        /// <summary>
+        /// Set obj's appearance. Will not update for PCs until they
+        /// re-enter the area.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="app"></param>
         public void SetAppearance(NWObject obj, int app)
         {
             string sFunc = "SetAppearance";
@@ -171,7 +223,11 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Object, sFunc);
         }
 
-        // Get obj's appearance
+        /// <summary>
+        /// Get obj's appearance
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public int GetAppearance(NWObject obj)
         {
             string sFunc = "GetAppearance";

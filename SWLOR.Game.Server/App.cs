@@ -336,6 +336,7 @@ namespace SWLOR.Game.Server
             builder.RegisterType<NWNXPlayer>().As<INWNXPlayer>().SingleInstance();
             builder.RegisterType<NWNXPlayerQuickBarSlot>().As<INWNXPlayerQuickBarSlot>().SingleInstance();
             builder.RegisterType<NWNXProfiler>().As<INWNXProfiler>().SingleInstance();
+            builder.RegisterType<NWNXVisibility>().As<INWNXVisibility>().SingleInstance();
             builder.RegisterType<NWNXWeapon>().As<INWNXWeapon>().SingleInstance();
             builder.RegisterType<NWScript>().As<INWScript>().SingleInstance();
             builder.RegisterType<BehaviourTreeBuilder>().SingleInstance();

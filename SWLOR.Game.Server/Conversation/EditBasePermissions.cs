@@ -160,6 +160,7 @@ namespace SWLOR.Game.Server.Conversation
             bool canEditPrimaryResidence = permission?.CanEditPrimaryResidence ?? false;
             bool canRemovePrimaryResidence = permission?.CanRemovePrimaryResidence ?? false;
             bool canChangeStructureMode = permission?.CanChangeStructureMode ?? false;
+            bool canDockShip = permission?.CanDockStarship ?? false;
             bool canAdjustPublicPermissions = permission?.CanAdjustPublicPermissions ?? false;
 
             string header = _color.Green("Name: ") + player.Name + "\n\n";
@@ -175,6 +176,7 @@ namespace SWLOR.Game.Server.Conversation
             header += "Can Edit Primary Residence: " + (canEditPrimaryResidence ? _color.Green("YES") : _color.Red("NO")) + "\n";
             header += "Can Remove Primary Residence: " + (canRemovePrimaryResidence ? _color.Green("YES") : _color.Red("NO")) + "\n";
             header += "Can Change Structure Mode: " + (canChangeStructureMode ? _color.Green("YES") : _color.Red("NO")) + "\n";
+            header += "Can Dock Starships: " + (canDockShip ? _color.Green("YES") : _color.Red("NO")) + "\n";
             header += "Can Adjust PUBLIC Permissions: " + (canAdjustPublicPermissions ? _color.Green("YES") : _color.Red("NO")) + "\n";
 
             SetPageHeader("PlayerDetailsPage", header);
@@ -188,6 +190,7 @@ namespace SWLOR.Game.Server.Conversation
             AddResponseToPage("PlayerDetailsPage", "Toggle: Can Rename Structures", true, player);
             AddResponseToPage("PlayerDetailsPage", "Toggle: Can Edit Primary Residence", true, player);
             AddResponseToPage("PlayerDetailsPage", "Toggle: Can Change Structure Mode", true, player);
+            AddResponseToPage("PlayerDetailsPage", "Toggle: Can Dock Starships", true, player);
             AddResponseToPage("PlayerDetailsPage", "Toggle: Can Adjust PUBLIC Permissions", true, player);
         }
 
@@ -226,7 +229,10 @@ namespace SWLOR.Game.Server.Conversation
                 case 9: // Can Change Structure Mode
                     TogglePermission(playerID, BasePermission.CanChangeStructureMode, false);
                     break;
-                case 10: // Can Adjust PUBLIC Permissions
+                case 10: // Can Dock Starships
+                    TogglePermission(playerID, BasePermission.CanDockStarship, false);
+                    break;
+                case 11: // Can Adjust PUBLIC Permissions
                     TogglePermission(playerID, BasePermission.CanAdjustPublicPermissions, false);
                     break;
             }
@@ -291,6 +297,12 @@ namespace SWLOR.Game.Server.Conversation
                 case BasePermission.CanAdjustPublicPermissions:
                     dbPermission.CanAdjustPublicPermissions = !dbPermission.CanAdjustPublicPermissions;
                     break;
+                case BasePermission.CanFlyStarship:
+                    dbPermission.CanFlyStarship = !dbPermission.CanFlyStarship;
+                    break;
+                case BasePermission.CanDockStarship:
+                    dbPermission.CanDockStarship = !dbPermission.CanDockStarship;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(permission), permission, null);
             }
@@ -311,13 +323,16 @@ namespace SWLOR.Game.Server.Conversation
             // CanRetrieveStructures, CanRenameStructures, CanEditPrimaryResidence, CanRemovePrimaryResidence, CanChangeStructureMode,
             // CanAdjustPublicPermissions
             bool canEnterBuildings = permission?.CanEnterBuildings ?? false;
+            bool canDockStarship = permission?.CanDockStarship ?? false;
 
             string header = _color.Green("Public Permissions: ") + "\n\n";
             header += "Can Enter Buildings: " + (canEnterBuildings ? _color.Green("YES") : _color.Red("NO")) + "\n";
+            header += "Can Dock Starships: " + (canDockStarship ? _color.Green("YES") : _color.Red("NO")) + "\n";
 
             SetPageHeader("PublicPermissionsPage", header);
 
             AddResponseToPage("PublicPermissionsPage", "Toggle: Can Enter Buildings");
+            AddResponseToPage("PublicPermissionsPage", "Toggle: Can Dock Starships");
         }
 
         private void PublicPermissionsResponses(int responseID)
@@ -330,6 +345,9 @@ namespace SWLOR.Game.Server.Conversation
             {
                 case 1: // Can Enter Buildings
                     TogglePermission(ownerPlayerID, BasePermission.CanEnterBuildings, true);
+                    break;
+                case 2: // Can Dock Starships
+                    TogglePermission(ownerPlayerID, BasePermission.CanDockStarship, true);
                     break;
             }
 

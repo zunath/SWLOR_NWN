@@ -56,13 +56,14 @@ namespace SWLOR.Game.Server.Item
 
             if (ship.IsValid)
             {
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(repair), ship);
+                ship.SetLocalInt("HP", ship.GetLocalInt("HP") + repair);
+                ship.FloatingText("Hull repaired: " + ship.GetLocalInt("HP") + "/" + ship.MaxHP);
             }
 
             pcbs.Durability += repair;
             _data.SubmitDataChange(pcbs, DatabaseActionType.Update);
 
-            player.SendMessage("Ship repaired for " + repair + " points.");
+            player.SendMessage("Ship repaired for " + repair + " points. (Hull points: " + pcbs.Durability + "/" + structure.Durability + ")");
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)

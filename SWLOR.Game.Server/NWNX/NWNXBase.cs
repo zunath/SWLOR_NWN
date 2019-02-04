@@ -1,5 +1,6 @@
 ﻿
 using NWN;
+using SWLOR.Game.Server.GameObject;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.NWNX
@@ -21,77 +22,57 @@ namespace SWLOR.Game.Server.NWNX
 
         protected void NWNX_CallFunction(string pluginName, string functionName)
         {
-            NWNX_INTERNAL_CallFunction(pluginName, functionName);
+            _.PlaySound(NWNX_INTERNAL_BuildString(pluginName, functionName, "CALL"));
         }
 
         protected void NWNX_PushArgumentInt(string pluginName, string functionName, int value)
         {
-            NWNX_INTERNAL_PushArgument(pluginName, functionName, "0 " + _.IntToString(value));
+            _.SetLocalInt(Object.OBJECT_INVALID, NWNX_INTERNAL_BuildString(pluginName, functionName, "PUSH"), value);
         }
 
         protected void NWNX_PushArgumentFloat(string pluginName, string functionName, float value)
         {
-            NWNX_INTERNAL_PushArgument(pluginName, functionName, "1 " + _.FloatToString(value));
+            _.SetLocalFloat(Object.OBJECT_INVALID, NWNX_INTERNAL_BuildString(pluginName, functionName, "PUSH"), value);
         }
 
-        protected void NWNX_PushArgumentObject(string pluginName, string functionName, Object value)
+        protected void NWNX_PushArgumentObject(string pluginName, string functionName, NWObject value)
         {
-            NWNX_INTERNAL_PushArgument(pluginName, functionName, "2 " + value.m_ObjId.ToString("X"));
+            _.SetLocalObject(Object.OBJECT_INVALID, NWNX_INTERNAL_BuildString(pluginName, functionName, "PUSH"), value);
         }
 
         protected void NWNX_PushArgumentString(string pluginName, string functionName, string value)
         {
-            NWNX_INTERNAL_PushArgument(pluginName, functionName, "3 " + value);
+            _.SetLocalString(Object.OBJECT_INVALID, NWNX_INTERNAL_BuildString(pluginName, functionName, "PUSH"), value);
         }
-        
+
         protected void NWNX_PushArgumentEffect(string pluginName, string functionName, Effect value)
         {
             _.TagEffect(value, NWNX_INTERNAL_BuildString(pluginName, functionName, "PUSH"));
         }
-        
-        private void NWNX_PushArgumentItemProperty(string pluginName, string functionName, ItemProperty value)
+
+        protected void NWNX_PushArgumentItemProperty(string pluginName, string functionName, ItemProperty value)
         {
             _.TagItemProperty(value, NWNX_INTERNAL_BuildString(pluginName, functionName, "PUSH"));
         }
-        
+
         protected int NWNX_GetReturnValueInt(string pluginName, string functionName)
         {
-            return _.StringToInt(NWNX_INTERNAL_GetReturnValueString(pluginName, functionName, "0 "));
+            return _.GetLocalInt(Object.OBJECT_INVALID, NWNX_INTERNAL_BuildString(pluginName, functionName, "POP"));
         }
 
         protected float NWNX_GetReturnValueFloat(string pluginName, string functionName)
         {
-            return _.StringToFloat(NWNX_INTERNAL_GetReturnValueString(pluginName, functionName, "1 "));
+            return _.GetLocalFloat(Object.OBJECT_INVALID, NWNX_INTERNAL_BuildString(pluginName, functionName, "POP"));
         }
 
         protected Object NWNX_GetReturnValueObject(string pluginName, string functionName)
         {
-            return NWNX_INTERNAL_GetReturnValueObject(pluginName, functionName, "2 ");
+            return _.GetLocalObject(Object.OBJECT_INVALID, NWNX_INTERNAL_BuildString(pluginName, functionName, "POP"));
         }
 
         protected string NWNX_GetReturnValueString(string pluginName, string functionName)
         {
-            return NWNX_INTERNAL_GetReturnValueString(pluginName, functionName, "3 ");
-        }
-
-        protected void NWNX_INTERNAL_CallFunction(string pluginName, string functionName)
-        {
-            _.SetLocalString(_.GetModule(), "NWNXEE!CALL_FUNCTION!" + pluginName + "!" + functionName, "1");
-        }
-
-        protected void NWNX_INTERNAL_PushArgument(string pluginName, string functionName, string value)
-        {
-            _.SetLocalString(_.GetModule(), "NWNXEE!PUSH_ARGUMENT!" + pluginName + "!" + functionName, value);
-        }
-
-        protected string NWNX_INTERNAL_GetReturnValueString(string pluginName, string functionName, string type)
-        {
-            return _.GetLocalString(_.GetModule(), "NWNXEE!GET_RETURN_VALUE!" + pluginName + "!" + functionName + "!" + type);
-        }
-
-        protected Object NWNX_INTERNAL_GetReturnValueObject(string pluginName, string functionName, string type)
-        {
-            return _.GetLocalObject(_.GetModule(), "NWNXEE!GET_RETURN_VALUE!" + pluginName + "!" + functionName + "!" + type);
+            return _.GetLocalString(Object.OBJECT_INVALID, NWNX_INTERNAL_BuildString(pluginName, functionName, "POP"));
         }
 
         protected Effect NWNX_GetReturnValueEffect(string pluginName, string functionName)

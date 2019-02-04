@@ -49,6 +49,7 @@ docker run --rm -it \
 -e NWNX_WEAPON_SKIP=n \
 -e NWNX_PROFILER_SKIP=n \
 -e NWNX_PROFILER_ENABLE_SCRIPTS=false \
+-e NWNX_VISIBILITY_SKIP=n \
 -e NWNX_MONO_ASSEMBLY=/nwn/home/mono/SWLOR.Game.Server.dll \
 -e NWNX_MONO_BASE_DIRECTORY=/nwn/home/mono \
 -e NWNX_MONO_APP_CONFIG=/nwn/home/mono/SWLOR.Game.Server.dll.config \

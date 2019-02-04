@@ -13,6 +13,12 @@ namespace SWLOR.Game.Server.NWNX
             _ = script;
         }
 
+
+        private string NWNX_INTERNAL_BuildString(string pluginName, string functionName, string operation)
+        {
+            return "NWNXEE!ABIv2!" + pluginName + "!" + functionName + "!" + operation;
+        }
+
         protected void NWNX_CallFunction(string pluginName, string functionName)
         {
             NWNX_INTERNAL_CallFunction(pluginName, functionName);
@@ -37,7 +43,17 @@ namespace SWLOR.Game.Server.NWNX
         {
             NWNX_INTERNAL_PushArgument(pluginName, functionName, "3 " + value);
         }
-
+        
+        protected void NWNX_PushArgumentEffect(string pluginName, string functionName, Effect value)
+        {
+            _.TagEffect(value, NWNX_INTERNAL_BuildString(pluginName, functionName, "PUSH"));
+        }
+        
+        private void NWNX_PushArgumentItemProperty(string pluginName, string functionName, ItemProperty value)
+        {
+            _.TagItemProperty(value, NWNX_INTERNAL_BuildString(pluginName, functionName, "PUSH"));
+        }
+        
         protected int NWNX_GetReturnValueInt(string pluginName, string functionName)
         {
             return _.StringToInt(NWNX_INTERNAL_GetReturnValueString(pluginName, functionName, "0 "));
@@ -78,5 +94,16 @@ namespace SWLOR.Game.Server.NWNX
             return _.GetLocalObject(_.GetModule(), "NWNXEE!GET_RETURN_VALUE!" + pluginName + "!" + functionName + "!" + type);
         }
 
+        protected Effect NWNX_GetReturnValueEffect(string pluginName, string functionName)
+        {
+            Effect e = new Effect();
+            return _.TagEffect(e, NWNX_INTERNAL_BuildString(pluginName, functionName, "POP"));
+        }
+
+        protected ItemProperty NWNX_GetReturnValueItemProperty(string pluginName, string functionName)
+        {
+            ItemProperty ip = new ItemProperty();
+            return _.TagItemProperty(ip, NWNX_INTERNAL_BuildString(pluginName, functionName, "POP"));
+        }
     }
 }

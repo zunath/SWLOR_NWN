@@ -432,7 +432,9 @@
     <Compile Include="Enumeration\PerkExecutionType.cs" />
     <Compile Include="Enumeration\PerkType.cs" />
     <Compile Include="Enumeration\QuestType.cs" />
-    <Compile Include="Enumeration\QuickBarSlotType.cs" />
+    <Compile Include="NWNX\Contracts\INWNXVisibility.cs" />
+    <Compile Include="NWNX\NWNXVisibility.cs" />
+    <Compile Include="NWNX\QuickBarSlotType.cs" />
     <Compile Include="Enumeration\ResistanceType.cs" />
     <Compile Include="Enumeration\ResourceQuality.cs" />
     <Compile Include="Enumeration\ResourceType.cs" />
@@ -524,7 +526,7 @@
     <Compile Include="NWNX\NWNXDamage.cs" />
     <Compile Include="NWNX\NWNXProfiler.cs" />
     <Compile Include="NWNX\NWNXWeapon.cs" />
-    <Compile Include="NWNX\PlayerVisibilityType.cs" />
+    <Compile Include="NWNX\VisibilityType.cs" />
     <Compile Include="NWN\Events\Conversation\KeyItem\AnyKeyItems\any_keyitems_1.cs" />
     <Compile Include="NWN\Events\Conversation\KeyItem\AnyKeyItems\any_keyitems_10.cs" />
     <Compile Include="NWN\Events\Conversation\KeyItem\AnyKeyItems\any_keyitems_2.cs" />

@@ -20,5 +20,6 @@ namespace SWLOR.Game.Server.NWNX.Contracts
         QuickBarSlot QuickChat(int nCommand);
         QuickBarSlot PossessFamiliar();
         QuickBarSlot UseSpecialAbility(int nSpell, int nCasterLevel);
+        QuickBarSlot Command(string sCommandLabel, string sCommandLine);
     }
 }

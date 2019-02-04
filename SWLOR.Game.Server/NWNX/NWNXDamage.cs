@@ -15,6 +15,13 @@ namespace SWLOR.Game.Server.NWNX
 
         }
 
+        /// <summary>
+        /// Set Damage Event Script
+        /// If oOwner is OBJECT_INVALID, this sets the script globally for all creatures
+        /// If oOwner is valid, it will set it only for that creature.
+        /// </summary>
+        /// <param name="script"></param>
+        /// <param name="oOwner"></param>
         public void SetDamageEventScript(string script, NWObject oOwner = null)
         {
             if(oOwner == null) oOwner = (new Object());
@@ -27,6 +34,10 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Damage, sFunc);
         }
 
+        /// <summary>
+        /// Get Damage Event Data (to use only on Damage Event Script)
+        /// </summary>
+        /// <returns></returns>
         public DamageData GetDamageEventData()
         {
             string sFunc = "GetEventData";
@@ -52,7 +63,10 @@ namespace SWLOR.Game.Server.NWNX
             return data;
         }
 
-
+        /// <summary>
+        /// Set Damage Event Data (to use only on Damage Event Script)
+        /// </summary>
+        /// <param name="data"></param>
         public void SetDamageEventData(DamageData data)
         {
             string sFunc = "SetEventData";

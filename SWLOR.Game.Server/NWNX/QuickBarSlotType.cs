@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Enumeration
+﻿namespace SWLOR.Game.Server.NWNX
 {
     public enum QuickBarSlotType
     {
@@ -12,6 +12,7 @@
         Emote = 8,
         ItemPropertyCastSpell = 9,
         ModeToggle = 10,
+        Command = 18,
         PossessFamiliar = 38,
         AssociateCommand = 39,
         Examine = 40,

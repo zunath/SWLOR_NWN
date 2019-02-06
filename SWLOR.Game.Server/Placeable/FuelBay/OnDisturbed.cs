@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
         private readonly INWScript _;
         private readonly IDataService _data;
         private readonly IItemService _item;
+        private readonly ISpaceService _space;
         private readonly ITimeService _time;
         private readonly IColorTokenService _color;
         private readonly IBaseService _base;
@@ -27,6 +28,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             INWScript script,
             IDataService data,
             IItemService item,
+            ISpaceService space,
             ITimeService time,
             IColorTokenService color,
             IBaseService @base)
@@ -34,6 +36,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             _ = script;
             _data = data;
             _item = item;
+            _space = space;
             _time = time;
             _color = color;
             _base = @base;
@@ -86,6 +89,12 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             if (stronidiumOnly)
             {
                 maxFuel = _base.CalculateMaxReinforcedFuel(pcBase.ID);
+
+                if (bay.Area.GetLocalInt("BUILDING_TYPE") == (int)Enumeration.BuildingType.Starship)
+                {
+                    maxFuel += 25 * _space.GetCargoBonus(_space.GetCargoBay(player.Area, null), (int)CustomItemPropertyType.StarshipStronidiumBonus);
+                }
+
                 if (fuelCount > maxFuel)
                 {
                     int returnAmount = fuelCount - maxFuel;
@@ -111,6 +120,12 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             else
             {
                 maxFuel = _base.CalculateMaxFuel(pcBase.ID);
+
+                if (bay.Area.GetLocalInt("BUILDING_TYPE") == (int)Enumeration.BuildingType.Starship)
+                {
+                    maxFuel += 25 * _space.GetCargoBonus(_space.GetCargoBay(player.Area, null), (int)CustomItemPropertyType.StarshipFuelBonus);
+                }
+
                 if (fuelCount > maxFuel)
                 {
                     int returnAmount = fuelCount - maxFuel;

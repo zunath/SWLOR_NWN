@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Service
             if (perk == null) return;
 
             // Check to see if we are a spaceship.  Spaceships can't use abilities...
-            if (pc.GetLocalInt("IS_SHIP") > 0)
+            if (pc.GetLocalInt("IS_SHIP") > 0 || pc.GetLocalInt("IS_GUNNER")>0)
             {
                 pc.SendMessage("You cannot use that ability while piloting a ship.");
                 return;

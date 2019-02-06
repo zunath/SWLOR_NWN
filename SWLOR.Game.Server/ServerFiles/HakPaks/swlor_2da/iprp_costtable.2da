@@ -77,3 +77,6 @@
 73    IPRP_LDEFBON       LightDefenseBonus              0            
 74    IPRP_DDEFBON       DarkDefenseBonus               0            
 75    IPRP_SCAVBON       ScavengingBonus                0            
+76    IPRP_PILBON        PilotingBonus                  0            
+77    IPRP_SHIPBON       StarshipBonus                  0            
+78    IPRP_SHIPCAPBON    StarshipCapacityBonus          0            

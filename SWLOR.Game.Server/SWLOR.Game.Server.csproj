@@ -490,6 +490,7 @@
     <Compile Include="Item\MineralScanner.cs" />
     <Compile Include="Item\ModItem.cs" />
     <Compile Include="Item\PerkRefund.cs" />
+    <Compile Include="Item\SSEnhancement.cs" />
     <Compile Include="Item\SSRepairKit.cs" />
     <Compile Include="Item\ResourceHarvester.cs" />
     <Compile Include="Item\StarchartDisk.cs" />
@@ -949,6 +950,16 @@
     <Compile Include="Perk\OneHanded\Opportunist.cs" />
     <Compile Include="Perk\OneHanded\SneakAttack.cs" />
     <Compile Include="Perk\OneHanded\WeaponFinesse.cs" />
+    <Compile Include="Perk\Piloting\CarefulPilot.cs" />
+    <Compile Include="Perk\Piloting\CrackShot.cs" />
+    <Compile Include="Perk\Piloting\Evasive.cs" />
+    <Compile Include="Perk\Piloting\CombatRepair.cs" />
+    <Compile Include="Perk\Piloting\SystemsOptimization.cs" />
+    <Compile Include="Perk\Piloting\Racer.cs" />
+    <Compile Include="Perk\Piloting\Sniper.cs" />
+    <Compile Include="Perk\Piloting\Sneak.cs" />
+    <Compile Include="Perk\Piloting\Scavenger.cs" />
+    <Compile Include="Perk\Piloting\Hunter.cs" />
     <Compile Include="Perk\Shields\BlockingRecovery.cs" />
     <Compile Include="Perk\Shields\ExpulsionManeuver.cs" />
     <Compile Include="Perk\Stances\BalancedStance.cs" />
@@ -2172,6 +2183,7 @@
     <EmbeddedResource Include="Data\Migrations\2019-01-18.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-01-19.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-01.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-02-05.1.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-07.1.sql" />

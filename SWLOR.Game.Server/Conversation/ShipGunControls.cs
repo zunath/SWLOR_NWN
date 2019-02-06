@@ -24,15 +24,26 @@ namespace SWLOR.Game.Server.Conversation
 
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            _space.CreateShipInSpace(player.Area);
+            string header;
+            DialogPage mainOptions;
 
-            string header = "Crewing the ship's guns allows the ship to fire in any direction using the gunner's Piloting skill. " +
-                "If the target is in front of the ship, both the pilot's and the gunner's skills are added to the shot. " +
-                "Unlike the pilot, the gunner can select targets using the quickbar option.  To stop crewing the guns, " +
-                "type /exit or use the quickbar button.";
+            if (!_space.IsLocationSpace(_space.GetShipLocation(player.Area)))
+            {
+                header = "You can only crew the guns while the ship is in space.";
+                mainOptions = new DialogPage(header);
+            }
+            else
+            {
+                _space.CreateShipInSpace(player.Area);
+
+                header = "Crewing the ship's guns allows the ship to fire in any direction using the gunner's Piloting skill. " +
+                    "If the target is in front of the ship, both the pilot's and the gunner's skills are added to the shot. " +
+                    "Unlike the pilot, the gunner can select targets using the quickbar option.  To stop crewing the guns, " +
+                    "type /exit or use the quickbar button.";
+                mainOptions = new DialogPage(header, "Crew the guns!");
+            }
 
             PlayerDialog dialog = new PlayerDialog("MainPage");
-            DialogPage mainOptions = new DialogPage(header, "Crew the guns!");
 
             dialog.AddPage("MainPage", mainOptions);
 

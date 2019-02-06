@@ -1,6 +1,6 @@
-﻿namespace SWLOR.Game.Server.Enumeration
+﻿namespace SWLOR.Game.Server.NWNX
 {
-    public enum MovementRate
+    public enum CreatureMovementRate
     {
         PC = 0,
         Immobile = 1,

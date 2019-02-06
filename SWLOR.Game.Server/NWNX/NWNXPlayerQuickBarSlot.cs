@@ -12,9 +12,12 @@ namespace SWLOR.Game.Server.NWNX
             : base(script)
         {
         }
-
-
-        // Create an empty QBS of given type
+        
+        /// <summary>
+        /// Create an empty QBS of given type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public QuickBarSlot Empty(QuickBarSlotType type)
         {
             QuickBarSlot qbs = new QuickBarSlot
@@ -37,7 +40,12 @@ namespace SWLOR.Game.Server.NWNX
             return qbs;
         }
 
-        // Create a QBS for using an item
+        /// <summary>
+        /// Create a QBS for using an item
+        /// </summary>
+        /// <param name="oItem"></param>
+        /// <param name="nPropertyID"></param>
+        /// <returns></returns>
         public QuickBarSlot UseItem(NWItem oItem, int nPropertyID)
         {
             QuickBarSlot qbs = Empty(QuickBarSlotType.Item);
@@ -48,7 +56,12 @@ namespace SWLOR.Game.Server.NWNX
             return qbs;
         }
 
-        // Create a QBS for equipping an item
+        /// <summary>
+        /// Create a QBS for equipping an item
+        /// </summary>
+        /// <param name="oItem"></param>
+        /// <param name="oSecondaryItem"></param>
+        /// <returns></returns>
         public QuickBarSlot EquipItem(NWItem oItem, NWItem oSecondaryItem)
         {
             QuickBarSlot qbs = Empty(QuickBarSlotType.Item);
@@ -59,7 +72,14 @@ namespace SWLOR.Game.Server.NWNX
             return qbs;
         }
 
-        // Create a QBS for casting a spell
+        /// <summary>
+        /// Create a QBS for casting a spell
+        /// </summary>
+        /// <param name="nSpell"></param>
+        /// <param name="nClassIndex"></param>
+        /// <param name="nMetamagic"></param>
+        /// <param name="nDomainLevel"></param>
+        /// <returns></returns>
         public QuickBarSlot CastSpell(int nSpell, int nClassIndex, int nMetamagic, int nDomainLevel)
         {
             QuickBarSlot qbs = Empty(QuickBarSlotType.Spell);
@@ -72,7 +92,11 @@ namespace SWLOR.Game.Server.NWNX
             return qbs;
         }
 
-        // Create a QBS for using a skill
+        /// <summary>
+        /// Create a QBS for using a skill
+        /// </summary>
+        /// <param name="nSkill"></param>
+        /// <returns></returns>
         public QuickBarSlot UseSkill(int nSkill)
         {
             QuickBarSlot qbs = Empty(QuickBarSlotType.Skill);
@@ -82,7 +106,11 @@ namespace SWLOR.Game.Server.NWNX
             return qbs;
         }
 
-        // Create a QBS for using a feat
+        /// <summary>
+        /// Create a QBS for using a feat
+        /// </summary>
+        /// <param name="nFeat"></param>
+        /// <returns></returns>
         public QuickBarSlot UseFeat(int nFeat)
         {
             QuickBarSlot qbs = Empty(QuickBarSlotType.Feat);
@@ -92,19 +120,29 @@ namespace SWLOR.Game.Server.NWNX
             return qbs;
         }
 
-        // Create a QBS for starting a dialog
+        /// <summary>
+        /// Create a QBS for starting a dialog
+        /// </summary>
+        /// <returns></returns>
         public QuickBarSlot StartDialog()
         {
             return Empty(QuickBarSlotType.Dialog);
         }
 
-        // Create a QBS for attacking
+        /// <summary>
+        /// Create a QBS for attacking
+        /// </summary>
+        /// <returns></returns>
         public QuickBarSlot Attack()
         {
             return Empty(QuickBarSlotType.Attack);
         }
 
-        // Create a QBS for emoting
+        /// <summary>
+        /// Create a QBS for emoting
+        /// </summary>
+        /// <param name="nEmote"></param>
+        /// <returns></returns>
         public QuickBarSlot Emote(int nEmote)
         {
             QuickBarSlot qbs = Empty(QuickBarSlotType.Emote);
@@ -114,7 +152,11 @@ namespace SWLOR.Game.Server.NWNX
             return qbs;
         }
 
-        // Create a QBS for toggling a mode
+        /// <summary>
+        /// Create a QBS for toggling a mode
+        /// </summary>
+        /// <param name="nMode"></param>
+        /// <returns></returns>
         public QuickBarSlot ToggleMode(int nMode)
         {
             QuickBarSlot qbs = Empty(QuickBarSlotType.ModeToggle);
@@ -124,19 +166,29 @@ namespace SWLOR.Game.Server.NWNX
             return qbs;
         }
 
-        // Create a QBS for examining
+        /// <summary>
+        /// Create a QBS for examining
+        /// </summary>
+        /// <returns></returns>
         public QuickBarSlot Examine()
         {
             return Empty(QuickBarSlotType.Examine);
         }
 
-        // Create a QBS for bartering
+        /// <summary>
+        /// Create a QBS for bartering
+        /// </summary>
+        /// <returns></returns>
         public QuickBarSlot Barter()
         {
             return Empty(QuickBarSlotType.Barter);
         }
 
-        // Create a QBS for quickchat command
+        /// <summary>
+        /// Create a QBS for quickchat command
+        /// </summary>
+        /// <param name="nCommand"></param>
+        /// <returns></returns>
         public QuickBarSlot QuickChat(int nCommand)
         {
             QuickBarSlot qbs = Empty(QuickBarSlotType.QuickChat);
@@ -146,13 +198,21 @@ namespace SWLOR.Game.Server.NWNX
             return qbs;
         }
 
-        // Create a QBS for possessing a familiar
+        /// <summary>
+        /// Create a QBS for possessing a familiar
+        /// </summary>
+        /// <returns></returns>
         public QuickBarSlot PossessFamiliar()
         {
             return Empty(QuickBarSlotType.PossessFamiliar);
         }
 
-        // Create a QBS for casting a spell
+        /// <summary>
+        /// Create a QBS for casting a spell
+        /// </summary>
+        /// <param name="nSpell"></param>
+        /// <param name="nCasterLevel"></param>
+        /// <returns></returns>
         public QuickBarSlot UseSpecialAbility(int nSpell, int nCasterLevel)
         {
             QuickBarSlot qbs = Empty(QuickBarSlotType.Spell);
@@ -162,5 +222,21 @@ namespace SWLOR.Game.Server.NWNX
 
             return qbs;
         }
-    }
+
+        /// <summary>
+        /// Create a QBS for running a command
+        /// </summary>
+        /// <param name="sCommandLabel"></param>
+        /// <param name="sCommandLine"></param>
+        /// <returns></returns>
+        public QuickBarSlot Command(string sCommandLabel, string sCommandLine)
+        {
+            QuickBarSlot qbs = Empty(QuickBarSlotType.Command);
+
+            qbs.CommandLabel = sCommandLabel;
+            qbs.CommandLine = sCommandLine;
+
+            return qbs;
+        }
+}
 }

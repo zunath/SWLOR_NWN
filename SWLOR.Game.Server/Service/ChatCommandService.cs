@@ -7,6 +7,7 @@ using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using System.Linq;
 using System.Reflection;
+using SWLOR.Game.Server.NWNX;
 using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Service

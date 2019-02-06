@@ -3,6 +3,15 @@
     public enum CustomItemPropertyType
     {
         Unknown = -1,
+        StarshipWeaponsBonus = 90,
+        StarshipShieldsBonus = 91,
+        StarshipStronidiumBonus = 92,
+        StarshipFuelBonus = 93,
+        StarshipStealthBonus = 94,
+        StarshipScanningBonus = 95,
+        StarshipSpeedBonus = 96,
+        StarshipRangeBonus = 97,
+        PilotingBonus = 98,
         ScavengingBonus = 99,
         RecommendedLevel = 100,
         RestBonus = 101,
@@ -53,7 +62,6 @@
         ElectricalDefenseBonus = 146,
         MindDefenseBonus = 147,
         LightDefenseBonus = 148,
-        DarkDefenseBonus = 149,
-        PilotingBonus = 150
+        DarkDefenseBonus = 149
     }
 }

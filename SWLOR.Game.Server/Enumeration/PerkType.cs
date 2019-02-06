@@ -161,7 +161,18 @@
         CombatModInstallationElectronics = 156,
         ForceModInstallationElectronics = 157,
         CraftingModInstallationElectronics = 158,
-        SpecialModInstallationElectronics = 159
+        SpecialModInstallationElectronics = 159,
+        SaberFinesse = 160,
+        Racer = 161,
+        Evasive = 162,
+        Hunter = 163,
+        Sneak = 164,
+        Scavenger = 165,
+        Sniper = 166,
+        CrackShot = 167,
+        SystemsOptimization = 168,
+        CombatRepair = 169,
+        CarefulPilot = 170
     }
 
 }

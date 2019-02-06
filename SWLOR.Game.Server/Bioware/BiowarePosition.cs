@@ -85,5 +85,44 @@ namespace SWLOR.Game.Server.Bioware
             return _.Vector(changedX, changedY, changedZ);
         }
 
+        /// <summary>
+        /// Returns the facing of o2 from o1 based on their relative positions.
+        /// o1.SetFacing(GetRelativeFacing(o1,o2)) === o1.SetFacingPoint(o2).
+        /// </summary>
+        /// <param name="o1"></param>
+        /// <param name="o2"></param>
+        /// <returns></returns>
+        public float GetRelativeFacing(NWObject o1, NWObject o2)
+        {
+            float diffX = o2.Position.m_X - o1.Position.m_X;
+            float diffY = o2.Position.m_Y - o1.Position.m_Y;
+            
+            // X/Y so that we're taking angle relative to the Y axis (X is opposite, Y adjacent)
+            float angle = _.atan(diffX / diffY);
+
+            // atan returns -90 to +90.  We need to turn it into a 360 degree facing based on 
+            // whether diffX and diffY are positive.  
+            // if diffX and diffY are positive, we should have a facing of 0-90.
+            //   - angle will already be 0-90 and correct
+            // if diffX is positive and diffY is negative, we should have a facing of 90-180.
+            //   - angle will be -90 to 0, so needs +180.
+            // if diffX and diffY are both negative, we should have a facing of 180-270.
+            //   - angle will be 0-90 so needs +180
+            // if diffX is negative and diffY is positive, we should have a facing of 270-360.
+            //   - angle will be -90 to 0, so needs +360.
+            // doing atan Y/X and then doing 90-atan for positive diffX and 270-atan for negative
+            // diffX should be equivalent. 
+
+            if (angle >= 0 && diffX >= 0 && diffY >= 0) angle += 0.0f;
+            else if (angle <= 0 && diffX >= 0 && diffY <= 0) angle += 180.0f;
+            else if (angle >= 0 && diffX <= 0 && diffY <= 0) angle+= 180.0f;
+            else angle += 360.0f;
+
+            // For some inescapable reason, NWN facings are based on 0 being due East and measured
+            // counterclockwise.
+            angle = 90 - angle;
+            if (angle < 0) return 360.0f + angle;
+            else return angle;
+        }
     }
 }

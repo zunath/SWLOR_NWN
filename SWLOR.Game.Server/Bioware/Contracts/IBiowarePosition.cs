@@ -10,5 +10,6 @@ namespace SWLOR.Game.Server.Bioware.Contracts
         float GetChangeInX(float fDistance, float fAngle);
         float GetChangeInY(float fDistance, float fAngle);
         Vector GetChangedPosition(Vector vOriginal, float fDistance, float fAngle);
+        float GetRelativeFacing(NWObject o1, NWObject o2);
     }
 }

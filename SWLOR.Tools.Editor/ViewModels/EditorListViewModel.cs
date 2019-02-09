@@ -58,13 +58,13 @@ namespace SWLOR.Tools.Editor.ViewModels
             }
         }
 
-        public IKeyItemEditorViewModel KeyItemVM
+        public IKeyItemEditorViewModel KeyItemEditorVM
         {
             get => _keyItemVM;
             set
             {
                 _keyItemVM = value;
-                NotifyOfPropertyChange(() => KeyItemVM);
+                NotifyOfPropertyChange(() => KeyItemEditorVM);
             }
         }
 

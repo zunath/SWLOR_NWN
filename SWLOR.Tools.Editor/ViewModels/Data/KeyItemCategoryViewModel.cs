@@ -16,16 +16,29 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
 
             TrackProperty(this, x => x.Name);
             TrackProperty(this, x => x.IsActive);
+            TrackProperty(this, x => x.KeyItems);
         }
 
-        private string _displayName;
+        private int _id;
+
+        [JsonProperty(nameof(ID))]
+        public int ID
+        {
+            get => _id;
+            set
+            {
+                _id = value;
+                NotifyOfPropertyChange(() => ID);
+            }
+        }
+
+        [JsonIgnore]
         public override string DisplayName
         {
-            get => _displayName;
+            get => _name;
             set
             {
                 _name = value;
-                _displayName = value;
                 NotifyOfPropertyChange(() => Name);
                 NotifyOfPropertyChange(() => DisplayName);
             }
@@ -39,7 +52,6 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
             set
             {
                 _name = value;
-                _displayName = value;
                 NotifyOfPropertyChange(() => Name);
                 NotifyOfPropertyChange(() => DisplayName);
             }

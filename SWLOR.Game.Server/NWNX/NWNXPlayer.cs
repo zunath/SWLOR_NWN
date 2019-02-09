@@ -4,6 +4,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX.Contracts;
 using System;
 using System.Reflection;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.NWNX
 {
@@ -17,7 +18,18 @@ namespace SWLOR.Game.Server.NWNX
 
         private const string NWNX_Player = "NWNX_Player";
 
-        // Force display placeable examine window for player
+        /// <summary>
+        /// // Force opens the target object's inventory for the player.
+        /// A few notes about this function:
+        /// - If the placeable is in a different area than the player, the portrait will not be shown
+        /// - The placeable's open/close animations will be played
+        /// - Clicking the 'close' button will cause the player to walk to the placeable;
+        ///     If the placeable is in a different area, the player will just walk to the edge
+        ///     of the current area and stop. This action can be cancelled manually.
+        /// - Walking will close the placeable automatically.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="placeable"></param>
         public void ForcePlaceableExamineWindow(NWPlayer player, NWPlaceable placeable)
         {
             string sFunc = "ForcePlaceableExamineWindow";
@@ -27,6 +39,42 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Player, sFunc);
         }
 
+        /// <summary>
+        /// Starts displaying a timing bar.
+        /// Will run a script at the end of the timing bar, if specified.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="seconds"></param>
+        /// <param name="script"></param>
+        public void StartGuiTimingBar(NWPlayer player, float seconds, string script)
+        {
+            // only one timing bar at a time!
+            if (_.GetLocalInt(player.Object, "NWNX_PLAYER_GUI_TIMING_ACTIVE") == 1)
+                return;
+
+            string sFunc = "StartGuiTimingBar";
+            NWNX_PushArgumentFloat(NWNX_Player, sFunc, seconds);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player.Object);
+
+            NWNX_CallFunction(NWNX_Player, sFunc);
+
+            int id = _.GetLocalInt(player.Object, "NWNX_PLAYER_GUI_TIMING_ID") + 1;
+            _.SetLocalInt(player.Object, "NWNX_PLAYER_GUI_TIMING_ACTIVE", id);
+            _.SetLocalInt(player.Object, "NWNX_PLAYER_GUI_TIMING_ID", id);
+
+            _.DelayCommand(seconds, () =>
+            {
+                StopGuiTimingBar(player, script, -1);
+            });
+        }
+
+        /// <summary>
+        /// Stops displaying a timing bar.
+        /// Runs a script if specified.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="script"></param>
+        /// <param name="id"></param>
         public void StopGuiTimingBar(NWPlayer player, string script, int id)
         {
             int activeId = _.GetLocalInt(player.Object, "NWNX_PLAYER_GUI_TIMING_ACTIVE");
@@ -61,39 +109,24 @@ namespace SWLOR.Game.Server.NWNX
             }
         }
 
-        // Starts displaying a timing bar.
-        // Will run a script at the end of the timing bar, if specified.
-        public void StartGuiTimingBar(NWPlayer player, float seconds, string script)
-        {
-            // only one timing bar at a time!
-            if (_.GetLocalInt(player.Object, "NWNX_PLAYER_GUI_TIMING_ACTIVE") == 1)
-                return;
 
-            string sFunc = "StartGuiTimingBar";
-            NWNX_PushArgumentFloat(NWNX_Player, sFunc, seconds);
-            NWNX_PushArgumentObject(NWNX_Player, sFunc, player.Object);
-
-            NWNX_CallFunction(NWNX_Player, sFunc);
-
-            int id = _.GetLocalInt(player.Object, "NWNX_PLAYER_GUI_TIMING_ID") + 1;
-            _.SetLocalInt(player.Object, "NWNX_PLAYER_GUI_TIMING_ACTIVE", id);
-            _.SetLocalInt(player.Object, "NWNX_PLAYER_GUI_TIMING_ID", id);
-
-            _.DelayCommand(seconds, () =>
-            {
-                StopGuiTimingBar(player, script, -1);
-            });
-        }
-
-        // Stops displaying a timing bar.
-        // Runs a script if specified.
+        /// <summary>
+        /// Stops displaying a timing bar.
+        /// Runs a script if specified.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="script"></param>
         public void StopGuiTimingBar(NWPlayer player, string script)
         {
             StopGuiTimingBar(player, script, -1);
         }
 
-        // Sets whether the player should always walk when given movement commands.
-        // If true, clicking on the ground or using WASD will trigger walking instead of running.
+        /// <summary>
+        /// Sets whether the player should always walk when given movement commands.
+        /// If true, clicking on the ground or using WASD will trigger walking instead of running.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="bWalk"></param>
         public void SetAlwaysWalk(NWPlayer player, int bWalk)
         {
             string sFunc = "SetAlwaysWalk";
@@ -103,7 +136,12 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Player, sFunc);
         }
 
-        // Gets the player's quickbar slot info
+        /// <summary>
+        /// Gets the player's quickbar slot info
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="slot"></param>
+        /// <returns></returns>
         public QuickBarSlot GetQuickBarSlot(NWPlayer player, int slot)
         {
             string sFunc = "GetQuickBarSlot";
@@ -130,7 +168,12 @@ namespace SWLOR.Game.Server.NWNX
             return qbs;
         }
 
-        // Sets a player's quickbar slot
+        /// <summary>
+        /// Sets a player's quickbar slot
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="slot"></param>
+        /// <param name="qbs"></param>
         public void SetQuickBarSlot(NWPlayer player, int slot, QuickBarSlot qbs)
         {
             string sFunc = "SetQuickBarSlot";
@@ -155,7 +198,11 @@ namespace SWLOR.Game.Server.NWNX
         }
 
 
-        // Get the name of the .bic file associated with the player's character.
+        /// <summary>
+        /// Get the name of the .bic file associated with the player's character.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <returns></returns>
         public string GetBicFileName(NWPlayer player)
         {
             string sFunc = "GetBicFileName";
@@ -164,33 +211,168 @@ namespace SWLOR.Game.Server.NWNX
             return NWNX_GetReturnValueString(NWNX_Player, sFunc);
         }
 
-
-
-        // Overrides the default visibility rules about how player perceives the target object.
-        // NWNX_PLAYER_VISIBILITY_DEFAULT - Restore normal behavior
-        // NWNX_PLAYER_VISIBILITY_HIDDEN - Object is always hidden from the player
-        // NWNX_PLAYER_VISIBILITY_VISIBLE - Object is always shown to the player
-
-        public void SetVisibilityOverride(NWPlayer player, NWObject target, int @override)
+        /// <summary>
+        /// Plays the VFX at the target position in current area for the given player only
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="effectId"></param>
+        /// <param name="position"></param>
+        public void ShowVisualEffect(NWPlayer player, int effectId, Vector position)
         {
-            string sFunc = "SetVisibilityOverride";
-            NWNX_PushArgumentInt(NWNX_Player, sFunc, @override);
-            NWNX_PushArgumentObject(NWNX_Player, sFunc, target.Object);
-            NWNX_PushArgumentObject(NWNX_Player, sFunc, player.Object);
+            string sFunc = "ShowVisualEffect";
+            NWNX_PushArgumentFloat(NWNX_Player, sFunc, position.m_X);
+            NWNX_PushArgumentFloat(NWNX_Player, sFunc, position.m_Y);
+            NWNX_PushArgumentFloat(NWNX_Player, sFunc, position.m_Z);
+            NWNX_PushArgumentInt(NWNX_Player, sFunc, effectId);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
 
             NWNX_CallFunction(NWNX_Player, sFunc);
         }
 
-        // Queries the existing visibility override for given (player, object) pair
-        // Returns NWNX_PLAYER_VISIBILITY_DEFAULT if no override exists
-        public int GetVisibilityOverride(NWPlayer player, NWObject target)
+        /// <summary>
+        /// Changes the daytime music track for the given player only
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="track"></param>
+        public void MusicBackgroundChangeDay(NWPlayer player, int track)
         {
-            string sFunc = "GetVisibilityOverride";
-            NWNX_PushArgumentObject(NWNX_Player, sFunc, target.Object);
-            NWNX_PushArgumentObject(NWNX_Player, sFunc, player.Object);
+            string sFunc = "ChangeBackgroundMusic";
+            NWNX_PushArgumentInt(NWNX_Player, sFunc, track);
+            NWNX_PushArgumentInt(NWNX_Player, sFunc, TRUE); // bool day = TRUE
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
 
             NWNX_CallFunction(NWNX_Player, sFunc);
-            return NWNX_GetReturnValueInt(NWNX_Player, sFunc);
+        }
+
+        /// <summary>
+        /// Changes the nighttime music track for the given player only
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="track"></param>
+        public void MusicBackgroundChangeNight(NWPlayer player, int track)
+        {
+            string sFunc = "ChangeBackgroundMusic";
+            NWNX_PushArgumentInt(NWNX_Player, sFunc, track);
+            NWNX_PushArgumentInt(NWNX_Player, sFunc, FALSE); // bool day = FALSE
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
+
+            NWNX_CallFunction(NWNX_Player, sFunc);
+        }
+
+        /// <summary>
+        /// Starts the background music for the given player only
+        /// </summary>
+        /// <param name="player"></param>
+        public void MusicBackgroundStart(NWPlayer player)
+        {
+            string sFunc = "PlayBackgroundMusic";
+            NWNX_PushArgumentInt(NWNX_Player, sFunc, TRUE); // bool play = TRUE
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
+
+            NWNX_CallFunction(NWNX_Player, sFunc);
+        }
+
+        /// <summary>
+        /// Stops the background music for the given player only
+        /// </summary>
+        /// <param name="player"></param>
+        public void MusicBackgroundStop(NWPlayer player)
+        {
+            string sFunc = "PlayBackgroundMusic";
+            NWNX_PushArgumentInt(NWNX_Player, sFunc, FALSE); // bool play = FALSE
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
+
+            NWNX_CallFunction(NWNX_Player, sFunc);
+        }
+
+        /// <summary>
+        /// Changes the battle music track for the given player only
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="track"></param>
+        public void MusicBattleChange(NWPlayer player, int track)
+        {
+            string sFunc = "ChangeBattleMusic";
+            NWNX_PushArgumentInt(NWNX_Player, sFunc, track);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
+
+            NWNX_CallFunction(NWNX_Player, sFunc);
+        }
+
+        /// <summary>
+        /// Starts the battle music for the given player only
+        /// </summary>
+        /// <param name="player"></param>
+        public void MusicBattleStart(NWPlayer player)
+        {
+            string sFunc = "PlayBattleMusic";
+            NWNX_PushArgumentInt(NWNX_Player, sFunc, TRUE); // bool play = TRUE
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
+
+            NWNX_CallFunction(NWNX_Player, sFunc);
+        }
+
+        /// <summary>
+        /// Stops the background music for the given player only
+        /// </summary>
+        /// <param name="player"></param>
+        public void MusicBattleStop(NWPlayer player)
+        {
+            string sFunc = "PlayBattleMusic";
+            NWNX_PushArgumentInt(NWNX_Player, sFunc, FALSE); // bool play = FALSE
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
+
+            NWNX_CallFunction(NWNX_Player, sFunc);
+        }
+
+        /// <summary>
+        /// Play a sound at the location of target for the given player only
+        /// If target is OBJECT_INVALID the sound will play at the location of the player
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="sound"></param>
+        /// <param name="target"></param>
+        public void PlaySound(NWPlayer player, string sound, NWObject target)
+        {
+            string sFunc = "PlaySound";
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, target);
+            NWNX_PushArgumentString(NWNX_Player, sFunc, sound);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
+
+            NWNX_CallFunction(NWNX_Player, sFunc);
+        }
+
+        /// <summary>
+        /// Toggle a placeable's usable flag for the given player only
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="placeable"></param>
+        /// <param name="isUseable"></param>
+        public void SetPlaceableUseable(NWPlayer player, NWPlaceable placeable, bool isUseable)
+        {
+            string sFunc = "SetPlaceableUsable";
+            NWNX_PushArgumentInt(NWNX_Player, sFunc, isUseable ? TRUE : FALSE);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, placeable);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
+
+            NWNX_CallFunction(NWNX_Player, sFunc);
+        }
+
+        /// <summary>
+        /// Override player's rest duration
+        /// Duration is in milliseconds, 1000 = 1 second
+        /// Minimum duration of 10ms
+        /// -1 clears the override
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="duration"></param>
+        public void SetRestDuration(NWPlayer player, int duration)
+        {
+            string sFunc = "SetRestDuration";
+            NWNX_PushArgumentInt(NWNX_Player, sFunc, duration);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
+
+            NWNX_CallFunction(NWNX_Player, sFunc);
         }
     }
 }

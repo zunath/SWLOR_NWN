@@ -1,8 +1,7 @@
-﻿using System;
+﻿using NWN;
 using SWLOR.Game.Server.GameObject;
-
-using NWN;
 using SWLOR.Game.Server.NWNX.Contracts;
+using System;
 
 namespace SWLOR.Game.Server.NWNX
 {
@@ -17,9 +16,13 @@ namespace SWLOR.Game.Server.NWNX
         }
 
 
-        // Scripts can subscribe to events.
-        // Some events are dispatched via the NWNX plugin (see NWNX_EVENTS_EVENT_* constants).
-        // Others can be signalled via script code (see NWNX_Events_SignalEvent).
+        /// <summary>
+        /// Scripts can subscribe to events.
+        /// Some events are dispatched via the NWNX plugin (see NWNX_EVENTS_EVENT_* constants).
+        /// Others can be signalled via script code (see NWNX_Events_SignalEvent).
+        /// </summary>
+        /// <param name="evt"></param>
+        /// <param name="script"></param>
         public void SubscribeEvent(string evt, string script)
         {
             NWNX_PushArgumentString("NWNX_Events", "SUBSCRIBE_EVENT", script);
@@ -27,8 +30,12 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction("NWNX_Events", "SUBSCRIBE_EVENT");
         }
 
-        // Pushes event data at the provided tag, which subscribers can access with GetEventData.
-        // This should be called BEFORE SignalEvent.
+        /// <summary>
+        /// Pushes event data at the provided tag, which subscribers can access with GetEventData.
+        /// This should be called BEFORE SignalEvent.
+        /// </summary>
+        /// <param name="tag"></param>
+        /// <param name="data"></param>
         public void PushEventData(string tag, string data)
         {
             NWNX_PushArgumentString("NWNX_Events", "PUSH_EVENT_DATA", data);
@@ -36,8 +43,13 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction("NWNX_Events", "PUSH_EVENT_DATA");
         }
 
-        // Signals an event. This will dispatch a notification to all subscribed handlers.
-        // Returns TRUE if anyone was subscribed to the event, FALSE otherwise.
+        /// <summary>
+        /// Signals an event. This will dispatch a notification to all subscribed handlers.
+        /// Returns TRUE if anyone was subscribed to the event, FALSE otherwise.
+        /// </summary>
+        /// <param name="evt"></param>
+        /// <param name="target"></param>
+        /// <returns></returns>
         public int SignalEvent(string evt, NWObject target)
         {
             NWNX_PushArgumentObject("NWNX_Events", "SIGNAL_EVENT", target.Object);
@@ -46,8 +58,12 @@ namespace SWLOR.Game.Server.NWNX
             return NWNX_GetReturnValueInt("NWNX_Events", "SIGNAL_EVENT");
         }
 
-        // Retrieves the event data for the currently executing script.
-        // THIS SHOULD ONLY BE CALLED FROM WITHIN AN EVENT HANDLER.
+        /// <summary>
+        /// Retrieves the event data for the currently executing script.
+        /// THIS SHOULD ONLY BE CALLED FROM WITHIN AN EVENT HANDLER.
+        /// </summary>
+        /// <param name="tag"></param>
+        /// <returns></returns>
         public string GetEventDataString(string tag)
         {
             NWNX_PushArgumentString("NWNX_Events", "GET_EVENT_DATA", tag);
@@ -56,24 +72,41 @@ namespace SWLOR.Game.Server.NWNX
         }
 
 
-        // Skips execution of the currently executing event.
-        // If this is a NWNX event, that means that the base function call won't be called.
-        // This won't impact any other subscribers, nor dispatch for before / after functions.
-        // For example, if you are subscribing to NWNX_ON_EXAMINE_OBJECT_BEFORE, and you skip ...
-        // - The other subscribers will still be called.
-        // - The original function in the base game will be skipped.
-        // - The matching after event (NWNX_ON_EXAMINE_OBJECT_AFTER) will also be executed.
-        //
-        // THIS SHOULD ONLY BE CALLED FROM WITHIN AN EVENT HANDLER.
-        // ONLY WORKS WITH HEALER'S KIT EVENT
+        /// <summary>
+        /// // Skips execution of the currently executing event.
+        /// If this is a NWNX event, that means that the base function call won't be called.
+        /// This won't impact any other subscribers, nor dispatch for before / after functions.
+        /// For example, if you are subscribing to NWNX_ON_EXAMINE_OBJECT_BEFORE, and you skip ...
+        /// - The other subscribers will still be called.
+        /// - The original function in the base game will be skipped.
+        /// - The matching after event (NWNX_ON_EXAMINE_OBJECT_AFTER) will also be executed.
+        ///
+        /// THIS SHOULD ONLY BE CALLED FROM WITHIN AN EVENT HANDLER.
+        /// ONLY WORKS WITH THE FOLLOWING EVENTS:
+        /// - Feat events
+        /// - Item events
+        /// - Healer's Kit event
+        /// - CombatMode events
+        /// - Party events
+        /// - Skill events
+        /// - Map events
+        /// - Listen/Spot Detection events
+        /// - Polymorph events
+        /// </summary>
         public void SkipEvent()
         {
             NWNX_CallFunction("NWNX_Events", "SKIP_EVENT");
         }
 
-        // Set the return value of the event.
-        //
-        // THIS SHOULD ONLY BE CALLED FROM WITHIN AN EVENT HANDLER.
+        /// <summary>
+        /// // Set the return value of the event.
+        ///
+        /// THIS SHOULD ONLY BE CALLED FROM WITHIN AN EVENT HANDLER.
+        /// ONLY WORKS WITH THE FOLLOWING EVENTS:
+        /// - Healer's Kit event
+        /// - Listen/Spot Detection events -> "1" or "0"
+        /// </summary>
+        /// <param name="data"></param>
         public void SetEventResult(string data)
         {
             NWNX_PushArgumentString("NWNX_Events", "EVENT_RESULT", data);
@@ -263,5 +296,15 @@ namespace SWLOR.Game.Server.NWNX
             return GetEventDataObject("TARGET");
         }
 
+        /// <summary>
+        /// Returns the current event name
+        /// THIS SHOULD ONLY BE CALLED FROM WITHIN AN EVENT HANDLER.
+        /// </summary>
+        /// <returns></returns>
+        public string GetCurrentEvent()
+        {
+            NWNX_CallFunction("NWNX_Events", "GET_CURRENT_EVENT");
+            return NWNX_GetReturnValueString("NWNX_Events", "GET_CURRENT_EVENT");
+        }
     }
 }

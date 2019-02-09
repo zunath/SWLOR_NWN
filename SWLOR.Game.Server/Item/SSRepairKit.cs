@@ -16,18 +16,21 @@ namespace SWLOR.Game.Server.Item
         private readonly IDataService _data;
         private readonly IPerkService _perk;
         private readonly ISkillService _skill;
+        private readonly ISpaceService _space;
         public SSRepairKit(
             INWScript script,
             IBaseService baseService,
             IDataService data,
             IPerkService perk,
-            ISkillService skill)
+            ISkillService skill,
+            ISpaceService space)
         {
             _ = script;
             _base = baseService;
             _data = data;
             _perk = perk;
             _skill = skill;
+            _space = space;
         }
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
@@ -56,17 +59,23 @@ namespace SWLOR.Game.Server.Item
 
             if (ship.IsValid)
             {
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(repair), ship);
+                ship.SetLocalInt("HP", ship.GetLocalInt("HP") + repair);
+                ship.FloatingText("Hull repaired: " + ship.GetLocalInt("HP") + "/" + ship.MaxHP);
             }
 
             pcbs.Durability += repair;
             _data.SubmitDataChange(pcbs, DatabaseActionType.Update);
 
-            player.SendMessage("Ship repaired for " + repair + " points.");
+            player.SendMessage("Ship repaired for " + repair + " points. (Hull points: " + pcbs.Durability + "/" + structure.Durability + ")");
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
+            if (_perk.GetPCPerkLevel(new NWPlayer(user), PerkType.CombatRepair) >= 2)
+            {
+                return 6.0f;
+            }
+
             return 12.0f;
         }
 
@@ -107,6 +116,14 @@ namespace SWLOR.Game.Server.Item
             if (structure.Durability == pcbs.Durability)
             {
                 return "This starship is already fully repaired.";
+            }
+
+            bool canRepair = (_perk.GetPCPerkLevel(new NWPlayer(user), PerkType.CombatRepair) >= 1);
+            PCBase pcBase = _data.Get<PCBase>(pcbs.PCBaseID);
+
+            if (!canRepair && _space.IsLocationSpace(pcBase.ShipLocation))
+            {
+                return "You need the Combat Repair perk to repair ships in space.";
             }
 
             return "";

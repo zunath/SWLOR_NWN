@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IDataService _data;
         private readonly IDialogService _dialog;
         private readonly IErrorService _error;
+        private readonly IPerkService _perk;
         private readonly IBasePermissionService _perm;
         private readonly ISerializationService _serialization;
         private readonly ISpaceService _space;
@@ -32,6 +33,7 @@ namespace SWLOR.Game.Server.Conversation
             IDialogService dialog,
             IDataService data,
             IErrorService error,
+            IPerkService perk,
             IBasePermissionService perm,
             ISerializationService serialization,
             IBaseService @base,
@@ -43,6 +45,7 @@ namespace SWLOR.Game.Server.Conversation
             _data = data;
             _dialog = dialog;
             _error = error;
+            _perk = perk;
             _perm = perm;
             _serialization = serialization;
             _space = space;
@@ -70,7 +73,7 @@ namespace SWLOR.Game.Server.Conversation
 
             List<string> options = new List<string>();
 
-            if (bSpace && _perm.HasBasePermission(player, structure.PCBaseID, BasePermission.CanFlyStarship))
+            if (bSpace && _perm.HasStructurePermission(player, structure.ID, StructurePermission.CanFlyStarship))
             {
                 // See if we are near enough to the planet to land.
                 if (_space.CanLandOnPlanet(player.Area))
@@ -81,12 +84,12 @@ namespace SWLOR.Game.Server.Conversation
                 options.Add("Pilot Ship");
                 options.Add("Hyperspace Jump");
             }
-            else if ( _perm.HasBasePermission(player, structure.PCBaseID, BasePermission.CanFlyStarship))
+            else if ( _perm.HasStructurePermission(player, structure.ID, StructurePermission.CanFlyStarship))
             {
                 options.Add("Take Off");
             }
 
-            if (_perm.HasBasePermission(player, structure.PCBaseID, BasePermission.CanManageBaseFuel))
+            if (!bSpace && _perm.HasBasePermission(player, structure.PCBaseID, BasePermission.CanManageBaseFuel))
             {
                 options.Add("Access Fuel Bay");
                 options.Add("Access Stronidium Bay");
@@ -94,7 +97,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (_perm.HasBasePermission(player, structure.PCBaseID, BasePermission.CanAccessStructureInventory))
             {
-                options.Add("Access Resource Bay");
+                if (!bSpace) options.Add("Access Resource Bay");
                 options.Add("Export Starcharts");
             }
 
@@ -127,12 +130,15 @@ namespace SWLOR.Game.Server.Conversation
             Guid structureID = new Guid(_.GetLocalString(_.GetArea(GetDialogTarget()), "PC_BASE_STRUCTURE_ID"));
             PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.ID == structureID); 
             PCBase pcBase = _data.Get<PCBase>(structure.PCBaseID);
+            BaseStructure baseStructure = _data.Get<BaseStructure>(structure.BaseStructureID);
+
+            NWPlaceable bay = _space.GetCargoBay(GetPC().Area, null);
 
             int currentReinforcedFuel = pcBase.ReinforcedFuel;
             int currentFuel = pcBase.Fuel;
             int currentResources = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structure.ID).Count();
-            int maxReinforcedFuel = _base.CalculateMaxReinforcedFuel(pcBase.ID);
-            int maxFuel = _base.CalculateMaxFuel(pcBase.ID);
+            int maxReinforcedFuel = _base.CalculateMaxReinforcedFuel(pcBase.ID) + 25 * _space.GetCargoBonus(bay, (int)CustomItemPropertyType.StarshipStronidiumBonus);
+            int maxFuel = _base.CalculateMaxFuel(pcBase.ID) + 25 * _space.GetCargoBonus(bay, (int)CustomItemPropertyType.StarshipFuelBonus);
             int maxResources = _base.CalculateResourceCapacity(pcBase.ID);
 
             string locationDescription = "";
@@ -154,6 +160,7 @@ namespace SWLOR.Game.Server.Conversation
             header += _color.Green("Fuel: ") + currentFuel + " / " + maxFuel + "\n";
             header += _color.Green("Reinforced Fuel: ") + currentReinforcedFuel + " / " + maxReinforcedFuel + "\n";
             header += _color.Green("Resource Bay: ") + currentResources + " / " + maxResources + "\n";
+            header += _color.Green("Hull integrity: ") + structure.Durability + " / " + baseStructure.Durability + "\n";
   
             header += "The computer awaits your orders.";
 
@@ -170,7 +177,9 @@ namespace SWLOR.Game.Server.Conversation
 
             DialogPage page = dialog.GetPageByName(pageName);
             DialogResponse response = page.Responses[responseID - 1];
-            
+
+            bool carefulPilot = _perk.GetPCPerkLevel(player, PerkType.CarefulPilot) > 0;
+                
             if (pageName == "MainPage")
             {
                 // The number of dialog options available can vary.  So query based on the actual text of the response.
@@ -200,7 +209,7 @@ namespace SWLOR.Game.Server.Conversation
                     else
                     {
                         // Fuel is good - we have liftoff.
-                        if (!_space.DoPilotingSkillCheck(GetPC(), 2))
+                        if (!_space.DoPilotingSkillCheck(GetPC(), 2, carefulPilot))
                         {
                             // Failed our skill check.  Deduct fuel but don't do anything else.
                             GetPC().FloatingText("The ship shudders a bit, but your awkwardness on the throttle shows, and it doesn't make it off the dock.  Try again.");
@@ -272,15 +281,18 @@ namespace SWLOR.Game.Server.Conversation
                 else if (response.Text == "Access Fuel Bay")
                 {
                     OpenFuelBay(false);
+                    EndConversation();
                 }
                 else if (response.Text == "Access Stronidium Bay")
                 {
                     OpenFuelBay(true);
+                    EndConversation();
                 }
                 else if (response.Text == "Access Resource Bay")
                 {
                     NWPlaceable bay = _space.GetCargoBay(player.Area, GetPC());
                     if (bay != null) GetPC().AssignCommand(() => _.ActionInteractObject(bay.Object));
+                    EndConversation();
                 }
                 else if (response.Text == "Export Starcharts")
                 {
@@ -303,12 +315,13 @@ namespace SWLOR.Game.Server.Conversation
                 else
                 {
                     // Fuel is good - make the jump
-                    if (!_space.DoPilotingSkillCheck(GetPC(), 10))
+                    if (!_space.DoPilotingSkillCheck(GetPC(), 13, carefulPilot))
                     {
                         // Failed our skill check.  Deduct fuel but don't do anything else.
                         GetPC().FloatingText("Jump failed!  You forgot to whatsit the thingummyjig.");
                         pcBase.Fuel -= 50;
                         _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                        EndConversation();
                         return;
                     }
 
@@ -339,9 +352,9 @@ namespace SWLOR.Game.Server.Conversation
             else if (pageName == "LandingDestPage")
             {
                 // Skill check. 
-                if (!_space.DoPilotingSkillCheck(GetPC(), 5))
+                if (!_space.DoPilotingSkillCheck(GetPC(), 5, carefulPilot))
                 {
-                    // Failed our skill check.  Deduct fuel but don't do anything else.
+                    // Failed our skill check.  Land anyway but burn more fuel.
                     if (pcBase.Fuel > 0)
                     {
                         GetPC().FloatingText("You overshoot the landing spot, burning extra fuel getting your ship into position.");
@@ -380,13 +393,13 @@ namespace SWLOR.Game.Server.Conversation
                 }
                 else
                 {
-                    _error.Trace("SPACE", "Landing in PC base dock, ID: " + dockStructureID.ToString());
+                    _error.Trace(TraceComponent.Space, "Landing in PC base dock, ID: " + dockStructureID.ToString());
                     PCBaseStructure dock = _data.SingleOrDefault<PCBaseStructure>(x => x.ID == dockStructureID);
 
                     if (dock == null)
                     {
                         player.SendMessage("ERROR: Could not find landing dock by ID.  Please report this.");
-                        _error.Trace("SPACE", "Could not find landing dock ID " + dockStructureID.ToString());
+                        _error.Trace(TraceComponent.Space, "Could not find landing dock ID " + dockStructureID.ToString());
                         return;
                     }
 
@@ -394,12 +407,12 @@ namespace SWLOR.Game.Server.Conversation
 
                     if (plc == null)
                     {
-                        _error.Trace("SPACE", "Failed to find dock placeable.");
+                        _error.Trace(TraceComponent.Space, "Failed to find dock placeable.");
                         player.SendMessage("ERROR: Could not find landing dock placeable.  Please report this.");
                         return; 
                     }
 
-                    _error.Trace("SPACE", "Found dock, landing ship.");
+                    _error.Trace(TraceComponent.Space, "Found dock, landing ship.");
 
                     // We've found our dock. Update our record of where the ship's exterior should spawn.
                     NWLocation loc = plc.Location;
@@ -434,6 +447,9 @@ namespace SWLOR.Game.Server.Conversation
                     _.ApplyEffectAtLocation(NWScript.DURATION_TYPE_INSTANT, _.EffectVisualEffect(356), loc);
                     DoDustClouds(loc);            
                 }
+
+                // We're landing.  Make sure any pilot or gunner get out of flight mode.  
+                _space.LandCrew(player.Area);
 
                 // If we are still here, we landed successfully.  Shake the screen about and notify PCs on the ship.
                 // Give the impression of movement

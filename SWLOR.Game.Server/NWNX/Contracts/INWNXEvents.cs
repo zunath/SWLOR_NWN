@@ -43,5 +43,6 @@ namespace SWLOR.Game.Server.NWNX.Contracts
         NWObject OnDMGiveLevels_GetTarget();
         int OnDMGiveGold_GetAmount();
         NWObject OnDMGiveGold_GetTarget();
+        string GetCurrentEvent();
     }
 }

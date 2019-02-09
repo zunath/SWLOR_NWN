@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Service
             if (perk == null) return;
 
             // Check to see if we are a spaceship.  Spaceships can't use abilities...
-            if (pc.GetLocalInt("IS_SHIP") > 0)
+            if (pc.GetLocalInt("IS_SHIP") > 0 || pc.GetLocalInt("IS_GUNNER")>0)
             {
                 pc.SendMessage("You cannot use that ability while piloting a ship.");
                 return;
@@ -418,7 +418,7 @@ namespace SWLOR.Game.Server.Service
             NWObject oTarget = _.GetSpellTargetObject();
 
             // Flag this attack as physical so that the damage scripts treat it properly.
-            _error.Trace(AbilityService.LAST_ATTACK, "Setting attack type from " + oPC.GlobalID + " against " + _.GetName(oTarget) + " to physical (" + ATTACK_PHYSICAL.ToString() + ")");
+            _error.Trace(TraceComponent.LastAttack, "Setting attack type from " + oPC.GlobalID + " against " + _.GetName(oTarget) + " to physical (" + ATTACK_PHYSICAL.ToString() + ")");
             oTarget.SetLocalInt(LAST_ATTACK + oPC.GlobalID, ATTACK_PHYSICAL);
 
             HandleGrenadeProficiency(oPC, oTarget);

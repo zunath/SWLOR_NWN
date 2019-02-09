@@ -75,6 +75,7 @@
     <Compile Include="AI\PackAggroBehaviour.cs" />
     <Compile Include="AI\SoundAggroBehaviour.cs" />
     <Compile Include="AI\SoundAggroRandomWalkBehaviour.cs" />
+    <Compile Include="AI\StarshipBehaviour.cs" />
     <Compile Include="App.cs" />
     <Compile Include="AppCache.cs" />
     <Compile Include="AI\AIComponent\AggroTargetBySight.cs" />
@@ -402,7 +403,8 @@
     <Compile Include="Enumeration\BaseStructureType.cs" />
     <Compile Include="Enumeration\BuildingType.cs" />
     <Compile Include="Enumeration\ChatChannelType.cs" />
-    <Compile Include="Enumeration\ClericDomain.cs" />
+    <Compile Include="Enumeration\TraceComponent.cs" />
+    <Compile Include="NWNX\ClericDomain.cs" />
     <Compile Include="Enumeration\CommandPermissionType.cs" />
     <Compile Include="Enumeration\ComponentBonusType.cs" />
     <Compile Include="Enumeration\ComponentType.cs" />
@@ -424,14 +426,17 @@
     <Compile Include="Enumeration\EventType.cs" />
     <Compile Include="Enumeration\ForceAbilityType.cs" />
     <Compile Include="Enumeration\LocalVariableType.cs" />
-    <Compile Include="Enumeration\MovementRate.cs" />
-    <Compile Include="Enumeration\MovementType.cs" />
+    <Compile Include="NWNX\CreatureBonusType.cs" />
+    <Compile Include="NWNX\CreatureMovementRate.cs" />
+    <Compile Include="NWNX\CreatureMovementType.cs" />
     <Compile Include="Enumeration\NodeType.cs" />
     <Compile Include="Enumeration\PCBaseType.cs" />
     <Compile Include="Enumeration\PerkExecutionType.cs" />
     <Compile Include="Enumeration\PerkType.cs" />
     <Compile Include="Enumeration\QuestType.cs" />
-    <Compile Include="Enumeration\QuickBarSlotType.cs" />
+    <Compile Include="NWNX\Contracts\INWNXVisibility.cs" />
+    <Compile Include="NWNX\NWNXVisibility.cs" />
+    <Compile Include="NWNX\QuickBarSlotType.cs" />
     <Compile Include="Enumeration\ResistanceType.cs" />
     <Compile Include="Enumeration\ResourceQuality.cs" />
     <Compile Include="Enumeration\ResourceType.cs" />
@@ -443,6 +448,7 @@
     <Compile Include="Event\Area\OnAreaHeartbeat.cs" />
     <Compile Include="Event\Area\OnAreaExit.cs" />
     <Compile Include="Event\Area\OnAreaEnter.cs" />
+    <Compile Include="Event\Conversation\HasCredits.cs" />
     <Compile Include="Event\Conversation\HasSkillRank.cs" />
     <Compile Include="Event\Conversation\KeyItemCheck.cs" />
     <Compile Include="Event\Conversation\OpenStore.cs" />
@@ -454,6 +460,7 @@
     <Compile Include="Event\Conversation\QuestCollectItem.cs" />
     <Compile Include="Event\Conversation\QuestComplete.cs" />
     <Compile Include="Event\Conversation\QuestIsDone.cs" />
+    <Compile Include="Event\Conversation\Tatooine GoCorp Transport\TransportToMosEisley.cs" />
     <Compile Include="Event\Conversation\WarpToWaypoint.cs" />
     <Compile Include="Event\Creature\OnBlocked.cs" />
     <Compile Include="Event\Creature\OnCombatRoundEnd.cs" />
@@ -489,6 +496,7 @@
     <Compile Include="Item\MineralScanner.cs" />
     <Compile Include="Item\ModItem.cs" />
     <Compile Include="Item\PerkRefund.cs" />
+    <Compile Include="Item\SSEnhancement.cs" />
     <Compile Include="Item\SSRepairKit.cs" />
     <Compile Include="Item\ResourceHarvester.cs" />
     <Compile Include="Item\StarchartDisk.cs" />
@@ -523,7 +531,8 @@
     <Compile Include="NWNX\NWNXDamage.cs" />
     <Compile Include="NWNX\NWNXProfiler.cs" />
     <Compile Include="NWNX\NWNXWeapon.cs" />
-    <Compile Include="NWNX\PlayerVisibilityType.cs" />
+    <Compile Include="NWNX\VisibilityType.cs" />
+    <Compile Include="NWN\Events\Conversation\credit_check.cs" />
     <Compile Include="NWN\Events\Conversation\KeyItem\AnyKeyItems\any_keyitems_1.cs" />
     <Compile Include="NWN\Events\Conversation\KeyItem\AnyKeyItems\any_keyitems_10.cs" />
     <Compile Include="NWN\Events\Conversation\KeyItem\AnyKeyItems\any_keyitems_2.cs" />
@@ -948,6 +957,16 @@
     <Compile Include="Perk\OneHanded\Opportunist.cs" />
     <Compile Include="Perk\OneHanded\SneakAttack.cs" />
     <Compile Include="Perk\OneHanded\WeaponFinesse.cs" />
+    <Compile Include="Perk\Piloting\CarefulPilot.cs" />
+    <Compile Include="Perk\Piloting\CrackShot.cs" />
+    <Compile Include="Perk\Piloting\Evasive.cs" />
+    <Compile Include="Perk\Piloting\CombatRepair.cs" />
+    <Compile Include="Perk\Piloting\SystemsOptimization.cs" />
+    <Compile Include="Perk\Piloting\Racer.cs" />
+    <Compile Include="Perk\Piloting\Sniper.cs" />
+    <Compile Include="Perk\Piloting\Sneak.cs" />
+    <Compile Include="Perk\Piloting\Scavenger.cs" />
+    <Compile Include="Perk\Piloting\Hunter.cs" />
     <Compile Include="Perk\Shields\BlockingRecovery.cs" />
     <Compile Include="Perk\Shields\ExpulsionManeuver.cs" />
     <Compile Include="Perk\Stances\BalancedStance.cs" />
@@ -2103,7 +2122,6 @@
     <None Include="ServerFiles\HakPaks\swlor_gui\cg_main.gui" />
     <None Include="ServerFiles\HakPaks\swlor_gui\cg_package.gui" />
     <None Include="ServerFiles\HakPaks\swlor_gui\cg_race.gui" />
-    <None Include="ServerFiles\HakPaks\swlor_tlk.tlk" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
@@ -2171,7 +2189,8 @@
     <EmbeddedResource Include="Data\Migrations\2019-01-16.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-01-18.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-01-19.1.sql" />
-    
+    <EmbeddedResource Include="Data\Migrations\2019-02-01.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-02-05.1.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-07.1.sql" />
@@ -2196,7 +2215,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)*.*" "C:/NeverwinterNights/nwn/mono" /E /Y /C
+    <PostBuildEvent>xcopy "$(TargetDir)*.*" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono" /E /Y /C /i
 </PostBuildEvent>
   </PropertyGroup>
 </Project>

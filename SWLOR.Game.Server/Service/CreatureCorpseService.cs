@@ -19,6 +19,8 @@ namespace SWLOR.Game.Server.Service
             _.SetIsDestroyable(FALSE);
             
             NWObject self = Object.OBJECT_SELF;
+            if (self.Tag == "spaceship_copy") return;
+
             Vector lootPosition = _.Vector(self.Position.m_X, self.Position.m_Y, self.Position.m_Z - 0.11f);
             Location spawnLocation = _.Location(self.Area, lootPosition, self.Facing);
 

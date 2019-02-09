@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         void OnNWNXChat();
         void OnModuleLeave(NWPlayer player);
         void SetShipLocation(NWArea area, string Location);
+        int GetCargoBonus(NWPlaceable bay, int stat);
         string GetShipLocation(NWArea area);
         bool IsLocationSpace(string location);
         bool IsLocationPublicStarport(string location);
@@ -23,11 +24,12 @@ namespace SWLOR.Game.Server.Service.Contracts
         string DestinationToPlanet(int destination);
         string[] GetHyperspaceDestinationList(PCBase pcBase);
         Hashtable GetLandingDestinationList(NWPlayer player, PCBase pcBase);
-        bool DoPilotingSkillCheck(NWPlayer player, int DC);
+        bool DoPilotingSkillCheck(NWPlayer player, int DC, bool reRollIfFailed = false);
         void DoFlyShip(NWPlayer player, NWArea ship);
         void DoStopFlyShip(NWPlayer player);
         void DoCrewGuns(NWPlayer player, NWArea ship);
         void DoStopCrewGuns(NWPlayer player);
+        void LandCrew(NWArea ship);
         void CreateShipInSpace(NWArea ship, NWLocation location = null);
         void RemoveShipInSpace(NWArea ship);
         bool CanLandOnPlanet(NWArea ship);
@@ -35,5 +37,8 @@ namespace SWLOR.Game.Server.Service.Contracts
         void OnCreatureSpawn(NWCreature creature);
         void OnCreatureHeartbeat(NWCreature creature);
         void OnModuleItemEquipped();
+        void OnPhysicalAttacked(NWCreature creature, NWCreature attacker);
+        void OnPerception(NWCreature creature, NWCreature perceived);
+        void OnHeartbeat(NWCreature creature);
     }
 }

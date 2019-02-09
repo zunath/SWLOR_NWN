@@ -40,7 +40,9 @@
 
             </TabItem>
             <TabItem Header="Key Items">
+                <views:KeyItemEditorView cal:View.Model="{Binding KeyItemEditorVM}">
 
+                </views:KeyItemEditorView>
             </TabItem>
             <TabItem Header="Loot">
                 <views:LootEditorView cal:View.Model="{Binding LootEditorVM}">

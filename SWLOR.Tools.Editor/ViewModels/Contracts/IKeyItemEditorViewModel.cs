@@ -4,8 +4,8 @@ using SWLOR.Tools.Editor.ViewModels.Data;
 
 namespace SWLOR.Tools.Editor.ViewModels.Contracts
 {
-    public interface IKeyItemEditorViewModel
+    public interface ILootEditorViewModel
     {
-        IObjectListViewModel<KeyItemCategoryViewModel> ObjectListVM { get; set; }
+        IObjectListViewModel<LootTableViewModel> ObjectListVM { get; set; }
     }
 }

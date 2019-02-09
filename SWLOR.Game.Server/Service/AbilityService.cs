@@ -418,7 +418,7 @@ namespace SWLOR.Game.Server.Service
             NWObject oTarget = _.GetSpellTargetObject();
 
             // Flag this attack as physical so that the damage scripts treat it properly.
-            _error.Trace(AbilityService.LAST_ATTACK, "Setting attack type from " + oPC.GlobalID + " against " + _.GetName(oTarget) + " to physical (" + ATTACK_PHYSICAL.ToString() + ")");
+            _error.Trace(TraceComponent.LastAttack, "Setting attack type from " + oPC.GlobalID + " against " + _.GetName(oTarget) + " to physical (" + ATTACK_PHYSICAL.ToString() + ")");
             oTarget.SetLocalInt(LAST_ATTACK + oPC.GlobalID, ATTACK_PHYSICAL);
 
             HandleGrenadeProficiency(oPC, oTarget);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -43,21 +44,34 @@ namespace SWLOR.Game.Server.Service
             _data.DataQueue.Enqueue(action);
         }
 
-        public void Trace(string component, string log)
+        public void Trace(TraceComponent component, string log)
         {
-            // Usually I would do this by looking at variables on the module.  But variables set on the module
-            // are apparently not queryable via _.GetModule().GetLocalxxx in C#.  So using a different approach.
-
-            NWObject oDebug = _.GetObjectByTag("DEBUG_ON");
-            if (_.GetIsObjectValid(oDebug) == 0)
+            // Check the global environment variable named "DEBUGGING_ENABLED" to see if it's set.
+            string env = Environment.GetEnvironmentVariable("DEBUGGING_ENABLED");
+            bool isDebuggingEnabled = env == "y" || env == "true" || env == "yes";
+            
+            if (!isDebuggingEnabled)
             {
                 // Trace disabled globally.
                 return;
             }
 
-            if(component == "" || oDebug.GetLocalInt(component) == 1)
+            // Trace components can be individually enabled or disabled.
+            // Based on the capitalized enumeration name, check to see if that environment variable is enabled.
+            // If the trace isn't attached to a specific component, it'll be displayed every time (so long as the global setting is on)
+            bool componentEnabled = true;
+            if(component != TraceComponent.None)
             {
-                Console.WriteLine(component + " -- " + log);
+                string componentName = Enum.GetName(typeof(TraceComponent), component)?.ToUpper();
+                env = Environment.GetEnvironmentVariable("DEBUGGING_COMPONENT_ENABLED_" + componentName);
+                componentEnabled = env == "y" || env == "true" || env == "yes";
+            }
+            
+            // If the component is enabled, output the trace.
+            if (componentEnabled)
+            {
+                string componentName = component == TraceComponent.None ? string.Empty : component.ToString();
+                Console.WriteLine(componentName + " -- " + log);
             }
         }
     }

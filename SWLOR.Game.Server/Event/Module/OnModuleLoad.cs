@@ -29,8 +29,10 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IBackgroundThreadManager _backgroundThreadManager;
         private readonly IDataPackageService _dataPackage;
         private readonly INWNXWeapon _nwnxWeapon;
+        private readonly IErrorService _error;
 
-        public OnModuleLoad(INWScript script,
+        public OnModuleLoad(
+            INWScript script,
             INWNXChat nwnxChat,
             INWNXEvents nwnxEvents,
             IObjectProcessingService objectProcessing,
@@ -43,7 +45,8 @@ namespace SWLOR.Game.Server.Event.Module
             IObjectVisibilityService objectVisibility,
             IBackgroundThreadManager backgroundThreadManager,
             IDataPackageService dataPackage,
-            INWNXWeapon nwnxWeapon)
+            INWNXWeapon nwnxWeapon,
+            IErrorService error)
         {
             _ = script;
             _nwnxChat = nwnxChat;
@@ -59,6 +62,7 @@ namespace SWLOR.Game.Server.Event.Module
             _backgroundThreadManager = backgroundThreadManager;
             _dataPackage = dataPackage;
             _nwnxWeapon = nwnxWeapon;
+            _error = error;
         }
 
         public bool Run(params object[] args)
@@ -89,6 +93,7 @@ namespace SWLOR.Game.Server.Event.Module
 
             nowString = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
             Console.WriteLine(nowString + ": Module OnLoad finished!");
+            
             return true;
         }
 

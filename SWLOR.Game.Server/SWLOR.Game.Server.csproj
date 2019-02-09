@@ -403,6 +403,7 @@
     <Compile Include="Enumeration\BaseStructureType.cs" />
     <Compile Include="Enumeration\BuildingType.cs" />
     <Compile Include="Enumeration\ChatChannelType.cs" />
+    <Compile Include="Enumeration\TraceComponent.cs" />
     <Compile Include="NWNX\ClericDomain.cs" />
     <Compile Include="Enumeration\CommandPermissionType.cs" />
     <Compile Include="Enumeration\ComponentBonusType.cs" />

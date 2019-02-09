@@ -362,6 +362,11 @@ namespace SWLOR.Game.Server.Service
 
         public NWPlaceable GetCargoBay(NWArea starship, NWPlayer player)
         {
+            if (starship == null || !starship.IsValid)
+            {
+                return null;
+            }
+
             NWPlaceable bay = starship.GetLocalObject("STARSHIP_RESOURCE_BAY");
 
             if (bay.IsValid)
@@ -373,20 +378,20 @@ namespace SWLOR.Game.Server.Service
                 }
                 else
                 {
-                    if (player.IsValid) player.FloatingText("Someone else is already accessing that structure's inventory. Please wait.");
+                    if (player != null && player.IsValid) player.FloatingText("Someone else is already accessing that structure's inventory. Please wait.");
                     return null;
                 }
             }
 
             Guid structureID = new Guid(starship.GetLocalString("PC_BASE_STRUCTURE_ID"));
             var structureItems = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structureID);
-
+            
             NWLocation location = (player != null ? player.Location : (NWLocation) _.Location(starship, _.Vector(1, 1, 0), 0));
             bay = _.CreateObject(OBJECT_TYPE_PLACEABLE, "resource_bay", location);
 
             starship.SetLocalObject("STARSHIP_RESOURCE_BAY", bay.Object);
             bay.SetLocalString("PC_BASE_STRUCTURE_ID", structureID.ToString());
-
+            
             foreach (var item in structureItems)
             {
                 _serialization.DeserializeItem(item.ItemObject, bay);
@@ -424,6 +429,8 @@ namespace SWLOR.Game.Server.Service
         public int GetCargoBonus(NWPlaceable bay, int stat)
         {
             int bonus = 0;
+            if (bay == null) return bonus;
+            if (!bay.IsValid) return bonus;
 
             // Get the starship's cargo inventory and look for enhancement items. 
             foreach (var item in bay.InventoryItems)

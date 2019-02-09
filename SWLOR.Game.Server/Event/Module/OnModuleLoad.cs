@@ -30,7 +30,8 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IDataPackageService _dataPackage;
         private readonly INWNXWeapon _nwnxWeapon;
 
-        public OnModuleLoad(INWScript script,
+        public OnModuleLoad(
+            INWScript script,
             INWNXChat nwnxChat,
             INWNXEvents nwnxEvents,
             IObjectProcessingService objectProcessing,
@@ -89,6 +90,7 @@ namespace SWLOR.Game.Server.Event.Module
 
             nowString = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
             Console.WriteLine(nowString + ": Module OnLoad finished!");
+            
             return true;
         }
 

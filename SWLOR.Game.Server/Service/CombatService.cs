@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Service
 
             int attackType = target.GetLocalInt(AbilityService.LAST_ATTACK + player.GlobalID);
 
-            _error.Trace(AbilityService.LAST_ATTACK, "Last attack from " + player.GlobalID + " on " + _.GetName(target) + " was type " + attackType.ToString());
+            _error.Trace(TraceComponent.LastAttack, "Last attack from " + player.GlobalID + " on " + _.GetName(target) + " was type " + attackType.ToString());
 
             if (attackType == AbilityService.ATTACK_PHYSICAL)
             {

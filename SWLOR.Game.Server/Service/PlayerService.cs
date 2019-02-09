@@ -381,7 +381,7 @@ namespace SWLOR.Game.Server.Service
             NWArea area = player.Area;
             if (area.IsValid && area.Tag != "ooc_area" && area.Tag != "tutorial" && !area.IsInstance)
             {
-                _error.Trace("SPACE", "Saving location in area " + _.GetName(area));
+                _error.Trace(TraceComponent.Space, "Saving location in area " + _.GetName(area));
                 Player entity = GetPlayerEntity(player.GlobalID);
                 entity.LocationAreaResref = area.Resref;
                 entity.LocationX = player.Position.m_X;
@@ -404,14 +404,14 @@ namespace SWLOR.Game.Server.Service
             }
             else if (area.IsInstance)
             {
-                _error.Trace("SPACE", "Saving location in instance area " + _.GetName(area));
+                _error.Trace(TraceComponent.Space, "Saving location in instance area " + _.GetName(area));
                 string instanceID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
                 if (string.IsNullOrWhiteSpace(instanceID))
                 {
                     instanceID = area.GetLocalString("PC_BASE_ID");
                 }
 
-                _error.Trace("SPACE", "Saving character in instance ID: " + instanceID);
+                _error.Trace(TraceComponent.Space, "Saving character in instance ID: " + instanceID);
 
                 if (!string.IsNullOrWhiteSpace(instanceID))
                 {

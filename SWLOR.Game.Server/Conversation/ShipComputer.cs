@@ -132,11 +132,13 @@ namespace SWLOR.Game.Server.Conversation
             PCBase pcBase = _data.Get<PCBase>(structure.PCBaseID);
             BaseStructure baseStructure = _data.Get<BaseStructure>(structure.BaseStructureID);
 
+            NWPlaceable bay = _space.GetCargoBay(GetPC().Area, null);
+
             int currentReinforcedFuel = pcBase.ReinforcedFuel;
             int currentFuel = pcBase.Fuel;
             int currentResources = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structure.ID).Count();
-            int maxReinforcedFuel = _base.CalculateMaxReinforcedFuel(pcBase.ID) + 25 * _space.GetCargoBonus(_space.GetCargoBay(GetPC().Area, null), (int)CustomItemPropertyType.StarshipStronidiumBonus);
-            int maxFuel = _base.CalculateMaxFuel(pcBase.ID) + 25 * _space.GetCargoBonus(_space.GetCargoBay(GetPC().Area, null), (int)CustomItemPropertyType.StarshipFuelBonus);
+            int maxReinforcedFuel = _base.CalculateMaxReinforcedFuel(pcBase.ID) + 25 * _space.GetCargoBonus(bay, (int)CustomItemPropertyType.StarshipStronidiumBonus);
+            int maxFuel = _base.CalculateMaxFuel(pcBase.ID) + 25 * _space.GetCargoBonus(bay, (int)CustomItemPropertyType.StarshipFuelBonus);
             int maxResources = _base.CalculateResourceCapacity(pcBase.ID);
 
             string locationDescription = "";
@@ -279,15 +281,18 @@ namespace SWLOR.Game.Server.Conversation
                 else if (response.Text == "Access Fuel Bay")
                 {
                     OpenFuelBay(false);
+                    EndConversation();
                 }
                 else if (response.Text == "Access Stronidium Bay")
                 {
                     OpenFuelBay(true);
+                    EndConversation();
                 }
                 else if (response.Text == "Access Resource Bay")
                 {
                     NWPlaceable bay = _space.GetCargoBay(player.Area, GetPC());
                     if (bay != null) GetPC().AssignCommand(() => _.ActionInteractObject(bay.Object));
+                    EndConversation();
                 }
                 else if (response.Text == "Export Starcharts")
                 {
@@ -316,6 +321,7 @@ namespace SWLOR.Game.Server.Conversation
                         GetPC().FloatingText("Jump failed!  You forgot to whatsit the thingummyjig.");
                         pcBase.Fuel -= 50;
                         _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                        EndConversation();
                         return;
                     }
 

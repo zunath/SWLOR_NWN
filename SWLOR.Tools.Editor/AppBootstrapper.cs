@@ -16,6 +16,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.Threading;
@@ -149,6 +150,7 @@ namespace SWLOR.Tools.Editor
             builder.RegisterType<ErrorViewModel>().As<IErrorViewModel>();
             builder.RegisterType<ImportViewModel>().As<IImportViewModel>();
             builder.RegisterType<ExportViewModel>().As<IExportViewModel>();
+            builder.RegisterType<KeyItemEditorViewModel>().As<IKeyItemEditorViewModel>();
             builder.RegisterType<LootEditorViewModel>().As<ILootEditorViewModel>();
             builder.RegisterType<MenuBarViewModel>().As<IMenuBarViewModel>();
             builder.RegisterType<PlantEditorViewModel>().As<IPlantEditorViewModel>();

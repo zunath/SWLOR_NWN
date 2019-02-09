@@ -177,10 +177,12 @@ namespace SWLOR.Tools.Editor.ViewModels
         }
 
         private List<LootTableItem> _lootTableItems;
+        private List<KeyItem> _keyItems;
         private void PerformDataSyncAsync(object sender, DoWorkEventArgs e)
         {
             _progress = 0;
             _lootTableItems = _data.GetAll<LootTableItem>().ToList();
+            _keyItems = _data.GetAll<KeyItem>().ToList();
 
             WriteDataFileAsync(BuildViewModel<ApartmentBuilding, ApartmentBuildingViewModel>(_data.GetAll<ApartmentBuilding>()));
             WriteDataFileAsync(BuildViewModel<BaseStructure, BaseStructureViewModel>(_data.GetAll<BaseStructure>()));
@@ -194,8 +196,7 @@ namespace SWLOR.Tools.Editor.ViewModels
             WriteDataFileAsync(BuildViewModel<FameRegion, FameRegionViewModel>(_data.GetAll<FameRegion>()));
             WriteDataFileAsync(BuildViewModel<GameTopic, GameTopicViewModel>(_data.GetAll<GameTopic>()));
             WriteDataFileAsync(BuildViewModel<GameTopicCategory, GameTopicCategoryViewModel>(_data.GetAll<GameTopicCategory>()));
-            WriteDataFileAsync(BuildViewModel<KeyItem, KeyItemViewModel>(_data.GetAll<KeyItem>()));
-            WriteDataFileAsync(BuildViewModel<KeyItemCategory, KeyItemCategoryViewModel>(_data.GetAll<KeyItemCategory>()));
+            WriteDataFileAsync(BuildViewModel<KeyItemCategory, KeyItemCategoryViewModel>(_data.GetAll<KeyItemCategory>(), KeyItemCategoryMapping));
             WriteDataFileAsync(BuildViewModel<LootTable, LootTableViewModel>(_data.GetAll<LootTable>(), LootTableMapping));
             WriteDataFileAsync(BuildViewModel<Mod, ModViewModel>(_data.GetAll<Mod>()));
             WriteDataFileAsync(BuildViewModel<NPCGroup, NPCGroupViewModel>(_data.GetAll<NPCGroup>()));
@@ -216,6 +217,19 @@ namespace SWLOR.Tools.Editor.ViewModels
             {
                 var itemVM = Mapper.Map<LootTableItem, LootTableItemViewModel>(item);
                 source.LootTableItems.Add(itemVM);
+            }
+
+            return source;
+        }
+
+        private KeyItemCategoryViewModel KeyItemCategoryMapping(KeyItemCategoryViewModel source)
+        {
+            var items = _keyItems.Where(x => x.KeyItemCategoryID == source.ID);
+
+            foreach (var item in items)
+            {
+                var itemVM = Mapper.Map<KeyItem, KeyItemViewModel>(item);
+                source.KeyItems.Add(itemVM);
             }
 
             return source;

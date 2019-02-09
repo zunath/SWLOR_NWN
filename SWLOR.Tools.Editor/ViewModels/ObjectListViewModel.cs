@@ -122,7 +122,8 @@ namespace SWLOR.Tools.Editor.ViewModels
 
         private void LoadFiles()
         {
-            var files = Directory.GetFiles("./Data/" + GetFolderName());
+            string path = "./Data/" + GetFolderName();
+            var files = Directory.GetFiles(path);
             foreach (var file in files)
             {
                 var json = File.ReadAllText(file);

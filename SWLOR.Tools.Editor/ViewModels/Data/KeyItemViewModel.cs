@@ -8,15 +8,20 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
     [Folder(nameof(KeyItem))]
     public class KeyItemViewModel : DBObjectViewModelBase
     {
-        private string _displayName;
+        public KeyItemViewModel()
+        {
+            TrackProperty(this, x => x.Name);
+            TrackProperty(this, x => x.Description);
+            TrackProperty(this, x => x.IsActive);
+        }
 
+        [JsonIgnore]
         public override string DisplayName
         {
-            get => _displayName;
+            get => _name;
             set
             {
                 _name = value;
-                _displayName = value;
                 NotifyOfPropertyChange(() => Name);
                 NotifyOfPropertyChange(() => DisplayName);
             }
@@ -30,9 +35,32 @@ namespace SWLOR.Tools.Editor.ViewModels.Data
             set
             {
                 _name = value;
-                _displayName = value;
                 NotifyOfPropertyChange(() => Name);
                 NotifyOfPropertyChange(() => DisplayName);
+            }
+        }
+
+        private string _description;
+        [JsonProperty(nameof(Description))]
+        public string Description
+        {
+            get => _description;
+            set
+            {
+                _description = value;
+                NotifyOfPropertyChange(() => Description);
+            }
+        }
+
+        private bool _isActive;
+        [JsonProperty(nameof(IsActive))]
+        public bool IsActive
+        {
+            get => _isActive;
+            set
+            {
+                _isActive = value;
+                NotifyOfPropertyChange(() => IsActive);
             }
         }
     }

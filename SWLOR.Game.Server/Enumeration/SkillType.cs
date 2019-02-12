@@ -20,7 +20,7 @@
         Fabrication = 15,
         Cooking = 16,
         Medicine = 17,
-        // 18 is free
+        Mirialan = 18,
         ForceCombat = 19,
         ForceSupport = 20,
         ForceUtility = 21,

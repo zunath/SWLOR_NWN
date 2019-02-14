@@ -13,6 +13,7 @@
         Twilek = 156,
         Cyborg = 157,
         Cathar = 158,
-        Trandoshan = 159
+        Trandoshan = 159,
+        Mirialan = 160
     }
 }

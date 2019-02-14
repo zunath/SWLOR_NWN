@@ -111,6 +111,12 @@ namespace SWLOR.Game.Server.Service
                     maleHead = 168;
                     femaleHead = 41;
                     break;
+                case CustomRaceType.Mirialan:
+                    skinColor = 38;
+                    hairColor = 3;
+                    maleHead = 20;
+                    femaleHead = 1;
+                    break;
                 case CustomRaceType.Cathar:
                     skinColor = 54;
                     hairColor = 0;

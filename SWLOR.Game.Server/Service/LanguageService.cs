@@ -44,7 +44,8 @@ namespace SWLOR.Game.Server.Service
                 { SkillType.Mandoa, typeof(TranslatorMandoa) },
                 { SkillType.Shyriiwook, typeof(TranslatorShyriiwook) },
                 { SkillType.Twileki, typeof(TranslatorTwileki) },
-                { SkillType.Zabraki, typeof(TranslatorZabraki) }
+                { SkillType.Zabraki, typeof(TranslatorZabraki) },
+                { SkillType.Mirialan, typeof(TranslatorMirialan) }
             };
 
             Type type = typeof(TranslatorGeneric);
@@ -158,6 +159,7 @@ namespace SWLOR.Game.Server.Service
                 case SkillType.Shyriiwook: r = 149; g = 125; b = 86; break;
                 case SkillType.Twileki: r = 65; g = 105; b = 225; break;
                 case SkillType.Zabraki: r = 255; g = 102; b = 102; break;
+                case SkillType.Mirialan: r = 77; g = 230; b = 215; break;
             }
 
             return r << 24 | g << 16 | b << 8;
@@ -177,6 +179,7 @@ namespace SWLOR.Game.Server.Service
                 case SkillType.Shyriiwook: return "Shyriiwook";
                 case SkillType.Twileki: return "Twi'leki";
                 case SkillType.Zabraki: return "Zabraki";
+                case SkillType.Mirialan: return "Mirialan";
             }
 
             return "Basic";
@@ -213,6 +216,9 @@ namespace SWLOR.Game.Server.Service
                     break;
                 case CustomRaceType.Cyborg:
                     languages.Add(SkillType.Droidspeak);
+                    break;
+                case CustomRaceType.Mirialan:
+                    languages.Add(SkillType.Mirialan);
                     break;
             }
 
@@ -286,6 +292,7 @@ namespace SWLOR.Game.Server.Service
                 SkillType.Shyriiwook,
                 SkillType.Twileki,
                 SkillType.Zabraki,
+                SkillType.Mirialan
             };
         }
     }

@@ -250,13 +250,13 @@ namespace SWLOR.Game.Server.Service
             int animationID = -1;
 
             // Activation Bonus % - Shorten activation time.
-            if (itemBonus < 0)
+            if (itemBonus > 0)
             {
                 float activationBonus = Math.Abs(itemBonus) * 0.01f;
                 activationTime = activationTime - activationTime * activationBonus;
             }
             // Activation Penalty % - Increase activation time.
-            else if (itemBonus > 0)
+            else if (itemBonus < 0)
             {
                 float activationPenalty = Math.Abs(itemBonus) * 0.01f;
                 activationTime = activationTime + activationTime * activationPenalty;

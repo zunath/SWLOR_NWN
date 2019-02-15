@@ -128,3 +128,5 @@
 124        alien_door1         111925   vmr_gdoor01      1            1              4              111925
 124        alien_door2         111925   vmr_gdoor02      1            1              4              111925
 124        alien_door3         111925   vmr_gdoor03      1            1              4              111925
+1361    Jabba_palace_door      5349     ttd_door009      1            1              0              14445       
+1362    Astroport_door         5349	ttd_door_010     1            1              0              14445

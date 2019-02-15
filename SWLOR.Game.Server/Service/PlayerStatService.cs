@@ -15,10 +15,10 @@ namespace SWLOR.Game.Server.Service
 {
     public class PlayerStatService : IPlayerStatService
     {
-        public const float PrimaryIncrease = 0.2f;
-        public const float SecondaryIncrease = 0.1f;
-        public const float TertiaryIncrease = 0.05f;
-        private const int MaxAttributeBonus = 70;
+        public const float PrimaryIncrease = 0.1f;
+        public const float SecondaryIncrease = 0.05f;
+        public const float TertiaryIncrease = 0.025f;
+        private const int MaxAttributeBonus = 35;
 
         private readonly INWScript _;
         private readonly ICustomEffectService _customEffect;
@@ -111,20 +111,20 @@ namespace SWLOR.Game.Server.Service
             if (chaBonus > MaxAttributeBonus) chaBonus = MaxAttributeBonus;
 
             // Apply item bonuses
-            strBonus += itemBonuses.Strength;
-            dexBonus += itemBonuses.Dexterity;
-            conBonus += itemBonuses.Constitution;
-            wisBonus += itemBonuses.Wisdom;
-            intBonus += itemBonuses.Intelligence;
-            chaBonus += itemBonuses.Charisma;
+            strBonus += itemBonuses.Strength / 3;
+            dexBonus += itemBonuses.Dexterity / 3;
+            conBonus += itemBonuses.Constitution / 3;
+            wisBonus += itemBonuses.Wisdom / 3;
+            intBonus += itemBonuses.Intelligence / 3;
+            chaBonus += itemBonuses.Charisma / 3;
 
             // Check final caps
-            if (strBonus > 100) strBonus = 100;
-            if (dexBonus > 100) dexBonus = 100;
-            if (conBonus > 100) conBonus = 100;
-            if (intBonus > 100) intBonus = 100;
-            if (wisBonus > 100) wisBonus = 100;
-            if (chaBonus > 100) chaBonus = 100;
+            if (strBonus > 55) strBonus = 55;
+            if (dexBonus > 55) dexBonus = 55;
+            if (conBonus > 55) conBonus = 55;
+            if (intBonus > 55) intBonus = 55;
+            if (wisBonus > 55) wisBonus = 55;
+            if (chaBonus > 55) chaBonus = 55;
 
             // Apply attributes
             _nwnxCreature.SetRawAbilityScore(player, ABILITY_STRENGTH, (int) strBonus + pcEntity.STRBase);
@@ -135,16 +135,13 @@ namespace SWLOR.Game.Server.Service
             _nwnxCreature.SetRawAbilityScore(player, ABILITY_CHARISMA, (int) chaBonus + pcEntity.CHABase);
 
             // Apply AC
-
             using (new Profiler("PlayerStatService::ApplyStatChanges::CalcAC"))
             {
                 int ac = EffectiveArmorClass(itemBonuses, player);
                 _nwnxCreature.SetBaseAC(player, ac);
             }
 
-
             // Apply BAB
-
             using (new Profiler("PlayerStatService::ApplyStatChanges::CalcBAB"))
             {
                 int bab = CalculateBAB(player, ignoreItem, itemBonuses);
@@ -152,7 +149,6 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Apply HP
-
             using (new Profiler("PlayerStatService::ApplyStatChanges::CalcHP"))
             {
                 int hp = EffectiveMaxHitPoints(player, itemBonuses);
@@ -176,8 +172,6 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
             }
-
-
 
             if (player.CurrentHP > player.MaxHP)
             {
@@ -226,7 +220,7 @@ namespace SWLOR.Game.Server.Service
             float effectPercentBonus = _customEffect.CalculateEffectHPBonusPercent(player);
             
             hp += _perk.GetPCPerkLevel(player, PerkType.Health) * 5;
-            hp += stats.HP;
+            hp += stats.HP / 2;
             hp = hp + (int)(hp * effectPercentBonus);
 
             if (hp > 1275) hp = 1275;
@@ -240,7 +234,7 @@ namespace SWLOR.Game.Server.Service
             int fp = 20;
             fp += (player.IntelligenceModifier + player.WisdomModifier + player.CharismaModifier) * 5;
             fp += _perk.GetPCPerkLevel(player, PerkType.FP) * 5;
-            fp += stats.FP;
+            fp += stats.FP / 2;
 
             if (fp < 0) fp = 0;
 
@@ -249,7 +243,7 @@ namespace SWLOR.Game.Server.Service
 
         private int EffectiveArmorClass(EffectiveItemStats stats, NWPlayer player)
         {
-            int baseAC = stats.AC + _customEffect.CalculateEffectAC(player);
+            int baseAC = stats.AC / 3 + _customEffect.CalculateEffectAC(player);
             int totalAC = _.GetAC(player) - baseAC;
             
             // Shield Oath and Precision Targeting affect a percentage of the TOTAL armor class on a creature.
@@ -370,21 +364,23 @@ namespace SWLOR.Game.Server.Service
                         using(new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::ItemLoop::CalcBAB"))
                         {
                             // Calculate base attack bonus
-                            int itemLevel = item.RecommendedLevel;
-                            int delta = itemLevel - rank;
-                            int itemBAB = item.BaseAttackBonus;
-                            if (delta >= 1) itemBAB--;
-                            if (delta > 0) itemBAB = itemBAB - delta / 5;
+                            if (ItemService.WeaponBaseItemTypes.Contains(item.BaseItemType))
+                            {
+                                int itemLevel = item.RecommendedLevel;
+                                int delta = itemLevel - rank;
+                                int itemBAB = item.BaseAttackBonus;
+                                if (delta >= 1) itemBAB--;
+                                if (delta > 0) itemBAB = itemBAB - delta / 5;
 
-                            if (itemBAB <= 0) itemBAB = 0;
-                            stats.BAB += itemBAB;
-
+                                if (itemBAB <= 0) itemBAB = 0;
+                                stats.BAB += itemBAB;
+                            }
                         }
 
                         using(new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::ItemLoop::CalcAC"))
                         {
                             // Calculate AC
-                            if (ACBaseItemTypes.Contains(item.BaseItemType))
+                            if (ItemService.ArmorBaseItemTypes.Contains(item.BaseItemType))
                             {
                                 int skillRankToUse;
                                 if (item.CustomItemType == CustomItemType.HeavyArmor)
@@ -435,21 +431,6 @@ namespace SWLOR.Game.Server.Service
                 }
             }
         }
-
-        private static readonly HashSet<int> ACBaseItemTypes = new HashSet<int>()
-        {
-            BASE_ITEM_AMULET,
-            BASE_ITEM_ARMOR,
-            BASE_ITEM_BELT,
-            BASE_ITEM_CLOAK,
-            BASE_ITEM_HELMET,
-            BASE_ITEM_GLOVES,
-            BASE_ITEM_BRACER,
-            BASE_ITEM_BOOTS,
-            BASE_ITEM_LARGESHIELD,
-            BASE_ITEM_SMALLSHIELD,
-            BASE_ITEM_TOWERSHIELD
-        };
 
         public float EffectiveResidencyBonus(NWPlayer player)
         {

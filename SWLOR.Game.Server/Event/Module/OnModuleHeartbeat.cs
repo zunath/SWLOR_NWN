@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Event.Module
         private void HandleRegenerationTick(NWPlayer oPC, Data.Entity.Player entity)
         {
             entity.RegenerationTick = entity.RegenerationTick - 1;
-            int rate = 20;
+            int rate = 5;
             int amount = entity.HPRegenerationAmount;
 
             if (entity.RegenerationTick <= 0)

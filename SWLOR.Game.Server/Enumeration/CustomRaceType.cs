@@ -14,6 +14,7 @@
         Cyborg = 157,
         Cathar = 158,
         Trandoshan = 159,
-        Mirialan = 160
+        Mirialan = 160,
+        Echani = 161
     }
 }

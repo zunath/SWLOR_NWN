@@ -117,6 +117,12 @@ namespace SWLOR.Game.Server.Service
                     maleHead = 20;
                     femaleHead = 1;
                     break;
+                case CustomRaceType.Echani:
+                    skinColor = 164;
+                    hairColor = 16;
+                    maleHead = 182;
+                    femaleHead = 45;
+                    break;
                 case CustomRaceType.Cathar:
                     skinColor = 54;
                     hairColor = 0;

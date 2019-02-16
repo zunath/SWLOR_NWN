@@ -222,6 +222,7 @@ namespace SWLOR.Game.Server.Conversation
             int[] CatharSkinColors = { 6, 7, 10, 11, 117, 118, 119, 130, 131 };
             int[] TrandoshanSkinColors = { 4, 5, 6, 18, 19, 34, 35, 36, 38, 39, 172 };
             int[] MirialanSkinColors = { 36, 37, 38, 52, 53 };
+            int[] EchaniSkinColors = { 16, 20, 40, 164 };
 
             CustomRaceType race = (CustomRaceType)GetPC().RacialType;
             int[] colorsToUse;
@@ -245,6 +246,9 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case CustomRaceType.Mirialan:
                     colorsToUse = MirialanSkinColors;
+                    break;
+                case CustomRaceType.Echani:
+                    colorsToUse = EchaniSkinColors;
                     break;
                 case CustomRaceType.Cyborg:
                     colorsToUse = CyborgSkinColors;
@@ -363,6 +367,7 @@ namespace SWLOR.Game.Server.Conversation
             int[] MaleZabrakHeads = { 103, };
             int[] MaleTwilekHeads = { 115, };
             int[] MaleMirialanHeads = { };
+            int[] MaleEchaniHeads = { };
             int[] MaleCyborgHeads = { 156, 168, 181, 187, 74, 88, };
             int[] MaleCatharHeads = { 26, 27, 28, 29, };
             int[] MaleTrandoshanHeads = { 2, 101, 111, 123, 124, 125, 143, 162 };
@@ -374,6 +379,7 @@ namespace SWLOR.Game.Server.Conversation
             int[] FemaleZabrakHeads = { 38, 120 };
             int[] FemaleTwilekHeads = { 139, 144, 145, };
             int[] FemaleMirialanHeads = { };
+            int[] FemaleEchaniHeads = { };
             int[] FemaleCyborgHeads = { 41, 109 };
             int[] FemaleCatharHeads = { 13, 14 };
             int[] FemaleTrandoshanHeads = { 135, 150, 157 };
@@ -406,6 +412,11 @@ namespace SWLOR.Game.Server.Conversation
                     headsToUse = gender == GENDER_MALE ? 
                         MaleMirialanHeads.Concat(MaleHumanHeads).ToArray() : 
                         FemaleMirialanHeads.Concat(FemaleHumanHeads).ToArray();
+                    break;
+                case CustomRaceType.Echani:
+                    headsToUse = gender == GENDER_MALE ? 
+                        MaleEchaniHeads.Concat(MaleHumanHeads).ToArray() :
+                        FemaleEchaniHeads.Concat(FemaleHumanHeads).ToArray();
                     break;
                 case CustomRaceType.Cyborg:
                     headsToUse = gender == GENDER_MALE ?
@@ -443,6 +454,7 @@ namespace SWLOR.Game.Server.Conversation
             int[] ZabrakHairColors = { 0 };
             int[] TwilekHairColors = { 0 };
             int[] MirialanHairColors = { 0, 1, 2, 3, 4, 5, 6, 7, 14, 15, 16, 17, 167 };
+            int[] EchaniHairColors = { 16, 62 };
             int[] CyborgHairColors = { 16, 17, 18, 19, 20, 21 };
             int[] CatharHairColors = { 0, 1, 2, 3, 4, 5, 6, 7, 116, 117 };
             int[] TrandoshanEyeColors = { }; // All
@@ -470,6 +482,9 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case CustomRaceType.Mirialan:
                     colorsToUse = MirialanHairColors;
+                    break;
+                case CustomRaceType.Echani:
+                    colorsToUse = EchaniHairColors;
                     break;
                 case CustomRaceType.Cyborg:
                     colorsToUse = CyborgHairColors.Concat(HumanHairColors).ToArray();

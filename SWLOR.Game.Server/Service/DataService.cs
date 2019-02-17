@@ -106,6 +106,7 @@ namespace SWLOR.Game.Server.Service
             GetAll<KeyItemCategory>();
             GetAll<LootTable>();
             GetAll<LootTableItem>();
+            GetAll<MarketCategory>();
             GetAll<Data.Entity.Mod>();
             GetAll<NPCGroup>();
             GetAll<PCBase>();
@@ -114,6 +115,7 @@ namespace SWLOR.Game.Server.Service
             GetAll<PCBaseStructureItem>();
             GetAll<PCBaseStructurePermission>();
             GetAll<PCBaseType>();
+            GetAll<PCMarketListing>();
             GetAll<SpaceStarport>();
             GetAll<SpaceEncounter>();
 

@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Data.Entity
 
         [ExplicitKey]
         public Guid ID { get; set; }
-        public Guid PlayerID { get; set; }
+        public Guid SellerPlayerID { get; set; }
         public string Note { get; set; }
         public int Price { get; set; }
         public int MarketRegionID { get; set; }
@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public DateTime DatePosted { get; set; }
         public DateTime DateExpires { get; set; }
         public DateTime? DateSold { get; set; }
+        public Guid? BuyerPlayerID { get; set; }
         public string ItemID { get; set; }
         public string ItemName { get; set; }
         public string ItemTag { get; set; }

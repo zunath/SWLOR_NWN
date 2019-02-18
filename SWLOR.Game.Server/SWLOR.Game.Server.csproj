@@ -204,7 +204,7 @@
     <Compile Include="Conversation\Shovel.cs" />
     <Compile Include="Conversation\SliceTerminal.cs" />
     <Compile Include="Conversation\StructureStorage.cs" />
-    <Compile Include="Conversation\TradeTerminal.cs" />
+    <Compile Include="Conversation\MarketTerminal.cs" />
     <Compile Include="Conversation\ViewBlueprints.cs" />
     <Compile Include="Conversation\ViewPerks.cs" />
     <Compile Include="Conversation\ViewSkills.cs" />
@@ -1122,9 +1122,10 @@
     <Compile Include="Placeable\CraftingForge\OnHeartbeat.cs" />
     <Compile Include="Placeable\DisabledStructure\OnUsed.cs" />
     <Compile Include="Placeable\Drill\OnHeartbeat.cs" />
-    <Compile Include="Placeable\GTNContainer\OnClosed.cs" />
-    <Compile Include="Placeable\GTNContainer\OnDisturbed.cs" />
-    <Compile Include="Placeable\GTNContainer\OnOpened.cs" />
+    <Compile Include="Placeable\MarketTerminal\OnClosed.cs" />
+    <Compile Include="Placeable\MarketTerminal\OnDisturbed.cs" />
+    <Compile Include="Placeable\MarketTerminal\OnOpened.cs" />
+    <Compile Include="Placeable\MarketTerminal\OnUsed.cs" />
     <Compile Include="Placeable\ObtainKeyItem.cs" />
     <Compile Include="Placeable\PermanentVisualEffect.cs" />
     <Compile Include="Placeable\QuestSystem\ItemCollector\OnClosed.cs" />

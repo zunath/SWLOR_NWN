@@ -68,5 +68,22 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.GoldTill += amount;
             _data.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
         }
+
+        public void OnModuleEnter()
+        {
+            NWPlayer player = _.GetEnteringObject();
+            if (!player.IsPlayer) return;
+
+            Player dbPlayer = _data.Get<Player>(player.GlobalID);
+
+            if (dbPlayer.GoldTill > 0)
+            {
+                player.FloatingText("You sold goods on the GTN Market while you were offline. " + dbPlayer.GoldTill + " credits have been transferred to your account.");
+                _.GiveGoldToCreature(player, dbPlayer.GoldTill);
+                dbPlayer.GoldTill = 0;
+                _data.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+            }
+        }
+
     }
 }

@@ -12,14 +12,14 @@ using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Conversation
 {
-    public class TradeTerminal: ConversationBase
+    public class MarketTerminal: ConversationBase
     {
         private readonly IColorTokenService _color;
         private readonly IMarketService _market;
         private readonly IDataService _data;
         private readonly ISerializationService _serialization;
 
-        public TradeTerminal(
+        public MarketTerminal(
             INWScript script, 
             IDialogService dialog,
             IColorTokenService color,
@@ -98,6 +98,24 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
+            var player = GetPC();
+            var model = _market.GetPlayerMarketData(player);
+
+            // Player is returning from an item preview.
+            // Send them to the Item Details page.
+            if (model.ReturningFromItemPreview)
+            {
+                NavigationStack = model.TemporaryDialogNavigationStack;
+
+                if (model.BrowseMode == MarketBrowseMode.ByCategory)
+                    LoadBrowseByCategoryPage();
+                else
+                    LoadBrowseBySellerPage();
+
+                LoadItemListPage();
+                LoadItemDetailsPage();
+                ChangePage("ItemDetailsPage", false);
+            }
         }
 
         public override void DoAction(NWPlayer player, string pageName, int responseID)
@@ -201,7 +219,7 @@ namespace SWLOR.Game.Server.Conversation
             IEnumerable<PCMarketListing> listings = _data.Where<PCMarketListing>(x => x.DateExpires > DateTime.UtcNow &&
                                                                                       x.MarketRegionID == marketRegionID &&
                                                                                       x.DateSold == null);
-            IEnumerable<Guid> playerIDs = listings.Select(s => s.PlayerID).Distinct();
+            IEnumerable<Guid> playerIDs = listings.Select(s => s.SellerPlayerID).Distinct();
             IEnumerable<Player> players = _data.Where<Player>(x => playerIDs.Contains(x.ID))
                 .OrderBy(o => o.CharacterName);
 
@@ -252,7 +270,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 listings = _data.Where<PCMarketListing>(x => x.DateExpires > now &&
                                                              x.MarketRegionID == marketRegionID &&
-                                                             x.PlayerID == model.BrowsePlayerID &&
+                                                             x.SellerPlayerID == model.BrowsePlayerID &&
                                                              x.DateSold == null);
             }
 
@@ -288,7 +306,7 @@ namespace SWLOR.Game.Server.Conversation
             // notify the player and refresh the item list page.
             var listing = _data.SingleOrDefault<PCMarketListing>(x => x.ID == listingID && 
                                                                       x.DateSold == null);
-            if (listing == null || listing.DateExpires > DateTime.UtcNow)
+            if (listing == null || listing.DateExpires <= DateTime.UtcNow)
             {
                 LoadItemListPage();
                 player.FloatingText("Unfortunately, that item is no longer available.");
@@ -335,9 +353,22 @@ namespace SWLOR.Game.Server.Conversation
             var model = _market.GetPlayerMarketData(buyer);
             var listing = _data.SingleOrDefault<PCMarketListing>(x => x.ID == model.BrowseListingID && 
                                                                       x.DateSold == null);
+            NWPlaceable terminal = GetDialogTarget().Object;
+
+            if (listing == null)
+            {
+                Console.WriteLine("Listing is NULLLLL");
+                Console.WriteLine("BrowseListingID = " + model.BrowseListingID);
+            }
+            else
+            {
+                Console.WriteLine("Listing date expires = " + listing.DateExpires);
+                Console.WriteLine("BrowseListingID = " + model.BrowseListingID);
+            }
+
 
             // Item was removed, sold, or expired.
-            if (listing == null || listing.DateExpires > DateTime.UtcNow)
+            if (listing == null || listing.DateExpires <= DateTime.UtcNow)
             {
                 LoadItemListPage();
                 ChangePage("ItemListPage", false);
@@ -348,6 +379,10 @@ namespace SWLOR.Game.Server.Conversation
             switch (responseID)
             {
                 case 1: // Examine Item
+                    _.CreateItemOnObject("exit_preview", terminal);
+                    NWItem item = _serialization.DeserializeItem(listing.ItemObject, terminal);
+                    item.IsCursed = true;
+                    OpenTerminalInventory();
                     break;
                 case 2: // Buy Item / Confirm Buy Item
 
@@ -368,17 +403,19 @@ namespace SWLOR.Game.Server.Conversation
                         _.TakeGoldFromCreature(listing.Price, buyer, TRUE);
 
                         // Give gold to seller.
-                        _market.GiveMarketGoldToPlayer(listing.PlayerID, listing.Price);
+                        _market.GiveMarketGoldToPlayer(listing.SellerPlayerID, listing.Price);
 
                         // Give the item to the buyer.
                         _serialization.DeserializeItem(listing.ItemObject, buyer);
 
                         // Mark the listing as sold.
                         listing.DateSold = DateTime.UtcNow;
+                        listing.BuyerPlayerID = buyer.GlobalID;
                         _data.SubmitDataChange(listing, DatabaseActionType.Update);
-
+                        
                         model.IsConfirming = false;
                         SetResponseText("ItemDetailsPage", 2, "Buy Item");
+                        LoadItemListPage();
                         ChangePage("ItemListPage", false);
                     }
                     else
@@ -420,14 +457,46 @@ namespace SWLOR.Game.Server.Conversation
         {
             var model = _market.GetPlayerMarketData(player);
             if (beforeMovePage == "ItemDetailsPage")
+            {
                 model.IsConfirming = false;
+                SetResponseText("ItemDetailsPage", 2, "Buy Item");
+            }
 
         }
 
         public override void EndDialog()
         {
             var pc = GetPC();
-            _market.ClearPlayerMarketData(pc);
+            var model = _market.GetPlayerMarketData(pc);
+
+            // We'll only wipe the data if the player isn't accessing the inventory or otherwise
+            // changing contexts.
+            if (!model.IsAccessingInventory)
+            {
+                _market.ClearPlayerMarketData(pc);
+            }
+        }
+
+        private void OpenTerminalInventory()
+        {
+            var model = _market.GetPlayerMarketData(GetPC());
+            NWPlaceable terminal = GetDialogTarget().Object;
+            terminal.IsLocked = false;
+            model.IsAccessingInventory = true;
+            model.TemporaryDialogNavigationStack = NavigationStack;
+            model.IsConfirming = false;
+
+            _.SetEventScript(terminal, EVENT_SCRIPT_PLACEABLE_ON_USED, string.Empty);
+            _.SetEventScript(terminal, EVENT_SCRIPT_PLACEABLE_ON_OPEN, "jvm_script_2");
+            _.SetEventScript(terminal, EVENT_SCRIPT_PLACEABLE_ON_CLOSED, "jvm_script_3");
+            _.SetEventScript(terminal, EVENT_SCRIPT_PLACEABLE_ON_INVENTORYDISTURBED, "jvm_script_4");
+
+            terminal.SetLocalString("JAVA_SCRIPT_2", "Placeable.MarketTerminal.OnOpened");
+            terminal.SetLocalString("JAVA_SCRIPT_3", "Placeable.MarketTerminal.OnClosed");
+            terminal.SetLocalString("JAVA_SCRIPT_4", "Placeable.MarketTerminal.OnDisturbed");
+
+            GetPC().AssignCommand(() => _.ActionInteractObject(terminal));
+            EndConversation();
         }
     }
 }

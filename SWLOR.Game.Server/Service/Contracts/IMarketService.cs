@@ -10,5 +10,6 @@ namespace SWLOR.Game.Server.Service.Contracts
         void ClearPlayerMarketData(NWPlayer player);
         int GetMarketRegionID(NWPlaceable terminal);
         void GiveMarketGoldToPlayer(Guid playerID, int amount);
+        void OnModuleEnter();
     }
 }

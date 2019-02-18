@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
@@ -11,9 +12,10 @@ namespace SWLOR.Game.Server.ValueObject
         public int BrowseCategoryID { get; set; }
         public Guid BrowsePlayerID { get; set; }
         public Guid BrowseListingID { get; set; }
-        public string Note { get; set; }
-        public int Price { get; set; }
-        public int LengthDays { get; set; }
         public bool IsConfirming { get; set; }
+        public bool IsAccessingInventory { get; set; }
+        public bool ReturningFromItemPreview { get; set; }
+        public Stack<DialogNavigation> TemporaryDialogNavigationStack { get; set; }
+
     }
 }

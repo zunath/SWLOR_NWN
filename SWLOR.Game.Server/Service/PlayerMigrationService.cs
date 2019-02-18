@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -75,6 +76,13 @@ namespace SWLOR.Game.Server.Service
                 _nwnxCreature.RemoveFeat(player, 1134); // Chainspell
 
                 dbPlayer.VersionNumber = 3;
+            }
+
+            // VERSION 4: Give the Uncanny Dodge 1 feat to all characters.
+            if (dbPlayer.VersionNumber < 4)
+            {
+                _nwnxCreature.AddFeatByLevel(player, FEAT_UNCANNY_DODGE_1, 1);
+                dbPlayer.VersionNumber = 4;
             }
 
             _data.SubmitDataChange(dbPlayer, DatabaseActionType.Update);

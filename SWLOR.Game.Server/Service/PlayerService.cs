@@ -137,6 +137,7 @@ namespace SWLOR.Game.Server.Service
                 _nwnxCreature.AddFeatByLevel(player, FEAT_WEAPON_PROFICIENCY_EXOTIC, 1);
                 _nwnxCreature.AddFeatByLevel(player, FEAT_WEAPON_PROFICIENCY_MARTIAL, 1);
                 _nwnxCreature.AddFeatByLevel(player, FEAT_WEAPON_PROFICIENCY_SIMPLE, 1);
+                _nwnxCreature.AddFeatByLevel(player, FEAT_UNCANNY_DODGE_1, 1);
                 _nwnxCreature.AddFeatByLevel(player, (int) CustomFeatType.StructureManagementTool, 1);
                 _nwnxCreature.AddFeatByLevel(player, (int) CustomFeatType.OpenRestMenu, 1);
                 _nwnxCreature.AddFeatByLevel(player, (int) CustomFeatType.RenameCraftedItem, 1);

@@ -122,6 +122,9 @@ namespace SWLOR.Game.Server.Conversation
                 case "ItemDetailsPage":
                     ItemDetailsPageResponses(responseID);
                     break;
+                case "SellPage":
+                    SellPageResponses(responseID);
+                    break;
             }
         }
 
@@ -165,7 +168,7 @@ namespace SWLOR.Game.Server.Conversation
                 .OrderBy(o => o.Name);
 
             ClearPageResponses("BrowseByCategoryPage");
-            AddResponseToPage("BrowseBySellerPage", _color.Green("Refresh"), true, -1);
+            AddResponseToPage("BrowseByCategoryPage", _color.Green("Refresh"), true, -1);
             foreach (var category in categories)
             {
                 AddResponseToPage("BrowseByCategoryPage", category.Name, true, category.ID);
@@ -386,6 +389,31 @@ namespace SWLOR.Game.Server.Conversation
 
                     break;
             }
+        }
+
+        private void SellPageResponses(int responseID)
+        {
+            switch (responseID)
+            {
+                case 1: // Sell an Item
+                    LoadSellItemPage();
+                    ChangePage("SellItemPage");
+                    break;
+                case 2: // View Market Listings
+                    LoadViewMarketListingsPage();
+                    ChangePage("MarketListingsPage");
+                    break;
+            }
+        }
+
+        private void LoadSellItemPage()
+        {
+
+        }
+
+        private void LoadViewMarketListingsPage()
+        {
+
         }
 
         public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)

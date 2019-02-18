@@ -362,6 +362,34 @@ namespace SWLOR.Game.Server.Service
                 description += _color.Orange("Item Type: ") + itemTypeProper + "\n";
             }
 
+            // Check for properties that can only be applied to limited things, and flag them here.
+            // Attack bonus, damage, base attack bonus: weapons only
+            // AC - armor items only.
+            ItemProperty ip = _.GetFirstItemProperty(examinedItem);
+            while (_.GetIsItemPropertyValid(ip) == TRUE)
+            {
+                if (_.GetItemPropertyType(ip) == (int) CustomItemPropertyType.ComponentBonus)
+                {
+                    switch (_.GetItemPropertySubType(ip))
+                    {
+                        case (int)ComponentBonusType.ACUp:
+                        {
+                            description += _color.Cyan("AC can only be applied to Shields, Armo(u)r and Helmets.  On other items, it will be ignored.\n");
+                            break;
+                        }
+                        case (int)ComponentBonusType.DamageUp:
+                        case (int)ComponentBonusType.AttackBonusUp:
+                        case (int)ComponentBonusType.BaseAttackBonusUp:
+                        {
+                            description += _color.Cyan("Damage Up, Attack Bonus Up and Base Attack Bonus Up can only be applied to weapons (including gloves).  On other items, it will be ignored.\n");
+                            break;
+                        }
+                    }
+                }
+
+                ip = _.GetNextItemProperty(examinedItem);
+            }
+
             return existingDescription + "\n" + description;
         }
 

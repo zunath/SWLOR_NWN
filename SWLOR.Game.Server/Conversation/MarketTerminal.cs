@@ -76,9 +76,27 @@ namespace SWLOR.Game.Server.Conversation
             DialogPage sellItemPage = new DialogPage(
                 _color.Green("Galactic Trade Network - Sell an Item"),
                 "Pick an Item",
-                "Set Price",
-                "Set Seller Note",
-                "Set Listing Length");
+                "Change Price",
+                "Change Seller Note",
+                "Remove Seller Note",
+                "Change Listing Length",
+                _color.Green("List the Item"));
+
+            // Page for setting a price on an item.
+            DialogPage changePricePage = new DialogPage(
+                "<SET LATER>",
+                "Increase by 100,000 credits",
+                "Increase by 10,000 credits",
+                "Increase by 1,000 credits",
+                "Increase by 100 credits",
+                "Increase by 10 credits",
+                "Increase by 1 credit",
+                "Decrease by 100,000 credits",
+                "Decrease by 10,000 credits",
+                "Decrease by 1,000 credits",
+                "Decrease by 100 credits",
+                "Decrease by 10 credits",
+                "Decrease by 1 credit");
 
             // Page for viewing items currently being sold by the player.
             DialogPage marketListingsPage = new DialogPage(
@@ -95,6 +113,7 @@ namespace SWLOR.Game.Server.Conversation
             dialog.AddPage("ItemDetailsPage", itemDetailsPage);
             dialog.AddPage("SellPage", sellPage);
             dialog.AddPage("SellItemPage", sellItemPage);
+            dialog.AddPage("ChangePricePage", changePricePage);
             dialog.AddPage("MarketListingsPage", marketListingsPage);
             dialog.AddPage("MarketListingDetailsPage", marketListingDetailsPage);
             return dialog;
@@ -158,6 +177,9 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case "SellItemPage":
                     SellItemPageResponses(responseID);
+                    break;
+                case "ChangePricePage":
+                    ChangePricePageResponses(responseID);
                     break;
             }
         }
@@ -466,9 +488,11 @@ namespace SWLOR.Game.Server.Conversation
                 header += "Please select an item to sell.";
 
                 SetResponseVisible("SellItemPage", 1, true);  // Pick Item
-                SetResponseVisible("SellItemPage", 2, false); // Set Price
-                SetResponseVisible("SellItemPage", 3, false); // Set Seller Note
-                SetResponseVisible("SellItemPage", 4, false); // Set Listing Length
+                SetResponseVisible("SellItemPage", 2, false); // Change Price
+                SetResponseVisible("SellItemPage", 3, false); // Change Seller Note
+                SetResponseVisible("SellItemPage", 4, false); // Remove Seller Note
+                SetResponseVisible("SellItemPage", 5, false); // Change Listing Length
+                SetResponseVisible("SellItemPage", 6, false); // List the Item
             }
             // Otherwise an item has already been picked.
             else
@@ -486,9 +510,11 @@ namespace SWLOR.Game.Server.Conversation
 
 
                 SetResponseVisible("SellItemPage", 1, false); // Pick Item
-                SetResponseVisible("SellItemPage", 2, true);  // Set Price
-                SetResponseVisible("SellItemPage", 3, true);  // Set Seller Note
-                SetResponseVisible("SellItemPage", 4, true);  // Set Listing Length
+                SetResponseVisible("SellItemPage", 2, true);  // Change Price
+                SetResponseVisible("SellItemPage", 3, true);  // Change Seller Note
+                SetResponseVisible("SellItemPage", 4, true);  // Remove Seller Note
+                SetResponseVisible("SellItemPage", 5, true);  // Change Listing Length
+                SetResponseVisible("SellItemPage", 6, true);  // List the Item
             }
 
             SetPageHeader("SellItemPage", header);
@@ -504,13 +530,84 @@ namespace SWLOR.Game.Server.Conversation
                 case 1: // Pick Item
                     OpenTerminalInventory();
                     break;
-                case 2: // Set Price
+                case 2: // Change Price
+                    LoadChangePricePage();
+                    ChangePage("ChangePricePage");
                     break;
-                case 3: // Set Seller Note
+                case 3: // Change Seller Note
                     break;
-                case 4: // Set Listing Length
+                case 4: // Remove Seller Note
+                    model.SellerNote = string.Empty;
+                    LoadSellItemPage();
+                    break;
+                case 5: // Change Listing Length
+                    break;
+                case 6: // List the Item
                     break;
             }
+        }
+
+        private void LoadChangePricePage()
+        {
+            var player = GetPC();
+            var model = _market.GetPlayerMarketData(player);
+            string header = _color.Green("Galactic Trade Network - Change Sell Price") + "\n\n";
+            header += _color.Green("Current Price: ") + model.SellPrice;
+
+            SetPageHeader("ChangePricePage", header);
+        }
+
+        private void ChangePricePageResponses(int responseID)
+        {
+            var player = GetPC();
+            var model = _market.GetPlayerMarketData(player);
+
+            switch (responseID)
+            {
+                case 1: // Increase by 100,000 credits
+                    model.SellPrice += 100000;
+                    break;
+                case 2: // Increase by 10,000 credits
+                    model.SellPrice += 10000;
+                    break;
+                case 3: // Increase by 1,000 credits
+                    model.SellPrice += 1000;
+                    break;
+                case 4: // Increase by 100 credits
+                    model.SellPrice += 100;
+                    break;
+                case 5: // Increase by 10 credits
+                    model.SellPrice += 10;
+                    break;
+                case 6: // Increase by 1 credit
+                    model.SellPrice += 1;
+                    break;
+                case 7: // Decrease by 100,000 credits
+                    model.SellPrice -= 100000;
+                    break;
+                case 8: // Decrease by 10,000 credits
+                    model.SellPrice -= 10000;
+                    break;
+                case 9: // Decrease by 1,000 credits
+                    model.SellPrice -= 1000;
+                    break;
+                case 10: // Decrease by 100 credits
+                    model.SellPrice -= 100;
+                    break;
+                case 11: // Decrease by 10 credits
+                    model.SellPrice -= 10;
+                    break;
+                case 12: // Decrease by 1 credit
+                    model.SellPrice -= 1;
+                    break;
+            }
+
+            if (model.SellPrice < 0)
+                model.SellPrice = 0;
+            else if (model.SellPrice > 999999)
+                model.SellPrice = 999999;
+
+            LoadChangePricePage();
         }
 
         private void LoadViewMarketListingsPage()
@@ -532,6 +629,11 @@ namespace SWLOR.Game.Server.Conversation
             else if (beforeMovePage == "SellItemPage")
             {
                 ReturnSellingItem();
+            }
+            // Returning to the Sell Item page.
+            else if (afterMovePage == "SellItemPage")
+            {
+                LoadSellItemPage();
             }
 
         }

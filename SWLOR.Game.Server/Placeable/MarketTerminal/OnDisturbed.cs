@@ -72,6 +72,7 @@ namespace SWLOR.Game.Server.Placeable.MarketTerminal
                 model.ItemResref = item.Resref;
                 model.ItemMarketCategoryID = marketCategoryID;
                 model.ItemObject = _serialization.Serialize(item);
+                model.SellPrice = 0;
                 
                 item.Destroy();
 

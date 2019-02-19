@@ -27,5 +27,6 @@ namespace SWLOR.Game.Server.ValueObject
         public bool IsSellingItem { get; set; }
         public int SellPrice { get; set; }
         public bool IsReturningFromItemPicking { get; set; }
+        public string SellerNote { get; set; }
     }
 }

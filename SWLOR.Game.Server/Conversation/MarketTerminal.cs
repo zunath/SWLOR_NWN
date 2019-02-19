@@ -42,7 +42,8 @@ namespace SWLOR.Game.Server.Conversation
             DialogPage mainPage = new DialogPage(
                 _color.Green("Galactic Trade Network"),
                 "Buy",
-                "Sell");
+                "Sell",
+                "View Market Listings");
 
             // Page for selecting browse method - either by category or by seller
             DialogPage buyPage = new DialogPage(
@@ -65,16 +66,11 @@ namespace SWLOR.Game.Server.Conversation
                 "<SET LATER>",
                 "Examine Item", 
                 "Buy Item");
-
-            // Page for selling a new item or looking at existing items the player is selling.
-            DialogPage sellPage = new DialogPage(
-                _color.Green("Galactic Trade Network - Sell"),
-                "Sell an Item",
-                "View Market Listings");
-
+            
             // Page for selling an item.
             DialogPage sellItemPage = new DialogPage(
-                _color.Green("Galactic Trade Network - Sell an Item"),
+                _color.Green("Galactic Trade Network - Sell Item"),
+                _color.Green("Refresh"),
                 "Pick an Item",
                 "Change Price",
                 "Change Seller Note",
@@ -98,6 +94,15 @@ namespace SWLOR.Game.Server.Conversation
                 "Decrease by 10 credits",
                 "Decrease by 1 credit");
 
+            // Page for changing the listing length on an item sale.
+            DialogPage changeListingLengthPage = new DialogPage("<SET LATER>",
+                "Set to Max (30 days, 3% fee)",
+                "Set to Default (7 days, 0.7% fee)",
+                "Increase by 7 days (+0.7% fee)",
+                "Increase by 1 day (+0.1% fee)",
+                "Decrease by 7 days (-0.7% fee)",
+                "Decrease by 1 day (-0.1% fee)");
+
             // Page for viewing items currently being sold by the player.
             DialogPage marketListingsPage = new DialogPage(
                 _color.Green("Galactic Trade Network - Market Listings")); // Responses dynamically built
@@ -111,9 +116,9 @@ namespace SWLOR.Game.Server.Conversation
             dialog.AddPage("BrowseBySellerPage", browseBySellerPage);
             dialog.AddPage("ItemListPage", itemListPage);
             dialog.AddPage("ItemDetailsPage", itemDetailsPage);
-            dialog.AddPage("SellPage", sellPage);
             dialog.AddPage("SellItemPage", sellItemPage);
             dialog.AddPage("ChangePricePage", changePricePage);
+            dialog.AddPage("ChangeListingLengthPage", changeListingLengthPage);
             dialog.AddPage("MarketListingsPage", marketListingsPage);
             dialog.AddPage("MarketListingDetailsPage", marketListingDetailsPage);
             return dialog;
@@ -172,14 +177,17 @@ namespace SWLOR.Game.Server.Conversation
                 case "ItemDetailsPage":
                     ItemDetailsPageResponses(responseID);
                     break;
-                case "SellPage":
-                    SellPageResponses(responseID);
-                    break;
                 case "SellItemPage":
                     SellItemPageResponses(responseID);
                     break;
                 case "ChangePricePage":
                     ChangePricePageResponses(responseID);
+                    break;
+                case "ChangeListingLengthPage":
+                    ChangeListingLengthPageResponses(responseID);
+                    break;
+                case "MarketListingsPage":
+                    ViewMarketListingsReponses(responseID);
                     break;
             }
         }
@@ -197,7 +205,13 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case 2: // Sell
                     model.IsSellingItem = true;
-                    ChangePage("SellPage");
+                    LoadSellItemPage();
+                    ChangePage("SellItemPage");
+                    break;
+                case 3: // View Market Listings
+                    model.IsSellingItem = true;
+                    LoadViewMarketListingsPage();
+                    ChangePage("MarketListingsPage");
                     break;
             }
         }
@@ -322,14 +336,20 @@ namespace SWLOR.Game.Server.Conversation
             AddResponseToPage("ItemListPage", _color.Green("Refresh"), true, Guid.Empty);
             foreach (var listing in listings)
             {
-                // Build the item name. Example:
-                // 1x Sword of Doom (5000 Credits) [RL: 50]
-                string listingName = listing.ItemStackSize + "x " + listing.ItemName + " (" + listing.Price + " credits)";
-                if (listing.ItemRecommendedLevel > 0)
-                    listingName += " [RL: " + listing.ItemRecommendedLevel + "]";
-
+                string listingName = BuildItemName(listing);
                 AddResponseToPage("ItemListPage", listingName, true, listing.ID);
             }
+        }
+
+        private string BuildItemName(PCMarketListing listing)
+        {
+            // Build the item name. Example:
+            // 1x Sword of Doom (5000 Credits) [RL: 50]
+            string listingName = listing.ItemStackSize + "x " + listing.ItemName + " (" + listing.Price + " credits)";
+            if (listing.ItemRecommendedLevel > 0)
+                listingName += " [RL: " + listing.ItemRecommendedLevel + "]";
+
+            return listingName;
         }
 
         private void ItemListPageResponses(int responseID)
@@ -447,6 +467,7 @@ namespace SWLOR.Game.Server.Conversation
                         model.IsConfirming = false;
                         SetResponseText("ItemDetailsPage", 2, "Buy Item");
                         LoadItemListPage();
+                        NavigationStack.Pop(); // Assume the previous page was the ItemListPage, which we're about to send the player back to now. Remove it from the stack.
                         ChangePage("ItemListPage", false);
                     }
                     else
@@ -458,22 +479,7 @@ namespace SWLOR.Game.Server.Conversation
                     break;
             }
         }
-
-        private void SellPageResponses(int responseID)
-        {
-            switch (responseID)
-            {
-                case 1: // Sell an Item
-                    LoadSellItemPage();
-                    ChangePage("SellItemPage");
-                    break;
-                case 2: // View Market Listings
-                    LoadViewMarketListingsPage();
-                    ChangePage("MarketListingsPage");
-                    break;
-            }
-        }
-
+        
         private void LoadSellItemPage()
         {
             var player = GetPC();
@@ -487,18 +493,26 @@ namespace SWLOR.Game.Server.Conversation
                 header = _color.Green("Galactic Trade Network - Sell Item") + "\n\n";
                 header += "Please select an item to sell.";
 
-                SetResponseVisible("SellItemPage", 1, true);  // Pick Item
-                SetResponseVisible("SellItemPage", 2, false); // Change Price
-                SetResponseVisible("SellItemPage", 3, false); // Change Seller Note
-                SetResponseVisible("SellItemPage", 4, false); // Remove Seller Note
-                SetResponseVisible("SellItemPage", 5, false); // Change Listing Length
-                SetResponseVisible("SellItemPage", 6, false); // List the Item
+                SetResponseVisible("SellItemPage", 1, false); // Refresh
+                SetResponseVisible("SellItemPage", 2, true);  // Pick Item
+                SetResponseVisible("SellItemPage", 3, false); // Change Price
+                SetResponseVisible("SellItemPage", 4, false); // Change Seller Note
+                SetResponseVisible("SellItemPage", 5, false); // Remove Seller Note
+                SetResponseVisible("SellItemPage", 6, false); // Change Listing Length
+                SetResponseVisible("SellItemPage", 7, false); // List the Item
             }
             // Otherwise an item has already been picked.
             else
             {
                 MarketCategory category = _data.Get<MarketCategory>(model.ItemMarketCategoryID);
-
+                float feeRate = _market.CalculateFeePercentage(model.LengthDays);
+                int fees = (int)(model.SellPrice * feeRate);
+                if (fees < 1) fees = 1;
+                bool canListItem = model.SellPrice > 0;
+                string sellerNote = model.SellerNote;
+                if (string.IsNullOrWhiteSpace(sellerNote))
+                    sellerNote = "[NOT SPECIFIED]";
+                
                 header = _color.Green("Galactic Trade Network - Sell Item") + "\n\n";
                 header += _color.Green("Item: ") + model.ItemStackSize + "x " + model.ItemName + "\n";
                 header += _color.Green("Category: ") + category.Name + "\n";
@@ -506,15 +520,28 @@ namespace SWLOR.Game.Server.Conversation
                 if(model.ItemRecommendedLevel > 0)
                     header += _color.Green("Recommended Level: ") + model.ItemRecommendedLevel + "\n";
 
-                header += _color.Green("Price: ") + model.SellPrice + " credits\n";
+                header += _color.Green("Sell Price: ") + model.SellPrice + " credits\n";
+                header += _color.Green("Fees: ") + fees + " credits\n";
+                header += _color.Green("Listing Length: ") + model.LengthDays + " days\n";
+                header += _color.Green("Seller Note: ") + sellerNote + "\n\n";
 
+                if (canListItem)
+                {
+                    header += _color.Green("This item can be listed now.");
+                }
+                else
+                {
+                    header += _color.Red("This item cannot be listed yet. Please confirm all details - such as pricing - have been set.");
+                }
 
-                SetResponseVisible("SellItemPage", 1, false); // Pick Item
-                SetResponseVisible("SellItemPage", 2, true);  // Change Price
-                SetResponseVisible("SellItemPage", 3, true);  // Change Seller Note
-                SetResponseVisible("SellItemPage", 4, true);  // Remove Seller Note
-                SetResponseVisible("SellItemPage", 5, true);  // Change Listing Length
-                SetResponseVisible("SellItemPage", 6, true);  // List the Item
+                SetResponseVisible("SellItemPage", 1, true);  // Refresh
+                SetResponseVisible("SellItemPage", 2, false); // Pick Item
+                SetResponseVisible("SellItemPage", 3, true);  // Change Price
+                SetResponseVisible("SellItemPage", 4, true);  // Change Seller Note
+                SetResponseVisible("SellItemPage", 5, true);  // Remove Seller Note
+                SetResponseVisible("SellItemPage", 6, true);  // Change Listing Length
+                SetResponseVisible("SellItemPage", 7, canListItem);    // List the Item
+                
             }
 
             SetPageHeader("SellItemPage", header);
@@ -527,22 +554,30 @@ namespace SWLOR.Game.Server.Conversation
 
             switch (responseID)
             {
-                case 1: // Pick Item
+                case 1: // Refresh
+                    LoadSellItemPage();
+                    break;
+                case 2: // Pick Item
                     OpenTerminalInventory();
                     break;
-                case 2: // Change Price
+                case 3: // Change Price
                     LoadChangePricePage();
                     ChangePage("ChangePricePage");
                     break;
-                case 3: // Change Seller Note
+                case 4: // Change Seller Note
+                    model.IsSettingSellerNote = true;
+                    player.FloatingText("Please enter text and then select the 'Refresh' option to see your changes.");
                     break;
-                case 4: // Remove Seller Note
+                case 5: // Remove Seller Note
                     model.SellerNote = string.Empty;
                     LoadSellItemPage();
                     break;
-                case 5: // Change Listing Length
+                case 6: // Change Listing Length
+                    LoadChangeListingLengthPage();
+                    ChangePage("ChangeListingLengthPage");
                     break;
-                case 6: // List the Item
+                case 7: // List the Item
+                    ListItem();
                     break;
             }
         }
@@ -610,8 +645,123 @@ namespace SWLOR.Game.Server.Conversation
             LoadChangePricePage();
         }
 
+        private void LoadChangeListingLengthPage()
+        {
+            var player = GetPC();
+            var model = _market.GetPlayerMarketData(player);
+            float feePercentage = _market.CalculateFeePercentage(model.LengthDays) * 100;
+            
+            string header = _color.Green("Galactic Trade Network - Change Listing Length") + "\n\n";
+            header += "Items will be listed, by default, for 7 days (real world time). You may increase or decrease this length as you see fit. A fee of 0.1% per day will be applied to the listing. (7 days = 0.7% fee).\n\n";
+            header += _color.Green("Days to List: ") + model.LengthDays + "\n";
+            header += _color.Green("Fees: ") + feePercentage.ToString("0.0") + "%";
+
+            SetPageHeader("ChangeListingLengthPage", header);
+        }
+
+        private void ChangeListingLengthPageResponses(int responseID)
+        {
+            var player = GetPC();
+            var model = _market.GetPlayerMarketData(player);
+
+            switch (responseID)
+            {
+                case 1: // Set to Max (30 days, 3% fee)
+                    model.LengthDays = 30;
+                    break;
+                case 2: // Set to Default (7 days, 0.7% fee)
+                    model.LengthDays = 7;
+                    break;
+                case 3: // Increase by 7 days (+0.7% fee)
+                    model.LengthDays += 7;
+                    break;
+                case 4: // Increase by 1 day (+0.1% fee)
+                    model.LengthDays += 1;
+                    break;
+                case 5: // Decrease by 7 days (-0.7% fee)
+                    model.LengthDays -= 7;
+                    break;
+                case 6: // Decrease by 1 day (-0.1% fee)
+                    model.LengthDays -= 1;
+                    break;
+            }
+
+            if (model.LengthDays < 1)
+                model.LengthDays = 1;
+            else if (model.LengthDays > 30)
+                model.LengthDays = 30;
+
+            LoadChangeListingLengthPage();
+        }
+
+        private void ListItem()
+        {
+            var player = GetPC();
+            var terminal = Object.OBJECT_SELF;
+            var model = _market.GetPlayerMarketData(player);
+            var marketRegionID = _market.GetMarketRegionID(terminal);
+            var feeRate = _market.CalculateFeePercentage(model.LengthDays);
+            int fees = (int)(model.SellPrice * feeRate);
+            if (fees < 1) fees = 1;
+
+            if (player.Gold < fees)
+            {
+                player.FloatingText("You do not have enough credits to pay the listing fees.");
+                return;
+            }
+
+            _.TakeGoldFromCreature(fees, player, TRUE);
+
+            PCMarketListing listing = new PCMarketListing
+            {
+                SellerPlayerID = player.GlobalID,
+                Note = model.SellerNote ?? string.Empty,
+                Price = model.SellPrice,
+                MarketRegionID = marketRegionID,
+                MarketCategoryID = model.ItemMarketCategoryID,
+                DatePosted = DateTime.UtcNow,
+                DateExpires = DateTime.UtcNow.AddDays(model.LengthDays),
+                DateSold = null,
+                BuyerPlayerID = null,
+                ItemID = model.ItemID.ToString(),
+                ItemName = model.ItemName,
+                ItemTag = model.ItemTag,
+                ItemResref = model.ItemResref,
+                ItemObject = model.ItemObject,
+                ItemRecommendedLevel = model.ItemRecommendedLevel,
+                ItemStackSize = model.ItemStackSize
+            };
+
+            _data.SubmitDataChange(listing, DatabaseActionType.Insert);
+            player.FloatingText("Item listed for sale!");
+            ClearNavigationStack();
+            ClearModelData();
+            ChangePage("MainPage", false);
+        }
+
         private void LoadViewMarketListingsPage()
         {
+            var player = GetPC();
+            var regionID = _market.GetMarketRegionID(Object.OBJECT_SELF);
+            var listings = _data.Where<PCMarketListing>(x => x.SellerPlayerID == player.GlobalID && 
+                                                             x.DateSold == null &&
+                                                             x.DateExpires > DateTime.UtcNow &&
+                                                             x.MarketRegionID == regionID);
+            
+            ClearPageResponses("MarketListingsPage");
+            foreach (var listing in listings)
+            {
+                string itemName = BuildItemName(listing);
+                AddResponseToPage("MarketListingsPage", itemName, true, listing.ID);
+            }
+        }
+
+        private void ViewMarketListingsReponses(int responseID)
+        {
+            var response = GetResponseByID("MarketListingsPage", responseID);
+            var listingID = (Guid)response.CustomData;
+            var player = GetPC();
+            var model = _market.GetPlayerMarketData(player);
 
         }
 
@@ -648,6 +798,14 @@ namespace SWLOR.Game.Server.Conversation
                 _serialization.DeserializeItem(model.ItemObject, player);
             }
 
+            ClearModelData();
+        }
+
+        private void ClearModelData()
+        {
+            var player = GetPC();
+            var model = _market.GetPlayerMarketData(player);
+
             model.ItemID = Guid.Empty;
             model.ItemName = string.Empty;
             model.ItemTag = string.Empty;
@@ -655,6 +813,11 @@ namespace SWLOR.Game.Server.Conversation
             model.ItemObject = string.Empty;
             model.ItemRecommendedLevel = 0;
             model.ItemStackSize = 0;
+            model.LengthDays = 7;
+            model.SellerNote = string.Empty;
+            model.IsSettingSellerNote = false;
+            model.TemporaryDialogNavigationStack = null;
+
         }
 
         public override void EndDialog()

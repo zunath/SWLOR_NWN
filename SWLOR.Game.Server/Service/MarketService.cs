@@ -3,7 +3,9 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN.NWScript;
@@ -15,13 +17,16 @@ namespace SWLOR.Game.Server.Service
     {
         private readonly INWScript _;
         private readonly IDataService _data;
+        private readonly INWNXChat _nwnxChat;
         
         public MarketService(
             INWScript script,
-            IDataService data)
+            IDataService data,
+            INWNXChat nwnxChat)
         {
             _ = script;
             _data = data;
+            _nwnxChat = nwnxChat;
         }
 
         /// <summary>
@@ -45,11 +50,20 @@ namespace SWLOR.Game.Server.Service
             return model;
         }
 
+        /// <summary>
+        /// Removes the temporary market data stored for a player.
+        /// </summary>
+        /// <param name="player"></param>
         public void ClearPlayerMarketData(NWPlayer player)
         {
             player.Data.Remove("MARKET_MODEL");
         }
 
+        /// <summary>
+        /// Determines which region a market terminal belongs to, based on the GTN_REGION_ID local variable.
+        /// </summary>
+        /// <param name="terminal">The market terminal placeable</param>
+        /// <returns>The ID which links up to the MarketRegion database table.</returns>
         public int GetMarketRegionID(NWPlaceable terminal)
         {
             int marketRegionID = terminal.GetLocalInt("GTN_REGION_ID");
@@ -101,6 +115,47 @@ namespace SWLOR.Game.Server.Service
                 dbPlayer.GoldTill = 0;
                 _data.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
             }
+        }
+
+        /// <summary>
+        /// Call this on the NWNX OnChat event (not the OnPlayerChat event provided by base NWN).
+        /// If a player is currently setting a "Seller Note", look for the text and apply it to their
+        /// temporary market data object.
+        /// </summary>
+        public void OnModuleNWNXChat()
+        {
+            var sender = _nwnxChat.GetSender();
+            if (!sender.IsPlayer) return;
+            NWPlayer player = sender.Object;
+
+            // Is the player currently in the market process?
+            if (!player.Data.ContainsKey("MARKET_MODEL")) return;
+
+            var model = GetPlayerMarketData(player);
+
+            // Is the player specifying a seller note?
+            if (!model.IsSettingSellerNote) return;
+            model.IsSettingSellerNote = false;
+
+            var message = _nwnxChat.GetMessage();
+            message = message.Truncate(1024);
+            model.SellerNote = message;
+
+            player.FloatingText("Seller note set! Please click 'Refresh' to see the changes.");
+            _nwnxChat.SkipMessage();
+        }
+
+        /// <summary>
+        /// Returns the fee percentage charged to players who sell an item.
+        /// This percentage should be tied to the price the item is being sold for.
+        /// Example: 1000 credit item should be charged 7 credits for a 7-day listing.
+        /// </summary>
+        /// <param name="days">The number of days the listing will be posted.</param>
+        /// <returns>The percentage, in decimal form, to apply when determining fees.</returns>
+        public float CalculateFeePercentage(int days)
+        {
+            const float Rate = 0.001f; // 0.1%
+            return days * Rate;
         }
 
         /// <summary>

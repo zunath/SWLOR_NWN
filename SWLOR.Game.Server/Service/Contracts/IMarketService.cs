@@ -11,6 +11,8 @@ namespace SWLOR.Game.Server.Service.Contracts
         int GetMarketRegionID(NWPlaceable terminal);
         void GiveMarketGoldToPlayer(Guid playerID, int amount);
         void OnModuleEnter();
+        void OnModuleNWNXChat();
+        float CalculateFeePercentage(int days);
         int DetermineMarketCategory(NWItem item);
     }
 }

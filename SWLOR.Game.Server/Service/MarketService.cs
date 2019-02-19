@@ -117,6 +117,14 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        public static bool CanHandleChat(NWPlayer player)
+        {
+            if (!player.IsPlayer) return false;
+
+            // Is the player currently in the market process?
+            return player.Data.ContainsKey("MARKET_MODEL");
+        }
+
         /// <summary>
         /// Call this on the NWNX OnChat event (not the OnPlayerChat event provided by base NWN).
         /// If a player is currently setting a "Seller Note", look for the text and apply it to their
@@ -124,12 +132,8 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public void OnModuleNWNXChat()
         {
-            var sender = _nwnxChat.GetSender();
-            if (!sender.IsPlayer) return;
-            NWPlayer player = sender.Object;
-
-            // Is the player currently in the market process?
-            if (!player.Data.ContainsKey("MARKET_MODEL")) return;
+            NWPlayer player = _nwnxChat.GetSender().Object;
+            if (!CanHandleChat(player)) return;
 
             var model = GetPlayerMarketData(player);
 

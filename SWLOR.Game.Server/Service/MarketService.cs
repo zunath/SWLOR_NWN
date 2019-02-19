@@ -6,6 +6,8 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
+using static NWN.NWScript;
+using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -13,7 +15,7 @@ namespace SWLOR.Game.Server.Service
     {
         private readonly INWScript _;
         private readonly IDataService _data;
-
+        
         public MarketService(
             INWScript script,
             IDataService data)
@@ -22,6 +24,12 @@ namespace SWLOR.Game.Server.Service
             _data = data;
         }
 
+        /// <summary>
+        /// Retrieves the temporary market data for a given player.
+        /// This data is only stored through the lifespan of a market transaction.
+        /// </summary>
+        /// <param name="player">The player to retrieve from.</param>
+        /// <returns>The market data for the player specified.</returns>
         public PCMarketData GetPlayerMarketData(NWPlayer player)
         {
             // Need to store the data outside of the conversation because of the constant
@@ -51,6 +59,12 @@ namespace SWLOR.Game.Server.Service
             return marketRegionID;
         }
 
+        /// <summary>
+        /// This will either give the seller of an item money immediately or place it in their "GoldTill"
+        /// value in the database. This money will be delivered to the player the next time he or she logs in.
+        /// </summary>
+        /// <param name="playerID">The player ID to pay.</param>
+        /// <param name="amount">The amount of gold to give them.</param>
         public void GiveMarketGoldToPlayer(Guid playerID, int amount)
         {
             NWPlayer player = NWModule.Get().Players.SingleOrDefault(x => x.GlobalID == playerID);
@@ -69,6 +83,10 @@ namespace SWLOR.Game.Server.Service
             _data.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
         }
 
+        /// <summary>
+        /// Call this on the module's OnEnter event.
+        /// If a player sold items on the market while they were offline, they'll receive that money on entry.
+        /// </summary>
         public void OnModuleEnter()
         {
             NWPlayer player = _.GetEnteringObject();
@@ -83,6 +101,230 @@ namespace SWLOR.Game.Server.Service
                 dbPlayer.GoldTill = 0;
                 _data.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
             }
+        }
+
+        /// <summary>
+        /// Returns an ID tied to the MarketCategory table. This is where players may find
+        /// the item on the marketplace.
+        /// </summary>
+        /// <param name="item">The item to use for the determination.</param>
+        /// <returns>The market category ID or a value of -1 if item is not supported.</returns>
+        public int DetermineMarketCategory(NWItem item)
+        {
+            // ===============================================================================
+            // The following items are intentionally excluded from market transactions:
+            // Lightsaber, Saberstaff
+            // ===============================================================================
+
+            // Some of the determinations require looking at the item's properties. Pull that list back now for later use.
+            var properties = item.ItemProperties.ToList();
+            var resref = item.Resref;
+
+            // Weapons - These IDs are based solely on the NWN BaseItemType
+            switch (item.BaseItemType)
+            {
+                case BASE_ITEM_GREATAXE: return 1;
+                case BASE_ITEM_BATTLEAXE: return 2;
+                case BASE_ITEM_BASTARDSWORD: return 3;
+                case BASE_ITEM_DAGGER: return 4;
+                case BASE_ITEM_GREATSWORD: return 5;
+                case BASE_ITEM_LONGSWORD: return 7;
+                case BASE_ITEM_RAPIER: return 8;
+                case BASE_ITEM_KATANA: return 9;
+                case BASE_ITEM_SHORTSWORD: return 10;
+                case BASE_ITEM_CLUB: return 11;
+                case BASE_ITEM_LIGHTMACE: return 12;
+                case BASE_ITEM_MORNINGSTAR: return 13;
+                case BASE_ITEM_QUARTERSTAFF: return 15;
+                case BASE_ITEM_DOUBLEAXE: return 16;
+                case BASE_ITEM_TWOBLADEDSWORD: return 17;
+                case BASE_ITEM_KUKRI: return 18;
+                case BASE_ITEM_HALBERD: return 19;
+                case BASE_ITEM_SHORTSPEAR: return 20;
+                case BASE_ITEM_HEAVYCROSSBOW: return 21; // Blaster Rifles
+                case BASE_ITEM_SHORTBOW: return 22; // Blaster Pistols
+                case BASE_ITEM_HELMET: return 23;
+                case BASE_ITEM_SMALLSHIELD: return 28; // Shields
+                case BASE_ITEM_LARGESHIELD: return 28; // Shields
+                case BASE_ITEM_TOWERSHIELD: return 28; // Shields
+                case BASE_ITEM_BOOK: return 29;
+                case BASE_ITEM_GLOVES: return 30; // Power Gloves
+                case BASE_ITEM_AMULET: return 102; // Necklace
+                case BASE_ITEM_RING: return 103;
+            }
+
+            // Check for armor.
+            if (item.BaseItemType == BASE_ITEM_ARMOR)
+            {
+                switch (item.CustomItemType)
+                {
+                    case CustomItemType.LightArmor: return 24;
+                    case CustomItemType.ForceArmor: return 25;
+                    case CustomItemType.HeavyArmor: return 26;
+                    default: return 23; // Default to clothes if no armor type is specified.
+                }
+            }
+
+            // Check for Scanners
+            if (item.GetLocalString("SCRIPT") == "MineralScanner")
+                return 31;
+            // Check for Harvesters
+            if (item.GetLocalString("SCRIPT") == "ResourceHarvester")
+                return 32;
+            // Check for Repair Kits
+            if (item.GetLocalString("SCRIPT") == "RepairKit")
+                return 104;
+            // Check for Stim Packs
+            if (item.GetLocalString("JAVA_ACTION_SCRIPT") == "Medicine.StimPack")
+                return 105;
+            // Check for Force Packs
+            if (item.GetLocalString("JAVA_ACTION_SCRIPT") == "Medicine.ForcePack")
+                return 106;
+            // Check for Healing Kits
+            if (item.GetLocalString("JAVA_ACTION_SCRIPT") == "Medicine.HealingKit")
+                return 107;
+            // Check for Resuscitation Devices
+            if (item.GetLocalString("JAVA_ACTION_SCRIPT") == "Medicine.ResuscitationKit")
+                return 108;
+            // Check for Starcharts
+            if (item.GetLocalString("SCRIPT") == "StarchartDisk" &&
+                item.GetLocalInt("Starcharts") > 0)
+                return 109;
+
+            // Check item properties
+            foreach (var prop in properties)
+            {
+                var propertyType = _.GetItemPropertyType(prop);
+                // Check for components
+                if (propertyType == (int) CustomItemPropertyType.ComponentType)
+                {
+                    // IDs are mapped to the iprp_comptype.2da file.
+                    switch (_.GetItemPropertyCostTableValue(prop))
+                    {
+                        case 1: return 33;
+                        case 2: return 34;
+                        case 3: return 35;
+                        case 4: return 36;
+                        case 5: return 37;
+                        case 6: return 38;
+                        case 7: return 39;
+                        case 8: return 40;
+                        case 9: return 41;
+                        case 10: return 42;
+                        case 11: return 43;
+                        case 12: return 44;
+                        case 13: return 45;
+                        case 14: return 46;
+                        case 15: return 47;
+                        case 16: return 48;
+                        case 17: return 49;
+                        case 18: return 50;
+                        case 19: return 51;
+                        case 20: return 52;
+                        case 21: return 53;
+                        case 22: return 54;
+                        case 23: return 55;
+                        case 24: return 56;
+                        case 25: return 57;
+                        case 26: return 58;
+                        case 27: return 59;
+                        case 28: return 60;
+                        case 29: return 61;
+                        case 30: return 62;
+                        case 31: return 63;
+                        case 32: return 64;
+                        case 33: return 65;
+                        case 34: return 66;
+                        case 35: return 67;
+                        case 36: return 68;
+                        case 37: return 69;
+                        case 38: return 70;
+                        case 39: return 71;
+                        case 40: return 72;
+                        case 41: return 73;
+                        case 42: return 74;
+                        case 43: return 75;
+                        case 44: return 76;
+                        case 45: return 77;
+                        case 46: return 78;
+                        case 47: return 79;
+                        case 48: return 80;
+                        case 49: return 81;
+                        case 50: return 82;
+                        case 51: return 83;
+                        case 52: return 84;
+                        case 53: return 85;
+                        case 54: return 86;
+                        case 55: return 87;
+                        case 56: return 88;
+                        case 57: return 89;
+                        case 58: return 90;
+                        case 59: return 91;
+                        case 60: return 92;
+                        case 61: return 93;
+                        case 62: return 94;
+                        case 63: return 95;
+                        case 64: return 96;
+                        case 65: return 97;
+                    }
+                }
+
+                // Check for mods
+                if (propertyType == (int)CustomItemPropertyType.BlueMod)
+                {
+                    return 98;
+                }
+                if (propertyType == (int)CustomItemPropertyType.GreenMod)
+                {
+                    return 99;
+                }
+                if (propertyType == (int)CustomItemPropertyType.RedMod)
+                {
+                    return 100;
+                }
+                if (propertyType == (int)CustomItemPropertyType.YellowMod)
+                {
+                    return 10;
+                }
+            }
+
+            // Check base structures.
+            int baseStructureID = item.GetLocalInt("BASE_STRUCTURE_ID");
+            if (baseStructureID > 0)
+            {
+                var baseStructure = _data.Get<BaseStructure>(baseStructureID);
+                var baseStructureType = (BaseStructureType) baseStructure.BaseStructureTypeID;
+
+                switch (baseStructureType)
+                {
+                    case BaseStructureType.ControlTower: return 111;
+                    case BaseStructureType.Drill: return 112;
+                    case BaseStructureType.ResourceSilo: return 113;
+                    case BaseStructureType.Turret: return 114;
+                    case BaseStructureType.Building: return 115;
+                    case BaseStructureType.MassProduction: return 116;
+                    case BaseStructureType.StarshipProduction: return 117;
+                    case BaseStructureType.Furniture: return 118;
+                    case BaseStructureType.StronidiumSilo: return 119;
+                    case BaseStructureType.FuelSilo: return 120;
+                    case BaseStructureType.CraftingDevice: return 121;
+                    case BaseStructureType.PersistentStorage: return 122;
+                    case BaseStructureType.Starship: return 123;
+                }
+            }
+
+            // Check for individual resrefs. This should be used as a last-resort.
+            switch (resref)
+            {
+                case "fuel_cell":
+                case "stronidium":
+                    return 110;
+            }
+
+            // A -1 represents that this item is not supported on the market system.
+            // This could be because we forgot to add a determination for it but more than likely it was
+            // excluded on purpose. Lightsabers and Saberstaffs are an example of this.
+            return -1;
         }
 
     }

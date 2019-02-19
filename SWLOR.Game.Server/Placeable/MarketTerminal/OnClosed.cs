@@ -36,8 +36,9 @@ namespace SWLOR.Game.Server.Placeable.MarketTerminal
             _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_CLOSED, string.Empty);
             _.SetEventScript(device.Object, EVENT_SCRIPT_PLACEABLE_ON_INVENTORYDISTURBED, string.Empty);
             
-            // Only wipe the data if we're not returning from an item preview.
-            if(!model.ReturningFromItemPreview)
+            // Only wipe the data if we're not returning from an item preview for item picking.
+            if(!model.IsReturningFromItemPreview &&
+               !model.IsReturningFromItemPicking)
                 _market.ClearPlayerMarketData(player);
             return true;
         }

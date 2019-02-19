@@ -22,7 +22,10 @@ namespace SWLOR.Game.Server.Placeable.MarketTerminal
             NWPlayer player = _.GetLastOpenedBy();
             var model = _market.GetPlayerMarketData(player);
 
-
+            if (model.IsSellingItem)
+            {
+                player.FloatingText("Please place an item you wish to sell inside of the terminal.");
+            }
 
             device.IsLocked = true;
             return true;

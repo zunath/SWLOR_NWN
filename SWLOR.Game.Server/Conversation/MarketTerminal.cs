@@ -74,7 +74,11 @@ namespace SWLOR.Game.Server.Conversation
 
             // Page for selling an item.
             DialogPage sellItemPage = new DialogPage(
-                _color.Green("Galactic Trade Network - Sell an Item"));
+                _color.Green("Galactic Trade Network - Sell an Item"),
+                "Pick an Item",
+                "Set Price",
+                "Set Seller Note",
+                "Set Listing Length");
 
             // Page for viewing items currently being sold by the player.
             DialogPage marketListingsPage = new DialogPage(
@@ -103,7 +107,7 @@ namespace SWLOR.Game.Server.Conversation
 
             // Player is returning from an item preview.
             // Send them to the Item Details page.
-            if (model.ReturningFromItemPreview)
+            if (model.IsReturningFromItemPreview)
             {
                 NavigationStack = model.TemporaryDialogNavigationStack;
 
@@ -115,6 +119,15 @@ namespace SWLOR.Game.Server.Conversation
                 LoadItemListPage();
                 LoadItemDetailsPage();
                 ChangePage("ItemDetailsPage", false);
+            }
+            // Player is returning from selecting an item to sell.
+            // Send them to the Sell Item page.
+            else if (model.IsReturningFromItemPicking)
+            {
+                NavigationStack = model.TemporaryDialogNavigationStack;
+
+                LoadSellItemPage();
+                ChangePage("SellItemPage", false);
             }
         }
 
@@ -143,17 +156,25 @@ namespace SWLOR.Game.Server.Conversation
                 case "SellPage":
                     SellPageResponses(responseID);
                     break;
+                case "SellItemPage":
+                    SellItemPageResponses(responseID);
+                    break;
             }
         }
 
         private void MainPageResponses(int responseID)
         {
+            var player = GetPC();
+            var model = _market.GetPlayerMarketData(player);
+
             switch (responseID)
             {
                 case 1: // Buy
+                    model.IsSellingItem = false;
                     ChangePage("BuyPage");
                     break;
                 case 2: // Sell
+                    model.IsSellingItem = true;
                     ChangePage("SellPage");
                     break;
             }
@@ -280,8 +301,8 @@ namespace SWLOR.Game.Server.Conversation
             foreach (var listing in listings)
             {
                 // Build the item name. Example:
-                // Sword of Doom 1x (5000 Credits) [RL: 50]
-                string listingName = listing.ItemName + " " + listing.ItemStackSize + "x" + " (" + listing.Price + " credits)";
+                // 1x Sword of Doom (5000 Credits) [RL: 50]
+                string listingName = listing.ItemStackSize + "x " + listing.ItemName + " (" + listing.Price + " credits)";
                 if (listing.ItemRecommendedLevel > 0)
                     listingName += " [RL: " + listing.ItemRecommendedLevel + "]";
 
@@ -354,19 +375,7 @@ namespace SWLOR.Game.Server.Conversation
             var listing = _data.SingleOrDefault<PCMarketListing>(x => x.ID == model.BrowseListingID && 
                                                                       x.DateSold == null);
             NWPlaceable terminal = GetDialogTarget().Object;
-
-            if (listing == null)
-            {
-                Console.WriteLine("Listing is NULLLLL");
-                Console.WriteLine("BrowseListingID = " + model.BrowseListingID);
-            }
-            else
-            {
-                Console.WriteLine("Listing date expires = " + listing.DateExpires);
-                Console.WriteLine("BrowseListingID = " + model.BrowseListingID);
-            }
-
-
+            
             // Item was removed, sold, or expired.
             if (listing == null || listing.DateExpires <= DateTime.UtcNow)
             {
@@ -445,7 +454,63 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadSellItemPage()
         {
+            var player = GetPC();
+            var model = _market.GetPlayerMarketData(player);
+            string header;
 
+            // A null or empty item object signifies that an item hasn't been selected for selling yet.
+            // Hide all options except for "Pick Item"
+            if (string.IsNullOrWhiteSpace(model.ItemObject))
+            {
+                header = _color.Green("Galactic Trade Network - Sell Item") + "\n\n";
+                header += "Please select an item to sell.";
+
+                SetResponseVisible("SellItemPage", 1, true);  // Pick Item
+                SetResponseVisible("SellItemPage", 2, false); // Set Price
+                SetResponseVisible("SellItemPage", 3, false); // Set Seller Note
+                SetResponseVisible("SellItemPage", 4, false); // Set Listing Length
+            }
+            // Otherwise an item has already been picked.
+            else
+            {
+                MarketCategory category = _data.Get<MarketCategory>(model.ItemMarketCategoryID);
+
+                header = _color.Green("Galactic Trade Network - Sell Item") + "\n\n";
+                header += _color.Green("Item: ") + model.ItemStackSize + "x " + model.ItemName + "\n";
+                header += _color.Green("Category: ") + category.Name + "\n";
+
+                if(model.ItemRecommendedLevel > 0)
+                    header += _color.Green("Recommended Level: ") + model.ItemRecommendedLevel + "\n";
+
+                header += _color.Green("Price: ") + model.SellPrice + " credits\n";
+
+
+                SetResponseVisible("SellItemPage", 1, false); // Pick Item
+                SetResponseVisible("SellItemPage", 2, true);  // Set Price
+                SetResponseVisible("SellItemPage", 3, true);  // Set Seller Note
+                SetResponseVisible("SellItemPage", 4, true);  // Set Listing Length
+            }
+
+            SetPageHeader("SellItemPage", header);
+        }
+
+        private void SellItemPageResponses(int responseID)
+        {
+            var player = GetPC();
+            var model = _market.GetPlayerMarketData(player);
+
+            switch (responseID)
+            {
+                case 1: // Pick Item
+                    OpenTerminalInventory();
+                    break;
+                case 2: // Set Price
+                    break;
+                case 3: // Set Seller Note
+                    break;
+                case 4: // Set Listing Length
+                    break;
+            }
         }
 
         private void LoadViewMarketListingsPage()
@@ -456,12 +521,38 @@ namespace SWLOR.Game.Server.Conversation
         public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
         {
             var model = _market.GetPlayerMarketData(player);
+
+            // Leaving the Item Details page.
             if (beforeMovePage == "ItemDetailsPage")
             {
                 model.IsConfirming = false;
                 SetResponseText("ItemDetailsPage", 2, "Buy Item");
             }
+            // Leaving the Sell Item page.
+            else if (beforeMovePage == "SellItemPage")
+            {
+                ReturnSellingItem();
+            }
 
+        }
+
+        private void ReturnSellingItem()
+        {
+            var player = GetPC();
+            var model = _market.GetPlayerMarketData(player);
+            
+            if (!string.IsNullOrWhiteSpace(model.ItemObject))
+            {
+                _serialization.DeserializeItem(model.ItemObject, player);
+            }
+
+            model.ItemID = Guid.Empty;
+            model.ItemName = string.Empty;
+            model.ItemTag = string.Empty;
+            model.ItemResref = string.Empty;
+            model.ItemObject = string.Empty;
+            model.ItemRecommendedLevel = 0;
+            model.ItemStackSize = 0;
         }
 
         public override void EndDialog()
@@ -473,6 +564,7 @@ namespace SWLOR.Game.Server.Conversation
             // changing contexts.
             if (!model.IsAccessingInventory)
             {
+                ReturnSellingItem();
                 _market.ClearPlayerMarketData(pc);
             }
         }

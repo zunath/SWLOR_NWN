@@ -16,6 +16,6 @@
         Trandoshan = 159,
         Mirialan = 160,
         Echani = 161,
-        MonCalamarian = 162
+        MonCalamari = 162
     }
 }

@@ -220,7 +220,7 @@ namespace SWLOR.Game.Server.Service
                 case CustomRaceType.Mirialan:
                     languages.Add(SkillType.Mirialan);
                     break;
-                case CustomRaceType.MonCalamarian:
+                case CustomRaceType.MonCalamari:
                     languages.Add(SkillType.MonCalamarian);
                     break;
             }

@@ -379,9 +379,9 @@ namespace SWLOR.Game.Server.Conversation
             int[] MaleEchaniHeads = { };
             int[] MaleCyborgHeads = { 74, 88, 156, 168, 181, 187 };
             int[] MaleCatharHeads = { 26, 27, 28, 29, };
-            int[] MaleTrandoshanHeads = { 2, 101, 111, 123, 124, 125, 143, 162 };
+            int[] MaleTrandoshanHeads = { 2, 101, 111, 123, 124, 125, 143 };
             int[] MaleWookieeHeads = {119, 192, 193};
-            int[] MaleMonCalamariHeads = { 6, 44, 48, 49, 104, 105, 106, 107, 108, 112, 113, 114, 117, 127 };
+            int[] MaleMonCalamariHeads = { 6, 44, 48, 49, 104, 105, 106, 107, 108, 112, 113, 114, 117, 119, 127 };
 
             int[] FemaleHumanHeads = { 1, 2, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18, 19, 20, 22, 23, 24, 25, 27, 28, 30, 31, 32, 33, 34, 35, 36, 37, 39, 40, 42, 44, 45, 46, 48, 49, 100, 101, 102, 103, 104, 105, 106, 107, 108, 111, 112, 113, 114, 116, 117, 118, 121, 123, 124, 125, 127, 130, 132, 134, 136, 137, 138, 140, 141, 164, 167, 168, 171, 172, 173, 174, 175, 177, 178, 180, 181, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 199 };
             int[] FemaleBothanHeads = { 109, 162, };
@@ -392,7 +392,7 @@ namespace SWLOR.Game.Server.Conversation
             int[] FemaleEchaniHeads = { };
             int[] FemaleCyborgHeads = { 41, 109 };
             int[] FemaleCatharHeads = { 13, 14 };
-            int[] FemaleTrandoshanHeads = { 135, 150, 157 };
+            int[] FemaleTrandoshanHeads = { 126, 128, 135, 150, 157 };
             int[] FemaleWookieeHeads = {110, 185, 186, 192, 193, 195};
             int[] FemaleMonCalamariHeads = { 3, 6, 16, 17, 21, 26, 29, 41, 43, 47, 110, 115, 119, 122 };
 

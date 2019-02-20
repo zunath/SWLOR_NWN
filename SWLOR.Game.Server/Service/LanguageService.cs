@@ -17,18 +17,15 @@ namespace SWLOR.Game.Server.Service
         private readonly ISkillService _skillService;
         private readonly IRandomService _randomService;
         private readonly IDataService _data;
-        private readonly AppCache _cache;
 
         public LanguageService(
             ISkillService skillService,
             IRandomService randomService,
-            IDataService data,
-            AppCache cache)
+            IDataService data)
         {
             _skillService = skillService;
             _randomService = randomService;
             _data = data;
-            _cache = cache;
         }
 
         public string TranslateSnippetForListener(NWObject speaker, NWObject listener, SkillType language, string snippet)
@@ -45,7 +42,8 @@ namespace SWLOR.Game.Server.Service
                 { SkillType.Shyriiwook, typeof(TranslatorShyriiwook) },
                 { SkillType.Twileki, typeof(TranslatorTwileki) },
                 { SkillType.Zabraki, typeof(TranslatorZabraki) },
-                { SkillType.Mirialan, typeof(TranslatorMirialan) }
+                { SkillType.Mirialan, typeof(TranslatorMirialan) },
+                {SkillType.MonCalamarian, typeof(TranslatorMonCalamarian) }
             };
 
             Type type = typeof(TranslatorGeneric);
@@ -160,6 +158,7 @@ namespace SWLOR.Game.Server.Service
                 case SkillType.Twileki: r = 65; g = 105; b = 225; break;
                 case SkillType.Zabraki: r = 255; g = 102; b = 102; break;
                 case SkillType.Mirialan: r = 77; g = 230; b = 215; break;
+                case SkillType.MonCalamarian: r = 128; g = 128; b = 192; break;
             }
 
             return r << 24 | g << 16 | b << 8;
@@ -180,6 +179,7 @@ namespace SWLOR.Game.Server.Service
                 case SkillType.Twileki: return "Twi'leki";
                 case SkillType.Zabraki: return "Zabraki";
                 case SkillType.Mirialan: return "Mirialan";
+                case SkillType.MonCalamarian: return "Mon Calamarian";
             }
 
             return "Basic";
@@ -219,6 +219,9 @@ namespace SWLOR.Game.Server.Service
                     break;
                 case CustomRaceType.Mirialan:
                     languages.Add(SkillType.Mirialan);
+                    break;
+                case CustomRaceType.MonCalamarian:
+                    languages.Add(SkillType.MonCalamarian);
                     break;
             }
 
@@ -292,7 +295,8 @@ namespace SWLOR.Game.Server.Service
                 SkillType.Shyriiwook,
                 SkillType.Twileki,
                 SkillType.Zabraki,
-                SkillType.Mirialan
+                SkillType.Mirialan,
+                SkillType.MonCalamarian
             };
         }
     }

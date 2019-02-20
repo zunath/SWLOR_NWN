@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IDataService _data;
         private readonly IRaceService _race;
         private readonly IPlayerMigrationService _migration;
+        private readonly IMarketService _market;
 
         public OnModuleEnter(
             INWScript script,
@@ -36,7 +37,8 @@ namespace SWLOR.Game.Server.Event.Module
             IPlayerValidationService playerValidation,
             IDataService data,
             IRaceService race,
-            IPlayerMigrationService migration)
+            IPlayerMigrationService migration,
+            IMarketService market)
         {
             _ = script;
             _player = player;
@@ -51,6 +53,7 @@ namespace SWLOR.Game.Server.Event.Module
             _data = data;
             _race = race;
             _migration = migration;
+            _market = market;
         }
 
         public bool Run(params object[] args)
@@ -80,6 +83,7 @@ namespace SWLOR.Game.Server.Event.Module
             _customEffect.OnModuleEnter();
             _chatText.OnModuleEnter();
             _race.OnModuleEnter();
+            _market.OnModuleEnter();
             
             player.SetLocalInt("LOGGED_IN_ONCE", TRUE);
             return true;

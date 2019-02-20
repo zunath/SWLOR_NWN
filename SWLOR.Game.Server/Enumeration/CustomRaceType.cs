@@ -15,6 +15,7 @@
         Cathar = 158,
         Trandoshan = 159,
         Mirialan = 160,
-        Echani = 161
+        Echani = 161,
+        MonCalamari = 162
     }
 }

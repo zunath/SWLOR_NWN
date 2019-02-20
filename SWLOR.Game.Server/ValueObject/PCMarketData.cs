@@ -7,6 +7,7 @@ namespace SWLOR.Game.Server.ValueObject
 {
     public class PCMarketData
     {
+        // Buy / Browse Mode
         public MarketBrowseMode BrowseMode { get; set; }
         public int BrowseCategoryID { get; set; }
         public Guid BrowsePlayerID { get; set; }
@@ -16,6 +17,7 @@ namespace SWLOR.Game.Server.ValueObject
         public bool IsReturningFromItemPreview { get; set; }
         public Stack<DialogNavigation> TemporaryDialogNavigationStack { get; set; }
 
+        // Sell / Manage Listings Mode
         public Guid ItemID { get; set; }
         public string ItemName { get; set; }
         public string ItemTag { get; set; }
@@ -30,5 +32,10 @@ namespace SWLOR.Game.Server.ValueObject
         public bool IsSettingSellerNote { get; set; }
         public string SellerNote { get; set; }
         public int LengthDays { get; set; }
+
+        // Manage Listings Mode
+        public Guid ManageListingID { get; set; }
+        public bool IsListingExpired => ListingExpirationDate < DateTime.UtcNow;
+        public DateTime ListingExpirationDate { get; set; }
     }
 }

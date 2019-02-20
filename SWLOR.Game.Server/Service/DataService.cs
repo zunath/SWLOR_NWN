@@ -115,7 +115,7 @@ namespace SWLOR.Game.Server.Service
             GetAll<PCBaseStructureItem>();
             GetAll<PCBaseStructurePermission>();
             GetAll<PCBaseType>();
-            GetAll<PCMarketListing>();
+            LoadPCMarketListingCache();
             GetAll<SpaceStarport>();
             GetAll<SpaceEncounter>();
 
@@ -168,6 +168,30 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine("Cache initialized!");
 
             _cacheInitialized = true;
+        }
+
+        /// <summary>
+        /// PC Market Listings should only be loaded into the cache if they:
+        /// 1.) Haven't been sold already
+        /// 2.) Haven't been removed by the seller.
+        /// This method will retrieve these specific records and store them into the cache.
+        /// Should be called in the InitializeCache() method.
+        /// </summary>
+        private void LoadPCMarketListingCache()
+        {
+            const string Sql = "SELECT * FROM dbo.PCMarketListing WHERE DateSold IS NULL AND DateRemoved IS NULL";
+
+            IEnumerable<PCMarketListing> results;
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                results = connection.Query<PCMarketListing>(Sql);
+            }
+
+            foreach (var result in results)
+            {
+                object id = GetEntityKey(result);
+                SetIntoCache<PCMarketListing>(id, result);
+            }
         }
 
         /// <summary>

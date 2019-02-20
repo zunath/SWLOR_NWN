@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public DateTime DatePosted { get; set; }
         public DateTime DateExpires { get; set; }
         public DateTime? DateSold { get; set; }
+        public DateTime? DateRemoved { get; set; }
         public Guid? BuyerPlayerID { get; set; }
         public string ItemID { get; set; }
         public string ItemName { get; set; }

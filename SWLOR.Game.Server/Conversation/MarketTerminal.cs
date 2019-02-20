@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IMarketService _market;
         private readonly IDataService _data;
         private readonly ISerializationService _serialization;
+        private readonly ITimeService _time;
 
         public MarketTerminal(
             INWScript script, 
@@ -25,13 +26,15 @@ namespace SWLOR.Game.Server.Conversation
             IColorTokenService color,
             IMarketService market,
             IDataService data,
-            ISerializationService serialization) 
+            ISerializationService serialization,
+            ITimeService time) 
             : base(script, dialog)
         {
             _color = color;
             _market = market;
             _data = data;
             _serialization = serialization;
+            _time = time;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -43,7 +46,7 @@ namespace SWLOR.Game.Server.Conversation
                 _color.Green("Galactic Trade Network"),
                 "Buy",
                 "Sell",
-                "View Market Listings");
+                "Manage Market Listings");
 
             // Page for selecting browse method - either by category or by seller
             DialogPage buyPage = new DialogPage(
@@ -105,10 +108,13 @@ namespace SWLOR.Game.Server.Conversation
 
             // Page for viewing items currently being sold by the player.
             DialogPage marketListingsPage = new DialogPage(
-                _color.Green("Galactic Trade Network - Market Listings")); // Responses dynamically built
+                _color.Green("Galactic Trade Market - Manage Market Listings"));
 
             // Page for viewing detailed information about a market listing.
-            DialogPage marketListingDetailsPage = new DialogPage(); // Dynamically built
+            DialogPage marketListingDetailsPage = new DialogPage(
+                "<SET LATER>",
+                _color.Green("Refresh"),
+                _color.Red("Remove Listing"));
 
             dialog.AddPage("MainPage", mainPage);
             dialog.AddPage("BuyPage", buyPage);
@@ -187,7 +193,10 @@ namespace SWLOR.Game.Server.Conversation
                     ChangeListingLengthPageResponses(responseID);
                     break;
                 case "MarketListingsPage":
-                    ViewMarketListingsReponses(responseID);
+                    ManageMarketListingsReponses(responseID);
+                    break;
+                case "MarketListingDetailsPage":
+                    ManageMarketListingDetailsResponses(responseID);
                     break;
             }
         }
@@ -208,9 +217,9 @@ namespace SWLOR.Game.Server.Conversation
                     LoadSellItemPage();
                     ChangePage("SellItemPage");
                     break;
-                case 3: // View Market Listings
-                    model.IsSellingItem = true;
-                    LoadViewMarketListingsPage();
+                case 3: // Manage Market Listings
+                    model.IsSellingItem = false;
+                    LoadManageMarketListingsPage();
                     ChangePage("MarketListingsPage");
                     break;
             }
@@ -233,11 +242,16 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadBrowseByCategoryPage()
         {
+            string header = _color.Green("Galactic Trade Network - Browse by Category") + "\n\n";
+            header += "Please select a category.";
+            SetPageHeader("BrowseByCategoryPage", header);
+
             NWPlaceable terminal = Object.OBJECT_SELF;
             int marketRegionID = _market.GetMarketRegionID(terminal);
             IEnumerable<PCMarketListing> listings = _data.Where<PCMarketListing>(x => x.DateExpires > DateTime.UtcNow &&
                                                                                       x.MarketRegionID == marketRegionID &&
-                                                                                      x.DateSold == null);
+                                                                                      x.DateSold == null &&
+                                                                                      x.DateRemoved == null);
             IEnumerable<int> categoryIDs = listings.Select(s => s.MarketCategoryID).Distinct();
             IEnumerable<MarketCategory> categories = _data.Where<MarketCategory>(x => categoryIDs.Contains(x.ID))
                 .OrderBy(o => o.Name);
@@ -271,11 +285,16 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadBrowseBySellerPage()
         {
+            string header = _color.Green("Galactic Trade Network - Browse by Seller") + "\n\n";
+            header += "Please select a seller.";
+            SetPageHeader("BrowseBySellerPage", header);
+
             NWPlaceable terminal = Object.OBJECT_SELF;
             int marketRegionID = _market.GetMarketRegionID(terminal);
             IEnumerable<PCMarketListing> listings = _data.Where<PCMarketListing>(x => x.DateExpires > DateTime.UtcNow &&
                                                                                       x.MarketRegionID == marketRegionID &&
-                                                                                      x.DateSold == null);
+                                                                                      x.DateSold == null &&
+                                                                                      x.DateRemoved == null);
             IEnumerable<Guid> playerIDs = listings.Select(s => s.SellerPlayerID).Distinct();
             IEnumerable<Player> players = _data.Where<Player>(x => playerIDs.Contains(x.ID))
                 .OrderBy(o => o.CharacterName);
@@ -320,7 +339,8 @@ namespace SWLOR.Game.Server.Conversation
                 listings = _data.Where<PCMarketListing>(x => x.DateExpires > now &&
                                                              x.MarketRegionID == marketRegionID &&
                                                              x.MarketCategoryID == model.BrowseCategoryID &&
-                                                             x.DateSold == null);
+                                                             x.DateSold == null &&
+                                                             x.DateRemoved == null);
             }
             // Pull items being sold by a specific player
             else
@@ -328,7 +348,8 @@ namespace SWLOR.Game.Server.Conversation
                 listings = _data.Where<PCMarketListing>(x => x.DateExpires > now &&
                                                              x.MarketRegionID == marketRegionID &&
                                                              x.SellerPlayerID == model.BrowsePlayerID &&
-                                                             x.DateSold == null);
+                                                             x.DateSold == null &&
+                                                             x.DateRemoved == null);
             }
 
             // Build the response list.
@@ -387,14 +408,18 @@ namespace SWLOR.Game.Server.Conversation
             var player = GetPC();
             var model = _market.GetPlayerMarketData(player);
             var listing = _data.Single<PCMarketListing>(x => x.ID == model.BrowseListingID);
+            string sellerNote = listing.Note;
+            if (string.IsNullOrWhiteSpace(listing.Note))
+                sellerNote = "[UNSPECIFIED]";
+
             string header = _color.Green("Galactic Trade Network") + "\n\n";
-            header += _color.Green("Name: ") + listing.ItemName + " " + listing.ItemStackSize + "x" + "\n";
+            header += _color.Green("Name: ") + listing.ItemStackSize + "x " + listing.ItemName + "\n";
 
             if(listing.ItemRecommendedLevel > 0)
                 header += _color.Green("Recommended Level: ") + listing.ItemRecommendedLevel + "\n";
 
-            header += _color.Green("Price: ") + listing.Price + "\n";
-            header += _color.Green("Seller Note: ") + listing.Note + "\n";
+            header += _color.Green("Price: ") + listing.Price + " credits\n";
+            header += _color.Green("Seller Note: ") + sellerNote + "\n";
 
             SetPageHeader("ItemDetailsPage", header);
 
@@ -739,32 +764,141 @@ namespace SWLOR.Game.Server.Conversation
             ChangePage("MainPage", false);
         }
 
-        private void LoadViewMarketListingsPage()
+        private void LoadManageMarketListingsPage()
         {
+            string header = _color.Green("Galactic Trade Market - Manage Market Listings") + "\n\n";
+            header += "The following is a list of items you are currently selling. Pick one to edit or remove the listing.";
+            SetPageHeader("MarketListingsPage", header);
+
             var player = GetPC();
             var regionID = _market.GetMarketRegionID(Object.OBJECT_SELF);
             var listings = _data.Where<PCMarketListing>(x => x.SellerPlayerID == player.GlobalID && 
                                                              x.DateSold == null &&
-                                                             x.DateExpires > DateTime.UtcNow &&
+                                                             x.DateRemoved == null &&
                                                              x.MarketRegionID == regionID);
             
             ClearPageResponses("MarketListingsPage");
             foreach (var listing in listings)
             {
                 string itemName = BuildItemName(listing);
+
+                // Display an EXPIRED tag on the item name if the listing has expired.
+                if (listing.DateExpires < DateTime.UtcNow)
+                    itemName += _color.Red(" [EXPIRED]");
+
                 AddResponseToPage("MarketListingsPage", itemName, true, listing.ID);
             }
         }
 
-        private void ViewMarketListingsReponses(int responseID)
+        private void ManageMarketListingsReponses(int responseID)
         {
             var response = GetResponseByID("MarketListingsPage", responseID);
-            var listingID = (Guid)response.CustomData;
             var player = GetPC();
             var model = _market.GetPlayerMarketData(player);
+            model.ManageListingID = (Guid)response.CustomData;
+
+            // Populate the temporary data model for use on other pages.
+            var listing = _data.Get<PCMarketListing>(model.ManageListingID);
+            model.ItemID = new Guid(listing.ItemID);
+            model.ItemName = listing.ItemName;
+            model.ItemTag = listing.ItemTag;
+            model.ItemResref = listing.ItemResref;
+            model.ItemObject = listing.ItemObject;
+            model.ItemRecommendedLevel = listing.ItemRecommendedLevel;
+            model.ItemStackSize = listing.ItemStackSize;
+            model.ItemMarketCategoryID = listing.MarketCategoryID;
+            model.SellPrice = listing.Price;
+            model.SellerNote = listing.Note;
+            model.ListingExpirationDate = listing.DateExpires;
+
+            // Switch to details page.
+            LoadManageMarketListingDetailsPage();
+            ChangePage("MarketListingDetailsPage");
+        }
+
+        private void LoadManageMarketListingDetailsPage()
+        {
+            var player = GetPC();
+            var model = _market.GetPlayerMarketData(player);
+            var category = _data.Get<MarketCategory>(model.ItemMarketCategoryID);
+
+            // Build the header
+            string header = _color.Green("Galactic Trade Market - Manage Market Listing") + "\n\n";
+            header += _color.Green("Item: ") + model.ItemStackSize + "x " + model.ItemName + "\n";
+            header += _color.Green("Category: ") + category.Name + "\n";
+
+            if (model.ItemRecommendedLevel > 0)
+                header += _color.Green("Recommended Level: ") + model.ItemRecommendedLevel + "\n";
+
+            header += _color.Green("Sell Price: ") + model.SellPrice + " credits\n";
+            header += _color.Green("Seller Note: ") + model.SellerNote + "\n\n";
+
+            if (model.IsListingExpired)
+            {
+                header += _color.Red("This listing has expired.");
+            }
+            else
+            {
+                DateTime now = DateTime.UtcNow;
+                var delta = model.ListingExpirationDate - now;
+                string expirationTime = _time.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
+                header += _color.Green("This listing expires in " + expirationTime + ".");
+            }
+
+            SetPageHeader("MarketListingDetailsPage", header);
 
         }
 
+        private void ManageMarketListingDetailsResponses(int responseID)
+        {
+            var player = GetPC();
+            var model = _market.GetPlayerMarketData(player);
+
+            switch (responseID)
+            {
+                case 1: // Refresh
+                    LoadManageMarketListingDetailsPage();
+                    break;
+                case 2: // Remove Listing
+
+                    var listing = _data.Get<PCMarketListing>(model.ManageListingID);
+
+                    // Start by verifying the item is still in a valid state.
+                    if (listing.DateRemoved != null ||
+                        listing.DateSold != null)
+                    {
+                        player.FloatingText("That item is no longer available. It may have been sold or removed from the listing.");
+                        ClearModelData();
+                        LoadManageMarketListingsPage();
+                        NavigationStack.Pop(); // Remove the duplicate "Back" page, since we're redirecting already.
+                        ChangePage("MarketListingsPage", false);
+                        return;
+                    }
+
+                    if (model.IsConfirming)
+                    {
+                        SetResponseText("MarketListingDetailsPage", 2, _color.Red("Remove Listing"));
+                        model.IsConfirming = false;
+                        
+                        _serialization.DeserializeItem(listing.ItemObject, player);
+                        listing.DateRemoved = DateTime.UtcNow;
+                        _data.SubmitDataChange(listing, DatabaseActionType.Update);
+
+                        ClearModelData();
+                        LoadManageMarketListingsPage();
+                        NavigationStack.Pop(); // Remove the duplicate "Back" page, since we're redirecting already.
+                        ChangePage("MarketListingsPage", false);
+                    }
+                    else
+                    {
+                        SetResponseText("MarketListingDetailsPage", 2, _color.Red("CONFIRM REMOVE LISTING"));
+                        model.IsConfirming = true;
+                    }
+
+                    break; 
+            }
+        }
+        
         public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
         {
             var model = _market.GetPlayerMarketData(player);
@@ -780,10 +914,31 @@ namespace SWLOR.Game.Server.Conversation
             {
                 ReturnSellingItem();
             }
+            // Leaving the Market Listing Details page.
+            else if (beforeMovePage == "MarketListingDetailsPage")
+            {
+                ClearModelData();
+                SetResponseText("MarketListingDetailsPage", 2, _color.Red("Remove Listing"));
+            }
             // Returning to the Sell Item page.
             else if (afterMovePage == "SellItemPage")
             {
                 LoadSellItemPage();
+            }
+            // Returning to the Browse By Category page
+            else if (afterMovePage == "BrowseByCategoryPage")
+            {
+                LoadBrowseByCategoryPage();
+            }
+            // Returning to the Browse By Seller page
+            else if (afterMovePage == "BrowseBySellerPage")
+            {
+                LoadBrowseBySellerPage();
+            }
+            // Returning to the Manage Market Listings page
+            else if (afterMovePage == "MarketListingsPage")
+            {
+                LoadManageMarketListingsPage();
             }
 
         }
@@ -792,7 +947,9 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var model = _market.GetPlayerMarketData(player);
-            
+
+            if (!model.IsSellingItem) return; // Prevent the "Manage Listings" page from firing this.
+
             if (!string.IsNullOrWhiteSpace(model.ItemObject))
             {
                 _serialization.DeserializeItem(model.ItemObject, player);

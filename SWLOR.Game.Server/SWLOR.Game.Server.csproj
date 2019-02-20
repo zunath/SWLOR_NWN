@@ -204,6 +204,7 @@
     <Compile Include="Conversation\Shovel.cs" />
     <Compile Include="Conversation\SliceTerminal.cs" />
     <Compile Include="Conversation\StructureStorage.cs" />
+    <Compile Include="Conversation\MarketTerminal.cs" />
     <Compile Include="Conversation\ViewBlueprints.cs" />
     <Compile Include="Conversation\ViewPerks.cs" />
     <Compile Include="Conversation\ViewSkills.cs" />
@@ -273,6 +274,8 @@
     <Compile Include="Data\Entity\Download.cs" />
     <Compile Include="Data\Entity\EnmityAdjustmentRule.cs" />
     <Compile Include="Data\Entity\Error.cs" />
+    <Compile Include="Data\Entity\MarketCategory.cs" />
+    <Compile Include="Data\Entity\PCMarketListing.cs" />
     <Compile Include="Data\Entity\SpaceEncounter.cs" />
     <Compile Include="Data\Entity\SpaceStarport.cs" />
     <Compile Include="Data\Entity\FameRegion.cs" />
@@ -394,6 +397,7 @@
     <Compile Include="DoorRule\Spaceship2Rule.cs" />
     <Compile Include="DoorRule\Spaceship1Rule.cs" />
     <Compile Include="DoorRule\SmallRoundBuildingRule.cs" />
+    <Compile Include="Enumeration\MarketBrowseMode.cs" />
     <Compile Include="Enumeration\Planet.cs" />
     <Compile Include="Enumeration\AddItemPropertyPolicy.cs" />
     <Compile Include="Enumeration\AreaSector.cs" />
@@ -404,6 +408,7 @@
     <Compile Include="Enumeration\BuildingType.cs" />
     <Compile Include="Enumeration\ChatChannelType.cs" />
     <Compile Include="Enumeration\TraceComponent.cs" />
+    <Compile Include="Extension\StringExtensions.cs" />
     <Compile Include="Language\TranslatorMirialan.cs" />
     <Compile Include="Language\TranslatorMonCalamarian.cs" />
     <Compile Include="NWNX\ClericDomain.cs" />
@@ -1119,6 +1124,10 @@
     <Compile Include="Placeable\CraftingForge\OnHeartbeat.cs" />
     <Compile Include="Placeable\DisabledStructure\OnUsed.cs" />
     <Compile Include="Placeable\Drill\OnHeartbeat.cs" />
+    <Compile Include="Placeable\MarketTerminal\OnClosed.cs" />
+    <Compile Include="Placeable\MarketTerminal\OnDisturbed.cs" />
+    <Compile Include="Placeable\MarketTerminal\OnOpened.cs" />
+    <Compile Include="Placeable\MarketTerminal\OnUsed.cs" />
     <Compile Include="Placeable\ObtainKeyItem.cs" />
     <Compile Include="Placeable\PermanentVisualEffect.cs" />
     <Compile Include="Placeable\QuestSystem\ItemCollector\OnClosed.cs" />
@@ -1223,6 +1232,7 @@
     <Compile Include="Service\CombatService.cs" />
     <Compile Include="Service\Contracts\IEmoteStyleService.cs" />
     <Compile Include="Service\Contracts\ISpaceService.cs" />
+    <Compile Include="Service\Contracts\IMarketService.cs" />
     <Compile Include="Service\Contracts\IWeatherService.cs" />
     <Compile Include="Service\DataPackageService.cs" />
     <Compile Include="Service\DataService.cs" />
@@ -1369,6 +1379,7 @@
     <Compile Include="Service\SpawnService.cs" />
     <Compile Include="Service\AreaService.cs" />
     <Compile Include="Service\TimeService.cs" />
+    <Compile Include="Service\MarketService.cs" />
     <Compile Include="Service\WeatherService.cs" />
     <Compile Include="SpawnRule\Contracts\ISpawnRule.cs" />
     <Compile Include="DoorRule\OldHouseRule.cs" />
@@ -1394,8 +1405,9 @@
     <Compile Include="ValueObject\ForceResistanceResult.cs" />
     <Compile Include="ValueObject\ForceSpreadDetails.cs" />
     <Compile Include="ValueObject\ObjectSpawn.cs" />
+    <Compile Include="ValueObject\PCMarketData.cs" />
     <Compile Include="ValueObject\PCTempBaseData.cs" />
-    <Compile Include="ValueObject\CraftingData.cs" />
+    <Compile Include="ValueObject\PCCraftingData.cs" />
     <Compile Include="ValueObject\CustomData.cs" />
     <Compile Include="ValueObject\CasterSpellVO.cs" />
     <Compile Include="ValueObject\Dialog\DialogPage.cs" />
@@ -2195,6 +2207,7 @@
     <EmbeddedResource Include="Data\Migrations\2019-02-05.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-12.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-14.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-02-20.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-19.1.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />

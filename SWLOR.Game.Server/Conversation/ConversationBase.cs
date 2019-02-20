@@ -170,6 +170,20 @@ namespace SWLOR.Game.Server.Conversation
             dialog.NavigationStack.Clear();
         }
 
+        protected Stack<DialogNavigation> NavigationStack
+        {
+            get
+            {
+                PlayerDialog dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
+                return dialog.NavigationStack;
+            }
+            set
+            {
+                PlayerDialog dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
+                dialog.NavigationStack = value;
+            }
+        }
+
         protected void ClearNavigationStack()
         {
             PlayerDialog dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);

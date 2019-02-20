@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Service.Contracts
         string GetIngotResref(string oreResref);
         int GetIngotLevel(string oreResref);
         int GetIngotPerkLevel(string oreResref);
-        CraftingData GetPlayerCraftingData(NWPlayer player);
+        PCCraftingData GetPlayerCraftingData(NWPlayer player);
         void ClearPlayerCraftingData(NWPlayer player, bool destroyComponents = false);
         string CalculateDifficultyDescription(int pcLevel, int blueprintLevel);
         int CalculatePCEffectiveLevel(NWPlayer player, int skillRank, SkillType skill);

@@ -500,7 +500,7 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        public CraftingData GetPlayerCraftingData(NWPlayer player)
+        public PCCraftingData GetPlayerCraftingData(NWPlayer player)
         {
             // Need to store the data outside of the conversation because of the constant
             // context switching between conversation and accessing placeable containers.
@@ -510,7 +510,7 @@ namespace SWLOR.Game.Server.Service
                 return player.Data["CRAFTING_MODEL"];
             }
 
-            var model = new CraftingData();
+            var model = new PCCraftingData();
             player.Data["CRAFTING_MODEL"] = model;
             return model;
         }

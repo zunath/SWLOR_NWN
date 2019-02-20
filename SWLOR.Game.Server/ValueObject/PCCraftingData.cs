@@ -6,7 +6,7 @@ using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.ValueObject
 {
-    public class CraftingData
+    public class PCCraftingData
     {
         public int BlueprintID { get; set; }
         public CraftBlueprint Blueprint { get; set; }
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.ValueObject
                                     && SecondaryComponents.Count >= SecondaryMinimum
                                     && TertiaryComponents.Count >= TertiaryMinimum;
         
-        public CraftingData()
+        public PCCraftingData()
         {
             MainComponents = new List<NWItem>();
             SecondaryComponents = new List<NWItem>();

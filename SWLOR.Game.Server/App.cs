@@ -281,6 +281,7 @@ namespace SWLOR.Game.Server
             builder.RegisterType<LootService>().As<ILootService>().SingleInstance();
             builder.RegisterType<MapService>().As<IMapService>().SingleInstance();
             builder.RegisterType<MapPinService>().As<IMapPinService>().SingleInstance();
+            builder.RegisterType<MarketService>().As<IMarketService>().SingleInstance();
             builder.RegisterType<MenuService>().As<IMenuService>().SingleInstance();
             builder.RegisterType<ModService>().As<IModService>().SingleInstance();
             builder.RegisterType<ObjectProcessingService>().As<IObjectProcessingService>().SingleInstance();

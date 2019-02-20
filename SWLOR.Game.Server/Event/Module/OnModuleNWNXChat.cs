@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IChatTextService _chatText;
         private readonly ICraftService _craft;
         private readonly ISpaceService _space;
+        private readonly IMarketService _market;
 
         public OnModuleNWNXChat(
             IActivityLoggingService activityLogging,
@@ -19,7 +20,8 @@ namespace SWLOR.Game.Server.Event.Module
             IBaseService @base,
             IChatTextService chatText,
             ICraftService craft,
-            ISpaceService space)
+            ISpaceService space,
+            IMarketService market)
         {
             _activityLogging = activityLogging;
             _chatCommand = chatCommand;
@@ -27,6 +29,7 @@ namespace SWLOR.Game.Server.Event.Module
             _chatText = chatText;
             _craft = craft;
             _space = space;
+            _market = market;
         }
 
         public bool Run(params object[] args)
@@ -38,6 +41,7 @@ namespace SWLOR.Game.Server.Event.Module
             _base.OnModuleNWNXChat(player);
             _chatText.OnNWNXChat();
             _craft.OnNWNXChat();
+            _market.OnModuleNWNXChat();
             return true;
         }
     }

@@ -59,5 +59,6 @@ namespace SWLOR.Game.Server.Data.Entity
         public int XPBonus { get; set; }
         public int LeaseRate { get; set; }
         public Guid? LocationInstanceID { get; set; }
+        public int GoldTill { get; set; }
     }
 }

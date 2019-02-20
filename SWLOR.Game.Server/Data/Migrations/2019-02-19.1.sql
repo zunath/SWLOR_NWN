@@ -1,4 +1,8 @@
 ﻿
+-- Fix skill category ID for the Mirialan language.
+UPDATE dbo.Skill
+Set SkillCategoryID = 8 Where ID = 18
+
 INSERT INTO dbo.Skill ( ID ,
                         SkillCategoryID ,
                         Name ,

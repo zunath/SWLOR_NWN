@@ -118,7 +118,8 @@ namespace SWLOR.Game.Server.Conversation
             CustomRaceType race = (CustomRaceType)GetPC().RacialType;
             string hairText = "Hair";
 
-            if (race == CustomRaceType.Trandoshan)
+            if (race == CustomRaceType.Trandoshan ||
+                race == CustomRaceType.MonCalamari)
             {
                 hairText = "Eyes";
                 SetResponseVisible("MainPage", 5, false);
@@ -223,6 +224,11 @@ namespace SWLOR.Game.Server.Conversation
             int[] TrandoshanSkinColors = { 4, 5, 6, 18, 19, 34, 35, 36, 38, 39, 172 };
             int[] MirialanSkinColors = { 36, 37, 38, 52, 53 };
             int[] EchaniSkinColors = { 16, 20, 40, 164 };
+            int[] MonCalamariSkinColors =
+            {
+                0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 60, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79,
+                80, 81, 82, 83, 84, 85, 86, 87, 94, 95, 97, 98, 99, 105, 106, 107, 109, 110, 111, 113, 114, 115, 117, 118, 119, 120, 121, 122, 124, 125, 126, 127, 129, 130, 131, 137, 138, 139, 141, 142, 143, 145, 146, 147, 148, 149, 151, 153, 155, 157, 158, 159, 160, 161, 162, 165, 171, 172, 175
+            };
 
             CustomRaceType race = (CustomRaceType)GetPC().RacialType;
             int[] colorsToUse;
@@ -258,6 +264,9 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case CustomRaceType.Trandoshan:
                     colorsToUse = TrandoshanSkinColors;
+                    break;
+                case CustomRaceType.MonCalamari:
+                    colorsToUse = MonCalamariSkinColors;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -368,10 +377,11 @@ namespace SWLOR.Game.Server.Conversation
             int[] MaleTwilekHeads = { 115, };
             int[] MaleMirialanHeads = { };
             int[] MaleEchaniHeads = { };
-            int[] MaleCyborgHeads = { 156, 168, 181, 187, 74, 88, };
+            int[] MaleCyborgHeads = { 74, 88, 156, 168, 181, 187 };
             int[] MaleCatharHeads = { 26, 27, 28, 29, };
             int[] MaleTrandoshanHeads = { 2, 101, 111, 123, 124, 125, 143, 162 };
             int[] MaleWookieeHeads = {119, 192, 193};
+            int[] MaleMonCalamariHeads = { 6, 44, 48, 49, 104, 105, 106, 107, 108, 112, 113, 114, 117, 127 };
 
             int[] FemaleHumanHeads = { 1, 2, 4, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 18, 19, 20, 22, 23, 24, 25, 27, 28, 30, 31, 32, 33, 34, 35, 36, 37, 39, 40, 42, 44, 45, 46, 48, 49, 100, 101, 102, 103, 104, 105, 106, 107, 108, 111, 112, 113, 114, 116, 117, 118, 121, 123, 124, 125, 127, 130, 132, 134, 136, 137, 138, 140, 141, 164, 167, 168, 171, 172, 173, 174, 175, 177, 178, 180, 181, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 199 };
             int[] FemaleBothanHeads = { 109, 162, };
@@ -384,6 +394,7 @@ namespace SWLOR.Game.Server.Conversation
             int[] FemaleCatharHeads = { 13, 14 };
             int[] FemaleTrandoshanHeads = { 135, 150, 157 };
             int[] FemaleWookieeHeads = {110, 185, 186, 192, 193, 195};
+            int[] FemaleMonCalamariHeads = { 3, 6, 16, 17, 21, 26, 29, 41, 43, 47, 110, 115, 119, 122 };
 
             CustomRaceType race = (CustomRaceType)GetPC().RacialType;
             int gender = GetPC().Gender;
@@ -432,6 +443,9 @@ namespace SWLOR.Game.Server.Conversation
                 case CustomRaceType.Wookiee:
                     headsToUse = gender == GENDER_MALE ? MaleWookieeHeads : FemaleWookieeHeads;
                     break;
+                case CustomRaceType.MonCalamari:
+                    headsToUse = gender == GENDER_MALE ? MaleMonCalamariHeads : FemaleMonCalamariHeads;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -459,6 +473,7 @@ namespace SWLOR.Game.Server.Conversation
             int[] CatharHairColors = { 0, 1, 2, 3, 4, 5, 6, 7, 116, 117 };
             int[] TrandoshanEyeColors = { }; // All
             int[] WookieeHairColors = {0, 1, 2, 3, 14, 49, 51};
+            int[] MonCalamariHairColors = { }; // All
 
             CustomRaceType race = (CustomRaceType)GetPC().RacialType;
             int[] colorsToUse;
@@ -498,6 +513,9 @@ namespace SWLOR.Game.Server.Conversation
                 case CustomRaceType.Wookiee:
                     colorsToUse = WookieeHairColors;
                     break;
+                case CustomRaceType.MonCalamari:
+                    colorsToUse = MonCalamariHairColors;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -531,7 +549,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var model = GetDialogCustomData<Model>();
             CustomRaceType race = (CustomRaceType)GetPC().RacialType;
-
+            
             // Note: The following part IDs are found in the "parts_*.2da" files.
             // Don't use the ID number listed in the toolset when selecting parts to make available.
             // The ID in the toolset is a DIFFERENT index and doesn't correlate to the 2da ID number.
@@ -539,86 +557,194 @@ namespace SWLOR.Game.Server.Conversation
             {
                 case 1: // Torso
                     model.BodyPartID = CREATURE_PART_TORSO;
-                    model.Parts = race == CustomRaceType.Wookiee ? 
-                        new[] {208, 209} : 
-                        new[] { 1, 2, 166};
+                    switch (race)
+                    {
+                        case CustomRaceType.Wookiee:
+                            model.Parts = new[] {208, 209};
+                            break;
+                        case CustomRaceType.MonCalamari:
+                            model.Parts = new[] {204};
+                            break;
+                        default:
+                            model.Parts = new[] { 1, 2, 166 };
+                            break;
+                    }   
                     model.PartName = "Torso";
                     break;
                 case 2: // Pelvis
                     model.BodyPartID = CREATURE_PART_PELVIS;
-                    model.Parts = race == CustomRaceType.Wookiee ? 
-                        new[] { 208, 209 } : 
-                        new[] { 1, 2, 11, 158 };
+                    switch (race)
+                    {
+                        case CustomRaceType.Wookiee:
+                            model.Parts = new[] { 208, 209 };
+                            break;
+                        case CustomRaceType.MonCalamari:
+                            model.Parts = new[] { 204 };
+                            break;
+                        default:
+                            model.Parts = new[] { 1, 2, 11, 158 };
+                            break;
+                    }
                     model.PartName = "Pelvis";
                     break;
                 case 3: // Right Bicep
                     model.BodyPartID = CREATURE_PART_RIGHT_BICEP;
-                    model.Parts = race == CustomRaceType.Wookiee ? 
-                        new[] { 208 } : 
-                        new[] { 1, 2 };
+                    switch (race)
+                    {
+                        case CustomRaceType.Wookiee:
+                            model.Parts = new[] { 208 };
+                            break;
+                        case CustomRaceType.MonCalamari:
+                            model.Parts = new[] { 204 };
+                            break;
+                        default:
+                            model.Parts = new[] { 1, 2 };
+                            break;
+                    }
                     model.PartName = "Right Bicep";
                     break;
                 case 4: // Right Forearm
                     model.BodyPartID = CREATURE_PART_RIGHT_FOREARM;
-                    model.Parts = race == CustomRaceType.Wookiee ? 
-                        new[] { 208 } : 
-                        new[] { 1, 2, 152 };
+                    switch (race)
+                    {
+                        case CustomRaceType.Wookiee:
+                            model.Parts = new[] { 208 };
+                            break;
+                        case CustomRaceType.MonCalamari:
+                            model.Parts = new[] { 204 };
+                            break;
+                        default:
+                            model.Parts = new[] { 1, 2, 152 };
+                            break;
+                    }
                     model.PartName = "Right Forearm";
                     break;
                 case 5: // Right Hand
                     model.BodyPartID = CREATURE_PART_RIGHT_HAND;
-                    model.Parts = race == CustomRaceType.Wookiee ? 
-                        new[] { 208 } : 
-                        new[] { 1, 2, 5, 6, 63, 100, 110, 113, 121, 151, };
+                    switch (race)
+                    {
+                        case CustomRaceType.Wookiee:
+                            model.Parts = new[] { 208 };
+                            break;
+                        case CustomRaceType.MonCalamari:
+                            model.Parts = new[] { 204 };
+                            break;
+                        default:
+                            model.Parts = new[] { 1, 2, 5, 6, 63, 100, 110, 113, 121, 151, };
+                            break;
+                    }
                     model.PartName = "Right Hand";
                     break;
                 case 6: // Right Thigh
                     model.BodyPartID = CREATURE_PART_RIGHT_THIGH;
-                    model.Parts = race == CustomRaceType.Wookiee ? 
-                        new[] { 208 } : 
-                        new[] { 1, 2, 154 };
+                    switch (race)
+                    {
+                        case CustomRaceType.Wookiee:
+                            model.Parts = new[] { 208 };
+                            break;
+                        case CustomRaceType.MonCalamari:
+                            model.Parts = new[] { 204 };
+                            break;
+                        default:
+                            model.Parts = new[] { 1, 2, 154 };
+                            break;
+                    }
                     model.PartName = "Right Thigh";
                     break;
                 case 7: // Right Shin
                     model.BodyPartID = CREATURE_PART_RIGHT_SHIN;
-                    model.Parts = race == CustomRaceType.Wookiee ? 
-                        new[] { 208 } : 
-                        new[] { 1, 2 };
+                    switch (race)
+                    {
+                        case CustomRaceType.Wookiee:
+                            model.Parts = new[] { 208 };
+                            break;
+                        case CustomRaceType.MonCalamari:
+                            model.Parts = new[] { 204 };
+                            break;
+                        default:
+                            model.Parts = new[] { 1, 2 };
+                            break;
+                    }
                     model.PartName = "Right Shin";
                     break;
                 case 8: // Left Bicep
                     model.BodyPartID = CREATURE_PART_LEFT_BICEP;
-                    model.Parts = race == CustomRaceType.Wookiee ? 
-                        new[] { 208 } : 
-                        new[] { 1, 2 };
+                    switch (race)
+                    {
+                        case CustomRaceType.Wookiee:
+                            model.Parts = new[] { 208 };
+                            break;
+                        case CustomRaceType.MonCalamari:
+                            model.Parts = new[] { 204 };
+                            break;
+                        default:
+                            model.Parts = new[] { 1, 2 };
+                            break;
+                    }
                     model.PartName = "Left Bicep";
                     break;
                 case 9: // Left Forearm
                     model.BodyPartID = CREATURE_PART_LEFT_FOREARM;
-                    model.Parts = race == CustomRaceType.Wookiee ? 
-                        new[] { 208 } : 
-                        new[] { 1, 2, 152 };
+                    switch (race)
+                    {
+                        case CustomRaceType.Wookiee:
+                            model.Parts = new[] { 208 };
+                            break;
+                        case CustomRaceType.MonCalamari:
+                            model.Parts = new[] { 204 };
+                            break;
+                        default:
+                            model.Parts = new[] { 1, 2, 152 };
+                            break;
+                    }
                     model.PartName = "Left Forearm";
                     break;
                 case 10: // Left Hand
                     model.BodyPartID = CREATURE_PART_LEFT_HAND;
-                    model.Parts = race == CustomRaceType.Wookiee ? 
-                        new[] { 208 } : 
-                        new[] { 1, 2, 5, 6, 63, 100, 110, 113, 121, 151, };
+                    switch (race)
+                    {
+                        case CustomRaceType.Wookiee:
+                            model.Parts = new[] { 208 };
+                            break;
+                        case CustomRaceType.MonCalamari:
+                            model.Parts = new[] { 204 };
+                            break;
+                        default:
+                            model.Parts = new[] { 1, 2, 5, 6, 63, 100, 110, 113, 121, 151, };
+                            break;
+                    }
                     model.PartName = "Left Hand";
                     break;
                 case 11: // Left Thigh
                     model.BodyPartID = CREATURE_PART_LEFT_THIGH;
-                    model.Parts = race == CustomRaceType.Wookiee ? 
-                        new[] { 208 } : 
-                        new[] { 1, 2, 154 };
+                    switch (race)
+                    {
+                        case CustomRaceType.Wookiee:
+                            model.Parts = new[] { 208 };
+                            break;
+                        case CustomRaceType.MonCalamari:
+                            model.Parts = new[] { 204 };
+                            break;
+                        default:
+                            model.Parts = new[] { 1, 2, 154 };
+                            break;
+                    }
                     model.PartName = "Left Thigh";
                     break;
                 case 12: // Left Shin
                     model.BodyPartID = CREATURE_PART_LEFT_SHIN;
-                    model.Parts = race == CustomRaceType.Wookiee ? 
-                        new[] { 208 } : 
-                        new[] { 1, 2 };
+                    switch (race)
+                    {
+                        case CustomRaceType.Wookiee:
+                            model.Parts = new[] { 208 };
+                            break;
+                        case CustomRaceType.MonCalamari:
+                            model.Parts = new[] { 204 };
+                            break;
+                        default:
+                            model.Parts = new[] { 1, 2 };
+                            break;
+                    }
                     model.PartName = "Left Shin";
                     break;
             }

@@ -38,6 +38,7 @@
         Basic = 33,
         Mandoa = 34,
         Huttese = 35,
-        Piloting = 36
+        Piloting = 36,
+        MonCalamarian = 37
     }
 }

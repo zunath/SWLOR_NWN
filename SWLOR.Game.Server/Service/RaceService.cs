@@ -208,6 +208,44 @@ namespace SWLOR.Game.Server.Service
                     femaleLeftFoot = 208;
 
                     break;
+                case CustomRaceType.MonCalamari:
+                    skinColor = 6;
+                    hairColor = 7;
+
+                    maleHead = 6;
+                    femaleHead = 6;
+                    maleNeck = 1;
+                    maleTorso = 204;
+                    malePelvis = 204;
+                    maleRightBicep = 204;
+                    maleRightForearm = 204;
+                    maleRightHand = 204;
+                    maleRightThigh = 204;
+                    maleRightShin = 204;
+                    maleRightFoot = 204;
+                    maleLeftBicep = 204;
+                    maleLeftForearm = 204;
+                    maleLeftHand = 204;
+                    maleLeftThigh = 204;
+                    maleLeftShin = 204;
+                    maleLeftFoot = 204;
+
+                    femaleNeck = 1;
+                    femaleTorso = 204;
+                    femalePelvis = 204;
+                    femaleRightBicep = 204;
+                    femaleRightForearm = 204;
+                    femaleRightHand = 204;
+                    femaleRightThigh = 204;
+                    femaleRightShin = 204;
+                    femaleRightFoot = 204;
+                    femaleLeftBicep = 204;
+                    femaleLeftForearm = 204;
+                    femaleLeftHand = 204;
+                    femaleLeftThigh = 204;
+                    femaleLeftShin = 204;
+                    femaleLeftFoot = 204;
+                    break;
                 default:
                     {
                         _.BootPC(player, "You have selected an invalid race. This could be due to files in your override folder. Ensure these are removed from the folder and then try creating a new character. If you have any problems, visit our website at http://starwarsnwn.com");

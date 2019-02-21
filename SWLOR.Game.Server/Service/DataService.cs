@@ -102,6 +102,7 @@ namespace SWLOR.Game.Server.Service
             GetAll<FameRegion>();
             GetAll<GrowingPlant>();
             GetAll<ItemType>();
+            GetAll<JukeboxSong>();
             GetAll<KeyItem>();
             GetAll<KeyItemCategory>();
             GetAll<LootTable>();
@@ -186,7 +187,7 @@ namespace SWLOR.Game.Server.Service
             {
                 results = connection.Query<PCMarketListing>(Sql);
             }
-
+            
             foreach (var result in results)
             {
                 object id = GetEntityKey(result);

@@ -163,6 +163,7 @@
     <Compile Include="ChatCommand\Victory1.cs" />
     <Compile Include="ChatCommand\Victory2.cs" />
     <Compile Include="ChatCommand\Victory3.cs" />
+    <Compile Include="Conversation\Jukebox.cs" />
     <Compile Include="Conversation\PublicStarport.cs" />
     <Compile Include="Conversation\ApartmentEntrance.cs" />
     <Compile Include="Conversation\ApartmentRental.cs" />
@@ -274,6 +275,7 @@
     <Compile Include="Data\Entity\Download.cs" />
     <Compile Include="Data\Entity\EnmityAdjustmentRule.cs" />
     <Compile Include="Data\Entity\Error.cs" />
+    <Compile Include="Data\Entity\JukeboxSong.cs" />
     <Compile Include="Data\Entity\MarketCategory.cs" />
     <Compile Include="Data\Entity\PCMarketListing.cs" />
     <Compile Include="Data\Entity\SpaceEncounter.cs" />
@@ -2209,6 +2211,7 @@
     <EmbeddedResource Include="Data\Migrations\2019-02-14.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-20.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-19.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-02-20.2.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-07.1.sql" />
@@ -2233,7 +2236,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)*.*" "%25USERPROFILE%25\Documents\Neverwinter Nights\mono" /E /Y /C /i
+    <PostBuildEvent>xcopy "$(TargetDir)*.*" "C:\NeverwinterNights\NWN\mono" /E /Y /C /i
 </PostBuildEvent>
   </PropertyGroup>
 </Project>

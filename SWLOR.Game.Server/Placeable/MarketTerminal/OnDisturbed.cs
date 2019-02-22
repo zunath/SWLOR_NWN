@@ -15,19 +15,22 @@ namespace SWLOR.Game.Server.Placeable.MarketTerminal
         private readonly IItemService _item;
         private readonly IDialogService _dialog;
         private readonly ISerializationService _serialization;
+        private readonly IColorTokenService _color;
 
         public OnDisturbed(
             INWScript script, 
             IMarketService market,
             IItemService item,
             IDialogService dialog,
-            ISerializationService serialization)
+            ISerializationService serialization,
+            IColorTokenService color)
         {
             _ = script;
             _market = market;
             _item = item;
             _dialog = dialog;
             _serialization = serialization;
+            _color = color;
         }
 
         public bool Run(params object[] args)
@@ -52,6 +55,14 @@ namespace SWLOR.Game.Server.Placeable.MarketTerminal
             NWPlaceable device = Object.OBJECT_SELF;
             var model = _market.GetPlayerMarketData(player);
 
+            // Serializing containers can be tricky so for the time being we'll leave them disabled.
+            if (_.GetHasInventory(item) == TRUE)
+            {
+                _item.ReturnItem(player, item);
+                player.SendMessage(_color.Red("Containers cannot be sold on the market."));
+                return;
+            }
+            
             // If selling an item, serialize it and store its information in the player's temporary data.
             if (model.IsSellingItem)
             {

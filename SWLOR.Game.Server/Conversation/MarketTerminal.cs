@@ -519,8 +519,7 @@ namespace SWLOR.Game.Server.Conversation
                     .Where<PCMarketListing>(x => x.SellerPlayerID == player.GlobalID &&
                                                  x.DateRemoved == null &&
                                                  x.DateSold == null)
-                    .DefaultIfEmpty()
-                    .Count();
+                    .Count;
                 bool canSellAnotherItem = numberItemsSelling < _market.NumberOfItemsAllowedToBeSoldAtATime;
                 header = _color.Green("Galactic Trade Network - Sell Item") + "\n\n";
                 header += _color.Green("Items Selling: ") + numberItemsSelling + " / " + _market.NumberOfItemsAllowedToBeSoldAtATime + "\n\n";

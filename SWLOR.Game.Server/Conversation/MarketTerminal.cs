@@ -515,11 +515,27 @@ namespace SWLOR.Game.Server.Conversation
             // Hide all options except for "Pick Item"
             if (string.IsNullOrWhiteSpace(model.ItemObject))
             {
+                int numberItemsSelling = _data
+                    .Where<PCMarketListing>(x => x.SellerPlayerID == player.GlobalID &&
+                                                 x.DateRemoved == null &&
+                                                 x.DateSold == null)
+                    .DefaultIfEmpty()
+                    .Count();
+                bool canSellAnotherItem = numberItemsSelling < _market.NumberOfItemsAllowedToBeSoldAtATime;
                 header = _color.Green("Galactic Trade Network - Sell Item") + "\n\n";
-                header += "Please select an item to sell.";
+                header += _color.Green("Items Selling: ") + numberItemsSelling + " / " + _market.NumberOfItemsAllowedToBeSoldAtATime + "\n\n";
+
+                if (canSellAnotherItem)
+                {
+                    header += "Please select an item to sell.";
+                }
+                else
+                {
+                    header += "You cannot sell any more items at this time.";
+                }
 
                 SetResponseVisible("SellItemPage", 1, false); // Refresh
-                SetResponseVisible("SellItemPage", 2, true);  // Pick Item
+                SetResponseVisible("SellItemPage", 2, canSellAnotherItem);  // Pick Item
                 SetResponseVisible("SellItemPage", 3, false); // Change Price
                 SetResponseVisible("SellItemPage", 4, false); // Change Seller Note
                 SetResponseVisible("SellItemPage", 5, false); // Remove Seller Note

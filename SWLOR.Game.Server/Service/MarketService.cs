@@ -29,6 +29,9 @@ namespace SWLOR.Game.Server.Service
             _nwnxChat = nwnxChat;
         }
 
+        // Couldn't get any more specific than this. :)
+        public int NumberOfItemsAllowedToBeSoldAtATime => 20;
+
         /// <summary>
         /// Retrieves the temporary market data for a given player.
         /// This data is only stored through the lifespan of a market transaction.

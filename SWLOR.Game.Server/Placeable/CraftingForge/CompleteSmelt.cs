@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             }
 
             var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
-            int stronidiumAmount = 2 + effectiveStats.Harvesting;
+            int stronidiumAmount = 2 + effectiveStats.Harvesting + _skill.GetPCSkillRank(player, SkillType.Harvesting);
             _.CreateItemOnObject("stronidium", player.Object, stronidiumAmount);
 
             int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(100, level, rank);

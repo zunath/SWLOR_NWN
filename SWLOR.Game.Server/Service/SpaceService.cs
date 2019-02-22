@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Bioware.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.SpawnRule.Contracts;
@@ -961,6 +962,14 @@ namespace SWLOR.Game.Server.Service
             NWPlayer speaker = NWN.Object.OBJECT_SELF;
             if (!speaker.IsPlayer) return;
 
+            // Ignore Tells, DM messages etc..
+            if (_nwnxChat.GetChannel() != NWNXChat.NWNX_CHAT_CHANNEL_PLAYER_TALK &&
+                _nwnxChat.GetChannel() != NWNXChat.NWNX_CHAT_CHANNEL_PLAYER_WHISPER &&
+                _nwnxChat.GetChannel() != NWNXChat.NWNX_CHAT_CHANNEL_PLAYER_PARTY)
+            {
+                return;
+            }
+
             string message = _nwnxChat.GetMessage().Trim();
 
             if (speaker.GetLocalInt("IS_SHIP") == 1 || speaker.GetLocalInt("IS_GUNNER") == 1)
@@ -1459,6 +1468,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (_.GetIsEnemy(target, creature) == TRUE &&
                     !target.IsDead &&
+                    target.GetLocalInt("IS_GUNNER") == 0 &&
                     _.GetDistanceBetween(creature, target) <= range &&
                     !target.HasAnyEffect(EFFECT_TYPE_INVISIBILITY, EFFECT_TYPE_SANCTUARY))
                 {
@@ -1524,6 +1534,7 @@ namespace SWLOR.Game.Server.Service
             if (stats.scale == default(float)) return;
 
             if (_.GetIsEnemy(perceived, creature) == 0) return;
+            if (perceived.GetLocalInt("IS_GUNNER") == 1) return;
 
             // Would be ideal to respect turning circles and only turn the ship a bit at a time. Less urgent now since 
             // the heartbeat code handles turning. 

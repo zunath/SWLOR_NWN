@@ -16,7 +16,7 @@
         AbsorptionField = 11,
         Hide = 12,
         ForceSpread = 13,
-        // 14 is open
+        StronidiumRefining = 14,
         Lucky = 15,
         Health = 16,
         FP = 17,

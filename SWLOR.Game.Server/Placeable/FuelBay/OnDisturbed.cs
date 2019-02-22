@@ -51,6 +51,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             string allowedResref = stronidiumOnly ? "stronidium" : "fuel_cell";
             string structureID = bay.GetLocalString("PC_BASE_STRUCTURE_ID");
             
+            // Check for either fuel cells or stronidium when adding an item to the container.
             if (disturbType == INVENTORY_DISTURB_TYPE_ADDED)
             {
                 if (item.Resref != allowedResref)
@@ -60,6 +61,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
                     return false;
                 }
             }
+            // If the item removed wasn't fuel cells or stronidium, exit early. We don't need to do anything else.
             else if (disturbType == INVENTORY_DISTURB_TYPE_REMOVED)
             {
                 if (item.Resref != allowedResref)
@@ -71,12 +73,14 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             var structure = _data.Single<PCBaseStructure>(x => x.ID == new Guid(structureID));
             var pcBase = _data.Get<PCBase>(structure.PCBaseID);
 
+            // Calculate how much fuel exists in the bay's inventory.
             int fuelCount = 0;
             foreach (var fuel in bay.InventoryItems)
             {
                 fuelCount += fuel.StackSize;
             }
             
+            // If there are extra units of fuel, destroy them. We will set the stack size of the first fuel later on.
             NWItem firstFuel = (_.GetFirstItemInInventory(bay.Object));
             NWItem nextFuel = (_.GetNextItemInInventory(bay.Object));
             while (nextFuel.IsValid)
@@ -86,15 +90,19 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             }
 
             int maxFuel;
+
+            // Handle Stronidium fuel process
             if (stronidiumOnly)
             {
                 maxFuel = _base.CalculateMaxReinforcedFuel(pcBase.ID);
 
+                // For starships only: Add the ship's cargo bonus to the max stronidium amount.
                 if (bay.Area.GetLocalInt("BUILDING_TYPE") == (int)Enumeration.BuildingType.Starship)
                 {
                     maxFuel += 25 * _space.GetCargoBonus(_space.GetCargoBay(player.Area, null), (int)CustomItemPropertyType.StarshipStronidiumBonus);
                 }
 
+                // Did the player put too much fuel inside? Return the excess to their inventory.
                 if (fuelCount > maxFuel)
                 {
                     int returnAmount = fuelCount - maxFuel;
@@ -117,15 +125,18 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
                     }
                 }
             }
+            // Handle Fuel Cell process
             else
             {
                 maxFuel = _base.CalculateMaxFuel(pcBase.ID);
 
+                // For starships only: Add the ship's cargo bonus to the max fuel amount.
                 if (bay.Area.GetLocalInt("BUILDING_TYPE") == (int)Enumeration.BuildingType.Starship)
                 {
                     maxFuel += 25 * _space.GetCargoBonus(_space.GetCargoBay(player.Area, null), (int)CustomItemPropertyType.StarshipFuelBonus);
                 }
 
+                // Did the player put too much fuel inside? Return the excess to their inventory.
                 if (fuelCount > maxFuel)
                 {
                     int returnAmount = fuelCount - maxFuel;
@@ -138,6 +149,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
                 pcBase.Fuel = fuelCount;
             }
 
+            // Submit a DB data change for the fuel or stronidium amount adjustment.
             _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
 
             var tower = _base.GetBaseControlTower(structure.PCBaseID);
@@ -150,10 +162,21 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             }
 
             int fuelRating = towerStructure.FuelRating;
-            int minutes = 30; // Stronidium is always 30 minutes
+            
 
-            if (!stronidiumOnly)
+            // Stronidium - Every unit lasts for 6 seconds during reinforcement mode.
+            if (stronidiumOnly)
             {
+                int seconds = 6 * fuelCount;
+                TimeSpan timeSpan = TimeSpan.FromSeconds(seconds);
+                player.SendMessage(_color.Gray("Reinforcement mode will last for " +
+                                               _time.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false) +
+                                               " (" + fuelCount + " / " + maxFuel + " units"));
+            }
+            // Regular fuel cells - Every unit lasts for 45, 15, or 5 minutes depending on the size of the tower.
+            else
+            {
+                int minutes;
                 switch (fuelRating)
                 {
                     case 1: // Small
@@ -168,12 +191,13 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
                     default:
                         throw new Exception("Invalid fuel rating value: " + fuelRating);
                 }
+
+                TimeSpan timeSpan = TimeSpan.FromMinutes(minutes * fuelCount);
+                player.SendMessage(_color.Gray("Fuel will last for " +
+                                               _time.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false) +
+                                               " (" + fuelCount + " / " + maxFuel + " units)"));
             }
 
-            TimeSpan timeSpan = TimeSpan.FromMinutes(minutes * fuelCount);
-            player.SendMessage(_color.Gray("Fuel will last for " + 
-                               _time.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false) + 
-                               " (" + fuelCount + " / " + maxFuel + " units)"));
 
             return true;
         }

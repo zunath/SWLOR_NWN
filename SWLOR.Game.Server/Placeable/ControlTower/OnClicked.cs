@@ -38,7 +38,9 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
 
             clicker.ClearAllActions();
             if (!clicker.IsPlayer) return false;
-            if (_.GetDistanceBetween(clicker.Object, tower.Object) > 10.0f)
+
+            // Check the distance.
+            if (_.GetDistanceBetween(clicker.Object, tower.Object) > 15.0f)
             {
                 clicker.SendMessage("You are too far away to interact with that control tower.");
                 return false;
@@ -46,9 +48,19 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             Guid structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
             PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.ID == structureID);
 
+            // Does the player have permission to access the fuel bays?
             if (_perm.HasBasePermission(clicker, structure.PCBaseID, BasePermission.CanManageBaseFuel))
             {
-                _dialog.StartConversation(clicker, tower, "ControlTower");
+                // Is the tower in reinforced mode? If so, fuel cannot be accessed.
+                var pcBase = _data.Single<PCBase>(x => x.ID == structure.PCBaseID);
+                if (pcBase.IsInReinforcedMode)
+                {
+                    clicker.SendMessage("This tower is currently in reinforced mode and cannot be accessed.");
+                }
+                else
+                {
+                    _dialog.StartConversation(clicker, tower, "ControlTower");
+                }
             }
             else
             {

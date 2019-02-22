@@ -264,7 +264,9 @@ namespace SWLOR.Game.Server.Service
                 int penalty = (int)(totalAC * 0.3f);
                 baseAC = baseAC - penalty;
             }
-            
+
+            if (baseAC < 0) baseAC = 0;
+
             return baseAC;
         }
         

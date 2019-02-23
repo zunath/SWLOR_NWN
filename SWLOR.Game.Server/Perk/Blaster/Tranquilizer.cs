@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         private bool RemoveExistingEffect(NWObject target, float duration)
         {
-            Effect effect = target.Effects.SingleOrDefault(x => _.GetEffectTag(x) == "TRANQUILIZER_EFFECT");
+            Effect effect = target.Effects.FirstOrDefault(x => _.GetEffectTag(x) == "TRANQUILIZER_EFFECT");
             if (effect == null) return false;
 
             if (_.GetEffectDurationRemaining(effect) >= duration) return true;

@@ -132,6 +132,7 @@ namespace SWLOR.Game.Server.Event.Module
             _nwnxEvents.SubscribeEvent(EventType.StartCombatRoundBefore, "mod_on_attack");
             _nwnxEvents.SubscribeEvent(EventType.ExamineObjectBefore, "mod_on_examine");
             _nwnxEvents.SubscribeEvent(EventType.UseFeatBefore, "mod_on_usefeat");
+            _nwnxEvents.SubscribeEvent(EventType.EnterStealthAfter, "mod_on_entstlth");
             _nwnxDamage.SetDamageEventScript("mod_on_applydmg");
 
             // DM Hooks

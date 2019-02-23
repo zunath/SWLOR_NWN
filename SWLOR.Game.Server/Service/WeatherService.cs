@@ -188,14 +188,26 @@ namespace SWLOR.Game.Server.Service
                 climate.special_warm_windy = "The hot wind wears at your face like a sandblaster.  A sand storm seems likely.";
                 climate.special_windy = "A scouring wind sweeps across the desert, a sand storm cannot be far away.";
             }
-            else if (planetName == "Druzer IX")
+            else if (planetName == "Mon Cala")
             {
-                _error.Trace(TraceComponent.Weather, "Planet is Druxer IX.");
-                climate.Humidity_Modifier = -6;
-                climate.Wind_Modifier = +2;
+                _error.Trace(TraceComponent.Weather, "Planet is Mon Cala.");
+                climate.Humidity_Modifier = 0;
+                climate.Wind_Modifier = +1;
+                climate.Heat_Modifier = +1;
 
-                climate.Dust_Storm = true;
-
+                climate.special_cloudy = "Clouds build over the ocean, and the wind starts to pick up.  A storm could be brewing.";
+                climate.special_cold_cloudy = "Thick clouds fill the sky, and a keen wind blows in off the ocean, exciting the waves.";
+                climate.special_cold_mild = "It is cool, but calm.  The ocean is calm and beautiful.";
+                climate.special_freezing = "A wave of cold air rolls in, stinging exposed flesh.";
+                climate.special_mild = "The sea is calm, a faint breeze rippling through the trees.";
+                climate.special_mild_night = "The sea is calm, and the sky towards the Galactic Core is full of stars.  In other directions, you see only a deep, unending black.";
+                climate.special_mist = "A mist has blown in off the sea, moisture hanging heavy in the air.";
+                climate.special_warm_cloudy = "The sea is choppy and the wind has picked up. An array of clouds marshals on the horizon, ready to sweep over you.";
+                climate.special_warm_mild = "It is a beautiful day, warm and calm, though quite humid.";
+                climate.special_rain_normal = "The ocean, affronted by the existence of patches of non-ocean on the surface of the planet, is attempting to reclaim the land by air drop.  In other words, it's raining.";
+                climate.special_rain_warm = "A heavy rain shower is passing over, but is doing little to dispel the humidity in the air.";
+                climate.special_snow = "It's snowing!  The local flora seems most surprised at this turn of events.";
+                climate.special_storm = "A storm rips in off the sea, filling the sky with dramatic flashes.";
                 climate.special_scorching = "The hard-baked mud parches under the intense glare of the local sun.";
                 climate.special_cold_windy = "A chill wind sweeps over the land.";
                 climate.special_warm_windy = "The wind is strong and dusty. A dust storm may not be far away.";

@@ -537,6 +537,7 @@ namespace SWLOR.Game.Server.Service
 
             if (((int)destinations & (int)Planet.Viscara) == (int)Planet.Viscara && PlanetToDestination(planet) != (int)Planet.Viscara) list.Add(DestinationToPlanet((int)Planet.Viscara));
             if (((int)destinations & (int)Planet.Tattooine) == (int)Planet.Tattooine && PlanetToDestination(planet) != (int)Planet.Tattooine) list.Add(DestinationToPlanet((int)Planet.Tattooine));
+            if (((int)destinations & (int)Planet.MonCala) == (int)Planet.MonCala && PlanetToDestination(planet) != (int)Planet.MonCala) list.Add(DestinationToPlanet((int)Planet.MonCala));
 
             return list.ToArray();
         }
@@ -1473,8 +1474,10 @@ namespace SWLOR.Game.Server.Service
                 shape = SHAPE_SPHERE;
                 targetLocation = creature.Location;
 
-                // TODO: increase range by gunner's perk level.
-                range += _perk.GetPCPerkLevel(area.GetLocalObject("GUNNER"), PerkType.Sniper);
+                if (area.IsValid && ((NWObject)area.GetLocalObject("GUNNER")).IsValid)
+                {
+                    range += _perk.GetPCPerkLevel(area.GetLocalObject("GUNNER"), PerkType.Sniper);
+                }
             }
 
             NWCreature target = _.GetFirstObjectInShape(shape, range, targetLocation, TRUE, OBJECT_TYPE_CREATURE, creature.Position);
@@ -1577,7 +1580,16 @@ namespace SWLOR.Game.Server.Service
                 _biowarePos.GetChangedPosition(creature.Position, 25.0f, creature.Facing),
                 creature.Facing + 180.0f);
 
-            NWCreature enemy = _.GetFirstObjectInShape(SHAPE_SPELLCONE, 25.0f, targetLocation, 1, OBJECT_TYPE_CREATURE);
+            int shape = SHAPE_SPELLCONE;           
+
+            bool hasGunner = creature.GetLocalInt("HAS_GUNNER") == 1;
+            if (hasGunner)
+            {
+                shape = SHAPE_SPHERE;
+                targetLocation = creature.Location;
+            }
+
+            NWCreature enemy = _.GetFirstObjectInShape(shape, 25.0f, targetLocation, 1, OBJECT_TYPE_CREATURE);
 
             while (enemy.IsValid)
             {
@@ -1587,7 +1599,7 @@ namespace SWLOR.Game.Server.Service
                     return true;
                 }
 
-                enemy = _.GetNextObjectInShape(SHAPE_SPELLCONE, 25.0f, targetLocation, 1, OBJECT_TYPE_CREATURE);
+                enemy = _.GetNextObjectInShape(shape, 25.0f, targetLocation, 1, OBJECT_TYPE_CREATURE);
             }
 
             enemy = _.GetNearestCreature(CREATURE_TYPE_REPUTATION, REPUTATION_TYPE_ENEMY, creature);

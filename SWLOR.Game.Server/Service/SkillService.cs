@@ -507,6 +507,12 @@ namespace SWLOR.Game.Server.Service
                 oItem.Destroy();
             }
 
+            // Remove any other fists in the PC's inventory.
+            foreach (var fist in oPC.InventoryItems.Where(x => x.Resref == "fist"))
+            {
+                fist.Destroy();
+            }
+
             // Check in 1 second to see if PC has a glove equipped. If they don't, create a fist glove and equip it.
             ForceEquipFistGlove(oPC);
         }

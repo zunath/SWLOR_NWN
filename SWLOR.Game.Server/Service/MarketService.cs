@@ -258,6 +258,9 @@ namespace SWLOR.Game.Server.Service
             // Check for Starship Equipment
             if (item.GetLocalString("SCRIPT") == "SSEnhancement")
                 return 124;
+            // Check for Starship Repair Kits
+            if (item.GetLocalString("SCRIPT") == "SSRepairKit")
+                return 104;
 
             // Check item properties
             foreach (var prop in properties)

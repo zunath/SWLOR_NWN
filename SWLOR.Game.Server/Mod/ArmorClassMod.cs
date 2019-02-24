@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Mod
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            if (target.CustomAC >= 50)
+            if (target.CustomAC >= 36) // Actually applies to the PC at 1/3 total, so 36 == 12
                 return "You cannot improve that item's AC any further.";
 
             if (!ItemService.ArmorBaseItemTypes.Contains(target.BaseItemType))

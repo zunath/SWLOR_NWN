@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         // Couldn't get any more specific than this. :)
-        public int NumberOfItemsAllowedToBeSoldAtATime => 20;
+        public int NumberOfItemsAllowedToBeSoldAtATime => 50;
 
         /// <summary>
         /// Retrieves the temporary market data for a given player.
@@ -216,7 +216,10 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Check for armor.
-            if (item.BaseItemType == BASE_ITEM_ARMOR)
+            if (item.BaseItemType == BASE_ITEM_ARMOR ||
+                item.BaseItemType == BASE_ITEM_BELT ||
+                item.BaseItemType == BASE_ITEM_CLOAK ||
+                item.BaseItemType == BASE_ITEM_BOOTS)
             {
                 switch (item.CustomItemType)
                 {
@@ -252,6 +255,9 @@ namespace SWLOR.Game.Server.Service
             if (item.GetLocalString("SCRIPT") == "StarchartDisk" &&
                 item.GetLocalInt("Starcharts") > 0)
                 return 109;
+            // Check for Starship Equipment
+            if (item.GetLocalString("SCRIPT") == "SSEnhancement")
+                return 124;
 
             // Check item properties
             foreach (var prop in properties)

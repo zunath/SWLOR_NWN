@@ -355,7 +355,7 @@ namespace SWLOR.Game.Server.Service
                 }
                 if (propertyType == (int)CustomItemPropertyType.YellowMod)
                 {
-                    return 10;
+                    return 101;
                 }
             }
 

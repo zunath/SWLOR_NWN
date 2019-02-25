@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.ValueObject
 {
     public class PCCraftingData
     {
+        // Normal Crafting properties
         public int BlueprintID { get; set; }
         public CraftBlueprint Blueprint { get; set; }
         public int MainMinimum { get; set; }
@@ -27,7 +28,7 @@ namespace SWLOR.Game.Server.ValueObject
         public int OptimizationLevel { get; set; }
         public int PlayerSkillRank { get; set; }
         public bool IsInitialized { get; set; }
-
+        
         public int AdjustedLevel
         {
             get
@@ -63,6 +64,12 @@ namespace SWLOR.Game.Server.ValueObject
                                     && SecondaryComponents.Count >= SecondaryMinimum
                                     && TertiaryComponents.Count >= TertiaryMinimum;
         
+        // Atomic Reassembly properties
+        public bool IsReturningFromPickingSalvageItem { get; set; }
+        public int SalvageComponentTypeID { get; set; }
+        public string SerializedSalvageItem { get; set; }
+
+
         public PCCraftingData()
         {
             MainComponents = new List<NWItem>();

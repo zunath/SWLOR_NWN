@@ -164,6 +164,7 @@
     <Compile Include="ChatCommand\Victory1.cs" />
     <Compile Include="ChatCommand\Victory2.cs" />
     <Compile Include="ChatCommand\Victory3.cs" />
+    <Compile Include="Conversation\AtomicReassembly.cs" />
     <Compile Include="Conversation\Jukebox.cs" />
     <Compile Include="Conversation\PublicStarport.cs" />
     <Compile Include="Conversation\ApartmentEntrance.cs" />
@@ -1014,6 +1015,7 @@
     <Compile Include="Perk\Weapons\ImprovedCritical.cs" />
     <Compile Include="Perk\Engineering\SpeedyEngineering.cs" />
     <Compile Include="Perk\Engineering\EngineeringBlueprints.cs" />
+    <Compile Include="Placeable\AtomicReassembler\OnUsed.cs" />
     <Compile Include="Placeable\Bank\OnClosed.cs" />
     <Compile Include="Placeable\ControlTower\OnClicked.cs" />
     <Compile Include="Placeable\ControlTower\OnDamaged.cs" />
@@ -2218,6 +2220,7 @@
     <EmbeddedResource Include="Data\Migrations\2019-02-21.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-23.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-23.2.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-02-24.1.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-07.1.sql" />

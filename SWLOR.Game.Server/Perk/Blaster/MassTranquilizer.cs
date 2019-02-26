@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -105,20 +106,43 @@ namespace SWLOR.Game.Server.Perk.Blaster
                 player.SendMessage("Lucky shot!");
             }
 
-            int current = 1;
-            NWCreature nearest = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, target, current);
-
-            while (nearest.IsValid)
+            // Apply to the target.
+            if (!RemoveExistingEffect(target, duration))
             {
-                if (_.GetDistanceBetween(nearest, target) > range) break;
-                if (RemoveExistingEffect(target, duration)) continue;
-                
-                nearest.SetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN", 1);
+                target.SetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN", 1);
+
                 Effect effect = _.EffectDazed();
                 effect = _.EffectLinkEffects(effect, _.EffectVisualEffect(VFX_DUR_IOUNSTONE_BLUE));
                 effect = _.TagEffect(effect, "TRANQUILIZER_EFFECT");
-                
+
                 _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, effect, target, duration);
+            }
+
+
+            // Iterate over all nearby hostiles. Apply the effect to them if they meet the criteria.
+            int current = 1;
+            NWCreature nearest = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, target, current);
+            while (nearest.IsValid)
+            {
+                float distance = _.GetDistanceBetween(nearest, target);
+                // Check distance. Exit loop if we're too far.
+                if (distance > range) break;
+
+                // If this creature isn't hostile to the attacking player or if this creature is already tranquilized, move to the next one.
+                if (_.GetIsReactionTypeHostile(nearest, player) == FALSE ||
+                    nearest.Object == target.Object ||
+                    RemoveExistingEffect(nearest, duration))
+                {
+                    current++;
+                    nearest = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, target, current);
+                    continue;
+                }
+
+                target.SetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN", 1);
+                Effect effect = _.EffectDazed();
+                effect = _.EffectLinkEffects(effect, _.EffectVisualEffect(VFX_DUR_IOUNSTONE_BLUE));
+                effect = _.TagEffect(effect, "TRANQUILIZER_EFFECT");
+                _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, effect, nearest, duration);
 
                 current++;
                 nearest = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, target, current);
@@ -128,7 +152,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         private bool RemoveExistingEffect(NWObject target, float duration)
         {
-            Effect effect = target.Effects.SingleOrDefault(x => _.GetEffectTag(x) == "TRANQUILIZER_EFFECT");
+            Effect effect = target.Effects.FirstOrDefault(x => _.GetEffectTag(x) == "TRANQUILIZER_EFFECT");
             if (effect == null) return false;
 
             if (_.GetEffectDurationRemaining(effect) >= duration) return true;

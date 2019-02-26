@@ -36,7 +36,6 @@ namespace SWLOR.Game.Server.Conversation
             DialogPage characterManagementPage = new DialogPage(
                 "Character Management & Information Page",
                 "Disable PVP Protection",
-                "Change Description",
                 "Toggle Helmet Display"
             );
 
@@ -61,10 +60,7 @@ namespace SWLOR.Game.Server.Conversation
                         case 1: // Disable PVP Protection
                             HandleDisablePVPProtection();
                             break;
-                        case 2: // Change Description
-                            SwitchConversation("ChangeDescription");
-                            break;
-                        case 3: // Toggle Helmet Display
+                        case 2: // Toggle Helmet Display
                             _helmetToggle.ToggleHelmetDisplay(GetPC());
                             break;
                     }

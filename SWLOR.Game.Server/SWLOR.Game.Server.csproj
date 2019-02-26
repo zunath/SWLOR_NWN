@@ -97,6 +97,7 @@
     <Compile Include="ChatCommand\Bow.cs" />
     <Compile Include="ChatCommand\Bug.cs" />
     <Compile Include="ChatCommand\CopyItem.cs" />
+    <Compile Include="ChatCommand\Customise.cs" />
     <Compile Include="ChatCommand\Exit.cs" />
     <Compile Include="ChatCommand\GetCacheStats.cs" />
     <Compile Include="ChatCommand\CDKey.cs" />
@@ -410,6 +411,7 @@
     <Compile Include="Enumeration\BuildingType.cs" />
     <Compile Include="Enumeration\ChatChannelType.cs" />
     <Compile Include="Enumeration\TraceComponent.cs" />
+    <Compile Include="Event\Module\OnModuleEnterStealthAfter.cs" />
     <Compile Include="Extension\StringExtensions.cs" />
     <Compile Include="Language\TranslatorMirialan.cs" />
     <Compile Include="Language\TranslatorMonCalamarian.cs" />
@@ -861,6 +863,7 @@
     <Compile Include="NWN\Events\Feat\swlor_craft.cs" />
     <Compile Include="NWN\Events\Module\mod_on_applydmg.cs" />
     <Compile Include="NWN\Events\Module\mod_on_attack.cs" />
+    <Compile Include="NWN\Events\Module\mod_on_entstlth.cs" />
     <Compile Include="NWN\Events\Module\mod_on_nwnxchat.cs" />
     <Compile Include="NWN\Events\Module\mod_on_usefeat.cs" />
     <Compile Include="NWN\Events\Player\pc_on_damaged.cs" />
@@ -2213,6 +2216,9 @@
     <EmbeddedResource Include="Data\Migrations\2019-02-19.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-20.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-21.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-02-23.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-02-23.2.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-02-26.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-22.1.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />

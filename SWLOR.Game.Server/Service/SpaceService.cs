@@ -276,6 +276,16 @@ namespace SWLOR.Game.Server.Service
                     stats.scale = 4.0f;
                     stats.range = 15.0f;
                     break;
+                case 2169: //star destroyer
+                    stats.weapons = 10;
+                    stats.shields = 10;
+                    stats.stealth = 0;
+                    stats.scanning = 0;
+                    stats.speed = 20;
+                    stats.stronidium = 10000;
+                    stats.scale = 4.0f;
+                    stats.range = 25.0f;
+                    break;
                 case 2170: //mon cala cruiser
                     stats.weapons = 10;
                     stats.shields = 10;

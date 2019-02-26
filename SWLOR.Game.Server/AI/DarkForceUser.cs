@@ -8,6 +8,7 @@ using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN.NWScript;
 using SWLOR.Game.Server.Event;
+using System;
 
 namespace SWLOR.Game.Server.AI
 {
@@ -39,12 +40,14 @@ namespace SWLOR.Game.Server.AI
 
         private void DoForceAttack()
         {
+            Console.Write("DoForceAttack called\n");
             // Trigger ForceAttackHighestEmnity if not doing anything. 
             if (_.GetCurrentAction() == NWScript.ACTION_ATTACKOBJECT)
             {
                 _.ClearAllActions();
 
-                App.RunEvent<ForceAttackHighestEnmity>();
+                NWObject self = NWN.Object.OBJECT_SELF;
+                App.RunEvent<ForceAttackHighestEnmity>(self);
             }
         }
 

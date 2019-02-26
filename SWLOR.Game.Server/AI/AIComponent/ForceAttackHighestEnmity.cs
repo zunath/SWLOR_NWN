@@ -34,7 +34,6 @@ namespace SWLOR.Game.Server.AI.AIComponent
 
         private bool UseFeat(int featID, string featName, NWCreature caster, NWCreature target)
         {
-
             // Note - this code is loosely based on code from AbilityService.  However, the perk interface
             // is written assuming players will always be using perks.  To allow NPCs to use them requires some hackery.
             int perkLevel = (int) caster.ChallengeRating / 5;
@@ -61,7 +60,8 @@ namespace SWLOR.Game.Server.AI.AIComponent
 
             // Cooldown of 1 round.
             string timeout = caster.GetLocalString("TIMEOUT_" + featName);
-            DateTime unlockTime = DateTime.Parse(timeout);
+            DateTime unlockTime = DateTime.UtcNow;
+            if (!string.IsNullOrWhiteSpace(timeout)) unlockTime = DateTime.Parse(timeout);
             DateTime now = DateTime.UtcNow;
 
             if (unlockTime > now)
@@ -150,24 +150,34 @@ namespace SWLOR.Game.Server.AI.AIComponent
                     Tier3Modifier,
                     Tier4Modifier);
 
-                caster.AssignCommand(() =>
-                {
-                    Effect damage = _.EffectDamage(calc.Damage, DAMAGE_TYPE_ELECTRICAL);
-                    _.ApplyEffectToObject(DURATION_TYPE_INSTANT, damage, target);
+                caster.AssignCommand(() => {
+                    _.SetFacingPoint(target.Location.Position);
+                    _.ActionPlayAnimation(ANIMATION_LOOPING_CONJURE1, 1.0f, 1.0f);
                 });
+                
+                caster.SetLocalInt("CASTING", 1);
 
-                if (length > 0.0f && dotAmount > 0)
+                _.DelayCommand(1.0f, () =>
                 {
-                    _customEffect.ApplyCustomEffect(caster, target.Object, CustomEffectType.ForceShock, length, perkLevel, dotAmount.ToString());
-                }
+                    caster.AssignCommand(() =>
+                    {
+                        Effect damage = _.EffectDamage(calc.Damage, DAMAGE_TYPE_ELECTRICAL);
+                        _.ApplyEffectToObject(DURATION_TYPE_INSTANT, damage, target);
+                    });
 
-                caster.AssignCommand(() =>
-                {
-                    _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_BEAM_LIGHTNING), target, 1.0f);
+                    if (length > 0.0f && dotAmount > 0)
+                    {
+                        _customEffect.ApplyCustomEffect(caster, target.Object, CustomEffectType.ForceShock, length, perkLevel, dotAmount.ToString());
+                    }
+
+                    caster.AssignCommand(() =>
+                    {
+                        _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_BEAM_LIGHTNING), target, 1.0f);
+                        caster.DeleteLocalInt("CASTING");
+                    });
+
+                    _combat.AddTemporaryForceDefense(target.Object, ForceAbilityType.Electrical);
                 });
-
-                _combat.AddTemporaryForceDefense(target.Object, ForceAbilityType.Electrical);
-
             }
             else if (featID == (int)CustomFeatType.DrainLife)
             {
@@ -212,25 +222,37 @@ namespace SWLOR.Game.Server.AI.AIComponent
                     Tier3Modifier,
                     Tier4Modifier);
 
-                _.AssignCommand(caster, () =>
-                {
-                    int heal = (int)(calc.Damage * recoveryPercent);
-                    if (heal > target.CurrentHP) heal = target.CurrentHP;
-
-                    _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(calc.Damage), target);
-                    _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(heal), caster);
-                    _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_BEAM_MIND), target, 1.0f);
+                caster.AssignCommand(() => {
+                    _.SetFacingPoint(target.Location.Position);
+                    _.ActionPlayAnimation(ANIMATION_LOOPING_CONJURE1, 1.0f, 1.0f);
                 });
+                caster.SetLocalInt("CASTING", 1);
+
+                _.DelayCommand(1.0f, () =>
+                {
+                    _.AssignCommand(caster, () =>
+                    {
+                        int heal = (int)(calc.Damage * recoveryPercent);
+                        if (heal > target.CurrentHP) heal = target.CurrentHP;
+
+                        _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(calc.Damage), target);
+                        _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(heal), caster);
+                        _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_BEAM_MIND), target, 1.0f);
+                        caster.DeleteLocalInt("CASTING");
+                    });
+                });
+
 
                 _combat.AddTemporaryForceDefense(target.Object, ForceAbilityType.Dark);
             }
-
+            
             return true;
         }
 
         public bool Run(object[] args)
         {
             NWCreature self = (NWCreature)args[0];
+            if (self.GetLocalInt("CASTING") == 1) return true;
             var enmityTable = _enmity.GetEnmityTable(self);
             var target = enmityTable.Values
                 .OrderByDescending(o => o.TotalAmount)
@@ -245,27 +267,25 @@ namespace SWLOR.Game.Server.AI.AIComponent
                 }
                 else
                 {
-                    if (_.GetCurrentAction(self) == NWScript.ACTION_CASTSPELL)
+                    bool bDone = false;
+
+                    // See which force feats we have, and pick one to use. 
+                    if (_.GetHasFeat((int)CustomFeatType.ForceLightning, self) == 1)
                     {
                         _.ClearAllActions();
-                        bool bDone = false;
+                        bDone = UseFeat((int)CustomFeatType.ForceLightning, "ForceLightning", self, target.TargetObject);
+                    }
 
-                        // See which force feats we have, and pick one to use. 
-                        if (_.GetHasFeat((int)CustomFeatType.ForceLightning, self) == 1)
-                        {
-                            bDone = UseFeat((int)CustomFeatType.ForceLightning, "ForceLightning", self, target.TargetObject);
-                        }
+                    if (!bDone && _.GetHasFeat((int)CustomFeatType.DrainLife, self) == 1)
+                    {
+                        _.ClearAllActions();
+                        bDone = UseFeat((int)CustomFeatType.DrainLife, "DrainLife", self, target.TargetObject);
+                    }
 
-                        if (!bDone && _.GetHasFeat((int)CustomFeatType.DrainLife, self) == 1)
-                        {
-                            bDone = UseFeat((int)CustomFeatType.DrainLife, "DrainLife", self, target.TargetObject);
-                        }
-
-                        if (!bDone)
-                        {
-                            // No abilities available right now, run away!
-                            _.ActionMoveAwayFromObject(target.TargetObject, 1);
-                        }
+                    if (!bDone)
+                    {
+                        // No abilities available right now, run away!
+                        _.ActionMoveAwayFromObject(target.TargetObject, 1);
                     }
                 }
             });

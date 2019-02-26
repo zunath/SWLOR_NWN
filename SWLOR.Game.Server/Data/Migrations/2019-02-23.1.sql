@@ -8,6 +8,9 @@ INSERT INTO dbo.SpaceEncounter (Planet, Type, Chance, Difficulty, LootTable) VAL
 ('Mon Cala', 2, 1, 40, 0),
 ('Mon Cala', 3, 15, 45, 0);
 
+-- Add Mon Cala's apartment complex.
+INSERT INTO dbo.ApartmentBuilding (ID, Name) VALUES (3, 'Under the Sea');
+
 -- Add loot for Mon Cala areas
 INSERT INTO dbo.LootTable (ID, Name) VALUES
  (90, 'Mon Cala Coral Isles 1 - Northeast'),
@@ -20,7 +23,8 @@ INSERT INTO dbo.LootTable (ID, Name) VALUES
  (97, 'Mon Cala Coral Isles 2 - Southwest'),
  (98, 'Mon Cala Eco Terrorists'),
  (99, 'Mon Cala Fauna'),
- (100, 'Mon Cala AmphiHydrus')
+ (100, 'Mon Cala AmphiHydrus'),
+ (101, 'Mon Cala Eco Terrorist Leader')
  ;
 
 INSERT INTO dbo.LootTableItem (LootTableID, Resref, MaxQuantity, Weight, IsActive,SpawnRule) VALUES
@@ -127,15 +131,32 @@ INSERT INTO dbo.LootTableItem (LootTableID, Resref, MaxQuantity, Weight, IsActiv
  (97, 'pefoate', 1, 3, 1, ''),
  (97, 'f_crystal_blue', 1, 3, 1, ''),
  (97, 'porlang', 1, 3, 1, ''),
- (97, 'coonlank_blue', 1, 3, 1, '');
-
- -- TODO - drops from creatures.
+ (97, 'coonlank_blue', 1, 3, 1, ''),
+ (98, 'nw_it_gold001', 30, 20, 1, ''), 
+ (98, 'nw_it_gold001', 50, 5, 1, ''),
+ (98, 'elec_imperfect', 1, 20, 1, ''),
+ (98, 'elec_good', 1, 5, 1, ''),
+ (99, 'cox_meat', 1, 50, 1, ''),
+ (99, 'lth_good', 1, 20, 1, ''),
+ (99, 'lth_imperfect', 1, 30, 1, ''),
+ (100, 'amphi_brain', 1, 10, 1, ''),
+ (100, 'amphi_brain2', 1, 10, 1, ''),
+ (101, 'nw_it_gold001', 60, 20, 1, ''), 
+ (101, 'nw_it_gold001', 100, 5, 1, ''),
+ (101, 'elec_imperfect', 1, 5, 1, ''),
+ (101, 'elec_good', 1, 10, 1, ''),
+ (101, 'c_cluster_green', 1, 10, 1,''),
+ (101, 'ecot_lthr_drop', 1, 1, 1, '') 
+ ;
 
  -- Add spawns for Mon Cala areas.
  INSERT INTO dbo.Spawn(ID, Name, SpawnObjectTypeID) VALUES
- (40, 'Mon Cala Coral Isles', 1);
+ (40, 'Mon Cala Coral Isles', 1),
+ (41, 'Mon Cala Eco-Terrorists', 1);
 
  INSERT INTO dbo.SpawnObject (ID, SpawnID, Resref, Weight, SpawnRule, NPCGroupID, BehaviourScript, DeathVFXID) VALUES
  (100, 40, 'viper', 20, '', NULL, 'SightAggroBehaviour', 0),
  (101, 40, 'mc_aradile', 40, '', NULL, 'SightAggroBehaviour', 0),
- (102, 40, 'mc_amphihydrus', 10, '', NULL, 'DarkForceUser', 0);
+ (102, 40, 'mc_amphihydrus', 10, '', NULL, 'DarkForceUser', 0),
+ (103, 41, 'ecoterr_1', 50, '', NULL, 'SightAggroBehaviour', 0),
+ (104, 41, 'ecoterr_2', 50, '', NULL, 'SightAggroBehaviour', 0);

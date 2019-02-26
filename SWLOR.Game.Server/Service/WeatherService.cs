@@ -208,10 +208,10 @@ namespace SWLOR.Game.Server.Service
                 climate.special_rain_warm = "A heavy rain shower is passing over, but is doing little to dispel the humidity in the air.";
                 climate.special_snow = "It's snowing!  The local flora seems most surprised at this turn of events.";
                 climate.special_storm = "A storm rips in off the sea, filling the sky with dramatic flashes.";
-                climate.special_scorching = "The hard-baked mud parches under the intense glare of the local sun.";
-                climate.special_cold_windy = "A chill wind sweeps over the land.";
-                climate.special_warm_windy = "The wind is strong and dusty. A dust storm may not be far away.";
-                climate.special_windy = "A scouring wind sweeps across the planet surface, a dust storm cannot be far away.";
+                climate.special_scorching = "The sun bakes the sand, making it extremely uncomfortable to those without insulated boots.";
+                climate.special_cold_windy = "A chill wind sweeps over the isles, the moisture in the air cutting to the bone.";
+                climate.special_warm_windy = "The wind is picking up, a warm front rolling over.  There could be a storm soon.";
+                climate.special_windy = "A strong wind sweeps in.  The sea is choppy, waves crashing onto the beach.";
             }
 
             return climate;

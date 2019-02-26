@@ -18,5 +18,6 @@ VALUES ( 47 ,   -- ID - int
     )
 
 UPDATE dbo.CraftBlueprint
-SET CraftCategoryID = 47
+SET CraftCategoryID = 47,
+	MainMaximum = 2
 WHERE ID = 682

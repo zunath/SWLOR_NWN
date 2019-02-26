@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Event.Module
         private void HandleRegenerationTick(NWPlayer oPC, Data.Entity.Player entity)
         {
             entity.RegenerationTick = entity.RegenerationTick - 1;
-            int rate = 20;
+            int rate = 5;
             int amount = entity.HPRegenerationAmount;
 
             if (entity.RegenerationTick <= 0)
@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.Event.Module
         private void HandleFPRegenerationTick(NWPlayer oPC, Data.Entity.Player entity)
         {
             entity.CurrentFPTick = entity.CurrentFPTick - 1;
-            int rate = 20;
+            int rate = 5;
             int amount = 1;
 
             if (entity.CurrentFPTick <= 0)

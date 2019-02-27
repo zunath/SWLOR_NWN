@@ -447,6 +447,9 @@
     <Compile Include="Enumeration\PerkType.cs" />
     <Compile Include="Enumeration\QuestType.cs" />
     <Compile Include="NWNX\Contracts\INWNXVisibility.cs" />
+    <Compile Include="NWNX\Contracts\INWNXItemProperty.cs" />
+    <Compile Include="NWNX\ItemPropertyUnpacked.cs" />
+    <Compile Include="NWNX\NWNXItemProperty.cs" />
     <Compile Include="NWNX\NWNXVisibility.cs" />
     <Compile Include="NWNX\QuickBarSlotType.cs" />
     <Compile Include="Enumeration\ResistanceType.cs" />
@@ -1015,7 +1018,8 @@
     <Compile Include="Perk\Weapons\ImprovedCritical.cs" />
     <Compile Include="Perk\Engineering\SpeedyEngineering.cs" />
     <Compile Include="Perk\Engineering\EngineeringBlueprints.cs" />
-    <Compile Include="Placeable\AtomicReassembler\OnUsed.cs" />
+    <Compile Include="Placeable\AtomicReassembler\OnDisturbed.cs" />
+    <Compile Include="Placeable\AtomicReassembler\OnOpened.cs" />
     <Compile Include="Placeable\Bank\OnClosed.cs" />
     <Compile Include="Placeable\ControlTower\OnClicked.cs" />
     <Compile Include="Placeable\ControlTower\OnDamaged.cs" />

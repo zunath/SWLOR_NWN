@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Service
         private readonly INWNXPlayer _nwnxPlayer;
         private readonly INWNXEvents _nwnxEvents;
         private readonly INWNXChat _nwnxChat;
+        private readonly ISerializationService _serialization;
 
         public CraftService(
             INWScript script,
@@ -35,7 +36,8 @@ namespace SWLOR.Game.Server.Service
             IColorTokenService color,
             INWNXPlayer nwnxPlayer,
             INWNXEvents nwnxEvents,
-            INWNXChat nwnxChat)
+            INWNXChat nwnxChat,
+            ISerializationService serialization)
         {
             _ = script;
             _data = data;
@@ -44,6 +46,7 @@ namespace SWLOR.Game.Server.Service
             _nwnxPlayer = nwnxPlayer;
             _nwnxEvents = nwnxEvents;
             _nwnxChat = nwnxChat;
+            _serialization = serialization;
         }
 
         private const float BaseCraftDelay = 18.0f;
@@ -542,6 +545,11 @@ namespace SWLOR.Game.Server.Service
                 if (!destroyComponents)
                     _.CopyItem(item.Object, player.Object, TRUE);
                 item.Destroy();
+            }
+
+            if (!string.IsNullOrWhiteSpace(model.SerializedSalvageItem))
+            {
+                _serialization.DeserializeItem(model.SerializedSalvageItem, player);
             }
 
             player.Data.Remove("CRAFTING_MODEL");

@@ -65,7 +65,6 @@ namespace SWLOR.Game.Server.ValueObject
                                     && TertiaryComponents.Count >= TertiaryMinimum;
         
         // Atomic Reassembly properties
-        public bool IsReturningFromPickingSalvageItem { get; set; }
         public int SalvageComponentTypeID { get; set; }
         public string SerializedSalvageItem { get; set; }
 

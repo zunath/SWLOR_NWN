@@ -104,29 +104,75 @@ namespace SWLOR.Game.Server.Conversation
                 {
                     // Get the amount of Attack Bonus
                     int amount = _.GetItemPropertyCostTableValue(prop);
-                    header += ProcessPropertyDetails(amount, "Attack Bonus");
+                    header += ProcessPropertyDetails(amount, componentType.Name, "Attack Bonus", 3);
                 }
             }
-            
+
+            // Now check specific custom properties which are stored as local variables on the item.
+            header += ProcessPropertyDetails(item.CustomAC, componentType.Name, "AC", 3);
+            header += ProcessPropertyDetails(item.HarvestingBonus, componentType.Name, "Harvesting Bonus", 3);
+            header += ProcessPropertyDetails(item.PilotingBonus, componentType.Name, "Piloting Bonus", 3);
+            header += ProcessPropertyDetails(item.ScanningBonus, componentType.Name, "Scanning Bonus", 3);
+            header += ProcessPropertyDetails(item.ScavengingBonus, componentType.Name, "Scavenging Bonus", 3);
+            header += ProcessPropertyDetails(item.CastingSpeed, componentType.Name, "Activation Speed", 3);
+            header += ProcessPropertyDetails(item.CraftBonusArmorsmith, componentType.Name, "Armorsmith", 3);
+            header += ProcessPropertyDetails(item.CraftBonusWeaponsmith, componentType.Name, "Weaponsmith", 3);
+            header += ProcessPropertyDetails(item.CraftBonusCooking, componentType.Name, "Cooking", 3);
+            header += ProcessPropertyDetails(item.CraftBonusEngineering, componentType.Name, "Engineering", 3);
+            header += ProcessPropertyDetails(item.CraftBonusFabrication, componentType.Name, "Fabrication", 3);
+            header += ProcessPropertyDetails(item.HPBonus, componentType.Name, "HP", 3, 0.5f);
+            header += ProcessPropertyDetails(item.FPBonus, componentType.Name, "FP", 3, 0.5f);
+            header += ProcessPropertyDetails(item.EnmityRate, componentType.Name, "Enmity", 3);
+            header += ProcessPropertyDetails(item.ForcePotencyBonus, componentType.Name, "Force Potency", 3);
+            header += ProcessPropertyDetails(item.ForceAccuracyBonus, componentType.Name, "Force Accuracy", 3);
+            header += ProcessPropertyDetails(item.ForceDefenseBonus, componentType.Name, "Force Defense", 3);
+            header += ProcessPropertyDetails(item.ElectricalPotencyBonus, componentType.Name, "Electrical Potency", 3);
+            header += ProcessPropertyDetails(item.MindPotencyBonus, componentType.Name, "Mind Potency", 3);
+            header += ProcessPropertyDetails(item.LightPotencyBonus, componentType.Name, "Light Potency", 3);
+            header += ProcessPropertyDetails(item.DarkPotencyBonus, componentType.Name, "Dark Potency", 3);
+            header += ProcessPropertyDetails(item.ElectricalDefenseBonus, componentType.Name, "Electrical Defense", 3);
+            header += ProcessPropertyDetails(item.MindDefenseBonus, componentType.Name, "Mind Defense", 3);
+            header += ProcessPropertyDetails(item.LightDefenseBonus, componentType.Name, "Light Defense", 3);
+            header += ProcessPropertyDetails(item.DarkDefenseBonus, componentType.Name, "Dark Defense", 3);
+            header += ProcessPropertyDetails(item.LuckBonus, componentType.Name, "Luck", 3);
+            header += ProcessPropertyDetails(item.MeditateBonus, componentType.Name, "Meditate", 3);
+            header += ProcessPropertyDetails(item.RestBonus, componentType.Name, "Rest", 3);
+            header += ProcessPropertyDetails(item.MedicineBonus, componentType.Name, "Medicine", 3);
+            header += ProcessPropertyDetails(item.HPRegenBonus, componentType.Name, "HP Regen", 3);
+            header += ProcessPropertyDetails(item.FPRegenBonus, componentType.Name, "FP Regen", 3);
+            header += ProcessPropertyDetails(item.BaseAttackBonus, componentType.Name, "BAB", 3);
+            header += ProcessPropertyDetails(item.StructureBonus, componentType.Name, "Structure Bonus", 3);
+            header += ProcessPropertyDetails(item.SneakAttackBonus, componentType.Name, "Sneak Attack", 3);
+            header += ProcessPropertyDetails(item.DamageBonus, componentType.Name, "Damage", 3);
+            header += ProcessPropertyDetails(item.StrengthBonus, componentType.Name, "STR", 3);
+            header += ProcessPropertyDetails(item.DexterityBonus, componentType.Name, "DEX", 3);
+            header += ProcessPropertyDetails(item.ConstitutionBonus, componentType.Name, "CON", 3);
+            header += ProcessPropertyDetails(item.WisdomBonus, componentType.Name, "WIS", 3);
+            header += ProcessPropertyDetails(item.IntelligenceBonus, componentType.Name, "INT", 3);
+            header += ProcessPropertyDetails(item.CharismaBonus, componentType.Name, "CHA", 3);
+            header += ProcessPropertyDetails(item.DurationBonus, componentType.Name, "Duration", 3);
+
             SetPageHeader("SalvagePage", header);
 
             // Remove the temporary copy from the game world.
             item.Destroy();
         }
 
-        private string ProcessPropertyDetails(int amount, string propertyName)
+        private string ProcessPropertyDetails(int amount, string componentName, string propertyName, int maxBonuses, float levelsPerBonus = 1.0f)
         {
             string result = string.Empty;
             while (amount > 0)
             {
-                if (amount >= 3)
+                if (amount >= maxBonuses)
                 {
-                    result += "+3 " + propertyName + "\n";
-                    amount -= 3;
+                    int levelIncrease = (int)(maxBonuses / levelsPerBonus);
+                    result += componentName + " (+" + maxBonuses + " " + propertyName + ") [RL: " + levelIncrease + "]\n";
+                    amount -= maxBonuses;
                 }
                 else
                 {
-                    result += "+" + amount + " " + propertyName + "\n";
+                    int levelIncrease = (int)(amount / levelsPerBonus);
+                    result += componentName + " (+" + amount + " " + propertyName + ") [RL: " + levelIncrease + "]\n";
                     break;
                 }
             }

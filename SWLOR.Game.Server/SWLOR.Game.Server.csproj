@@ -885,6 +885,7 @@
     <Compile Include="Perk\Blaster\Tranquilizer.cs" />
     <Compile Include="Perk\Cooking\CookingEfficiency.cs" />
     <Compile Include="Perk\Cooking\CookingOptimization.cs" />
+    <Compile Include="Perk\Engineering\StronidiumRefining.cs" />
     <Compile Include="Perk\ForceUtility\Chainspell.cs" />
     <Compile Include="Perk\ForceCombat\DrainLife.cs" />
     <Compile Include="Perk\ForceCombat\ForceLightning.cs" />
@@ -900,6 +901,7 @@
     <Compile Include="Perk\Fabrication\FabricationOptimization.cs" />
     <Compile Include="Perk\Fabrication\SpeedyFabrication.cs" />
     <Compile Include="Perk\General\Dash.cs" />
+    <Compile Include="Perk\Harvesting\SpeedyReassembly.cs" />
     <Compile Include="Perk\Lightsaber\DeflectBlasterFire.cs" />
     <Compile Include="Perk\Lightsaber\DualWielding.cs" />
     <Compile Include="Perk\Lightsaber\SaberstaffMastery.cs" />
@@ -1020,6 +1022,7 @@
     <Compile Include="Perk\Engineering\EngineeringBlueprints.cs" />
     <Compile Include="Placeable\AtomicReassembler\OnDisturbed.cs" />
     <Compile Include="Placeable\AtomicReassembler\OnOpened.cs" />
+    <Compile Include="Placeable\AtomicReassembler\ReassembleComplete.cs" />
     <Compile Include="Placeable\Bank\OnClosed.cs" />
     <Compile Include="Placeable\ControlTower\OnClicked.cs" />
     <Compile Include="Placeable\ControlTower\OnDamaged.cs" />
@@ -2224,7 +2227,7 @@
     <EmbeddedResource Include="Data\Migrations\2019-02-21.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-23.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-23.2.sql" />
-    <EmbeddedResource Include="Data\Migrations\2019-02-26.2.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-02-27.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-26.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-27.1.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />

@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.ValueObject
         // Atomic Reassembly properties
         public int SalvageComponentTypeID { get; set; }
         public string SerializedSalvageItem { get; set; }
-
+        public bool IsConfirmingReassemble { get; set; }
 
         public PCCraftingData()
         {

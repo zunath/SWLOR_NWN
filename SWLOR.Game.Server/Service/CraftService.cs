@@ -219,8 +219,7 @@ namespace SWLOR.Game.Server.Service
 
             oPC.IsBusy = true;
 
-            int atmosphere = CalculateAreaAtmosphereBonus(oPC.Area);
-            float modifiedCraftDelay = CalculateCraftingDelay(oPC, blueprint.SkillID, atmosphere);
+            float modifiedCraftDelay = CalculateCraftingDelay(oPC, blueprint.SkillID);
             oPC.AssignCommand(() =>
             {
                 _.ClearAllActions();
@@ -242,8 +241,9 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        private float CalculateCraftingDelay(NWPlayer oPC, int skillID, int atmosphere)
+        public float CalculateCraftingDelay(NWPlayer oPC, int skillID)
         {
+            int atmosphere = CalculateAreaAtmosphereBonus(oPC.Area);
             PerkType perkType;
             float adjustedSpeed = 1.0f;
             SkillType skillType = (SkillType)skillID;
@@ -255,6 +255,7 @@ namespace SWLOR.Game.Server.Service
             else if (skillType == SkillType.Engineering) perkType = PerkType.SpeedyEngineering;
             else if (skillType == SkillType.Fabrication) perkType = PerkType.SpeedyFabrication;
             else if (skillType == SkillType.Medicine) perkType = PerkType.SpeedyMedicine;
+            else if (skillType == SkillType.Harvesting) perkType = PerkType.SpeedyReassembly;
             else return BaseCraftDelay;
 
             int perkLevel = _perk.GetPCPerkLevel(oPC, perkType);

@@ -1,10 +1,13 @@
 ﻿using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.Placeable.AtomicReassembler;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static NWN.NWScript;
+using ComponentType = SWLOR.Game.Server.Data.Entity.ComponentType;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -14,6 +17,7 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IDataService _data;
         private readonly ICraftService _craft;
         private readonly ISerializationService _serialization;
+        private readonly INWNXPlayer _nwnxPlayer;
 
         public AtomicReassembly(
             INWScript script, 
@@ -21,20 +25,23 @@ namespace SWLOR.Game.Server.Conversation
             IColorTokenService color,
             IDataService data,
             ICraftService craft,
-            ISerializationService serialization) 
+            ISerializationService serialization,
+            INWNXPlayer nwnxPlayer) 
             : base(script, dialog)
         {
             _color = color;
             _data = data;
             _craft = craft;
             _serialization = serialization;
+            _nwnxPlayer = nwnxPlayer;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
             DialogPage mainPage = new DialogPage(); // Dynamically built
-            DialogPage salvagePage = new DialogPage(); // Dynamically built
+            DialogPage salvagePage = new DialogPage("<SET LATER>",
+                "Reassemble Component(s)"); 
             
             dialog.AddPage("MainPage", mainPage);
             dialog.AddPage("SalvagePage", salvagePage);
@@ -120,8 +127,8 @@ namespace SWLOR.Game.Server.Conversation
             header += ProcessPropertyDetails(item.CraftBonusCooking, componentType.Name, "Cooking", 3);
             header += ProcessPropertyDetails(item.CraftBonusEngineering, componentType.Name, "Engineering", 3);
             header += ProcessPropertyDetails(item.CraftBonusFabrication, componentType.Name, "Fabrication", 3);
-            header += ProcessPropertyDetails(item.HPBonus, componentType.Name, "HP", 3, 0.5f);
-            header += ProcessPropertyDetails(item.FPBonus, componentType.Name, "FP", 3, 0.5f);
+            header += ProcessPropertyDetails(item.HPBonus, componentType.Name, "HP", 5, 0.5f);
+            header += ProcessPropertyDetails(item.FPBonus, componentType.Name, "FP", 5, 0.5f);
             header += ProcessPropertyDetails(item.EnmityRate, componentType.Name, "Enmity", 3);
             header += ProcessPropertyDetails(item.ForcePotencyBonus, componentType.Name, "Force Potency", 3);
             header += ProcessPropertyDetails(item.ForceAccuracyBonus, componentType.Name, "Force Accuracy", 3);
@@ -182,11 +189,55 @@ namespace SWLOR.Game.Server.Conversation
 
         private void SalvagePageResponses(int responseID)
         {
+            var player = GetPC();
+            var model = _craft.GetPlayerCraftingData(player);
 
+            switch (responseID)
+            {
+                case 1: // Reassemble Component(s)
+                    if (model.IsConfirmingReassemble)
+                    {
+                        // Calculate delay, fire off delayed event, and show timing bar.
+                        float delay = _craft.CalculateCraftingDelay(player, (int) SkillType.Harvesting);
+                        _nwnxPlayer.StartGuiTimingBar(player, delay, string.Empty);
+                        player.DelayEvent<ReassembleComplete>(delay, model.SerializedSalvageItem);
+
+                        // Make the player play an animation.
+                        player.AssignCommand(() =>
+                        {
+                            _.ClearAllActions();
+                            _.ActionPlayAnimation(ANIMATION_LOOPING_GET_MID, 1.0f, delay);
+                        });
+
+                        // Show sparks halfway through the process.
+                        _.DelayCommand(1.0f * (delay / 2.0f), () =>
+                        {
+                            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_COM_BLOOD_SPARK_MEDIUM), Object.OBJECT_SELF);
+                        });
+                        
+                        // Immobilize the player while crafting.
+                        Effect immobilize = _.EffectCutsceneImmobilize();
+                        immobilize = _.TagEffect(immobilize, "CRAFTING_IMMOBILIZATION");
+                        _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, immobilize, player);
+
+                        // Clear the temporary crafting data and end this conversation.
+                        model.SerializedSalvageItem = string.Empty;
+                        EndConversation();
+                    }
+                    else
+                    {
+                        model.IsConfirmingReassemble = true;
+                        SetResponseText("SalvagePage", 1, "CONFIRM REASSEMBLE COMPONENT(S)");
+                    }
+                    break;
+            }
         }
 
         public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
         {
+            var model = _craft.GetPlayerCraftingData(player);
+            model.IsConfirmingReassemble = false;
+            SetResponseText("SalvagePage", 1, "Reassemble Component(s)");
         }
 
         public override void EndDialog()
@@ -194,10 +245,5 @@ namespace SWLOR.Game.Server.Conversation
             var player = GetPC();
             _craft.ClearPlayerCraftingData(player);
         }
-
-
-
-
-
     }
 }

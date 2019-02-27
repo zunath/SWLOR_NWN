@@ -29,5 +29,6 @@ namespace SWLOR.Game.Server.Service.Contracts
         int CalculateAreaAtmosphereBonus(NWArea area);
         string GetAreaAtmosphereBonusText(NWArea area);
         void OnAreaEnter();
+        float CalculateCraftingDelay(NWPlayer oPC, int skillID);
     }
 }

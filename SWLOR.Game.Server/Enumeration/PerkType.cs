@@ -8,7 +8,7 @@
         ForceBreach = 3,
         ForceLightning = 4,
         ForceHeal = 5,
-        // 6 is open
+        SpeedyReassembly = 6,
         Rest = 7,
         StimFiend = 8,
         MedicalBlueprints = 9,

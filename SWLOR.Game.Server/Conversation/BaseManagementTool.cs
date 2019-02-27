@@ -733,12 +733,20 @@ namespace SWLOR.Game.Server.Conversation
                     impoundedCount++;
                 }
                 
+                // Remove any primary owner permissions.
                 var primaryOwner = _data.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseStructureID == structure.ID);
                 if (primaryOwner != null)
                 {
                     primaryOwner.PrimaryResidencePCBaseStructureID = null;
                     _data.SubmitDataChange(primaryOwner, DatabaseActionType.Update);
                 }
+
+                // Remove any access permissions.
+                foreach (var buildingPermission in _data.Where<PCBaseStructurePermission>(x => x.PCBaseStructureID == structure.ID))
+                {
+                    _data.SubmitDataChange(buildingPermission, DatabaseActionType.Delete);
+                }
+
             }
             else if (structureType == BaseStructureType.StarshipProduction && data.ManipulatingStructure.Structure.GetLocalInt("DOCKED_STARSHIP") == 1)
             {

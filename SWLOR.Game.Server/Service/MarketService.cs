@@ -231,7 +231,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Check for Scanners
-            if (item.GetLocalString("SCRIPT") == "MineralScanner")
+            if (item.GetLocalString("SCRIPT") == "ResourceScanner" ||
+                item.GetLocalString("SCRIPT") == "MineralScanner")
                 return 31;
             // Check for Harvesters
             if (item.GetLocalString("SCRIPT") == "ResourceHarvester")

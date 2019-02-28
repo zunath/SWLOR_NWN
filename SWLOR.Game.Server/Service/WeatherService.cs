@@ -188,18 +188,30 @@ namespace SWLOR.Game.Server.Service
                 climate.special_warm_windy = "The hot wind wears at your face like a sandblaster.  A sand storm seems likely.";
                 climate.special_windy = "A scouring wind sweeps across the desert, a sand storm cannot be far away.";
             }
-            else if (planetName == "Druzer IX")
+            else if (planetName == "Mon Cala")
             {
-                _error.Trace(TraceComponent.Weather, "Planet is Druxer IX.");
-                climate.Humidity_Modifier = -6;
-                climate.Wind_Modifier = +2;
+                _error.Trace(TraceComponent.Weather, "Planet is Mon Cala.");
+                climate.Humidity_Modifier = 0;
+                climate.Wind_Modifier = +1;
+                climate.Heat_Modifier = +1;
 
-                climate.Dust_Storm = true;
-
-                climate.special_scorching = "The hard-baked mud parches under the intense glare of the local sun.";
-                climate.special_cold_windy = "A chill wind sweeps over the land.";
-                climate.special_warm_windy = "The wind is strong and dusty. A dust storm may not be far away.";
-                climate.special_windy = "A scouring wind sweeps across the planet surface, a dust storm cannot be far away.";
+                climate.special_cloudy = "Clouds build over the ocean, and the wind starts to pick up.  A storm could be brewing.";
+                climate.special_cold_cloudy = "Thick clouds fill the sky, and a keen wind blows in off the ocean, exciting the waves.";
+                climate.special_cold_mild = "It is cool, but calm.  The ocean is calm and beautiful.";
+                climate.special_freezing = "A wave of cold air rolls in, stinging exposed flesh.";
+                climate.special_mild = "The sea is calm, a faint breeze rippling through the trees.";
+                climate.special_mild_night = "The sea is calm, and the sky towards the Galactic Core is full of stars.  In other directions, you see only a deep, unending black.";
+                climate.special_mist = "A mist has blown in off the sea, moisture hanging heavy in the air.";
+                climate.special_warm_cloudy = "The sea is choppy and the wind has picked up. An array of clouds marshals on the horizon, ready to sweep over you.";
+                climate.special_warm_mild = "It is a beautiful day, warm and calm, though quite humid.";
+                climate.special_rain_normal = "The ocean, affronted by the existence of patches of non-ocean on the surface of the planet, is attempting to reclaim the land by air drop.  In other words, it's raining.";
+                climate.special_rain_warm = "A heavy rain shower is passing over, but is doing little to dispel the humidity in the air.";
+                climate.special_snow = "It's snowing!  The local flora seems most surprised at this turn of events.";
+                climate.special_storm = "A storm rips in off the sea, filling the sky with dramatic flashes.";
+                climate.special_scorching = "The sun bakes the sand, making it extremely uncomfortable to those without insulated boots.";
+                climate.special_cold_windy = "A chill wind sweeps over the isles, the moisture in the air cutting to the bone.";
+                climate.special_warm_windy = "The wind is picking up, a warm front rolling over.  There could be a storm soon.";
+                climate.special_windy = "A strong wind sweeps in.  The sea is choppy, waves crashing onto the beach.";
             }
 
             return climate;
@@ -475,6 +487,7 @@ namespace SWLOR.Game.Server.Service
             bool bStormy = _.GetSkyBox(oArea) == NWScript.SKYBOX_GRASS_STORM;
             bool bIsPC  = (_.GetIsPC(oCreature) == 1);
             string sMessage = "";
+            PlanetaryClimate climate = _GetClimate(oArea);
 
             //--------------------------------------------------------------------------
             // Apply acid rain, if applicable.  Stolen shamelessly from the Melf's Acid
@@ -516,7 +529,7 @@ namespace SWLOR.Game.Server.Service
                 // Stormy weather
                 if (bStormy)
                 {
-                    sMessage = FB_T_WEATHER_MESSAGE_STORM;
+                    sMessage = string.IsNullOrWhiteSpace(climate.special_storm) ? FB_T_WEATHER_MESSAGE_STORM : climate.special_storm;
                 }
                 // Rain or mist
                 else if (nHumidity > 7 && nHeat > 3)
@@ -524,54 +537,54 @@ namespace SWLOR.Game.Server.Service
                     // Mist
                     if (nHeat < 6 && nWind < 3)
                     {
-                        sMessage = FB_T_WEATHER_MESSAGE_MIST;
+                        sMessage = string.IsNullOrWhiteSpace(climate.special_mist) ? FB_T_WEATHER_MESSAGE_MIST : climate.special_mist;
                     }
                     // Humid
                     else if (nHeat > 7)
                     {
-                        sMessage = FB_T_WEATHER_MESSAGE_RAIN_WARM;
+                        sMessage = string.IsNullOrWhiteSpace(climate.special_rain_warm) ? FB_T_WEATHER_MESSAGE_RAIN_WARM : climate.special_rain_warm;
                     }
                     else
                     {
-                        sMessage = FB_T_WEATHER_MESSAGE_RAIN_NORMAL;
+                        sMessage = string.IsNullOrWhiteSpace(climate.special_rain_normal) ? FB_T_WEATHER_MESSAGE_RAIN_NORMAL : climate.special_rain_normal;
                     }
                 }
                 // Snow
                 else if (nHumidity > 7)
                 {
-                    sMessage = FB_T_WEATHER_MESSAGE_SNOW;
+                    sMessage = string.IsNullOrWhiteSpace(climate.special_snow) ? FB_T_WEATHER_MESSAGE_SNOW : climate.special_snow;
                 }
                 // Freezing
                 else if (nHeat < 3)
                 {
-                    sMessage = FB_T_WEATHER_MESSAGE_FREEZING;
+                    sMessage = string.IsNullOrWhiteSpace(climate.special_freezing) ? FB_T_WEATHER_MESSAGE_FREEZING : climate.special_freezing;
                 }
                 // Boiling
                 else if (nHeat > 8)
                 {
-                    sMessage = FB_T_WEATHER_MESSAGE_SCORCHING;
+                    sMessage = string.IsNullOrWhiteSpace(climate.special_scorching) ? FB_T_WEATHER_MESSAGE_SCORCHING : climate.special_scorching;
                 }
                 // Cold
                 else if (nHeat < 5)
                 {
-                    if (nWind < 5) sMessage = FB_T_WEATHER_MESSAGE_COLD_MILD;
-                    else if (nWind < 8) sMessage = FB_T_WEATHER_MESSAGE_COLD_CLOUDY;
-                    else sMessage = FB_T_WEATHER_MESSAGE_COLD_WINDY;
+                    if (nWind < 5) sMessage = string.IsNullOrWhiteSpace(climate.special_cold_mild) ? FB_T_WEATHER_MESSAGE_COLD_MILD : climate.special_cold_mild;
+                    else if (nWind < 8) sMessage = string.IsNullOrWhiteSpace(climate.special_cold_cloudy) ? FB_T_WEATHER_MESSAGE_COLD_CLOUDY : climate.special_cold_cloudy;
+                    else sMessage = string.IsNullOrWhiteSpace(climate.special_cold_windy) ? FB_T_WEATHER_MESSAGE_COLD_WINDY : climate.special_cold_windy;
                 }
                 // Hot
                 else if (nHeat > 6)
                 {
-                    if (nWind < 5) sMessage = FB_T_WEATHER_MESSAGE_WARM_MILD;
-                    else if (nWind < 8) sMessage = FB_T_WEATHER_MESSAGE_WARM_CLOUDY;
-                    else sMessage = FB_T_WEATHER_MESSAGE_WARM_WINDY;
+                    if (nWind < 5) sMessage = string.IsNullOrWhiteSpace(climate.special_warm_mild) ? FB_T_WEATHER_MESSAGE_WARM_MILD : climate.special_warm_mild;
+                    else if (nWind < 8) sMessage = string.IsNullOrWhiteSpace(climate.special_warm_cloudy) ? FB_T_WEATHER_MESSAGE_WARM_CLOUDY : climate.special_warm_cloudy;
+                    else sMessage = string.IsNullOrWhiteSpace(climate.special_warm_windy) ? FB_T_WEATHER_MESSAGE_WARM_WINDY : climate.special_warm_windy;
                 }
                 else if (nWind < 5)
                 {
-                    if (_.GetIsNight() == 0) sMessage = FB_T_WEATHER_MESSAGE_MILD;
-                    else sMessage = FB_T_WEATHER_MESSAGE_MILD_NIGHT;
+                    if (_.GetIsNight() == 0) sMessage = string.IsNullOrWhiteSpace(climate.special_mild) ? FB_T_WEATHER_MESSAGE_MILD : climate.special_mild;
+                    else sMessage = string.IsNullOrWhiteSpace(climate.special_mild_night) ? FB_T_WEATHER_MESSAGE_MILD_NIGHT : climate.special_mild_night;
                 }
-                else if (nWind < 8) sMessage = FB_T_WEATHER_MESSAGE_CLOUDY;
-                else sMessage = FB_T_WEATHER_MESSAGE_WINDY;
+                else if (nWind < 8) sMessage = string.IsNullOrWhiteSpace(climate.special_cloudy) ? FB_T_WEATHER_MESSAGE_CLOUDY : climate.special_cloudy;
+                else sMessage = string.IsNullOrWhiteSpace(climate.special_windy) ? FB_T_WEATHER_MESSAGE_WINDY : climate.special_windy;
 
                 _.SendMessageToPC(oCreature, sMessage);
             }

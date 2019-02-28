@@ -13,6 +13,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static NWN.NWScript;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
@@ -242,7 +243,7 @@ namespace SWLOR.Game.Server.Service
                     stats.stealth = 0;
                     stats.scanning = 0;
                     stats.speed = 50;
-                    stats.stronidium = 600;
+                    stats.stronidium = 1000;
                     stats.scale = 4.0f;
                     stats.range = 20.0f;
                     break;
@@ -274,6 +275,26 @@ namespace SWLOR.Game.Server.Service
                     stats.stronidium = 400;
                     stats.scale = 4.0f;
                     stats.range = 15.0f;
+                    break;
+                case 2169: //star destroyer
+                    stats.weapons = 10;
+                    stats.shields = 10;
+                    stats.stealth = 0;
+                    stats.scanning = 0;
+                    stats.speed = 20;
+                    stats.stronidium = 10000;
+                    stats.scale = 4.0f;
+                    stats.range = 25.0f;
+                    break;
+                case 2170: //mon cala cruiser
+                    stats.weapons = 10;
+                    stats.shields = 10;
+                    stats.stealth = 0;
+                    stats.scanning = 0;
+                    stats.speed = 20;
+                    stats.stronidium = 10000;
+                    stats.scale = 4.0f;
+                    stats.range = 25.0f;
                     break;
             }
 
@@ -492,6 +513,8 @@ namespace SWLOR.Game.Server.Service
                 return (int) Planet.Viscara;
             if (planet == "Tattooine")
                 return (int) Planet.Tattooine;
+            if (planet == "Mon Cala")
+                return (int)Planet.MonCala;
 
             return 0;
         }
@@ -502,6 +525,7 @@ namespace SWLOR.Game.Server.Service
             {
                 case (int)Planet.Viscara: return "Viscara";
                 case (int)Planet.Tattooine: return "Tattooine";
+                case (int)Planet.MonCala: return "Mon Cala";
                 default: return "";
             }
         }
@@ -523,6 +547,7 @@ namespace SWLOR.Game.Server.Service
 
             if (((int)destinations & (int)Planet.Viscara) == (int)Planet.Viscara && PlanetToDestination(planet) != (int)Planet.Viscara) list.Add(DestinationToPlanet((int)Planet.Viscara));
             if (((int)destinations & (int)Planet.Tattooine) == (int)Planet.Tattooine && PlanetToDestination(planet) != (int)Planet.Tattooine) list.Add(DestinationToPlanet((int)Planet.Tattooine));
+            if (((int)destinations & (int)Planet.MonCala) == (int)Planet.MonCala && PlanetToDestination(planet) != (int)Planet.MonCala) list.Add(DestinationToPlanet((int)Planet.MonCala));
 
             return list.ToArray();
         }
@@ -658,7 +683,8 @@ namespace SWLOR.Game.Server.Service
             if (location == null)
             {
                 string planet = GetPlanetFromLocation(shipBase.ShipLocation);
-                NWObject waypoint = _.GetObjectByTag(planet + "_Orbit");
+                // Planet names may have spaces in them - so remove any spaces before looking for the tag.
+                NWObject waypoint = _.GetObjectByTag(Regex.Replace(planet, @"\s+", "") + "_Orbit");
                 _error.Trace(TraceComponent.Space, "Found space waypoint " + waypoint.Name + " in " + waypoint.Area.Name);
 
                 if (!waypoint.IsValid)
@@ -710,7 +736,7 @@ namespace SWLOR.Game.Server.Service
             string planet = GetPlanetFromLocation(shipBase.ShipLocation);
 
             NWCreature shipCreature = ship.GetLocalObject("CREATURE");
-            NWObject waypoint = _.GetObjectByTag(planet + "_Orbit");
+            NWObject waypoint = _.GetObjectByTag(Regex.Replace(planet, @"\s+", "") + "_Orbit");
 
             if (!shipCreature.IsValid || !waypoint.IsValid || _.GetDistanceBetween(shipCreature, waypoint) < 10.0f)
             {
@@ -1458,8 +1484,10 @@ namespace SWLOR.Game.Server.Service
                 shape = SHAPE_SPHERE;
                 targetLocation = creature.Location;
 
-                // TODO: increase range by gunner's perk level.
-                range += _perk.GetPCPerkLevel(area.GetLocalObject("GUNNER"), PerkType.Sniper);
+                if (area.IsValid && ((NWObject)area.GetLocalObject("GUNNER")).IsValid)
+                {
+                    range += _perk.GetPCPerkLevel(area.GetLocalObject("GUNNER"), PerkType.Sniper);
+                }
             }
 
             NWCreature target = _.GetFirstObjectInShape(shape, range, targetLocation, TRUE, OBJECT_TYPE_CREATURE, creature.Position);
@@ -1562,7 +1590,16 @@ namespace SWLOR.Game.Server.Service
                 _biowarePos.GetChangedPosition(creature.Position, 25.0f, creature.Facing),
                 creature.Facing + 180.0f);
 
-            NWCreature enemy = _.GetFirstObjectInShape(SHAPE_SPELLCONE, 25.0f, targetLocation, 1, OBJECT_TYPE_CREATURE);
+            int shape = SHAPE_SPELLCONE;           
+
+            bool hasGunner = creature.GetLocalInt("HAS_GUNNER") == 1;
+            if (hasGunner)
+            {
+                shape = SHAPE_SPHERE;
+                targetLocation = creature.Location;
+            }
+
+            NWCreature enemy = _.GetFirstObjectInShape(shape, 25.0f, targetLocation, 1, OBJECT_TYPE_CREATURE);
 
             while (enemy.IsValid)
             {
@@ -1572,7 +1609,7 @@ namespace SWLOR.Game.Server.Service
                     return true;
                 }
 
-                enemy = _.GetNextObjectInShape(SHAPE_SPELLCONE, 25.0f, targetLocation, 1, OBJECT_TYPE_CREATURE);
+                enemy = _.GetNextObjectInShape(shape, 25.0f, targetLocation, 1, OBJECT_TYPE_CREATURE);
             }
 
             enemy = _.GetNearestCreature(CREATURE_TYPE_REPUTATION, REPUTATION_TYPE_ENEMY, creature);

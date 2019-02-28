@@ -13,6 +13,6 @@
     {
         Viscara = 1,
         Tattooine = 2,
-        NextPlanet = 4
+        MonCala = 4
     }
 }

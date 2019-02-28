@@ -15,7 +15,6 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IBaseService _base;
         private readonly IBasePermissionService _perm;
         private readonly IColorTokenService _color;
-        private readonly IDeathService _death;
 
         public EditPrimaryResidence(
             INWScript script, 
@@ -23,15 +22,13 @@ namespace SWLOR.Game.Server.Conversation
             IDataService data,
             IBaseService @base,
             IBasePermissionService perm,
-            IColorTokenService color,
-            IDeathService death) 
+            IColorTokenService color) 
             : base(script, dialog)
         {
             _data = data;
             _base = @base;
             _perm = perm;
             _color = color;
-            _death = death;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -41,21 +38,17 @@ namespace SWLOR.Game.Server.Conversation
             DialogPage mainPage = new DialogPage(
                 string.Empty,
                 "Select as my primary residence",                                 
-                "Revoke primary residence",
-                "Set as respawn point.");
+                "Revoke primary residence");
 
             DialogPage revokePage = new DialogPage("Are you sure you want to revoke the current resident's residency?",
                 "Yes, revoke their residency");
 
             DialogPage setAsResidence = new DialogPage("Are you sure you want to claim this building as your primary residence?\n\nThe current resident's residency will be revoked.",
                 "Yes, set as my primary residence");
-            DialogPage setRespawnPoint = new DialogPage("Are you sure you want to set this residence as your respawn point? You will spawn here once you die.",
-                "Yes, I would like to respawn here from now on.");
-
+            
             dialog.AddPage("MainPage", mainPage);
             dialog.AddPage("RevokePage", revokePage);
             dialog.AddPage("SetAsResidencePage", setAsResidence);
-            dialog.AddPage("SetRespawnPoint", setRespawnPoint);
             return dialog;
         }
 
@@ -157,9 +150,6 @@ namespace SWLOR.Game.Server.Conversation
                 case "SetAsResidencePage":
                     SetAsResidenceResponses(responseID);
                     break;
-                case "SetRespawnPoint":
-                    SetRespawnPointResponses(responseID);
-                    break;
             }
         }
 
@@ -176,9 +166,6 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case 2: // Revoke Primary Residence
                     ChangePage("RevokePage");
-                    break;
-                case 3: // Set as Respawn Point
-                    ChangePage("SetRespawnPoint");
                     break;
             }
         }
@@ -201,18 +188,6 @@ namespace SWLOR.Game.Server.Conversation
                     DoRevoke();
                     break;
             }
-        }
-        private void SetRespawnPointResponses(int responseID)
-        {
-            switch (responseID)
-            {
-                case 1:
-                    DoSetRespawnPoint();
-                    break;
-            }
-
-
-
         }
         private void DoSetAsResidence()
         {
@@ -285,17 +260,7 @@ namespace SWLOR.Game.Server.Conversation
             ClearNavigationStack();
             ChangePage("MainPage", false);
         }
-        private void DoSetRespawnPoint()
-        {
-            var player = GetPC();
-            var data = _base.GetPlayerTempData(player);
-            var newResident = _data.Single<Player>(x => x.ID == player.GlobalID);
-            _death.SetRespawnLocation(player);
-            BuildMainPageHeader();
-            BuildMainPageResponses();
-            ClearNavigationStack();
-            ChangePage("MainPage", false);
-        }
+
         private void DoRevoke()
         {
             var data = _base.GetPlayerTempData(GetPC());

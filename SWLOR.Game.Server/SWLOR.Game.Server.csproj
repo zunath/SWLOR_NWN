@@ -71,10 +71,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AI\AIComponent\AILinking.cs" />
+    <Compile Include="AI\AIComponent\ForceAttackHighestEnmity.cs" />
     <Compile Include="AI\AIComponent\WarpToTargetIfStuck.cs" />
     <Compile Include="AI\PackAggroBehaviour.cs" />
     <Compile Include="AI\SoundAggroBehaviour.cs" />
     <Compile Include="AI\SoundAggroRandomWalkBehaviour.cs" />
+    <Compile Include="AI\DarkForceUser.cs" />
     <Compile Include="AI\StarshipBehaviour.cs" />
     <Compile Include="App.cs" />
     <Compile Include="AppCache.cs" />
@@ -2228,6 +2230,7 @@
     <EmbeddedResource Include="Data\Migrations\2019-02-23.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-23.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-27.2.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-02-23.3.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-26.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-27.1.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />

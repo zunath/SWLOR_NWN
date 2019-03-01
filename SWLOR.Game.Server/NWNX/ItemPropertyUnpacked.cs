@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using NWN;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.NWNX
 {
@@ -16,5 +17,11 @@ namespace SWLOR.Game.Server.NWNX
         public int SpellID { get; set; }
         public NWObject Creator { get; set; }
         public string Tag { get; set; }
+
+        public ItemPropertyUnpacked()
+        {
+            Creator = new NWObject(Object.OBJECT_INVALID);
+            Tag = string.Empty;
+        }
     }
 }

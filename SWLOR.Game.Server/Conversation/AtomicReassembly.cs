@@ -200,7 +200,7 @@ namespace SWLOR.Game.Server.Conversation
                         // Calculate delay, fire off delayed event, and show timing bar.
                         float delay = _craft.CalculateCraftingDelay(player, (int) SkillType.Harvesting);
                         _nwnxPlayer.StartGuiTimingBar(player, delay, string.Empty);
-                        player.DelayEvent<ReassembleComplete>(delay, model.SerializedSalvageItem);
+                        player.DelayEvent<ReassembleComplete>(delay, player, model.SerializedSalvageItem, model.SalvageComponentTypeID);
 
                         // Make the player play an animation.
                         player.AssignCommand(() =>

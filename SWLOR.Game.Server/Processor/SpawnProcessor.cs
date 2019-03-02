@@ -136,6 +136,11 @@ namespace SWLOR.Game.Server.Processor
                     {
                         spawn.SpawnRule = dbSpawn.SpawnRule;
                     }
+                    else
+                    {
+                        // Clear the saved spawn rule since we now have a new resref etc.
+                        spawn.SpawnRule = null;
+                    }
                 }
 
                 if (location == null)

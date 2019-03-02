@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Service
                             if (!string.IsNullOrWhiteSpace(dbSpawn.BehaviourScript))
                                 behaviourScript = dbSpawn.BehaviourScript;
 
-                            if (!string.IsNullOrWhiteSpace(spawnRule))
+                            if (!string.IsNullOrWhiteSpace(dbSpawn.SpawnRule))
                                 spawnRule = dbSpawn.SpawnRule;
 
                             if (deathVFXID <= 0)
@@ -155,9 +155,7 @@ namespace SWLOR.Game.Server.Service
                         else if (objectType == OBJECT_TYPE_PLACEABLE)
                         {
                             areaSpawn.Placeables.Add(newSpawn);
-                        }
-                        
-
+                        }                      
                     }
                 }
 

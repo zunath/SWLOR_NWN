@@ -275,3 +275,88 @@ VALUES ( @PerkLevelID , -- PerkLevelID - int
          10 , -- SkillID - int
          100   -- RequiredRank - int
     )
+
+
+
+-- Add the assembly terminal to the structure and crafting lists.
+INSERT INTO dbo.BaseStructure ( ID ,
+                                BaseStructureTypeID ,
+                                Name ,
+                                PlaceableResref ,
+                                ItemResref ,
+                                IsActive ,
+                                Power ,
+                                CPU ,
+                                Durability ,
+                                Storage ,
+                                HasAtmosphere ,
+                                ReinforcedStorage ,
+                                RequiresBasePower ,
+                                ResourceStorage ,
+                                RetrievalRating ,
+                                FuelRating ,
+                                DefaultStructureModeID )
+VALUES ( 11 ,    -- ID - int
+         11 ,    -- BaseStructureTypeID - int
+         N'Atomic Reassembly Terminal' ,  -- Name - nvarchar(64)
+         N'atom_reass' ,  -- PlaceableResref - nvarchar(16)
+         N'furniture' ,  -- ItemResref - nvarchar(16)
+         1 , -- IsActive - bit
+         0.0 ,  -- Power - float
+         0.0 ,  -- CPU - float
+         0.0 ,  -- Durability - float
+         0 ,    -- Storage - int
+         0 , -- HasAtmosphere - bit
+         0 ,    -- ReinforcedStorage - int
+         1 , -- RequiresBasePower - bit
+         0 ,    -- ResourceStorage - int
+         0 ,    -- RetrievalRating - int
+         0 ,    -- FuelRating - int
+         0      -- DefaultStructureModeID - int
+    )
+
+INSERT INTO dbo.CraftBlueprint ( ID ,
+                                 CraftCategoryID ,
+                                 BaseLevel ,
+                                 ItemName ,
+                                 ItemResref ,
+                                 Quantity ,
+                                 SkillID ,
+                                 CraftDeviceID ,
+                                 PerkID ,
+                                 RequiredPerkLevel ,
+                                 IsActive ,
+                                 MainComponentTypeID ,
+                                 MainMinimum ,
+                                 SecondaryComponentTypeID ,
+                                 SecondaryMinimum ,
+                                 TertiaryComponentTypeID ,
+                                 TertiaryMinimum ,
+                                 EnhancementSlots ,
+                                 MainMaximum ,
+                                 SecondaryMaximum ,
+                                 TertiaryMaximum ,
+                                 BaseStructureID )
+VALUES ( 427 ,    -- ID - int
+         39 ,    -- CraftCategoryID - int
+         5 ,    -- BaseLevel - int
+         N'Atomic Reassembly Terminal' ,  -- ItemName - nvarchar(64)
+         N'furniture' ,  -- ItemResref - nvarchar(16)
+         1 ,    -- Quantity - int
+         15 ,    -- SkillID - int
+         5 ,    -- CraftDeviceID - int
+         2 ,    -- PerkID - int
+         3 ,    -- RequiredPerkLevel - int
+         1 , -- IsActive - bit
+         32 ,    -- MainComponentTypeID - int
+         5 ,    -- MainMinimum - int
+         43 ,    -- SecondaryComponentTypeID - int
+         1 ,    -- SecondaryMinimum - int
+         0 ,    -- TertiaryComponentTypeID - int
+         0 ,    -- TertiaryMinimum - int
+         0 ,    -- EnhancementSlots - int
+         5 ,    -- MainMaximum - int
+         1 ,    -- SecondaryMaximum - int
+         0 ,    -- TertiaryMaximum - int
+         11      -- BaseStructureID - int
+    )

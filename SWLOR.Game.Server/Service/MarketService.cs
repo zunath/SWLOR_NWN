@@ -203,7 +203,7 @@ namespace SWLOR.Game.Server.Service
                 case BASE_ITEM_KUKRI: return 18;
                 case BASE_ITEM_HALBERD: return 19;
                 case BASE_ITEM_SHORTSPEAR: return 20;
-                case BASE_ITEM_HEAVYCROSSBOW: return 21; // Blaster Rifles
+                case BASE_ITEM_LIGHTCROSSBOW: return 21; // Blaster Rifles
                 case BASE_ITEM_SHORTBOW: return 22; // Blaster Pistols
                 case BASE_ITEM_HELMET: return 23;
                 case BASE_ITEM_SMALLSHIELD: return 28; // Shields

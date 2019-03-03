@@ -52,6 +52,7 @@ SET ReassembledResref = 'ass_herb'
 WHERE ID = 48
 
 
+DECLARE @PerkLevelID INT 
 
 
 INSERT INTO dbo.Perk ( ID ,
@@ -84,7 +85,6 @@ VALUES ( 6 ,    -- ID - int
          NULL      -- CastAnimationID - int
     )
 
-DECLARE @PerkLevelID INT 
 INSERT INTO dbo.PerkLevel ( PerkID ,
                             Level ,
                             Price ,
@@ -393,7 +393,6 @@ VALUES ( 171 ,    -- ID - int
          NULL      -- CastAnimationID - int
     )
 
-DECLARE @PerkLevelID INT 
 INSERT INTO dbo.PerkLevel ( PerkID ,
                             Level ,
                             Price ,

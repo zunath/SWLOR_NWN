@@ -8,7 +8,7 @@
         ForceBreach = 3,
         ForceLightning = 4,
         ForceHeal = 5,
-        // 6 is open
+        SpeedyReassembly = 6,
         Rest = 7,
         StimFiend = 8,
         MedicalBlueprints = 9,
@@ -172,7 +172,8 @@
         CrackShot = 167,
         SystemsOptimization = 168,
         CombatRepair = 169,
-        CarefulPilot = 170
+        CarefulPilot = 170,
+        MolecularReassemblyProficiency = 171
     }
 
 }

@@ -248,6 +248,8 @@ namespace SWLOR.Game.Server.Conversation
                         _data.SubmitDataChange(post, DatabaseActionType.Insert);
                         _.TakeGoldFromCreature(price, player, TRUE);
 
+                        player.DeleteLocalInt("MESSAGE_BOARD_LISTENING");
+                        player.DeleteLocalString("MESSAGE_BOARD_TEXT");
                         LoadMainPage();
                         ClearNavigationStack();
                         ChangePage("MainPage", false);

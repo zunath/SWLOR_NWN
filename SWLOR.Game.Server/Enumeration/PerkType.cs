@@ -173,7 +173,7 @@
         SystemsOptimization = 168,
         CombatRepair = 169,
         CarefulPilot = 170,
-        AtomicReassemblyProficiency = 171
+        MolecularReassemblyProficiency = 171
     }
 
 }

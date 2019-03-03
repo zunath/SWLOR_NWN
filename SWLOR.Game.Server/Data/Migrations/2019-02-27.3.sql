@@ -298,7 +298,7 @@ INSERT INTO dbo.BaseStructure ( ID ,
                                 DefaultStructureModeID )
 VALUES ( 11 ,    -- ID - int
          11 ,    -- BaseStructureTypeID - int
-         N'Atomic Reassembly Terminal' ,  -- Name - nvarchar(64)
+         N'Molecular Reassembly Terminal' ,  -- Name - nvarchar(64)
          N'atom_reass' ,  -- PlaceableResref - nvarchar(16)
          N'furniture' ,  -- ItemResref - nvarchar(16)
          1 , -- IsActive - bit
@@ -340,7 +340,7 @@ INSERT INTO dbo.CraftBlueprint ( ID ,
 VALUES ( 427 ,    -- ID - int
          39 ,    -- CraftCategoryID - int
          5 ,    -- BaseLevel - int
-         N'Atomic Reassembly Terminal' ,  -- ItemName - nvarchar(64)
+         N'Molecular Reassembly Terminal' ,  -- ItemName - nvarchar(64)
          N'furniture' ,  -- ItemResref - nvarchar(16)
          1 ,    -- Quantity - int
          15 ,    -- SkillID - int
@@ -378,12 +378,12 @@ INSERT INTO dbo.Perk ( ID ,
                        EnmityAdjustmentRuleID ,
                        CastAnimationID )
 VALUES ( 171 ,    -- ID - int
-         'Atomic Reassembly Proficiency' ,   -- Name - varchar(64)
+         'Molecular Reassembly Proficiency' ,   -- Name - varchar(64)
          1 , -- IsActive - bit
-         'Harvesting.AtomicReassemblyProficiency' ,   -- ScriptName - varchar(64)
+         'Harvesting.MolecularReassemblyProficiency' ,   -- ScriptName - varchar(64)
          0 ,    -- BaseFPCost - int
          0.0 ,  -- BaseCastingTime - float
-         N'Improves your ability to reassemble components from fully-built equipment. Requires the use of an Atomic Reassembly Terminal.' ,  -- Description - nvarchar(256)
+         N'Improves your ability to reassemble components from fully-built equipment. Requires the use of an Molecular Reassembly Terminal.' ,  -- Description - nvarchar(256)
          34 ,    -- PerkCategoryID - int
          NULL ,    -- CooldownCategoryID - int
          0 ,    -- ExecutionTypeID - int

@@ -166,7 +166,7 @@
     <Compile Include="ChatCommand\Victory1.cs" />
     <Compile Include="ChatCommand\Victory2.cs" />
     <Compile Include="ChatCommand\Victory3.cs" />
-    <Compile Include="Conversation\AtomicReassembly.cs" />
+    <Compile Include="Conversation\MolecularReassembly.cs" />
     <Compile Include="Conversation\Jukebox.cs" />
     <Compile Include="Conversation\PublicStarport.cs" />
     <Compile Include="Conversation\ApartmentEntrance.cs" />
@@ -903,7 +903,7 @@
     <Compile Include="Perk\Fabrication\FabricationOptimization.cs" />
     <Compile Include="Perk\Fabrication\SpeedyFabrication.cs" />
     <Compile Include="Perk\General\Dash.cs" />
-    <Compile Include="Perk\Harvesting\AtomicReassemblyProficiency.cs" />
+    <Compile Include="Perk\Harvesting\MolecularReassemblyProficiency.cs" />
     <Compile Include="Perk\Harvesting\SpeedyReassembly.cs" />
     <Compile Include="Perk\Lightsaber\DeflectBlasterFire.cs" />
     <Compile Include="Perk\Lightsaber\DualWielding.cs" />
@@ -1023,9 +1023,9 @@
     <Compile Include="Perk\Weapons\ImprovedCritical.cs" />
     <Compile Include="Perk\Engineering\SpeedyEngineering.cs" />
     <Compile Include="Perk\Engineering\EngineeringBlueprints.cs" />
-    <Compile Include="Placeable\AtomicReassembler\OnDisturbed.cs" />
-    <Compile Include="Placeable\AtomicReassembler\OnOpened.cs" />
-    <Compile Include="Placeable\AtomicReassembler\ReassembleComplete.cs" />
+    <Compile Include="Placeable\MolecularReassembler\OnDisturbed.cs" />
+    <Compile Include="Placeable\MolecularReassembler\OnOpened.cs" />
+    <Compile Include="Placeable\MolecularReassembler\ReassembleComplete.cs" />
     <Compile Include="Placeable\Bank\OnClosed.cs" />
     <Compile Include="Placeable\ControlTower\OnClicked.cs" />
     <Compile Include="Placeable\ControlTower\OnDamaged.cs" />

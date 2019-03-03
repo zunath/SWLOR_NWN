@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.ValueObject
                                     && SecondaryComponents.Count >= SecondaryMinimum
                                     && TertiaryComponents.Count >= TertiaryMinimum;
         
-        // Atomic Reassembly properties
+        // Molecular Reassembly properties
         public int SalvageComponentTypeID { get; set; }
         public string SerializedSalvageItem { get; set; }
         public bool IsConfirmingReassemble { get; set; }

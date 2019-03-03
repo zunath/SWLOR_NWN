@@ -726,7 +726,7 @@ namespace SWLOR.Game.Server.Service
             const int BaseChance = 70;
             int harvesting = _skill.GetPCSkillRank(player, SkillType.Harvesting);
             var itemBonuses = _playerStat.GetPlayerItemEffectiveStats(player);
-            int perkLevel = _perk.GetPCPerkLevel(player, PerkType.AtomicReassemblyProficiency);
+            int perkLevel = _perk.GetPCPerkLevel(player, PerkType.MolecularReassemblyProficiency);
 
             // Calculate the base chance after factoring in skills, perks, and items.
             int categoryChance = (int) (BaseChance + (harvesting / 2.5f) + perkLevel * 10 + itemBonuses.Harvesting / 3f);

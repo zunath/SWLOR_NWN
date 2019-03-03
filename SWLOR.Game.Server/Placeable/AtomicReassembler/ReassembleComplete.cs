@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Placeable.AtomicReassembler
         {
             _player = (NWPlayer) args[0];
             _playerItemStats = _playerStat.GetPlayerItemEffectiveStats(_player);
-            int xp = 0;
+            int xp = 100; // Always grant at least this much XP to player.
 
             // Remove the immobilization effect
             foreach (var effect in _player.Effects)
@@ -79,6 +79,9 @@ namespace SWLOR.Game.Server.Placeable.AtomicReassembler
             NWItem item = _serialization.DeserializeItem(serializedSalvageItem, tempStorage);
             int salvageComponentTypeID = (int) args[2];
             _componentType = _data.Get<ComponentType>(salvageComponentTypeID);
+            
+            // Create an item with no bonuses every time.
+            _.CreateItemOnObject(_componentType.ReassembledResref, _player);
 
             // First check is for attack bonuses
             foreach (var prop in item.ItemProperties)
@@ -137,7 +140,7 @@ namespace SWLOR.Game.Server.Placeable.AtomicReassembler
             xp += ProcessProperty(item.IntelligenceBonus, 3, ComponentBonusType.IntelligenceUp);
             xp += ProcessProperty(item.CharismaBonus, 3, ComponentBonusType.CharismaUp);
             xp += ProcessProperty(item.DurationBonus, 3, ComponentBonusType.DurationUp);
-
+            
             item.Destroy();
 
             _skill.GiveSkillXP(_player, SkillType.Harvesting, xp);

@@ -102,7 +102,10 @@ namespace SWLOR.Game.Server.Conversation
             var componentType = _data.Get<ComponentType>(model.SalvageComponentTypeID);
             string header = _color.Green("Item: ") + item.Name + "\n\n";
             header += "Reassembling this item will create the following " + _color.Green(componentType.Name) + " component(s). Chance to create depends on your perks, skills, and harvesting bonus on items.\n\n";
-            
+
+            // Always create one item with zero bonuses.
+            header += componentType.Name + " (No Bonuses) [RL: 0] " + GetChanceColor(100) + "\n";
+
             // Start by checking attack bonus since we're not storing this value as a local variable on the item.
             foreach (var prop in item.ItemProperties)
             {
@@ -158,6 +161,7 @@ namespace SWLOR.Game.Server.Conversation
             header += ProcessPropertyDetails(item.IntelligenceBonus, componentType.Name, "INT", 3);
             header += ProcessPropertyDetails(item.CharismaBonus, componentType.Name, "CHA", 3);
             header += ProcessPropertyDetails(item.DurationBonus, componentType.Name, "Duration", 3);
+
 
             SetPageHeader("SalvagePage", header);
 

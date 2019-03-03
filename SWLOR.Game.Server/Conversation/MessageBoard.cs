@@ -81,11 +81,12 @@ namespace SWLOR.Game.Server.Conversation
             NWPlaceable terminal = Object.OBJECT_SELF;
             DateTime now = DateTime.UtcNow;
             Guid boardID = new Guid(terminal.GetLocalString("MESSAGE_BOARD_ID"));
+            bool isDM = player.IsDM;
             var messages = _data.Where<Message>(x => x.BoardID == boardID && x.DateExpires > now && x.DateRemoved == null)
                 .OrderByDescending(o => o.DatePosted);
 
             ClearPageResponses("MainPage");
-            AddResponseToPage("MainPage", _color.Green("Create New Post"));
+            AddResponseToPage("MainPage", _color.Green("Create New Post"), !isDM);
             foreach (var message in messages)
             {
                 string title = message.Title;

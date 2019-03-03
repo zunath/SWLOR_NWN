@@ -30,5 +30,6 @@ namespace SWLOR.Game.Server.Service.Contracts
         string GetAreaAtmosphereBonusText(NWArea area);
         void OnAreaEnter();
         float CalculateCraftingDelay(NWPlayer oPC, int skillID);
+        int CalculateReassemblyChance(NWPlayer player, int penalty);
     }
 }

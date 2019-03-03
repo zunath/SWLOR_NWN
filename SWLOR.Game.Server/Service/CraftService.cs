@@ -28,6 +28,8 @@ namespace SWLOR.Game.Server.Service
         private readonly INWNXEvents _nwnxEvents;
         private readonly INWNXChat _nwnxChat;
         private readonly ISerializationService _serialization;
+        private readonly ISkillService _skill;
+        private readonly IPlayerStatService _playerStat;
 
         public CraftService(
             INWScript script,
@@ -37,7 +39,9 @@ namespace SWLOR.Game.Server.Service
             INWNXPlayer nwnxPlayer,
             INWNXEvents nwnxEvents,
             INWNXChat nwnxChat,
-            ISerializationService serialization)
+            ISerializationService serialization,
+            ISkillService skill,
+            IPlayerStatService playerStat)
         {
             _ = script;
             _data = data;
@@ -47,6 +51,8 @@ namespace SWLOR.Game.Server.Service
             _nwnxEvents = nwnxEvents;
             _nwnxChat = nwnxChat;
             _serialization = serialization;
+            _skill = skill;
+            _playerStat = playerStat;
         }
 
         private const float BaseCraftDelay = 18.0f;
@@ -713,6 +719,26 @@ namespace SWLOR.Game.Server.Service
             NWCreature entering = _.GetEnteringObject();
 
             entering.SendMessage(bonuses);
+        }
+
+        public int CalculateReassemblyChance(NWPlayer player, int penalty)
+        {
+            const int BaseChance = 70;
+            int harvesting = _skill.GetPCSkillRank(player, SkillType.Harvesting);
+            var itemBonuses = _playerStat.GetPlayerItemEffectiveStats(player);
+            int perkLevel = _perk.GetPCPerkLevel(player, PerkType.AtomicReassemblyProficiency);
+
+            // Calculate the base chance after factoring in skills, perks, and items.
+            int categoryChance = (int) (BaseChance + (harvesting / 2.5f) + perkLevel * 10 + itemBonuses.Harvesting / 3f);
+
+            // Reduce the chance by the penalty. This penalty is generally determined by how many properties were already
+            // applied during this batch.
+            categoryChance -= penalty;
+
+            // Keep bounds between 0 and 100
+            if (categoryChance < 0) return 0;
+            else if (categoryChance > 100) return 100;
+            else return categoryChance;
         }
 
     }

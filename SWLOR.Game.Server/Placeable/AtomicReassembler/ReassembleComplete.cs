@@ -7,6 +7,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.ValueObject;
 using static NWN.NWScript;
 using ComponentType = SWLOR.Game.Server.Data.Entity.ComponentType;
 using Object = NWN.Object;
@@ -20,28 +21,49 @@ namespace SWLOR.Game.Server.Placeable.AtomicReassembler
         private readonly IDataService _data;
         private readonly INWNXItemProperty _nwnxItemProperty;
         private readonly IBiowareXP2 _biowareXP2;
+        private readonly ICraftService _craft;
+        private readonly IRandomService _random;
+        private readonly IColorTokenService _color;
+        private readonly IPerkService _perk;
+        private readonly IPlayerStatService _playerStat;
+        private readonly ISkillService _skill;
 
         public ReassembleComplete(
             INWScript script,
             ISerializationService serialization,
             IDataService data, 
             INWNXItemProperty nwnxItemProperty,
-            IBiowareXP2 biowareXP2)
+            IBiowareXP2 biowareXP2,
+            ICraftService craft,
+            IRandomService random,
+            IColorTokenService color,
+            IPerkService perk,
+            IPlayerStatService playerStat,
+            ISkillService skill)
         {
             _ = script;
             _serialization = serialization;
             _data = data;
             _nwnxItemProperty = nwnxItemProperty;
             _biowareXP2 = biowareXP2;
+            _craft = craft;
+            _random = random;
+            _color = color;
+            _perk = perk;
+            _playerStat = playerStat;
+            _skill = skill;
         }
 
         private ComponentType _componentType;
         private NWPlayer _player;
+        private EffectiveItemStats _playerItemStats;
 
         // New component items will be spawned and the appropriate properties from the base item will be transferred.
         public bool Run(params object[] args)
         {
             _player = (NWPlayer) args[0];
+            _playerItemStats = _playerStat.GetPlayerItemEffectiveStats(_player);
+            int xp = 0;
 
             // Remove the immobilization effect
             foreach (var effect in _player.Effects)
@@ -67,63 +89,67 @@ namespace SWLOR.Game.Server.Placeable.AtomicReassembler
                     // Get the amount of Attack Bonus
                     int amount = _.GetItemPropertyCostTableValue(prop);
 
-                    ProcessProperty(amount, 3, ComponentBonusType.AttackBonusUp);
+                    xp += ProcessProperty(amount, 3, ComponentBonusType.AttackBonusUp);
                 }
             }
 
             // Now check specific custom properties which are stored as local variables on the item.
-            ProcessProperty(item.CustomAC, 3, ComponentBonusType.ACUp);
-            ProcessProperty(item.HarvestingBonus, 3, ComponentBonusType.HarvestingUp);
-            ProcessProperty(item.PilotingBonus, 3, ComponentBonusType.PilotingUp);
-            ProcessProperty(item.ScanningBonus, 3, ComponentBonusType.ScanningUp);
-            ProcessProperty(item.ScavengingBonus, 3, ComponentBonusType.ScavengingUp);
-            ProcessProperty(item.CastingSpeed, 3, ComponentBonusType.CastingSpeedUp);
-            ProcessProperty(item.CraftBonusArmorsmith, 3, ComponentBonusType.ArmorsmithUp);
-            ProcessProperty(item.CraftBonusWeaponsmith, 3, ComponentBonusType.WeaponsmithUp);
-            ProcessProperty(item.CraftBonusCooking, 3, ComponentBonusType.CookingUp);
-            ProcessProperty(item.CraftBonusEngineering, 3, ComponentBonusType.EngineeringUp);
-            ProcessProperty(item.CraftBonusFabrication, 3, ComponentBonusType.FabricationUp);
-            ProcessProperty(item.HPBonus, 5, ComponentBonusType.HPUp, 0.5f);
-            ProcessProperty(item.FPBonus, 5, ComponentBonusType.FPUp, 0.5f);
-            ProcessProperty(item.EnmityRate, 3, ComponentBonusType.EnmityUp);
-            ProcessProperty(item.ForcePotencyBonus, 3, ComponentBonusType.ForcePotencyUp);
-            ProcessProperty(item.ForceAccuracyBonus, 3, ComponentBonusType.ForceAccuracyUp);
-            ProcessProperty(item.ForceDefenseBonus, 3, ComponentBonusType.ForceDefenseUp);
-            ProcessProperty(item.ElectricalPotencyBonus, 3, ComponentBonusType.ElectricalPotencyUp);
-            ProcessProperty(item.MindPotencyBonus, 3, ComponentBonusType.MindPotencyUp);
-            ProcessProperty(item.LightPotencyBonus, 3, ComponentBonusType.LightPotencyUp);
-            ProcessProperty(item.DarkPotencyBonus, 3, ComponentBonusType.DarkPotencyUp);
-            ProcessProperty(item.ElectricalDefenseBonus, 3, ComponentBonusType.ElectricalDefenseUp);
-            ProcessProperty(item.MindDefenseBonus, 3, ComponentBonusType.MindDefenseUp);
-            ProcessProperty(item.LightDefenseBonus, 3, ComponentBonusType.LightDefenseUp);
-            ProcessProperty(item.DarkDefenseBonus, 3, ComponentBonusType.DarkDefenseUp);
+            xp += ProcessProperty(item.CustomAC, 3, ComponentBonusType.ACUp);
+            xp += ProcessProperty(item.HarvestingBonus, 3, ComponentBonusType.HarvestingUp);
+            xp += ProcessProperty(item.PilotingBonus, 3, ComponentBonusType.PilotingUp);
+            xp += ProcessProperty(item.ScanningBonus, 3, ComponentBonusType.ScanningUp);
+            xp += ProcessProperty(item.ScavengingBonus, 3, ComponentBonusType.ScavengingUp);
+            xp += ProcessProperty(item.CastingSpeed, 3, ComponentBonusType.CastingSpeedUp);
+            xp += ProcessProperty(item.CraftBonusArmorsmith, 3, ComponentBonusType.ArmorsmithUp);
+            xp += ProcessProperty(item.CraftBonusWeaponsmith, 3, ComponentBonusType.WeaponsmithUp);
+            xp += ProcessProperty(item.CraftBonusCooking, 3, ComponentBonusType.CookingUp);
+            xp += ProcessProperty(item.CraftBonusEngineering, 3, ComponentBonusType.EngineeringUp);
+            xp += ProcessProperty(item.CraftBonusFabrication, 3, ComponentBonusType.FabricationUp);
+            xp += ProcessProperty(item.HPBonus, 5, ComponentBonusType.HPUp, 0.5f);
+            xp += ProcessProperty(item.FPBonus, 5, ComponentBonusType.FPUp, 0.5f);
+            xp += ProcessProperty(item.EnmityRate, 3, ComponentBonusType.EnmityUp);
+            xp += ProcessProperty(item.ForcePotencyBonus, 3, ComponentBonusType.ForcePotencyUp);
+            xp += ProcessProperty(item.ForceAccuracyBonus, 3, ComponentBonusType.ForceAccuracyUp);
+            xp += ProcessProperty(item.ForceDefenseBonus, 3, ComponentBonusType.ForceDefenseUp);
+            xp += ProcessProperty(item.ElectricalPotencyBonus, 3, ComponentBonusType.ElectricalPotencyUp);
+            xp += ProcessProperty(item.MindPotencyBonus, 3, ComponentBonusType.MindPotencyUp);
+            xp += ProcessProperty(item.LightPotencyBonus, 3, ComponentBonusType.LightPotencyUp);
+            xp += ProcessProperty(item.DarkPotencyBonus, 3, ComponentBonusType.DarkPotencyUp);
+            xp += ProcessProperty(item.ElectricalDefenseBonus, 3, ComponentBonusType.ElectricalDefenseUp);
+            xp += ProcessProperty(item.MindDefenseBonus, 3, ComponentBonusType.MindDefenseUp);
+            xp += ProcessProperty(item.LightDefenseBonus, 3, ComponentBonusType.LightDefenseUp);
+            xp += ProcessProperty(item.DarkDefenseBonus, 3, ComponentBonusType.DarkDefenseUp);
 
-            ProcessProperty(item.LuckBonus, 3, ComponentBonusType.LuckUp);
-            ProcessProperty(item.MeditateBonus, 3, ComponentBonusType.MeditateUp);
-            ProcessProperty(item.RestBonus, 3, ComponentBonusType.RestUp);
-            ProcessProperty(item.MedicineBonus, 3, ComponentBonusType.MedicineUp);
-            ProcessProperty(item.HPRegenBonus, 3, ComponentBonusType.HPRegenUp);
-            ProcessProperty(item.FPRegenBonus, 3, ComponentBonusType.FPRegenUp);
-            ProcessProperty(item.BaseAttackBonus, 3, ComponentBonusType.BaseAttackBonusUp);
-            ProcessProperty(item.StructureBonus, 3, ComponentBonusType.StructureBonusUp);
-            ProcessProperty(item.SneakAttackBonus, 3, ComponentBonusType.SneakAttackUp);
-            ProcessProperty(item.DamageBonus, 3, ComponentBonusType.DamageUp);
-            ProcessProperty(item.StrengthBonus, 3, ComponentBonusType.StrengthUp);
-            ProcessProperty(item.DexterityBonus, 3, ComponentBonusType.DexterityUp);
-            ProcessProperty(item.ConstitutionBonus, 3, ComponentBonusType.ConstitutionUp);
-            ProcessProperty(item.WisdomBonus, 3, ComponentBonusType.WisdomUp);
-            ProcessProperty(item.IntelligenceBonus, 3, ComponentBonusType.IntelligenceUp);
-            ProcessProperty(item.CharismaBonus, 3, ComponentBonusType.CharismaUp);
-            ProcessProperty(item.DurationBonus, 3, ComponentBonusType.DurationUp);
+            xp += ProcessProperty(item.LuckBonus, 3, ComponentBonusType.LuckUp);
+            xp += ProcessProperty(item.MeditateBonus, 3, ComponentBonusType.MeditateUp);
+            xp += ProcessProperty(item.RestBonus, 3, ComponentBonusType.RestUp);
+            xp += ProcessProperty(item.MedicineBonus, 3, ComponentBonusType.MedicineUp);
+            xp += ProcessProperty(item.HPRegenBonus, 3, ComponentBonusType.HPRegenUp);
+            xp += ProcessProperty(item.FPRegenBonus, 3, ComponentBonusType.FPRegenUp);
+            xp += ProcessProperty(item.BaseAttackBonus, 3, ComponentBonusType.BaseAttackBonusUp);
+            xp += ProcessProperty(item.StructureBonus, 3, ComponentBonusType.StructureBonusUp);
+            xp += ProcessProperty(item.SneakAttackBonus, 3, ComponentBonusType.SneakAttackUp);
+            xp += ProcessProperty(item.DamageBonus, 3, ComponentBonusType.DamageUp);
+            xp += ProcessProperty(item.StrengthBonus, 3, ComponentBonusType.StrengthUp);
+            xp += ProcessProperty(item.DexterityBonus, 3, ComponentBonusType.DexterityUp);
+            xp += ProcessProperty(item.ConstitutionBonus, 3, ComponentBonusType.ConstitutionUp);
+            xp += ProcessProperty(item.WisdomBonus, 3, ComponentBonusType.WisdomUp);
+            xp += ProcessProperty(item.IntelligenceBonus, 3, ComponentBonusType.IntelligenceUp);
+            xp += ProcessProperty(item.CharismaBonus, 3, ComponentBonusType.CharismaUp);
+            xp += ProcessProperty(item.DurationBonus, 3, ComponentBonusType.DurationUp);
 
             item.Destroy();
 
+            _skill.GiveSkillXP(_player, SkillType.Harvesting, xp);
             return true;
         }
 
-        private void ProcessProperty(int amount, int maxBonuses, ComponentBonusType bonus, float levelsPerBonus = 1.0f)
+        private int ProcessProperty(int amount, int maxBonuses, ComponentBonusType bonus, float levelsPerBonus = 1.0f)
         {
             string resref = _componentType.ReassembledResref;
+            int penalty = 0;
+            int luck = _perk.GetPCPerkLevel(_player, PerkType.Lucky) + (_playerItemStats.Luck / 3);
+            int xp = 0;
 
             ItemPropertyUnpacked bonusIP = new ItemPropertyUnpacked
             {
@@ -141,30 +167,63 @@ namespace SWLOR.Game.Server.Placeable.AtomicReassembler
 
             while (amount > 0)
             {
+                int chanceToTransfer = _craft.CalculateReassemblyChance(_player, penalty);
+                // Roll to see if the item can be created.
+                bool success = _random.Random(0, 100) <= chanceToTransfer;
+
+                // Do a lucky roll if we failed the first time.
+                if (!success && luck > 0 && _random.Random(0, 100) <= luck)
+                {
+                    _player.SendMessage("Lucky reassemble!");
+                    success = true;
+                }
+
                 if (amount >= maxBonuses)
                 {
-                    int levelIncrease = (int)(maxBonuses / levelsPerBonus);
-                    bonusIP.CostTableValue = maxBonuses;
-                    ItemProperty bonusIPPacked = _nwnxItemProperty.NWNX_ItemProperty_PackIP(bonusIP);
-                    NWItem item = _.CreateItemOnObject(resref, _player);
-                    item.RecommendedLevel = levelIncrease;
-                    _biowareXP2.IPSafeAddItemProperty(item, bonusIPPacked, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
+                    if (success)
+                    {
+                        int levelIncrease = (int)(maxBonuses / levelsPerBonus);
+                        // Roll succeeded. Create item.
+                        bonusIP.CostTableValue = maxBonuses;
+                        ItemProperty bonusIPPacked = _nwnxItemProperty.NWNX_ItemProperty_PackIP(bonusIP);
+                        NWItem item = _.CreateItemOnObject(resref, _player);
+                        item.RecommendedLevel = levelIncrease;
+                        _biowareXP2.IPSafeAddItemProperty(item, bonusIPPacked, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
 
+                        xp += (150 * maxBonuses + _random.Random(0, 5));
+                    }
+                    else
+                    {
+                        _player.SendMessage(_color.Red("You failed to create a component. (+" + maxBonuses + ")"));
+                        xp += (50 + _random.Random(0, 5));
+                    }
+                    // Penalty to chance increases regardless if item was created or not.
+                    penalty += (maxBonuses * 5);
                     amount -= maxBonuses;
                 }
                 else
                 {
-                    int levelIncrease = (int)(amount / levelsPerBonus);
-                    bonusIP.CostTableValue = amount;
-                    ItemProperty bonusIPPacked = _nwnxItemProperty.NWNX_ItemProperty_PackIP(bonusIP);
-                    NWItem item = _.CreateItemOnObject(resref, _player);
-                    item.RecommendedLevel = levelIncrease;
-                    _biowareXP2.IPSafeAddItemProperty(item, bonusIPPacked, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
+                    if (success)
+                    {
+                        int levelIncrease = (int)(amount / levelsPerBonus);
+                        bonusIP.CostTableValue = amount;
+                        ItemProperty bonusIPPacked = _nwnxItemProperty.NWNX_ItemProperty_PackIP(bonusIP);
+                        NWItem item = _.CreateItemOnObject(resref, _player);
+                        item.RecommendedLevel = levelIncrease;
+                        _biowareXP2.IPSafeAddItemProperty(item, bonusIPPacked, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
 
+                        xp += (150 * amount + _random.Random(0, 5));
+                    }
+                    else
+                    {
+                        _player.SendMessage(_color.Red("You failed to create a component. (+" + amount + ")"));
+                        xp += (50 + _random.Random(0, 5));
+                    }
                     break;
                 }
             }
 
+            return xp;
         }
     }
 }

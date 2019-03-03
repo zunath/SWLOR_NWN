@@ -903,6 +903,7 @@
     <Compile Include="Perk\Fabrication\FabricationOptimization.cs" />
     <Compile Include="Perk\Fabrication\SpeedyFabrication.cs" />
     <Compile Include="Perk\General\Dash.cs" />
+    <Compile Include="Perk\Harvesting\AtomicReassemblyProficiency.cs" />
     <Compile Include="Perk\Harvesting\SpeedyReassembly.cs" />
     <Compile Include="Perk\Lightsaber\DeflectBlasterFire.cs" />
     <Compile Include="Perk\Lightsaber\DualWielding.cs" />

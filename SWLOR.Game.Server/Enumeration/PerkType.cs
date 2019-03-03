@@ -172,7 +172,8 @@
         CrackShot = 167,
         SystemsOptimization = 168,
         CombatRepair = 169,
-        CarefulPilot = 170
+        CarefulPilot = 170,
+        AtomicReassemblyProficiency = 171
     }
 
 }

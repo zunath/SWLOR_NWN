@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Conversation
             var item = _serialization.DeserializeItem(model.SerializedSalvageItem, tempStorage);
             var componentType = _data.Get<ComponentType>(model.SalvageComponentTypeID);
             string header = _color.Green("Item: ") + item.Name + "\n\n";
-            header += "Reassembling this item will create the following " + _color.Green(componentType.Name) + " component(s).\n\n";
+            header += "Reassembling this item will create the following " + _color.Green(componentType.Name) + " component(s). Chance to create depends on your perks, skills, and harvesting bonus on items.\n\n";
             
             // Start by checking attack bonus since we're not storing this value as a local variable on the item.
             foreach (var prop in item.ItemProperties)
@@ -165,21 +165,36 @@ namespace SWLOR.Game.Server.Conversation
             item.Destroy();
         }
 
+        private string GetChanceColor(int chance)
+        {
+            string message = "-" + chance + "%-";
+            if (chance <= 50)
+                return _color.Red(message);
+            else if (chance <= 80)
+                return _color.Yellow(message);
+            else return _color.Green(message);
+        }
+
         private string ProcessPropertyDetails(int amount, string componentName, string propertyName, int maxBonuses, float levelsPerBonus = 1.0f)
         {
+            var player = GetPC();
             string result = string.Empty;
+            int penalty = 0;
             while (amount > 0)
             {
                 if (amount >= maxBonuses)
                 {
                     int levelIncrease = (int)(maxBonuses / levelsPerBonus);
-                    result += componentName + " (+" + maxBonuses + " " + propertyName + ") [RL: " + levelIncrease + "]\n";
+                    int chanceToTransfer = _craft.CalculateReassemblyChance(player, penalty);
+                    result += componentName + " (+" + maxBonuses + " " + propertyName + ") [RL: " + levelIncrease + "] " + GetChanceColor(chanceToTransfer) + "\n";
+                    penalty += (maxBonuses * 5);
                     amount -= maxBonuses;
                 }
                 else
                 {
                     int levelIncrease = (int)(amount / levelsPerBonus);
-                    result += componentName + " (+" + amount + " " + propertyName + ") [RL: " + levelIncrease + "]\n";
+                    int chanceToTransfer = _craft.CalculateReassemblyChance(player, penalty);
+                    result += componentName + " (+" + amount + " " + propertyName + ") [RL: " + levelIncrease + "] " + GetChanceColor(chanceToTransfer)+ "\n";
                     break;
                 }
             }

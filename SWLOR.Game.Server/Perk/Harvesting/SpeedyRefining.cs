@@ -1,8 +1,8 @@
 ﻿using SWLOR.Game.Server.GameObject;
 
-namespace SWLOR.Game.Server.Perk.Engineering
+namespace SWLOR.Game.Server.Perk.Harvesting
 {
-    public class StronidiumRefining: IPerk
+    public class SpeedyRefining : IPerk
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Perk.Engineering
 
         public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellFeatID)
         {
-            return null;
+            return baseCooldownCategoryID;
         }
 
         public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)

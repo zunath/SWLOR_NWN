@@ -262,8 +262,8 @@ namespace SWLOR.Game.Server.Service
                 activationTime = activationTime + activationTime * activationPenalty;
             }
 
-            if (baseActivationTime > 0f && activationTime < 0.5f)
-                activationTime = 0.5f;
+            if (baseActivationTime > 0f && activationTime < 1.0f)
+                activationTime = 1.0f;
 
             // Force ability armor penalties
             if (executionType == PerkExecutionType.ForceAbility)

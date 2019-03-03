@@ -229,6 +229,9 @@ namespace SWLOR.Game.Server.Service
                     case ComponentBonusType.DarkDefenseDown:
                         product.DarkDefenseBonus -= amount;
                         break;
+                    case ComponentBonusType.PilotingUp:
+                        product.PilotingBonus += amount;
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }

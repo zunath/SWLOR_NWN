@@ -332,6 +332,7 @@ namespace SWLOR.Game.Server
             builder.RegisterType<NWNXDamage>().As<INWNXDamage>().SingleInstance();
             builder.RegisterType<NWNXEvents>().As<INWNXEvents>().SingleInstance();
             builder.RegisterType<NWNXItem>().As<INWNXItem>().SingleInstance();
+            builder.RegisterType<NWNXItemProperty>().As<INWNXItemProperty>().SingleInstance();
             builder.RegisterType<NWNXObject>().As<INWNXObject>().SingleInstance();
             builder.RegisterType<NWNXItem>().As<INWNXItem>().SingleInstance();
             builder.RegisterType<NWNXPlayer>().As<INWNXPlayer>().SingleInstance();

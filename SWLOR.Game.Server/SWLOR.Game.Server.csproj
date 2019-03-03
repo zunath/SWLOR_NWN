@@ -166,6 +166,7 @@
     <Compile Include="ChatCommand\Victory1.cs" />
     <Compile Include="ChatCommand\Victory2.cs" />
     <Compile Include="ChatCommand\Victory3.cs" />
+    <Compile Include="Conversation\MessageBoard.cs" />
     <Compile Include="Conversation\MolecularReassembly.cs" />
     <Compile Include="Conversation\Jukebox.cs" />
     <Compile Include="Conversation\PublicStarport.cs" />
@@ -281,6 +282,7 @@
     <Compile Include="Data\Entity\Error.cs" />
     <Compile Include="Data\Entity\JukeboxSong.cs" />
     <Compile Include="Data\Entity\MarketCategory.cs" />
+    <Compile Include="Data\Entity\Message.cs" />
     <Compile Include="Data\Entity\PCMarketListing.cs" />
     <Compile Include="Data\Entity\SpaceEncounter.cs" />
     <Compile Include="Data\Entity\SpaceStarport.cs" />
@@ -1259,6 +1261,7 @@
     <Compile Include="Service\Contracts\IDataService.cs" />
     <Compile Include="Service\Contracts\ICombatService.cs" />
     <Compile Include="Service\Contracts\IPlayerMigrationService.cs" />
+    <Compile Include="Service\Contracts\IMessageBoardService.cs" />
     <Compile Include="Service\LanguageService.cs" />
     <Compile Include="Service\ColorTokenService.cs" />
     <Compile Include="Service\ComponentBonusService.cs" />
@@ -1345,6 +1348,7 @@
     <Compile Include="Service\Contracts\IDialogService.cs" />
     <Compile Include="Service\DurabilityService.cs" />
     <Compile Include="Service\Contracts\IChatTextService.cs" />
+    <Compile Include="Service\MessageBoardService.cs" />
     <Compile Include="Service\PlayerMigrationService.cs" />
     <Compile Include="Service\PlayerStatService.cs" />
     <Compile Include="Service\EnmityService.cs" />
@@ -2236,6 +2240,7 @@
     <EmbeddedResource Include="Data\Migrations\2019-02-27.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-27.3.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-03-02.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-03-03.1.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-07.1.sql" />

@@ -22,17 +22,13 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
         private readonly ICraftService _craft;
         private readonly IBiowarePosition _biowarePosition;
         private readonly INWNXPlayer _nwnxPlayer;
-        private readonly IRandomService _random;
-        private readonly IBiowareXP2 _biowareXP2;
 
         public OnDisturbed(INWScript script,
             IPerkService perk,
             ISkillService skill,
             ICraftService craft,
             IBiowarePosition biowarePosition,
-            INWNXPlayer nwnxPlayer,
-            IRandomService random,
-            IBiowareXP2 biowareXP2)
+            INWNXPlayer nwnxPlayer)
         {
             _ = script;
             _perk = perk;
@@ -40,8 +36,6 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             _craft = craft;
             _biowarePosition = biowarePosition;
             _nwnxPlayer = nwnxPlayer;
-            _random = random;
-            _biowareXP2 = biowareXP2;
         }
 
         public bool Run(params object[] args)
@@ -93,7 +87,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             }
 
             int level = _craft.GetIngotLevel(item.Resref);
-            int rank = _skill.GetPCSkillRank(pc, SkillType.Engineering);
+            int rank = _skill.GetPCSkillRank(pc, SkillType.Harvesting);
             
             int delta = rank - level;
             if (delta <= -4)

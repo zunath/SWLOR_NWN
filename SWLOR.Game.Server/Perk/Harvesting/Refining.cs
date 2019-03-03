@@ -1,8 +1,8 @@
 ﻿using SWLOR.Game.Server.GameObject;
 
-namespace SWLOR.Game.Server.Perk.Engineering
+namespace SWLOR.Game.Server.Perk.Harvesting
 {
-    public class SpeedyRefining : IPerk
+    public class Refining : IPerk
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

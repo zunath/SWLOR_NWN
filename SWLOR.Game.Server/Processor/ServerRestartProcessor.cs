@@ -1,5 +1,6 @@
 ﻿using System;
 using NWN;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Processor.Contracts;
@@ -18,15 +19,18 @@ namespace SWLOR.Game.Server.Processor
         private readonly INWScript _;
         private readonly INWNXAdmin _nwnxAdmin;
         private readonly ITimeService _time;
+        private readonly IDataService _data;
 
         public ServerRestartProcessor(
             INWScript script,
             INWNXAdmin nwnxAdmin,
-            ITimeService time)
+            ITimeService time,
+            IDataService data)
         {
             _ = script;
             _nwnxAdmin = nwnxAdmin;
             _time = time;
+            _data = data;
 
             if (!_isLoaded)
             {
@@ -80,7 +84,17 @@ namespace SWLOR.Game.Server.Processor
                 string message = "Server will automatically reboot in " + rebootString;
                 foreach (var player in NWModule.Get().Players)
                 {
+                    // Send a message about the next reboot.
                     player.FloatingText(message);
+
+                    // If the player has a lease which is expiring in <= 24 hours, notify them.
+                    int leasesExpiring = _data.Where<PCBase>(x => x.DateRentDue.AddHours(-24) <= now).Count;
+
+                    if (leasesExpiring > 0)
+                    {
+                        string leaseDetails = leasesExpiring == 1 ? "1 lease" : leasesExpiring + " leases";
+                        player.FloatingText("You have " + leaseDetails + " expiring in less than 24 hours (real world time). Please extend the lease or your land will be forfeited.");
+                    }
                 }
                 Console.WriteLine(message);
                 

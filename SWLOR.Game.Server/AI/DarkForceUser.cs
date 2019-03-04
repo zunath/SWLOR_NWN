@@ -40,7 +40,6 @@ namespace SWLOR.Game.Server.AI
 
         private void DoForceAttack()
         {
-            Console.Write("DoForceAttack called\n");
             // Trigger ForceAttackHighestEmnity if not doing anything. 
             if (_.GetCurrentAction() == NWScript.ACTION_ATTACKOBJECT)
             {

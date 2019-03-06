@@ -158,10 +158,6 @@ namespace SWLOR.Game.Server.Service
             {
                 description += _color.Orange("Recommended Level: ") + examinedItem.RecommendedLevel + "\n";
             }
-            if (examinedItem.LevelIncrease > 0)
-            {
-                description += _color.Orange("Level Increase: ") + examinedItem.LevelIncrease + "\n";
-            }
             if (examinedItem.AssociatedSkillType > 0)
             {
                 Skill skill = _data.Get<Skill>((int)examinedItem.AssociatedSkillType);
@@ -502,14 +498,14 @@ namespace SWLOR.Game.Server.Service
                 NWPlayer player = _.GetPCItemLastEquippedBy();
                 NWItem oItem = (_.GetPCItemLastEquipped());
                 int baseItemType = oItem.BaseItemType;
-                Effect eEffect = _.EffectVisualEffect(579);
-                eEffect = _.TagEffect(eEffect, "LIGHTSABER_HUM");
+                Effect oEffect = _.EffectVisualEffect(579);
+                oEffect = _.TagEffect(oEffect, "LIGHTSABER_HUM");
 
                 // Handle lightsaber sounds
                 if (oItem.CustomItemType == CustomItemType.Lightsaber ||
                     oItem.CustomItemType == CustomItemType.Saberstaff)
                 {
-                    _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, eEffect, player);
+                    _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, oEffect, player);
                     player.AssignCommand(() =>  
                     {   
                         _.PlaySound("saberon");                 

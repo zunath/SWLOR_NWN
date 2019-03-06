@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Net.Http;
 using System.Reflection;
 using Autofac;
 using FluentBehaviourTree;
@@ -11,7 +10,6 @@ using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Conversation.Contracts;
 using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.Data;
-using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
@@ -283,6 +281,7 @@ namespace SWLOR.Game.Server
             builder.RegisterType<MapPinService>().As<IMapPinService>().SingleInstance();
             builder.RegisterType<MarketService>().As<IMarketService>().SingleInstance();
             builder.RegisterType<MenuService>().As<IMenuService>().SingleInstance();
+            builder.RegisterType<MessageBoardService>().As<IMessageBoardService>().SingleInstance();
             builder.RegisterType<ModService>().As<IModService>().SingleInstance();
             builder.RegisterType<ObjectProcessingService>().As<IObjectProcessingService>().SingleInstance();
             builder.RegisterType<ObjectVisibilityService>().As<IObjectVisibilityService>().SingleInstance();
@@ -332,6 +331,7 @@ namespace SWLOR.Game.Server
             builder.RegisterType<NWNXDamage>().As<INWNXDamage>().SingleInstance();
             builder.RegisterType<NWNXEvents>().As<INWNXEvents>().SingleInstance();
             builder.RegisterType<NWNXItem>().As<INWNXItem>().SingleInstance();
+            builder.RegisterType<NWNXItemProperty>().As<INWNXItemProperty>().SingleInstance();
             builder.RegisterType<NWNXObject>().As<INWNXObject>().SingleInstance();
             builder.RegisterType<NWNXItem>().As<INWNXItem>().SingleInstance();
             builder.RegisterType<NWNXPlayer>().As<INWNXPlayer>().SingleInstance();

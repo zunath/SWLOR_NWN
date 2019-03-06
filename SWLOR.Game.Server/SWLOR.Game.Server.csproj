@@ -71,10 +71,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AI\AIComponent\AILinking.cs" />
+    <Compile Include="AI\AIComponent\ForceAttackHighestEnmity.cs" />
     <Compile Include="AI\AIComponent\WarpToTargetIfStuck.cs" />
     <Compile Include="AI\PackAggroBehaviour.cs" />
     <Compile Include="AI\SoundAggroBehaviour.cs" />
     <Compile Include="AI\SoundAggroRandomWalkBehaviour.cs" />
+    <Compile Include="AI\DarkForceUser.cs" />
     <Compile Include="AI\StarshipBehaviour.cs" />
     <Compile Include="App.cs" />
     <Compile Include="AppCache.cs" />
@@ -164,6 +166,8 @@
     <Compile Include="ChatCommand\Victory1.cs" />
     <Compile Include="ChatCommand\Victory2.cs" />
     <Compile Include="ChatCommand\Victory3.cs" />
+    <Compile Include="Conversation\MessageBoard.cs" />
+    <Compile Include="Conversation\MolecularReassembly.cs" />
     <Compile Include="Conversation\Jukebox.cs" />
     <Compile Include="Conversation\PublicStarport.cs" />
     <Compile Include="Conversation\ApartmentEntrance.cs" />
@@ -278,6 +282,7 @@
     <Compile Include="Data\Entity\Error.cs" />
     <Compile Include="Data\Entity\JukeboxSong.cs" />
     <Compile Include="Data\Entity\MarketCategory.cs" />
+    <Compile Include="Data\Entity\Message.cs" />
     <Compile Include="Data\Entity\PCMarketListing.cs" />
     <Compile Include="Data\Entity\SpaceEncounter.cs" />
     <Compile Include="Data\Entity\SpaceStarport.cs" />
@@ -446,6 +451,9 @@
     <Compile Include="Enumeration\PerkType.cs" />
     <Compile Include="Enumeration\QuestType.cs" />
     <Compile Include="NWNX\Contracts\INWNXVisibility.cs" />
+    <Compile Include="NWNX\Contracts\INWNXItemProperty.cs" />
+    <Compile Include="NWNX\ItemPropertyUnpacked.cs" />
+    <Compile Include="NWNX\NWNXItemProperty.cs" />
     <Compile Include="NWNX\NWNXVisibility.cs" />
     <Compile Include="NWNX\QuickBarSlotType.cs" />
     <Compile Include="Enumeration\ResistanceType.cs" />
@@ -881,6 +889,7 @@
     <Compile Include="Perk\Blaster\Tranquilizer.cs" />
     <Compile Include="Perk\Cooking\CookingEfficiency.cs" />
     <Compile Include="Perk\Cooking\CookingOptimization.cs" />
+    <Compile Include="Perk\Harvesting\StronidiumRefining.cs" />
     <Compile Include="Perk\ForceUtility\Chainspell.cs" />
     <Compile Include="Perk\ForceCombat\DrainLife.cs" />
     <Compile Include="Perk\ForceCombat\ForceLightning.cs" />
@@ -896,6 +905,8 @@
     <Compile Include="Perk\Fabrication\FabricationOptimization.cs" />
     <Compile Include="Perk\Fabrication\SpeedyFabrication.cs" />
     <Compile Include="Perk\General\Dash.cs" />
+    <Compile Include="Perk\Harvesting\MolecularReassemblyProficiency.cs" />
+    <Compile Include="Perk\Harvesting\SpeedyReassembly.cs" />
     <Compile Include="Perk\Lightsaber\DeflectBlasterFire.cs" />
     <Compile Include="Perk\Lightsaber\DualWielding.cs" />
     <Compile Include="Perk\Lightsaber\SaberstaffMastery.cs" />
@@ -953,10 +964,10 @@
     <Compile Include="Perk\ForceSupport\ForceHeal.cs" />
     <Compile Include="Perk\MartialArts\CircleKick.cs" />
     <Compile Include="Perk\MartialArts\EvadeBlasterFire.cs" />
-    <Compile Include="Perk\Engineering\RefineryManagement.cs" />
-    <Compile Include="Perk\Engineering\Refining.cs" />
+    <Compile Include="Perk\Harvesting\RefineryManagement.cs" />
+    <Compile Include="Perk\Harvesting\Refining.cs" />
     <Compile Include="Perk\Engineering\ProcessingEfficiency.cs" />
-    <Compile Include="Perk\Engineering\SpeedyRefining.cs" />
+    <Compile Include="Perk\Harvesting\SpeedyRefining.cs" />
     <Compile Include="Perk\MartialArts\MartialArtsProficiency.cs" />
     <Compile Include="Perk\OneHanded\BladePowerAttack.cs" />
     <Compile Include="Perk\Lightsaber\LightsaberProficiency.cs" />
@@ -1014,6 +1025,9 @@
     <Compile Include="Perk\Weapons\ImprovedCritical.cs" />
     <Compile Include="Perk\Engineering\SpeedyEngineering.cs" />
     <Compile Include="Perk\Engineering\EngineeringBlueprints.cs" />
+    <Compile Include="Placeable\MolecularReassembler\OnDisturbed.cs" />
+    <Compile Include="Placeable\MolecularReassembler\OnOpened.cs" />
+    <Compile Include="Placeable\MolecularReassembler\ReassembleComplete.cs" />
     <Compile Include="Placeable\Bank\OnClosed.cs" />
     <Compile Include="Placeable\ControlTower\OnClicked.cs" />
     <Compile Include="Placeable\ControlTower\OnDamaged.cs" />
@@ -1247,6 +1261,7 @@
     <Compile Include="Service\Contracts\IDataService.cs" />
     <Compile Include="Service\Contracts\ICombatService.cs" />
     <Compile Include="Service\Contracts\IPlayerMigrationService.cs" />
+    <Compile Include="Service\Contracts\IMessageBoardService.cs" />
     <Compile Include="Service\LanguageService.cs" />
     <Compile Include="Service\ColorTokenService.cs" />
     <Compile Include="Service\ComponentBonusService.cs" />
@@ -1333,6 +1348,7 @@
     <Compile Include="Service\Contracts\IDialogService.cs" />
     <Compile Include="Service\DurabilityService.cs" />
     <Compile Include="Service\Contracts\IChatTextService.cs" />
+    <Compile Include="Service\MessageBoardService.cs" />
     <Compile Include="Service\PlayerMigrationService.cs" />
     <Compile Include="Service\PlayerStatService.cs" />
     <Compile Include="Service\EnmityService.cs" />
@@ -2212,14 +2228,18 @@
     <EmbeddedResource Include="Data\Migrations\2019-02-05.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-12.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-14.1.sql" />
-    <EmbeddedResource Include="Data\Migrations\2019-02-20.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-19.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-02-20.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-20.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-21.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-23.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-23.2.sql" />
-    <EmbeddedResource Include="Data\Migrations\2019-02-26.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-02-26.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-27.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-02-27.2.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-02-27.3.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-03-02.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-03-03.1.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-07.1.sql" />

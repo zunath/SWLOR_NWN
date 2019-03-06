@@ -108,6 +108,7 @@ namespace SWLOR.Game.Server.Service
             GetAll<LootTable>();
             GetAll<LootTableItem>();
             GetAll<MarketCategory>();
+            GetAll<Message>();
             GetAll<Data.Entity.Mod>();
             GetAll<NPCGroup>();
             GetAll<PCBase>();

@@ -262,8 +262,8 @@ namespace SWLOR.Game.Server.Service
                 activationTime = activationTime + activationTime * activationPenalty;
             }
 
-            if (baseActivationTime > 0f && activationTime < 0.5f)
-                activationTime = 0.5f;
+            if (baseActivationTime > 0f && activationTime < 1.0f)
+                activationTime = 1.0f;
 
             // Force ability armor penalties
             if (executionType == PerkExecutionType.ForceAbility)
@@ -416,6 +416,10 @@ namespace SWLOR.Game.Server.Service
         public void OnHitCastSpell(NWPlayer oPC)
         {
             NWObject oTarget = _.GetSpellTargetObject();
+            NWItem oItem = _.GetSpellCastItem();
+
+            // If this method was triggered by our own armor (from getting hit), return. 
+            if (oItem.BaseItemType == BASE_ITEM_ARMOR) return;
 
             // Flag this attack as physical so that the damage scripts treat it properly.
             _error.Trace(TraceComponent.LastAttack, "Setting attack type from " + oPC.GlobalID + " against " + _.GetName(oTarget) + " to physical (" + ATTACK_PHYSICAL.ToString() + ")");

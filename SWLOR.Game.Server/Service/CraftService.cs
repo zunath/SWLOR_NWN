@@ -27,6 +27,9 @@ namespace SWLOR.Game.Server.Service
         private readonly INWNXPlayer _nwnxPlayer;
         private readonly INWNXEvents _nwnxEvents;
         private readonly INWNXChat _nwnxChat;
+        private readonly ISerializationService _serialization;
+        private readonly ISkillService _skill;
+        private readonly IPlayerStatService _playerStat;
 
         public CraftService(
             INWScript script,
@@ -35,7 +38,10 @@ namespace SWLOR.Game.Server.Service
             IColorTokenService color,
             INWNXPlayer nwnxPlayer,
             INWNXEvents nwnxEvents,
-            INWNXChat nwnxChat)
+            INWNXChat nwnxChat,
+            ISerializationService serialization,
+            ISkillService skill,
+            IPlayerStatService playerStat)
         {
             _ = script;
             _data = data;
@@ -44,6 +50,9 @@ namespace SWLOR.Game.Server.Service
             _nwnxPlayer = nwnxPlayer;
             _nwnxEvents = nwnxEvents;
             _nwnxChat = nwnxChat;
+            _serialization = serialization;
+            _skill = skill;
+            _playerStat = playerStat;
         }
 
         private const float BaseCraftDelay = 18.0f;
@@ -216,8 +225,7 @@ namespace SWLOR.Game.Server.Service
 
             oPC.IsBusy = true;
 
-            int atmosphere = CalculateAreaAtmosphereBonus(oPC.Area);
-            float modifiedCraftDelay = CalculateCraftingDelay(oPC, blueprint.SkillID, atmosphere);
+            float modifiedCraftDelay = CalculateCraftingDelay(oPC, blueprint.SkillID);
             oPC.AssignCommand(() =>
             {
                 _.ClearAllActions();
@@ -239,8 +247,9 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        private float CalculateCraftingDelay(NWPlayer oPC, int skillID, int atmosphere)
+        public float CalculateCraftingDelay(NWPlayer oPC, int skillID)
         {
+            int atmosphere = CalculateAreaAtmosphereBonus(oPC.Area);
             PerkType perkType;
             float adjustedSpeed = 1.0f;
             SkillType skillType = (SkillType)skillID;
@@ -252,6 +261,7 @@ namespace SWLOR.Game.Server.Service
             else if (skillType == SkillType.Engineering) perkType = PerkType.SpeedyEngineering;
             else if (skillType == SkillType.Fabrication) perkType = PerkType.SpeedyFabrication;
             else if (skillType == SkillType.Medicine) perkType = PerkType.SpeedyMedicine;
+            else if (skillType == SkillType.Harvesting) perkType = PerkType.SpeedyReassembly;
             else return BaseCraftDelay;
 
             int perkLevel = _perk.GetPCPerkLevel(oPC, perkType);
@@ -544,6 +554,11 @@ namespace SWLOR.Game.Server.Service
                 item.Destroy();
             }
 
+            if (!string.IsNullOrWhiteSpace(model.SerializedSalvageItem))
+            {
+                _serialization.DeserializeItem(model.SerializedSalvageItem, player);
+            }
+
             player.Data.Remove("CRAFTING_MODEL");
             player.DeleteLocalInt("CRAFT_BLUEPRINT_ID");
 
@@ -704,6 +719,26 @@ namespace SWLOR.Game.Server.Service
             NWCreature entering = _.GetEnteringObject();
 
             entering.SendMessage(bonuses);
+        }
+
+        public int CalculateReassemblyChance(NWPlayer player, int penalty)
+        {
+            const int BaseChance = 70;
+            int harvesting = _skill.GetPCSkillRank(player, SkillType.Harvesting);
+            var itemBonuses = _playerStat.GetPlayerItemEffectiveStats(player);
+            int perkLevel = _perk.GetPCPerkLevel(player, PerkType.MolecularReassemblyProficiency);
+
+            // Calculate the base chance after factoring in skills, perks, and items.
+            int categoryChance = (int) (BaseChance + (harvesting / 2.5f) + perkLevel * 10 + itemBonuses.Harvesting / 3f);
+
+            // Reduce the chance by the penalty. This penalty is generally determined by how many properties were already
+            // applied during this batch.
+            categoryChance -= penalty;
+
+            // Keep bounds between 0 and 100
+            if (categoryChance < 0) return 0;
+            else if (categoryChance > 100) return 100;
+            else return categoryChance;
         }
 
     }

@@ -412,10 +412,17 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = _.GetPCItemLastUnequippedBy();
             NWItem oItem = _.GetPCItemLastUnequipped();
 
+            // Remove lightsaber hum effect.
+            foreach (var effect in player.Effects.Where(x=> _.GetEffectTag(x) == "LIGHTSABER_HUM"))
+            {
+                _.RemoveEffect(player, effect);
+            }
+
             // Handle lightsaber sounds
             if (oItem.CustomItemType == CustomItemType.Lightsaber ||
                 oItem.CustomItemType == CustomItemType.Saberstaff)
             {
+  
                 player.AssignCommand(() =>
                 {
                     _.PlaySound("saberoff");
@@ -491,14 +498,17 @@ namespace SWLOR.Game.Server.Service
                 NWPlayer player = _.GetPCItemLastEquippedBy();
                 NWItem oItem = (_.GetPCItemLastEquipped());
                 int baseItemType = oItem.BaseItemType;
+                Effect oEffect = _.EffectVisualEffect(579);
+                oEffect = _.TagEffect(oEffect, "LIGHTSABER_HUM");
 
                 // Handle lightsaber sounds
                 if (oItem.CustomItemType == CustomItemType.Lightsaber ||
                     oItem.CustomItemType == CustomItemType.Saberstaff)
                 {
-                    player.AssignCommand(() =>
-                    {
-                        _.PlaySound("saberon");
+                    _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, oEffect, player);
+                    player.AssignCommand(() =>  
+                    {   
+                        _.PlaySound("saberon");                 
                     });
                 }
 

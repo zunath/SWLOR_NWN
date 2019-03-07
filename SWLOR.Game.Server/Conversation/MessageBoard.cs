@@ -266,6 +266,17 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
         {
+            ClearTempData();
+        }
+
+        public override void EndDialog()
+        {
+            ClearTempData();
+        }
+
+        private void ClearTempData()
+        {
+            NWPlayer player = GetPC();
             var model = GetDialogCustomData<Model>();
             model.IsConfirming = false;
             model.Title = string.Empty;
@@ -274,10 +285,7 @@ namespace SWLOR.Game.Server.Conversation
             SetResponseText("CreatePostPage", 3, "Post Message");
             player.DeleteLocalInt("MESSAGE_BOARD_LISTENING");
             player.DeleteLocalString("MESSAGE_BOARD_TEXT");
-        }
 
-        public override void EndDialog()
-        {
         }
     }
 }

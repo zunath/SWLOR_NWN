@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
             {
                 _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_BEAM_LIGHTNING), target, 1.0f);
             });
-
+            _.PlaySound("v_pro_lightning");
             _combat.AddTemporaryForceDefense(target.Object, ForceAbilityType.Electrical);
         }
 

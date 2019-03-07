@@ -75,6 +75,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             if (background == BackgroundType.Medic)
                 interval *= 0.5f;
 
+            _.PlaySound("use_bacta");
             Effect regeneration = _.EffectRegenerate(restoreAmount, interval);
             _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, regeneration, target.Object, duration);
             player.SendMessage("You successfully treat " + target.Name + "'s wounds. The healing kit will expire in " + duration + " seconds.");

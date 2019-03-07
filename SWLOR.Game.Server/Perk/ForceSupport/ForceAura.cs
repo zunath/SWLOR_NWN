@@ -101,6 +101,7 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
                     _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_AC_BONUS), member);
                 }
 
+                _.PlaySound("v_pro_frcaura");
                 _customEffect.SetForceSpreadUses(player, spread.Uses);
                 _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceUtility, null);
             }

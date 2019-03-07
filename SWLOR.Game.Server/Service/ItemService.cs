@@ -498,14 +498,14 @@ namespace SWLOR.Game.Server.Service
                 NWPlayer player = _.GetPCItemLastEquippedBy();
                 NWItem oItem = (_.GetPCItemLastEquipped());
                 int baseItemType = oItem.BaseItemType;
-                Effect oEffect = _.EffectVisualEffect(579);
-                oEffect = _.TagEffect(oEffect, "LIGHTSABER_HUM");
+                Effect eEffect = _.EffectVisualEffect(579);
+                eEffect = _.TagEffect(eEffect, "LIGHTSABER_HUM");
 
                 // Handle lightsaber sounds
                 if (oItem.CustomItemType == CustomItemType.Lightsaber ||
                     oItem.CustomItemType == CustomItemType.Saberstaff)
                 {
-                    _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, oEffect, player);
+                    _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, eEffect, player);
                     player.AssignCommand(() =>  
                     {   
                         _.PlaySound("saberon");                 

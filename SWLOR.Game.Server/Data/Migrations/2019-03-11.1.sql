@@ -197,6 +197,3 @@ BEGIN
 	 FROM dbo.PCSkillPool pcsp
 	 WHERE pcsp.PlayerID = @PlayerID 
 END
-
-GO
-

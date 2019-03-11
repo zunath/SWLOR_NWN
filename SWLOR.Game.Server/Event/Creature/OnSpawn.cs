@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.AI.Contracts;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
+using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Event.Creature
 {
@@ -22,6 +23,9 @@ namespace SWLOR.Game.Server.Event.Creature
             NWCreature self = Object.OBJECT_SELF;
 
             _space.OnCreatureSpawn(self);
+
+            // Don't modify AI behaviour for DM-spawned creatures.
+            if (self.GetLocalInt("DM_SPAWNED") == TRUE) return false;
 
             string creatureScript = self.GetLocalString("BEHAVIOUR");
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");

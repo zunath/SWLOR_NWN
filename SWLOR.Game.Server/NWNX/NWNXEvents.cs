@@ -273,7 +273,7 @@ namespace SWLOR.Game.Server.NWNX
 
         public NWObject OnDMGiveXP_GetTarget()
         {
-            return GetEventDataObject("TARGET");
+            return GetEventDataObject("OBJECT");
         }
 
         public int OnDMGiveLevels_GetAmount()
@@ -283,7 +283,7 @@ namespace SWLOR.Game.Server.NWNX
 
         public NWObject OnDMGiveLevels_GetTarget()
         {
-            return GetEventDataObject("TARGET");
+            return GetEventDataObject("OBJECT");
         }
 
         public int OnDMGiveGold_GetAmount()
@@ -293,7 +293,50 @@ namespace SWLOR.Game.Server.NWNX
 
         public NWObject OnDMGiveGold_GetTarget()
         {
-            return GetEventDataObject("TARGET");
+            return GetEventDataObject("OBJECT");
+        }
+
+        public NWArea OnDMSpawnObject_GetArea()
+        {
+            return GetEventDataObject("AREA").Object;
+        }
+        
+        public NWObject OnDMSpawnObject_GetObject()
+        {
+            return GetEventDataObject("OBJECT");
+        }
+
+        public int OnDMSpawnObject_GetObjectType()
+        {
+            // For whatever reason, NWNX uses different object type IDs from standard NWN.
+            // I don't want to deal with this nonsense so we'll convert to the correct IDs here.
+            int nwnxObjectTypeID = GetEventDataInt("OBJECT_TYPE");
+
+            switch (nwnxObjectTypeID)
+            {
+                case 5: return NWScript.OBJECT_TYPE_CREATURE;
+                case 6: return NWScript.OBJECT_TYPE_ITEM;
+                case 7: return NWScript.OBJECT_TYPE_TRIGGER;
+                case 9: return NWScript.OBJECT_TYPE_PLACEABLE;
+                case 12: return NWScript.OBJECT_TYPE_WAYPOINT;
+                case 13: return NWScript.OBJECT_TYPE_ENCOUNTER;
+                case 15: return 15; // Only exception are portals, whatever those are!
+            }
+
+            throw new Exception("Invalid object type: " + nwnxObjectTypeID);
+        }
+
+        public float OnDMSpawnObject_GetPositionX()
+        {
+            return GetEventDataFloat("POS_X");
+        }
+        public float OnDMSpawnObject_GetPositionY()
+        {
+            return GetEventDataFloat("POS_Y");
+        }
+        public float OnDMSpawnObject_GetPositionZ()
+        {
+            return GetEventDataFloat("POS_Z");
         }
 
         /// <summary>

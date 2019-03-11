@@ -158,6 +158,10 @@ namespace SWLOR.Game.Server.Service
             {
                 description += _color.Orange("Recommended Level: ") + examinedItem.RecommendedLevel + "\n";
             }
+            if (examinedItem.LevelIncrease > 0)
+            {
+                description += _color.Orange("Level Increase: ") + examinedItem.LevelIncrease + "\n";
+            }
             if (examinedItem.AssociatedSkillType > 0)
             {
                 Skill skill = _data.Get<Skill>((int)examinedItem.AssociatedSkillType);

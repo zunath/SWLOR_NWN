@@ -576,6 +576,12 @@ namespace SWLOR.Game.Server.Service
                            (x.XP > 0 || x.Rank > 0);
                 }).ToList();
 
+            // There's an edge case where players can be at the cap, but we're unable to find a skill to decay.
+            // In this scenario we can't go any further. Return false which will cause the GiveSkillXP method to 
+            // bail out with no changes to XP or decayed skills.
+            if (skillsPossibleToDecay.Count <= 0)
+                return false;
+
             while (xp > 0)
             {
                 int skillIndex = _random.Random(skillsPossibleToDecay.Count);

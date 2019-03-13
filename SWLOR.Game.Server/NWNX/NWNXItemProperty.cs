@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.NWNX
 
             var n = new ItemPropertyUnpacked
             {
+                ItemPropertyID = NWNX_GetReturnValueInt(NWNX_ItemProperty, FunctionName),
                 Property = NWNX_GetReturnValueInt(NWNX_ItemProperty, FunctionName),
                 SubType = NWNX_GetReturnValueInt(NWNX_ItemProperty, FunctionName),
                 CostTable = NWNX_GetReturnValueInt(NWNX_ItemProperty, FunctionName),
@@ -39,7 +40,7 @@ namespace SWLOR.Game.Server.NWNX
             return n;
         }
 
-        public ItemProperty NWNX_ItemProperty_PackIP(ItemPropertyUnpacked n)
+        public ItemProperty PackIP(ItemPropertyUnpacked n)
         {
             const string sFunc = "PackIP";
 
@@ -55,6 +56,7 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_PushArgumentInt(NWNX_ItemProperty, sFunc, n.CostTable);
             NWNX_PushArgumentInt(NWNX_ItemProperty, sFunc, n.SubType);
             NWNX_PushArgumentInt(NWNX_ItemProperty, sFunc, n.Property);
+            NWNX_PushArgumentInt(NWNX_ItemProperty, sFunc, n.ItemPropertyID);
 
             NWNX_CallFunction(NWNX_ItemProperty, sFunc);
             return NWNX_GetReturnValueItemProperty(NWNX_ItemProperty, sFunc);

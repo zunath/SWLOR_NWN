@@ -185,7 +185,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
                         int levelIncrease = (int)(maxBonuses / levelsPerBonus);
                         // Roll succeeded. Create item.
                         bonusIP.CostTableValue = maxBonuses;
-                        ItemProperty bonusIPPacked = _nwnxItemProperty.NWNX_ItemProperty_PackIP(bonusIP);
+                        ItemProperty bonusIPPacked = _nwnxItemProperty.PackIP(bonusIP);
                         NWItem item = _.CreateItemOnObject(resref, _player);
                         item.RecommendedLevel = levelIncrease;
                         _biowareXP2.IPSafeAddItemProperty(item, bonusIPPacked, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
@@ -207,7 +207,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
                     {
                         int levelIncrease = (int)(amount / levelsPerBonus);
                         bonusIP.CostTableValue = amount;
-                        ItemProperty bonusIPPacked = _nwnxItemProperty.NWNX_ItemProperty_PackIP(bonusIP);
+                        ItemProperty bonusIPPacked = _nwnxItemProperty.PackIP(bonusIP);
                         NWItem item = _.CreateItemOnObject(resref, _player);
                         item.RecommendedLevel = levelIncrease;
                         _biowareXP2.IPSafeAddItemProperty(item, bonusIPPacked, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);

@@ -46,6 +46,14 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
                 return false;
             }
 
+            // Only crafted items can be reassembled.
+            if (string.IsNullOrWhiteSpace(item.GetLocalString("CRAFTER_PLAYER_ID")))
+            {
+                _item.ReturnItem(player, item);
+                player.SendMessage("Only crafted items may be reassembled.");
+                return false;
+            }
+
             // DMs cannot reassemble because they don't have the necessary DB records.
             if (player.IsDM)
             {

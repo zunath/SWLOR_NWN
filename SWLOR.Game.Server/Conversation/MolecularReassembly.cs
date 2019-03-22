@@ -150,7 +150,7 @@ namespace SWLOR.Game.Server.Conversation
             header += ProcessPropertyDetails(item.MedicineBonus, componentType.Name, "Medicine", 3);
             header += ProcessPropertyDetails(item.HPRegenBonus, componentType.Name, "HP Regen", 3);
             header += ProcessPropertyDetails(item.FPRegenBonus, componentType.Name, "FP Regen", 3);
-            header += ProcessPropertyDetails(item.BaseAttackBonus, componentType.Name, "BAB", 3, 3);
+            header += ProcessPropertyDetails(item.BaseAttackBonus, componentType.Name, "BAB", 3, 6);
             header += ProcessPropertyDetails(item.StructureBonus, componentType.Name, "Structure Bonus", 3);
             header += ProcessPropertyDetails(item.SneakAttackBonus, componentType.Name, "Sneak Attack", 3);
             header += ProcessPropertyDetails(item.DamageBonus, componentType.Name, "Damage", 3);

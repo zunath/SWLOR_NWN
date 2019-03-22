@@ -370,7 +370,7 @@ namespace SWLOR.Game.Server.Service
                             {
                                 int itemLevel = item.RecommendedLevel;
                                 int delta = itemLevel - rank;
-                                int itemBAB = item.BaseAttackBonus;
+                                int itemBAB = item.BaseAttackBonus / 3;
                                 if (delta >= 1) itemBAB--;
                                 if (delta > 0) itemBAB = itemBAB - delta / 5;
 

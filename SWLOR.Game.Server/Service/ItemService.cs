@@ -338,7 +338,7 @@ namespace SWLOR.Game.Server.Service
             {
                 if (WeaponBaseItemTypes.Contains(examinedItem.BaseItemType))
                 {
-                    description += _color.Orange("Base Attack Bonus: ") + examinedItem.BaseAttackBonus + "\n";
+                    description += _color.Orange("Base Attack Bonus: ") + examinedItem.BaseAttackBonus + " (/3)\n";
                 }
                 else
                 {
@@ -378,7 +378,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         case (int)ComponentBonusType.ACUp:
                         {
-                            description += _color.Cyan("AC can only be applied to Shields, Armo(u)r and Helmets.  On other items, it will be ignored.\n");
+                            description += _color.Cyan("AC can only be applied to Shields, Armor and Helmets.  On other items, it will be ignored.\n");
                             break;
                         }
                         case (int)ComponentBonusType.DamageUp:

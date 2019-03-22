@@ -18,6 +18,8 @@ using SWLOR.Game.Server.Mod.Contracts;
 using NWN;
 using SWLOR.Game.Server.AreaInstance.Contracts;
 using SWLOR.Game.Server.DoorRule.Contracts;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.Messaging.Contracts;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Perk;
@@ -253,7 +255,8 @@ namespace SWLOR.Game.Server
             builder.RegisterType<BackgroundThreadManager>()
                 .As<IBackgroundThreadManager>()
                 .SingleInstance();
-            
+            builder.RegisterInstance(MessageHub.Instance).As<IMessageHub>().SingleInstance();
+
             // Game Objects
             builder.RegisterType<NWObject>();
             builder.RegisterType<NWCreature>();

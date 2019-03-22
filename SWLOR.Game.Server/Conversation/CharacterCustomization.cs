@@ -466,7 +466,7 @@ namespace SWLOR.Game.Server.Conversation
             int[] BothanHairColors = { 2, 3, };
             int[] ChissHairColors = { 23, 51, 63 };
             int[] ZabrakHairColors = { 0 };
-            int[] TwilekHairColors = { 0 };
+            int[] TwilekHairColors = { }; // All
             int[] MirialanHairColors = { 0, 1, 2, 3, 4, 5, 6, 7, 14, 15, 16, 17, 167 };
             int[] EchaniHairColors = { 16, 62 };
             int[] CyborgHairColors = { 16, 17, 18, 19, 20, 21 };

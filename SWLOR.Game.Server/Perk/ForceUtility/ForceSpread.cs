@@ -93,6 +93,8 @@ namespace SWLOR.Game.Server.Perk.ForceUtility
                     break;
                 default: return;
             }
+
+            _.PlaySound("v_useforce");
             _customEffect.ApplyCustomEffect(player, targetCreature, CustomEffectType.ForceSpread, duration, perkLevel, uses + "," + range);
             _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceUtility, null);
         }

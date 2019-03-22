@@ -84,6 +84,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 int fpRecover = (int)(dbPlayer.MaxFP * (0.01f * baseHeal));
                 int hpRecover = (int)(target.MaxHP * (0.01f * baseHeal));
 
+                _.PlaySound("use_bacta");
                 _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectResurrection(), target);
                 _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(hpRecover), target);
                 dbPlayer.CurrentFP = fpRecover;

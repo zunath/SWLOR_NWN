@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Event.Module
         public bool Run(params object[] args)
         {
             int actionTypeID = Convert.ToInt32(args[0]);
-            string details = BuildDetails(actionTypeID);
+            string details = ProcessEventAndBuildDetails(actionTypeID);
             
             NWObject dm = Object.OBJECT_SELF;
             
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Event.Module
             return true;
         }
 
-        private string BuildDetails(int eventID)
+        private string ProcessEventAndBuildDetails(int eventID)
         {
             string details = string.Empty;
             NWObject target;
@@ -55,6 +55,16 @@ namespace SWLOR.Game.Server.Event.Module
 
             switch (eventID)
             {
+                case 1: // Spawn Creature
+                    string areaName = _nwnxEvents.OnDMSpawnObject_GetArea().Name;
+                    NWCreature creature = _nwnxEvents.OnDMSpawnObject_GetObject().Object;
+                    int objectTypeID = _nwnxEvents.OnDMSpawnObject_GetObjectType();
+                    float x = _nwnxEvents.OnDMSpawnObject_GetPositionX();
+                    float y = _nwnxEvents.OnDMSpawnObject_GetPositionY();
+                    float z = _nwnxEvents.OnDMSpawnObject_GetPositionZ();
+                    creature.SetLocalInt("DM_SPAWNED", NWScript.TRUE);
+                    details = areaName + "," + creature.Name + "," + objectTypeID + "," + x + "," + y + "," + z;
+                    break;
                 case 22: // Give XP
                     amount = _nwnxEvents.OnDMGiveXP_GetAmount();
                     target = _nwnxEvents.OnDMGiveXP_GetTarget();

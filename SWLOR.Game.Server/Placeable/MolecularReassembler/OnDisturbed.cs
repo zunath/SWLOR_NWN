@@ -46,6 +46,22 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
                 return false;
             }
 
+            // Only crafted items can be reassembled.
+            if (string.IsNullOrWhiteSpace(item.GetLocalString("CRAFTER_PLAYER_ID")))
+            {
+                _item.ReturnItem(player, item);
+                player.SendMessage("Only crafted items may be reassembled.");
+                return false;
+            }
+
+            // DMs cannot reassemble because they don't have the necessary DB records.
+            if (player.IsDM)
+            {
+                _item.ReturnItem(player, item);
+                player.SendMessage("DMs cannot reassemble items at this time.");
+                return false;
+            }
+
             // Serialize the item into a string and store it into the temporary data for this player. Destroy the physical item.
             var model = _craft.GetPlayerCraftingData(player);
             model.SerializedSalvageItem = _serialization.Serialize(item);

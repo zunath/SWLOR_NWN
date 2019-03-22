@@ -115,6 +115,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
                 player.SendMessage("Lucky force push!");
             }
 
+            _.PlaySound("v_imp_frcpush");
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_POSITIVE), target);
             _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectKnockdown(), target, length);
             _combat.AddTemporaryForceDefense(target.Object, ForceAbilityType.Light);

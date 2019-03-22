@@ -81,11 +81,12 @@ namespace SWLOR.Game.Server.Conversation
             NWPlaceable terminal = Object.OBJECT_SELF;
             DateTime now = DateTime.UtcNow;
             Guid boardID = new Guid(terminal.GetLocalString("MESSAGE_BOARD_ID"));
+            bool isDM = player.IsDM;
             var messages = _data.Where<Message>(x => x.BoardID == boardID && x.DateExpires > now && x.DateRemoved == null)
                 .OrderByDescending(o => o.DatePosted);
 
             ClearPageResponses("MainPage");
-            AddResponseToPage("MainPage", _color.Green("Create New Post"));
+            AddResponseToPage("MainPage", _color.Green("Create New Post"), !isDM);
             foreach (var message in messages)
             {
                 string title = message.Title;
@@ -248,6 +249,8 @@ namespace SWLOR.Game.Server.Conversation
                         _data.SubmitDataChange(post, DatabaseActionType.Insert);
                         _.TakeGoldFromCreature(price, player, TRUE);
 
+                        player.DeleteLocalInt("MESSAGE_BOARD_LISTENING");
+                        player.DeleteLocalString("MESSAGE_BOARD_TEXT");
                         LoadMainPage();
                         ClearNavigationStack();
                         ChangePage("MainPage", false);
@@ -263,6 +266,17 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
         {
+            ClearTempData();
+        }
+
+        public override void EndDialog()
+        {
+            ClearTempData();
+        }
+
+        private void ClearTempData()
+        {
+            NWPlayer player = GetPC();
             var model = GetDialogCustomData<Model>();
             model.IsConfirming = false;
             model.Title = string.Empty;
@@ -271,10 +285,7 @@ namespace SWLOR.Game.Server.Conversation
             SetResponseText("CreatePostPage", 3, "Post Message");
             player.DeleteLocalInt("MESSAGE_BOARD_LISTENING");
             player.DeleteLocalString("MESSAGE_BOARD_TEXT");
-        }
 
-        public override void EndDialog()
-        {
         }
     }
 }

@@ -186,7 +186,7 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
                 _customEffect.SetForceSpreadUses(player, spread.Uses);
                 _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceUtility, null);
             }
-
+            _.PlaySound("v_imp_heal");
             _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceSupport, target.Object);
         }
         

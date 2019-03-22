@@ -171,6 +171,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
                 _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, target);
             });
 
+            _.PlaySound("v_useforce");
             _combat.AddTemporaryForceDefense(target.Object, ForceAbilityType.Light);
         }
 

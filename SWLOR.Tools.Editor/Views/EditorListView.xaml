@@ -54,9 +54,6 @@
 
                 </views:SpawnEditorView>
             </TabItem>
-            <TabItem Header="Skills">
-
-            </TabItem>
             <TabItem Header="Perks">
 
             </TabItem>

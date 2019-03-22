@@ -158,6 +158,10 @@ namespace SWLOR.Game.Server.Service
             {
                 description += _color.Orange("Recommended Level: ") + examinedItem.RecommendedLevel + "\n";
             }
+            if (examinedItem.LevelIncrease > 0)
+            {
+                description += _color.Orange("Level Increase: ") + examinedItem.LevelIncrease + "\n";
+            }
             if (examinedItem.AssociatedSkillType > 0)
             {
                 Skill skill = _data.Get<Skill>((int)examinedItem.AssociatedSkillType);
@@ -458,10 +462,17 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = _.GetPCItemLastUnequippedBy();
             NWItem oItem = _.GetPCItemLastUnequipped();
 
+            // Remove lightsaber hum effect.
+            foreach (var effect in player.Effects.Where(x=> _.GetEffectTag(x) == "LIGHTSABER_HUM"))
+            {
+                _.RemoveEffect(player, effect);
+            }
+
             // Handle lightsaber sounds
             if (oItem.CustomItemType == CustomItemType.Lightsaber ||
                 oItem.CustomItemType == CustomItemType.Saberstaff)
             {
+  
                 player.AssignCommand(() =>
                 {
                     _.PlaySound("saberoff");
@@ -537,14 +548,17 @@ namespace SWLOR.Game.Server.Service
                 NWPlayer player = _.GetPCItemLastEquippedBy();
                 NWItem oItem = (_.GetPCItemLastEquipped());
                 int baseItemType = oItem.BaseItemType;
+                Effect eEffect = _.EffectVisualEffect(579);
+                eEffect = _.TagEffect(eEffect, "LIGHTSABER_HUM");
 
                 // Handle lightsaber sounds
                 if (oItem.CustomItemType == CustomItemType.Lightsaber ||
                     oItem.CustomItemType == CustomItemType.Saberstaff)
                 {
-                    player.AssignCommand(() =>
-                    {
-                        _.PlaySound("saberon");
+                    _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, eEffect, player);
+                    player.AssignCommand(() =>  
+                    {   
+                        _.PlaySound("saberon");                 
                     });
                 }
 

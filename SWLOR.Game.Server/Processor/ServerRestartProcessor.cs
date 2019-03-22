@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Processor
                     player.FloatingText(message);
 
                     // If the player has a lease which is expiring in <= 24 hours, notify them.
-                    int leasesExpiring = _data.Where<PCBase>(x => x.DateRentDue.AddHours(-24) <= now).Count;
+                    int leasesExpiring = _data.Where<PCBase>(x => x.DateRentDue.AddHours(-24) <= now && x.PlayerID == player.GlobalID).Count;
 
                     if (leasesExpiring > 0)
                     {

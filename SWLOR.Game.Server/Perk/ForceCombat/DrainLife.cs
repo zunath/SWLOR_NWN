@@ -153,7 +153,8 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
                 _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(heal), player);
                 _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_BEAM_MIND), target, 1.0f);
             });
-            
+
+            _.PlaySound("v_pro_drain");
             _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceCombat, target.Object);
             _combat.AddTemporaryForceDefense(target.Object, ForceAbilityType.Dark);
         }

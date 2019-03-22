@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
             xp += ProcessProperty(item.MedicineBonus, 3, ComponentBonusType.MedicineUp);
             xp += ProcessProperty(item.HPRegenBonus, 3, ComponentBonusType.HPRegenUp);
             xp += ProcessProperty(item.FPRegenBonus, 3, ComponentBonusType.FPRegenUp);
-            xp += ProcessProperty(item.BaseAttackBonus, 3, ComponentBonusType.BaseAttackBonusUp);
+            xp += ProcessProperty(item.BaseAttackBonus, 3, ComponentBonusType.BaseAttackBonusUp, 3f);
             xp += ProcessProperty(item.StructureBonus, 3, ComponentBonusType.StructureBonusUp);
             xp += ProcessProperty(item.SneakAttackBonus, 3, ComponentBonusType.SneakAttackUp);
             xp += ProcessProperty(item.DamageBonus, 3, ComponentBonusType.DamageUp);
@@ -182,7 +182,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
                 {
                     if (success)
                     {
-                        int levelIncrease = (int)(maxBonuses / levelsPerBonus);
+                        int levelIncrease = (int)(maxBonuses * levelsPerBonus);
                         // Roll succeeded. Create item.
                         bonusIP.CostTableValue = maxBonuses;
                         ItemProperty bonusIPPacked = _nwnxItemProperty.PackIP(bonusIP);
@@ -205,7 +205,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
                 {
                     if (success)
                     {
-                        int levelIncrease = (int)(amount / levelsPerBonus);
+                        int levelIncrease = (int)(amount * levelsPerBonus);
                         bonusIP.CostTableValue = amount;
                         ItemProperty bonusIPPacked = _nwnxItemProperty.PackIP(bonusIP);
                         NWItem item = _.CreateItemOnObject(resref, _player);

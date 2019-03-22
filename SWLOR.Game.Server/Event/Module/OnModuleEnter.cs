@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IRaceService _race;
         private readonly IPlayerMigrationService _migration;
         private readonly IMarketService _market;
+        private readonly IPerkService _perk;
 
         public OnModuleEnter(
             INWScript script,
@@ -38,7 +39,8 @@ namespace SWLOR.Game.Server.Event.Module
             IDataService data,
             IRaceService race,
             IPlayerMigrationService migration,
-            IMarketService market)
+            IMarketService market,
+            IPerkService perk)
         {
             _ = script;
             _player = player;
@@ -54,6 +56,7 @@ namespace SWLOR.Game.Server.Event.Module
             _race = race;
             _migration = migration;
             _market = market;
+            _perk = perk;
         }
 
         public bool Run(params object[] args)
@@ -71,6 +74,7 @@ namespace SWLOR.Game.Server.Event.Module
             _player.InitializePlayer(player);
             _data.CachePlayerData(player);
             _skill.OnModuleEnter();
+            _perk.OnModuleEnter();
             _player.LoadCharacter(player);
             _migration.OnModuleEnter();
             _player.ShowMOTD(player);

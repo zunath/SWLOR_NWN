@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Bioware.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Messaging.Contracts;
+using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Perk;
@@ -22,26 +23,41 @@ namespace SWLOR.Game.Server.Service
         private readonly INWScript _;
         private readonly IColorTokenService _color;
         private readonly IDataService _data;
-        private readonly IBiowareXP2 _biowareXP2;
         private readonly INWNXCreature _nwnxCreature;
         private readonly INWNXPlayerQuickBarSlot _nwnxQBS;
         private readonly INWNXPlayer _nwnxPlayer;
+        private readonly IMessageHub _messageHub;
+        private readonly AppCache _cache;
 
         public PerkService(INWScript script,
             IColorTokenService color,
             IDataService data,
-            IBiowareXP2 biowareXP2,
             INWNXCreature nwnxCreature,
             INWNXPlayerQuickBarSlot nwnxQBS,
-            INWNXPlayer nwnxPlayer)
+            INWNXPlayer nwnxPlayer,
+            IMessageHub messageHub,
+            AppCache cache)
         {
             _ = script;
             _color = color;
             _data = data;
-            _biowareXP2 = biowareXP2;
             _nwnxCreature = nwnxCreature;
             _nwnxQBS = nwnxQBS;
             _nwnxPlayer = nwnxPlayer;
+            _messageHub = messageHub;
+            _cache = cache;
+
+            SubscribeEvents();
+        }
+
+        private void SubscribeEvents()
+        {
+            // The player perk level cache gets refreshed on the following events.
+            _messageHub.Subscribe<SkillDecayedMessage>(message => CacheAllPerkLevels(message.Player));
+            _messageHub.Subscribe<SkillGainedMessage>(message => CacheAllPerkLevels(message.Player));
+            _messageHub.Subscribe<PerkUpgradedMessage>(message => CacheEffectivePerkLevel(message.Player, message.PerkID));
+            _messageHub.Subscribe<PerkRefundedMessage>(message => CacheEffectivePerkLevel(message.Player, message.PerkID));
+            _messageHub.Subscribe<QuestCompletedMessage>(message => CacheAllPerkLevels(message.Player));
         }
 
         private List<PCPerk> GetPCPerksByExecutionType(NWPlayer oPC, PerkExecutionType executionType)
@@ -62,6 +78,30 @@ namespace SWLOR.Game.Server.Service
                 return true;
             }).ToList();
 
+        }
+
+        private void CacheAllPerkLevels(NWPlayer player)
+        {
+            var perks = _data.Where<PCPerk>(x => x.PlayerID == player.GlobalID);
+            foreach (var perk in perks)
+            {
+                CacheEffectivePerkLevel(player, perk.PerkID);
+            }
+        }
+
+        public void OnModuleEnter()
+        {
+            // The first time a player logs in, build their effective perk level cache.
+            // This cache gets used all over to determine whether the player can use a perk.
+            // It's cheaper for us to perform this calculation up front than to do it later.
+
+            NWPlayer player = _.GetEnteringObject();
+            if (!player.IsPlayer) return;
+            
+            // Are the player's perks already cached? This has already run for this player. Exit.
+            if (_cache.PlayerEffectivePerkLevels.ContainsKey(player.GlobalID)) return;
+            
+            CacheAllPerkLevels(player);
         }
 
         public void OnModuleItemEquipped()
@@ -116,10 +156,10 @@ namespace SWLOR.Game.Server.Service
             return GetPCPerkLevel(player, (int)perkType);
         }
 
-        public int GetPCPerkLevel(NWPlayer player, int perkID)
+        public int GetPCPerkLevel(NWPlayer player, int perkTypeID)
         {
             if (!player.IsPlayer) return -1;
-            return GetPCEffectivePerkLevel(player, perkID);
+            return GetPCEffectivePerkLevel(player, perkTypeID);
         }
 
         public void OnHitCastSpell(NWPlayer oPC)
@@ -347,6 +387,7 @@ namespace SWLOR.Game.Server.Service
                     perkScript.OnPurchased(oPC, pcPerk.PerkLevel);
                 });
 
+                _messageHub.Publish(new PerkUpgradedMessage(oPC, perkID));
             }
             else
             {
@@ -367,9 +408,37 @@ namespace SWLOR.Game.Server.Service
         /// <returns></returns>
         private int GetPCEffectivePerkLevel(NWPlayer player, int perkID)
         {
-            using(new Profiler("PerkService::GetPCEffectivePerkLevel"))
+            // Effective levels are cached because they're so frequently used.
+            // They get recached on the following events:
+            //      - Player log-in
+            //      - Player gains a skill rank
+            //      - Player's skill decays
+            //      - Player buys a perk
+            //      - Player refunds a perk
+            //      - Player completes a quest
+            if (!_cache.PlayerEffectivePerkLevels.ContainsKey(player.GlobalID)) return 0;
+            var levels = _cache.PlayerEffectivePerkLevels[player.GlobalID];
+            if (!levels.ContainsKey(perkID)) return 0;
+            return levels[perkID];
+        }
+
+        public void CacheEffectivePerkLevel(NWPlayer player, int perkID)
+        {
+            if (!_cache.PlayerEffectivePerkLevels.ContainsKey(player.GlobalID))
             {
-                var pcSkills = _data.Where<PCSkill>(x => x.PlayerID == player.GlobalID).ToList();
+                _cache.PlayerEffectivePerkLevels.Add(player.GlobalID, new Dictionary<int, int>());
+            }
+
+            int perkLevel = CalculateEffectivePerkLevel(player, perkID);
+            var levels = _cache.PlayerEffectivePerkLevels[player.GlobalID];
+            levels[perkID] = perkLevel;
+        }
+
+        private int CalculateEffectivePerkLevel(NWPlayer player, int perkID)
+        {
+            using (new Profiler("PerkService::CalculateEffectivePerkLevel"))
+            {
+                var pcSkills = _data.Where<PCSkill>(x => x.PlayerID == player.GlobalID);
                 // Get the PC's perk information and all of the perk levels at or below their current level.
                 var pcPerk = _data.SingleOrDefault<PCPerk>(x => x.PlayerID == player.GlobalID && x.PerkID == perkID);
                 if (pcPerk == null) return 0;
@@ -379,7 +448,7 @@ namespace SWLOR.Game.Server.Service
                     .Where<PerkLevel>(x => x.PerkID == perkID && x.Level <= pcPerk.PerkLevel)
                     .OrderByDescending(o => o.Level);
 
-                using (new Profiler("PerkService::GetPCEffectivePerkLevel::PerkLevelIteration"))
+                using (new Profiler("PerkService::CalculateEffectivePerkLevel::PerkLevelIteration"))
                 {
 
                     // Iterate over each perk level. If player doesn't meet the requirements, the effective level is dropped.
@@ -407,7 +476,7 @@ namespace SWLOR.Game.Server.Service
                         // Check the quest requirements.
                         foreach (var req in questRequirements)
                         {
-                            var pcQuest = _data.SingleOrDefault<PCQuestStatus>(q => q.PlayerID == player.GlobalID && q.QuestID == req.RequiredQuestID );
+                            var pcQuest = _data.SingleOrDefault<PCQuestStatus>(q => q.PlayerID == player.GlobalID && q.QuestID == req.RequiredQuestID);
                             if (pcQuest == null || pcQuest.CompletionDate == null)
                             {
                                 effectiveLevel--;

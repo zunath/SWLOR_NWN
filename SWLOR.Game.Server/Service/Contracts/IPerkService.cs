@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Service.Contracts
 {
     public interface IPerkService
     {
+        void OnModuleEnter();
         void OnModuleItemEquipped();
         void OnModuleItemUnequipped();
         int GetPCPerkLevel(NWPlayer player, PerkType perkType);
@@ -23,5 +24,6 @@ namespace SWLOR.Game.Server.Service.Contracts
         void DoPerkUpgrade(NWPlayer player, int perkID, bool freeUpgrade = false);
         void DoPerkUpgrade(NWPlayer player, PerkType perkType, bool freeUpgrade = false);
         void OnHitCastSpell(NWPlayer oPC);
+        void CacheEffectivePerkLevel(NWPlayer player, int perkID);
     }
 }

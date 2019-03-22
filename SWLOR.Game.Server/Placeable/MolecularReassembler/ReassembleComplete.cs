@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
             xp += ProcessProperty(item.MedicineBonus, 3, ComponentBonusType.MedicineUp);
             xp += ProcessProperty(item.HPRegenBonus, 3, ComponentBonusType.HPRegenUp);
             xp += ProcessProperty(item.FPRegenBonus, 3, ComponentBonusType.FPRegenUp);
-            xp += ProcessProperty(item.BaseAttackBonus, 3, ComponentBonusType.BaseAttackBonusUp, 3f);
+            xp += ProcessProperty(item.BaseAttackBonus, 3, ComponentBonusType.BaseAttackBonusUp, 6f);
             xp += ProcessProperty(item.StructureBonus, 3, ComponentBonusType.StructureBonusUp);
             xp += ProcessProperty(item.SneakAttackBonus, 3, ComponentBonusType.SneakAttackUp);
             xp += ProcessProperty(item.DamageBonus, 3, ComponentBonusType.DamageUp);

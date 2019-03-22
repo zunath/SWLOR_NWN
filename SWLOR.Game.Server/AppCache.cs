@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server
         public Dictionary<string, NWObject> VisibilityObjects { get; set; }
         public List<Guid> PCEffectsForRemoval { get; set; }
         public List<NWObject> ConnectedDMs { get; set; }
+        public Dictionary<Guid, Dictionary<int, int>> PlayerEffectivePerkLevels { get; set; }
 
         public AppCache()
         {
@@ -41,7 +42,7 @@ namespace SWLOR.Game.Server
             VisibilityObjects = new Dictionary<string, NWObject>();
             PCEffectsForRemoval = new List<Guid>();
             ConnectedDMs = new List<NWObject>();
-            
+            PlayerEffectivePerkLevels = new Dictionary<Guid, Dictionary<int, int>>();
 
             for (int x = 1; x <= DialogService.NumberOfDialogs; x++)
             {

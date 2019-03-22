@@ -1393,6 +1393,7 @@
     <Compile Include="Service\RandomService.cs" />
     <Compile Include="Service\ModService.cs" />
     <Compile Include="Service\ResourceService.cs" />
+    <Compile Include="Service\RoleplayService.cs" />
     <Compile Include="Service\SearchService.cs" />
     <Compile Include="Service\SerializationService.cs" />
     <Compile Include="Service\SkillService.cs" />
@@ -2241,6 +2242,7 @@
     <EmbeddedResource Include="Data\Migrations\2019-03-02.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-03-03.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-03-11.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-03-13.1.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-07.1.sql" />

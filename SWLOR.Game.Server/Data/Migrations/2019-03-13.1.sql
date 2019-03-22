@@ -1,0 +1,7 @@
+﻿
+ALTER TABLE dbo.Player
+ADD RoleplayPoints INT NOT NULL DEFAULT 0
+
+
+ALTER TABLE dbo.Player
+ADD RoleplayXP INT NOT NULL DEFAULT 0

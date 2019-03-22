@@ -274,22 +274,12 @@ namespace SWLOR.Game.Server.Service
         {
             using (new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats"))
             {
-                List<PCSkill> pcArmorSkills;
-                using (new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::GetPCArmorSkills"))
-                {
-                    pcArmorSkills = _data.Where<PCSkill>(x => x.PlayerID == player.GlobalID && 
-                                                              (x.SkillID == (int)SkillType.HeavyArmor ||
-                                                               x.SkillID == (int)SkillType.LightArmor ||
-                                                               x.SkillID == (int)SkillType.ForceArmor ||
-                                                               x.SkillID == (int)SkillType.MartialArts))
-                        .ToList();
-
-                }
-
-                int heavyRank = pcArmorSkills.Single(x => x.SkillID == (int)SkillType.HeavyArmor).Rank;
-                int lightRank = pcArmorSkills.Single(x => x.SkillID == (int)SkillType.LightArmor).Rank;
-                int forceRank = pcArmorSkills.Single(x => x.SkillID == (int)SkillType.ForceArmor).Rank;
-                int martialRank = pcArmorSkills.Single(x => x.SkillID == (int)SkillType.MartialArts).Rank;
+                var pcSkills = _data.Where<PCSkill>(x => x.PlayerID == player.GlobalID);
+                
+                int heavyRank = pcSkills.Single(x => x.SkillID == (int)SkillType.HeavyArmor).Rank;
+                int lightRank = pcSkills.Single(x => x.SkillID == (int)SkillType.LightArmor).Rank;
+                int forceRank = pcSkills.Single(x => x.SkillID == (int)SkillType.ForceArmor).Rank;
+                int martialRank = pcSkills.Single(x => x.SkillID == (int)SkillType.MartialArts).Rank;
 
                 EffectiveItemStats stats = new EffectiveItemStats();
                 stats.EnmityRate = 1.0f;
@@ -313,7 +303,7 @@ namespace SWLOR.Game.Server.Service
                         
                         using(new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::ItemLoop::GetRank"))
                         {
-                            rank = _data.Single<PCSkill>(x => x.PlayerID == player.GlobalID && x.SkillID == (int)skill).Rank;
+                            rank = pcSkills.Single(x => x.SkillID == (int)skill).Rank;
                         }
 
                         using (new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::ItemLoop::StatAdjustments"))

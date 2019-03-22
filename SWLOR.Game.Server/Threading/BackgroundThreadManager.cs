@@ -15,15 +15,6 @@ namespace SWLOR.Game.Server.Threading
         public BackgroundThreadManager(
             IDatabaseThread databaseThread)
         {
-            // Temporarily double thread limit to try to get us running for longer than 8 hours.
-            // Not a long-term solution, but we'll see if it works in the meantime.
-            const int MaxThreads = 250;
-            bool success = ThreadPool.SetMaxThreads(MaxThreads, MaxThreads);
-            if (!success)
-            {
-                throw new Exception("Failed to set max threads to " + MaxThreads + ".");
-            }
-
             _dbThread = databaseThread;
             _dbWorker = new Thread(x => ProcessDatabaseThread());
             _dbWorker.IsBackground = true;

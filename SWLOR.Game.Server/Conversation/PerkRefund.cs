@@ -6,6 +6,8 @@ using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging.Contracts;
+using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Perk;
 using SWLOR.Game.Server.Service.Contracts;
@@ -30,6 +32,7 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IPlayerStatService _stat;
         private readonly ITimeService _time;
         private readonly IBackgroundService _background;
+        private readonly IMessageHub _messageHub;
 
         public PerkRefund(
             INWScript script, 
@@ -40,7 +43,8 @@ namespace SWLOR.Game.Server.Conversation
             ICustomEffectService customEffect,
             IPlayerStatService stat,
             ITimeService time, 
-            IBackgroundService background)
+            IBackgroundService background,
+            IMessageHub messageHub)
             : base(script, dialog)
         {
             _data = data;
@@ -50,6 +54,7 @@ namespace SWLOR.Game.Server.Conversation
             _stat = stat;
             _time = time;
             _background = background;
+            _messageHub = messageHub;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -251,6 +256,8 @@ namespace SWLOR.Game.Server.Conversation
             {
                 perkAction?.OnRemoved(player);
             });
+
+            _messageHub.Publish(new PerkRefundedMessage(player, pcPerk.PerkID));
         }
 
         private bool IsGrantedByBackground(PerkType perkType)

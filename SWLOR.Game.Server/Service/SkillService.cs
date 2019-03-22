@@ -9,6 +9,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.Messaging.Contracts;
+using SWLOR.Game.Server.Messaging.Messages;
 using static NWN.NWScript;
 using Object = NWN.Object;
 using SWLOR.Game.Server.NWNX.Contracts;
@@ -27,6 +30,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IPlayerStatService _playerStat;
         private readonly IItemService _item;
         private readonly IDataService _data;
+        private readonly IMessageHub _messageHub;
         private readonly AppCache _cache;
         
         public SkillService(
@@ -37,6 +41,7 @@ namespace SWLOR.Game.Server.Service
             IPlayerStatService playerStat,
             IItemService item,
             IDataService data,
+            IMessageHub messageHub,
             AppCache cache)
         {
             _ = script;
@@ -46,6 +51,7 @@ namespace SWLOR.Game.Server.Service
             _playerStat = playerStat;
             _item = item;
             _data = data;
+            _messageHub = messageHub;
             _cache = cache;
         }
 
@@ -165,6 +171,8 @@ namespace SWLOR.Game.Server.Service
                     RemoveEquipmentPenalties(item);
                     ApplyEquipmentPenalties(oPC, item);
                 }
+                
+                _messageHub.Publish(new SkillGainedMessage(oPC, skillID));
             }
         
             _data.SubmitDataChange(pcSkill, DatabaseActionType.Update);
@@ -586,7 +594,8 @@ namespace SWLOR.Game.Server.Service
             {
                 int skillIndex = _random.Random(skillsPossibleToDecay.Count);
                 PCSkill decaySkill = skillsPossibleToDecay[skillIndex];
-                int totalDecaySkillXP = totalXPs.Find(x => x.SkillID == decaySkill.SkillID).TotalSkillXP; 
+                int totalDecaySkillXP = totalXPs.Find(x => x.SkillID == decaySkill.SkillID).TotalSkillXP;
+                int oldRank = decaySkill.Rank;
 
                 if (totalDecaySkillXP >= xp)
                 {
@@ -611,6 +620,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     // Get the XP amounts required per level, in ascending order, so we can see how many levels we're now meant to have. 
                     List<SkillXPRequirement> reqs = _data.Where<SkillXPRequirement>(x => x.SkillID == decaySkill.SkillID && x.Rank <= decaySkill.Rank).OrderBy(o => o.Rank).ToList();
+                    
 
                     // The first entry in the database is for rank 0, and if passed, will raise us to 1.  So start our count at 0.
                     int newDecaySkillRank = 0; 
@@ -641,6 +651,7 @@ namespace SWLOR.Game.Server.Service
                     XP = decaySkill.XP
                 };
                 _data.SubmitDataChange(dbDecaySkill, DatabaseActionType.Update);
+                _messageHub.Publish(new SkillDecayedMessage(oPC, decaySkill.SkillID, oldRank, decaySkill.Rank));
             }
 
             _playerStat.ApplyStatChanges(oPC, null);

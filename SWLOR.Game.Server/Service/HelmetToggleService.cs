@@ -8,7 +8,7 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.Contracts;
-using SWLOR.Game.Server.NWNX.Contracts;
+
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service
@@ -17,13 +17,9 @@ namespace SWLOR.Game.Server.Service
     {
         private readonly IDataService _data;
         
-        private readonly INWNXProfiler _nwnxProfiler;
-
-        public HelmetToggleService(IDataService data,  INWNXProfiler nwnxProfiler)
+        public HelmetToggleService(IDataService data)
         {
             _data = data;
-            
-            _nwnxProfiler = nwnxProfiler;
         }
 
         public void OnModuleItemEquipped()

@@ -1,20 +1,12 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX.Contracts;
+using static SWLOR.Game.Server.NWNX.NWNXCore;
 using System;
 
 namespace SWLOR.Game.Server.NWNX
 {
-    public class NWNXEvents : NWNXBase, INWNXEvents
+    public static class NWNXEvents
     {
-        private readonly INWNXObject _nwnxObject;
-
-        public NWNXEvents(INWNXObject nwnxObject)
-        {
-            _nwnxObject = nwnxObject;
-        }
-
-
         /// <summary>
         /// Scripts can subscribe to events.
         /// Some events are dispatched via the NWNX plugin (see NWNX_EVENTS_EVENT_* constants).
@@ -22,7 +14,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="evt"></param>
         /// <param name="script"></param>
-        public void SubscribeEvent(string evt, string script)
+        public static void SubscribeEvent(string evt, string script)
         {
             NWNX_PushArgumentString("NWNX_Events", "SUBSCRIBE_EVENT", script);
             NWNX_PushArgumentString("NWNX_Events", "SUBSCRIBE_EVENT", evt);
@@ -35,7 +27,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="tag"></param>
         /// <param name="data"></param>
-        public void PushEventData(string tag, string data)
+        public static void PushEventData(string tag, string data)
         {
             NWNX_PushArgumentString("NWNX_Events", "PUSH_EVENT_DATA", data);
             NWNX_PushArgumentString("NWNX_Events", "PUSH_EVENT_DATA", tag);
@@ -49,7 +41,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="evt"></param>
         /// <param name="target"></param>
         /// <returns></returns>
-        public int SignalEvent(string evt, NWObject target)
+        public static int SignalEvent(string evt, NWObject target)
         {
             NWNX_PushArgumentObject("NWNX_Events", "SIGNAL_EVENT", target.Object);
             NWNX_PushArgumentString("NWNX_Events", "SIGNAL_EVENT", evt);
@@ -63,7 +55,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="tag"></param>
         /// <returns></returns>
-        public string GetEventDataString(string tag)
+        public static string GetEventDataString(string tag)
         {
             NWNX_PushArgumentString("NWNX_Events", "GET_EVENT_DATA", tag);
             NWNX_CallFunction("NWNX_Events", "GET_EVENT_DATA");
@@ -92,7 +84,7 @@ namespace SWLOR.Game.Server.NWNX
         /// - Listen/Spot Detection events
         /// - Polymorph events
         /// </summary>
-        public void SkipEvent()
+        public static void SkipEvent()
         {
             NWNX_CallFunction("NWNX_Events", "SKIP_EVENT");
         }
@@ -106,52 +98,52 @@ namespace SWLOR.Game.Server.NWNX
         /// - Listen/Spot Detection events -> "1" or "0"
         /// </summary>
         /// <param name="data"></param>
-        public void SetEventResult(string data)
+        public static void SetEventResult(string data)
         {
             NWNX_PushArgumentString("NWNX_Events", "EVENT_RESULT", data);
             NWNX_CallFunction("NWNX_Events", "EVENT_RESULT");
         }
 
-        private int GetEventDataInt(string tag)
+        private static int GetEventDataInt(string tag)
         {
             string data = GetEventDataString(tag);
             return Convert.ToInt32(data);
         }
 
-        private bool GetEventDataBoolean(string tag)
+        private static bool GetEventDataBoolean(string tag)
         {
             int data = GetEventDataInt(tag);
             return data == 1;
         }
 
-        private float GetEventDataFloat(string tag)
+        private static float GetEventDataFloat(string tag)
         {
             string data = GetEventDataString(tag);
             return (float)Convert.ToDouble(data);
         }
 
-        private NWObject GetEventDataObject(string tag)
+        private static NWObject GetEventDataObject(string tag)
         {
             string data = GetEventDataString(tag);
-            return _nwnxObject.StringToObject(data);
+            return NWNXObject.StringToObject(data);
         }
 
-        public int OnFeatUsed_GetFeatID()
+        public static int OnFeatUsed_GetFeatID()
         {
             return GetEventDataInt("FEAT_ID");
         }
 
-        public int OnFeatUsed_GetSubFeatID()
+        public static int OnFeatUsed_GetSubFeatID()
         {
             return GetEventDataInt("SUBFEAT_ID");
         }
 
-        public NWObject OnFeatUsed_GetTarget()
+        public static NWObject OnFeatUsed_GetTarget()
         {
             return GetEventDataObject("TARGET_OBJECT_ID");
         }
 
-        public NWLocation OnFeatUsed_GetTargetLocation()
+        public static NWLocation OnFeatUsed_GetTargetLocation()
         {
             return _.Location(
                     OnFeatUsed_GetArea().Object,
@@ -160,152 +152,152 @@ namespace SWLOR.Game.Server.NWNX
             );
         }
 
-        public NWObject OnFeatUsed_GetArea()
+        public static NWObject OnFeatUsed_GetArea()
         {
             return GetEventDataObject("AREA_OBJECT_ID");
         }
 
-        public float OnFeatUsed_GetTargetPositionX()
+        public static float OnFeatUsed_GetTargetPositionX()
         {
             return GetEventDataFloat("TARGET_POSITION_X");
         }
 
-        public float OnFeatUsed_GetTargetPositionY()
+        public static float OnFeatUsed_GetTargetPositionY()
         {
             return GetEventDataFloat("TARGET_POSITION_Y");
         }
 
-        public float OnFeatUsed_GetTargetPositionZ()
+        public static float OnFeatUsed_GetTargetPositionZ()
         {
             return GetEventDataFloat("TARGET_POSITION_Z");
         }
 
-        public NWObject OnItemUsed_GetItem()
+        public static NWObject OnItemUsed_GetItem()
         {
             return GetEventDataObject("ITEM_OBJECT_ID");
         }
 
-        public NWObject OnItemUsed_GetTarget()
+        public static NWObject OnItemUsed_GetTarget()
         {
             return GetEventDataObject("TARGET_OBJECT_ID");
         }
 
-        public int OnItemUsed_GetItemPropertyIndex()
+        public static int OnItemUsed_GetItemPropertyIndex()
         {
             return GetEventDataInt("ITEM_PROPERTY_INDEX");
         }
 
-        public int OnItemUsed_GetValue2()
+        public static int OnItemUsed_GetValue2()
         {
             return GetEventDataInt("TEST_VALUE_2");
         }
 
-        public NWObject OnExamineObject_GetTarget()
+        public static NWObject OnExamineObject_GetTarget()
         {
             return GetEventDataObject("EXAMINEE_OBJECT_ID");
         }
 
-        public int OnCastSpell_GetSpellID()
+        public static int OnCastSpell_GetSpellID()
         {
             return GetEventDataInt("SPELL_ID");
         }
 
-        public int OnCastSpell_GetTargetPositionX()
+        public static int OnCastSpell_GetTargetPositionX()
         {
             return GetEventDataInt("TARGET_POSITION_X");
         }
 
-        public int OnCastSpell_GetTargetPositionY()
+        public static int OnCastSpell_GetTargetPositionY()
         {
             return GetEventDataInt("TARGET_POSITION_Y");
         }
 
-        public int OnCastSpell_GetTargetPositionZ()
+        public static int OnCastSpell_GetTargetPositionZ()
         {
             return GetEventDataInt("TARGET_POSITION_Z");
         }
 
-        public NWObject OnCastSpell_GetTarget()
+        public static NWObject OnCastSpell_GetTarget()
         {
             return GetEventDataObject("TARGET_OBJECT_ID");
         }
 
-        public int OnCastSpell_GetMultiClass()
+        public static int OnCastSpell_GetMultiClass()
         {
             return GetEventDataInt("MULTI_CLASS");
         }
 
-        public NWObject OnCastSpell_GetItem()
+        public static NWObject OnCastSpell_GetItem()
         {
             return GetEventDataObject("ITEM_OBJECT_ID");
         }
 
-        public bool OnCastSpell_GetSpellCountered()
+        public static bool OnCastSpell_GetSpellCountered()
         {
             return GetEventDataBoolean("SPELL_COUNTERED");
         }
 
-        public bool OnCastSpell_GetCounteringSpell()
+        public static bool OnCastSpell_GetCounteringSpell()
         {
             return GetEventDataBoolean("COUNTERING_SPELL");
         }
 
-        public int OnCastSpell_GetProjectilePathType()
+        public static int OnCastSpell_GetProjectilePathType()
         {
             return GetEventDataInt("PROJECTILE_PATH_TYPE");
         }
 
-        public bool OnCastSpell_IsInstantSpell()
+        public static bool OnCastSpell_IsInstantSpell()
         {
             return GetEventDataBoolean("IS_INSTANT_SPELL");
         }
 
-        public NWObject OnCombatRoundStart_GetTarget()
+        public static NWObject OnCombatRoundStart_GetTarget()
         {
             return GetEventDataObject("TARGET_OBJECT_ID");
         }
 
-        public int OnDMGiveXP_GetAmount()
+        public static int OnDMGiveXP_GetAmount()
         {
             return GetEventDataInt("AMOUNT");
         }
 
-        public NWObject OnDMGiveXP_GetTarget()
+        public static NWObject OnDMGiveXP_GetTarget()
         {
             return GetEventDataObject("OBJECT");
         }
 
-        public int OnDMGiveLevels_GetAmount()
+        public static int OnDMGiveLevels_GetAmount()
         {
             return GetEventDataInt("NUM_LEVELS");
         }
 
-        public NWObject OnDMGiveLevels_GetTarget()
+        public static NWObject OnDMGiveLevels_GetTarget()
         {
             return GetEventDataObject("OBJECT");
         }
 
-        public int OnDMGiveGold_GetAmount()
+        public static int OnDMGiveGold_GetAmount()
         {
             return GetEventDataInt("AMOUNT");
         }
 
-        public NWObject OnDMGiveGold_GetTarget()
+        public static NWObject OnDMGiveGold_GetTarget()
         {
             return GetEventDataObject("OBJECT");
         }
 
-        public NWArea OnDMSpawnObject_GetArea()
+        public static NWArea OnDMSpawnObject_GetArea()
         {
             return GetEventDataObject("AREA").Object;
         }
         
-        public NWObject OnDMSpawnObject_GetObject()
+        public static NWObject OnDMSpawnObject_GetObject()
         {
             return GetEventDataObject("OBJECT");
         }
 
-        public int OnDMSpawnObject_GetObjectType()
+        public static int OnDMSpawnObject_GetObjectType()
         {
             // For whatever reason, NWNX uses different object type IDs from standard NWN.
             // I don't want to deal with this nonsense so we'll convert to the correct IDs here.
@@ -325,15 +317,15 @@ namespace SWLOR.Game.Server.NWNX
             throw new Exception("Invalid object type: " + nwnxObjectTypeID);
         }
 
-        public float OnDMSpawnObject_GetPositionX()
+        public static float OnDMSpawnObject_GetPositionX()
         {
             return GetEventDataFloat("POS_X");
         }
-        public float OnDMSpawnObject_GetPositionY()
+        public static float OnDMSpawnObject_GetPositionY()
         {
             return GetEventDataFloat("POS_Y");
         }
-        public float OnDMSpawnObject_GetPositionZ()
+        public static float OnDMSpawnObject_GetPositionZ()
         {
             return GetEventDataFloat("POS_Z");
         }
@@ -343,7 +335,7 @@ namespace SWLOR.Game.Server.NWNX
         /// THIS SHOULD ONLY BE CALLED FROM WITHIN AN EVENT HANDLER.
         /// </summary>
         /// <returns></returns>
-        public string GetCurrentEvent()
+        public static string GetCurrentEvent()
         {
             NWNX_CallFunction("NWNX_Events", "GET_CURRENT_EVENT");
             return NWNX_GetReturnValueString("NWNX_Events", "GET_CURRENT_EVENT");

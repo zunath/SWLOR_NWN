@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Bioware.Contracts;
+
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;

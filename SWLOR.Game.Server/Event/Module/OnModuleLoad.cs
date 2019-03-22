@@ -4,7 +4,6 @@ using SWLOR.Game.Server.Enumeration;
 using NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
-using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Processor;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.Threading.Contracts;
@@ -15,12 +14,8 @@ namespace SWLOR.Game.Server.Event.Module
 {
     internal class OnModuleLoad: IRegisteredEvent
     {
-        
-        private readonly INWNXChat _nwnxChat;
-        private readonly INWNXEvents _nwnxEvents;
         private readonly IObjectProcessingService _objectProcessing;
         private readonly IFarmingService _farming;
-        private readonly INWNXDamage _nwnxDamage;
         private readonly IAreaService _area;
         private readonly IBaseService _base;
         private readonly ISpawnService _spawn;
@@ -28,30 +23,21 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IObjectVisibilityService _objectVisibility;
         private readonly IBackgroundThreadManager _backgroundThreadManager;
         private readonly IDataPackageService _dataPackage;
-        private readonly INWNXWeapon _nwnxWeapon;
 
         public OnModuleLoad(
             
-            INWNXChat nwnxChat,
-            INWNXEvents nwnxEvents,
             IObjectProcessingService objectProcessing,
             IFarmingService farming,
-            INWNXDamage nwnxDamage,
             IAreaService area,
             IBaseService @base,
             ISpawnService spawn,
             ICustomEffectService customEffect,
             IObjectVisibilityService objectVisibility,
             IBackgroundThreadManager backgroundThreadManager,
-            IDataPackageService dataPackage,
-            INWNXWeapon nwnxWeapon)
+            IDataPackageService dataPackage)
         {
-            
-            _nwnxChat = nwnxChat;
-            _nwnxEvents = nwnxEvents;
             _objectProcessing = objectProcessing;
             _farming = farming;
-            _nwnxDamage = nwnxDamage;
             _area = area;
             _base = @base;
             _spawn = spawn;
@@ -59,7 +45,6 @@ namespace SWLOR.Game.Server.Event.Module
             _objectVisibility = objectVisibility;
             _backgroundThreadManager = backgroundThreadManager;
             _dataPackage = dataPackage;
-            _nwnxWeapon = nwnxWeapon;
         }
 
         public bool Run(params object[] args)
@@ -70,7 +55,7 @@ namespace SWLOR.Game.Server.Event.Module
             Console.WriteLine("Starting background thread manager...");
             _backgroundThreadManager.Start();
             
-            _nwnxChat.RegisterChatScript("mod_on_nwnxchat");
+            NWNXChat.RegisterChatScript("mod_onNWNXChat");
             SetModuleEventScripts();
             SetAreaEventScripts();
             SetWeaponSettings();
@@ -129,61 +114,61 @@ namespace SWLOR.Game.Server.Event.Module
             _.SetEventScript(_.GetModule(), EVENT_SCRIPT_MODULE_ON_USER_DEFINED_EVENT, "mod_on_user");
 
             // NWNX Hooks
-            _nwnxEvents.SubscribeEvent(EventType.StartCombatRoundBefore, "mod_on_attack");
-            _nwnxEvents.SubscribeEvent(EventType.ExamineObjectBefore, "mod_on_examine");
-            _nwnxEvents.SubscribeEvent(EventType.UseFeatBefore, "mod_on_usefeat");
-            _nwnxEvents.SubscribeEvent(EventType.EnterStealthAfter, "mod_on_entstlth");
-            _nwnxDamage.SetDamageEventScript("mod_on_applydmg");
+            NWNXEvents.SubscribeEvent(EventType.StartCombatRoundBefore, "mod_on_attack");
+            NWNXEvents.SubscribeEvent(EventType.ExamineObjectBefore, "mod_on_examine");
+            NWNXEvents.SubscribeEvent(EventType.UseFeatBefore, "mod_on_usefeat");
+            NWNXEvents.SubscribeEvent(EventType.EnterStealthAfter, "mod_on_entstlth");
+            NWNXDamage.SetDamageEventScript("mod_on_applydmg");
 
             // DM Hooks
-            _nwnxEvents.SubscribeEvent(EventType.DMAppearBefore, "dm_appear");
-            _nwnxEvents.SubscribeEvent(EventType.DMChangeDifficultyBefore, "dm_change_diff");
-            _nwnxEvents.SubscribeEvent(EventType.DMDisableTrapBefore, "dm_disab_trap");
-            _nwnxEvents.SubscribeEvent(EventType.DMDisappearBefore, "dm_disappear");
-            _nwnxEvents.SubscribeEvent(EventType.DMForceRestBefore, "dm_force_rest");
-            _nwnxEvents.SubscribeEvent(EventType.DMGetVariableBefore, "dm_get_var");
-            _nwnxEvents.SubscribeEvent(EventType.DMGiveGoldBefore, "dm_give_gold");
-            _nwnxEvents.SubscribeEvent(EventType.DMGiveItemBefore, "dm_give_item");
-            _nwnxEvents.SubscribeEvent(EventType.DMGiveLevelBefore, "dm_give_level");
-            _nwnxEvents.SubscribeEvent(EventType.DMGiveXPBefore, "dm_give_xp");
-            _nwnxEvents.SubscribeEvent(EventType.DMHealBefore, "dm_heal");
-            _nwnxEvents.SubscribeEvent(EventType.DMJumpBefore, "dm_jump");
-            _nwnxEvents.SubscribeEvent(EventType.DMJumpAllPlayersToPointBefore, "dm_jump_all");
-            _nwnxEvents.SubscribeEvent(EventType.DMJumpTargetToPointBefore, "dm_jump_target");
-            _nwnxEvents.SubscribeEvent(EventType.DMKillBefore, "dm_kill");
-            _nwnxEvents.SubscribeEvent(EventType.DMLimboBefore, "dm_limbo");
-            _nwnxEvents.SubscribeEvent(EventType.DMPossessBefore, "dm_possess");
-            _nwnxEvents.SubscribeEvent(EventType.DMSetDateBefore, "dm_set_date");
-            _nwnxEvents.SubscribeEvent(EventType.DMSetStatBefore, "dm_set_stat");
-            _nwnxEvents.SubscribeEvent(EventType.DMSetTimeBefore, "dm_set_time");
-            _nwnxEvents.SubscribeEvent(EventType.DMSetVariableBefore, "dm_set_var");
-            _nwnxEvents.SubscribeEvent(EventType.DMSpawnCreatureAfter, "dm_spawn_crea");
-            _nwnxEvents.SubscribeEvent(EventType.DMSpawnEncounterAfter, "dm_spawn_enco");
-            _nwnxEvents.SubscribeEvent(EventType.DMSpawnItemAfter, "dm_spawn_item");
-            _nwnxEvents.SubscribeEvent(EventType.DMSpawnPlaceableAfter, "dm_spawn_plac");
-            _nwnxEvents.SubscribeEvent(EventType.DMSpawnPortalAfter, "dm_spawn_port");
-            _nwnxEvents.SubscribeEvent(EventType.DMSpawnTrapOnObjectAfter, "dm_spawn_trap");
-            _nwnxEvents.SubscribeEvent(EventType.DMSpawnTriggerAfter, "dm_spawn_trigg");
-            _nwnxEvents.SubscribeEvent(EventType.DMSpawnWaypointAfter, "dm_spawn_wayp");
-            _nwnxEvents.SubscribeEvent(EventType.DMTakeItemBefore, "dm_take_item");
-            _nwnxEvents.SubscribeEvent(EventType.DMToggleImmortalBefore, "dm_togg_immo");
-            _nwnxEvents.SubscribeEvent(EventType.DMToggleAIBefore, "dm_toggle_ai");
-            _nwnxEvents.SubscribeEvent(EventType.DMToggleLockBefore, "dm_toggle_lock");
+            NWNXEvents.SubscribeEvent(EventType.DMAppearBefore, "dm_appear");
+            NWNXEvents.SubscribeEvent(EventType.DMChangeDifficultyBefore, "dm_change_diff");
+            NWNXEvents.SubscribeEvent(EventType.DMDisableTrapBefore, "dm_disab_trap");
+            NWNXEvents.SubscribeEvent(EventType.DMDisappearBefore, "dm_disappear");
+            NWNXEvents.SubscribeEvent(EventType.DMForceRestBefore, "dm_force_rest");
+            NWNXEvents.SubscribeEvent(EventType.DMGetVariableBefore, "dm_get_var");
+            NWNXEvents.SubscribeEvent(EventType.DMGiveGoldBefore, "dm_give_gold");
+            NWNXEvents.SubscribeEvent(EventType.DMGiveItemBefore, "dm_give_item");
+            NWNXEvents.SubscribeEvent(EventType.DMGiveLevelBefore, "dm_give_level");
+            NWNXEvents.SubscribeEvent(EventType.DMGiveXPBefore, "dm_give_xp");
+            NWNXEvents.SubscribeEvent(EventType.DMHealBefore, "dm_heal");
+            NWNXEvents.SubscribeEvent(EventType.DMJumpBefore, "dm_jump");
+            NWNXEvents.SubscribeEvent(EventType.DMJumpAllPlayersToPointBefore, "dm_jump_all");
+            NWNXEvents.SubscribeEvent(EventType.DMJumpTargetToPointBefore, "dm_jump_target");
+            NWNXEvents.SubscribeEvent(EventType.DMKillBefore, "dm_kill");
+            NWNXEvents.SubscribeEvent(EventType.DMLimboBefore, "dm_limbo");
+            NWNXEvents.SubscribeEvent(EventType.DMPossessBefore, "dm_possess");
+            NWNXEvents.SubscribeEvent(EventType.DMSetDateBefore, "dm_set_date");
+            NWNXEvents.SubscribeEvent(EventType.DMSetStatBefore, "dm_set_stat");
+            NWNXEvents.SubscribeEvent(EventType.DMSetTimeBefore, "dm_set_time");
+            NWNXEvents.SubscribeEvent(EventType.DMSetVariableBefore, "dm_set_var");
+            NWNXEvents.SubscribeEvent(EventType.DMSpawnCreatureAfter, "dm_spawn_crea");
+            NWNXEvents.SubscribeEvent(EventType.DMSpawnEncounterAfter, "dm_spawn_enco");
+            NWNXEvents.SubscribeEvent(EventType.DMSpawnItemAfter, "dm_spawn_item");
+            NWNXEvents.SubscribeEvent(EventType.DMSpawnPlaceableAfter, "dm_spawn_plac");
+            NWNXEvents.SubscribeEvent(EventType.DMSpawnPortalAfter, "dm_spawn_port");
+            NWNXEvents.SubscribeEvent(EventType.DMSpawnTrapOnObjectAfter, "dm_spawn_trap");
+            NWNXEvents.SubscribeEvent(EventType.DMSpawnTriggerAfter, "dm_spawn_trigg");
+            NWNXEvents.SubscribeEvent(EventType.DMSpawnWaypointAfter, "dm_spawn_wayp");
+            NWNXEvents.SubscribeEvent(EventType.DMTakeItemBefore, "dm_take_item");
+            NWNXEvents.SubscribeEvent(EventType.DMToggleImmortalBefore, "dm_togg_immo");
+            NWNXEvents.SubscribeEvent(EventType.DMToggleAIBefore, "dm_toggle_ai");
+            NWNXEvents.SubscribeEvent(EventType.DMToggleLockBefore, "dm_toggle_lock");
         }
 
         private void SetWeaponSettings()
         {
-            _nwnxWeapon.SetWeaponFocusFeat(CustomBaseItemType.Lightsaber, FEAT_WEAPON_FOCUS_LONG_SWORD);
-            _nwnxWeapon.SetWeaponFocusFeat(CustomBaseItemType.Saberstaff, FEAT_WEAPON_FOCUS_TWO_BLADED_SWORD);
+            NWNXWeapon.SetWeaponFocusFeat(CustomBaseItemType.Lightsaber, FEAT_WEAPON_FOCUS_LONG_SWORD);
+            NWNXWeapon.SetWeaponFocusFeat(CustomBaseItemType.Saberstaff, FEAT_WEAPON_FOCUS_TWO_BLADED_SWORD);
 
-            _nwnxWeapon.SetWeaponImprovedCriticalFeat(CustomBaseItemType.Lightsaber, FEAT_IMPROVED_CRITICAL_LONG_SWORD);
-            _nwnxWeapon.SetWeaponImprovedCriticalFeat(CustomBaseItemType.Saberstaff, FEAT_IMPROVED_CRITICAL_TWO_BLADED_SWORD);
+            NWNXWeapon.SetWeaponImprovedCriticalFeat(CustomBaseItemType.Lightsaber, FEAT_IMPROVED_CRITICAL_LONG_SWORD);
+            NWNXWeapon.SetWeaponImprovedCriticalFeat(CustomBaseItemType.Saberstaff, FEAT_IMPROVED_CRITICAL_TWO_BLADED_SWORD);
 
-            _nwnxWeapon.SetWeaponSpecializationFeat(CustomBaseItemType.Lightsaber, FEAT_WEAPON_SPECIALIZATION_LONG_SWORD);
-            _nwnxWeapon.SetWeaponSpecializationFeat(CustomBaseItemType.Saberstaff, FEAT_WEAPON_SPECIALIZATION_TWO_BLADED_SWORD);
+            NWNXWeapon.SetWeaponSpecializationFeat(CustomBaseItemType.Lightsaber, FEAT_WEAPON_SPECIALIZATION_LONG_SWORD);
+            NWNXWeapon.SetWeaponSpecializationFeat(CustomBaseItemType.Saberstaff, FEAT_WEAPON_SPECIALIZATION_TWO_BLADED_SWORD);
 
-            _nwnxWeapon.SetWeaponFinesseSize(CustomBaseItemType.Lightsaber, CREATURE_SIZE_MEDIUM);
-            _nwnxWeapon.SetWeaponFinesseSize(CustomBaseItemType.Saberstaff, CREATURE_SIZE_MEDIUM);
+            NWNXWeapon.SetWeaponFinesseSize(CustomBaseItemType.Lightsaber, CREATURE_SIZE_MEDIUM);
+            NWNXWeapon.SetWeaponFinesseSize(CustomBaseItemType.Saberstaff, CREATURE_SIZE_MEDIUM);
         }
 
     }

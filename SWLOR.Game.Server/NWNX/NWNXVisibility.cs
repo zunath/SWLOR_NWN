@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NWN;
-using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX.Contracts;
+﻿using SWLOR.Game.Server.GameObject;
+using static SWLOR.Game.Server.NWNX.NWNXCore;
 
 namespace SWLOR.Game.Server.NWNX
 {
-    public class NWNXVisibility : NWNXBase, INWNXVisibility
+    public static class NWNXVisibility
     {
 
         private const string NWNX_Visibility = "NWNX_Visibility";
@@ -33,7 +27,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="player"></param>
         /// <param name="target"></param>
         /// <returns></returns>
-        public VisibilityType GetVisibilityOverride(NWPlayer player, NWObject target)
+        public static VisibilityType GetVisibilityOverride(NWPlayer player, NWObject target)
         {
             string sFunc = "GetVisibilityOverride";
 
@@ -68,7 +62,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="player"></param>
         /// <param name="target"></param>
         /// <param name="override"></param>
-        public void SetVisibilityOverride(NWPlayer player, NWObject target, VisibilityType @override)
+        public static void SetVisibilityOverride(NWPlayer player, NWObject target, VisibilityType @override)
         {
             string sFunc = "SetVisibilityOverride";
 

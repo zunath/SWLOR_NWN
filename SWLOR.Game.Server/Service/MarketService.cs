@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
@@ -15,18 +15,13 @@ namespace SWLOR.Game.Server.Service
 {
     public class MarketService: IMarketService
     {
-        
         private readonly IDataService _data;
-        private readonly INWNXChat _nwnxChat;
         
         public MarketService(
             
-            IDataService data,
-            INWNXChat nwnxChat)
+            IDataService data)
         {
-            
             _data = data;
-            _nwnxChat = nwnxChat;
         }
 
         // Couldn't get any more specific than this. :)
@@ -135,7 +130,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public void OnModuleNWNXChat()
         {
-            NWPlayer player = _nwnxChat.GetSender().Object;
+            NWPlayer player = NWNXChat.GetSender().Object;
             if (!CanHandleChat(player)) return;
 
             var model = GetPlayerMarketData(player);
@@ -144,12 +139,12 @@ namespace SWLOR.Game.Server.Service
             if (!model.IsSettingSellerNote) return;
             model.IsSettingSellerNote = false;
 
-            var message = _nwnxChat.GetMessage();
+            var message = NWNXChat.GetMessage();
             message = message.Truncate(1024);
             model.SellerNote = message;
 
             player.FloatingText("Seller note set! Please click 'Refresh' to see the changes.");
-            _nwnxChat.SkipMessage();
+            NWNXChat.SkipMessage();
         }
 
         /// <summary>

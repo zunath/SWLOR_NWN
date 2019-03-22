@@ -1,14 +1,14 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX.Contracts;
+using static SWLOR.Game.Server.NWNX.NWNXCore;
 using System;
 using System.Reflection;
 using static NWN._;
 
 namespace SWLOR.Game.Server.NWNX
 {
-    public class NWNXPlayer : NWNXBase, INWNXPlayer
+    public static class NWNXPlayer
     {
         private const string NWNX_Player = "NWNX_Player";
 
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="player"></param>
         /// <param name="placeable"></param>
-        public void ForcePlaceableExamineWindow(NWPlayer player, NWPlaceable placeable)
+        public static void ForcePlaceableExamineWindow(NWPlayer player, NWPlaceable placeable)
         {
             string sFunc = "ForcePlaceableExamineWindow";
             NWNX_PushArgumentObject(NWNX_Player, sFunc, placeable.Object);
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="player"></param>
         /// <param name="seconds"></param>
         /// <param name="script"></param>
-        public void StartGuiTimingBar(NWPlayer player, float seconds, string script)
+        public static void StartGuiTimingBar(NWPlayer player, float seconds, string script)
         {
             // only one timing bar at a time!
             if (_.GetLocalInt(player.Object, "NWNX_PLAYER_GUI_TIMING_ACTIVE") == 1)
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="player"></param>
         /// <param name="script"></param>
         /// <param name="id"></param>
-        public void StopGuiTimingBar(NWPlayer player, string script, int id)
+        public static void StopGuiTimingBar(NWPlayer player, string script, int id)
         {
             int activeId = _.GetLocalInt(player.Object, "NWNX_PLAYER_GUI_TIMING_ACTIVE");
             // Either the timing event was never started, or it already finished.
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="player"></param>
         /// <param name="script"></param>
-        public void StopGuiTimingBar(NWPlayer player, string script)
+        public static void StopGuiTimingBar(NWPlayer player, string script)
         {
             StopGuiTimingBar(player, script, -1);
         }
@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="player"></param>
         /// <param name="bWalk"></param>
-        public void SetAlwaysWalk(NWPlayer player, int bWalk)
+        public static void SetAlwaysWalk(NWPlayer player, int bWalk)
         {
             string sFunc = "SetAlwaysWalk";
             NWNX_PushArgumentInt(NWNX_Player, sFunc, bWalk);
@@ -136,7 +136,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="player"></param>
         /// <param name="slot"></param>
         /// <returns></returns>
-        public QuickBarSlot GetQuickBarSlot(NWPlayer player, int slot)
+        public static QuickBarSlot GetQuickBarSlot(NWPlayer player, int slot)
         {
             string sFunc = "GetQuickBarSlot";
             QuickBarSlot qbs = new QuickBarSlot();
@@ -168,7 +168,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="player"></param>
         /// <param name="slot"></param>
         /// <param name="qbs"></param>
-        public void SetQuickBarSlot(NWPlayer player, int slot, QuickBarSlot qbs)
+        public static void SetQuickBarSlot(NWPlayer player, int slot, QuickBarSlot qbs)
         {
             string sFunc = "SetQuickBarSlot";
 
@@ -197,7 +197,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="player"></param>
         /// <returns></returns>
-        public string GetBicFileName(NWPlayer player)
+        public static string GetBicFileName(NWPlayer player)
         {
             string sFunc = "GetBicFileName";
             NWNX_PushArgumentObject(NWNX_Player, sFunc, player.Object);
@@ -211,7 +211,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="player"></param>
         /// <param name="effectId"></param>
         /// <param name="position"></param>
-        public void ShowVisualEffect(NWPlayer player, int effectId, Vector position)
+        public static void ShowVisualEffect(NWPlayer player, int effectId, Vector position)
         {
             string sFunc = "ShowVisualEffect";
             NWNX_PushArgumentFloat(NWNX_Player, sFunc, position.m_X);
@@ -228,7 +228,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="player"></param>
         /// <param name="track"></param>
-        public void MusicBackgroundChangeDay(NWPlayer player, int track)
+        public static void MusicBackgroundChangeDay(NWPlayer player, int track)
         {
             string sFunc = "ChangeBackgroundMusic";
             NWNX_PushArgumentInt(NWNX_Player, sFunc, track);
@@ -243,7 +243,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="player"></param>
         /// <param name="track"></param>
-        public void MusicBackgroundChangeNight(NWPlayer player, int track)
+        public static void MusicBackgroundChangeNight(NWPlayer player, int track)
         {
             string sFunc = "ChangeBackgroundMusic";
             NWNX_PushArgumentInt(NWNX_Player, sFunc, track);
@@ -257,7 +257,7 @@ namespace SWLOR.Game.Server.NWNX
         /// Starts the background music for the given player only
         /// </summary>
         /// <param name="player"></param>
-        public void MusicBackgroundStart(NWPlayer player)
+        public static void MusicBackgroundStart(NWPlayer player)
         {
             string sFunc = "PlayBackgroundMusic";
             NWNX_PushArgumentInt(NWNX_Player, sFunc, TRUE); // bool play = TRUE
@@ -270,7 +270,7 @@ namespace SWLOR.Game.Server.NWNX
         /// Stops the background music for the given player only
         /// </summary>
         /// <param name="player"></param>
-        public void MusicBackgroundStop(NWPlayer player)
+        public static void MusicBackgroundStop(NWPlayer player)
         {
             string sFunc = "PlayBackgroundMusic";
             NWNX_PushArgumentInt(NWNX_Player, sFunc, FALSE); // bool play = FALSE
@@ -284,7 +284,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="player"></param>
         /// <param name="track"></param>
-        public void MusicBattleChange(NWPlayer player, int track)
+        public static void MusicBattleChange(NWPlayer player, int track)
         {
             string sFunc = "ChangeBattleMusic";
             NWNX_PushArgumentInt(NWNX_Player, sFunc, track);
@@ -297,7 +297,7 @@ namespace SWLOR.Game.Server.NWNX
         /// Starts the battle music for the given player only
         /// </summary>
         /// <param name="player"></param>
-        public void MusicBattleStart(NWPlayer player)
+        public static void MusicBattleStart(NWPlayer player)
         {
             string sFunc = "PlayBattleMusic";
             NWNX_PushArgumentInt(NWNX_Player, sFunc, TRUE); // bool play = TRUE
@@ -310,7 +310,7 @@ namespace SWLOR.Game.Server.NWNX
         /// Stops the background music for the given player only
         /// </summary>
         /// <param name="player"></param>
-        public void MusicBattleStop(NWPlayer player)
+        public static void MusicBattleStop(NWPlayer player)
         {
             string sFunc = "PlayBattleMusic";
             NWNX_PushArgumentInt(NWNX_Player, sFunc, FALSE); // bool play = FALSE
@@ -326,7 +326,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="player"></param>
         /// <param name="sound"></param>
         /// <param name="target"></param>
-        public void PlaySound(NWPlayer player, string sound, NWObject target)
+        public static void PlaySound(NWPlayer player, string sound, NWObject target)
         {
             string sFunc = "PlaySound";
             NWNX_PushArgumentObject(NWNX_Player, sFunc, target);
@@ -342,7 +342,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="player"></param>
         /// <param name="placeable"></param>
         /// <param name="isUseable"></param>
-        public void SetPlaceableUseable(NWPlayer player, NWPlaceable placeable, bool isUseable)
+        public static void SetPlaceableUseable(NWPlayer player, NWPlaceable placeable, bool isUseable)
         {
             string sFunc = "SetPlaceableUsable";
             NWNX_PushArgumentInt(NWNX_Player, sFunc, isUseable ? TRUE : FALSE);
@@ -360,7 +360,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="player"></param>
         /// <param name="duration"></param>
-        public void SetRestDuration(NWPlayer player, int duration)
+        public static void SetRestDuration(NWPlayer player, int duration)
         {
             string sFunc = "SetRestDuration";
             NWNX_PushArgumentInt(NWNX_Player, sFunc, duration);

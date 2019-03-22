@@ -1,10 +1,10 @@
 ﻿using NWN;
-using SWLOR.Game.Server.Bioware.Contracts;
+
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
-using SWLOR.Game.Server.NWNX.Contracts;
+
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
@@ -15,6 +15,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using SWLOR.Game.Server.Bioware;
 using static NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
@@ -23,14 +24,11 @@ namespace SWLOR.Game.Server.Service
 {
     public class SpaceService : ISpaceService
     {
-        
         private readonly IBasePermissionService _perm;
-        private readonly IBiowarePosition _biowarePos;
         private readonly IDataService _data;
         private readonly IErrorService _error;
         private readonly ILootService _loot;
-        private readonly INWNXChat _nwnxChat;
-        private readonly INWNXCreature _nwnxCreature;
+        
         private readonly IPerkService _perk;
         private readonly IPlayerService _player;
         private readonly IPlayerStatService _playerStat;
@@ -39,25 +37,19 @@ namespace SWLOR.Game.Server.Service
         
         public SpaceService(
                             IBasePermissionService perm,
-                            IBiowarePosition biowarePos,
                             IDataService data,
                             IErrorService error,
                             ILootService loot,
-                            INWNXChat nwnxChat,
-                            INWNXCreature nwnxCreature,
                             IPerkService perk,
                             IPlayerService player,
                             IPlayerStatService playerStat,
                             ISerializationService serial,
                             ISkillService skill)
         {
-            
-            _biowarePos = biowarePos;
             _data = data;
             _error = error;
             _loot = loot;
-            _nwnxChat = nwnxChat;
-            _nwnxCreature = nwnxCreature;
+            
             _perk = perk;
             _perm = perm;
             _player = player;
@@ -989,18 +981,18 @@ namespace SWLOR.Game.Server.Service
             if (!speaker.IsPlayer) return;
 
             // Ignore Tells, DM messages etc..
-            if (_nwnxChat.GetChannel() != NWNXChat.NWNX_CHAT_CHANNEL_PLAYER_TALK &&
-                _nwnxChat.GetChannel() != NWNXChat.NWNX_CHAT_CHANNEL_PLAYER_WHISPER &&
-                _nwnxChat.GetChannel() != NWNXChat.NWNX_CHAT_CHANNEL_PLAYER_PARTY)
+            if (NWNXChat.GetChannel() != NWNXChat.NWNX_CHAT_CHANNEL_PLAYER_TALK &&
+                NWNXChat.GetChannel() != NWNXChat.NWNX_CHAT_CHANNEL_PLAYER_WHISPER &&
+                NWNXChat.GetChannel() != NWNXChat.NWNX_CHAT_CHANNEL_PLAYER_PARTY)
             {
                 return;
             }
 
-            string message = _nwnxChat.GetMessage().Trim();
+            string message = NWNXChat.GetMessage().Trim();
 
             if (speaker.GetLocalInt("IS_SHIP") == 1 || speaker.GetLocalInt("IS_GUNNER") == 1)
             {
-                _nwnxChat.SkipMessage();
+                NWNXChat.SkipMessage();
 
                 // Are we doing a special command?
                 if (message == "/exit")
@@ -1473,7 +1465,7 @@ namespace SWLOR.Game.Server.Service
 
             Location targetLocation = _.Location(
                 creature.Area.Object,
-                _biowarePos.GetChangedPosition(creature.Position, range, creature.Facing),
+                BiowarePosition.GetChangedPosition(creature.Position, range, creature.Facing),
                 creature.Facing + 180.0f);
 
             // If we have a gunner, we can fire in any direction.  If we don't, we can only fire in front of us. 
@@ -1587,7 +1579,7 @@ namespace SWLOR.Game.Server.Service
             // If we have an enemy in front of us, process them. 
             Location targetLocation = _.Location(
                 creature.Area.Object,
-                _biowarePos.GetChangedPosition(creature.Position, 25.0f, creature.Facing),
+                BiowarePosition.GetChangedPosition(creature.Position, 25.0f, creature.Facing),
                 creature.Facing + 180.0f);
 
             int shape = SHAPE_SPELLCONE;           
@@ -1617,7 +1609,7 @@ namespace SWLOR.Game.Server.Service
             if (enemy.IsValid && _.GetDistanceBetween(enemy, creature) < 25.0f)
             {
                 // We have an enemy but they are not in our front arc.  
-                float facing = _biowarePos.GetRelativeFacing(creature, enemy);
+                float facing = BiowarePosition.GetRelativeFacing(creature, enemy);
 
                 // Creature facing is, for some reason, based with 0= due east and proceeding counter clockwise.
                 // Convert to clockwise with due north as 0 so that we can compare it. 
@@ -1639,7 +1631,7 @@ namespace SWLOR.Game.Server.Service
                 // Move forward a little way in our new facing.  
                 targetLocation = _.Location(
                   creature.Area.Object,
-                  _biowarePos.GetChangedPosition(creature.Position, 5.0f, myFacing),
+                  BiowarePosition.GetChangedPosition(creature.Position, 5.0f, myFacing),
                   myFacing + 180.0f);
 
                 _.AssignCommand(creature, () => { _.ActionMoveToLocation(targetLocation, 1); });

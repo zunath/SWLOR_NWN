@@ -3,30 +3,19 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.NWNX;
-using SWLOR.Game.Server.NWNX.Contracts;
+
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
     public class LocalVariableService: ILocalVariableService
     {
-        
-        private readonly INWNXObject _nwnxObject;
-
-        public LocalVariableService(
-            
-            INWNXObject nwnxObject)
-        {
-            
-            _nwnxObject = nwnxObject;
-        }
-
         public void CopyVariables(NWObject oSource, NWObject oCopy)
         {
-            int variableCount = _nwnxObject.GetLocalVariableCount(oSource);
+            int variableCount = NWNXObject.GetLocalVariableCount(oSource);
             for (int variableIndex = 0; variableIndex < variableCount - 1; variableIndex++)
             {
-                LocalVariable stCurVar = _nwnxObject.GetLocalVariable(oSource, variableIndex);
+                LocalVariable stCurVar = NWNXObject.GetLocalVariable(oSource, variableIndex);
 
                 switch (stCurVar.Type)
                 {

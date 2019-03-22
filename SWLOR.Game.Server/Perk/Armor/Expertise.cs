@@ -1,19 +1,13 @@
 ﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using NWN;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.NWNX;
+
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
     public class Expertise : IPerk
     {
-        private readonly INWNXCreature _nwnxCreature;
-
-        public Expertise(INWNXCreature nwnxCreature)
-        {
-            _nwnxCreature = nwnxCreature;
-        }
-
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;
@@ -55,7 +49,7 @@ namespace SWLOR.Game.Server.Perk.Armor
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, _.FEAT_EXPERTISE);
+            NWNXCreature.RemoveFeat(oPC, _.FEAT_EXPERTISE);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
@@ -82,11 +76,11 @@ namespace SWLOR.Game.Server.Perk.Armor
 
             if (equipped.Equals(oItem) || equipped.CustomItemType != CustomItemType.HeavyArmor)
             {
-                _nwnxCreature.RemoveFeat(oPC, _.FEAT_EXPERTISE);
+                NWNXCreature.RemoveFeat(oPC, _.FEAT_EXPERTISE);
                 return;
             }
 
-            _nwnxCreature.AddFeat(oPC, _.FEAT_EXPERTISE);
+            NWNXCreature.AddFeat(oPC, _.FEAT_EXPERTISE);
         }
 
         public bool IsHostile()

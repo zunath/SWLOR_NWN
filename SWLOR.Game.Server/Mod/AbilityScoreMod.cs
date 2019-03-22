@@ -1,25 +1,16 @@
 ﻿using System;
-using SWLOR.Game.Server.Bioware.Contracts;
+
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Mod.Contracts;
 
 using NWN;
+using SWLOR.Game.Server.Bioware;
 
 namespace SWLOR.Game.Server.Mod
 {
     public class AbilityScoreMod: IMod
     {
-        
-        private readonly IBiowareXP2 _biowareXP2;
-
-        public AbilityScoreMod(
-            IBiowareXP2 biowareXP2)
-        {
-            
-            _biowareXP2 = biowareXP2;
-        }
-
         private Tuple<int, int> GetExistingIPInfo(NWItem item, int abilityType)
         {
             Tuple<int, int> result = new Tuple<int, int>(0, 0);
@@ -93,7 +84,7 @@ namespace SWLOR.Game.Server.Mod
             ItemProperty ip = _.ItemPropertyAbilityBonus(data.Item1, newValue);
             ip = _.TagItemProperty(ip, "RUNE_IP");
 
-            _biowareXP2.IPSafeAddItemProperty(target, ip, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
+            BiowareXP2.IPSafeAddItemProperty(target, ip, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
         }
 
         public string Description(NWPlayer player, NWItem target, params string[] args)

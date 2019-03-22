@@ -1,11 +1,10 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject;
-
-using SWLOR.Game.Server.NWNX.Contracts;
+using static SWLOR.Game.Server.NWNX.NWNXCore;
 
 namespace SWLOR.Game.Server.NWNX
 {
-    public class NWNXDamage : NWNXBase, INWNXDamage
+    public static class NWNXDamage
     {
         private const string NWNX_Damage = "NWNX_Damage";
         
@@ -16,7 +15,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="script"></param>
         /// <param name="oOwner"></param>
-        public void SetDamageEventScript(string script, NWObject oOwner = null)
+        public static void SetDamageEventScript(string script, NWObject oOwner = null)
         {
             if(oOwner == null) oOwner = (new Object());
 
@@ -32,7 +31,7 @@ namespace SWLOR.Game.Server.NWNX
         /// Get Damage Event Data (to use only on Damage Event Script)
         /// </summary>
         /// <returns></returns>
-        public DamageData GetDamageEventData()
+        public static DamageData GetDamageEventData()
         {
             string sFunc = "GetEventData";
             DamageData data = new DamageData();
@@ -61,7 +60,7 @@ namespace SWLOR.Game.Server.NWNX
         /// Set Damage Event Data (to use only on Damage Event Script)
         /// </summary>
         /// <param name="data"></param>
-        public void SetDamageEventData(DamageData data)
+        public static void SetDamageEventData(DamageData data)
         {
             string sFunc = "SetEventData";
 

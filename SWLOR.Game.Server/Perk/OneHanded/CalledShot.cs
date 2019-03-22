@@ -2,7 +2,7 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 
@@ -11,15 +11,15 @@ namespace SWLOR.Game.Server.Perk.OneHanded
     public class CalledShot : IPerk
     {
         
-        private readonly INWNXCreature _nwnxCreature;
+        
         private readonly IPerkService _perk;
 
         public CalledShot(
-            INWNXCreature nwnxCreature,
+            
             IPerkService perk)
         {
             
-            _nwnxCreature = nwnxCreature;
+            
             _perk = perk;
         }
 
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, FEAT_CALLED_SHOT);
+            NWNXCreature.RemoveFeat(oPC, FEAT_CALLED_SHOT);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
@@ -91,11 +91,11 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             
             if (Equals(equipped, oItem) || equipped.CustomItemType != CustomItemType.FinesseVibroblade)
             {
-                _nwnxCreature.RemoveFeat(oPC, FEAT_CALLED_SHOT);
+                NWNXCreature.RemoveFeat(oPC, FEAT_CALLED_SHOT);
                 return;
             }
 
-            _nwnxCreature.AddFeat(oPC, FEAT_CALLED_SHOT);
+            NWNXCreature.AddFeat(oPC, FEAT_CALLED_SHOT);
         }
 
         public bool IsHostile()

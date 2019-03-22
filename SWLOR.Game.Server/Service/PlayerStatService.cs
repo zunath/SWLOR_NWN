@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.NWNX;
 using static NWN._;
 using SWLOR.Game.Server.ValueObject;
 
@@ -25,12 +25,12 @@ namespace SWLOR.Game.Server.Service
         private readonly IItemService _item;
         private readonly IDataService _data;
         private readonly IPerkService _perk;
-        private readonly INWNXCreature _nwnxCreature;
+        
 
         public PlayerStatService(
             
             ICustomEffectService customEffect,
-            INWNXCreature nwnxCreature,
+            
             IItemService item,
             IDataService data,
             IPerkService perk)
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Service
             _item = item;
             _data = data;
             _perk = perk;
-            _nwnxCreature = nwnxCreature;
+            
         }
 
         public void ApplyStatChanges(NWPlayer player, NWItem ignoreItem, bool isInitialization = false)
@@ -127,19 +127,19 @@ namespace SWLOR.Game.Server.Service
             if (chaBonus > 100) chaBonus = 100;
 
             // Apply attributes
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_STRENGTH, (int) strBonus + pcEntity.STRBase);
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_DEXTERITY, (int) dexBonus + pcEntity.DEXBase);
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_CONSTITUTION, (int) conBonus + pcEntity.CONBase);
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_INTELLIGENCE, (int) intBonus + pcEntity.INTBase);
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_WISDOM, (int) wisBonus + pcEntity.WISBase);
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_CHARISMA, (int) chaBonus + pcEntity.CHABase);
+            NWNXCreature.SetRawAbilityScore(player, ABILITY_STRENGTH, (int) strBonus + pcEntity.STRBase);
+            NWNXCreature.SetRawAbilityScore(player, ABILITY_DEXTERITY, (int) dexBonus + pcEntity.DEXBase);
+            NWNXCreature.SetRawAbilityScore(player, ABILITY_CONSTITUTION, (int) conBonus + pcEntity.CONBase);
+            NWNXCreature.SetRawAbilityScore(player, ABILITY_INTELLIGENCE, (int) intBonus + pcEntity.INTBase);
+            NWNXCreature.SetRawAbilityScore(player, ABILITY_WISDOM, (int) wisBonus + pcEntity.WISBase);
+            NWNXCreature.SetRawAbilityScore(player, ABILITY_CHARISMA, (int) chaBonus + pcEntity.CHABase);
 
             // Apply AC
 
             using (new Profiler("PlayerStatService::ApplyStatChanges::CalcAC"))
             {
                 int ac = EffectiveArmorClass(itemBonuses, player);
-                _nwnxCreature.SetBaseAC(player, ac);
+                NWNXCreature.SetBaseAC(player, ac);
             }
 
 
@@ -148,7 +148,7 @@ namespace SWLOR.Game.Server.Service
             using (new Profiler("PlayerStatService::ApplyStatChanges::CalcBAB"))
             {
                 int bab = CalculateBAB(player, ignoreItem, itemBonuses);
-                _nwnxCreature.SetBaseAttackBonus(player, bab);
+                NWNXCreature.SetBaseAttackBonus(player, bab);
             }
 
             // Apply HP
@@ -159,19 +159,19 @@ namespace SWLOR.Game.Server.Service
                 for (int level = 1; level <= 5; level++)
                 {
                     hp--;
-                    _nwnxCreature.SetMaxHitPointsByLevel(player, level, 1);
+                    NWNXCreature.SetMaxHitPointsByLevel(player, level, 1);
                 }
 
                 for (int level = 1; level <= 5; level++)
                 {
                     if (hp > 255) // Levels can only contain a max of 255 HP
                     {
-                        _nwnxCreature.SetMaxHitPointsByLevel(player, level, 255);
+                        NWNXCreature.SetMaxHitPointsByLevel(player, level, 255);
                         hp = hp - 254;
                     }
                     else // Remaining value gets set to the level. (<255 hp)
                     {
-                        _nwnxCreature.SetMaxHitPointsByLevel(player, level, hp + 1);
+                        NWNXCreature.SetMaxHitPointsByLevel(player, level, hp + 1);
                         break;
                     }
                 }

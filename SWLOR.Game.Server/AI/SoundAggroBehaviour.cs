@@ -3,7 +3,7 @@ using NWN;
 using SWLOR.Game.Server.AI.AIComponent;
 using SWLOR.Game.Server.Extension;
 
-using SWLOR.Game.Server.NWNX.Contracts;
+
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.AI
@@ -17,9 +17,8 @@ namespace SWLOR.Game.Server.AI
             BehaviourTreeBuilder builder,
             
             IEnmityService enmity,
-            IDialogService dialog,
-            INWNXObject nwnxObject)
-            : base(builder, enmity, dialog, nwnxObject)
+            IDialogService dialog)
+            : base(builder, enmity, dialog)
         {
         }
 

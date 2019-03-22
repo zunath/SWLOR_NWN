@@ -2,11 +2,11 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.NWNX.Contracts;
+using static SWLOR.Game.Server.NWNX.NWNXCore;
 
 namespace SWLOR.Game.Server.NWNX
 {
-    public class NWNXObject : NWNXBase, INWNXObject
+    public static class NWNXObject
     {
         private const string NWNX_Object = "NWNX_Object";
 
@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public int GetLocalVariableCount(NWObject obj)
+        public static int GetLocalVariableCount(NWObject obj)
         {
             string sFunc = "GetLocalVariableCount";
 
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="obj"></param>
         /// <param name="index"></param>
         /// <returns></returns>
-        public LocalVariable GetLocalVariable(NWObject obj, int index)
+        public static LocalVariable GetLocalVariable(NWObject obj, int index)
         {
             string sFunc = "GetLocalVariable";
 
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public NWObject StringToObject(string id)
+        public static NWObject StringToObject(string id)
         {
             string sFunc = "StringToObject";
 
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="pos"></param>
-        public void SetPosition(NWObject obj, Vector pos)
+        public static void SetPosition(NWObject obj, Vector pos)
         {
             string sFunc = "SetPosition";
 
@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="hp"></param>
-        public void SetCurrentHitPoints(NWCreature creature, int hp)
+        public static void SetCurrentHitPoints(NWCreature creature, int hp)
         {
             string sFunc = "SetCurrentHitPoints";
 
@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="hp"></param>
-        public void SetMaxHitPoints(NWObject creature, int hp)
+        public static void SetMaxHitPoints(NWObject creature, int hp)
         {
             string sFunc = "SetMaxHitPoints";
 
@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <returns></returns>
-        public string GetPortrait(NWObject creature)
+        public static string GetPortrait(NWObject creature)
         {
             string sFunc = "GetPortrait";
 
@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="portrait"></param>
-        public void SetPortrait(NWObject creature, string portrait)
+        public static void SetPortrait(NWObject creature, string portrait)
         {
             string sFunc = "SetPortrait";
 
@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public string Serialize(Object obj)
+        public static string Serialize(Object obj)
         {
             string sFunc = "Serialize";
 
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="serialized"></param>
         /// <returns></returns>
-        public Object Deserialize(string serialized)
+        public static Object Deserialize(string serialized)
         {
             string sFunc = "Deserialize";
 
@@ -176,7 +176,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public string GetDialogResref(NWObject obj)
+        public static string GetDialogResref(NWObject obj)
         {
             string sFunc = "GetDialogResref";
 
@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="dialog"></param>
-        public void SetDialogResref(NWObject obj, string dialog)
+        public static void SetDialogResref(NWObject obj, string dialog)
         {
             string sFunc = "SetDialogResref";
 
@@ -207,7 +207,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="app"></param>
-        public void SetAppearance(NWObject obj, int app)
+        public static void SetAppearance(NWObject obj, int app)
         {
             string sFunc = "SetAppearance";
 
@@ -222,7 +222,7 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public int GetAppearance(NWObject obj)
+        public static int GetAppearance(NWObject obj)
         {
             string sFunc = "GetAppearance";
 

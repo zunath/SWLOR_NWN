@@ -1,21 +1,12 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
     public class ZenMarksmanship : IPerk
     {
-        
-        private readonly INWNXCreature _nwnxCreature;
-
-        public ZenMarksmanship(
-            INWNXCreature nwnxCreature)
-        {
-            
-            _nwnxCreature = nwnxCreature;
-        }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
@@ -58,7 +49,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, _.FEAT_ZEN_ARCHERY);
+            NWNXCreature.RemoveFeat(oPC, _.FEAT_ZEN_ARCHERY);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
@@ -89,11 +80,11 @@ namespace SWLOR.Game.Server.Perk.Blaster
                     (equipped.CustomItemType != CustomItemType.BlasterPistol && 
                      equipped.CustomItemType != CustomItemType.BlasterRifle))
             {
-                _nwnxCreature.RemoveFeat(oPC, _.FEAT_ZEN_ARCHERY);
+                NWNXCreature.RemoveFeat(oPC, _.FEAT_ZEN_ARCHERY);
                 return;
             }
 
-            _nwnxCreature.AddFeat(oPC, _.FEAT_ZEN_ARCHERY);
+            NWNXCreature.AddFeat(oPC, _.FEAT_ZEN_ARCHERY);
         }
 
         public bool IsHostile()

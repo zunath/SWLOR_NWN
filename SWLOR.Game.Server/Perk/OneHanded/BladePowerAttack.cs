@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 
@@ -12,15 +12,15 @@ namespace SWLOR.Game.Server.Perk.OneHanded
     public class BladePowerAttack : IPerk
     {
         
-        private readonly INWNXCreature _nwnxCreature;
+        
         private readonly IPerkService _perk;
 
         public BladePowerAttack(
-            INWNXCreature nwnxCreature,
+            
             IPerkService perk)
         {
             
-            _nwnxCreature = nwnxCreature;
+            
             _perk = perk;
         }
 
@@ -65,8 +65,8 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, FEAT_POWER_ATTACK);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_POWER_ATTACK);
+            NWNXCreature.RemoveFeat(oPC, FEAT_POWER_ATTACK);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_POWER_ATTACK);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
@@ -93,8 +93,8 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             
             if (Equals(equipped, oItem) || equipped.CustomItemType != CustomItemType.Vibroblade)
             {
-                _nwnxCreature.RemoveFeat(oPC, FEAT_POWER_ATTACK);
-                _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_POWER_ATTACK);
+                NWNXCreature.RemoveFeat(oPC, FEAT_POWER_ATTACK);
+                NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_POWER_ATTACK);
                 if (_.GetActionMode(oPC, ACTION_MODE_POWER_ATTACK) == TRUE)
                 {
                     _.SetActionMode(oPC, ACTION_MODE_POWER_ATTACK, FALSE);
@@ -107,11 +107,11 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             }
 
             int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.BladePowerAttack);
-            _nwnxCreature.AddFeat(oPC, FEAT_POWER_ATTACK);
+            NWNXCreature.AddFeat(oPC, FEAT_POWER_ATTACK);
 
             if (perkLevel >= 2)
             {
-                _nwnxCreature.AddFeat(oPC, FEAT_IMPROVED_POWER_ATTACK);
+                NWNXCreature.AddFeat(oPC, FEAT_IMPROVED_POWER_ATTACK);
             }
         }
 

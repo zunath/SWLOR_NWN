@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 
@@ -11,16 +11,16 @@ namespace SWLOR.Game.Server.Perk.Armor
 {
     public class Provoke: IPerk
     {
-        private readonly INWNXCreature _nwnxCreature;
+        
         private readonly IPerkService _perk;
         private readonly IEnmityService _enmity;
         
 
-        public Provoke(INWNXCreature nwnxCreature,
+        public Provoke(
             IPerkService perk,
             IEnmityService enmity)
         {
-            _nwnxCreature = nwnxCreature;
+            
             _perk = perk;
             _enmity = enmity;
             
@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Perk.Armor
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, (int)CustomFeatType.Provoke);
+            NWNXCreature.RemoveFeat(oPC, (int)CustomFeatType.Provoke);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
@@ -119,11 +119,11 @@ namespace SWLOR.Game.Server.Perk.Armor
             
             if (equipped.Equals(oItem) || equipped.CustomItemType != CustomItemType.HeavyArmor)
             {
-                _nwnxCreature.RemoveFeat(oPC, (int)CustomFeatType.Provoke);
+                NWNXCreature.RemoveFeat(oPC, (int)CustomFeatType.Provoke);
                 return;
             }
 
-            _nwnxCreature.AddFeat(oPC, (int)CustomFeatType.Provoke);
+            NWNXCreature.AddFeat(oPC, (int)CustomFeatType.Provoke);
         }
 
         public bool IsHostile()

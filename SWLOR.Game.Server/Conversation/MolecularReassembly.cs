@@ -2,7 +2,7 @@
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Placeable.MolecularReassembler;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IDataService _data;
         private readonly ICraftService _craft;
         private readonly ISerializationService _serialization;
-        private readonly INWNXPlayer _nwnxPlayer;
+        
 
         public MolecularReassembly(
              
@@ -25,15 +25,14 @@ namespace SWLOR.Game.Server.Conversation
             IColorTokenService color,
             IDataService data,
             ICraftService craft,
-            ISerializationService serialization,
-            INWNXPlayer nwnxPlayer) 
+            ISerializationService serialization) 
             : base(dialog)
         {
             _color = color;
             _data = data;
             _craft = craft;
             _serialization = serialization;
-            _nwnxPlayer = nwnxPlayer;
+            
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -218,7 +217,7 @@ namespace SWLOR.Game.Server.Conversation
                     {
                         // Calculate delay, fire off delayed event, and show timing bar.
                         float delay = _craft.CalculateCraftingDelay(player, (int) SkillType.Harvesting);
-                        _nwnxPlayer.StartGuiTimingBar(player, delay, string.Empty);
+                        NWNXPlayer.StartGuiTimingBar(player, delay, string.Empty);
                         player.DelayEvent<ReassembleComplete>(delay, player, model.SerializedSalvageItem, model.SalvageComponentTypeID);
 
                         // Make the player play an animation.

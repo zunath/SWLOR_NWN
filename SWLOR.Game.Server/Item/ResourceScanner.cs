@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Bioware.Contracts;
+using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
@@ -12,33 +12,27 @@ namespace SWLOR.Game.Server.Item
 {
     public class ResourceScanner: IActionItem
     {
-        
         private readonly ISpawnService _spawn;
         private readonly IRandomService _random;
         private readonly IPerkService _perk;
         private readonly IResourceService _resource;
         private readonly ISkillService _skill;
         private readonly IDurabilityService _durability;
-        private readonly IBiowarePosition _biowarePosition;
-
+        
         public ResourceScanner(
-            
             ISpawnService spawn,
             IRandomService random,
             IPerkService perk,
             IResourceService resource,
             ISkillService skill,
-            IDurabilityService durability,
-            IBiowarePosition biowarePosition)
+            IDurabilityService durability)
         {
-            
             _spawn = spawn;
             _random = random;
             _perk = perk;
             _resource = resource;
             _skill = skill;
             _durability = durability;
-            _biowarePosition = biowarePosition;
         }
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
@@ -101,7 +95,7 @@ namespace SWLOR.Game.Server.Item
                 int cellX = (int)(position.m_X / 10);
                 int cellY = (int)(position.m_Y / 10);
 
-                _biowarePosition.TurnToFaceLocation(spawn.SpawnLocation, user);
+                BiowarePosition.TurnToFaceLocation(spawn.SpawnLocation, user);
 
                 user.FloatingText("Nearest resource is located at coordinates (" + cellX + ", " + cellY + ")");
             }

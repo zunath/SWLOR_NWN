@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Linq;
-using SWLOR.Game.Server.Bioware.Contracts;
+
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Mod.Contracts;
 
 using NWN;
+using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 
@@ -13,20 +14,6 @@ namespace SWLOR.Game.Server.Mod
 {
     public class EnhancementBonusMod : IMod
     {
-        
-        private readonly IItemService _item;
-        private readonly IBiowareXP2 _biowareXP2;
-
-        public EnhancementBonusMod(
-            
-            IItemService item,
-            IBiowareXP2 biowareXP2)
-        {
-            
-            _item = item;
-            _biowareXP2 = biowareXP2;
-        }
-
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             if (!ItemService.WeaponBaseItemTypes.Contains(target.BaseItemType))
@@ -48,7 +35,7 @@ namespace SWLOR.Game.Server.Mod
             ItemProperty ip = _.ItemPropertyEnhancementBonus(newValue);
             ip = _.TagItemProperty(ip, "RUNE_IP");
 
-            _biowareXP2.IPSafeAddItemProperty(target, ip, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
+            BiowareXP2.IPSafeAddItemProperty(target, ip, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
         }
 
         public string Description(NWPlayer player, NWItem target, params string[] args)

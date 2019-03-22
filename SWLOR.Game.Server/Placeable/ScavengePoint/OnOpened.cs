@@ -1,5 +1,5 @@
 ﻿using System;
-using SWLOR.Game.Server.Bioware.Contracts;
+
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
@@ -10,13 +10,14 @@ using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using Object = NWN.Object;
 using System.Linq;
+using SWLOR.Game.Server.Bioware;
 
 namespace SWLOR.Game.Server.Placeable.ScavengePoint
 {
     public class OnOpened: IRegisteredEvent
     {
         
-        private readonly IBiowareXP2 _biowareXP2;
+        
         private readonly ISkillService _skill;
         private readonly IPerkService _perk;
         private readonly IRandomService _random;
@@ -27,7 +28,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
         private readonly IPlayerStatService _playerStat;
 
         public OnOpened(
-            IBiowareXP2 biowareXP2,
+            
             ISkillService skill,
             IPerkService perk,
             IRandomService random,
@@ -38,7 +39,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
             IPlayerStatService playerStat)
         {
             
-			_biowareXP2 = biowareXP2;
+			
             _skill = skill;
             _perk = perk;
             _random = random;
@@ -133,7 +134,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
                             if (_random.Random(1, 100) <= ipBonusChance)
                             {
                                 var ip = _resource.GetRandomComponentBonusIP(ResourceQuality.Normal);
-                                _biowareXP2.IPSafeAddItemProperty(resource, ip.Item1, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
+                                BiowareXP2.IPSafeAddItemProperty(resource, ip.Item1, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
 
                                 switch (ip.Item2)
                                 {

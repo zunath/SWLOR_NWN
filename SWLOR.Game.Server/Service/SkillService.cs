@@ -1,5 +1,5 @@
 ﻿using NWN;
-using SWLOR.Game.Server.Bioware.Contracts;
+
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
@@ -8,13 +8,14 @@ using SWLOR.Game.Server.ValueObject.Skill;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Messaging.Contracts;
 using SWLOR.Game.Server.Messaging.Messages;
 using static NWN._;
 using Object = NWN.Object;
-using SWLOR.Game.Server.NWNX.Contracts;
+
 
 namespace SWLOR.Game.Server.Service
 {
@@ -25,7 +26,7 @@ namespace SWLOR.Game.Server.Service
         
         
         private readonly IRandomService _random;
-        private readonly IBiowareXP2 _biowareXP2;
+        
         private readonly IEnmityService _enmity;
         private readonly IPlayerStatService _playerStat;
         private readonly IItemService _item;
@@ -35,7 +36,7 @@ namespace SWLOR.Game.Server.Service
         public SkillService(
             
             IRandomService random,
-            IBiowareXP2 biowareXP2,
+            
             IEnmityService enmity,
             IPlayerStatService playerStat,
             IItemService item,
@@ -44,7 +45,7 @@ namespace SWLOR.Game.Server.Service
         {
             
             _random = random;
-            _biowareXP2 = biowareXP2;
+            
             _enmity = enmity;
             _playerStat = playerStat;
             _item = item;
@@ -770,24 +771,24 @@ namespace SWLOR.Game.Server.Service
             {
                 ItemProperty noDamage = _.ItemPropertyNoDamage();
                 noDamage = _.TagItemProperty(noDamage, IPWeaponPenaltyTag);
-                _biowareXP2.IPSafeAddItemProperty(oItem, noDamage, 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(oItem, noDamage, 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
                 penalty = 5; // Reset to 5 so that the following penalties apply.
             }
 
             // Decreased attack penalty
             ItemProperty ipPenalty = _.ItemPropertyAttackPenalty(penalty);
             ipPenalty = _.TagItemProperty(ipPenalty, IPWeaponPenaltyTag);
-            _biowareXP2.IPSafeAddItemProperty(oItem, ipPenalty, 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(oItem, ipPenalty, 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
 
             // Decreased damage penalty
             ipPenalty = _.ItemPropertyDamagePenalty(penalty);
             ipPenalty = _.TagItemProperty(ipPenalty, IPWeaponPenaltyTag);
-            _biowareXP2.IPSafeAddItemProperty(oItem, ipPenalty, 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(oItem, ipPenalty, 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
 
             // Decreased enhancement bonus penalty
             ipPenalty = _.ItemPropertyEnhancementPenalty(penalty);
             ipPenalty = _.TagItemProperty(ipPenalty, IPWeaponPenaltyTag);
-            _biowareXP2.IPSafeAddItemProperty(oItem, ipPenalty, 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(oItem, ipPenalty, 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
 
             oPC.SendMessage("A penalty has been applied to your weapon '" + oItem.Name + "' due to your skill being under the recommended level.");
         }
@@ -886,7 +887,7 @@ namespace SWLOR.Game.Server.Service
 
                 ItemProperty ip = _.ItemPropertyDecreaseAbility(ABILITY_STRENGTH, newStr);
                 ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
-                _biowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
             if (dex > 0)
             {
@@ -895,7 +896,7 @@ namespace SWLOR.Game.Server.Service
 
                 ItemProperty ip = _.ItemPropertyDecreaseAbility(ABILITY_DEXTERITY, newDex);
                 ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
-                _biowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
             if (con > 0)
             {
@@ -904,7 +905,7 @@ namespace SWLOR.Game.Server.Service
 
                 ItemProperty ip = _.ItemPropertyDecreaseAbility(ABILITY_CONSTITUTION, newCon);
                 ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
-                _biowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
             if (@int > 0)
             {
@@ -913,7 +914,7 @@ namespace SWLOR.Game.Server.Service
 
                 ItemProperty ip = _.ItemPropertyDecreaseAbility(ABILITY_INTELLIGENCE, newInt);
                 ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
-                _biowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
             if (wis > 0)
             {
@@ -922,7 +923,7 @@ namespace SWLOR.Game.Server.Service
 
                 ItemProperty ip = _.ItemPropertyDecreaseAbility(ABILITY_WISDOM, newWis);
                 ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
-                _biowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
             if (cha > 0)
             {
@@ -931,7 +932,7 @@ namespace SWLOR.Game.Server.Service
 
                 ItemProperty ip = _.ItemPropertyDecreaseAbility(ABILITY_CHARISMA, newCha);
                 ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
-                _biowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
             if (ab > 0)
             {
@@ -940,7 +941,7 @@ namespace SWLOR.Game.Server.Service
 
                 ItemProperty ip = _.ItemPropertyAttackPenalty(newAB);
                 ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
-                _biowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
             if (eb > 0)
             {
@@ -949,7 +950,7 @@ namespace SWLOR.Game.Server.Service
 
                 ItemProperty ip = _.ItemPropertyEnhancementPenalty(newEB);
                 ip = _.TagItemProperty(ip, IPEquipmentPenaltyTag);
-                _biowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                BiowareXP2.IPSafeAddItemProperty(oItem, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
 
         }

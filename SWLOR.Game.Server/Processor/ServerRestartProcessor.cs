@@ -2,7 +2,7 @@
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Processor.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 
@@ -17,18 +17,14 @@ namespace SWLOR.Game.Server.Processor
         private const int DefaultRestartMinutes = 300; // 300 = 5 hours
         private const int NotificationIntervalMinutes = 60;
         
-        private readonly INWNXAdmin _nwnxAdmin;
+        
         private readonly ITimeService _time;
         private readonly IDataService _data;
 
         public ServerRestartProcessor(
-            
-            INWNXAdmin nwnxAdmin,
             ITimeService time,
             IDataService data)
         {
-            
-            _nwnxAdmin = nwnxAdmin;
             _time = time;
             _data = data;
 
@@ -75,7 +71,7 @@ namespace SWLOR.Game.Server.Processor
                     _.BootPC(player, "Server is automatically rebooting. This is a temporary solution until we can fix performance problems. Thank you for your patience and understanding.");
                 }
 
-                _nwnxAdmin.ShutdownServer();
+                NWNXAdmin.ShutdownServer();
             }
             else if(now >= _nextNotification)
             {

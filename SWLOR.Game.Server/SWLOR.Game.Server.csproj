@@ -92,8 +92,6 @@
     <Compile Include="AreaInstance\ExitAreaInstance.cs" />
     <Compile Include="Bioware\BiowarePosition.cs" />
     <Compile Include="Bioware\BiowareXP2.cs" />
-    <Compile Include="Bioware\Contracts\IBiowarePosition.cs" />
-    <Compile Include="Bioware\Contracts\IBiowareXP2.cs" />
     <Compile Include="ChatCommand\Blueprints.cs" />
     <Compile Include="ChatCommand\Bored.cs" />
     <Compile Include="ChatCommand\Bow.cs" />
@@ -459,8 +457,6 @@
     <Compile Include="Enumeration\PerkExecutionType.cs" />
     <Compile Include="Enumeration\PerkType.cs" />
     <Compile Include="Enumeration\QuestType.cs" />
-    <Compile Include="NWNX\Contracts\INWNXVisibility.cs" />
-    <Compile Include="NWNX\Contracts\INWNXItemProperty.cs" />
     <Compile Include="NWNX\ItemPropertyUnpacked.cs" />
     <Compile Include="NWNX\NWNXItemProperty.cs" />
     <Compile Include="NWNX\NWNXVisibility.cs" />
@@ -549,12 +545,8 @@
     <Compile Include="Mod\ElectricalPotencyMod.cs" />
     <Compile Include="Mod\FabricationMod.cs" />
     <Compile Include="Mod\RestMod.cs" />
-    <Compile Include="NWNX\Contracts\INWNXProfiler.cs" />
     <Compile Include="NWNX\DamageData.cs" />
-    <Compile Include="NWNX\Contracts\INWNXDamage.cs" />
-    <Compile Include="NWNX\Contracts\INWNXAdmin.cs" />
     <Compile Include="NWNX\DevastatingCriticalData.cs" />
-    <Compile Include="NWNX\Contracts\INWNXWeapon.cs" />
     <Compile Include="NWNX\NWNXAdmin.cs" />
     <Compile Include="NWNX\NWNXDamage.cs" />
     <Compile Include="NWNX\NWNXProfiler.cs" />
@@ -1091,15 +1083,8 @@
     <Compile Include="Item\Shovel.cs" />
     <Compile Include="Item\WaterJug.cs" />
     <Compile Include="Item\XPTome.cs" />
-    <Compile Include="NWNX\Contracts\INWNXChat.cs" />
-    <Compile Include="NWNX\Contracts\INWNXCreature.cs" />
-    <Compile Include="NWNX\Contracts\INWNXEvents.cs" />
-    <Compile Include="NWNX\Contracts\INWNXItem.cs" />
-    <Compile Include="NWNX\Contracts\INWNXObject.cs" />
-    <Compile Include="NWNX\Contracts\INWNXPlayer.cs" />
-    <Compile Include="NWNX\Contracts\INWNXPlayerQuickBarSlot.cs" />
     <Compile Include="NWNX\LocalVariable.cs" />
-    <Compile Include="NWNX\NWNXBase.cs" />
+    <Compile Include="NWNX\NWNXCore.cs" />
     <Compile Include="NWNX\NWNXChat.cs" />
     <Compile Include="NWNX\NWNXCreature.cs" />
     <Compile Include="NWNX\MemorizedSpellSlot.cs" />

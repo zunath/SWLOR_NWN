@@ -4,7 +4,7 @@ using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
-using SWLOR.Game.Server.NWNX.Contracts;
+
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
@@ -14,8 +14,6 @@ namespace SWLOR.Game.Server.Service
 {
     public class CombatService : ICombatService
     {
-        
-        private readonly INWNXDamage _nwnxDamage;
         private readonly IPerkService _perk;
         private readonly IRandomService _random;
         private readonly IAbilityService _ability;
@@ -26,8 +24,6 @@ namespace SWLOR.Game.Server.Service
         private readonly IColorTokenService _color;
         
         public CombatService(
-            
-            INWNXDamage nwnxDamage,
             IPerkService perk,
             IRandomService random,
             IAbilityService ability,
@@ -37,8 +33,6 @@ namespace SWLOR.Game.Server.Service
             ICustomEffectService customEffect,
             IColorTokenService color)
         {
-            
-            _nwnxDamage = nwnxDamage;
             _perk = perk;
             _random = random;
             _ability = ability;
@@ -51,7 +45,7 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleApplyDamage()
         {
-            DamageData data = _nwnxDamage.GetDamageEventData();
+            DamageData data = NWNXDamage.GetDamageEventData();
 
             NWPlayer player = data.Damager.Object;
             NWCreature target = Object.OBJECT_SELF;
@@ -77,7 +71,7 @@ namespace SWLOR.Game.Server.Service
 
         private void HandleWeaponStatBonuses()
         {
-            DamageData data = _nwnxDamage.GetDamageEventData();
+            DamageData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
 
             NWPlayer player = data.Damager.Object;
@@ -97,12 +91,12 @@ namespace SWLOR.Game.Server.Service
                 data.Base += statBonus;
             }
 
-            _nwnxDamage.SetDamageEventData(data);
+            NWNXDamage.SetDamageEventData(data);
         }
 
         private void HandleEvadeOrDeflectBlasterFire()
         {
-            DamageData data = _nwnxDamage.GetDamageEventData();
+            DamageData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
             NWCreature damager = data.Damager.Object;
             NWCreature target = Object.OBJECT_SELF;
@@ -187,7 +181,7 @@ namespace SWLOR.Game.Server.Service
             {
                 target.SendMessage(_color.Gray("You " + action + " a blaster shot."));
                 data.AdjustAllByPercent(-1);
-                _nwnxDamage.SetDamageEventData(data);
+                NWNXDamage.SetDamageEventData(data);
             }
             else
             {
@@ -197,7 +191,7 @@ namespace SWLOR.Game.Server.Service
 
         private void HandleBattlemagePerk()
         {
-            DamageData data = _nwnxDamage.GetDamageEventData();
+            DamageData data = NWNXDamage.GetDamageEventData();
             if (data.Base <= 0) return;
 
             NWObject target = Object.OBJECT_SELF;
@@ -244,7 +238,7 @@ namespace SWLOR.Game.Server.Service
 
         private void HandleApplySneakAttackDamage()
         {
-            DamageData data = _nwnxDamage.GetDamageEventData();
+            DamageData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
             NWObject damager = data.Damager;
             int sneakAttackType = damager.GetLocalInt("SNEAK_ATTACK_ACTIVE");
@@ -278,7 +272,7 @@ namespace SWLOR.Game.Server.Service
                     _enmity.AdjustEnmity(target, player, 5 * data.Base);
                 }
 
-                _nwnxDamage.SetDamageEventData(data);
+                NWNXDamage.SetDamageEventData(data);
             }
 
             damager.DeleteLocalInt("SNEAK_ATTACK_ACTIVE");
@@ -286,7 +280,7 @@ namespace SWLOR.Game.Server.Service
 
         private void HandleAbsorptionFieldEffect()
         {
-            DamageData data = _nwnxDamage.GetDamageEventData();
+            DamageData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
             NWObject target = Object.OBJECT_SELF;
             if (!target.IsPlayer) return;
@@ -311,7 +305,7 @@ namespace SWLOR.Game.Server.Service
 
         private void HandleRecoveryBlast()
         {
-            DamageData data = _nwnxDamage.GetDamageEventData();
+            DamageData data = NWNXDamage.GetDamageEventData();
             NWObject damager = data.Damager;
             bool isActive = damager.GetLocalInt("RECOVERY_BLAST_ACTIVE") == TRUE;
             damager.DeleteLocalInt("RECOVERY_BLAST_ACTIVE");
@@ -333,12 +327,12 @@ namespace SWLOR.Game.Server.Service
             data.Sonic = 0;
             data.Base = 0;
 
-            _nwnxDamage.SetDamageEventData(data);
+            NWNXDamage.SetDamageEventData(data);
         }
 
         private void HandleTranquilizerEffect()
         {
-            DamageData data = _nwnxDamage.GetDamageEventData();
+            DamageData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
             NWObject self = Object.OBJECT_SELF;
 
@@ -360,7 +354,7 @@ namespace SWLOR.Game.Server.Service
 
         private void HandleStances()
         {
-            DamageData data = _nwnxDamage.GetDamageEventData();
+            DamageData data = NWNXDamage.GetDamageEventData();
             NWPlayer damager = data.Damager.Object;
             NWItem damagerWeapon = _.GetLastWeaponUsed(damager);
 
@@ -384,7 +378,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
             
-            _nwnxDamage.SetDamageEventData(data);
+            NWNXDamage.SetDamageEventData(data);
         }
 
         private int CalculateForceAccuracy(

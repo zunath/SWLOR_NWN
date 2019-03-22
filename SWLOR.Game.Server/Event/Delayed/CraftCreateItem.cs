@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Bioware.Contracts;
+using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
@@ -20,7 +20,6 @@ namespace SWLOR.Game.Server.Event.Delayed
         private readonly IErrorService _error;
         private readonly ICraftService _craft;
         private readonly IComponentBonusService _componentBonus;
-        private readonly IBiowareXP2 _biowareXP2;
         private readonly IColorTokenService _color;
         private readonly IBaseService _base;
         private readonly ISkillService _skill;
@@ -35,7 +34,7 @@ namespace SWLOR.Game.Server.Event.Delayed
             IErrorService error,
             ICraftService craft,
             IComponentBonusService componentBonus,
-            IBiowareXP2 biowareXP2,
+            
             IColorTokenService color,
             IBaseService @base,
             ISkillService skill,
@@ -49,7 +48,7 @@ namespace SWLOR.Game.Server.Event.Delayed
             _error = error;
             _craft = craft;
             _componentBonus = componentBonus;
-            _biowareXP2 = biowareXP2;
+            
             _color = color;
             _base = @base;
             _skill = skill;
@@ -233,7 +232,7 @@ namespace SWLOR.Game.Server.Event.Delayed
                         if (componentIP == null)
                             _componentBonus.ApplyComponentBonus(item, ip);
                         else
-                            _biowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
+                            BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
 
                     }
                     player.SendMessage(_color.Green("Successfully applied component property: " + bonusName));

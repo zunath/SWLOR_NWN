@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using NWN;
-using SWLOR.Game.Server.Bioware.Contracts;
+using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
         private readonly ICraftService _craft;
         private readonly IRandomService _random;
         private readonly IPerkService _perk;
-        private readonly IBiowareXP2 _biowareXP2;
+        
         private readonly IPlayerStatService _playerStat;
 
         public CompleteSmelt(
@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             ICraftService craft,
             IRandomService random,
             IPerkService perk,
-            IBiowareXP2 biowareXP2,
+            
             IPlayerStatService playerStat)
         {
             
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             _craft = craft;
             _random = random;
             _perk = perk;
-            _biowareXP2 = biowareXP2;
+            
             _playerStat = playerStat;
         }
 
@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
                 {
                     if(_random.D100(1) <= chance)
                     {
-                        _biowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
+                        BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
                     }
                 }
             }

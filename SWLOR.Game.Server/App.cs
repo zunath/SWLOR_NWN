@@ -4,8 +4,6 @@ using System.Reflection;
 using Autofac;
 using FluentBehaviourTree;
 using SWLOR.Game.Server.AI.Contracts;
-using SWLOR.Game.Server.Bioware;
-using SWLOR.Game.Server.Bioware.Contracts;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Conversation.Contracts;
 using SWLOR.Game.Server.CustomEffect.Contracts;
@@ -14,14 +12,12 @@ using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Mod.Contracts;
-
-using NWN;
 using SWLOR.Game.Server.AreaInstance.Contracts;
 using SWLOR.Game.Server.DoorRule.Contracts;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Messaging.Contracts;
 using SWLOR.Game.Server.NWNX;
-using SWLOR.Game.Server.NWNX.Contracts;
+
 using SWLOR.Game.Server.Perk;
 using SWLOR.Game.Server.Processor.Contracts;
 using SWLOR.Game.Server.QuestRule.Contracts;
@@ -305,22 +301,6 @@ namespace SWLOR.Game.Server
             RegisterInterfaceImplementations<IAreaInstance>(builder, false, true);
 
             // Third Party
-            builder.RegisterType<BiowarePosition>().As<IBiowarePosition>().SingleInstance();
-            builder.RegisterType<BiowareXP2>().As<IBiowareXP2>().SingleInstance();
-            builder.RegisterType<NWNXAdmin>().As<INWNXAdmin>().SingleInstance();
-            builder.RegisterType<NWNXChat>().As<INWNXChat>().SingleInstance();
-            builder.RegisterType<NWNXCreature>().As<INWNXCreature>().SingleInstance();
-            builder.RegisterType<NWNXDamage>().As<INWNXDamage>().SingleInstance();
-            builder.RegisterType<NWNXEvents>().As<INWNXEvents>().SingleInstance();
-            builder.RegisterType<NWNXItem>().As<INWNXItem>().SingleInstance();
-            builder.RegisterType<NWNXItemProperty>().As<INWNXItemProperty>().SingleInstance();
-            builder.RegisterType<NWNXObject>().As<INWNXObject>().SingleInstance();
-            builder.RegisterType<NWNXItem>().As<INWNXItem>().SingleInstance();
-            builder.RegisterType<NWNXPlayer>().As<INWNXPlayer>().SingleInstance();
-            builder.RegisterType<NWNXPlayerQuickBarSlot>().As<INWNXPlayerQuickBarSlot>().SingleInstance();
-            builder.RegisterType<NWNXProfiler>().As<INWNXProfiler>().SingleInstance();
-            builder.RegisterType<NWNXVisibility>().As<INWNXVisibility>().SingleInstance();
-            builder.RegisterType<NWNXWeapon>().As<INWNXWeapon>().SingleInstance();
             builder.RegisterType<BehaviourTreeBuilder>().SingleInstance();
             
             _container = builder.Build();

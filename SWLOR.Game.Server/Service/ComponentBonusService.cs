@@ -1,6 +1,6 @@
 ﻿using System;
 using NWN;
-using SWLOR.Game.Server.Bioware.Contracts;
+using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
@@ -11,18 +11,18 @@ namespace SWLOR.Game.Server.Service
     {
         
         private readonly IItemService _item;
-        private readonly IBiowareXP2 _biowareXP2;
+        
         private readonly IDurabilityService _durability;
 
         public ComponentBonusService(
             
             IItemService item,
-            IBiowareXP2 biowareXP2,
+            
             IDurabilityService durability)
         {
             
             _item = item;
-            _biowareXP2 = biowareXP2;
+            
             _durability = durability;
         }
 
@@ -243,7 +243,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (prop == null) return;
 
-                _biowareXP2.IPSafeAddItemProperty(product, prop, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
+                BiowareXP2.IPSafeAddItemProperty(product, prop, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
             }
 
         }

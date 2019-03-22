@@ -1,9 +1,7 @@
-﻿using FluentBehaviourTree;
-using SWLOR.Game.Server.AI.Contracts;
-using SWLOR.Game.Server.Bioware.Contracts;
-using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
@@ -15,16 +13,12 @@ namespace SWLOR.Game.Server.AI.AIComponent
     /// </summary>
     public class AggroTargetBySight: IRegisteredEvent
     {
-        
         private readonly IEnmityService _enmity;
-        private readonly IBiowarePosition _biowarePos;
-
+        
         public AggroTargetBySight(
-            IEnmityService enmity,
-            IBiowarePosition biowarePos)
+            IEnmityService enmity)
         {
             _enmity = enmity;
-            _biowarePos = biowarePos;
         }
 
         public bool Run(object[] args)
@@ -37,7 +31,7 @@ namespace SWLOR.Game.Server.AI.AIComponent
             if (aggroRange <= 0.0f) aggroRange = 10.0f;
             Location targetLocation = _.Location(
                 self.Area.Object,
-                _biowarePos.GetChangedPosition(self.Position, aggroRange, self.Facing),
+                BiowarePosition.GetChangedPosition(self.Position, aggroRange, self.Facing),
                 self.Facing + 180.0f);
             
             NWCreature creature = _.GetFirstObjectInShape(SHAPE_SPELLCYLINDER, aggroRange, targetLocation, TRUE, OBJECT_TYPE_CREATURE, self.Position);

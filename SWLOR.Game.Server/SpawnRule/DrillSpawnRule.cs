@@ -1,5 +1,5 @@
 ﻿using NWN;
-using SWLOR.Game.Server.Bioware.Contracts;
+using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
@@ -11,18 +11,18 @@ namespace SWLOR.Game.Server.SpawnRule
     {
         private readonly IRandomService _random;
         private readonly IResourceService _resource;
-        private readonly IBiowareXP2 _biowareXP2;
+        
         private readonly IColorTokenService _color;
 
         public DrillSpawnRule(
             IRandomService random,
             IResourceService resource,
-            IBiowareXP2 biowareXP2,
+            
             IColorTokenService color)
         {
             _random = random;
             _resource = resource;
-            _biowareXP2 = biowareXP2;
+            
             _color = color;
         }
 
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.SpawnRule
             }
 
             var ip = _resource.GetRandomComponentBonusIP(quality);
-            _biowareXP2.IPSafeAddItemProperty(target.Object, ip.Item1, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
+            BiowareXP2.IPSafeAddItemProperty(target.Object, ip.Item1, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
 
             switch (ip.Item2)
             {

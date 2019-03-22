@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Event.Module;
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    internal class mod_on_nwnxchat
+    internal class mod_onNWNXChat
 #pragma warning restore IDE1006 // Naming Styles
     {
         // ReSharper disable once UnusedMember.Local

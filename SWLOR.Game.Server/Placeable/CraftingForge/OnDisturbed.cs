@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Bioware.Contracts;
+
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.Bioware;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service.Contracts;
 using Object = NWN.Object;
 
@@ -20,22 +21,17 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
         private readonly IPerkService _perk;
         private readonly ISkillService _skill;
         private readonly ICraftService _craft;
-        private readonly IBiowarePosition _biowarePosition;
-        private readonly INWNXPlayer _nwnxPlayer;
+        
+        
 
         public OnDisturbed(
             IPerkService perk,
             ISkillService skill,
-            ICraftService craft,
-            IBiowarePosition biowarePosition,
-            INWNXPlayer nwnxPlayer)
+            ICraftService craft)
         {
-            
             _perk = perk;
             _skill = skill;
             _craft = craft;
-            _biowarePosition = biowarePosition;
-            _nwnxPlayer = nwnxPlayer;
         }
 
         public bool Run(params object[] args)
@@ -120,7 +116,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
                 NWPlaceable flames = (forge.GetLocalObject("FORGE_FLAMES"));
                 if (!flames.IsValid)
                 {
-                    Vector flamePosition = _biowarePosition.GetChangedPosition(forge.Position, 0.36f, forge.Facing);
+                    Vector flamePosition = BiowarePosition.GetChangedPosition(forge.Position, 0.36f, forge.Facing);
                     Location flameLocation = _.Location(forge.Area.Object, flamePosition, 0.0f);
                     flames = (_.CreateObject(_.OBJECT_TYPE_PLACEABLE, "forge_flame", flameLocation));
                     forge.SetLocalObject("FORGE_FLAMES", flames.Object);
@@ -138,7 +134,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             float baseCraftDelay = 18.0f - (18.0f * _perk.GetPCPerkLevel(pc, PerkType.SpeedyRefining) * 0.1f);
 
             pc.IsBusy = true;
-            _nwnxPlayer.StartGuiTimingBar(pc, baseCraftDelay, string.Empty);
+            NWNXPlayer.StartGuiTimingBar(pc, baseCraftDelay, string.Empty);
 
             // Any component bonuses on the ore get applied to the end product.
             var itemProperties = item.ItemProperties.Where(x =>

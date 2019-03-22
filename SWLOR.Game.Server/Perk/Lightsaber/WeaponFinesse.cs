@@ -2,7 +2,7 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 namespace SWLOR.Game.Server.Perk.Lightsaber
@@ -10,15 +10,15 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
     public class WeaponFinesse : IPerk
     {
         
-        private readonly INWNXCreature _nwnxCreature;
+        
         private readonly IPerkService _perk;
 
         public WeaponFinesse(
-            INWNXCreature nwnxCreature,
+            
             IPerkService perk)
         {
             
-            _nwnxCreature = nwnxCreature;
+            
             _perk = perk;
         }
 
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, _.FEAT_WEAPON_FINESSE);
+            NWNXCreature.RemoveFeat(oPC, _.FEAT_WEAPON_FINESSE);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
@@ -88,10 +88,10 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
             NWItem equipped = oItem ?? oPC.RightHand;
             if (Equals(equipped, oItem) || (equipped.CustomItemType != CustomItemType.Lightsaber && equipped.CustomItemType != CustomItemType.Saberstaff && equipped.GetLocalInt("LIGHTSABER") == FALSE))
             {
-                _nwnxCreature.RemoveFeat(oPC, _.FEAT_WEAPON_FINESSE);
+                NWNXCreature.RemoveFeat(oPC, _.FEAT_WEAPON_FINESSE);
                 return;
             }
-            _nwnxCreature.AddFeat(oPC, _.FEAT_WEAPON_FINESSE);
+            NWNXCreature.AddFeat(oPC, _.FEAT_WEAPON_FINESSE);
         }
 
         public bool IsHostile()

@@ -4,7 +4,7 @@ using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 using Object = NWN.Object;
@@ -13,18 +13,12 @@ namespace SWLOR.Game.Server.Placeable.Scrapper
 {
     public class OnDisturbed: IRegisteredEvent
     {
-        
         private readonly IItemService _item;
-        private readonly INWNXObject _nwnxObject;
-
+        
         public OnDisturbed(
-            
-            IItemService item,
-            INWNXObject nwnxObject)
+            IItemService item)
         {
-            
             _item = item;
-            _nwnxObject = nwnxObject;
         }
 
         public bool Run(params object[] args)
@@ -63,10 +57,10 @@ namespace SWLOR.Game.Server.Placeable.Scrapper
             }
             
             // Remove local variables (except the global ID)
-            int varCount = _nwnxObject.GetLocalVariableCount(item);
+            int varCount = NWNXObject.GetLocalVariableCount(item);
             for (int index = varCount-1; index >= 0; index--)
             {
-                var localVar = _nwnxObject.GetLocalVariable(item, index);
+                var localVar = NWNXObject.GetLocalVariable(item, index);
 
                 if (localVar.Key != "GLOBAL_ID")
                 {

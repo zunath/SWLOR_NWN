@@ -1,39 +1,33 @@
 ﻿using NWN;
-using SWLOR.Game.Server.Bioware.Contracts;
+
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Delayed;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
-using SWLOR.Game.Server.NWNX.Contracts;
+
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Bioware;
+using SWLOR.Game.Server.NWNX;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
     public class ItemService : IItemService
     {
-        
-        private readonly IBiowareXP2 _xp2;
         private readonly IColorTokenService _color;
-        private readonly INWNXPlayer _nwnxPlayer;
+        
         private readonly IDataService _data;
 
         public ItemService(
-            
-            IBiowareXP2 xp2,
             IColorTokenService color,
-            INWNXPlayer nwnxPlayer,
             IDataService data)
         {
-            
-            _xp2 = xp2;
             _color = color;
-            _nwnxPlayer = nwnxPlayer;
             _data = data;
         }
 
@@ -133,7 +127,7 @@ namespace SWLOR.Game.Server.Service
                         _.ActionPlayAnimation(animationID, 1.0f, delay);
                 });
 
-                _nwnxPlayer.StartGuiTimingBar(user, delay, string.Empty);
+                NWNXPlayer.StartGuiTimingBar(user, delay, string.Empty);
                 user.DelayEvent<FinishActionItem>(
                     delay,
                     className,
@@ -565,7 +559,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // No item property found. Add it to the item.
-            _xp2.IPSafeAddItemProperty(oItem, _.ItemPropertyOnHitCastSpell(IP_CONST_ONHIT_CASTSPELL_ONHIT_UNIQUEPOWER, 40), 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(oItem, _.ItemPropertyOnHitCastSpell(IP_CONST_ONHIT_CASTSPELL_ONHIT_UNIQUEPOWER, 40), 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
         }
 
         public void ReturnItem(NWObject target, NWItem item)

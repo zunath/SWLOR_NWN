@@ -1,6 +1,6 @@
 ﻿using FluentBehaviourTree;
 using SWLOR.Game.Server.AI.Contracts;
-using SWLOR.Game.Server.Bioware.Contracts;
+
 using SWLOR.Game.Server.GameObject;
 
 using NWN;

@@ -1,9 +1,9 @@
 ﻿using NWN;
-using SWLOR.Game.Server.NWNX.Contracts;
+using static SWLOR.Game.Server.NWNX.NWNXCore;
 
 namespace SWLOR.Game.Server.NWNX
 {
-    public class NWNXWeapon : NWNXBase, INWNXWeapon
+    public static class NWNXWeapon
     {
         const string NWNX_Weapon = "NWNX_Weapon";
         // Otpions constants to be used with NWNX_Weapon_SetOption function
@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.NWNX
         // Set Event Data Constants
         const int NWNX_WEAPON_SETDATA_DC_BYPASS = 0; // Set Devastating Critical Bypass
         
-        public void SetWeaponFocusFeat(int nBaseItem, int nFeat)
+        public static void SetWeaponFocusFeat(int nBaseItem, int nFeat)
         {
             string sFunc = "SetWeaponFocusFeat";
 
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
-        public void SetEpicWeaponFocusFeat(int nBaseItem, int nFeat)
+        public static void SetEpicWeaponFocusFeat(int nBaseItem, int nFeat)
         {
             string sFunc = "SetEpicWeaponFocusFeat";
 
@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
-        public void SetGreaterWeaponFocusFeat(int nBaseItem, int nFeat)
+        public static void SetGreaterWeaponFocusFeat(int nBaseItem, int nFeat)
         {
             string sFunc = "SetGreaterWeaponFocusFeat";
 
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
-        public void SetWeaponFinesseSize(int nBaseItem, int nSize)
+        public static void SetWeaponFinesseSize(int nBaseItem, int nSize)
         {
             string sFunc = "SetWeaponFinesseSize";
 
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
-        public void SetWeaponUnarmed(int nBaseItem)
+        public static void SetWeaponUnarmed(int nBaseItem)
         {
             string sFunc = "SetWeaponUnarmed";
 
@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
-        public void SetWeaponIsMonkWeapon(int nBaseItem)
+        public static void SetWeaponIsMonkWeapon(int nBaseItem)
         {
             string sFunc = "SetWeaponIsMonkWeapon";
 
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
-        public void SetWeaponImprovedCriticalFeat(int nBaseItem, int nFeat)
+        public static void SetWeaponImprovedCriticalFeat(int nBaseItem, int nFeat)
         {
             string sFunc = "SetWeaponImprovedCriticalFeat";
 
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
-        public void SetWeaponSpecializationFeat(int nBaseItem, int nFeat)
+        public static void SetWeaponSpecializationFeat(int nBaseItem, int nFeat)
         {
             string sFunc = "SetWeaponSpecializationFeat";
 
@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
-        public void SetGreaterWeaponSpecializationFeat(int nBaseItem, int nFeat)
+        public static void SetGreaterWeaponSpecializationFeat(int nBaseItem, int nFeat)
         {
             string sFunc = "SetGreaterWeaponSpecializationFeat";
 
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
-        public void SetEpicWeaponSpecializationFeat(int nBaseItem, int nFeat)
+        public static void SetEpicWeaponSpecializationFeat(int nBaseItem, int nFeat)
         {
             string sFunc = "SetEpicWeaponSpecializationFeat";
 
@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
-        public void SetEpicWeaponOverwhelmingCriticalFeat(int nBaseItem, int nFeat)
+        public static void SetEpicWeaponOverwhelmingCriticalFeat(int nBaseItem, int nFeat)
         {
             string sFunc = "SetEpicWeaponOverwhelmingCriticalFeat";
 
@@ -124,7 +124,7 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
-        public void SetEpicWeaponDevastatingCriticalFeat(int nBaseItem, int nFeat)
+        public static void SetEpicWeaponDevastatingCriticalFeat(int nBaseItem, int nFeat)
         {
             string sFunc = "SetEpicWeaponDevastatingCriticalFeat";
 
@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
-        public void SetWeaponOfChoiceFeat(int nBaseItem, int nFeat)
+        public static void SetWeaponOfChoiceFeat(int nBaseItem, int nFeat)
         {
             string sFunc = "SetWeaponOfChoiceFeat";
 
@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
-        public void SetOption(int nOption, int nVal)
+        public static void SetOption(int nOption, int nVal)
         {
             string sFunc = "SetOption";
 
@@ -154,7 +154,7 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
-        public void SetDevastatingCriticalEventScript(string sScript)
+        public static void SetDevastatingCriticalEventScript(string sScript)
         {
             string sFunc = "SetDevastatingCriticalEventScript";
 
@@ -163,7 +163,7 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
 
-        public void BypassDevastatingCritical()
+        public static void BypassDevastatingCritical()
         {
             string sFunc = "SetEventData";
 
@@ -173,7 +173,7 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Weapon, sFunc);
         }
         
-        DevastatingCriticalData GetDevastatingCriticalEventData()
+        public static DevastatingCriticalData GetDevastatingCriticalEventData()
         {
             string sFunc = "GetEventData";
             DevastatingCriticalData data = new DevastatingCriticalData();

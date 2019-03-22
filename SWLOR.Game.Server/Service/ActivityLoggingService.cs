@@ -6,8 +6,7 @@ using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 
@@ -15,15 +14,11 @@ namespace SWLOR.Game.Server.Service
 {
     public class ActivityLoggingService: IActivityLoggingService
     {
-        
         private readonly IDataService _data;
-        private readonly INWNXChat _nwnxChat;
-
-        public ActivityLoggingService( IDataService data, INWNXChat nwnxChat)
+        
+        public ActivityLoggingService( IDataService data)
         {
-            
             _data = data;
-            _nwnxChat = nwnxChat;
         }
 
         public void OnModuleClientEnter()
@@ -111,12 +106,12 @@ namespace SWLOR.Game.Server.Service
         public void OnModuleNWNXChat(NWPlayer sender)
         {
             if (!sender.IsPlayer && !sender.IsDM) return;
-            string text = _nwnxChat.GetMessage();
+            string text = NWNXChat.GetMessage();
             if (string.IsNullOrWhiteSpace(text)) return;
 
-            int mode = _nwnxChat.GetChannel();
+            int mode = NWNXChat.GetChannel();
             int channel = ConvertNWNXChatChannelIDToDatabaseID(mode);
-            NWObject recipient = _nwnxChat.GetTarget();
+            NWObject recipient = NWNXChat.GetTarget();
             ChatChannel channelEntity = _data.Single<ChatChannel>(x => x.ID == channel);
 
             // Sender - should always have this data.

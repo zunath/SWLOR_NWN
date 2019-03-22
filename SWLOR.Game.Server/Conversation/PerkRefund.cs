@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging.Contracts;
 using SWLOR.Game.Server.Messaging.Messages;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Perk;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private readonly IDataService _data;
         private readonly IColorTokenService _color;
-        private readonly INWNXCreature _nwnxCreature;
+        
         private readonly ICustomEffectService _customEffect;
         private readonly IPlayerStatService _stat;
         private readonly ITimeService _time;
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Conversation
             IDialogService dialog,
             IDataService data,
             IColorTokenService color,
-            INWNXCreature nwnxCreature,
+            
             ICustomEffectService customEffect,
             IPlayerStatService stat,
             ITimeService time, 
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             _data = data;
             _color = color;
-            _nwnxCreature = nwnxCreature;
+            
             _customEffect = customEffect;
             _stat = stat;
             _time = time;
@@ -312,7 +312,7 @@ namespace SWLOR.Game.Server.Conversation
 
             foreach (var feat in feats)
             {
-                _nwnxCreature.RemoveFeat(GetPC(), feat.FeatID);
+                NWNXCreature.RemoveFeat(GetPC(), feat.FeatID);
             }
         }
 

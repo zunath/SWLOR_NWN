@@ -2,22 +2,13 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.NWNX;
+
 
 namespace SWLOR.Game.Server.Perk.Throwing
 {
     public class RapidToss: IPerk
     {
-        
-        private readonly INWNXCreature _nwnxCreature;
-
-        public RapidToss(
-            INWNXCreature nwnxCreature)
-        {
-            
-            _nwnxCreature = nwnxCreature;
-        }
-
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;
@@ -59,7 +50,7 @@ namespace SWLOR.Game.Server.Perk.Throwing
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, _.FEAT_RAPID_SHOT);
+            NWNXCreature.RemoveFeat(oPC, _.FEAT_RAPID_SHOT);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
@@ -91,11 +82,11 @@ namespace SWLOR.Game.Server.Perk.Throwing
                 equippedArmor.CustomItemType != CustomItemType.LightArmor ||
                 equippedWeapon.CustomItemType != CustomItemType.Throwing)
             {
-                _nwnxCreature.RemoveFeat(oPC, _.FEAT_RAPID_SHOT);
+                NWNXCreature.RemoveFeat(oPC, _.FEAT_RAPID_SHOT);
                 return;
             }
 
-            _nwnxCreature.AddFeat(oPC, _.FEAT_RAPID_SHOT);
+            NWNXCreature.AddFeat(oPC, _.FEAT_RAPID_SHOT);
         }
 
         public bool IsHostile()

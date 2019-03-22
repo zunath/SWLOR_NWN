@@ -7,7 +7,7 @@ using System;
 using System.Linq;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
-using SWLOR.Game.Server.NWNX.Contracts;
+
 using static NWN._;
 
 namespace SWLOR.Game.Server.Conversation

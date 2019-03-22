@@ -3,7 +3,7 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using Object = NWN.Object;
@@ -13,15 +13,11 @@ namespace SWLOR.Game.Server.Event.Module
     public class OnDMAction: IRegisteredEvent
     {
         private readonly IDataService _data;
-        private readonly INWNXEvents _nwnxEvents;
-        
-
         public OnDMAction(
-            IDataService data,
-            INWNXEvents nwnxEvents)
+            IDataService data)
         {
             _data = data;
-            _nwnxEvents = nwnxEvents;
+            
             
         }
 
@@ -55,28 +51,28 @@ namespace SWLOR.Game.Server.Event.Module
             switch (eventID)
             {
                 case 1: // Spawn Creature
-                    string areaName = _nwnxEvents.OnDMSpawnObject_GetArea().Name;
-                    NWCreature creature = _nwnxEvents.OnDMSpawnObject_GetObject().Object;
-                    int objectTypeID = _nwnxEvents.OnDMSpawnObject_GetObjectType();
-                    float x = _nwnxEvents.OnDMSpawnObject_GetPositionX();
-                    float y = _nwnxEvents.OnDMSpawnObject_GetPositionY();
-                    float z = _nwnxEvents.OnDMSpawnObject_GetPositionZ();
+                    string areaName = NWNXEvents.OnDMSpawnObject_GetArea().Name;
+                    NWCreature creature = NWNXEvents.OnDMSpawnObject_GetObject().Object;
+                    int objectTypeID = NWNXEvents.OnDMSpawnObject_GetObjectType();
+                    float x = NWNXEvents.OnDMSpawnObject_GetPositionX();
+                    float y = NWNXEvents.OnDMSpawnObject_GetPositionY();
+                    float z = NWNXEvents.OnDMSpawnObject_GetPositionZ();
                     creature.SetLocalInt("DM_SPAWNED", _.TRUE);
                     details = areaName + "," + creature.Name + "," + objectTypeID + "," + x + "," + y + "," + z;
                     break;
                 case 22: // Give XP
-                    amount = _nwnxEvents.OnDMGiveXP_GetAmount();
-                    target = _nwnxEvents.OnDMGiveXP_GetTarget();
+                    amount = NWNXEvents.OnDMGiveXP_GetAmount();
+                    target = NWNXEvents.OnDMGiveXP_GetTarget();
                     details = amount + "," + target.Name;
                     break;
                 case 23: // Give Level
-                    amount = _nwnxEvents.OnDMGiveLevels_GetAmount();
-                    target = _nwnxEvents.OnDMGiveLevels_GetTarget();
+                    amount = NWNXEvents.OnDMGiveLevels_GetAmount();
+                    target = NWNXEvents.OnDMGiveLevels_GetTarget();
                     details = amount + "," + target.Name;
                     break;
                 case 24: // Give Gold
-                    amount = _nwnxEvents.OnDMGiveGold_GetAmount();
-                    target = _nwnxEvents.OnDMGiveGold_GetTarget();
+                    amount = NWNXEvents.OnDMGiveGold_GetAmount();
+                    target = NWNXEvents.OnDMGiveGold_GetTarget();
                     details = amount + "," + target.Name;
                     break;
             }

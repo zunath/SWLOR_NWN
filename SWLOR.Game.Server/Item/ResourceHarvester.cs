@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Bioware.Contracts;
+using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Item
         private readonly IPerkService _perk;
         private readonly IResourceService _resource;
         private readonly ISkillService _skill;
-        private readonly IBiowareXP2 _biowareXP2;
+        
         private readonly IDurabilityService _durability;
         private readonly IColorTokenService _color;
 
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Item
             IPerkService perk,
             IResourceService resource,
             ISkillService skill,
-            IBiowareXP2 biowareXP2,
+            
             IDurabilityService durability,
             IColorTokenService color)
         {
@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Item
             _perk = perk;
             _resource = resource;
             _skill = skill;
-            _biowareXP2 = biowareXP2;
+            
             _durability = durability;
             _color = color;
         }
@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Item
             if (roll <= ipBonusChance)
             {
                 var ip = _resource.GetRandomComponentBonusIP(quality);
-                _biowareXP2.IPSafeAddItemProperty(resource, ip.Item1, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
+                BiowareXP2.IPSafeAddItemProperty(resource, ip.Item1, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
 
                 switch (ip.Item2)
                 {

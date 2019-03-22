@@ -2,7 +2,7 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Perk.TwinBlade
@@ -10,15 +10,15 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
     public class TwinBladeMastery : IPerk
     {
         
-        private readonly INWNXCreature _nwnxCreature;
+        
         private readonly IPerkService _perk;
 
         public TwinBladeMastery(
-            INWNXCreature nwnxCreature,
+            
             IPerkService perk)
         {
             
-            _nwnxCreature = nwnxCreature;
+            
             _perk = perk;
         }
 
@@ -84,9 +84,9 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
 
         private void RemoveFeats(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, _.FEAT_TWO_WEAPON_FIGHTING);
-            _nwnxCreature.RemoveFeat(oPC, _.FEAT_AMBIDEXTERITY);
-            _nwnxCreature.RemoveFeat(oPC, _.FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
+            NWNXCreature.RemoveFeat(oPC, _.FEAT_TWO_WEAPON_FIGHTING);
+            NWNXCreature.RemoveFeat(oPC, _.FEAT_AMBIDEXTERITY);
+            NWNXCreature.RemoveFeat(oPC, _.FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
         }
 
         private void ApplyFeatChanges(NWPlayer oPC, NWItem unequippedItem)
@@ -100,15 +100,15 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
             }
 
             int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.TwinVibrobladeMastery);
-            _nwnxCreature.AddFeat(oPC, _.FEAT_TWO_WEAPON_FIGHTING);
+            NWNXCreature.AddFeat(oPC, _.FEAT_TWO_WEAPON_FIGHTING);
 
             if (perkLevel >= 2)
             {
-                _nwnxCreature.AddFeat(oPC, _.FEAT_AMBIDEXTERITY);
+                NWNXCreature.AddFeat(oPC, _.FEAT_AMBIDEXTERITY);
             }
             if (perkLevel >= 3)
             {
-                _nwnxCreature.AddFeat(oPC, _.FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
+                NWNXCreature.AddFeat(oPC, _.FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
             }
         }
 

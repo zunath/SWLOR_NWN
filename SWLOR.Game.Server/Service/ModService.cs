@@ -2,8 +2,7 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.NWNX.Contracts;
-
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
@@ -14,19 +13,15 @@ namespace SWLOR.Game.Server.Service
     {
         
         private readonly IColorTokenService _color;
-        private readonly INWNXDamage _nwnxDamage;
         private readonly ISkillService _skill;
         private readonly IItemService _item;
 
         public ModService(
             IColorTokenService color,
-            INWNXDamage nwnxDamage,
             ISkillService skill,
             IItemService item)
         {
-            
             _color = color;
-            _nwnxDamage = nwnxDamage;
             _skill = skill;
             _item = item;
         }
@@ -154,7 +149,7 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleApplyDamage()
         {
-            var data = _nwnxDamage.GetDamageEventData();
+            var data = NWNXDamage.GetDamageEventData();
             if (data.Base <= 0) return;
 
             NWObject damager = data.Damager;
@@ -180,7 +175,7 @@ namespace SWLOR.Game.Server.Service
             if (damageBonus <= 0) damageBonus = 0;
             
             data.Base += damageBonus;
-            _nwnxDamage.SetDamageEventData(data);
+            NWNXDamage.SetDamageEventData(data);
         }
     }
 }

@@ -3,9 +3,10 @@ using System.Linq;
 using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
-using SWLOR.Game.Server.NWNX.Contracts;
+
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service
@@ -13,22 +14,13 @@ namespace SWLOR.Game.Server.Service
     public class DurabilityService : IDurabilityService
     {
         private const float DefaultDurability = 5.0f;
-
-        
         private readonly IColorTokenService _color;
-        private readonly INWNXProfiler _nwnxProfiler;
-        private readonly INWNXCreature _creature;
-
+        
         public DurabilityService(
             
-            IColorTokenService color,
-            INWNXProfiler nwnxProfiler,
-            INWNXCreature creature)
+            IColorTokenService color)
         {
-            
             _color = color;
-            _nwnxProfiler = nwnxProfiler;
-            _creature = creature;
         }
         
         private void InitializeDurability(NWItem item)
@@ -165,7 +157,7 @@ namespace SWLOR.Game.Server.Service
             
             float durability = GetDurability(item);
             string sItemName = item.Name;
-            int apr = _creature.GetAttacksPerRound(player, 1);
+            int apr = NWNXCreature.GetAttacksPerRound(player, 1);
             // Reduce by 0.001 each time it's run. Player only receives notifications when it drops a full point.
             // I.E: Dropping from 29.001 to 29.
             // Note that players only see two decimal places in-game on purpose.

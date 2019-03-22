@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 
@@ -13,20 +13,6 @@ namespace SWLOR.Game.Server.Service
 {
     public class PlayerValidationService : IPlayerValidationService
     {
-        
-        private readonly INWNXAdmin _nwnxAdmin;
-        private readonly IDataService _data;
-
-        public PlayerValidationService(
-            
-            INWNXAdmin nwnxAdmin,
-            IDataService data)
-        {
-            
-            _nwnxAdmin = nwnxAdmin;
-            _data = data;
-        }
-
         public void OnModuleEnter()
         {
             NWPlayer player = _.GetEnteringObject();
@@ -42,7 +28,7 @@ namespace SWLOR.Game.Server.Service
             if (!string.IsNullOrWhiteSpace(error))
             {
                 _.BootPC(player, error);
-                _nwnxAdmin.DeletePlayerCharacter(player, true);
+                NWNXAdmin.DeletePlayerCharacter(player, true);
             }
         }
 

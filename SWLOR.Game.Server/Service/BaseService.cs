@@ -3,12 +3,13 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.DoorRule.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX.Contracts;
+
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.NWNX;
 using static NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
@@ -19,13 +20,13 @@ namespace SWLOR.Game.Server.Service
     public class BaseService : IBaseService
     {
         
-        private readonly INWNXEvents _nwnxEvents;
+        
         private readonly IDialogService _dialog;
         private readonly IDataService _data;
         private readonly IPlayerService _player;
         private readonly IImpoundService _impound;
         private readonly IBasePermissionService _perm;
-        private readonly INWNXChat _nwnxChat;
+        
         private readonly IDurabilityService _durability;
         private readonly IAreaService _area;
         private readonly IErrorService _error;
@@ -33,14 +34,12 @@ namespace SWLOR.Game.Server.Service
         private readonly ISerializationService _serialization;
 
         public BaseService(
-            
-            INWNXEvents nwnxEvents,
             IDialogService dialog,
             IDataService data,
             IPlayerService player,
             IImpoundService impound,
             IBasePermissionService perm,
-            INWNXChat nwnxChat,
+            
             IDurabilityService durability,
             IAreaService area,
             ISpaceService space,
@@ -48,13 +47,13 @@ namespace SWLOR.Game.Server.Service
             ISerializationService serialization)
         {
             
-            _nwnxEvents = nwnxEvents;
+            
             _dialog = dialog;
             _data = data;
             _player = player;
             _impound = impound;
             _perm = perm;
-            _nwnxChat = nwnxChat;
+            
             _durability = durability;
             _area = area;
             _data = data;
@@ -90,8 +89,8 @@ namespace SWLOR.Game.Server.Service
         public void OnModuleUseFeat()
         {
             NWPlayer player = (Object.OBJECT_SELF);
-            int featID = _nwnxEvents.OnFeatUsed_GetFeatID();
-            NWLocation targetLocation = _nwnxEvents.OnFeatUsed_GetTargetLocation();
+            int featID = NWNXEvents.OnFeatUsed_GetFeatID();
+            NWLocation targetLocation = NWNXEvents.OnFeatUsed_GetTargetLocation();
             NWArea targetArea = (_.GetAreaFromLocation(targetLocation));
 
             if (featID != (int)CustomFeatType.StructureManagementTool) return;
@@ -99,7 +98,7 @@ namespace SWLOR.Game.Server.Service
             var data = GetPlayerTempData(player);
             data.TargetArea = targetArea;
             data.TargetLocation = targetLocation;
-            data.TargetObject = _nwnxEvents.OnItemUsed_GetTarget();
+            data.TargetObject = NWNXEvents.OnItemUsed_GetTarget();
 
             player.ClearAllActions();
             _dialog.StartConversation(player, player, "BaseManagementTool");
@@ -1244,14 +1243,14 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleNWNXChat(NWPlayer sender)
         {
-            string text = _nwnxChat.GetMessage().Trim();
+            string text = NWNXChat.GetMessage().Trim();
 
             if (!CanHandleChat(sender, text))
             {
                 return;
             }
 
-            _nwnxChat.SkipMessage();
+            NWNXChat.SkipMessage();
 
             if (text.Length > 32)
             {

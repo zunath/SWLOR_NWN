@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.ChatCommand
@@ -16,17 +16,11 @@ namespace SWLOR.Game.Server.ChatCommand
     [CommandDetails("Permanently deletes your character.", CommandPermissionType.Player)]
     public class Delete : IChatCommand
     {
-        
-        private readonly INWNXAdmin _admin;
         private readonly IDataService _data;
 
         public Delete(
-            
-            INWNXAdmin admin,
             IDataService data)
         {
-            
-            _admin = admin;
             _data = data;
         }
 
@@ -68,7 +62,7 @@ namespace SWLOR.Game.Server.ChatCommand
                 _data.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
 
                 _.BootPC(user, "Your character has been deleted.");
-                _admin.DeletePlayerCharacter(user, true);
+                NWNXAdmin.DeletePlayerCharacter(user, true);
 
             }
         }

@@ -1,14 +1,15 @@
 using System;
 using System.Linq;
-using SWLOR.Game.Server.Bioware.Contracts;
+
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.Delayed;
 using SWLOR.Game.Server.NWNX;
-using SWLOR.Game.Server.NWNX.Contracts;
+
 using SWLOR.Game.Server.Perk;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
@@ -24,13 +25,13 @@ namespace SWLOR.Game.Server.Service
         private readonly IPerkService _perk;
         private readonly IPVPSanctuaryService _pvpSanctuary;
         private readonly ITimeService _time;
-        private readonly IBiowarePosition _biowarePosition;
-        private readonly INWNXPlayer _nwnxPlayer;
+        
+        
         private readonly IColorTokenService _color;
         private readonly IRandomService _random;
         private readonly IEnmityService _enmity;
         private readonly IErrorService _error;
-        private readonly INWNXEvents _nwnxEvents;
+        
         private readonly ICustomEffectService _customEffect;
         private readonly IPlayerStatService _playerStat;
 
@@ -50,13 +51,10 @@ namespace SWLOR.Game.Server.Service
             IPerkService perk,
             IPVPSanctuaryService pvpSanctuary,
             ITimeService time,
-            IBiowarePosition biowarePosition,
-            INWNXPlayer nwnxPlayer,
             IColorTokenService color,
             IRandomService random,
             IEnmityService enmity,
             IErrorService error,
-            INWNXEvents nwnxEvents,
             ICustomEffectService customEffect,
             IPlayerStatService playerStat)
         {
@@ -65,13 +63,13 @@ namespace SWLOR.Game.Server.Service
             _perk = perk;
             _pvpSanctuary = pvpSanctuary;
             _time = time;
-            _biowarePosition = biowarePosition;
-            _nwnxPlayer = nwnxPlayer;
+            
+            
             _color = color;
             _random = random;
             _enmity = enmity;
             _error = error;
-            _nwnxEvents = nwnxEvents;
+            
             _customEffect = customEffect;
             _playerStat = playerStat;
         }
@@ -79,8 +77,8 @@ namespace SWLOR.Game.Server.Service
         public void OnModuleUseFeat()
         {
             NWPlayer pc = Object.OBJECT_SELF;
-            NWCreature target = _nwnxEvents.OnFeatUsed_GetTarget().Object;
-            int featID = _nwnxEvents.OnFeatUsed_GetFeatID();
+            NWCreature target = NWNXEvents.OnFeatUsed_GetTarget().Object;
+            int featID = NWNXEvents.OnFeatUsed_GetFeatID();
             var perkFeat = _data.SingleOrDefault<PerkFeat>(x => x.FeatID == featID);
             if (perkFeat == null) return;
             Data.Entity.Perk perk = _data.GetAll<Data.Entity.Perk>().SingleOrDefault(x => x.ID == perkFeat.PerkID);
@@ -297,7 +295,7 @@ namespace SWLOR.Game.Server.Service
                 _.SetActionMode(pc.Object, ACTION_MODE_STEALTH, 0);
 
             _.ClearAllActions();
-            _biowarePosition.TurnToFaceObject(target, pc);
+            BiowarePosition.TurnToFaceObject(target, pc);
 
             if (executionType == PerkExecutionType.ForceAbility)
             {
@@ -321,7 +319,7 @@ namespace SWLOR.Game.Server.Service
             CheckForSpellInterruption(pc, uuid, pc.Position);
             pc.SetLocalInt(uuid, (int)SpellStatusType.Started);
 
-            _nwnxPlayer.StartGuiTimingBar(pc, (int)activationTime, "");
+            NWNXPlayer.StartGuiTimingBar(pc, (int)activationTime, "");
             
             int perkID = entity.ID;
             pc.DelayEvent<FinishAbilityUse>(activationTime + 0.2f,
@@ -360,7 +358,7 @@ namespace SWLOR.Game.Server.Service
                     _.RemoveEffect(pc, effect);
                 }
 
-                _nwnxPlayer.StopGuiTimingBar(pc, "", -1);
+                NWNXPlayer.StopGuiTimingBar(pc, "", -1);
                 pc.IsBusy = false;
                 pc.SetLocalInt(spellUUID, (int)SpellStatusType.Interrupted);
                 pc.SendMessage("Your ability has been interrupted.");

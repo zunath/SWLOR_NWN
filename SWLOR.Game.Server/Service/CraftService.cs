@@ -9,7 +9,7 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.Delayed;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
@@ -24,9 +24,6 @@ namespace SWLOR.Game.Server.Service
         private readonly IDataService _data;
         private readonly IPerkService _perk;
         private readonly IColorTokenService _color;
-        private readonly INWNXPlayer _nwnxPlayer;
-        private readonly INWNXEvents _nwnxEvents;
-        private readonly INWNXChat _nwnxChat;
         private readonly ISerializationService _serialization;
         private readonly ISkillService _skill;
         private readonly IPlayerStatService _playerStat;
@@ -36,9 +33,6 @@ namespace SWLOR.Game.Server.Service
             IDataService data,
             IPerkService perk,
             IColorTokenService color,
-            INWNXPlayer nwnxPlayer,
-            INWNXEvents nwnxEvents,
-            INWNXChat nwnxChat,
             ISerializationService serialization,
             ISkillService skill,
             IPlayerStatService playerStat)
@@ -47,9 +41,7 @@ namespace SWLOR.Game.Server.Service
             _data = data;
             _perk = perk;
             _color = color;
-            _nwnxPlayer = nwnxPlayer;
-            _nwnxEvents = nwnxEvents;
-            _nwnxChat = nwnxChat;
+            
             _serialization = serialization;
             _skill = skill;
             _playerStat = playerStat;
@@ -239,7 +231,7 @@ namespace SWLOR.Game.Server.Service
             immobilize = _.TagEffect(immobilize, "CRAFTING_IMMOBILIZATION");
             _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, immobilize, oPC.Object);
 
-            _nwnxPlayer.StartGuiTimingBar(oPC, modifiedCraftDelay, "");
+            NWNXPlayer.StartGuiTimingBar(oPC, modifiedCraftDelay, "");
 
             oPC.DelayEvent<CraftCreateItem>(
                 modifiedCraftDelay,
@@ -571,15 +563,15 @@ namespace SWLOR.Game.Server.Service
 
         public void OnNWNXChat()
         {
-            NWPlayer pc = _nwnxChat.GetSender().Object;
-            string newName = _nwnxChat.GetMessage();
+            NWPlayer pc = NWNXChat.GetSender().Object;
+            string newName = NWNXChat.GetMessage();
 
             if (!CanHandleChat(pc, newName))
             {
                 return;
             }
 
-            _nwnxChat.SkipMessage();
+            NWNXChat.SkipMessage();
             NWItem renameItem = pc.GetLocalObject("CRAFT_RENAMING_ITEM_OBJECT");
 
             pc.DeleteLocalInt("CRAFT_RENAMING_ITEM");
@@ -605,13 +597,13 @@ namespace SWLOR.Game.Server.Service
         public void OnModuleUseFeat()
         {
             NWPlayer pc = Object.OBJECT_SELF;
-            int featID = _nwnxEvents.OnFeatUsed_GetFeatID();
+            int featID = NWNXEvents.OnFeatUsed_GetFeatID();
 
             if (featID != (int)CustomFeatType.RenameCraftedItem) return;
             pc.ClearAllActions();
 
             bool isSetting = pc.GetLocalInt("CRAFT_RENAMING_ITEM") == TRUE;
-            NWItem renameItem = _nwnxEvents.OnFeatUsed_GetTarget().Object;
+            NWItem renameItem = NWNXEvents.OnFeatUsed_GetTarget().Object;
 
             if (isSetting)
             {

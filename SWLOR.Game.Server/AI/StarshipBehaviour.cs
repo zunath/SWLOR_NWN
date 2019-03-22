@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 
@@ -19,21 +19,19 @@ namespace SWLOR.Game.Server.AI
         protected readonly BehaviourTreeBuilder _builder;
         private readonly IEnmityService _enmity;
         private readonly IDialogService _dialog;
-        private readonly INWNXObject _nwnxObject;
+        
         private readonly ISpaceService _space;
 
         public StarshipBehaviour(BehaviourTreeBuilder builder,
             
             IEnmityService enmity,
             IDialogService dialog,
-            INWNXObject nwnxObject,
             ISpaceService space)
         {
             
             _builder = builder;
             _enmity = enmity;
             _dialog = dialog;
-            _nwnxObject = nwnxObject;
             _space = space;
         }
 
@@ -89,9 +87,9 @@ namespace SWLOR.Game.Server.AI
                 NWPlayer player = (_.GetLastSpeaker());
                 _dialog.StartConversation(player, Self, convo);
             }
-            else if (!string.IsNullOrWhiteSpace(_nwnxObject.GetDialogResref(Self)))
+            else if (!string.IsNullOrWhiteSpace(NWNXObject.GetDialogResref(Self)))
             {
-                _.BeginConversation(_nwnxObject.GetDialogResref(Self));
+                _.BeginConversation(NWNXObject.GetDialogResref(Self));
             }
         }
 

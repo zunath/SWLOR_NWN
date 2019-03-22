@@ -12,11 +12,12 @@ using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX.Contracts;
+
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 using System.Text;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -34,7 +35,7 @@ namespace SWLOR.Game.Server.Service
     {
         
         private readonly IColorTokenService _color;
-        private readonly INWNXChat _nwnxChat;
+        
         private readonly IDataService _data;
         private readonly ILanguageService _language;
         private readonly IEmoteStyleService _emoteStyle;
@@ -42,14 +43,13 @@ namespace SWLOR.Game.Server.Service
         public ChatTextService(
             
             IColorTokenService color,
-            INWNXChat nwnxChat,
             IDataService data,
             ILanguageService language,
             IEmoteStyleService emoteStyle)
         {
             
             _color = color;
-            _nwnxChat = nwnxChat;
+            
             _data = data;
             _language = language;
             _emoteStyle = emoteStyle;
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Service
 
         public void OnNWNXChat()
         {
-            ChatChannelType channel = (ChatChannelType)_nwnxChat.GetChannel();
+            ChatChannelType channel = (ChatChannelType)NWNXChat.GetChannel();
 
             // So we're going to play with a couple of channels here.
 
@@ -82,8 +82,8 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            NWObject sender = _nwnxChat.GetSender();
-            string message = _nwnxChat.GetMessage();
+            NWObject sender = NWNXChat.GetSender();
+            string message = NWNXChat.GetMessage();
 
             if (string.IsNullOrWhiteSpace(message))
             {
@@ -104,12 +104,12 @@ namespace SWLOR.Game.Server.Service
             if (channel == ChatChannelType.PlayerDM)
             {
                 // Simply echo the message back to the player.
-                _nwnxChat.SendMessage((int)ChatChannelType.ServerMessage, "(Sent to DM) " + message, sender, sender);
+                NWNXChat.SendMessage((int)ChatChannelType.ServerMessage, "(Sent to DM) " + message, sender, sender);
                 return;
             }
 
             // At this point, every channel left is one we want to manually handle.
-            _nwnxChat.SkipMessage();
+            NWNXChat.SkipMessage();
 
             // If this is a shout message, and the holonet is disabled, we disallow it.
             if (channel == ChatChannelType.PlayerShout && sender.IsPC && sender.GetLocalInt("DISPLAY_HOLONET") == FALSE)
@@ -325,7 +325,7 @@ namespace SWLOR.Game.Server.Service
                     finalMessageColoured = _color.Orange(finalMessageColoured);
                 }
 
-                _nwnxChat.SendMessage((int)finalChannel, finalMessageColoured, sender, obj);
+                NWNXChat.SendMessage((int)finalChannel, finalMessageColoured, sender, obj);
             }
         }
 

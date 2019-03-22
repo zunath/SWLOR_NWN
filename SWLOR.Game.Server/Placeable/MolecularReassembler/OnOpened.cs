@@ -1,7 +1,7 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX.Contracts;
+
 
 namespace SWLOR.Game.Server.Placeable.MolecularReassembler
 {

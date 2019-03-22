@@ -2,7 +2,7 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 
@@ -11,15 +11,15 @@ namespace SWLOR.Game.Server.Perk.Weapons
     public class ImprovedCritical : IPerk
     {
         
-        private readonly INWNXCreature _nwnxCreature;
+        
         private readonly IPerkService _perk;
 
         public ImprovedCritical(
-            INWNXCreature nwnxCreature,
+            
             IPerkService perk)
         {
             
-            _nwnxCreature = nwnxCreature;
+            
             _perk = perk;
         }
 
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Perk.Weapons
             {
                 if (_perk.GetPCPerkLevel(oPC, PerkType.ImprovedCriticalMartialArts) > 0)
                 {
-                    _nwnxCreature.AddFeat(oPC, FEAT_IMPROVED_CRITICAL_UNARMED_STRIKE);
+                    NWNXCreature.AddFeat(oPC, FEAT_IMPROVED_CRITICAL_UNARMED_STRIKE);
                 }
                 return;
             }
@@ -143,46 +143,46 @@ namespace SWLOR.Game.Server.Perk.Weapons
 
         private void RemoveAllFeats(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_BASTARD_SWORD);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_BATTLE_AXE);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_CLUB);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_DAGGER);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_DART);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_DIRE_MACE);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_DOUBLE_AXE);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_DWAXE);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_GREAT_AXE);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_GREAT_SWORD);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_HALBERD);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_HAND_AXE);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_HEAVY_CROSSBOW);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_HEAVY_FLAIL);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_KAMA);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_KATANA);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_KUKRI);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_LIGHT_CROSSBOW);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_LIGHT_FLAIL);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_LIGHT_HAMMER);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_LIGHT_MACE);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_LONGBOW);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_LONG_SWORD);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_MORNING_STAR);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_RAPIER);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_SCIMITAR);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_SCYTHE);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_SHORTBOW);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_SHORT_SWORD);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_SHURIKEN);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_SICKLE);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_SLING);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_SPEAR);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_STAFF);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_THROWING_AXE);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_TRIDENT);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_TWO_BLADED_SWORD);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_UNARMED_STRIKE);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_WAR_HAMMER);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_WHIP);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_BASTARD_SWORD);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_BATTLE_AXE);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_CLUB);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_DAGGER);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_DART);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_DIRE_MACE);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_DOUBLE_AXE);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_DWAXE);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_GREAT_AXE);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_GREAT_SWORD);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_HALBERD);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_HAND_AXE);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_HEAVY_CROSSBOW);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_HEAVY_FLAIL);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_KAMA);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_KATANA);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_KUKRI);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_LIGHT_CROSSBOW);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_LIGHT_FLAIL);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_LIGHT_HAMMER);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_LIGHT_MACE);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_LONGBOW);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_LONG_SWORD);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_MORNING_STAR);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_RAPIER);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_SCIMITAR);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_SCYTHE);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_SHORTBOW);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_SHORT_SWORD);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_SHURIKEN);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_SICKLE);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_SLING);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_SPEAR);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_STAFF);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_THROWING_AXE);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_TRIDENT);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_TWO_BLADED_SWORD);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_UNARMED_STRIKE);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_WAR_HAMMER);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_CRITICAL_WHIP);
         }
 
         private void AddCriticalFeat(NWPlayer oPC, int type)
@@ -236,7 +236,7 @@ namespace SWLOR.Game.Server.Perk.Weapons
                 default: return;
             }
 
-            _nwnxCreature.AddFeat(oPC, feat);
+            NWNXCreature.AddFeat(oPC, feat);
         }
 
         public bool IsHostile()

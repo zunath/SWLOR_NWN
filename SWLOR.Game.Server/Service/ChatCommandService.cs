@@ -3,7 +3,7 @@ using SWLOR.Game.Server.ChatCommand;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX.Contracts;
+
 using SWLOR.Game.Server.Service.Contracts;
 using System.Linq;
 using System.Reflection;
@@ -14,33 +14,16 @@ namespace SWLOR.Game.Server.Service
 {
     public class ChatCommandService : IChatCommandService
     {
-        
-        private readonly INWNXChat _nwnxChat;
         private readonly IColorTokenService _color;
         private readonly IAuthorizationService _auth;
-        private readonly INWNXEvents _nwnxEvents;
-        private readonly INWNXCreature _nwnxCreature;
-        private readonly INWNXPlayer _nwnxPlayer;
-        private readonly INWNXPlayerQuickBarSlot _nwnxQBS;
-
+        
         public ChatCommandService(
-            INWNXChat nwnxChat,
-            IColorTokenService color,
-            IAuthorizationService auth,
-            INWNXEvents nwnxEvents,
-            INWNXCreature nwnxCreature,
             
-            INWNXPlayer nwnxPlayer,
-            INWNXPlayerQuickBarSlot nwnxQBS)
+            IColorTokenService color,
+            IAuthorizationService auth)
         {
-            _nwnxChat = nwnxChat;
             _color = color;
             _auth = auth;
-            _nwnxEvents = nwnxEvents;
-            _nwnxCreature = nwnxCreature;
-            
-            _nwnxPlayer = nwnxPlayer;
-            _nwnxQBS = nwnxQBS;
         }
 
         public static bool CanHandleChat(NWObject sender, string message)
@@ -52,7 +35,7 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleNWNXChat(NWPlayer sender)
         {
-            string originalMessage = _nwnxChat.GetMessage().Trim();
+            string originalMessage = NWNXChat.GetMessage().Trim();
 
             if (!CanHandleChat(sender, originalMessage))
             {
@@ -69,7 +52,7 @@ namespace SWLOR.Game.Server.Service
             string command = split[0].Substring(1, split[0].Length - 1);
             split.RemoveAt(0);
 
-            _nwnxChat.SkipMessage();
+            NWNXChat.SkipMessage();
 
             if (!App.IsKeyRegistered<IChatCommand>("ChatCommand." + command))
             {
@@ -100,14 +83,14 @@ namespace SWLOR.Game.Server.Service
 
                     if (_.GetHasFeat((int) CustomFeatType.ChatCommandTargeter, sender) == FALSE || sender.IsDM)
                     {
-                        _nwnxCreature.AddFeatByLevel(sender, (int)CustomFeatType.ChatCommandTargeter, 1);
+                        NWNXCreature.AddFeatByLevel(sender, (int)CustomFeatType.ChatCommandTargeter, 1);
 
                         if(sender.IsDM)
                         {
-                            var qbs = _nwnxPlayer.GetQuickBarSlot(sender, 11);
+                            var qbs = NWNXPlayer.GetQuickBarSlot(sender, 11);
                             if (qbs.ObjectType == QuickBarSlotType.Empty)
                             {
-                                _nwnxPlayer.SetQuickBarSlot(sender, 11, _nwnxQBS.UseFeat((int)CustomFeatType.ChatCommandTargeter));
+                                NWNXPlayer.SetQuickBarSlot(sender, 11, NWNXPlayerQuickBarSlot.UseFeat((int)CustomFeatType.ChatCommandTargeter));
                             }
                         }
                     }
@@ -119,12 +102,12 @@ namespace SWLOR.Game.Server.Service
         public void OnModuleUseFeat()
         {
             NWPlayer pc = Object.OBJECT_SELF;
-            int featID = _nwnxEvents.OnFeatUsed_GetFeatID();
+            int featID = NWNXEvents.OnFeatUsed_GetFeatID();
 
             if (featID != (int)CustomFeatType.ChatCommandTargeter) return;
 
-            var target = _nwnxEvents.OnFeatUsed_GetTarget();
-            var targetLocation = _nwnxEvents.OnFeatUsed_GetTargetLocation();
+            var target = NWNXEvents.OnFeatUsed_GetTarget();
+            var targetLocation = NWNXEvents.OnFeatUsed_GetTargetLocation();
             string command = pc.GetLocalString("CHAT_COMMAND");
             string args = pc.GetLocalString("CHAT_COMMAND_ARGS");
 

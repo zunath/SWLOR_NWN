@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Processor.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
@@ -20,19 +20,15 @@ namespace SWLOR.Game.Server.Processor
         private readonly IDataService _data;
         private readonly IErrorService _error;
         
-        private readonly INWNXObject _nwnxObject;
+        
         private readonly ICustomEffectService _customEffect;
 
         public CustomEffectProcessor(IDataService data,
             IErrorService error,
-            
-            INWNXObject nwnxObject,
             ICustomEffectService customEffect)
         {
             _data = data;
             _error = error;
-            
-            _nwnxObject = nwnxObject;
             _customEffect = customEffect;
         }
 
@@ -133,7 +129,7 @@ namespace SWLOR.Game.Server.Processor
             NWCreature caster = oPC;
             if (!string.IsNullOrWhiteSpace(effect.CasterNWNObjectID))
             {
-                var obj = _nwnxObject.StringToObject(effect.CasterNWNObjectID);
+                var obj = NWNXObject.StringToObject(effect.CasterNWNObjectID);
                 if (obj.IsValid)
                 {
                     caster = obj.Object;

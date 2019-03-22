@@ -17,21 +17,15 @@ namespace SWLOR.Game.Server.Service
     {
         private readonly INWScript _;
         private readonly IDataService _data;
-        private readonly AppCache _appCache;
-        private readonly INWNXPlayer _nwnxPlayer;
         private readonly INWNXVisibility _nwnxVisibility;
 
         public ObjectVisibilityService(
             INWScript script,
             IDataService data,
-            AppCache appCache,
-            INWNXPlayer nwnxPlayer,
             INWNXVisibility nwnxVisibility)
         {
             _ = script;
             _data = data;
-            _appCache = appCache;
-            _nwnxPlayer = nwnxPlayer;
             _nwnxVisibility = nwnxVisibility;
         }
 
@@ -45,7 +39,7 @@ namespace SWLOR.Game.Server.Service
                     string visibilityObjectID = obj.GetLocalString("VISIBILITY_OBJECT_ID");
                     if (!string.IsNullOrWhiteSpace(visibilityObjectID))
                     {
-                        _appCache.VisibilityObjects.Add(visibilityObjectID, obj);
+                        AppCache.VisibilityObjects.Add(visibilityObjectID, obj);
                     }
 
                     obj = _.GetNextObjectInArea(area);
@@ -64,9 +58,9 @@ namespace SWLOR.Game.Server.Service
             // Apply visibilities for player
             foreach (var visibility in visibilities)
             {
-                if (!_appCache.VisibilityObjects.ContainsKey(visibility.VisibilityObjectID)) continue;
+                if (!AppCache.VisibilityObjects.ContainsKey(visibility.VisibilityObjectID)) continue;
 
-                var obj = _appCache.VisibilityObjects[visibility.VisibilityObjectID];
+                var obj = AppCache.VisibilityObjects[visibility.VisibilityObjectID];
 
                 if (visibility.IsVisible)
                     _nwnxVisibility.SetVisibilityOverride(player, obj, VisibilityType.Visible);
@@ -75,7 +69,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Hide any objects which are hidden by default, as long as player doesn't have an override already.
-            foreach (var visibilityObject in _appCache.VisibilityObjects)
+            foreach (var visibilityObject in AppCache.VisibilityObjects)
             {
                 string visibilityObjectID = visibilityObject.Value.GetLocalString("VISIBILITY_OBJECT_ID");
                 var matchingVisibility = visibilities.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.VisibilityObjectID.ToString() == visibilityObjectID);
@@ -92,13 +86,13 @@ namespace SWLOR.Game.Server.Service
             string visibilityObjectID = target.GetLocalString("VISIBILITY_OBJECT_ID");
             if (string.IsNullOrWhiteSpace(visibilityObjectID)) return;
             
-            if (!_appCache.VisibilityObjects.ContainsKey(visibilityObjectID))
+            if (!AppCache.VisibilityObjects.ContainsKey(visibilityObjectID))
             {
-                _appCache.VisibilityObjects.Add(visibilityObjectID, target);
+                AppCache.VisibilityObjects.Add(visibilityObjectID, target);
             }
             else
             {
-                _appCache.VisibilityObjects[visibilityObjectID] = target;
+                AppCache.VisibilityObjects[visibilityObjectID] = target;
             }
             
             var players = NWModule.Get().Players.ToList();
@@ -162,7 +156,7 @@ namespace SWLOR.Game.Server.Service
 
         public void AdjustVisibility(NWPlayer player, string targetGUID, bool isVisible)
         {
-            var obj = _appCache.VisibilityObjects.Single(x => x.Key == targetGUID);
+            var obj = AppCache.VisibilityObjects.Single(x => x.Key == targetGUID);
             AdjustVisibility(player, obj.Value, isVisible);
         }
     }

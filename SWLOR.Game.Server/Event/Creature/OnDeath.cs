@@ -11,20 +11,17 @@ namespace SWLOR.Game.Server.Event.Creature
         private readonly ILootService _loot;
         private readonly IQuestService _quest;
         private readonly ICreatureCorpseService _creatureCorpse;
-        private readonly AppCache _cache;
-
+        
         public OnDeath(
             ISkillService skill,
             ILootService loot,
             IQuestService quest,
-            ICreatureCorpseService creatureCorpse,
-            AppCache cache)
+            ICreatureCorpseService creatureCorpse)
         {
             _skill = skill;
             _loot = loot;
             _quest = quest;
             _creatureCorpse = creatureCorpse;
-            _cache = cache;
         }
 
         public bool Run(params object[] args)
@@ -35,9 +32,9 @@ namespace SWLOR.Game.Server.Event.Creature
             _quest.OnCreatureDeath(self);
             _creatureCorpse.OnCreatureDeath();
 
-            if (_cache.CustomObjectData.ContainsKey(self.GlobalID))
+            if (AppCache.CustomObjectData.ContainsKey(self.GlobalID))
             {
-                _cache.CustomObjectData.Remove(self.GlobalID);
+                AppCache.CustomObjectData.Remove(self.GlobalID);
             }
 
             string creatureScript = self.GetLocalString("BEHAVIOUR");

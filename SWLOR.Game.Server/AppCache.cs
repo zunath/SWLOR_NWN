@@ -8,25 +8,25 @@ using SWLOR.Game.Server.ValueObject.Skill;
 
 namespace SWLOR.Game.Server
 {
-    public class AppCache
+    public static class AppCache
     {
-        public Dictionary<Guid, PlayerDialog> PlayerDialogs { get; }
-        public Dictionary<int, bool> DialogFilesInUse { get; }
-        public Dictionary<string, int> EffectTicks { get; }
-        public Dictionary<Guid, CreatureSkillRegistration> CreatureSkillRegistrations;
-        public Dictionary<CasterSpellVO, int> NPCEffects { get; }
-        public Dictionary<string, ProcessingEvent> ProcessingEvents { get; set; }
-        public Queue<string> UnregisterProcessingEvents { get; set; }
-        public Dictionary<Guid, EnmityTable> NPCEnmityTables { get; set; }
-        public Dictionary<Guid, CustomData> CustomObjectData { get; set; } 
-        public Dictionary<string, NWCreature> NPCBehaviours { get; set; }
-        public Dictionary<NWArea, AreaSpawn> AreaSpawns { get; set; }
-        public Dictionary<string, NWObject> VisibilityObjects { get; set; }
-        public List<Guid> PCEffectsForRemoval { get; set; }
-        public List<NWObject> ConnectedDMs { get; set; }
-        public Dictionary<Guid, Dictionary<int, int>> PlayerEffectivePerkLevels { get; set; }
+        public static Dictionary<Guid, PlayerDialog> PlayerDialogs { get; }
+        public static Dictionary<int, bool> DialogFilesInUse { get; }
+        public static Dictionary<string, int> EffectTicks { get; }
+        public static Dictionary<Guid, CreatureSkillRegistration> CreatureSkillRegistrations;
+        public static Dictionary<CasterSpellVO, int> NPCEffects { get; }
+        public static Dictionary<string, ProcessingEvent> ProcessingEvents { get; set; }
+        public static Queue<string> UnregisterProcessingEvents { get; set; }
+        public static Dictionary<Guid, EnmityTable> NPCEnmityTables { get; set; }
+        public static Dictionary<Guid, CustomData> CustomObjectData { get; set; } 
+        public static Dictionary<string, NWCreature> NPCBehaviours { get; set; }
+        public static Dictionary<NWArea, AreaSpawn> AreaSpawns { get; set; }
+        public static Dictionary<string, NWObject> VisibilityObjects { get; set; }
+        public static List<Guid> PCEffectsForRemoval { get; set; }
+        public static List<NWObject> ConnectedDMs { get; set; }
+        public static Dictionary<Guid, Dictionary<int, int>> PlayerEffectivePerkLevels { get; set; }
 
-        public AppCache()
+        static AppCache()
         {
             PlayerDialogs = new Dictionary<Guid, PlayerDialog>();
             DialogFilesInUse = new Dictionary<int, bool>();

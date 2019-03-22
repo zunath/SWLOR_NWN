@@ -17,18 +17,15 @@ namespace SWLOR.Game.Server.Service
         private readonly INWScript _;
         private readonly IDataService _data;
         private readonly ISpawnService _spawn;
-        private readonly AppCache _cache;
-
+        
         public AreaService(
             INWScript script,
             IDataService data,
-            ISpawnService spawn,
-            AppCache cache)
+            ISpawnService spawn)
         {
             _ = script;
             _data = data;
             _spawn = spawn;
-            _cache = cache;
         }
 
         public void OnModuleLoad()
@@ -246,9 +243,9 @@ namespace SWLOR.Game.Server.Service
         {
             if (!area.IsInstance) return;
 
-            if (_cache.AreaSpawns.ContainsKey(area))
+            if (AppCache.AreaSpawns.ContainsKey(area))
             {
-                _cache.AreaSpawns.Remove(area);
+                AppCache.AreaSpawns.Remove(area);
             }
 
             _.DestroyArea(area);

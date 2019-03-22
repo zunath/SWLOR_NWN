@@ -20,21 +20,18 @@ namespace SWLOR.Game.Server.Service
         private readonly INWScript _;
         private readonly IDataService _data;
         private readonly IObjectProcessingService _processor;
-        private readonly AppCache _cache;
         private readonly IRandomService _random;
 
         public SpawnService(
             INWScript script,
             IDataService data,
             IRandomService random,
-            IObjectProcessingService processor,
-            AppCache cache)
+            IObjectProcessingService processor)
         {
             _ = script;
             _data = data;
             _random = random;
             _processor = processor;
-            _cache = cache;
         }
 
         public void OnModuleLoad()
@@ -162,7 +159,7 @@ namespace SWLOR.Game.Server.Service
                 obj = _.GetNextObjectInArea(area.Object);
             }
 
-            _cache.AreaSpawns.Add(area, areaSpawn);
+            AppCache.AreaSpawns.Add(area, areaSpawn);
 
             _.DelayCommand(1.0f, () =>
             {
@@ -271,12 +268,12 @@ namespace SWLOR.Game.Server.Service
 
         public IReadOnlyCollection<ObjectSpawn> GetAreaPlaceableSpawns(NWArea area)
         {
-            var areaSpawn = _cache.AreaSpawns[area];
+            var areaSpawn = AppCache.AreaSpawns[area];
             return new ReadOnlyCollection<ObjectSpawn>(areaSpawn.Placeables);
         }
         public IReadOnlyCollection<ObjectSpawn> GetAreaCreatureSpawns(NWArea area)
         {
-            var areaSpawn = _cache.AreaSpawns[area];
+            var areaSpawn = AppCache.AreaSpawns[area];
             return new ReadOnlyCollection<ObjectSpawn>(areaSpawn.Creatures);
         }
 

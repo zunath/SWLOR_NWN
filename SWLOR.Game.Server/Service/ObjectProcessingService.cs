@@ -10,16 +10,13 @@ namespace SWLOR.Game.Server.Service
     public class ObjectProcessingService : IObjectProcessingService
     {
         private readonly INWScript _;
-        private readonly AppCache _cache;
         private readonly IErrorService _error;
         private DateTime _dateLastRun;
 
         public ObjectProcessingService(INWScript script,
-            AppCache cache,
             IErrorService error)
         {
             _ = script;
-            _cache = cache;
             _error = error;
             _dateLastRun = DateTime.UtcNow;
         }
@@ -42,13 +39,13 @@ namespace SWLOR.Game.Server.Service
             if (delta.Seconds < 1) return;
             _dateLastRun = DateTime.UtcNow;
             
-            foreach (var toUnregister in _cache.UnregisterProcessingEvents)
+            foreach (var toUnregister in AppCache.UnregisterProcessingEvents)
             {
-                _cache.ProcessingEvents.Remove(toUnregister);
+                AppCache.ProcessingEvents.Remove(toUnregister);
             }
-            _cache.UnregisterProcessingEvents.Clear();
+            AppCache.UnregisterProcessingEvents.Clear();
 
-            foreach (var @event in _cache.ProcessingEvents)
+            foreach (var @event in AppCache.ProcessingEvents)
             {
                 try
                 {
@@ -69,15 +66,15 @@ namespace SWLOR.Game.Server.Service
         {
             string globalID = Guid.NewGuid().ToString();
             ProcessingEvent @event = new ProcessingEvent(typeof(T), args);
-            _cache.ProcessingEvents.Add(globalID, @event);
+            AppCache.ProcessingEvents.Add(globalID, @event);
             return globalID;
         }
 
         public void UnregisterProcessingEvent(string globalID)
         {
-            if (_cache.ProcessingEvents.ContainsKey(globalID))
+            if (AppCache.ProcessingEvents.ContainsKey(globalID))
             {
-                _cache.UnregisterProcessingEvents.Enqueue(globalID);
+                AppCache.UnregisterProcessingEvents.Enqueue(globalID);
             }
         }
     }

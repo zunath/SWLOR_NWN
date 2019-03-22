@@ -31,7 +31,6 @@ namespace SWLOR.Game.Server.Service
         private readonly IItemService _item;
         private readonly IDataService _data;
         private readonly IMessageHub _messageHub;
-        private readonly AppCache _cache;
         
         public SkillService(
             INWScript script,
@@ -41,8 +40,7 @@ namespace SWLOR.Game.Server.Service
             IPlayerStatService playerStat,
             IItemService item,
             IDataService data,
-            IMessageHub messageHub,
-            AppCache cache)
+            IMessageHub messageHub)
         {
             _ = script;
             _random = random;
@@ -52,7 +50,6 @@ namespace SWLOR.Game.Server.Service
             _item = item;
             _data = data;
             _messageHub = messageHub;
-            _cache = cache;
         }
 
         public int SkillCap => 500;
@@ -370,7 +367,7 @@ namespace SWLOR.Game.Server.Service
 
             }
 
-            _cache.CreatureSkillRegistrations.Remove(creature.GlobalID);
+            AppCache.CreatureSkillRegistrations.Remove(creature.GlobalID);
         }
 
         private float CalculatePartyLevelDifferencePenalty(int highestSkillRank, int skillRank)
@@ -485,17 +482,17 @@ namespace SWLOR.Game.Server.Service
 
         private void RemovePlayerFromRegistrations(NWPlayer oPC)
         {
-            foreach (CreatureSkillRegistration reg in _cache.CreatureSkillRegistrations.Values.ToArray())
+            foreach (CreatureSkillRegistration reg in AppCache.CreatureSkillRegistrations.Values.ToArray())
             {
                 reg.RemovePlayerRegistration(oPC);
 
                 if (reg.IsRegistrationEmpty())
                 {
-                    _cache.CreatureSkillRegistrations.Remove(reg.CreatureID);
+                    AppCache.CreatureSkillRegistrations.Remove(reg.CreatureID);
                 }
                 else
                 {
-                    _cache.CreatureSkillRegistrations[reg.CreatureID] = reg;
+                    AppCache.CreatureSkillRegistrations[reg.CreatureID] = reg;
                 }
             }
         }
@@ -661,14 +658,14 @@ namespace SWLOR.Game.Server.Service
 
         private CreatureSkillRegistration GetCreatureSkillRegistration(Guid creatureUUID)
         {
-            if (_cache.CreatureSkillRegistrations.ContainsKey(creatureUUID))
+            if (AppCache.CreatureSkillRegistrations.ContainsKey(creatureUUID))
             {
-                return _cache.CreatureSkillRegistrations[creatureUUID];
+                return AppCache.CreatureSkillRegistrations[creatureUUID];
             }
             else
             {
                 var reg = new CreatureSkillRegistration(creatureUUID);
-                _cache.CreatureSkillRegistrations[creatureUUID] = reg;
+                AppCache.CreatureSkillRegistrations[creatureUUID] = reg;
                 return reg;
             }
         }

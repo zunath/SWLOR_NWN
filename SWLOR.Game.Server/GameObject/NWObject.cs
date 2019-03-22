@@ -13,13 +13,11 @@ namespace SWLOR.Game.Server.GameObject
     {
         public virtual Object Object { get; }
         protected readonly INWScript _;
-        private readonly AppCache _cache;
-
+        
         public NWObject(Object nwnObject)
         {
             Object = nwnObject;
             _ = App.GetNWScript();
-            _cache = App.GetAppState();
         }
 
         public virtual bool IsInitializedAsPlayer
@@ -328,12 +326,12 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                if (!_cache.CustomObjectData.ContainsKey(GlobalID))
+                if (!AppCache.CustomObjectData.ContainsKey(GlobalID))
                 {
-                    _cache.CustomObjectData.Add(GlobalID, new CustomData(this));
+                    AppCache.CustomObjectData.Add(GlobalID, new CustomData(this));
                 }
 
-                return _cache.CustomObjectData[GlobalID];
+                return AppCache.CustomObjectData[GlobalID];
             }
         }
 

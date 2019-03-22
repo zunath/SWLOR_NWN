@@ -173,7 +173,7 @@ namespace SWLOR.Game.Server.Service
             if (channel == ChatChannelType.PlayerShout)
             {
                 recipients.AddRange(NWModule.Get().Players.Where(player => player.GetLocalInt("DISPLAY_HOLONET") == TRUE));
-                recipients.AddRange(App.GetAppState().ConnectedDMs);
+                recipients.AddRange(AppCache.ConnectedDMs);
             }
             // This is the normal party chat, plus everyone within 20 units of the sender.
             else if (channel == ChatChannelType.PlayerParty)
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Service
                 // Can an NPC use the playerparty channel? I feel this is safe ...
                 NWPlayer player = sender.Object;
                 recipients.AddRange(player.PartyMembers.Cast<NWObject>().Where(x => x != sender));
-                recipients.AddRange(App.GetAppState().ConnectedDMs);
+                recipients.AddRange(AppCache.ConnectedDMs);
 
                 needsAreaCheck = true;
                 distanceCheck = 20.0f;
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Service
             if (needsAreaCheck)
             {
                 recipients.AddRange(sender.Area.Objects.Where(obj => obj.IsPC && _.GetDistanceBetween(sender, obj) <= distanceCheck));
-                recipients.AddRange(App.GetAppState().ConnectedDMs.Where(dm => dm.Area == sender.Area && _.GetDistanceBetween(sender, dm) <= distanceCheck));
+                recipients.AddRange(AppCache.ConnectedDMs.Where(dm => dm.Area == sender.Area && _.GetDistanceBetween(sender, dm) <= distanceCheck));
             }
 
             // Now we have a list of who is going to actually receive a message, we need to modify

@@ -15,20 +15,17 @@ namespace SWLOR.Game.Server.Processor
 {
     public class SpawnProcessor: IEventProcessor
     {
-        private readonly AppCache _cache;
         private readonly IObjectProcessingService _processor;
         private readonly IDataService _data;
         private readonly ISpawnService _spawn;
         private readonly INWScript _;
 
         public SpawnProcessor(
-            AppCache cache,
             IObjectProcessingService processor,
             IDataService data,
             ISpawnService spawn,
             INWScript script)
         {
-            _cache = cache;
             _processor = processor;
             _data = data;
             _spawn = spawn;
@@ -37,7 +34,7 @@ namespace SWLOR.Game.Server.Processor
 
         public void Run(object[] args)
         {
-            var spawns = _cache.AreaSpawns;
+            var spawns = AppCache.AreaSpawns;
 
             foreach (var spawn in spawns)
             {

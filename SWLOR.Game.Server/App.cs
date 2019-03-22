@@ -169,12 +169,7 @@ namespace SWLOR.Game.Server
         {
             return _container.Resolve<INWScript>();
         }
-
-        public static AppCache GetAppState()
-        {
-            return _container.Resolve<AppCache>();
-        }
-
+        
         public static void Resolve<T>(AppResolveDelegate<T> action)
         {
             if (action == null)
@@ -201,35 +196,6 @@ namespace SWLOR.Game.Server
             }
             
         }
-
-        public static T2 Resolve<T1, T2>(AppResolveDelegate<T1, T2> action)
-        {
-            T2 result;
-            if (action == null)
-            {
-                throw new NullReferenceException(nameof(action));
-            }
-
-            using (new Profiler(typeof(T1).ToString()))
-            {
-                using (var scope = _container.BeginLifetimeScope())
-                {
-                    T1 resolved = (T1)scope.Resolve(typeof(T1));
-                    try
-                    {
-                        result = action.Invoke(resolved);
-                    }
-                    catch (Exception ex)
-                    {
-                        IErrorService errorService = scope.Resolve<IErrorService>();
-                        errorService.LogError(ex, typeof(T1).ToString());
-                        throw;
-                    }
-                }
-            }
-            
-            return result;
-        }
         
         public static bool IsKeyRegistered<T>(string key)
         {
@@ -246,9 +212,7 @@ namespace SWLOR.Game.Server
         private static void BuildIOCContainer()
         {
             var builder = new ContainerBuilder();
-
-            // Instances
-            builder.RegisterInstance(new AppCache());
+            
             builder.RegisterType<DatabaseMigrationRunner>()
                 .As<IStartable>()
                 .SingleInstance();
@@ -256,7 +220,7 @@ namespace SWLOR.Game.Server
                 .As<IBackgroundThreadManager>()
                 .SingleInstance();
             builder.RegisterInstance(MessageHub.Instance).As<IMessageHub>().SingleInstance();
-
+            
             // Game Objects
             builder.RegisterType<NWObject>();
             builder.RegisterType<NWCreature>();

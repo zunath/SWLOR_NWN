@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Event.Module
 
             if (player.IsDM)
             {
-                App.GetAppState().ConnectedDMs.Add(player);
+                AppCache.ConnectedDMs.Add(player);
             }
 
             player.DeleteLocalInt("IS_CUSTOMIZING_ITEM");

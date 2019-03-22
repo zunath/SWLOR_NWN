@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Event.Module
             //}
 
             //ThreadPool.GetMaxThreads(out int workers, out int completionPort);
-            //Console.WriteLine("Max threads: " + workers + " workers, " + completionPort + " completionPorts" );
+            //Console.WriteLine("Max threads: " + workers + " workers, " + completionPort + " completionPorts");
             //Console.WriteLine("Null thread count: " + nullThreadCount);
 
 

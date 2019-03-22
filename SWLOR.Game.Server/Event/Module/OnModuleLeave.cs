@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Event.Module
 
             if (pc.IsDM)
             {
-                App.GetAppState().ConnectedDMs.Remove(pc);
+                AppCache.ConnectedDMs.Remove(pc);
             }
 
             if (pc.IsPlayer)

@@ -27,16 +27,14 @@ namespace SWLOR.Game.Server.Service
         private readonly INWNXPlayerQuickBarSlot _nwnxQBS;
         private readonly INWNXPlayer _nwnxPlayer;
         private readonly IMessageHub _messageHub;
-        private readonly AppCache _cache;
-
+        
         public PerkService(INWScript script,
             IColorTokenService color,
             IDataService data,
             INWNXCreature nwnxCreature,
             INWNXPlayerQuickBarSlot nwnxQBS,
             INWNXPlayer nwnxPlayer,
-            IMessageHub messageHub,
-            AppCache cache)
+            IMessageHub messageHub)
         {
             _ = script;
             _color = color;
@@ -45,7 +43,6 @@ namespace SWLOR.Game.Server.Service
             _nwnxQBS = nwnxQBS;
             _nwnxPlayer = nwnxPlayer;
             _messageHub = messageHub;
-            _cache = cache;
 
             SubscribeEvents();
         }
@@ -99,7 +96,7 @@ namespace SWLOR.Game.Server.Service
             if (!player.IsPlayer) return;
             
             // Are the player's perks already cached? This has already run for this player. Exit.
-            if (_cache.PlayerEffectivePerkLevels.ContainsKey(player.GlobalID)) return;
+            if (AppCache.PlayerEffectivePerkLevels.ContainsKey(player.GlobalID)) return;
             
             CacheAllPerkLevels(player);
         }
@@ -416,21 +413,21 @@ namespace SWLOR.Game.Server.Service
             //      - Player buys a perk
             //      - Player refunds a perk
             //      - Player completes a quest
-            if (!_cache.PlayerEffectivePerkLevels.ContainsKey(player.GlobalID)) return 0;
-            var levels = _cache.PlayerEffectivePerkLevels[player.GlobalID];
+            if (!AppCache.PlayerEffectivePerkLevels.ContainsKey(player.GlobalID)) return 0;
+            var levels = AppCache.PlayerEffectivePerkLevels[player.GlobalID];
             if (!levels.ContainsKey(perkID)) return 0;
             return levels[perkID];
         }
 
         public void CacheEffectivePerkLevel(NWPlayer player, int perkID)
         {
-            if (!_cache.PlayerEffectivePerkLevels.ContainsKey(player.GlobalID))
+            if (!AppCache.PlayerEffectivePerkLevels.ContainsKey(player.GlobalID))
             {
-                _cache.PlayerEffectivePerkLevels.Add(player.GlobalID, new Dictionary<int, int>());
+                AppCache.PlayerEffectivePerkLevels.Add(player.GlobalID, new Dictionary<int, int>());
             }
 
             int perkLevel = CalculateEffectivePerkLevel(player, perkID);
-            var levels = _cache.PlayerEffectivePerkLevels[player.GlobalID];
+            var levels = AppCache.PlayerEffectivePerkLevels[player.GlobalID];
             levels[perkID] = perkLevel;
         }
 

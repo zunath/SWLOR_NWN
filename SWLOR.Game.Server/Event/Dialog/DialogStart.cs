@@ -2,19 +2,19 @@
 
 using NWN;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Event.Dialog
 {
     public class DialogStart: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IDialogService _dialog;
 
-        public DialogStart(INWScript script, IDialogService dialogService)
+        public DialogStart( IDialogService dialogService)
         {
-            _ = script;
+            
             _dialog = dialogService;
         }
 

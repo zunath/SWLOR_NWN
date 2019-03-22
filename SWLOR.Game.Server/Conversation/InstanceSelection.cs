@@ -3,7 +3,7 @@ using NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -19,11 +19,11 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IPlayerService _player;
 
         public InstanceSelection(
-            INWScript script, 
+             
             IDialogService dialog,
             IAreaService area,
             IPlayerService player) : 
-            base(script, dialog)
+            base(dialog)
         {
             _area = area;
             _player = player;

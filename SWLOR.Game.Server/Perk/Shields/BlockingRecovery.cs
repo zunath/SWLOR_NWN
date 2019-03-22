@@ -8,17 +8,17 @@ namespace SWLOR.Game.Server.Perk.Shields
 {
     public class BlockingRecovery: IPerk
     {
-        private readonly INWScript _;
+        
         private readonly IPerkService _perk;
         private readonly IRandomService _random;
         private readonly IPlayerStatService _playerStat;
 
-        public BlockingRecovery(INWScript script,
+        public BlockingRecovery(
             IPerkService perk,
             IRandomService random,
             IPlayerStatService playerStat)
         {
-            _ = script;
+            
             _perk = perk;
             _random = random;
             _playerStat = playerStat;
@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Perk.Shields
             if (_random.Random(100) + 1 <= chance)
             {
                 Effect heal = _.EffectHeal(amount);
-                _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, heal, player.Object);
+                _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, heal, player.Object);
             }
         }
 

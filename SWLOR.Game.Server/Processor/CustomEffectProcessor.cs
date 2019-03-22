@@ -19,19 +19,19 @@ namespace SWLOR.Game.Server.Processor
     {
         private readonly IDataService _data;
         private readonly IErrorService _error;
-        private readonly INWScript _;
+        
         private readonly INWNXObject _nwnxObject;
         private readonly ICustomEffectService _customEffect;
 
         public CustomEffectProcessor(IDataService data,
             IErrorService error,
-            INWScript script,
+            
             INWNXObject nwnxObject,
             ICustomEffectService customEffect)
         {
             _data = data;
             _error = error;
-            _ = script;
+            
             _nwnxObject = nwnxObject;
             _customEffect = customEffect;
         }

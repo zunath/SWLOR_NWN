@@ -18,12 +18,12 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IHelmetToggleService _helmetToggle;
 
         public CharacterManagement(
-            INWScript script, 
+             
             IDialogService dialog,
             IPVPSanctuaryService pvpSanctuary,
             IColorTokenService color,
             IHelmetToggleService helmetToggle) 
-            : base(script, dialog)
+            : base(dialog)
         {
             _pvpSanctuary = pvpSanctuary;
             _color = color;
@@ -91,13 +91,13 @@ namespace SWLOR.Game.Server.Conversation
             {
                 _pvpSanctuary.SetPlayerPVPSanctuaryOverride(GetPC(), true);
                 dto.IsConfirmingDisableSanctuary = false;
-                _.FloatingTextStringOnCreature(_color.Red("PVP protection has been disabled. You may now attack and be attacked by other players."), GetPC().Object, NWScript.FALSE);
+                _.FloatingTextStringOnCreature(_color.Red("PVP protection has been disabled. You may now attack and be attacked by other players."), GetPC().Object, _.FALSE);
                 SetResponseText("MainPage", 1, "Disable PVP Protection");
             }
             else
             {
                 dto.IsConfirmingDisableSanctuary = true;
-                _.FloatingTextStringOnCreature(_color.Red("WARNING: PVP protection prevents other players from attacking you. If you disable this, players will immediately be able to attack you anywhere. Click again to confirm."), GetPC().Object, NWScript.FALSE);
+                _.FloatingTextStringOnCreature(_color.Red("WARNING: PVP protection prevents other players from attacking you. If you disable this, players will immediately be able to attack you anywhere. Click again to confirm."), GetPC().Object, _.FALSE);
                 SetResponseText("MainPage", 1, "CONFIRM DISABLE PVP PROTECTION");
             }
 

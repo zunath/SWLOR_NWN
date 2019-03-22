@@ -9,27 +9,27 @@ using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.SpawnRule.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.Drill
 {
     public class OnHeartbeat: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
         private readonly IBaseService _base;
         private readonly ILootService _loot;
         private readonly ISerializationService _serialization;
 
         public OnHeartbeat(
-            INWScript script,
+            
             IDataService data,
             IBaseService @base,
             ILootService loot,
             ISerializationService serialization)
         {
-            _ = script;
+            
             _data = data;
             _base = @base;
             _loot = loot;

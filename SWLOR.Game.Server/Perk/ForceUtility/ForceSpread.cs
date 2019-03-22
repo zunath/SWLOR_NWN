@@ -7,16 +7,16 @@ namespace SWLOR.Game.Server.Perk.ForceUtility
 {
     public class ForceSpread: IPerk
     {
-        private readonly INWScript _;
+        
         private readonly ICustomEffectService _customEffect;
         private readonly ISkillService _skill;
 
         public ForceSpread(
-            INWScript script,
+            
             ICustomEffectService customEffect,
             ISkillService skill)
         {
-            _ = script;
+            
             _customEffect = customEffect;
             _skill = skill;
         }

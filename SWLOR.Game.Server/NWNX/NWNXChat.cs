@@ -7,11 +7,6 @@ namespace SWLOR.Game.Server.NWNX
 {
     public class NWNXChat: NWNXBase, INWNXChat
     {
-        public NWNXChat(INWScript script) 
-            : base(script)
-        {
-        }
-
         public const int NWNX_CHAT_CHANNEL_PLAYER_TALK = 1;
         public const int NWNX_CHAT_CHANNEL_PLAYER_SHOUT = 2;
         public const int NWNX_CHAT_CHANNEL_PLAYER_WHISPER = 3;

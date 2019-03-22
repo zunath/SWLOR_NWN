@@ -8,22 +8,22 @@ using System.Linq;
 using SWLOR.Game.Server.AreaInstance.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
     public class AreaService : IAreaService
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
         private readonly ISpawnService _spawn;
         
         public AreaService(
-            INWScript script,
+            
             IDataService data,
             ISpawnService spawn)
         {
-            _ = script;
+            
             _data = data;
             _spawn = spawn;
         }

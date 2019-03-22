@@ -9,14 +9,14 @@ namespace SWLOR.Game.Server.Event.Conversation
 {
     public class HasSkillRank : IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly ISkillService _skill;
 
         public HasSkillRank(
-            INWScript script,
+            
             ISkillService skill)
         {
-            _ = script;
+            
             _skill = skill;
         }
         public bool Run(params object[] args)

@@ -4,24 +4,24 @@ using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.CustomEffect
 {
     public class RestEffect : ICustomEffect
     {
-        private readonly INWScript _;
+        
         private readonly IPerkService _perk;
         private readonly ICustomEffectService _customEffect;
         private readonly IPlayerStatService _playerStat;
 
         public RestEffect(
-            INWScript script,
+            
             IPerkService perk,
             ICustomEffectService customEffect,
             IPlayerStatService playerStat)
         {
-            _ = script;
+            
             _customEffect = customEffect;
             _perk = perk;
             _playerStat = playerStat;

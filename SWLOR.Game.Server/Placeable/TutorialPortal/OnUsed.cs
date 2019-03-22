@@ -11,14 +11,14 @@ namespace SWLOR.Game.Server.Placeable.TutorialPortal
 {
     public class OnUsed: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IPlayerService _player;
 
         public OnUsed(
-            INWScript script,
+            
             IPlayerService player)
         {
-            _ = script;
+            
             _player = player;
         }
 
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Placeable.TutorialPortal
         {
             NWPlayer player = (_.GetLastUsedBy());
             NWPlaceable warp = (Object.OBJECT_SELF);
-            bool isExit = warp.GetLocalInt("IS_EXIT") == NWScript.TRUE;
+            bool isExit = warp.GetLocalInt("IS_EXIT") == _.TRUE;
 
             if (isExit)
             {

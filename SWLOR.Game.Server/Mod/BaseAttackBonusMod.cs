@@ -10,14 +10,14 @@ namespace SWLOR.Game.Server.Mod
 {
     public class BaseAttackBonusMod: IMod
     {
-        private readonly INWScript _;
+        
         private readonly IItemService _item;
 
         public BaseAttackBonusMod(
-            INWScript script,
+            
             IItemService item)
         {
-            _ = script;
+            
             _item = item;
         }
         public string CanApply(NWPlayer player, NWItem target, params string[] args)

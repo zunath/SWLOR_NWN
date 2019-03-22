@@ -10,14 +10,14 @@ namespace SWLOR.Game.Server.Service
 {
     public class LocalVariableService: ILocalVariableService
     {
-        private readonly INWScript _;
+        
         private readonly INWNXObject _nwnxObject;
 
         public LocalVariableService(
-            INWScript script,
+            
             INWNXObject nwnxObject)
         {
-            _ = script;
+            
             _nwnxObject = nwnxObject;
         }
 

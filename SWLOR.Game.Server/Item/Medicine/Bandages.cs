@@ -5,27 +5,27 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Item.Medicine
 {
     public class Bandages: IActionItem
     {
-        private readonly INWScript _;
+        
         private readonly ISkillService _skill;
         private readonly ICustomEffectService _customEffect;
         private readonly IRandomService _random;
         private readonly IPerkService _perk;
         private readonly IPlayerStatService _playerStat;
 
-        public Bandages(INWScript script,
+        public Bandages(
             ISkillService skill,
             ICustomEffectService customEffect,
             IRandomService random,
             IPerkService perk,
             IPlayerStatService playerStat)
         {
-            _ = script;
+            
             _skill = skill;
             _customEffect = customEffect;
             _random = random;

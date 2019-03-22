@@ -6,27 +6,27 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.Bank
 {
     public class OnDisturbed : IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IItemService _item;
         private readonly IDataService _data;
         private readonly IColorTokenService _color;
         private readonly ISerializationService _serialization;
 
         public OnDisturbed(
-            INWScript script,
+            
             IItemService item,
             IDataService data,
             IColorTokenService color,
             ISerializationService serialization)
         {
-            _ = script;
+            
             _item = item;
             _data = data;
             _color = color;

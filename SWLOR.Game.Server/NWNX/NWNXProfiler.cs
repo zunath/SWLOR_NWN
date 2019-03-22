@@ -7,11 +7,6 @@ namespace SWLOR.Game.Server.NWNX
 {
     public class NWNXProfiler : NWNXBase, INWNXProfiler
     {
-        public NWNXProfiler(INWScript script)
-            : base(script)
-        {
-        }
-
         public void PushPerfScope(string name)
         {
             NWNX_PushArgumentString("NWNX_Profiler", "PUSH_PERF_SCOPE", name);

@@ -8,12 +8,12 @@ namespace SWLOR.Game.Server.Placeable.WeatherModifier
 {
     public class OnHeartbeat : IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IWeatherService _weather;
 
-        public OnHeartbeat(INWScript script, IWeatherService weather)
+        public OnHeartbeat( IWeatherService weather)
         {
-            _ = script;
+            
             _weather = weather;
         }
 
@@ -35,10 +35,10 @@ namespace SWLOR.Game.Server.Placeable.WeatherModifier
 
             if (nDust > 0)
             {
-                _.SetFogColor(NWScript.FOG_TYPE_SUN, NWScript.FOG_COLOR_BROWN, oArea);
-                _.SetFogColor(NWScript.FOG_TYPE_MOON, NWScript.FOG_COLOR_BROWN, oArea);
-                _.SetFogAmount(NWScript.FOG_TYPE_SUN, 80, oArea);
-                _.SetFogAmount(NWScript.FOG_TYPE_MOON, 80, oArea);
+                _.SetFogColor(_.FOG_TYPE_SUN, _.FOG_COLOR_BROWN, oArea);
+                _.SetFogColor(_.FOG_TYPE_MOON, _.FOG_COLOR_BROWN, oArea);
+                _.SetFogAmount(_.FOG_TYPE_SUN, 80, oArea);
+                _.SetFogAmount(_.FOG_TYPE_MOON, 80, oArea);
 
                 oArea.SetLocalInt("DUST_STORM", 1);
 
@@ -50,10 +50,10 @@ namespace SWLOR.Game.Server.Placeable.WeatherModifier
 
             if (nSand > 0)
             {
-                _.SetFogColor(NWScript.FOG_TYPE_SUN, NWScript.FOG_COLOR_ORANGE_DARK, oArea);
-                _.SetFogColor(NWScript.FOG_TYPE_MOON, NWScript.FOG_COLOR_ORANGE_DARK, oArea);
-                _.SetFogAmount(NWScript.FOG_TYPE_SUN, 80, oArea);
-                _.SetFogAmount(NWScript.FOG_TYPE_MOON, 80, oArea);
+                _.SetFogColor(_.FOG_TYPE_SUN, _.FOG_COLOR_ORANGE_DARK, oArea);
+                _.SetFogColor(_.FOG_TYPE_MOON, _.FOG_COLOR_ORANGE_DARK, oArea);
+                _.SetFogAmount(_.FOG_TYPE_SUN, 80, oArea);
+                _.SetFogAmount(_.FOG_TYPE_MOON, 80, oArea);
 
                 oArea.SetLocalInt("SAND_STORM", 1);
 

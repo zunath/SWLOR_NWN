@@ -7,7 +7,7 @@ using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -17,11 +17,11 @@ namespace SWLOR.Game.Server.Conversation
         private readonly ICraftService _craft;
 
         public CraftingDevice(
-            INWScript script, 
+             
             IDialogService dialog,
             IColorTokenService color,
             ICraftService craft) 
-            : base(script, dialog)
+            : base(dialog)
         {
             _color = color;
             _craft = craft;

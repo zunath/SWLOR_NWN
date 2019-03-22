@@ -7,12 +7,12 @@ namespace SWLOR.Game.Server.Placeable.MarketTerminal
 {
     public class OnOpened: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IMarketService _market;
 
-        public OnOpened(INWScript script, IMarketService market)
+        public OnOpened( IMarketService market)
         {
-            _ = script;
+            
             _market = market;
         }
 

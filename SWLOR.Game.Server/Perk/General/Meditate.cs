@@ -4,21 +4,21 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.CustomEffect;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.General
 {
     public class Meditate: IPerk
     {
-        private readonly INWScript _;
+        
         private readonly IPerkService _perk;
         private readonly ICustomEffectService _customEffect;
 
-        public Meditate(INWScript script, 
+        public Meditate( 
             IPerkService perk,
             ICustomEffectService customEffect)
         {
-            _ = script;
+            
             _perk = perk;
             _customEffect = customEffect;
         }

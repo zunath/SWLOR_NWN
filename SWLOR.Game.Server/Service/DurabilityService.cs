@@ -4,7 +4,7 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.ValueObject;
 
@@ -14,18 +14,18 @@ namespace SWLOR.Game.Server.Service
     {
         private const float DefaultDurability = 5.0f;
 
-        private readonly INWScript _;
+        
         private readonly IColorTokenService _color;
         private readonly INWNXProfiler _nwnxProfiler;
         private readonly INWNXCreature _creature;
 
         public DurabilityService(
-            INWScript script,
+            
             IColorTokenService color,
             INWNXProfiler nwnxProfiler,
             INWNXCreature creature)
         {
-            _ = script;
+            
             _color = color;
             _nwnxProfiler = nwnxProfiler;
             _creature = creature;

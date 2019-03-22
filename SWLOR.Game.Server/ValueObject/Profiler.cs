@@ -10,8 +10,7 @@ namespace SWLOR.Game.Server.ValueObject
 
         public Profiler(string name)
         {
-            var script = App.GetNWScript();
-            _nwnxProfiler = new NWNXProfiler(script);
+            _nwnxProfiler = new NWNXProfiler();
             _nwnxProfiler.PushPerfScope(name);
         }
 

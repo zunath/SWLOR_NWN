@@ -6,7 +6,7 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 using SWLOR.Game.Server.Event;
 using System;
 
@@ -17,19 +17,19 @@ namespace SWLOR.Game.Server.AI
     /// </summary>
     public class DarkForceUser : BehaviourBase
     {
-        private readonly INWScript _;
+        
         protected readonly BehaviourTreeBuilder _builder;
         private readonly IEnmityService _enmity;
         private readonly IDialogService _dialog;
         private readonly INWNXObject _nwnxObject;
 
         public DarkForceUser(BehaviourTreeBuilder builder,
-            INWScript script,
+            
             IEnmityService enmity,
             IDialogService dialog,
             INWNXObject nwnxObject)
         {
-            _ = script;
+            
             _builder = builder;
             _enmity = enmity;
             _dialog = dialog;
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.AI
         private void DoForceAttack()
         {
             // Trigger ForceAttackHighestEmnity if not doing anything. 
-            if (_.GetCurrentAction() == NWScript.ACTION_ATTACKOBJECT)
+            if (_.GetCurrentAction() == _.ACTION_ATTACKOBJECT)
             {
                 _.ClearAllActions();
 

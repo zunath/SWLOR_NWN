@@ -3,20 +3,19 @@ using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.CustomEffect
 {
     public class SonicCellEffect: ICustomEffect
     {
-        private readonly INWScript _;
+        
         private readonly IRandomService _random;
 
         public SonicCellEffect(
-            INWScript script,
+            
             IRandomService random)
         {
-            _ = script;
+            
             _random = random;
         }
 
@@ -34,7 +33,7 @@ namespace SWLOR.Game.Server.CustomEffect
 
             oCaster.AssignCommand(() =>
             {
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_SONIC), oTarget);
+                _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectDamage(damage, _.DAMAGE_TYPE_SONIC), oTarget);
             });
             
         }

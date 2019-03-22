@@ -8,7 +8,7 @@ using SWLOR.Game.Server.ValueObject.Dialog;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
-using static NWN.NWScript;
+using static NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
 
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Conversation
         private readonly ICraftService _craft;
 
         public PlaceStructure(
-            INWScript script,
+            
             IDialogService dialog,
             IDataService data,
             IBaseService @base,
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Conversation
             IAreaService area,
             IDurabilityService durability,
             ICraftService craft)
-            : base(script, dialog)
+            : base(dialog)
         {
             _data = data;
             _base = @base;

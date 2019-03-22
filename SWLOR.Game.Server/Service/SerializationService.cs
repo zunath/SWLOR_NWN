@@ -4,20 +4,20 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
     public class SerializationService : ISerializationService
     {
-        private readonly INWScript _;
+        
         private readonly INWNXObject _nwnxObject;
 
         public SerializationService(
-            INWScript script,
+            
             INWNXObject nwnxObject)
         {
-            _ = script;
+            
             _nwnxObject = nwnxObject;
         }
 

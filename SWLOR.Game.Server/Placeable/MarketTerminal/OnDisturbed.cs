@@ -3,14 +3,14 @@ using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.MarketTerminal
 {
     public class OnDisturbed: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IMarketService _market;
         private readonly IItemService _item;
         private readonly IDialogService _dialog;
@@ -18,14 +18,14 @@ namespace SWLOR.Game.Server.Placeable.MarketTerminal
         private readonly IColorTokenService _color;
 
         public OnDisturbed(
-            INWScript script, 
+             
             IMarketService market,
             IItemService item,
             IDialogService dialog,
             ISerializationService serialization,
             IColorTokenService color)
         {
-            _ = script;
+            
             _market = market;
             _item = item;
             _dialog = dialog;

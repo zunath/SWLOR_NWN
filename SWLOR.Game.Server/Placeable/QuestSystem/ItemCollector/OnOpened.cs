@@ -13,16 +13,16 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
 {
     public class OnOpened : IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
         private readonly IQuestService _quest;
 
         public OnOpened(
-            INWScript script,
+            
             IDataService data,
             IQuestService quest)
         {
-            _ = script;
+            
             _data = data;
             _quest = quest;
         }

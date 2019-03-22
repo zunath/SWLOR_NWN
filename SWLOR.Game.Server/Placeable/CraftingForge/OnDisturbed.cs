@@ -16,21 +16,21 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
 {
     public class OnDisturbed: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IPerkService _perk;
         private readonly ISkillService _skill;
         private readonly ICraftService _craft;
         private readonly IBiowarePosition _biowarePosition;
         private readonly INWNXPlayer _nwnxPlayer;
 
-        public OnDisturbed(INWScript script,
+        public OnDisturbed(
             IPerkService perk,
             ISkillService skill,
             ICraftService craft,
             IBiowarePosition biowarePosition,
             INWNXPlayer nwnxPlayer)
         {
-            _ = script;
+            
             _perk = perk;
             _skill = skill;
             _craft = craft;
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
 
         public bool Run(params object[] args)
         {
-            if (_.GetInventoryDisturbType() != NWScript.INVENTORY_DISTURB_TYPE_ADDED) return false;
+            if (_.GetInventoryDisturbType() != _.INVENTORY_DISTURB_TYPE_ADDED) return false;
 
             NWPlayer pc = (_.GetLastDisturbed());
             NWItem item = (_.GetInventoryDisturbItem());
@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
                 return false;
             }
 
-            if (_.GetIsObjectValid(forge.GetLocalObject("FORGE_USER")) == NWScript.TRUE)
+            if (_.GetIsObjectValid(forge.GetLocalObject("FORGE_USER")) == _.TRUE)
             {
                 ReturnItemToPC(pc, item, "This forge is currently in use. Please wait...");
                 return false;
@@ -122,7 +122,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
                 {
                     Vector flamePosition = _biowarePosition.GetChangedPosition(forge.Position, 0.36f, forge.Facing);
                     Location flameLocation = _.Location(forge.Area.Object, flamePosition, 0.0f);
-                    flames = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "forge_flame", flameLocation));
+                    flames = (_.CreateObject(_.OBJECT_TYPE_PLACEABLE, "forge_flame", flameLocation));
                     forge.SetLocalObject("FORGE_FLAMES", flames.Object);
                 }
 
@@ -149,8 +149,8 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
 
             pc.DelayEvent<CompleteSmelt>(baseCraftDelay, pc, itemResref, itemProperties);
             
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, _.EffectCutsceneImmobilize(), pc.Object, baseCraftDelay);
-            pc.AssignCommand(() => _.ActionPlayAnimation(NWScript.ANIMATION_LOOPING_GET_MID, 1.0f, baseCraftDelay));
+            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, _.EffectCutsceneImmobilize(), pc.Object, baseCraftDelay);
+            pc.AssignCommand(() => _.ActionPlayAnimation(_.ANIMATION_LOOPING_GET_MID, 1.0f, baseCraftDelay));
             item.Destroy();
         }
 
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
 
         private void ReturnItemToPC(NWPlayer pc, NWItem item, string message)
         {
-            _.CopyItem(item.Object, pc.Object, NWScript.TRUE);
+            _.CopyItem(item.Object, pc.Object, _.TRUE);
             item.Destroy();
             pc.SendMessage(message);
         }

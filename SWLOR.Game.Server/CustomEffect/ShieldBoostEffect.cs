@@ -4,24 +4,24 @@ using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.CustomEffect
 {
     public class ShieldBoostEffect: ICustomEffect
     {
-        private readonly INWScript _;
+        
         private readonly ISkillService _skill;
         private readonly ICustomEffectService _customEffect;
         private readonly IPlayerStatService _stat;
 
         public ShieldBoostEffect(
-            INWScript script,
+            
             ISkillService skill,
             ICustomEffectService customEffect,
             IPlayerStatService stat)
         {
-            _ = script;
+            
             _skill = skill;
             _customEffect = customEffect;
             _stat = stat;

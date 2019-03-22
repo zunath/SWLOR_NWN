@@ -9,20 +9,20 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
 {
     public class OnDisturbed: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IDialogService _dialog;
         private readonly ICraftService _craft;
         private readonly ISerializationService _serialization;
         private readonly IItemService _item;
 
         public OnDisturbed(
-            INWScript script, 
+             
             IDialogService dialog,
             ICraftService craft,
             ISerializationService serialization,
             IItemService item)
         {
-            _ = script;
+            
             _dialog = dialog;
             _craft = craft;
             _serialization = serialization;
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
 
         public bool Run(params object[] args)
         {
-            if (_.GetInventoryDisturbType() != NWScript.INVENTORY_DISTURB_TYPE_ADDED)
+            if (_.GetInventoryDisturbType() != _.INVENTORY_DISTURB_TYPE_ADDED)
                 return false;
             
             NWPlayer player = _.GetLastDisturbed();
@@ -78,55 +78,55 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
             int type = item.BaseItemType;
             int[] validTypes =
             {
-                NWScript.BASE_ITEM_SHORTSWORD,
-                NWScript.BASE_ITEM_LONGSWORD,
-                NWScript.BASE_ITEM_BATTLEAXE,
-                NWScript.BASE_ITEM_BASTARDSWORD,
-                NWScript.BASE_ITEM_LIGHTFLAIL,
-                NWScript.BASE_ITEM_WARHAMMER,
-                NWScript.BASE_ITEM_HEAVYCROSSBOW,
-                NWScript.BASE_ITEM_LIGHTCROSSBOW,
-                NWScript.BASE_ITEM_LONGBOW,
-                NWScript.BASE_ITEM_LIGHTMACE,
-                NWScript.BASE_ITEM_HALBERD,
-                NWScript.BASE_ITEM_SHORTBOW,
-                NWScript.BASE_ITEM_TWOBLADEDSWORD,
-                NWScript.BASE_ITEM_GREATSWORD,
-                NWScript.BASE_ITEM_SMALLSHIELD,
-                NWScript.BASE_ITEM_ARMOR,
-                NWScript.BASE_ITEM_HELMET,
-                NWScript.BASE_ITEM_GREATAXE,
-                NWScript.BASE_ITEM_AMULET,
-                NWScript.BASE_ITEM_BELT,
-                NWScript.BASE_ITEM_DAGGER,
-                NWScript.BASE_ITEM_BOOTS,
-                NWScript.BASE_ITEM_CLUB,
-                NWScript.BASE_ITEM_DIREMACE,
-                NWScript.BASE_ITEM_DOUBLEAXE,
-                NWScript.BASE_ITEM_HEAVYFLAIL,
-                NWScript.BASE_ITEM_GLOVES,
-                NWScript.BASE_ITEM_LIGHTHAMMER,
-                NWScript.BASE_ITEM_HANDAXE,
-                NWScript.BASE_ITEM_KAMA,
-                NWScript.BASE_ITEM_KATANA,
-                NWScript.BASE_ITEM_KUKRI,
-                NWScript.BASE_ITEM_MORNINGSTAR,
-                NWScript.BASE_ITEM_QUARTERSTAFF,
-                NWScript.BASE_ITEM_RAPIER,
-                NWScript.BASE_ITEM_RING,
-                NWScript.BASE_ITEM_SCIMITAR,
-                NWScript.BASE_ITEM_SCYTHE,
-                NWScript.BASE_ITEM_LARGESHIELD,
-                NWScript.BASE_ITEM_TOWERSHIELD,
-                NWScript.BASE_ITEM_SHORTSPEAR,
-                NWScript.BASE_ITEM_SICKLE,
-                NWScript.BASE_ITEM_SLING,
-                NWScript.BASE_ITEM_THROWINGAXE,
-                NWScript.BASE_ITEM_BRACER,
-                NWScript.BASE_ITEM_CLOAK,
-                NWScript.BASE_ITEM_TRIDENT,
-                NWScript.BASE_ITEM_DWARVENWARAXE,
-                NWScript.BASE_ITEM_WHIP,
+                _.BASE_ITEM_SHORTSWORD,
+                _.BASE_ITEM_LONGSWORD,
+                _.BASE_ITEM_BATTLEAXE,
+                _.BASE_ITEM_BASTARDSWORD,
+                _.BASE_ITEM_LIGHTFLAIL,
+                _.BASE_ITEM_WARHAMMER,
+                _.BASE_ITEM_HEAVYCROSSBOW,
+                _.BASE_ITEM_LIGHTCROSSBOW,
+                _.BASE_ITEM_LONGBOW,
+                _.BASE_ITEM_LIGHTMACE,
+                _.BASE_ITEM_HALBERD,
+                _.BASE_ITEM_SHORTBOW,
+                _.BASE_ITEM_TWOBLADEDSWORD,
+                _.BASE_ITEM_GREATSWORD,
+                _.BASE_ITEM_SMALLSHIELD,
+                _.BASE_ITEM_ARMOR,
+                _.BASE_ITEM_HELMET,
+                _.BASE_ITEM_GREATAXE,
+                _.BASE_ITEM_AMULET,
+                _.BASE_ITEM_BELT,
+                _.BASE_ITEM_DAGGER,
+                _.BASE_ITEM_BOOTS,
+                _.BASE_ITEM_CLUB,
+                _.BASE_ITEM_DIREMACE,
+                _.BASE_ITEM_DOUBLEAXE,
+                _.BASE_ITEM_HEAVYFLAIL,
+                _.BASE_ITEM_GLOVES,
+                _.BASE_ITEM_LIGHTHAMMER,
+                _.BASE_ITEM_HANDAXE,
+                _.BASE_ITEM_KAMA,
+                _.BASE_ITEM_KATANA,
+                _.BASE_ITEM_KUKRI,
+                _.BASE_ITEM_MORNINGSTAR,
+                _.BASE_ITEM_QUARTERSTAFF,
+                _.BASE_ITEM_RAPIER,
+                _.BASE_ITEM_RING,
+                _.BASE_ITEM_SCIMITAR,
+                _.BASE_ITEM_SCYTHE,
+                _.BASE_ITEM_LARGESHIELD,
+                _.BASE_ITEM_TOWERSHIELD,
+                _.BASE_ITEM_SHORTSPEAR,
+                _.BASE_ITEM_SICKLE,
+                _.BASE_ITEM_SLING,
+                _.BASE_ITEM_THROWINGAXE,
+                _.BASE_ITEM_BRACER,
+                _.BASE_ITEM_CLOAK,
+                _.BASE_ITEM_TRIDENT,
+                _.BASE_ITEM_DWARVENWARAXE,
+                _.BASE_ITEM_WHIP,
                 CustomBaseItemType.Lightsaber,
                 CustomBaseItemType.Saberstaff
             };

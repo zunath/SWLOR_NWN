@@ -2,26 +2,26 @@
 using NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Event.Module
 {
     internal class OnModuleUnequipItem : IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly ISkillService _skill;
         private readonly IPerkService _perk;
         private readonly IHelmetToggleService _helmetToggle;
         private readonly IItemService _item;
 
         public OnModuleUnequipItem(
-            INWScript script,
+            
             ISkillService skill,
             IPerkService perk,
             IHelmetToggleService helmetToggle,
             IItemService item)
         {
-            _ = script;
+            
             _skill = skill;
             _perk = perk;
             _helmetToggle = helmetToggle;

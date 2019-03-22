@@ -11,24 +11,24 @@ using SWLOR.Game.Server.Processor;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
     public class SpawnService : ISpawnService
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
         private readonly IObjectProcessingService _processor;
         private readonly IRandomService _random;
 
         public SpawnService(
-            INWScript script,
+            
             IDataService data,
             IRandomService random,
             IObjectProcessingService processor)
         {
-            _ = script;
+            
             _data = data;
             _random = random;
             _processor = processor;

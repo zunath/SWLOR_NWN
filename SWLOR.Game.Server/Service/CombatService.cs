@@ -7,14 +7,14 @@ using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
     public class CombatService : ICombatService
     {
-        private readonly INWScript _;
+        
         private readonly INWNXDamage _nwnxDamage;
         private readonly IPerkService _perk;
         private readonly IRandomService _random;
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IColorTokenService _color;
         
         public CombatService(
-            INWScript script,
+            
             INWNXDamage nwnxDamage,
             IPerkService perk,
             IRandomService random,
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Service
             ICustomEffectService customEffect,
             IColorTokenService color)
         {
-            _ = script;
+            
             _nwnxDamage = nwnxDamage;
             _perk = perk;
             _random = random;

@@ -2,21 +2,21 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.TwinBlade
 {
     public class CrossCut: IPerk
     {
-        private readonly INWScript _;
+        
         private readonly IPerkService _perk;
         private readonly IRandomService _random;
 
-        public CrossCut(INWScript script,
+        public CrossCut(
             IPerkService perk,
             IRandomService random)
         {
-            _ = script;
+            
             _perk = perk;
             _random = random;
         }

@@ -7,12 +7,12 @@ namespace SWLOR.Game.Server.Event.Module
 {
     internal class OnModuleRest : IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IDialogService _dialog;
 
-        public OnModuleRest(INWScript script, IDialogService dialog)
+        public OnModuleRest( IDialogService dialog)
         {
-            _ = script;
+            
             _dialog = dialog;
         }
 
@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Event.Module
             NWPlayer player = (_.GetLastPCRested());
             int restType = _.GetLastRestEventType();
 
-            if (restType != NWScript.REST_EVENTTYPE_REST_STARTED ||
+            if (restType != _.REST_EVENTTYPE_REST_STARTED ||
                 !player.IsValid ||
                 player.IsDM) return false;
 

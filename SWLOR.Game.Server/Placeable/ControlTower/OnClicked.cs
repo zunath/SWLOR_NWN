@@ -14,18 +14,18 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
 {
     public class OnClicked: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IDialogService _dialog;
         private readonly IBasePermissionService _perm;
         private readonly IDataService _data;
 
         public OnClicked(
-            INWScript script,
+            
             IDialogService dialog,
             IBasePermissionService perm,
             IDataService data)
         {
-            _ = script;
+            
             _dialog = dialog;
             _perm = perm;
             _data = data;

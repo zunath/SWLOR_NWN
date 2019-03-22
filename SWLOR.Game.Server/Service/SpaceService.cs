@@ -15,7 +15,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using static NWN.NWScript;
+using static NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
 
@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Service
 {
     public class SpaceService : ISpaceService
     {
-        private readonly INWScript _;
+        
         private readonly IBasePermissionService _perm;
         private readonly IBiowarePosition _biowarePos;
         private readonly IDataService _data;
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Service
         private readonly ISerializationService _serialization;
         private readonly ISkillService _skill;
         
-        public SpaceService(INWScript script,
+        public SpaceService(
                             IBasePermissionService perm,
                             IBiowarePosition biowarePos,
                             IDataService data,
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Service
                             ISerializationService serial,
                             ISkillService skill)
         {
-            _ = script;
+            
             _biowarePos = biowarePos;
             _data = data;
             _error = error;
@@ -697,7 +697,7 @@ namespace SWLOR.Game.Server.Service
                 location = waypoint.Location;
             }
 
-            NWCreature shipCreature = _.CreateObject(NWScript.OBJECT_TYPE_CREATURE, "starship" + shipBase.BuildingStyleID.ToString(), location, 0, shipID);
+            NWCreature shipCreature = _.CreateObject(_.OBJECT_TYPE_CREATURE, "starship" + shipBase.BuildingStyleID.ToString(), location, 0, shipID);
 
             shipCreature.SetLocalObject("AREA", ship);
             ship.SetLocalObject("CREATURE", shipCreature);

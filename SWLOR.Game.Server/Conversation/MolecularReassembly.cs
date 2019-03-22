@@ -6,7 +6,7 @@ using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Placeable.MolecularReassembler;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN.NWScript;
+using static NWN._;
 using ComponentType = SWLOR.Game.Server.Data.Entity.ComponentType;
 
 namespace SWLOR.Game.Server.Conversation
@@ -20,14 +20,14 @@ namespace SWLOR.Game.Server.Conversation
         private readonly INWNXPlayer _nwnxPlayer;
 
         public MolecularReassembly(
-            INWScript script, 
+             
             IDialogService dialog,
             IColorTokenService color,
             IDataService data,
             ICraftService craft,
             ISerializationService serialization,
             INWNXPlayer nwnxPlayer) 
-            : base(script, dialog)
+            : base(dialog)
         {
             _color = color;
             _data = data;

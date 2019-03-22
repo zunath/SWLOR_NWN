@@ -9,9 +9,9 @@ namespace SWLOR.Game.Server.Conversation
     public class FarmHole: ConversationBase
     {
         public FarmHole(
-            INWScript script, 
+             
             IDialogService dialog) 
-            : base(script, dialog)
+            : base(dialog)
         {
         }
 
@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 case 1: // Plant a seed
                     Location location = GetPC().Location;
-                    NWPlaceable planter = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "farm_plant_seed", location));
+                    NWPlaceable planter = (_.CreateObject(_.OBJECT_TYPE_PLACEABLE, "farm_plant_seed", location));
                     planter.SetLocalObject("FARM_SMALL_HOLE", GetDialogTarget().Object);
                     GetPC().AssignCommand(() => _.ActionInteractObject(planter.Object));
                     break;

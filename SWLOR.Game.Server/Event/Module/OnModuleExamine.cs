@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Event.Module
 {
     public class OnModuleExamine: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IFarmingService _farming;
         private readonly IDurabilityService _durability;
         private readonly IPerkService _perk;
@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IModService _mod;
         private readonly IColorTokenService _color;
         public OnModuleExamine(
-            INWScript script,
+            
             IFarmingService farming,
             IDurabilityService durability,
             IPerkService perk,
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Event.Module
             IModService mod,
             IColorTokenService color)
         {
-            _ = script;
+            
             _farming = farming;
             _durability = durability;
             _perk = perk;
@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Event.Module
             NWObject examinedObject = _nwnxEvents.OnExamineObject_GetTarget();
             if (_examination.OnModuleExamine(examiner, examinedObject)) return true;
 
-            string description = _.GetDescription(examinedObject.Object, NWScript.TRUE) + "\n\n";
+            string description = _.GetDescription(examinedObject.Object, _.TRUE) + "\n\n";
 
             if (examinedObject.IsCreature)
             {
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Event.Module
             description = _farming.OnModuleExamine(description, examinedObject);
             
             if (string.IsNullOrWhiteSpace(description)) return false;
-            _.SetDescription(examinedObject.Object, description, NWScript.FALSE);
+            _.SetDescription(examinedObject.Object, description, _.FALSE);
             _.SetDescription(examinedObject.Object, description);
             
 

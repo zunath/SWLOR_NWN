@@ -6,25 +6,25 @@ using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using System.Linq;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Item
 {
     public class SSEnhancement : IActionItem
     {
-        private readonly INWScript _;
+        
         private readonly IBaseService _base;
         private readonly IDataService _data;
         private readonly ISerializationService _serialization;
         private readonly ISkillService _skill;
         public SSEnhancement(
-            INWScript script,
+            
             IBaseService baseService,
             IDataService data,
             ISerializationService serialization,
             ISkillService skill)
         {
-            _ = script;
+            
             _base = baseService;
             _data = data;
             _serialization = serialization;

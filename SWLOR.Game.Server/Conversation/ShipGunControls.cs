@@ -15,9 +15,9 @@ namespace SWLOR.Game.Server.Conversation
         private ISpaceService _space;
 
         public ShipGunControls(
-            INWScript script,
+            
             IDialogService dialog,
-            ISpaceService space) : base(script, dialog)
+            ISpaceService space) : base(dialog)
         {
             _space = space;
         }

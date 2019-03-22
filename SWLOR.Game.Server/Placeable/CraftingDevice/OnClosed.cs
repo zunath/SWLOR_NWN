@@ -9,13 +9,13 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
 {
     public class OnClosed: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly ICraftService _craft;
         
-        public OnClosed(INWScript script,
+        public OnClosed(
             ICraftService craft)
         {
-            _ = script;
+            
             _craft = craft;
         }
 
@@ -32,29 +32,29 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
 
             foreach (var item in model.MainComponents)
             {
-                _.CopyItem(item.Object, player.Object, NWScript.TRUE);
+                _.CopyItem(item.Object, player.Object, _.TRUE);
                 item.Destroy();
             }
             foreach (var item in model.SecondaryComponents)
             {
-                _.CopyItem(item.Object, player.Object, NWScript.TRUE);
+                _.CopyItem(item.Object, player.Object, _.TRUE);
                 item.Destroy();
             }
             foreach (var item in model.TertiaryComponents)
             {
-                _.CopyItem(item.Object, player.Object, NWScript.TRUE);
+                _.CopyItem(item.Object, player.Object, _.TRUE);
                 item.Destroy();
             }
             foreach (var item in model.EnhancementComponents)
             {
-                _.CopyItem(item.Object, player.Object, NWScript.TRUE);
+                _.CopyItem(item.Object, player.Object, _.TRUE);
                 item.Destroy();
             }
 
-            _.SetEventScript(device.Object, NWScript.EVENT_SCRIPT_PLACEABLE_ON_USED, "jvm_script_1");
-            _.SetEventScript(device.Object, NWScript.EVENT_SCRIPT_PLACEABLE_ON_OPEN, string.Empty);
-            _.SetEventScript(device.Object, NWScript.EVENT_SCRIPT_PLACEABLE_ON_CLOSED, string.Empty);
-            _.SetEventScript(device.Object, NWScript.EVENT_SCRIPT_PLACEABLE_ON_INVENTORYDISTURBED, string.Empty);
+            _.SetEventScript(device.Object, _.EVENT_SCRIPT_PLACEABLE_ON_USED, "jvm_script_1");
+            _.SetEventScript(device.Object, _.EVENT_SCRIPT_PLACEABLE_ON_OPEN, string.Empty);
+            _.SetEventScript(device.Object, _.EVENT_SCRIPT_PLACEABLE_ON_CLOSED, string.Empty);
+            _.SetEventScript(device.Object, _.EVENT_SCRIPT_PLACEABLE_ON_INVENTORYDISTURBED, string.Empty);
             player.Data.Remove("CRAFTING_MODEL");
             return true;
         }

@@ -9,16 +9,16 @@ namespace SWLOR.Game.Server.Event.Conversation
 {
     public class QuestAdvance : IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IQuestService _quest;
         private readonly IDataService _data;
 
         public QuestAdvance(
-            INWScript script,
+            
             IQuestService quest,
             IDataService data)
         {
-            _ = script;
+            
             _quest = quest;
             _data = data;
         }

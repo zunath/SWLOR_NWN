@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Conversation
@@ -25,11 +25,11 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IColorTokenService _color;
 
         public MessageBoard(
-            INWScript script, 
+             
             IDialogService dialog,
             IDataService data,
             IColorTokenService color) 
-            : base(script, dialog)
+            : base(dialog)
         {
             _data = data;
             _color = color;

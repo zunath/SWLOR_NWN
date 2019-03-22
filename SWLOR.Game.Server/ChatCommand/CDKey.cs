@@ -12,13 +12,6 @@ namespace SWLOR.Game.Server.ChatCommand
     [CommandDetails("Displays your public CD key.", CommandPermissionType.DM | CommandPermissionType.Player)]
     public class CDKey : IChatCommand
     {
-        private readonly INWScript _;
-
-        public CDKey(INWScript script)
-        {
-            _ = script;
-        }
-
         /// <summary>
         /// Displays the public CD key of the user.
         /// </summary>

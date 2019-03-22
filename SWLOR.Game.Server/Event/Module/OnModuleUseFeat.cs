@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Event.Module
 {
     internal class OnModuleUseFeat : IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IAbilityService _ability;
         private readonly IPlayerService _player;
         private readonly IBaseService _base;
@@ -14,14 +14,14 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IChatCommandService _chat;
 
         public OnModuleUseFeat(
-            INWScript script,
+            
             IAbilityService ability,
             IPlayerService player,
             IBaseService @base,
             ICraftService craft,
             IChatCommandService chat)
         {
-            _ = script;
+            
             _ability = ability;
             _player = player;
             _base = @base;

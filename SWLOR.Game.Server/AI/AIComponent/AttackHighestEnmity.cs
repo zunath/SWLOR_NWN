@@ -13,13 +13,12 @@ namespace SWLOR.Game.Server.AI.AIComponent
     public class AttackHighestEnmity : IRegisteredEvent
     {
         private readonly IEnmityService _enmity;
-        private readonly INWScript _;
+        
 
-        public AttackHighestEnmity(IEnmityService enmity,
-            INWScript script)
+        public AttackHighestEnmity(IEnmityService enmity)
         {
             _enmity = enmity;
-            _ = script;
+            
         }
 
         public bool Run(object[] args)

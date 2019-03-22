@@ -12,7 +12,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Messaging.Contracts;
 using SWLOR.Game.Server.Messaging.Messages;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 using SWLOR.Game.Server.NWNX.Contracts;
 
@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Service
         private const string IPWeaponPenaltyTag = "SKILL_PENALTY_WEAPON_ITEM_PROPERTY";
         private const string IPEquipmentPenaltyTag = "SKILL_PENALTY_EQUIPMENT_ITEM_PROPERTY";
         
-        private readonly INWScript _;
+        
         private readonly IRandomService _random;
         private readonly IBiowareXP2 _biowareXP2;
         private readonly IEnmityService _enmity;
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IMessageHub _messageHub;
         
         public SkillService(
-            INWScript script,
+            
             IRandomService random,
             IBiowareXP2 biowareXP2,
             IEnmityService enmity,
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Service
             IDataService data,
             IMessageHub messageHub)
         {
-            _ = script;
+            
             _random = random;
             _biowareXP2 = biowareXP2;
             _enmity = enmity;

@@ -7,13 +7,13 @@ namespace SWLOR.Game.Server.Trigger
 {
     public class SpaceEncounter: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly ISpaceService _space;
 
-        public SpaceEncounter(INWScript script, 
+        public SpaceEncounter( 
                               ISpaceService space)
         {
-            _ = script;
+            
             _space = space;
         }
 

@@ -2,14 +2,14 @@
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Event.Module
 {
     internal class OnModuleEquipItem : IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IDurabilityService _durability;
         private readonly ISkillService _skill;
         private readonly IPerkService _perk;
@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IHelmetToggleService _helmetToggle;
         private readonly ISpaceService _space;
 
-        public OnModuleEquipItem(INWScript script,
+        public OnModuleEquipItem(
             IDurabilityService durability,
             ISkillService skill,
             IPerkService perk,
@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Event.Module
             IHelmetToggleService helmetToggle,
             ISpaceService space)
         {
-            _ = script;
+            
             _durability = durability;
             _skill = skill;
             _perk = perk;

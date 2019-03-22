@@ -2,20 +2,12 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
     public class RaceService : IRaceService
     {
-        private readonly INWScript _;
-
-        public RaceService(
-            INWScript script)
-        {
-            _ = script;
-        }
-
         public void OnModuleEnter()
         {
             NWPlayer player = _.GetEnteringObject();

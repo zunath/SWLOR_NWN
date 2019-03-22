@@ -11,11 +11,6 @@ namespace SWLOR.Game.Server.NWNX
 {
     public class NWNXVisibility : NWNXBase, INWNXVisibility
     {
-        public NWNXVisibility(INWScript script) 
-            : base(script)
-        {
-        }
-
 
         private const string NWNX_Visibility = "NWNX_Visibility";
 

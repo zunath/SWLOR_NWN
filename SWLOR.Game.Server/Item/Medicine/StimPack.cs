@@ -10,15 +10,15 @@ namespace SWLOR.Game.Server.Item.Medicine
 {
     public class StimPack: IActionItem
     {
-        private readonly INWScript _;
+        
         private readonly IPerkService _perk;
         private readonly ISkillService _skill;
 
-        public StimPack(INWScript script,
+        public StimPack(
             IPerkService perk,
             ISkillService skill)
         {
-            _ = script;
+            
             _perk = perk;
             _skill = skill;
         }
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            if (target.ObjectType != NWScript.OBJECT_TYPE_CREATURE)
+            if (target.ObjectType != _.OBJECT_TYPE_CREATURE)
             {
                 user.SendMessage("You may only use stim packs on creatures!");
                 return;
@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             Effect effect = _.EffectAbilityIncrease(ability, amount);
             effect = _.TagEffect(effect, "STIM_PACK_EFFECT");
 
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, effect, target, duration);
+            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, target, duration);
 
             user.SendMessage("You inject " + target.Name + " with a stim pack. The stim pack will expire in " + duration + " seconds.");
 
@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public int AnimationID()
         {
-            return NWScript.ANIMATION_LOOPING_GET_MID;
+            return _.ANIMATION_LOOPING_GET_MID;
         }
 
         public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)
@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Item.Medicine
         {
             var existing = target.Effects.SingleOrDefault(x => _.GetEffectTag(x) == "STIM_PACK_EFFECT");
 
-            if (existing != null && _.GetIsEffectValid(existing) == NWScript.TRUE)
+            if (existing != null && _.GetIsEffectValid(existing) == _.TRUE)
             {
                 return "Your target is already under the effects of another stimulant.";
             }

@@ -9,13 +9,13 @@ using NWN;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Item
 {
     public class ModItem : IActionItem
     {
-        private readonly INWScript _;
+        
         private readonly IPerkService _perk;
         private readonly IItemService _item;
         private readonly IModService _mod;
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Item
         private readonly ISkillService _skill;
 
         public ModItem(
-            INWScript script,
+            
             IPerkService perk,
             IItemService item,
             IModService mod,
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Item
         {
             _perk = perk;
             _item = item;
-            _ = script;
+            
             _mod = mod;
             _data = data;
             _color = color;
@@ -301,7 +301,7 @@ namespace SWLOR.Game.Server.Item
             }
 
             // Run the individual mod's rules for application. Will return the error message or a null.
-            string canApply = App.ResolveByInterface<IMod, string>("Mod." + dbMod.Script, 
+            string canApply = App.ResolveByInterface<IMod, string>("Mod." + dbMod.Script,
                 (modRules) => modRules.CanApply(player, targetItem, modArgs));
 
             return canApply;

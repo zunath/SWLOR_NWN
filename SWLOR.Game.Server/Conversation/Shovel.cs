@@ -16,12 +16,12 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IFarmingService _farming;
 
         public Shovel(
-            INWScript script, 
+             
             IDialogService dialog,
             IPlayerService player,
             ISkillService skill,
             IFarmingService farming) 
-            : base(script, dialog)
+            : base(dialog)
         {
             _player = player;
             _skill = skill;
@@ -102,8 +102,8 @@ namespace SWLOR.Game.Server.Conversation
         {
             Location targetLocation = GetPC().GetLocalLocation("SHOVEL_TARGET_LOCATION");
 
-            _.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "farm_small_hole", targetLocation);
-            _.FloatingTextStringOnCreature("You dig a hole.", GetPC().Object, NWScript.FALSE);
+            _.CreateObject(_.OBJECT_TYPE_PLACEABLE, "farm_small_hole", targetLocation);
+            _.FloatingTextStringOnCreature("You dig a hole.", GetPC().Object, _.FALSE);
             _skill.GiveSkillXP(GetPC(), SkillType.Farming, 50);
             EndConversation();
         }

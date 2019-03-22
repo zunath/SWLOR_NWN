@@ -10,18 +10,18 @@ namespace SWLOR.Game.Server.Placeable.Quests
 {
     public class ForceCrystal: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IQuestService _quest;
         private readonly IDataService _data;
         private readonly IObjectVisibilityService _ovs;
 
         public ForceCrystal(
-            INWScript script,
+            
             IQuestService quest,
             IDataService data,
             IObjectVisibilityService ovs)
         {
-            _ = script;
+            
             _quest = quest;
             _data = data;
             _ovs = ovs;

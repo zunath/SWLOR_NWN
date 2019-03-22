@@ -11,14 +11,14 @@ namespace SWLOR.Game.Server.Event.Conversation
 {
     public class KeyItemCheck : IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IKeyItemService _keyItem;
 
         public KeyItemCheck(
-            INWScript script,
+            
             IKeyItemService keyItem)
         {
-            _ = script;
+            
             _keyItem = keyItem;
         }
 

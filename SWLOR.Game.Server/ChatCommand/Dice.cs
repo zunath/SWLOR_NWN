@@ -4,25 +4,25 @@ using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
     [CommandDetails("Rolls dice. Use /dice help for more information", CommandPermissionType.Player | CommandPermissionType.DM)]
     public class Dice : IChatCommand
     {
-        private readonly INWScript _;
+        
         private readonly IRandomService _random;
         private readonly IColorTokenService _color;
 
         private string GenericError;
 
         public Dice(
-            INWScript script,
+            
             IRandomService random,
             IColorTokenService color)
         {
-            _ = script;
+            
             _random = random;
             _color = color;
 

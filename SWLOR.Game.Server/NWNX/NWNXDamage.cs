@@ -8,13 +8,7 @@ namespace SWLOR.Game.Server.NWNX
     public class NWNXDamage : NWNXBase, INWNXDamage
     {
         private const string NWNX_Damage = "NWNX_Damage";
-
-        public NWNXDamage(INWScript script)
-            : base(script)
-        {
-
-        }
-
+        
         /// <summary>
         /// Set Damage Event Script
         /// If oOwner is OBJECT_INVALID, this sets the script globally for all creatures

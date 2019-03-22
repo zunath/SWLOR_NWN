@@ -7,13 +7,13 @@ namespace SWLOR.Game.Server.Perk.Blaster
 {
     public class RapidShot : IPerk
     {
-        private readonly INWScript _;
+        
         private readonly INWNXCreature _nwnxCreature;
 
-        public RapidShot(INWScript script,
+        public RapidShot(
             INWNXCreature nwnxCreature)
         {
-            _ = script;
+            
             _nwnxCreature = nwnxCreature;
         }
 
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_RAPID_SHOT);
+            _nwnxCreature.RemoveFeat(oPC, _.FEAT_RAPID_SHOT);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
@@ -90,11 +90,11 @@ namespace SWLOR.Game.Server.Perk.Blaster
                 equippedArmor.CustomItemType != CustomItemType.LightArmor ||
                 equippedWeapon.CustomItemType != CustomItemType.BlasterPistol)
             {
-                _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_RAPID_SHOT);
+                _nwnxCreature.RemoveFeat(oPC, _.FEAT_RAPID_SHOT);
                 return;
             }
 
-            _nwnxCreature.AddFeat(oPC, NWScript.FEAT_RAPID_SHOT);
+            _nwnxCreature.AddFeat(oPC, _.FEAT_RAPID_SHOT);
         }
 
         public bool IsHostile()

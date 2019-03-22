@@ -12,11 +12,11 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IColorTokenService _color;
 
         public CloningTerminal(
-            INWScript script, 
+             
             IDialogService dialog,
             IDeathService death,
             IColorTokenService color) 
-            : base(script, dialog)
+            : base(dialog)
         {
             _death = death;
             _color = color;

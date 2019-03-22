@@ -8,13 +8,13 @@ namespace SWLOR.Game.Server.Perk.Armor
 {
     public class DeflectDamage: IPerk
     {
-        private readonly INWScript _;
+        
         private readonly IPerkService _perk;
 
-        public DeflectDamage(INWScript script,
+        public DeflectDamage(
             IPerkService perk)
         {
-            _ = script;
+            
             _perk = perk;
         }
 
@@ -81,14 +81,14 @@ namespace SWLOR.Game.Server.Perk.Armor
                     return;
             }
 
-            Effect effect = _.EffectDamageShield(damageBase, randomDamage, NWScript.DAMAGE_TYPE_MAGICAL);
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, effect, player.Object, length);
+            Effect effect = _.EffectDamageShield(damageBase, randomDamage, _.DAMAGE_TYPE_MAGICAL);
+            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, player.Object, length);
 
-            effect = _.EffectVisualEffect(NWScript.VFX_DUR_AURA_ORANGE);
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, effect, player.Object, length);
+            effect = _.EffectVisualEffect(_.VFX_DUR_AURA_ORANGE);
+            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, player.Object, length);
 
-            effect = _.EffectVisualEffect(NWScript.VFX_IMP_AC_BONUS);
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, effect, player.Object);
+            effect = _.EffectVisualEffect(_.VFX_IMP_AC_BONUS);
+            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, effect, player.Object);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

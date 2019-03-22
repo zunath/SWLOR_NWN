@@ -1,7 +1,6 @@
 ﻿
 using System.Collections.Generic;
 using NWN;
-using static NWN.NWScript;
 using Object = NWN.Object;
 
 
@@ -16,7 +15,6 @@ namespace SWLOR.Game.Server.GameObject
 
         public static NWModule Get()
         {
-            INWScript _ = App.GetNWScript(); 
             return new NWModule(_.GetModule());
         }
 
@@ -35,7 +33,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                for (NWArea area = _.GetFirstArea(); _.GetIsObjectValid(area) == TRUE; area = _.GetNextArea())
+                for (NWArea area = _.GetFirstArea(); _.GetIsObjectValid(area) == _.TRUE; area = _.GetNextArea())
                 {
                     yield return area;
                 }

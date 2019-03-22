@@ -2,7 +2,7 @@
 using SWLOR.Game.Server.AI.Contracts;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Event.Creature
 {

@@ -11,7 +11,7 @@ using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Perk;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
 
@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Service
 {
     public class AbilityService : IAbilityService
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
         private readonly IPerkService _perk;
         private readonly IPVPSanctuaryService _pvpSanctuary;
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Service
         public static int ATTACK_COMBATABILITY = 3; // Combat tricks like Provoke
         public static int ATTACK_DOT = 4; // Subsequent damage effects
 
-        public AbilityService(INWScript script, 
+        public AbilityService( 
             IDataService data,
             IPerkService perk,
             IPVPSanctuaryService pvpSanctuary,
@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Service
             ICustomEffectService customEffect,
             IPlayerStatService playerStat)
         {
-            _ = script;
+            
             _data = data;
             _perk = perk;
             _pvpSanctuary = pvpSanctuary;
@@ -460,9 +460,9 @@ namespace SWLOR.Game.Server.Service
             if (_.GetHasFeat((int)CustomFeatType.PlasmaCell, player) == FALSE) return;  // Check if player has the perk
             if (player.RightHand.CustomItemType != CustomItemType.BlasterPistol &&
                 player.RightHand.CustomItemType != CustomItemType.BlasterRifle) return; // Check if player has the right weapons
-            if (target.GetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN") == NWScript.TRUE) return;   // Check if Tranquilizer is on to avoid conflict
-            if (player.GetLocalInt("PLASMA_CELL_TOGGLE_OFF") == NWScript.TRUE) return;  // Check if Plasma Cell toggle is on or off
-            if (target.GetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN") == NWScript.TRUE) return;
+            if (target.GetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN") == _.TRUE) return;   // Check if Tranquilizer is on to avoid conflict
+            if (player.GetLocalInt("PLASMA_CELL_TOGGLE_OFF") == _.TRUE) return;  // Check if Plasma Cell toggle is on or off
+            if (target.GetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN") == _.TRUE) return;
 
             int perkLevel = _perk.GetPCPerkLevel(player, PerkType.PlasmaCell);
             int chance;

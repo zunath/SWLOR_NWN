@@ -11,11 +11,11 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IObjectVisibilityService _ovs;
         
         public SliceTerminal(
-            INWScript script, 
+             
             IDialogService dialog,
             IKeyItemService keyItem,
             IObjectVisibilityService ovs) 
-            : base(script, dialog)
+            : base(dialog)
         {
             _keyItem = keyItem;
             _ovs = ovs;

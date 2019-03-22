@@ -13,13 +13,13 @@ namespace SWLOR.Game.Server.Placeable.OverflowStorage
 {
     public class OnDisturbed: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
 
-        public OnDisturbed(INWScript script,
+        public OnDisturbed(
             IDataService data)
         {
-            _ = script;
+            
             _data = data;
         }
 
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Placeable.OverflowStorage
             NWItem oItem = (_.GetInventoryDisturbItem());
             int type = _.GetInventoryDisturbType();
 
-            if (type == NWScript.INVENTORY_DISTURB_TYPE_ADDED)
+            if (type == _.INVENTORY_DISTURB_TYPE_ADDED)
             {
                 container.AssignCommand(() => _.ActionGiveItem(oItem.Object, oPC.Object));
                 return true;

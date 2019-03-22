@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
 {
     public class OnOpened: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IBiowareXP2 _biowareXP2;
         private readonly ISkillService _skill;
         private readonly IPerkService _perk;
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
         private readonly IFarmingService _farming;
         private readonly IPlayerStatService _playerStat;
 
-        public OnOpened(INWScript script,
+        public OnOpened(
             IBiowareXP2 biowareXP2,
             ISkillService skill,
             IPerkService perk,
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
             IFarmingService farming,
             IPlayerStatService playerStat)
         {
-            _ = script;
+            
 			_biowareXP2 = biowareXP2;
             _skill = skill;
             _perk = perk;
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
                 dc--;
             }
 
-            oPC.AssignCommand(() => _.ActionPlayAnimation(NWScript.ANIMATION_LOOPING_GET_LOW, 1.0f, 2.0f));
+            oPC.AssignCommand(() => _.ActionPlayAnimation(_.ANIMATION_LOOPING_GET_LOW, 1.0f, 2.0f));
 
             for (int attempt = 1; attempt <= searchAttempts; attempt++)
             {

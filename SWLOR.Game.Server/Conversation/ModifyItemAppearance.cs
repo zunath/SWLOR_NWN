@@ -3,7 +3,7 @@ using NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -19,9 +19,9 @@ namespace SWLOR.Game.Server.Conversation
         
 
         public ModifyItemAppearance(
-            INWScript script, 
+             
             IDialogService dialog) 
-            : base(script, dialog)
+            : base(dialog)
         {
         }
 

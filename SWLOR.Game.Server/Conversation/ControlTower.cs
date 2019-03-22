@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Conversation
         private readonly ITimeService _time;
 
         public ControlTower(
-            INWScript script, 
+             
             IDialogService dialog,
             IDataService data,
             IBasePermissionService perm,
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Conversation
             IBaseService @base,
             IColorTokenService color,
             ITimeService time) 
-            : base(script, dialog)
+            : base(dialog)
         {
             _data = data;
             _perm = perm;

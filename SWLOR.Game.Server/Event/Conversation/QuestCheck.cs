@@ -11,14 +11,14 @@ namespace SWLOR.Game.Server.Event.Conversation
 {
     public class QuestCheck: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
 
         public QuestCheck(
-            INWScript script,
+            
             IDataService data)
         {
-            _ = script;
+            
             _data = data;
         }
 

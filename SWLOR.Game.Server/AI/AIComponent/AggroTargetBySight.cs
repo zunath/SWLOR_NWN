@@ -6,7 +6,7 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.AI.AIComponent
 {
@@ -15,15 +15,14 @@ namespace SWLOR.Game.Server.AI.AIComponent
     /// </summary>
     public class AggroTargetBySight: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IEnmityService _enmity;
         private readonly IBiowarePosition _biowarePos;
 
-        public AggroTargetBySight(INWScript script,
+        public AggroTargetBySight(
             IEnmityService enmity,
             IBiowarePosition biowarePos)
         {
-            _ = script;
             _enmity = enmity;
             _biowarePos = biowarePos;
         }

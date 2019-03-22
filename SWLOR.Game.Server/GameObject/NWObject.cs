@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.ValueObject;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.GameObject
@@ -12,12 +12,10 @@ namespace SWLOR.Game.Server.GameObject
     public class NWObject
     {
         public virtual Object Object { get; }
-        protected readonly INWScript _;
         
         public NWObject(Object nwnObject)
         {
             Object = nwnObject;
-            _ = App.GetNWScript();
         }
 
         public virtual bool IsInitializedAsPlayer

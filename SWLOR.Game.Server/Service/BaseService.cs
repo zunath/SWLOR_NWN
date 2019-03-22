@@ -9,7 +9,7 @@ using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static NWN.NWScript;
+using static NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
 using Object = NWN.Object;
@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Service
 {
     public class BaseService : IBaseService
     {
-        private readonly INWScript _;
+        
         private readonly INWNXEvents _nwnxEvents;
         private readonly IDialogService _dialog;
         private readonly IDataService _data;
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Service
         private readonly ISerializationService _serialization;
 
         public BaseService(
-            INWScript script,
+            
             INWNXEvents nwnxEvents,
             IDialogService dialog,
             IDataService data,
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Service
             IErrorService error,
             ISerializationService serialization)
         {
-            _ = script;
+            
             _nwnxEvents = nwnxEvents;
             _dialog = dialog;
             _data = data;

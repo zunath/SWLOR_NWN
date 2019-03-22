@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Event.Delayed
 {
     public class CraftCreateItem: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
         private readonly IErrorService _error;
         private readonly ICraftService _craft;
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Event.Delayed
         private readonly IPerkService _perk;
 
         public CraftCreateItem(
-            INWScript script,
+            
             IDataService data,
             IErrorService error,
             ICraftService craft,
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Event.Delayed
             IDurabilityService durability,
             IPerkService perk)
         {
-            _ = script;
+            
             _data = data;
             _error = error;
             _craft = craft;

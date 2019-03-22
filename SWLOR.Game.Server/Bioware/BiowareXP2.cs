@@ -12,13 +12,6 @@ namespace SWLOR.Game.Server.Bioware
     /// </summary>
     public class BiowareXP2 : IBiowareXP2
     {
-        private readonly INWScript _;
-
-        public BiowareXP2(INWScript script)
-        {
-            _ = script;
-        }
-
         /// <summary>
         /// 
         /// ----------------------------------------------------------------------------
@@ -52,12 +45,12 @@ namespace SWLOR.Game.Server.Bioware
             if (fDuration == 0.0f)
             {
 
-                nDuration = NWScript.DURATION_TYPE_PERMANENT;
+                nDuration = _.DURATION_TYPE_PERMANENT;
             }
             else
             {
 
-                nDuration = NWScript.DURATION_TYPE_TEMPORARY;
+                nDuration = _.DURATION_TYPE_TEMPORARY;
             }
 
             int nDurationCompare = nDuration;
@@ -89,7 +82,7 @@ namespace SWLOR.Game.Server.Bioware
 
             }
 
-            if (nDuration == NWScript.DURATION_TYPE_PERMANENT)
+            if (nDuration == _.DURATION_TYPE_PERMANENT)
             {
                 _.AddItemProperty(nDuration, ip, oItem.Object);
             }

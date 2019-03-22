@@ -8,23 +8,23 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
-using static NWN.NWScript;
+using static NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 
 namespace SWLOR.Game.Server.Service
 {
     public class MarketService: IMarketService
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
         private readonly INWNXChat _nwnxChat;
         
         public MarketService(
-            INWScript script,
+            
             IDataService data,
             INWNXChat nwnxChat)
         {
-            _ = script;
+            
             _data = data;
             _nwnxChat = nwnxChat;
         }

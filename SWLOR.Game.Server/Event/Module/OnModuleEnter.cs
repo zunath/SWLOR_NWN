@@ -2,14 +2,14 @@
 
 using NWN;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Event.Module
 {
     internal class OnModuleEnter : IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IPlayerService _player;
         private readonly ISkillService _skill;
         private readonly IQuestService _quest;
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IPerkService _perk;
 
         public OnModuleEnter(
-            INWScript script,
+            
             IPlayerService player,
             ISkillService skill,
             IQuestService quest,
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Event.Module
             IMarketService market,
             IPerkService perk)
         {
-            _ = script;
+            
             _player = player;
             _skill = skill;
             _quest = quest;

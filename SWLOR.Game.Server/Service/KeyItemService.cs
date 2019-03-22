@@ -15,12 +15,10 @@ namespace SWLOR.Game.Server.Service
     public class KeyItemService : IKeyItemService
     {
         private readonly IDataService _data;
-        private readonly INWScript _;
-
-        public KeyItemService(IDataService data, INWScript script)
+        
+        public KeyItemService(IDataService data)
         {
             _data = data;
-            _ = script;
         }
 
         public bool PlayerHasKeyItem(NWObject oPC, int keyItemID)

@@ -10,14 +10,14 @@ namespace SWLOR.Game.Server.ChatCommand
     [CommandDetails("Spawns gold of a specific quantity on your character. Example: /spawngold 33", CommandPermissionType.DM)]
     public class SpawnGold : IChatCommand
     {
-        private readonly INWScript _;
+        
         private readonly IColorTokenService _color;
 
         public SpawnGold(
-            INWScript script,
+            
             IColorTokenService color)
         {
-            _ = script;
+            
             _color = color;
         }
 

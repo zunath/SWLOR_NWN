@@ -9,12 +9,12 @@ namespace SWLOR.Game.Server.Event.Trigger
 {
     public class ExplorationTrigger: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IColorTokenService _colorToken;
 
-        public ExplorationTrigger(INWScript script, IColorTokenService colorTokenService)
+        public ExplorationTrigger( IColorTokenService colorTokenService)
         {
-            _ = script;
+            
             _colorToken = colorTokenService;
         }
 

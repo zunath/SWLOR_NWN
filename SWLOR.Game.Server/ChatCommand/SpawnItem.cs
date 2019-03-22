@@ -10,14 +10,14 @@ namespace SWLOR.Game.Server.ChatCommand
     [CommandDetails("Spawns an item of a specific quantity on your character. Example: /spawnitem my_item 3", CommandPermissionType.DM)]
     public class SpawnItem: IChatCommand
     {
-        private readonly INWScript _;
+        
         private readonly IColorTokenService _color;
 
         public SpawnItem(
-            INWScript script,
+            
             IColorTokenService color)
         {
-            _ = script;
+            
             _color = color;
         }
 

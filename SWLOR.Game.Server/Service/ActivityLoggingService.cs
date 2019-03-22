@@ -15,13 +15,13 @@ namespace SWLOR.Game.Server.Service
 {
     public class ActivityLoggingService: IActivityLoggingService
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
         private readonly INWNXChat _nwnxChat;
 
-        public ActivityLoggingService(INWScript script, IDataService data, INWNXChat nwnxChat)
+        public ActivityLoggingService( IDataService data, INWNXChat nwnxChat)
         {
-            _ = script;
+            
             _data = data;
             _nwnxChat = nwnxChat;
         }

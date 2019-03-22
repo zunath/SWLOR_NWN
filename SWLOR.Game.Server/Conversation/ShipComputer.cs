@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN.NWScript;
+using static NWN._;
 using System.Collections.Generic;
 using System.Collections;
 using SWLOR.Game.Server.ValueObject;
@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Conversation
         private readonly ITimeService _time;
 
         public ShipComputer(
-            INWScript script,
+            
             IDialogService dialog,
             IDataService data,
             IErrorService error,
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Conversation
             IColorTokenService color,
             ISpaceService space,
             ITimeService time) 
-            : base(script, dialog)
+            : base(dialog)
         {
             _data = data;
             _dialog = dialog;
@@ -239,7 +239,7 @@ namespace SWLOR.Game.Server.Conversation
                             }
                         }
 
-                        _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, _.EffectVisualEffect(356), player);
+                        _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(356), player);
 
                         // Clean up the base structure, if we were in a PC dock not public starport.
                         // Get a reference to our placeable (and door), and delete them with some VFX. 
@@ -266,7 +266,7 @@ namespace SWLOR.Game.Server.Conversation
                                     // Found our dock.  Clear its variable and play some VFX.
                                     plc.Structure.SetLocalInt("DOCKED_STARSHIP", 0);
                                     DoDustClouds(plc.Structure.Location);
-                                    _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, _.EffectVisualEffect(356), plc.Structure);
+                                    _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(356), plc.Structure);
                                 }
                                 else if (plc.PCBaseStructureID == structure.ID)
                                 {
@@ -444,7 +444,7 @@ namespace SWLOR.Game.Server.Conversation
                     }
 
                     // And shake the screen, because stuff.
-                    _.ApplyEffectAtLocation(NWScript.DURATION_TYPE_INSTANT, _.EffectVisualEffect(356), loc);
+                    _.ApplyEffectAtLocation(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(356), loc);
                     DoDustClouds(loc);            
                 }
 
@@ -461,7 +461,7 @@ namespace SWLOR.Game.Server.Conversation
                     }
                 }
 
-                _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, _.EffectVisualEffect(356), player);
+                _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(356), player);
                 _space.RemoveShipInSpace(player.Area);
 
                 EndConversation();

@@ -6,13 +6,13 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Item
 {
     public class ResourceHarvester : IActionItem
     {
-        private readonly INWScript _;
+        
         private readonly IRandomService _random;
         private readonly IPerkService _perk;
         private readonly IResourceService _resource;
@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Item
         private readonly IColorTokenService _color;
 
         public ResourceHarvester(
-            INWScript script,
+            
             IRandomService random,
             IPerkService perk,
             IResourceService resource,
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Item
             IDurabilityService durability,
             IColorTokenService color)
         {
-            _ = script;
+            
             _random = random;
             _perk = perk;
             _resource = resource;

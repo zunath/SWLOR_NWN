@@ -14,23 +14,23 @@ namespace SWLOR.Game.Server.ChatCommand
     [CommandDetails("Sets portrait of the target player using the string specified. (Remember to add po_ to the portrait)", CommandPermissionType.DM)]
     public class SetPortrait : IChatCommand
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
         private readonly INWNXObject _object;
 
         public SetPortrait(
-            INWScript script,
+            
             IDataService data,
             INWNXObject @object)
         {
-            _ = script;
+            
             _data = data;
             _object = @object;
         }
 
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            if (!target.IsValid || target.ObjectType != NWScript.OBJECT_TYPE_CREATURE)
+            if (!target.IsValid || target.ObjectType != _.OBJECT_TYPE_CREATURE)
             {
                 user.SendMessage("Only creatures may be targeted with this command.");
                 return;

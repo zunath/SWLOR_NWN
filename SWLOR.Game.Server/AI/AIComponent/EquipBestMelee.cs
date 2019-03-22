@@ -10,13 +10,6 @@ namespace SWLOR.Game.Server.AI.AIComponent
     /// </summary>
     public class EquipBestMelee : IRegisteredEvent
     {
-        private readonly INWScript _;
-
-        public EquipBestMelee(INWScript script)
-        {
-            _ = script;
-        }
-
         public bool Run(object[] args)
         {
             NWCreature self = (NWCreature)args[0];

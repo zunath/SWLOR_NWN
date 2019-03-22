@@ -5,12 +5,10 @@ namespace SWLOR.Game.Server.GameObject
     public class NWLocation
     {
         public Location Location { get; set; }
-        protected readonly INWScript _;
 
         public NWLocation(Location nwnLocation)
         {
             Location = nwnLocation;
-            _ = App.GetNWScript();
         }
 
         public float X => _.GetPositionFromLocation(Location).m_X;

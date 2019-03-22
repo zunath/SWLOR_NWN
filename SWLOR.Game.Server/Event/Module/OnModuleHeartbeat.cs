@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Event.Module
 {
     internal class OnModuleHeartbeat : IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
         private readonly IItemService _item;
         private readonly IAbilityService _ability;
@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IPlayerStatService _playerStat;
         private readonly IWeatherService _weather;
         
-        public OnModuleHeartbeat(INWScript script,
+        public OnModuleHeartbeat(
             IDataService data,
             IItemService item,
             IAbilityService ability,
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Event.Module
             IPlayerStatService playerStat,
             IWeatherService weather)
         {
-            _ = script;
+            
             _data = data;
             _item = item;
             _ability = ability;
@@ -133,7 +133,7 @@ namespace SWLOR.Game.Server.Event.Module
                             amount += sturdinessLevel + 1;
                         }
                     }
-                    _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, _.EffectHeal(amount), oPC.Object);
+                    _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectHeal(amount), oPC.Object);
                 }
 
                 entity.RegenerationTick = rate;

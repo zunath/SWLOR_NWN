@@ -4,26 +4,26 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Placeable.WarpDevice
 {
     public class OnUsed: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IKeyItemService _keyItem;
         private readonly IAreaService _area;
         private readonly IPlayerService _player;
         private readonly IDialogService _dialog;
 
         public OnUsed(
-            INWScript script,
+            
             IKeyItemService keyItem,
             IAreaService area,
             IPlayerService player,
             IDialogService dialog)
         {
-            _ = script;
+            
             _keyItem = keyItem;
             _area = area;
             _player = player;

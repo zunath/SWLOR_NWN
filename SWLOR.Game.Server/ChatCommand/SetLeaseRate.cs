@@ -13,14 +13,14 @@ namespace SWLOR.Game.Server.ChatCommand
     [CommandDetails("Sets the lease bonus or penalty on a particular player. Range must be between -99 and 500.", CommandPermissionType.DM)]
     public class SetLeaseRate : IChatCommand
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
 
         public SetLeaseRate(
-            INWScript script,
+            
             IDataService data)
         {
-            _ = script;
+            
             _data = data;
         }
 

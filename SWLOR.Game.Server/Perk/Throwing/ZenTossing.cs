@@ -8,13 +8,13 @@ namespace SWLOR.Game.Server.Perk.Throwing
 {
     public class ZenTossing : IPerk
     {
-        private readonly INWScript _;
+        
         private readonly INWNXCreature _nwnxCreature;
 
-        public ZenTossing(INWScript script,
+        public ZenTossing(
             INWNXCreature nwnxCreature)
         {
-            _ = script;
+            
             _nwnxCreature = nwnxCreature;
         }
 
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Perk.Throwing
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_ZEN_ARCHERY);
+            _nwnxCreature.RemoveFeat(oPC, _.FEAT_ZEN_ARCHERY);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
@@ -87,11 +87,11 @@ namespace SWLOR.Game.Server.Perk.Throwing
             if (Equals(equipped, oItem) ||
                 equipped.CustomItemType != CustomItemType.Throwing)
             {
-                _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_ZEN_ARCHERY);
+                _nwnxCreature.RemoveFeat(oPC, _.FEAT_ZEN_ARCHERY);
                 return;
             }
 
-            _nwnxCreature.AddFeat(oPC, NWScript.FEAT_ZEN_ARCHERY);
+            _nwnxCreature.AddFeat(oPC, _.FEAT_ZEN_ARCHERY);
         }
 
         public bool IsHostile()

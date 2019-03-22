@@ -12,12 +12,12 @@ namespace SWLOR.Game.Server.Service
 {
     public class ErrorService: IErrorService
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
 
-        public ErrorService(INWScript script, IDataService data)
+        public ErrorService( IDataService data)
         {
-            _ = script;
+            
             _data = data;
         }
 

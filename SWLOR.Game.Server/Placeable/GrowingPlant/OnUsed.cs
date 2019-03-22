@@ -10,12 +10,12 @@ namespace SWLOR.Game.Server.Placeable.GrowingPlant
 {
     public class OnUsed: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IFarmingService _farming;
 
-        public OnUsed(INWScript script, IFarmingService farming)
+        public OnUsed( IFarmingService farming)
         {
-            _ = script;
+            
             _farming = farming;
         }
 

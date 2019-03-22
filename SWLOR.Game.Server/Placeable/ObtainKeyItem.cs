@@ -7,16 +7,16 @@ namespace SWLOR.Game.Server.Placeable
 {
     public class ObtainKeyItem: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IKeyItemService _keyItem;
         private readonly IObjectVisibilityService _ovs;
 
         public ObtainKeyItem(
-            INWScript script,
+            
             IKeyItemService keyItem,
             IObjectVisibilityService ovs)
         {
-            _ = script;
+            
             _keyItem = keyItem;
             _ovs = ovs;
         }

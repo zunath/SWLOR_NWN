@@ -16,15 +16,15 @@ namespace SWLOR.Game.Server.Service
     public class CustomEffectService : ICustomEffectService
     {
         private readonly IDataService _data;
-        private readonly INWScript _;
+        
         private readonly IObjectProcessingService _ops;
 
         public CustomEffectService(IDataService data,
-            INWScript script,
+            
             IObjectProcessingService ops)
         {
             _data = data;
-            _ = script;
+            
             _ops = ops;
         }
         

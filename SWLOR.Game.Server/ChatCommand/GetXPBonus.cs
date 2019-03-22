@@ -13,14 +13,14 @@ namespace SWLOR.Game.Server.ChatCommand
     [CommandDetails("Gets the XP bonus on a particular player.", CommandPermissionType.DM)]
     public class GetXPBonus : IChatCommand
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
 
         public GetXPBonus(
-            INWScript script,
+            
             IDataService data)
         {
-            _ = script;
+            
             _data = data;
         }
         

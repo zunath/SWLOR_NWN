@@ -10,13 +10,13 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
 {
     public class OnClosed: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IFarmingService _farming;
 
-        public OnClosed(INWScript script,
+        public OnClosed(
             IFarmingService farming)
         {
-            _ = script;
+            
             _farming = farming;
         }
 
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
                 string seed = point.GetLocalString("SCAVENGE_POINT_SEED");
                 if (!string.IsNullOrWhiteSpace(seed))
                 {
-                    _.CreateObject(NWScript.OBJECT_TYPE_ITEM, seed, point.Location);
+                    _.CreateObject(_.OBJECT_TYPE_ITEM, seed, point.Location);
                 }
 
                 point.Destroy();

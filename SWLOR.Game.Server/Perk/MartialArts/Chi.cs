@@ -2,20 +2,20 @@
 using NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.MartialArts
 {
     public class Chi: IPerk
     {
-        private readonly INWScript _;
+        
         private readonly IRandomService _random;
 
         public Chi(
-            INWScript script,
+            
             IRandomService random)
         {
-            _ = script;
+            
             _random = random;
         }
 

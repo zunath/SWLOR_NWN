@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using System.Linq;
 using SWLOR.Game.Server.Enumeration;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.AI.AIComponent
 {
@@ -16,13 +16,13 @@ namespace SWLOR.Game.Server.AI.AIComponent
     /// </summary>
     public class WarpToTargetIfStuck : IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IEnmityService _enmity;
 
-        public WarpToTargetIfStuck(INWScript script,
+        public WarpToTargetIfStuck(
             IEnmityService enmity)
         {
-            _ = script;
+            
             _enmity = enmity;
         }
 

@@ -10,13 +10,6 @@ namespace SWLOR.Game.Server.AI.AIComponent
     /// </summary>
     public class EquipBestRanged : IRegisteredEvent
     {
-        private readonly INWScript _;
-
-        public EquipBestRanged(INWScript script)
-        {
-            _ = script;
-        }
-
         public bool Run(object[] args)
         {
             NWCreature self = (NWCreature)args[0];

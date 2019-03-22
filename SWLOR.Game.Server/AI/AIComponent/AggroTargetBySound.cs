@@ -3,7 +3,7 @@ using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.AI.AIComponent
 {
@@ -12,13 +12,13 @@ namespace SWLOR.Game.Server.AI.AIComponent
     /// </summary>
     public class AggroTargetBySound : IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IEnmityService _enmity;
 
-        public AggroTargetBySound(INWScript script,
+        public AggroTargetBySound(
             IEnmityService enmity)
         {
-            _ = script;
+            
             _enmity = enmity;
         }
 

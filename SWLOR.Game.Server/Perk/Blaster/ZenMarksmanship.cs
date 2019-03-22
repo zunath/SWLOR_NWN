@@ -7,13 +7,13 @@ namespace SWLOR.Game.Server.Perk.Blaster
 {
     public class ZenMarksmanship : IPerk
     {
-        private readonly INWScript _;
+        
         private readonly INWNXCreature _nwnxCreature;
 
-        public ZenMarksmanship(INWScript script,
+        public ZenMarksmanship(
             INWNXCreature nwnxCreature)
         {
-            _ = script;
+            
             _nwnxCreature = nwnxCreature;
         }
 
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_ZEN_ARCHERY);
+            _nwnxCreature.RemoveFeat(oPC, _.FEAT_ZEN_ARCHERY);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
@@ -89,11 +89,11 @@ namespace SWLOR.Game.Server.Perk.Blaster
                     (equipped.CustomItemType != CustomItemType.BlasterPistol && 
                      equipped.CustomItemType != CustomItemType.BlasterRifle))
             {
-                _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_ZEN_ARCHERY);
+                _nwnxCreature.RemoveFeat(oPC, _.FEAT_ZEN_ARCHERY);
                 return;
             }
 
-            _nwnxCreature.AddFeat(oPC, NWScript.FEAT_ZEN_ARCHERY);
+            _nwnxCreature.AddFeat(oPC, _.FEAT_ZEN_ARCHERY);
         }
 
         public bool IsHostile()

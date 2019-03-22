@@ -17,11 +17,11 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IColorTokenService _color;
 
         public KeyItems(
-            INWScript script, 
+             
             IDialogService dialog,
             IKeyItemService keyItem,
             IColorTokenService color) 
-            : base(script, dialog)
+            : base(dialog)
         {
             _keyItem = keyItem;
             _color = color;

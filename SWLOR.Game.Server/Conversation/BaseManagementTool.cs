@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Conversation
         private readonly ICraftService _craft;
         
         public BaseManagementTool(
-            INWScript script,
+            
             IDialogService dialog,
             IBaseService @base,
             IColorTokenService color,
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Conversation
             IImpoundService impound,
             IBasePermissionService perm,
             ICraftService craft)
-            : base(script, dialog)
+            : base(dialog)
         {
             _base = @base;
             _color = color;
@@ -335,7 +335,7 @@ namespace SWLOR.Game.Server.Conversation
 
                     if (string.IsNullOrWhiteSpace(newDescription))
                     {
-                        _.FloatingTextStringOnCreature("Type in a new name to the chat bar and then press 'Next'.", GetPC().Object, NWScript.FALSE);
+                        _.FloatingTextStringOnCreature("Type in a new name to the chat bar and then press 'Next'.", GetPC().Object, _.FALSE);
                         return;
                     }
 
@@ -450,7 +450,7 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case 7: // Rename Building/Apartment
                     GetPC().SetLocalInt("LISTENING_FOR_DESCRIPTION", 1);
-                    _.FloatingTextStringOnCreature("Type in a new name to the chat bar and then press 'Next'.", GetPC().Object, NWScript.FALSE);
+                    _.FloatingTextStringOnCreature("Type in a new name to the chat bar and then press 'Next'.", GetPC().Object, _.FALSE);
                     ChangePage("RenamePage");
                     break;
                 case 8: // Edit Building Mode

@@ -8,19 +8,19 @@ namespace SWLOR.Game.Server.Perk.Shields
 {
     public class ExpulsionManeuver : IPerk
     {
-        private readonly INWScript _;
+        
         private readonly IPerkService _perk;
         private readonly IRandomService _random;
         private readonly IColorTokenService _color;
         private readonly IPlayerStatService _playerStat;
 
-        public ExpulsionManeuver(INWScript script,
+        public ExpulsionManeuver(
             IPerkService perk,
             IRandomService random,
             IColorTokenService color,
             IPlayerStatService playerStat)
         {
-            _ = script;
+            
             _perk = perk;
             _random = random;
             _color = color;
@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Perk.Shields
 
             if (_random.Random(100) + 1 <= chance)
             {
-                _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, _.EffectAttackIncrease(ab), player.Object, length);
+                _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, _.EffectAttackIncrease(ab), player.Object, length);
                 player.SendMessage(_color.Combat("You perform a defensive maneuver."));
             }
         }

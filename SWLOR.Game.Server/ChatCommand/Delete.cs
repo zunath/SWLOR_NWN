@@ -16,16 +16,16 @@ namespace SWLOR.Game.Server.ChatCommand
     [CommandDetails("Permanently deletes your character.", CommandPermissionType.Player)]
     public class Delete : IChatCommand
     {
-        private readonly INWScript _;
+        
         private readonly INWNXAdmin _admin;
         private readonly IDataService _data;
 
         public Delete(
-            INWScript script,
+            
             INWNXAdmin admin,
             IDataService data)
         {
-            _ = script;
+            
             _admin = admin;
             _data = data;
         }

@@ -9,15 +9,15 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 {
     public class Opportunist : IPerk
     {
-        private readonly INWScript _;
+        
         private readonly INWNXCreature _nwnxCreature;
         private readonly IPerkService _perk;
 
-        public Opportunist(INWScript script,
+        public Opportunist(
             INWNXCreature nwnxCreature,
             IPerkService perk)
         {
-            _ = script;
+            
             _nwnxCreature = nwnxCreature;
             _perk = perk;
         }
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_OPPORTUNIST);
+            _nwnxCreature.RemoveFeat(oPC, _.FEAT_OPPORTUNIST);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
@@ -91,11 +91,11 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             
             if (Equals(equipped, oItem) || equipped.CustomItemType != CustomItemType.FinesseVibroblade)
             {
-                _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_OPPORTUNIST);
+                _nwnxCreature.RemoveFeat(oPC, _.FEAT_OPPORTUNIST);
                 return;
             }
 
-            _nwnxCreature.AddFeat(oPC, NWScript.FEAT_OPPORTUNIST);
+            _nwnxCreature.AddFeat(oPC, _.FEAT_OPPORTUNIST);
         }
 
         public bool IsHostile()

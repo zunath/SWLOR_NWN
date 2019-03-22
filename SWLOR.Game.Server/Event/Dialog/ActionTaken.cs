@@ -11,12 +11,12 @@ namespace SWLOR.Game.Server.Event.Dialog
     public class ActionTaken: IRegisteredEvent
     {
         private readonly IDialogService _dialogService;
-        private readonly INWScript _;
+        
 
-        public ActionTaken(INWScript script, IDialogService dialogService)
+        public ActionTaken( IDialogService dialogService)
         {
             _dialogService = dialogService;
-            _ = script;
+            
         }
 
         public bool Run(params object[] args)

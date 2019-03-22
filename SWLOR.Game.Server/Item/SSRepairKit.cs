@@ -5,27 +5,27 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Item
 {
     public class SSRepairKit : IActionItem
     {
-        private readonly INWScript _;
+        
         private readonly IBaseService _base;
         private readonly IDataService _data;
         private readonly IPerkService _perk;
         private readonly ISkillService _skill;
         private readonly ISpaceService _space;
         public SSRepairKit(
-            INWScript script,
+            
             IBaseService baseService,
             IDataService data,
             IPerkService perk,
             ISkillService skill,
             ISpaceService space)
         {
-            _ = script;
+            
             _base = baseService;
             _data = data;
             _perk = perk;

@@ -9,14 +9,14 @@ namespace SWLOR.Game.Server.Service
 {
     public class ObjectProcessingService : IObjectProcessingService
     {
-        private readonly INWScript _;
+        
         private readonly IErrorService _error;
         private DateTime _dateLastRun;
 
-        public ObjectProcessingService(INWScript script,
+        public ObjectProcessingService(
             IErrorService error)
         {
-            _ = script;
+            
             _error = error;
             _dateLastRun = DateTime.UtcNow;
         }

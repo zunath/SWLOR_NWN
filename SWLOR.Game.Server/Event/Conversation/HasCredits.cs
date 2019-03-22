@@ -11,13 +11,6 @@ namespace SWLOR.Game.Server.Event.Conversation
 {
     public class HasCredits : IRegisteredEvent
     {
-        private readonly INWScript _;
-
-        public HasCredits(INWScript script)
-        {
-            _ = script;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlayer oPC = _.GetPCSpeaker();

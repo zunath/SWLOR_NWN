@@ -15,18 +15,18 @@ namespace SWLOR.Game.Server.Service
     public class ExaminationService: IExaminationService
     {
         private readonly IDataService _data;
-        private readonly INWScript _;
+        
         private readonly IColorTokenService _color;
         private readonly ISkillService _skill;
 
         public ExaminationService(
             IDataService data, 
-            INWScript script, 
+             
             IColorTokenService color,
             ISkillService skill)
         {
             _data = data;
-            _ = script;
+            
             _color = color;
             _skill = skill;
         }

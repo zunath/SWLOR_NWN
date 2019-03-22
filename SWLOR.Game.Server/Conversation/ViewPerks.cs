@@ -28,14 +28,14 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IDataService _data;
 
         public ViewPerks(
-            INWScript script, 
+             
             IDialogService dialog,
             IPerkService perk,
             ISkillService skill,
             IPlayerService player,
             IColorTokenService color,
             IDataService data) 
-            : base(script, dialog)
+            : base(dialog)
         {
             _perk = perk;
             _skill = skill;

@@ -12,10 +12,10 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IDataService _data;
 
         public Jukebox(
-            INWScript script, 
+             
             IDialogService dialog,
             IDataService data) 
-            : base(script, dialog)
+            : base(dialog)
         {
             _data = data;
         }

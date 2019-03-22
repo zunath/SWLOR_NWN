@@ -2,19 +2,19 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
     public class PointBlankShot: IPerk
     {
-        private readonly INWScript _;
+        
         private readonly INWNXCreature _nwnxCreature;
 
-        public PointBlankShot(INWScript script,
+        public PointBlankShot(
             INWNXCreature nwnxCreature)
         {
-            _ = script;
+            
             _nwnxCreature = nwnxCreature;
         }
 

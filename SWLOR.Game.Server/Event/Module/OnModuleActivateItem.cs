@@ -7,14 +7,14 @@ namespace SWLOR.Game.Server.Event.Module
 {
     internal class OnModuleActivateItem : IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IItemService _item;
 
         public OnModuleActivateItem(
-            INWScript script,
+            
             IItemService item)
         {
-            _ = script;
+            
             _item = item;
         }
 

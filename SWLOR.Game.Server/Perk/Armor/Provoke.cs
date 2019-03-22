@@ -14,17 +14,16 @@ namespace SWLOR.Game.Server.Perk.Armor
         private readonly INWNXCreature _nwnxCreature;
         private readonly IPerkService _perk;
         private readonly IEnmityService _enmity;
-        private readonly INWScript _;
+        
 
         public Provoke(INWNXCreature nwnxCreature,
             IPerkService perk,
-            IEnmityService enmity,
-            INWScript script)
+            IEnmityService enmity)
         {
             _nwnxCreature = nwnxCreature;
             _perk = perk;
             _enmity = enmity;
-            _ = script;
+            
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -74,12 +73,12 @@ namespace SWLOR.Game.Server.Perk.Armor
         public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
         {
             NWCreature npc = (target.Object);
-            Effect vfx = _.EffectVisualEffect(NWScript.VFX_IMP_CHARM);
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, vfx, target.Object);
+            Effect vfx = _.EffectVisualEffect(_.VFX_IMP_CHARM);
+            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, vfx, target.Object);
             
             player.AssignCommand(() =>
             {
-                _.ActionPlayAnimation(NWScript.ANIMATION_FIREFORGET_TAUNT, 1f, 1f);
+                _.ActionPlayAnimation(_.ANIMATION_FIREFORGET_TAUNT, 1f, 1f);
             });
 
             _enmity.AdjustEnmity(npc, player, 120);

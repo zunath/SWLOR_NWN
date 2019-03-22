@@ -5,21 +5,21 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
     public class MapService : IMapService
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
 
         public MapService(
-            INWScript script,
+            
             IDataService data)
         {
-            _ = script;
+            
             _data = data;
         }
 

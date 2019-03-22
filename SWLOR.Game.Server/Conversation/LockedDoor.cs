@@ -15,11 +15,11 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IKeyItemService _keyItem;
 
         public LockedDoor(
-            INWScript script, 
+             
             IDialogService dialog,
             IDataService data,
             IKeyItemService keyItem) 
-            : base(script, dialog)
+            : base(dialog)
         {
             _data = data;
             _keyItem = keyItem;

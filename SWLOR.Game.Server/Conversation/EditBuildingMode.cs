@@ -25,13 +25,13 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IImpoundService _impound;
 
         public EditBuildingMode(
-            INWScript script, 
+             
             IDialogService dialog,
             IColorTokenService color,
             IBaseService @base,
             IDataService data,
             IImpoundService impound) 
-            : base(script, dialog)
+            : base(dialog)
         {
             _color = color;
             _base = @base;

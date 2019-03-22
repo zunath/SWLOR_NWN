@@ -12,7 +12,7 @@ using SWLOR.Game.Server.Event.Delayed;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
-using static NWN.NWScript;
+using static NWN._;
 using ComponentType = SWLOR.Game.Server.Data.Entity.ComponentType;
 using Object = NWN.Object;
 
@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Service
 {
     public class CraftService : ICraftService
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
         private readonly IPerkService _perk;
         private readonly IColorTokenService _color;
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IPlayerStatService _playerStat;
 
         public CraftService(
-            INWScript script,
+            
             IDataService data,
             IPerkService perk,
             IColorTokenService color,
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Service
             ISkillService skill,
             IPlayerStatService playerStat)
         {
-            _ = script;
+            
             _data = data;
             _perk = perk;
             _color = color;

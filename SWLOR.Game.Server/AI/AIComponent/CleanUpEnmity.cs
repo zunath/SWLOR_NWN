@@ -12,13 +12,13 @@ namespace SWLOR.Game.Server.AI.AIComponent
     /// </summary>
     public class CleanUpEnmity : IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IEnmityService _enmity;
 
-        public CleanUpEnmity(INWScript script,
+        public CleanUpEnmity(
             IEnmityService enmity)
         {
-            _ = script;
+            
             _enmity = enmity;
         }
 

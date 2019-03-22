@@ -10,13 +10,13 @@ namespace SWLOR.Game.Server.ChatCommand
     [CommandDetails("Manually saves your character. Your character also saves automatically every few minutes.", CommandPermissionType.Player)]
     public class Save: IChatCommand
     {
-        private readonly INWScript _;
+        
         private readonly IPlayerService _player;
 
-        public Save(INWScript script,
+        public Save(
             IPlayerService player)
         {
-            _ = script;
+            
             _player = player;
         }
 

@@ -3,20 +3,20 @@ using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Placeable.StructureRubble
 {
     public class OnDisturbed: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IItemService _item;
 
         public OnDisturbed(
-            INWScript script,
+            
             IItemService item)
         {
-            _ = script;
+            
             _item = item;
         }
 

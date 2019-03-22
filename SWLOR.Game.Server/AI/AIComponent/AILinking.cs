@@ -6,7 +6,7 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 using System;
 using System.Linq;
 
@@ -17,13 +17,13 @@ namespace SWLOR.Game.Server.AI.AIComponent
     /// </summary>
     public class AILinking : IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IEnmityService _enmity;
         
-        public AILinking(INWScript script,
+        public AILinking(
             IEnmityService enmity)
         {
-            _ = script;
+            
             _enmity = enmity;
         }
 

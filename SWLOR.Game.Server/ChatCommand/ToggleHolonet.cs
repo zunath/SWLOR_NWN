@@ -6,23 +6,23 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
     [CommandDetails("Enables or disables holonet chat channel.", CommandPermissionType.Player)]
     public class ToggleHolonet : IChatCommand
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
         private readonly IColorTokenService _color;
 
         public ToggleHolonet(
-            INWScript script,
+            
             IDataService data,
             IColorTokenService color)
         {
-            _ = script;
+            
             _data = data;
             _color = color;
         }

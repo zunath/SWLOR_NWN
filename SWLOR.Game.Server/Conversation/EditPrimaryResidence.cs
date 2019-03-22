@@ -17,13 +17,13 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IColorTokenService _color;
 
         public EditPrimaryResidence(
-            INWScript script, 
+             
             IDialogService dialog,
             IDataService data,
             IBaseService @base,
             IBasePermissionService perm,
             IColorTokenService color) 
-            : base(script, dialog)
+            : base(dialog)
         {
             _data = data;
             _base = @base;

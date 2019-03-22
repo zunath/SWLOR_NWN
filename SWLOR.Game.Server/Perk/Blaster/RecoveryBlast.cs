@@ -3,22 +3,22 @@ using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
     public class RecoveryBlast: IPerk
     {
-        private readonly INWScript _;
+        
         private readonly IPerkService _perk;
         private readonly IRandomService _random;
 
         public RecoveryBlast(
-            INWScript script,
+            
             IPerkService perk,
             IRandomService random)
         {
-            _ = script;
+            
             _perk = perk;
             _random = random;
         }

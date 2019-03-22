@@ -9,13 +9,6 @@ namespace SWLOR.Game.Server.CustomEffect
 {
     public class BleedingEffect: ICustomEffect
     {
-        private readonly INWScript _;
-
-        public BleedingEffect(INWScript script)
-        {
-            _ = script;
-        }
-
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
             return null;
@@ -26,7 +19,7 @@ namespace SWLOR.Game.Server.CustomEffect
             if (currentTick % 2 == 0) return;
 
             Location location = oTarget.Location;
-            NWPlaceable oBlood = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "plc_bloodstain", location));
+            NWPlaceable oBlood = (_.CreateObject(_.OBJECT_TYPE_PLACEABLE, "plc_bloodstain", location));
             oBlood.Destroy(48.0f);
 
             int amount = 1;
@@ -41,7 +34,7 @@ namespace SWLOR.Game.Server.CustomEffect
             oCaster.AssignCommand(() =>
             {
                 Effect damage = _.EffectDamage(amount);
-                _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, damage, oTarget.Object);
+                _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, damage, oTarget.Object);
             });
         }
 

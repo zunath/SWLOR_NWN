@@ -8,11 +8,6 @@ namespace SWLOR.Game.Server.NWNX
 {
     public class NWNXPlayerQuickBarSlot: NWNXBase, INWNXPlayerQuickBarSlot
     {
-        public NWNXPlayerQuickBarSlot(INWScript script) 
-            : base(script)
-        {
-        }
-        
         /// <summary>
         /// Create an empty QBS of given type
         /// </summary>

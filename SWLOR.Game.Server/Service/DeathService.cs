@@ -8,26 +8,26 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
     public class DeathService : IDeathService
     {
         private readonly IDataService _data;
-        private readonly INWScript _;
+        
         private readonly IRandomService _random;
         private readonly IDurabilityService _durability;
         private readonly IAreaService _area;
 
         public DeathService(IDataService data, 
-            INWScript script,
+            
             IRandomService random,
             IDurabilityService durability,
             IAreaService area)
         {
             _data = data;
-            _ = script;
+            
             _random = random;
             _durability = durability;
             _area = area;

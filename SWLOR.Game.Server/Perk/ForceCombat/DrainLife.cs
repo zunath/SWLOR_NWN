@@ -2,13 +2,13 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceCombat
 {
     public class DrainLife: IPerk
     {
-        private readonly INWScript _;
+        
         private readonly ISkillService _skill;
         private readonly ICombatService _combat;
         private readonly IPerkService _perk;
@@ -16,14 +16,14 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
         private readonly IPlayerStatService _stat;
 
         public DrainLife(
-            INWScript script,
+            
             ISkillService skill,
             ICombatService combat,
             IPerkService perk,
             IRandomService random,
             IPlayerStatService stat)
         {
-            _ = script;
+            
             _skill = skill;
             _combat = combat;
             _perk = perk;

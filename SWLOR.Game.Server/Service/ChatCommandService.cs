@@ -8,13 +8,13 @@ using SWLOR.Game.Server.Service.Contracts;
 using System.Linq;
 using System.Reflection;
 using SWLOR.Game.Server.NWNX;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
     public class ChatCommandService : IChatCommandService
     {
-        private readonly INWScript _;
+        
         private readonly INWNXChat _nwnxChat;
         private readonly IColorTokenService _color;
         private readonly IAuthorizationService _auth;
@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Service
             IAuthorizationService auth,
             INWNXEvents nwnxEvents,
             INWNXCreature nwnxCreature,
-            INWScript script,
+            
             INWNXPlayer nwnxPlayer,
             INWNXPlayerQuickBarSlot nwnxQBS)
         {
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Service
             _auth = auth;
             _nwnxEvents = nwnxEvents;
             _nwnxCreature = nwnxCreature;
-            _ = script;
+            
             _nwnxPlayer = nwnxPlayer;
             _nwnxQBS = nwnxQBS;
         }

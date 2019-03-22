@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Event.Module
 {
     internal class OnModuleLeave : IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IPlayerService _player;
         private readonly IActivityLoggingService _activityLogging;
         private readonly ISkillService _skill;
@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly ISpaceService _space;
 
         public OnModuleLeave(
-            INWScript script,
+            
             IPlayerService player,
             IActivityLoggingService activityLogging,
             ISkillService skill,
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Event.Module
             IDataService data,
             ISpaceService space)
         {
-            _ = script;
+            
             _player = player;
             _activityLogging = activityLogging;
             _skill = skill;

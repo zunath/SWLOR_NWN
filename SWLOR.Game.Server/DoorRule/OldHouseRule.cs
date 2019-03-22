@@ -7,13 +7,6 @@ namespace SWLOR.Game.Server.DoorRule
 {
     public class OldHouseRule: IDoorRule
     {
-        private readonly INWScript _;
-
-        public OldHouseRule(INWScript script)
-        {
-            _ = script;
-        }
-
         public NWPlaceable Run(NWArea area, Location location, float orientationOverride = 0f, float sqrtValue = 0f)
         {
             Vector doorPosition = _.GetPositionFromLocation(location);
@@ -29,7 +22,7 @@ namespace SWLOR.Game.Server.DoorRule
             doorPosition.m_Y = doorPosition.m_Y - fMod;
             Location doorLocation = _.Location(area.Object, doorPosition, _.GetFacingFromLocation(location));
 
-            return _.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "building_door", doorLocation);
+            return _.CreateObject(_.OBJECT_TYPE_PLACEABLE, "building_door", doorLocation);
         }
     }
 }

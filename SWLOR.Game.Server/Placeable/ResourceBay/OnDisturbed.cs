@@ -7,25 +7,25 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.ResourceBay
 {
     public class OnDisturbed: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
         private readonly IItemService _item;
         private readonly IBaseService _base;
 
         public OnDisturbed(
-            INWScript script,
+            
             IDataService data,
             IItemService item,
             IBaseService @base)
         {
-            _ = script;
+            
             _data = data;
             _item = item;
             _base = @base;

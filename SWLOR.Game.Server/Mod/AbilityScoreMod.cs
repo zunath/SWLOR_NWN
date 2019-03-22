@@ -10,13 +10,13 @@ namespace SWLOR.Game.Server.Mod
 {
     public class AbilityScoreMod: IMod
     {
-        private readonly INWScript _;
+        
         private readonly IBiowareXP2 _biowareXP2;
 
-        public AbilityScoreMod(INWScript script,
+        public AbilityScoreMod(
             IBiowareXP2 biowareXP2)
         {
-            _ = script;
+            
             _biowareXP2 = biowareXP2;
         }
 
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Mod
             foreach (var ip in item.ItemProperties)
             {
                 int type = _.GetItemPropertyType(ip);
-                if (type == NWScript.ITEM_PROPERTY_ABILITY_BONUS)
+                if (type == _.ITEM_PROPERTY_ABILITY_BONUS)
                 {
                     int currentAbilityType = _.GetItemPropertySubType(ip);
                     if (currentAbilityType == abilityType)
@@ -50,22 +50,22 @@ namespace SWLOR.Game.Server.Mod
             switch (strType)
             {
                 case "STR":
-                    type = NWScript.ABILITY_STRENGTH;
+                    type = _.ABILITY_STRENGTH;
                     break;
                 case "CON":
-                    type = NWScript.ABILITY_CONSTITUTION;
+                    type = _.ABILITY_CONSTITUTION;
                     break;
                 case "DEX":
-                    type = NWScript.ABILITY_DEXTERITY;
+                    type = _.ABILITY_DEXTERITY;
                     break;
                 case "WIS":
-                    type = NWScript.ABILITY_WISDOM;
+                    type = _.ABILITY_WISDOM;
                     break;
                 case "INT":
-                    type = NWScript.ABILITY_INTELLIGENCE;
+                    type = _.ABILITY_INTELLIGENCE;
                     break;
                 case "CHA":
-                    type = NWScript.ABILITY_CHARISMA;
+                    type = _.ABILITY_CHARISMA;
                     break;
             }
 

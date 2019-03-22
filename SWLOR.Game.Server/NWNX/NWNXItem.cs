@@ -7,12 +7,6 @@ namespace SWLOR.Game.Server.NWNX
 {
     public class NWNXItem : NWNXBase, INWNXItem
     {
-        public NWNXItem(INWScript script)
-            : base(script)
-        {
-        }
-
-
         private const string NWNX_Item = "NWNX_Item";
 
         // Set oItem's weight. Will not persist through saving.

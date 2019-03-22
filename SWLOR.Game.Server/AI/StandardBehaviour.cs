@@ -6,7 +6,6 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.AI
 {
@@ -15,19 +14,18 @@ namespace SWLOR.Game.Server.AI
     /// </summary>
     public class StandardBehaviour : BehaviourBase
     {
-        private readonly INWScript _;
         protected readonly BehaviourTreeBuilder _builder;
         private readonly IEnmityService _enmity;
         private readonly IDialogService _dialog;
         private readonly INWNXObject _nwnxObject;
 
         public StandardBehaviour(BehaviourTreeBuilder builder,
-            INWScript script,
+            
             IEnmityService enmity,
             IDialogService dialog,
             INWNXObject nwnxObject)
         {
-            _ = script;
+            
             _builder = builder;
             _enmity = enmity;
             _dialog = dialog;
@@ -63,7 +61,7 @@ namespace SWLOR.Game.Server.AI
             int vfx = Self.GetLocalInt("DEATH_VFX");
             if (vfx > 0)
             {
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(vfx), Self);
+                _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(vfx), Self);
             }
         }
 
@@ -96,9 +94,9 @@ namespace SWLOR.Game.Server.AI
             NWObject door = (_.GetBlockingDoor());
             if (!door.IsValid) return;
 
-            if (_.GetIsDoorActionPossible(door.Object, DOOR_ACTION_OPEN) == TRUE)
+            if (_.GetIsDoorActionPossible(door.Object, _.DOOR_ACTION_OPEN) == _.TRUE)
             {
-                _.DoDoorAction(door.Object, DOOR_ACTION_OPEN);
+                _.DoDoorAction(door.Object, _.DOOR_ACTION_OPEN);
             }
         }
 

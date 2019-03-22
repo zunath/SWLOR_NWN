@@ -2,21 +2,21 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
     public class Hide: IPerk
     {
-        private readonly INWScript _;
+        
         private readonly IEnmityService _enmity;
         private readonly IPerkService _perk;
 
-        public Hide(INWScript script,
+        public Hide(
             IEnmityService enmity,
             IPerkService perk)
         {
-            _ = script;
+            
             _enmity = enmity;
             _perk = perk;
         }

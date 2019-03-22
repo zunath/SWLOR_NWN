@@ -12,19 +12,19 @@ namespace SWLOR.Game.Server.Service
 {
     public class ModService : IModService
     {
-        private readonly INWScript _;
+        
         private readonly IColorTokenService _color;
         private readonly INWNXDamage _nwnxDamage;
         private readonly ISkillService _skill;
         private readonly IItemService _item;
 
-        public ModService(INWScript script,
+        public ModService(
             IColorTokenService color,
             INWNXDamage nwnxDamage,
             ISkillService skill,
             IItemService item)
         {
-            _ = script;
+            
             _color = color;
             _nwnxDamage = nwnxDamage;
             _skill = skill;
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Service
 
         public string OnModuleExamine(string existingDescription, NWPlayer examiner, NWObject examinedObject)
         {
-            if (examinedObject.ObjectType != NWScript.OBJECT_TYPE_ITEM) return existingDescription;
+            if (examinedObject.ObjectType != _.OBJECT_TYPE_ITEM) return existingDescription;
             NWItem examinedItem = (examinedObject.Object);
             string description = string.Empty;
             ModSlots slot = GetModSlots(examinedItem);

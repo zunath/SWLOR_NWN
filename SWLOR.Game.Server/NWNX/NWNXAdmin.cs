@@ -1,18 +1,12 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.NWNX
 {
     public class NWNXAdmin : NWNXBase, INWNXAdmin
     {
-        public NWNXAdmin(INWScript script) 
-            : base(script)
-        {
-        }
-
-
         /// <summary>
         /// Gets the current player password.
         /// </summary>

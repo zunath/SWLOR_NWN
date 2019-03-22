@@ -6,23 +6,23 @@ using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.Scrapper
 {
     public class OnDisturbed: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IItemService _item;
         private readonly INWNXObject _nwnxObject;
 
         public OnDisturbed(
-            INWScript script,
+            
             IItemService item,
             INWNXObject nwnxObject)
         {
-            _ = script;
+            
             _item = item;
             _nwnxObject = nwnxObject;
         }

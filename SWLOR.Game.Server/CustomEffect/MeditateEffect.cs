@@ -4,26 +4,26 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using System;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.CustomEffect
 {
     public class MeditateEffect : ICustomEffect
     {
-        private readonly INWScript _;
+        
         private readonly IAbilityService _ability;
         private readonly IPerkService _perk;
         private readonly ICustomEffectService _customEffect;
         private readonly IPlayerStatService _playerStat;
 
         public MeditateEffect(
-            INWScript script,
+            
             IAbilityService ability,
             IPerkService perk,
             ICustomEffectService customEffect,
             IPlayerStatService playerStat)
         {
-            _ = script;
+            
             _ability = ability;
             _perk = perk;
             _customEffect = customEffect;

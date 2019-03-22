@@ -9,12 +9,12 @@ namespace SWLOR.Game.Server.Event.Dialog
 {
     public class DialogEnd: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IDialogService _dialog;
 
-        public DialogEnd(INWScript script, IDialogService dialog)
+        public DialogEnd( IDialogService dialog)
         {
-            _ = script;
+            
             _dialog = dialog;
         }
 

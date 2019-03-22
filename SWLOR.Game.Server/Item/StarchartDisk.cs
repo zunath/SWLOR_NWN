@@ -7,20 +7,18 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Item
 {
     public class StarchartDisk: IActionItem
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
 
         public StarchartDisk(
-            IDataService data,
-            INWScript script)
+            IDataService data)
         {
-            _ = script;
             _data = data;
         }
 

@@ -5,21 +5,21 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
     public class BladePowerAttack : IPerk
     {
-        private readonly INWScript _;
+        
         private readonly INWNXCreature _nwnxCreature;
         private readonly IPerkService _perk;
 
-        public BladePowerAttack(INWScript script,
+        public BladePowerAttack(
             INWNXCreature nwnxCreature,
             IPerkService perk)
         {
-            _ = script;
+            
             _nwnxCreature = nwnxCreature;
             _perk = perk;
         }

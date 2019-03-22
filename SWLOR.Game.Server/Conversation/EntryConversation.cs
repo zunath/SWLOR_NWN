@@ -7,8 +7,8 @@ namespace SWLOR.Game.Server.Conversation
 {
     public class EntryConversation: ConversationBase
     {
-        public EntryConversation(INWScript script, IDialogService dialog) 
-            : base(script, dialog)
+        public EntryConversation( IDialogService dialog) 
+            : base(dialog)
         {
         }
 

@@ -1,18 +1,11 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.General
 {
     public class Dash: IPerk
     {
-        private readonly INWScript _;
-
-        public Dash(INWScript script)
-        {
-            _ = script;
-        }
-
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return true;

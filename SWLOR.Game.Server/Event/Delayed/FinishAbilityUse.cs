@@ -12,20 +12,20 @@ namespace SWLOR.Game.Server.Event.Delayed
     public class FinishAbilityUse : IRegisteredEvent
     {
         private readonly IDataService _data;
-        private readonly INWScript _;
+        
         private readonly IAbilityService _ability;
         private readonly IColorTokenService _color;
         private readonly ICustomEffectService _customEffect;
 
         public FinishAbilityUse(
             IDataService data,
-            INWScript script,
+            
             IAbilityService ability,
             IColorTokenService color,
             ICustomEffectService customEffect)
         {
             _data = data;
-            _ = script;
+            
             _ability = ability;
             _color = color;
             _customEffect = customEffect;

@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 using System.Globalization;
 
@@ -14,20 +14,20 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
 {
     public class OnDamaged: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
         private readonly IRandomService _random;
         private readonly IBaseService _base;
         private readonly IDurabilityService _durability;
 
         public OnDamaged(
-            INWScript script,
+            
             IDataService data,
             IRandomService random,
             IBaseService @base,
             IDurabilityService durability)
         {
-            _ = script;
+            
             _data = data;
             _random = random;
             _base = @base;

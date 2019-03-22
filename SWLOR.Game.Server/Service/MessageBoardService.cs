@@ -2,20 +2,20 @@
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
     public class MessageBoardService : IMessageBoardService
     {
-        private readonly INWScript _;
+        
         private readonly INWNXChat _nwnxChat;
 
         public MessageBoardService(
-            INWScript script,
+            
             INWNXChat nwnxChat)
         {
-            _ = script;
+            
             _nwnxChat = nwnxChat;
         }
 

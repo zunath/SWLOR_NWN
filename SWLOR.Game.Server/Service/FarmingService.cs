@@ -14,17 +14,17 @@ namespace SWLOR.Game.Server.Service
 {
     public class FarmingService: IFarmingService
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
         private readonly IRandomService _random;
         private readonly IColorTokenService _color;
 
-        public FarmingService(INWScript script, 
+        public FarmingService( 
             IDataService data,
             IRandomService random,
             IColorTokenService color)
         {
-            _ = script;
+            
             _data = data;
             _random = random;
             _color = color;
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Service
         {
             int plantID = examinedObject.GetLocalInt("PLANT_ID");
             if (plantID <= 0) return existingDescription;
-            if (examinedObject.ObjectType != NWScript.OBJECT_TYPE_ITEM) return existingDescription;
+            if (examinedObject.ObjectType != _.OBJECT_TYPE_ITEM) return existingDescription;
 
             Plant plant = _data.SingleOrDefault<Plant>(x => x.ID == plantID);
             if (plant == null) return existingDescription;
@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Service
                 NWArea area = (_.GetObjectByTag(growingPlant.LocationAreaTag));
                 Vector position = _.Vector((float)growingPlant.LocationX, (float)growingPlant.LocationY, (float)growingPlant.LocationZ);
                 Location location = _.Location(area.Object, position, (float)growingPlant.LocationOrientation);
-                NWPlaceable plantPlc = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, resref, location));
+                NWPlaceable plantPlc = (_.CreateObject(_.OBJECT_TYPE_PLACEABLE, resref, location));
                 plantPlc.SetLocalString("GROWING_PLANT_ID", growingPlant.ID.ToString());
 
                 if (growingPlant.RemainingTicks > 0)

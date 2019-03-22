@@ -6,7 +6,7 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.AI
 {
@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.AI
     /// </summary>
     public class StarshipBehaviour : BehaviourBase
     {
-        private readonly INWScript _;
+        
         protected readonly BehaviourTreeBuilder _builder;
         private readonly IEnmityService _enmity;
         private readonly IDialogService _dialog;
@@ -23,13 +23,13 @@ namespace SWLOR.Game.Server.AI
         private readonly ISpaceService _space;
 
         public StarshipBehaviour(BehaviourTreeBuilder builder,
-            INWScript script,
+            
             IEnmityService enmity,
             IDialogService dialog,
             INWNXObject nwnxObject,
             ISpaceService space)
         {
-            _ = script;
+            
             _builder = builder;
             _enmity = enmity;
             _dialog = dialog;

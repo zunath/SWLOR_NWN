@@ -6,16 +6,16 @@ namespace SWLOR.Game.Server.Event.Module
 {
     internal class OnModuleAcquireItem: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IKeyItemService _keyItem;
         private readonly IQuestService _quest;
 
         public OnModuleAcquireItem(
-            INWScript script, 
+             
             IKeyItemService keyItem,
             IQuestService quest)
         {
-            _ = script;
+            
             _keyItem = keyItem;
             _quest = quest;
         }

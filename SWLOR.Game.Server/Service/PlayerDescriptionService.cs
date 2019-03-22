@@ -8,12 +8,6 @@ namespace SWLOR.Game.Server.Service
 {
     public class PlayerDescriptionService: IPlayerDescriptionService
     {
-        private readonly INWScript _;
-
-        public PlayerDescriptionService(INWScript script)
-        {
-            _ = script;
-        }
 
         public void OnModuleChat()
         {
@@ -36,9 +30,9 @@ namespace SWLOR.Game.Server.Service
 
             string newDescription = player.GetLocalString("NEW_DESCRIPTION_TO_SET");
             _.SetDescription(player.Object, newDescription);
-            _.SetDescription(player.Object, newDescription, NWScript.FALSE);
+            _.SetDescription(player.Object, newDescription, _.FALSE);
 
-            _.FloatingTextStringOnCreature("New description set!", player.Object, NWScript.FALSE);
+            _.FloatingTextStringOnCreature("New description set!", player.Object, _.FALSE);
         }
     }
 }

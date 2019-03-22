@@ -10,13 +10,13 @@ namespace SWLOR.Game.Server.Service
 {
     public class EnmityService : IEnmityService
     {
-        private readonly INWScript _;
+        
         private readonly IPlayerStatService _playerStat;
 
-        public EnmityService(INWScript script,
+        public EnmityService(
             IPlayerStatService playerStat)
         {
-            _ = script;
+            
             _playerStat = playerStat;
         }
 

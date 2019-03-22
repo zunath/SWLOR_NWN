@@ -2,17 +2,12 @@
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.NWNX.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.NWNX
 {
     public class NWNXCreature : NWNXBase, INWNXCreature
     {
-        public NWNXCreature(INWScript script)
-            : base(script)
-        {
-        }
-
         private const string NWNX_Creature = "NWNX_Creature";
 
         /// <summary>

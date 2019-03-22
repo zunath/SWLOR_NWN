@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -23,11 +23,11 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IDataService _data;
 
         public QuestRewardSelection(
-            INWScript script, 
+             
             IDialogService dialog,
             IQuestService quest,
             IDataService data) 
-            : base(script, dialog)
+            : base(dialog)
         {
             _quest = quest;
             _data = data;

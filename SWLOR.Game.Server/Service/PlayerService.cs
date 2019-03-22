@@ -6,7 +6,7 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 using SWLOR.Game.Server.Data.Entity;
 
@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Service
 {
     public class PlayerService : IPlayerService
     {
-        private readonly INWScript _;
+        
         private readonly IColorTokenService _color;
         private readonly IDataService _data;
         private readonly IErrorService _error;
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Service
         private readonly ILanguageService _language;
 
         public PlayerService(
-            INWScript script,
+            
             IColorTokenService color,
             IDataService data, 
             IErrorService error,
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Service
             IPlayerStatService stat,
             ILanguageService language)
         {
-            _ = script;
+            
             _color = color;
             _data = data;
             _error = error;

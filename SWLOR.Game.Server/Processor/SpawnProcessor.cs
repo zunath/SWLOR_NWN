@@ -9,7 +9,7 @@ using SWLOR.Game.Server.Processor.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Processor
 {
@@ -18,18 +18,17 @@ namespace SWLOR.Game.Server.Processor
         private readonly IObjectProcessingService _processor;
         private readonly IDataService _data;
         private readonly ISpawnService _spawn;
-        private readonly INWScript _;
+        
 
         public SpawnProcessor(
             IObjectProcessingService processor,
             IDataService data,
-            ISpawnService spawn,
-            INWScript script)
+            ISpawnService spawn)
         {
             _processor = processor;
             _data = data;
             _spawn = spawn;
-            _ = script;
+            
         }
 
         public void Run(object[] args)

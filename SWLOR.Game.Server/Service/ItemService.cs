@@ -11,26 +11,26 @@ using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
     public class ItemService : IItemService
     {
-        private readonly INWScript _;
+        
         private readonly IBiowareXP2 _xp2;
         private readonly IColorTokenService _color;
         private readonly INWNXPlayer _nwnxPlayer;
         private readonly IDataService _data;
 
         public ItemService(
-            INWScript script,
+            
             IBiowareXP2 xp2,
             IColorTokenService color,
             INWNXPlayer nwnxPlayer,
             IDataService data)
         {
-            _ = script;
+            
             _xp2 = xp2;
             _color = color;
             _nwnxPlayer = nwnxPlayer;

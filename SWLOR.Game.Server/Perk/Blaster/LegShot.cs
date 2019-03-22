@@ -2,23 +2,23 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
     public class LegShot: IPerk
     {
-        private readonly INWScript _;
+        
         private readonly IPerkService _perk;
         private readonly IRandomService _random;
 
         public LegShot(
-            INWScript script,
+            
             IPerkService perk,
             IRandomService random)
         {
             _perk = perk;
-            _ = script;
+            
             _random = random;
         }
 

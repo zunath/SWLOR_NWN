@@ -11,12 +11,12 @@ namespace SWLOR.Game.Server.Service
 {
     public class AuthorizationService: IAuthorizationService
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
 
-        public AuthorizationService(INWScript script, IDataService data)
+        public AuthorizationService( IDataService data)
         {
-            _ = script;
+            
             _data = data;
         }
 

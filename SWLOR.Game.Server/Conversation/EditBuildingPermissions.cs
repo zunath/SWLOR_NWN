@@ -19,13 +19,13 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IBasePermissionService _perm;
 
         public EditBuildingPermissions(
-            INWScript script, 
+             
             IDialogService dialog,
             IBaseService @base,
             IColorTokenService color,
             IDataService data,
             IBasePermissionService perm) 
-            : base(script, dialog)
+            : base(dialog)
         {
             _base = @base;
             _color = color;

@@ -13,14 +13,14 @@ using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Perk;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
-using static NWN.NWScript;
+using static NWN._;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
 
 namespace SWLOR.Game.Server.Service
 {
     public class PerkService: IPerkService
     {
-        private readonly INWScript _;
+        
         private readonly IColorTokenService _color;
         private readonly IDataService _data;
         private readonly INWNXCreature _nwnxCreature;
@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Service
         private readonly INWNXPlayer _nwnxPlayer;
         private readonly IMessageHub _messageHub;
         
-        public PerkService(INWScript script,
+        public PerkService(
             IColorTokenService color,
             IDataService data,
             INWNXCreature nwnxCreature,
@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Service
             INWNXPlayer nwnxPlayer,
             IMessageHub messageHub)
         {
-            _ = script;
+            
             _color = color;
             _data = data;
             _nwnxCreature = nwnxCreature;

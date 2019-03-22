@@ -9,18 +9,18 @@ namespace SWLOR.Game.Server.Service
 {
     public class ComponentBonusService : IComponentBonusService
     {
-        private readonly INWScript _;
+        
         private readonly IItemService _item;
         private readonly IBiowareXP2 _biowareXP2;
         private readonly IDurabilityService _durability;
 
         public ComponentBonusService(
-            INWScript script,
+            
             IItemService item,
             IBiowareXP2 biowareXP2,
             IDurabilityService durability)
         {
-            _ = script;
+            
             _item = item;
             _biowareXP2 = biowareXP2;
             _durability = durability;

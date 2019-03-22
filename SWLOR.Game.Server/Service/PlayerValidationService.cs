@@ -7,22 +7,22 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
     public class PlayerValidationService : IPlayerValidationService
     {
-        private readonly INWScript _;
+        
         private readonly INWNXAdmin _nwnxAdmin;
         private readonly IDataService _data;
 
         public PlayerValidationService(
-            INWScript script,
+            
             INWNXAdmin nwnxAdmin,
             IDataService data)
         {
-            _ = script;
+            
             _nwnxAdmin = nwnxAdmin;
             _data = data;
         }

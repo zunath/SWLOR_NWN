@@ -4,22 +4,22 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
     public class PlayerMigrationService : IPlayerMigrationService
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
         private readonly INWNXCreature _nwnxCreature;
 
         public PlayerMigrationService(
-            INWScript script,
+            
             IDataService data,
             INWNXCreature nwnxCreature)
         {
-            _ = script;
+            
             _data = data;
             _nwnxCreature = nwnxCreature;
         }

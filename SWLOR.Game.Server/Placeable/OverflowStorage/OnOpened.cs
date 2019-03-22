@@ -12,15 +12,15 @@ namespace SWLOR.Game.Server.Placeable.OverflowStorage
 {
     public class OnOpened: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
         private readonly ISerializationService _serialization;
 
-        public OnOpened(INWScript script,
+        public OnOpened(
             IDataService data,
             ISerializationService serialization)
         {
-            _ = script;
+            
             _data = data;
             _serialization = serialization;
         }

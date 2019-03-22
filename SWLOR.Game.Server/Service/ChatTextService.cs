@@ -14,7 +14,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 using System.Text;
 using SWLOR.Game.Server.Data.Entity;
 
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Service
 
     public class ChatTextService : IChatTextService
     {
-        private readonly INWScript _;
+        
         private readonly IColorTokenService _color;
         private readonly INWNXChat _nwnxChat;
         private readonly IDataService _data;
@@ -40,14 +40,14 @@ namespace SWLOR.Game.Server.Service
         private readonly IEmoteStyleService _emoteStyle;
 
         public ChatTextService(
-            INWScript script,
+            
             IColorTokenService color,
             INWNXChat nwnxChat,
             IDataService data,
             ILanguageService language,
             IEmoteStyleService emoteStyle)
         {
-            _ = script;
+            
             _color = color;
             _nwnxChat = nwnxChat;
             _data = data;

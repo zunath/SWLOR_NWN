@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Service.Contracts;
 using System;
 using System.Linq;
 
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.AI.AIComponent
 {
@@ -19,17 +19,16 @@ namespace SWLOR.Game.Server.AI.AIComponent
         private readonly ICombatService _combat;
         private readonly ICustomEffectService _customEffect;
         private readonly IEnmityService _enmity;
-        private readonly INWScript _;
+        
 
         public ForceAttackHighestEnmity(ICombatService combat,
             ICustomEffectService customEffect,
-            IEnmityService enmity,
-            INWScript script)
+            IEnmityService enmity)
         {
             _combat = combat;
             _customEffect = customEffect;
             _enmity = enmity;
-            _ = script;
+            
         }
 
         private bool UseFeat(int featID, string featName, NWCreature caster, NWCreature target)

@@ -9,22 +9,22 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
     public class ObjectVisibilityService : IObjectVisibilityService
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
         private readonly INWNXVisibility _nwnxVisibility;
 
         public ObjectVisibilityService(
-            INWScript script,
+            
             IDataService data,
             INWNXVisibility nwnxVisibility)
         {
-            _ = script;
+            
             _data = data;
             _nwnxVisibility = nwnxVisibility;
         }

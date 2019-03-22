@@ -24,12 +24,12 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IPlayerStatService _playerStat;
 
         public DistributeSkillRanks(
-            INWScript script, 
+             
             IDialogService dialog,
             IDataService data,
             IColorTokenService color,
             IPlayerStatService playerStat) 
-            : base(script, dialog)
+            : base(dialog)
         {
             _data = data;
             _color = color;

@@ -7,27 +7,27 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
 {
     public class OnDisturbed : IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
         private readonly IQuestService _quest;
         private readonly IColorTokenService _color;
         private readonly IDialogService _dialog;
 
         public OnDisturbed(
-            INWScript script,
+            
             IDataService data,
             IQuestService quest,
             IColorTokenService color,
             IDialogService dialog)
         {
-            _ = script;
+            
             _data = data;
             _quest = quest;
             _color = color;

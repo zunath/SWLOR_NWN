@@ -3,21 +3,21 @@ using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.MarketTerminal
 {
     public class OnClosed: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IMarketService _market;
 
         public OnClosed(
-            INWScript script,
+            
             IMarketService market)
         {
-            _ = script;
+            
             _market = market;
         }
 

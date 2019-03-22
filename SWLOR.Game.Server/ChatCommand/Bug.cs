@@ -14,14 +14,14 @@ namespace SWLOR.Game.Server.ChatCommand
     [CommandDetails("Report a bug to the developers. Please include as much detail as possible.", CommandPermissionType.Player | CommandPermissionType.DM)]
     public class Bug : IChatCommand
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
 
         public Bug(
-            INWScript script,
+            
             IDataService data)
         {
-            _ = script;
+            
             _data = data;
         }
 

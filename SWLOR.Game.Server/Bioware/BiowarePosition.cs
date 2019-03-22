@@ -10,13 +10,6 @@ namespace SWLOR.Game.Server.Bioware
     /// </summary>
     public class BiowarePosition : IBiowarePosition
     {
-        private readonly INWScript _;
-
-        public BiowarePosition(INWScript script)
-        {
-            _ = script;
-        }
-
         /// <summary>
         /// Causes object to face another object.
         /// </summary>

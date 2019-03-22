@@ -3,20 +3,20 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Placeable
 {
     public class GenericConversation: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IDialogService _dialog;
 
         public GenericConversation(
-            INWScript script,
+            
             IDialogService dialog)
         {
-            _ = script;
+            
             _dialog = dialog;
         }
 

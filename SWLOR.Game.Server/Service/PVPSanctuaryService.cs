@@ -11,13 +11,13 @@ namespace SWLOR.Game.Server.Service
     public class PVPSanctuaryService: IPVPSanctuaryService
     {
         private readonly IDataService _data;
-        private readonly INWScript _;
+        
         private readonly IColorTokenService _color;
 
-        public PVPSanctuaryService(IDataService data, INWScript script, IColorTokenService color)
+        public PVPSanctuaryService(IDataService data,  IColorTokenService color)
         {
             _data = data;
-            _ = script;
+            
             _color = color;
         }
 

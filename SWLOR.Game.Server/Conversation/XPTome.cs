@@ -23,11 +23,11 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IDataService _data;
 
         public XPTome(
-            INWScript script, 
+             
             IDialogService dialog,
             ISkillService skill,
             IDataService data) 
-            : base(script, dialog)
+            : base(dialog)
         {
             _skill = skill;
             _data = data;

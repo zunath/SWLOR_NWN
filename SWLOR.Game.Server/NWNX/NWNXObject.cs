@@ -8,12 +8,6 @@ namespace SWLOR.Game.Server.NWNX
 {
     public class NWNXObject : NWNXBase, INWNXObject
     {
-        public NWNXObject(INWScript script)
-            : base(script)
-        {
-        }
-
-
         private const string NWNX_Object = "NWNX_Object";
 
         /// <summary>

@@ -13,7 +13,7 @@ using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Messaging.Contracts;
 using SWLOR.Game.Server.Messaging.Messages;
-using static NWN.NWScript;
+using static NWN._;
 using Quest = SWLOR.Game.Server.Data.Entity.Quest;
 using QuestType = SWLOR.Game.Server.Enumeration.QuestType;
 
@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Service
     {
         private const string TempStoragePlaceableTag = "QUEST_BARREL";
 
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
         private readonly IKeyItemService _keyItem;
         private readonly IMapPinService _mapPin;
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IObjectVisibilityService _ovs;
         private readonly IMessageHub _messageHub;
 
-        public QuestService(INWScript script,
+        public QuestService(
             IDataService data,
             IKeyItemService keyItem,
             IMapPinService mapPin,
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Service
             IObjectVisibilityService ovs,
             IMessageHub messageHub)
         {
-            _ = script;
+            
             _data = data;
             _keyItem = keyItem;
             _mapPin = mapPin;

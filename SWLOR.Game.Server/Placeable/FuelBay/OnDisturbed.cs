@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Service.Contracts;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 
@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
 {
     public class OnDisturbed : IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
         private readonly IItemService _item;
         private readonly ISpaceService _space;
@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
         private readonly IBaseService _base;
 
         public OnDisturbed(
-            INWScript script,
+            
             IDataService data,
             IItemService item,
             ISpaceService space,
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             IColorTokenService color,
             IBaseService @base)
         {
-            _ = script;
+            
             _data = data;
             _item = item;
             _space = space;

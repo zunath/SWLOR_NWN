@@ -13,12 +13,12 @@ namespace SWLOR.Game.Server.Placeable.MarketTerminal
 {
     public class OnUsed: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IDialogService _dialog;
 
-        public OnUsed(INWScript script, IDialogService dialog)
+        public OnUsed( IDialogService dialog)
         {
-            _ = script;
+            
             _dialog = dialog;
         }
 

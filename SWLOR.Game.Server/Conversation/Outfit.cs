@@ -9,7 +9,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Conversation
@@ -21,12 +21,12 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IDataService _data;
 
         public Outfit(
-            INWScript script, 
+             
             IDialogService dialog,
             IColorTokenService color,
             ISerializationService serialization,
             IDataService data) 
-            : base(script, dialog)
+            : base(dialog)
         {
             _color = color;
             _data = data;

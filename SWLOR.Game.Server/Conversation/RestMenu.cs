@@ -18,13 +18,13 @@ namespace SWLOR.Game.Server.Conversation
         private readonly ISkillService _skill;
         private readonly IMenuService _menu;
 
-        public RestMenu(INWScript script,
+        public RestMenu(
             IDialogService dialog,
             IColorTokenService color,
             IDataService data,
             ISkillService skill,
             IMenuService menu)
-            : base(script, dialog)
+            : base(dialog)
         {
             _color = color;
             _data = data;
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Conversation
                     {
                         // Open Overflow Inventory
                         case 1:
-                            NWObject storage = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "overflow_storage", player.Location));
+                            NWObject storage = (_.CreateObject(_.OBJECT_TYPE_PLACEABLE, "overflow_storage", player.Location));
                             player.AssignCommand(() => _.ActionInteractObject(storage.Object));
                             break;
                         // View Skills
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Conversation
                         // Open Trash Can (Destroy Items)
                         case 8:
                             EndConversation();
-                            NWPlaceable trashCan = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "reo_trash_can", player.Location));
+                            NWPlaceable trashCan = (_.CreateObject(_.OBJECT_TYPE_PLACEABLE, "reo_trash_can", player.Location));
 
                             player.AssignCommand(() => _.ActionInteractObject(trashCan.Object));
                             _.DelayCommand(0.2f, () => trashCan.IsUseable = false);

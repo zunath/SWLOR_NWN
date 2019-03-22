@@ -12,14 +12,8 @@ namespace SWLOR.Game.Server.Service
 {
     public class DialogService: IDialogService
     {
-        private readonly INWScript _;
         public const int NumberOfDialogs = 255;
         
-        public DialogService(INWScript script)
-        {
-            _ = script;
-        }
-
         private void StorePlayerDialog(Guid globalID, PlayerDialog dialog)
         {
             if (dialog.DialogNumber <= 0)
@@ -111,7 +105,7 @@ namespace SWLOR.Game.Server.Service
 
             // NPC conversations
             
-            if (_.GetObjectType(talkTo.Object) == NWScript.OBJECT_TYPE_CREATURE &&
+            if (_.GetObjectType(talkTo.Object) == _.OBJECT_TYPE_CREATURE &&
                 !talkTo.IsPlayer &&
                 !talkTo.IsDM)
             {
@@ -120,7 +114,7 @@ namespace SWLOR.Game.Server.Service
             // Everything else
             else
             {
-                player.AssignCommand(() => _.ActionStartConversation(talkTo.Object, "dialog" + dialog.DialogNumber, NWScript.TRUE, NWScript.FALSE));
+                player.AssignCommand(() => _.ActionStartConversation(talkTo.Object, "dialog" + dialog.DialogNumber, _.TRUE, _.FALSE));
             }
         }
 

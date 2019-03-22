@@ -1,19 +1,12 @@
 ﻿
 using NWN;
 using SWLOR.Game.Server.GameObject;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Event.Conversation
 {
     public class OpenStore : IRegisteredEvent
     {
-        private readonly INWScript _;
-
-        public OpenStore(INWScript script)
-        {
-            _ = script;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlayer player = _.GetPCSpeaker();

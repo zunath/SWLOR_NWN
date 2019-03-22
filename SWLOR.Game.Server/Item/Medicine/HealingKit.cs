@@ -6,26 +6,26 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Item.Medicine
 {
     public class HealingKit: IActionItem
     {
 
-        private readonly INWScript _;
+        
         private readonly ISkillService _skill;
         private readonly IRandomService _random;
         private readonly IPerkService _perk;
         private readonly IPlayerStatService _playerStat;
 
-        public HealingKit(INWScript script,
+        public HealingKit(
             ISkillService skill,
             IRandomService random,
             IPerkService perk,
             IPlayerStatService playerStat)
         {
-            _ = script;
+            
             _skill = skill;
             _random = random;
             _perk = perk;

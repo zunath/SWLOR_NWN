@@ -9,15 +9,15 @@ namespace SWLOR.Game.Server.Perk.TwoHanded
 {
     public class Cleave : IPerk
     {
-        private readonly INWScript _;
+        
         private readonly INWNXCreature _nwnxCreature;
         private readonly IPerkService _perk;
 
-        public Cleave(INWScript script,
+        public Cleave(
             INWNXCreature nwnxCreature,
             IPerkService perk)
         {
-            _ = script;
+            
             _nwnxCreature = nwnxCreature;
             _perk = perk;
         }
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Perk.TwoHanded
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_CLEAVE);
+            _nwnxCreature.RemoveFeat(oPC, _.FEAT_CLEAVE);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
@@ -90,11 +90,11 @@ namespace SWLOR.Game.Server.Perk.TwoHanded
 
             if (Equals(equipped, oItem) || equipped.CustomItemType != CustomItemType.HeavyVibroblade)
             {
-                _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_CLEAVE);
+                _nwnxCreature.RemoveFeat(oPC, _.FEAT_CLEAVE);
                 return;
             }
 
-            _nwnxCreature.AddFeat(oPC, NWScript.FEAT_CLEAVE);
+            _nwnxCreature.AddFeat(oPC, _.FEAT_CLEAVE);
         }
 
         public bool IsHostile()

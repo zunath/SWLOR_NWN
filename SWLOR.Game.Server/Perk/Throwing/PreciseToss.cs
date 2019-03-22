@@ -3,25 +3,25 @@ using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Throwing
 {
     public class PreciseToss: IPerk
     {
-        private readonly INWScript _;
+        
         private readonly IPerkService _perk;
         private readonly IRandomService _random;
         private readonly ICustomEffectService _customEffect;
 
         public PreciseToss(
-            INWScript script,
+            
             IPerkService perk,
             IRandomService random,
             ICustomEffectService customEffect)
         {
             _perk = perk;
-            _ = script;
+            
             _random = random;
             _customEffect = customEffect;
         }

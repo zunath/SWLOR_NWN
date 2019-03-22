@@ -16,15 +16,13 @@ namespace SWLOR.Game.Server.Service
     {
         private readonly IDataService _data;
         private readonly IRandomService _random;
-        private readonly INWScript _;
+        
 
         public LootService(IDataService data,
-            IRandomService random,
-            INWScript script)
+            IRandomService random)
         {
             _data = data;
             _random = random;
-            _ = script;
         }
 
         public ItemVO PickRandomItemFromLootTable(int lootTableID)

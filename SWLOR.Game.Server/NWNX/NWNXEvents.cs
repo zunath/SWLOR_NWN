@@ -9,8 +9,7 @@ namespace SWLOR.Game.Server.NWNX
     {
         private readonly INWNXObject _nwnxObject;
 
-        public NWNXEvents(INWScript script, INWNXObject nwnxObject)
-            : base(script)
+        public NWNXEvents(INWNXObject nwnxObject)
         {
             _nwnxObject = nwnxObject;
         }
@@ -314,12 +313,12 @@ namespace SWLOR.Game.Server.NWNX
 
             switch (nwnxObjectTypeID)
             {
-                case 5: return NWScript.OBJECT_TYPE_CREATURE;
-                case 6: return NWScript.OBJECT_TYPE_ITEM;
-                case 7: return NWScript.OBJECT_TYPE_TRIGGER;
-                case 9: return NWScript.OBJECT_TYPE_PLACEABLE;
-                case 12: return NWScript.OBJECT_TYPE_WAYPOINT;
-                case 13: return NWScript.OBJECT_TYPE_ENCOUNTER;
+                case 5: return _.OBJECT_TYPE_CREATURE;
+                case 6: return _.OBJECT_TYPE_ITEM;
+                case 7: return _.OBJECT_TYPE_TRIGGER;
+                case 9: return _.OBJECT_TYPE_PLACEABLE;
+                case 12: return _.OBJECT_TYPE_WAYPOINT;
+                case 13: return _.OBJECT_TYPE_ENCOUNTER;
                 case 15: return 15; // Only exception are portals, whatever those are!
             }
 

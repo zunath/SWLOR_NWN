@@ -8,8 +8,8 @@ namespace SWLOR.Game.Server.Conversation
 {
     internal class DestroySurvivalKnife: ConversationBase
     {
-        public DestroySurvivalKnife(INWScript script, IDialogService dialog) 
-            : base(script, dialog)
+        public DestroySurvivalKnife( IDialogService dialog) 
+            : base(dialog)
         {
         }
 

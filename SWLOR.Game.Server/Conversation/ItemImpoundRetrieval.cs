@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -17,11 +17,11 @@ namespace SWLOR.Game.Server.Conversation
         private readonly ISerializationService _serialization;
 
         public ItemImpoundRetrieval(
-            INWScript script, 
+             
             IDialogService dialog,
             IDataService data,
             ISerializationService serialization) 
-            : base(script, dialog)
+            : base(dialog)
         {
             _data = data;
             _serialization = serialization;

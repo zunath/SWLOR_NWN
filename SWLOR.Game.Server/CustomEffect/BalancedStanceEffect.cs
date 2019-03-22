@@ -2,19 +2,12 @@
 using NWN;
 using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.GameObject;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.CustomEffect
 {
     public class BalancedStanceEffect: ICustomEffect
     {
-        private readonly INWScript _;
-
-        public BalancedStanceEffect(INWScript script)
-        {
-            _ = script;
-        }
-
         public string Apply(NWCreature oCaster, NWObject target, int effectiveLevel)
         {
             if (target.Effects.Any(x => _.GetEffectTag(x) == "BALANCED_STANCE"))

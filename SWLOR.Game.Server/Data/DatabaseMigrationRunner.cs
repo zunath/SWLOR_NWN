@@ -234,7 +234,7 @@ namespace SWLOR.Game.Server.Data
         /// <summary>
         /// Applies an individual migration script to the database.
         /// </summary>
-        /// <param name="resource">The full resource path of the script, including namespace.</param>
+        /// <param name="resource">The full resource path of the including namespace.</param>
         private void ApplyMigrationScript(string resource)
         {
             string fileName = GetFileNameFromScriptResourceName(resource);
@@ -265,7 +265,7 @@ namespace SWLOR.Game.Server.Data
         /// <summary>
         /// Retrieves an embedded resource, reads the file, and returns the SQL.
         /// </summary>
-        /// <param name="resource">The fulle resource path of the script, including namespace.</param>
+        /// <param name="resource">The fulle resource path of the including namespace.</param>
         /// <returns>The SQL commands</returns>
         private string ReadResourceFile(string resource)
         {

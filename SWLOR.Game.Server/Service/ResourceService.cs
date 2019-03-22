@@ -8,20 +8,20 @@ namespace SWLOR.Game.Server.Service
 {
     public class ResourceService : IResourceService
     {
-        private readonly INWScript _;
+        
         private readonly IItemService _item;
         private readonly IRandomService _random;
         private readonly ISkillService _skill;
         private readonly IPlayerStatService _playerStat;
 
         public ResourceService(
-            INWScript script,
+            
             IItemService item,
             IRandomService random,
             ISkillService skill,
             IPlayerStatService playerStat)
         {
-            _ = script;
+            
             _item = item;
             _random = random;
             _skill = skill;

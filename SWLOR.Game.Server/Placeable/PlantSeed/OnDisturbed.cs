@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
 {
     public class OnDisturbed: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IItemService _item;
         private readonly IDataService _data;
         private readonly IRandomService _random;
@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
         private readonly IFarmingService _farming;
         private readonly IPlayerStatService _playerStat;
 
-        public OnDisturbed(INWScript script,
+        public OnDisturbed(
             IItemService item,
             IDataService data,
             IRandomService random,
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
             IFarmingService farming,
             IPlayerStatService playerStat)
         {
-            _ = script;
+            
             _item = item;
             _data = data;
             _random = random;
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
             NWItem item = (_.GetInventoryDisturbItem());
             var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(oPC);
 
-            if (type != NWScript.INVENTORY_DISTURB_TYPE_ADDED) return false;
+            if (type != _.INVENTORY_DISTURB_TYPE_ADDED) return false;
 
             int plantID = item.GetLocalInt("PLANT_ID");
 
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
             _data.SubmitDataChange(growingPlant, DatabaseActionType.Insert);
             
             NWPlaceable hole = (container.GetLocalObject("FARM_SMALL_HOLE"));
-            NWPlaceable plantPlc = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "growing_plant", hole.Location));
+            NWPlaceable plantPlc = (_.CreateObject(_.OBJECT_TYPE_PLACEABLE, "growing_plant", hole.Location));
             plantPlc.SetLocalString("GROWING_PLANT_ID", growingPlant.ID.ToString());
             plantPlc.Name = "Growing Plant (" + plant.Name + ")";
 

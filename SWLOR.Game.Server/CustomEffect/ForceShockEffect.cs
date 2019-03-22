@@ -3,19 +3,12 @@ using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 using System;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.CustomEffect
 {
     public class ForceShockEffect: ICustomEffect
     {
-        private readonly INWScript _;
-
-        public ForceShockEffect(INWScript script)
-        {
-            _ = script;
-        }
-
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
             return null;

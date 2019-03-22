@@ -9,12 +9,11 @@ namespace SWLOR.Game.Server.Event.Dialog
 {
     public class AppearsWhen: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IDialogService _dialog;
 
-        public AppearsWhen(INWScript nw, IDialogService dialogService)
+        public AppearsWhen(IDialogService dialogService)
         {
-            _ = nw;
             _dialog = dialogService;
         }
 

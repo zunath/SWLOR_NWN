@@ -8,12 +8,12 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
 {
     public class OnClosed: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IItemService _item;
 
-        public OnClosed(INWScript script, IItemService item)
+        public OnClosed( IItemService item)
         {
-            _ = script;
+            
             _item = item;
         }
 

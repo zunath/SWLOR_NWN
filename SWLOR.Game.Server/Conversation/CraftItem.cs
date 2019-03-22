@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -19,13 +19,13 @@ namespace SWLOR.Game.Server.Conversation
         private readonly ISkillService _skill;
 
         public CraftItem(
-            INWScript script,
+            
             IDialogService dialog,
             ICraftService craft,
             IColorTokenService color,
             IPerkService perk,
             ISkillService skill)
-            : base(script, dialog)
+            : base(dialog)
         {
             _craft = craft;
             _color = color;

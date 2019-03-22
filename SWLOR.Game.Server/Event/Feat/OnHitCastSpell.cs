@@ -9,20 +9,20 @@ namespace SWLOR.Game.Server.Event.Feat
 {
     public class OnHitCastSpell: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IDurabilityService _durability;
         private readonly IAbilityService _ability;
         private readonly ISkillService _skill;
         private readonly IPerkService _perk;
 
         public OnHitCastSpell(
-            INWScript script,
+            
             IDurabilityService durability,
             IAbilityService ability,
             ISkillService skill,
             IPerkService perk)
         {
-            _ = script;
+            
             _durability = durability;
             _ability = ability;
             _skill = skill;

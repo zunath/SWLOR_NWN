@@ -12,13 +12,13 @@ namespace SWLOR.Game.Server.Placeable.GrowingPlant
 {
     public class OnHeartbeat: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
 
-        public OnHeartbeat(INWScript script,
+        public OnHeartbeat(
             IDataService data)
         {
-            _ = script;
+            
             _data = data;
         }
 
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Placeable.GrowingPlant
             if (growingPlant.RemainingTicks <= 0)
             {
                 plc.Destroy();
-                plc = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, plant.Resref, plc.Location));
+                plc = (_.CreateObject(_.OBJECT_TYPE_PLACEABLE, plant.Resref, plc.Location));
                 plc.SetLocalInt("GROWING_PLANT_ID", growingPlantID);
             }
             

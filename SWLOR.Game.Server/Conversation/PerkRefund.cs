@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IMessageHub _messageHub;
 
         public PerkRefund(
-            INWScript script, 
+             
             IDialogService dialog,
             IDataService data,
             IColorTokenService color,
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Conversation
             ITimeService time, 
             IBackgroundService background,
             IMessageHub messageHub)
-            : base(script, dialog)
+            : base(dialog)
         {
             _data = data;
             _color = color;

@@ -4,18 +4,12 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX.Contracts;
 using System;
 using System.Reflection;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.NWNX
 {
     public class NWNXPlayer : NWNXBase, INWNXPlayer
     {
-        public NWNXPlayer(INWScript script)
-            : base(script)
-        {
-        }
-
-
         private const string NWNX_Player = "NWNX_Player";
 
         /// <summary>

@@ -27,13 +27,13 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IDataService _data;
 
         public ViewSkills(
-            INWScript script, 
+             
             IDialogService dialog,
             ISkillService skill,
             IColorTokenService color,
             IMenuService menu,
             IDataService data) 
-            : base(script, dialog)
+            : base(dialog)
         {
             _skill = skill;
             _color = color;

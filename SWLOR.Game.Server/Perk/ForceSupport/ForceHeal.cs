@@ -5,7 +5,7 @@ using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceSupport
 {
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
             }
         }
 
-        private readonly INWScript _;
+        
         private readonly IPerkService _perk;
         private readonly IRandomService _random;
         private readonly ISkillService _skill;
@@ -60,14 +60,14 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
 
         };
 
-        public ForceHeal(INWScript script,
+        public ForceHeal(
             IPerkService perk,
             IRandomService random,
             ISkillService skill,
             ICustomEffectService customEffect,
             IPlayerStatService playerStat)
         {
-            _ = script;
+            
             _perk = perk;
             _random = random;
             _skill = skill;

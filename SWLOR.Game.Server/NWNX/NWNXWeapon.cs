@@ -15,14 +15,7 @@ namespace SWLOR.Game.Server.NWNX
 
         // Set Event Data Constants
         const int NWNX_WEAPON_SETDATA_DC_BYPASS = 0; // Set Devastating Critical Bypass
-
-
-        public NWNXWeapon(
-            INWScript script) 
-            : base(script)
-        {
-        }
-
+        
         public void SetWeaponFocusFeat(int nBaseItem, int nFeat)
         {
             string sFunc = "SetWeaponFocusFeat";

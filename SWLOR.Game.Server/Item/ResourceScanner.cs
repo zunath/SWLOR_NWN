@@ -6,13 +6,13 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Item
 {
     public class ResourceScanner: IActionItem
     {
-        private readonly INWScript _;
+        
         private readonly ISpawnService _spawn;
         private readonly IRandomService _random;
         private readonly IPerkService _perk;
@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Item
         private readonly IBiowarePosition _biowarePosition;
 
         public ResourceScanner(
-            INWScript script,
+            
             ISpawnService spawn,
             IRandomService random,
             IPerkService perk,
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Item
             IDurabilityService durability,
             IBiowarePosition biowarePosition)
         {
-            _ = script;
+            
             _spawn = spawn;
             _random = random;
             _perk = perk;

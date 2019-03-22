@@ -9,13 +9,13 @@ namespace SWLOR.Game.Server.Item
 {
     public class XPTome: IActionItem
     {
-        private readonly INWScript _;
+        
         private readonly IDialogService _dialog;
 
-        public XPTome(INWScript script,
+        public XPTome(
             IDialogService dialog)
         {
-            _ = script;
+            
             _dialog = dialog;
         }
 

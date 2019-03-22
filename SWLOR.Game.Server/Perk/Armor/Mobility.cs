@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Perk.Armor
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_MOBILITY);
+            _nwnxCreature.RemoveFeat(oPC, _.FEAT_MOBILITY);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
@@ -81,11 +81,11 @@ namespace SWLOR.Game.Server.Perk.Armor
 
             if (equipped.Equals(oItem) || equipped.CustomItemType != CustomItemType.LightArmor)
             {
-                _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_MOBILITY);
+                _nwnxCreature.RemoveFeat(oPC, _.FEAT_MOBILITY);
                 return;
             }
 
-            _nwnxCreature.AddFeat(oPC, NWScript.FEAT_MOBILITY);
+            _nwnxCreature.AddFeat(oPC, _.FEAT_MOBILITY);
         }
 
         public bool IsHostile()

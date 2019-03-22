@@ -6,11 +6,6 @@ namespace SWLOR.Game.Server.NWNX
 {
     public class NWNXItemProperty : NWNXBase, INWNXItemProperty
     {
-        public NWNXItemProperty(INWScript script)
-            : base(script)
-        {
-        }
-
         private const string NWNX_ItemProperty = "NWNX_ItemProperty";
 
         public ItemPropertyUnpacked UnpackIP(ItemProperty ip)

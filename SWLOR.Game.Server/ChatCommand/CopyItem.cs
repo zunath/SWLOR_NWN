@@ -3,19 +3,13 @@ using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
     [CommandDetails("Copies the targeted item.", CommandPermissionType.DM)]
     public class CopyItem : IChatCommand
     {
-        private readonly INWScript _;
-        public CopyItem(INWScript script)
-        {
-            _ = script;
-        }
-
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             if (target.ObjectType != OBJECT_TYPE_ITEM)

@@ -14,16 +14,15 @@ namespace SWLOR.Game.Server.Event.Module
     {
         private readonly IDataService _data;
         private readonly INWNXEvents _nwnxEvents;
-        private readonly INWScript _;
+        
 
         public OnDMAction(
             IDataService data,
-            INWNXEvents nwnxEvents,
-            INWScript script)
+            INWNXEvents nwnxEvents)
         {
             _data = data;
             _nwnxEvents = nwnxEvents;
-            _ = script;
+            
         }
 
         public bool Run(params object[] args)
@@ -62,7 +61,7 @@ namespace SWLOR.Game.Server.Event.Module
                     float x = _nwnxEvents.OnDMSpawnObject_GetPositionX();
                     float y = _nwnxEvents.OnDMSpawnObject_GetPositionY();
                     float z = _nwnxEvents.OnDMSpawnObject_GetPositionZ();
-                    creature.SetLocalInt("DM_SPAWNED", NWScript.TRUE);
+                    creature.SetLocalInt("DM_SPAWNED", _.TRUE);
                     details = areaName + "," + creature.Name + "," + objectTypeID + "," + x + "," + y + "," + z;
                     break;
                 case 22: // Give XP

@@ -9,16 +9,16 @@ namespace SWLOR.Game.Server.Event.Conversation
 {
     public class QuestCollectItem : IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IQuestService _quest;
         private readonly IDataService _data;
 
         public QuestCollectItem(
-            INWScript script,
+            
             IQuestService quest,
             IDataService data)
         {
-            _ = script;
+            
             _quest = quest;
             _data = data;
         }

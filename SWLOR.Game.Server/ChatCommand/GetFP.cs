@@ -13,15 +13,15 @@ namespace SWLOR.Game.Server.ChatCommand
     [CommandDetails("Gets the current FP of player.", CommandPermissionType.Player)]
     public class FP : IChatCommand
     {
-        private readonly INWScript _;
+        
         private readonly IColorTokenService _color;
         private readonly IDataService _data;
         public FP(
-            INWScript script,
+            
             IColorTokenService color,
             IDataService data)
         {
-            _ = script;
+            
             _color = color;
             _data = data;
         }

@@ -8,26 +8,26 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.StructureStorage
 {
     public class OnDisturbed : IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
         private readonly IColorTokenService _color;
         private readonly ISerializationService _serialization;
         private readonly IItemService _item;
 
-        public OnDisturbed(INWScript script,
+        public OnDisturbed(
             IDataService data,
             IColorTokenService color,
             ISerializationService serialization,
             IItemService item)
         {
-            _ = script;
+            
             _data = data;
             _color = color;
             _serialization = serialization;

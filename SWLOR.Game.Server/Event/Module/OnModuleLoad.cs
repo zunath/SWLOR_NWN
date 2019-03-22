@@ -8,14 +8,14 @@ using SWLOR.Game.Server.NWNX.Contracts;
 using SWLOR.Game.Server.Processor;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.Threading.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Event.Module
 {
     internal class OnModuleLoad: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly INWNXChat _nwnxChat;
         private readonly INWNXEvents _nwnxEvents;
         private readonly IObjectProcessingService _objectProcessing;
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly INWNXWeapon _nwnxWeapon;
 
         public OnModuleLoad(
-            INWScript script,
+            
             INWNXChat nwnxChat,
             INWNXEvents nwnxEvents,
             IObjectProcessingService objectProcessing,
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Event.Module
             IDataPackageService dataPackage,
             INWNXWeapon nwnxWeapon)
         {
-            _ = script;
+            
             _nwnxChat = nwnxChat;
             _nwnxEvents = nwnxEvents;
             _objectProcessing = objectProcessing;

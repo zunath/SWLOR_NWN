@@ -12,11 +12,11 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IPlayerDescriptionService _playerDescription;
 
         public ChangeDescription(
-            INWScript script, 
+             
             IDialogService dialog,
             IColorTokenService color,
             IPlayerDescriptionService playerDescription) 
-            : base(script, dialog)
+            : base(dialog)
         {
             _color = color;
             _playerDescription = playerDescription;
@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Conversation
 
                     if (string.IsNullOrWhiteSpace(newDescription))
                     {
-                        _.FloatingTextStringOnCreature("Type in a new description to the chat bar and then press 'Next'.", GetPC().Object, NWScript.FALSE);
+                        _.FloatingTextStringOnCreature("Type in a new description to the chat bar and then press 'Next'.", GetPC().Object, _.FALSE);
                         return;
                     }
 

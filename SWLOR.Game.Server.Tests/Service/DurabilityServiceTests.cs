@@ -15,11 +15,11 @@ namespace SWLOR.Game.Server.Tests.Service
         [Test]
         public void DurabilityService_GetMaxDurability_InvalidArguments_ShouldThrowException()
         {
-            INWScript script = Substitute.For<INWScript>();
+            
             IColorTokenService color = Substitute.For<IColorTokenService>();
             INWNXProfiler nwnxProfiler = Substitute.For<INWNXProfiler>();
             INWNXCreature creature = Substitute.For<INWNXCreature>();
-            DurabilityService service = new DurabilityService(script, color, nwnxProfiler,creature);
+            DurabilityService service = new DurabilityService(color, nwnxProfiler,creature);
 
             Assert.Throws(typeof(ArgumentNullException), () =>
             {
@@ -30,11 +30,11 @@ namespace SWLOR.Game.Server.Tests.Service
         [Test]
         public void DurabilityService_SetMaxDurability_InvalidArguments_ShouldThrowException()
         {
-            INWScript script = Substitute.For<INWScript>();
+            
             IColorTokenService color = Substitute.For<IColorTokenService>();
             INWNXProfiler nwnxProfiler = Substitute.For<INWNXProfiler>();
             INWNXCreature creature = Substitute.For<INWNXCreature>();
-            DurabilityService service = new DurabilityService(script, color, nwnxProfiler, creature);
+            DurabilityService service = new DurabilityService(color, nwnxProfiler, creature);
 
             Assert.Throws(typeof(ArgumentNullException), () =>
             {
@@ -45,11 +45,11 @@ namespace SWLOR.Game.Server.Tests.Service
         [Test]
         public void DurabilityService_GetDurability_InvalidArguments_ShouldThrowException()
         {
-            INWScript script = Substitute.For<INWScript>();
+            
             IColorTokenService color = Substitute.For<IColorTokenService>();
             INWNXProfiler nwnxProfiler = Substitute.For<INWNXProfiler>();
             INWNXCreature creature = Substitute.For<INWNXCreature>();
-            DurabilityService service = new DurabilityService(script, color, nwnxProfiler, creature);
+            DurabilityService service = new DurabilityService(color, nwnxProfiler, creature);
 
             Assert.Throws(typeof(ArgumentNullException), () =>
             {
@@ -60,11 +60,11 @@ namespace SWLOR.Game.Server.Tests.Service
         [Test]
         public void DurabilityService_SetDurability_InvalidArguments_ShouldThrowException()
         {
-            INWScript script = Substitute.For<INWScript>();
+            
             IColorTokenService color = Substitute.For<IColorTokenService>();
             INWNXProfiler nwnxProfiler = Substitute.For<INWNXProfiler>();
             INWNXCreature creature = Substitute.For<INWNXCreature>();
-            DurabilityService service = new DurabilityService(script, color, nwnxProfiler, creature);
+            DurabilityService service = new DurabilityService(color, nwnxProfiler, creature);
 
             Assert.Throws(typeof(ArgumentNullException), () =>
             {
@@ -75,13 +75,13 @@ namespace SWLOR.Game.Server.Tests.Service
         [Test]
         public void DurabilityService_GetMaxDurability_InvalidType_ShouldReturnNegative1()
         {
-            INWScript script = Substitute.For<INWScript>();
+            
             IColorTokenService color = Substitute.For<IColorTokenService>();
             INWNXProfiler nwnxProfiler = Substitute.For<INWNXProfiler>();
             INWNXCreature creature = Substitute.For<INWNXCreature>();
-            DurabilityService service = new DurabilityService(script, color, nwnxProfiler, creature);
-            NWItem item = Substitute.For<NWItem>(script, service);
-            item.BaseItemType.Returns(x => NWScript.BASE_ITEM_BLANK_SCROLL);
+            DurabilityService service = new DurabilityService(color, nwnxProfiler, creature);
+            NWItem item = Substitute.For<NWItem>(service);
+            item.BaseItemType.Returns(x => _.BASE_ITEM_BLANK_SCROLL);
 
             float result = service.GetMaxDurability(item);
             Assert.AreEqual(-1.0f, result);
@@ -90,13 +90,13 @@ namespace SWLOR.Game.Server.Tests.Service
         [Test]
         public void DurabilityService_GetMaxDurability_ShouldReturnDefault()
         {
-            INWScript script = Substitute.For<INWScript>();
+            
             IColorTokenService color = Substitute.For<IColorTokenService>();
             INWNXProfiler nwnxProfiler = Substitute.For<INWNXProfiler>();
             INWNXCreature creature = Substitute.For<INWNXCreature>();
-            DurabilityService service = new DurabilityService(script, color, nwnxProfiler, creature);
-            NWItem item = Substitute.For<NWItem>(script, service);
-            item.BaseItemType.Returns(x => NWScript.BASE_ITEM_LONGSWORD);
+            DurabilityService service = new DurabilityService(color, nwnxProfiler, creature);
+            NWItem item = Substitute.For<NWItem>(service);
+            item.BaseItemType.Returns(x => _.BASE_ITEM_LONGSWORD);
 
             float result = service.GetMaxDurability(item);
             Assert.AreEqual(30.0f, result);
@@ -105,13 +105,13 @@ namespace SWLOR.Game.Server.Tests.Service
         [Test]
         public void DurabilityService_GetMaxDurability_ShouldReturn4()
         {
-            INWScript script = Substitute.For<INWScript>();
+            
             IColorTokenService color = Substitute.For<IColorTokenService>();
             INWNXProfiler nwnxProfiler = Substitute.For<INWNXProfiler>();
             INWNXCreature creature = Substitute.For<INWNXCreature>();
-            DurabilityService service = new DurabilityService(script, color, nwnxProfiler, creature);
-            NWItem item = Substitute.For<NWItem>(script, service);
-            item.BaseItemType.Returns(x => NWScript.BASE_ITEM_LONGSWORD);
+            DurabilityService service = new DurabilityService(color, nwnxProfiler, creature);
+            NWItem item = Substitute.For<NWItem>(service);
+            item.BaseItemType.Returns(x => _.BASE_ITEM_LONGSWORD);
             item.GetLocalInt(Arg.Any<string>()).Returns(4);
 
             float result = service.GetMaxDurability(item);
@@ -121,13 +121,12 @@ namespace SWLOR.Game.Server.Tests.Service
         [Test]
         public void DurabilityService_GetDurability_ShouldReturn6Point23()
         {
-            INWScript script = Substitute.For<INWScript>();
             IColorTokenService color = Substitute.For<IColorTokenService>();
             INWNXProfiler nwnxProfiler = Substitute.For<INWNXProfiler>();
             INWNXCreature creature = Substitute.For<INWNXCreature>();
-            DurabilityService service = new DurabilityService(script, color, nwnxProfiler, creature);
-            NWItem item = Substitute.For<NWItem>(script, service);
-            item.BaseItemType.Returns(x => NWScript.BASE_ITEM_LONGSWORD);
+            DurabilityService service = new DurabilityService(color, nwnxProfiler, creature);
+            NWItem item = Substitute.For<NWItem>(service);
+            item.BaseItemType.Returns(x => _.BASE_ITEM_LONGSWORD);
             item.GetLocalFloat(Arg.Any<string>()).Returns(6.23f);
 
             float result = service.GetDurability(item);
@@ -137,14 +136,13 @@ namespace SWLOR.Game.Server.Tests.Service
         [Test]
         public void DurabilityService_SetMaxDurability_InvalidType_ShouldNotRunOnce()
         {
-            INWScript script = Substitute.For<INWScript>();
             IColorTokenService color = Substitute.For<IColorTokenService>();
             INWNXProfiler nwnxProfiler = Substitute.For<INWNXProfiler>();
             INWNXCreature creature = Substitute.For<INWNXCreature>();
-            DurabilityService service = new DurabilityService(script, color, nwnxProfiler, creature);
+            DurabilityService service = new DurabilityService(color, nwnxProfiler, creature);
             bool ranOnce = false;
-            NWItem item = Substitute.For<NWItem>(script, service);
-            item.BaseItemType.Returns(x => NWScript.BASE_ITEM_BLANK_SCROLL);
+            NWItem item = Substitute.For<NWItem>(service);
+            item.BaseItemType.Returns(x => _.BASE_ITEM_BLANK_SCROLL);
             item.When(x => x.SetLocalFloat(Arg.Any<string>(), Arg.Any<float>()))
                 .Do(x => ranOnce = true);
 
@@ -155,14 +153,14 @@ namespace SWLOR.Game.Server.Tests.Service
         [Test]
         public void DurabilityService_SetMaxDurability_ShouldSetToDefaultValue()
         {
-            INWScript script = Substitute.For<INWScript>();
+            
             IColorTokenService color = Substitute.For<IColorTokenService>();
             INWNXProfiler nwnxProfiler = Substitute.For<INWNXProfiler>();
             INWNXCreature creature = Substitute.For<INWNXCreature>();
-            DurabilityService service = new DurabilityService(script, color, nwnxProfiler, creature);
+            DurabilityService service = new DurabilityService(color, nwnxProfiler, creature);
             float value = 0.0f;
-            NWItem item = Substitute.For<NWItem>(script, service);
-            item.BaseItemType.Returns(x => NWScript.BASE_ITEM_LONGSWORD);
+            NWItem item = Substitute.For<NWItem>(service);
+            item.BaseItemType.Returns(x => _.BASE_ITEM_LONGSWORD);
             item.When(x => x.SetLocalFloat(Arg.Any<string>(), Arg.Any<float>()))
                 .Do(x => value = x.ArgAt<float>(1));
 
@@ -173,14 +171,14 @@ namespace SWLOR.Game.Server.Tests.Service
         [Test]
         public void DurabilityService_SetMaxDurability_ShouldSetToSpecifiedValue()
         {
-            INWScript script = Substitute.For<INWScript>();
+            
             IColorTokenService color = Substitute.For<IColorTokenService>();
             INWNXProfiler nwnxProfiler = Substitute.For<INWNXProfiler>();
             INWNXCreature creature = Substitute.For<INWNXCreature>();
-            DurabilityService service = new DurabilityService(script, color, nwnxProfiler, creature);
+            DurabilityService service = new DurabilityService(color, nwnxProfiler, creature);
             float value = 0.0f;
-            NWItem item = Substitute.For<NWItem>(script, service);
-            item.BaseItemType.Returns(x => NWScript.BASE_ITEM_LONGSWORD);
+            NWItem item = Substitute.For<NWItem>(service);
+            item.BaseItemType.Returns(x => _.BASE_ITEM_LONGSWORD);
             item.When(x => x.SetLocalFloat("DURABILITY_MAX", Arg.Any<float>()))
                 .Do(x => value = x.ArgAt<float>(1));
 
@@ -192,14 +190,14 @@ namespace SWLOR.Game.Server.Tests.Service
         [Test]
         public void DurabilityService_SetDurability_InvalidType_ShouldNotRunOnce()
         {
-            INWScript script = Substitute.For<INWScript>();
+            
             IColorTokenService color = Substitute.For<IColorTokenService>();
             INWNXProfiler nwnxProfiler = Substitute.For<INWNXProfiler>();
             INWNXCreature creature = Substitute.For<INWNXCreature>();
-            DurabilityService service = new DurabilityService(script, color, nwnxProfiler, creature);
+            DurabilityService service = new DurabilityService(color, nwnxProfiler, creature);
             bool ranOnce = false;
-            NWItem item = Substitute.For<NWItem>(script, service);
-            item.BaseItemType.Returns(x => NWScript.BASE_ITEM_BLANK_SCROLL);
+            NWItem item = Substitute.For<NWItem>(service);
+            item.BaseItemType.Returns(x => _.BASE_ITEM_BLANK_SCROLL);
             item.When(x => x.SetLocalFloat(Arg.Any<string>(), Arg.Any<float>()))
                 .Do(x => ranOnce = true);
 
@@ -210,14 +208,14 @@ namespace SWLOR.Game.Server.Tests.Service
         [Test]
         public void DurabilityService_SetDurability_ShouldSetToDefaultValue()
         {
-            INWScript script = Substitute.For<INWScript>();
+            
             IColorTokenService color = Substitute.For<IColorTokenService>();
             INWNXProfiler nwnxProfiler = Substitute.For<INWNXProfiler>();
             INWNXCreature creature = Substitute.For<INWNXCreature>();
-            DurabilityService service = new DurabilityService(script, color, nwnxProfiler, creature);
+            DurabilityService service = new DurabilityService(color, nwnxProfiler, creature);
             float value = 0.0f;
-            NWItem item = Substitute.For<NWItem>(script, service);
-            item.BaseItemType.Returns(x => NWScript.BASE_ITEM_LONGSWORD);
+            NWItem item = Substitute.For<NWItem>(service);
+            item.BaseItemType.Returns(x => _.BASE_ITEM_LONGSWORD);
             item.When(x => x.SetLocalFloat(Arg.Any<string>(), Arg.Any<float>()))
                 .Do(x => value = x.ArgAt<float>(1));
 
@@ -228,14 +226,14 @@ namespace SWLOR.Game.Server.Tests.Service
         [Test]
         public void DurabilityService_SetDurability_ShouldSetToSpecifiedValue()
         {
-            INWScript script = Substitute.For<INWScript>();
+            
             IColorTokenService color = Substitute.For<IColorTokenService>();
             INWNXProfiler nwnxProfiler = Substitute.For<INWNXProfiler>();
             INWNXCreature creature = Substitute.For<INWNXCreature>();
-            DurabilityService service = new DurabilityService(script, color, nwnxProfiler, creature);
+            DurabilityService service = new DurabilityService(color, nwnxProfiler, creature);
             float value = 0.0f;
-            NWItem item = Substitute.For<NWItem>(script, service);
-            item.BaseItemType.Returns(x => NWScript.BASE_ITEM_LONGSWORD);
+            NWItem item = Substitute.For<NWItem>(service);
+            item.BaseItemType.Returns(x => _.BASE_ITEM_LONGSWORD);
             item.When(x => x.SetLocalFloat("DURABILITY_CURRENT", Arg.Any<float>()))
                 .Do(x => value = x.ArgAt<float>(1));
 

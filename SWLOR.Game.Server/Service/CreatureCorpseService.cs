@@ -1,19 +1,12 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
     public class CreatureCorpseService : ICreatureCorpseService
     {
-        private readonly INWScript _;
-
-        public CreatureCorpseService(INWScript script)
-        {
-            _ = script;
-        }
-
         public void OnCreatureDeath()
         {
             _.SetIsDestroyable(FALSE);

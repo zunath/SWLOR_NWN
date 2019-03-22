@@ -1,5 +1,5 @@
 ﻿using SWLOR.Game.Server.GameObject;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.NWNX.Contracts
 {

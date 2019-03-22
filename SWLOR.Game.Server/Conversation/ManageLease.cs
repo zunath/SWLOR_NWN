@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -21,14 +21,14 @@ namespace SWLOR.Game.Server.Conversation
         private readonly ISpaceService _space;
 
         public ManageLease(
-            INWScript script, 
+             
             IDialogService dialog,
             IBaseService @base,
             IColorTokenService color,
             IDataService data,
             IBasePermissionService perm,
             ISpaceService space) 
-            : base(script, dialog)
+            : base(dialog)
         {
             _base = @base;
             _color = color;

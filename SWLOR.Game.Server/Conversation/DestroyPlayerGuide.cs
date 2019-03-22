@@ -8,8 +8,8 @@ namespace SWLOR.Game.Server.Conversation
 {
     internal class DestroyPlayerGuide: ConversationBase
     {
-        public DestroyPlayerGuide(INWScript script, IDialogService dialog) 
-            : base(script, dialog)
+        public DestroyPlayerGuide( IDialogService dialog) 
+            : base(dialog)
         {
         }
 

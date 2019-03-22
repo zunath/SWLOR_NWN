@@ -8,13 +8,13 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Item
 {
     public class MineralScanner : IActionItem
     {
-        private readonly INWScript _;
+        
         private readonly IPerkService _perk;
         private readonly IDataService _data;
         private readonly IBaseService _base;
@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Item
         private readonly IDurabilityService _durability;
 
         public MineralScanner(
-            INWScript script,
+            
             IPerkService perk,
             IDataService data,
             IBaseService @base,
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Item
             IRandomService random,
             IDurabilityService durability)
         {
-            _ = script;
+            
             _perk = perk;
             _data = data;
             _base = @base;

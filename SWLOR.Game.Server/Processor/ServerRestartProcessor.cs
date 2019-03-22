@@ -16,18 +16,18 @@ namespace SWLOR.Game.Server.Processor
         public static bool IsDisabled { get; private set; }
         private const int DefaultRestartMinutes = 300; // 300 = 5 hours
         private const int NotificationIntervalMinutes = 60;
-        private readonly INWScript _;
+        
         private readonly INWNXAdmin _nwnxAdmin;
         private readonly ITimeService _time;
         private readonly IDataService _data;
 
         public ServerRestartProcessor(
-            INWScript script,
+            
             INWNXAdmin nwnxAdmin,
             ITimeService time,
             IDataService data)
         {
-            _ = script;
+            
             _nwnxAdmin = nwnxAdmin;
             _time = time;
             _data = data;

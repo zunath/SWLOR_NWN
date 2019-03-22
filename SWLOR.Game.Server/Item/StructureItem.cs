@@ -16,18 +16,18 @@ namespace SWLOR.Game.Server.Item
 {
     public class StructureItem : IActionItem
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
         private readonly IDialogService _dialog;
         private readonly IBaseService _base;
 
         public StructureItem(
-            INWScript script,
+            
             IDataService data,
             IDialogService dialog,
             IBaseService @base)
         {
-            _ = script;
+            
             _data = data;
             _dialog = dialog;
             _base = @base;

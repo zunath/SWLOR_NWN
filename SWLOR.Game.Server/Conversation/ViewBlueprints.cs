@@ -22,11 +22,11 @@ namespace SWLOR.Game.Server.Conversation
         private readonly ISkillService _skill;
 
         public ViewBlueprints(
-            INWScript script,
+            
             IDialogService dialog,
             ICraftService craft,
             ISkillService skill)
-            : base(script, dialog)
+            : base(dialog)
         {
             _craft = craft;
             _skill = skill;

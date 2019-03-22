@@ -15,13 +15,13 @@ namespace SWLOR.Game.Server.ChatCommand
     [CommandDetails("Toggles the Plasma Cell on and off.", CommandPermissionType.Player)]
     public class PlasmaCell : IChatCommand
     {
-        private readonly INWScript _;
+        
         private readonly IColorTokenService _color;
         public PlasmaCell(
-            INWScript script,
+            
             IColorTokenService color)
         {
-            _ = script;
+            
             _color = color;
         }
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
@@ -29,14 +29,14 @@ namespace SWLOR.Game.Server.ChatCommand
             if (!user.IsPlayer) return;
 
             //Checks if the player has Plasma Cell
-            if (_.GetHasFeat((int)CustomFeatType.PlasmaCell, user) == NWScript.FALSE)
+            if (_.GetHasFeat((int)CustomFeatType.PlasmaCell, user) == _.FALSE)
             {
                 user.SendMessage(_color.Red("You do not have the perk: Plasma Cell."));
                 return;
             }
 
             //Checks if the player has toggled plasma cell off
-            if (user.GetLocalInt("PLASMA_CELL_TOGGLE_OFF") == NWScript.FALSE)
+            if (user.GetLocalInt("PLASMA_CELL_TOGGLE_OFF") == _.FALSE)
             {
                 user.SetLocalInt("PLASMA_CELL_TOGGLE_OFF", 1);
                 user.SendMessage(_color.Red("Plasma Cell is now toggled off."));

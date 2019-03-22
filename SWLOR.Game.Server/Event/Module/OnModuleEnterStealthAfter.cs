@@ -5,20 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using NWN;
 using SWLOR.Game.Server.GameObject;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Event.Module
 {
     public class OnModuleEnterStealthAfter: IRegisteredEvent
     {
-        private readonly INWScript _;
-
-        public OnModuleEnterStealthAfter(INWScript script)
-        {
-            _ = script;
-        }
-
         public bool Run(params object[] args)
         {
             NWObject stealther = Object.OBJECT_SELF;

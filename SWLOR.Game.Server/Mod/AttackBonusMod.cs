@@ -13,16 +13,16 @@ namespace SWLOR.Game.Server.Mod
 {
     public class AttackBonusMod: IMod
     {
-        private readonly INWScript _;
+        
         private readonly IItemService _item;
         private readonly IBiowareXP2 _biowareXP2;
 
         public AttackBonusMod(
-            INWScript script,
+            
             IItemService item,
             IBiowareXP2 biowareXP2)
         {
-            _ = script;
+            
             _item = item;
             _biowareXP2 = biowareXP2;
         }
@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Mod
             foreach (var ip in item.ItemProperties)
             {
                 int type = _.GetItemPropertyType(ip);
-                if (type == NWScript.ITEM_PROPERTY_ATTACK_BONUS)
+                if (type == _.ITEM_PROPERTY_ATTACK_BONUS)
                 {
                     return _.GetItemPropertyCostTableValue(ip);
                 }

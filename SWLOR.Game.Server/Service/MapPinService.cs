@@ -14,14 +14,14 @@ namespace SWLOR.Game.Server.Service
 {
     public class MapPinService : IMapPinService
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
 
         public MapPinService(
-            INWScript script,
+            
             IDataService data)
         {
-            _ = script;
+            
             _data = data;
         }
 

@@ -16,13 +16,13 @@ namespace SWLOR.Game.Server.Service
     public class HelmetToggleService: IHelmetToggleService
     {
         private readonly IDataService _data;
-        private readonly INWScript _;
+        
         private readonly INWNXProfiler _nwnxProfiler;
 
-        public HelmetToggleService(IDataService data, INWScript script, INWNXProfiler nwnxProfiler)
+        public HelmetToggleService(IDataService data,  INWNXProfiler nwnxProfiler)
         {
             _data = data;
-            _ = script;
+            
             _nwnxProfiler = nwnxProfiler;
         }
 
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Service
                 if (!player.IsPlayer || !player.IsInitializedAsPlayer) return;
 
                 NWItem item = (_.GetPCItemLastEquipped());
-                if (item.BaseItemType != NWScript.BASE_ITEM_HELMET) return;
+                if (item.BaseItemType != _.BASE_ITEM_HELMET) return;
 
                 Player pc = _data.Single<Player>(x => x.ID == player.GlobalID);
                 _.SetHiddenWhenEquipped(item.Object, !pc.DisplayHelmet == false ? 0 : 1);
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Service
                 if (!player.IsPlayer) return;
 
                 NWItem item = (_.GetPCItemLastUnequipped());
-                if (item.BaseItemType != NWScript.BASE_ITEM_HELMET) return;
+                if (item.BaseItemType != _.BASE_ITEM_HELMET) return;
 
                 Player pc = _data.Single<Player>(x => x.ID == player.GlobalID);
                 _.SetHiddenWhenEquipped(item.Object, !pc.DisplayHelmet == false ? 0 : 1);
@@ -69,9 +69,9 @@ namespace SWLOR.Game.Server.Service
             _.FloatingTextStringOnCreature(
                 pc.DisplayHelmet ? "Now showing equipped helmet." : "Now hiding equipped helmet.", 
                 player.Object,
-                NWScript.FALSE);
+                _.FALSE);
 
-            NWItem helmet = (_.GetItemInSlot(NWScript.INVENTORY_SLOT_HEAD, player.Object));
+            NWItem helmet = (_.GetItemInSlot(_.INVENTORY_SLOT_HEAD, player.Object));
             if (helmet.IsValid)
             {
                 _.SetHiddenWhenEquipped(helmet.Object, !pc.DisplayHelmet == false ? 0 : 1);

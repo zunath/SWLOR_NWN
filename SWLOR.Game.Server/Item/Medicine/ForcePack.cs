@@ -8,14 +8,14 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Item.Medicine
 {
     public class ForcePack: IActionItem
     {
 
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
         private readonly ISkillService _skill;
         private readonly IRandomService _random;
@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Item.Medicine
         private readonly ICustomEffectService _customEffect;
 
         public ForcePack(
-            INWScript script,
+            
             IDataService data,
             ISkillService skill,
             IRandomService random,
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             IAbilityService ability,
             ICustomEffectService customEffect)
         {
-            _ = script;
+            
             _data = data;
             _skill = skill;
             _random = random;

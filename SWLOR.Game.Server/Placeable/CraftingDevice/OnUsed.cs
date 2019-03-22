@@ -11,16 +11,16 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
 {
     public class OnUsed: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IDialogService _dialog;
         private readonly IDataService _data;
 
         public OnUsed(
-            INWScript script,
+            
             IDialogService dialog,
             IDataService data)
         {
-            _ = script;
+            
             _dialog = dialog;
             _data = data;
         }

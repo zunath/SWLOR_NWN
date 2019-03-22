@@ -12,12 +12,11 @@ namespace SWLOR.Game.Server.Conversation
 {
     public abstract class ConversationBase: IConversation
     {
-        protected readonly INWScript _;
         private readonly IDialogService _dialog;
 
-        protected ConversationBase(INWScript script, IDialogService dialog)
+        protected ConversationBase( IDialogService dialog)
         {
-            _ = script;
+            
             _dialog = dialog;
         }
 

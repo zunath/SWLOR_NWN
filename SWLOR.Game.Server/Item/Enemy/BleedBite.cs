@@ -8,16 +8,16 @@ namespace SWLOR.Game.Server.Item.Enemy
 {
     public class BleedBite: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IRandomService _random;
         private readonly ICustomEffectService _customEffect;
 
         public BleedBite(
-            INWScript script,
+            
             IRandomService random,
             ICustomEffectService customEffect)
         {
-            _ = script;
+            
             _random = random;
             _customEffect = customEffect;
         }

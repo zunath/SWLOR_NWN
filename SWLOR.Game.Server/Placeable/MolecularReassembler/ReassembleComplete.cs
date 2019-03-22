@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
 {
     public class ReassembleComplete: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly ISerializationService _serialization;
         private readonly IDataService _data;
         private readonly INWNXItemProperty _nwnxItemProperty;
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
         private readonly ISkillService _skill;
 
         public ReassembleComplete(
-            INWScript script,
+            
             ISerializationService serialization,
             IDataService data, 
             INWNXItemProperty nwnxItemProperty,
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
             IPlayerStatService playerStat,
             ISkillService skill)
         {
-            _ = script;
+            
             _serialization = serialization;
             _data = data;
             _nwnxItemProperty = nwnxItemProperty;
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
             foreach (var prop in item.ItemProperties)
             {
                 int propTypeID = _.GetItemPropertyType(prop);
-                if (propTypeID == NWScript.ITEM_PROPERTY_ATTACK_BONUS)
+                if (propTypeID == _.ITEM_PROPERTY_ATTACK_BONUS)
                 {
                     // Get the amount of Attack Bonus
                     int amount = _.GetItemPropertyCostTableValue(prop);

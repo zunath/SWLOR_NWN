@@ -164,11 +164,6 @@ namespace SWLOR.Game.Server
             
             return result;
         }
-
-        public static INWScript GetNWScript()
-        {
-            return _container.Resolve<INWScript>();
-        }
         
         public static void Resolve<T>(AppResolveDelegate<T> action)
         {
@@ -326,7 +321,6 @@ namespace SWLOR.Game.Server
             builder.RegisterType<NWNXProfiler>().As<INWNXProfiler>().SingleInstance();
             builder.RegisterType<NWNXVisibility>().As<INWNXVisibility>().SingleInstance();
             builder.RegisterType<NWNXWeapon>().As<INWNXWeapon>().SingleInstance();
-            builder.RegisterType<NWScript>().As<INWScript>().SingleInstance();
             builder.RegisterType<BehaviourTreeBuilder>().SingleInstance();
             
             _container = builder.Build();

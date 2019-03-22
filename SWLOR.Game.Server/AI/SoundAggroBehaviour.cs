@@ -15,11 +15,11 @@ namespace SWLOR.Game.Server.AI
     {
         public SoundAggroBehaviour(
             BehaviourTreeBuilder builder,
-            INWScript script,
+            
             IEnmityService enmity,
             IDialogService dialog,
             INWNXObject nwnxObject)
-            : base(builder, script, enmity, dialog, nwnxObject)
+            : base(builder, enmity, dialog, nwnxObject)
         {
         }
 

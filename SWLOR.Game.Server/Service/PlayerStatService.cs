@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.NWNX.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service
@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Service
         public const float TertiaryIncrease = 0.05f;
         private const int MaxAttributeBonus = 70;
 
-        private readonly INWScript _;
+        
         private readonly ICustomEffectService _customEffect;
         private readonly IItemService _item;
         private readonly IDataService _data;
@@ -28,14 +28,14 @@ namespace SWLOR.Game.Server.Service
         private readonly INWNXCreature _nwnxCreature;
 
         public PlayerStatService(
-            INWScript script,
+            
             ICustomEffectService customEffect,
             INWNXCreature nwnxCreature,
             IItemService item,
             IDataService data,
             IPerkService perk)
         {
-            _ = script;
+            
             _customEffect = customEffect;
             _item = item;
             _data = data;

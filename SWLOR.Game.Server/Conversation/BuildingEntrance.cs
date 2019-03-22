@@ -21,14 +21,14 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IBasePermissionService _perm;
 
         public BuildingEntrance(
-            INWScript script,
+            
             IDialogService dialog,
             IBaseService @base,
             IPlayerService player,
             IDataService data,
             IAreaService area,
             IBasePermissionService perm)
-            : base(script, dialog)
+            : base(dialog)
         {
             _base = @base;
             _player = player;
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (string.IsNullOrWhiteSpace(pcBaseStructureID))
             {
-                _.FloatingTextStringOnCreature("ERROR: Door doesn't have a structure ID assigned. Notify an admin about this issue.", oPC.Object, NWScript.FALSE);
+                _.FloatingTextStringOnCreature("ERROR: Door doesn't have a structure ID assigned. Notify an admin about this issue.", oPC.Object, _.FALSE);
                 return;
             }
             var structureID = new Guid(pcBaseStructureID);
@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.Conversation
             Guid structureID = new Guid(door.GetLocalString("PC_BASE_STRUCTURE_ID"));
             NWArea instance = _base.GetAreaInstance(structureID, false);
 
-            _.FloatingTextStringOnCreature("You knock on the door.", GetPC().Object, NWScript.FALSE);
+            _.FloatingTextStringOnCreature("You knock on the door.", GetPC().Object, _.FALSE);
 
             if (instance != null)
             {
@@ -153,7 +153,7 @@ namespace SWLOR.Game.Server.Conversation
                 {
                     if (Equals(player.Area, instance))
                     {
-                        _.FloatingTextStringOnCreature("Someone is knocking on the front door.", player.Object, NWScript.FALSE);
+                        _.FloatingTextStringOnCreature("Someone is knocking on the front door.", player.Object, _.FALSE);
                     }
 
                     player = (_.GetNextPC());

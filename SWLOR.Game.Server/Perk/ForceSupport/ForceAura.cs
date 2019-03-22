@@ -3,24 +3,24 @@ using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceSupport
 {
     public class ForceAura: IPerk
     {
-        private readonly INWScript _;
+        
         private readonly ICustomEffectService _customEffect;
         private readonly ISkillService _skill;
         private readonly ICombatService _combat;
 
         public ForceAura(
-            INWScript script,
+            
             ICustomEffectService customEffect,
             ISkillService skill,
             ICombatService combat)
         {
-            _ = script;
+            
             _customEffect = customEffect;
             _skill = skill;
             _combat = combat;

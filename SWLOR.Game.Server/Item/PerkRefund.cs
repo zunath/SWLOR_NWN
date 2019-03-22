@@ -9,13 +9,13 @@ namespace SWLOR.Game.Server.Item
 {
     public class PerkRefund : IActionItem
     {
-        private readonly INWScript _;
+        
         private readonly IDialogService _dialog;
 
-        public PerkRefund(INWScript script,
+        public PerkRefund(
             IDialogService dialog)
         {
-            _ = script;
+            
             _dialog = dialog;
         }
 

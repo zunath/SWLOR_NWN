@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN.NWScript;
+using static NWN._;
 using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
 using Object = NWN.Object;
 
@@ -19,12 +19,12 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IBaseService _base;
 
         public ApartmentEntrance(
-            INWScript script,
+            
             IDialogService dialog,
             IDataService data,
             IAreaService area,
             IBaseService @base)
-            : base(script, dialog)
+            : base(dialog)
         {
             _data = data;
             _area = area;

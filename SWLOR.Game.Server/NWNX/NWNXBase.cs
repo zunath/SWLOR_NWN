@@ -7,14 +7,6 @@ namespace SWLOR.Game.Server.NWNX
 {
     public abstract class NWNXBase
     {
-        protected readonly INWScript _;
-
-        protected NWNXBase(INWScript script)
-        {
-            _ = script;
-        }
-
-
         private string NWNX_INTERNAL_BuildString(string pluginName, string functionName, string operation)
         {
             return "NWNXEE!ABIv2!" + pluginName + "!" + functionName + "!" + operation;

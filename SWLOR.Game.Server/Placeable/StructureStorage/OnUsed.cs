@@ -11,17 +11,17 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
 {
     public class OnUsed: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IBasePermissionService _perm;
         private readonly IDialogService _dialog;
         private readonly IDataService _data;
 
-        public OnUsed(INWScript script,
+        public OnUsed(
             IBasePermissionService perm,
             IDialogService dialog,
             IDataService data)
         {
-            _ = script;
+            
             _perm = perm;
             _dialog = dialog;
             _data = data;

@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
 {
     public class CompleteSmelt: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly ISkillService _skill;
         private readonly ICraftService _craft;
         private readonly IRandomService _random;
@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
         private readonly IPlayerStatService _playerStat;
 
         public CompleteSmelt(
-            INWScript script,
+            
             ISkillService skill,
             ICraftService craft,
             IRandomService random,
@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             IBiowareXP2 biowareXP2,
             IPlayerStatService playerStat)
         {
-            _ = script;
+            
             _skill = skill;
             _craft = craft;
             _random = random;

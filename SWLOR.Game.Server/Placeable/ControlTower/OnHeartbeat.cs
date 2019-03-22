@@ -8,23 +8,23 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.ControlTower
 {
     public class OnHeartbeat: IRegisteredEvent
     {
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
         private readonly IBaseService _base;
 
         public OnHeartbeat(
-            INWScript script,
+            
             IDataService data,
             IBaseService @base)
         {
-            _ = script;
+            
             _data = data;
             _base = @base;
         }

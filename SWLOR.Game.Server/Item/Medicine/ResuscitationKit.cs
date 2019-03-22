@@ -5,14 +5,14 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Item.Medicine
 {
     public class ResuscitationKit : IActionItem
     {
 
-        private readonly INWScript _;
+        
         private readonly IDataService _data;
         private readonly ISkillService _skill;
         private readonly IRandomService _random;
@@ -20,14 +20,14 @@ namespace SWLOR.Game.Server.Item.Medicine
         private readonly IPlayerStatService _playerStat;
 
         public ResuscitationKit(
-            INWScript script,
+            
             IDataService data,
             ISkillService skill,
             IRandomService random,
             IPerkService perk,
             IPlayerStatService playerStat)
         {
-            _ = script;
+            
             _data = data;
             _skill = skill;
             _random = random;

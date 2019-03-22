@@ -28,6 +28,7 @@ using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.Threading;
 using SWLOR.Game.Server.Threading.Contracts;
+using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server
 {
@@ -44,50 +45,57 @@ namespace SWLOR.Game.Server
         public static bool RunEvent<T>(params object[] args)
             where T: IRegisteredEvent
         {
-            try
+            string typeName = typeof(T).ToString();
+            using (new Profiler(typeName))
             {
-                bool success;
-                using (var scope = _container.BeginLifetimeScope())
+                try
                 {
-                    IRegisteredEvent @event = scope.ResolveKeyed<IRegisteredEvent>(typeof(T).ToString());
-                    success = @event.Run(args);
+                    bool success;
+                    using (var scope = _container.BeginLifetimeScope())
+                    {
+                        IRegisteredEvent @event = scope.ResolveKeyed<IRegisteredEvent>(typeName);
+                        success = @event.Run(args);
+                    }
+                    return success;
                 }
-                return success;
-            }
-            catch (Exception ex)
-            {
-                using (var scope = _container.BeginLifetimeScope())
+                catch (Exception ex)
                 {
-                    IErrorService errorService = scope.Resolve<IErrorService>();
-                    errorService.LogError(ex, typeof(T).ToString());
-                }
+                    using (var scope = _container.BeginLifetimeScope())
+                    {
+                        IErrorService errorService = scope.Resolve<IErrorService>();
+                        errorService.LogError(ex, typeName);
+                    }
 
-                throw;
+                    throw;
+                }
             }
         }
 
         public static bool RunEvent(Type type, params object[] args)
         {
-            try
+            using (new Profiler(type.ToString()))
             {
-                bool success;
-                using (var scope = _container.BeginLifetimeScope())
+                try
                 {
-                    IRegisteredEvent @event = scope.ResolveKeyed<IRegisteredEvent>(type.ToString());
-                    success = @event.Run(args);
-                }
+                    bool success;
+                    using (var scope = _container.BeginLifetimeScope())
+                    {
+                        IRegisteredEvent @event = scope.ResolveKeyed<IRegisteredEvent>(type.ToString());
+                        success = @event.Run(args);
+                    }
 
-                return success;
-            }
-            catch (Exception ex)
-            {
-                using (var scope = _container.BeginLifetimeScope())
+                    return success;
+                }
+                catch (Exception ex)
                 {
-                    IErrorService errorService = scope.Resolve<IErrorService>();
-                    errorService.LogError(ex, type.ToString());
-                }
+                    using (var scope = _container.BeginLifetimeScope())
+                    {
+                        IErrorService errorService = scope.Resolve<IErrorService>();
+                        errorService.LogError(ex, type.ToString());
+                    }
 
-                throw;
+                    throw;
+                }
             }
         }
 
@@ -99,21 +107,24 @@ namespace SWLOR.Game.Server
                 throw new Exception(nameof(T) + " must be an interface.");
             }
 
-            using (var scope = _container.BeginLifetimeScope())
+            string assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
+            typeName = typeName.Replace(assemblyName + ".", string.Empty);
+            string @namespace = assemblyName + "." + typeName;
+            using (new Profiler(typeName))
             {
-                string assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
-                typeName = typeName.Replace(assemblyName + ".", string.Empty);
-                string @namespace = assemblyName + "." + typeName;
-                var resolved = scope.ResolveKeyed<T>(@namespace);
+                using (var scope = _container.BeginLifetimeScope())
+                {
+                    var resolved = scope.ResolveKeyed<T>(@namespace);
 
-                try
-                {
-                    action.Invoke(resolved);
-                }
-                catch (Exception ex)
-                {
-                    IErrorService errorService = scope.Resolve<IErrorService>();
-                    errorService.LogError(ex, typeof(T).ToString());
+                    try
+                    {
+                        action.Invoke(resolved);
+                    }
+                    catch (Exception ex)
+                    {
+                        IErrorService errorService = scope.Resolve<IErrorService>();
+                        errorService.LogError(ex, typeof(T).ToString());
+                    }
                 }
             }
         }
@@ -126,26 +137,29 @@ namespace SWLOR.Game.Server
             {
                 throw new Exception(nameof(T1) + " must be an interface.");
             }
+            string assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
+            typeName = typeName.Replace(assemblyName + ".", string.Empty);
+            string @namespace = assemblyName + "." + typeName;
 
-            using (var scope = _container.BeginLifetimeScope())
+            using (new Profiler(typeName))
             {
-                string assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
-                typeName = typeName.Replace(assemblyName + ".", string.Empty);
-                string @namespace = assemblyName + "." + typeName;
-                var resolved = scope.ResolveKeyed<T1>(@namespace);
-                
-                try
+                using (var scope = _container.BeginLifetimeScope())
                 {
-                    result = action.Invoke(resolved);
-                }
-                catch (Exception ex)
-                {
-                    IErrorService errorService = scope.Resolve<IErrorService>();
-                    errorService.LogError(ex, typeof(T1).ToString());
-                    throw;
+                    var resolved = scope.ResolveKeyed<T1>(@namespace);
+
+                    try
+                    {
+                        result = action.Invoke(resolved);
+                    }
+                    catch (Exception ex)
+                    {
+                        IErrorService errorService = scope.Resolve<IErrorService>();
+                        errorService.LogError(ex, typeof(T1).ToString());
+                        throw;
+                    }
                 }
             }
-
+            
             return result;
         }
 
@@ -166,21 +180,24 @@ namespace SWLOR.Game.Server
                 throw new NullReferenceException(nameof(action));
             }
 
-            using (var scope = _container.BeginLifetimeScope())
+            using (new Profiler(typeof(T).ToString()))
             {
-                T resolved = (T)scope.Resolve(typeof(T));
-
-                try
+                using (var scope = _container.BeginLifetimeScope())
                 {
-                    action.Invoke(resolved);
-                }
-                catch(Exception ex)
-                {
-                    IErrorService errorService = scope.Resolve<IErrorService>();
-                    errorService.LogError(ex, typeof(T).ToString());
-                }
+                    T resolved = (T)scope.Resolve(typeof(T));
 
+                    try
+                    {
+                        action.Invoke(resolved);
+                    }
+                    catch (Exception ex)
+                    {
+                        IErrorService errorService = scope.Resolve<IErrorService>();
+                        errorService.LogError(ex, typeof(T).ToString());
+                    }
+                }
             }
+            
         }
 
         public static T2 Resolve<T1, T2>(AppResolveDelegate<T1, T2> action)
@@ -191,21 +208,24 @@ namespace SWLOR.Game.Server
                 throw new NullReferenceException(nameof(action));
             }
 
-            using (var scope = _container.BeginLifetimeScope())
+            using (new Profiler(typeof(T1).ToString()))
             {
-                T1 resolved = (T1)scope.Resolve(typeof(T1));
-                try
+                using (var scope = _container.BeginLifetimeScope())
                 {
-                    result = action.Invoke(resolved);
-                }
-                catch (Exception ex)
-                {
-                    IErrorService errorService = scope.Resolve<IErrorService>();
-                    errorService.LogError(ex, typeof(T1).ToString());
-                    throw;
+                    T1 resolved = (T1)scope.Resolve(typeof(T1));
+                    try
+                    {
+                        result = action.Invoke(resolved);
+                    }
+                    catch (Exception ex)
+                    {
+                        IErrorService errorService = scope.Resolve<IErrorService>();
+                        errorService.LogError(ex, typeof(T1).ToString());
+                        throw;
+                    }
                 }
             }
-
+            
             return result;
         }
         

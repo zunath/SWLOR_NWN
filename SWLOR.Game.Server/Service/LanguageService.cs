@@ -15,16 +15,11 @@ namespace SWLOR.Game.Server.Service
     public class LanguageService : ILanguageService
     {
         private readonly ISkillService _skillService;
-        private readonly IRandomService _randomService;
         
-
         public LanguageService(
-            ISkillService skillService,
-            IRandomService randomService)
+            ISkillService skillService)
         {
             _skillService = skillService;
-            _randomService = randomService;
-            
         }
 
         public string TranslateSnippetForListener(NWObject speaker, NWObject listener, SkillType language, string snippet)
@@ -63,9 +58,9 @@ namespace SWLOR.Game.Server.Service
                     string[] split = snippet.Split(' ');
                     for (int i = 0; i < split.Length; ++i)
                     {
-                        if (_randomService.Random(100) <= garbledChance)
+                        if (RandomService.Random(100) <= garbledChance)
                         {
-                            split[i] = new string(split[i].ToCharArray().OrderBy(s => (_randomService.Random(2) % 2) == 0).ToArray());
+                            split[i] = new string(split[i].ToCharArray().OrderBy(s => (RandomService.Random(2) % 2) == 0).ToArray());
                         }
                     }
 
@@ -105,7 +100,7 @@ namespace SWLOR.Game.Server.Service
                 // If this assumption changes, the below logic needs to change too.
                 for (int i = 0; i < originalSplit.Length; ++i)
                 {
-                    if (_randomService.Random(100) <= englishChance)
+                    if (RandomService.Random(100) <= englishChance)
                     {
                         endResult.Append(originalSplit[i]);
                     }

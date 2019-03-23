@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
@@ -15,19 +16,19 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         
         private readonly ISkillService _skill;
-        private readonly IRandomService _random;
+        
         private readonly IPerkService _perk;
         private readonly IPlayerStatService _playerStat;
 
         public HealingKit(
             ISkillService skill,
-            IRandomService random,
+            
             IPerkService perk,
             IPlayerStatService playerStat)
         {
             
             _skill = skill;
-            _random = random;
+            
             _perk = perk;
             _playerStat = playerStat;
         }
@@ -62,7 +63,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             if (perkBlastBonus > 0)
             {
                 int blastHeal = restoreAmount * perkBlastBonus;
-                if (_random.Random(100) + 1 <= luck / 2)
+                if (RandomService.Random(100) + 1 <= luck / 2)
                 {
                     blastHeal *= 2;
                 }
@@ -90,7 +91,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            if ( _random.Random(100) + 1 <= _perk.GetPCPerkLevel((NWPlayer)user, PerkType.SpeedyFirstAid) * 10)
+            if ( RandomService.Random(100) + 1 <= _perk.GetPCPerkLevel((NWPlayer)user, PerkType.SpeedyFirstAid) * 10)
             {
                 return 0.1f;
             }
@@ -125,7 +126,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             }
 
 
-            return _random.Random(100) + 1 > consumeChance;
+            return RandomService.Random(100) + 1 > consumeChance;
         }
 
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)

@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Perk.Shields
@@ -10,17 +11,17 @@ namespace SWLOR.Game.Server.Perk.Shields
     {
         
         private readonly IPerkService _perk;
-        private readonly IRandomService _random;
+        
         private readonly IPlayerStatService _playerStat;
 
         public BlockingRecovery(
             IPerkService perk,
-            IRandomService random,
+            
             IPlayerStatService playerStat)
         {
             
             _perk = perk;
-            _random = random;
+            
             _playerStat = playerStat;
         }
 
@@ -89,7 +90,7 @@ namespace SWLOR.Game.Server.Perk.Shields
             int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
             chance += luck;
 
-            if (_random.Random(100) + 1 <= chance)
+            if (RandomService.Random(100) + 1 <= chance)
             {
                 Effect heal = _.EffectHeal(amount);
                 _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, heal, player.Object);

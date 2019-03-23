@@ -17,20 +17,20 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
     {
         
         
-        private readonly IRandomService _random;
+        
         private readonly IBaseService _base;
         private readonly IDurabilityService _durability;
 
         public OnDamaged(
             
             
-            IRandomService random,
+            
             IBaseService @base,
             IDurabilityService durability)
         {
             
             
-            _random = random;
+            
             _base = @base;
             _durability = durability;
         }
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             // HP is tracked in the database. Heal the placeable so it doesn't get destroyed.
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(9999), tower.Object);
 
-            var durability = _durability.GetDurability(weapon) - _random.RandomFloat(0.01f, 0.03f);
+            var durability = _durability.GetDurability(weapon) - RandomService.RandomFloat(0.01f, 0.03f);
             _durability.SetDurability(weapon, durability);
 
             // If the shields have fallen to zero, the tower will begin to take structure damage.
@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             {
                 pcBase.ShieldHP = 0;
                 
-                structure.Durability -= _random.RandomFloat(0.5f, 2.0f);
+                structure.Durability -= RandomService.RandomFloat(0.5f, 2.0f);
                 if (structure.Durability < 0.0f) structure.Durability = 0.0f;
                 attacker.SendMessage("Structure Durability: " + structure.Durability.ToString("0.00"));
 

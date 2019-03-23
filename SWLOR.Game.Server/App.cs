@@ -245,7 +245,6 @@ namespace SWLOR.Game.Server
             builder.RegisterType<MenuService>().As<IMenuService>().SingleInstance();
             builder.RegisterType<MessageBoardService>().As<IMessageBoardService>().SingleInstance();
             builder.RegisterType<ModService>().As<IModService>().SingleInstance();
-            builder.RegisterType<ObjectProcessingService>().As<IObjectProcessingService>().SingleInstance();
             builder.RegisterType<ObjectVisibilityService>().As<IObjectVisibilityService>().SingleInstance();
             builder.RegisterType<PerkService>().As<IPerkService>().SingleInstance();
             builder.RegisterType<PlayerDescriptionService>().As<IPlayerDescriptionService>().SingleInstance();
@@ -256,14 +255,11 @@ namespace SWLOR.Game.Server
             builder.RegisterType<PVPSanctuaryService>().As<IPVPSanctuaryService>().SingleInstance();
             builder.RegisterType<QuestService>().As<IQuestService>().SingleInstance();
             builder.RegisterType<RaceService>().As<IRaceService>().SingleInstance();
-            builder.RegisterType<RandomService>().As<IRandomService>().SingleInstance(); // Must be single instance to avoid RNG issues
             builder.RegisterType<ResourceService>().As<IResourceService>().SingleInstance();
             builder.RegisterType<SearchService>().As<ISearchService>().SingleInstance();
             builder.RegisterType<SerializationService>().As<ISerializationService>().SingleInstance();
             builder.RegisterType<SkillService>().As<ISkillService>().SingleInstance();
             builder.RegisterType<SpaceService>().As<ISpaceService>().SingleInstance();
-            builder.RegisterType<SpawnService>().As<ISpawnService>().SingleInstance();
-            builder.RegisterType<TimeService>().As<ITimeService>().SingleInstance();
             
             // Background threads
             builder.RegisterType<DatabaseBackgroundThread>().As<IDatabaseThread>().SingleInstance();

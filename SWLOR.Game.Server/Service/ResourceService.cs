@@ -10,20 +10,20 @@ namespace SWLOR.Game.Server.Service
     {
         
         private readonly IItemService _item;
-        private readonly IRandomService _random;
+        
         private readonly ISkillService _skill;
         private readonly IPlayerStatService _playerStat;
 
         public ResourceService(
             
             IItemService item,
-            IRandomService random,
+            
             ISkillService skill,
             IPlayerStatService playerStat)
         {
             
             _item = item;
-            _random = random;
+            
             _skill = skill;
             _playerStat = playerStat;
         }
@@ -301,7 +301,7 @@ namespace SWLOR.Game.Server.Service
 
             string[] setToUse = null;
 
-            int index = _random.GetRandomWeightedIndex(chance);
+            int index = RandomService.GetRandomWeightedIndex(chance);
 
             switch (index)
             {
@@ -313,7 +313,7 @@ namespace SWLOR.Game.Server.Service
 
             if (setToUse == null) throw new NullReferenceException(nameof(setToUse));
 
-            index = _random.Random(0, setToUse.Length - 1);
+            index = RandomService.Random(0, setToUse.Length - 1);
 
             string itemTag = setToUse[index];
 

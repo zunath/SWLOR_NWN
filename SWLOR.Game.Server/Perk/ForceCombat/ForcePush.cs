@@ -1,6 +1,7 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
@@ -11,7 +12,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
     {
         
         private readonly IPerkService _perk;
-        private readonly IRandomService _random;
+        
         private readonly IPlayerStatService _playerStat;
         private readonly ISkillService _skill;
         private readonly ICombatService _combat;
@@ -19,14 +20,14 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
         public ForcePush(
             
             IPerkService perk,
-            IRandomService random,
+            
             IPlayerStatService playerStat,
             ISkillService skill,
             ICombatService combat)
         {
             
             _perk = perk;
-            _random = random;
+            
             _playerStat = playerStat;
             _skill = skill;
             _combat = combat;
@@ -73,23 +74,23 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
             switch (level)
             {
                 case 1:
-                    damage = _random.D4(1);
+                    damage = RandomService.D4(1);
                     length = 3;
                     break;
                 case 2:
-                    damage = _random.D4(1);
+                    damage = RandomService.D4(1);
                     length = 6;
                     break;
                 case 3:
-                    damage = _random.D6(1);
+                    damage = RandomService.D6(1);
                     length = 6;
                     break;
                 case 4:
-                    damage = _random.D8(1);
+                    damage = RandomService.D8(1);
                     length = 6;
                     break;
                 case 5:
-                    damage = _random.D8(1);
+                    damage = RandomService.D8(1);
                     length = 9;
                     break;
 
@@ -109,7 +110,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
 
             var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
             int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
-            if (_random.Random(100) + 1 <= luck)
+            if (RandomService.Random(100) + 1 <= luck)
             {
                 length = length * 2;
                 player.SendMessage("Lucky force push!");

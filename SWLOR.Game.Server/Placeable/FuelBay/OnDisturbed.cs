@@ -21,7 +21,6 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
         
         private readonly IItemService _item;
         private readonly ISpaceService _space;
-        private readonly ITimeService _time;
         private readonly IColorTokenService _color;
         private readonly IBaseService _base;
 
@@ -30,15 +29,11 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             
             IItemService item,
             ISpaceService space,
-            ITimeService time,
             IColorTokenService color,
             IBaseService @base)
         {
-            
-            
             _item = item;
             _space = space;
-            _time = time;
             _color = color;
             _base = @base;
         }
@@ -171,7 +166,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
                 int seconds = 6 * fuelCount;
                 TimeSpan timeSpan = TimeSpan.FromSeconds(seconds);
                 player.SendMessage(_color.Gray("Reinforcement mode will last for " +
-                                               _time.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false) +
+                                               TimeService.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false) +
                                                " (" + fuelCount + " / " + maxFuel + " units"));
             }
             // Regular fuel cells - Every unit lasts for 45, 15, or 5 minutes depending on the size of the tower.
@@ -195,7 +190,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
 
                 TimeSpan timeSpan = TimeSpan.FromMinutes(minutes * fuelCount);
                 player.SendMessage(_color.Gray("Fuel will last for " +
-                                               _time.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false) +
+                                               TimeService.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false) +
                                                " (" + fuelCount + " / " + maxFuel + " units)"));
             }
 

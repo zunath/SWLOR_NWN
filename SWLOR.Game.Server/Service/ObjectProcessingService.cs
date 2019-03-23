@@ -7,28 +7,28 @@ using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class ObjectProcessingService : IObjectProcessingService
+    public static class ObjectProcessingService
     {
-        private DateTime _dateLastRun;
+        private static DateTime _dateLastRun;
 
-        public ObjectProcessingService()
+        static ObjectProcessingService()
         {
             _dateLastRun = DateTime.UtcNow;
         }
 
-        public void OnModuleLoad()
+        public static void OnModuleLoad()
         {
             Events.MainLoopTick += Events_MainLoopTick;
         }
 
-        private void Events_MainLoopTick(ulong frame)
+        private static void Events_MainLoopTick(ulong frame)
         {
             RunProcessor();
         }
 
-        public float ProcessingTickInterval => 1f;
+        public static float ProcessingTickInterval => 1f;
 
-        private void RunProcessor()
+        private static void RunProcessor()
         {
             var delta = DateTime.UtcNow - _dateLastRun;
             if (delta.Seconds < 1) return;
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public string RegisterProcessingEvent<T>(params object[] args)
+        public static string RegisterProcessingEvent<T>(params object[] args)
             where T: IEventProcessor
         {
             string globalID = Guid.NewGuid().ToString();
@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Service
             return globalID;
         }
 
-        public void UnregisterProcessingEvent(string globalID)
+        public static void UnregisterProcessingEvent(string globalID)
         {
             if (AppCache.ProcessingEvents.ContainsKey(globalID))
             {

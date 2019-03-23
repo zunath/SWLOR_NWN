@@ -1325,7 +1325,6 @@
     <Compile Include="Service\Contracts\IPlayerService.cs" />
     <Compile Include="Service\Contracts\IPVPSanctuaryService.cs" />
     <Compile Include="Service\Contracts\IQuestService.cs" />
-    <Compile Include="Service\Contracts\IRandomService.cs" />
     <Compile Include="Service\Contracts\ISearchService.cs" />
     <Compile Include="Service\Contracts\ISerializationService.cs" />
     <Compile Include="Service\Contracts\ISkillService.cs" />
@@ -1345,7 +1344,6 @@
     <Compile Include="Service\ExaminationService.cs" />
     <Compile Include="Service\FarmingService.cs" />
     <Compile Include="Service\HelmetToggleService.cs" />
-    <Compile Include="Service\Contracts\IObjectProcessingService.cs" />
     <Compile Include="Service\Contracts\IBehaviourService.cs" />
     <Compile Include="Service\Contracts\IEnmityService.cs" />
     <Compile Include="Service\Contracts\IMapService.cs" />
@@ -1358,12 +1356,10 @@
     <Compile Include="Service\Contracts\ICreatureCorpseService.cs" />
     <Compile Include="Service\Contracts\IPlayerStatService.cs" />
     <Compile Include="Service\ImpoundService.cs" />
-    <Compile Include="Service\Contracts\ISpawnService.cs" />
     <Compile Include="Service\Contracts\IResourceService.cs" />
     <Compile Include="Service\Contracts\IRaceService.cs" />
     <Compile Include="Service\Contracts\IObjectVisibilityService.cs" />
     <Compile Include="Service\ItemService.cs" />
-    <Compile Include="Service\Contracts\ITimeService.cs" />
     <Compile Include="Service\KeyItemService.cs" />
     <Compile Include="Service\LocalVariableService.cs" />
     <Compile Include="Service\LootService.cs" />

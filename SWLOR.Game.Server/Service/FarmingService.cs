@@ -16,17 +16,17 @@ namespace SWLOR.Game.Server.Service
     {
         
         
-        private readonly IRandomService _random;
+        
         private readonly IColorTokenService _color;
 
         public FarmingService( 
             
-            IRandomService random,
+            
             IColorTokenService color)
         {
             
             
-            _random = random;
+            
             _color = color;
         }
 

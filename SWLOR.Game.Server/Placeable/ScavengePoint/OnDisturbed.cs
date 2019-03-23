@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Placeable.ScavengePoint
@@ -12,20 +13,20 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
     {
         
         private readonly IFarmingService _farming;
-        private readonly IRandomService _random;
+        
         private readonly IItemService _item;
         private readonly IPerkService _perk;
 
         public OnDisturbed(
             
             IFarmingService farming,
-            IRandomService random,
+            
             IItemService item,
             IPerkService perk)
         {
             
             _farming = farming;
-            _random = random;
+            
             _item = item;
             _perk = perk;
         }
@@ -53,7 +54,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
                         _.CreateObject(_.OBJECT_TYPE_ITEM, seed, point.Location);
 
                         int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.SeedPicker);
-                        if (_random.Random(100) + 1 <= perkLevel * 10)
+                        if (RandomService.Random(100) + 1 <= perkLevel * 10)
                         {
                             _.CreateObject(_.OBJECT_TYPE_ITEM, seed, point.Location);
                         }

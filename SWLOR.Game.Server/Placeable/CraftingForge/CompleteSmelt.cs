@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Placeable.CraftingForge
@@ -14,7 +15,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
         
         private readonly ISkillService _skill;
         private readonly ICraftService _craft;
-        private readonly IRandomService _random;
+        
         private readonly IPerkService _perk;
         
         private readonly IPlayerStatService _playerStat;
@@ -23,7 +24,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             
             ISkillService skill,
             ICraftService craft,
-            IRandomService random,
+            
             IPerkService perk,
             
             IPlayerStatService playerStat)
@@ -31,7 +32,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             
             _skill = skill;
             _craft = craft;
-            _random = random;
+            
             _perk = perk;
             
             _playerStat = playerStat;
@@ -56,12 +57,12 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             if (delta > 2) count = delta;
             if (count > 4) count = 4;
 
-            if (_random.Random(100) + 1 <= _perk.GetPCPerkLevel(player, PerkType.Lucky))
+            if (RandomService.Random(100) + 1 <= _perk.GetPCPerkLevel(player, PerkType.Lucky))
             {
                 count++;
             }
 
-            if (_random.Random(100) + 1 <= _perk.GetPCPerkLevel(player, PerkType.ProcessingEfficiency) * 10)
+            if (RandomService.Random(100) + 1 <= _perk.GetPCPerkLevel(player, PerkType.ProcessingEfficiency) * 10)
             {
                 count++;
             }
@@ -93,7 +94,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
 
                 foreach (var ip in itemProperties)
                 {
-                    if(_random.D100(1) <= chance)
+                    if(RandomService.D100(1) <= chance)
                     {
                         BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
                     }
@@ -103,7 +104,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
             int harvestingSkill = _skill.GetPCSkillRank(player, SkillType.Harvesting);
             int perkBonus = _perk.GetPCPerkLevel(player, PerkType.StronidiumRefining) + 1;
-            int stronidiumAmount = 10 + effectiveStats.Harvesting + harvestingSkill + _random.Random(1, 5);
+            int stronidiumAmount = 10 + effectiveStats.Harvesting + harvestingSkill + RandomService.Random(1, 5);
             stronidiumAmount *= perkBonus;
             _.CreateItemOnObject("stronidium", player.Object, stronidiumAmount);
 

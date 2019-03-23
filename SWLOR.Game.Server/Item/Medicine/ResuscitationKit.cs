@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Item.Medicine
         
         
         private readonly ISkillService _skill;
-        private readonly IRandomService _random;
+        
         private readonly IPerkService _perk;
         private readonly IPlayerStatService _playerStat;
 
@@ -24,14 +24,14 @@ namespace SWLOR.Game.Server.Item.Medicine
             
             
             ISkillService skill,
-            IRandomService random,
+            
             IPerkService perk,
             IPlayerStatService playerStat)
         {
             
             
             _skill = skill;
-            _random = random;
+            
             _perk = perk;
             _playerStat = playerStat;
         }
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            if (_random.Random(100) + 1 <= _perk.GetPCPerkLevel((NWPlayer)user, PerkType.SpeedyFirstAid) * 10)
+            if (RandomService.Random(100) + 1 <= _perk.GetPCPerkLevel((NWPlayer)user, PerkType.SpeedyFirstAid) * 10)
             {
                 return 0.1f;
             }
@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Item.Medicine
         public bool ReducesItemCharge(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
             int consumeChance = _perk.GetPCPerkLevel((NWPlayer)user, PerkType.FrugalMedic) * 10;
-            return _random.Random(100) + 1 > consumeChance;
+            return RandomService.Random(100) + 1 > consumeChance;
         }
 
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)

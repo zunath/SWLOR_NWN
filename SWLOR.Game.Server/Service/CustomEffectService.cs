@@ -14,20 +14,7 @@ using SWLOR.Game.Server.ValueObject;
 namespace SWLOR.Game.Server.Service
 {
     public class CustomEffectService : ICustomEffectService
-    {
-        
-        
-        private readonly IObjectProcessingService _ops;
-
-        public CustomEffectService(
-            
-            IObjectProcessingService ops)
-        {
-            
-            
-            _ops = ops;
-        }
-        
+    {   
         public void ApplyCustomEffect(NWCreature caster, NWCreature target, CustomEffectType effectType, int ticks, int level, string data)
         {
             ApplyCustomEffect(caster, target, (int) effectType, ticks, level, data);
@@ -93,7 +80,7 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleLoad()
         {
-            _ops.RegisterProcessingEvent<CustomEffectProcessor>();
+            ObjectProcessingService.RegisterProcessingEvent<CustomEffectProcessor>();
         }
         
         public void ApplyCustomEffect(NWCreature caster, NWCreature target, int customEffectID, int ticks, int effectiveLevel, string data)

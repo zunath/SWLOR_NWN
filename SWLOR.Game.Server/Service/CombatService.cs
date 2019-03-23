@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Service
     public class CombatService : ICombatService
     {
         private readonly IPerkService _perk;
-        private readonly IRandomService _random;
+        
         private readonly IAbilityService _ability;
         private readonly IEnmityService _enmity;
         
@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Service
         
         public CombatService(
             IPerkService perk,
-            IRandomService random,
+            
             IAbilityService ability,
             IEnmityService enmity,
             IPlayerStatService playerStat,
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Service
             IColorTokenService color)
         {
             _perk = perk;
-            _random = random;
+            
             _ability = ability;
             _enmity = enmity;
             _playerStat = playerStat;
@@ -173,7 +173,7 @@ namespace SWLOR.Game.Server.Service
             cooldown = DateTime.UtcNow.AddSeconds(delay);
             target.SetLocalString("EVADE_OR_DEFLECT_BLASTER_FIRE_COOLDOWN", cooldown.ToString(CultureInfo.InvariantCulture));
 
-            int roll = _random.D100(1);
+            int roll = RandomService.D100(1);
 
             if (roll <= chanceToDeflect)
             {
@@ -204,7 +204,7 @@ namespace SWLOR.Game.Server.Service
             int perkRank = _perk.GetPCPerkLevel(player, PerkType.Battlemage);
 
             int restoreAmount = 0;
-            bool metRoll = _random.Random(100) + 1 <= 50;
+            bool metRoll = RandomService.Random(100) + 1 <= 50;
 
             switch (perkRank)
             {
@@ -490,19 +490,19 @@ namespace SWLOR.Game.Server.Service
             // resistance.  The more checks you succeed, the lower the resistance. 
             int successes = 0;
             
-            if (_random.D100(1) <= accuracy)
+            if (RandomService.D100(1) <= accuracy)
             {
                 successes++;
 
-                if (_random.D100(1) <= accuracy)
+                if (RandomService.D100(1) <= accuracy)
                 {
                     successes++;
 
-                    if (_random.D100(1) <= accuracy)
+                    if (RandomService.D100(1) <= accuracy)
                     {
                         successes++;
 
-                        if (_random.D100(1) <= accuracy)
+                        if (RandomService.D100(1) <= accuracy)
                         {
                             successes++;
                         }
@@ -638,7 +638,7 @@ namespace SWLOR.Game.Server.Service
             int damage = (int)((itemBonus + basePotency + (delta * multiplier)) * resistance.Amount);
 
             if (damage > 0)
-                damage += _random.D8(1);
+                damage += RandomService.D8(1);
 
             if (damage <= 1)
                 damage = 1;

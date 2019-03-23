@@ -2,6 +2,7 @@
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 
@@ -9,18 +10,12 @@ namespace SWLOR.Game.Server.Perk.Blaster
 {
     public class RecoveryBlast: IPerk
     {
-        
         private readonly IPerkService _perk;
-        private readonly IRandomService _random;
 
         public RecoveryBlast(
-            
-            IPerkService perk,
-            IRandomService random)
+            IPerkService perk)
         {
-            
             _perk = perk;
-            _random = random;
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -75,27 +70,27 @@ namespace SWLOR.Game.Server.Perk.Blaster
             switch (level)
             {
                 case 1:
-                    amount = _random.D12(1);
+                    amount = RandomService.D12(1);
                     break;
                 case 2:
-                    amount = _random.D8(2);
+                    amount = RandomService.D8(2);
                     break;
                 case 3:
-                    amount = _random.D8(3);
+                    amount = RandomService.D8(3);
                     break;
                 case 4:
-                    amount = _random.D8(4);
+                    amount = RandomService.D8(4);
                     break;
                 case 5:
-                    amount = _random.D8(5);
+                    amount = RandomService.D8(5);
                     break;
                 case 6:
-                    amount = _random.D8(6);
+                    amount = RandomService.D8(6);
                     break;
                 default: return;
             }
 
-            if (_random.D100(1) <= luck)
+            if (RandomService.D100(1) <= luck)
             {
                 amount *= 2;
             }

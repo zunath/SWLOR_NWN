@@ -15,32 +15,15 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class SpawnService : ISpawnService
+    public static class SpawnService
     {
-        
-        
-        private readonly IObjectProcessingService _processor;
-        private readonly IRandomService _random;
-
-        public SpawnService(
-            
-            
-            IRandomService random,
-            IObjectProcessingService processor)
-        {
-            
-            
-            _random = random;
-            _processor = processor;
-        }
-
-        public void OnModuleLoad()
+        public static void OnModuleLoad()
         {
             InitializeSpawns();
-            _processor.RegisterProcessingEvent<SpawnProcessor>();
+            ObjectProcessingService.RegisterProcessingEvent<SpawnProcessor>();
         }
 
-        private void InitializeSpawns()
+        private static void InitializeSpawns()
         {
             foreach (var area in NWModule.Get().Areas)
             {
@@ -48,7 +31,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public void InitializeAreaSpawns(NWArea area)
+        public static void InitializeAreaSpawns(NWArea area)
         {
             var areaSpawn = new AreaSpawn();
 
@@ -80,7 +63,7 @@ namespace SWLOR.Game.Server.Service
                         // Pick a random record.   
                         var spawnObjects = DataService.Where<SpawnObject>(x => x.SpawnID == spawnTableID).ToList();
                         int count = spawnObjects.Count;
-                        int index = count <= 0 ? 0 : _random.Random(count);
+                        int index = count <= 0 ? 0 : RandomService.Random(count);
                         var dbSpawn = spawnObjects[index];
 
                         if (dbSpawn != null)
@@ -167,22 +150,22 @@ namespace SWLOR.Game.Server.Service
             });
         }
         
-        public Location GetRandomSpawnPoint(NWArea area)
+        public static Location GetRandomSpawnPoint(NWArea area)
         {
             Area dbArea = DataService.Single<Area>(x => x.Resref == area.Resref);
             var walkmeshes = DataService.Where<AreaWalkmesh>(x => x.AreaID == dbArea.ID).ToList();
             int count = walkmeshes.Count;
-            var index = count <= 0 ? 0 : _random.Random(count);
+            var index = count <= 0 ? 0 : RandomService.Random(count);
 
             var spawnPoint = walkmeshes[index];
             
             return _.Location(area.Object,
                 _.Vector((float)spawnPoint.LocationX, (float)spawnPoint.LocationY, (float)spawnPoint.LocationZ),
-                _random.RandomFloat(0, 360));
+                RandomService.RandomFloat(0, 360));
 
         }
 
-        private void SpawnResources(NWArea area, AreaSpawn areaSpawn)
+        private static void SpawnResources(NWArea area, AreaSpawn areaSpawn)
         {
             var dbArea = DataService.GetAll<Area>().Single(x => x.Resref == area.Resref);
 
@@ -229,7 +212,7 @@ namespace SWLOR.Game.Server.Service
 
             for (int x = 1; x <= maxSpawns; x++)
             {
-                int index = _random.GetRandomWeightedIndex(weights);
+                int index = RandomService.GetRandomWeightedIndex(weights);
                 var dbSpawn = possibleSpawns.ElementAt(index);
                 Location location = GetRandomSpawnPoint(area);
                 NWPlaceable plc = (_.CreateObject(OBJECT_TYPE_PLACEABLE, dbSpawn.Resref, location));
@@ -266,18 +249,18 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public IReadOnlyCollection<ObjectSpawn> GetAreaPlaceableSpawns(NWArea area)
+        public static IReadOnlyCollection<ObjectSpawn> GetAreaPlaceableSpawns(NWArea area)
         {
             var areaSpawn = AppCache.AreaSpawns[area];
             return new ReadOnlyCollection<ObjectSpawn>(areaSpawn.Placeables);
         }
-        public IReadOnlyCollection<ObjectSpawn> GetAreaCreatureSpawns(NWArea area)
+        public static IReadOnlyCollection<ObjectSpawn> GetAreaCreatureSpawns(NWArea area)
         {
             var areaSpawn = AppCache.AreaSpawns[area];
             return new ReadOnlyCollection<ObjectSpawn>(areaSpawn.Creatures);
         }
 
-        public void AssignScriptEvents(NWCreature creature)
+        public static void AssignScriptEvents(NWCreature creature)
         {
             if (string.IsNullOrWhiteSpace(_.GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_HEARTBEAT)))
             {

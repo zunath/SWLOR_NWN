@@ -11,6 +11,7 @@ using SWLOR.Game.Server.ValueObject;
 using Object = NWN.Object;
 using System.Linq;
 using SWLOR.Game.Server.Bioware;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Placeable.ScavengePoint
 {
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
         
         private readonly ISkillService _skill;
         private readonly IPerkService _perk;
-        private readonly IRandomService _random;
+        
         private readonly IResourceService _resource;
         private readonly IColorTokenService _color;
         private readonly ILootService _loot;
@@ -31,7 +32,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
             
             ISkillService skill,
             IPerkService perk,
-            IRandomService random,
+            
             IResourceService resource,
             IColorTokenService color,
             ILootService loot,
@@ -42,7 +43,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
 			
             _skill = skill;
             _perk = perk;
-            _random = random;
+            
 			_resource = resource;
             _color = color;
             _loot = loot;
@@ -93,7 +94,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
             int searchAttempts = 1 + CalculateSearchAttempts(oPC);
 
             int luck = _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + effectiveStats.Luck;
-            if (_random.Random(100) + 1 <= luck / 2)
+            if (RandomService.Random(100) + 1 <= luck / 2)
             {
                 dc--;
             }
@@ -102,7 +103,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
 
             for (int attempt = 1; attempt <= searchAttempts; attempt++)
             {
-                int roll = _random.Random(20) + 1;
+                int roll = RandomService.Random(20) + 1;
                 if (roll >= dc)
                 {
                     oPC.FloatingText(_color.SkillCheck("Search: *success*: (" + roll + " vs. DC: " + dc + ")"));
@@ -121,7 +122,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
                         if (componentIP != null)
                         {
                             // Add properties to the item based on Scavenging skill.  Similar logic to the resource harvester.
-                            var chance = _random.Random(1, 100) + _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + effectiveStats.Luck;
+                            var chance = RandomService.Random(1, 100) + _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + effectiveStats.Luck;
                             ResourceQuality quality;
 
                             if (chance < 50) quality = ResourceQuality.Low;
@@ -131,7 +132,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
 
                             int ipBonusChance = _resource.CalculateChanceForComponentBonus(oPC, (level / 10 + 1), quality, true);
 
-                            if (_random.Random(1, 100) <= ipBonusChance)
+                            if (RandomService.Random(1, 100) <= ipBonusChance)
                             {
                                 var ip = _resource.GetRandomComponentBonusIP(ResourceQuality.Normal);
                                 BiowareXP2.IPSafeAddItemProperty(resource, ip.Item1, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
@@ -165,7 +166,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
                     float xp = _skill.CalculateRegisteredSkillLevelAdjustedXP(50, level, rank);
                     _skill.GiveSkillXP(oPC, SkillType.Scavenging, (int)xp);
                 }
-                dc += _random.Random(3) + 1;
+                dc += RandomService.Random(3) + 1;
             }
             
             // Chance to destroy the scavenge point.
@@ -179,7 +180,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
 
             if (chanceToFullyHarvest <= 5) chanceToFullyHarvest = 5;
 
-            if (alwaysDestroys || _random.Random(100) + 1 <= chanceToFullyHarvest)
+            if (alwaysDestroys || RandomService.Random(100) + 1 <= chanceToFullyHarvest)
             {
                 point.SetLocalInt("SCAVENGE_POINT_FULLY_HARVESTED", 1);
                 oPC.SendMessage("This resource has been fully harvested...");
@@ -187,7 +188,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
             // Otherwise the scavenge point will be refilled in 10-20 minutes.
             else
             {
-                point.SetLocalInt("SCAVENGE_POINT_REFILL_TICKS", 100 + _random.Random(100));
+                point.SetLocalInt("SCAVENGE_POINT_REFILL_TICKS", 100 + RandomService.Random(100));
             }
 
             point.SetLocalInt("SCAVENGE_POINT_DESPAWN_TICKS", 30);
@@ -234,11 +235,11 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
                     break;
             }
 
-            if (_random.Random(100) + 1 <= attempt1Chance)
+            if (RandomService.Random(100) + 1 <= attempt1Chance)
             {
                 numberOfSearches++;
             }
-            if (_random.Random(100) + 1 <= attempt2Chance)
+            if (RandomService.Random(100) + 1 <= attempt2Chance)
             {
                 numberOfSearches++;
             }

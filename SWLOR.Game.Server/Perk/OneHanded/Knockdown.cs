@@ -1,6 +1,7 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 
@@ -8,19 +9,6 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 {
     public class Knockdown: IPerk
     {
-        
-        private readonly IPerkService _perk;
-        private readonly IRandomService _random;
-
-        public Knockdown(
-            IPerkService perk,
-            IRandomService random)
-        {
-            
-            _perk = perk;
-            _random = random;
-        }
-
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             NWItem weapon = oPC.RightHand;
@@ -60,27 +48,27 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             switch (perkLevel)
             {
                 case 1:
-                    damage = _random.D4(1);
+                    damage = RandomService.D4(1);
                     length = 6.0f;
                     break;
                 case 2:
-                    damage = _random.D4(2);
+                    damage = RandomService.D4(2);
                     length = 6.0f;
                     break;
                 case 3:
-                    damage = _random.D6(2);
+                    damage = RandomService.D6(2);
                     length = 6.0f;
                     break;
                 case 4:
-                    damage = _random.D6(2);
+                    damage = RandomService.D6(2);
                     length = 9.0f;
                     break;
                 case 5:
-                    damage = _random.D6(3);
+                    damage = RandomService.D6(3);
                     length = 9.0f;
                     break;
                 case 6:
-                    damage = _random.D8(3);
+                    damage = RandomService.D8(3);
                     length = 9.0f;
                     break;
                 default: return;

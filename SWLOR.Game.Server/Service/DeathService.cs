@@ -16,19 +16,19 @@ namespace SWLOR.Game.Server.Service
     {
         
         
-        private readonly IRandomService _random;
+        
         private readonly IDurabilityService _durability;
         private readonly IAreaService _area;
 
         public DeathService( 
             
-            IRandomService random,
+            
             IDurabilityService durability,
             IAreaService area)
         {
             
             
-            _random = random;
+            
             _durability = durability;
             _area = area;
         }
@@ -56,12 +56,12 @@ namespace SWLOR.Game.Server.Service
             for (int index = 0; index < NUM_INVENTORY_SLOTS; index++)
             {
                 NWItem equipped = _.GetItemInSlot(index, player);
-                _durability.RunItemDecay(player, equipped, _random.RandomFloat(0.02f, 0.07f));
+                _durability.RunItemDecay(player, equipped, RandomService.RandomFloat(0.02f, 0.07f));
             }
 
             foreach (var item in player.InventoryItems)
             {
-                _durability.RunItemDecay(player, item, _random.RandomFloat(0.02f, 0.07f));
+                _durability.RunItemDecay(player, item, RandomService.RandomFloat(0.02f, 0.07f));
             }
 
             _.PopUpDeathGUIPanel(player.Object, TRUE, TRUE, 0, RespawnMessage);

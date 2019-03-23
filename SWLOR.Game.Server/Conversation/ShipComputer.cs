@@ -26,7 +26,6 @@ namespace SWLOR.Game.Server.Conversation
         private readonly ISerializationService _serialization;
         private readonly ISpaceService _space;
         private readonly IColorTokenService _color;
-        private readonly ITimeService _time;
 
         public ShipComputer(
             
@@ -36,8 +35,7 @@ namespace SWLOR.Game.Server.Conversation
             ISerializationService serialization,
             IBaseService @base,
             IColorTokenService color,
-            ISpaceService space,
-            ITimeService time) 
+            ISpaceService space) 
             : base(dialog)
         {
             _dialog = dialog;
@@ -47,7 +45,6 @@ namespace SWLOR.Game.Server.Conversation
             _space = space;
             _base = @base;
             _color = color;
-            _time = time;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)

@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
@@ -13,7 +14,7 @@ namespace SWLOR.Game.Server.Item
     public class ResourceHarvester : IActionItem
     {
         
-        private readonly IRandomService _random;
+        
         private readonly IPerkService _perk;
         private readonly IResourceService _resource;
         private readonly ISkillService _skill;
@@ -23,7 +24,7 @@ namespace SWLOR.Game.Server.Item
 
         public ResourceHarvester(
             
-            IRandomService random,
+            
             IPerkService perk,
             IResourceService resource,
             ISkillService skill,
@@ -32,7 +33,7 @@ namespace SWLOR.Game.Server.Item
             IColorTokenService color)
         {
             
-            _random = random;
+            
             _perk = perk;
             _resource = resource;
             _skill = skill;
@@ -55,7 +56,7 @@ namespace SWLOR.Game.Server.Item
             int remaining = target.GetLocalInt("RESOURCE_COUNT") - 1;
             string itemResref = target.GetLocalString("RESOURCE_RESREF");
             int ipBonusChance = _resource.CalculateChanceForComponentBonus(player, tier, quality);
-            int roll = _random.Random(1, 100);
+            int roll = RandomService.Random(1, 100);
             int rank = _skill.GetPCSkillRank(player, SkillType.Harvesting);
             if (item.RecommendedLevel < rank)
                 rank = item.RecommendedLevel;
@@ -116,7 +117,7 @@ namespace SWLOR.Game.Server.Item
             }
 
             user.SendMessage("You harvest " + resource.Name + ".");
-            _durability.RunItemDecay(player, item, _random.RandomFloat(decayMinimum, decayMaximum));
+            _durability.RunItemDecay(player, item, RandomService.RandomFloat(decayMinimum, decayMaximum));
             int xp = baseXP;
             _skill.GiveSkillXP(player, SkillType.Harvesting, xp);
 

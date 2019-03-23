@@ -3,6 +3,7 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 
@@ -10,18 +11,12 @@ namespace SWLOR.Game.Server.Perk.Blaster
 {
     public class MassTranquilizer : IPerk
     {
-        
         private readonly IPerkService _perk;
-        private readonly IRandomService _random;
-
+        
         public MassTranquilizer(
-            
-            IPerkService perk,
-            IRandomService random)
+            IPerkService perk)
         {
-            
             _perk = perk;
-            _random = random;
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -100,7 +95,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
                 default: return;
             }
 
-            if (_random.D100(1) <= luck)
+            if (RandomService.D100(1) <= luck)
             {
                 duration *= 2;
                 player.SendMessage("Lucky shot!");

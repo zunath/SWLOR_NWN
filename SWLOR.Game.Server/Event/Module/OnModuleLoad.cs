@@ -5,6 +5,7 @@ using NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Processor;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.Threading.Contracts;
 using static NWN._;
@@ -14,33 +15,26 @@ namespace SWLOR.Game.Server.Event.Module
 {
     internal class OnModuleLoad: IRegisteredEvent
     {
-        private readonly IObjectProcessingService _objectProcessing;
         private readonly IFarmingService _farming;
         private readonly IAreaService _area;
         private readonly IBaseService _base;
-        private readonly ISpawnService _spawn;
         private readonly ICustomEffectService _customEffect;
         private readonly IObjectVisibilityService _objectVisibility;
         private readonly IBackgroundThreadManager _backgroundThreadManager;
         private readonly IDataPackageService _dataPackage;
 
         public OnModuleLoad(
-            
-            IObjectProcessingService objectProcessing,
             IFarmingService farming,
             IAreaService area,
             IBaseService @base,
-            ISpawnService spawn,
             ICustomEffectService customEffect,
             IObjectVisibilityService objectVisibility,
             IBackgroundThreadManager backgroundThreadManager,
             IDataPackageService dataPackage)
         {
-            _objectProcessing = objectProcessing;
             _farming = farming;
             _area = area;
             _base = @base;
-            _spawn = spawn;
             _customEffect = customEffect;
             _objectVisibility = objectVisibility;
             _backgroundThreadManager = backgroundThreadManager;
@@ -62,14 +56,14 @@ namespace SWLOR.Game.Server.Event.Module
 
             // Bioware default
             _.ExecuteScript("x2_mod_def_load", Object.OBJECT_SELF);
-            _objectProcessing.RegisterProcessingEvent<AppStateProcessor>();
-            _objectProcessing.RegisterProcessingEvent<ServerRestartProcessor>();
-            _objectProcessing.OnModuleLoad();
+            ObjectProcessingService.RegisterProcessingEvent<AppStateProcessor>();
+            ObjectProcessingService.RegisterProcessingEvent<ServerRestartProcessor>();
+            ObjectProcessingService.OnModuleLoad();
             _dataPackage.OnModuleLoad();
             _farming.OnModuleLoad();
             _base.OnModuleLoad();
             _area.OnModuleLoad();
-            _spawn.OnModuleLoad();
+            SpawnService.OnModuleLoad();
             _customEffect.OnModuleLoad();
             _objectVisibility.OnModuleLoad();
 

@@ -12,18 +12,9 @@ namespace SWLOR.Game.Server.SpawnRule
 {
     public class CrystalClusterSpawnRule : ISpawnRule
     {
-        private readonly IRandomService _random;
-        
-
-        public CrystalClusterSpawnRule(IRandomService random)
-        {
-            _random = random;
-            
-        }
-
         public void Run(NWObject target, params object[] args)
         {
-            int roll = _random.Random(0, 100);
+            int roll = RandomService.Random(0, 100);
             ResourceQuality quality = ResourceQuality.Low;
             string qualityName = "Sparse";
 
@@ -57,7 +48,7 @@ namespace SWLOR.Game.Server.SpawnRule
                 qualityName = "Thick";
             }
 
-            roll = _random.Random(0, 100);
+            roll = RandomService.Random(0, 100);
             if (roll <= 3)
             {
                 tier++;
@@ -69,15 +60,15 @@ namespace SWLOR.Game.Server.SpawnRule
                 tier = maxTier;
 
             string resref = GetResourceResref(tier);
-            int quantity = _random.Random(3, 10);
+            int quantity = RandomService.Random(3, 10);
 
-            roll = _random.Random(0, 100);
+            roll = RandomService.Random(0, 100);
 
             if (roll <= 2)
             {
                 string[] coloredResrefs = {"p_crystal_red", "p_crystal_green", "p_crystal_blue", "p_crystal_yellow"};
 
-                roll = _random.Random(0, 3);
+                roll = RandomService.Random(0, 3);
                 resref = coloredResrefs[roll];
             }
             

@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
         
         
         private readonly ICraftService _craft;
-        private readonly IRandomService _random;
+        
         private readonly IColorTokenService _color;
         private readonly IPerkService _perk;
         private readonly IPlayerStatService _playerStat;
@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
             ISerializationService serialization,
              
             ICraftService craft,
-            IRandomService random,
+            
             IColorTokenService color,
             IPerkService perk,
             IPlayerStatService playerStat,
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
             _serialization = serialization;
             
             _craft = craft;
-            _random = random;
+            
             _color = color;
             _perk = perk;
             _playerStat = playerStat;
@@ -163,10 +163,10 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
             {
                 int chanceToTransfer = _craft.CalculateReassemblyChance(_player, penalty);
                 // Roll to see if the item can be created.
-                bool success = _random.Random(0, 100) <= chanceToTransfer;
+                bool success = RandomService.Random(0, 100) <= chanceToTransfer;
 
                 // Do a lucky roll if we failed the first time.
-                if (!success && luck > 0 && _random.Random(0, 100) <= luck)
+                if (!success && luck > 0 && RandomService.Random(0, 100) <= luck)
                 {
                     _player.SendMessage("Lucky reassemble!");
                     success = true;
@@ -184,12 +184,12 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
                         item.RecommendedLevel = levelIncrease;
                         BiowareXP2.IPSafeAddItemProperty(item, bonusIPPacked, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
 
-                        xp += (150 * maxBonuses + _random.Random(0, 5));
+                        xp += (150 * maxBonuses + RandomService.Random(0, 5));
                     }
                     else
                     {
                         _player.SendMessage(_color.Red("You failed to create a component. (+" + maxBonuses + ")"));
-                        xp += (50 + _random.Random(0, 5));
+                        xp += (50 + RandomService.Random(0, 5));
                     }
                     // Penalty to chance increases regardless if item was created or not.
                     penalty += (maxBonuses * 5);
@@ -206,12 +206,12 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
                         item.RecommendedLevel = levelIncrease;
                         BiowareXP2.IPSafeAddItemProperty(item, bonusIPPacked, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
 
-                        xp += (150 * amount + _random.Random(0, 5));
+                        xp += (150 * amount + RandomService.Random(0, 5));
                     }
                     else
                     {
                         _player.SendMessage(_color.Red("You failed to create a component. (+" + amount + ")"));
-                        xp += (50 + _random.Random(0, 5));
+                        xp += (50 + RandomService.Random(0, 5));
                     }
                     break;
                 }

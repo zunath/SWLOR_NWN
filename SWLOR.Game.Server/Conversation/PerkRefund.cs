@@ -28,27 +28,20 @@ namespace SWLOR.Game.Server.Conversation
         
         private readonly ICustomEffectService _customEffect;
         private readonly IPlayerStatService _stat;
-        private readonly ITimeService _time;
         private readonly IBackgroundService _background;
         
         public PerkRefund(
              
             IDialogService dialog,
-            
             IColorTokenService color,
-            
             ICustomEffectService customEffect,
             IPlayerStatService stat,
-            ITimeService time, 
             IBackgroundService background)
             : base(dialog)
         {
-            
             _color = color;
-            
             _customEffect = customEffect;
             _stat = stat;
-            _time = time;
             _background = background;
         }
 
@@ -110,7 +103,7 @@ namespace SWLOR.Game.Server.Conversation
             if (dbPlayer.DatePerkRefundAvailable != null && dbPlayer.DatePerkRefundAvailable > DateTime.UtcNow)
             {
                 TimeSpan delta = (DateTime)dbPlayer.DatePerkRefundAvailable - DateTime.UtcNow;
-                var time = _time.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
+                var time = TimeService.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
                 header += "You can refund another perk in " + time;   
             }
             else
@@ -193,7 +186,7 @@ namespace SWLOR.Game.Server.Conversation
             if (canRefund) return true;
             
             TimeSpan delta = refundDate - DateTime.UtcNow;
-            string time = _time.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
+            string time = TimeService.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
             GetPC().FloatingText("You can refund another perk in " + time);
     
             return false;

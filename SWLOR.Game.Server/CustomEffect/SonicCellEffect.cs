@@ -8,17 +8,6 @@ namespace SWLOR.Game.Server.CustomEffect
 {
     public class SonicCellEffect: ICustomEffect
     {
-        
-        private readonly IRandomService _random;
-
-        public SonicCellEffect(
-            
-            IRandomService random)
-        {
-            
-            _random = random;
-        }
-
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
             oCaster.SendMessage("A sonic cell lands on your target.");
@@ -28,7 +17,7 @@ namespace SWLOR.Game.Server.CustomEffect
         public void Tick(NWCreature oCaster, NWObject oTarget, int currentTick, int effectiveLevel, string data)
         {
             if (currentTick % 2 != 0) return;
-            int damage = _random.D4(1);
+            int damage = RandomService.D4(1);
             oTarget.SetLocalInt(AbilityService.LAST_ATTACK + oCaster.GlobalID, AbilityService.ATTACK_DOT);
 
             oCaster.AssignCommand(() =>

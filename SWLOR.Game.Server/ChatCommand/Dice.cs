@@ -3,6 +3,7 @@ using NWN;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 
@@ -12,18 +13,18 @@ namespace SWLOR.Game.Server.ChatCommand
     public class Dice : IChatCommand
     {
         
-        private readonly IRandomService _random;
+        
         private readonly IColorTokenService _color;
 
         private string GenericError;
 
         public Dice(
             
-            IRandomService random,
+            
             IColorTokenService color)
         {
             
-            _random = random;
+            
             _color = color;
 
             GenericError = _color.Red("Please enter /dice help for more information on how to use this command.");
@@ -100,25 +101,25 @@ namespace SWLOR.Game.Server.ChatCommand
             switch (sides)
             {
                 case 2:
-                    value = _random.D2(number);
+                    value = RandomService.D2(number);
                     break;
                 case 4:
-                    value = _random.D4(number);
+                    value = RandomService.D4(number);
                     break;
                 case 6:
-                    value = _random.D6(number);
+                    value = RandomService.D6(number);
                     break;
                 case 8:
-                    value = _random.D8(number);
+                    value = RandomService.D8(number);
                     break;
                 case 10:
-                    value = _random.D10(number);
+                    value = RandomService.D10(number);
                     break;
                 case 20:
-                    value = _random.D20(number);
+                    value = RandomService.D20(number);
                     break;
                 case 100:
-                    value = _random.D100(number);
+                    value = RandomService.D100(number);
                     break;
                 default:
                     value = 0;

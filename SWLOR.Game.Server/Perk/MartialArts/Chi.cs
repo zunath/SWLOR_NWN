@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using NWN;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 
@@ -8,17 +9,6 @@ namespace SWLOR.Game.Server.Perk.MartialArts
 {
     public class Chi: IPerk
     {
-        
-        private readonly IRandomService _random;
-
-        public Chi(
-            
-            IRandomService random)
-        {
-            
-            _random = random;
-        }
-
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return true;
@@ -76,7 +66,7 @@ namespace SWLOR.Game.Server.Perk.MartialArts
             float percentage = perkLevel * 0.10f;
             int heal = (int)(target.MaxHP * percentage);
 
-            heal = _random.Random(minimum, heal);
+            heal = RandomService.Random(minimum, heal);
 
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(heal), target);
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_HEALING_G), target);

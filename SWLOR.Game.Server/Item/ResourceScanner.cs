@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
@@ -12,23 +13,17 @@ namespace SWLOR.Game.Server.Item
 {
     public class ResourceScanner: IActionItem
     {
-        private readonly ISpawnService _spawn;
-        private readonly IRandomService _random;
         private readonly IPerkService _perk;
         private readonly IResourceService _resource;
         private readonly ISkillService _skill;
         private readonly IDurabilityService _durability;
         
         public ResourceScanner(
-            ISpawnService spawn,
-            IRandomService random,
             IPerkService perk,
             IResourceService resource,
             ISkillService skill,
             IDurabilityService durability)
         {
-            _spawn = spawn;
-            _random = random;
             _perk = perk;
             _resource = resource;
             _skill = skill;
@@ -49,14 +44,14 @@ namespace SWLOR.Game.Server.Item
             if (!target.IsValid || Equals(user, target))
             {
                 ScanArea(user, targetLocation);
-                _durability.RunItemDecay(player, item, _random.RandomFloat(0.02f, 0.08f));
+                _durability.RunItemDecay(player, item, RandomService.RandomFloat(0.02f, 0.08f));
                 effectLocation = targetLocation;
 
             }
             else if(!string.IsNullOrWhiteSpace(target.GetLocalString("RESOURCE_RESREF")))
             {
                 ScanResource(user, target);
-                _durability.RunItemDecay(player, item, _random.RandomFloat(0.05f, 0.1f));
+                _durability.RunItemDecay(player, item, RandomService.RandomFloat(0.05f, 0.1f));
                 effectLocation = target.Location;
             }
             else
@@ -78,7 +73,7 @@ namespace SWLOR.Game.Server.Item
         private void ScanArea(NWCreature user, Location targetLocation)
         {
             NWArea area = (_.GetAreaFromLocation(targetLocation));
-            var spawns = _spawn.GetAreaPlaceableSpawns(area);
+            var spawns = SpawnService.GetAreaPlaceableSpawns(area);
             var spawn = spawns
                 .Where(x => !string.IsNullOrWhiteSpace(x.SpawnPlaceable.GetLocalString("RESOURCE_RESREF")) &&
                             x.SpawnPlaceable.IsValid)

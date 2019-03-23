@@ -2,19 +2,13 @@
 using System.Linq;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Processor.Contracts;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Processor
 {
     public class AppStateProcessor: IEventProcessor
     {
-        private readonly IObjectProcessingService _ops;
-
-        public AppStateProcessor(IObjectProcessingService ops)
-        {
-            _ops = ops;
-        }
-
         public void Run(object[] args)
         {
             foreach (var npcTable in AppCache.NPCEnmityTables.ToArray())
@@ -29,7 +23,7 @@ namespace SWLOR.Game.Server.Processor
                 var npcBehaviour = AppCache.NPCBehaviours.ElementAt(x);
                 if (!npcBehaviour.Value.IsValid)
                 {
-                    _ops.UnregisterProcessingEvent(npcBehaviour.Key);
+                    ObjectProcessingService.UnregisterProcessingEvent(npcBehaviour.Key);
                     AppCache.NPCBehaviours.Remove(npcBehaviour.Key);
                 }
             }

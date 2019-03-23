@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Item
         
         private readonly IBaseService _base;
         private readonly IItemService _item;
-        private readonly IRandomService _random;
+        
         private readonly IDurabilityService _durability;
 
         public MineralScanner(
@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Item
             
             IBaseService @base,
             IItemService item,
-            IRandomService random,
+            
             IDurabilityService durability)
         {
             
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Item
             
             _base = @base;
             _item = item;
-            _random = random;
+            
             _durability = durability;
         }
 
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Item
                 user.SendMessage(name + " [Density: " + lti.Weight + "]");
             }
             
-            _durability.RunItemDecay(user.Object, item, _random.RandomFloat(0.02f, 0.08f));
+            _durability.RunItemDecay(user.Object, item, RandomService.RandomFloat(0.02f, 0.08f));
         }
         
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)

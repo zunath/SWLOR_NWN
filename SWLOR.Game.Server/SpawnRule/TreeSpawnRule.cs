@@ -12,18 +12,9 @@ namespace SWLOR.Game.Server.SpawnRule
 {
     public class TreeSpawnRule : ISpawnRule
     {
-        private readonly IRandomService _random;
-        
-
-        public TreeSpawnRule(IRandomService random)
-        {
-            _random = random;
-            
-        }
-
         public void Run(NWObject target, params object[] args)
         {
-            int roll = _random.Random(0, 100);
+            int roll = RandomService.Random(0, 100);
             ResourceQuality quality = ResourceQuality.Low;
             string qualityName = "Low Quality";
 
@@ -58,7 +49,7 @@ namespace SWLOR.Game.Server.SpawnRule
             }
 
 
-            roll = _random.Random(0, 100);
+            roll = RandomService.Random(0, 100);
             if (roll <= 2)
             {
                 tier++;
@@ -71,7 +62,7 @@ namespace SWLOR.Game.Server.SpawnRule
 
             target.SetLocalInt("RESOURCE_QUALITY", (int)quality);
             target.SetLocalInt("RESOURCE_TIER", tier);
-            target.SetLocalInt("RESOURCE_COUNT", _random.Random(3, 10));
+            target.SetLocalInt("RESOURCE_COUNT", RandomService.Random(3, 10));
             target.SetLocalString("RESOURCE_RESREF", GetResourceResref(tier));
             target.SetLocalString("RESOURCE_QUALITY_NAME", qualityName);
         }

@@ -16,22 +16,6 @@ namespace SWLOR.Game.Server.Processor
 {
     public class SpawnProcessor: IEventProcessor
     {
-        private readonly IObjectProcessingService _processor;
-        
-        private readonly ISpawnService _spawn;
-        
-
-        public SpawnProcessor(
-            IObjectProcessingService processor,
-            
-            ISpawnService spawn)
-        {
-            _processor = processor;
-            
-            _spawn = spawn;
-            
-        }
-
         public void Run(object[] args)
         {
             var spawns = AppCache.AreaSpawns;
@@ -47,7 +31,7 @@ namespace SWLOR.Game.Server.Processor
                 // No players in area. Process the despawner.
                 if(pcsInArea <= 0 && areaSpawn.HasSpawned)
                 {
-                    areaSpawn.SecondsEmpty += _processor.ProcessingTickInterval;
+                    areaSpawn.SecondsEmpty += ObjectProcessingService.ProcessingTickInterval;
 
                     if(areaSpawn.SecondsEmpty >= 1200) // 20 minutes have passed with no players in the area.
                     {
@@ -105,7 +89,7 @@ namespace SWLOR.Game.Server.Processor
             // Don't process anything that's valid.
             if (spawn.Spawn.IsValid) return;
 
-            spawn.Timer += _processor.ProcessingTickInterval;
+            spawn.Timer += ObjectProcessingService.ProcessingTickInterval;
 
             // Time to respawn!
             if (spawn.Timer >= spawn.RespawnTime || forceSpawn)
@@ -142,7 +126,7 @@ namespace SWLOR.Game.Server.Processor
 
                 if (location == null)
                 {
-                    location = _spawn.GetRandomSpawnPoint(area);
+                    location = SpawnService.GetRandomSpawnPoint(area);
                 }
 
                 spawn.Spawn = _.CreateObject(objectType, resref, location);
@@ -164,7 +148,7 @@ namespace SWLOR.Game.Server.Processor
                     spawn.Spawn.SetLocalString("BEHAVIOUR", behaviour);
 
                 if (objectType == OBJECT_TYPE_CREATURE)
-                    _spawn.AssignScriptEvents(spawn.Spawn.Object);
+                    SpawnService.AssignScriptEvents(spawn.Spawn.Object);
 
                 if (!string.IsNullOrWhiteSpace(spawn.SpawnRule))
                 {

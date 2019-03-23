@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Perk.Shields
@@ -10,19 +11,19 @@ namespace SWLOR.Game.Server.Perk.Shields
     {
         
         private readonly IPerkService _perk;
-        private readonly IRandomService _random;
+        
         private readonly IColorTokenService _color;
         private readonly IPlayerStatService _playerStat;
 
         public ExpulsionManeuver(
             IPerkService perk,
-            IRandomService random,
+            
             IColorTokenService color,
             IPlayerStatService playerStat)
         {
             
             _perk = perk;
-            _random = random;
+            
             _color = color;
             _playerStat = playerStat;
         }
@@ -98,7 +99,7 @@ namespace SWLOR.Game.Server.Perk.Shields
             int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
             chance += luck;
 
-            if (_random.Random(100) + 1 <= chance)
+            if (RandomService.Random(100) + 1 <= chance)
             {
                 _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, _.EffectAttackIncrease(ab), player.Object, length);
                 player.SendMessage(_color.Combat("You perform a defensive maneuver."));

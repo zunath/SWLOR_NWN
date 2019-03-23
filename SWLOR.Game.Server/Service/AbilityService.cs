@@ -22,11 +22,8 @@ namespace SWLOR.Game.Server.Service
     {
         private readonly IPerkService _perk;
         private readonly IPVPSanctuaryService _pvpSanctuary;
-        private readonly ITimeService _time;
-        
-        
         private readonly IColorTokenService _color;
-        private readonly IRandomService _random;
+        
         private readonly IEnmityService _enmity;
         
         
@@ -47,18 +44,16 @@ namespace SWLOR.Game.Server.Service
         public AbilityService( 
             IPerkService perk,
             IPVPSanctuaryService pvpSanctuary,
-            ITimeService time,
             IColorTokenService color,
-            IRandomService random,
+            
             IEnmityService enmity,
             ICustomEffectService customEffect,
             IPlayerStatService playerStat)
         {
             _perk = perk;
             _pvpSanctuary = pvpSanctuary;
-            _time = time;
             _color = color;
-            _random = random;
+            
             _enmity = enmity;
             _customEffect = customEffect;
             _playerStat = playerStat;
@@ -166,7 +161,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (unlockDateTime > now)
                 {
-                    string timeToWait = _time.GetTimeToWaitLongIntervals(now, unlockDateTime, false);
+                    string timeToWait = TimeService.GetTimeToWaitLongIntervals(now, unlockDateTime, false);
                     pc.SendMessage("That ability can be used in " + timeToWait + ".");
                     return;
                 }
@@ -503,9 +498,9 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var effect in damageTypes)
             {
-                if (_random.D100(1) <= chance)
+                if (RandomService.D100(1) <= chance)
                 {
-                    _customEffect.ApplyCustomEffect(player, target.Object, effect, _random.D6(1), perkLevel, null);
+                    _customEffect.ApplyCustomEffect(player, target.Object, effect, RandomService.D6(1), perkLevel, null);
                 }
             }
 
@@ -539,7 +534,7 @@ namespace SWLOR.Game.Server.Service
             }
 
 
-            if (_random.D100(1) <= chance)
+            if (RandomService.D100(1) <= chance)
             {
                 _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectKnockdown(), target, duration);
             }

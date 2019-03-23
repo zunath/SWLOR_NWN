@@ -14,20 +14,6 @@ namespace SWLOR.Game.Server.Service
 {
     public class AreaService : IAreaService
     {
-        
-        
-        private readonly ISpawnService _spawn;
-        
-        public AreaService(
-            
-            
-            ISpawnService spawn)
-        {
-            
-            
-            _spawn = spawn;
-        }
-
         public void OnModuleLoad()
         {
             var areas = NWModule.Get().Areas;
@@ -225,7 +211,7 @@ namespace SWLOR.Game.Server.Service
             instance.SetLocalLocation("INSTANCE_ENTRANCE", entranceWP.Location);
             entranceWP.Destroy(); // Destroy it so we don't get dupes.
 
-            _spawn.InitializeAreaSpawns(instance);
+            SpawnService.InitializeAreaSpawns(instance);
             
             string spawnScript = instance.GetLocalString("INSTANCE_ON_SPAWN");
             if (!string.IsNullOrWhiteSpace(spawnScript))

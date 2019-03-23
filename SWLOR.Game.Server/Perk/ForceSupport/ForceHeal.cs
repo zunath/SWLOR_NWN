@@ -4,6 +4,7 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 
@@ -29,7 +30,7 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
 
         
         private readonly IPerkService _perk;
-        private readonly IRandomService _random;
+        
         private readonly ISkillService _skill;
         private readonly ICustomEffectService _customEffect;
         private readonly IPlayerStatService _playerStat;
@@ -62,14 +63,14 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
 
         public ForceHeal(
             IPerkService perk,
-            IRandomService random,
+            
             ISkillService skill,
             ICustomEffectService customEffect,
             IPlayerStatService playerStat)
         {
             
             _perk = perk;
-            _random = random;
+            
             _skill = skill;
             _customEffect = customEffect;
             _playerStat = playerStat;
@@ -391,7 +392,7 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
             
             // Do a lucky check. Increases damage by 50% if successful.
             int luck = _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + effectiveStats.Luck;
-            if (_random.Random(100) + 1 <= luck)
+            if (RandomService.Random(100) + 1 <= luck)
             {
                 amount = (int) (amount * 1.5f);
                 oPC.SendMessage("Lucky heal!");

@@ -1,6 +1,7 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 
@@ -12,7 +13,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
         private readonly ISkillService _skill;
         private readonly ICombatService _combat;
         private readonly IPerkService _perk;
-        private readonly IRandomService _random;
+        
         private readonly IPlayerStatService _stat;
 
         public DrainLife(
@@ -20,14 +21,14 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
             ISkillService skill,
             ICombatService combat,
             IPerkService perk,
-            IRandomService random,
+            
             IPlayerStatService stat)
         {
             
             _skill = skill;
             _combat = combat;
             _perk = perk;
-            _random = random;
+            
             _stat = stat;
         }
 
@@ -128,7 +129,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
 
             var effectiveStats = _stat.GetPlayerItemEffectiveStats(player);
             int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
-            if (_random.Random(100) + 1 <= luck)
+            if (RandomService.Random(100) + 1 <= luck)
             {
                 recoveryPercent = 1.0f;
                 player.SendMessage("Lucky drain life!");

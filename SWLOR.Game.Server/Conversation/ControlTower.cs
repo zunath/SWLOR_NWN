@@ -20,7 +20,6 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IBasePermissionService _perm;
         private readonly ISerializationService _serialization;
         private readonly IColorTokenService _color;
-        private readonly ITimeService _time;
 
         public ControlTower(
              
@@ -29,8 +28,7 @@ namespace SWLOR.Game.Server.Conversation
             IBasePermissionService perm,
             ISerializationService serialization,
             IBaseService @base,
-            IColorTokenService color,
-            ITimeService time) 
+            IColorTokenService color) 
             : base(dialog)
         {
             
@@ -38,7 +36,6 @@ namespace SWLOR.Game.Server.Conversation
             _serialization = serialization;
             _base = @base;
             _color = color;
-            _time = time;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -100,7 +97,7 @@ namespace SWLOR.Game.Server.Conversation
                 }
                 
                 TimeSpan timeSpan = TimeSpan.FromMinutes(minutes * currentFuel) + deltaTime;
-                time = _time.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false);
+                time = TimeService.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false);
 
                 time = "Fuel will expire in " + time;
             }

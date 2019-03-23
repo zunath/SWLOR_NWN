@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Service
         private const string IPWeaponPenaltyTag = "SKILL_PENALTY_WEAPON_ITEM_PROPERTY";
         private const string IPEquipmentPenaltyTag = "SKILL_PENALTY_EQUIPMENT_ITEM_PROPERTY";
         
-        private readonly IRandomService _random;
+        
         private readonly IEnmityService _enmity;
         private readonly IPlayerStatService _playerStat;
         private readonly IItemService _item;
@@ -29,13 +29,13 @@ namespace SWLOR.Game.Server.Service
 
 
         public SkillService(
-            IRandomService random,
+            
             IEnmityService enmity,
             IPlayerStatService playerStat,
             IItemService item)
         {
 
-            _random = random;
+            
 
             _enmity = enmity;
             _playerStat = playerStat;
@@ -579,7 +579,7 @@ namespace SWLOR.Game.Server.Service
 
             while (xp > 0)
             {
-                int skillIndex = _random.Random(skillsPossibleToDecay.Count);
+                int skillIndex = RandomService.Random(skillsPossibleToDecay.Count);
                 PCSkill decaySkill = skillsPossibleToDecay[skillIndex];
                 int totalDecaySkillXP = totalXPs.Find(x => x.SkillID == decaySkill.SkillID).TotalSkillXP;
                 int oldRank = decaySkill.Rank;

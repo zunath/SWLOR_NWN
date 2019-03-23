@@ -15,15 +15,15 @@ namespace SWLOR.Game.Server.Item
 {
     public class WaterJug: IActionItem
     {
-        private readonly IRandomService _random;
+        
         
         private readonly ISkillService _skill;
 
-        public WaterJug(IRandomService random, 
+        public WaterJug( 
             
             ISkillService skill)
         {
-            _random = random;
+            
             
             _skill = skill;
         }

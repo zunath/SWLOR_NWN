@@ -18,16 +18,8 @@ namespace SWLOR.Game.Server.Processor
         private const int DefaultRestartMinutes = 300; // 300 = 5 hours
         private const int NotificationIntervalMinutes = 60;
         
-        
-        private readonly ITimeService _time;
-        
-
-        public ServerRestartProcessor(
-            ITimeService time)
-            
+        public ServerRestartProcessor()   
         {
-            _time = time;
-
             if (!_isLoaded)
             {
                 string autoRebootMinutes = Environment.GetEnvironmentVariable("AUTO_REBOOT_MINUTES");
@@ -76,7 +68,7 @@ namespace SWLOR.Game.Server.Processor
             else if(now >= _nextNotification)
             {
                 var delta = RestartTime - now;
-                string rebootString = _time.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
+                string rebootString = TimeService.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
                 string message = "Server will automatically reboot in " + rebootString;
                 foreach (var player in NWModule.Get().Players)
                 {

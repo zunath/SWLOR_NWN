@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
@@ -12,17 +13,17 @@ namespace SWLOR.Game.Server.Item
     {
         private readonly IDurabilityService _durability;
         private readonly IPerkService _perk;
-        private readonly IRandomService _random;
+        
         private readonly ISkillService _skill;
         public RepairKit(
             IDurabilityService durability,
             IPerkService perk,
-            IRandomService random,
+            
             ISkillService skill)
         {
             _durability = durability;
             _perk = perk;
-            _random = random;
+            
             _skill = skill;
         }
 
@@ -62,7 +63,7 @@ namespace SWLOR.Game.Server.Item
             }
             float minReduction = 0.05f * tech;
             float maxReduction = 0.15f * tech;
-            float reductionAmount = _random.RandomFloat(minReduction, maxReduction);
+            float reductionAmount = RandomService.RandomFloat(minReduction, maxReduction);
             if (delta >= 6) baseXP = 400;
             else if (delta == 5) baseXP = 350;
             else if (delta == 4) baseXP = 325;

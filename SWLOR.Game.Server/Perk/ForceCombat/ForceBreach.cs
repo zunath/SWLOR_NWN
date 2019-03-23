@@ -1,6 +1,7 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 
@@ -10,7 +11,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
     {
         
         private readonly IPerkService _perk;
-        private readonly IRandomService _random;
+        
         private readonly ISkillService _skill;
         private readonly ICustomEffectService _customEffect;
         private readonly IPlayerStatService _playerStat;
@@ -19,7 +20,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
         public ForceBreach(
             
             IPerkService perk,
-            IRandomService random,
+            
             ISkillService skill,
             ICustomEffectService customEffect,
             IPlayerStatService playerStat,
@@ -27,7 +28,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
         {
             
             _perk = perk;
-            _random = random;
+            
             _skill = skill;
             _customEffect = customEffect;
             _playerStat = playerStat;
@@ -136,7 +137,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
             }
 
             int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
-            if (_random.Random(100) + 1 <= luck)
+            if (RandomService.Random(100) + 1 <= luck)
             {
                 length = length * 2;
                 player.SendMessage("Lucky force breach!");

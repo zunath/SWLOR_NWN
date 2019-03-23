@@ -19,9 +19,6 @@ namespace SWLOR.Game.Server.Service
         private const string SearchSiteDCVariableName = "SearchSiteDC";
         private const string SearchSiteLootTableVariableName = "SearchLootTable";
         private const int ExtraSearchPerNumberLevels = 5;
-
-        
-        private readonly IRandomService _random;
         
         private readonly IQuestService _quest;
         private readonly ISerializationService _serialization;
@@ -30,18 +27,12 @@ namespace SWLOR.Game.Server.Service
         private readonly IDurabilityService _durability;
 
         public SearchService(
-            
-            IRandomService random,
-            
             IQuestService quest,
             ISerializationService serialization,
             ILocalVariableService localVariable,
             IColorTokenService color,
             IDurabilityService durability)
         {
-            
-            _random = random;
-            
             _quest = quest;
             _serialization = serialization;
             _localVariable = localVariable;
@@ -79,7 +70,7 @@ namespace SWLOR.Game.Server.Service
 
                 float minSearchSeconds = 1.5f;
                 float maxSearchSeconds = 4.5f;
-                float searchDelay = _random.RandomFloat() * (maxSearchSeconds - minSearchSeconds) + minSearchSeconds;
+                float searchDelay = RandomService.RandomFloat() * (maxSearchSeconds - minSearchSeconds) + minSearchSeconds;
 
                 oPC.AssignCommand(() =>
                 {
@@ -141,7 +132,7 @@ namespace SWLOR.Game.Server.Service
                 for (int search = 1; search <= numberOfSearches; search++)
                 {
                     RunSearchCycle(oPC, oChest, dc);
-                    dc += _random.Random(3) + 1;
+                    dc += RandomService.Random(3) + 1;
                 }
 
                 SaveChestInventory(oPC, oChest, false);
@@ -188,7 +179,7 @@ namespace SWLOR.Game.Server.Service
             int chestID = oChest.GetLocalInt(SearchSiteIDVariableName);
             PCSearchSite entity = DataService.SingleOrDefault<PCSearchSite>(x => x.PlayerID == oPC.GlobalID && x.SearchSiteID == chestID);
 
-            int lockHours = _random.Random(2, 5);
+            int lockHours = RandomService.Random(2, 5);
             DateTime lockTime = DateTime.UtcNow.AddHours(lockHours);
             if (entity != null)
             {
@@ -229,7 +220,7 @@ namespace SWLOR.Game.Server.Service
             if (skill > 10) skill = 10;
             else if (skill < 0) skill = 0;
 
-            int roll = _random.Random(20) + 1;
+            int roll = RandomService.Random(20) + 1;
             int combinedRoll = roll + skill;
             if (roll + skill >= iDC)
             {
@@ -241,7 +232,7 @@ namespace SWLOR.Game.Server.Service
                     NWItem foundItem = (_.CreateItemOnObject(spawnItem.Resref, oChest.Object, spawnItem.Quantity, ""));
                     float maxDurability = _durability.GetMaxDurability(foundItem);
                     if (maxDurability > -1)
-                        _durability.SetDurability(foundItem, _random.RandomFloat() * maxDurability + 1);
+                        _durability.SetDurability(foundItem, RandomService.RandomFloat() * maxDurability + 1);
                 }
             }
             else
@@ -261,10 +252,10 @@ namespace SWLOR.Game.Server.Service
             {
                 weights[x] = lootTableItems.ElementAt(x).Weight;
             }
-            int randomIndex = _random.GetRandomWeightedIndex(weights);
+            int randomIndex = RandomService.GetRandomWeightedIndex(weights);
 
             LootTableItem itemEntity = lootTableItems.ElementAt(randomIndex);
-            int quantity = _random.Random(itemEntity.MaxQuantity) + 1;
+            int quantity = RandomService.Random(itemEntity.MaxQuantity) + 1;
 
             ItemVO result = new ItemVO
             {

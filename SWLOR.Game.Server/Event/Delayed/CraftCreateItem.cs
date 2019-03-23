@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Event.Delayed
         private readonly IColorTokenService _color;
         private readonly IBaseService _base;
         private readonly ISkillService _skill;
-        private readonly IRandomService _random;
+        
         private readonly IPlayerStatService _playerStat;
         private readonly IDurabilityService _durability;
         private readonly IPerkService _perk;
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Event.Delayed
             IColorTokenService color,
             IBaseService @base,
             ISkillService skill,
-            IRandomService random,
+            
             IPlayerStatService playerStat,
             IDurabilityService durability,
             IPerkService perk)
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Event.Delayed
             _color = color;
             _base = @base;
             _skill = skill;
-            _random = random;
+            
             _playerStat = playerStat;
             _durability = durability;
             _perk = perk;
@@ -125,9 +125,9 @@ namespace SWLOR.Game.Server.Event.Delayed
                 _base.ApplyCraftedItemLocalVariables(item, baseStructure);
             }
 
-            if(_random.Random(1, 100) <= luckyBonus)
+            if(RandomService.Random(1, 100) <= luckyBonus)
             {
-                chance += _random.Random(1, luckyBonus);
+                chance += RandomService.Random(1, luckyBonus);
             }
             
             int successAmount = 0;
@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.Event.Delayed
             }
             
             player.SendMessage("You created " + blueprint.Quantity + "x " + blueprint.ItemName + "!");
-            int baseXP = 250 + successAmount * _random.Random(1, 50);
+            int baseXP = 250 + successAmount * RandomService.Random(1, 50);
             float xp = _skill.CalculateRegisteredSkillLevelAdjustedXP(baseXP, model.AdjustedLevel, pcSkill.Rank);
 
             var pcCraftedBlueprint = DataService.SingleOrDefault<PCCraftedBlueprint>(x => x.PlayerID == player.GlobalID && x.CraftBlueprintID == blueprint.ID);
@@ -210,7 +210,7 @@ namespace SWLOR.Game.Server.Event.Delayed
                 int tlkID = Convert.ToInt32(_.Get2DAString("iprp_compbon", "Name", bonusTypeID));
                 int amount = _.GetItemPropertyCostTableValue(ip);
                 string bonusName = _.GetStringByStrRef(tlkID) + " " + amount;
-                float random = _random.RandomFloat() * 100.0f;
+                float random = RandomService.RandomFloat() * 100.0f;
                 float modifiedEquipmentBonus = equipmentBonus * 0.25f;
 
                 if (random <= chance + modifiedEquipmentBonus)
@@ -238,19 +238,19 @@ namespace SWLOR.Game.Server.Event.Delayed
                         switch (componentLevel)
                         {
                             case 1:
-                                penalty = _random.Random(1, 19);
+                                penalty = RandomService.Random(1, 19);
                                 break;
                             case 2:
-                                penalty = _random.Random(1, 9);
+                                penalty = RandomService.Random(1, 9);
                                 break;
                             case 3:
-                                penalty = _random.Random(1, 6);
+                                penalty = RandomService.Random(1, 6);
                                 break;
                             case 4:
-                                penalty = _random.Random(1, 4);
+                                penalty = RandomService.Random(1, 4);
                                 break;
                             default:
-                                penalty = _random.Random(1, 3);
+                                penalty = RandomService.Random(1, 3);
                                 break;
                         }
                         chance -=  penalty;

@@ -17,9 +17,7 @@ namespace SWLOR.Game.Server.Conversation
     {
         private readonly IColorTokenService _color;
         private readonly IMarketService _market;
-        
         private readonly ISerializationService _serialization;
-        private readonly ITimeService _time;
 
         public MarketTerminal(
              
@@ -27,15 +25,13 @@ namespace SWLOR.Game.Server.Conversation
             IColorTokenService color,
             IMarketService market,
             
-            ISerializationService serialization,
-            ITimeService time) 
+            ISerializationService serialization) 
             : base(dialog)
         {
             _color = color;
             _market = market;
             
             _serialization = serialization;
-            _time = time;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -857,7 +853,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 DateTime now = DateTime.UtcNow;
                 var delta = model.ListingExpirationDate - now;
-                string expirationTime = _time.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
+                string expirationTime = TimeService.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
                 header += _color.Green("This listing expires in " + expirationTime + ".");
             }
 

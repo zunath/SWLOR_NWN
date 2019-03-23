@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 
@@ -9,18 +10,18 @@ namespace SWLOR.Game.Server.SpawnRule
 {
     public class DrillSpawnRule: ISpawnRule
     {
-        private readonly IRandomService _random;
+        
         private readonly IResourceService _resource;
         
         private readonly IColorTokenService _color;
 
         public DrillSpawnRule(
-            IRandomService random,
+            
             IResourceService resource,
             
             IColorTokenService color)
         {
-            _random = random;
+            
             _resource = resource;
             
             _color = color;
@@ -31,7 +32,7 @@ namespace SWLOR.Game.Server.SpawnRule
             int retrievalRating = (int) args[0];
             int highQualityChance = 10 * retrievalRating;
             int veryHighQualityChance = 2 * retrievalRating;
-            int roll = _random.Random(0, 100);
+            int roll = RandomService.Random(0, 100);
 
             ResourceQuality quality = ResourceQuality.Normal;
 

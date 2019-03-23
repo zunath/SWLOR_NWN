@@ -14,17 +14,6 @@ namespace SWLOR.Game.Server.Service
 {
     public class LootService: ILootService
     {
-        
-        private readonly IRandomService _random;
-        
-
-        public LootService(
-            IRandomService random)
-        {
-            
-            _random = random;
-        }
-
         public ItemVO PickRandomItemFromLootTable(int lootTableID)
         {
             if (lootTableID <= 0) return null;
@@ -37,9 +26,9 @@ namespace SWLOR.Game.Server.Service
                 weights[x] = lootTableItems.ElementAt(x).Weight;
             }
 
-            int randomIndex = _random.GetRandomWeightedIndex(weights);
+            int randomIndex = RandomService.GetRandomWeightedIndex(weights);
             LootTableItem itemEntity = lootTableItems.ElementAt(randomIndex);
-            int quantity = _random.Random(itemEntity.MaxQuantity) + 1;
+            int quantity = RandomService.Random(itemEntity.MaxQuantity) + 1;
             ItemVO result = new ItemVO
             {
                 Quantity = quantity,
@@ -88,12 +77,12 @@ namespace SWLOR.Game.Server.Service
 
             for (int a = 1; a <= attempts; a++)
             {
-                if (_random.Random(100) + 1 <= chance)
+                if (RandomService.Random(100) + 1 <= chance)
                 {
                     ItemVO model = PickRandomItemFromLootTable(lootTableID);
                     if (model == null) continue;
 
-                    int spawnQuantity = model.Quantity > 1 ? _random.Random(1, model.Quantity) : 1;
+                    int spawnQuantity = model.Quantity > 1 ? RandomService.Random(1, model.Quantity) : 1;
 
                     for (int x = 1; x <= spawnQuantity; x++)
                     {

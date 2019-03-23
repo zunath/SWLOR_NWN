@@ -7,6 +7,8 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.Delayed;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Area;
 using SWLOR.Game.Server.NWNX;
 
 using SWLOR.Game.Server.ValueObject;
@@ -19,7 +21,12 @@ namespace SWLOR.Game.Server.Service
     public static class CraftService
     {
         private const float BaseCraftDelay = 18.0f;
-
+        
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnAreaEnter>(message => OnAreaEnter());
+        }
+        
         private static List<CraftBlueprint> GetCraftBlueprintsAvailableToPlayer(Guid playerID)
         {
             var pcPerks = DataService.Where<PCPerk>(x => x.PlayerID == playerID).ToList();
@@ -673,7 +680,7 @@ namespace SWLOR.Game.Server.Service
             return text;
         }
 
-        public static void OnAreaEnter()
+        private static void OnAreaEnter()
         {
             NWArea area = Object.OBJECT_SELF;
             string bonuses = GetAreaAtmosphereBonusText(area);

@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.AI
             {
                 _.ClearAllActions();
 
-                NWObject self = NWN.Object.OBJECT_SELF;
+                NWObject self = Object.OBJECT_SELF;
                 App.RunEvent<ForceAttackHighestEnmity>(self);
             }
         }

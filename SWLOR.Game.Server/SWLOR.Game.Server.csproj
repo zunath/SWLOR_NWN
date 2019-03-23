@@ -468,10 +468,10 @@
     <Compile Include="Enumeration\SpellStatusType.cs" />
     <Compile Include="Enumeration\StructureModeType.cs" />
     <Compile Include="Enumeration\StructurePermission.cs" />
-    <Compile Include="Event\Area\OnAreaUserDefined.cs" />
-    <Compile Include="Event\Area\OnAreaHeartbeat.cs" />
-    <Compile Include="Event\Area\OnAreaExit.cs" />
-    <Compile Include="Event\Area\OnAreaEnter.cs" />
+    <Compile Include="NWN\Events\Area\OnAreaUserDefined.cs" />
+    <Compile Include="NWN\Events\Area\OnAreaHeartbeat.cs" />
+    <Compile Include="NWN\Events\Area\OnAreaExit.cs" />
+    <Compile Include="NWN\Events\Area\OnAreaEnter.cs" />
     <Compile Include="Event\Conversation\HasCredits.cs" />
     <Compile Include="Event\Conversation\HasSkillRank.cs" />
     <Compile Include="Event\Conversation\KeyItemCheck.cs" />
@@ -484,7 +484,7 @@
     <Compile Include="Event\Conversation\QuestCollectItem.cs" />
     <Compile Include="Event\Conversation\QuestComplete.cs" />
     <Compile Include="Event\Conversation\QuestIsDone.cs" />
-    <Compile Include="Event\Conversation\Tatooine GoCorp Transport\TransportToMosEisley.cs" />
+    <Compile Include="Event\Conversation\TransportToMosEisley.cs" />
     <Compile Include="Event\Conversation\WarpToWaypoint.cs" />
     <Compile Include="Event\Creature\OnBlocked.cs" />
     <Compile Include="Event\Creature\OnCombatRoundEnd.cs" />

@@ -11,6 +11,7 @@ using SWLOR.Game.Server.ValueObject.Skill;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.NWN.Events.Area;
 using static NWN._;
 
 
@@ -22,7 +23,11 @@ namespace SWLOR.Game.Server.Service
         private const string IPEquipmentPenaltyTag = "SKILL_PENALTY_EQUIPMENT_ITEM_PROPERTY";
         
         public static int SkillCap => 500;
-
+        
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnAreaExit>(message => OnAreaExit());
+        }
 
         public static void RegisterPCToAllCombatTargetsForSkill(NWPlayer player, SkillType skillType, NWCreature target)
         {
@@ -352,7 +357,7 @@ namespace SWLOR.Game.Server.Service
             return levelDifferencePenalty;
         }
 
-        public static void OnAreaExit()
+        private static void OnAreaExit()
         {
             NWPlayer oPC = _.GetExitingObject();
             RemovePlayerFromRegistrations(oPC);

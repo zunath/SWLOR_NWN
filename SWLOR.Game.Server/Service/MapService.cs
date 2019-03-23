@@ -1,10 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
-
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Area;
 using static NWN._;
 using Object = NWN.Object;
 
@@ -12,13 +14,20 @@ namespace SWLOR.Game.Server.Service
 {
     public static class MapService
     {
-        public static void OnAreaEnter()
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnAreaEnter>(message => OnAreaEnter());
+            MessageHub.Instance.Subscribe<OnAreaExit>(message => OnAreaExit());
+            MessageHub.Instance.Subscribe<OnAreaHeartbeat>(message => OnAreaHeartbeat());
+        }
+        
+        private static void OnAreaEnter()
         {
             NWArea area = (Object.OBJECT_SELF);
             NWPlayer player = _.GetEnteringObject();
-
+            
             if (!player.IsPlayer) return;
-
+            
             if (area.GetLocalInt("AUTO_EXPLORED") == TRUE)
             {
                 _.ExploreAreaForPlayer(area.Object, player);
@@ -27,7 +36,7 @@ namespace SWLOR.Game.Server.Service
             LoadMapProgression(area, player);
         }
 
-        public static void OnAreaExit()
+        private static void OnAreaExit()
         {
             NWArea area = Object.OBJECT_SELF;
             NWPlayer player = _.GetExitingObject();
@@ -112,6 +121,23 @@ namespace SWLOR.Game.Server.Service
                     count++;
                 }
             }
+        }
+
+
+        private static void OnAreaHeartbeat()
+        {
+            NWArea area = Object.OBJECT_SELF;
+            
+            if (area.GetLocalInt("HIDE_MINIMAP") == _.TRUE)
+            {
+                var players = NWModule.Get().Players.Where(x => x.Area.Equals(area) && x.IsPlayer);
+
+                foreach (var player in players)
+                {
+                    _.ExploreAreaForPlayer(area, player, _.FALSE);
+                }
+            }
+
         }
 
     }

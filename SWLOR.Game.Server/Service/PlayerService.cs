@@ -9,12 +9,19 @@ using NWN;
 using static NWN._;
 using Object = NWN.Object;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Area;
 using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class PlayerService
     {
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnAreaEnter>(message => OnAreaEnter());
+        }
+
         public static void InitializePlayer(NWPlayer player)
         {
             if (player == null) throw new ArgumentNullException(nameof(player));
@@ -262,7 +269,7 @@ namespace SWLOR.Game.Server.Service
             return DataService.Get<Player>(playerID);
         }
 
-        public static void OnAreaEnter()
+        private static void OnAreaEnter()
         {
             NWPlayer player = (_.GetEnteringObject());
 

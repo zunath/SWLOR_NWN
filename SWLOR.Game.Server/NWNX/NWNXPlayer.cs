@@ -87,18 +87,7 @@ namespace SWLOR.Game.Server.NWNX
 
             if (!string.IsNullOrWhiteSpace(script))
             {
-                // "." is an invalid character in NWN script files, but valid for the C# classes.
-                // Assume this is intended to be a C# call.
-                if (script.Contains("."))
-                {
-                    Type type = Assembly.GetExecutingAssembly().GetType(script);
-                    App.RunEvent(type);
-                }
-                // Everything else is assumed to be an NWN script.
-                else
-                {
-                    _.ExecuteScript(script, player.Object);
-                }
+                _.ExecuteScript(script, player.Object);
             }
         }
 

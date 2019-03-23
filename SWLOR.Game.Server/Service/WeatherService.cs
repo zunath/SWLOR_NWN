@@ -1,6 +1,8 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Area;
 using Object = NWN.Object;
 /*
     Name: WeatherService
@@ -44,6 +46,11 @@ namespace SWLOR.Game.Server.Service
 {
     public static class WeatherService
     {
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnAreaEnter>(message => OnAreaEnter());
+        }
+
         // Feedback texts.
         const string FB_T_WEATHER_LIGHTNING = "You were hit by the bolt of lightning!";
         const string FB_T_WEATHER_MESSAGE_CLOUDY = "Clouds move across the sky at a brisk pace, driven by strong wind.";
@@ -758,7 +765,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static void OnAreaEnter()
+        private static void OnAreaEnter()
         {
             SetWeather();
 

@@ -39,6 +39,13 @@ namespace SWLOR.Game.Server.Event.Module
             CustomEffectService.OnModuleLoad();
             ObjectVisibilityService.OnModuleLoad();
 
+
+            MapService.SubscribeEvents();
+            PerkService.SubscribeEvents();
+            PlayerService.SubscribeEvents();
+            SkillService.SubscribeEvents();
+            WeatherService.SubscribeEvents();
+
             nowString = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
             Console.WriteLine(nowString + ": Module OnLoad finished!");
             

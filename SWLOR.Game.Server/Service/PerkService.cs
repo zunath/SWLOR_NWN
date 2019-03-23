@@ -20,12 +20,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class PerkService
     {
-        static PerkService()
-        {
-            SubscribeEvents();
-        }
-
-        private static void SubscribeEvents()
+        public static void SubscribeEvents()
         {
             // The player perk level cache gets refreshed on the following events.
             MessageHub.Instance.Subscribe<SkillDecayedMessage>(message => CacheAllPerkLevels(message.Player));

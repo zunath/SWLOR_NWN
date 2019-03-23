@@ -9,6 +9,7 @@ using SWLOR.Game.Server.AreaInstance.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using static NWN._;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -205,7 +206,7 @@ namespace SWLOR.Game.Server.Service
             if (!entranceWP.IsValid)
             {
                 owner.SendMessage("ERROR: Couldn't locate entrance waypoint with tag '" + entranceWaypointTag + "'. Notify an admin.");
-                return new NWN.Object();
+                return new Object();
             }
 
             instance.SetLocalLocation("INSTANCE_ENTRANCE", entranceWP.Location);

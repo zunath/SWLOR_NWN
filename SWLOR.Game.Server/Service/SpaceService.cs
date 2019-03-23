@@ -16,6 +16,7 @@ using System.Text.RegularExpressions;
 using SWLOR.Game.Server.Bioware;
 using static NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -895,7 +896,7 @@ namespace SWLOR.Game.Server.Service
         private static void ClonePCAndSit(NWPlayer player, NWPlaceable chair)
         {
             // Create a copy of the PC and link the two. 
-            NWObject copy = _.CopyObject(player, player.Location, NWN.Object.OBJECT_INVALID, "spaceship_copy");
+            NWObject copy = _.CopyObject(player, player.Location, Object.OBJECT_INVALID, "spaceship_copy");
             _.ChangeToStandardFaction(copy, STANDARD_FACTION_DEFENDER);
 
             Effect eInv = _.EffectVisualEffect(VFX_DUR_CUTSCENE_INVISIBILITY);
@@ -942,7 +943,7 @@ namespace SWLOR.Game.Server.Service
         public static void OnNWNXChat()
         {
             // Is the speaker a pilot or gunner?
-            NWPlayer speaker = NWN.Object.OBJECT_SELF;
+            NWPlayer speaker = Object.OBJECT_SELF;
             if (!speaker.IsPlayer) return;
 
             // Ignore Tells, DM messages etc..

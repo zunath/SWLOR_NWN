@@ -18,8 +18,6 @@ using SWLOR.Game.Server.Processor.Contracts;
 using SWLOR.Game.Server.QuestRule.Contracts;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.SpawnRule.Contracts;
-using SWLOR.Game.Server.Threading;
-using SWLOR.Game.Server.Threading.Contracts;
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server
@@ -143,32 +141,6 @@ namespace SWLOR.Game.Server
             return result;
         }
         
-        public static void Resolve<T>(AppResolveDelegate<T> action)
-        {
-            if (action == null)
-            {
-                throw new NullReferenceException(nameof(action));
-            }
-
-            using (new Profiler(typeof(T).ToString()))
-            {
-                using (var scope = _container.BeginLifetimeScope())
-                {
-                    T resolved = (T)scope.Resolve(typeof(T));
-
-                    try
-                    {
-                        action.Invoke(resolved);
-                    }
-                    catch (Exception ex)
-                    {
-                        ErrorService.LogError(ex, typeof(T).ToString());
-                    }
-                }
-            }
-            
-        }
-        
         public static bool IsKeyRegistered<T>(string key)
         {
             bool isRegistered;
@@ -188,13 +160,6 @@ namespace SWLOR.Game.Server
             builder.RegisterType<DatabaseMigrationRunner>()
                 .As<IStartable>()
                 .SingleInstance();
-            builder.RegisterType<BackgroundThreadManager>()
-                .As<IBackgroundThreadManager>()
-                .SingleInstance();
-            
-            // Background threads
-            builder.RegisterType<DatabaseBackgroundThread>().As<IDatabaseThread>().SingleInstance();
-
             // Interfaces
             RegisterInterfaceImplementations<IRegisteredEvent>(builder);
             RegisterInterfaceImplementations<ICustomEffect>(builder, false, true);

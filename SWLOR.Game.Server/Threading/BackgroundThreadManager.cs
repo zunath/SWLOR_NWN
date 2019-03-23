@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Threading;
-using SWLOR.Game.Server.Threading.Contracts;
 
 namespace SWLOR.Game.Server.Threading
 {
-    public class BackgroundThreadManager: IBackgroundThreadManager
+    public static class BackgroundThreadManager
     {
-        private readonly IDatabaseThread _dbThread;
-        private readonly Thread _dbWorker;
-        private volatile bool _isShuttingDown;
-        private volatile bool _threadHasShutDown;
+        private static readonly DatabaseBackgroundThread _dbThread;
+        private static readonly Thread _dbWorker;
+        private static volatile bool _isShuttingDown;
+        private static volatile bool _threadHasShutDown;
 
-        public BackgroundThreadManager(
-            IDatabaseThread databaseThread)
+        static BackgroundThreadManager()
         {
-            _dbThread = databaseThread;
+            _dbThread = new DatabaseBackgroundThread();
             _dbWorker = new Thread(x => ProcessDatabaseThread());
             _dbWorker.IsBackground = true;
             _isShuttingDown = false;
@@ -22,7 +20,7 @@ namespace SWLOR.Game.Server.Threading
             AppDomain.CurrentDomain.ProcessExit += CurrentDomainOnProcessExit;
         }
         
-        private void ProcessDatabaseThread()
+        private static void ProcessDatabaseThread()
         {
             Console.WriteLine("DB thread starting");
             while (!_isShuttingDown)
@@ -33,13 +31,13 @@ namespace SWLOR.Game.Server.Threading
             _threadHasShutDown = true;
         }
 
-        public void Start()
+        public static void Start()
         {
             Console.WriteLine("Starting database thread...");
             _dbWorker.Start();
         }
 
-        private void CurrentDomainOnProcessExit(object sender, EventArgs e)
+        private static void CurrentDomainOnProcessExit(object sender, EventArgs e)
         {
             Console.WriteLine("Shutting down database thread. Please be patient while all data is committed to the database.");
             _isShuttingDown = true;

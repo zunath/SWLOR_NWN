@@ -1,5 +1,4 @@
 ﻿
-using SWLOR.Game.Server.Threading.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Data.SqlClient;
@@ -9,7 +8,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Threading
 {
-    public class DatabaseBackgroundThread : IDatabaseThread
+    public class DatabaseBackgroundThread
     {
         private readonly string _connectionString;
         

@@ -5,8 +5,7 @@ using NWN;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Processor;
 using SWLOR.Game.Server.Service;
-
-using SWLOR.Game.Server.Threading.Contracts;
+using SWLOR.Game.Server.Threading;
 using static NWN._;
 using Object = NWN.Object;
 
@@ -14,21 +13,13 @@ namespace SWLOR.Game.Server.Event.Module
 {
     internal class OnModuleLoad: IRegisteredEvent
     {
-        private readonly IBackgroundThreadManager _backgroundThreadManager;
-
-        public OnModuleLoad(
-            IBackgroundThreadManager backgroundThreadManager)
-        {
-            _backgroundThreadManager = backgroundThreadManager;
-        }
-
         public bool Run(params object[] args)
         {
             string nowString = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
             Console.WriteLine(nowString + ": Module OnLoad executing...");
             
             Console.WriteLine("Starting background thread manager...");
-            _backgroundThreadManager.Start();
+            BackgroundThreadManager.Start();
             
             NWNXChat.RegisterChatScript("mod_on_nwnxchat");
             SetModuleEventScripts();

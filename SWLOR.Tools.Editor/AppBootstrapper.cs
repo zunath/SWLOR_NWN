@@ -22,7 +22,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Threading;
 using IContainer = Autofac.IContainer;
 using SWLOR.Tools.Editor.ViewModels.Data;
-using SWLOR.Game.Server.Threading.Contracts;
 
 namespace SWLOR.Tools.Editor
 {
@@ -123,9 +122,6 @@ namespace SWLOR.Tools.Editor
 
         protected virtual void ConfigureContainer(ContainerBuilder builder)
         {
-            // SWLOR.Game.Server Registrations
-            builder.RegisterType<DatabaseBackgroundThread>().As<IDatabaseThread>().SingleInstance();
-
             // Singletons
             builder.RegisterType<AppSettings>().SingleInstance();
 
@@ -133,7 +129,6 @@ namespace SWLOR.Tools.Editor
             builder.RegisterType<CreateDataDirectories>().As<IStartable>().SingleInstance();
             builder.RegisterType<InitializeJsonSerializer>().As<IStartable>().SingleInstance();
             builder.RegisterType<InitializeAutomapper>().As<IStartable>().SingleInstance();
-            builder.RegisterType<BackgroundThreadManager>().As<IBackgroundThreadManager>().SingleInstance();
 
             // Other Startup Events
             builder.RegisterType<PostBootstrap>().As<IPostBootstrap>().SingleInstance();

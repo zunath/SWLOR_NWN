@@ -460,7 +460,7 @@ namespace SWLOR.Game.Server.Service
             var tower = GetBaseControlTower(pcBaseID);
             var structure = _data.Get<BaseStructure>(tower.BaseStructureID);
 
-            return structure.Power + (tower.StructureBonus * 2);
+            return structure.Power + (tower.StructureBonus * 3);
         }
 
         public string GetSectorOfLocation(NWLocation targetLocation)

@@ -11,7 +11,9 @@ using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Messaging.Messages;
+using SWLOR.Game.Server.NWN.Events.Creature;
 using static NWN._;
+using Object = NWN.Object;
 using Quest = SWLOR.Game.Server.Data.Entity.Quest;
 using QuestType = SWLOR.Game.Server.Enumeration.QuestType;
 
@@ -20,7 +22,12 @@ namespace SWLOR.Game.Server.Service
     public static class QuestService
     {
         private const string TempStoragePlaceableTag = "QUEST_BARREL";
-        
+
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnCreatureDeath>(message => OnCreatureDeath());
+        }
+
         public static Quest GetQuestByID(int questID)
         {
             return DataService.Single<Quest>(x => x.ID == questID);
@@ -426,8 +433,10 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        public static void OnCreatureDeath(NWCreature creature)
+        private static void OnCreatureDeath()
         {
+            NWCreature creature = Object.OBJECT_SELF;
+
             int npcGroupID = creature.GetLocalInt("NPC_GROUP");
             if (npcGroupID <= 0) return;
 

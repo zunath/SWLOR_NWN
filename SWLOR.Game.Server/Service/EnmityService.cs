@@ -4,12 +4,19 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Player;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class EnmityService
     {
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnPlayerDamaged>(message => OnPlayerDamaged());
+        }
+
         private static Enmity GetEnmity(NWCreature npc, NWCreature attacker)
         {
             var table = GetEnmityTable(npc);

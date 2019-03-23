@@ -14,6 +14,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using SWLOR.Game.Server.Bioware;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Creature;
+using SWLOR.Game.Server.NWN.Events.Player;
 using static NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 using Object = NWN.Object;
@@ -22,7 +25,15 @@ namespace SWLOR.Game.Server.Service
 {
     public static class SpaceService
     {
-        
+        public static void SubscribeEvents()
+        {
+            // Creature Events
+            MessageHub.Instance.Subscribe<OnCreatureHeartbeat>(message => OnCreatureHeartbeat());
+            MessageHub.Instance.Subscribe<OnCreatureSpawn>(message => OnCreatureSpawn());
+
+            // Player Events
+            MessageHub.Instance.Subscribe<OnPlayerHeartbeat>(message => OnCreatureHeartbeat());
+        }
 
         private struct ShipStats
         {
@@ -1396,8 +1407,10 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static void OnCreatureSpawn(NWCreature creature)
+        private static void OnCreatureSpawn()
         {
+            NWCreature creature = Object.OBJECT_SELF;
+
             // Only do things for ships. 
             ShipStats stats = GetShipStatsByAppearance(_.GetAppearanceType(creature));
             if (stats.scale == default(float)) return;
@@ -1467,8 +1480,10 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static void OnCreatureHeartbeat(NWCreature creature)
+        private static void OnCreatureHeartbeat()
         {
+            NWCreature creature = Object.OBJECT_SELF;
+
             // Only do things for armed ships. 
             if (creature.IsDead) return;
             ShipStats stats = GetShipStatsByAppearance(_.GetAppearanceType(creature));

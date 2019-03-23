@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
 using SWLOR.Game.Server.Enumeration;
 
 using NWN;
@@ -39,17 +41,29 @@ namespace SWLOR.Game.Server.Event.Module
             CustomEffectService.OnModuleLoad();
             ObjectVisibilityService.OnModuleLoad();
 
-
-            MapService.SubscribeEvents();
-            PerkService.SubscribeEvents();
-            PlayerService.SubscribeEvents();
-            SkillService.SubscribeEvents();
-            WeatherService.SubscribeEvents();
-
+            RegisterServiceSubscribeEvents();
+            
             nowString = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
             Console.WriteLine(nowString + ": Module OnLoad finished!");
             
             return true;
+        }
+
+        private static void RegisterServiceSubscribeEvents()
+        {
+            // Use reflection to get all of the SubscribeEvents() methods in the Service namespace.
+            var typesInNamespace = Assembly.GetExecutingAssembly()
+                .GetTypes()
+                .Where(x => string.Equals(x.Namespace, "SWLOR.Game.Server.Service"))
+                .ToArray();
+            foreach (var type in typesInNamespace)
+            {
+                var method = type.GetMethod("SubscribeEvents");
+                if (method != null)
+                {
+                    method.Invoke(null, null);
+                }
+            }
         }
 
         private void SetAreaEventScripts()

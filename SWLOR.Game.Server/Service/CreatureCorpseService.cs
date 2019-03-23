@@ -1,13 +1,19 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject;
-
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Creature;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class CreatureCorpseService
     {
-        public static void OnCreatureDeath()
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnCreatureDeath>(message => OnCreatureDeath());
+        }
+
+        private static void OnCreatureDeath()
         {
             _.SetIsDestroyable(FALSE);
             

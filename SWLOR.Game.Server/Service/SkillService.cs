@@ -12,7 +12,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.NWN.Events.Area;
+using SWLOR.Game.Server.NWN.Events.Creature;
 using static NWN._;
+using Object = NWN.Object;
 
 
 namespace SWLOR.Game.Server.Service
@@ -26,7 +28,11 @@ namespace SWLOR.Game.Server.Service
         
         public static void SubscribeEvents()
         {
+            // Area Events
             MessageHub.Instance.Subscribe<OnAreaExit>(message => OnAreaExit());
+
+            // Creature Events
+            MessageHub.Instance.Subscribe<OnCreatureDeath>(message => OnCreatureDeath());
         }
 
         public static void RegisterPCToAllCombatTargetsForSkill(NWPlayer player, SkillType skillType, NWCreature target)
@@ -225,8 +231,9 @@ namespace SWLOR.Game.Server.Service
             DataService.SubmitDataChange(pcSkill, DatabaseActionType.Update);
         }
 
-        public static void OnCreatureDeath(NWCreature creature)
+        private static void OnCreatureDeath()
         {
+            NWCreature creature = Object.OBJECT_SELF;
             CreatureSkillRegistration reg = GetCreatureSkillRegistration(creature.GlobalID);
             List<PlayerSkillRegistration> playerRegs = reg.GetAllRegistrations();
             var registration = reg.Registrations.OrderByDescending(o => o.Value.HighestRank).FirstOrDefault();

@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 using Object = NWN.Object;
@@ -15,18 +16,18 @@ namespace SWLOR.Game.Server.Placeable.ResourceBay
     public class OnDisturbed: IRegisteredEvent
     {
         
-        private readonly IDataService _data;
+        
         private readonly IItemService _item;
         private readonly IBaseService _base;
 
         public OnDisturbed(
             
-            IDataService data,
+            
             IItemService item,
             IBaseService @base)
         {
             
-            _data = data;
+            
             _item = item;
             _base = @base;
         }
@@ -39,7 +40,7 @@ namespace SWLOR.Game.Server.Placeable.ResourceBay
             NWItem item = _.GetInventoryDisturbItem();
             string structureID = bay.GetLocalString("PC_BASE_STRUCTURE_ID");
             Guid structureGUID = new Guid(structureID);
-            var structure = _data.Single<PCBaseStructure>(x => x.ID == structureGUID);
+            var structure = DataService.Single<PCBaseStructure>(x => x.ID == structureGUID);
             var controlTower = _base.GetBaseControlTower(structure.PCBaseID);
 
             if (disturbType == INVENTORY_DISTURB_TYPE_ADDED)
@@ -50,10 +51,10 @@ namespace SWLOR.Game.Server.Placeable.ResourceBay
             }
             else if (disturbType == INVENTORY_DISTURB_TYPE_REMOVED)
             {
-                var removeItem = _data.SingleOrDefault<PCBaseStructureItem>(x => x.PCBaseStructureID == controlTower.ID && x.ItemGlobalID == item.GlobalID.ToString());
+                var removeItem = DataService.SingleOrDefault<PCBaseStructureItem>(x => x.PCBaseStructureID == controlTower.ID && x.ItemGlobalID == item.GlobalID.ToString());
                 if (removeItem == null) return false;
 
-                _data.SubmitDataChange(removeItem, DatabaseActionType.Delete);
+                DataService.SubmitDataChange(removeItem, DatabaseActionType.Delete);
             }
 
             return true;

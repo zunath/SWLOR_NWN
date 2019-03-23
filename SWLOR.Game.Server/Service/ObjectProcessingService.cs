@@ -9,15 +9,10 @@ namespace SWLOR.Game.Server.Service
 {
     public class ObjectProcessingService : IObjectProcessingService
     {
-        
-        private readonly IErrorService _error;
         private DateTime _dateLastRun;
 
-        public ObjectProcessingService(
-            IErrorService error)
+        public ObjectProcessingService()
         {
-            
-            _error = error;
             _dateLastRun = DateTime.UtcNow;
         }
 
@@ -56,7 +51,7 @@ namespace SWLOR.Game.Server.Service
                 }
                 catch (Exception ex)
                 {
-                    _error.LogError(ex, "ObjectProcessingService. EventID = " + @event.Key);
+                    ErrorService.LogError(ex, "ObjectProcessingService. EventID = " + @event.Key);
                 }
             }
         }

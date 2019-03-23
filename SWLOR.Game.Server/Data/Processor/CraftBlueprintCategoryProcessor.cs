@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Data.Processor
     {
         public IValidator Validator => new CraftBlueprintCategoryValidator();
 
-        public DatabaseAction Process(IDataService data, JObject dataObject)
+        public DatabaseAction Process( JObject dataObject)
         {
             return null;
         }

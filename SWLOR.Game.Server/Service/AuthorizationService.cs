@@ -12,12 +12,12 @@ namespace SWLOR.Game.Server.Service
     public class AuthorizationService: IAuthorizationService
     {
         
-        private readonly IDataService _data;
+        
 
-        public AuthorizationService( IDataService data)
+        public AuthorizationService( )
         {
             
-            _data = data;
+            
         }
 
         public bool IsPCRegisteredAsDM(NWPlayer player)
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Service
 
             string cdKey = _.GetPCPublicCDKey(player.Object);
 
-            AuthorizedDM entity = _data.SingleOrDefault<AuthorizedDM>(x => x.CDKey == cdKey && x.IsActive);
+            AuthorizedDM entity = DataService.SingleOrDefault<AuthorizedDM>(x => x.CDKey == cdKey && x.IsActive);
             return entity != null;
         }
     }

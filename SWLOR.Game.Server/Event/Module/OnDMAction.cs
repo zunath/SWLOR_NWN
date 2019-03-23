@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using Object = NWN.Object;
@@ -12,15 +13,6 @@ namespace SWLOR.Game.Server.Event.Module
 {
     public class OnDMAction: IRegisteredEvent
     {
-        private readonly IDataService _data;
-        public OnDMAction(
-            IDataService data)
-        {
-            _data = data;
-            
-            
-        }
-
         public bool Run(params object[] args)
         {
             int actionTypeID = Convert.ToInt32(args[0]);
@@ -38,7 +30,7 @@ namespace SWLOR.Game.Server.Event.Module
             };
 
             // Don't cache DM actions.
-            _data.DataQueue.Enqueue(new DatabaseAction(record, DatabaseActionType.Insert));
+            DataService.DataQueue.Enqueue(new DatabaseAction(record, DatabaseActionType.Insert));
             return true;
         }
 

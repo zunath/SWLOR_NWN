@@ -9,6 +9,6 @@ namespace SWLOR.Game.Server.Data.Contracts
     public interface IDataProcessor<in T>
     {
         IValidator Validator { get; }
-        DatabaseAction Process(IDataService db, JObject target);
+        DatabaseAction Process(JObject target);
     }
 }

@@ -24,22 +24,21 @@ using QuestType = SWLOR.Game.Server.Data.Entity.QuestType;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class DataService : IDataService
+    public static class DataService
     {
-        public ConcurrentQueue<DatabaseAction> DataQueue { get; }
-        private string _connectionString;
-        private bool _cacheInitialized;
+        public static ConcurrentQueue<DatabaseAction> DataQueue { get; }
+        private static string _connectionString;
+        private static bool _cacheInitialized;
 
-        public Dictionary<Type, Dictionary<object, object>> Cache { get; }
+        public static Dictionary<Type, Dictionary<object, object>> Cache { get; }
 
-        public DataService()
+        static DataService()
         {
             DataQueue = new ConcurrentQueue<DatabaseAction>();
             Cache = new Dictionary<Type, Dictionary<object, object>>();
-
         }
 
-        public void Initialize(bool initializeCache)
+        public static void Initialize(bool initializeCache)
         {
             _connectionString = new SqlConnectionStringBuilder()
             {
@@ -53,7 +52,7 @@ namespace SWLOR.Game.Server.Service
                 InitializeCache();
         }
 
-        public void Initialize(string ip, string database, string user, string password, bool initializeCache)
+        public static void Initialize(string ip, string database, string user, string password, bool initializeCache)
         {
             _connectionString = new SqlConnectionStringBuilder()
             {
@@ -71,7 +70,7 @@ namespace SWLOR.Game.Server.Service
         /// Retrieves all objects in frequently accessed data from the database and stores them into the cache.
         /// This should only be called one time at initial load.
         /// </summary>
-        private void InitializeCache()
+        private static void InitializeCache()
         {
             if (_cacheInitialized) return;
 
@@ -179,7 +178,7 @@ namespace SWLOR.Game.Server.Service
         /// This method will retrieve these specific records and store them into the cache.
         /// Should be called in the InitializeCache() method.
         /// </summary>
-        private void LoadPCMarketListingCache()
+        private static void LoadPCMarketListingCache()
         {
             const string Sql = "SELECT * FROM dbo.PCMarketListing WHERE DateSold IS NULL AND DateRemoved IS NULL";
 
@@ -200,7 +199,7 @@ namespace SWLOR.Game.Server.Service
         /// Caches a player's data. Be sure to call RemoveCachedPlayerData when the player exits the game.
         /// </summary>
         /// <param name="player"></param>
-        public void CachePlayerData(NWPlayer player)
+        public static void CachePlayerData(NWPlayer player)
         {
             if (!player.IsPlayer) return;
 
@@ -263,7 +262,7 @@ namespace SWLOR.Game.Server.Service
         /// Removes a player's cached data. Be sure to call this ONLY on the OnClientLeave event.
         /// </summary>
         /// <param name="player"></param>
-        public void RemoveCachedPlayerData(NWPlayer player)
+        public static void RemoveCachedPlayerData(NWPlayer player)
         {
             if (!player.IsPlayer) return;
 
@@ -318,7 +317,7 @@ namespace SWLOR.Game.Server.Service
         /// and you cannot reliably retrieve the data directly from the database immediately afterwards.
         /// However, data in the cache will be up to date as soon as a value is changed.
         /// </summary>
-        public void SubmitDataChange(DatabaseAction action)
+        public static void SubmitDataChange(DatabaseAction action)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
             if(action.Data == null) throw new ArgumentNullException(nameof(action.Data));
@@ -347,7 +346,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="data">The data to submit for processing</param>
         /// <param name="actionType">The type (Insert, Update, Delete, etc.) of change to make.</param>
-        public void SubmitDataChange(IEntity data, DatabaseActionType actionType)
+        public static void SubmitDataChange(IEntity data, DatabaseActionType actionType)
         {
             if(data == null) throw new ArgumentNullException(nameof(data));
 
@@ -363,7 +362,7 @@ namespace SWLOR.Game.Server.Service
             DataQueue.Enqueue(new DatabaseAction(data, actionType));
         }
 
-        private T GetFromCache<T>(object key)
+        private static T GetFromCache<T>(object key)
             where T : IEntity
         {
             if (!Cache.TryGetValue(typeof(T), out var cachedSet))
@@ -380,13 +379,13 @@ namespace SWLOR.Game.Server.Service
             return default(T);
         }
 
-        private void SetIntoCache<T>(object key, object value)
+        private static void SetIntoCache<T>(object key, object value)
             where T : IEntity
         {
             SetIntoCache(typeof(T), key, value);
         }
 
-        private void SetIntoCache(Type type, object key, object value)
+        private static void SetIntoCache(Type type, object key, object value)
         {
             if (!type.GetInterfaces().Contains(typeof(IEntity)))
                 throw new ArgumentException("Only objects which implement " + nameof(IEntity) + " may be set into the cache.");
@@ -418,13 +417,13 @@ namespace SWLOR.Game.Server.Service
             
         }
 
-        private void DeleteFromCache<T>(object key)
+        private static void DeleteFromCache<T>(object key)
             where T : IEntity
         {
             DeleteFromCache(typeof(T), key);
         }
 
-        private void DeleteFromCache(Type type, object key)
+        private static void DeleteFromCache(Type type, object key)
         {
             if (!Cache.ContainsKey(type)) return;
 
@@ -443,7 +442,7 @@ namespace SWLOR.Game.Server.Service
         /// <typeparam name="T">The type of entity to retrieve.</typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public T Get<T>(object id)
+        public static T Get<T>(object id)
             where T : class, IEntity
         {
             var cached = GetFromCache<T>(id);
@@ -459,7 +458,7 @@ namespace SWLOR.Game.Server.Service
             return cached;
         }
 
-        private void RegisterEmptyCacheSet<T>()
+        private static void RegisterEmptyCacheSet<T>()
             where T: class, IEntity
         {
             if (Cache.ContainsKey(typeof(T)))
@@ -479,7 +478,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <typeparam name="T">The type of entity to retrieve.</typeparam>
         /// <returns></returns>
-        public IEnumerable<T> GetAll<T>()
+        public static IEnumerable<T> GetAll<T>()
             where T : class, IEntity
         {
             // Cache already built. Return everything that's cached so far.
@@ -513,37 +512,37 @@ namespace SWLOR.Game.Server.Service
             return new HashSet<T>();
         }
 
-        public T Single<T>()
+        public static T Single<T>()
             where T : class, IEntity
         {
             return GetAll<T>().Single();
         }
 
-        public T Single<T>(Func<T, bool> predicate)
+        public static T Single<T>(Func<T, bool> predicate)
             where T : class, IEntity
         {
             return GetAll<T>().Single(predicate);
         }
 
-        public T SingleOrDefault<T>()
+        public static T SingleOrDefault<T>()
             where T : class, IEntity
         {
             return GetAll<T>().SingleOrDefault();
         }
 
-        public T SingleOrDefault<T>(Func<T, bool> predicate)
+        public static T SingleOrDefault<T>(Func<T, bool> predicate)
             where T : class, IEntity
         {
             return GetAll<T>().SingleOrDefault(predicate);
         }
 
-        public HashSet<T> Where<T>(Func<T, bool> predicate)
+        public static HashSet<T> Where<T>(Func<T, bool> predicate)
             where T : class, IEntity
         {
             return new HashSet<T>(GetAll<T>().Where(predicate));
         }
 
-        private object GetEntityKey(IEntity entity)
+        private static object GetEntityKey(IEntity entity)
         {
             // Locate a Key or ExplicitKey attribute on this type. These are Dapper attributes which determine if the key
             // is auto-generated (Key) or manually set (ExplicitKey) on the entity.
@@ -576,7 +575,7 @@ namespace SWLOR.Game.Server.Service
             return propertyWithKey.GetValue(entity);
         }
 
-        public void StoredProcedure(string procedureName, params SqlParameter[] args)
+        public static void StoredProcedure(string procedureName, params SqlParameter[] args)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -584,7 +583,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public IEnumerable<T> StoredProcedure<T>(string procedureName, params SqlParameter[] args)
+        public static IEnumerable<T> StoredProcedure<T>(string procedureName, params SqlParameter[] args)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -592,7 +591,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public IEnumerable<TResult> StoredProcedure<T1, T2, TResult>(string procedureName, Func<T1, T2, TResult> map, string splitOn, SqlParameter arg)
+        public static IEnumerable<TResult> StoredProcedure<T1, T2, TResult>(string procedureName, Func<T1, T2, TResult> map, string splitOn, SqlParameter arg)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -600,7 +599,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public IEnumerable<TResult> StoredProcedure<T1, T2, T3, TResult>(string procedureName, Func<T1, T2, T3, TResult> map, string splitOn, SqlParameter arg)
+        public static IEnumerable<TResult> StoredProcedure<T1, T2, T3, TResult>(string procedureName, Func<T1, T2, T3, TResult> map, string splitOn, SqlParameter arg)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -608,7 +607,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public IEnumerable<TResult> StoredProcedure<T1, T2, T3, T4, TResult>(string procedureName, Func<T1, T2, T3, T4, TResult> map, string splitOn, SqlParameter arg)
+        public static IEnumerable<TResult> StoredProcedure<T1, T2, T3, T4, TResult>(string procedureName, Func<T1, T2, T3, T4, TResult> map, string splitOn, SqlParameter arg)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -616,7 +615,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public IEnumerable<TResult> StoredProcedure<T1, T2, T3, T4, T5, TResult>(string procedureName, Func<T1, T2, T3, T4, T5, TResult> map, string splitOn, SqlParameter arg)
+        public static IEnumerable<TResult> StoredProcedure<T1, T2, T3, T4, T5, TResult>(string procedureName, Func<T1, T2, T3, T4, T5, TResult> map, string splitOn, SqlParameter arg)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -624,7 +623,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public IEnumerable<TResult> StoredProcedure<T1, T2, T3, T4, T5, T6, TResult>(string procedureName, Func<T1, T2, T3, T4, T5, T6, TResult> map, string splitOn, SqlParameter arg)
+        public static IEnumerable<TResult> StoredProcedure<T1, T2, T3, T4, T5, T6, TResult>(string procedureName, Func<T1, T2, T3, T4, T5, T6, TResult> map, string splitOn, SqlParameter arg)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -632,7 +631,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public IEnumerable<TResult> StoredProcedure<T1, T2, T3, T4, T5, T6, T7, TResult>(string procedureName, Func<T1, T2, T3, T4, T5, T6, T7, TResult> map, string splitOn, SqlParameter arg)
+        public static IEnumerable<TResult> StoredProcedure<T1, T2, T3, T4, T5, T6, T7, TResult>(string procedureName, Func<T1, T2, T3, T4, T5, T6, T7, TResult> map, string splitOn, SqlParameter arg)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -640,7 +639,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public T StoredProcedureSingle<T>(string procedureName, params SqlParameter[] args)
+        public static T StoredProcedureSingle<T>(string procedureName, params SqlParameter[] args)
         {
             using (var connection = new SqlConnection(_connectionString))
             {

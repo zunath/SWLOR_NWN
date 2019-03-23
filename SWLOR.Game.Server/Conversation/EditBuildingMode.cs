@@ -5,6 +5,7 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
@@ -21,7 +22,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private readonly IColorTokenService _color;
         private readonly IBaseService _base;
-        private readonly IDataService _data;
+        
         private readonly IImpoundService _impound;
 
         public EditBuildingMode(
@@ -29,13 +30,13 @@ namespace SWLOR.Game.Server.Conversation
             IDialogService dialog,
             IColorTokenService color,
             IBaseService @base,
-            IDataService data,
+            
             IImpoundService impound) 
             : base(dialog)
         {
             _color = color;
             _base = @base;
-            _data = data;
+            
             _impound = impound;
         }
 
@@ -81,8 +82,8 @@ namespace SWLOR.Game.Server.Conversation
             var player = GetPC();
             var data = _base.GetPlayerTempData(player);
             var pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            var structure = _data.Get<PCBaseStructure>(pcBaseStructureID);
-            var mode = _data.Get<StructureMode>(structure.StructureModeID);
+            var structure = DataService.Get<PCBaseStructure>(pcBaseStructureID);
+            var mode = DataService.Get<StructureMode>(structure.StructureModeID);
             var modeType = (StructureModeType) mode.ID;
 
             string header = "You may change the active mode of this building here. Only one mode may be set at a time.\n\nBe aware that switching modes will remove all primary residents for the building.\n\n";
@@ -153,7 +154,7 @@ namespace SWLOR.Game.Server.Conversation
             var player = GetPC();
             var data = _base.GetPlayerTempData(player);
             var pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            var structure = _data.Get<PCBaseStructure>(pcBaseStructureID);
+            var structure = DataService.Get<PCBaseStructure>(pcBaseStructureID);
             var modeType = (StructureModeType)structure.StructureModeID;
             string warning;
 
@@ -191,20 +192,20 @@ namespace SWLOR.Game.Server.Conversation
             var player = GetPC();
             var data = _base.GetPlayerTempData(player);
             var pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            var structure = _data.Get<PCBaseStructure>(pcBaseStructureID);
+            var structure = DataService.Get<PCBaseStructure>(pcBaseStructureID);
             var impoundedItems = 0;
 
             // Remove primary residents
-            var primaryResident = _data.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseStructureID == pcBaseStructureID);
+            var primaryResident = DataService.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseStructureID == pcBaseStructureID);
             if (primaryResident != null)
             {
                 primaryResident.PrimaryResidencePCBaseStructureID = null;
-                _data.SubmitDataChange(primaryResident, DatabaseActionType.Update);
+                DataService.SubmitDataChange(primaryResident, DatabaseActionType.Update);
             }
             
             // Change mode
             structure.StructureModeID = (int)model.Mode;
-            _data.SubmitDataChange(structure, DatabaseActionType.Update);
+            DataService.SubmitDataChange(structure, DatabaseActionType.Update);
 
             player.FloatingText("Building mode updated! " + impoundedItems + " item(s) were impounded.");
             EndConversation();

@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
 
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.Conversation
     {
         private readonly IBaseService _base;
         private readonly IColorTokenService _color;
-        private readonly IDataService _data;
+        
         private readonly IBasePermissionService _perm;
 
         public EditBuildingPermissions(
@@ -23,13 +24,13 @@ namespace SWLOR.Game.Server.Conversation
             IDialogService dialog,
             IBaseService @base,
             IColorTokenService color,
-            IDataService data,
+            
             IBasePermissionService perm) 
             : base(dialog)
         {
             _base = @base;
             _color = color;
-            _data = data;
+            
             _perm = perm;
         }
 
@@ -140,7 +141,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             ClearPageResponses("PlayerDetailsPage");
             var data = _base.GetPlayerTempData(GetPC());
-            var permission = _data.SingleOrDefault<PCBaseStructurePermission>(x => x.PlayerID == player.GlobalID && 
+            var permission = DataService.SingleOrDefault<PCBaseStructurePermission>(x => x.PlayerID == player.GlobalID && 
                                                                                    x.PCBaseStructureID == data.StructureID &&
                                                                                    !x.IsPublicPermission);
 
@@ -241,9 +242,9 @@ namespace SWLOR.Game.Server.Conversation
         {
             var data = _base.GetPlayerTempData(GetPC());
             var dbPermission = isPublicPermission ? 
-                _data.SingleOrDefault<PCBaseStructurePermission>(x => x.PCBaseStructureID == data.StructureID &&
+                DataService.SingleOrDefault<PCBaseStructurePermission>(x => x.PCBaseStructureID == data.StructureID &&
                                                                       x.IsPublicPermission) :
-                _data.SingleOrDefault<PCBaseStructurePermission>(x => x.PlayerID == playerID && 
+                DataService.SingleOrDefault<PCBaseStructurePermission>(x => x.PlayerID == playerID && 
                                                                       x.PCBaseStructureID == data.StructureID &&
                                                                       !x.IsPublicPermission);
             var action = DatabaseActionType.Update;
@@ -298,14 +299,14 @@ namespace SWLOR.Game.Server.Conversation
                     throw new ArgumentOutOfRangeException(nameof(permission), permission, null);
             }
 
-            _data.SubmitDataChange(dbPermission, action);
+            DataService.SubmitDataChange(dbPermission, action);
         }
 
         private void BuildPublicPermissionsPage()
         {
             ClearPageResponses("PublicPermissionsPage");
             var data = _base.GetPlayerTempData(GetPC());
-            var permission = _data.SingleOrDefault<PCBaseStructurePermission>(x => x.PCBaseStructureID == data.StructureID &&
+            var permission = DataService.SingleOrDefault<PCBaseStructurePermission>(x => x.PCBaseStructureID == data.StructureID &&
                                                                                    x.IsPublicPermission);
 
             // Intentionally excluded permissions:
@@ -325,8 +326,8 @@ namespace SWLOR.Game.Server.Conversation
         private void PublicPermissionsResponses(int responseID)
         {
             var data = _base.GetPlayerTempData(GetPC());
-            var pcStructure = _data.Get<PCBaseStructure>(data.StructureID);
-            var pcBase = _data.Get<PCBase>(pcStructure.PCBaseID);
+            var pcStructure = DataService.Get<PCBaseStructure>(data.StructureID);
+            var pcBase = DataService.Get<PCBase>(pcStructure.PCBaseID);
             var ownerPlayerID = pcBase.PlayerID;
 
             switch (responseID)

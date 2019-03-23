@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static NWN._;
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.Conversation
     public class ControlTower: ConversationBase
     {
         private readonly IBaseService _base;
-        private readonly IDataService _data;
+        
         private readonly IBasePermissionService _perm;
         private readonly ISerializationService _serialization;
         private readonly IColorTokenService _color;
@@ -24,7 +25,7 @@ namespace SWLOR.Game.Server.Conversation
         public ControlTower(
              
             IDialogService dialog,
-            IDataService data,
+            
             IBasePermissionService perm,
             ISerializationService serialization,
             IBaseService @base,
@@ -32,7 +33,7 @@ namespace SWLOR.Game.Server.Conversation
             ITimeService time) 
             : base(dialog)
         {
-            _data = data;
+            
             _perm = perm;
             _serialization = serialization;
             _base = @base;
@@ -57,9 +58,9 @@ namespace SWLOR.Game.Server.Conversation
         public override void Initialize()
         {
             Guid structureID = new Guid(GetDialogTarget().GetLocalString("PC_BASE_STRUCTURE_ID"));
-            PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.ID == structureID);
+            PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
             Guid pcBaseID = structure.PCBaseID;
-            PCBase pcBase = _data.Get<PCBase>(pcBaseID);
+            PCBase pcBase = DataService.Get<PCBase>(pcBaseID);
 
             double currentCPU = _base.GetCPUInUse(pcBaseID);
             double currentPower = _base.GetPowerInUse(pcBaseID);
@@ -68,7 +69,7 @@ namespace SWLOR.Game.Server.Conversation
 
             int currentReinforcedFuel = pcBase.ReinforcedFuel;
             int currentFuel = pcBase.Fuel;
-            int currentResources = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structure.ID).Count();
+            int currentResources = DataService.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structure.ID).Count();
             int maxReinforcedFuel = _base.CalculateMaxReinforcedFuel(pcBaseID);
             int maxFuel = _base.CalculateMaxFuel(pcBaseID);
             int maxResources = _base.CalculateResourceCapacity(pcBaseID);
@@ -79,7 +80,7 @@ namespace SWLOR.Game.Server.Conversation
                 TimeSpan deltaTime = pcBase.DateFuelEnds - DateTime.UtcNow;
 
                 var tower = _base.GetBaseControlTower(pcBaseID);
-                var towerStructure = _data.Single<BaseStructure>(x => x.ID == tower.BaseStructureID);
+                var towerStructure = DataService.Single<BaseStructure>(x => x.ID == tower.BaseStructureID);
                 int fuelRating = towerStructure.FuelRating;
                 int minutes;
 
@@ -179,8 +180,8 @@ namespace SWLOR.Game.Server.Conversation
             }
 
             var structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            var structure = _data.Single<PCBaseStructure>(x => x.ID == structureID);
-            var pcBase = _data.Get<PCBase>(structure.PCBaseID);
+            var structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
+            var pcBase = DataService.Get<PCBase>(structure.PCBaseID);
             Location location = oPC.Location;
             bay = _.CreateObject(OBJECT_TYPE_PLACEABLE, "fuel_bay", location);
             bay.AssignCommand(() => _.SetFacingPoint(oPC.Position));
@@ -227,7 +228,7 @@ namespace SWLOR.Game.Server.Conversation
             }
             
             Guid structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            var structureItems = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structureID);
+            var structureItems = DataService.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structureID);
             Location location = oPC.Location;
             bay = _.CreateObject(OBJECT_TYPE_PLACEABLE, "resource_bay", location);
 

@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
-
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using ComponentType = SWLOR.Game.Server.Data.Entity.ComponentType;
@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
     {
         
         private readonly ISerializationService _serialization;
-        private readonly IDataService _data;
+        
         
         private readonly ICraftService _craft;
         private readonly IRandomService _random;
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
         public ReassembleComplete(
             
             ISerializationService serialization,
-            IDataService data, 
+             
             ICraftService craft,
             IRandomService random,
             IColorTokenService color,
@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
             ISkillService skill)
         {
             _serialization = serialization;
-            _data = data;
+            
             _craft = craft;
             _random = random;
             _color = color;
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
             NWPlaceable tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
             NWItem item = _serialization.DeserializeItem(serializedSalvageItem, tempStorage);
             int salvageComponentTypeID = (int) args[2];
-            _componentType = _data.Get<ComponentType>(salvageComponentTypeID);
+            _componentType = DataService.Get<ComponentType>(salvageComponentTypeID);
             
             // Create an item with no bonuses every time.
             _.CreateItemOnObject(_componentType.ReassembledResref, _player);

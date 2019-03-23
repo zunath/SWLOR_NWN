@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Processor.Contracts;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Processor
@@ -19,14 +20,13 @@ namespace SWLOR.Game.Server.Processor
         
         
         private readonly ITimeService _time;
-        private readonly IDataService _data;
+        
 
         public ServerRestartProcessor(
-            ITimeService time,
-            IDataService data)
+            ITimeService time)
+            
         {
             _time = time;
-            _data = data;
 
             if (!_isLoaded)
             {
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Processor
                     player.FloatingText(message);
 
                     // If the player has a lease which is expiring in <= 24 hours, notify them.
-                    int leasesExpiring = _data.Where<PCBase>(x => x.DateRentDue.AddHours(-24) <= now && x.PlayerID == player.GlobalID).Count;
+                    int leasesExpiring = DataService.Where<PCBase>(x => x.DateRentDue.AddHours(-24) <= now && x.PlayerID == player.GlobalID).Count;
 
                     if (leasesExpiring > 0)
                     {

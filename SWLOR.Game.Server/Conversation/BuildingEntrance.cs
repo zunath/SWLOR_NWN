@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
@@ -16,7 +17,7 @@ namespace SWLOR.Game.Server.Conversation
     {
         private readonly IBaseService _base;
         private readonly IPlayerService _player;
-        private readonly IDataService _data;
+        
         private readonly IAreaService _area;
         private readonly IBasePermissionService _perm;
 
@@ -25,14 +26,14 @@ namespace SWLOR.Game.Server.Conversation
             IDialogService dialog,
             IBaseService @base,
             IPlayerService player,
-            IDataService data,
+            
             IAreaService area,
             IBasePermissionService perm)
             : base(dialog)
         {
             _base = @base;
             _player = player;
-            _data = data;
+            
             _area = area;
             _perm = perm;
         }
@@ -63,8 +64,8 @@ namespace SWLOR.Game.Server.Conversation
         {
             NWPlaceable door = GetDialogTarget().Object;
             var structureID = new Guid(door.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            PCBaseStructure structure = _data.Get<PCBaseStructure>(structureID);
-            PCBase pcBase = _data.Get<PCBase>(structure.PCBaseID);
+            PCBaseStructure structure = DataService.Get<PCBaseStructure>(structureID);
+            PCBase pcBase = DataService.Get<PCBase>(structure.PCBaseID);
             Player owner = _player.GetPlayerEntity(pcBase.PlayerID);
             string buildingName = owner.CharacterName + "'s Building";
             if (!string.IsNullOrWhiteSpace(structure.CustomName))
@@ -123,9 +124,9 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            var structure = _data.Single<PCBaseStructure>(x => x.ID == structureID);
-            var pcBase = _data.Get<PCBase>(structure.PCBaseID);
-            var interiorStyle = _data.Get<BuildingStyle>(structure.InteriorStyleID);
+            var structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
+            var pcBase = DataService.Get<PCBase>(structure.PCBaseID);
+            var interiorStyle = DataService.Get<BuildingStyle>(structure.InteriorStyleID);
 
             bool starship = pcBase.PCBaseTypeID == 3;
             NWArea instance = _base.GetAreaInstance(structureID, false);

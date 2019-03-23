@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Service
     public class CraftService : ICraftService
     {
         
-        private readonly IDataService _data;
+        
         private readonly IPerkService _perk;
         private readonly IColorTokenService _color;
         private readonly ISerializationService _serialization;
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Service
 
         public CraftService(
             
-            IDataService data,
+            
             IPerkService perk,
             IColorTokenService color,
             ISerializationService serialization,
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Service
             IPlayerStatService playerStat)
         {
             
-            _data = data;
+            
             _perk = perk;
             _color = color;
             
@@ -51,10 +51,10 @@ namespace SWLOR.Game.Server.Service
 
         private List<CraftBlueprint> GetCraftBlueprintsAvailableToPlayer(Guid playerID)
         {
-            var pcPerks = _data.Where<PCPerk>(x => x.PlayerID == playerID).ToList();
-            var pcSkills = _data.Where<PCSkill>(x => x.PlayerID == playerID).ToList();
+            var pcPerks = DataService.Where<PCPerk>(x => x.PlayerID == playerID).ToList();
+            var pcSkills = DataService.Where<PCSkill>(x => x.PlayerID == playerID).ToList();
 
-            return _data.Where<CraftBlueprint>(x =>
+            return DataService.Where<CraftBlueprint>(x =>
             {
                 // ReSharper disable once ReplaceWithSingleAssignment.True
                 bool found = true;
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Service
             var blueprints = GetCraftBlueprintsAvailableToPlayer(playerID).Where(x => x.CraftDeviceID == deviceID);
             var categoryIDs = blueprints.Select(x => x.CraftCategoryID).Distinct();
 
-            var categories = _data.Where<CraftBlueprintCategory>(x => x.IsActive &&
+            var categories = DataService.Where<CraftBlueprintCategory>(x => x.IsActive &&
                                                                       categoryIDs.Contains(x.ID));
             return categories.ToList();
         }
@@ -96,10 +96,10 @@ namespace SWLOR.Game.Server.Service
             var model = GetPlayerCraftingData(player);
             var bp = model.Blueprint;
             int playerEL = CalculatePCEffectiveLevel(player, model.PlayerSkillRank, (SkillType)bp.SkillID);
-            var baseStructure = bp.BaseStructureID == null ? null : _data.Get<BaseStructure>(bp.BaseStructureID);
-            var mainComponent = _data.Get<ComponentType>(bp.MainComponentTypeID);
-            var secondaryComponent = _data.Get<ComponentType>(bp.SecondaryComponentTypeID);
-            var tertiaryComponent = _data.Get<ComponentType>(bp.TertiaryComponentTypeID);
+            var baseStructure = bp.BaseStructureID == null ? null : DataService.Get<BaseStructure>(bp.BaseStructureID);
+            var mainComponent = DataService.Get<ComponentType>(bp.MainComponentTypeID);
+            var secondaryComponent = DataService.Get<ComponentType>(bp.SecondaryComponentTypeID);
+            var tertiaryComponent = DataService.Get<ComponentType>(bp.TertiaryComponentTypeID);
 
             string header = _color.Green("Blueprint: ") + bp.Quantity + "x " + bp.ItemName + "\n";
             header += _color.Green("Level: ") + (model.AdjustedLevel < 0 ? 0 : model.AdjustedLevel) + " (Base: " + (bp.BaseLevel < 0 ? 0 : bp.BaseLevel) + ")\n";
@@ -182,13 +182,13 @@ namespace SWLOR.Game.Server.Service
 
         public CraftBlueprint GetBlueprintByID(int craftBlueprintID)
         {
-            return _data.SingleOrDefault<CraftBlueprint>(x => x.ID == craftBlueprintID);
+            return DataService.SingleOrDefault<CraftBlueprint>(x => x.ID == craftBlueprintID);
         }
 
         public List<CraftBlueprintCategory> GetCategoriesAvailableToPC(Guid playerID)
         {
             var blueprints = GetCraftBlueprintsAvailableToPlayer(playerID).Select(x => x.CraftCategoryID).Distinct();
-            return _data.Where<CraftBlueprintCategory>(x => blueprints.Contains(x.ID)).ToList();
+            return DataService.Where<CraftBlueprintCategory>(x => blueprints.Contains(x.ID)).ToList();
         }
 
         public List<CraftBlueprint> GetPCBlueprintsByCategoryID(Guid playerID, int categoryID)
@@ -200,7 +200,7 @@ namespace SWLOR.Game.Server.Service
         public void CraftItem(NWPlayer oPC, NWPlaceable device)
         {
             var model = GetPlayerCraftingData(oPC);
-            CraftBlueprint blueprint = _data.Single<CraftBlueprint>(x => x.ID == model.BlueprintID);
+            CraftBlueprint blueprint = DataService.Single<CraftBlueprint>(x => x.ID == model.BlueprintID);
             if (blueprint == null) return;
 
             if (oPC.IsBusy)
@@ -633,16 +633,16 @@ namespace SWLOR.Game.Server.Service
 
             // Pull the building structure from the database.
             Guid buildingID = new Guid(pcStructureID);
-            var building = _data.Get<PCBaseStructure>(buildingID);
+            var building = DataService.Get<PCBaseStructure>(buildingID);
 
             // Building must be in "Workshop" mode in order for the atmosphere bonuses to take effect.
             if (building.StructureModeID != (int)StructureModeType.Workshop) return 0;
 
             // Get all child structures contained by this building which improve atmosphere.
-            var structures = _data.Where<PCBaseStructure>(x =>
+            var structures = DataService.Where<PCBaseStructure>(x =>
             {
                 if (x.ParentPCBaseStructureID != buildingID) return false;
-                var baseStructure = _data.Get<BaseStructure>(x.BaseStructureID);
+                var baseStructure = DataService.Get<BaseStructure>(x.BaseStructureID);
                 return baseStructure.HasAtmosphere;
             });
 

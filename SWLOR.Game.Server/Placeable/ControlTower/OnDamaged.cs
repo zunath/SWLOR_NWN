@@ -9,26 +9,27 @@ using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 using Object = NWN.Object;
 using System.Globalization;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Placeable.ControlTower
 {
     public class OnDamaged: IRegisteredEvent
     {
         
-        private readonly IDataService _data;
+        
         private readonly IRandomService _random;
         private readonly IBaseService _base;
         private readonly IDurabilityService _durability;
 
         public OnDamaged(
             
-            IDataService data,
+            
             IRandomService random,
             IBaseService @base,
             IDurabilityService durability)
         {
             
-            _data = data;
+            
             _random = random;
             _base = @base;
             _durability = durability;
@@ -41,10 +42,10 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             NWItem weapon = (_.GetLastWeaponUsed(attacker.Object));
             int damage = _.GetTotalDamageDealt();
             var structureID = tower.GetLocalString("PC_BASE_STRUCTURE_ID");
-            PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.ID == new Guid(structureID));
+            PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID == new Guid(structureID));
             int maxShieldHP = _base.CalculateMaxShieldHP(structure);
-            PCBase pcBase = _data.Get<PCBase>(structure.PCBaseID);
-            var playerIDs = _data.Where<PCBasePermission>(x => x.PCBaseID == structure.PCBaseID && 
+            PCBase pcBase = DataService.Get<PCBase>(structure.PCBaseID);
+            var playerIDs = DataService.Where<PCBasePermission>(x => x.PCBaseID == structure.PCBaseID && 
                                                                !x.IsPublicPermission)
                                  .Select(s => s.PlayerID);
             var toNotify = NWModule.Get().Players.Where(x => playerIDs.Contains(x.GlobalID));
@@ -104,8 +105,8 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
                 }
             }
 
-            _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
-            _data.SubmitDataChange(structure, DatabaseActionType.Update);
+            DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
+            DataService.SubmitDataChange(structure, DatabaseActionType.Update);
             return true;
         }
     }

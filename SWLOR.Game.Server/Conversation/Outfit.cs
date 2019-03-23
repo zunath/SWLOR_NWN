@@ -7,6 +7,7 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static NWN._;
@@ -18,18 +19,15 @@ namespace SWLOR.Game.Server.Conversation
     {
         private readonly IColorTokenService _color;
         private readonly ISerializationService _serialization;
-        private readonly IDataService _data;
+        
 
         public Outfit(
-             
             IDialogService dialog,
             IColorTokenService color,
-            ISerializationService serialization,
-            IDataService data) 
+            ISerializationService serialization)
             : base(dialog)
         {
             _color = color;
-            _data = data;
             _serialization = serialization;
         }
 
@@ -100,7 +98,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private PCOutfit GetPlayerOutfits(NWPlayer oPC)
         {
-            return _data.SingleOrDefault<PCOutfit>(x => x.PlayerID == oPC.GlobalID);
+            return DataService.SingleOrDefault<PCOutfit>(x => x.PlayerID == oPC.GlobalID);
         }
 
         private bool CanModifyClothes()
@@ -158,7 +156,7 @@ namespace SWLOR.Game.Server.Conversation
             else if (responseID == 9) entity.Outfit9 = clothesData;
             else if (responseID == 10) entity.Outfit10 = clothesData;
 
-            _data.SubmitDataChange(entity, action);
+            DataService.SubmitDataChange(entity, action);
             ShowSaveOutfitOptions();
         }
 

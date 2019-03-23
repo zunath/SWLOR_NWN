@@ -4,7 +4,7 @@ using NWN;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
-
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
@@ -20,17 +20,14 @@ namespace SWLOR.Game.Server.Conversation
         }
 
         private readonly ISkillService _skill;
-        private readonly IDataService _data;
+        
 
         public XPTome(
-             
             IDialogService dialog,
-            ISkillService skill,
-            IDataService data) 
+            ISkillService skill)    
             : base(dialog)
         {
             _skill = skill;
-            _data = data;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -61,7 +58,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             List<SkillCategory> categories = _skill.GetActiveCategories().Where(x =>
             {
-                var skills = _data.Where<Skill>(s => s.SkillCategoryID == x.ID && s.ContributesToSkillCap);
+                var skills = DataService.Where<Skill>(s => s.SkillCategoryID == x.ID && s.ContributesToSkillCap);
                 return skills.Any();
             }).ToList();
 
@@ -132,7 +129,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (vm.Item != null && vm.Item.IsValid)
             {
-                var skill = _data.Get<Skill>(vm.SkillID);
+                var skill = DataService.Get<Skill>(vm.SkillID);
                 if (!skill.ContributesToSkillCap)
                 {
                     GetPC().FloatingText("You cannot raise that skill with this tome.");

@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 using Object = NWN.Object;
@@ -16,31 +17,31 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
     public class OnHeartbeat: IRegisteredEvent
     {
         
-        private readonly IDataService _data;
+        
         private readonly IBaseService _base;
 
         public OnHeartbeat(
             
-            IDataService data,
+            
             IBaseService @base)
         {
             
-            _data = data;
+            
             _base = @base;
         }
         public bool Run(params object[] args)
         {
             NWPlaceable tower = Object.OBJECT_SELF;
             Guid structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.ID == structureID);
+            PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
             int maxShieldHP = _base.CalculateMaxShieldHP(structure);
-            var pcBase = _data.Get<PCBase>(structure.PCBaseID);
+            var pcBase = DataService.Get<PCBase>(structure.PCBaseID);
 
             // Regular fuel usage
             if (DateTime.UtcNow >= pcBase.DateFuelEnds && pcBase.Fuel > 0)
             {
                 pcBase.Fuel--;
-                BaseStructure towerStructure = _data.Single<BaseStructure>(x => x.ID == structure.BaseStructureID);
+                BaseStructure towerStructure = DataService.Single<BaseStructure>(x => x.ID == structure.BaseStructureID);
                 int fuelRating = towerStructure.FuelRating;
                 int minutes;
 
@@ -149,7 +150,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             if (pcBase.ShieldHP > maxShieldHP)
                 pcBase.ShieldHP = maxShieldHP;
 
-            _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+            DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
             return true;
         }
     }

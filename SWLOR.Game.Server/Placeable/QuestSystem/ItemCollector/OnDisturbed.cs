@@ -6,6 +6,7 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 using Object = NWN.Object;
@@ -15,20 +16,20 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
     public class OnDisturbed : IRegisteredEvent
     {
         
-        private readonly IDataService _data;
+        
         private readonly IQuestService _quest;
         private readonly IColorTokenService _color;
         private readonly IDialogService _dialog;
 
         public OnDisturbed(
             
-            IDataService data,
+            
             IQuestService quest,
             IColorTokenService color,
             IDialogService dialog)
         {
             
-            _data = data;
+            
             _quest = quest;
             _color = color;
             _dialog = dialog;
@@ -51,8 +52,8 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
             if (disturbType == INVENTORY_DISTURB_TYPE_ADDED)
             {
                 int questID = container.GetLocalInt("QUEST_ID");
-                PCQuestStatus status = _data.Single<PCQuestStatus>(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
-                PCQuestItemProgress progress = _data.SingleOrDefault<PCQuestItemProgress>(x => x.PCQuestStatusID == status.ID && x.Resref == item.Resref);
+                PCQuestStatus status = DataService.Single<PCQuestStatus>(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
+                PCQuestItemProgress progress = DataService.SingleOrDefault<PCQuestItemProgress>(x => x.PCQuestStatusID == status.ID && x.Resref == item.Resref);
                 DatabaseActionType action = DatabaseActionType.Update;
 
                 if (progress == null)
@@ -72,13 +73,13 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
                     if (progress.Remaining <= 0)
                     {
                         var progressCopy = progress;
-                        progress = _data.Single<PCQuestItemProgress>(x => x.ID == progressCopy.ID);
+                        progress = DataService.Single<PCQuestItemProgress>(x => x.ID == progressCopy.ID);
                         action = DatabaseActionType.Delete;
                     }
-                    _data.SubmitDataChange(progress, action);
+                    DataService.SubmitDataChange(progress, action);
 
                     // Recalc the remaining items needed.
-                    int remainingCount = _data.GetAll<PCQuestItemProgress>().Count(x => x.PCQuestStatusID == status.ID);
+                    int remainingCount = DataService.GetAll<PCQuestItemProgress>().Count(x => x.PCQuestStatusID == status.ID);
                     if (remainingCount <= 0)
                     {
                         _quest.AdvanceQuestState(player, owner, questID);
@@ -88,7 +89,7 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
                 }
                 item.Destroy();
 
-                var questItemProgresses = _data.Where<PCQuestItemProgress>(x => x.PCQuestStatusID == status.ID);
+                var questItemProgresses = DataService.Where<PCQuestItemProgress>(x => x.PCQuestStatusID == status.ID);
                 if ( !questItemProgresses.Any())
                 {
                     string conversation = _.GetLocalString(owner, "CONVERSATION");

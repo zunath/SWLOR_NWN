@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
@@ -13,7 +14,7 @@ namespace SWLOR.Game.Server.Item.Medicine
     {
 
         
-        private readonly IDataService _data;
+        
         private readonly ISkillService _skill;
         private readonly IRandomService _random;
         private readonly IPerkService _perk;
@@ -21,14 +22,14 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public ResuscitationKit(
             
-            IDataService data,
+            
             ISkillService skill,
             IRandomService random,
             IPerkService perk,
             IPlayerStatService playerStat)
         {
             
-            _data = data;
+            
             _skill = skill;
             _random = random;
             _perk = perk;
@@ -80,7 +81,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             if (target.IsPlayer)
             {
                 baseHeal = (int)(baseHeal * effectivenessPercent);
-                Player dbPlayer = _data.Single<Player>(x => x.ID == target.GlobalID);
+                Player dbPlayer = DataService.Single<Player>(x => x.ID == target.GlobalID);
                 int fpRecover = (int)(dbPlayer.MaxFP * (0.01f * baseHeal));
                 int hpRecover = (int)(target.MaxHP * (0.01f * baseHeal));
 
@@ -88,7 +89,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectResurrection(), target);
                 _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(hpRecover), target);
                 dbPlayer.CurrentFP = fpRecover;
-                _data.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+                DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
                 player.SendMessage("You successfully resuscitate " + target.Name + "!");
 
                 int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(600, item.RecommendedLevel, skillRank);

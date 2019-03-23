@@ -10,18 +10,9 @@ using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class ErrorService: IErrorService
+    public static class ErrorService
     {
-        
-        private readonly IDataService _data;
-
-        public ErrorService( IDataService data)
-        {
-            
-            _data = data;
-        }
-
-        public void LogError(Exception ex, string @event = "")
+        public static void LogError(Exception ex, string @event = "")
         {
             string stackTrace = ex.ToMessageAndCompleteStacktrace();
 
@@ -41,10 +32,10 @@ namespace SWLOR.Game.Server.Service
             };
             DatabaseAction action = new DatabaseAction(log, DatabaseActionType.Insert);
             // Bypass the caching logic and directly enqueue the insert.
-            _data.DataQueue.Enqueue(action);
+            DataService.DataQueue.Enqueue(action);
         }
 
-        public void Trace(TraceComponent component, string log)
+        public static void Trace(TraceComponent component, string log)
         {
             // Check the global environment variable named "DEBUGGING_ENABLED" to see if it's set.
             string env = Environment.GetEnvironmentVariable("DEBUGGING_ENABLED");

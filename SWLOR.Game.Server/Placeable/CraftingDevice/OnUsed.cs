@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using Object = NWN.Object;
 
@@ -11,18 +12,12 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
 {
     public class OnUsed: IRegisteredEvent
     {
-        
         private readonly IDialogService _dialog;
-        private readonly IDataService _data;
-
+        
         public OnUsed(
-            
-            IDialogService dialog,
-            IDataService data)
+            IDialogService dialog)
         {
-            
             _dialog = dialog;
-            _data = data;
         }
 
         public bool Run(params object[] args)
@@ -35,13 +30,13 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
             if (!string.IsNullOrWhiteSpace(structureID))
             {
                 Guid structureGuid = new Guid(structureID);
-                var structure = _data.Get<PCBaseStructure>(structureGuid);
+                var structure = DataService.Get<PCBaseStructure>(structureGuid);
 
                 // Workbenches and crafting devices can only be used inside 
                 // buildings set to "Workshop" mode.
                 if(structure.ParentPCBaseStructureID != null)
                 {
-                    var buildingStructure = _data.Get<PCBaseStructure>(structure.ParentPCBaseStructureID);
+                    var buildingStructure = DataService.Get<PCBaseStructure>(structure.ParentPCBaseStructureID);
                     var modeType = (StructureModeType) buildingStructure.StructureModeID;
 
                     if (modeType != StructureModeType.Workshop)

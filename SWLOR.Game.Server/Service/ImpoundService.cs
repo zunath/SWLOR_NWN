@@ -10,21 +10,21 @@ namespace SWLOR.Game.Server.Service
 {
     public class ImpoundService : IImpoundService
     {
-        private readonly IDataService _data;
+        
         private readonly ISerializationService _serialization;
 
         public ImpoundService(
-            IDataService data,
+            
             ISerializationService serialization)
         {
-            _data = data;
+            
             _serialization = serialization;
         }
 
         public void Impound(PCBaseStructureItem pcBaseStructureItem)
         {
-            var pcBaseStructure = _data.Get<PCBaseStructure>(pcBaseStructureItem.PCBaseStructureID);
-            var pcBase = _data.Get<PCBase>(pcBaseStructure.PCBaseID);
+            var pcBaseStructure = DataService.Get<PCBaseStructure>(pcBaseStructureItem.PCBaseStructureID);
+            var pcBase = DataService.Get<PCBase>(pcBaseStructure.PCBaseID);
 
             var impoundItem = new PCImpoundedItem
             {
@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Service
                 ItemTag = pcBaseStructureItem.ItemTag,
                 PlayerID = pcBase.PlayerID
             };
-            _data.SubmitDataChange(impoundItem, DatabaseActionType.Insert);
+            DataService.SubmitDataChange(impoundItem, DatabaseActionType.Insert);
         }
 
         public void Impound(Guid playerID, NWItem item)
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Service
                 ItemResref = item.Resref,
                 ItemName = item.Name
             };
-            _data.SubmitDataChange(structureImpoundedItem, DatabaseActionType.Insert);
+            DataService.SubmitDataChange(structureImpoundedItem, DatabaseActionType.Insert);
         }
     }
 }

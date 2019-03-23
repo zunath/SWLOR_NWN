@@ -14,19 +14,19 @@ namespace SWLOR.Game.Server.Service
 {
     public class DeathService : IDeathService
     {
-        private readonly IDataService _data;
+        
         
         private readonly IRandomService _random;
         private readonly IDurabilityService _durability;
         private readonly IAreaService _area;
 
-        public DeathService(IDataService data, 
+        public DeathService( 
             
             IRandomService random,
             IDurabilityService durability,
             IAreaService area)
         {
-            _data = data;
+            
             
             _random = random;
             _durability = durability;
@@ -100,20 +100,20 @@ namespace SWLOR.Game.Server.Service
             if (player == null) throw new ArgumentNullException(nameof(player), nameof(player) + " cannot be null.");
             if (player.Object == null) throw new ArgumentNullException(nameof(player.Object), nameof(player.Object) + " cannot be null.");
 
-            Player pc = _data.Single<Player>(x => x.ID == player.GlobalID);
+            Player pc = DataService.Single<Player>(x => x.ID == player.GlobalID);
             pc.RespawnLocationX = player.Position.m_X;
             pc.RespawnLocationY = player.Position.m_Y;
             pc.RespawnLocationZ = player.Position.m_Z;
             pc.RespawnLocationOrientation = player.Facing;
             pc.RespawnAreaResref = player.Area.Resref;
-            _data.SubmitDataChange(pc, DatabaseActionType.Update);
+            DataService.SubmitDataChange(pc, DatabaseActionType.Update);
             _.FloatingTextStringOnCreature("You will return to this location the next time you die.", player.Object, FALSE);
         }
 
 
         public void TeleportPlayerToBindPoint(NWPlayer pc)
         {
-            Player entity = _data.Single<Player>(x => x.ID == pc.GlobalID);
+            Player entity = DataService.Single<Player>(x => x.ID == pc.GlobalID);
             TeleportPlayerToBindPoint(pc, entity);
         }
 

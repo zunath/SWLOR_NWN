@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
@@ -16,7 +17,7 @@ namespace SWLOR.Game.Server.Item
     {
         
         private readonly IPerkService _perk;
-        private readonly IDataService _data;
+        
         private readonly IBaseService _base;
         private readonly IItemService _item;
         private readonly IRandomService _random;
@@ -25,7 +26,7 @@ namespace SWLOR.Game.Server.Item
         public MineralScanner(
             
             IPerkService perk,
-            IDataService data,
+            
             IBaseService @base,
             IItemService item,
             IRandomService random,
@@ -33,7 +34,7 @@ namespace SWLOR.Game.Server.Item
         {
             
             _perk = perk;
-            _data = data;
+            
             _base = @base;
             _item = item;
             _random = random;
@@ -51,7 +52,7 @@ namespace SWLOR.Game.Server.Item
             if (lootTableID <= 0) return;
 
             NWArea area = _.GetAreaFromLocation(targetLocation);
-            var items = _data.Where<LootTableItem>(x => x.LootTableID == lootTableID).OrderByDescending(o => o.Weight);
+            var items = DataService.Where<LootTableItem>(x => x.LootTableID == lootTableID).OrderByDescending(o => o.Weight);
             string sector = _base.GetSectorOfLocation(targetLocation);
             string sectorName = "Unknown";
 
@@ -112,7 +113,7 @@ namespace SWLOR.Game.Server.Item
         private int GetLootTable(Location targetLocation)
         {
             NWArea area = _.GetAreaFromLocation(targetLocation);
-            var dbArea = _data.Single<Area>(x => x.Resref == area.Resref);
+            var dbArea = DataService.Single<Area>(x => x.Resref == area.Resref);
             var sector = _base.GetSectorOfLocation(targetLocation);
             int lootTableID = 0;
 

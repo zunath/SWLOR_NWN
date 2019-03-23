@@ -18,18 +18,18 @@ namespace SWLOR.Game.Server.Service
     public class SpawnService : ISpawnService
     {
         
-        private readonly IDataService _data;
+        
         private readonly IObjectProcessingService _processor;
         private readonly IRandomService _random;
 
         public SpawnService(
             
-            IDataService data,
+            
             IRandomService random,
             IObjectProcessingService processor)
         {
             
-            _data = data;
+            
             _random = random;
             _processor = processor;
         }
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Service
                     if (string.IsNullOrWhiteSpace(spawnResref) && spawnTableID > 0)
                     {
                         // Pick a random record.   
-                        var spawnObjects = _data.Where<SpawnObject>(x => x.SpawnID == spawnTableID).ToList();
+                        var spawnObjects = DataService.Where<SpawnObject>(x => x.SpawnID == spawnTableID).ToList();
                         int count = spawnObjects.Count;
                         int index = count <= 0 ? 0 : _random.Random(count);
                         var dbSpawn = spawnObjects[index];
@@ -169,8 +169,8 @@ namespace SWLOR.Game.Server.Service
         
         public Location GetRandomSpawnPoint(NWArea area)
         {
-            Area dbArea = _data.Single<Area>(x => x.Resref == area.Resref);
-            var walkmeshes = _data.Where<AreaWalkmesh>(x => x.AreaID == dbArea.ID).ToList();
+            Area dbArea = DataService.Single<Area>(x => x.Resref == area.Resref);
+            var walkmeshes = DataService.Where<AreaWalkmesh>(x => x.AreaID == dbArea.ID).ToList();
             int count = walkmeshes.Count;
             var index = count <= 0 ? 0 : _random.Random(count);
 
@@ -184,11 +184,11 @@ namespace SWLOR.Game.Server.Service
 
         private void SpawnResources(NWArea area, AreaSpawn areaSpawn)
         {
-            var dbArea = _data.GetAll<Area>().Single(x => x.Resref == area.Resref);
+            var dbArea = DataService.GetAll<Area>().Single(x => x.Resref == area.Resref);
 
             if (dbArea.ResourceSpawnTableID <= 0 ||
                 !dbArea.AutoSpawnResources) return;
-            var possibleSpawns = _data.Where<SpawnObject>(x => x.SpawnID == dbArea.ResourceSpawnTableID).ToList();
+            var possibleSpawns = DataService.Where<SpawnObject>(x => x.SpawnID == dbArea.ResourceSpawnTableID).ToList();
 
             // 1024 size = 32x32
             // 256  size = 16x16

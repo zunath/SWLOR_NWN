@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
@@ -13,15 +14,6 @@ namespace SWLOR.Game.Server.Item
 {
     public class StarchartDisk: IActionItem
     {
-        
-        private readonly IDataService _data;
-
-        public StarchartDisk(
-            IDataService data)
-        {
-            _data = data;
-        }
-
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
             return null;
@@ -41,11 +33,11 @@ namespace SWLOR.Game.Server.Item
 
             // Get the base.
             string starshipID = _.GetLocalString(_.GetArea(target), "PC_BASE_STRUCTURE_ID");
-            PCBaseStructure starship = _data.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == starshipID);
-            PCBase starkillerBase = _data.SingleOrDefault<PCBase>(x => x.ID == starship.PCBaseID);
+            PCBaseStructure starship = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == starshipID);
+            PCBase starkillerBase = DataService.SingleOrDefault<PCBase>(x => x.ID == starship.PCBaseID);
 
             starkillerBase.Starcharts |= starcharts;
-            _data.SubmitDataChange(starkillerBase, DatabaseActionType.Update);
+            DataService.SubmitDataChange(starkillerBase, DatabaseActionType.Update);
 
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_CONFUSION_S), target);
             _.FloatingTextStringOnCreature("Starcharts loaded!", player);

@@ -15,15 +15,15 @@ namespace SWLOR.Game.Server.Service
 {
     public class CustomEffectService : ICustomEffectService
     {
-        private readonly IDataService _data;
+        
         
         private readonly IObjectProcessingService _ops;
 
-        public CustomEffectService(IDataService data,
+        public CustomEffectService(
             
             IObjectProcessingService ops)
         {
-            _data = data;
+            
             
             _ops = ops;
         }
@@ -76,14 +76,14 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
 
-            var stance = _data.SingleOrDefault<PCCustomEffect>(x =>
+            var stance = DataService.SingleOrDefault<PCCustomEffect>(x =>
             {
-                var customEffect = _data.Get<Data.Entity.CustomEffect>(x.CustomEffectID);
+                var customEffect = DataService.Get<Data.Entity.CustomEffect>(x.CustomEffectID);
                 return x.PlayerID == player.GlobalID &&
                        customEffect.CustomEffectCategoryID == (int) CustomEffectCategoryType.Stance;
             });
             if (stance?.StancePerkID == null) return;
-            var stanceEffect = _data.Get<Data.Entity.CustomEffect>(stance.CustomEffectID);
+            var stanceEffect = DataService.Get<Data.Entity.CustomEffect>(stance.CustomEffectID);
 
             App.ResolveByInterface<ICustomEffect>("CustomEffect." + stanceEffect.ScriptHandler, handler =>
             {
@@ -112,13 +112,13 @@ namespace SWLOR.Game.Server.Service
 
         private void ApplyPCEffect(NWCreature caster, NWCreature target, int customEffectID, int ticks, int effectiveLevel, string data)
         {
-            Data.Entity.CustomEffect customEffect = _data.Single<Data.Entity.CustomEffect>(x => x.ID == customEffectID);
-            PCCustomEffect pcEffect = _data.SingleOrDefault<PCCustomEffect>(x => x.PlayerID == target.GlobalID && x.CustomEffectID == customEffectID);
+            Data.Entity.CustomEffect customEffect = DataService.Single<Data.Entity.CustomEffect>(x => x.ID == customEffectID);
+            PCCustomEffect pcEffect = DataService.SingleOrDefault<PCCustomEffect>(x => x.PlayerID == target.GlobalID && x.CustomEffectID == customEffectID);
             CustomEffectCategoryType category = (CustomEffectCategoryType) customEffect.CustomEffectCategoryID;
 
             if(category == CustomEffectCategoryType.FoodEffect)
             {
-                var customEffectPC = _data.Get<Data.Entity.CustomEffect>(pcEffect.CustomEffectID);
+                var customEffectPC = DataService.Get<Data.Entity.CustomEffect>(pcEffect.CustomEffectID);
                 if (pcEffect != null && customEffectPC.CustomEffectCategoryID == (int) category)
                 {
                     caster.SendMessage("You are not hungry.");
@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.Service
             pcEffect.EffectiveLevel = effectiveLevel;
             pcEffect.Ticks = ticks;
             pcEffect.CasterNWNObjectID = _.ObjectToString(caster);
-            _data.SubmitDataChange(pcEffect, action);
+            DataService.SubmitDataChange(pcEffect, action);
 
             target.SendMessage(customEffect.StartMessage);
             
@@ -154,7 +154,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (string.IsNullOrWhiteSpace(data)) data = string.Empty;
                 pcEffect.Data = data;
-                _data.SubmitDataChange(pcEffect, DatabaseActionType.Update);
+                DataService.SubmitDataChange(pcEffect, DatabaseActionType.Update);
 
                 // Was already queued for removal, but got cast again. Take it out of the list to be removed.
                 if (AppCache.PCEffectsForRemoval.Contains(pcEffect.ID))
@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.Service
         
         private void ApplyNPCEffect(NWCreature caster, NWCreature target, int customEffectID, int ticks, int effectiveLevel, string data)
         {
-            Data.Entity.CustomEffect effectEntity = _data.Single<Data.Entity.CustomEffect>(x => x.ID == customEffectID);
+            Data.Entity.CustomEffect effectEntity = DataService.Single<Data.Entity.CustomEffect>(x => x.ID == customEffectID);
             // Look for existing effect.
             var spellModel = AppCache.NPCEffects.SingleOrDefault(x => x.Key.Caster.Equals(caster) &&
                                                                     x.Key.CustomEffectID == customEffectID &&
@@ -204,11 +204,11 @@ namespace SWLOR.Game.Server.Service
 
         public CustomEffectType GetCurrentStanceType(NWPlayer player)
         {
-            var stanceEffect = _data.SingleOrDefault<PCCustomEffect>(x =>
+            var stanceEffect = DataService.SingleOrDefault<PCCustomEffect>(x =>
             {
                 if (x.PlayerID != player.GlobalID) return false;
 
-                var customEffect = _data.Get<Data.Entity.CustomEffect>(x.CustomEffectID);
+                var customEffect = DataService.Get<Data.Entity.CustomEffect>(x.CustomEffectID);
                 return customEffect.CustomEffectCategoryID == (int) CustomEffectCategoryType.Stance;
             });
             if (stanceEffect == null) return CustomEffectType.None;
@@ -219,9 +219,9 @@ namespace SWLOR.Game.Server.Service
         public bool RemoveStance(NWPlayer player, PCCustomEffect stanceEffect = null, bool sendMessage = true)
         {
             if (stanceEffect == null)
-                stanceEffect = _data.SingleOrDefault<PCCustomEffect>(x =>
+                stanceEffect = DataService.SingleOrDefault<PCCustomEffect>(x =>
                 {
-                    var customEffect = _data.Get<Data.Entity.CustomEffect>(x.CustomEffectID);
+                    var customEffect = DataService.Get<Data.Entity.CustomEffect>(x.CustomEffectID);
                     return x.PlayerID == player.GlobalID &&
                            customEffect.CustomEffectCategoryID == (int) CustomEffectCategoryType.Stance;
                 });
@@ -232,9 +232,9 @@ namespace SWLOR.Game.Server.Service
             
             int effectiveLevel = stanceEffect.EffectiveLevel;
             string data = stanceEffect.Data;
-            var stanceCustomEffect = _data.Get<Data.Entity.CustomEffect>(stanceEffect.CustomEffectID);
+            var stanceCustomEffect = DataService.Get<Data.Entity.CustomEffect>(stanceEffect.CustomEffectID);
             string scriptHandler = stanceCustomEffect.ScriptHandler;
-            _data.SubmitDataChange(stanceEffect, DatabaseActionType.Delete);
+            DataService.SubmitDataChange(stanceEffect, DatabaseActionType.Delete);
             
             App.ResolveByInterface<ICustomEffect>("CustomEffect." + scriptHandler, handler =>
             {
@@ -246,10 +246,10 @@ namespace SWLOR.Game.Server.Service
 
         public void ApplyStance(NWPlayer player, CustomEffectType customEffect, PerkType perkType, int effectiveLevel, string data)
         {
-            var dbEffect = _data.Single<Data.Entity.CustomEffect>(x => x.ID == (int) customEffect);
-            var pcStanceEffect = _data.SingleOrDefault<PCCustomEffect>(x =>
+            var dbEffect = DataService.Single<Data.Entity.CustomEffect>(x => x.ID == (int) customEffect);
+            var pcStanceEffect = DataService.SingleOrDefault<PCCustomEffect>(x =>
             {
-                var ce = _data.Get<Data.Entity.CustomEffect>(x.CustomEffectID);
+                var ce = DataService.Get<Data.Entity.CustomEffect>(x.CustomEffectID);
                 return x.PlayerID == player.GlobalID &&
                        ce.CustomEffectCategoryID == (int) CustomEffectCategoryType.Stance;
             });
@@ -277,20 +277,20 @@ namespace SWLOR.Game.Server.Service
                 EffectiveLevel = effectiveLevel,
                 StancePerkID = (int)perkType
             };
-            _data.SubmitDataChange(pcStanceEffect, DatabaseActionType.Insert);
+            DataService.SubmitDataChange(pcStanceEffect, DatabaseActionType.Insert);
             
             App.ResolveByInterface<ICustomEffect>("CustomEffect." + dbEffect.ScriptHandler, handler =>
             {
                 if (string.IsNullOrWhiteSpace(data))
                     data = handler?.Apply(player, player, effectiveLevel);
 
-                var stanceCustomEffect = _data.Get<Data.Entity.CustomEffect>(pcStanceEffect.CustomEffectID);
+                var stanceCustomEffect = DataService.Get<Data.Entity.CustomEffect>(pcStanceEffect.CustomEffectID);
                 if(!string.IsNullOrWhiteSpace(stanceCustomEffect.StartMessage))
                     player.SendMessage(stanceCustomEffect.StartMessage);
 
                 if (string.IsNullOrWhiteSpace(data)) data = string.Empty;
                 pcStanceEffect.Data = data;
-                _data.SubmitDataChange(pcStanceEffect, DatabaseActionType.Update);
+                DataService.SubmitDataChange(pcStanceEffect, DatabaseActionType.Update);
                 
                 // Was already queued for removal, but got cast again. Take it out of the list to be removed.
                 if (AppCache.PCEffectsForRemoval.Contains(pcStanceEffect.ID))
@@ -300,7 +300,7 @@ namespace SWLOR.Game.Server.Service
 
         public bool DoesPCHaveCustomEffect(NWPlayer oPC, int customEffectID)
         {
-            PCCustomEffect effect = _data.SingleOrDefault<PCCustomEffect>(x => x.PlayerID == oPC.GlobalID && x.CustomEffectID == customEffectID);
+            PCCustomEffect effect = DataService.SingleOrDefault<PCCustomEffect>(x => x.PlayerID == oPC.GlobalID && x.CustomEffectID == customEffectID);
 
             if (effect == null) return false;
             else if (AppCache.PCEffectsForRemoval.Contains(effect.ID))
@@ -316,9 +316,9 @@ namespace SWLOR.Game.Server.Service
 
         public bool DoesPCHaveCustomEffectByCategory(NWPlayer player, CustomEffectCategoryType category)
         {
-            var pcEffect = _data.GetAll<PCCustomEffect>().FirstOrDefault(x =>
+            var pcEffect = DataService.GetAll<PCCustomEffect>().FirstOrDefault(x =>
             {
-                var customEffect = _data.Get<Data.Entity.CustomEffect>(x.CustomEffectID);
+                var customEffect = DataService.Get<Data.Entity.CustomEffect>(x.CustomEffectID);
                 return customEffect.CustomEffectCategoryID == (int) category;
             });
 
@@ -327,13 +327,13 @@ namespace SWLOR.Game.Server.Service
 
         public void RemovePCCustomEffect(NWPlayer oPC, int customEffectID)
         {
-            PCCustomEffect effect = _data.SingleOrDefault<PCCustomEffect>(x => x.PlayerID == oPC.GlobalID && x.CustomEffectID == customEffectID);
+            PCCustomEffect effect = DataService.SingleOrDefault<PCCustomEffect>(x => x.PlayerID == oPC.GlobalID && x.CustomEffectID == customEffectID);
             oPC.DeleteLocalInt("CUSTOM_EFFECT_ACTIVE_" + customEffectID);
 
             // Doesn't exist in DB or is already marked for removal
             if (effect == null ||
                 AppCache.PCEffectsForRemoval.Contains(effect.ID)) return;
-            var customEffect = _data.Get<Data.Entity.CustomEffect>(effect.CustomEffectID);
+            var customEffect = DataService.Get<Data.Entity.CustomEffect>(effect.CustomEffectID);
 
             oPC.SendMessage(customEffect.WornOffMessage);
 
@@ -357,7 +357,7 @@ namespace SWLOR.Game.Server.Service
             }
             else if (creature.IsPlayer)
             {
-                PCCustomEffect dbEffect = _data.SingleOrDefault<PCCustomEffect>(x => x.PlayerID == creature.GlobalID && x.CustomEffectID == (int)customEffectType);
+                PCCustomEffect dbEffect = DataService.SingleOrDefault<PCCustomEffect>(x => x.PlayerID == creature.GlobalID && x.CustomEffectID == (int)customEffectType);
                 if (dbEffect != null)
                 {
                     if (!AppCache.PCEffectsForRemoval.Contains(dbEffect.ID))
@@ -372,7 +372,7 @@ namespace SWLOR.Game.Server.Service
 
         public ForceSpreadDetails GetForceSpreadDetails(NWPlayer player)
         {
-            PCCustomEffect spreadEffect = _data.SingleOrDefault<PCCustomEffect>(x => x.PlayerID == player.GlobalID && x.CustomEffectID == (int)CustomEffectType.ForceSpread);
+            PCCustomEffect spreadEffect = DataService.SingleOrDefault<PCCustomEffect>(x => x.PlayerID == player.GlobalID && x.CustomEffectID == (int)CustomEffectType.ForceSpread);
             ForceSpreadDetails details = new ForceSpreadDetails();
             string spreadData = spreadEffect?.Data ?? string.Empty;
 
@@ -385,7 +385,7 @@ namespace SWLOR.Game.Server.Service
 
         public void SetForceSpreadUses(NWPlayer player, int uses)
         {
-            PCCustomEffect spreadEffect = _data.SingleOrDefault<PCCustomEffect>(x => x.PlayerID == player.GlobalID && x.CustomEffectID == (int)CustomEffectType.ForceSpread);
+            PCCustomEffect spreadEffect = DataService.SingleOrDefault<PCCustomEffect>(x => x.PlayerID == player.GlobalID && x.CustomEffectID == (int)CustomEffectType.ForceSpread);
             if (spreadEffect == null) return;
 
             if (uses <= 0)
@@ -397,7 +397,7 @@ namespace SWLOR.Game.Server.Service
 
             float range = Convert.ToSingle(spreadData.Split(',')[1]);
             spreadEffect.Data = uses + "," + range;
-            _data.SubmitDataChange(spreadEffect, DatabaseActionType.Update);
+            DataService.SubmitDataChange(spreadEffect, DatabaseActionType.Update);
             player.SendMessage("Force Spread uses remaining: " + uses);
 
         }

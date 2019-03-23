@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Service.Contracts;
+﻿using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Event.Area
 {
@@ -8,20 +9,17 @@ namespace SWLOR.Game.Server.Event.Area
         private readonly ICraftService _craft;
         private readonly IMapService _map;
         private readonly IPlayerService _player;
-        private readonly IWeatherService _weather;
-
+        
         public OnAreaEnter(
             IBaseService baseService,
             IPlayerService player,
             IMapService map,
-            ICraftService craft,
-            IWeatherService weather)
+            ICraftService craft)
         {
             _base = baseService;
             _player = player;
             _map = map;
             _craft = craft;
-            _weather = weather;
         }
 
         public bool Run(params object[] args)
@@ -33,7 +31,7 @@ namespace SWLOR.Game.Server.Event.Area
             _player.OnAreaEnter();
             _map.OnAreaEnter();
             _craft.OnAreaEnter();
-            _weather.OnAreaEnter();
+            WeatherService.OnAreaEnter();
 
             return true;
         }

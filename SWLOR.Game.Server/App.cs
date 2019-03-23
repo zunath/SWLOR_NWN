@@ -58,12 +58,7 @@ namespace SWLOR.Game.Server
                 }
                 catch (Exception ex)
                 {
-                    using (var scope = _container.BeginLifetimeScope())
-                    {
-                        IErrorService errorService = scope.Resolve<IErrorService>();
-                        errorService.LogError(ex, typeName);
-                    }
-
+                    ErrorService.LogError(ex, typeName);
                     throw;
                 }
             }
@@ -86,12 +81,7 @@ namespace SWLOR.Game.Server
                 }
                 catch (Exception ex)
                 {
-                    using (var scope = _container.BeginLifetimeScope())
-                    {
-                        IErrorService errorService = scope.Resolve<IErrorService>();
-                        errorService.LogError(ex, type.ToString());
-                    }
-
+                    ErrorService.LogError(ex, type.ToString());
                     throw;
                 }
             }
@@ -120,8 +110,7 @@ namespace SWLOR.Game.Server
                     }
                     catch (Exception ex)
                     {
-                        IErrorService errorService = scope.Resolve<IErrorService>();
-                        errorService.LogError(ex, typeof(T).ToString());
+                        ErrorService.LogError(ex, typeof(T).ToString());
                     }
                 }
             }
@@ -151,8 +140,7 @@ namespace SWLOR.Game.Server
                     }
                     catch (Exception ex)
                     {
-                        IErrorService errorService = scope.Resolve<IErrorService>();
-                        errorService.LogError(ex, typeof(T1).ToString());
+                        ErrorService.LogError(ex, typeof(T1).ToString());
                         throw;
                     }
                 }
@@ -180,8 +168,7 @@ namespace SWLOR.Game.Server
                     }
                     catch (Exception ex)
                     {
-                        IErrorService errorService = scope.Resolve<IErrorService>();
-                        errorService.LogError(ex, typeof(T).ToString());
+                        ErrorService.LogError(ex, typeof(T).ToString());
                     }
                 }
             }
@@ -237,14 +224,12 @@ namespace SWLOR.Game.Server
             builder.RegisterType<CraftService>().As<ICraftService>().SingleInstance();
             builder.RegisterType<CreatureCorpseService>().As<ICreatureCorpseService>().SingleInstance();
             builder.RegisterType<CustomEffectService>().As<ICustomEffectService>().SingleInstance();
-            builder.RegisterType<DataService>().As<IDataService>().SingleInstance(); // Database processing needs to be a single instance because it holds state.
             builder.RegisterType<DataPackageService>().As<IDataPackageService>().SingleInstance();
             builder.RegisterType<DeathService>().As<IDeathService>().SingleInstance();
             builder.RegisterType<DialogService>().As<IDialogService>().SingleInstance();
             builder.RegisterType<DurabilityService>().As<IDurabilityService>().SingleInstance();
             builder.RegisterType<EmoteStyleService>().As<IEmoteStyleService>().SingleInstance();
             builder.RegisterType<EnmityService>().As<IEnmityService>().SingleInstance();
-            builder.RegisterType<ErrorService>().As<IErrorService>().SingleInstance();
             builder.RegisterType<ExaminationService>().As<IExaminationService>().SingleInstance();
             builder.RegisterType<FarmingService>().As<IFarmingService>().SingleInstance();
             builder.RegisterType<HelmetToggleService>().As<IHelmetToggleService>().SingleInstance();
@@ -279,7 +264,6 @@ namespace SWLOR.Game.Server
             builder.RegisterType<SpaceService>().As<ISpaceService>().SingleInstance();
             builder.RegisterType<SpawnService>().As<ISpawnService>().SingleInstance();
             builder.RegisterType<TimeService>().As<ITimeService>().SingleInstance();
-            builder.RegisterType<WeatherService>().As<IWeatherService>().SingleInstance();
             
             // Background threads
             builder.RegisterType<DatabaseBackgroundThread>().As<IDatabaseThread>().SingleInstance();

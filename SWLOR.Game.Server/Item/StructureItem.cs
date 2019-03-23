@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Service;
 using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
 
 
@@ -17,18 +18,18 @@ namespace SWLOR.Game.Server.Item
     public class StructureItem : IActionItem
     {
         
-        private readonly IDataService _data;
+        
         private readonly IDialogService _dialog;
         private readonly IBaseService _base;
 
         public StructureItem(
             
-            IDataService data,
+            
             IDialogService dialog,
             IBaseService @base)
         {
             
-            _data = data;
+            
             _dialog = dialog;
             _base = @base;
         }
@@ -66,7 +67,7 @@ namespace SWLOR.Game.Server.Item
             else if (!string.IsNullOrWhiteSpace(parentStructureID))
             {
                 var parentStructureGuid = new Guid(parentStructureID);
-                var parentStructure = _data.Get<PCBaseStructure>(parentStructureGuid);
+                var parentStructure = DataService.Get<PCBaseStructure>(parentStructureGuid);
                 data.PCBaseID = parentStructure.PCBaseID;
                 data.ParentStructureID = parentStructureGuid;
 
@@ -83,7 +84,7 @@ namespace SWLOR.Game.Server.Item
             else
             {
                 string sector = _base.GetSectorOfLocation(targetLocation);
-                PCBase pcBase = _data.Single<PCBase>(x => x.AreaResref == area.Resref && x.Sector == sector);
+                PCBase pcBase = DataService.Single<PCBase>(x => x.AreaResref == area.Resref && x.Sector == sector);
                 data.PCBaseID = pcBase.ID;
                 data.ParentStructureID = null;
                 data.BuildingType = BuildingType.Exterior;

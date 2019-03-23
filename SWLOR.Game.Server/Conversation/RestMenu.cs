@@ -6,6 +6,7 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
 
@@ -13,7 +14,7 @@ namespace SWLOR.Game.Server.Conversation
 {
     internal class RestMenu : ConversationBase
     {
-        private readonly IDataService _data;
+        
         private readonly IColorTokenService _color;
         private readonly ISkillService _skill;
         private readonly IMenuService _menu;
@@ -21,13 +22,13 @@ namespace SWLOR.Game.Server.Conversation
         public RestMenu(
             IDialogService dialog,
             IColorTokenService color,
-            IDataService data,
+            
             ISkillService skill,
             IMenuService menu)
             : base(dialog)
         {
             _color = color;
-            _data = data;
+            
             _skill = skill;
             _menu = menu;
         }
@@ -54,7 +55,7 @@ namespace SWLOR.Game.Server.Conversation
         public override void Initialize()
         {
             Guid playerID = GetPC().GlobalID;
-            long overflowCount = _data.Where<PCOverflowItem>(x => x.PlayerID == playerID).LongCount();
+            long overflowCount = DataService.Where<PCOverflowItem>(x => x.PlayerID == playerID).LongCount();
 
             if (overflowCount <= 0)
             {
@@ -123,11 +124,11 @@ namespace SWLOR.Game.Server.Conversation
 
         private string BuildMainPageHeader(NWPlayer player)
         {
-            Player playerEntity = _data.Single<Player>(x => x.ID == player.GlobalID);
-            var association = _data.Get<Association>(playerEntity.AssociationID);
-            int totalSkillCount = _data.Where<PCSkill>(x =>
+            Player playerEntity = DataService.Single<Player>(x => x.ID == player.GlobalID);
+            var association = DataService.Get<Association>(playerEntity.AssociationID);
+            int totalSkillCount = DataService.Where<PCSkill>(x =>
             {
-                var skill = _data.Get<Skill>(x.SkillID);
+                var skill = DataService.Get<Skill>(x.SkillID);
                 return x.PlayerID == player.GlobalID && skill.ContributesToSkillCap;
             }).Sum(s => s.Rank);
 

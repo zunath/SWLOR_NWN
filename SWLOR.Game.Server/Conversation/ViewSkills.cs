@@ -24,21 +24,18 @@ namespace SWLOR.Game.Server.Conversation
         private readonly ISkillService _skill;
         private readonly IColorTokenService _color;
         private readonly IMenuService _menu;
-        private readonly IDataService _data;
+        
 
         public ViewSkills(
-             
             IDialogService dialog,
             ISkillService skill,
             IColorTokenService color,
-            IMenuService menu,
-            IDataService data) 
+            IMenuService menu)
             : base(dialog)
         {
             _skill = skill;
             _color = color;
             _menu = menu;
-            _data = data;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -74,7 +71,7 @@ namespace SWLOR.Game.Server.Conversation
             ClearPageResponses("CategoryPage");
 
             // If player has skill levels to distribute, display the option to distribute them.
-            var showDistribution = _data.Where<PCSkillPool>(x => x.PlayerID == GetPC().GlobalID && x.Levels > 0).Count > 0;
+            var showDistribution = DataService.Where<PCSkillPool>(x => x.PlayerID == GetPC().GlobalID && x.Levels > 0).Count > 0;
             AddResponseToPage("CategoryPage", _color.Green("Distribute Skill Ranks"), showDistribution);
             
             foreach (SkillCategory category in categories)
@@ -101,7 +98,7 @@ namespace SWLOR.Game.Server.Conversation
             Model vm = GetDialogCustomData<Model>();
             Skill skill = _skill.GetSkill(vm.SelectedSkillID);
             PCSkill pcSkill = _skill.GetPCSkill(GetPC(), vm.SelectedSkillID);
-            SkillXPRequirement req = _data.Single<SkillXPRequirement>(x => x.Rank == pcSkill.Rank && x.SkillID == skill.ID); 
+            SkillXPRequirement req = DataService.Single<SkillXPRequirement>(x => x.Rank == pcSkill.Rank && x.SkillID == skill.ID); 
             string header = CreateSkillDetailsHeader(pcSkill, req);
             SetPageHeader("SkillDetailsPage", header);
 
@@ -144,9 +141,9 @@ namespace SWLOR.Game.Server.Conversation
                 noContributeMessage = _color.Green("This skill does not contribute to your cumulative skill cap.") + "\n\n";
             }
 
-            Attribute primaryAttribute = _data.Get<Attribute>(skill.Primary);
-            Attribute secondaryAttribute = _data.Get<Attribute>(skill.Secondary);
-            Attribute tertiaryAttribute = _data.Get<Attribute>(skill.Tertiary);
+            Attribute primaryAttribute = DataService.Get<Attribute>(skill.Primary);
+            Attribute secondaryAttribute = DataService.Get<Attribute>(skill.Secondary);
+            Attribute tertiaryAttribute = DataService.Get<Attribute>(skill.Tertiary);
             string primary = _color.Green("Primary (+" + PlayerStatService.PrimaryIncrease + "): ") + primaryAttribute.Name + "\n";
             string secondary = _color.Green("Secondary (+" + PlayerStatService.SecondaryIncrease + "): ") + secondaryAttribute.Name + "\n";
             string tertiary = _color.Green("Tertiary (+" + PlayerStatService.TertiaryIncrease + "): ") + tertiaryAttribute.Name + "\n";

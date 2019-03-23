@@ -8,6 +8,7 @@ using SWLOR.Game.Server.ValueObject.Dialog;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
 using static NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
@@ -16,7 +17,7 @@ namespace SWLOR.Game.Server.Conversation
 {
     public class PlaceStructure : ConversationBase
     {
-        private readonly IDataService _data;
+        
         private readonly IBaseService _base;
         private readonly IColorTokenService _color;
         private readonly IAreaService _area;
@@ -26,7 +27,7 @@ namespace SWLOR.Game.Server.Conversation
         public PlaceStructure(
             
             IDialogService dialog,
-            IDataService data,
+            
             IBaseService @base,
             IColorTokenService color,
             IAreaService area,
@@ -34,7 +35,7 @@ namespace SWLOR.Game.Server.Conversation
             ICraftService craft)
             : base(dialog)
         {
-            _data = data;
+            
             _base = @base;
             _color = color;
             _area = area;
@@ -81,9 +82,9 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadMainPage()
         {
             var data = _base.GetPlayerTempData(GetPC());
-            BaseStructure structure = _data.Single<BaseStructure>(x => x.ID == data.BaseStructureID);
+            BaseStructure structure = DataService.Single<BaseStructure>(x => x.ID == data.BaseStructureID);
             var tower = _base.GetBaseControlTower(data.PCBaseID);
-            var towerBaseStructure = tower == null ? null : _data.Get<BaseStructure>(tower.BaseStructureID);
+            var towerBaseStructure = tower == null ? null : DataService.Get<BaseStructure>(tower.BaseStructureID);
 
             bool canPlaceStructure = true;
             bool isPlacingTower = structure.BaseStructureTypeID == (int)BaseStructureType.ControlTower;
@@ -105,15 +106,15 @@ namespace SWLOR.Game.Server.Conversation
 
             if (data.BuildingType == BuildingType.Interior)
             {
-                var buildingStructure = _data.Get<PCBaseStructure>(data.ParentStructureID);
-                var baseStructure = _data.Get<BaseStructure>(buildingStructure.BaseStructureID);
-                var childStructures = _data.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == buildingStructure.ID).ToList();
+                var buildingStructure = DataService.Get<PCBaseStructure>(data.ParentStructureID);
+                var baseStructure = DataService.Get<BaseStructure>(buildingStructure.BaseStructureID);
+                var childStructures = DataService.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == buildingStructure.ID).ToList();
 
                 header += _color.Green("Structure Limit: ") + childStructures.Count + " / " + (baseStructure.Storage + buildingStructure.StructureBonus) + "\n";
-                var structures = _data.Where<PCBaseStructure>(x =>
+                var structures = DataService.Where<PCBaseStructure>(x =>
                 {
                     if (x.ParentPCBaseStructureID != buildingStructure.ID) return false;
-                    var childStructure = _data.Get<BaseStructure>(x.BaseStructureID);
+                    var childStructure = DataService.Get<BaseStructure>(x.BaseStructureID);
                     return childStructure.HasAtmosphere;
                 });
 
@@ -125,15 +126,15 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if (data.BuildingType == BuildingType.Starship)
             {
-                var buildingStructure = _data.Get<PCBaseStructure>(data.ParentStructureID);
-                var buildingStyle = _data.Get<BuildingStyle>(buildingStructure.InteriorStyleID);
-                var childStructures = _data.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == buildingStructure.ID).ToList();
+                var buildingStructure = DataService.Get<PCBaseStructure>(data.ParentStructureID);
+                var buildingStyle = DataService.Get<BuildingStyle>(buildingStructure.InteriorStyleID);
+                var childStructures = DataService.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == buildingStructure.ID).ToList();
 
                 header += _color.Green("Structure Limit: ") + childStructures.Count + " / " + (buildingStyle.FurnitureLimit + buildingStructure.StructureBonus) + "\n";
-                var structures = _data.Where<PCBaseStructure>(x =>
+                var structures = DataService.Where<PCBaseStructure>(x =>
                 {
                     if (x.ParentPCBaseStructureID != buildingStructure.ID) return false;
-                    var childStructure = _data.Get<BaseStructure>(x.BaseStructureID);
+                    var childStructure = DataService.Get<BaseStructure>(x.BaseStructureID);
                     return childStructure.HasAtmosphere;
                 });
 
@@ -145,9 +146,9 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if (data.BuildingType == BuildingType.Apartment)
             {
-                var pcBase = _data.Get<PCBase>(data.PCBaseID);
-                var buildingStyle = _data.Get<BuildingStyle>(pcBase.BuildingStyleID);
-                var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == pcBase.ID).ToList();
+                var pcBase = DataService.Get<PCBase>(data.PCBaseID);
+                var buildingStyle = DataService.Get<BuildingStyle>(pcBase.BuildingStyleID);
+                var structures = DataService.Where<PCBaseStructure>(x => x.PCBaseID == pcBase.ID).ToList();
                 header += _color.Green("Structure Limit: ") + structures.Count + " / " + buildingStyle.FurnitureLimit + "\n";
                 int bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;
                 if (bonus > 150) bonus = 150;
@@ -174,8 +175,8 @@ namespace SWLOR.Game.Server.Conversation
             {
                 int exteriorStyle = data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID");
                 int interiorStyle = data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID");
-                var exterior = _data.Single<BuildingStyle>(x => x.ID == exteriorStyle);
-                var interior = _data.Single<BuildingStyle>(x => x.ID == interiorStyle);
+                var exterior = DataService.Single<BuildingStyle>(x => x.ID == exteriorStyle);
+                var interior = DataService.Single<BuildingStyle>(x => x.ID == interiorStyle);
 
                 header += _color.Green("Exterior Style: ") + exterior.Name + "\n";
                 header += _color.Green("Interior Style: ") + interior.Name + "\n";
@@ -259,7 +260,7 @@ namespace SWLOR.Game.Server.Conversation
                 structure.BaseStructureTypeID == (int)BaseStructureType.Building)
             {
                 int exteriorID = data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_EXTERIOR_ID");
-                var style = _data.Single<BuildingStyle>(x => x.ID == exteriorID);
+                var style = DataService.Single<BuildingStyle>(x => x.ID == exteriorID);
 
                 resref = style.Resref;
             }
@@ -273,7 +274,7 @@ namespace SWLOR.Game.Server.Conversation
             if (data.IsPreviewing) return;
 
             data.IsPreviewing = true;
-            var structure = _data.Single<BaseStructure>(x => x.ID == data.BaseStructureID);
+            var structure = DataService.Single<BaseStructure>(x => x.ID == data.BaseStructureID);
             string resref = GetPlaceableResref(structure);
 
             NWPlaceable plc = (_.CreateObject(OBJECT_TYPE_PLACEABLE, resref, data.TargetLocation));
@@ -291,7 +292,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (data.StructurePreview == null || !data.StructurePreview.IsValid)
             {
-                var structure = _data.Single<BaseStructure>(x => x.ID == data.BaseStructureID);
+                var structure = DataService.Single<BaseStructure>(x => x.ID == data.BaseStructureID);
                 string resref = GetPlaceableResref(structure);
                 data.StructurePreview = (_.CreateObject(OBJECT_TYPE_PLACEABLE, resref, data.TargetLocation));
                 data.StructurePreview.IsUseable = false;
@@ -374,7 +375,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var data = _base.GetPlayerTempData(GetPC());
             string canPlaceStructure = _base.CanPlaceStructure(GetPC(), data.StructureItem, data.TargetLocation, data.BaseStructureID);
-            var baseStructure = _data.Single<BaseStructure>(x => x.ID == data.BaseStructureID);
+            var baseStructure = DataService.Single<BaseStructure>(x => x.ID == data.BaseStructureID);
 
             if (!string.IsNullOrWhiteSpace(canPlaceStructure))
             {
@@ -404,14 +405,14 @@ namespace SWLOR.Game.Server.Conversation
                 StructureBonus = data.StructureItem.StructureBonus, 
                 StructureModeID = baseStructure.DefaultStructureModeID
             };
-            _data.SubmitDataChange(structure, DatabaseActionType.Insert);
+            DataService.SubmitDataChange(structure, DatabaseActionType.Insert);
             
             // Placing a control tower. Set base shields to 100%
             if (baseStructure.BaseStructureTypeID == (int)BaseStructureType.ControlTower)
             {
-                var pcBase = _data.Single<PCBase>(x => x.ID == data.PCBaseID);
+                var pcBase = DataService.Single<PCBase>(x => x.ID == data.PCBaseID);
                 pcBase.ShieldHP = _base.CalculateMaxShieldHP(structure);
-                _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
             }
             
             _base.SpawnStructure(data.TargetArea, structure.ID);
@@ -428,7 +429,7 @@ namespace SWLOR.Game.Server.Conversation
             if (buildingType == BuildingType.Interior)
                 styleID = data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID");
 
-            var currentStyle = _data.Single<BuildingStyle>(x => x.ID == styleID);
+            var currentStyle = DataService.Single<BuildingStyle>(x => x.ID == styleID);
             string header = _color.Green("Building Style: ") + currentStyle.Name + "\n\n";
             header += "Change the style by selecting from the list below.";
 
@@ -441,7 +442,7 @@ namespace SWLOR.Game.Server.Conversation
                 AddResponseToPage("StylePage", "Preview Interior", true, new Tuple<int, BuildingType>(-2, BuildingType.Interior));
             }
 
-            var styles = _data.Where<BuildingStyle>(x => x.BuildingTypeID == (int)buildingType && x.BaseStructureID == data.BaseStructureID && x.IsActive).ToList();
+            var styles = DataService.Where<BuildingStyle>(x => x.BuildingTypeID == (int)buildingType && x.BaseStructureID == data.BaseStructureID && x.IsActive).ToList();
             foreach (var style in styles)
             {
                 var args = new Tuple<int, BuildingType>(style.ID, buildingType);
@@ -481,7 +482,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var data = _base.GetPlayerTempData(GetPC());
             int styleID = data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID");
-            var style = _data.Single<BuildingStyle>(x => x.ID == styleID);
+            var style = DataService.Single<BuildingStyle>(x => x.ID == styleID);
             var area = _area.CreateAreaInstance(GetPC(), style.Resref, "BUILDING PREVIEW: " + style.Name, "PLAYER_HOME_ENTRANCE");
             area.SetLocalInt("IS_BUILDING_PREVIEW", TRUE);
             NWPlayer player = GetPC();

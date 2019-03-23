@@ -8,44 +8,34 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Event.Module
 {
     internal class OnModuleHeartbeat : IRegisteredEvent
     {
-        
-        private readonly IDataService _data;
-        private readonly IItemService _item;
         private readonly IAbilityService _ability;
         private readonly IPerkService _perk;
         private readonly IBaseService _base;
         private readonly IPlayerStatService _playerStat;
-        private readonly IWeatherService _weather;
         
         public OnModuleHeartbeat(
-            IDataService data,
-            IItemService item,
             IAbilityService ability,
             IPerkService perk,
             IBaseService @base,
-            IPlayerStatService playerStat,
-            IWeatherService weather)
+            IPlayerStatService playerStat)
         {
-            
-            _data = data;
-            _item = item;
             _ability = ability;
             _perk = perk;
             _base = @base;
             _playerStat = playerStat;
-            _weather = weather;
         }
 
         public bool Run(params object[] args)
         {
             Guid[] playerIDs = NWModule.Get().Players.Where(x => x.IsPlayer).Select(x => x.GlobalID).ToArray();
-            var entities = _data.Where<Data.Entity.Player>(x => playerIDs.Contains(x.ID)).ToList();
+            var entities = DataService.Where<Data.Entity.Player>(x => playerIDs.Contains(x.ID)).ToList();
 
             foreach (var player in NWModule.Get().Players)
             {
@@ -55,12 +45,12 @@ namespace SWLOR.Game.Server.Event.Module
                 HandleRegenerationTick(player, entity);
                 HandleFPRegenerationTick(player, entity);
 
-                _data.SubmitDataChange(entity, DatabaseActionType.Update);
+                DataService.SubmitDataChange(entity, DatabaseActionType.Update);
             }
             
             SaveCharacters();
             _base.OnModuleHeartbeat();
-            _weather.OnModuleHeartbeat();
+            WeatherService.OnModuleHeartbeat();
 
             // todo: use for debugging the memleak issue. Leave in for now - will remove after it's been fixed.
 

@@ -14,17 +14,16 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
         
         private readonly IBasePermissionService _perm;
         private readonly IDialogService _dialog;
-        private readonly IDataService _data;
+        
 
         public OnUsed(
             IBasePermissionService perm,
-            IDialogService dialog,
-            IDataService data)
+            IDialogService dialog)
+            
         {
             
             _perm = perm;
             _dialog = dialog;
-            _data = data;
         }
 
         public bool Run(params object[] args)

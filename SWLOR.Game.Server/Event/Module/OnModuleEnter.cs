@@ -1,6 +1,7 @@
 ﻿using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 using Object = NWN.Object;
@@ -19,7 +20,7 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly ICustomEffectService _customEffect;
         private readonly IChatTextService _chatText;
         private readonly IPlayerValidationService _playerValidation;
-        private readonly IDataService _data;
+        
         private readonly IRaceService _race;
         private readonly IPlayerMigrationService _migration;
         private readonly IMarketService _market;
@@ -36,7 +37,7 @@ namespace SWLOR.Game.Server.Event.Module
             ICustomEffectService customEffect,
             IChatTextService chatText,
             IPlayerValidationService playerValidation,
-            IDataService data,
+            
             IRaceService race,
             IPlayerMigrationService migration,
             IMarketService market,
@@ -52,7 +53,7 @@ namespace SWLOR.Game.Server.Event.Module
             _customEffect = customEffect;
             _chatText = chatText;
             _playerValidation = playerValidation;
-            _data = data;
+            
             _race = race;
             _migration = migration;
             _market = market;
@@ -72,7 +73,7 @@ namespace SWLOR.Game.Server.Event.Module
             _.ExecuteScript("dmfi_onclienter ", Object.OBJECT_SELF); // DMFI also calls "x3_mod_def_enter"
             _playerValidation.OnModuleEnter();
             _player.InitializePlayer(player);
-            _data.CachePlayerData(player);
+            DataService.CachePlayerData(player);
             _skill.OnModuleEnter();
             _perk.OnModuleEnter();
             _player.LoadCharacter(player);

@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Placeable.MolecularReassembler;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static NWN._;
@@ -14,7 +15,7 @@ namespace SWLOR.Game.Server.Conversation
     public class MolecularReassembly: ConversationBase
     {
         private readonly IColorTokenService _color;
-        private readonly IDataService _data;
+        
         private readonly ICraftService _craft;
         private readonly ISerializationService _serialization;
         
@@ -23,13 +24,13 @@ namespace SWLOR.Game.Server.Conversation
              
             IDialogService dialog,
             IColorTokenService color,
-            IDataService data,
+            
             ICraftService craft,
             ISerializationService serialization) 
             : base(dialog)
         {
             _color = color;
-            _data = data;
+            
             _craft = craft;
             _serialization = serialization;
             
@@ -74,7 +75,7 @@ namespace SWLOR.Game.Server.Conversation
             SetPageHeader("MainPage", header);
 
             ClearPageResponses("MainPage");
-            var componentTypes = _data.Where<ComponentType>(x => !string.IsNullOrWhiteSpace(x.ReassembledResref));
+            var componentTypes = DataService.Where<ComponentType>(x => !string.IsNullOrWhiteSpace(x.ReassembledResref));
             foreach (var type in componentTypes)
             {
                 AddResponseToPage("MainPage", type.Name, true, type.ID);
@@ -98,7 +99,7 @@ namespace SWLOR.Game.Server.Conversation
             var model = _craft.GetPlayerCraftingData(player);
             NWPlaceable tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
             var item = _serialization.DeserializeItem(model.SerializedSalvageItem, tempStorage);
-            var componentType = _data.Get<ComponentType>(model.SalvageComponentTypeID);
+            var componentType = DataService.Get<ComponentType>(model.SalvageComponentTypeID);
             string header = _color.Green("Item: ") + item.Name + "\n\n";
             header += "Reassembling this item will create the following " + _color.Green(componentType.Name) + " component(s). Chance to create depends on your perks, skills, and harvesting bonus on items.\n\n";
 

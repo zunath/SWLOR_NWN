@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Data.Processor
     {
         public IValidator Validator => new DownloadValidator();
 
-        public DatabaseAction Process(IDataService data, JObject dataObject)
+        public DatabaseAction Process( JObject dataObject)
         {
             return null;
         }

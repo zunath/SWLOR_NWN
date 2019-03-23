@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Processor.Contracts;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
@@ -16,17 +17,17 @@ namespace SWLOR.Game.Server.Processor
     public class SpawnProcessor: IEventProcessor
     {
         private readonly IObjectProcessingService _processor;
-        private readonly IDataService _data;
+        
         private readonly ISpawnService _spawn;
         
 
         public SpawnProcessor(
             IObjectProcessingService processor,
-            IDataService data,
+            
             ISpawnService spawn)
         {
             _processor = processor;
-            _data = data;
+            
             _spawn = spawn;
             
         }
@@ -120,7 +121,7 @@ namespace SWLOR.Game.Server.Processor
                 // Look for a spawn out of the database set. Update spawn data if one is found.
                 if (string.IsNullOrWhiteSpace(resref))
                 {
-                    var dbSpawn = _data.Where<SpawnObject>(x => x.SpawnID == spawn.SpawnTableID)
+                    var dbSpawn = DataService.Where<SpawnObject>(x => x.SpawnID == spawn.SpawnTableID)
                         .OrderBy(o => Guid.NewGuid()).First();
 
                     resref = dbSpawn.Resref;

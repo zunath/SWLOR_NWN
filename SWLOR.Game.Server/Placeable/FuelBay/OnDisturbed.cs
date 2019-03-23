@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.Contracts;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
 using static NWN._;
 using Object = NWN.Object;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
@@ -17,7 +18,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
     public class OnDisturbed : IRegisteredEvent
     {
         
-        private readonly IDataService _data;
+        
         private readonly IItemService _item;
         private readonly ISpaceService _space;
         private readonly ITimeService _time;
@@ -26,7 +27,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
 
         public OnDisturbed(
             
-            IDataService data,
+            
             IItemService item,
             ISpaceService space,
             ITimeService time,
@@ -34,7 +35,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             IBaseService @base)
         {
             
-            _data = data;
+            
             _item = item;
             _space = space;
             _time = time;
@@ -70,8 +71,8 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
                 }
             }
 
-            var structure = _data.Single<PCBaseStructure>(x => x.ID == new Guid(structureID));
-            var pcBase = _data.Get<PCBase>(structure.PCBaseID);
+            var structure = DataService.Single<PCBaseStructure>(x => x.ID == new Guid(structureID));
+            var pcBase = DataService.Get<PCBase>(structure.PCBaseID);
 
             // Calculate how much fuel exists in the bay's inventory.
             int fuelCount = 0;
@@ -150,10 +151,10 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             }
 
             // Submit a DB data change for the fuel or stronidium amount adjustment.
-            _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+            DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
 
             var tower = _base.GetBaseControlTower(structure.PCBaseID);
-            var towerStructure = _data.Single<BaseStructure>(x => x.ID == tower.BaseStructureID);
+            var towerStructure = DataService.Single<BaseStructure>(x => x.ID == tower.BaseStructureID);
 
             if (towerStructure.BaseStructureTypeID == (int)BaseStructureType.Starship)
             {

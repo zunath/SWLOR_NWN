@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
@@ -16,7 +17,7 @@ namespace SWLOR.Game.Server.Item.Medicine
     {
 
         
-        private readonly IDataService _data;
+        
         private readonly ISkillService _skill;
         private readonly IRandomService _random;
         private readonly IPerkService _perk;
@@ -26,7 +27,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public ForcePack(
             
-            IDataService data,
+            
             ISkillService skill,
             IRandomService random,
             IPerkService perk,
@@ -35,7 +36,7 @@ namespace SWLOR.Game.Server.Item.Medicine
             ICustomEffectService customEffect)
         {
             
-            _data = data;
+            
             _skill = skill;
             _random = random;
             _perk = perk;
@@ -145,7 +146,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return "Only players may be targeted with this item.";
             }
 
-            var dbTarget = _data.Single<Player>(x => x.ID == target.GlobalID);
+            var dbTarget = DataService.Single<Player>(x => x.ID == target.GlobalID);
             if (dbTarget.CurrentFP >= dbTarget.MaxFP)
             {
                 return "Your target's FP is at their maximum.";

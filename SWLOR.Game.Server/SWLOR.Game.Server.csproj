@@ -1245,13 +1245,11 @@
     <Compile Include="Service\Contracts\IEmoteStyleService.cs" />
     <Compile Include="Service\Contracts\ISpaceService.cs" />
     <Compile Include="Service\Contracts\IMarketService.cs" />
-    <Compile Include="Service\Contracts\IWeatherService.cs" />
     <Compile Include="Service\DataPackageService.cs" />
     <Compile Include="Service\DataService.cs" />
     <Compile Include="Service\EmoteStyleService.cs" />
     <Compile Include="Service\Contracts\IPlayerValidationService.cs" />
     <Compile Include="Service\Contracts\IDataPackageService.cs" />
-    <Compile Include="Service\Contracts\IDataService.cs" />
     <Compile Include="Service\Contracts\ICombatService.cs" />
     <Compile Include="Service\Contracts\IPlayerMigrationService.cs" />
     <Compile Include="Service\Contracts\IMessageBoardService.cs" />
@@ -1312,7 +1310,6 @@
     <Compile Include="Service\Contracts\ICraftService.cs" />
     <Compile Include="Service\Contracts\IDeathService.cs" />
     <Compile Include="Service\Contracts\IDurabilityService.cs" />
-    <Compile Include="Service\Contracts\IErrorService.cs" />
     <Compile Include="Service\Contracts\IExaminationService.cs" />
     <Compile Include="Service\Contracts\IFarmingService.cs" />
     <Compile Include="Service\Contracts\IHelmetToggleService.cs" />

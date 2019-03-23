@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
@@ -13,21 +14,21 @@ namespace SWLOR.Game.Server.Item
     {
         
         private readonly IBaseService _base;
-        private readonly IDataService _data;
+        
         private readonly IPerkService _perk;
         private readonly ISkillService _skill;
         private readonly ISpaceService _space;
         public SSRepairKit(
             
             IBaseService baseService,
-            IDataService data,
+            
             IPerkService perk,
             ISkillService skill,
             ISpaceService space)
         {
             
             _base = baseService;
-            _data = data;
+            
             _perk = perk;
             _skill = skill;
             _space = space;
@@ -44,8 +45,8 @@ namespace SWLOR.Game.Server.Item
             NWPlayer player = new NWPlayer(user);
             string structureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
 
-            PCBaseStructure pcbs = _data.Single<PCBaseStructure>(x => x.ID.ToString() == structureID);
-            BaseStructure structure = _data.Get<BaseStructure>(pcbs.BaseStructureID);
+            PCBaseStructure pcbs = DataService.Single<PCBaseStructure>(x => x.ID.ToString() == structureID);
+            BaseStructure structure = DataService.Get<BaseStructure>(pcbs.BaseStructureID);
 
             int repair = _skill.GetPCSkillRank(player, SkillType.Piloting);
             int maxRepair = (int)structure.Durability - (int)pcbs.Durability;
@@ -64,7 +65,7 @@ namespace SWLOR.Game.Server.Item
             }
 
             pcbs.Durability += repair;
-            _data.SubmitDataChange(pcbs, DatabaseActionType.Update);
+            DataService.SubmitDataChange(pcbs, DatabaseActionType.Update);
 
             player.SendMessage("Ship repaired for " + repair + " points. (Hull points: " + pcbs.Durability + "/" + structure.Durability + ")");
         }
@@ -110,8 +111,8 @@ namespace SWLOR.Game.Server.Item
 
             string structureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
 
-            PCBaseStructure pcbs = _data.Single<PCBaseStructure>(x => x.ID.ToString() == structureID);
-            BaseStructure structure = _data.Get<BaseStructure>(pcbs.BaseStructureID);
+            PCBaseStructure pcbs = DataService.Single<PCBaseStructure>(x => x.ID.ToString() == structureID);
+            BaseStructure structure = DataService.Get<BaseStructure>(pcbs.BaseStructureID);
 
             if (structure.Durability == pcbs.Durability)
             {
@@ -119,7 +120,7 @@ namespace SWLOR.Game.Server.Item
             }
 
             bool canRepair = (_perk.GetPCPerkLevel(new NWPlayer(user), PerkType.CombatRepair) >= 1);
-            PCBase pcBase = _data.Get<PCBase>(pcbs.PCBaseID);
+            PCBase pcBase = DataService.Get<PCBase>(pcbs.PCBaseID);
 
             if (!canRepair && _space.IsLocationSpace(pcBase.ShipLocation))
             {

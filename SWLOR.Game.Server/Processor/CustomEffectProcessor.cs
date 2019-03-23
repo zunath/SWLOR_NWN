@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Processor.Contracts;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 
@@ -17,18 +18,11 @@ namespace SWLOR.Game.Server.Processor
 {
     public class CustomEffectProcessor: IEventProcessor
     {
-        private readonly IDataService _data;
-        private readonly IErrorService _error;
-        
-        
         private readonly ICustomEffectService _customEffect;
 
-        public CustomEffectProcessor(IDataService data,
-            IErrorService error,
+        public CustomEffectProcessor(
             ICustomEffectService customEffect)
         {
-            _data = data;
-            _error = error;
             _customEffect = customEffect;
         }
 
@@ -45,9 +39,9 @@ namespace SWLOR.Game.Server.Processor
             {
                 if (!player.IsInitializedAsPlayer) continue; // Ignored to prevent a timing issue where new characters would be included in this processing.
 
-                List<PCCustomEffect> effects = _data.Where<PCCustomEffect>(x =>
+                List<PCCustomEffect> effects = DataService.Where<PCCustomEffect>(x =>
                 {
-                    var customEffect = _data.Get<Data.Entity.CustomEffect>(x.CustomEffectID);
+                    var customEffect = DataService.Get<Data.Entity.CustomEffect>(x.CustomEffectID);
                     return x.PlayerID == player.GlobalID &&
                            customEffect.CustomEffectCategoryID != (int) CustomEffectCategoryType.Stance;
                 }).ToList();
@@ -63,12 +57,12 @@ namespace SWLOR.Game.Server.Processor
                     PCCustomEffect result = RunPCCustomEffectProcess(player, effect);
                     if (result == null)
                     {
-                        var customEffect = _data.Get<Data.Entity.CustomEffect>(effect.CustomEffectID);
+                        var customEffect = DataService.Get<Data.Entity.CustomEffect>(effect.CustomEffectID);
                         string message = customEffect.WornOffMessage;
                         string scriptHandler = customEffect.ScriptHandler;
                         player.SendMessage(message);
                         player.DeleteLocalInt("CUSTOM_EFFECT_ACTIVE_" + effect.CustomEffectID);
-                        _data.SubmitDataChange(effect, DatabaseActionType.Delete);
+                        DataService.SubmitDataChange(effect, DatabaseActionType.Delete);
                         
                         App.ResolveByInterface<ICustomEffect>("CustomEffect." + scriptHandler, (handler) =>
                         {
@@ -77,7 +71,7 @@ namespace SWLOR.Game.Server.Processor
                     }
                     else
                     {
-                        _data.SubmitDataChange(effect, DatabaseActionType.Update);
+                        DataService.SubmitDataChange(effect, DatabaseActionType.Update);
                     }
                 }
             }
@@ -90,7 +84,7 @@ namespace SWLOR.Game.Server.Processor
                 var entry = AppCache.NPCEffects.ElementAt(index);
                 CasterSpellVO casterModel = entry.Key;
                 AppCache.NPCEffects[entry.Key] = entry.Value - 1;
-                Data.Entity.CustomEffect entity = _data.Single<Data.Entity.CustomEffect>(x => x.ID == casterModel.CustomEffectID);
+                Data.Entity.CustomEffect entity = DataService.Single<Data.Entity.CustomEffect>(x => x.ID == casterModel.CustomEffectID);
                 App.ResolveByInterface<ICustomEffect>("CustomEffect." + entity.ScriptHandler, (handler) =>
                 {
                     try
@@ -99,7 +93,7 @@ namespace SWLOR.Game.Server.Processor
                     }
                     catch (Exception ex)
                     {
-                        _error.LogError(ex, "CustomEffectService processor was unable to run specific effect script: " + entity.ScriptHandler);
+                        ErrorService.LogError(ex, "CustomEffectService processor was unable to run specific effect script: " + entity.ScriptHandler);
                     }
 
 
@@ -140,7 +134,7 @@ namespace SWLOR.Game.Server.Processor
                 effect.Ticks = effect.Ticks - 1;
 
             if (effect.Ticks == 0) return null;
-            var customEffect = _data.Get<Data.Entity.CustomEffect>(effect.CustomEffectID);
+            var customEffect = DataService.Get<Data.Entity.CustomEffect>(effect.CustomEffectID);
 
             if (!string.IsNullOrWhiteSpace(customEffect.ContinueMessage) &&
                 effect.Ticks % 6 == 0) // Only show the message once every six seconds
@@ -158,11 +152,11 @@ namespace SWLOR.Game.Server.Processor
 
         private void ClearRemovedPCEffects()
         {
-            var records = _data.Where<PCCustomEffect>(x => AppCache.PCEffectsForRemoval.Contains(x.ID)).ToList();
+            var records = DataService.Where<PCCustomEffect>(x => AppCache.PCEffectsForRemoval.Contains(x.ID)).ToList();
 
             foreach (var record in records)
             {
-                _data.SubmitDataChange(record, DatabaseActionType.Delete);
+                DataService.SubmitDataChange(record, DatabaseActionType.Delete);
             }
             AppCache.PCEffectsForRemoval.Clear();
         }

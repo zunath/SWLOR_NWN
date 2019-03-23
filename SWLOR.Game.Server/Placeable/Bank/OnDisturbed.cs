@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 using Object = NWN.Object;
@@ -15,20 +16,20 @@ namespace SWLOR.Game.Server.Placeable.Bank
     {
         
         private readonly IItemService _item;
-        private readonly IDataService _data;
+        
         private readonly IColorTokenService _color;
         private readonly ISerializationService _serialization;
 
         public OnDisturbed(
             
             IItemService item,
-            IDataService data,
+            
             IColorTokenService color,
             ISerializationService serialization)
         {
             
             _item = item;
-            _data = data;
+            
             _color = color;
             _serialization = serialization;
         }
@@ -75,7 +76,7 @@ namespace SWLOR.Game.Server.Placeable.Bank
                         DateStored = DateTime.UtcNow
                     };
                     
-                    _data.SubmitDataChange(itemEntity, DatabaseActionType.Insert);
+                    DataService.SubmitDataChange(itemEntity, DatabaseActionType.Insert);
                 }
             }
             else if (disturbType == INVENTORY_DISTURB_TYPE_REMOVED)
@@ -86,8 +87,8 @@ namespace SWLOR.Game.Server.Placeable.Bank
                 }
                 else
                 {
-                    var record = _data.Single<BankItem>(x => x.ItemID == item.GlobalID.ToString());
-                    _data.SubmitDataChange(record, DatabaseActionType.Delete);
+                    var record = DataService.Single<BankItem>(x => x.ItemID == item.GlobalID.ToString());
+                    DataService.SubmitDataChange(record, DatabaseActionType.Delete);
                 }
             }
 

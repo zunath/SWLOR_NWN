@@ -5,6 +5,7 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
@@ -20,17 +21,14 @@ namespace SWLOR.Game.Server.Conversation
         }
         
         private readonly IQuestService _quest;
-        private readonly IDataService _data;
+        
 
         public QuestRewardSelection(
-             
             IDialogService dialog,
-            IQuestService quest,
-            IDataService data) 
+            IQuestService quest)
             : base(dialog)
         {
             _quest = quest;
-            _data = data;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -49,7 +47,7 @@ namespace SWLOR.Game.Server.Conversation
             int questID = GetPC().GetLocalInt("QST_REWARD_SELECTION_QUEST_ID");
             GetPC().DeleteLocalInt("QST_REWARD_SELECTION_QUEST_ID");
             Quest quest = _quest.GetQuestByID(questID);
-            var rewardItems = _data.Where<QuestRewardItem>(x => x.QuestID == quest.ID).ToList();
+            var rewardItems = DataService.Where<QuestRewardItem>(x => x.QuestID == quest.ID).ToList();
             
             Model model = GetDialogCustomData<Model>();
             model.QuestID = questID;

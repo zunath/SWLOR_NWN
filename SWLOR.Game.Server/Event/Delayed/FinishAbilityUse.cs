@@ -5,26 +5,27 @@ using SWLOR.Game.Server.Perk;
 using SWLOR.Game.Server.Service.Contracts;
 using System;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Service;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
 
 namespace SWLOR.Game.Server.Event.Delayed
 {
     public class FinishAbilityUse : IRegisteredEvent
     {
-        private readonly IDataService _data;
+        
         
         private readonly IAbilityService _ability;
         private readonly IColorTokenService _color;
         private readonly ICustomEffectService _customEffect;
 
         public FinishAbilityUse(
-            IDataService data,
+            
             
             IAbilityService ability,
             IColorTokenService color,
             ICustomEffectService customEffect)
         {
-            _data = data;
+            
             
             _ability = ability;
             _color = color;
@@ -40,7 +41,7 @@ namespace SWLOR.Game.Server.Event.Delayed
             int pcPerkLevel = (int) args[4];
             int featID = (int) args[5];
 
-            Data.Entity.Perk entity = _data.Single<Data.Entity.Perk>(x => x.ID == perkID);
+            Data.Entity.Perk entity = DataService.Single<Data.Entity.Perk>(x => x.ID == perkID);
             PerkExecutionType executionType = (PerkExecutionType) entity.ExecutionTypeID;
 
             return App.ResolveByInterface<IPerk, bool>("Perk." + entity.ScriptName, perk =>
@@ -48,7 +49,7 @@ namespace SWLOR.Game.Server.Event.Delayed
                 int? cooldownID = perk.CooldownCategoryID(pc, entity.CooldownCategoryID, featID);
                 CooldownCategory cooldown = cooldownID == null ? 
                     null : 
-                    _data.SingleOrDefault<CooldownCategory>(x => x.ID == cooldownID);
+                    DataService.SingleOrDefault<CooldownCategory>(x => x.ID == cooldownID);
 
                 if (pc.GetLocalInt(spellUUID) == (int)SpellStatusType.Interrupted || // Moved during casting
                         pc.CurrentHP < 0 || pc.IsDead) // Or is dead/dying
@@ -85,13 +86,13 @@ namespace SWLOR.Game.Server.Event.Delayed
 
 
                 // Adjust FP only if spell cost > 0
-                Data.Entity.Player pcEntity = _data.Single<Data.Entity.Player>(x => x.ID == pc.GlobalID);
+                Data.Entity.Player pcEntity = DataService.Single<Data.Entity.Player>(x => x.ID == pc.GlobalID);
                 int fpCost = perk.FPCost(pc, entity.BaseFPCost, featID);
 
                 if (fpCost > 0)
                 {
                     pcEntity.CurrentFP = pcEntity.CurrentFP - fpCost;
-                    _data.SubmitDataChange(pcEntity, DatabaseActionType.Update);
+                    DataService.SubmitDataChange(pcEntity, DatabaseActionType.Update);
                     pc.SendMessage(_color.Custom("FP: " + pcEntity.CurrentFP + " / " + pcEntity.MaxFP, 32, 223, 219));
 
                 }

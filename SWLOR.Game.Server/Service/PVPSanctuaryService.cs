@@ -10,13 +10,13 @@ namespace SWLOR.Game.Server.Service
 {
     public class PVPSanctuaryService: IPVPSanctuaryService
     {
-        private readonly IDataService _data;
+        
         
         private readonly IColorTokenService _color;
 
-        public PVPSanctuaryService(IDataService data,  IColorTokenService color)
+        public PVPSanctuaryService(  IColorTokenService color)
         {
-            _data = data;
+            
             
             _color = color;
         }
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Service
             if (player == null) throw new ArgumentNullException(nameof(player));
             if (player.Object == null) throw new ArgumentNullException(nameof(player.Object));
 
-            Player pc = _data.Single<Player>(x => x.ID == player.GlobalID);
+            Player pc = DataService.Single<Player>(x => x.ID == player.GlobalID);
             DateTime now = DateTime.UtcNow;
 
             return !pc.IsSanctuaryOverrideEnabled && now <= pc.DateSanctuaryEnds;
@@ -37,9 +37,9 @@ namespace SWLOR.Game.Server.Service
             if (player == null) throw new ArgumentNullException(nameof(player));
             if (player.Object == null) throw new ArgumentNullException(nameof(player.Object));
 
-            Player pc = _data.Single<Player>(x => x.ID == player.GlobalID);
+            Player pc = DataService.Single<Player>(x => x.ID == player.GlobalID);
             pc.IsSanctuaryOverrideEnabled = overrideStatus;
-            _data.SubmitDataChange(pc, DatabaseActionType.Update);
+            DataService.SubmitDataChange(pc, DatabaseActionType.Update);
         }
 
         public bool IsPVPAttackAllowed(NWPlayer attacker, NWPlayer target)

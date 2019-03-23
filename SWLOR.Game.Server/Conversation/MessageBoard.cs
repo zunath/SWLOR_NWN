@@ -4,6 +4,7 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static NWN._;
@@ -21,17 +22,17 @@ namespace SWLOR.Game.Server.Conversation
             public string Message { get; set; }
         }
 
-        private readonly IDataService _data;
+        
         private readonly IColorTokenService _color;
 
         public MessageBoard(
              
             IDialogService dialog,
-            IDataService data,
+            
             IColorTokenService color) 
             : base(dialog)
         {
-            _data = data;
+            
             _color = color;
         }
 
@@ -82,7 +83,7 @@ namespace SWLOR.Game.Server.Conversation
             DateTime now = DateTime.UtcNow;
             Guid boardID = new Guid(terminal.GetLocalString("MESSAGE_BOARD_ID"));
             bool isDM = player.IsDM;
-            var messages = _data.Where<Message>(x => x.BoardID == boardID && x.DateExpires > now && x.DateRemoved == null)
+            var messages = DataService.Where<Message>(x => x.BoardID == boardID && x.DateExpires > now && x.DateRemoved == null)
                 .OrderByDescending(o => o.DatePosted);
 
             ClearPageResponses("MainPage");
@@ -116,8 +117,8 @@ namespace SWLOR.Game.Server.Conversation
         {
             NWPlayer player = GetPC();
             Model model = GetDialogCustomData<Model>();
-            Message message = _data.Get<Message>(model.MessageID);
-            Player poster = _data.Get<Player>(message.PlayerID);
+            Message message = DataService.Get<Message>(model.MessageID);
+            Player poster = DataService.Get<Player>(message.PlayerID);
             string header = _color.Green("Title: ") + message.Title + "\n";
             header += _color.Green("Posted By: ") + poster.CharacterName + "\n";
             header += _color.Green("Date: ") + message.DatePosted + "\n\n";
@@ -132,7 +133,7 @@ namespace SWLOR.Game.Server.Conversation
         private void PostDetailsPageResponses(int responseID)
         {
             var model = GetDialogCustomData<Model>();
-            var message = _data.Get<Message>(model.MessageID);
+            var message = DataService.Get<Message>(model.MessageID);
 
             switch (responseID)
             {
@@ -142,7 +143,7 @@ namespace SWLOR.Game.Server.Conversation
                         model.IsConfirming = false;
                         SetResponseText("PostDetailsPage", 1, "Remove Post");
                         message.DateRemoved = DateTime.UtcNow;
-                        _data.SubmitDataChange(message, DatabaseActionType.Update);
+                        DataService.SubmitDataChange(message, DatabaseActionType.Update);
                         ClearNavigationStack();
                         LoadMainPage();
                         ChangePage("MainPage", false);
@@ -246,7 +247,7 @@ namespace SWLOR.Game.Server.Conversation
                             DateExpires = now.AddDays(30),
                             DateRemoved = null
                         };
-                        _data.SubmitDataChange(post, DatabaseActionType.Insert);
+                        DataService.SubmitDataChange(post, DatabaseActionType.Insert);
                         _.TakeGoldFromCreature(price, player, TRUE);
 
                         player.DeleteLocalInt("MESSAGE_BOARD_LISTENING");

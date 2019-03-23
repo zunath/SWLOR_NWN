@@ -7,6 +7,7 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using Object = NWN.Object;
 
@@ -16,7 +17,7 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
     {
         
         private readonly IItemService _item;
-        private readonly IDataService _data;
+        
         private readonly IRandomService _random;
         private readonly ISkillService _skill;
         private readonly IPerkService _perk;
@@ -25,7 +26,7 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
 
         public OnDisturbed(
             IItemService item,
-            IDataService data,
+            
             IRandomService random,
             ISkillService skill,
             IPerkService perk,
@@ -34,7 +35,7 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
         {
             
             _item = item;
-            _data = data;
+            
             _random = random;
             _skill = skill;
             _perk = perk;
@@ -98,7 +99,7 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
                 LongevityBonus = perkBonus
             };
             
-            _data.SubmitDataChange(growingPlant, DatabaseActionType.Insert);
+            DataService.SubmitDataChange(growingPlant, DatabaseActionType.Insert);
             
             NWPlaceable hole = (container.GetLocalObject("FARM_SMALL_HOLE"));
             NWPlaceable plantPlc = (_.CreateObject(_.OBJECT_TYPE_PLACEABLE, "growing_plant", hole.Location));

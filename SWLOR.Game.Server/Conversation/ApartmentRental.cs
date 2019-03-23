@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static NWN._;
@@ -16,7 +17,7 @@ namespace SWLOR.Game.Server.Conversation
     public class ApartmentRental : ConversationBase
     {
         private readonly IColorTokenService _color;
-        private readonly IDataService _data;
+        
         private readonly IBaseService _base;
         private readonly IAreaService _area;
         private readonly IImpoundService _impound;
@@ -26,7 +27,7 @@ namespace SWLOR.Game.Server.Conversation
             
             IDialogService dialog,
             IColorTokenService color,
-            IDataService data,
+            
             IBaseService @base,
             IAreaService area,
             IImpoundService impound,
@@ -34,7 +35,7 @@ namespace SWLOR.Game.Server.Conversation
             : base(dialog)
         {
             _color = color;
-            _data = data;
+            
             _base = @base;
             _area = area;
             _impound = impound;
@@ -132,7 +133,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var data = _base.GetPlayerTempData(player);
-            var bases = _data
+            var bases = DataService
                 .Where<PCBase>(x => x.PlayerID == player.GlobalID && x.ApartmentBuildingID == data.ApartmentBuildingID).OrderBy(o => o.DateInitialPurchase)
                 .ToList();
 
@@ -180,8 +181,8 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadLeasePage()
         {
             var data = _base.GetPlayerTempData(GetPC());
-            var apartmentBuilding = _data.Single<ApartmentBuilding>(x => x.ID == data.ApartmentBuildingID);
-            var styles = _data.Where<BuildingStyle>(x => x.BuildingTypeID == (int)Enumeration.BuildingType.Apartment && x.IsActive).ToList();
+            var apartmentBuilding = DataService.Single<ApartmentBuilding>(x => x.ID == data.ApartmentBuildingID);
+            var styles = DataService.Where<BuildingStyle>(x => x.BuildingTypeID == (int)Enumeration.BuildingType.Apartment && x.IsActive).ToList();
 
             string header = _color.Green(apartmentBuilding.Name) + "\n\n";
 
@@ -210,8 +211,8 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var data = _base.GetPlayerTempData(GetPC());
-            var style = _data.Single<BuildingStyle>(x => x.ID == data.BuildingStyleID);
-            var dbPlayer = _data.Get<Player>(player.GlobalID);
+            var style = DataService.Single<BuildingStyle>(x => x.ID == data.BuildingStyleID);
+            var dbPlayer = DataService.Get<Player>(player.GlobalID);
             int purchasePrice = style.PurchasePrice + (int) (style.PurchasePrice * (dbPlayer.LeaseRate * 0.01f));
             int dailyUpkeep = style.DailyUpkeep + (int) (style.DailyUpkeep * (dbPlayer.LeaseRate * 0.01f));
 
@@ -257,7 +258,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             NWPlayer player = GetPC();
             var data = _base.GetPlayerTempData(GetPC());
-            var style = _data.Single<BuildingStyle>(x => x.ID == data.BuildingStyleID);
+            var style = DataService.Single<BuildingStyle>(x => x.ID == data.BuildingStyleID);
             var area = _area.CreateAreaInstance(player, style.Resref, "APARTMENT PREVIEW: " + style.Name, "PLAYER_HOME_ENTRANCE");
             area.SetLocalInt("IS_BUILDING_PREVIEW", TRUE);
             _base.JumpPCToBuildingInterior(player, area);
@@ -267,8 +268,8 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var data = _base.GetPlayerTempData(GetPC());
-            var style = _data.Single<BuildingStyle>(x => x.ID == data.BuildingStyleID);
-            var dbPlayer = _data.Get<Player>(player.GlobalID);
+            var style = DataService.Single<BuildingStyle>(x => x.ID == data.BuildingStyleID);
+            var dbPlayer = DataService.Get<Player>(player.GlobalID);
             int purchasePrice = style.PurchasePrice + (int)(style.PurchasePrice * (dbPlayer.LeaseRate * 0.01f));
 
             if (player.Gold < purchasePrice)
@@ -290,14 +291,14 @@ namespace SWLOR.Game.Server.Conversation
                 DateFuelEnds = DateTime.UtcNow,
                 Sector = "AP",
             };
-            _data.SubmitDataChange(pcApartment, DatabaseActionType.Insert);
+            DataService.SubmitDataChange(pcApartment, DatabaseActionType.Insert);
             
             PCBasePermission permission = new PCBasePermission
             {
                 PCBaseID = pcApartment.ID,
                 PlayerID = player.GlobalID
             };
-            _data.SubmitDataChange(permission, DatabaseActionType.Insert);
+            DataService.SubmitDataChange(permission, DatabaseActionType.Insert);
             
             
             // Grant all base permissions to owner.
@@ -316,9 +317,9 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var data = _base.GetPlayerTempData(player);
-            var pcApartment = _data.Get<PCBase>(data.PCBaseID);
-            var buildingStyle = _data.Get<BuildingStyle>(pcApartment.BuildingStyleID);
-            var dbPlayer = _data.Get<Player>(player.GlobalID);
+            var pcApartment = DataService.Get<PCBase>(data.PCBaseID);
+            var buildingStyle = DataService.Get<BuildingStyle>(pcApartment.BuildingStyleID);
+            var dbPlayer = DataService.Get<Player>(player.GlobalID);
             var name = player.Name + "'s Apartment";
             int dailyUpkeep = buildingStyle.DailyUpkeep + (int)(buildingStyle.DailyUpkeep * (dbPlayer.LeaseRate * 0.01f));
 
@@ -369,9 +370,9 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var data = _base.GetPlayerTempData(player);
-            var pcApartment = _data.Single<PCBase>(x => x.ID == data.PCBaseID);
-            var dbPlayer = _data.Get<Player>(player.GlobalID);
-            var style = _data.Get<BuildingStyle>(pcApartment.BuildingStyleID);
+            var pcApartment = DataService.Single<PCBase>(x => x.ID == data.PCBaseID);
+            var dbPlayer = DataService.Get<Player>(player.GlobalID);
+            var style = DataService.Get<BuildingStyle>(pcApartment.BuildingStyleID);
             int dailyUpkeep = style.DailyUpkeep + (int)(style.DailyUpkeep * (dbPlayer.LeaseRate * 0.01f));
 
             if (data.ExtensionDays != days)
@@ -396,7 +397,7 @@ namespace SWLOR.Game.Server.Conversation
                 data.IsConfirming = false;
                 SetResponseText("DetailsPage", responseID, optionText);
                 pcApartment.DateRentDue = pcApartment.DateRentDue.AddDays(days);
-                _data.SubmitDataChange(pcApartment, DatabaseActionType.Update);
+                DataService.SubmitDataChange(pcApartment, DatabaseActionType.Update);
                 LoadDetailsPage();
             }
             else

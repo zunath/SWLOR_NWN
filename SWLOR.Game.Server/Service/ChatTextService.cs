@@ -36,21 +36,21 @@ namespace SWLOR.Game.Server.Service
         
         private readonly IColorTokenService _color;
         
-        private readonly IDataService _data;
+        
         private readonly ILanguageService _language;
         private readonly IEmoteStyleService _emoteStyle;
 
         public ChatTextService(
             
             IColorTokenService color,
-            IDataService data,
+            
             ILanguageService language,
             IEmoteStyleService emoteStyle)
         {
             
             _color = color;
             
-            _data = data;
+            
             _language = language;
             _emoteStyle = emoteStyle;
         }
@@ -334,7 +334,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
 
-            var dbPlayer = _data.Single<Player>(x => x.ID == player.GlobalID);
+            var dbPlayer = DataService.Single<Player>(x => x.ID == player.GlobalID);
             player.SetLocalInt("DISPLAY_HOLONET", dbPlayer.DisplayHolonet ? TRUE : FALSE);
         }
         

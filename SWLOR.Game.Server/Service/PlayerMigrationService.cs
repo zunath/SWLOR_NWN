@@ -10,22 +10,12 @@ namespace SWLOR.Game.Server.Service
 {
     public class PlayerMigrationService : IPlayerMigrationService
     {
-        private readonly IDataService _data;
-        
-        public PlayerMigrationService(
-            IDataService data)
-        {
-            
-            _data = data;
-            
-        }
-
         public void OnModuleEnter()
         {
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
 
-            var dbPlayer = _data.Get<Player>(player.GlobalID);
+            var dbPlayer = DataService.Get<Player>(player.GlobalID);
 
             // VERSION 2: Background items are no longer plot because item level no longer dictates your skill XP gain.
             if (dbPlayer.VersionNumber < 2) 
@@ -81,7 +71,7 @@ namespace SWLOR.Game.Server.Service
                 dbPlayer.VersionNumber = 4;
             }
 
-            _data.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
         }
 
         

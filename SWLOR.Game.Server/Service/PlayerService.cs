@@ -15,11 +15,7 @@ namespace SWLOR.Game.Server.Service
 {
     public class PlayerService : IPlayerService
     {
-        
         private readonly IColorTokenService _color;
-        private readonly IDataService _data;
-        private readonly IErrorService _error;
-        
         private readonly IDialogService _dialog;
         private readonly IBackgroundService _background;
         private readonly IRaceService _race;
@@ -30,8 +26,6 @@ namespace SWLOR.Game.Server.Service
         public PlayerService(
             
             IColorTokenService color,
-            IDataService data, 
-            IErrorService error,
             IDialogService dialog,
             IBackgroundService background,
             IRaceService race,
@@ -41,8 +35,6 @@ namespace SWLOR.Game.Server.Service
         {
             
             _color = color;
-            _data = data;
-            _error = error;
             _dialog = dialog;
             _background = background;
             _race = race;
@@ -60,7 +52,7 @@ namespace SWLOR.Game.Server.Service
             // Player is initialized but not in the DB. Wipe the tag and rerun them through initialization - something went wrong before.
             if (player.IsInitializedAsPlayer)
             {
-                if (_data.GetAll<Player>().SingleOrDefault(x => x.ID == player.GlobalID) == null)
+                if (DataService.GetAll<Player>().SingleOrDefault(x => x.ID == player.GlobalID) == null)
                 {
                     _.SetTag(player, string.Empty);
                 }
@@ -149,9 +141,9 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 Player entity = CreateDBPCEntity(player);
-                _data.SubmitDataChange(entity, DatabaseActionType.Insert);
+                DataService.SubmitDataChange(entity, DatabaseActionType.Insert);
                 
-                var skills = _data.GetAll<Skill>();
+                var skills = DataService.GetAll<Skill>();
                 foreach (var skill in skills)
                 {
                     var pcSkill = new PCSkill
@@ -163,7 +155,7 @@ namespace SWLOR.Game.Server.Service
                         XP = 0
                     };
                     
-                    _data.SubmitDataChange(pcSkill, DatabaseActionType.Insert);
+                    DataService.SubmitDataChange(pcSkill, DatabaseActionType.Insert);
                 }
 
                 _race.ApplyDefaultAppearance(player);
@@ -289,13 +281,13 @@ namespace SWLOR.Game.Server.Service
             if(player == null) throw new ArgumentNullException(nameof(player));
             if(!player.IsPlayer) throw new ArgumentException(nameof(player) + " must be a player.", nameof(player));
 
-            return _data.Get<Player>(player.GlobalID);
+            return DataService.Get<Player>(player.GlobalID);
         }
 
         public Player GetPlayerEntity(Guid playerID)
         {
             if (playerID == null) throw new ArgumentException("Invalid player ID.", nameof(playerID));
-            return _data.Get<Player>(playerID);
+            return DataService.Get<Player>(playerID);
         }
 
         public void OnAreaEnter()
@@ -344,7 +336,7 @@ namespace SWLOR.Game.Server.Service
 
         public void ShowMOTD(NWPlayer player)
         {
-            ServerConfiguration config = _data.GetAll<ServerConfiguration>().First();
+            ServerConfiguration config = DataService.GetAll<ServerConfiguration>().First();
             string message = _color.Green("Welcome to " + config.ServerName + "!\n\nMOTD: ") + _color.White(config.MessageOfTheDay);
 
             _.DelayCommand(6.5f, () =>
@@ -360,7 +352,7 @@ namespace SWLOR.Game.Server.Service
             entity.CharacterName = player.Name;
             entity.HitPoints = player.CurrentHP;
 
-            _data.SubmitDataChange(entity, DatabaseActionType.Update);
+            DataService.SubmitDataChange(entity, DatabaseActionType.Update);
         }
 
         public void SaveLocation(NWPlayer player)
@@ -372,7 +364,7 @@ namespace SWLOR.Game.Server.Service
             NWArea area = player.Area;
             if (area.IsValid && area.Tag != "ooc_area" && area.Tag != "tutorial" && !area.IsInstance)
             {
-                _error.Trace(TraceComponent.Space, "Saving location in area " + _.GetName(area));
+                ErrorService.Trace(TraceComponent.Space, "Saving location in area " + _.GetName(area));
                 Player entity = GetPlayerEntity(player.GlobalID);
                 entity.LocationAreaResref = area.Resref;
                 entity.LocationX = player.Position.m_X;
@@ -391,18 +383,18 @@ namespace SWLOR.Game.Server.Service
                     entity.RespawnLocationZ = waypoint.Position.m_Z;
                 }
 
-                _data.SubmitDataChange(entity, DatabaseActionType.Update);
+                DataService.SubmitDataChange(entity, DatabaseActionType.Update);
             }
             else if (area.IsInstance)
             {
-                _error.Trace(TraceComponent.Space, "Saving location in instance area " + _.GetName(area));
+                ErrorService.Trace(TraceComponent.Space, "Saving location in instance area " + _.GetName(area));
                 string instanceID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
                 if (string.IsNullOrWhiteSpace(instanceID))
                 {
                     instanceID = area.GetLocalString("PC_BASE_ID");
                 }
 
-                _error.Trace(TraceComponent.Space, "Saving character in instance ID: " + instanceID);
+                ErrorService.Trace(TraceComponent.Space, "Saving character in instance ID: " + instanceID);
 
                 if (!string.IsNullOrWhiteSpace(instanceID))
                 {
@@ -414,7 +406,7 @@ namespace SWLOR.Game.Server.Service
                     entity.LocationOrientation = (player.Facing);
                     entity.LocationInstanceID = new Guid(instanceID);
 
-                    _data.SubmitDataChange(entity, DatabaseActionType.Update);
+                    DataService.SubmitDataChange(entity, DatabaseActionType.Update);
                 }
             }
         }

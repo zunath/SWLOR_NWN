@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 
@@ -12,12 +13,12 @@ namespace SWLOR.Game.Server.SpawnRule
     public class OreSpawnRule : ISpawnRule
     {
         private readonly IRandomService _random;
-        private readonly IDataService _data;
+        
 
-        public OreSpawnRule(IRandomService random, IDataService data)
+        public OreSpawnRule(IRandomService random)
         {
             _random = random;
-            _data = data;
+            
         }
 
         public void Run(NWObject target, params object[] args)
@@ -26,7 +27,7 @@ namespace SWLOR.Game.Server.SpawnRule
             ResourceQuality quality = ResourceQuality.Low;
             string qualityName = "Low Quality";
 
-            var dbArea = _data.Single<Area>(x => x.Resref == target.Area.Resref);
+            var dbArea = DataService.Single<Area>(x => x.Resref == target.Area.Resref);
             int tier = dbArea.ResourceQuality;
             int maxTier = dbArea.MaxResourceQuality;
 

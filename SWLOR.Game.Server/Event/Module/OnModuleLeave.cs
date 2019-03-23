@@ -1,6 +1,6 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject;
-
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Event.Module
@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly ISkillService _skill;
         private readonly IMapPinService _mapPin;
         private readonly IMapService _map;
-        private readonly IDataService _data;
+        
         private readonly ISpaceService _space;
 
         public OnModuleLeave(
@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Event.Module
             ISkillService skill,
             IMapPinService mapPin,
             IMapService map,
-            IDataService data,
+            
             ISpaceService space)
         {
             
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Event.Module
             _skill = skill;
             _mapPin = mapPin;
             _map = map;
-            _data = data;
+            
             _space = space;
         }
 
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Event.Module
             _map.OnModuleLeave();
             _space.OnModuleLeave(pc);
 
-            _data.RemoveCachedPlayerData(pc); // Ensure this is called LAST.
+            DataService.RemoveCachedPlayerData(pc); // Ensure this is called LAST.
             return true;
 
         }

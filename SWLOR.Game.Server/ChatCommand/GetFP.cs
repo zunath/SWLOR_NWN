@@ -6,6 +6,7 @@ using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.ChatCommand
@@ -15,20 +16,16 @@ namespace SWLOR.Game.Server.ChatCommand
     {
         
         private readonly IColorTokenService _color;
-        private readonly IDataService _data;
+        
         public FP(
-            
-            IColorTokenService color,
-            IDataService data)
+            IColorTokenService color)   
         {
-            
             _color = color;
-            _data = data;
         }
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             if (!user.IsPlayer) return;
-            Player entity = _data.Get<Player>(user.GlobalID);
+            Player entity = DataService.Get<Player>(user.GlobalID);
             user.SendMessage(_color.Custom("FP: " + entity.CurrentFP + " / " + entity.MaxFP, 32, 223, 219));
         }
         public string ValidateArguments(NWPlayer user, params string[] args)

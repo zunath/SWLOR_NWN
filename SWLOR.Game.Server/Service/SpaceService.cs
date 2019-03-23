@@ -25,10 +25,7 @@ namespace SWLOR.Game.Server.Service
     public class SpaceService : ISpaceService
     {
         private readonly IBasePermissionService _perm;
-        private readonly IDataService _data;
-        private readonly IErrorService _error;
         private readonly ILootService _loot;
-        
         private readonly IPerkService _perk;
         private readonly IPlayerService _player;
         private readonly IPlayerStatService _playerStat;
@@ -37,8 +34,6 @@ namespace SWLOR.Game.Server.Service
         
         public SpaceService(
                             IBasePermissionService perm,
-                            IDataService data,
-                            IErrorService error,
                             ILootService loot,
                             IPerkService perk,
                             IPlayerService player,
@@ -46,8 +41,6 @@ namespace SWLOR.Game.Server.Service
                             ISerializationService serial,
                             ISkillService skill)
         {
-            _data = data;
-            _error = error;
             _loot = loot;
             
             _perk = perk;
@@ -320,7 +313,7 @@ namespace SWLOR.Game.Server.Service
 
         public bool IsLocationPublicStarport(string location)
         {
-            SpaceStarport starport = _data.SingleOrDefault<SpaceStarport>(x => x.ID.ToString() == location);
+            SpaceStarport starport = DataService.SingleOrDefault<SpaceStarport>(x => x.ID.ToString() == location);
             return (starport != null);
         }
 
@@ -331,11 +324,11 @@ namespace SWLOR.Game.Server.Service
             {
                 // Ship is docked.  Get the PCBaseStructure of the dock and find its parent base.  
                 // Then find the area from the resref.
-                PCBaseStructure dock = _data.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == location);
+                PCBaseStructure dock = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == location);
 
                 if (dock != null)
                 {
-                    PCBase parentBase = _data.SingleOrDefault<PCBase>(x => x.ID == dock.PCBaseID);
+                    PCBase parentBase = DataService.SingleOrDefault<PCBase>(x => x.ID == dock.PCBaseID);
                     IEnumerable<NWArea> areas = NWModule.Get().Areas;
 
                     foreach (var area in areas)
@@ -350,7 +343,7 @@ namespace SWLOR.Game.Server.Service
                 else 
                 {
                     // Not on a PC dock.  Are we on a starport dock?
-                    SpaceStarport starport = _data.SingleOrDefault<SpaceStarport>(x => x.ID.ToString() == location);
+                    SpaceStarport starport = DataService.SingleOrDefault<SpaceStarport>(x => x.ID.ToString() == location);
 
                     if (starport != null)
                     {
@@ -362,7 +355,7 @@ namespace SWLOR.Game.Server.Service
                 if (hyphen == -1)
                 {
                     // Something went wrong.
-                    _error.Trace(TraceComponent.Space, "Unable to find planet name from dock area.");
+                    ErrorService.Trace(TraceComponent.Space, "Unable to find planet name from dock area.");
                     return "";
                 }
             }
@@ -396,7 +389,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             Guid structureID = new Guid(starship.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            var structureItems = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structureID);
+            var structureItems = DataService.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structureID);
             
             NWLocation location = (player != null ? player.Location : (NWLocation) _.Location(starship, _.Vector(1, 1, 0), 0));
             bay = _.CreateObject(OBJECT_TYPE_PLACEABLE, "resource_bay", location);
@@ -420,12 +413,12 @@ namespace SWLOR.Game.Server.Service
 
             if (string.IsNullOrWhiteSpace(baseStructureID))
             {
-                _error.Trace(TraceComponent.Space, "UpdateCargoBonus called for non-ship area.");
+                ErrorService.Trace(TraceComponent.Space, "UpdateCargoBonus called for non-ship area.");
                 return;
             }
 
-            PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.ID.ToString() == baseStructureID);
-            PCBase pcBase = _data.Single<PCBase>(x => x.ID == structure.PCBaseID);
+            PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID.ToString() == baseStructureID);
+            PCBase pcBase = DataService.Single<PCBase>(x => x.ID == structure.PCBaseID);
             NWPlaceable bay = GetCargoBay(area, null);
 
             ship.SetLocalInt("WEAPONS", stats.weapons + GetCargoBonus(bay, (int)CustomItemPropertyType.StarshipWeaponsBonus));
@@ -465,15 +458,15 @@ namespace SWLOR.Game.Server.Service
             string structureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
             if (string.IsNullOrWhiteSpace(structureID))
             {
-                _error.Trace(TraceComponent.Space, "Asked to set location of invalid ship area.");
+                ErrorService.Trace(TraceComponent.Space, "Asked to set location of invalid ship area.");
                 return;
             }
 
-            PCBaseStructure structure = _data.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == structureID);
-            PCBase starkillerBase = _data.SingleOrDefault<PCBase>(x => x.ID == structure.PCBaseID);
+            PCBaseStructure structure = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == structureID);
+            PCBase starkillerBase = DataService.SingleOrDefault<PCBase>(x => x.ID == structure.PCBaseID);
             starkillerBase.ShipLocation = location;
             area.SetLocalString("SHIP_LOCATION", location);
-            _data.SubmitDataChange(starkillerBase, DatabaseActionType.Update);
+            DataService.SubmitDataChange(starkillerBase, DatabaseActionType.Update);
         }
 
         public string GetShipLocation(NWArea area)
@@ -489,12 +482,12 @@ namespace SWLOR.Game.Server.Service
             string structureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
             if (string.IsNullOrWhiteSpace(structureID))
             {
-                _error.Trace(TraceComponent.Space, "Asked to get location of invalid ship area.");
+                ErrorService.Trace(TraceComponent.Space, "Asked to get location of invalid ship area.");
                 return "";
             }
 
-            PCBaseStructure structure = _data.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == structureID);
-            PCBase starkillerBase = _data.SingleOrDefault<PCBase>(x => x.ID == structure.PCBaseID);
+            PCBaseStructure structure = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == structureID);
+            PCBase starkillerBase = DataService.SingleOrDefault<PCBase>(x => x.ID == structure.PCBaseID);
 
             return starkillerBase.ShipLocation;
         }
@@ -531,7 +524,7 @@ namespace SWLOR.Game.Server.Service
             {
                 destinations = PlanetToDestination(planet);
                 pcBase.Starcharts = destinations;
-                _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
                 return new string[] { DestinationToPlanet((int)destinations) };
             }
 
@@ -551,7 +544,7 @@ namespace SWLOR.Game.Server.Service
             Hashtable landingSpots = new Hashtable();
 
             // First get any public starports.
-            HashSet<SpaceStarport> starports = _data.Where<SpaceStarport>(x => x.Planet == planet);
+            HashSet<SpaceStarport> starports = DataService.Where<SpaceStarport>(x => x.Planet == planet);
 
             foreach (var starport in starports)
             {
@@ -568,7 +561,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (_.GetName(area).StartsWith(planet))
                 {
-                    _error.Trace(TraceComponent.Space, "Checking area " + _.GetName(area) + " for landing spots.");
+                    ErrorService.Trace(TraceComponent.Space, "Checking area " + _.GetName(area) + " for landing spots.");
 
                     // This area is on our planet.  
                     if (!area.Data.ContainsKey("BASE_SERVICE_STRUCTURES"))
@@ -576,23 +569,23 @@ namespace SWLOR.Game.Server.Service
                         area.Data["BASE_SERVICE_STRUCTURES"] = new List<AreaStructure>();
                     }
 
-                    var pcBases = _data.Where<PCBase>(x => x.AreaResref == area.Resref && x.ApartmentBuildingID == null).ToList();
+                    var pcBases = DataService.Where<PCBase>(x => x.AreaResref == area.Resref && x.ApartmentBuildingID == null).ToList();
                     foreach (var @base in pcBases)
                     {
-                        _error.Trace(TraceComponent.Space, "Checking base " + @base.ID.ToString() + " for landing slots.");
+                        ErrorService.Trace(TraceComponent.Space, "Checking base " + @base.ID.ToString() + " for landing slots.");
 
                         // Do we have permission to dock here?
                         if (_perm.HasBasePermission(player, @base.ID, BasePermission.CanDockStarship))
                         {
-                            _error.Trace(TraceComponent.Space, "Player has permission to land here.");
+                            ErrorService.Trace(TraceComponent.Space, "Player has permission to land here.");
                             // Are there any docks in the base?
-                            var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == @base.ID);
+                            var structures = DataService.Where<PCBaseStructure>(x => x.PCBaseID == @base.ID);
                             foreach (var structure in structures)
                             {
-                                BaseStructure baseStructure = _data.Get<BaseStructure>(structure.BaseStructureID);
+                                BaseStructure baseStructure = DataService.Get<BaseStructure>(structure.BaseStructureID);
                                 if (baseStructure.BaseStructureTypeID == (int)BaseStructureType.StarshipProduction)
                                 {
-                                    _error.Trace(TraceComponent.Space, "Found a dock with ID " + baseStructure.ID.ToString());
+                                    ErrorService.Trace(TraceComponent.Space, "Found a dock with ID " + baseStructure.ID.ToString());
 
                                     // Found a dock.  Is it open?  Find the actual placeable object for the dock so we can check its vars.
                                     List<AreaStructure> areaStructures = area.Data["BASE_SERVICE_STRUCTURES"];
@@ -600,11 +593,11 @@ namespace SWLOR.Game.Server.Service
                                     {
                                         if (plc.PCBaseStructureID == structure.ID)
                                         {
-                                            _error.Trace(TraceComponent.Space, "Found placeable object.");
+                                            ErrorService.Trace(TraceComponent.Space, "Found placeable object.");
 
                                             if (plc.Structure.GetLocalInt("DOCKED_STARSHIP") == 0)
                                             {
-                                                _error.Trace(TraceComponent.Space, "Dock is currently open.");
+                                                ErrorService.Trace(TraceComponent.Space, "Dock is currently open.");
 
                                                 // We have permission to dock in this base.  Moreover, we have found a dock 
                                                 // which is not occupied.  (Possibly several!).  Add each dock to our list.
@@ -656,7 +649,7 @@ namespace SWLOR.Game.Server.Service
             // check that we are not already flying.
             if (((NWObject)ship.GetLocalObject("CREATURE")).IsValid)
             {
-                _error.Trace(TraceComponent.Space, "Ship already exists.");
+                ErrorService.Trace(TraceComponent.Space, "Ship already exists.");
                 return;
             }
 
@@ -665,24 +658,24 @@ namespace SWLOR.Game.Server.Service
 
             if (string.IsNullOrWhiteSpace(shipID))
             {
-                _error.Trace(TraceComponent.Space, "Error - tried to create a ship but can't find its structure ID.");
+                ErrorService.Trace(TraceComponent.Space, "Error - tried to create a ship but can't find its structure ID.");
                 return;
             }
 
-            PCBaseStructure shipStructure = _data.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == shipID);
-            PCBase shipBase = _data.Get<PCBase>(shipStructure.PCBaseID);
+            PCBaseStructure shipStructure = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == shipID);
+            PCBase shipBase = DataService.Get<PCBase>(shipStructure.PCBaseID);
 
             if (location == null)
             {
                 string planet = GetPlanetFromLocation(shipBase.ShipLocation);
                 // Planet names may have spaces in them - so remove any spaces before looking for the tag.
                 NWObject waypoint = _.GetObjectByTag(Regex.Replace(planet, @"\s+", "") + "_Orbit");
-                _error.Trace(TraceComponent.Space, "Found space waypoint " + waypoint.Name + " in " + waypoint.Area.Name);
+                ErrorService.Trace(TraceComponent.Space, "Found space waypoint " + waypoint.Name + " in " + waypoint.Area.Name);
 
                 if (!waypoint.IsValid)
                 {
                     // Uh oh.
-                    _error.Trace(TraceComponent.Space, "Could not find orbit waypoint for planet " + planet);
+                    ErrorService.Trace(TraceComponent.Space, "Could not find orbit waypoint for planet " + planet);
                     return;
                 }
 
@@ -695,7 +688,7 @@ namespace SWLOR.Game.Server.Service
             ship.SetLocalObject("CREATURE", shipCreature);
 
             shipCreature.Name = ship.Name;
-            _error.Trace(TraceComponent.Space, "Created ship " + shipCreature.Name + " in area " + shipCreature.Area.Name);
+            ErrorService.Trace(TraceComponent.Space, "Created ship " + shipCreature.Name + " in area " + shipCreature.Area.Name);
 
             // Once the ship has spawned (and had its base stats set), adjust them for any mods we have on board.
             _.AssignCommand(shipCreature, () => { UpdateCargoBonus(ship, shipCreature); });
@@ -707,24 +700,24 @@ namespace SWLOR.Game.Server.Service
             if (shipCreature.IsValid)
             {
                 string shipID = ship.GetLocalString("PC_BASE_STRUCTURE_ID");
-                PCBaseStructure shipStructure = _data.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == shipID);
-                PCBase shipBase = _data.Get<PCBase>(shipStructure.PCBaseID);
+                PCBaseStructure shipStructure = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == shipID);
+                PCBase shipBase = DataService.Get<PCBase>(shipStructure.PCBaseID);
                 
                 // Remove the ship object.
-                _error.Trace(TraceComponent.Space, "Removing ship " + shipCreature.Name + " from " + shipCreature.Area.Name);
+                ErrorService.Trace(TraceComponent.Space, "Removing ship " + shipCreature.Name + " from " + shipCreature.Area.Name);
                 shipCreature.Destroy();
             }
             else
             {
-                _error.Trace(TraceComponent.Space, "Could not find ship to remove from space.");
+                ErrorService.Trace(TraceComponent.Space, "Could not find ship to remove from space.");
             }
         }
 
         public bool CanLandOnPlanet(NWArea ship)
         {
             string shipID = ship.GetLocalString("PC_BASE_STRUCTURE_ID");
-            PCBaseStructure shipStructure = _data.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == shipID);
-            PCBase shipBase = _data.Get<PCBase>(shipStructure.PCBaseID);
+            PCBaseStructure shipStructure = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == shipID);
+            PCBase shipBase = DataService.Get<PCBase>(shipStructure.PCBaseID);
             string planet = GetPlanetFromLocation(shipBase.ShipLocation);
 
             NWCreature shipCreature = ship.GetLocalObject("CREATURE");
@@ -752,7 +745,7 @@ namespace SWLOR.Game.Server.Service
 
             if (string.IsNullOrWhiteSpace(shipID))
             {
-                _error.Trace(TraceComponent.Space, "Error - tried to fly a ship but can't find its structure ID.");
+                ErrorService.Trace(TraceComponent.Space, "Error - tried to fly a ship but can't find its structure ID.");
                 player.SendMessage("Sorry, we hit a problem.  Please report this message.");
                 return;
             }
@@ -760,8 +753,8 @@ namespace SWLOR.Game.Server.Service
             // Save our location so we come back to the computer if we disconnect in space.
             _player.SaveLocation(player);
 
-            PCBaseStructure shipStructure = _data.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == shipID);
-            PCBase shipBase = _data.Get<PCBase>(shipStructure.PCBaseID);
+            PCBaseStructure shipStructure = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == shipID);
+            PCBase shipBase = DataService.Get<PCBase>(shipStructure.PCBaseID);
 
             int shipAppearance = GetPCShipAppearanceByStyleID((int) shipBase.BuildingStyleID);
 
@@ -824,7 +817,7 @@ namespace SWLOR.Game.Server.Service
             entity.LocationOrientation = (copy.Facing);
             entity.LocationInstanceID = new Guid(copy.Area.GetLocalString("PC_BASE_STRUCTURE_ID"));
 
-            _data.SubmitDataChange(entity, DatabaseActionType.Update);
+            DataService.SubmitDataChange(entity, DatabaseActionType.Update);
 
             // Apply ghost effects so we can stand on each other's heads, and create the ship again.
             Effect eGhost = _.EffectCutsceneGhost();
@@ -1051,18 +1044,18 @@ namespace SWLOR.Game.Server.Service
             NWArea ship = player.GetLocalObject("AREA");
 
             string shipID = ship.GetLocalString("PC_BASE_STRUCTURE_ID");
-            PCBaseStructure shipStructure = _data.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == shipID);
-            PCBase shipBase = _data.Get<PCBase>(shipStructure.PCBaseID);
+            PCBaseStructure shipStructure = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == shipID);
+            PCBase shipBase = DataService.Get<PCBase>(shipStructure.PCBaseID);
             string planet = GetPlanetFromLocation(shipBase.ShipLocation);
 
-            _error.Trace(TraceComponent.Space, "Creating space encounter for " + player.Name + " near planet " + planet);
+            ErrorService.Trace(TraceComponent.Space, "Creating space encounter for " + player.Name + " near planet " + planet);
 
-            HashSet<SpaceEncounter> encounters = _data.Where<SpaceEncounter>(x => x.Planet == planet);
+            HashSet<SpaceEncounter> encounters = DataService.Where<SpaceEncounter>(x => x.Planet == planet);
             int totalChance = 0;
 
             foreach (var encounter in encounters)
             {
-                _error.Trace(TraceComponent.Space, "Found encounter: " + encounter.Type + " with base chance " + encounter.Chance);
+                ErrorService.Trace(TraceComponent.Space, "Found encounter: " + encounter.Type + " with base chance " + encounter.Chance);
 
                 if (encounter.Type == 1 || encounter.Type == 4)
                 {
@@ -1075,7 +1068,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 if (encounter.Chance < 1) encounter.Chance = 1;
-                _error.Trace(TraceComponent.Space, "Modified chance: " + encounter.Chance);
+                ErrorService.Trace(TraceComponent.Space, "Modified chance: " + encounter.Chance);
 
                 totalChance += encounter.Chance;
             }
@@ -1124,7 +1117,7 @@ namespace SWLOR.Game.Server.Service
                                 player.FloatingText("Hull points: " + targetHP + "/" + player.GetLocalInt("MAX_HP"));
 
                                 shipStructure.Durability = targetHP;
-                                _data.SubmitDataChange(shipStructure, DatabaseActionType.Update);
+                                DataService.SubmitDataChange(shipStructure, DatabaseActionType.Update);
 
                             }
 
@@ -1138,8 +1131,8 @@ namespace SWLOR.Game.Server.Service
                         {
                             player.SendMessage("You found some salvage!");
 
-                            BaseStructure structure = _data.Get<BaseStructure>(shipStructure.BaseStructureID);
-                            int count = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == shipStructure.ID).Count() + 1;
+                            BaseStructure structure = DataService.Get<BaseStructure>(shipStructure.BaseStructureID);
+                            int count = DataService.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == shipStructure.ID).Count() + 1;
                             if (count > (structure.ResourceStorage + shipStructure.StructureBonus))
                             {
                                 player.SendMessage("Your cargo bay is full!  You weren't able to collect the salvage.");
@@ -1176,7 +1169,7 @@ namespace SWLOR.Game.Server.Service
                                 ItemObject = _serialization.Serialize(item)
                             };
 
-                            _data.SubmitDataChange(dbItem, DatabaseActionType.Insert);
+                            DataService.SubmitDataChange(dbItem, DatabaseActionType.Insert);
                             player.SendMessage(item.Name + " was successfully brought into your cargo bay.");
                             item.Destroy();
                         }
@@ -1208,7 +1201,7 @@ namespace SWLOR.Game.Server.Service
             if (attackStron == 0)
             {
                 attacker.FloatingText("Out of Stronidium!");
-                _error.Trace(TraceComponent.Space, attacker.Name + " is out of stronidium");
+                ErrorService.Trace(TraceComponent.Space, attacker.Name + " is out of stronidium");
                 return;
             }
 
@@ -1218,7 +1211,7 @@ namespace SWLOR.Game.Server.Service
             int defendShields = target.GetLocalInt("SHIELDS");
             if (defendShields > defendStron) defendShields = defendStron;
 
-            _error.Trace(TraceComponent.Space, "Attacker weapons: " + attackWeapons + ", defender shields " + defendShields);
+            ErrorService.Trace(TraceComponent.Space, "Attacker weapons: " + attackWeapons + ", defender shields " + defendShields);
 
             // Get the piloting skill of the attacker and defender
             int attackerPiloting = 0;
@@ -1256,7 +1249,7 @@ namespace SWLOR.Game.Server.Service
                 defenderPiloting += target.GetLocalInt("DC") > 0 ? target.GetLocalInt("DC") : 10;
             }
 
-            _error.Trace(TraceComponent.Space, "Attacker skill " + attackerPiloting + ", defender skill " + defenderPiloting);
+            ErrorService.Trace(TraceComponent.Space, "Attacker skill " + attackerPiloting + ", defender skill " + defenderPiloting);
 
             // Make the shot... preparing some VFX.
             int damage = 0;
@@ -1268,7 +1261,7 @@ namespace SWLOR.Game.Server.Service
             float fTargetDistance = _.GetDistanceBetween(attacker, target);*/
 
             int check = _.d100();
-            _error.Trace(TraceComponent.Space, "Check result " + check);
+            ErrorService.Trace(TraceComponent.Space, "Check result " + check);
 
             if (check < (100 * attackerPiloting) / (attackerPiloting + defenderPiloting))
             {
@@ -1291,7 +1284,7 @@ namespace SWLOR.Game.Server.Service
                 // Calculate damage. 
                 int overkill = (100 * attackerPiloting) / (attackerPiloting + defenderPiloting) - check; // how much we beat the check by.
                 float bonus = (float)overkill / 100.0f;
-                _error.Trace(TraceComponent.Space, "Hit! Bonus % damage: " + bonus);
+                ErrorService.Trace(TraceComponent.Space, "Hit! Bonus % damage: " + bonus);
 
                 damage = (int)((float)attackWeapons * (1.0f + bonus)) - defendShields;
                 if (damage < 0) damage = 0;
@@ -1347,8 +1340,8 @@ namespace SWLOR.Game.Server.Service
             if (attackerArea.IsValid)
             {
                 string baseStructureID = attackerArea.GetLocalString("PC_BASE_STRUCTURE_ID");
-                PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.ID.ToString() == baseStructureID);
-                PCBase pcBase = _data.Single<PCBase>(x => x.ID == structure.PCBaseID);
+                PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID.ToString() == baseStructureID);
+                PCBase pcBase = DataService.Single<PCBase>(x => x.ID == structure.PCBaseID);
 
                 int stronLoss = pcBase.ReinforcedFuel - attackStron;
 
@@ -1360,7 +1353,7 @@ namespace SWLOR.Game.Server.Service
                         if (obj.IsPC)
                         {
                             stronLoss -= _perk.GetPCPerkLevel(new NWPlayer(obj), PerkType.SystemsOptimization);
-                            _error.Trace(TraceComponent.Space, "Attacker's stronidium loss reduced by engineer, now " + stronLoss);
+                            ErrorService.Trace(TraceComponent.Space, "Attacker's stronidium loss reduced by engineer, now " + stronLoss);
 
                             if (stronLoss < 1)
                             {
@@ -1374,15 +1367,15 @@ namespace SWLOR.Game.Server.Service
                 if (stronLoss > 0)
                 {
                     pcBase.ReinforcedFuel = attackStron;
-                    _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                    DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
                 }
             }
 
             if (defenderArea.IsValid)
             {
                 string baseStructureID = defenderArea.GetLocalString("PC_BASE_STRUCTURE_ID");
-                PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.ID.ToString() == baseStructureID);
-                PCBase pcBase = _data.Single<PCBase>(x => x.ID == structure.PCBaseID);
+                PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID.ToString() == baseStructureID);
+                PCBase pcBase = DataService.Single<PCBase>(x => x.ID == structure.PCBaseID);
 
                 int stronLoss = pcBase.ReinforcedFuel - defendStron;
 
@@ -1394,7 +1387,7 @@ namespace SWLOR.Game.Server.Service
                         if (obj.IsPC)
                         {
                             stronLoss -= _perk.GetPCPerkLevel(new NWPlayer(obj), PerkType.SystemsOptimization);
-                            _error.Trace(TraceComponent.Space, "Defender's stronidium loss reduced by engineer, now " + stronLoss);
+                            ErrorService.Trace(TraceComponent.Space, "Defender's stronidium loss reduced by engineer, now " + stronLoss);
 
                             if (stronLoss < 1)
                             {
@@ -1408,7 +1401,7 @@ namespace SWLOR.Game.Server.Service
                 if (stronLoss > 0)
                 {
                     pcBase.ReinforcedFuel = defendStron;
-                    _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                    DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
                 }
 
                 if (damage > 0)
@@ -1424,7 +1417,7 @@ namespace SWLOR.Game.Server.Service
                     }
                     else
                     {
-                        _data.SubmitDataChange(structure, DatabaseActionType.Update);
+                        DataService.SubmitDataChange(structure, DatabaseActionType.Update);
                     }
                 }
             }
@@ -1492,7 +1485,7 @@ namespace SWLOR.Game.Server.Service
                     _.GetDistanceBetween(creature, target) <= range &&
                     !target.HasAnyEffect(EFFECT_TYPE_INVISIBILITY, EFFECT_TYPE_SANCTUARY))
                 {
-                    _error.Trace(TraceComponent.Space, "Found valid target: " + target.Name);
+                    ErrorService.Trace(TraceComponent.Space, "Found valid target: " + target.Name);
                     DoSpaceAttack(creature, target, hasGunner);
                     break;
                 }

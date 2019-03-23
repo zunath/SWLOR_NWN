@@ -15,12 +15,12 @@ namespace SWLOR.Game.Server.Service
 {
     public class ObjectVisibilityService : IObjectVisibilityService
     {
-        private readonly IDataService _data;
+        
         
         public ObjectVisibilityService(   
-            IDataService data)
+            )
         {
-            _data = data;
+            
         }
 
         public void OnModuleLoad()
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
             
-            var visibilities = _data.Where<PCObjectVisibility>(x => x.PlayerID == player.GlobalID).ToList();
+            var visibilities = DataService.Where<PCObjectVisibility>(x => x.PlayerID == player.GlobalID).ToList();
 
             // Apply visibilities for player
             foreach (var visibility in visibilities)
@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Service
             
             var players = NWModule.Get().Players.ToList();
             var concatPlayerIDs = players.Select(x => x.GlobalID);
-            var pcVisibilities = _data.Where<PCObjectVisibility>(x => concatPlayerIDs.Contains(x.PlayerID)).ToList();
+            var pcVisibilities = DataService.Where<PCObjectVisibility>(x => concatPlayerIDs.Contains(x.PlayerID)).ToList();
 
             foreach (var player in players)
             {
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var visibility = _data.SingleOrDefault<PCObjectVisibility>(x => x.PlayerID == player.GlobalID && x.VisibilityObjectID == visibilityObjectID);
+            var visibility = DataService.SingleOrDefault<PCObjectVisibility>(x => x.PlayerID == player.GlobalID && x.VisibilityObjectID == visibilityObjectID);
             DatabaseActionType action = DatabaseActionType.Update;
 
             if (visibility == null)
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             visibility.IsVisible = isVisible;
-            _data.SubmitDataChange(visibility, action);
+            DataService.SubmitDataChange(visibility, action);
 
             if (visibility.IsVisible)
                 NWNXVisibility.SetVisibilityOverride(player, target, VisibilityType.Visible);

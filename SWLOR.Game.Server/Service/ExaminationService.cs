@@ -14,18 +14,18 @@ namespace SWLOR.Game.Server.Service
 {
     public class ExaminationService: IExaminationService
     {
-        private readonly IDataService _data;
+        
         
         private readonly IColorTokenService _color;
         private readonly ISkillService _skill;
 
         public ExaminationService(
-            IDataService data, 
+             
              
             IColorTokenService color,
             ISkillService skill)
         {
-            _data = data;
+            
             
             _color = color;
             _skill = skill;
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Service
 
             backupDescription = target.IdentifiedDescription;
             target.SetLocalString("BACKUP_DESCRIPTION", backupDescription);
-            Player playerEntity = _data.Single<Player>(x => x.ID == target.GlobalID);
+            Player playerEntity = DataService.Single<Player>(x => x.ID == target.GlobalID);
             NWArea area = NWModule.Get().Areas.Single(x => x.Resref == playerEntity.RespawnAreaResref);
             string respawnAreaName = area.Name;
 
@@ -66,11 +66,11 @@ namespace SWLOR.Game.Server.Service
 
             description.Append("\n\n").Append(_color.Green("Perks: ")).Append("\n\n");
             
-            var pcPerks = _data.Where<PCPerk>(x => x.PlayerID == target.GlobalID);
+            var pcPerks = DataService.Where<PCPerk>(x => x.PlayerID == target.GlobalID);
             
             foreach (PCPerk pcPerk in pcPerks)
             {
-                var perk = _data.Get<Data.Entity.Perk>(pcPerk.PerkID);
+                var perk = DataService.Get<Data.Entity.Perk>(pcPerk.PerkID);
                 description.Append(perk.Name).Append(" Lvl. ").Append(pcPerk.PerkLevel).AppendLine();
             }
             

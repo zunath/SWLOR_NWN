@@ -15,23 +15,23 @@ namespace SWLOR.Game.Server.Service
     public class AreaService : IAreaService
     {
         
-        private readonly IDataService _data;
+        
         private readonly ISpawnService _spawn;
         
         public AreaService(
             
-            IDataService data,
+            
             ISpawnService spawn)
         {
             
-            _data = data;
+            
             _spawn = spawn;
         }
 
         public void OnModuleLoad()
         {
             var areas = NWModule.Get().Areas;
-            var dbAreas = _data.GetAll<Area>().Where(x => x.IsActive).ToList();
+            var dbAreas = DataService.GetAll<Area>().Where(x => x.IsActive).ToList();
             dbAreas.ForEach(x => x.IsActive = false);
 
             foreach (var area in areas)
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Service
                 if (dbArea.MaxResourceQuality < dbArea.ResourceQuality)
                     dbArea.MaxResourceQuality = dbArea.ResourceQuality;
 
-                _data.SubmitDataChange(dbArea, action);
+                DataService.SubmitDataChange(dbArea, action);
             }
             
             string arg = Environment.GetEnvironmentVariable("AREA_BAKING_ENABLED");
@@ -101,8 +101,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Cache both areas and area walkmeshes now that they're built, if they aren't already.
-            _data.GetAll<Area>();
-            _data.GetAll<AreaWalkmesh>();
+            DataService.GetAll<Area>();
+            DataService.GetAll<AreaWalkmesh>();
         }
 
         // Area baking process
@@ -113,13 +113,13 @@ namespace SWLOR.Game.Server.Service
         // accuracy I wanted, without too much overhead. Your mileage may vary.
         private void BakeAreas()
         {
-            var config = _data.GetAll<ServerConfiguration>().First();
+            var config = DataService.GetAll<ServerConfiguration>().First();
             int Step = config.AreaBakeStep;
             const float MinDistance = 6.0f;
 
             foreach (var area in NWModule.Get().Areas)
             {
-                var dbArea = _data.Single<Area>(x => x.Resref == area.Resref);
+                var dbArea = DataService.Single<Area>(x => x.Resref == area.Resref);
 
                 int arraySizeX = dbArea.Width * (10 / Step);
                 int arraySizeY = dbArea.Height * (10 / Step);
@@ -153,15 +153,15 @@ namespace SWLOR.Game.Server.Service
                 {
                     dbArea.Walkmesh = walkmesh;
                     dbArea.DateLastBaked = DateTime.UtcNow;
-                    _data.SubmitDataChange(dbArea, DatabaseActionType.Update);
+                    DataService.SubmitDataChange(dbArea, DatabaseActionType.Update);
 
                     Console.WriteLine("Baking area because its walkmesh has changed since last run: " + area.Name);
 
-                    var walkmeshes = _data.Where<AreaWalkmesh>(x => x.AreaID == dbArea.ID).ToList();
+                    var walkmeshes = DataService.Where<AreaWalkmesh>(x => x.AreaID == dbArea.ID).ToList();
                     for(int x = walkmeshes.Count-1; x >= 0; x--)
                     {
                         var mesh = walkmeshes.ElementAt(x);
-                        _data.SubmitDataChange(mesh, DatabaseActionType.Delete);
+                        DataService.SubmitDataChange(mesh, DatabaseActionType.Delete);
                     }
                     
                     Console.WriteLine("Cleared old walkmesh. Adding new one now.");
@@ -185,7 +185,7 @@ namespace SWLOR.Game.Server.Service
                                 LocationZ = z
                             };
 
-                            _data.SubmitDataChange(mesh, DatabaseActionType.Insert);
+                            DataService.SubmitDataChange(mesh, DatabaseActionType.Insert);
 
                             records++;
                         }

@@ -11,17 +11,17 @@ namespace SWLOR.Game.Server.Conversation
 {
     public class LockedDoor: ConversationBase
     {
-        private readonly IDataService _data;
+        
         private readonly IKeyItemService _keyItem;
 
         public LockedDoor(
              
             IDialogService dialog,
-            IDataService data,
+            
             IKeyItemService keyItem) 
             : base(dialog)
         {
-            _data = data;
+            
             _keyItem = keyItem;
         }
 

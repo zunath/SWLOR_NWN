@@ -14,21 +14,21 @@ namespace SWLOR.Game.Server.Service
 {
     public class LootService: ILootService
     {
-        private readonly IDataService _data;
+        
         private readonly IRandomService _random;
         
 
-        public LootService(IDataService data,
+        public LootService(
             IRandomService random)
         {
-            _data = data;
+            
             _random = random;
         }
 
         public ItemVO PickRandomItemFromLootTable(int lootTableID)
         {
             if (lootTableID <= 0) return null;
-            var lootTableItems = _data.Where<LootTableItem>(x => x.LootTableID == lootTableID).ToList();
+            var lootTableItems = DataService.Where<LootTableItem>(x => x.LootTableID == lootTableID).ToList();
 
             if (lootTableItems.Count <= 0) return null;
             int[] weights = new int[lootTableItems.Count];

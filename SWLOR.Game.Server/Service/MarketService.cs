@@ -15,13 +15,13 @@ namespace SWLOR.Game.Server.Service
 {
     public class MarketService: IMarketService
     {
-        private readonly IDataService _data;
+        
         
         public MarketService(
             
-            IDataService data)
+            )
         {
-            _data = data;
+            
         }
 
         // Couldn't get any more specific than this. :)
@@ -90,9 +90,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Player is offline. Put the gold into their "Till" and give it to them the next time they log on.
-            Player dbPlayer = _data.Get<Player>(playerID);
+            Player dbPlayer = DataService.Get<Player>(playerID);
             dbPlayer.GoldTill += amount;
-            _data.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
         }
 
         /// <summary>
@@ -104,14 +104,14 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
 
-            Player dbPlayer = _data.Get<Player>(player.GlobalID);
+            Player dbPlayer = DataService.Get<Player>(player.GlobalID);
 
             if (dbPlayer.GoldTill > 0)
             {
                 player.FloatingText("You sold goods on the GTN Market while you were offline. " + dbPlayer.GoldTill + " credits have been transferred to your account.");
                 _.GiveGoldToCreature(player, dbPlayer.GoldTill);
                 dbPlayer.GoldTill = 0;
-                _data.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+                DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
             }
         }
 
@@ -359,7 +359,7 @@ namespace SWLOR.Game.Server.Service
             int baseStructureID = item.GetLocalInt("BASE_STRUCTURE_ID");
             if (baseStructureID > 0)
             {
-                var baseStructure = _data.Get<BaseStructure>(baseStructureID);
+                var baseStructure = DataService.Get<BaseStructure>(baseStructureID);
                 var baseStructureType = (BaseStructureType) baseStructure.BaseStructureTypeID;
 
                 switch (baseStructureType)

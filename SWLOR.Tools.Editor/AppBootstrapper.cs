@@ -125,8 +125,6 @@ namespace SWLOR.Tools.Editor
         {
             // SWLOR.Game.Server Registrations
             builder.RegisterType<DatabaseBackgroundThread>().As<IDatabaseThread>().SingleInstance();
-            builder.RegisterType<DataService>().As<IDataService>().SingleInstance();
-
 
             // Singletons
             builder.RegisterType<AppSettings>().SingleInstance();

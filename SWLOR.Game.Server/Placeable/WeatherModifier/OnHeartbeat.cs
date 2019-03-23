@@ -2,21 +2,13 @@
 using SWLOR.Game.Server.Event;
 using NWN;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.WeatherModifier
 {
     public class OnHeartbeat : IRegisteredEvent
     {
-        
-        private readonly IWeatherService _weather;
-
-        public OnHeartbeat( IWeatherService weather)
-        {
-            
-            _weather = weather;
-        }
-
         public bool Run(params object[] args)
         {
             NWObject oSelf = Object.OBJECT_SELF;
@@ -28,10 +20,10 @@ namespace SWLOR.Game.Server.Placeable.WeatherModifier
             int nSand = oSelf.GetLocalInt("WEATHER_SAND_STORM");
 
             NWArea oArea = _.GetArea(oSelf);
-            _weather.SetAreaHeatModifier(oArea, nHeat);
-            _weather.SetAreaHumidityModifier(oArea, nWet);
-            _weather.SetAreaWindModifier(oArea, nWind);
-            _weather.SetAreaAcidRain(oArea, nAcid);
+            WeatherService.SetAreaHeatModifier(oArea, nHeat);
+            WeatherService.SetAreaHumidityModifier(oArea, nWet);
+            WeatherService.SetAreaWindModifier(oArea, nWind);
+            WeatherService.SetAreaAcidRain(oArea, nAcid);
 
             if (nDust > 0)
             {
@@ -44,7 +36,7 @@ namespace SWLOR.Game.Server.Placeable.WeatherModifier
 
                 foreach (NWObject player in oArea.Objects)
                 {
-                    if (player.IsPC) _weather.DoWeatherEffects(player);
+                    if (player.IsPC) WeatherService.DoWeatherEffects(player);
                 }
             }
 
@@ -59,7 +51,7 @@ namespace SWLOR.Game.Server.Placeable.WeatherModifier
 
                 foreach (NWObject player in oArea.Objects)
                 {
-                    if (player.IsPC) _weather.DoWeatherEffects(player);
+                    if (player.IsPC) WeatherService.DoWeatherEffects(player);
                 }
             }
             _.DestroyObject(oSelf);

@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 
@@ -15,9 +16,6 @@ namespace SWLOR.Game.Server.Event.Delayed
 {
     public class CraftCreateItem: IRegisteredEvent
     {
-        
-        private readonly IDataService _data;
-        private readonly IErrorService _error;
         private readonly ICraftService _craft;
         private readonly IComponentBonusService _componentBonus;
         private readonly IColorTokenService _color;
@@ -29,9 +27,6 @@ namespace SWLOR.Game.Server.Event.Delayed
         private readonly IPerkService _perk;
 
         public CraftCreateItem(
-            
-            IDataService data,
-            IErrorService error,
             ICraftService craft,
             IComponentBonusService componentBonus,
             
@@ -43,9 +38,6 @@ namespace SWLOR.Game.Server.Event.Delayed
             IDurabilityService durability,
             IPerkService perk)
         {
-            
-            _data = data;
-            _error = error;
             _craft = craft;
             _componentBonus = componentBonus;
             
@@ -69,7 +61,7 @@ namespace SWLOR.Game.Server.Event.Delayed
             }
             catch (Exception ex)
             {
-                _error.LogError(ex);
+                ErrorService.LogError(ex);
 
                 return false;
             }
@@ -89,8 +81,8 @@ namespace SWLOR.Game.Server.Event.Delayed
 
             var model = _craft.GetPlayerCraftingData(player);
 
-            CraftBlueprint blueprint = _data.Single<CraftBlueprint>(x => x.ID == model.BlueprintID);
-            BaseStructure baseStructure = blueprint.BaseStructureID == null ? null : _data.Get<BaseStructure>(blueprint.BaseStructureID);
+            CraftBlueprint blueprint = DataService.Single<CraftBlueprint>(x => x.ID == model.BlueprintID);
+            BaseStructure baseStructure = blueprint.BaseStructureID == null ? null : DataService.Get<BaseStructure>(blueprint.BaseStructureID);
             PCSkill pcSkill = _skill.GetPCSkill(player, blueprint.SkillID);
 
             int pcEffectiveLevel = _craft.CalculatePCEffectiveLevel(player, pcSkill.Rank, (SkillType)blueprint.SkillID);
@@ -180,7 +172,7 @@ namespace SWLOR.Game.Server.Event.Delayed
             int baseXP = 250 + successAmount * _random.Random(1, 50);
             float xp = _skill.CalculateRegisteredSkillLevelAdjustedXP(baseXP, model.AdjustedLevel, pcSkill.Rank);
 
-            var pcCraftedBlueprint = _data.SingleOrDefault<PCCraftedBlueprint>(x => x.PlayerID == player.GlobalID && x.CraftBlueprintID == blueprint.ID);
+            var pcCraftedBlueprint = DataService.SingleOrDefault<PCCraftedBlueprint>(x => x.PlayerID == player.GlobalID && x.CraftBlueprintID == blueprint.ID);
             if(pcCraftedBlueprint == null)
             {
                 xp = xp * 1.25f;
@@ -193,7 +185,7 @@ namespace SWLOR.Game.Server.Event.Delayed
                     PlayerID = player.GlobalID
                 };
 
-                _data.SubmitDataChange(pcCraftedBlueprint, DatabaseActionType.Insert);
+                DataService.SubmitDataChange(pcCraftedBlueprint, DatabaseActionType.Insert);
             }
 
             _skill.GiveSkillXP(player, blueprint.SkillID, (int)xp);

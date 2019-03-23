@@ -19,13 +19,13 @@ namespace SWLOR.Game.Server.Service
 {
     public class DataPackageService : IDataPackageService
     {
-        private readonly IDataService _data;
+        
         const string PackagesPath = "./DataPackages/";
         private Queue<DatabaseAction> _queuedDBChanges;
 
-        public DataPackageService(IDataService data)
+        public DataPackageService()
         {
-            _data = data;
+            
             _queuedDBChanges = new Queue<DatabaseAction>();
         }
 
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Service
                     package.ImportedSuccessfully = false;
                 }
 
-                _data.SubmitDataChange(package, DatabaseActionType.Insert);
+                DataService.SubmitDataChange(package, DatabaseActionType.Insert);
                 
                 if (package.ImportedSuccessfully)
                 {
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Service
         private List<DataPackage> BuildPackageList()
         {
             // Pull back all of the packages we've already attempted to import.
-            var importedPackages = _data.GetAll<DataPackage>();
+            var importedPackages = DataService.GetAll<DataPackage>();
 
             List<DataPackage> packages = new List<DataPackage>();
             string[] files = Directory.GetFiles(PackagesPath, "*.json");
@@ -180,7 +180,7 @@ namespace SWLOR.Game.Server.Service
                 while (_queuedDBChanges.Count > 0)
                 {
                     var change = _queuedDBChanges.Dequeue();
-                    _data.SubmitDataChange(change);
+                    DataService.SubmitDataChange(change);
                 }
             }
             return errors;
@@ -203,7 +203,7 @@ namespace SWLOR.Game.Server.Service
             {
                 try
                 {
-                    var result = processor.Process(_data, dataObject);
+                    var result = processor.Process(dataObject);
 
                     if (result == null)
                     {

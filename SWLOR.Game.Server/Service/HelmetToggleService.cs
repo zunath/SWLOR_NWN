@@ -15,11 +15,11 @@ namespace SWLOR.Game.Server.Service
 {
     public class HelmetToggleService: IHelmetToggleService
     {
-        private readonly IDataService _data;
         
-        public HelmetToggleService(IDataService data)
+        
+        public HelmetToggleService()
         {
-            _data = data;
+            
         }
 
         public void OnModuleItemEquipped()
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Service
                 NWItem item = (_.GetPCItemLastEquipped());
                 if (item.BaseItemType != _.BASE_ITEM_HELMET) return;
 
-                Player pc = _data.Single<Player>(x => x.ID == player.GlobalID);
+                Player pc = DataService.Single<Player>(x => x.ID == player.GlobalID);
                 _.SetHiddenWhenEquipped(item.Object, !pc.DisplayHelmet == false ? 0 : 1);
             }
         }
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Service
                 NWItem item = (_.GetPCItemLastUnequipped());
                 if (item.BaseItemType != _.BASE_ITEM_HELMET) return;
 
-                Player pc = _data.Single<Player>(x => x.ID == player.GlobalID);
+                Player pc = DataService.Single<Player>(x => x.ID == player.GlobalID);
                 _.SetHiddenWhenEquipped(item.Object, !pc.DisplayHelmet == false ? 0 : 1);
             }
         }
@@ -58,9 +58,9 @@ namespace SWLOR.Game.Server.Service
 
             if (!player.IsPlayer) return;
 
-            Player pc = _data.Single<Player>(x => x.ID == player.GlobalID);
+            Player pc = DataService.Single<Player>(x => x.ID == player.GlobalID);
             pc.DisplayHelmet = !pc.DisplayHelmet;
-            _data.SubmitDataChange(pc, DatabaseActionType.Update);
+            DataService.SubmitDataChange(pc, DatabaseActionType.Update);
             
             _.FloatingTextStringOnCreature(
                 pc.DisplayHelmet ? "Now showing equipped helmet." : "Now hiding equipped helmet.", 

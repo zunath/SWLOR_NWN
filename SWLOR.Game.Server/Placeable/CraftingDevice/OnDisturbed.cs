@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using NWN;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 using Object = NWN.Object;
@@ -16,19 +17,18 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
         private readonly ICraftService _craft;
         private readonly IItemService _item;
         private readonly IDialogService _dialog;
-        private readonly IDataService _data;
+        
 
         public OnDisturbed(
             ICraftService craft,
             IItemService item,
-            IDialogService dialog,
-            IDataService data)
+            IDialogService dialog)
+            
         {
             
             _craft = craft;
             _item = item;
             _dialog = dialog;
-            _data = data;
         }
 
         public bool Run(params object[] args)
@@ -60,9 +60,9 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
             }
 
             var model = _craft.GetPlayerCraftingData(oPC);
-            var mainComponent = _data.Get<Data.Entity.ComponentType>(model.Blueprint.MainComponentTypeID);
-            var secondaryComponent = _data.Get<Data.Entity.ComponentType>(model.Blueprint.SecondaryComponentTypeID);
-            var tertiaryComponent = _data.Get<Data.Entity.ComponentType>(model.Blueprint.TertiaryComponentTypeID);
+            var mainComponent = DataService.Get<Data.Entity.ComponentType>(model.Blueprint.MainComponentTypeID);
+            var secondaryComponent = DataService.Get<Data.Entity.ComponentType>(model.Blueprint.SecondaryComponentTypeID);
+            var tertiaryComponent = DataService.Get<Data.Entity.ComponentType>(model.Blueprint.TertiaryComponentTypeID);
 
             NWPlaceable storage = _.GetObjectByTag("craft_temp_store");
 

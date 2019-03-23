@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static NWN._;
@@ -13,17 +14,17 @@ namespace SWLOR.Game.Server.Conversation
 {
     public class ItemImpoundRetrieval: ConversationBase
     {
-        private readonly IDataService _data;
+        
         private readonly ISerializationService _serialization;
 
         public ItemImpoundRetrieval(
              
             IDialogService dialog,
-            IDataService data,
+            
             ISerializationService serialization) 
             : base(dialog)
         {
-            _data = data;
+            
             _serialization = serialization;
         }
 
@@ -44,7 +45,7 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadMainPage()
         {
             var player = GetPC();
-            var items = _data.Where<PCImpoundedItem>(x => x.PlayerID == player.GlobalID && x.DateRetrieved == null).ToList();
+            var items = DataService.Where<PCImpoundedItem>(x => x.PlayerID == player.GlobalID && x.DateRetrieved == null).ToList();
 
             ClearPageResponses("MainPage");
             foreach (var item in items)
@@ -63,7 +64,7 @@ namespace SWLOR.Game.Server.Conversation
 
             var response = GetResponseByID("MainPage", responseID);
             Guid pcImpoundedItemID = (Guid)response.CustomData;
-            var item = _data.Single<PCImpoundedItem>(x => x.ID == pcImpoundedItemID);
+            var item = DataService.Single<PCImpoundedItem>(x => x.ID == pcImpoundedItemID);
 
             if (item.DateRetrieved != null)
             {
@@ -72,7 +73,7 @@ namespace SWLOR.Game.Server.Conversation
             }
 
             item.DateRetrieved = DateTime.UtcNow;
-            _data.SubmitDataChange(item, DatabaseActionType.Update);
+            DataService.SubmitDataChange(item, DatabaseActionType.Update);
             _serialization.DeserializeItem(item.ItemObject, player);
             _.TakeGoldFromCreature(50, player, TRUE);
 

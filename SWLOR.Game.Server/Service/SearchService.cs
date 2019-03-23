@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Service
 
         
         private readonly IRandomService _random;
-        private readonly IDataService _data;
+        
         private readonly IQuestService _quest;
         private readonly ISerializationService _serialization;
         private readonly ILocalVariableService _localVariable;
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Service
         public SearchService(
             
             IRandomService random,
-            IDataService data,
+            
             IQuestService quest,
             ISerializationService serialization,
             ILocalVariableService localVariable,
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Service
         {
             
             _random = random;
-            _data = data;
+            
             _quest = quest;
             _serialization = serialization;
             _localVariable = localVariable;
@@ -117,7 +117,7 @@ namespace SWLOR.Game.Server.Service
             int chestID = oChest.GetLocalInt(SearchSiteIDVariableName);
             int skillRank = _.GetSkillRank(_.SKILL_SEARCH, oPC.Object);
             int numberOfSearches = (skillRank / ExtraSearchPerNumberLevels) + 1;
-            PCSearchSite searchEntity = _data.SingleOrDefault<PCSearchSite>(x => x.PlayerID == oPC.GlobalID && x.SearchSiteID == chestID);
+            PCSearchSite searchEntity = DataService.SingleOrDefault<PCSearchSite>(x => x.PlayerID == oPC.GlobalID && x.SearchSiteID == chestID);
             DateTime timeLock = DateTime.UtcNow;
 
             if (numberOfSearches <= 0) numberOfSearches = 1;
@@ -148,7 +148,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                var searchItems = _data.Where<PCSearchSiteItem>(x => x.PlayerID == oPC.GlobalID && x.SearchSiteID == searchEntity.SearchSiteID).ToList();
+                var searchItems = DataService.Where<PCSearchSiteItem>(x => x.PlayerID == oPC.GlobalID && x.SearchSiteID == searchEntity.SearchSiteID).ToList();
                 foreach (PCSearchSiteItem item in searchItems)
                 {
                     NWItem oItem = _serialization.DeserializeItem(item.SearchItem, oChest);
@@ -186,7 +186,7 @@ namespace SWLOR.Game.Server.Service
         private void SaveChestInventory(NWPlayer oPC, NWPlaceable oChest, bool resetTimeLock)
         {
             int chestID = oChest.GetLocalInt(SearchSiteIDVariableName);
-            PCSearchSite entity = _data.SingleOrDefault<PCSearchSite>(x => x.PlayerID == oPC.GlobalID && x.SearchSiteID == chestID);
+            PCSearchSite entity = DataService.SingleOrDefault<PCSearchSite>(x => x.PlayerID == oPC.GlobalID && x.SearchSiteID == chestID);
 
             int lockHours = _random.Random(2, 5);
             DateTime lockTime = DateTime.UtcNow.AddHours(lockHours);
@@ -196,7 +196,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     lockTime = entity.UnlockDateTime;
                 }
-                _data.SubmitDataChange(entity, DatabaseActionType.Delete);
+                DataService.SubmitDataChange(entity, DatabaseActionType.Delete);
             }
 
             entity = new PCSearchSite
@@ -216,7 +216,7 @@ namespace SWLOR.Game.Server.Service
                         SearchSiteID = entity.SearchSiteID
                     };
 
-                    _data.SubmitDataChange(itemEntity, DatabaseActionType.Insert);
+                    DataService.SubmitDataChange(itemEntity, DatabaseActionType.Insert);
                 }
             }
         }
@@ -253,7 +253,7 @@ namespace SWLOR.Game.Server.Service
 
         private ItemVO PickResultItem(int lootTableID)
         {
-            var lootTableItems = _data.Where<LootTableItem>(x => x.LootTableID == lootTableID).ToList();
+            var lootTableItems = DataService.Where<LootTableItem>(x => x.LootTableID == lootTableID).ToList();
 
             int[] weights = new int[lootTableItems.Count];
 

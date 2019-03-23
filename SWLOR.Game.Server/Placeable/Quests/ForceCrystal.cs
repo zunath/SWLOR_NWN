@@ -3,6 +3,7 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using Object = NWN.Object;
 
@@ -12,18 +13,18 @@ namespace SWLOR.Game.Server.Placeable.Quests
     {
         
         private readonly IQuestService _quest;
-        private readonly IDataService _data;
+        
         private readonly IObjectVisibilityService _ovs;
 
         public ForceCrystal(
             
             IQuestService quest,
-            IDataService data,
+            
             IObjectVisibilityService ovs)
         {
             
             _quest = quest;
-            _data = data;
+            
             _ovs = ovs;
         }
 
@@ -34,8 +35,8 @@ namespace SWLOR.Game.Server.Placeable.Quests
             NWPlayer player = _.GetLastUsedBy();
 
             // Check player's current quest state. If they aren't on stage 2 of the quest only show a message.
-            var status = _data.Single<PCQuestStatus>(x => x.PlayerID == player.GlobalID && x.QuestID == QuestID);
-            var currentState = _data.Single<QuestState>(x => x.ID == status.CurrentQuestStateID);
+            var status = DataService.Single<PCQuestStatus>(x => x.PlayerID == player.GlobalID && x.QuestID == QuestID);
+            var currentState = DataService.Single<QuestState>(x => x.ID == status.CurrentQuestStateID);
 
             if (currentState.Sequence != 2)
             {

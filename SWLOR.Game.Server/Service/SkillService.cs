@@ -25,15 +25,14 @@ namespace SWLOR.Game.Server.Service
         private readonly IEnmityService _enmity;
         private readonly IPlayerStatService _playerStat;
         private readonly IItemService _item;
-        private readonly IDataService _data;
+        
 
 
         public SkillService(
             IRandomService random,
             IEnmityService enmity,
             IPlayerStatService playerStat,
-            IItemService item,
-            IDataService data)
+            IItemService item)
         {
 
             _random = random;
@@ -41,7 +40,6 @@ namespace SWLOR.Game.Server.Service
             _enmity = enmity;
             _playerStat = playerStat;
             _item = item;
-            _data = data;
         }
 
         public int SkillCap => 500;
@@ -90,12 +88,12 @@ namespace SWLOR.Game.Server.Service
             {
                 xp = (int)(xp + xp * _playerStat.EffectiveResidencyBonus(oPC));
             }
-            Player player = _data.Get<Player>(oPC.GlobalID);
+            Player player = DataService.Get<Player>(oPC.GlobalID);
             Skill skill = GetSkill(skillID);
 
             // Check if the player has any undistributed skill ranks for this skill category.
             // If they haven't been distributed yet, the player CANNOT gain XP for this skill.
-            var pool = _data.SingleOrDefault<PCSkillPool>(x => x.PlayerID == oPC.GlobalID &&
+            var pool = DataService.SingleOrDefault<PCSkillPool>(x => x.PlayerID == oPC.GlobalID &&
                                                                x.SkillCategoryID == skill.SkillCategoryID &&
                                                                x.Levels > 0);
             if (pool != null)
@@ -106,7 +104,7 @@ namespace SWLOR.Game.Server.Service
 
 
             PCSkill pcSkill = GetPCSkill(oPC, skillID);
-            SkillXPRequirement req = _data.Single<SkillXPRequirement>(x => x.SkillID == skillID && x.Rank == pcSkill.Rank);
+            SkillXPRequirement req = DataService.Single<SkillXPRequirement>(x => x.SkillID == skillID && x.Rank == pcSkill.Rank);
             int maxRank = skill.MaxRank;
             int originalRank = pcSkill.Rank;
             float xpBonusModifier = player.XPBonus * 0.01f;
@@ -149,7 +147,7 @@ namespace SWLOR.Game.Server.Service
 
                 pcSkill.Rank++;
                 oPC.FloatingText("Your " + skill.Name + " skill level increased to rank " + pcSkill.Rank + "!");
-                req = _data.Single<SkillXPRequirement>(x => x.SkillID == skillID && x.Rank == pcSkill.Rank);
+                req = DataService.Single<SkillXPRequirement>(x => x.SkillID == skillID && x.Rank == pcSkill.Rank);
 
                 // Reapply skill penalties on a skill level up.
                 for (int slot = 0; slot < NUM_INVENTORY_SLOTS; slot++)
@@ -164,7 +162,7 @@ namespace SWLOR.Game.Server.Service
                 MessageHub.Instance.Publish(new SkillGainedMessage(oPC, skillID));
             }
 
-            _data.SubmitDataChange(pcSkill, DatabaseActionType.Update);
+            DataService.SubmitDataChange(pcSkill, DatabaseActionType.Update);
 
             // Update player and apply stat changes only if a level up occurred.
             if (originalRank != pcSkill.Rank)
@@ -177,7 +175,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!player.IsPlayer || skill == SkillType.Unknown) return 0;
 
-            return _data.Single<PCSkill>(x => x.PlayerID == player.GlobalID && x.SkillID == (int)skill).Rank;
+            return DataService.Single<PCSkill>(x => x.PlayerID == player.GlobalID && x.SkillID == (int)skill).Rank;
         }
 
         public int GetPCSkillRank(NWPlayer player, int skillID)
@@ -187,12 +185,12 @@ namespace SWLOR.Game.Server.Service
 
         public PCSkill GetPCSkill(NWPlayer player, int skillID)
         {
-            return _data.Single<PCSkill>(x => x.PlayerID == player.GlobalID && x.SkillID == skillID);
+            return DataService.Single<PCSkill>(x => x.PlayerID == player.GlobalID && x.SkillID == skillID);
         }
 
         public List<PCSkill> GetAllPCSkills(NWPlayer player)
         {
-            return _data.Where<PCSkill>(x => x.PlayerID == player.GlobalID).ToList();
+            return DataService.Where<PCSkill>(x => x.PlayerID == player.GlobalID).ToList();
         }
 
         public Skill GetSkill(int skillID)
@@ -202,12 +200,12 @@ namespace SWLOR.Game.Server.Service
 
         public Skill GetSkill(SkillType skillType)
         {
-            return _data.Get<Skill>((int)skillType);
+            return DataService.Get<Skill>((int)skillType);
         }
 
         public int GetPCTotalSkillCount(NWPlayer player)
         {
-            var skills = _data
+            var skills = DataService
                 .Where<Skill>(x => x.ContributesToSkillCap)
                 .Select(s => s.ID);
             var pcSkills = GetAllPCSkills(player)
@@ -217,18 +215,18 @@ namespace SWLOR.Game.Server.Service
 
         public List<SkillCategory> GetActiveCategories()
         {
-            return _data.Where<SkillCategory>(x => x.ID != 0).ToList();
+            return DataService.Where<SkillCategory>(x => x.ID != 0).ToList();
         }
 
         public List<PCSkill> GetPCSkillsForCategory(Guid playerID, int skillCategoryID)
         {
             // Get list of skills part of this category.
-            var skillIDs = _data
+            var skillIDs = DataService
                 .Where<Skill>(x => x.SkillCategoryID == skillCategoryID && x.IsActive)
                 .Select(s => s.ID);
 
             // Get all PC Skills with a matching category.
-            var pcSkills = _data.Where<PCSkill>(x => x.PlayerID == playerID &&
+            var pcSkills = DataService.Where<PCSkill>(x => x.PlayerID == playerID &&
                                                      skillIDs.Contains(x.SkillID))
                 .ToList();
 
@@ -237,10 +235,10 @@ namespace SWLOR.Game.Server.Service
 
         public void ToggleSkillLock(Guid playerID, int skillID)
         {
-            PCSkill pcSkill = _data.Single<PCSkill>(x => x.PlayerID == playerID && x.SkillID == skillID);
+            PCSkill pcSkill = DataService.Single<PCSkill>(x => x.PlayerID == playerID && x.SkillID == skillID);
             pcSkill.IsLocked = !pcSkill.IsLocked;
 
-            _data.SubmitDataChange(pcSkill, DatabaseActionType.Update);
+            DataService.SubmitDataChange(pcSkill, DatabaseActionType.Update);
         }
 
         public void OnCreatureDeath(NWCreature creature)
@@ -387,9 +385,9 @@ namespace SWLOR.Game.Server.Service
             if (oPC.IsPlayer)
             {
                 // Add any missing skills the player does not have.
-                var skills = _data.Where<Skill>(x =>
+                var skills = DataService.Where<Skill>(x =>
                 {
-                    var pcSkill = _data.SingleOrDefault<PCSkill>(s => s.SkillID == x.ID && s.PlayerID == oPC.GlobalID);
+                    var pcSkill = DataService.SingleOrDefault<PCSkill>(s => s.SkillID == x.ID && s.PlayerID == oPC.GlobalID);
                     return pcSkill == null;
                 });
                 foreach (var skill in skills)
@@ -403,7 +401,7 @@ namespace SWLOR.Game.Server.Service
                         XP = 0
                     };
 
-                    _data.SubmitDataChange(pcSkill, DatabaseActionType.Insert);
+                    DataService.SubmitDataChange(pcSkill, DatabaseActionType.Insert);
                 }
                 ForceEquipFistGlove(oPC);
             }
@@ -547,10 +545,10 @@ namespace SWLOR.Game.Server.Service
             if (totalSkillRanks < SkillCap) return true;
 
             // Find out if we have enough XP to remove. If we don't, make no changes and return false signifying no XP could be removed.
-            var pcSkills = _data.Where<PCSkill>(x => x.PlayerID == oPC.GlobalID && x.SkillID != levelingSkill.SkillID);
+            var pcSkills = DataService.Where<PCSkill>(x => x.PlayerID == oPC.GlobalID && x.SkillID != levelingSkill.SkillID);
             var totalXPs = pcSkills.Select(s =>
             {
-                var reqXP = _data.Where<SkillXPRequirement>(x => x.SkillID == s.SkillID && (x.Rank < s.Rank || x.Rank == 0 && s.XP > 0));
+                var reqXP = DataService.Where<SkillXPRequirement>(x => x.SkillID == s.SkillID && (x.Rank < s.Rank || x.Rank == 0 && s.XP > 0));
                 var totalXP = reqXP.Sum(x => x.XP);
                 return new { s.SkillID, TotalSkillXP = totalXP };
             }).ToList();
@@ -566,7 +564,7 @@ namespace SWLOR.Game.Server.Service
             var skillsPossibleToDecay = GetAllPCSkills(oPC)
                 .Where(x =>
                 {
-                    var skill = _data.Get<Skill>(x.SkillID);
+                    var skill = DataService.Get<Skill>(x.SkillID);
                     return !x.IsLocked &&
                            skill.ContributesToSkillCap &&
                            x.SkillID != levelingSkill.SkillID &&
@@ -608,7 +606,7 @@ namespace SWLOR.Game.Server.Service
                 else
                 {
                     // Get the XP amounts required per level, in ascending order, so we can see how many levels we're now meant to have. 
-                    List<SkillXPRequirement> reqs = _data.Where<SkillXPRequirement>(x => x.SkillID == decaySkill.SkillID && x.Rank <= decaySkill.Rank).OrderBy(o => o.Rank).ToList();
+                    List<SkillXPRequirement> reqs = DataService.Where<SkillXPRequirement>(x => x.SkillID == decaySkill.SkillID && x.Rank <= decaySkill.Rank).OrderBy(o => o.Rank).ToList();
 
 
                     // The first entry in the database is for rank 0, and if passed, will raise us to 1.  So start our count at 0.
@@ -639,7 +637,7 @@ namespace SWLOR.Game.Server.Service
                     Rank = decaySkill.Rank,
                     XP = decaySkill.XP
                 };
-                _data.SubmitDataChange(dbDecaySkill, DatabaseActionType.Update);
+                DataService.SubmitDataChange(dbDecaySkill, DatabaseActionType.Update);
                 MessageHub.Instance.Publish(new SkillDecayedMessage(oPC, decaySkill.SkillID, oldRank, decaySkill.Rank));
             }
 

@@ -16,16 +16,15 @@ namespace SWLOR.Game.Server.Service
     {
         private readonly ISkillService _skillService;
         private readonly IRandomService _randomService;
-        private readonly IDataService _data;
+        
 
         public LanguageService(
             ISkillService skillService,
-            IRandomService randomService,
-            IDataService data)
+            IRandomService randomService)
         {
             _skillService = skillService;
             _randomService = randomService;
-            _data = data;
+            
         }
 
         public string TranslateSnippetForListener(NWObject speaker, NWObject listener, SkillType language, string snippet)
@@ -235,22 +234,22 @@ namespace SWLOR.Game.Server.Service
             // Fair warning: We're short-circuiting the skill system here.
             // Languages don't level up like normal skills (no stat increases, SP, etc.)
             // So it's safe to simply set the player's rank in the skill to max.
-            var pcSkills = _data.Where<PCSkill>
+            var pcSkills = DataService.Where<PCSkill>
                 (x => x.PlayerID == player.GlobalID &&
                             languages.Contains((SkillType)x.SkillID))
                 .ToList();
             
             foreach (var pcSkill in pcSkills)
             {
-                var skill = _data.Get<Skill>(pcSkill.SkillID);
+                var skill = DataService.Get<Skill>(pcSkill.SkillID);
                 int maxRank = skill.MaxRank;
                 int skillID = skill.ID;
-                var xpRecord = _data.Single<SkillXPRequirement>(x => x.SkillID == skillID && x.Rank == maxRank);
+                var xpRecord = DataService.Single<SkillXPRequirement>(x => x.SkillID == skillID && x.Rank == maxRank);
 
                 pcSkill.Rank = maxRank;
                 pcSkill.XP = xpRecord.XP - 1;
 
-                _data.SubmitDataChange(pcSkill, DatabaseActionType.Update);
+                DataService.SubmitDataChange(pcSkill, DatabaseActionType.Update);
             }
             
         }

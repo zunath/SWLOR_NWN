@@ -15,17 +15,17 @@ namespace SWLOR.Game.Server.Service
     public class FarmingService: IFarmingService
     {
         
-        private readonly IDataService _data;
+        
         private readonly IRandomService _random;
         private readonly IColorTokenService _color;
 
         public FarmingService( 
-            IDataService data,
+            
             IRandomService random,
             IColorTokenService color)
         {
             
-            _data = data;
+            
             _random = random;
             _color = color;
         }
@@ -46,8 +46,8 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            GrowingPlant growingPlant = _data.Single<GrowingPlant>(x => x.ID == growingPlantGuid);
-            Plant plantEntity = _data.Get<Plant>(growingPlant.PlantID);
+            GrowingPlant growingPlant = DataService.Single<GrowingPlant>(x => x.ID == growingPlantGuid);
+            Plant plantEntity = DataService.Get<Plant>(growingPlant.PlantID);
 
             if (string.IsNullOrWhiteSpace(plantEntity.SeedResref))
             {
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Service
             }
             
             growingPlant.IsActive = false;
-            _data.SubmitDataChange(growingPlant, DatabaseActionType.Update);
+            DataService.SubmitDataChange(growingPlant, DatabaseActionType.Update);
 
             _.CreateItemOnObject(plantEntity.SeedResref, player.Object);
             plant.Destroy();
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Service
             if (plantID <= 0) return existingDescription;
             if (examinedObject.ObjectType != _.OBJECT_TYPE_ITEM) return existingDescription;
 
-            Plant plant = _data.SingleOrDefault<Plant>(x => x.ID == plantID);
+            Plant plant = DataService.SingleOrDefault<Plant>(x => x.ID == plantID);
             if (plant == null) return existingDescription;
 
             existingDescription += _color.Orange("This item can be planted. Farming skill required: " + plant.Level) + "\n\n";
@@ -79,11 +79,11 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleLoad()
         {
-            List<GrowingPlant> plants = _data.Where<GrowingPlant>(x => x.IsActive).ToList();
+            List<GrowingPlant> plants = DataService.Where<GrowingPlant>(x => x.IsActive).ToList();
 
             foreach (GrowingPlant growingPlant in plants)
             {
-                var plant = _data.Get<Plant>(growingPlant.PlantID);
+                var plant = DataService.Get<Plant>(growingPlant.PlantID);
                 string resref = "growing_plant";
                 if (growingPlant.RemainingTicks <= 0)
                     resref = plant.Resref;
@@ -110,19 +110,19 @@ namespace SWLOR.Game.Server.Service
 
             if (growingPlantGuid == null) return;
 
-            GrowingPlant growingPlant = _data.Single<GrowingPlant>(x => x.ID == growingPlantGuid);
+            GrowingPlant growingPlant = DataService.Single<GrowingPlant>(x => x.ID == growingPlantGuid);
             growingPlant.IsActive = false;
-            _data.SubmitDataChange(growingPlant, DatabaseActionType.Update);
+            DataService.SubmitDataChange(growingPlant, DatabaseActionType.Update);
         }
 
         public GrowingPlant GetGrowingPlantByID(Guid growingPlantID)
         {
-            return _data.Single<GrowingPlant>(x => x.ID == growingPlantID);
+            return DataService.Single<GrowingPlant>(x => x.ID == growingPlantID);
         }
 
         public Plant GetPlantByID(int plantID)
         {
-            return _data.Single<Plant>(x => x.ID == plantID);
+            return DataService.Single<Plant>(x => x.ID == plantID);
         }
 
     }

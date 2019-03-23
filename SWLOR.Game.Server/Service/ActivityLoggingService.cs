@@ -14,11 +14,11 @@ namespace SWLOR.Game.Server.Service
 {
     public class ActivityLoggingService: IActivityLoggingService
     {
-        private readonly IDataService _data;
         
-        public ActivityLoggingService( IDataService data)
+        
+        public ActivityLoggingService( )
         {
-            _data = data;
+            
         }
 
         public void OnModuleClientEnter()
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Service
             };
 
             // Bypass the caching logic.
-            _data.DataQueue.Enqueue(new DatabaseAction(entity, DatabaseActionType.Insert));
+            DataService.DataQueue.Enqueue(new DatabaseAction(entity, DatabaseActionType.Insert));
         }
 
         public void OnModuleClientLeave()
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Service
             };
 
             // Bypass the caching logic.
-            _data.DataQueue.Enqueue(new DatabaseAction(entity, DatabaseActionType.Insert));
+            DataService.DataQueue.Enqueue(new DatabaseAction(entity, DatabaseActionType.Insert));
         }
 
 
@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Service
             int mode = NWNXChat.GetChannel();
             int channel = ConvertNWNXChatChannelIDToDatabaseID(mode);
             NWObject recipient = NWNXChat.GetTarget();
-            ChatChannel channelEntity = _data.Single<ChatChannel>(x => x.ID == channel);
+            ChatChannel channelEntity = DataService.Single<ChatChannel>(x => x.ID == channel);
 
             // Sender - should always have this data.
             string senderCDKey = _.GetPCPublicCDKey(sender.Object);
@@ -161,7 +161,7 @@ namespace SWLOR.Game.Server.Service
             };
             
             // Bypass the caching logic
-            _data.DataQueue.Enqueue(new DatabaseAction(entity, DatabaseActionType.Insert));
+            DataService.DataQueue.Enqueue(new DatabaseAction(entity, DatabaseActionType.Insert));
         }
 
     }

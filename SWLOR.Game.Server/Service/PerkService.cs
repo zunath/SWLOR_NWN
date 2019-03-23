@@ -22,15 +22,12 @@ namespace SWLOR.Game.Server.Service
     public class PerkService: IPerkService
     {
         private readonly IColorTokenService _color;
-        private readonly IDataService _data;
+        
         
         public PerkService(
-            IColorTokenService color,
-            IDataService data)
+            IColorTokenService color)
         {
             _color = color;
-            _data = data;
-
             SubscribeEvents();
         }
 
@@ -46,11 +43,11 @@ namespace SWLOR.Game.Server.Service
 
         private List<PCPerk> GetPCPerksByExecutionType(NWPlayer oPC, PerkExecutionType executionType)
         {
-            var pcPerks = _data.Where<PCPerk>(x => x.PlayerID == oPC.GlobalID);
+            var pcPerks = DataService.Where<PCPerk>(x => x.PlayerID == oPC.GlobalID);
             return pcPerks.Where(x =>
             {
                 // Filter on equipment-based execution type.
-                var perk = _data.Get<Data.Entity.Perk>(x.PerkID);
+                var perk = DataService.Get<Data.Entity.Perk>(x.PerkID);
                 bool matchesExecutionType = perk.ExecutionTypeID == (int)executionType;
                 if (!matchesExecutionType) return false;
 
@@ -66,7 +63,7 @@ namespace SWLOR.Game.Server.Service
 
         private void CacheAllPerkLevels(NWPlayer player)
         {
-            var perks = _data.Where<PCPerk>(x => x.PlayerID == player.GlobalID);
+            var perks = DataService.Where<PCPerk>(x => x.PlayerID == player.GlobalID);
             foreach (var perk in perks)
             {
                 CacheEffectivePerkLevel(player, perk.PerkID);
@@ -100,7 +97,7 @@ namespace SWLOR.Game.Server.Service
                 var executionPerks = GetPCPerksByExecutionType(oPC, PerkExecutionType.EquipmentBased);
                 foreach (PCPerk pcPerk in executionPerks)
                 {
-                    var perk = _data.Get<Data.Entity.Perk>(pcPerk.PerkID);
+                    var perk = DataService.Get<Data.Entity.Perk>(pcPerk.PerkID);
                     string jsName = perk.ScriptName;
                     if (string.IsNullOrWhiteSpace(jsName)) continue;
 
@@ -123,7 +120,7 @@ namespace SWLOR.Game.Server.Service
                 var executionPerks = GetPCPerksByExecutionType(oPC, PerkExecutionType.EquipmentBased);
                 foreach (PCPerk pcPerk in executionPerks)
                 {
-                    var perk = _data.Get<Data.Entity.Perk>(pcPerk.PerkID);
+                    var perk = DataService.Get<Data.Entity.Perk>(pcPerk.PerkID);
                     string jsName = perk.ScriptName;
                     if (string.IsNullOrWhiteSpace(jsName)) continue;
 
@@ -151,12 +148,12 @@ namespace SWLOR.Game.Server.Service
             if (!oPC.IsPlayer) return;
             NWItem oItem = (_.GetSpellCastItem());
             int type = oItem.BaseItemType;
-            var pcPerks = _data.Where<PCPerk>(x =>
+            var pcPerks = DataService.Where<PCPerk>(x =>
             {
                 if (oPC.GlobalID != x.PlayerID) return false;
 
                 // Only pull back perks which have a Shield On Hit execution type.
-                var perk = _data.Get<Data.Entity.Perk>(x.PerkID);
+                var perk = DataService.Get<Data.Entity.Perk>(x.PerkID);
                 if (perk.ExecutionTypeID != (int) PerkExecutionType.ShieldOnHit)
                     return false;
 
@@ -171,7 +168,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var perk = GetPerkByID(pcPerk.PerkID);
                 if (string.IsNullOrWhiteSpace(perk.ScriptName) || perk.ExecutionTypeID == (int)PerkExecutionType.None) continue;
-                var perkFeat = _data.SingleOrDefault<PerkFeat>(x => x.PerkID == pcPerk.PerkID);
+                var perkFeat = DataService.SingleOrDefault<PerkFeat>(x => x.PerkID == pcPerk.PerkID);
                 int featID = perkFeat == null ? -1 : perkFeat.FeatID;
 
                 if (!App.IsKeyRegistered<IPerk>("Perk." + perk.ScriptName)) continue;
@@ -189,23 +186,23 @@ namespace SWLOR.Game.Server.Service
 
         public int GetPCTotalPerkCount(Guid playerID)
         {
-            return _data.GetAll<PCPerk>().Count(x => x.PlayerID == playerID);
+            return DataService.GetAll<PCPerk>().Count(x => x.PlayerID == playerID);
         }
 
 
         public List<Data.Entity.Perk> GetPerksAvailableToPC(NWPlayer player)
         {
             var playerID = player.GlobalID;
-            var pcSkills = _data.Where<PCSkill>(x => x.PlayerID == playerID).ToList();
+            var pcSkills = DataService.Where<PCSkill>(x => x.PlayerID == playerID).ToList();
 
-            return _data.Where<Data.Entity.Perk>(x =>
+            return DataService.Where<Data.Entity.Perk>(x =>
             {
                 if (!x.IsActive) return false;
                 // Determination for whether a player can see a perk in the menu is based on whether they meet the
                 // requirements for the first level in that perk.
-                var perkLevel = _data.Single<PerkLevel>(pl => pl.PerkID == x.ID && pl.Level == 1);
-                var skillRequirements = _data.Where<PerkLevelSkillRequirement>(sr => sr.PerkLevelID == perkLevel.ID);
-                var questRequirements = _data.Where<PerkLevelQuestRequirement>(qr => qr.PerkLevelID == perkLevel.ID);
+                var perkLevel = DataService.Single<PerkLevel>(pl => pl.PerkID == x.ID && pl.Level == 1);
+                var skillRequirements = DataService.Where<PerkLevelSkillRequirement>(sr => sr.PerkLevelID == perkLevel.ID);
+                var questRequirements = DataService.Where<PerkLevelQuestRequirement>(qr => qr.PerkLevelID == perkLevel.ID);
 
                 // Check the player's skill level against the perk requirements.
                 foreach (var skillReq in skillRequirements)
@@ -221,7 +218,7 @@ namespace SWLOR.Game.Server.Service
                 // Check the player's quest completion status against the perk requirements.
                 foreach (var questReq in questRequirements)
                 {
-                    var pcQuest = _data.SingleOrDefault<PCQuestStatus>(q => q.PlayerID == player.GlobalID && 
+                    var pcQuest = DataService.SingleOrDefault<PCQuestStatus>(q => q.PlayerID == player.GlobalID && 
                                                                             q.QuestID == questReq.RequiredQuestID);
                     if (pcQuest == null || pcQuest.CompletionDate == null)
                         return false;
@@ -233,12 +230,12 @@ namespace SWLOR.Game.Server.Service
         
         public Data.Entity.Perk GetPerkByID(int perkID)
         {
-            return _data.Single<Data.Entity.Perk>(x => x.ID == perkID);
+            return DataService.Single<Data.Entity.Perk>(x => x.ID == perkID);
         }
 
         public PCPerk GetPCPerkByID(Guid playerID, int perkID)
         {
-            return _data.SingleOrDefault<PCPerk>(x => x.PlayerID == playerID && x.PerkID == perkID);
+            return DataService.SingleOrDefault<PCPerk>(x => x.PlayerID == playerID && x.PerkID == perkID);
         }
 
         public PerkLevel FindPerkLevel(IEnumerable<PerkLevel> levels, int findLevel)
@@ -248,9 +245,9 @@ namespace SWLOR.Game.Server.Service
 
         public bool CanPerkBeUpgraded(NWPlayer player, int perkID)
         {
-            var dbPlayer = _data.Get<Player>(player.GlobalID);
-            var perkLevels = _data.Where<PerkLevel>(x => x.PerkID == perkID).ToList();
-            var pcPerk = _data.SingleOrDefault<PCPerk>(x => x.PlayerID == player.GlobalID && x.PerkID == perkID);
+            var dbPlayer = DataService.Get<Player>(player.GlobalID);
+            var perkLevels = DataService.Where<PerkLevel>(x => x.PerkID == perkID).ToList();
+            var pcPerk = DataService.SingleOrDefault<PCPerk>(x => x.PlayerID == player.GlobalID && x.PerkID == perkID);
 
             int rank = 0;
             if (pcPerk != null)
@@ -265,13 +262,13 @@ namespace SWLOR.Game.Server.Service
 
             if (dbPlayer.UnallocatedSP < level.Price) return false;
 
-            var skillRequirements = _data.Where<PerkLevelSkillRequirement>(x => x.PerkLevelID == level.ID).ToList();
+            var skillRequirements = DataService.Where<PerkLevelSkillRequirement>(x => x.PerkLevelID == level.ID).ToList();
 
-            var questRequirements = _data.Where<PerkLevelQuestRequirement>(x => x.PerkLevelID == level.ID).ToList();
+            var questRequirements = DataService.Where<PerkLevelQuestRequirement>(x => x.PerkLevelID == level.ID).ToList();
 
             foreach (var req in skillRequirements)
             {
-                PCSkill pcSkill = _data.Single<PCSkill>(x => x.PlayerID == dbPlayer.ID && 
+                PCSkill pcSkill = DataService.Single<PCSkill>(x => x.PlayerID == dbPlayer.ID && 
                                                              x.SkillID == req.SkillID);
 
                 if (pcSkill.Rank < req.RequiredRank) return false;
@@ -279,7 +276,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var req in questRequirements)
             {
-                var pcQuest = _data.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == dbPlayer.ID && 
+                var pcQuest = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == dbPlayer.ID && 
                                                                x.QuestID == req.RequiredQuestID && 
                                                                x.CompletionDate != null);
                 if (pcQuest == null) return false;
@@ -289,10 +286,10 @@ namespace SWLOR.Game.Server.Service
 
         public void DoPerkUpgrade(NWPlayer oPC, int perkID, bool freeUpgrade = false)
         {
-            var perk = _data.Single<Data.Entity.Perk>(x => x.ID == perkID);
-            var perkLevels = _data.Where<PerkLevel>(x => x.PerkID == perkID);
-            var pcPerk = _data.SingleOrDefault<PCPerk>(x => x.PlayerID == oPC.GlobalID && x.PerkID == perkID);
-            var player = _data.Single<Player>(x => x.ID == oPC.GlobalID);
+            var perk = DataService.Single<Data.Entity.Perk>(x => x.ID == perkID);
+            var perkLevels = DataService.Where<PerkLevel>(x => x.PerkID == perkID);
+            var pcPerk = DataService.SingleOrDefault<PCPerk>(x => x.PlayerID == oPC.GlobalID && x.PerkID == perkID);
+            var player = DataService.Single<Player>(x => x.ID == oPC.GlobalID);
 
             if (freeUpgrade || CanPerkBeUpgraded(oPC, perkID))
             {
@@ -313,16 +310,16 @@ namespace SWLOR.Game.Server.Service
                 if (nextPerkLevel == null) return;
 
                 pcPerk.PerkLevel++;
-                _data.SubmitDataChange(pcPerk, action);
+                DataService.SubmitDataChange(pcPerk, action);
 
                 if (!freeUpgrade)
                 {
                     player.UnallocatedSP -= nextPerkLevel.Price;
-                    _data.SubmitDataChange(player, DatabaseActionType.Update);
+                    DataService.SubmitDataChange(player, DatabaseActionType.Update);
                 }
 
                 // Look for any perk levels to grant.
-                var perkFeatsToGrant = _data.Where<PerkFeat>(x => x.PerkID == perkID && x.PerkLevelUnlocked == pcPerk.PerkLevel);
+                var perkFeatsToGrant = DataService.Where<PerkFeat>(x => x.PerkID == perkID && x.PerkLevelUnlocked == pcPerk.PerkLevel);
                 
                 // If at least one feat ID is assigned, add the feat(s) to the player if it doesn't exist yet.
                 if (perkFeatsToGrant.Count > 0)
@@ -422,13 +419,13 @@ namespace SWLOR.Game.Server.Service
         {
             using (new Profiler("PerkService::CalculateEffectivePerkLevel"))
             {
-                var pcSkills = _data.Where<PCSkill>(x => x.PlayerID == player.GlobalID);
+                var pcSkills = DataService.Where<PCSkill>(x => x.PlayerID == player.GlobalID);
                 // Get the PC's perk information and all of the perk levels at or below their current level.
-                var pcPerk = _data.SingleOrDefault<PCPerk>(x => x.PlayerID == player.GlobalID && x.PerkID == perkID);
+                var pcPerk = DataService.SingleOrDefault<PCPerk>(x => x.PlayerID == player.GlobalID && x.PerkID == perkID);
                 if (pcPerk == null) return 0;
 
                 // Get all of the perk levels in range, starting with the highest level.
-                var perkLevelsInRange = _data
+                var perkLevelsInRange = DataService
                     .Where<PerkLevel>(x => x.PerkID == perkID && x.Level <= pcPerk.PerkLevel)
                     .OrderByDescending(o => o.Level);
 
@@ -439,8 +436,8 @@ namespace SWLOR.Game.Server.Service
                     // Iteration ends when the player meets that level's requirements. 
                     foreach (var perkLevel in perkLevelsInRange)
                     {
-                        var skillRequirements = _data.Where<PerkLevelSkillRequirement>(r => r.PerkLevelID == perkLevel.ID);
-                        var questRequirements = _data.Where<PerkLevelQuestRequirement>(q => q.PerkLevelID == perkLevel.ID);
+                        var skillRequirements = DataService.Where<PerkLevelSkillRequirement>(r => r.PerkLevelID == perkLevel.ID);
+                        var questRequirements = DataService.Where<PerkLevelQuestRequirement>(q => q.PerkLevelID == perkLevel.ID);
                         int effectiveLevel = pcPerk.PerkLevel;
 
                         // Check the skill requirements.
@@ -460,7 +457,7 @@ namespace SWLOR.Game.Server.Service
                         // Check the quest requirements.
                         foreach (var req in questRequirements)
                         {
-                            var pcQuest = _data.SingleOrDefault<PCQuestStatus>(q => q.PlayerID == player.GlobalID && q.QuestID == req.RequiredQuestID);
+                            var pcQuest = DataService.SingleOrDefault<PCQuestStatus>(q => q.PlayerID == player.GlobalID && q.QuestID == req.RequiredQuestID);
                             if (pcQuest == null || pcQuest.CompletionDate == null)
                             {
                                 effectiveLevel--;

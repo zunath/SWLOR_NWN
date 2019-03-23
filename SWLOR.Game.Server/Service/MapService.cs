@@ -13,14 +13,14 @@ namespace SWLOR.Game.Server.Service
     public class MapService : IMapService
     {
         
-        private readonly IDataService _data;
+        
 
         public MapService(
             
-            IDataService data)
+            )
         {
             
-            _data = data;
+            
         }
 
         public void OnAreaEnter()
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Service
 
         private void SaveMapProgression(NWArea area, NWPlayer player)
         {
-            var map = _data.GetAll<PCMapProgression>().SingleOrDefault(x => x.PlayerID == player.GlobalID && x.AreaResref == area.Resref);
+            var map = DataService.GetAll<PCMapProgression>().SingleOrDefault(x => x.PlayerID == player.GlobalID && x.AreaResref == area.Resref);
             int areaSize = area.Width * area.Height;
             DatabaseActionType action = DatabaseActionType.Update;
 
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Service
             {
                 if (map != null)
                 {
-                    _data.SubmitDataChange(map, DatabaseActionType.Delete);
+                    DataService.SubmitDataChange(map, DatabaseActionType.Delete);
                 }
 
                 map = new PCMapProgression
@@ -90,12 +90,12 @@ namespace SWLOR.Game.Server.Service
             }
             
             map.Progression = progression;
-            _data.SubmitDataChange(map, action);
+            DataService.SubmitDataChange(map, action);
         }
 
         private void LoadMapProgression(NWArea area, NWPlayer player)
         {
-            var map = _data.GetAll<PCMapProgression>().SingleOrDefault(x => x.PlayerID == player.GlobalID && x.AreaResref == area.Resref);
+            var map = DataService.GetAll<PCMapProgression>().SingleOrDefault(x => x.PlayerID == player.GlobalID && x.AreaResref == area.Resref);
             int areaSize = area.Width * area.Height;
 
             // No progression set - do a save which will create the record.

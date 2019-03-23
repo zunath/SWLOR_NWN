@@ -6,30 +6,21 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Placeable.GrowingPlant
 {
     public class OnHeartbeat: IRegisteredEvent
     {
-        
-        private readonly IDataService _data;
-
-        public OnHeartbeat(
-            IDataService data)
-        {
-            
-            _data = data;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlaceable plc = (Object.OBJECT_SELF);
             int growingPlantID = plc.GetLocalInt("GROWING_PLANT_ID");
             if (growingPlantID <= 0) return false;
             
-            var growingPlant = _data.Get<Data.Entity.GrowingPlant>(growingPlantID);
-            var plant = _data.Get<Plant>(growingPlant.PlantID);
+            var growingPlant = DataService.Get<Data.Entity.GrowingPlant>(growingPlantID);
+            var plant = DataService.Get<Plant>(growingPlant.PlantID);
 
             growingPlant.RemainingTicks--;
             growingPlant.TotalTicks++;
@@ -53,7 +44,7 @@ namespace SWLOR.Game.Server.Placeable.GrowingPlant
                 plc.SetLocalInt("GROWING_PLANT_ID", growingPlantID);
             }
             
-            _data.SubmitDataChange(growingPlant, DatabaseActionType.Update);
+            DataService.SubmitDataChange(growingPlant, DatabaseActionType.Update);
             return true;
         }
     }

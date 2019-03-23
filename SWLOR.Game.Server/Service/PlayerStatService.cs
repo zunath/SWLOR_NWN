@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Service
         
         private readonly ICustomEffectService _customEffect;
         private readonly IItemService _item;
-        private readonly IDataService _data;
+        
         private readonly IPerkService _perk;
         
 
@@ -32,13 +32,13 @@ namespace SWLOR.Game.Server.Service
             ICustomEffectService customEffect,
             
             IItemService item,
-            IDataService data,
+            
             IPerkService perk)
         {
             
             _customEffect = customEffect;
             _item = item;
-            _data = data;
+            
             _perk = perk;
             
         }
@@ -55,8 +55,8 @@ namespace SWLOR.Game.Server.Service
                  ignoreItem.BaseItemType == BASE_ITEM_ARROW ||
                  ignoreItem.BaseItemType == BASE_ITEM_BULLET)) return;
 
-            Player pcEntity = _data.Get<Player>(player.GlobalID);
-            List<PCSkill> skills = _data.Where<PCSkill>(x => x.PlayerID == player.GlobalID && x.Rank > 0).ToList();
+            Player pcEntity = DataService.Get<Player>(player.GlobalID);
+            List<PCSkill> skills = DataService.Where<PCSkill>(x => x.PlayerID == player.GlobalID && x.Rank > 0).ToList();
             EffectiveItemStats itemBonuses = GetPlayerItemEffectiveStats(player, ignoreItem);
             
             float strBonus = 0.0f;
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Service
             {
                 foreach (PCSkill pcSkill in skills)
                 {
-                    Skill skill = _data.Get<Skill>(pcSkill.SkillID);
+                    Skill skill = DataService.Get<Skill>(pcSkill.SkillID);
                     CustomAttribute primary = (CustomAttribute) skill.Primary;
                     CustomAttribute secondary = (CustomAttribute) skill.Secondary;
                     CustomAttribute tertiary = (CustomAttribute) skill.Tertiary;
@@ -196,7 +196,7 @@ namespace SWLOR.Game.Server.Service
                     pcEntity.CurrentFP = pcEntity.MaxFP;
                 }
 
-                _data.SubmitDataChange(pcEntity, DatabaseActionType.Update);
+                DataService.SubmitDataChange(pcEntity, DatabaseActionType.Update);
             }
         }
 
@@ -274,7 +274,7 @@ namespace SWLOR.Game.Server.Service
         {
             using (new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats"))
             {
-                var pcSkills = _data.Where<PCSkill>(x => x.PlayerID == player.GlobalID);
+                var pcSkills = DataService.Where<PCSkill>(x => x.PlayerID == player.GlobalID);
                 
                 int heavyRank = pcSkills.Single(x => x.SkillID == (int)SkillType.HeavyArmor).Rank;
                 int lightRank = pcSkills.Single(x => x.SkillID == (int)SkillType.LightArmor).Rank;
@@ -445,7 +445,7 @@ namespace SWLOR.Game.Server.Service
 
         public float EffectiveResidencyBonus(NWPlayer player)
         {
-            var dbPlayer = _data.Get<Player>(player.GlobalID);
+            var dbPlayer = DataService.Get<Player>(player.GlobalID);
 
             // Player doesn't have either kind of residence. Return 0f
             if (dbPlayer.PrimaryResidencePCBaseID == null &&
@@ -460,18 +460,18 @@ namespace SWLOR.Game.Server.Service
             // Apartments - Pull structures directly from the table based on the PCBaseID
             if (dbPlayer.PrimaryResidencePCBaseID != null)
             {
-                structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == dbPlayer.PrimaryResidencePCBaseID).ToList();
+                structures = DataService.Where<PCBaseStructure>(x => x.PCBaseID == dbPlayer.PrimaryResidencePCBaseID).ToList();
                 
             }
             // Buildings - Get the building's PCBaseID and then grab its children
             else
             {
-                structures = _data.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == dbPlayer.PrimaryResidencePCBaseStructureID).ToList();
+                structures = DataService.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == dbPlayer.PrimaryResidencePCBaseStructureID).ToList();
             }
 
             var atmoStructures = structures.Where(x =>
             {
-                var baseStructure = _data.Get<BaseStructure>(x.BaseStructureID);
+                var baseStructure = DataService.Get<BaseStructure>(x.BaseStructureID);
                 return baseStructure.HasAtmosphere;
             }).ToList();
             
@@ -523,7 +523,7 @@ namespace SWLOR.Game.Server.Service
                 itemSkill == SkillType.Shields) return 0;
 
             int weaponSkillID = (int)itemSkill;
-            PCSkill skill = _data.Single<PCSkill>(x => x.PlayerID == oPC.GlobalID && x.SkillID == weaponSkillID);
+            PCSkill skill = DataService.Single<PCSkill>(x => x.PlayerID == oPC.GlobalID && x.SkillID == weaponSkillID);
             if (skill == null) return 0;
             int skillBAB = skill.Rank / 10;
             int perkBAB = 0;

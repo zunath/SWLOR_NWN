@@ -11,6 +11,7 @@ using SWLOR.Game.Server.ValueObject.Dialog;
 using static NWN._;
 using System.Collections.Generic;
 using System.Collections;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Conversation
@@ -18,9 +19,8 @@ namespace SWLOR.Game.Server.Conversation
     public class ShipComputer: ConversationBase
     {
         private readonly IBaseService _base;
-        private readonly IDataService _data;
         private readonly IDialogService _dialog;
-        private readonly IErrorService _error;
+        
         private readonly IPerkService _perk;
         private readonly IBasePermissionService _perm;
         private readonly ISerializationService _serialization;
@@ -31,8 +31,6 @@ namespace SWLOR.Game.Server.Conversation
         public ShipComputer(
             
             IDialogService dialog,
-            IDataService data,
-            IErrorService error,
             IPerkService perk,
             IBasePermissionService perm,
             ISerializationService serialization,
@@ -42,9 +40,7 @@ namespace SWLOR.Game.Server.Conversation
             ITimeService time) 
             : base(dialog)
         {
-            _data = data;
             _dialog = dialog;
-            _error = error;
             _perk = perk;
             _perm = perm;
             _serialization = serialization;
@@ -66,8 +62,8 @@ namespace SWLOR.Game.Server.Conversation
                 return null;
             }
 
-            PCBaseStructure structure = _data.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == structureID);
-            PCBase pcBase = _data.SingleOrDefault<PCBase>(x => x.ID == structure.PCBaseID);
+            PCBaseStructure structure = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == structureID);
+            PCBase pcBase = DataService.SingleOrDefault<PCBase>(x => x.ID == structure.PCBaseID);
 
             bool bSpace = _space.IsLocationSpace(pcBase.ShipLocation);
 
@@ -128,15 +124,15 @@ namespace SWLOR.Game.Server.Conversation
         public override void Initialize()
         {
             Guid structureID = new Guid(_.GetLocalString(_.GetArea(GetDialogTarget()), "PC_BASE_STRUCTURE_ID"));
-            PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.ID == structureID); 
-            PCBase pcBase = _data.Get<PCBase>(structure.PCBaseID);
-            BaseStructure baseStructure = _data.Get<BaseStructure>(structure.BaseStructureID);
+            PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID); 
+            PCBase pcBase = DataService.Get<PCBase>(structure.PCBaseID);
+            BaseStructure baseStructure = DataService.Get<BaseStructure>(structure.BaseStructureID);
 
             NWPlaceable bay = _space.GetCargoBay(GetPC().Area, null);
 
             int currentReinforcedFuel = pcBase.ReinforcedFuel;
             int currentFuel = pcBase.Fuel;
-            int currentResources = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structure.ID).Count();
+            int currentResources = DataService.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structure.ID).Count();
             int maxReinforcedFuel = _base.CalculateMaxReinforcedFuel(pcBase.ID) + 25 * _space.GetCargoBonus(bay, (int)CustomItemPropertyType.StarshipStronidiumBonus);
             int maxFuel = _base.CalculateMaxFuel(pcBase.ID) + 25 * _space.GetCargoBonus(bay, (int)CustomItemPropertyType.StarshipFuelBonus);
             int maxResources = _base.CalculateResourceCapacity(pcBase.ID);
@@ -172,8 +168,8 @@ namespace SWLOR.Game.Server.Conversation
         {
             PlayerDialog dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
             Guid structureID = new Guid(_.GetLocalString(player.Area, "PC_BASE_STRUCTURE_ID"));
-            PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.ID == structureID);
-            PCBase pcBase = _data.Get<PCBase>(structure.PCBaseID);
+            PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
+            PCBase pcBase = DataService.Get<PCBase>(structure.PCBaseID);
 
             DialogPage page = dialog.GetPageByName(pageName);
             DialogResponse response = page.Responses[responseID - 1];
@@ -214,19 +210,19 @@ namespace SWLOR.Game.Server.Conversation
                             // Failed our skill check.  Deduct fuel but don't do anything else.
                             GetPC().FloatingText("The ship shudders a bit, but your awkwardness on the throttle shows, and it doesn't make it off the dock.  Try again.");
                             pcBase.Fuel -= 1;
-                            _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                            DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
                             return;
                         }
 
                         EndConversation();
 
                         // Save details of the current dock for later.
-                        PCBaseStructure dock = _data.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == pcBase.ShipLocation);
+                        PCBaseStructure dock = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == pcBase.ShipLocation);
 
                         pcBase.Fuel -= 1;
                         pcBase.DateRentDue = DateTime.UtcNow.AddDays(99);
                         pcBase.ShipLocation = _space.GetPlanetFromLocation(pcBase.ShipLocation) + " - Orbit";
-                        _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                        DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
 
                         _space.CreateShipInSpace(player.Area);
 
@@ -245,7 +241,7 @@ namespace SWLOR.Game.Server.Conversation
                         // Get a reference to our placeable (and door), and delete them with some VFX. 
                         if (dock != null)
                         {
-                            PCBase dockBase = _data.SingleOrDefault<PCBase>(x => x.ID == dock.PCBaseID);
+                            PCBase dockBase = DataService.SingleOrDefault<PCBase>(x => x.ID == dock.PCBaseID);
 
                             IEnumerable<NWArea> areas = NWModule.Get().Areas;
                             NWArea landingArea = new NWArea(_.GetFirstArea());
@@ -320,7 +316,7 @@ namespace SWLOR.Game.Server.Conversation
                         // Failed our skill check.  Deduct fuel but don't do anything else.
                         GetPC().FloatingText("Jump failed!  You forgot to whatsit the thingummyjig.");
                         pcBase.Fuel -= 50;
-                        _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                        DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
                         EndConversation();
                         return;
                     }
@@ -332,7 +328,7 @@ namespace SWLOR.Game.Server.Conversation
                     EndConversation();
                     pcBase.Fuel -= 50;
                     pcBase.ShipLocation = response.Text + " - Orbit";
-                    _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                    DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
 
                     // Put the ship in its new orbit.
                     _space.CreateShipInSpace(player.Area);
@@ -359,7 +355,7 @@ namespace SWLOR.Game.Server.Conversation
                     {
                         GetPC().FloatingText("You overshoot the landing spot, burning extra fuel getting your ship into position.");
                         pcBase.Fuel -= 1;
-                        _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                        DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
                     }
                 }
 
@@ -367,7 +363,7 @@ namespace SWLOR.Game.Server.Conversation
                 Guid dockStructureID = dialog.CustomData["LAND_" + response.Text];
 
                 // This could be a public startport ID or a private dock base structure ID.  
-                SpaceStarport starport = _data.SingleOrDefault<SpaceStarport>(x => x.ID == dockStructureID);
+                SpaceStarport starport = DataService.SingleOrDefault<SpaceStarport>(x => x.ID == dockStructureID);
                 if (starport != null)
                 {
                     // We have a public starport.  
@@ -383,7 +379,7 @@ namespace SWLOR.Game.Server.Conversation
                         // Land.
                         pcBase.ShipLocation = starport.ID.ToString();
                         pcBase.DateRentDue = DateTime.UtcNow.AddDays(1);
-                        _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                        DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
 
                         // Notify PC.
                         player.SendMessage("You have paid your first day's berthing fees. Use the Base Management System to extend your lease if you plan to stay longer, or your ship will be impounded.");
@@ -393,13 +389,13 @@ namespace SWLOR.Game.Server.Conversation
                 }
                 else
                 {
-                    _error.Trace(TraceComponent.Space, "Landing in PC base dock, ID: " + dockStructureID.ToString());
-                    PCBaseStructure dock = _data.SingleOrDefault<PCBaseStructure>(x => x.ID == dockStructureID);
+                    ErrorService.Trace(TraceComponent.Space, "Landing in PC base dock, ID: " + dockStructureID.ToString());
+                    PCBaseStructure dock = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID == dockStructureID);
 
                     if (dock == null)
                     {
                         player.SendMessage("ERROR: Could not find landing dock by ID.  Please report this.");
-                        _error.Trace(TraceComponent.Space, "Could not find landing dock ID " + dockStructureID.ToString());
+                        ErrorService.Trace(TraceComponent.Space, "Could not find landing dock ID " + dockStructureID.ToString());
                         return;
                     }
 
@@ -407,12 +403,12 @@ namespace SWLOR.Game.Server.Conversation
 
                     if (plc == null)
                     {
-                        _error.Trace(TraceComponent.Space, "Failed to find dock placeable.");
+                        ErrorService.Trace(TraceComponent.Space, "Failed to find dock placeable.");
                         player.SendMessage("ERROR: Could not find landing dock placeable.  Please report this.");
                         return; 
                     }
 
-                    _error.Trace(TraceComponent.Space, "Found dock, landing ship.");
+                    ErrorService.Trace(TraceComponent.Space, "Found dock, landing ship.");
 
                     // We've found our dock. Update our record of where the ship's exterior should spawn.
                     NWLocation loc = plc.Location;
@@ -422,11 +418,11 @@ namespace SWLOR.Game.Server.Conversation
                     structure.LocationZ = loc.Z;
                     structure.LocationOrientation = _.GetFacingFromLocation(loc);
 
-                    _data.SubmitDataChange(structure, DatabaseActionType.Update);
+                    DataService.SubmitDataChange(structure, DatabaseActionType.Update);
 
                     // And update the base to mark the parent dock as the location.
                     pcBase.ShipLocation = dock.ID.ToString();
-                    _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                    DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
 
                     // Now use the Base Service to spawn the ship exterior.
                     _base.SpawnStructure(plc.Area, structure.ID);
@@ -498,8 +494,8 @@ namespace SWLOR.Game.Server.Conversation
             }
 
             Guid structureID = new Guid(_.GetLocalString(area, "PC_BASE_STRUCTURE_ID"));
-            var structure = _data.Single<PCBaseStructure>(x => x.ID == structureID);
-            var pcBase = _data.Get<PCBase>(structure.PCBaseID);
+            var structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
+            var pcBase = DataService.Get<PCBase>(structure.PCBaseID);
             Location location = oPC.Location;
             bay = _.CreateObject(OBJECT_TYPE_PLACEABLE, "fuel_bay", location);
             bay.AssignCommand(() => _.SetFacingPoint(oPC.Position));

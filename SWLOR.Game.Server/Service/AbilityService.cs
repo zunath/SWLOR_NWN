@@ -20,8 +20,6 @@ namespace SWLOR.Game.Server.Service
 {
     public class AbilityService : IAbilityService
     {
-        
-        private readonly IDataService _data;
         private readonly IPerkService _perk;
         private readonly IPVPSanctuaryService _pvpSanctuary;
         private readonly ITimeService _time;
@@ -30,7 +28,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IColorTokenService _color;
         private readonly IRandomService _random;
         private readonly IEnmityService _enmity;
-        private readonly IErrorService _error;
+        
         
         private readonly ICustomEffectService _customEffect;
         private readonly IPlayerStatService _playerStat;
@@ -47,29 +45,21 @@ namespace SWLOR.Game.Server.Service
         public static int ATTACK_DOT = 4; // Subsequent damage effects
 
         public AbilityService( 
-            IDataService data,
             IPerkService perk,
             IPVPSanctuaryService pvpSanctuary,
             ITimeService time,
             IColorTokenService color,
             IRandomService random,
             IEnmityService enmity,
-            IErrorService error,
             ICustomEffectService customEffect,
             IPlayerStatService playerStat)
         {
-            
-            _data = data;
             _perk = perk;
             _pvpSanctuary = pvpSanctuary;
             _time = time;
-            
-            
             _color = color;
             _random = random;
             _enmity = enmity;
-            _error = error;
-            
             _customEffect = customEffect;
             _playerStat = playerStat;
         }
@@ -79,9 +69,9 @@ namespace SWLOR.Game.Server.Service
             NWPlayer pc = Object.OBJECT_SELF;
             NWCreature target = NWNXEvents.OnFeatUsed_GetTarget().Object;
             int featID = NWNXEvents.OnFeatUsed_GetFeatID();
-            var perkFeat = _data.SingleOrDefault<PerkFeat>(x => x.FeatID == featID);
+            var perkFeat = DataService.SingleOrDefault<PerkFeat>(x => x.FeatID == featID);
             if (perkFeat == null) return;
-            Data.Entity.Perk perk = _data.GetAll<Data.Entity.Perk>().SingleOrDefault(x => x.ID == perkFeat.PerkID);
+            Data.Entity.Perk perk = DataService.GetAll<Data.Entity.Perk>().SingleOrDefault(x => x.ID == perkFeat.PerkID);
             if (perk == null) return;
 
             // Check to see if we are a spaceship.  Spaceships can't use abilities...
@@ -95,15 +85,15 @@ namespace SWLOR.Game.Server.Service
             {
                 if (perkAction == null) return;
 
-                Player playerEntity =  _data.Get<Player>(pc.GlobalID);
+                Player playerEntity =  DataService.Get<Player>(pc.GlobalID);
                 int pcPerkLevel = _perk.GetPCPerkLevel(pc, perk.ID);
 
                 // If player is disabling an existing stance, remove that effect.
                 if (perk.ExecutionTypeID == (int) PerkExecutionType.Stance)
                 {
-                    PCCustomEffect stanceEffect = _data.GetAll<PCCustomEffect>().SingleOrDefault(x =>
+                    PCCustomEffect stanceEffect = DataService.GetAll<PCCustomEffect>().SingleOrDefault(x =>
                     {
-                        var customEffect = _data.Get<Data.Entity.CustomEffect>(x.CustomEffectID);
+                        var customEffect = DataService.Get<Data.Entity.CustomEffect>(x.CustomEffectID);
 
                         return x.PlayerID == pc.GlobalID &&
                                customEffect.CustomEffectCategoryID == (int) CustomEffectCategoryType.Stance;
@@ -157,7 +147,7 @@ namespace SWLOR.Game.Server.Service
 
                 // Check cooldown
                 int? cooldownCategoryID = perkAction.CooldownCategoryID(pc, perk.CooldownCategoryID, featID);
-                PCCooldown pcCooldown = _data.GetAll<PCCooldown>().SingleOrDefault(x => x.PlayerID == pc.GlobalID && 
+                PCCooldown pcCooldown = DataService.GetAll<PCCooldown>().SingleOrDefault(x => x.PlayerID == pc.GlobalID && 
                                                                                         x.CooldownCategoryID == cooldownCategoryID);
                 if (pcCooldown == null)
                 {
@@ -168,7 +158,7 @@ namespace SWLOR.Game.Server.Service
                         PlayerID = pc.GlobalID
                     };
 
-                    _data.SubmitDataChange(pcCooldown, DatabaseActionType.Insert);
+                    DataService.SubmitDataChange(pcCooldown, DatabaseActionType.Insert);
                 }
 
                 DateTime unlockDateTime = pcCooldown.DateUnlocked;
@@ -337,9 +327,9 @@ namespace SWLOR.Game.Server.Service
             int cooldownSeconds = (int)finalCooldown;
             int cooldownMillis = (int)((finalCooldown - cooldownSeconds) * 100);
 
-            PCCooldown pcCooldown = _data.GetAll<PCCooldown>().Single(x => x.PlayerID == pc.GlobalID && x.CooldownCategoryID == cooldown.ID);
+            PCCooldown pcCooldown = DataService.GetAll<PCCooldown>().Single(x => x.PlayerID == pc.GlobalID && x.CooldownCategoryID == cooldown.ID);
             pcCooldown.DateUnlocked = DateTime.UtcNow.AddSeconds(cooldownSeconds).AddMilliseconds(cooldownMillis);
-            _data.SubmitDataChange(pcCooldown, DatabaseActionType.Update);
+            DataService.SubmitDataChange(pcCooldown, DatabaseActionType.Update);
         }
 
         private void CheckForSpellInterruption(NWPlayer pc, string spellUUID, Vector position)
@@ -371,7 +361,7 @@ namespace SWLOR.Game.Server.Service
         public void HandleQueueWeaponSkill(NWPlayer pc, Data.Entity.Perk entity, IPerk ability, int spellFeatID)
         {
             int? cooldownCategoryID = ability.CooldownCategoryID(pc, entity.CooldownCategoryID, spellFeatID);
-            var cooldownCategory = _data.Get<CooldownCategory>(cooldownCategoryID);
+            var cooldownCategory = DataService.Get<CooldownCategory>(cooldownCategoryID);
             string queueUUID = Guid.NewGuid().ToString();
             pc.SetLocalInt("ACTIVE_WEAPON_SKILL", entity.ID);
             pc.SetLocalString("ACTIVE_WEAPON_SKILL_UUID", queueUUID);
@@ -406,9 +396,9 @@ namespace SWLOR.Game.Server.Service
 
         public void RestoreFP(NWPlayer oPC, int amount)
         {
-            Player entity = _data.Get<Player>(oPC.GlobalID);
+            Player entity = DataService.Get<Player>(oPC.GlobalID);
             RestoreFP(oPC, amount, entity);
-            _data.SubmitDataChange(entity, DatabaseActionType.Update);
+            DataService.SubmitDataChange(entity, DatabaseActionType.Update);
         }
 
         public void OnHitCastSpell(NWPlayer oPC)
@@ -420,7 +410,7 @@ namespace SWLOR.Game.Server.Service
             if (oItem.BaseItemType == BASE_ITEM_ARMOR) return;
 
             // Flag this attack as physical so that the damage scripts treat it properly.
-            _error.Trace(TraceComponent.LastAttack, "Setting attack type from " + oPC.GlobalID + " against " + _.GetName(oTarget) + " to physical (" + ATTACK_PHYSICAL.ToString() + ")");
+            ErrorService.Trace(TraceComponent.LastAttack, "Setting attack type from " + oPC.GlobalID + " against " + _.GetName(oTarget) + " to physical (" + ATTACK_PHYSICAL.ToString() + ")");
             oTarget.SetLocalInt(LAST_ATTACK + oPC.GlobalID, ATTACK_PHYSICAL);
 
             HandleGrenadeProficiency(oPC, oTarget);
@@ -430,8 +420,8 @@ namespace SWLOR.Game.Server.Service
             int activeWeaponSkillFeatID = oPC.GetLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID");
             if (activeWeaponSkillFeatID < 0) activeWeaponSkillFeatID = -1;
 
-            PCPerk entity = _data.GetAll<PCPerk>().Single(x => x.PlayerID == oPC.GlobalID && x.PerkID == activeWeaponSkillID);
-            var perk = _data.Get<Data.Entity.Perk>(entity.PerkID);
+            PCPerk entity = DataService.GetAll<PCPerk>().Single(x => x.PlayerID == oPC.GlobalID && x.PerkID == activeWeaponSkillID);
+            var perk = DataService.Get<Data.Entity.Perk>(entity.PerkID);
             
             App.ResolveByInterface<IPerk>("Perk." + perk.ScriptName, (script) =>
             {

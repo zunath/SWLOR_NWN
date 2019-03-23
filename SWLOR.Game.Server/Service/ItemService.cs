@@ -21,14 +21,13 @@ namespace SWLOR.Game.Server.Service
     {
         private readonly IColorTokenService _color;
         
-        private readonly IDataService _data;
+        
 
         public ItemService(
-            IColorTokenService color,
-            IDataService data)
+            IColorTokenService color)
         {
             _color = color;
-            _data = data;
+            
         }
 
         public string GetNameByResref(string resref)
@@ -158,7 +157,7 @@ namespace SWLOR.Game.Server.Service
             }
             if (examinedItem.AssociatedSkillType > 0)
             {
-                Skill skill = _data.Get<Skill>((int)examinedItem.AssociatedSkillType);
+                Skill skill = DataService.Get<Skill>((int)examinedItem.AssociatedSkillType);
                 description += _color.Orange("Associated Skill: ") + skill.Name + "\n";
             }
             if (examinedItem.CustomAC > 0)

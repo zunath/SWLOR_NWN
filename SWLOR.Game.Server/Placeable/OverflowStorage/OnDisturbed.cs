@@ -7,22 +7,13 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Placeable.OverflowStorage
 {
     public class OnDisturbed: IRegisteredEvent
     {
-        
-        private readonly IDataService _data;
-
-        public OnDisturbed(
-            IDataService data)
-        {
-            
-            _data = data;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlaceable container = (Object.OBJECT_SELF);
@@ -37,8 +28,8 @@ namespace SWLOR.Game.Server.Placeable.OverflowStorage
             }
             
             int overflowItemID = oItem.GetLocalInt("TEMP_OVERFLOW_ITEM_ID");
-            PCOverflowItem overflowItem = _data.Get<PCOverflowItem>(overflowItemID);
-            _data.SubmitDataChange(overflowItem, DatabaseActionType.Delete);
+            PCOverflowItem overflowItem = DataService.Get<PCOverflowItem>(overflowItemID);
+            DataService.SubmitDataChange(overflowItem, DatabaseActionType.Delete);
             oItem.DeleteLocalInt("TEMP_OVERFLOW_ITEM_ID");
 
             if (!container.InventoryItems.Any())

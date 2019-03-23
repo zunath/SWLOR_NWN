@@ -10,6 +10,7 @@ using System.Reflection;
 using Dapper;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Data
 {
@@ -22,19 +23,11 @@ namespace SWLOR.Game.Server.Data
     /// </summary>
     public class DatabaseMigrationRunner: IStartable
     {
-        private readonly IDataService _data;
-        private readonly IErrorService _error;
-
         private readonly string _masterConnectionString;
         private readonly string _swlorConnectionString;
 
-        public DatabaseMigrationRunner(
-            IDataService data,
-            IErrorService error)
+        public DatabaseMigrationRunner()
         {
-            _data = data;
-            _error = error;
-
             var ip = Environment.GetEnvironmentVariable("SQL_SERVER_IP_ADDRESS");
             var user = Environment.GetEnvironmentVariable("SQL_SERVER_USERNAME");
             var password = Environment.GetEnvironmentVariable("SQL_SERVER_PASSWORD");
@@ -70,7 +63,7 @@ namespace SWLOR.Game.Server.Data
 
             BuildDatabase();
             ApplyMigrations();
-            _data.Initialize(true);
+            DataService.Initialize(true);
         }
 
         /// <summary>
@@ -97,7 +90,7 @@ namespace SWLOR.Game.Server.Data
                     catch (Exception ex)
                     {
                         Console.WriteLine("ERROR: Unable to create database. Please check your permissions.");
-                        _error.LogError(ex);
+                        ErrorService.LogError(ex);
                         return;
                     }
                     finally    
@@ -257,7 +250,7 @@ namespace SWLOR.Game.Server.Data
                 catch (Exception ex)
                 {
                     Console.WriteLine("ERROR: Database migration script named '" + resource + "' failed to apply. Canceling database migration process!");
-                    _error.LogError(ex, nameof(DatabaseMigrationRunner));
+                    ErrorService.LogError(ex, nameof(DatabaseMigrationRunner));
                 }
             }
         }

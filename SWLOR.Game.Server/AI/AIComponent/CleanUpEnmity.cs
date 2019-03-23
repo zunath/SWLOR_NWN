@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using System.Linq;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.AI.AIComponent
 {
@@ -13,19 +14,19 @@ namespace SWLOR.Game.Server.AI.AIComponent
     public class CleanUpEnmity : IRegisteredEvent
     {
         
-        private readonly IEnmityService _enmity;
+        
 
         public CleanUpEnmity(
-            IEnmityService enmity)
+            )
         {
             
-            _enmity = enmity;
+            
         }
 
         public bool Run(object[] args)
         {
             NWCreature self = (NWCreature)args[0];
-            var table = _enmity.GetEnmityTable(self);
+            var table = EnmityService.GetEnmityTable(self);
             if (table.Count <= 0) return false;
 
             foreach (var enmity in table.ToArray())
@@ -39,14 +40,14 @@ namespace SWLOR.Game.Server.AI.AIComponent
                     !target.Area.Equals(self.Area) ||
                     target.CurrentHP <= -11)
                 {
-                    _enmity.GetEnmityTable(self).Remove(enmity.Key);
+                    EnmityService.GetEnmityTable(self).Remove(enmity.Key);
                     continue;
                 }
 
                 _.AdjustReputation(target.Object, self.Object, -100);
 
                 // Reduce volatile enmity every tick
-                _enmity.GetEnmityTable(self)[target.GlobalID].VolatileAmount--;
+                EnmityService.GetEnmityTable(self)[target.GlobalID].VolatileAmount--;
             }
 
             return true;

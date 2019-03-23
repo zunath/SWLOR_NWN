@@ -3,6 +3,7 @@ using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Placeable.MolecularReassembler
@@ -13,20 +14,20 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
         private readonly IDialogService _dialog;
         private readonly ICraftService _craft;
         private readonly ISerializationService _serialization;
-        private readonly IItemService _item;
+        
 
         public OnDisturbed(
              
             IDialogService dialog,
             ICraftService craft,
-            ISerializationService serialization,
-            IItemService item)
+            ISerializationService serialization
+            )
         {
             
             _dialog = dialog;
             _craft = craft;
             _serialization = serialization;
-            _item = item;
+            
         }
 
         public bool Run(params object[] args)
@@ -41,7 +42,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
             // Check the item type to see if it's valid.
             if (!IsValidItemType(item))
             {
-                _item.ReturnItem(player, item);
+                ItemService.ReturnItem(player, item);
                 player.SendMessage("You cannot reassemble this item.");
                 return false;
             }
@@ -49,7 +50,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
             // Only crafted items can be reassembled.
             if (string.IsNullOrWhiteSpace(item.GetLocalString("CRAFTER_PLAYER_ID")))
             {
-                _item.ReturnItem(player, item);
+                ItemService.ReturnItem(player, item);
                 player.SendMessage("Only crafted items may be reassembled.");
                 return false;
             }
@@ -57,7 +58,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
             // DMs cannot reassemble because they don't have the necessary DB records.
             if (player.IsDM)
             {
-                _item.ReturnItem(player, item);
+                ItemService.ReturnItem(player, item);
                 player.SendMessage("DMs cannot reassemble items at this time.");
                 return false;
             }

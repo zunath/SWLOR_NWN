@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Service
     public class ChatTextService : IChatTextService
     {
         
-        private readonly IColorTokenService _color;
+        
         
         
         private readonly ILanguageService _language;
@@ -42,13 +42,13 @@ namespace SWLOR.Game.Server.Service
 
         public ChatTextService(
             
-            IColorTokenService color,
+            
             
             ILanguageService language,
             IEmoteStyleService emoteStyle)
         {
             
-            _color = color;
+            
             
             
             _language = language;
@@ -272,7 +272,7 @@ namespace SWLOR.Game.Server.Service
                 if (language != SkillType.Basic)
                 {
                     string languageName = _language.GetName(language);
-                    finalMessage.Append(_color.Custom($"[{languageName}] ", r, g, b));
+                    finalMessage.Append(ColorTokenService.Custom($"[{languageName}] ", r, g, b));
                 }
 
                 foreach (ChatComponent component in chatComponents)
@@ -285,13 +285,13 @@ namespace SWLOR.Game.Server.Service
 
                         if (colour != 0)
                         {
-                            text = _color.Custom(text, r, g, b);
+                            text = ColorTokenService.Custom(text, r, g, b);
                         }
                     }
 
                     if (component.m_CustomColour)
                     {
-                        text = _color.Custom(text, component.m_ColourRed, component.m_ColourGreen, component.m_ColourBlue);
+                        text = ColorTokenService.Custom(text, component.m_ColourRed, component.m_ColourGreen, component.m_ColourBlue);
                     }
 
                     finalMessage.Append(text);
@@ -318,11 +318,11 @@ namespace SWLOR.Game.Server.Service
 
                 if (channel == ChatChannelType.PlayerShout)
                 {
-                    finalMessageColoured = _color.Custom(finalMessageColoured, 0, 180, 255);
+                    finalMessageColoured = ColorTokenService.Custom(finalMessageColoured, 0, 180, 255);
                 }
                 else if (channel == ChatChannelType.PlayerParty)
                 {
-                    finalMessageColoured = _color.Orange(finalMessageColoured);
+                    finalMessageColoured = ColorTokenService.Orange(finalMessageColoured);
                 }
 
                 NWNXChat.SendMessage((int)finalChannel, finalMessageColoured, sender, obj);

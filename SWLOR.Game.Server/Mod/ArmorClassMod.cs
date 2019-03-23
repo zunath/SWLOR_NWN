@@ -9,11 +9,11 @@ namespace SWLOR.Game.Server.Mod
 {
     public class ArmorClassMod: IMod
     {
-        private readonly IItemService _item;
         
-        public ArmorClassMod(IItemService item)
+        
+        public ArmorClassMod()
         {
-            _item = item;
+            
         }
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)

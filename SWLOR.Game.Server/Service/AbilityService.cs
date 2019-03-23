@@ -20,15 +20,15 @@ namespace SWLOR.Game.Server.Service
 {
     public class AbilityService : IAbilityService
     {
-        private readonly IPerkService _perk;
+        
         private readonly IPVPSanctuaryService _pvpSanctuary;
-        private readonly IColorTokenService _color;
-        
-        private readonly IEnmityService _enmity;
         
         
-        private readonly ICustomEffectService _customEffect;
-        private readonly IPlayerStatService _playerStat;
+        
+        
+        
+        
+        
 
         // These variables are used throughout the engine to flag the type of damage being done to 
         // a creature.  The damage code reads this to determine what bonus effects to apply.
@@ -42,21 +42,10 @@ namespace SWLOR.Game.Server.Service
         public static int ATTACK_DOT = 4; // Subsequent damage effects
 
         public AbilityService( 
-            IPerkService perk,
-            IPVPSanctuaryService pvpSanctuary,
-            IColorTokenService color,
-            
-            IEnmityService enmity,
-            ICustomEffectService customEffect,
-            IPlayerStatService playerStat)
+            IPVPSanctuaryService pvpSanctuary
+            )
         {
-            _perk = perk;
             _pvpSanctuary = pvpSanctuary;
-            _color = color;
-            
-            _enmity = enmity;
-            _customEffect = customEffect;
-            _playerStat = playerStat;
         }
         
         public void OnModuleUseFeat()
@@ -81,7 +70,7 @@ namespace SWLOR.Game.Server.Service
                 if (perkAction == null) return;
 
                 Player playerEntity =  DataService.Get<Player>(pc.GlobalID);
-                int pcPerkLevel = _perk.GetPCPerkLevel(pc, perk.ID);
+                int pcPerkLevel = PerkService.GetPCPerkLevel(pc, perk.ID);
 
                 // If player is disabling an existing stance, remove that effect.
                 if (perk.ExecutionTypeID == (int) PerkExecutionType.Stance)
@@ -96,7 +85,7 @@ namespace SWLOR.Game.Server.Service
 
                     if (stanceEffect != null && perk.ID == stanceEffect.StancePerkID)
                     {
-                        if (_customEffect.RemoveStance(pc))
+                        if (CustomEffectService.RemoveStance(pc))
                         {
                             return;
                         }
@@ -199,12 +188,12 @@ namespace SWLOR.Game.Server.Service
             switch ((EnmityAdjustmentRuleType)perk.EnmityAdjustmentRuleID)
             {
                 case EnmityAdjustmentRuleType.AllTaggedTargets:
-                    _enmity.AdjustEnmityOnAllTaggedCreatures(pc, perk.Enmity);
+                    EnmityService.AdjustEnmityOnAllTaggedCreatures(pc, perk.Enmity);
                     break;
                 case EnmityAdjustmentRuleType.TargetOnly:
                     if (target.IsValid)
                     {
-                        _enmity.AdjustEnmity(target, pc, perk.Enmity);
+                        EnmityService.AdjustEnmity(target, pc, perk.Enmity);
                     }
                     break;
                 case EnmityAdjustmentRuleType.Custom:
@@ -225,7 +214,7 @@ namespace SWLOR.Game.Server.Service
                                int spellFeatID)
         {
             string uuid = Guid.NewGuid().ToString();
-            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(pc);
+            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(pc);
             int itemBonus = effectiveStats.CastingSpeed;
             float baseActivationTime = perk.CastingTime(pc, (float)entity.BaseCastingTime, spellFeatID);
             float activationTime = baseActivationTime;
@@ -384,7 +373,7 @@ namespace SWLOR.Game.Server.Service
             if (entity.CurrentFP > entity.MaxFP)
                 entity.CurrentFP = entity.MaxFP;
 
-            oPC.SendMessage(_color.Custom("FP: " + entity.CurrentFP + " / " + entity.MaxFP, 32, 223, 219));
+            oPC.SendMessage(ColorTokenService.Custom("FP: " + entity.CurrentFP + " / " + entity.MaxFP, 32, 223, 219));
 
             return entity;
         }
@@ -447,7 +436,7 @@ namespace SWLOR.Game.Server.Service
             if (player.GetLocalInt("PLASMA_CELL_TOGGLE_OFF") == _.TRUE) return;  // Check if Plasma Cell toggle is on or off
             if (target.GetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN") == _.TRUE) return;
 
-            int perkLevel = _perk.GetPCPerkLevel(player, PerkType.PlasmaCell);
+            int perkLevel = PerkService.GetPCPerkLevel(player, PerkType.PlasmaCell);
             int chance;
             CustomEffectType[] damageTypes;
             switch (perkLevel)
@@ -500,7 +489,7 @@ namespace SWLOR.Game.Server.Service
             {
                 if (RandomService.D100(1) <= chance)
                 {
-                    _customEffect.ApplyCustomEffect(player, target.Object, effect, RandomService.D6(1), perkLevel, null);
+                    CustomEffectService.ApplyCustomEffect(player, target.Object, effect, RandomService.D6(1), perkLevel, null);
                 }
             }
 
@@ -511,7 +500,7 @@ namespace SWLOR.Game.Server.Service
             NWItem weapon = _.GetSpellCastItem();
             if (weapon.BaseItemType != BASE_ITEM_GRENADE) return;
 
-            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.GrenadeProficiency);
+            int perkLevel = PerkService.GetPCPerkLevel(oPC, PerkType.GrenadeProficiency);
             int chance = 10 * perkLevel;
             float duration;
 

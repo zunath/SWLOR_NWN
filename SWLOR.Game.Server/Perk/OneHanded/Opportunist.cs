@@ -11,15 +11,15 @@ namespace SWLOR.Game.Server.Perk.OneHanded
     {
         
         
-        private readonly IPerkService _perk;
+        
 
         public Opportunist(
             
-            IPerkService perk)
+            )
         {
             
             
-            _perk = perk;
+            
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)

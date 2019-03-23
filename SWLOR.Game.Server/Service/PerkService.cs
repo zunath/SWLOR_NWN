@@ -19,19 +19,14 @@ using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class PerkService: IPerkService
+    public static class PerkService
     {
-        private readonly IColorTokenService _color;
-        
-        
-        public PerkService(
-            IColorTokenService color)
+        static PerkService()
         {
-            _color = color;
             SubscribeEvents();
         }
 
-        private void SubscribeEvents()
+        private static void SubscribeEvents()
         {
             // The player perk level cache gets refreshed on the following events.
             MessageHub.Instance.Subscribe<SkillDecayedMessage>(message => CacheAllPerkLevels(message.Player));
@@ -41,7 +36,7 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<QuestCompletedMessage>(message => CacheAllPerkLevels(message.Player));
         }
 
-        private List<PCPerk> GetPCPerksByExecutionType(NWPlayer oPC, PerkExecutionType executionType)
+        private static List<PCPerk> GetPCPerksByExecutionType(NWPlayer oPC, PerkExecutionType executionType)
         {
             var pcPerks = DataService.Where<PCPerk>(x => x.PlayerID == oPC.GlobalID);
             return pcPerks.Where(x =>
@@ -61,7 +56,7 @@ namespace SWLOR.Game.Server.Service
 
         }
 
-        private void CacheAllPerkLevels(NWPlayer player)
+        private static void CacheAllPerkLevels(NWPlayer player)
         {
             var perks = DataService.Where<PCPerk>(x => x.PlayerID == player.GlobalID);
             foreach (var perk in perks)
@@ -70,7 +65,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public void OnModuleEnter()
+        public static void OnModuleEnter()
         {
             // The first time a player logs in, build their effective perk level cache.
             // This cache gets used all over to determine whether the player can use a perk.
@@ -85,7 +80,7 @@ namespace SWLOR.Game.Server.Service
             CacheAllPerkLevels(player);
         }
 
-        public void OnModuleItemEquipped()
+        public static void OnModuleItemEquipped()
         {
             using (new Profiler("PerkService::OnModuleItemEquipped()"))
             {
@@ -109,7 +104,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public void OnModuleItemUnequipped()
+        public static void OnModuleItemUnequipped()
         {
             using (new Profiler("PerkService::OnModuleItemUnequipped()"))
             {
@@ -132,18 +127,18 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public int GetPCPerkLevel(NWPlayer player, PerkType perkType)
+        public static int GetPCPerkLevel(NWPlayer player, PerkType perkType)
         {
             return GetPCPerkLevel(player, (int)perkType);
         }
 
-        public int GetPCPerkLevel(NWPlayer player, int perkTypeID)
+        public static int GetPCPerkLevel(NWPlayer player, int perkTypeID)
         {
             if (!player.IsPlayer) return -1;
             return GetPCEffectivePerkLevel(player, perkTypeID);
         }
 
-        public void OnHitCastSpell(NWPlayer oPC)
+        public static void OnHitCastSpell(NWPlayer oPC)
         {
             if (!oPC.IsPlayer) return;
             NWItem oItem = (_.GetSpellCastItem());
@@ -184,13 +179,13 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public int GetPCTotalPerkCount(Guid playerID)
+        public static int GetPCTotalPerkCount(Guid playerID)
         {
             return DataService.GetAll<PCPerk>().Count(x => x.PlayerID == playerID);
         }
 
 
-        public List<Data.Entity.Perk> GetPerksAvailableToPC(NWPlayer player)
+        public static List<Data.Entity.Perk> GetPerksAvailableToPC(NWPlayer player)
         {
             var playerID = player.GlobalID;
             var pcSkills = DataService.Where<PCSkill>(x => x.PlayerID == playerID).ToList();
@@ -228,22 +223,22 @@ namespace SWLOR.Game.Server.Service
             }).ToList();
         }
         
-        public Data.Entity.Perk GetPerkByID(int perkID)
+        public static Data.Entity.Perk GetPerkByID(int perkID)
         {
             return DataService.Single<Data.Entity.Perk>(x => x.ID == perkID);
         }
 
-        public PCPerk GetPCPerkByID(Guid playerID, int perkID)
+        public static PCPerk GetPCPerkByID(Guid playerID, int perkID)
         {
             return DataService.SingleOrDefault<PCPerk>(x => x.PlayerID == playerID && x.PerkID == perkID);
         }
 
-        public PerkLevel FindPerkLevel(IEnumerable<PerkLevel> levels, int findLevel)
+        public static PerkLevel FindPerkLevel(IEnumerable<PerkLevel> levels, int findLevel)
         {
             return levels.FirstOrDefault(lvl => lvl.Level == findLevel);
         }
 
-        public bool CanPerkBeUpgraded(NWPlayer player, int perkID)
+        public static bool CanPerkBeUpgraded(NWPlayer player, int perkID)
         {
             var dbPlayer = DataService.Get<Player>(player.GlobalID);
             var perkLevels = DataService.Where<PerkLevel>(x => x.PerkID == perkID).ToList();
@@ -284,7 +279,7 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
-        public void DoPerkUpgrade(NWPlayer oPC, int perkID, bool freeUpgrade = false)
+        public static void DoPerkUpgrade(NWPlayer oPC, int perkID, bool freeUpgrade = false)
         {
             var perk = DataService.Single<Data.Entity.Perk>(x => x.ID == perkID);
             var perkLevels = DataService.Where<PerkLevel>(x => x.PerkID == perkID);
@@ -360,7 +355,7 @@ namespace SWLOR.Game.Server.Service
 
                 }
 
-                oPC.SendMessage(_color.Green("Perk Purchased: " + perk.Name + " (Lvl. " + pcPerk.PerkLevel + ")"));
+                oPC.SendMessage(ColorTokenService.Green("Perk Purchased: " + perk.Name + " (Lvl. " + pcPerk.PerkLevel + ")"));
 
                 App.ResolveByInterface<IPerk>("Perk." + perk.ScriptName, (perkScript) =>
                 {
@@ -372,11 +367,11 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                oPC.FloatingText(_color.Red("You cannot purchase the perk at this time."));
+                oPC.FloatingText(ColorTokenService.Red("You cannot purchase the perk at this time."));
             }
         }
 
-        public void DoPerkUpgrade(NWPlayer player, PerkType perkType, bool freeUpgrade = false)
+        public static void DoPerkUpgrade(NWPlayer player, PerkType perkType, bool freeUpgrade = false)
         {
             DoPerkUpgrade(player, (int)perkType, freeUpgrade);
         }
@@ -387,7 +382,7 @@ namespace SWLOR.Game.Server.Service
         /// reduced to the appropriate level.
         /// </summary>
         /// <returns></returns>
-        private int GetPCEffectivePerkLevel(NWPlayer player, int perkID)
+        private static int GetPCEffectivePerkLevel(NWPlayer player, int perkID)
         {
             // Effective levels are cached because they're so frequently used.
             // They get recached on the following events:
@@ -403,7 +398,7 @@ namespace SWLOR.Game.Server.Service
             return levels[perkID];
         }
 
-        public void CacheEffectivePerkLevel(NWPlayer player, int perkID)
+        public static void CacheEffectivePerkLevel(NWPlayer player, int perkID)
         {
             if (!AppCache.PlayerEffectivePerkLevels.ContainsKey(player.GlobalID))
             {
@@ -415,7 +410,7 @@ namespace SWLOR.Game.Server.Service
             levels[perkID] = perkLevel;
         }
 
-        private int CalculateEffectivePerkLevel(NWPlayer player, int perkID)
+        private static int CalculateEffectivePerkLevel(NWPlayer player, int perkID)
         {
             using (new Profiler("PerkService::CalculateEffectivePerkLevel"))
             {

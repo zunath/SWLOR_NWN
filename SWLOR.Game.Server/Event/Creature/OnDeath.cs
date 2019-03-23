@@ -1,24 +1,25 @@
 ﻿using NWN;
 using SWLOR.Game.Server.AI.Contracts;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Event.Creature
 {
     public class OnDeath : IRegisteredEvent
     {
-        private readonly ISkillService _skill;
+        
         private readonly ILootService _loot;
         private readonly IQuestService _quest;
         private readonly ICreatureCorpseService _creatureCorpse;
         
         public OnDeath(
-            ISkillService skill,
+            
             ILootService loot,
             IQuestService quest,
             ICreatureCorpseService creatureCorpse)
         {
-            _skill = skill;
+            
             _loot = loot;
             _quest = quest;
             _creatureCorpse = creatureCorpse;
@@ -27,7 +28,7 @@ namespace SWLOR.Game.Server.Event.Creature
         public bool Run(params object[] args)
         {
             NWCreature self = Object.OBJECT_SELF;
-            _skill.OnCreatureDeath(self);
+            SkillService.OnCreatureDeath(self);
             _loot.OnCreatureDeath(self);
             _quest.OnCreatureDeath(self);
             _creatureCorpse.OnCreatureDeath();

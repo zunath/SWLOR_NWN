@@ -2,6 +2,7 @@
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static NWN._;
@@ -10,15 +11,15 @@ namespace SWLOR.Game.Server.Conversation
 {
     public class CoxxionTerminal: ConversationBase
     {
-        private readonly IColorTokenService _color;
+        
 
         public CoxxionTerminal(
              
-            IDialogService dialog,
-            IColorTokenService color) 
+            IDialogService dialog
+            ) 
             : base(dialog)
         {
-            _color = color;
+            
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -103,13 +104,13 @@ namespace SWLOR.Game.Server.Conversation
             switch (colorID)
             {
                 case 1: // Blue
-                    colorText = _color.Blue("BLUE");
+                    colorText = ColorTokenService.Blue("BLUE");
                     break;
                 case 2: // Green
-                    colorText = _color.Green("GREEN");
+                    colorText = ColorTokenService.Green("GREEN");
                     break;
                 case 3: // Red
-                    colorText = _color.Red("RED");
+                    colorText = ColorTokenService.Red("RED");
                     break;
                 default: return string.Empty;
             }

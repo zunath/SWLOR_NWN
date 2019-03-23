@@ -23,17 +23,17 @@ namespace SWLOR.Game.Server.Conversation
         }
 
         
-        private readonly IColorTokenService _color;
+        
 
         public MessageBoard(
              
-            IDialogService dialog,
+            IDialogService dialog
             
-            IColorTokenService color) 
+            ) 
             : base(dialog)
         {
             
-            _color = color;
+            
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -87,12 +87,12 @@ namespace SWLOR.Game.Server.Conversation
                 .OrderByDescending(o => o.DatePosted);
 
             ClearPageResponses("MainPage");
-            AddResponseToPage("MainPage", _color.Green("Create New Post"), !isDM);
+            AddResponseToPage("MainPage", ColorTokenService.Green("Create New Post"), !isDM);
             foreach (var message in messages)
             {
                 string title = message.Title;
                 if (message.PlayerID == player.GlobalID)
-                    title = _color.Cyan(title);
+                    title = ColorTokenService.Cyan(title);
                 AddResponseToPage("MainPage", title, true, message.ID);
             }
         }
@@ -119,9 +119,9 @@ namespace SWLOR.Game.Server.Conversation
             Model model = GetDialogCustomData<Model>();
             Message message = DataService.Get<Message>(model.MessageID);
             Player poster = DataService.Get<Player>(message.PlayerID);
-            string header = _color.Green("Title: ") + message.Title + "\n";
-            header += _color.Green("Posted By: ") + poster.CharacterName + "\n";
-            header += _color.Green("Date: ") + message.DatePosted + "\n\n";
+            string header = ColorTokenService.Green("Title: ") + message.Title + "\n";
+            header += ColorTokenService.Green("Posted By: ") + poster.CharacterName + "\n";
+            header += ColorTokenService.Green("Date: ") + message.DatePosted + "\n\n";
             header += message.Text;
 
             SetPageHeader("PostDetailsPage", header);
@@ -165,8 +165,8 @@ namespace SWLOR.Game.Server.Conversation
             int price = terminal.GetLocalInt("PRICE");
             string header = "Please enter text and then click the 'Set Title' or 'Set Message' buttons. Titles must be 256 characters or less. Messages must be 4000 characters or less.\n\n";
             header += "Posting a message costs " + price + " credits. Posts last for 30 days (real world time) before they will expire.\n\n";
-            header += _color.Green("Title: ") + model.Title + "\n";
-            header += _color.Green("Message: ") + model.Message + "\n";
+            header += ColorTokenService.Green("Title: ") + model.Title + "\n";
+            header += ColorTokenService.Green("Message: ") + model.Message + "\n";
 
             SetPageHeader("CreatePostPage", header);
 

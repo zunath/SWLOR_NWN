@@ -18,21 +18,21 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
     {
         
         
-        private readonly IColorTokenService _color;
+        
         private readonly ISerializationService _serialization;
-        private readonly IItemService _item;
+        
 
         public OnDisturbed(
             
-            IColorTokenService color,
-            ISerializationService serialization,
-            IItemService item)
+            
+            ISerializationService serialization
+            )
         {
             
             
-            _color = color;
+            
             _serialization = serialization;
-            _item = item;
+            
         }
 
         public bool Run(params object[] args)
@@ -54,20 +54,20 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
                 if (_.GetHasInventory(item) == TRUE)
                 {
                     item.SetLocalInt("RETURNING_ITEM", TRUE);
-                    _item.ReturnItem(oPC, item);
-                    oPC.SendMessage(_color.Red("Containers cannot currently be stored inside banks."));
+                    ItemService.ReturnItem(oPC, item);
+                    oPC.SendMessage(ColorTokenService.Red("Containers cannot currently be stored inside banks."));
                     return false;
                 }
                 
                 if (itemCount > itemLimit)
                 {
-                    _item.ReturnItem(oPC, item);
-                    oPC.SendMessage(_color.Red("No more items can be placed inside."));
+                    ItemService.ReturnItem(oPC, item);
+                    oPC.SendMessage(ColorTokenService.Red("No more items can be placed inside."));
                 }
                 else if (item.BaseItemType == BASE_ITEM_GOLD)
                 {
-                    _item.ReturnItem(oPC, item);
-                    oPC.SendMessage(_color.Red("Credits cannot be placed inside."));
+                    ItemService.ReturnItem(oPC, item);
+                    oPC.SendMessage(ColorTokenService.Red("Credits cannot be placed inside."));
                 }
                 else
                 {
@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
                 }
             }
 
-            oPC.SendMessage(_color.White("Item Limit: " + itemCount + " / ") + _color.Red(itemLimit.ToString()));
+            oPC.SendMessage(ColorTokenService.White("Item Limit: " + itemCount + " / ") + ColorTokenService.Red(itemLimit.ToString()));
 
             return true;
         }

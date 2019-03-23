@@ -17,17 +17,17 @@ namespace SWLOR.Game.Server.Conversation
 {
     public class Outfit: ConversationBase
     {
-        private readonly IColorTokenService _color;
+        
         private readonly ISerializationService _serialization;
         
 
         public Outfit(
             IDialogService dialog,
-            IColorTokenService color,
+            
             ISerializationService serialization)
             : base(dialog)
         {
-            _color = color;
+            
             _serialization = serialization;
         }
 
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (!oClothes.IsValid)
             {
-                oPC.FloatingText(_color.Red("You do not have clothes equipped"));
+                oPC.FloatingText(ColorTokenService.Red("You do not have clothes equipped"));
                 return;
             }
 
@@ -275,34 +275,34 @@ namespace SWLOR.Game.Server.Conversation
 
             ClearPageResponses("SaveOutfitPage");
 
-            string responseText = entity.Outfit1 == null ? _color.Red("Save in Slot 1") : _color.Green("Save in Slot 1");
+            string responseText = entity.Outfit1 == null ? ColorTokenService.Red("Save in Slot 1") : ColorTokenService.Green("Save in Slot 1");
             AddResponseToPage("SaveOutfitPage", responseText);
 
-            responseText = entity.Outfit2 == null ? _color.Red("Save in Slot 2") : _color.Green("Save in Slot 2");
+            responseText = entity.Outfit2 == null ? ColorTokenService.Red("Save in Slot 2") : ColorTokenService.Green("Save in Slot 2");
             AddResponseToPage("SaveOutfitPage", responseText);
 
-            responseText = entity.Outfit3 == null ? _color.Red("Save in Slot 3") : _color.Green("Save in Slot 3");
+            responseText = entity.Outfit3 == null ? ColorTokenService.Red("Save in Slot 3") : ColorTokenService.Green("Save in Slot 3");
             AddResponseToPage("SaveOutfitPage", responseText);
 
-            responseText = entity.Outfit4 == null ? _color.Red("Save in Slot 4") : _color.Green("Save in Slot 4");
+            responseText = entity.Outfit4 == null ? ColorTokenService.Red("Save in Slot 4") : ColorTokenService.Green("Save in Slot 4");
             AddResponseToPage("SaveOutfitPage", responseText);
 
-            responseText = entity.Outfit5 == null ? _color.Red("Save in Slot 5") : _color.Green("Save in Slot 5");
+            responseText = entity.Outfit5 == null ? ColorTokenService.Red("Save in Slot 5") : ColorTokenService.Green("Save in Slot 5");
             AddResponseToPage("SaveOutfitPage", responseText);
 
-            responseText = entity.Outfit6 == null ? _color.Red("Save in Slot 6") : _color.Green("Save in Slot 6");
+            responseText = entity.Outfit6 == null ? ColorTokenService.Red("Save in Slot 6") : ColorTokenService.Green("Save in Slot 6");
             AddResponseToPage("SaveOutfitPage", responseText);
 
-            responseText = entity.Outfit7 == null ? _color.Red("Save in Slot 7") : _color.Green("Save in Slot 7");
+            responseText = entity.Outfit7 == null ? ColorTokenService.Red("Save in Slot 7") : ColorTokenService.Green("Save in Slot 7");
             AddResponseToPage("SaveOutfitPage", responseText);
 
-            responseText = entity.Outfit8 == null ? _color.Red("Save in Slot 8") : _color.Green("Save in Slot 8");
+            responseText = entity.Outfit8 == null ? ColorTokenService.Red("Save in Slot 8") : ColorTokenService.Green("Save in Slot 8");
             AddResponseToPage("SaveOutfitPage", responseText);
 
-            responseText = entity.Outfit9 == null ? _color.Red("Save in Slot 9") : _color.Green("Save in Slot 9");
+            responseText = entity.Outfit9 == null ? ColorTokenService.Red("Save in Slot 9") : ColorTokenService.Green("Save in Slot 9");
             AddResponseToPage("SaveOutfitPage", responseText);
 
-            responseText = entity.Outfit10 == null ? _color.Red("Save in Slot 10") : _color.Green("Save in Slot 10");
+            responseText = entity.Outfit10 == null ? ColorTokenService.Red("Save in Slot 10") : ColorTokenService.Green("Save in Slot 10");
             AddResponseToPage("SaveOutfitPage", responseText);
         }
 

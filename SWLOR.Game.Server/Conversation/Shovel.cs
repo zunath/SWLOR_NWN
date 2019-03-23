@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
 
@@ -12,19 +13,19 @@ namespace SWLOR.Game.Server.Conversation
     public class Shovel: ConversationBase
     {
         private readonly IPlayerService _player;
-        private readonly ISkillService _skill;
+        
         private readonly IFarmingService _farming;
 
         public Shovel(
              
             IDialogService dialog,
             IPlayerService player,
-            ISkillService skill,
+            
             IFarmingService farming) 
             : base(dialog)
         {
             _player = player;
-            _skill = skill;
+            
             _farming = farming;
         }
 
@@ -104,7 +105,7 @@ namespace SWLOR.Game.Server.Conversation
 
             _.CreateObject(_.OBJECT_TYPE_PLACEABLE, "farm_small_hole", targetLocation);
             _.FloatingTextStringOnCreature("You dig a hole.", GetPC().Object, _.FALSE);
-            _skill.GiveSkillXP(GetPC(), SkillType.Farming, 50);
+            SkillService.GiveSkillXP(GetPC(), SkillType.Farming, 50);
             EndConversation();
         }
 

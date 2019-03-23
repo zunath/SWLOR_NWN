@@ -10,28 +10,28 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
     public class ForceBreach : IPerk
     {
         
-        private readonly IPerkService _perk;
         
-        private readonly ISkillService _skill;
-        private readonly ICustomEffectService _customEffect;
-        private readonly IPlayerStatService _playerStat;
+        
+        
+        
+        
         private readonly ICombatService _combat;
 
         public ForceBreach(
             
-            IPerkService perk,
             
-            ISkillService skill,
-            ICustomEffectService customEffect,
-            IPlayerStatService playerStat,
+            
+            
+            
+            
             ICombatService combat)
         {
             
-            _perk = perk;
             
-            _skill = skill;
-            _customEffect = customEffect;
-            _playerStat = playerStat;
+            
+            
+            
+            
             _combat = combat;
         }
 
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
 
         public void OnImpact(NWPlayer player, NWObject target, int level, int spellFeatID)
         {
-            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
+            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
             int length;
             int dotAmount;
             
@@ -136,7 +136,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
                 default: return;
             }
 
-            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
+            int luck = PerkService.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
             if (RandomService.Random(100) + 1 <= luck)
             {
                 length = length * 2;
@@ -161,10 +161,10 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
             
             if (length > 0.0f && dotAmount > 0)
             {
-                _customEffect.ApplyCustomEffect(player, target.Object, CustomEffectType.ForceBreach, length, level, dotAmount.ToString());
+                CustomEffectService.ApplyCustomEffect(player, target.Object, CustomEffectType.ForceBreach, length, level, dotAmount.ToString());
             }
 
-            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceCombat, target.Object);
+            SkillService.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceCombat, target.Object);
 
             player.AssignCommand(() =>
             {

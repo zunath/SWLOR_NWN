@@ -17,18 +17,18 @@ namespace SWLOR.Game.Server.Placeable.ResourceBay
     {
         
         
-        private readonly IItemService _item;
+        
         private readonly IBaseService _base;
 
         public OnDisturbed(
             
             
-            IItemService item,
+            
             IBaseService @base)
         {
             
             
-            _item = item;
+            
             _base = @base;
         }
 
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Placeable.ResourceBay
 
             if (disturbType == INVENTORY_DISTURB_TYPE_ADDED)
             {
-                _item.ReturnItem(player, item);
+                ItemService.ReturnItem(player, item);
                 player.SendMessage("Items cannot be placed inside.");
                 return false;
             }

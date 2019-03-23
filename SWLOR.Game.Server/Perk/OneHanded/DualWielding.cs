@@ -4,6 +4,7 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 
@@ -13,15 +14,15 @@ namespace SWLOR.Game.Server.Perk.OneHanded
     {
         
         
-        private readonly IPerkService _perk;
+        
 
         public DualWielding(
             
-            IPerkService perk)
+            )
         {
             
             
-            _perk = perk;
+            
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -137,7 +138,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             }
 
 
-            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.OneHandedDualWielding);
+            int perkLevel = PerkService.GetPCPerkLevel(oPC, PerkType.OneHandedDualWielding);
             NWNXCreature.AddFeat(oPC, FEAT_TWO_WEAPON_FIGHTING);
 
             if (perkLevel >= 2)

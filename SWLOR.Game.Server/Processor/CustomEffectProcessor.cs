@@ -18,12 +18,12 @@ namespace SWLOR.Game.Server.Processor
 {
     public class CustomEffectProcessor: IEventProcessor
     {
-        private readonly ICustomEffectService _customEffect;
+        
 
         public CustomEffectProcessor(
-            ICustomEffectService customEffect)
+            )
         {
-            _customEffect = customEffect;
+            
         }
 
 
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Processor
                 {
                     if (player.CurrentHP <= -11)
                     {
-                        _customEffect.RemovePCCustomEffect(player, effect.CustomEffectID);
+                        CustomEffectService.RemovePCCustomEffect(player, effect.CustomEffectID);
                         return;
                     }
 

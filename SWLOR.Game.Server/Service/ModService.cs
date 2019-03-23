@@ -11,21 +11,6 @@ namespace SWLOR.Game.Server.Service
 {
     public class ModService : IModService
     {
-        
-        private readonly IColorTokenService _color;
-        private readonly ISkillService _skill;
-        private readonly IItemService _item;
-
-        public ModService(
-            IColorTokenService color,
-            ISkillService skill,
-            IItemService item)
-        {
-            _color = color;
-            _skill = skill;
-            _item = item;
-        }
-
         public CustomItemPropertyType GetModType(NWItem item)
         {
             CustomItemPropertyType ipType = CustomItemPropertyType.Unknown;
@@ -112,8 +97,8 @@ namespace SWLOR.Game.Server.Service
 
         public string PrismaticString()
         {
-            return _color.Red("p") + _color.Orange("r") + _color.Yellow("i") + _color.Green("s") + _color.Blue("m") +
-                                   _color.LightPurple("a") + _color.Purple("t") + _color.White("i") + _color.Black("c");
+            return ColorTokenService.Red("p") + ColorTokenService.Orange("r") + ColorTokenService.Yellow("i") + ColorTokenService.Green("s") + ColorTokenService.Blue("m") +
+                                   ColorTokenService.LightPurple("a") + ColorTokenService.Purple("t") + ColorTokenService.White("i") + ColorTokenService.Black("c");
         }
 
         public string OnModuleExamine(string existingDescription, NWPlayer examiner, NWObject examinedObject)
@@ -125,19 +110,19 @@ namespace SWLOR.Game.Server.Service
             
             for (int red = 1; red <= slot.FilledRedSlots; red++)
             {
-                description += _color.Red("Red Slot #" + red + ": ") + examinedItem.GetLocalString("MOD_SLOT_RED_DESC_" + red) + "\n";
+                description += ColorTokenService.Red("Red Slot #" + red + ": ") + examinedItem.GetLocalString("MOD_SLOT_RED_DESC_" + red) + "\n";
             }
             for (int blue = 1; blue <= slot.FilledBlueSlots; blue++)
             {
-                description += _color.Red("Blue Slot #" + blue + ": ") + examinedItem.GetLocalString("MOD_SLOT_BLUE_DESC_" + blue) + "\n";
+                description += ColorTokenService.Red("Blue Slot #" + blue + ": ") + examinedItem.GetLocalString("MOD_SLOT_BLUE_DESC_" + blue) + "\n";
             }
             for (int green = 1; green <= slot.FilledGreenSlots; green++)
             {
-                description += _color.Red("Green Slot #" + green + ": ") + examinedItem.GetLocalString("MOD_SLOT_GREEN_DESC_" + green) + "\n";
+                description += ColorTokenService.Red("Green Slot #" + green + ": ") + examinedItem.GetLocalString("MOD_SLOT_GREEN_DESC_" + green) + "\n";
             }
             for (int yellow = 1; yellow <= slot.FilledYellowSlots; yellow++)
             {
-                description += _color.Red("Yellow Slot #" + yellow + ": ") + examinedItem.GetLocalString("MOD_SLOT_YELLOW_DESC_" + yellow) + "\n";
+                description += ColorTokenService.Red("Yellow Slot #" + yellow + ": ") + examinedItem.GetLocalString("MOD_SLOT_YELLOW_DESC_" + yellow) + "\n";
             }
             for (int prismatic = 1; prismatic <= slot.FilledPrismaticSlots; prismatic++)
             {
@@ -164,10 +149,10 @@ namespace SWLOR.Game.Server.Service
 
             NWPlayer player = (damager.Object);
             int itemLevel = weapon.RecommendedLevel;
-            SkillType skill = _item.GetSkillTypeForItem(weapon);
+            SkillType skill = ItemService.GetSkillTypeForItem(weapon);
             if (skill == SkillType.Unknown) return;
 
-            int rank = _skill.GetPCSkillRank(player, skill);
+            int rank = SkillService.GetPCSkillRank(player, skill);
             int delta = itemLevel - rank;
             if (delta >= 1) damageBonus--;
             damageBonus = damageBonus - delta / 5;

@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using System;
+using SWLOR.Game.Server.Service;
 using static NWN._;
 
 namespace SWLOR.Game.Server.CustomEffect
@@ -12,22 +13,22 @@ namespace SWLOR.Game.Server.CustomEffect
     {
         
         private readonly IAbilityService _ability;
-        private readonly IPerkService _perk;
-        private readonly ICustomEffectService _customEffect;
-        private readonly IPlayerStatService _playerStat;
+        
+        
+        
 
         public MeditateEffect(
             
-            IAbilityService ability,
-            IPerkService perk,
-            ICustomEffectService customEffect,
-            IPlayerStatService playerStat)
+            IAbilityService ability
+            
+            
+            )
         {
             
             _ability = ability;
-            _perk = perk;
-            _customEffect = customEffect;
-            _playerStat = playerStat;
+            
+            
+            
         }
 
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
@@ -70,7 +71,7 @@ namespace SWLOR.Game.Server.CustomEffect
                 !player.IsValid)
             {
                 player.IsBusy = false;
-                _customEffect.RemovePCCustomEffect(player, CustomEffectType.Meditate);
+                CustomEffectService.RemovePCCustomEffect(player, CustomEffectType.Meditate);
                 return;
             }
 
@@ -103,8 +104,8 @@ namespace SWLOR.Game.Server.CustomEffect
 
         private int CalculateAmount(NWPlayer player)
         {
-            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
-            int perkLevel = _perk.GetPCPerkLevel(player, PerkType.Meditate);
+            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
+            int perkLevel = PerkService.GetPCPerkLevel(player, PerkType.Meditate);
             int amount;
             switch (perkLevel)
             {

@@ -15,22 +15,22 @@ namespace SWLOR.Game.Server.Placeable.Bank
     public class OnDisturbed : IRegisteredEvent
     {
         
-        private readonly IItemService _item;
         
-        private readonly IColorTokenService _color;
+        
+        
         private readonly ISerializationService _serialization;
 
         public OnDisturbed(
             
-            IItemService item,
             
-            IColorTokenService color,
+            
+            
             ISerializationService serialization)
         {
             
-            _item = item;
             
-            _color = color;
+            
+            
             _serialization = serialization;
         }
 
@@ -52,15 +52,15 @@ namespace SWLOR.Game.Server.Placeable.Bank
                 if (_.GetHasInventory(item) == TRUE)
                 {
                     item.SetLocalInt("RETURNING_ITEM", TRUE);
-                    _item.ReturnItem(player, item);
-                    player.SendMessage(_color.Red("Containers cannot currently be stored inside banks."));
+                    ItemService.ReturnItem(player, item);
+                    player.SendMessage(ColorTokenService.Red("Containers cannot currently be stored inside banks."));
                     return false;
                 }
 
                 if (itemCount > itemLimit)
                 {
-                    _item.ReturnItem(player, item);
-                    player.SendMessage(_color.Red("No more items can be placed inside."));
+                    ItemService.ReturnItem(player, item);
+                    player.SendMessage(ColorTokenService.Red("No more items can be placed inside."));
                 }
                 else
                 {
@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Placeable.Bank
                 }
             }
 
-            player.SendMessage(_color.White("Item Limit: " + (itemCount > itemLimit ? itemLimit : itemCount) + " / ") + _color.Red("" + itemLimit));
+            player.SendMessage(ColorTokenService.White("Item Limit: " + (itemCount > itemLimit ? itemLimit : itemCount) + " / ") + ColorTokenService.Red("" + itemLimit));
             return true;
         }
     }

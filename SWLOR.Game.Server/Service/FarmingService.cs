@@ -14,22 +14,6 @@ namespace SWLOR.Game.Server.Service
 {
     public class FarmingService: IFarmingService
     {
-        
-        
-        
-        private readonly IColorTokenService _color;
-
-        public FarmingService( 
-            
-            
-            IColorTokenService color)
-        {
-            
-            
-            
-            _color = color;
-        }
-
         public void HarvestPlant(NWPlayer player, NWItem shovel, NWPlaceable plant)
         {
             string growingPlantID = plant.GetLocalString("GROWING_PLANT_ID");
@@ -73,7 +57,7 @@ namespace SWLOR.Game.Server.Service
             Plant plant = DataService.SingleOrDefault<Plant>(x => x.ID == plantID);
             if (plant == null) return existingDescription;
 
-            existingDescription += _color.Orange("This item can be planted. Farming skill required: " + plant.Level) + "\n\n";
+            existingDescription += ColorTokenService.Orange("This item can be planted. Farming skill required: " + plant.Level) + "\n\n";
             return existingDescription;
         }
 

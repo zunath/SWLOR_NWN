@@ -16,31 +16,18 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
     public class OnDisturbed: IRegisteredEvent
     {
         
-        private readonly IItemService _item;
         
         
-        private readonly ISkillService _skill;
-        private readonly IPerkService _perk;
+        
+        
+        
         private readonly IFarmingService _farming;
-        private readonly IPlayerStatService _playerStat;
+        
 
         public OnDisturbed(
-            IItemService item,
-            
-            
-            ISkillService skill,
-            IPerkService perk,
-            IFarmingService farming,
-            IPlayerStatService playerStat)
+            IFarmingService farming)
         {
-            
-            _item = item;
-            
-            
-            _skill = skill;
-            _perk = perk;
             _farming = farming;
-            _playerStat = playerStat;
         }
 
         public bool Run(params object[] args)
@@ -49,7 +36,7 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
             NWPlayer oPC = (_.GetLastDisturbed());
             int type = _.GetInventoryDisturbType();
             NWItem item = (_.GetInventoryDisturbItem());
-            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(oPC);
+            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(oPC);
 
             if (type != _.INVENTORY_DISTURB_TYPE_ADDED) return false;
 
@@ -57,7 +44,7 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
 
             if (plantID <= 0)
             {
-                _item.ReturnItem(oPC, item);
+                ItemService.ReturnItem(oPC, item);
                 oPC.SendMessage("You cannot plant that item.");
                 return true;
             }
@@ -65,16 +52,16 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
             Plant plant = _farming.GetPlantByID(plantID);
             if (plant == null)
             {
-                _item.ReturnItem(oPC, item);
+                ItemService.ReturnItem(oPC, item);
                 oPC.SendMessage("You cannot plant that item.");
                 return true;
             }
 
-            int rank = _skill.GetPCSkillRank(oPC, SkillType.Farming);
+            int rank = SkillService.GetPCSkillRank(oPC, SkillType.Farming);
             
             if (rank + 2 < plant.Level)
             {
-                _item.ReturnItem(oPC, item);
+                ItemService.ReturnItem(oPC, item);
                 oPC.SendMessage("You do not have enough Farming skill to plant that seed. (Required: " + (plant.Level - 2) + ")");
                 return true;
             }
@@ -83,8 +70,8 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
 
             string areaTag = container.Area.Tag;
             Location plantLocation = container.Location;
-            int perkBonus = _perk.GetPCPerkLevel(oPC, PerkType.FarmingEfficiency) * 2;
-            int ticks = (int)(plant.BaseTicks - ((_perk.GetPCPerkLevel(oPC, PerkType.ExpertFarmer) * 0.05f)) * plant.BaseTicks);
+            int perkBonus = PerkService.GetPCPerkLevel(oPC, PerkType.FarmingEfficiency) * 2;
+            int ticks = (int)(plant.BaseTicks - ((PerkService.GetPCPerkLevel(oPC, PerkType.ExpertFarmer) * 0.05f)) * plant.BaseTicks);
             Data.Entity.GrowingPlant growingPlant = new Data.Entity.GrowingPlant
             {
                 PlantID = plant.ID,
@@ -109,14 +96,14 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
             container.Destroy();
             hole.Destroy();
 
-            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(200, plant.Level, rank);
+            int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(200, plant.Level, rank);
 
-            if (RandomService.Random(100) + 1 <= _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + effectiveStats.Luck)
+            if (RandomService.Random(100) + 1 <= PerkService.GetPCPerkLevel(oPC, PerkType.Lucky) + effectiveStats.Luck)
             {
                 xp *= 2;
             }
 
-            _skill.GiveSkillXP(oPC, SkillType.Farming, xp);
+            SkillService.GiveSkillXP(oPC, SkillType.Farming, xp);
             return true;
         }
     }

@@ -2,7 +2,7 @@
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.ChatCommand
@@ -11,14 +11,14 @@ namespace SWLOR.Game.Server.ChatCommand
     public class SpawnItem: IChatCommand
     {
         
-        private readonly IColorTokenService _color;
+        
 
         public SpawnItem(
             
-            IColorTokenService color)
+            )
         {
             
-            _color = color;
+            
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.ChatCommand
 
             if (!item.IsValid)
             {
-                user.SendMessage(_color.Red("Item not found! Did you enter the correct ResRef?"));
+                user.SendMessage(ColorTokenService.Red("Item not found! Did you enter the correct ResRef?"));
                 return;
             }
 
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.ChatCommand
         {
             if (args.Length <= 0)
             {
-                return _color.Red("Please specify a resref and optionally a quantity. Example: /" + nameof(SpawnItem) + " my_resref 20");
+                return ColorTokenService.Red("Please specify a resref and optionally a quantity. Example: /" + nameof(SpawnItem) + " my_resref 20");
             }
 
             return string.Empty;

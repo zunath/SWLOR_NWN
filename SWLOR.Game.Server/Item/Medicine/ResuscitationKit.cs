@@ -15,25 +15,25 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         
         
-        private readonly ISkillService _skill;
         
-        private readonly IPerkService _perk;
-        private readonly IPlayerStatService _playerStat;
+        
+        
+        
 
         public ResuscitationKit(
             
             
-            ISkillService skill,
             
-            IPerkService perk,
-            IPlayerStatService playerStat)
+            
+            
+            )
         {
             
             
-            _skill = skill;
             
-            _perk = perk;
-            _playerStat = playerStat;
+            
+            
+            
         }
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
@@ -44,9 +44,9 @@ namespace SWLOR.Game.Server.Item.Medicine
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
             NWPlayer player = user.Object;
-            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
-            int skillRank = _skill.GetPCSkillRank(player, SkillType.Medicine);
-            int perkLevel = _perk.GetPCPerkLevel(player, PerkType.ResuscitationDevices);
+            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
+            int skillRank = SkillService.GetPCSkillRank(player, SkillType.Medicine);
+            int perkLevel = PerkService.GetPCPerkLevel(player, PerkType.ResuscitationDevices);
             int rank = item.GetLocalInt("RANK");
             int baseHeal;
 
@@ -92,8 +92,8 @@ namespace SWLOR.Game.Server.Item.Medicine
                 DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
                 player.SendMessage("You successfully resuscitate " + target.Name + "!");
 
-                int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(600, item.RecommendedLevel, skillRank);
-                _skill.GiveSkillXP(player, SkillType.Medicine, xp);
+                int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(600, item.RecommendedLevel, skillRank);
+                SkillService.GiveSkillXP(player, SkillType.Medicine, xp);
             }
             else
             {
@@ -107,12 +107,12 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            if (RandomService.Random(100) + 1 <= _perk.GetPCPerkLevel((NWPlayer)user, PerkType.SpeedyFirstAid) * 10)
+            if (RandomService.Random(100) + 1 <= PerkService.GetPCPerkLevel((NWPlayer)user, PerkType.SpeedyFirstAid) * 10)
             {
                 return 0.1f;
             }
 
-            int rank = _skill.GetPCSkillRank((NWPlayer)user, SkillType.Medicine);
+            int rank = SkillService.GetPCSkillRank((NWPlayer)user, SkillType.Medicine);
             return 12.0f - (rank * 0.1f);
         }
 
@@ -128,12 +128,12 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            return 3.5f + _perk.GetPCPerkLevel(user.Object, PerkType.RangedHealing);
+            return 3.5f + PerkService.GetPCPerkLevel(user.Object, PerkType.RangedHealing);
         }
 
         public bool ReducesItemCharge(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            int consumeChance = _perk.GetPCPerkLevel((NWPlayer)user, PerkType.FrugalMedic) * 10;
+            int consumeChance = PerkService.GetPCPerkLevel((NWPlayer)user, PerkType.FrugalMedic) * 10;
             return RandomService.Random(100) + 1 > consumeChance;
         }
 
@@ -154,7 +154,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return "You are in combat.";
             }
 
-            int perkLevel = _perk.GetPCPerkLevel(user.Object, PerkType.ResuscitationDevices);
+            int perkLevel = PerkService.GetPCPerkLevel(user.Object, PerkType.ResuscitationDevices);
             int requiredLevel = item.GetLocalInt("RANK");
 
             if (perkLevel < requiredLevel)

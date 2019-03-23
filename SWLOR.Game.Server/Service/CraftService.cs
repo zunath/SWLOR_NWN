@@ -20,31 +20,12 @@ namespace SWLOR.Game.Server.Service
 {
     public class CraftService : ICraftService
     {
-        
-        
-        private readonly IPerkService _perk;
-        private readonly IColorTokenService _color;
         private readonly ISerializationService _serialization;
-        private readonly ISkillService _skill;
-        private readonly IPlayerStatService _playerStat;
-
+        
         public CraftService(
-            
-            
-            IPerkService perk,
-            IColorTokenService color,
-            ISerializationService serialization,
-            ISkillService skill,
-            IPlayerStatService playerStat)
+            ISerializationService serialization)
         {
-            
-            
-            _perk = perk;
-            _color = color;
-            
             _serialization = serialization;
-            _skill = skill;
-            _playerStat = playerStat;
         }
 
         private const float BaseCraftDelay = 18.0f;
@@ -101,39 +82,39 @@ namespace SWLOR.Game.Server.Service
             var secondaryComponent = DataService.Get<ComponentType>(bp.SecondaryComponentTypeID);
             var tertiaryComponent = DataService.Get<ComponentType>(bp.TertiaryComponentTypeID);
 
-            string header = _color.Green("Blueprint: ") + bp.Quantity + "x " + bp.ItemName + "\n";
-            header += _color.Green("Level: ") + (model.AdjustedLevel < 0 ? 0 : model.AdjustedLevel) + " (Base: " + (bp.BaseLevel < 0 ? 0 : bp.BaseLevel) + ")\n";
-            header += _color.Green("Difficulty: ") + CalculateDifficultyDescription(playerEL, model.AdjustedLevel) + "\n";
+            string header = ColorTokenService.Green("Blueprint: ") + bp.Quantity + "x " + bp.ItemName + "\n";
+            header += ColorTokenService.Green("Level: ") + (model.AdjustedLevel < 0 ? 0 : model.AdjustedLevel) + " (Base: " + (bp.BaseLevel < 0 ? 0 : bp.BaseLevel) + ")\n";
+            header += ColorTokenService.Green("Difficulty: ") + CalculateDifficultyDescription(playerEL, model.AdjustedLevel) + "\n";
 
             if (baseStructure != null)
             {
-                header += _color.Green("Raises Atmosphere: ");
+                header += ColorTokenService.Green("Raises Atmosphere: ");
                 if (baseStructure.HasAtmosphere)
                 {
-                    header += _color.Green("Yes");
+                    header += ColorTokenService.Green("Yes");
                 }
                 else
                 {
-                    header += _color.Red("No");
+                    header += ColorTokenService.Red("No");
                 }
 
                 header += "\n";
             }
 
-            header += _color.Green("Required Components (Required/Maximum): ") + "\n\n";
+            header += ColorTokenService.Green("Required Components (Required/Maximum): ") + "\n\n";
 
             string mainCounts = " (" + (model.MainMinimum > 0 ? Convert.ToString(model.MainMinimum) : "Optional") + "/" + model.MainMaximum + ")";
-            header += _color.Green("Main: ") + mainComponent.Name + mainCounts + "\n";
+            header += ColorTokenService.Green("Main: ") + mainComponent.Name + mainCounts + "\n";
 
             if (bp.SecondaryMinimum > 0 && bp.SecondaryComponentTypeID > 0)
             {
                 string secondaryCounts = " (" + (model.SecondaryMinimum > 0 ? Convert.ToString(model.SecondaryMinimum) : "Optional") + "/" + model.SecondaryMaximum + ")";
-                header += _color.Green("Secondary: ") + secondaryComponent.Name + secondaryCounts + "\n";
+                header += ColorTokenService.Green("Secondary: ") + secondaryComponent.Name + secondaryCounts + "\n";
             }
             if (bp.TertiaryMinimum > 0 && bp.TertiaryComponentTypeID > 0)
             {
                 string tertiaryCounts = " (" + (model.TertiaryMinimum > 0 ? Convert.ToString(model.TertiaryMinimum) : "Optional") + "/" + model.TertiaryMaximum + ")";
-                header += _color.Green("Tertiary: ") + tertiaryComponent.Name + tertiaryCounts + "\n";
+                header += ColorTokenService.Green("Tertiary: ") + tertiaryComponent.Name + tertiaryCounts + "\n";
             }
             if (bp.EnhancementSlots > 0)
             {
@@ -148,12 +129,12 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 string enhancementSlots = " (0/" + Convert.ToString(nSlots) + ")";
-                header += _color.Green("Enhancement slots: ") + enhancementSlots + "\n";
+                header += ColorTokenService.Green("Enhancement slots: ") + enhancementSlots + "\n";
             }
 
             if (showAddedComponentList)
             {
-                header += "\n" + _color.Green("Your components:") + "\n\n";
+                header += "\n" + ColorTokenService.Green("Your components:") + "\n\n";
                 if (!model.HasPlayerComponents) header += "No components selected yet!";
                 else
                 {
@@ -256,7 +237,7 @@ namespace SWLOR.Game.Server.Service
             else if (skillType == SkillType.Harvesting) perkType = PerkType.SpeedyReassembly;
             else return BaseCraftDelay;
 
-            int perkLevel = _perk.GetPCPerkLevel(oPC, perkType);
+            int perkLevel = PerkService.GetPCPerkLevel(oPC, perkType);
 
             // Each perk level reduces crafting speed by 10%.
             switch (perkLevel)
@@ -299,39 +280,39 @@ namespace SWLOR.Game.Server.Service
 
             if (delta <= -5)
             {
-                difficulty = _color.Custom("Impossible", 255, 62, 150);
+                difficulty = ColorTokenService.Custom("Impossible", 255, 62, 150);
             }
             else if (delta >= 4)
             {
-                difficulty = _color.Custom("Trivial", 102, 255, 102);
+                difficulty = ColorTokenService.Custom("Trivial", 102, 255, 102);
             }
             else
             {
                 switch (delta)
                 {
                     case -4:
-                        difficulty = _color.Custom("Extremely Difficult", 220, 20, 60);
+                        difficulty = ColorTokenService.Custom("Extremely Difficult", 220, 20, 60);
                         break;
                     case -3:
-                        difficulty = _color.Custom("Very Difficult", 255, 69, 0);
+                        difficulty = ColorTokenService.Custom("Very Difficult", 255, 69, 0);
                         break;
                     case -2:
-                        difficulty = _color.Custom("Difficult", 255, 165, 0);
+                        difficulty = ColorTokenService.Custom("Difficult", 255, 165, 0);
                         break;
                     case -1:
-                        difficulty = _color.Custom("Challenging", 238, 238, 0);
+                        difficulty = ColorTokenService.Custom("Challenging", 238, 238, 0);
                         break;
                     case 0:
-                        difficulty = _color.Custom("Moderate", 255, 255, 255);
+                        difficulty = ColorTokenService.Custom("Moderate", 255, 255, 255);
                         break;
                     case 1:
-                        difficulty = _color.Custom("Easy", 65, 105, 225);
+                        difficulty = ColorTokenService.Custom("Easy", 65, 105, 225);
                         break;
                     case 2:
-                        difficulty = _color.Custom("Very Easy", 113, 113, 198);
+                        difficulty = ColorTokenService.Custom("Very Easy", 113, 113, 198);
                         break;
                     case 3:
-                        difficulty = _color.Custom("Extremely Easy", 153, 255, 255);
+                        difficulty = ColorTokenService.Custom("Extremely Easy", 153, 255, 255);
                         break;
                 }
             }
@@ -716,9 +697,9 @@ namespace SWLOR.Game.Server.Service
         public int CalculateReassemblyChance(NWPlayer player, int penalty)
         {
             const int BaseChance = 70;
-            int harvesting = _skill.GetPCSkillRank(player, SkillType.Harvesting);
-            var itemBonuses = _playerStat.GetPlayerItemEffectiveStats(player);
-            int perkLevel = _perk.GetPCPerkLevel(player, PerkType.MolecularReassemblyProficiency);
+            int harvesting = SkillService.GetPCSkillRank(player, SkillType.Harvesting);
+            var itemBonuses = PlayerStatService.GetPlayerItemEffectiveStats(player);
+            int perkLevel = PerkService.GetPCPerkLevel(player, PerkType.MolecularReassemblyProficiency);
 
             // Calculate the base chance after factoring in skills, perks, and items.
             int categoryChance = (int) (BaseChance + (harvesting / 2.5f) + perkLevel * 10 + itemBonuses.Harvesting / 3f);

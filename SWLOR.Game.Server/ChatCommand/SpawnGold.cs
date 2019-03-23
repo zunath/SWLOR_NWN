@@ -2,7 +2,7 @@
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.ChatCommand
@@ -11,14 +11,14 @@ namespace SWLOR.Game.Server.ChatCommand
     public class SpawnGold : IChatCommand
     {
         
-        private readonly IColorTokenService _color;
+        
 
         public SpawnGold(
             
-            IColorTokenService color)
+            )
         {
             
-            _color = color;
+            
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.ChatCommand
         {
             if (args.Length <= 0)
             {
-                return _color.Red("Please specify a quantity. Example: /" + nameof(SpawnGold) + " 34");
+                return ColorTokenService.Red("Please specify a quantity. Example: /" + nameof(SpawnGold) + " 34");
             }
             return string.Empty;
         }

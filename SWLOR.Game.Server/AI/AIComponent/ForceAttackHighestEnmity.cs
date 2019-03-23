@@ -6,7 +6,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using System;
 using System.Linq;
-
+using SWLOR.Game.Server.Service;
 using static NWN._;
 
 namespace SWLOR.Game.Server.AI.AIComponent
@@ -17,17 +17,17 @@ namespace SWLOR.Game.Server.AI.AIComponent
     public class ForceAttackHighestEnmity : IRegisteredEvent
     {
         private readonly ICombatService _combat;
-        private readonly ICustomEffectService _customEffect;
-        private readonly IEnmityService _enmity;
+        
+        
         
 
-        public ForceAttackHighestEnmity(ICombatService combat,
-            ICustomEffectService customEffect,
-            IEnmityService enmity)
+        public ForceAttackHighestEnmity(ICombatService combat
+            
+            )
         {
             _combat = combat;
-            _customEffect = customEffect;
-            _enmity = enmity;
+            
+            
             
         }
 
@@ -166,7 +166,7 @@ namespace SWLOR.Game.Server.AI.AIComponent
 
                     if (length > 0.0f && dotAmount > 0)
                     {
-                        _customEffect.ApplyCustomEffect(caster, target.Object, CustomEffectType.ForceShock, length, perkLevel, dotAmount.ToString());
+                        CustomEffectService.ApplyCustomEffect(caster, target.Object, CustomEffectType.ForceShock, length, perkLevel, dotAmount.ToString());
                     }
 
                     caster.AssignCommand(() =>
@@ -252,7 +252,7 @@ namespace SWLOR.Game.Server.AI.AIComponent
         {
             NWCreature self = (NWCreature)args[0];
             if (self.GetLocalInt("CASTING") == 1) return true;
-            var enmityTable = _enmity.GetEnmityTable(self);
+            var enmityTable = EnmityService.GetEnmityTable(self);
             var target = enmityTable.Values
                 .OrderByDescending(o => o.TotalAmount)
                 .FirstOrDefault(x => x.TargetObject.IsValid &&

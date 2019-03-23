@@ -12,30 +12,12 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
 {
     public class CompleteSmelt: IRegisteredEvent
     {
-        
-        private readonly ISkillService _skill;
         private readonly ICraftService _craft;
-        
-        private readonly IPerkService _perk;
-        
-        private readonly IPlayerStatService _playerStat;
 
         public CompleteSmelt(
-            
-            ISkillService skill,
-            ICraftService craft,
-            
-            IPerkService perk,
-            
-            IPlayerStatService playerStat)
+            ICraftService craft)
         {
-            
-            _skill = skill;
             _craft = craft;
-            
-            _perk = perk;
-            
-            _playerStat = playerStat;
         }
 
         public bool Run(params object[] args)
@@ -46,7 +28,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             
             player.IsBusy = false;
 
-            int rank = _skill.GetPCSkillRank(player, SkillType.Harvesting);
+            int rank = SkillService.GetPCSkillRank(player, SkillType.Harvesting);
             int level = _craft.GetIngotLevel(oreResref);
             string ingotResref = _craft.GetIngotResref(oreResref);
             if (level < 0 || string.IsNullOrWhiteSpace(ingotResref)) return false;
@@ -57,12 +39,12 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             if (delta > 2) count = delta;
             if (count > 4) count = 4;
 
-            if (RandomService.Random(100) + 1 <= _perk.GetPCPerkLevel(player, PerkType.Lucky))
+            if (RandomService.Random(100) + 1 <= PerkService.GetPCPerkLevel(player, PerkType.Lucky))
             {
                 count++;
             }
 
-            if (RandomService.Random(100) + 1 <= _perk.GetPCPerkLevel(player, PerkType.ProcessingEfficiency) * 10)
+            if (RandomService.Random(100) + 1 <= PerkService.GetPCPerkLevel(player, PerkType.ProcessingEfficiency) * 10)
             {
                 count++;
             }
@@ -101,15 +83,15 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
                 }
             }
 
-            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
-            int harvestingSkill = _skill.GetPCSkillRank(player, SkillType.Harvesting);
-            int perkBonus = _perk.GetPCPerkLevel(player, PerkType.StronidiumRefining) + 1;
+            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
+            int harvestingSkill = SkillService.GetPCSkillRank(player, SkillType.Harvesting);
+            int perkBonus = PerkService.GetPCPerkLevel(player, PerkType.StronidiumRefining) + 1;
             int stronidiumAmount = 10 + effectiveStats.Harvesting + harvestingSkill + RandomService.Random(1, 5);
             stronidiumAmount *= perkBonus;
             _.CreateItemOnObject("stronidium", player.Object, stronidiumAmount);
 
-            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(100, level, rank);
-            _skill.GiveSkillXP(player, SkillType.Harvesting, xp);
+            int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(100, level, rank);
+            SkillService.GiveSkillXP(player, SkillType.Harvesting, xp);
             return true;
         }
     }

@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IKeyItemService _keyItem;
         private readonly IMapPinService _mapPin;
         private readonly IDialogService _dialog;
-        private readonly IColorTokenService _color;
+        
         private readonly IObjectVisibilityService _ovs;
         
 
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Service
             IKeyItemService keyItem,
             IMapPinService mapPin,
             IDialogService dialog,
-            IColorTokenService color,
+            
             IObjectVisibilityService ovs)
         {
             
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Service
             _keyItem = keyItem;
             _mapPin = mapPin;
             _dialog = dialog;
-            _color = color;
+            
             _ovs = ovs;
         }
 
@@ -498,7 +498,7 @@ namespace SWLOR.Game.Server.Service
 
                     if (kt.RemainingToKill <= 0)
                     {
-                        updateMessage += " " + _color.Green(" {COMPLETE}");
+                        updateMessage += " " + ColorTokenService.Green(" {COMPLETE}");
                         playersToAdvance.Add(new KeyValuePair<NWPlayer, int>(oPC, quest.ID));
                         action = DatabaseActionType.Delete;
                     }

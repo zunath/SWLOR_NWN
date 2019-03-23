@@ -15,18 +15,18 @@ namespace SWLOR.Game.Server.ChatCommand
     public class FP : IChatCommand
     {
         
-        private readonly IColorTokenService _color;
+        
         
         public FP(
-            IColorTokenService color)   
+            )   
         {
-            _color = color;
+            
         }
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             if (!user.IsPlayer) return;
             Player entity = DataService.Get<Player>(user.GlobalID);
-            user.SendMessage(_color.Custom("FP: " + entity.CurrentFP + " / " + entity.MaxFP, 32, 223, 219));
+            user.SendMessage(ColorTokenService.Custom("FP: " + entity.CurrentFP + " / " + entity.MaxFP, 32, 223, 219));
         }
         public string ValidateArguments(NWPlayer user, params string[] args)
         {

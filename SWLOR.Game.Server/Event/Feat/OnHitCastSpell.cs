@@ -1,7 +1,7 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Event.Legacy;
 using SWLOR.Game.Server.GameObject;
-
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using Object = NWN.Object;
 
@@ -12,21 +12,21 @@ namespace SWLOR.Game.Server.Event.Feat
         
         private readonly IDurabilityService _durability;
         private readonly IAbilityService _ability;
-        private readonly ISkillService _skill;
-        private readonly IPerkService _perk;
+        
+        
 
         public OnHitCastSpell(
             
             IDurabilityService durability,
-            IAbilityService ability,
-            ISkillService skill,
-            IPerkService perk)
+            IAbilityService ability
+            
+            )
         {
             
             _durability = durability;
             _ability = ability;
-            _skill = skill;
-            _perk = perk;
+            
+            
         }
 
         public bool Run(params object[] args)
@@ -37,8 +37,8 @@ namespace SWLOR.Game.Server.Event.Feat
             {
                 _durability.OnHitCastSpell(player);
                 _ability.OnHitCastSpell(player);
-                _skill.OnHitCastSpell(player);
-                _perk.OnHitCastSpell(player);
+                SkillService.OnHitCastSpell(player);
+                PerkService.OnHitCastSpell(player);
                 HandleItemSpecificCastSpell();
             }
             return true;

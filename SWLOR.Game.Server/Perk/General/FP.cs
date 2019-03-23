@@ -1,15 +1,16 @@
 ﻿using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Perk.General
 {
     public class FP : IPerk
     {
-        private readonly IPlayerStatService _stat;
+        
 
-        public FP(IPlayerStatService stat)
+        public FP()
         {
-            _stat = stat;
+            
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -48,12 +49,12 @@ namespace SWLOR.Game.Server.Perk.General
 
         public void OnPurchased(NWPlayer oPC, int newLevel)
         {
-            _stat.ApplyStatChanges(oPC, null);
+            PlayerStatService.ApplyStatChanges(oPC, null);
         }
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _stat.ApplyStatChanges(oPC, null);
+            PlayerStatService.ApplyStatChanges(oPC, null);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)

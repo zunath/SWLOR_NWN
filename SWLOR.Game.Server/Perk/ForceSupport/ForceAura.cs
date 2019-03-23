@@ -2,6 +2,7 @@
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 
@@ -10,19 +11,19 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
     public class ForceAura: IPerk
     {
         
-        private readonly ICustomEffectService _customEffect;
-        private readonly ISkillService _skill;
+        
+        
         private readonly ICombatService _combat;
 
         public ForceAura(
             
-            ICustomEffectService customEffect,
-            ISkillService skill,
+            
+            
             ICombatService combat)
         {
             
-            _customEffect = customEffect;
-            _skill = skill;
+            
+            
             _combat = combat;
         }
 
@@ -63,7 +64,7 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
         public void OnImpact(NWPlayer player, NWObject target, int level, int spellFeatID)
         {
             int ticks;
-            var spread = _customEffect.GetForceSpreadDetails(player);
+            var spread = CustomEffectService.GetForceSpreadDetails(player);
 
             switch (level)
             {
@@ -85,7 +86,7 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
             // Force Spread isn't active. This is a single target cast.
             if (spread.Level <= 0)
             {
-                _customEffect.ApplyCustomEffect(player, target.Object, CustomEffectType.ForceAura, ticks, level, null);
+                CustomEffectService.ApplyCustomEffect(player, target.Object, CustomEffectType.ForceAura, ticks, level, null);
                 _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_AC_BONUS), target);
             }
             // Force Spread is active. Target nearby party members.
@@ -97,16 +98,16 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
 
                 foreach (var member in members)
                 {
-                    _customEffect.ApplyCustomEffect(member, target.Object, CustomEffectType.ForceAura, ticks, level, null);
+                    CustomEffectService.ApplyCustomEffect(member, target.Object, CustomEffectType.ForceAura, ticks, level, null);
                     _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_AC_BONUS), member);
                 }
 
                 _.PlaySound("v_pro_frcaura");
-                _customEffect.SetForceSpreadUses(player, spread.Uses);
-                _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceUtility, null);
+                CustomEffectService.SetForceSpreadUses(player, spread.Uses);
+                SkillService.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceUtility, null);
             }
             
-            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceSupport, null);
+            SkillService.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceSupport, null);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

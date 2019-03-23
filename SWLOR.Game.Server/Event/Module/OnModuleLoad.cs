@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IFarmingService _farming;
         private readonly IAreaService _area;
         private readonly IBaseService _base;
-        private readonly ICustomEffectService _customEffect;
+        
         private readonly IObjectVisibilityService _objectVisibility;
         private readonly IBackgroundThreadManager _backgroundThreadManager;
         private readonly IDataPackageService _dataPackage;
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Event.Module
             IFarmingService farming,
             IAreaService area,
             IBaseService @base,
-            ICustomEffectService customEffect,
+            
             IObjectVisibilityService objectVisibility,
             IBackgroundThreadManager backgroundThreadManager,
             IDataPackageService dataPackage)
@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Event.Module
             _farming = farming;
             _area = area;
             _base = @base;
-            _customEffect = customEffect;
+            
             _objectVisibility = objectVisibility;
             _backgroundThreadManager = backgroundThreadManager;
             _dataPackage = dataPackage;
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Event.Module
             _base.OnModuleLoad();
             _area.OnModuleLoad();
             SpawnService.OnModuleLoad();
-            _customEffect.OnModuleLoad();
+            CustomEffectService.OnModuleLoad();
             _objectVisibility.OnModuleLoad();
 
             nowString = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");

@@ -3,6 +3,7 @@
 using NWN;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Event;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 
@@ -13,14 +14,6 @@ namespace SWLOR.Game.Server.AI.AIComponent
     /// </summary>
     public class AggroTargetBySight: IRegisteredEvent
     {
-        private readonly IEnmityService _enmity;
-        
-        public AggroTargetBySight(
-            IEnmityService enmity)
-        {
-            _enmity = enmity;
-        }
-
         public bool Run(object[] args)
         {
             NWCreature self = (NWCreature)args[0];
@@ -38,11 +31,11 @@ namespace SWLOR.Game.Server.AI.AIComponent
             while (creature.IsValid)
             {
                 if (_.GetIsEnemy(creature.Object, self.Object) == TRUE &&
-                    !_enmity.IsOnEnmityTable(self, creature) &&
+                    !EnmityService.IsOnEnmityTable(self, creature) &&
                     _.GetDistanceBetween(self.Object, creature.Object) <= aggroRange &&
                     !creature.HasAnyEffect(EFFECT_TYPE_INVISIBILITY, EFFECT_TYPE_SANCTUARY))
                 {
-                    _enmity.AdjustEnmity(self, creature, 0, 1);
+                    EnmityService.AdjustEnmity(self, creature, 0, 1);
                 }
                 
                 creature = _.GetNextObjectInShape(SHAPE_SPELLCYLINDER, aggroRange, targetLocation, TRUE, OBJECT_TYPE_CREATURE, self.Position);

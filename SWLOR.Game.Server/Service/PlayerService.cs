@@ -15,31 +15,28 @@ namespace SWLOR.Game.Server.Service
 {
     public class PlayerService : IPlayerService
     {
-        private readonly IColorTokenService _color;
+        
         private readonly IDialogService _dialog;
         private readonly IBackgroundService _background;
         private readonly IRaceService _race;
         private readonly IDurabilityService _durability;
-        private readonly IPlayerStatService _stat;
         private readonly ILanguageService _language;
 
         public PlayerService(
             
-            IColorTokenService color,
+            
             IDialogService dialog,
             IBackgroundService background,
             IRaceService race,
             IDurabilityService durability,
-            IPlayerStatService stat,
             ILanguageService language)
         {
             
-            _color = color;
+            
             _dialog = dialog;
             _background = background;
             _race = race;
             _durability = durability;
-            _stat = stat;
             _language = language;
         }
 
@@ -163,7 +160,7 @@ namespace SWLOR.Game.Server.Service
                 NWNXCreature.SetAlignmentGoodEvil(player, 50);
                 _background.ApplyBackgroundBonuses(player);
 
-                _stat.ApplyStatChanges(player, null, true);
+                PlayerStatService.ApplyStatChanges(player, null, true);
                 _language.InitializePlayerLanguages(player);
 
                 _.DelayCommand(1.0f, () => _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(999), player));
@@ -337,7 +334,7 @@ namespace SWLOR.Game.Server.Service
         public void ShowMOTD(NWPlayer player)
         {
             ServerConfiguration config = DataService.GetAll<ServerConfiguration>().First();
-            string message = _color.Green("Welcome to " + config.ServerName + "!\n\nMOTD: ") + _color.White(config.MessageOfTheDay);
+            string message = ColorTokenService.Green("Welcome to " + config.ServerName + "!\n\nMOTD: ") + ColorTokenService.White(config.MessageOfTheDay);
 
             _.DelayCommand(6.5f, () =>
             {

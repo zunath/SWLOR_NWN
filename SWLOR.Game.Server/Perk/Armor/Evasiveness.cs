@@ -9,13 +9,13 @@ namespace SWLOR.Game.Server.Perk.Armor
     public class Evasiveness : IPerk
     {
         
-        private readonly IPerkService _perk;
+        
 
         public Evasiveness(
-            IPerkService perk)
+            )
         {
             
-            _perk = perk;
+            
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)

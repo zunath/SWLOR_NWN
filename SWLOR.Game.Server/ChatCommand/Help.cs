@@ -4,6 +4,7 @@ using System.Reflection;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.ChatCommand
@@ -11,13 +12,13 @@ namespace SWLOR.Game.Server.ChatCommand
     [CommandDetails("Displays all chat commands available to you.", CommandPermissionType.DM | CommandPermissionType.Player)]
     public class Help: IChatCommand
     {
-        private readonly IColorTokenService _color;
+        
         private readonly IAuthorizationService _auth;
 
-        public Help(IColorTokenService color,
+        public Help(
             IAuthorizationService auth)
         {
-            _color = color;
+            
             _auth = auth;
         }
 
@@ -46,7 +47,7 @@ namespace SWLOR.Game.Server.ChatCommand
                 if (attribute.Permissions.HasFlag(CommandPermissionType.Player) && user.IsPlayer ||
                     attribute.Permissions.HasFlag(CommandPermissionType.DM) && isDM)
                 {
-                    user.SendMessage(_color.Green("/" + @class.Name.ToLower()) + _color.White(": " + attribute.Description));
+                    user.SendMessage(ColorTokenService.Green("/" + @class.Name.ToLower()) + ColorTokenService.White(": " + attribute.Description));
                 }
             }
         }

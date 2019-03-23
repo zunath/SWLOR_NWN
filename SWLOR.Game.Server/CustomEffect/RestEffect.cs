@@ -3,6 +3,7 @@ using NWN;
 using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 
@@ -11,20 +12,20 @@ namespace SWLOR.Game.Server.CustomEffect
     public class RestEffect : ICustomEffect
     {
         
-        private readonly IPerkService _perk;
-        private readonly ICustomEffectService _customEffect;
-        private readonly IPlayerStatService _playerStat;
+        
+        
+        
 
         public RestEffect(
             
-            IPerkService perk,
-            ICustomEffectService customEffect,
-            IPlayerStatService playerStat)
+            
+            
+            )
         {
             
-            _customEffect = customEffect;
-            _perk = perk;
-            _playerStat = playerStat;
+            
+            
+            
         }
 
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
@@ -68,7 +69,7 @@ namespace SWLOR.Game.Server.CustomEffect
                 !player.IsValid)
             {
                 player.IsBusy = false;
-                _customEffect.RemovePCCustomEffect(player, CustomEffectType.Rest);
+                CustomEffectService.RemovePCCustomEffect(player, CustomEffectType.Rest);
                 return;
             }
 
@@ -100,8 +101,8 @@ namespace SWLOR.Game.Server.CustomEffect
 
         private int CalculateAmount(NWPlayer player)
         {
-            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
-            int perkLevel = _perk.GetPCPerkLevel(player, PerkType.Rest);
+            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
+            int perkLevel = PerkService.GetPCPerkLevel(player, PerkType.Rest);
             int amount;
             switch (perkLevel)
             {

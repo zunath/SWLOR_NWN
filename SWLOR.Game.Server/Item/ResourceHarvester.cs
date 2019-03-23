@@ -15,31 +15,31 @@ namespace SWLOR.Game.Server.Item
     {
         
         
-        private readonly IPerkService _perk;
+        
         private readonly IResourceService _resource;
-        private readonly ISkillService _skill;
+        
         
         private readonly IDurabilityService _durability;
-        private readonly IColorTokenService _color;
+        
 
         public ResourceHarvester(
             
             
-            IPerkService perk,
-            IResourceService resource,
-            ISkillService skill,
             
-            IDurabilityService durability,
-            IColorTokenService color)
+            IResourceService resource,
+            
+            
+            IDurabilityService durability
+            )
         {
             
             
-            _perk = perk;
+            
             _resource = resource;
-            _skill = skill;
+            
             
             _durability = durability;
-            _color = color;
+            
         }
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Item
             string itemResref = target.GetLocalString("RESOURCE_RESREF");
             int ipBonusChance = _resource.CalculateChanceForComponentBonus(player, tier, quality);
             int roll = RandomService.Random(1, 100);
-            int rank = _skill.GetPCSkillRank(player, SkillType.Harvesting);
+            int rank = SkillService.GetPCSkillRank(player, SkillType.Harvesting);
             if (item.RecommendedLevel < rank)
                 rank = item.RecommendedLevel;
 
@@ -93,16 +93,16 @@ namespace SWLOR.Game.Server.Item
                 switch (ip.Item2)
                 {
                     case 0:
-                        resource.Name = _color.Green(resource.Name);
+                        resource.Name = ColorTokenService.Green(resource.Name);
                         break;
                     case 1:
-                        resource.Name = _color.Blue(resource.Name);
+                        resource.Name = ColorTokenService.Blue(resource.Name);
                         break;
                     case 2:
-                        resource.Name = _color.Purple(resource.Name);
+                        resource.Name = ColorTokenService.Purple(resource.Name);
                         break;
                     case 3:
-                        resource.Name = _color.Orange(resource.Name);
+                        resource.Name = ColorTokenService.Orange(resource.Name);
                         break;
                 }
             }
@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Item
             user.SendMessage("You harvest " + resource.Name + ".");
             _durability.RunItemDecay(player, item, RandomService.RandomFloat(decayMinimum, decayMaximum));
             int xp = baseXP;
-            _skill.GiveSkillXP(player, SkillType.Harvesting, xp);
+            SkillService.GiveSkillXP(player, SkillType.Harvesting, xp);
 
             if (remaining <= 0)
             {
@@ -150,7 +150,7 @@ namespace SWLOR.Game.Server.Item
             if (user.IsPlayer)
             {
                 var player = (user.Object);
-                harvestingTime = BaseHarvestingTime - BaseHarvestingTime * (_perk.GetPCPerkLevel(player, PerkType.SpeedyHarvester) * 0.1f);
+                harvestingTime = BaseHarvestingTime - BaseHarvestingTime * (PerkService.GetPCPerkLevel(player, PerkType.SpeedyHarvester) * 0.1f);
 
             }
             return harvestingTime;
@@ -193,7 +193,7 @@ namespace SWLOR.Game.Server.Item
             NWPlayer player = (user.Object);
             ResourceQuality quality = (ResourceQuality)qualityID;
             int tier = target.GetLocalInt("RESOURCE_TIER");
-            int rank = _skill.GetPCSkillRank(player, SkillType.Harvesting);
+            int rank = SkillService.GetPCSkillRank(player, SkillType.Harvesting);
             int difficulty = (tier - 1) * 10 + _resource.GetDifficultyAdjustment(quality);
             int delta = difficulty - rank;
 

@@ -21,30 +21,30 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IBaseService _base;
         private readonly IDialogService _dialog;
         
-        private readonly IPerkService _perk;
+        
         private readonly IBasePermissionService _perm;
         private readonly ISerializationService _serialization;
         private readonly ISpaceService _space;
-        private readonly IColorTokenService _color;
+        
 
         public ShipComputer(
             
             IDialogService dialog,
-            IPerkService perk,
+            
             IBasePermissionService perm,
             ISerializationService serialization,
             IBaseService @base,
-            IColorTokenService color,
+            
             ISpaceService space) 
             : base(dialog)
         {
             _dialog = dialog;
-            _perk = perk;
+            
             _perm = perm;
             _serialization = serialization;
             _space = space;
             _base = @base;
-            _color = color;
+            
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -138,22 +138,22 @@ namespace SWLOR.Game.Server.Conversation
 
             if (_space.IsLocationSpace(pcBase.ShipLocation))
             {
-                locationDescription = "Ship is in orbit around " + _color.Cyan(_space.GetPlanetFromLocation(pcBase.ShipLocation)) + ".\n";
+                locationDescription = "Ship is in orbit around " + ColorTokenService.Cyan(_space.GetPlanetFromLocation(pcBase.ShipLocation)) + ".\n";
             }
             else if (_space.IsLocationPublicStarport(pcBase.ShipLocation))
             {
-                locationDescription = "Ship is docked in the public starport on " + _color.Cyan(_space.GetPlanetFromLocation(pcBase.ShipLocation)) + ".\n";
+                locationDescription = "Ship is docked in the public starport on " + ColorTokenService.Cyan(_space.GetPlanetFromLocation(pcBase.ShipLocation)) + ".\n";
             }
             else
             {
-                locationDescription = "Ship is docked on " + _color.Cyan(_space.GetPlanetFromLocation(pcBase.ShipLocation)) + ".\n";
+                locationDescription = "Ship is docked on " + ColorTokenService.Cyan(_space.GetPlanetFromLocation(pcBase.ShipLocation)) + ".\n";
             }
 
             string header = locationDescription;
-            header += _color.Green("Fuel: ") + currentFuel + " / " + maxFuel + "\n";
-            header += _color.Green("Reinforced Fuel: ") + currentReinforcedFuel + " / " + maxReinforcedFuel + "\n";
-            header += _color.Green("Resource Bay: ") + currentResources + " / " + maxResources + "\n";
-            header += _color.Green("Hull integrity: ") + structure.Durability + " / " + baseStructure.Durability + "\n";
+            header += ColorTokenService.Green("Fuel: ") + currentFuel + " / " + maxFuel + "\n";
+            header += ColorTokenService.Green("Reinforced Fuel: ") + currentReinforcedFuel + " / " + maxReinforcedFuel + "\n";
+            header += ColorTokenService.Green("Resource Bay: ") + currentResources + " / " + maxResources + "\n";
+            header += ColorTokenService.Green("Hull integrity: ") + structure.Durability + " / " + baseStructure.Durability + "\n";
   
             header += "The computer awaits your orders.";
 
@@ -171,7 +171,7 @@ namespace SWLOR.Game.Server.Conversation
             DialogPage page = dialog.GetPageByName(pageName);
             DialogResponse response = page.Responses[responseID - 1];
 
-            bool carefulPilot = _perk.GetPCPerkLevel(player, PerkType.CarefulPilot) > 0;
+            bool carefulPilot = PerkService.GetPCPerkLevel(player, PerkType.CarefulPilot) > 0;
                 
             if (pageName == "MainPage")
             {

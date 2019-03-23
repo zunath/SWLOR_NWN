@@ -13,17 +13,17 @@ namespace SWLOR.Game.Server.Conversation
 {
     public class CraftingDevice: ConversationBase
     {
-        private readonly IColorTokenService _color;
+        
         private readonly ICraftService _craft;
 
         public CraftingDevice(
              
             IDialogService dialog,
-            IColorTokenService color,
+            
             ICraftService craft) 
             : base(dialog)
         {
-            _color = color;
+            
             _craft = craft;
         }
 

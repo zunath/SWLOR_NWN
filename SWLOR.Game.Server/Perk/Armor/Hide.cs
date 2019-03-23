@@ -1,6 +1,7 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 
@@ -9,16 +10,16 @@ namespace SWLOR.Game.Server.Perk.Armor
     public class Hide: IPerk
     {
         
-        private readonly IEnmityService _enmity;
-        private readonly IPerkService _perk;
+        
+        
 
         public Hide(
-            IEnmityService enmity,
-            IPerkService perk)
+            
+            )
         {
             
-            _enmity = enmity;
-            _perk = perk;
+            
+            
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -55,7 +56,7 @@ namespace SWLOR.Game.Server.Perk.Armor
         {
             int adjust = perkLevel * 10;
             _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_DUR_GHOSTLY_VISAGE), target, 3.0f);
-            _enmity.AdjustPercentEnmityOnAllTaggedCreatures(player, -adjust, -adjust);
+            EnmityService.AdjustPercentEnmityOnAllTaggedCreatures(player, -adjust, -adjust);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

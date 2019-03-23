@@ -4,6 +4,7 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 
@@ -13,15 +14,15 @@ namespace SWLOR.Game.Server.Perk.OneHanded
     {
         
         
-        private readonly IPerkService _perk;
+        
 
         public BladePowerAttack(
             
-            IPerkService perk)
+            )
         {
             
             
-            _perk = perk;
+            
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -106,7 +107,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
                 return;
             }
 
-            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.BladePowerAttack);
+            int perkLevel = PerkService.GetPCPerkLevel(oPC, PerkType.BladePowerAttack);
             NWNXCreature.AddFeat(oPC, FEAT_POWER_ATTACK);
 
             if (perkLevel >= 2)

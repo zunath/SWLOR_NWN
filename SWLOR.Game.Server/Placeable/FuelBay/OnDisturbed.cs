@@ -19,22 +19,22 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
     {
         
         
-        private readonly IItemService _item;
+        
         private readonly ISpaceService _space;
-        private readonly IColorTokenService _color;
+        
         private readonly IBaseService _base;
 
         public OnDisturbed(
             
             
-            IItemService item,
+            
             ISpaceService space,
-            IColorTokenService color,
+            
             IBaseService @base)
         {
-            _item = item;
+            
             _space = space;
-            _color = color;
+            
             _base = @base;
         }
         public bool Run(params object[] args)
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             {
                 if (item.Resref != allowedResref)
                 {
-                    _item.ReturnItem(player, item);
+                    ItemService.ReturnItem(player, item);
                     player.SendMessage("Only " + (stronidiumOnly ? "Stronidium" : "Fuel Cells") + " may be placed inside this fuel bay.");
                     return false;
                 }
@@ -165,7 +165,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             {
                 int seconds = 6 * fuelCount;
                 TimeSpan timeSpan = TimeSpan.FromSeconds(seconds);
-                player.SendMessage(_color.Gray("Reinforcement mode will last for " +
+                player.SendMessage(ColorTokenService.Gray("Reinforcement mode will last for " +
                                                TimeService.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false) +
                                                " (" + fuelCount + " / " + maxFuel + " units"));
             }
@@ -189,7 +189,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
                 }
 
                 TimeSpan timeSpan = TimeSpan.FromMinutes(minutes * fuelCount);
-                player.SendMessage(_color.Gray("Fuel will last for " +
+                player.SendMessage(ColorTokenService.Gray("Fuel will last for " +
                                                TimeService.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false) +
                                                " (" + fuelCount + " / " + maxFuel + " units)"));
             }

@@ -15,21 +15,21 @@ namespace SWLOR.Game.Server.Event.Delayed
         
         
         private readonly IAbilityService _ability;
-        private readonly IColorTokenService _color;
-        private readonly ICustomEffectService _customEffect;
+        
+        
 
         public FinishAbilityUse(
             
             
-            IAbilityService ability,
-            IColorTokenService color,
-            ICustomEffectService customEffect)
+            IAbilityService ability
+            
+            )
         {
             
             
             _ability = ability;
-            _color = color;
-            _customEffect = customEffect;
+            
+            
         }
 
         public bool Run(params object[] args)
@@ -93,11 +93,11 @@ namespace SWLOR.Game.Server.Event.Delayed
                 {
                     pcEntity.CurrentFP = pcEntity.CurrentFP - fpCost;
                     DataService.SubmitDataChange(pcEntity, DatabaseActionType.Update);
-                    pc.SendMessage(_color.Custom("FP: " + pcEntity.CurrentFP + " / " + pcEntity.MaxFP, 32, 223, 219));
+                    pc.SendMessage(ColorTokenService.Custom("FP: " + pcEntity.CurrentFP + " / " + pcEntity.MaxFP, 32, 223, 219));
 
                 }
 
-                bool hasChainspell = _customEffect.DoesPCHaveCustomEffect(pc, CustomEffectType.Chainspell) &&
+                bool hasChainspell = CustomEffectService.DoesPCHaveCustomEffect(pc, CustomEffectType.Chainspell) &&
                     executionType == PerkExecutionType.ForceAbility;
 
                 if(!hasChainspell && cooldown != null)

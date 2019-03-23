@@ -5,6 +5,7 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static NWN._;
@@ -14,23 +15,23 @@ namespace SWLOR.Game.Server.Conversation
     public class CraftItem : ConversationBase
     {
         private readonly ICraftService _craft;
-        private readonly IColorTokenService _color;
-        private readonly IPerkService _perk;
-        private readonly ISkillService _skill;
+        
+        
+        
 
         public CraftItem(
             
             IDialogService dialog,
-            ICraftService craft,
-            IColorTokenService color,
-            IPerkService perk,
-            ISkillService skill)
+            ICraftService craft
+            
+            
+            )
             : base(dialog)
         {
             _craft = craft;
-            _color = color;
-            _perk = perk;
-            _skill = skill;
+            
+            
+            
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -54,37 +55,37 @@ namespace SWLOR.Game.Server.Conversation
             {
                 model.IsInitialized = true;
                 model.Blueprint = _craft.GetBlueprintByID(model.BlueprintID);
-                model.PlayerSkillRank = _skill.GetPCSkillRank(GetPC(), model.Blueprint.SkillID);
+                model.PlayerSkillRank = SkillService.GetPCSkillRank(GetPC(), model.Blueprint.SkillID);
 
                 switch ((SkillType)model.Blueprint.SkillID)
                 {
                     case SkillType.Armorsmith:
-                        model.PlayerPerkLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.ArmorBlueprints);
-                        model.EfficiencyLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.ArmorsmithEfficiency);
-                        model.OptimizationLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.ArmorsmithOptimization);
+                        model.PlayerPerkLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.ArmorBlueprints);
+                        model.EfficiencyLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.ArmorsmithEfficiency);
+                        model.OptimizationLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.ArmorsmithOptimization);
                         break;
                     case SkillType.Engineering:
-                        model.PlayerPerkLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.EngineeringBlueprints);
-                        model.EfficiencyLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.EngineeringEfficiency);
-                        model.OptimizationLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.EngineeringOptimization);
+                        model.PlayerPerkLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.EngineeringBlueprints);
+                        model.EfficiencyLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.EngineeringEfficiency);
+                        model.OptimizationLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.EngineeringOptimization);
                         break;
                     case SkillType.Weaponsmith:
-                        model.PlayerPerkLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.WeaponBlueprints);
-                        model.EfficiencyLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.WeaponsmithEfficiency);
-                        model.OptimizationLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.WeaponsmithOptimization);
+                        model.PlayerPerkLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.WeaponBlueprints);
+                        model.EfficiencyLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.WeaponsmithEfficiency);
+                        model.OptimizationLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.WeaponsmithOptimization);
                         break;
                     case SkillType.Fabrication:
-                        model.PlayerPerkLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.FabricationBlueprints);
-                        model.EfficiencyLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.FabricationEfficiency);
-                        model.OptimizationLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.FabricationOptimization);
+                        model.PlayerPerkLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.FabricationBlueprints);
+                        model.EfficiencyLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.FabricationEfficiency);
+                        model.OptimizationLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.FabricationOptimization);
                         break;
                     case SkillType.Medicine:
-                        model.PlayerPerkLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.MedicalBlueprints);
-                        model.EfficiencyLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.MedicineEfficiency);
-                        model.OptimizationLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.MedicineOptimization);
+                        model.PlayerPerkLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.MedicalBlueprints);
+                        model.EfficiencyLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.MedicineEfficiency);
+                        model.OptimizationLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.MedicineOptimization);
                         break;
                     case SkillType.Lightsaber:
-                        model.PlayerPerkLevel = _perk.GetPCPerkLevel(GetPC(), PerkType.LightsaberBlueprints);
+                        model.PlayerPerkLevel = PerkService.GetPCPerkLevel(GetPC(), PerkType.LightsaberBlueprints);
 						// Lightsabers do not have Optimisation or Efficiency perks. 
                         break;
                     default:

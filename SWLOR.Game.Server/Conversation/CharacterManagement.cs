@@ -1,6 +1,7 @@
 ﻿using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
 
@@ -14,19 +15,19 @@ namespace SWLOR.Game.Server.Conversation
         }
 
         private readonly IPVPSanctuaryService _pvpSanctuary;
-        private readonly IColorTokenService _color;
+        
         private readonly IHelmetToggleService _helmetToggle;
 
         public CharacterManagement(
              
             IDialogService dialog,
             IPVPSanctuaryService pvpSanctuary,
-            IColorTokenService color,
+            
             IHelmetToggleService helmetToggle) 
             : base(dialog)
         {
             _pvpSanctuary = pvpSanctuary;
-            _color = color;
+            
             _helmetToggle = helmetToggle;
         }
 
@@ -91,13 +92,13 @@ namespace SWLOR.Game.Server.Conversation
             {
                 _pvpSanctuary.SetPlayerPVPSanctuaryOverride(GetPC(), true);
                 dto.IsConfirmingDisableSanctuary = false;
-                _.FloatingTextStringOnCreature(_color.Red("PVP protection has been disabled. You may now attack and be attacked by other players."), GetPC().Object, _.FALSE);
+                _.FloatingTextStringOnCreature(ColorTokenService.Red("PVP protection has been disabled. You may now attack and be attacked by other players."), GetPC().Object, _.FALSE);
                 SetResponseText("MainPage", 1, "Disable PVP Protection");
             }
             else
             {
                 dto.IsConfirmingDisableSanctuary = true;
-                _.FloatingTextStringOnCreature(_color.Red("WARNING: PVP protection prevents other players from attacking you. If you disable this, players will immediately be able to attack you anywhere. Click again to confirm."), GetPC().Object, _.FALSE);
+                _.FloatingTextStringOnCreature(ColorTokenService.Red("WARNING: PVP protection prevents other players from attacking you. If you disable this, players will immediately be able to attack you anywhere. Click again to confirm."), GetPC().Object, _.FALSE);
                 SetResponseText("MainPage", 1, "CONFIRM DISABLE PVP PROTECTION");
             }
 

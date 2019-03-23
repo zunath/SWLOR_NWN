@@ -16,9 +16,9 @@ namespace SWLOR.Game.Server.AI
         public SoundAggroBehaviour(
             BehaviourTreeBuilder builder,
             
-            IEnmityService enmity,
+            
             IDialogService dialog)
-            : base(builder, enmity, dialog)
+            : base(builder, dialog)
         {
         }
 

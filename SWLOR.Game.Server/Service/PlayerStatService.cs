@@ -13,37 +13,14 @@ using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class PlayerStatService : IPlayerStatService
+    public static class PlayerStatService
     {
         public const float PrimaryIncrease = 0.2f;
         public const float SecondaryIncrease = 0.1f;
         public const float TertiaryIncrease = 0.05f;
         private const int MaxAttributeBonus = 70;
-
         
-        private readonly ICustomEffectService _customEffect;
-        private readonly IItemService _item;
-        
-        private readonly IPerkService _perk;
-        
-
-        public PlayerStatService(
-            
-            ICustomEffectService customEffect,
-            
-            IItemService item,
-            
-            IPerkService perk)
-        {
-            
-            _customEffect = customEffect;
-            _item = item;
-            
-            _perk = perk;
-            
-        }
-
-        public void ApplyStatChanges(NWPlayer player, NWItem ignoreItem, bool isInitialization = false)
+        public static void ApplyStatChanges(NWPlayer player, NWItem ignoreItem, bool isInitialization = false)
         {
             if (!player.IsPlayer) return;
             if (!player.IsInitializedAsPlayer) return;
@@ -220,12 +197,12 @@ namespace SWLOR.Game.Server.Service
             return adjustedValue;
         }
 
-        private int EffectiveMaxHitPoints(NWPlayer player, EffectiveItemStats stats)
+        private static int EffectiveMaxHitPoints(NWPlayer player, EffectiveItemStats stats)
         {
             int hp = 25 + player.ConstitutionModifier * 5;
-            float effectPercentBonus = _customEffect.CalculateEffectHPBonusPercent(player);
+            float effectPercentBonus = CustomEffectService.CalculateEffectHPBonusPercent(player);
             
-            hp += _perk.GetPCPerkLevel(player, PerkType.Health) * 5;
+            hp += PerkService.GetPCPerkLevel(player, PerkType.Health) * 5;
             hp += stats.HP;
             hp = hp + (int)(hp * effectPercentBonus);
 
@@ -235,11 +212,11 @@ namespace SWLOR.Game.Server.Service
             return hp;
         }
 
-        private int EffectiveMaxFP(NWPlayer player, EffectiveItemStats stats)
+        private static int EffectiveMaxFP(NWPlayer player, EffectiveItemStats stats)
         {
             int fp = 20;
             fp += (player.IntelligenceModifier + player.WisdomModifier + player.CharismaModifier) * 5;
-            fp += _perk.GetPCPerkLevel(player, PerkType.FP) * 5;
+            fp += PerkService.GetPCPerkLevel(player, PerkType.FP) * 5;
             fp += stats.FP;
 
             if (fp < 0) fp = 0;
@@ -247,13 +224,13 @@ namespace SWLOR.Game.Server.Service
             return fp;
         }
 
-        private int EffectiveArmorClass(EffectiveItemStats stats, NWPlayer player)
+        private static int EffectiveArmorClass(EffectiveItemStats stats, NWPlayer player)
         {
-            int baseAC = stats.AC + _customEffect.CalculateEffectAC(player);
+            int baseAC = stats.AC + CustomEffectService.CalculateEffectAC(player);
             int totalAC = _.GetAC(player) - baseAC;
             
             // Shield Oath and Precision Targeting affect a percentage of the TOTAL armor class on a creature.
-            var stance = _customEffect.GetCurrentStanceType(player);
+            var stance = CustomEffectService.GetCurrentStanceType(player);
             if (stance == CustomEffectType.ShieldOath)
             {
                 int bonus = (int) (totalAC * 0.2f);
@@ -270,7 +247,7 @@ namespace SWLOR.Game.Server.Service
             return baseAC;
         }
         
-        public EffectiveItemStats GetPlayerItemEffectiveStats(NWPlayer player, NWItem ignoreItem = null)
+        public static EffectiveItemStats GetPlayerItemEffectiveStats(NWPlayer player, NWItem ignoreItem = null)
         {
             using (new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats"))
             {
@@ -292,7 +269,7 @@ namespace SWLOR.Game.Server.Service
                         NWItem item = _.GetItemInSlot(itemSlot, player);
 
                         if (!item.IsValid || item.Equals(ignoreItem)) continue;
-                        SkillType skill = _item.GetSkillTypeForItem(item);
+                        SkillType skill = ItemService.GetSkillTypeForItem(item);
                         int rank;
 
                         // Have we already processed this particular item? Skip over it.
@@ -417,7 +394,7 @@ namespace SWLOR.Game.Server.Service
                     if (stats.EnmityRate < 0.5f) stats.EnmityRate = 0.5f;
                     else if (stats.EnmityRate > 1.5f) stats.EnmityRate = 1.5f;
 
-                    var stance = _customEffect.GetCurrentStanceType(player);
+                    var stance = CustomEffectService.GetCurrentStanceType(player);
                     if (stance == CustomEffectType.ShieldOath)
                     {
                         stats.EnmityRate = stats.EnmityRate + 0.2f;
@@ -443,7 +420,7 @@ namespace SWLOR.Game.Server.Service
             BASE_ITEM_TOWERSHIELD
         };
 
-        public float EffectiveResidencyBonus(NWPlayer player)
+        public static float EffectiveResidencyBonus(NWPlayer player)
         {
             var dbPlayer = DataService.Get<Player>(player.GlobalID);
 
@@ -481,7 +458,7 @@ namespace SWLOR.Game.Server.Service
             return bonus;
         }
         
-        private int CalculateBAB(NWPlayer oPC, NWItem ignoreItem, EffectiveItemStats stats)
+        private static int CalculateBAB(NWPlayer oPC, NWItem ignoreItem, EffectiveItemStats stats)
         {
             NWItem weapon = oPC.RightHand;
 
@@ -515,7 +492,7 @@ namespace SWLOR.Game.Server.Service
             }
             if (!weapon.IsValid) return 0;
 
-            SkillType itemSkill = _item.GetSkillTypeForItem(weapon);
+            SkillType itemSkill = ItemService.GetSkillTypeForItem(weapon);
             if (itemSkill == SkillType.Unknown ||
                 itemSkill == SkillType.LightArmor ||
                 itemSkill == SkillType.HeavyArmor ||
@@ -602,7 +579,7 @@ namespace SWLOR.Game.Server.Service
             if (proficiencyPerk != PerkType.Unknown &&
                 proficiencySkill != SkillType.Unknown)
             {
-                perkBAB += _perk.GetPCPerkLevel(oPC, proficiencyPerk);
+                perkBAB += PerkService.GetPCPerkLevel(oPC, proficiencyPerk);
             }
 
             if (receivesBackgroundBonus)

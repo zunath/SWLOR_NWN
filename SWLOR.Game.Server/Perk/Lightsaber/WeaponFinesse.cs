@@ -11,15 +11,15 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
     {
         
         
-        private readonly IPerkService _perk;
+        
 
         public WeaponFinesse(
             
-            IPerkService perk)
+            )
         {
             
             
-            _perk = perk;
+            
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)

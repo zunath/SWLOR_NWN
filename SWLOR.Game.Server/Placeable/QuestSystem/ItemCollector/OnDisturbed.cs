@@ -18,20 +18,20 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
         
         
         private readonly IQuestService _quest;
-        private readonly IColorTokenService _color;
+        
         private readonly IDialogService _dialog;
 
         public OnDisturbed(
             
             
             IQuestService quest,
-            IColorTokenService color,
+            
             IDialogService dialog)
         {
             
             
             _quest = quest;
-            _color = color;
+            
             _dialog = dialog;
         }
 
@@ -59,12 +59,12 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
                 if (progress == null)
                 {
                     _.CopyItem(item, player, TRUE);
-                    player.SendMessage(_color.Red("That item is not required for this quest."));
+                    player.SendMessage(ColorTokenService.Red("That item is not required for this quest."));
                 }
                 else if (progress.MustBeCraftedByPlayer && crafterPlayerGUID != player.GlobalID)
                 {
                     _.CopyItem(item, player, TRUE);
-                    player.SendMessage(_color.Red("You may only submit items which you have personally created for this quest."));
+                    player.SendMessage(ColorTokenService.Red("You may only submit items which you have personally created for this quest."));
                 }
                 else
                 {

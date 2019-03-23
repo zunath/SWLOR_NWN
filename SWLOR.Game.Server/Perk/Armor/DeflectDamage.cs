@@ -9,13 +9,13 @@ namespace SWLOR.Game.Server.Perk.Armor
     public class DeflectDamage: IPerk
     {
         
-        private readonly IPerkService _perk;
+        
 
         public DeflectDamage(
-            IPerkService perk)
+            )
         {
             
-            _perk = perk;
+            
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)

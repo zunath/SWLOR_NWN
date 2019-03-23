@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 
@@ -11,16 +12,16 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
     {
         
         
-        private readonly IPerkService _perk;
+        
 
         public SaberstaffMastery(
             
             
-            IPerkService perk)
+            )
         {
             
             
-            _perk = perk;
+            
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -100,7 +101,7 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
                 return;
             }
 
-            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.SaberstaffMastery);
+            int perkLevel = PerkService.GetPCPerkLevel(oPC, PerkType.SaberstaffMastery);
             NWNXCreature.AddFeat(oPC, FEAT_TWO_WEAPON_FIGHTING);
 
             if (perkLevel >= 2)

@@ -12,19 +12,19 @@ namespace SWLOR.Game.Server.Item
     public class RepairKit : IActionItem
     {
         private readonly IDurabilityService _durability;
-        private readonly IPerkService _perk;
         
-        private readonly ISkillService _skill;
+        
+        
         public RepairKit(
-            IDurabilityService durability,
-            IPerkService perk,
+            IDurabilityService durability
             
-            ISkillService skill)
+            
+            )
         {
             _durability = durability;
-            _perk = perk;
             
-            _skill = skill;
+            
+            
         }
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
@@ -45,20 +45,20 @@ namespace SWLOR.Game.Server.Item
             int baseXP = 0;
             if (skillType == SkillType.Armorsmith)
             {
-                skillRank = (_skill.GetPCSkillRank(user.Object, skillType));
-                repairAmount += item.CraftBonusArmorsmith + (_perk.GetPCPerkLevel(user.Object, PerkType.ArmorRepair) * 2);
+                skillRank = (SkillService.GetPCSkillRank(user.Object, skillType));
+                repairAmount += item.CraftBonusArmorsmith + (PerkService.GetPCPerkLevel(user.Object, PerkType.ArmorRepair) * 2);
                 delta = level - skillRank;
             }
             else if (skillType == SkillType.Weaponsmith)
             {
-                skillRank = (_skill.GetPCSkillRank(user.Object, skillType));
-                repairAmount += item.CraftBonusWeaponsmith + (_perk.GetPCPerkLevel(user.Object, PerkType.WeaponRepair) * 2);
+                skillRank = (SkillService.GetPCSkillRank(user.Object, skillType));
+                repairAmount += item.CraftBonusWeaponsmith + (PerkService.GetPCPerkLevel(user.Object, PerkType.WeaponRepair) * 2);
                 delta = level - skillRank;
             }
             else if (skillType == SkillType.Engineering)
             {
-                skillRank = (_skill.GetPCSkillRank(user.Object, skillType));
-                repairAmount += item.CraftBonusEngineering + (_perk.GetPCPerkLevel(user.Object, PerkType.ElectronicRepair) * 2);
+                skillRank = (SkillService.GetPCSkillRank(user.Object, skillType));
+                repairAmount += item.CraftBonusEngineering + (PerkService.GetPCPerkLevel(user.Object, PerkType.ElectronicRepair) * 2);
                 delta = level - skillRank;
             }
             float minReduction = 0.05f * tech;
@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Item
             else if (delta == -2) baseXP = 100;
             else if (delta == -3) baseXP = 50;
             else if (delta == -4) baseXP = 25;
-            _skill.GiveSkillXP(user.Object, skillType, baseXP);
+            SkillService.GiveSkillXP(user.Object, skillType, baseXP);
             _durability.RunItemRepair(user.Object, target.Object, repairAmount, reductionAmount + maxDurabilityReductionPenalty);
         }
 

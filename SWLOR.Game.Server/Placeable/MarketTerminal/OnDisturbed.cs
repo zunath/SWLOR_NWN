@@ -2,6 +2,7 @@
 using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 using Object = NWN.Object;
@@ -12,25 +13,20 @@ namespace SWLOR.Game.Server.Placeable.MarketTerminal
     {
         
         private readonly IMarketService _market;
-        private readonly IItemService _item;
+        
         private readonly IDialogService _dialog;
         private readonly ISerializationService _serialization;
-        private readonly IColorTokenService _color;
+        
 
         public OnDisturbed(
-             
             IMarketService market,
-            IItemService item,
             IDialogService dialog,
-            ISerializationService serialization,
-            IColorTokenService color)
+            ISerializationService serialization)
         {
-            
             _market = market;
-            _item = item;
             _dialog = dialog;
             _serialization = serialization;
-            _color = color;
+            
         }
 
         public bool Run(params object[] args)
@@ -58,8 +54,8 @@ namespace SWLOR.Game.Server.Placeable.MarketTerminal
             // Serializing containers can be tricky so for the time being we'll leave them disabled.
             if (_.GetHasInventory(item) == TRUE)
             {
-                _item.ReturnItem(player, item);
-                player.SendMessage(_color.Red("Containers cannot be sold on the market."));
+                ItemService.ReturnItem(player, item);
+                player.SendMessage(ColorTokenService.Red("Containers cannot be sold on the market."));
                 return;
             }
             
@@ -70,7 +66,7 @@ namespace SWLOR.Game.Server.Placeable.MarketTerminal
                 int marketCategoryID = _market.DetermineMarketCategory(item);
                 if (marketCategoryID <= 0)
                 {
-                    _item.ReturnItem(player, item);
+                    ItemService.ReturnItem(player, item);
                     player.FloatingText("This item cannot be placed on the market.");
                     return;
                 }
@@ -96,7 +92,7 @@ namespace SWLOR.Game.Server.Placeable.MarketTerminal
             }
             else
             {
-                _item.ReturnItem(player, item);
+                ItemService.ReturnItem(player, item);
             }
         }
 

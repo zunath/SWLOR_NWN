@@ -1,6 +1,7 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 
@@ -9,14 +10,14 @@ namespace SWLOR.Game.Server.Placeable.Corpse
     public class OnDisturbed: IRegisteredEvent
     {
         
-        private readonly IItemService _item;
+        
 
 
         public OnDisturbed(
-            IItemService item)
+            )
         {
             
-            _item = item;
+            
         }
 
         public bool Run(params object[] args)
@@ -32,7 +33,7 @@ namespace SWLOR.Game.Server.Placeable.Corpse
 
             if (type == INVENTORY_DISTURB_TYPE_ADDED)
             {
-                _item.ReturnItem(looter, item);
+                ItemService.ReturnItem(looter, item);
                 looter.SendMessage("You cannot place items inside of corpses.");
             }
             else if (type == INVENTORY_DISTURB_TYPE_REMOVED)

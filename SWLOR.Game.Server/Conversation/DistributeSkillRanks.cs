@@ -21,20 +21,20 @@ namespace SWLOR.Game.Server.Conversation
         }
 
         
-        private readonly IColorTokenService _color;
-        private readonly IPlayerStatService _playerStat;
+        
+        
 
         public DistributeSkillRanks(
              
-            IDialogService dialog,
+            IDialogService dialog
             
-            IColorTokenService color,
-            IPlayerStatService playerStat) 
+            
+            ) 
             : base(dialog)
         {
             
-            _color = color;
-            _playerStat = playerStat;
+            
+            
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -92,8 +92,8 @@ namespace SWLOR.Game.Server.Conversation
             var pool = DataService.Single<PCSkillPool>(x => x.PlayerID == GetPC().GlobalID && x.SkillCategoryID == model.SkillCategoryID);
             var skills = DataService.Where<Skill>(x => x.SkillCategoryID == model.SkillCategoryID);
 
-            string header = _color.Green("Category: ") + category.Name + "\n";
-            header += _color.Green("Ranks to Distribute: ") + pool.Levels + "\n\n";
+            string header = ColorTokenService.Green("Category: ") + category.Name + "\n";
+            header += ColorTokenService.Green("Ranks to Distribute: ") + pool.Levels + "\n\n";
             header += "You may distribute ranks to any of the following skills. Note that you may only increase a rank to a maximum level of 40. You will not gain any new experience towards any of the following skills until *ALL* ranks have been distributed.";
 
             SetPageHeader("SkillListPage", header);
@@ -133,17 +133,17 @@ namespace SWLOR.Game.Server.Conversation
             var pool = DataService.Single<PCSkillPool>(x => x.PlayerID == GetPC().GlobalID && x.SkillCategoryID == model.SkillCategoryID);
             
             // Build the page header
-            var header = _color.Green("Skill: ") + skill.Name + "\n";
-            header += _color.Green("Current Rank: ") + pcSkill.Rank + "\n";
-            header += _color.Green("Ranks to Distribute: ") + pool.Levels + "\n\n";
+            var header = ColorTokenService.Green("Skill: ") + skill.Name + "\n";
+            header += ColorTokenService.Green("Current Rank: ") + pcSkill.Rank + "\n";
+            header += ColorTokenService.Green("Ranks to Distribute: ") + pool.Levels + "\n\n";
 
             if (pcSkill.Rank >= MaxRankForDistribution)
             {
-                header += _color.Red("You cannot distribute any more ranks into this skill.");
+                header += ColorTokenService.Red("You cannot distribute any more ranks into this skill.");
             }
             else
             {
-                header += _color.Green("You may distribute a skill rank into this skill.");
+                header += ColorTokenService.Green("You may distribute a skill rank into this skill.");
             }
 
             SetPageHeader("SkillPage", header);
@@ -212,7 +212,7 @@ namespace SWLOR.Game.Server.Conversation
                 var pcSkill = DataService.Single<PCSkill>(x => x.PlayerID == GetPC().GlobalID && x.SkillID == model.SkillID);
                 pcSkill.Rank += amount;
                 DataService.SubmitDataChange(pcSkill, DatabaseActionType.Update);
-                _playerStat.ApplyStatChanges(GetPC(), null);
+                PlayerStatService.ApplyStatChanges(GetPC(), null);
 
                 // Reduce the pool levels. Delete the record if it drops to zero.
                 var pool = DataService.Single<PCSkillPool>(x => x.PlayerID == GetPC().GlobalID && x.SkillCategoryID == model.SkillCategoryID);

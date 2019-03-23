@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using System.Linq;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
 using static NWN._;
 
 namespace SWLOR.Game.Server.AI.AIComponent
@@ -17,20 +18,20 @@ namespace SWLOR.Game.Server.AI.AIComponent
     public class WarpToTargetIfStuck : IRegisteredEvent
     {
         
-        private readonly IEnmityService _enmity;
+        
 
         public WarpToTargetIfStuck(
-            IEnmityService enmity)
+            )
         {
             
-            _enmity = enmity;
+            
         }
 
         public bool Run(object[] args)
         {
             NWCreature self = (NWCreature)args[0];
 
-            if (_enmity.IsEnmityTableEmpty(self) ||
+            if (EnmityService.IsEnmityTableEmpty(self) ||
                 _.GetMovementRate(self.Object) == 1 || // 1 = Immobile
                 self.HasAnyEffect(EFFECT_TYPE_DAZED) ||  // Dazed
                 self.RightHand.CustomItemType == CustomItemType.BlasterRifle ||
@@ -63,7 +64,7 @@ namespace SWLOR.Game.Server.AI.AIComponent
 
                 if (cyclesStuck >= 12) // Stuck for 12 seconds - warp to the target if still in the area.
                 {
-                    EnmityTable table = _enmity.GetEnmityTable(self);
+                    EnmityTable table = EnmityService.GetEnmityTable(self);
                     var topTarget = table.Values.OrderByDescending(o => o.TotalAmount).FirstOrDefault();
                     if (topTarget != null && topTarget.TargetObject.IsValid)
                     {

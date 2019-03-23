@@ -11,12 +11,12 @@ namespace SWLOR.Game.Server.Perk.Blaster
 {
     public class MassTranquilizer : IPerk
     {
-        private readonly IPerkService _perk;
+        
         
         public MassTranquilizer(
-            IPerkService perk)
+            )
         {
-            _perk = perk;
+            
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -51,9 +51,9 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
         {
-            int massLevel = _perk.GetPCPerkLevel(player, PerkType.MassTranquilizer);
-            int tranqLevel = _perk.GetPCPerkLevel(player, PerkType.Tranquilizer);
-            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky);
+            int massLevel = PerkService.GetPCPerkLevel(player, PerkType.MassTranquilizer);
+            int tranqLevel = PerkService.GetPCPerkLevel(player, PerkType.Tranquilizer);
+            int luck = PerkService.GetPCPerkLevel(player, PerkType.Lucky);
             float duration;
             float range = 5 * massLevel;
             

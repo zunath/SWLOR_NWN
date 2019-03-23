@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Conversation
 {
     public class MolecularReassembly: ConversationBase
     {
-        private readonly IColorTokenService _color;
+        
         
         private readonly ICraftService _craft;
         private readonly ISerializationService _serialization;
@@ -23,13 +23,13 @@ namespace SWLOR.Game.Server.Conversation
         public MolecularReassembly(
              
             IDialogService dialog,
-            IColorTokenService color,
+            
             
             ICraftService craft,
             ISerializationService serialization) 
             : base(dialog)
         {
-            _color = color;
+            
             
             _craft = craft;
             _serialization = serialization;
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadMainPage()
         {
-            string header = _color.Green("Molecular Reassembler") + "\n\n";
+            string header = ColorTokenService.Green("Molecular Reassembler") + "\n\n";
             header += "This device can be used to salvage equipment and reassemble them into components.\n\n";
             header += "Please select the type of item you wish to create. The new item(s) created will have a chance to receive property bonuses from the salvaged item.\n\n";
             header += "Start by selecting a component type now.";
@@ -100,8 +100,8 @@ namespace SWLOR.Game.Server.Conversation
             NWPlaceable tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
             var item = _serialization.DeserializeItem(model.SerializedSalvageItem, tempStorage);
             var componentType = DataService.Get<ComponentType>(model.SalvageComponentTypeID);
-            string header = _color.Green("Item: ") + item.Name + "\n\n";
-            header += "Reassembling this item will create the following " + _color.Green(componentType.Name) + " component(s). Chance to create depends on your perks, skills, and harvesting bonus on items.\n\n";
+            string header = ColorTokenService.Green("Item: ") + item.Name + "\n\n";
+            header += "Reassembling this item will create the following " + ColorTokenService.Green(componentType.Name) + " component(s). Chance to create depends on your perks, skills, and harvesting bonus on items.\n\n";
 
             // Always create one item with zero bonuses.
             header += componentType.Name + " (No Bonuses) [RL: 0] " + GetChanceColor(100) + "\n";
@@ -173,10 +173,10 @@ namespace SWLOR.Game.Server.Conversation
         {
             string message = "-" + chance + "%-";
             if (chance <= 50)
-                return _color.Red(message);
+                return ColorTokenService.Red(message);
             else if (chance <= 80)
-                return _color.Yellow(message);
-            else return _color.Green(message);
+                return ColorTokenService.Yellow(message);
+            else return ColorTokenService.Green(message);
         }
 
         private string ProcessPropertyDetails(int amount, string componentName, string propertyName, int maxBonuses, float levelsPerBonus = 1.0f)

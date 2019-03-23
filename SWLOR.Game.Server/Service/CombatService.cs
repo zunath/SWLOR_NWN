@@ -14,31 +14,14 @@ namespace SWLOR.Game.Server.Service
 {
     public class CombatService : ICombatService
     {
-        private readonly IPerkService _perk;
+        
         
         private readonly IAbilityService _ability;
-        private readonly IEnmityService _enmity;
-        
-        private readonly IPlayerStatService _playerStat;
-        private readonly ICustomEffectService _customEffect;
-        private readonly IColorTokenService _color;
         
         public CombatService(
-            IPerkService perk,
-            
-            IAbilityService ability,
-            IEnmityService enmity,
-            IPlayerStatService playerStat,
-            ICustomEffectService customEffect,
-            IColorTokenService color)
+            IAbilityService ability)
         {
-            _perk = perk;
-            
             _ability = ability;
-            _enmity = enmity;
-            _playerStat = playerStat;
-            _customEffect = customEffect;
-            _color = color;
         }
 
         public void OnModuleApplyDamage()
@@ -119,7 +102,7 @@ namespace SWLOR.Game.Server.Service
                 !target.RightHand.IsValid && !target.LeftHand.IsValid))
             {
                 // Martial Arts (weapon or unarmed) uses the Evade Blaster Fire perk which is primarily DEX based.
-                perkLevel = _perk.GetPCPerkLevel(target.Object, PerkType.EvadeBlasterFire);
+                perkLevel = PerkService.GetPCPerkLevel(target.Object, PerkType.EvadeBlasterFire);
                 modifier = target.DexterityModifier;
                 action = "evade";
             }
@@ -129,7 +112,7 @@ namespace SWLOR.Game.Server.Service
                       targetWeapon.GetLocalInt("LIGHTSABER") == TRUE))
             {
                 // Lightsabers (lightsaber or saberstaff) uses the Deflect Blaster Fire perk which is primarily CHA based.
-                perkLevel = _perk.GetPCPerkLevel(target.Object, PerkType.DeflectBlasterFire);
+                perkLevel = PerkService.GetPCPerkLevel(target.Object, PerkType.DeflectBlasterFire);
                 modifier = target.CharismaModifier;
                 action = "deflect";
             }
@@ -177,13 +160,13 @@ namespace SWLOR.Game.Server.Service
 
             if (roll <= chanceToDeflect)
             {
-                target.SendMessage(_color.Gray("You " + action + " a blaster shot."));
+                target.SendMessage(ColorTokenService.Gray("You " + action + " a blaster shot."));
                 data.AdjustAllByPercent(-1);
                 NWNXDamage.SetDamageEventData(data);
             }
             else
             {
-                target.SendMessage(_color.Gray("You fail to " + action + " a blaster shot. (" + roll + " vs " + chanceToDeflect + ")"));
+                target.SendMessage(ColorTokenService.Gray("You fail to " + action + " a blaster shot. (" + roll + " vs " + chanceToDeflect + ")"));
             }
         }
 
@@ -201,7 +184,7 @@ namespace SWLOR.Game.Server.Service
             if (weapon.CustomItemType != CustomItemType.Baton) return;
             if (player.Chest.CustomItemType != CustomItemType.ForceArmor) return;
 
-            int perkRank = _perk.GetPCPerkLevel(player, PerkType.Battlemage);
+            int perkRank = PerkService.GetPCPerkLevel(player, PerkType.Battlemage);
 
             int restoreAmount = 0;
             bool metRoll = RandomService.Random(100) + 1 <= 50;
@@ -245,7 +228,7 @@ namespace SWLOR.Game.Server.Service
             {
                 NWPlayer player = damager.Object;
                 NWCreature target = Object.OBJECT_SELF;
-                int perkRank = _perk.GetPCPerkByID(damager.GlobalID, (int)PerkType.SneakAttack).PerkLevel;
+                int perkRank = PerkService.GetPCPerkByID(damager.GlobalID, (int)PerkType.SneakAttack).PerkLevel;
                 int perkBonus = 1;
 
                 // Rank 4 increases damage bonus by 2x (total: 3x)
@@ -261,13 +244,13 @@ namespace SWLOR.Game.Server.Service
                     perkRate = 0.5f * perkBonus;
                 }
 
-                var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
+                var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
                 float damageRate = 1.0f + perkRate + effectiveStats.SneakAttack * 0.05f;
                 data.Base = (int)(data.Base * damageRate);
 
                 if (target.IsNPC)
                 {
-                    _enmity.AdjustEnmity(target, player, 5 * data.Base);
+                    EnmityService.AdjustEnmity(target, player, 5 * data.Base);
                 }
 
                 NWNXDamage.SetDamageEventData(data);
@@ -284,13 +267,13 @@ namespace SWLOR.Game.Server.Service
             if (!target.IsPlayer) return;
 
             NWPlayer player = target.Object;
-            int effectLevel = _customEffect.GetCustomEffectLevel(player, CustomEffectType.AbsorptionField);
+            int effectLevel = CustomEffectService.GetCustomEffectLevel(player, CustomEffectType.AbsorptionField);
             if (effectLevel <= 0) return;
 
             // Remove effect if player activates ability and removes the armor.
             if (player.Chest.CustomItemType != CustomItemType.ForceArmor)
             {
-                _customEffect.RemovePCCustomEffect(player, CustomEffectType.AbsorptionField);
+                CustomEffectService.RemovePCCustomEffect(player, CustomEffectType.AbsorptionField);
             }
 
             float absorptionRate = effectLevel * 0.1f;
@@ -358,7 +341,7 @@ namespace SWLOR.Game.Server.Service
 
             if (damager.IsPlayer)
             {
-                CustomEffectType stance = _customEffect.GetCurrentStanceType(damager);
+                CustomEffectType stance = CustomEffectService.GetCurrentStanceType(damager);
 
                 switch (stance)
                 {
@@ -385,14 +368,14 @@ namespace SWLOR.Game.Server.Service
             ForceAbilityType abilityType)
         {
             EffectiveItemStats casterItemStats = caster.IsPlayer ? 
-                _playerStat.GetPlayerItemEffectiveStats(caster.Object) : 
+                PlayerStatService.GetPlayerItemEffectiveStats(caster.Object) : 
                 null;
             float casterPrimary;
             float casterSecondary;
             float casterItemAccuracy = casterItemStats?.ForceAccuracy ?? 0;
 
             EffectiveItemStats targetItemStats = target.IsPlayer ? 
-                _playerStat.GetPlayerItemEffectiveStats(target.Object) : 
+                PlayerStatService.GetPlayerItemEffectiveStats(target.Object) : 
                 null;
             float targetPrimary;
             float targetSecondary;
@@ -540,7 +523,7 @@ namespace SWLOR.Game.Server.Service
         public int CalculateItemPotencyBonus(NWCreature caster, ForceAbilityType abilityType)
         {
             if (!caster.IsPlayer) return 0;
-            EffectiveItemStats itemStats = _playerStat.GetPlayerItemEffectiveStats(caster.Object);
+            EffectiveItemStats itemStats = PlayerStatService.GetPlayerItemEffectiveStats(caster.Object);
             
             int itemBonus = itemStats.ForcePotency;
             switch (abilityType)

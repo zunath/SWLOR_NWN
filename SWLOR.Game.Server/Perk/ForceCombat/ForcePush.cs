@@ -11,25 +11,25 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
     public class ForcePush: IPerk
     {
         
-        private readonly IPerkService _perk;
         
-        private readonly IPlayerStatService _playerStat;
-        private readonly ISkillService _skill;
+        
+        
+        
         private readonly ICombatService _combat;
 
         public ForcePush(
             
-            IPerkService perk,
             
-            IPlayerStatService playerStat,
-            ISkillService skill,
+            
+            
+            
             ICombatService combat)
         {
             
-            _perk = perk;
             
-            _playerStat = playerStat;
-            _skill = skill;
+            
+            
+            
             _combat = combat;
         }
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
 
                 default: return;
             }
-            _skill.RegisterPCToNPCForSkill(player, target, SkillType.ForceCombat);
+            SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceCombat);
             
             // Resistance affects length for this perk.
             ForceResistanceResult resistance = _combat.CalculateResistanceRating(player, target.Object, ForceAbilityType.Mind);
@@ -108,8 +108,8 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
                 return;
             }
 
-            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
-            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
+            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
+            int luck = PerkService.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
             if (RandomService.Random(100) + 1 <= luck)
             {
                 length = length * 2;

@@ -14,19 +14,19 @@ namespace SWLOR.Game.Server.Conversation
 {
     public class StructureStorage : ConversationBase
     {
-        private readonly IColorTokenService _color;
+        
         
         private readonly IBasePermissionService _perm;
 
         public StructureStorage(
             
             IDialogService dialog,
-            IColorTokenService color,
+            
             
             IBasePermissionService perm)
             : base(dialog)
         {
-            _color = color;
+            
             
             _perm = perm;
         }
@@ -35,13 +35,13 @@ namespace SWLOR.Game.Server.Conversation
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
             DialogPage mainPage = new DialogPage(
-                _color.Green("Persistent Storage Menu") + "\n\nPlease select an option.",
+                ColorTokenService.Green("Persistent Storage Menu") + "\n\nPlease select an option.",
                 "Open Storage",
                 "Change Container Name"
             );
 
             DialogPage changeNamePage = new DialogPage(
-                _color.Green("Change Container Name") + "\n\nPlease type a name for the container into your chat bar and then press enter. After that's done click the 'Next' button on this conversation window.",
+                ColorTokenService.Green("Change Container Name") + "\n\nPlease type a name for the container into your chat bar and then press enter. After that's done click the 'Next' button on this conversation window.",
                 "Next"
             );
 
@@ -126,8 +126,8 @@ namespace SWLOR.Game.Server.Conversation
                         return;
                     }
 
-                    string header = _color.Green("Change Container Name") + "\n\n";
-                    header += _color.Green("New Container Name: ") + name + "\n\n";
+                    string header = ColorTokenService.Green("Change Container Name") + "\n\n";
+                    header += ColorTokenService.Green("New Container Name: ") + name + "\n\n";
                     header += "Are you sure you want to change your container to this name?";
 
                     SetPageHeader("ConfirmChangeNamePage", header);

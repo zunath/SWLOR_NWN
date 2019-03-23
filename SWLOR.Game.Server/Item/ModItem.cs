@@ -16,29 +16,29 @@ namespace SWLOR.Game.Server.Item
     public class ModItem : IActionItem
     {
         
-        private readonly IPerkService _perk;
-        private readonly IItemService _item;
+        
+        
         private readonly IModService _mod;
         
-        private readonly IColorTokenService _color;
-        private readonly ISkillService _skill;
+        
+        
 
         public ModItem(
             
-            IPerkService perk,
-            IItemService item,
-            IModService mod,
             
-            IColorTokenService color,
-            ISkillService skill)
+            
+            IModService mod
+            
+            
+            )
         {
-            _perk = perk;
-            _item = item;
+            
+            
             
             _mod = mod;
             
-            _color = color;
-            _skill = skill;
+            
+            
         }
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Item
                         {
                             targetItem.SetLocalInt("MOD_SLOT_RED_" + (slots.FilledRedSlots + 1), modID);
                             targetItem.SetLocalString("MOD_SLOT_RED_DESC_" + (slots.FilledRedSlots + 1), description);
-                            player.SendMessage("Mod installed into " + _color.Red("red") + " slot #" + (slots.FilledRedSlots + 1));
+                            player.SendMessage("Mod installed into " + ColorTokenService.Red("red") + " slot #" + (slots.FilledRedSlots + 1));
                         }
                         else usePrismatic = true;
                         break;
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Item
                         {
                             targetItem.SetLocalInt("MOD_SLOT_BLUE_" + (slots.FilledBlueSlots + 1), modID);
                             targetItem.SetLocalString("MOD_SLOT_BLUE_DESC_" + (slots.FilledBlueSlots + 1), description);
-                            player.SendMessage("Mod installed into " + _color.Blue("blue") + " slot #" + (slots.FilledBlueSlots + 1));
+                            player.SendMessage("Mod installed into " + ColorTokenService.Blue("blue") + " slot #" + (slots.FilledBlueSlots + 1));
                         }
                         else usePrismatic = true;
                         break;
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Item
                         {
                             targetItem.SetLocalInt("MOD_SLOT_GREEN_" + (slots.FilledGreenSlots + 1), modID);
                             targetItem.SetLocalString("MOD_SLOT_GREEN_DESC_" + (slots.FilledGreenSlots + 1), description);
-                            player.SendMessage("Mod installed into " + _color.Green("green") + " slot #" + (slots.FilledGreenSlots + 1));
+                            player.SendMessage("Mod installed into " + ColorTokenService.Green("green") + " slot #" + (slots.FilledGreenSlots + 1));
                         }
                         else usePrismatic = true;
                         break;
@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Item
                         {
                             targetItem.SetLocalInt("MOD_SLOT_YELLOW_" + (slots.FilledYellowSlots + 1), modID);
                             targetItem.SetLocalString("MOD_SLOT_YELLOW_DESC_" + (slots.FilledYellowSlots + 1), description);
-                            player.SendMessage("Mod installed into " + _color.Yellow("yellow") + " slot #" + (slots.FilledYellowSlots + 1));
+                            player.SendMessage("Mod installed into " + ColorTokenService.Yellow("yellow") + " slot #" + (slots.FilledYellowSlots + 1));
                         }
                         else usePrismatic = true;
                         break;
@@ -130,9 +130,9 @@ namespace SWLOR.Game.Server.Item
                 }
                 else return;
 
-                int rank = _skill.GetPCSkillRank(player, skillType);
-                int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(400, modLevel, rank);
-                _skill.GiveSkillXP(player, skillType, xp);
+                int rank = SkillService.GetPCSkillRank(player, skillType);
+                int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(400, modLevel, rank);
+                SkillService.GiveSkillXP(player, skillType, xp);
             });
             
         }
@@ -145,15 +145,15 @@ namespace SWLOR.Game.Server.Item
 
             if (ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
             {
-                perkBonus = _perk.GetPCPerkLevel(userPlayer, PerkType.SpeedyArmorsmith) * 0.1f;
+                perkBonus = PerkService.GetPCPerkLevel(userPlayer, PerkType.SpeedyArmorsmith) * 0.1f;
             }
             else if (WeaponsmithBaseItemTypes.Contains(targetItem.BaseItemType))
             {
-                perkBonus = _perk.GetPCPerkLevel(userPlayer, PerkType.SpeedyWeaponsmith) * 0.1f;
+                perkBonus = PerkService.GetPCPerkLevel(userPlayer, PerkType.SpeedyWeaponsmith) * 0.1f;
             }
             else if (EngineeringBaseItemTypes.Contains(targetItem.BaseItemType))
             {
-                perkBonus = _perk.GetPCPerkLevel(userPlayer, PerkType.SpeedyEngineering) * 0.1f;
+                perkBonus = PerkService.GetPCPerkLevel(userPlayer, PerkType.SpeedyEngineering) * 0.1f;
             }
             
 
@@ -216,16 +216,16 @@ namespace SWLOR.Game.Server.Item
                 switch (modType)
                 {
                     case CustomItemPropertyType.RedMod:
-                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.CombatModInstallationWeapons);
+                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.CombatModInstallationWeapons);
                         break;
                     case CustomItemPropertyType.BlueMod:
-                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.ForceModInstallationWeapons);
+                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.ForceModInstallationWeapons);
                         break;
                     case CustomItemPropertyType.GreenMod:
-                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.CraftingModInstallationWeapons);
+                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.CraftingModInstallationWeapons);
                         break;
                     case CustomItemPropertyType.YellowMod:
-                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.SpecialModInstallationWeapons);
+                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.SpecialModInstallationWeapons);
                         break;
                     default:
                         perkLevel = 0;
@@ -237,16 +237,16 @@ namespace SWLOR.Game.Server.Item
                 switch (modType)
                 {
                     case CustomItemPropertyType.RedMod:
-                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.CombatModInstallationArmors);
+                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.CombatModInstallationArmors);
                         break;
                     case CustomItemPropertyType.BlueMod:
-                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.ForceModInstallationArmors);
+                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.ForceModInstallationArmors);
                         break;
                     case CustomItemPropertyType.GreenMod:
-                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.CraftingModInstallationArmors);
+                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.CraftingModInstallationArmors);
                         break;
                     case CustomItemPropertyType.YellowMod:
-                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.SpecialModInstallationArmors);
+                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.SpecialModInstallationArmors);
                         break;
                     default:
                         perkLevel = 0;
@@ -258,16 +258,16 @@ namespace SWLOR.Game.Server.Item
                 switch (modType)
                 {
                     case CustomItemPropertyType.RedMod:
-                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.CombatModInstallationElectronics);
+                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.CombatModInstallationElectronics);
                         break;
                     case CustomItemPropertyType.BlueMod:
-                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.ForceModInstallationElectronics);
+                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.ForceModInstallationElectronics);
                         break;
                     case CustomItemPropertyType.GreenMod:
-                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.CraftingModInstallationElectronics);
+                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.CraftingModInstallationElectronics);
                         break;
                     case CustomItemPropertyType.YellowMod:
-                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.SpecialModInstallationElectronics);
+                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.SpecialModInstallationElectronics);
                         break;
                     default:
                         perkLevel = 0;

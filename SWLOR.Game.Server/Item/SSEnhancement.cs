@@ -17,19 +17,19 @@ namespace SWLOR.Game.Server.Item
         private readonly IBaseService _base;
         
         private readonly ISerializationService _serialization;
-        private readonly ISkillService _skill;
+        
         public SSEnhancement(
             
             IBaseService baseService,
             
-            ISerializationService serialization,
-            ISkillService skill)
+            ISerializationService serialization
+            )
         {
             
             _base = baseService;
             
             _serialization = serialization;
-            _skill = skill;
+            
         }
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)

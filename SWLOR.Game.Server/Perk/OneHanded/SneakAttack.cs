@@ -1,16 +1,17 @@
 ﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
     public class SneakAttack: IPerk
     {
-        private readonly IPerkService _perk;
+        
 
-        public SneakAttack(IPerkService perk)
+        public SneakAttack()
         {
-            _perk = perk;
+            
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -39,7 +40,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellFeatID)
         {
-            int perkRank = _perk.GetPCPerkLevel(oPC, PerkType.SneakAttack);
+            int perkRank = PerkService.GetPCPerkLevel(oPC, PerkType.SneakAttack);
             float cooldown = baseCooldownTime;
 
             if (perkRank == 2)

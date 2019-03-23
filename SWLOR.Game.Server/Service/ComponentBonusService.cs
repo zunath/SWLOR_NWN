@@ -10,18 +10,18 @@ namespace SWLOR.Game.Server.Service
     public class ComponentBonusService : IComponentBonusService
     {
         
-        private readonly IItemService _item;
+        
         
         private readonly IDurabilityService _durability;
 
         public ComponentBonusService(
             
-            IItemService item,
+            
             
             IDurabilityService durability)
         {
             
-            _item = item;
+            
             
             _durability = durability;
         }
@@ -238,7 +238,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (!string.IsNullOrWhiteSpace(sourceTag))
                 {
-                    prop = _item.GetCustomItemPropertyByItemTag(sourceTag);
+                    prop = ItemService.GetCustomItemPropertyByItemTag(sourceTag);
                 }
 
                 if (prop == null) return;

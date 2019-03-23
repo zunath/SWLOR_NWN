@@ -15,22 +15,22 @@ namespace SWLOR.Game.Server.Item.Medicine
     {
 
         
-        private readonly ISkillService _skill;
         
-        private readonly IPerkService _perk;
-        private readonly IPlayerStatService _playerStat;
+        
+        
+        
 
         public HealingKit(
-            ISkillService skill,
             
-            IPerkService perk,
-            IPlayerStatService playerStat)
+            
+            
+            )
         {
             
-            _skill = skill;
             
-            _perk = perk;
-            _playerStat = playerStat;
+            
+            
+            
         }
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
@@ -42,11 +42,11 @@ namespace SWLOR.Game.Server.Item.Medicine
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
             NWPlayer player = (user.Object);
-            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
+            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
             target.RemoveEffect(EFFECT_TYPE_REGENERATE);
-            int rank = _skill.GetPCSkillRank(player, SkillType.Medicine);
-            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky);
-            int perkDurationBonus = _perk.GetPCPerkLevel(player, PerkType.HealingKitExpert) * 6 + (luck * 2);
+            int rank = SkillService.GetPCSkillRank(player, SkillType.Medicine);
+            int luck = PerkService.GetPCPerkLevel(player, PerkType.Lucky);
+            int perkDurationBonus = PerkService.GetPCPerkLevel(player, PerkType.HealingKitExpert) * 6 + (luck * 2);
             float duration = 30.0f + (rank * 0.4f) + perkDurationBonus;
             int restoreAmount = 1 + item.GetLocalInt("HEALING_BONUS") + effectiveStats.Medicine + item.MedicineBonus;
             int delta = item.RecommendedLevel - rank;
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
             restoreAmount = (int)(restoreAmount * effectivenessPercent);
 
-            int perkBlastBonus = _perk.GetPCPerkLevel(player, PerkType.ImmediateImprovement);
+            int perkBlastBonus = PerkService.GetPCPerkLevel(player, PerkType.ImmediateImprovement);
             if (perkBlastBonus > 0)
             {
                 int blastHeal = restoreAmount * perkBlastBonus;
@@ -84,19 +84,19 @@ namespace SWLOR.Game.Server.Item.Medicine
             _.DelayCommand(duration + 0.5f, () => { player.SendMessage("The healing kit that you applied to " + target.Name + " has expired."); });
 
             if(target.IsPlayer){
-                int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, rank);
-                _skill.GiveSkillXP(player, SkillType.Medicine, xp);
+                int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, rank);
+                SkillService.GiveSkillXP(player, SkillType.Medicine, xp);
             }
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            if ( RandomService.Random(100) + 1 <= _perk.GetPCPerkLevel((NWPlayer)user, PerkType.SpeedyFirstAid) * 10)
+            if ( RandomService.Random(100) + 1 <= PerkService.GetPCPerkLevel((NWPlayer)user, PerkType.SpeedyFirstAid) * 10)
             {
                 return 0.1f;
             }
 
-            int rank = _skill.GetPCSkillRank((NWPlayer)user, SkillType.Medicine);
+            int rank = SkillService.GetPCSkillRank((NWPlayer)user, SkillType.Medicine);
             return 12.0f - (rank * 0.1f);
         }
 
@@ -112,12 +112,12 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            return 3.5f + _perk.GetPCPerkLevel(user.Object, PerkType.RangedHealing);
+            return 3.5f + PerkService.GetPCPerkLevel(user.Object, PerkType.RangedHealing);
         }
 
         public bool ReducesItemCharge(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            int consumeChance = _perk.GetPCPerkLevel((NWPlayer)user, PerkType.FrugalMedic) * 10;
+            int consumeChance = PerkService.GetPCPerkLevel((NWPlayer)user, PerkType.FrugalMedic) * 10;
             BackgroundType background = (BackgroundType) user.Class1;
 
             if (background == BackgroundType.Medic)

@@ -3,6 +3,7 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 
@@ -10,19 +11,6 @@ namespace SWLOR.Game.Server.Perk.Weapons
 {
     public class ImprovedCritical : IPerk
     {
-        
-        
-        private readonly IPerkService _perk;
-
-        public ImprovedCritical(
-            
-            IPerkService perk)
-        {
-            
-            
-            _perk = perk;
-        }
-
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;
@@ -100,7 +88,7 @@ namespace SWLOR.Game.Server.Perk.Weapons
 
             if (!mainHand.IsValid && !offHand.IsValid)
             {
-                if (_perk.GetPCPerkLevel(oPC, PerkType.ImprovedCriticalMartialArts) > 0)
+                if (PerkService.GetPCPerkLevel(oPC, PerkType.ImprovedCriticalMartialArts) > 0)
                 {
                     NWNXCreature.AddFeat(oPC, FEAT_IMPROVED_CRITICAL_UNARMED_STRIKE);
                 }
@@ -133,7 +121,7 @@ namespace SWLOR.Game.Server.Perk.Weapons
                 perkType = PerkType.ImprovedCriticalLightsabers;
             }
             
-            int perkLevel = _perk.GetPCPerkLevel(oPC, perkType);
+            int perkLevel = PerkService.GetPCPerkLevel(oPC, perkType);
             int type = equipped.BaseItemType;
             if (perkLevel > 0)
             {

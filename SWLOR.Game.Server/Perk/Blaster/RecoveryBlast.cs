@@ -10,12 +10,12 @@ namespace SWLOR.Game.Server.Perk.Blaster
 {
     public class RecoveryBlast: IPerk
     {
-        private readonly IPerkService _perk;
+        
 
         public RecoveryBlast(
-            IPerkService perk)
+            )
         {
-            _perk = perk;
+            
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
             player.SetLocalInt("RECOVERY_BLAST_ACTIVE", 1);
 
             var members = player.PartyMembers.Where(x => _.GetDistanceBetween(x, target) <= 10.0f);
-            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky);
+            int luck = PerkService.GetPCPerkLevel(player, PerkType.Lucky);
 
             foreach (var member in members)
             {

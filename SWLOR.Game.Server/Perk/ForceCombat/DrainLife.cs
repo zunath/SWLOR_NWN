@@ -10,26 +10,26 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
     public class DrainLife: IPerk
     {
         
-        private readonly ISkillService _skill;
-        private readonly ICombatService _combat;
-        private readonly IPerkService _perk;
         
-        private readonly IPlayerStatService _stat;
+        private readonly ICombatService _combat;
+        
+        
+        
 
         public DrainLife(
             
-            ISkillService skill,
-            ICombatService combat,
-            IPerkService perk,
             
-            IPlayerStatService stat)
+            ICombatService combat
+            
+            
+            )
         {
             
-            _skill = skill;
-            _combat = combat;
-            _perk = perk;
             
-            _stat = stat;
+            _combat = combat;
+            
+            
+            
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -127,8 +127,8 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
                 default: return;
             }
 
-            var effectiveStats = _stat.GetPlayerItemEffectiveStats(player);
-            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
+            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
+            int luck = PerkService.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
             if (RandomService.Random(100) + 1 <= luck)
             {
                 recoveryPercent = 1.0f;
@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
             });
 
             _.PlaySound("v_pro_drain");
-            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceCombat, target.Object);
+            SkillService.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceCombat, target.Object);
             _combat.AddTemporaryForceDefense(target.Object, ForceAbilityType.Dark);
         }
 

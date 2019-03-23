@@ -13,22 +13,6 @@ namespace SWLOR.Game.Server.Service
     public class BackgroundService: IBackgroundService
     {
         
-        
-        private readonly IPerkService _perk;
-        private readonly IPlayerStatService _stat;
-
-        public BackgroundService(
-             
-             
-            IPerkService perk,
-            IPlayerStatService stat)
-        {
-            
-            
-            _perk = perk;
-            _stat = stat;
-        }
-        
         public void ApplyBackgroundBonuses(NWPlayer oPC)
         {
             var dbPlayer = DataService.Single<Player>(x => x.ID == oPC.GlobalID);
@@ -68,29 +52,29 @@ namespace SWLOR.Game.Server.Service
                     item1Resref = "greatsword_s";
                     break;
                 case BackgroundType.Armorsmith:
-                    _perk.DoPerkUpgrade(oPC, PerkType.ArmorBlueprints, true);
+                    PerkService.DoPerkUpgrade(oPC, PerkType.ArmorBlueprints, true);
                     break;
                 case BackgroundType.Weaponsmith:
-                    _perk.DoPerkUpgrade(oPC, PerkType.WeaponBlueprints, true);
+                    PerkService.DoPerkUpgrade(oPC, PerkType.WeaponBlueprints, true);
                     break;
                 case BackgroundType.Chef:
-                    _perk.DoPerkUpgrade(oPC, PerkType.FoodRecipes, true);
+                    PerkService.DoPerkUpgrade(oPC, PerkType.FoodRecipes, true);
                     break;
                 case BackgroundType.Engineer:
-                    _perk.DoPerkUpgrade(oPC, PerkType.EngineeringBlueprints, true);
+                    PerkService.DoPerkUpgrade(oPC, PerkType.EngineeringBlueprints, true);
                     break;
                 case BackgroundType.Fabricator:
-                    _perk.DoPerkUpgrade(oPC, PerkType.FabricationBlueprints, true);
+                    PerkService.DoPerkUpgrade(oPC, PerkType.FabricationBlueprints, true);
                     break;
                 case BackgroundType.Harvester:
                     item1Resref = "scanner_r_h";
                     item2Resref = "harvest_r_h";
                     break;
                 case BackgroundType.Scavenger:
-                    _perk.DoPerkUpgrade(oPC, PerkType.ScavengingExpert, true);
+                    PerkService.DoPerkUpgrade(oPC, PerkType.ScavengingExpert, true);
                     break;
                 case BackgroundType.Medic:
-                    _perk.DoPerkUpgrade(oPC, PerkType.ImmediateImprovement, true);
+                    PerkService.DoPerkUpgrade(oPC, PerkType.ImmediateImprovement, true);
                     break;
                 case BackgroundType.Mandalorian:
                     item1Resref = "man_armor";

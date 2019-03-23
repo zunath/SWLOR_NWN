@@ -11,16 +11,16 @@ namespace SWLOR.Game.Server.Item.Enemy
     {
         
         
-        private readonly ICustomEffectService _customEffect;
+        
 
         public BleedBite(
             
             
-            ICustomEffectService customEffect)
+            )
         {
             
             
-            _customEffect = customEffect;
+            
         }
 
         public bool Run(params object[] args)
@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Item.Enemy
 
             if (RandomService.D100(1) > 5) return false;
             
-            _customEffect.ApplyCustomEffect(Object.OBJECT_SELF, oTarget, CustomEffectType.Bleeding, 12, 1, null);
+            CustomEffectService.ApplyCustomEffect(Object.OBJECT_SELF, oTarget, CustomEffectType.Bleeding, 12, 1, null);
             return true;
         }
     }

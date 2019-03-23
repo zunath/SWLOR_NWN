@@ -10,17 +10,6 @@ namespace SWLOR.Game.Server.Service
 {
     public class PVPSanctuaryService: IPVPSanctuaryService
     {
-        
-        
-        private readonly IColorTokenService _color;
-
-        public PVPSanctuaryService(  IColorTokenService color)
-        {
-            
-            
-            _color = color;
-        }
-
         public bool PlayerHasPVPSanctuary(NWPlayer player)
         {
             if (player == null) throw new ArgumentNullException(nameof(player));
@@ -50,14 +39,14 @@ namespace SWLOR.Game.Server.Service
                 // Either the attacker or target has sanctuary - prevent combat from happening
                 if (PlayerHasPVPSanctuary(attacker))
                 {
-                    attacker.FloatingText(_color.Red("You are under the effects of PVP sanctuary and cannot engage in PVP. To disable this feature permanently refer to the 'Disable PVP Sanctuary' option in your rest menu."));
+                    attacker.FloatingText(ColorTokenService.Red("You are under the effects of PVP sanctuary and cannot engage in PVP. To disable this feature permanently refer to the 'Disable PVP Sanctuary' option in your rest menu."));
                     attacker.DelayAssignCommand(() => attacker.ClearAllActions(), 0.0f);
                     
                     return false;
                 }
                 else if (PlayerHasPVPSanctuary(target))
                 {
-                    attacker.FloatingText(_color.Red("Your target is under the effects of PVP sanctuary and cannot engage in PVP combat."));
+                    attacker.FloatingText(ColorTokenService.Red("Your target is under the effects of PVP sanctuary and cannot engage in PVP combat."));
                     attacker.DelayAssignCommand(() => attacker.ClearAllActions(), 0.0f);
                     return false;
                 }

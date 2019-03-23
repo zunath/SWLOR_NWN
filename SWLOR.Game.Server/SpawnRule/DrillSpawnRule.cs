@@ -13,18 +13,18 @@ namespace SWLOR.Game.Server.SpawnRule
         
         private readonly IResourceService _resource;
         
-        private readonly IColorTokenService _color;
+        
 
         public DrillSpawnRule(
             
-            IResourceService resource,
+            IResourceService resource
             
-            IColorTokenService color)
+            )
         {
             
             _resource = resource;
             
-            _color = color;
+            
         }
 
         public void Run(NWObject target, params object[] args)
@@ -51,16 +51,16 @@ namespace SWLOR.Game.Server.SpawnRule
             switch (ip.Item2)
             {
                 case 0:
-                    target.Name = _color.Green(target.Name);
+                    target.Name = ColorTokenService.Green(target.Name);
                     break;
                 case 1:
-                    target.Name = _color.Blue(target.Name);
+                    target.Name = ColorTokenService.Blue(target.Name);
                     break;
                 case 2:
-                    target.Name = _color.Purple(target.Name);
+                    target.Name = ColorTokenService.Purple(target.Name);
                     break;
                 case 3:
-                    target.Name = _color.Orange(target.Name);
+                    target.Name = ColorTokenService.Orange(target.Name);
                     break;
             }
         }

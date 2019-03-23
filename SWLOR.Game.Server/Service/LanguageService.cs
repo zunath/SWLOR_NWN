@@ -14,14 +14,6 @@ namespace SWLOR.Game.Server.Service
 {
     public class LanguageService : ILanguageService
     {
-        private readonly ISkillService _skillService;
-        
-        public LanguageService(
-            ISkillService skillService)
-        {
-            _skillService = skillService;
-        }
-
         public string TranslateSnippetForListener(NWObject speaker, NWObject listener, SkillType language, string snippet)
         {
             Dictionary<SkillType, Type> map = new Dictionary<SkillType, Type>
@@ -48,8 +40,8 @@ namespace SWLOR.Game.Server.Service
             {
                 // Get the rank and max rank for the speaker, and garble their English text based on it.
                 NWPlayer speakerAsPlayer = speaker.Object;
-                int speakerSkillRank = _skillService.GetPCSkillRank(speakerAsPlayer, language);
-                int speakerSkillMaxRank = _skillService.GetSkill(language).MaxRank;
+                int speakerSkillRank = SkillService.GetPCSkillRank(speakerAsPlayer, language);
+                int speakerSkillMaxRank = SkillService.GetSkill(language).MaxRank;
 
                 if (speakerSkillRank != speakerSkillMaxRank)
                 {
@@ -76,8 +68,8 @@ namespace SWLOR.Game.Server.Service
 
             // Let's grab the max rank for the listener skill, and then we roll for a successful translate based on that.
             NWPlayer listenerAsPlayer = listener.Object;
-            int rank = _skillService.GetPCSkillRank(listenerAsPlayer, language);
-            int maxRank = _skillService.GetSkill(language).MaxRank;
+            int rank = SkillService.GetPCSkillRank(listenerAsPlayer, language);
+            int maxRank = SkillService.GetSkill(language).MaxRank;
 
             if (rank == maxRank || speaker == listener)
             {
@@ -125,7 +117,7 @@ namespace SWLOR.Game.Server.Service
             if (differenceInSeconds / 60 >= 5)
             {
                 // Reward exp towards the language - we scale this with character count, maxing at 50 exp for 150 characters.
-                _skillService.GiveSkillXP(listenerAsPlayer, language, Math.Max(10, Math.Min(150, snippet.Length) / 3));
+                SkillService.GiveSkillXP(listenerAsPlayer, language, Math.Max(10, Math.Min(150, snippet.Length) / 3));
                 listenerAsPlayer.SetLocalInt("LAST_LANGUAGE_SKILL_INCREASE_LOW", (int)(now & 0xFFFFFFFF));
                 listenerAsPlayer.SetLocalInt("LAST_LANGUAGE_SKILL_INCREASE_HIGH", (int)((now >> 32) & 0xFFFFFFFF));
             }

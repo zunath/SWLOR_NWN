@@ -10,23 +10,6 @@ namespace SWLOR.Game.Server.Perk.Throwing
 {
     public class PreciseToss: IPerk
     {
-        
-        private readonly IPerkService _perk;
-        
-        private readonly ICustomEffectService _customEffect;
-
-        public PreciseToss(
-            
-            IPerkService perk,
-            
-            ICustomEffectService customEffect)
-        {
-            _perk = perk;
-            
-            
-            _customEffect = customEffect;
-        }
-
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return oPC.RightHand.CustomItemType == CustomItemType.Throwing;
@@ -114,7 +97,7 @@ namespace SWLOR.Game.Server.Perk.Throwing
             }
 
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_PIERCING), target);
-            _customEffect.ApplyCustomEffect(player, target.Object, CustomEffectType.Bleeding, seconds, level, Convert.ToString(dotDamage));
+            CustomEffectService.ApplyCustomEffect(player, target.Object, CustomEffectType.Bleeding, seconds, level, Convert.ToString(dotDamage));
 
 
         }

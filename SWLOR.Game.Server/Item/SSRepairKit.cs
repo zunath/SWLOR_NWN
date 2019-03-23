@@ -15,22 +15,22 @@ namespace SWLOR.Game.Server.Item
         
         private readonly IBaseService _base;
         
-        private readonly IPerkService _perk;
-        private readonly ISkillService _skill;
+        
+        
         private readonly ISpaceService _space;
         public SSRepairKit(
             
             IBaseService baseService,
             
-            IPerkService perk,
-            ISkillService skill,
+            
+            
             ISpaceService space)
         {
             
             _base = baseService;
             
-            _perk = perk;
-            _skill = skill;
+            
+            
             _space = space;
         }
 
@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Item
             PCBaseStructure pcbs = DataService.Single<PCBaseStructure>(x => x.ID.ToString() == structureID);
             BaseStructure structure = DataService.Get<BaseStructure>(pcbs.BaseStructureID);
 
-            int repair = _skill.GetPCSkillRank(player, SkillType.Piloting);
+            int repair = SkillService.GetPCSkillRank(player, SkillType.Piloting);
             int maxRepair = (int)structure.Durability - (int)pcbs.Durability;
 
             if (maxRepair < repair) repair = maxRepair;
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Item
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            if (_perk.GetPCPerkLevel(new NWPlayer(user), PerkType.CombatRepair) >= 2)
+            if (PerkService.GetPCPerkLevel(new NWPlayer(user), PerkType.CombatRepair) >= 2)
             {
                 return 6.0f;
             }
@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Item
                 return "This starship is already fully repaired.";
             }
 
-            bool canRepair = (_perk.GetPCPerkLevel(new NWPlayer(user), PerkType.CombatRepair) >= 1);
+            bool canRepair = (PerkService.GetPCPerkLevel(new NWPlayer(user), PerkType.CombatRepair) >= 1);
             PCBase pcBase = DataService.Get<PCBase>(pcbs.PCBaseID);
 
             if (!canRepair && _space.IsLocationSpace(pcBase.ShipLocation))

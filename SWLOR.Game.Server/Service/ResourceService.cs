@@ -9,25 +9,6 @@ namespace SWLOR.Game.Server.Service
     public class ResourceService : IResourceService
     {
         
-        private readonly IItemService _item;
-        
-        private readonly ISkillService _skill;
-        private readonly IPlayerStatService _playerStat;
-
-        public ResourceService(
-            
-            IItemService item,
-            
-            ISkillService skill,
-            IPlayerStatService playerStat)
-        {
-            
-            _item = item;
-            
-            _skill = skill;
-            _playerStat = playerStat;
-        }
-        
         public string GetResourceDescription(NWPlaceable resource)
         {
             NWPlaceable tempStorage = (_.GetObjectByTag("TEMP_ITEM_STORAGE"));
@@ -80,7 +61,7 @@ namespace SWLOR.Game.Server.Service
 
         public int CalculateChanceForComponentBonus(NWPlayer player, int tier, ResourceQuality quality, bool scavenging = false)
         {
-            int rank = (scavenging ? _skill.GetPCSkillRank(player, SkillType.Scavenging) : _skill.GetPCSkillRank(player, SkillType.Harvesting));
+            int rank = (scavenging ? SkillService.GetPCSkillRank(player, SkillType.Scavenging) : SkillService.GetPCSkillRank(player, SkillType.Harvesting));
             int difficulty = (tier - 1) * 10 + GetDifficultyAdjustment(quality);
             int delta = difficulty - rank;
 
@@ -105,7 +86,7 @@ namespace SWLOR.Game.Server.Service
                 case -6: chance = 27; break;
             }
 
-            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
+            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
             int itemBonus = (scavenging ? effectiveStats.Scavenging : effectiveStats.Harvesting) / 2;
             if (itemBonus > 30) itemBonus = 30;
             chance += itemBonus;
@@ -317,7 +298,7 @@ namespace SWLOR.Game.Server.Service
 
             string itemTag = setToUse[index];
 
-            return new Tuple<ItemProperty, int>(_item.GetCustomItemPropertyByItemTag(itemTag), index); 
+            return new Tuple<ItemProperty, int>(ItemService.GetCustomItemPropertyByItemTag(itemTag), index); 
         }
     }
 }

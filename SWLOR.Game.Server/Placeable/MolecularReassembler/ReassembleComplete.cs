@@ -19,30 +19,30 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
         
         private readonly ICraftService _craft;
         
-        private readonly IColorTokenService _color;
-        private readonly IPerkService _perk;
-        private readonly IPlayerStatService _playerStat;
-        private readonly ISkillService _skill;
+        
+        
+        
+        
 
         public ReassembleComplete(
             
             ISerializationService serialization,
              
-            ICraftService craft,
+            ICraftService craft
             
-            IColorTokenService color,
-            IPerkService perk,
-            IPlayerStatService playerStat,
-            ISkillService skill)
+            
+            
+            
+            )
         {
             _serialization = serialization;
             
             _craft = craft;
             
-            _color = color;
-            _perk = perk;
-            _playerStat = playerStat;
-            _skill = skill;
+            
+            
+            
+            
         }
 
         private ComponentType _componentType;
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
         public bool Run(params object[] args)
         {
             _player = (NWPlayer) args[0];
-            _playerItemStats = _playerStat.GetPlayerItemEffectiveStats(_player);
+            _playerItemStats = PlayerStatService.GetPlayerItemEffectiveStats(_player);
             int xp = 100; // Always grant at least this much XP to player.
 
             // Remove the immobilization effect
@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
             
             item.Destroy();
 
-            _skill.GiveSkillXP(_player, SkillType.Harvesting, xp);
+            SkillService.GiveSkillXP(_player, SkillType.Harvesting, xp);
             return true;
         }
 
@@ -142,7 +142,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
         {
             string resref = _componentType.ReassembledResref;
             int penalty = 0;
-            int luck = _perk.GetPCPerkLevel(_player, PerkType.Lucky) + (_playerItemStats.Luck / 3);
+            int luck = PerkService.GetPCPerkLevel(_player, PerkType.Lucky) + (_playerItemStats.Luck / 3);
             int xp = 0;
 
             ItemPropertyUnpacked bonusIP = new ItemPropertyUnpacked
@@ -188,7 +188,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
                     }
                     else
                     {
-                        _player.SendMessage(_color.Red("You failed to create a component. (+" + maxBonuses + ")"));
+                        _player.SendMessage(ColorTokenService.Red("You failed to create a component. (+" + maxBonuses + ")"));
                         xp += (50 + RandomService.Random(0, 5));
                     }
                     // Penalty to chance increases regardless if item was created or not.
@@ -210,7 +210,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
                     }
                     else
                     {
-                        _player.SendMessage(_color.Red("You failed to create a component. (+" + amount + ")"));
+                        _player.SendMessage(ColorTokenService.Red("You failed to create a component. (+" + amount + ")"));
                         xp += (50 + RandomService.Random(0, 5));
                     }
                     break;

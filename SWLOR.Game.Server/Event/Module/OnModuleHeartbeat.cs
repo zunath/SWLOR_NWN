@@ -16,20 +16,19 @@ namespace SWLOR.Game.Server.Event.Module
     internal class OnModuleHeartbeat : IRegisteredEvent
     {
         private readonly IAbilityService _ability;
-        private readonly IPerkService _perk;
+        
         private readonly IBaseService _base;
-        private readonly IPlayerStatService _playerStat;
+        
         
         public OnModuleHeartbeat(
             IAbilityService ability,
-            IPerkService perk,
-            IBaseService @base,
-            IPlayerStatService playerStat)
+            IBaseService @base
+            )
         {
             _ability = ability;
-            _perk = perk;
+            
             _base = @base;
-            _playerStat = playerStat;
+            
         }
 
         public bool Run(params object[] args)
@@ -106,7 +105,7 @@ namespace SWLOR.Game.Server.Event.Module
             {
                 if (oPC.CurrentHP < oPC.MaxHP)
                 {
-                    var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(oPC);
+                    var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(oPC);
                     // CON bonus
                     int con = oPC.ConstitutionModifier;
                     if (con > 0)
@@ -117,7 +116,7 @@ namespace SWLOR.Game.Server.Event.Module
                     
                     if (oPC.Chest.CustomItemType == CustomItemType.HeavyArmor)
                     {
-                        int sturdinessLevel = _perk.GetPCPerkLevel(oPC, PerkType.Sturdiness);
+                        int sturdinessLevel = PerkService.GetPCPerkLevel(oPC, PerkType.Sturdiness);
                         if (sturdinessLevel > 0)
                         {
                             amount += sturdinessLevel + 1;
@@ -140,7 +139,7 @@ namespace SWLOR.Game.Server.Event.Module
             {
                 if (entity.CurrentFP < entity.MaxFP)
                 {
-                    var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(oPC);
+                    var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(oPC);
                     // CHA bonus
                     int cha = oPC.CharismaModifier;
                     if (cha > 0)
@@ -151,7 +150,7 @@ namespace SWLOR.Game.Server.Event.Module
 
                     if (oPC.Chest.CustomItemType == CustomItemType.ForceArmor)
                     {
-                        int clarityLevel = _perk.GetPCPerkLevel(oPC, PerkType.Clarity);
+                        int clarityLevel = PerkService.GetPCPerkLevel(oPC, PerkType.Clarity);
                         if (clarityLevel > 0)
                         {
                             amount += clarityLevel + 1;

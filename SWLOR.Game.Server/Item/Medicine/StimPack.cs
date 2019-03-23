@@ -3,6 +3,7 @@ using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 
@@ -11,16 +12,16 @@ namespace SWLOR.Game.Server.Item.Medicine
     public class StimPack: IActionItem
     {
         
-        private readonly IPerkService _perk;
-        private readonly ISkillService _skill;
+        
+        
 
         public StimPack(
-            IPerkService perk,
-            ISkillService skill)
+            
+            )
         {
             
-            _perk = perk;
-            _skill = skill;
+            
+            
         }
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
@@ -39,10 +40,10 @@ namespace SWLOR.Game.Server.Item.Medicine
             NWPlayer player = user.Object;
             int ability = item.GetLocalInt("ABILITY_TYPE");
             int amount = item.GetLocalInt("AMOUNT") + item.MedicineBonus;
-            int rank = player.IsPlayer ? _skill.GetPCSkillRank(player, SkillType.Medicine) : 0;
+            int rank = player.IsPlayer ? SkillService.GetPCSkillRank(player, SkillType.Medicine) : 0;
             int recommendedLevel = item.RecommendedLevel;
             float duration = 30.0f;
-            int perkLevel = player.IsPlayer ? _perk.GetPCPerkLevel(player, PerkType.StimFiend) : 0;
+            int perkLevel = player.IsPlayer ? PerkService.GetPCPerkLevel(player, PerkType.StimFiend) : 0;
             float percentIncrease = perkLevel * 0.25f;
             duration = duration + (duration * percentIncrease);
             Effect effect = _.EffectAbilityIncrease(ability, amount);
@@ -60,8 +61,8 @@ namespace SWLOR.Game.Server.Item.Medicine
                 targetCreature.SendMessage(user.Name + " injects you with a stim pack.");
             }
 
-            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, rank);
-            _skill.GiveSkillXP(player, SkillType.Medicine, xp);
+            int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, rank);
+            SkillService.GiveSkillXP(player, SkillType.Medicine, xp);
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
@@ -81,7 +82,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            return 3.5f + _perk.GetPCPerkLevel(user.Object, PerkType.RangedHealing);
+            return 3.5f + PerkService.GetPCPerkLevel(user.Object, PerkType.RangedHealing);
         }
 
         public bool ReducesItemCharge(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)

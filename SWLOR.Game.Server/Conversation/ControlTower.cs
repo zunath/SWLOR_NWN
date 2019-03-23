@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Conversation
         
         private readonly IBasePermissionService _perm;
         private readonly ISerializationService _serialization;
-        private readonly IColorTokenService _color;
+        
 
         public ControlTower(
              
@@ -27,15 +27,15 @@ namespace SWLOR.Game.Server.Conversation
             
             IBasePermissionService perm,
             ISerializationService serialization,
-            IBaseService @base,
-            IColorTokenService color) 
+            IBaseService @base
+            ) 
             : base(dialog)
         {
             
             _perm = perm;
             _serialization = serialization;
             _base = @base;
-            _color = color;
+            
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -103,16 +103,16 @@ namespace SWLOR.Game.Server.Conversation
             }
             else
             {
-                time = _color.Red("Fuel has expired.");
+                time = ColorTokenService.Red("Fuel has expired.");
             }
 
              
 
-            string header = _color.Green("Power: ") + currentPower + " / " + maxPower + "\n";
-            header += _color.Green("CPU: ") + currentCPU + " / " + maxCPU + "\n";
-            header += _color.Green("Fuel: ") + currentFuel + " / " + maxFuel + "\n";
-            header += _color.Green("Reinforced Fuel: ") + currentReinforcedFuel + " / " + maxReinforcedFuel + "\n";
-            header += _color.Green("Resource Bay: ") + currentResources + " / " + maxResources + "\n";
+            string header = ColorTokenService.Green("Power: ") + currentPower + " / " + maxPower + "\n";
+            header += ColorTokenService.Green("CPU: ") + currentCPU + " / " + maxCPU + "\n";
+            header += ColorTokenService.Green("Fuel: ") + currentFuel + " / " + maxFuel + "\n";
+            header += ColorTokenService.Green("Reinforced Fuel: ") + currentReinforcedFuel + " / " + maxReinforcedFuel + "\n";
+            header += ColorTokenService.Green("Resource Bay: ") + currentResources + " / " + maxResources + "\n";
             header += time + "\n";
             header += "What would you like to do with this control tower?";
 

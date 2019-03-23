@@ -13,20 +13,20 @@ namespace SWLOR.Game.Server.Item
 {
     public class ResourceScanner: IActionItem
     {
-        private readonly IPerkService _perk;
+        
         private readonly IResourceService _resource;
-        private readonly ISkillService _skill;
+        
         private readonly IDurabilityService _durability;
         
         public ResourceScanner(
-            IPerkService perk,
+            
             IResourceService resource,
-            ISkillService skill,
+            
             IDurabilityService durability)
         {
-            _perk = perk;
+            
             _resource = resource;
-            _skill = skill;
+            
             _durability = durability;
         }
 
@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Item
             if (user.IsPlayer && user.GetLocalInt(target.GlobalID.ToString()) == FALSE)
             {
                 int scanningBonus = item.ScanningBonus;
-                _skill.GiveSkillXP(player, SkillType.Harvesting, 150);
+                SkillService.GiveSkillXP(player, SkillType.Harvesting, 150);
                 user.SetLocalInt(target.GlobalID.ToString(), 1 + scanningBonus); 
             }
         }
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Item
             if (user.IsPlayer)
             {
                 var player = (user.Object);
-                scanningTime = BaseScanningTime - BaseScanningTime * (_perk.GetPCPerkLevel(player, PerkType.SpeedyScanner) * 0.1f);
+                scanningTime = BaseScanningTime - BaseScanningTime * (PerkService.GetPCPerkLevel(player, PerkType.SpeedyScanner) * 0.1f);
 
             }
             return scanningTime;

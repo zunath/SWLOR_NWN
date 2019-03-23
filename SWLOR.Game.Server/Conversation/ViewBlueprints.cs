@@ -4,7 +4,7 @@ using NWN;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
-
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
 
@@ -19,17 +19,17 @@ namespace SWLOR.Game.Server.Conversation
         }
 
         private readonly ICraftService _craft;
-        private readonly ISkillService _skill;
+        
 
         public ViewBlueprints(
             
             IDialogService dialog,
-            ICraftService craft,
-            ISkillService skill)
+            ICraftService craft
+            )
             : base(dialog)
         {
             _craft = craft;
-            _skill = skill;
+            
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Conversation
             var model = _craft.GetPlayerCraftingData(GetPC());
             model.Blueprint = _craft.GetBlueprintByID(blueprintID);
             model.BlueprintID = blueprintID;
-            model.PlayerSkillRank = _skill.GetPCSkillRank(GetPC(), model.Blueprint.SkillID);
+            model.PlayerSkillRank = SkillService.GetPCSkillRank(GetPC(), model.Blueprint.SkillID);
             model.MainMinimum = model.Blueprint.MainMinimum;
             model.MainMaximum = model.Blueprint.MainMaximum;
             model.SecondaryMinimum = model.Blueprint.SecondaryMinimum;

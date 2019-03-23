@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Conversation
     public class ManageLease: ConversationBase
     {
         private readonly IBaseService _base;
-        private readonly IColorTokenService _color;
+        
         
         private readonly IBasePermissionService _perm;
         private readonly ISpaceService _space;
@@ -25,14 +25,14 @@ namespace SWLOR.Game.Server.Conversation
              
             IDialogService dialog,
             IBaseService @base,
-            IColorTokenService color,
+            
             
             IBasePermissionService perm,
             ISpaceService space) 
             : base(dialog)
         {
             _base = @base;
-            _color = color;
+            
             
             _perm = perm;
             _space = space;
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Conversation
             PlayerDialog dialog = new PlayerDialog("MainPage");
 
             DialogPage mainPage = new DialogPage(
-                _color.Green("Manage Territory Menu") + "\n\nPlease select a territory.");
+                ColorTokenService.Green("Manage Territory Menu") + "\n\nPlease select a territory.");
 
             DialogPage baseDetailsPage = new DialogPage(string.Empty,
                 "Extend Lease (+1 day)",
@@ -149,11 +149,11 @@ namespace SWLOR.Game.Server.Conversation
 
             int dailyUpkeep = dbArea.DailyUpkeep + (int)(dbArea.DailyUpkeep * (owner.LeaseRate * 0.01f));
 
-            string header = _color.Green("Location: ") + dbArea.Name + " (" + pcBase.Sector + ")\n\n";
-            header += _color.Green("Owned By: ") + owner.CharacterName + "\n";
-            header += _color.Green("Purchased: ") + pcBase.DateInitialPurchase + "\n";
-            header += _color.Green("Rent Due: ") + pcBase.DateRentDue + "\n";
-            header += _color.Green("Daily Upkeep: ") + dailyUpkeep + " credits\n\n";
+            string header = ColorTokenService.Green("Location: ") + dbArea.Name + " (" + pcBase.Sector + ")\n\n";
+            header += ColorTokenService.Green("Owned By: ") + owner.CharacterName + "\n";
+            header += ColorTokenService.Green("Purchased: ") + pcBase.DateInitialPurchase + "\n";
+            header += ColorTokenService.Green("Rent Due: ") + pcBase.DateRentDue + "\n";
+            header += ColorTokenService.Green("Daily Upkeep: ") + dailyUpkeep + " credits\n\n";
             header += "Daily upkeep may be paid up to 30 days in advance.\n";
 
             // Starships have slightly different setups.  They only pay rent when in a public starport and
@@ -165,9 +165,9 @@ namespace SWLOR.Game.Server.Conversation
                 if (_space.IsLocationPublicStarport(pcBase.ShipLocation))
                 {
                     SpaceStarport starport = DataService.SingleOrDefault<SpaceStarport>(x => x.ID.ToString() == pcBase.ShipLocation);
-                    header = _color.Green("Location: ") + starport.Name + " (" + starport.Planet + ")\n";
-                    header += _color.Green("Rent Due: ") + pcBase.DateRentDue + "\n";
-                    header += _color.Green("Daily Upkeep: ") + starport.Cost + " credits\n\n";
+                    header = ColorTokenService.Green("Location: ") + starport.Name + " (" + starport.Planet + ")\n";
+                    header += ColorTokenService.Green("Rent Due: ") + pcBase.DateRentDue + "\n";
+                    header += ColorTokenService.Green("Daily Upkeep: ") + starport.Cost + " credits\n\n";
                 }
                 else
                 {

@@ -16,9 +16,9 @@ namespace SWLOR.Game.Server.AI
         public SightAggroBehaviour(
             BehaviourTreeBuilder builder,
             
-            IEnmityService enmity,
+            
             IDialogService dialog)
-            : base(builder, enmity, dialog)
+            : base(builder, dialog)
         {
         }
 

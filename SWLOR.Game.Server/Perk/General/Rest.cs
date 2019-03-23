@@ -3,6 +3,7 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.CustomEffect;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 
@@ -11,16 +12,16 @@ namespace SWLOR.Game.Server.Perk.General
     public class Rest : IPerk
     {
         
-        private readonly IPerkService _perk;
-        private readonly ICustomEffectService _customEffect;
+        
+        
 
         public Rest(
-            IPerkService perk,
-            ICustomEffectService customEffect)
+            
+            )
         {
             
-            _perk = perk;
-            _customEffect = customEffect;
+            
+            
         }
 
 
@@ -46,7 +47,7 @@ namespace SWLOR.Game.Server.Perk.General
 
         public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellFeatID)
         {
-            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.Rest);
+            int perkLevel = PerkService.GetPCPerkLevel(oPC, PerkType.Rest);
 
             switch (perkLevel)
             {
@@ -71,7 +72,7 @@ namespace SWLOR.Game.Server.Perk.General
 
         public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
         {
-            _customEffect.ApplyCustomEffect(player, player, CustomEffectType.Rest, -1, 0, null);
+            CustomEffectService.ApplyCustomEffect(player, player, CustomEffectType.Rest, -1, 0, null);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

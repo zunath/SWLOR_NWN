@@ -14,14 +14,6 @@ namespace SWLOR.Game.Server.Service
     public class DurabilityService : IDurabilityService
     {
         private const float DefaultDurability = 5.0f;
-        private readonly IColorTokenService _color;
-        
-        public DurabilityService(
-            
-            IColorTokenService color)
-        {
-            _color = color;
-        }
         
         private void InitializeDurability(NWItem item)
         {
@@ -114,7 +106,7 @@ namespace SWLOR.Game.Server.Service
                         _.ActionUnequipItem(oItem.Object);
                     });
 
-                    oPC.FloatingText(_color.Red("That item is broken and must be repaired before you can use it."));
+                    oPC.FloatingText(ColorTokenService.Red("That item is broken and must be repaired before you can use it."));
                 }
             }
         }
@@ -126,12 +118,12 @@ namespace SWLOR.Game.Server.Service
             NWItem examinedItem = (examinedObject.Object);
             if (examinedItem.GetLocalFloat("DURABILITY_MAX") <= 0f) return existingDescription;
 
-            string description = _color.Orange("Durability: ");
+            string description = ColorTokenService.Orange("Durability: ");
             float durability = GetDurability(examinedItem);
-            if (durability <= 0.0f) description += _color.Red(Convert.ToString(durability));
-            else description += _color.White(FormatDurability(durability));
+            if (durability <= 0.0f) description += ColorTokenService.Red(Convert.ToString(durability));
+            else description += ColorTokenService.White(FormatDurability(durability));
 
-            description += _color.White(" / " + FormatDurability(GetMaxDurability(examinedItem)));
+            description += ColorTokenService.White(" / " + FormatDurability(GetMaxDurability(examinedItem)));
 
             return existingDescription + "\n\n" + description;
         }
@@ -166,13 +158,13 @@ namespace SWLOR.Game.Server.Service
 
             if (displayMessage)
             {
-                player.SendMessage(_color.Red("Your " + sItemName + " has been damaged. (" + FormatDurability(durability) + " / " + GetMaxDurability(item)));
+                player.SendMessage(ColorTokenService.Red("Your " + sItemName + " has been damaged. (" + FormatDurability(durability) + " / " + GetMaxDurability(item)));
             }
 
             if (durability <= 0.00f)
             {
                 item.Destroy();
-                player.SendMessage(_color.Red("Your " + sItemName + " has broken!"));
+                player.SendMessage(ColorTokenService.Red("Your " + sItemName + " has broken!"));
             }
             else
             {
@@ -202,7 +194,7 @@ namespace SWLOR.Game.Server.Service
             SetMaxDurability(item, maxDurability);
             SetDurability(item, durability);
             string durMessage = FormatDurability(durability) + " / " + FormatDurability(maxDurability);
-            oPC.SendMessage(_color.Green("You repaired your " + item.Name + ". (" + durMessage + ")"));
+            oPC.SendMessage(ColorTokenService.Green("You repaired your " + item.Name + ". (" + durMessage + ")"));
         }
         
         public void OnHitCastSpell(NWPlayer oTarget)

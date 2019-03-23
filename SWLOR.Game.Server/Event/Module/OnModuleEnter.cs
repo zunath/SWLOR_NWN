@@ -12,52 +12,52 @@ namespace SWLOR.Game.Server.Event.Module
     {
         
         private readonly IPlayerService _player;
-        private readonly ISkillService _skill;
+        
         private readonly IQuestService _quest;
         private readonly IActivityLoggingService _activityLogging;
         private readonly IMapPinService _mapPin;
         private readonly IObjectVisibilityService _objectVisibility;
-        private readonly ICustomEffectService _customEffect;
+        
         private readonly IChatTextService _chatText;
         private readonly IPlayerValidationService _playerValidation;
         
         private readonly IRaceService _race;
         private readonly IPlayerMigrationService _migration;
         private readonly IMarketService _market;
-        private readonly IPerkService _perk;
+        
 
         public OnModuleEnter(
             
             IPlayerService player,
-            ISkillService skill,
+            
             IQuestService quest,
             IActivityLoggingService activityLogging,
             IMapPinService mapPin,
             IObjectVisibilityService objectVisibility,
-            ICustomEffectService customEffect,
+            
             IChatTextService chatText,
             IPlayerValidationService playerValidation,
             
             IRaceService race,
             IPlayerMigrationService migration,
-            IMarketService market,
-            IPerkService perk)
+            IMarketService market
+            )
         {
             
             _player = player;
-            _skill = skill;
+            
             _quest = quest;
             _activityLogging = activityLogging;
             _mapPin = mapPin;
             _objectVisibility = objectVisibility;
-            _customEffect = customEffect;
+            
             _chatText = chatText;
             _playerValidation = playerValidation;
             
             _race = race;
             _migration = migration;
             _market = market;
-            _perk = perk;
+            
         }
 
         public bool Run(params object[] args)
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Event.Module
             _playerValidation.OnModuleEnter();
             _player.InitializePlayer(player);
             DataService.CachePlayerData(player);
-            _skill.OnModuleEnter();
-            _perk.OnModuleEnter();
+            SkillService.OnModuleEnter();
+            PerkService.OnModuleEnter();
             _player.LoadCharacter(player);
             _migration.OnModuleEnter();
             _player.ShowMOTD(player);
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Event.Module
             ApplyScriptEvents(player);
             _mapPin.OnModuleClientEnter();
             _objectVisibility.OnClientEnter();
-            _customEffect.OnModuleEnter();
+            CustomEffectService.OnModuleEnter();
             _chatText.OnModuleEnter();
             _race.OnModuleEnter();
             _market.OnModuleEnter();

@@ -5,6 +5,7 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.AI
@@ -15,17 +16,17 @@ namespace SWLOR.Game.Server.AI
     public class StandardBehaviour : BehaviourBase
     {
         protected readonly BehaviourTreeBuilder _builder;
-        private readonly IEnmityService _enmity;
+        
         private readonly IDialogService _dialog;
         
 
         public StandardBehaviour(BehaviourTreeBuilder builder,
             
-            IEnmityService enmity,
+            
             IDialogService dialog)
         {
             _builder = builder;
-            _enmity = enmity;
+            
             _dialog = dialog;
         }
 
@@ -48,7 +49,7 @@ namespace SWLOR.Game.Server.AI
         public override void OnPhysicalAttacked()
         {
             base.OnPhysicalAttacked();
-            _enmity.OnNPCPhysicallyAttacked();
+            EnmityService.OnNPCPhysicallyAttacked();
         }
 
         public override void OnDeath()
@@ -65,7 +66,7 @@ namespace SWLOR.Game.Server.AI
         public override void OnDamaged()
         {
             base.OnDamaged();
-            _enmity.OnNPCDamaged();
+            EnmityService.OnNPCDamaged();
         }
 
         public override void OnConversation()

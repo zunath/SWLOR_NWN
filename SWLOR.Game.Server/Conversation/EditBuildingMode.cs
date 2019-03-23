@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Conversation
             public StructureModeType Mode { get; set; }
         }
 
-        private readonly IColorTokenService _color;
+        
         private readonly IBaseService _base;
         
         private readonly IImpoundService _impound;
@@ -28,13 +28,13 @@ namespace SWLOR.Game.Server.Conversation
         public EditBuildingMode(
              
             IDialogService dialog,
-            IColorTokenService color,
+            
             IBaseService @base,
             
             IImpoundService impound) 
             : base(dialog)
         {
-            _color = color;
+            
             _base = @base;
             
             _impound = impound;
@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Conversation
             var modeType = (StructureModeType) mode.ID;
 
             string header = "You may change the active mode of this building here. Only one mode may be set at a time.\n\nBe aware that switching modes will remove all primary residents for the building.\n\n";
-            header += _color.Green("Current Mode: ") + mode.Name;
+            header += ColorTokenService.Green("Current Mode: ") + mode.Name;
 
             if (modeType == StructureModeType.Residence)
                 SetResponseVisible("MainPage", 1, false);
@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.Conversation
                     throw new ArgumentOutOfRangeException();
             }
 
-            header += _color.Red("\n\nWARNING:\n\n");
+            header += ColorTokenService.Red("\n\nWARNING:\n\n");
             header += GetWarning();
 
             SetPageHeader("ConfirmSetMode", header);

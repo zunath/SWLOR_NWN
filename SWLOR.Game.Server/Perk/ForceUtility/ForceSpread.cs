@@ -1,6 +1,7 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Perk.ForceUtility
@@ -8,17 +9,17 @@ namespace SWLOR.Game.Server.Perk.ForceUtility
     public class ForceSpread: IPerk
     {
         
-        private readonly ICustomEffectService _customEffect;
-        private readonly ISkillService _skill;
+        
+        
 
         public ForceSpread(
             
-            ICustomEffectService customEffect,
-            ISkillService skill)
+            
+            )
         {
             
-            _customEffect = customEffect;
-            _skill = skill;
+            
+            
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -95,8 +96,8 @@ namespace SWLOR.Game.Server.Perk.ForceUtility
             }
 
             _.PlaySound("v_useforce");
-            _customEffect.ApplyCustomEffect(player, targetCreature, CustomEffectType.ForceSpread, duration, perkLevel, uses + "," + range);
-            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceUtility, null);
+            CustomEffectService.ApplyCustomEffect(player, targetCreature, CustomEffectType.ForceSpread, duration, perkLevel, uses + "," + range);
+            SkillService.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceUtility, null);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

@@ -16,16 +16,16 @@ namespace SWLOR.Game.Server.ChatCommand
     {
         
         
-        private readonly IColorTokenService _color;
+        
 
         public ToggleHolonet(
             
             
-            IColorTokenService color)
+            )
         {
             
             
-            _color = color;
+            
         }
 
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
@@ -38,11 +38,11 @@ namespace SWLOR.Game.Server.ChatCommand
 
             if (player.DisplayHolonet)
             {
-                user.SendMessage("Holonet chat: " + _color.Green("ENABLED"));
+                user.SendMessage("Holonet chat: " + ColorTokenService.Green("ENABLED"));
             }
             else
             {
-                user.SendMessage("Holonet chat: " + _color.Red("DISABLED"));
+                user.SendMessage("Holonet chat: " + ColorTokenService.Red("DISABLED"));
             }
         }
 

@@ -10,6 +10,7 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using Object = NWN.Object;
 
@@ -18,19 +19,19 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
     public class OnDisturbed: IRegisteredEvent
     {
         
-        private readonly IPerkService _perk;
-        private readonly ISkillService _skill;
+        
+        
         private readonly ICraftService _craft;
         
         
 
         public OnDisturbed(
-            IPerkService perk,
-            ISkillService skill,
+            
+            
             ICraftService craft)
         {
-            _perk = perk;
-            _skill = skill;
+            
+            
             _craft = craft;
         }
 
@@ -83,7 +84,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             }
 
             int level = _craft.GetIngotLevel(item.Resref);
-            int rank = _skill.GetPCSkillRank(pc, SkillType.Harvesting);
+            int rank = SkillService.GetPCSkillRank(pc, SkillType.Harvesting);
             
             int delta = rank - level;
             if (delta <= -4)
@@ -92,7 +93,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
                 return false;
             }
 
-            int pcPerkLevel = _perk.GetPCPerkLevel(pc, PerkType.Refining);
+            int pcPerkLevel = PerkService.GetPCPerkLevel(pc, PerkType.Refining);
             int orePerkLevel = _craft.GetIngotPerkLevel(item.Resref);
 
             if (pcPerkLevel < orePerkLevel)
@@ -131,7 +132,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             }
 
             // Ready to smelt
-            float baseCraftDelay = 18.0f - (18.0f * _perk.GetPCPerkLevel(pc, PerkType.SpeedyRefining) * 0.1f);
+            float baseCraftDelay = 18.0f - (18.0f * PerkService.GetPCPerkLevel(pc, PerkType.SpeedyRefining) * 0.1f);
 
             pc.IsBusy = true;
             NWNXPlayer.StartGuiTimingBar(pc, baseCraftDelay, string.Empty);
@@ -178,7 +179,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
 
         private int CalculatePerkCoalBonusCharges(NWPlayer pc)
         {
-            int perkLevel = _perk.GetPCPerkLevel(pc, PerkType.RefineryManagement);
+            int perkLevel = PerkService.GetPCPerkLevel(pc, PerkType.RefineryManagement);
 
             switch (perkLevel)
             {

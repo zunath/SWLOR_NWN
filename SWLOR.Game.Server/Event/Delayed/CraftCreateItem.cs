@@ -18,36 +18,36 @@ namespace SWLOR.Game.Server.Event.Delayed
     {
         private readonly ICraftService _craft;
         private readonly IComponentBonusService _componentBonus;
-        private readonly IColorTokenService _color;
-        private readonly IBaseService _base;
-        private readonly ISkillService _skill;
         
-        private readonly IPlayerStatService _playerStat;
+        private readonly IBaseService _base;
+        
+        
+        
         private readonly IDurabilityService _durability;
-        private readonly IPerkService _perk;
+        
 
         public CraftCreateItem(
             ICraftService craft,
             IComponentBonusService componentBonus,
             
-            IColorTokenService color,
-            IBaseService @base,
-            ISkillService skill,
             
-            IPlayerStatService playerStat,
-            IDurabilityService durability,
-            IPerkService perk)
+            IBaseService @base,
+            
+            
+            
+            IDurabilityService durability
+            )
         {
             _craft = craft;
             _componentBonus = componentBonus;
             
-            _color = color;
-            _base = @base;
-            _skill = skill;
             
-            _playerStat = playerStat;
+            _base = @base;
+            
+            
+            
             _durability = durability;
-            _perk = perk;
+            
         }
 
         public bool Run(params object[] args)
@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Event.Delayed
 
             CraftBlueprint blueprint = DataService.Single<CraftBlueprint>(x => x.ID == model.BlueprintID);
             BaseStructure baseStructure = blueprint.BaseStructureID == null ? null : DataService.Get<BaseStructure>(blueprint.BaseStructureID);
-            PCSkill pcSkill = _skill.GetPCSkill(player, blueprint.SkillID);
+            PCSkill pcSkill = SkillService.GetPCSkill(player, blueprint.SkillID);
 
             int pcEffectiveLevel = _craft.CalculatePCEffectiveLevel(player, pcSkill.Rank, (SkillType)blueprint.SkillID);
             int itemLevel = model.AdjustedLevel;
@@ -93,12 +93,12 @@ namespace SWLOR.Game.Server.Event.Delayed
 
             if (chance <= 1.0f)
             {
-                player.FloatingText(_color.Red("Critical failure! You don't have enough skill to create that item. All components were lost."));
+                player.FloatingText(ColorTokenService.Red("Critical failure! You don't have enough skill to create that item. All components were lost."));
                 _craft.ClearPlayerCraftingData(player, true);
                 return;
             }
 
-            int luckyBonus = _perk.GetPCPerkLevel(player, PerkType.Lucky);
+            int luckyBonus = PerkService.GetPCPerkLevel(player, PerkType.Lucky);
             var craftedItems = new List<NWItem>();
             NWItem craftedItem = (_.CreateItemOnObject(blueprint.ItemResref, player.Object, blueprint.Quantity));
             craftedItem.IsIdentified = true;
@@ -170,7 +170,7 @@ namespace SWLOR.Game.Server.Event.Delayed
             
             player.SendMessage("You created " + blueprint.Quantity + "x " + blueprint.ItemName + "!");
             int baseXP = 250 + successAmount * RandomService.Random(1, 50);
-            float xp = _skill.CalculateRegisteredSkillLevelAdjustedXP(baseXP, model.AdjustedLevel, pcSkill.Rank);
+            float xp = SkillService.CalculateRegisteredSkillLevelAdjustedXP(baseXP, model.AdjustedLevel, pcSkill.Rank);
 
             var pcCraftedBlueprint = DataService.SingleOrDefault<PCCraftedBlueprint>(x => x.PlayerID == player.GlobalID && x.CraftBlueprintID == blueprint.ID);
             if(pcCraftedBlueprint == null)
@@ -188,7 +188,7 @@ namespace SWLOR.Game.Server.Event.Delayed
                 DataService.SubmitDataChange(pcCraftedBlueprint, DatabaseActionType.Insert);
             }
 
-            _skill.GiveSkillXP(player, blueprint.SkillID, (int)xp);
+            SkillService.GiveSkillXP(player, blueprint.SkillID, (int)xp);
             _craft.ClearPlayerCraftingData(player, true);
             player.SetLocalInt("LAST_CRAFTED_BLUEPRINT_ID_" + blueprint.CraftDeviceID, blueprint.ID);
         }
@@ -227,7 +227,7 @@ namespace SWLOR.Game.Server.Event.Delayed
                             BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
 
                     }
-                    player.SendMessage(_color.Green("Successfully applied component property: " + bonusName));
+                    player.SendMessage(ColorTokenService.Green("Successfully applied component property: " + bonusName));
 
                     ComponentBonusType bonusType = (ComponentBonusType)_.GetItemPropertySubType(ip);
                     if (bonusType != ComponentBonusType.DurabilityUp)
@@ -261,7 +261,7 @@ namespace SWLOR.Game.Server.Event.Delayed
                 }
                 else
                 {
-                    player.SendMessage(_color.Red("Failed to apply component property: " + bonusName));
+                    player.SendMessage(ColorTokenService.Red("Failed to apply component property: " + bonusName));
                 }
             }
 
@@ -271,7 +271,7 @@ namespace SWLOR.Game.Server.Event.Delayed
 
         private float CalculateEquipmentBonus(NWPlayer player, SkillType skillType)
         {
-            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
+            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
             int equipmentBonus = 0;
             float multiplier = 0.5f;
             int atmosphere = _craft.CalculateAreaAtmosphereBonus(player.Area);

@@ -9,19 +9,6 @@ namespace SWLOR.Game.Server.Perk.TwoHanded
 {
     public class Cleave : IPerk
     {
-        
-        
-        private readonly IPerkService _perk;
-
-        public Cleave(
-            
-            IPerkService perk)
-        {
-            
-            
-            _perk = perk;
-        }
-
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

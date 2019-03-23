@@ -10,12 +10,12 @@ namespace SWLOR.Game.Server.Perk.Blaster
 {
     public class Tranquilizer: IPerk
     {
-        private readonly IPerkService _perk;
+        
 
         public Tranquilizer(
-            IPerkService perk)
+            )
         {
-            _perk = perk;
+            
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
         {
-            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky);
+            int luck = PerkService.GetPCPerkLevel(player, PerkType.Lucky);
             float duration;
 
             switch (perkLevel)

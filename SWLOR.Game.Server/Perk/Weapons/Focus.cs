@@ -3,6 +3,7 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 
@@ -10,19 +11,6 @@ namespace SWLOR.Game.Server.Perk.Weapons
 {
     public class Focus : IPerk
     {
-        
-        
-        private readonly IPerkService _perk;
-
-        public Focus(
-            
-            IPerkService perk)
-        {
-            
-            
-            _perk = perk;
-        }
-
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;
@@ -100,7 +88,7 @@ namespace SWLOR.Game.Server.Perk.Weapons
 
             if (!mainHand.IsValid && !offHand.IsValid) 
             {
-                int martialArtsLevel = _perk.GetPCPerkLevel(oPC, PerkType.WeaponFocusMartialArts);
+                int martialArtsLevel = PerkService.GetPCPerkLevel(oPC, PerkType.WeaponFocusMartialArts);
                 if (martialArtsLevel >= 1)
                 {
                     NWNXCreature.AddFeat(oPC, FEAT_WEAPON_FOCUS_UNARMED_STRIKE);
@@ -139,7 +127,7 @@ namespace SWLOR.Game.Server.Perk.Weapons
                 perkType = PerkType.WeaponFocusLightsaber;
             }
             
-            int perkLevel = _perk.GetPCPerkLevel(oPC, perkType);
+            int perkLevel = PerkService.GetPCPerkLevel(oPC, perkType);
             int type = equipped.BaseItemType;
             if (perkLevel >= 1)
             {

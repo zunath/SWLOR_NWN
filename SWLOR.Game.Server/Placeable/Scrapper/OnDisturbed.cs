@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 using Object = NWN.Object;
@@ -13,12 +14,12 @@ namespace SWLOR.Game.Server.Placeable.Scrapper
 {
     public class OnDisturbed: IRegisteredEvent
     {
-        private readonly IItemService _item;
+        
         
         public OnDisturbed(
-            IItemService item)
+            )
         {
-            _item = item;
+            
         }
 
         public bool Run(params object[] args)
@@ -33,7 +34,7 @@ namespace SWLOR.Game.Server.Placeable.Scrapper
             // Not a component. Return the item.
             if (componentIP == null)
             {
-                _item.ReturnItem(player, item);
+                ItemService.ReturnItem(player, item);
                 player.FloatingText("You cannot scrap this item.");
                 return false;
             }
@@ -41,7 +42,7 @@ namespace SWLOR.Game.Server.Placeable.Scrapper
             // Item is a component but it was crafted. Cannot scrap crafted items.
             if (!string.IsNullOrWhiteSpace(item.GetLocalString("CRAFTER_PLAYER_ID")))
             {
-                _item.ReturnItem(player, item);
+                ItemService.ReturnItem(player, item);
                 player.FloatingText("You cannot scrap crafted items.");
                 return false;
             }

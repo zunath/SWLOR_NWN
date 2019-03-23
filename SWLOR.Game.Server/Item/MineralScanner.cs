@@ -16,27 +16,27 @@ namespace SWLOR.Game.Server.Item
     public class MineralScanner : IActionItem
     {
         
-        private readonly IPerkService _perk;
+        
         
         private readonly IBaseService _base;
-        private readonly IItemService _item;
+        
         
         private readonly IDurabilityService _durability;
 
         public MineralScanner(
             
-            IPerkService perk,
+            
             
             IBaseService @base,
-            IItemService item,
+            
             
             IDurabilityService durability)
         {
             
-            _perk = perk;
+            
             
             _base = @base;
-            _item = item;
+            
             
             _durability = durability;
         }
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Item
 
             foreach (var lti in items)
             {
-                string name = _item.GetNameByResref(lti.Resref);
+                string name = ItemService.GetNameByResref(lti.Resref);
                 user.SendMessage(name + " [Density: " + lti.Weight + "]");
             }
             
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Item
             if (user.IsPlayer)
             {
                 var player = (user.Object);
-                scanningTime = BaseScanningTime - BaseScanningTime * (_perk.GetPCPerkLevel(player, PerkType.SpeedyScanner) * 0.1f);
+                scanningTime = BaseScanningTime - BaseScanningTime * (PerkService.GetPCPerkLevel(player, PerkType.SpeedyScanner) * 0.1f);
 
             }
             return scanningTime;

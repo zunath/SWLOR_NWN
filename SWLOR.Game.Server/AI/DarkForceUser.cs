@@ -10,6 +10,7 @@ using static NWN._;
 using SWLOR.Game.Server.Event;
 using System;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.AI
 {
@@ -20,18 +21,18 @@ namespace SWLOR.Game.Server.AI
     {
         
         protected readonly BehaviourTreeBuilder _builder;
-        private readonly IEnmityService _enmity;
+        
         private readonly IDialogService _dialog;
         
 
         public DarkForceUser(BehaviourTreeBuilder builder,
             
-            IEnmityService enmity,
+            
             IDialogService dialog)
         {
             
             _builder = builder;
-            _enmity = enmity;
+            
             _dialog = dialog;
         }
 
@@ -65,7 +66,7 @@ namespace SWLOR.Game.Server.AI
         public override void OnPhysicalAttacked()
         {
             base.OnPhysicalAttacked();
-            _enmity.OnNPCPhysicallyAttacked();
+            EnmityService.OnNPCPhysicallyAttacked();
 
             DoForceAttack();
         }
@@ -84,7 +85,7 @@ namespace SWLOR.Game.Server.AI
         public override void OnDamaged()
         {
             base.OnDamaged();
-            _enmity.OnNPCDamaged();
+            EnmityService.OnNPCDamaged();
 
             DoForceAttack();
         }

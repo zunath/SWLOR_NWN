@@ -5,6 +5,7 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 
@@ -17,20 +18,20 @@ namespace SWLOR.Game.Server.AI
     {
         
         protected readonly BehaviourTreeBuilder _builder;
-        private readonly IEnmityService _enmity;
+        
         private readonly IDialogService _dialog;
         
         private readonly ISpaceService _space;
 
         public StarshipBehaviour(BehaviourTreeBuilder builder,
             
-            IEnmityService enmity,
+            
             IDialogService dialog,
             ISpaceService space)
         {
             
             _builder = builder;
-            _enmity = enmity;
+            
             _dialog = dialog;
             _space = space;
         }
@@ -52,7 +53,7 @@ namespace SWLOR.Game.Server.AI
         public override void OnPhysicalAttacked()
         {
             base.OnPhysicalAttacked();
-            _enmity.OnNPCPhysicallyAttacked();
+            EnmityService.OnNPCPhysicallyAttacked();
 
             NWCreature self = Object.OBJECT_SELF;
             NWCreature attacker = _.GetLastAttacker();
@@ -74,7 +75,7 @@ namespace SWLOR.Game.Server.AI
         public override void OnDamaged()
         {
             base.OnDamaged();
-            _enmity.OnNPCDamaged();
+            EnmityService.OnNPCDamaged();
         }
 
         public override void OnConversation()

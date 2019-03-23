@@ -14,20 +14,20 @@ namespace SWLOR.Game.Server.ChatCommand
     {
         
         
-        private readonly IColorTokenService _color;
+        
 
         private string GenericError;
 
         public Dice(
             
             
-            IColorTokenService color)
+            )
         {
             
             
-            _color = color;
+            
 
-            GenericError = _color.Red("Please enter /dice help for more information on how to use this command.");
+            GenericError = ColorTokenService.Red("Please enter /dice help for more information on how to use this command.");
         }
 
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.ChatCommand
             }
 
             string dieRoll = number + "d" + sides;
-            string message = _color.SkillCheck("Dice Roll: ") + dieRoll + ": " + value;
+            string message = ColorTokenService.SkillCheck("Dice Roll: ") + dieRoll + ": " + value;
             user.SpeakString(message);
         }
 

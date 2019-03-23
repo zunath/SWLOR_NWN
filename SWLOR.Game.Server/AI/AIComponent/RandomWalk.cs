@@ -13,14 +13,14 @@ namespace SWLOR.Game.Server.AI.AIComponent
     public class RandomWalk : IRegisteredEvent
     {
         
-        private readonly IEnmityService _enmity;
+        
         
 
         public RandomWalk(
-            IEnmityService enmity)
+            )
         {
             
-            _enmity = enmity;
+            
             
         }
 
@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.AI.AIComponent
         {
             NWCreature self = (NWCreature)args[0];
 
-            if (self.IsInCombat || !_enmity.IsEnmityTableEmpty(self))
+            if (self.IsInCombat || !EnmityService.IsEnmityTableEmpty(self))
             {
                 if (_.GetCurrentAction(self.Object) == _.ACTION_RANDOMWALK)
                 {

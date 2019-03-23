@@ -218,23 +218,19 @@ namespace SWLOR.Game.Server
             builder.RegisterType<BehaviourService>().As<IBehaviourService>().SingleInstance();
             builder.RegisterType<ChatCommandService>().As<IChatCommandService>().SingleInstance();
             builder.RegisterType<ChatTextService>().As<IChatTextService>().SingleInstance();
-            builder.RegisterType<ColorTokenService>().As<IColorTokenService>().SingleInstance();
             builder.RegisterType<CombatService>().As<ICombatService>().SingleInstance();
             builder.RegisterType<ComponentBonusService>().As<IComponentBonusService>().SingleInstance();
             builder.RegisterType<CraftService>().As<ICraftService>().SingleInstance();
             builder.RegisterType<CreatureCorpseService>().As<ICreatureCorpseService>().SingleInstance();
-            builder.RegisterType<CustomEffectService>().As<ICustomEffectService>().SingleInstance();
             builder.RegisterType<DataPackageService>().As<IDataPackageService>().SingleInstance();
             builder.RegisterType<DeathService>().As<IDeathService>().SingleInstance();
             builder.RegisterType<DialogService>().As<IDialogService>().SingleInstance();
             builder.RegisterType<DurabilityService>().As<IDurabilityService>().SingleInstance();
             builder.RegisterType<EmoteStyleService>().As<IEmoteStyleService>().SingleInstance();
-            builder.RegisterType<EnmityService>().As<IEnmityService>().SingleInstance();
             builder.RegisterType<ExaminationService>().As<IExaminationService>().SingleInstance();
             builder.RegisterType<FarmingService>().As<IFarmingService>().SingleInstance();
             builder.RegisterType<HelmetToggleService>().As<IHelmetToggleService>().SingleInstance();
             builder.RegisterType<ImpoundService>().As<IImpoundService>().SingleInstance();
-            builder.RegisterType<ItemService>().As<IItemService>().SingleInstance();
             builder.RegisterType<KeyItemService>().As<IKeyItemService>().SingleInstance();
             builder.RegisterType<LanguageService>().As<ILanguageService>().SingleInstance();
             builder.RegisterType<LocalVariableService>().As<ILocalVariableService>().SingleInstance();
@@ -246,19 +242,16 @@ namespace SWLOR.Game.Server
             builder.RegisterType<MessageBoardService>().As<IMessageBoardService>().SingleInstance();
             builder.RegisterType<ModService>().As<IModService>().SingleInstance();
             builder.RegisterType<ObjectVisibilityService>().As<IObjectVisibilityService>().SingleInstance();
-            builder.RegisterType<PerkService>().As<IPerkService>().SingleInstance();
             builder.RegisterType<PlayerDescriptionService>().As<IPlayerDescriptionService>().SingleInstance();
             builder.RegisterType<PlayerMigrationService>().As<IPlayerMigrationService>().SingleInstance();
             builder.RegisterType<PlayerValidationService>().As<IPlayerValidationService>().SingleInstance();
             builder.RegisterType<PlayerService>().As<IPlayerService>().SingleInstance();
-            builder.RegisterType<PlayerStatService>().As<IPlayerStatService>().SingleInstance();
             builder.RegisterType<PVPSanctuaryService>().As<IPVPSanctuaryService>().SingleInstance();
             builder.RegisterType<QuestService>().As<IQuestService>().SingleInstance();
             builder.RegisterType<RaceService>().As<IRaceService>().SingleInstance();
             builder.RegisterType<ResourceService>().As<IResourceService>().SingleInstance();
             builder.RegisterType<SearchService>().As<ISearchService>().SingleInstance();
             builder.RegisterType<SerializationService>().As<ISerializationService>().SingleInstance();
-            builder.RegisterType<SkillService>().As<ISkillService>().SingleInstance();
             builder.RegisterType<SpaceService>().As<ISpaceService>().SingleInstance();
             
             // Background threads

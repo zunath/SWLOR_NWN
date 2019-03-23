@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 
@@ -9,12 +10,12 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
 {
     public class DualWielding : IPerk
     {
-        private readonly IPerkService _perk;
+        
 
         public DualWielding(
-            IPerkService perk)
+            )
         {
-            _perk = perk;
+            
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -122,7 +123,7 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
             }
 
 
-            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.LightsaberDualWielding);
+            int perkLevel = PerkService.GetPCPerkLevel(oPC, PerkType.LightsaberDualWielding);
             NWNXCreature.AddFeat(oPC, FEAT_TWO_WEAPON_FIGHTING);
 
             if (perkLevel >= 2)

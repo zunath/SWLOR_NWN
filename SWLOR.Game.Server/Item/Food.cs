@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
@@ -10,11 +11,11 @@ namespace SWLOR.Game.Server.Item
 {
     public class Food: IActionItem
     {
-        private readonly ICustomEffectService _customEffect;
+        
 
-        public Food(ICustomEffectService customEffect)
+        public Food()
         {
-            _customEffect = customEffect;
+            
         }
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.Item
 
             string data = $"{type},{amount}";
 
-            _customEffect.ApplyCustomEffect(user, target.Object, CustomEffectType.FoodEffect, length, item.RecommendedLevel, data);
+            CustomEffectService.ApplyCustomEffect(user, target.Object, CustomEffectType.FoodEffect, length, item.RecommendedLevel, data);
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
@@ -69,7 +70,7 @@ namespace SWLOR.Game.Server.Item
                 return "ERROR: This food isn't set up properly. Please inform an admin. Resref: " + item.Resref;
             }
 
-            bool hasFoodEffect = _customEffect.DoesPCHaveCustomEffectByCategory(user.Object, CustomEffectCategoryType.FoodEffect);
+            bool hasFoodEffect = CustomEffectService.DoesPCHaveCustomEffectByCategory(user.Object, CustomEffectCategoryType.FoodEffect);
 
             if (hasFoodEffect)
             {

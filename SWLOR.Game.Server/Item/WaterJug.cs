@@ -17,15 +17,15 @@ namespace SWLOR.Game.Server.Item
     {
         
         
-        private readonly ISkillService _skill;
+        
 
         public WaterJug( 
             
-            ISkillService skill)
+            )
         {
             
             
-            _skill = skill;
+            
         }
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
@@ -70,10 +70,10 @@ namespace SWLOR.Game.Server.Item
 
             user.SendMessage("You water the plant.");
             
-            int rank = _skill.GetPCSkillRank((NWPlayer)user, SkillType.Farming);
+            int rank = SkillService.GetPCSkillRank((NWPlayer)user, SkillType.Farming);
             
-            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(100, plant.Level, rank);
-            _skill.GiveSkillXP((NWPlayer)user, SkillType.Farming, xp);
+            int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(100, plant.Level, rank);
+            SkillService.GiveSkillXP((NWPlayer)user, SkillType.Farming, xp);
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)

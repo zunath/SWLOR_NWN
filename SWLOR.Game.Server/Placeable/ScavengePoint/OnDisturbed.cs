@@ -14,21 +14,21 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
         
         private readonly IFarmingService _farming;
         
-        private readonly IItemService _item;
-        private readonly IPerkService _perk;
+        
+        
 
         public OnDisturbed(
             
-            IFarmingService farming,
+            IFarmingService farming
             
-            IItemService item,
-            IPerkService perk)
+            
+            )
         {
             
             _farming = farming;
             
-            _item = item;
-            _perk = perk;
+            
+            
         }
 
         public bool Run(params object[] args)
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
 
             if (disturbType == _.INVENTORY_DISTURB_TYPE_ADDED)
             {
-                _item.ReturnItem(oPC, oItem);
+                ItemService.ReturnItem(oPC, oItem);
             }
             else
             {
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
                     {
                         _.CreateObject(_.OBJECT_TYPE_ITEM, seed, point.Location);
 
-                        int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.SeedPicker);
+                        int perkLevel = PerkService.GetPCPerkLevel(oPC, PerkType.SeedPicker);
                         if (RandomService.Random(100) + 1 <= perkLevel * 10)
                         {
                             _.CreateObject(_.OBJECT_TYPE_ITEM, seed, point.Location);

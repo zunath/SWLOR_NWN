@@ -15,21 +15,21 @@ namespace SWLOR.Game.Server.Conversation
     internal class RestMenu : ConversationBase
     {
         
-        private readonly IColorTokenService _color;
-        private readonly ISkillService _skill;
+        
+        
         private readonly IMenuService _menu;
 
         public RestMenu(
             IDialogService dialog,
-            IColorTokenService color,
             
-            ISkillService skill,
+            
+            
             IMenuService menu)
             : base(dialog)
         {
-            _color = color;
             
-            _skill = skill;
+            
+            
             _menu = menu;
         }
 
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Conversation
             PlayerDialog dialog = new PlayerDialog("MainPage");
             DialogPage mainPage = new DialogPage(
                 BuildMainPageHeader(player),
-                _color.Green("Open Overflow Inventory"),
+                ColorTokenService.Green("Open Overflow Inventory"),
                 "View Skills",
                 "View Perks",
                 "View Blueprints",
@@ -132,11 +132,11 @@ namespace SWLOR.Game.Server.Conversation
                 return x.PlayerID == player.GlobalID && skill.ContributesToSkillCap;
             }).Sum(s => s.Rank);
 
-            string header = _color.Green("Name: ") + player.Name + "\n";
-            header += _color.Green("Association: ") + association.Name + "\n\n";
-            header += _color.Green("Skill Points: ") + totalSkillCount + " / " + _skill.SkillCap + "\n";
-            header += _color.Green("Unallocated SP: ") + playerEntity.UnallocatedSP + "\n";
-            header += _color.Green("FP: ")  + (playerEntity.MaxFP > 0 ? _menu.BuildBar(playerEntity.CurrentFP, playerEntity.MaxFP, 100, _color.TokenStart(32, 223, 219)) : "N/A") + "\n";
+            string header = ColorTokenService.Green("Name: ") + player.Name + "\n";
+            header += ColorTokenService.Green("Association: ") + association.Name + "\n\n";
+            header += ColorTokenService.Green("Skill Points: ") + totalSkillCount + " / " + SkillService.SkillCap + "\n";
+            header += ColorTokenService.Green("Unallocated SP: ") + playerEntity.UnallocatedSP + "\n";
+            header += ColorTokenService.Green("FP: ")  + (playerEntity.MaxFP > 0 ? _menu.BuildBar(playerEntity.CurrentFP, playerEntity.MaxFP, 100, ColorTokenService.TokenStart(32, 223, 219)) : "N/A") + "\n";
 
             return header;
         }

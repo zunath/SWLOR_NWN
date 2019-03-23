@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Conversation
     {
         
         private readonly IBaseService _base;
-        private readonly IColorTokenService _color;
+        
         private readonly IAreaService _area;
         private readonly IDurabilityService _durability;
         private readonly ICraftService _craft;
@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Conversation
             IDialogService dialog,
             
             IBaseService @base,
-            IColorTokenService color,
+            
             IAreaService area,
             IDurabilityService durability,
             ICraftService craft)
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             
             _base = @base;
-            _color = color;
+            
             _area = area;
             _durability = durability;
             _craft = craft;
@@ -99,10 +99,10 @@ namespace SWLOR.Game.Server.Conversation
             double newPower = powerInUse + structure.Power;
             double newCPU = cpuInUse + structure.CPU;
 
-            string insufficientPower = newPower > towerPower && !isPlacingTower ? _color.Red(" (INSUFFICIENT POWER)") : string.Empty;
-            string insufficientCPU = newCPU > towerCPU && !isPlacingTower ? _color.Red(" (INSUFFICIENT CPU)") : string.Empty;
+            string insufficientPower = newPower > towerPower && !isPlacingTower ? ColorTokenService.Red(" (INSUFFICIENT POWER)") : string.Empty;
+            string insufficientCPU = newCPU > towerCPU && !isPlacingTower ? ColorTokenService.Red(" (INSUFFICIENT CPU)") : string.Empty;
 
-            string header = _color.Green("Structure: ") + structure.Name + "\n";
+            string header = ColorTokenService.Green("Structure: ") + structure.Name + "\n";
 
             if (data.BuildingType == BuildingType.Interior)
             {
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Conversation
                 var baseStructure = DataService.Get<BaseStructure>(buildingStructure.BaseStructureID);
                 var childStructures = DataService.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == buildingStructure.ID).ToList();
 
-                header += _color.Green("Structure Limit: ") + childStructures.Count + " / " + (baseStructure.Storage + buildingStructure.StructureBonus) + "\n";
+                header += ColorTokenService.Green("Structure Limit: ") + childStructures.Count + " / " + (baseStructure.Storage + buildingStructure.StructureBonus) + "\n";
                 var structures = DataService.Where<PCBaseStructure>(x =>
                 {
                     if (x.ParentPCBaseStructureID != buildingStructure.ID) return false;
@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Conversation
                 // Add up the total atmosphere rating, being careful not to go over the cap.
                 int bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;
                 if (bonus > 150) bonus = 150;
-                header += _color.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
+                header += ColorTokenService.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
                 header += "\n";
             }
             else if (data.BuildingType == BuildingType.Starship)
@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Conversation
                 var buildingStyle = DataService.Get<BuildingStyle>(buildingStructure.InteriorStyleID);
                 var childStructures = DataService.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == buildingStructure.ID).ToList();
 
-                header += _color.Green("Structure Limit: ") + childStructures.Count + " / " + (buildingStyle.FurnitureLimit + buildingStructure.StructureBonus) + "\n";
+                header += ColorTokenService.Green("Structure Limit: ") + childStructures.Count + " / " + (buildingStyle.FurnitureLimit + buildingStructure.StructureBonus) + "\n";
                 var structures = DataService.Where<PCBaseStructure>(x =>
                 {
                     if (x.ParentPCBaseStructureID != buildingStructure.ID) return false;
@@ -141,7 +141,7 @@ namespace SWLOR.Game.Server.Conversation
                 // Add up the total atmosphere rating, being careful not to go over the cap.
                 int bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;
                 if (bonus > 150) bonus = 150;
-                header += _color.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
+                header += ColorTokenService.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
                 header += "\n";
             }
             else if (data.BuildingType == BuildingType.Apartment)
@@ -149,25 +149,25 @@ namespace SWLOR.Game.Server.Conversation
                 var pcBase = DataService.Get<PCBase>(data.PCBaseID);
                 var buildingStyle = DataService.Get<BuildingStyle>(pcBase.BuildingStyleID);
                 var structures = DataService.Where<PCBaseStructure>(x => x.PCBaseID == pcBase.ID).ToList();
-                header += _color.Green("Structure Limit: ") + structures.Count + " / " + buildingStyle.FurnitureLimit + "\n";
+                header += ColorTokenService.Green("Structure Limit: ") + structures.Count + " / " + buildingStyle.FurnitureLimit + "\n";
                 int bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;
                 if (bonus > 150) bonus = 150;
-                header += _color.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
+                header += ColorTokenService.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
                 header += "\n";
             }
             else if(data.BuildingType == BuildingType.Exterior)
             {
                 if (isPlacingTower)
                 {
-                    header += _color.Green("Available Power: ") + (structure.Power + data.StructureItem.StructureBonus * 3) + "\n";
-                    header += _color.Green("Available CPU: ") + (structure.CPU + data.StructureItem.StructureBonus * 2) + "\n";
+                    header += ColorTokenService.Green("Available Power: ") + (structure.Power + data.StructureItem.StructureBonus * 3) + "\n";
+                    header += ColorTokenService.Green("Available CPU: ") + (structure.CPU + data.StructureItem.StructureBonus * 2) + "\n";
                 }
                 else
                 {
-                    header += _color.Green("Base Power: ") + powerInUse + " / " + towerPower + "\n";
-                    header += _color.Green("Base CPU: ") + cpuInUse + " / " + towerCPU + "\n";
-                    header += _color.Green("Required Power: ") + structure.Power + insufficientPower + "\n";
-                    header += _color.Green("Required CPU: ") + structure.CPU + insufficientCPU + "\n";
+                    header += ColorTokenService.Green("Base Power: ") + powerInUse + " / " + towerPower + "\n";
+                    header += ColorTokenService.Green("Base CPU: ") + cpuInUse + " / " + towerCPU + "\n";
+                    header += ColorTokenService.Green("Required Power: ") + structure.Power + insufficientPower + "\n";
+                    header += ColorTokenService.Green("Required CPU: ") + structure.CPU + insufficientCPU + "\n";
                 }
             }
 
@@ -178,8 +178,8 @@ namespace SWLOR.Game.Server.Conversation
                 var exterior = DataService.Single<BuildingStyle>(x => x.ID == exteriorStyle);
                 var interior = DataService.Single<BuildingStyle>(x => x.ID == interiorStyle);
 
-                header += _color.Green("Exterior Style: ") + exterior.Name + "\n";
-                header += _color.Green("Interior Style: ") + interior.Name + "\n";
+                header += ColorTokenService.Green("Exterior Style: ") + exterior.Name + "\n";
+                header += ColorTokenService.Green("Interior Style: ") + interior.Name + "\n";
             }
 
             if (!isPlacingTower && (newPower > towerPower || newCPU > towerCPU))
@@ -288,7 +288,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var data = _base.GetPlayerTempData(GetPC());
             float facing = _.GetFacingFromLocation(data.TargetLocation);
-            string header = _color.Green("Current Direction: ") + facing;
+            string header = ColorTokenService.Green("Current Direction: ") + facing;
 
             if (data.StructurePreview == null || !data.StructurePreview.IsValid)
             {
@@ -430,7 +430,7 @@ namespace SWLOR.Game.Server.Conversation
                 styleID = data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID");
 
             var currentStyle = DataService.Single<BuildingStyle>(x => x.ID == styleID);
-            string header = _color.Green("Building Style: ") + currentStyle.Name + "\n\n";
+            string header = ColorTokenService.Green("Building Style: ") + currentStyle.Name + "\n\n";
             header += "Change the style by selecting from the list below.";
 
             SetPageHeader("StylePage", header);

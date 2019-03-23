@@ -7,6 +7,7 @@ using Object = NWN.Object;
 using SWLOR.Game.Server.Enumeration;
 using System;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Event.Module
 {
@@ -15,27 +16,27 @@ namespace SWLOR.Game.Server.Event.Module
         
         private readonly IFarmingService _farming;
         private readonly IDurabilityService _durability;
-        private readonly IItemService _item;
+        
         private readonly IExaminationService _examination;
         private readonly IModService _mod;
-        private readonly IColorTokenService _color;
+        
         public OnModuleExamine(
             
             IFarmingService farming,
             IDurabilityService durability,
-            IPerkService perk,
-            IItemService item,
+            
+            
             IExaminationService examination,
-            IModService mod,
-            IColorTokenService color)
+            IModService mod
+            )
         {
             
             _farming = farming;
             _durability = durability;
-            _item = item;
+            
             _examination = examination;
             _mod = mod;
-            _color = color;
+            
         }
 
         public bool Run(params object[] args)
@@ -50,11 +51,11 @@ namespace SWLOR.Game.Server.Event.Module
             {
                 int racialID = Convert.ToInt32(_.Get2DAString("racialtypes", "Name", _.GetRacialType(examinedObject)));
                 string racialtype = _.GetStringByStrRef(racialID);
-                description += _color.Green("Racial Type: ") + racialtype;
+                description += ColorTokenService.Green("Racial Type: ") + racialtype;
             }
 
             description = _mod.OnModuleExamine(description, examiner, examinedObject);
-            description = _item.OnModuleExamine(description, examiner, examinedObject);
+            description = ItemService.OnModuleExamine(description, examiner, examinedObject);
             description = _durability.OnModuleExamine(description, examinedObject);
             description = _farming.OnModuleExamine(description, examinedObject);
             

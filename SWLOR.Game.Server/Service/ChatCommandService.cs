@@ -14,15 +14,15 @@ namespace SWLOR.Game.Server.Service
 {
     public class ChatCommandService : IChatCommandService
     {
-        private readonly IColorTokenService _color;
+        
         private readonly IAuthorizationService _auth;
         
         public ChatCommandService(
             
-            IColorTokenService color,
+            
             IAuthorizationService auth)
         {
-            _color = color;
+            
             _auth = auth;
         }
 
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Service
 
             if (!App.IsKeyRegistered<IChatCommand>("ChatCommand." + command))
             {
-                sender.SendMessage(_color.Red("Invalid chat command. Use '/help' to get a list of available commands."));
+                sender.SendMessage(ColorTokenService.Red("Invalid chat command. Use '/help' to get a list of available commands."));
                 return;
             }
 
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                sender.SendMessage(_color.Red("Invalid chat command. Use '/help' to get a list of available commands."));
+                sender.SendMessage(ColorTokenService.Red("Invalid chat command. Use '/help' to get a list of available commands."));
             }
         }
     }

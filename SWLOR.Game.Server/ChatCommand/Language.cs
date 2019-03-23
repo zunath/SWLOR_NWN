@@ -4,6 +4,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
@@ -11,14 +12,14 @@ namespace SWLOR.Game.Server.ChatCommand
     public class Language : IChatCommand
     {
         private readonly ILanguageService _language;
-        private readonly IColorTokenService _color;
+        
 
         public Language(
-            ILanguageService language,
-            IColorTokenService color)
+            ILanguageService language
+            )
         {
             _language = language;
-            _color = color;
+            
         }
 
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
@@ -47,7 +48,7 @@ namespace SWLOR.Game.Server.ChatCommand
                 command != SkillType.Shyriiwook.ToString().ToLower())
             {
                 _language.SetActiveLanguage(user, SkillType.Shyriiwook);
-                user.SendMessage(_color.Red("Wookiees can only speak Shyriiwook."));
+                user.SendMessage(ColorTokenService.Red("Wookiees can only speak Shyriiwook."));
                 return;
             }
 
@@ -61,14 +62,14 @@ namespace SWLOR.Game.Server.ChatCommand
                 }
             }
 
-            user.SendMessage(_color.Red($"Unknown language {command}."));
+            user.SendMessage(ColorTokenService.Red($"Unknown language {command}."));
         }
 
         public string ValidateArguments(NWPlayer user, params string[] args)
         {
             if (args.Length < 1)
             {
-                return _color.Red("Please enter /language help for more information on how to use this command.");
+                return ColorTokenService.Red("Please enter /language help for more information on how to use this command.");
             }
 
             return string.Empty;

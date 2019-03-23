@@ -23,20 +23,20 @@ namespace SWLOR.Game.Server.Service
         private readonly IQuestService _quest;
         private readonly ISerializationService _serialization;
         private readonly ILocalVariableService _localVariable;
-        private readonly IColorTokenService _color;
+        
         private readonly IDurabilityService _durability;
 
         public SearchService(
             IQuestService quest,
             ISerializationService serialization,
             ILocalVariableService localVariable,
-            IColorTokenService color,
+            
             IDurabilityService durability)
         {
             _quest = quest;
             _serialization = serialization;
             _localVariable = localVariable;
-            _color = color;
+            
             _durability = durability;
         }
 
@@ -224,7 +224,7 @@ namespace SWLOR.Game.Server.Service
             int combinedRoll = roll + skill;
             if (roll + skill >= iDC)
             {
-                oPC.FloatingText(_color.SkillCheck("Search: *success*: (" + roll + " + " + skill + " = " + combinedRoll + " vs. DC: " + iDC + ")"));
+                oPC.FloatingText(ColorTokenService.SkillCheck("Search: *success*: (" + roll + " + " + skill + " = " + combinedRoll + " vs. DC: " + iDC + ")"));
                 ItemVO spawnItem = PickResultItem(lootTable);
 
                 if (!string.IsNullOrWhiteSpace(spawnItem.Resref) && spawnItem.Quantity > 0)
@@ -237,7 +237,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                oPC.FloatingText(_color.SkillCheck("Search: *failure*: (" + roll + " + " + skill + " = " + combinedRoll + " vs. DC: " + iDC + ")"));
+                oPC.FloatingText(ColorTokenService.SkillCheck("Search: *failure*: (" + roll + " + " + skill + " = " + combinedRoll + " vs. DC: " + iDC + ")"));
             }
         }
 

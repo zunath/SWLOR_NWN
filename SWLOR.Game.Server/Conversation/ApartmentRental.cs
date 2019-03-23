@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Conversation
 {
     public class ApartmentRental : ConversationBase
     {
-        private readonly IColorTokenService _color;
+        
         
         private readonly IBaseService _base;
         private readonly IAreaService _area;
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Conversation
         public ApartmentRental(
             
             IDialogService dialog,
-            IColorTokenService color,
+            
             
             IBaseService @base,
             IAreaService area,
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Conversation
             IBasePermissionService perm)
             : base(dialog)
         {
-            _color = color;
+            
             
             _base = @base;
             _area = area;
@@ -137,12 +137,12 @@ namespace SWLOR.Game.Server.Conversation
                 .Where<PCBase>(x => x.PlayerID == player.GlobalID && x.ApartmentBuildingID == data.ApartmentBuildingID).OrderBy(o => o.DateInitialPurchase)
                 .ToList();
 
-            string header = _color.Green("Apartment Rental Terminal") + "\n\n";
+            string header = ColorTokenService.Green("Apartment Rental Terminal") + "\n\n";
             header += "Apartments you are currently renting can be found in the list below. You may also rent an apartment here.";
             SetPageHeader("MainPage", header);
 
             ClearPageResponses("MainPage");
-            AddResponseToPage("MainPage", _color.Green("Lease New Apartment"));
+            AddResponseToPage("MainPage", ColorTokenService.Green("Lease New Apartment"));
             int count = 1;
             foreach (var apartment in bases)
             {
@@ -184,7 +184,7 @@ namespace SWLOR.Game.Server.Conversation
             var apartmentBuilding = DataService.Single<ApartmentBuilding>(x => x.ID == data.ApartmentBuildingID);
             var styles = DataService.Where<BuildingStyle>(x => x.BuildingTypeID == (int)Enumeration.BuildingType.Apartment && x.IsActive).ToList();
 
-            string header = _color.Green(apartmentBuilding.Name) + "\n\n";
+            string header = ColorTokenService.Green(apartmentBuilding.Name) + "\n\n";
 
             header += "You may rent an apartment here. Select a layout style from the list below to learn more about pricing details.";
             SetPageHeader("LeasePage", header);
@@ -216,9 +216,9 @@ namespace SWLOR.Game.Server.Conversation
             int purchasePrice = style.PurchasePrice + (int) (style.PurchasePrice * (dbPlayer.LeaseRate * 0.01f));
             int dailyUpkeep = style.DailyUpkeep + (int) (style.DailyUpkeep * (dbPlayer.LeaseRate * 0.01f));
 
-            string header = _color.Green("Style: ") + style.Name + "\n\n";
-            header += _color.Green("Purchase Price: ") + purchasePrice + " credits\n";
-            header += _color.Green("Daily Upkeep: ") + dailyUpkeep + " credits\n\n";
+            string header = ColorTokenService.Green("Style: ") + style.Name + "\n\n";
+            header += ColorTokenService.Green("Purchase Price: ") + purchasePrice + " credits\n";
+            header += ColorTokenService.Green("Daily Upkeep: ") + dailyUpkeep + " credits\n\n";
             header += "Purchasing an apartment will grant you 7 days on your lease. Leases can be extended for up to 30 days (real world time) in advance.";
 
             SetPageHeader("PurchaseDetailsPage", header);
@@ -329,10 +329,10 @@ namespace SWLOR.Game.Server.Conversation
                 name = pcApartment.CustomName;
             }
 
-            string header = _color.Green(name) + "\n\n";
-            header += _color.Green("Purchased: ") + pcApartment.DateInitialPurchase + "\n";
-            header += _color.Green("Rent Due: ") + pcApartment.DateRentDue + "\n";
-            header += _color.Green("Daily Upkeep: ") + dailyUpkeep + " credits\n\n";
+            string header = ColorTokenService.Green(name) + "\n\n";
+            header += ColorTokenService.Green("Purchased: ") + pcApartment.DateInitialPurchase + "\n";
+            header += ColorTokenService.Green("Rent Due: ") + pcApartment.DateRentDue + "\n";
+            header += ColorTokenService.Green("Daily Upkeep: ") + dailyUpkeep + " credits\n\n";
             header += "Daily upkeep may be paid up to 30 days in advance.\n";
 
             SetPageHeader("DetailsPage", header);

@@ -8,19 +8,9 @@ using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class EnmityService : IEnmityService
+    public static class EnmityService
     {
-        
-        private readonly IPlayerStatService _playerStat;
-
-        public EnmityService(
-            IPlayerStatService playerStat)
-        {
-            
-            _playerStat = playerStat;
-        }
-
-        private Enmity GetEnmity(NWCreature npc, NWCreature attacker)
+        private static Enmity GetEnmity(NWCreature npc, NWCreature attacker)
         {
             var table = GetEnmityTable(npc);
             if (!table.ContainsKey(attacker.GlobalID))
@@ -31,7 +21,7 @@ namespace SWLOR.Game.Server.Service
             return table[attacker.GlobalID];
         }
 
-        private Dictionary<Guid, EnmityTable> GetAllNPCEnmityTablesForCreature(NWCreature player)
+        private static Dictionary<Guid, EnmityTable> GetAllNPCEnmityTablesForCreature(NWCreature player)
         {
             if (!player.IsPlayer) throw new Exception(nameof(GetAllNPCEnmityTablesForCreature) + " can only be used with players.");
 
@@ -48,7 +38,7 @@ namespace SWLOR.Game.Server.Service
             return npcTables;
         }
 
-        public void AdjustEnmity(NWCreature npc, NWCreature attacker, int volatileAdjust, int cumulativeAdjust = 0)
+        public static void AdjustEnmity(NWCreature npc, NWCreature attacker, int volatileAdjust, int cumulativeAdjust = 0)
         {
             if (!npc.IsNPC) return;
 
@@ -59,7 +49,7 @@ namespace SWLOR.Game.Server.Service
             if (attacker.IsPlayer)
             {
                 NWPlayer player = (attacker.Object);
-                var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
+                var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
                 effectiveEnmityRate = effectiveStats.EnmityRate;
             }
 
@@ -91,7 +81,7 @@ namespace SWLOR.Game.Server.Service
 
         }
 
-        public void AdjustEnmityOnAllTaggedCreatures(NWCreature attacker, int volatileAdjust, int cumulativeAdjust = 0)
+        public static void AdjustEnmityOnAllTaggedCreatures(NWCreature attacker, int volatileAdjust, int cumulativeAdjust = 0)
         {
             var tables = GetAllNPCEnmityTablesForCreature(attacker);
             foreach (var table in tables)
@@ -100,7 +90,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public void AdjustPercentEnmityOnAllTaggedCreatures(NWCreature attacker, int volatilePercentAdjust, int cumulativePercentAdjust = 0)
+        public static void AdjustPercentEnmityOnAllTaggedCreatures(NWCreature attacker, int volatilePercentAdjust, int cumulativePercentAdjust = 0)
         {
             var tables = GetAllNPCEnmityTablesForCreature(attacker);
             foreach (var table in tables)
@@ -122,14 +112,14 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public void OnNPCPhysicallyAttacked()
+        public static void OnNPCPhysicallyAttacked()
         {
             NWCreature self = (Object.OBJECT_SELF);
             NWCreature attacker = (_.GetLastAttacker(Object.OBJECT_SELF));
             AdjustEnmity(self, attacker, 0, 1);
         }
 
-        public void OnNPCDamaged()
+        public static void OnNPCDamaged()
         {
             NWCreature self = (Object.OBJECT_SELF);
             NWCreature damager = (_.GetLastDamager(Object.OBJECT_SELF));
@@ -139,7 +129,7 @@ namespace SWLOR.Game.Server.Service
             AdjustEnmity(self, damager, 0, enmityAmount);
         }
 
-        public void OnPlayerDamaged()
+        public static void OnPlayerDamaged()
         {
             NWPlayer player = (Object.OBJECT_SELF);
             NWCreature npc = (_.GetLastDamager(Object.OBJECT_SELF));
@@ -151,7 +141,7 @@ namespace SWLOR.Game.Server.Service
             enmity.CumulativeAmount -= damage;
         }
 
-        public EnmityTable GetEnmityTable(NWCreature npc)
+        public static EnmityTable GetEnmityTable(NWCreature npc)
         {
             if (!npc.IsNPC && !npc.IsDMPossessed) throw new Exception("Only NPCs have enmity tables.");
 
@@ -163,7 +153,7 @@ namespace SWLOR.Game.Server.Service
             return AppCache.NPCEnmityTables[npc.GlobalID];
         }
 
-        public bool IsOnEnmityTable(NWCreature npc, NWCreature target)
+        public static bool IsOnEnmityTable(NWCreature npc, NWCreature target)
         {
             if (!npc.IsNPC && !npc.IsDMPossessed) throw new Exception("Only NPCs have enmity tables.");
 
@@ -172,7 +162,7 @@ namespace SWLOR.Game.Server.Service
             return table.ContainsKey(target.GlobalID);
         }
 
-        public bool IsEnmityTableEmpty(NWCreature npc)
+        public static bool IsEnmityTableEmpty(NWCreature npc)
         {
             if (!npc.IsNPC && !npc.IsDMPossessed) throw new Exception("Only NPCs have enmity tables.");
 

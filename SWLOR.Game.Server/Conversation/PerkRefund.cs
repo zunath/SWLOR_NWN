@@ -24,24 +24,24 @@ namespace SWLOR.Game.Server.Conversation
         }
 
         
-        private readonly IColorTokenService _color;
         
-        private readonly ICustomEffectService _customEffect;
-        private readonly IPlayerStatService _stat;
+        
+        
+        
         private readonly IBackgroundService _background;
         
         public PerkRefund(
              
-            IDialogService dialog,
-            IColorTokenService color,
-            ICustomEffectService customEffect,
-            IPlayerStatService stat,
+            IDialogService dialog
+            
+            
+            ,
             IBackgroundService background)
             : base(dialog)
         {
-            _color = color;
-            _customEffect = customEffect;
-            _stat = stat;
+            
+            
+            
             _background = background;
         }
 
@@ -135,10 +135,10 @@ namespace SWLOR.Game.Server.Conversation
 
             int refundAmount = DataService.Where<PerkLevel>(x => x.PerkID == perk.ID && x.Level <= pcPerk.PerkLevel && x.Level >= minimumLevel).Sum(x => x.Price);
 
-            string header = _color.Green("Perk: ") + perk.Name + "\n";
-            header += _color.Green("Level: ") + pcPerk.PerkLevel + "\n\n";
+            string header = ColorTokenService.Green("Perk: ") + perk.Name + "\n";
+            header += ColorTokenService.Green("Level: ") + pcPerk.PerkLevel + "\n\n";
 
-            header += "You will receive " + _color.Green(refundAmount.ToString()) + " SP if you refund this perk. Are you sure you want to refund it?";
+            header += "You will receive " + ColorTokenService.Green(refundAmount.ToString()) + " SP if you refund this perk. Are you sure you want to refund it?";
 
             SetPageHeader("ConfirmPage", header);
             
@@ -215,8 +215,8 @@ namespace SWLOR.Game.Server.Conversation
             dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow.AddHours(24);
             RemovePerkItem(perk);
             RemovePerkFeat(perk);
-            _customEffect.RemoveStance(GetPC());
-            _stat.ApplyStatChanges(GetPC(), null);
+            CustomEffectService.RemoveStance(GetPC());
+            PlayerStatService.ApplyStatChanges(GetPC(), null);
 
             dbPlayer.UnallocatedSP += refundAmount;
 

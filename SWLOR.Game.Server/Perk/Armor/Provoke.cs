@@ -4,6 +4,7 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 
@@ -12,17 +13,17 @@ namespace SWLOR.Game.Server.Perk.Armor
     public class Provoke: IPerk
     {
         
-        private readonly IPerkService _perk;
-        private readonly IEnmityService _enmity;
+        
+        
         
 
         public Provoke(
-            IPerkService perk,
-            IEnmityService enmity)
+            
+            )
         {
             
-            _perk = perk;
-            _enmity = enmity;
+            
+            
             
         }
 
@@ -56,7 +57,7 @@ namespace SWLOR.Game.Server.Perk.Armor
 
         public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellFeatID)
         {
-            int perkRank = _perk.GetPCPerkLevel(oPC, PerkType.Provoke);
+            int perkRank = PerkService.GetPCPerkLevel(oPC, PerkType.Provoke);
 
             if (perkRank == 2) baseCooldownTime -= 5.0f;
             else if (perkRank == 3) baseCooldownTime -= 10.0f;
@@ -81,7 +82,7 @@ namespace SWLOR.Game.Server.Perk.Armor
                 _.ActionPlayAnimation(_.ANIMATION_FIREFORGET_TAUNT, 1f, 1f);
             });
 
-            _enmity.AdjustEnmity(npc, player, 120);
+            EnmityService.AdjustEnmity(npc, player, 120);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

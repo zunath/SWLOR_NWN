@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service.Contracts;
 using System.Linq;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.AI.AIComponent
 {
@@ -12,19 +13,19 @@ namespace SWLOR.Game.Server.AI.AIComponent
     /// </summary>
     public class AttackHighestEnmity : IRegisteredEvent
     {
-        private readonly IEnmityService _enmity;
+        
         
 
-        public AttackHighestEnmity(IEnmityService enmity)
+        public AttackHighestEnmity()
         {
-            _enmity = enmity;
+            
             
         }
 
         public bool Run(object[] args)
         {
             NWCreature self = (NWCreature)args[0];
-            var enmityTable = _enmity.GetEnmityTable(self);
+            var enmityTable = EnmityService.GetEnmityTable(self);
             var target = enmityTable.Values
                 .OrderByDescending(o => o.TotalAmount)
                 .FirstOrDefault(x => x.TargetObject.IsValid &&

@@ -10,22 +10,22 @@ namespace SWLOR.Game.Server.Perk.Shields
     public class ExpulsionManeuver : IPerk
     {
         
-        private readonly IPerkService _perk;
         
-        private readonly IColorTokenService _color;
-        private readonly IPlayerStatService _playerStat;
+        
+        
+        
 
         public ExpulsionManeuver(
-            IPerkService perk,
             
-            IColorTokenService color,
-            IPlayerStatService playerStat)
+            
+            
+            )
         {
             
-            _perk = perk;
             
-            _color = color;
-            _playerStat = playerStat;
+            
+            
+            
         }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Perk.Shields
 
         public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
         {
-            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
+            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
             float length;
             int ab;
             int chance;
@@ -96,13 +96,13 @@ namespace SWLOR.Game.Server.Perk.Shields
                     return;
             }
 
-            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
+            int luck = PerkService.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
             chance += luck;
 
             if (RandomService.Random(100) + 1 <= chance)
             {
                 _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, _.EffectAttackIncrease(ab), player.Object, length);
-                player.SendMessage(_color.Combat("You perform a defensive maneuver."));
+                player.SendMessage(ColorTokenService.Combat("You perform a defensive maneuver."));
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 
@@ -8,11 +9,11 @@ namespace SWLOR.Game.Server.Event.Delayed
 {
     public class FinishActionItem: IRegisteredEvent
     {
-        private readonly IItemService _item;
+        
 
-        public FinishActionItem(IItemService item)
+        public FinishActionItem()
         {
-            _item = item;
+            
         }
 
         public bool Run(params object[] args)
@@ -27,7 +28,7 @@ namespace SWLOR.Game.Server.Event.Delayed
 
             App.ResolveByInterface<IActionItem>("Item." + className, actionItem =>
             {
-                _item.FinishActionItem(
+                ItemService.FinishActionItem(
                     actionItem,
                     user,
                     itemObject,

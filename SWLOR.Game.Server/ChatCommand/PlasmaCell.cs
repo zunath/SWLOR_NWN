@@ -8,6 +8,7 @@ using NWN;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.ChatCommand
@@ -16,13 +17,13 @@ namespace SWLOR.Game.Server.ChatCommand
     public class PlasmaCell : IChatCommand
     {
         
-        private readonly IColorTokenService _color;
+        
         public PlasmaCell(
             
-            IColorTokenService color)
+            )
         {
             
-            _color = color;
+            
         }
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
@@ -31,7 +32,7 @@ namespace SWLOR.Game.Server.ChatCommand
             //Checks if the player has Plasma Cell
             if (_.GetHasFeat((int)CustomFeatType.PlasmaCell, user) == _.FALSE)
             {
-                user.SendMessage(_color.Red("You do not have the perk: Plasma Cell."));
+                user.SendMessage(ColorTokenService.Red("You do not have the perk: Plasma Cell."));
                 return;
             }
 
@@ -39,7 +40,7 @@ namespace SWLOR.Game.Server.ChatCommand
             if (user.GetLocalInt("PLASMA_CELL_TOGGLE_OFF") == _.FALSE)
             {
                 user.SetLocalInt("PLASMA_CELL_TOGGLE_OFF", 1);
-                user.SendMessage(_color.Red("Plasma Cell is now toggled off."));
+                user.SendMessage(ColorTokenService.Red("Plasma Cell is now toggled off."));
                 return;
             }
 
@@ -47,14 +48,14 @@ namespace SWLOR.Game.Server.ChatCommand
             else if (user.GetLocalInt("PLASMA_CELL_TOGGLE_OFF") > 0)
             {
                 user.DeleteLocalInt("PLASMA_CELL_TOGGLE_OFF");
-                user.SendMessage(_color.Green("Plasma Cell is now toggled on!"));
+                user.SendMessage(ColorTokenService.Green("Plasma Cell is now toggled on!"));
                 return;
             }
 
             //If the above aren't working, this should appear and debugging required
             else
             {
-                user.SendMessage(_color.Red("Something's wrong, contact a code contributor!"));
+                user.SendMessage(ColorTokenService.Red("Something's wrong, contact a code contributor!"));
                 return;
             }
             

@@ -2,18 +2,26 @@
 using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Feat;
 using SWLOR.Game.Server.NWNX;
 
 using static NWN._;
 
 using SWLOR.Game.Server.ValueObject;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class DurabilityService
     {
         private const float DefaultDurability = 5.0f;
-        
+
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
+        }
+
         private static void InitializeDurability(NWItem item)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
@@ -196,8 +204,10 @@ namespace SWLOR.Game.Server.Service
             oPC.SendMessage(ColorTokenService.Green("You repaired your " + item.Name + ". (" + durMessage + ")"));
         }
         
-        public static void OnHitCastSpell(NWPlayer oTarget)
+        private static void OnHitCastSpell()
         {
+            NWPlayer oTarget = Object.OBJECT_SELF;
+            if (!oTarget.IsValid) return;
             NWItem oSpellOrigin = (_.GetSpellCastItem());
 
             NWItem decayItem = oSpellOrigin;

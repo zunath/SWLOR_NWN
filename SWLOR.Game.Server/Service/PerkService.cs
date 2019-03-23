@@ -8,12 +8,14 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Messaging.Messages;
+using SWLOR.Game.Server.NWN.Events.Feat;
 using SWLOR.Game.Server.NWNX;
 
 using SWLOR.Game.Server.Perk;
 
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
+using Object = NWN.Object;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
 
 namespace SWLOR.Game.Server.Service
@@ -28,6 +30,9 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<PerkUpgradedMessage>(message => CacheEffectivePerkLevel(message.Player, message.PerkID));
             MessageHub.Instance.Subscribe<PerkRefundedMessage>(message => CacheEffectivePerkLevel(message.Player, message.PerkID));
             MessageHub.Instance.Subscribe<QuestCompletedMessage>(message => CacheAllPerkLevels(message.Player));
+
+            // Feat Events
+            MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
         }
 
         private static List<PCPerk> GetPCPerksByExecutionType(NWPlayer oPC, PerkExecutionType executionType)
@@ -132,9 +137,10 @@ namespace SWLOR.Game.Server.Service
             return GetPCEffectivePerkLevel(player, perkTypeID);
         }
 
-        public static void OnHitCastSpell(NWPlayer oPC)
+        private static void OnHitCastSpell()
         {
-            if (!oPC.IsPlayer) return;
+            NWPlayer oPC = Object.OBJECT_SELF;
+            if (!oPC.IsValid || !oPC.IsPlayer) return;
             NWItem oItem = (_.GetSpellCastItem());
             int type = oItem.BaseItemType;
             var pcPerks = DataService.Where<PCPerk>(x =>

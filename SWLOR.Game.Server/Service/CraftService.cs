@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.Delayed;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Area;
+using SWLOR.Game.Server.NWN.Events.Feat;
 using SWLOR.Game.Server.NWNX;
 
 using SWLOR.Game.Server.ValueObject;
@@ -25,6 +26,11 @@ namespace SWLOR.Game.Server.Service
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnAreaEnter>(message => OnAreaEnter());
+            MessageHub.Instance.Subscribe<OnUseCraftingFeat>(messsage =>
+            {
+                NWPlayer player = Object.OBJECT_SELF;
+                DialogService.StartConversation(player, player, "ModifyItemAppearance");
+            });
         }
         
         private static List<CraftBlueprint> GetCraftBlueprintsAvailableToPlayer(Guid playerID)

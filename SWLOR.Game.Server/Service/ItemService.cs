@@ -12,13 +12,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Bioware;
+using SWLOR.Game.Server.Event.Legacy;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Feat;
 using SWLOR.Game.Server.NWNX;
 using static NWN._;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class ItemService
     {
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
+        }
+
         public static string GetNameByResref(string resref)
         {
             NWPlaceable tempStorage = (_.GetObjectByTag("TEMP_ITEM_STORAGE"));
@@ -792,6 +801,22 @@ namespace SWLOR.Game.Server.Service
                 }
                 return result;
             }
+        }
+
+        private static void OnHitCastSpell()
+        {
+            NWObject target = Object.OBJECT_SELF;
+            if (!target.IsValid) return;
+
+            NWObject oSpellOrigin = (_.GetSpellCastItem());
+            // Item specific
+            string script = oSpellOrigin.GetLocalString("JAVA_SCRIPT");
+
+            if (!string.IsNullOrWhiteSpace(script))
+            {
+                App.RunEvent<LegacyJVMItemEvent>(script);
+            }
+
         }
     }
 }

@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Event.Module
             // Use reflection to get all of the SubscribeEvents() methods in the Service namespace.
             var typesInNamespace = Assembly.GetExecutingAssembly()
                 .GetTypes()
-                .Where(x => string.Equals(x.Namespace, "SWLOR.Game.Server.Service"))
+                .Where(x => x.Namespace != null && x.Namespace.StartsWith("SWLOR.Game.Server"))
                 .ToArray();
             foreach (var type in typesInNamespace)
             {

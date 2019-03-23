@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.NWN.Events.Area;
 using SWLOR.Game.Server.NWN.Events.Creature;
+using SWLOR.Game.Server.NWN.Events.Feat;
 using static NWN._;
 using Object = NWN.Object;
 
@@ -33,6 +34,9 @@ namespace SWLOR.Game.Server.Service
 
             // Creature Events
             MessageHub.Instance.Subscribe<OnCreatureDeath>(message => OnCreatureDeath());
+
+            // Feat Events
+            MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
         }
 
         public static void RegisterPCToAllCombatTargetsForSkill(NWPlayer player, SkillType skillType, NWCreature target)
@@ -652,9 +656,10 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        public static void OnHitCastSpell(NWPlayer oPC)
+        private static void OnHitCastSpell()
         {
-            if (!oPC.IsPlayer) return;
+            NWPlayer oPC = Object.OBJECT_SELF;
+            if (!oPC.IsValid || !oPC.IsPlayer) return;
             NWItem oSpellOrigin = (_.GetSpellCastItem());
             NWCreature oTarget = (_.GetSpellTargetObject());
 

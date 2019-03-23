@@ -8,6 +8,8 @@ using NWN;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.Delayed;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Feat;
 using SWLOR.Game.Server.NWNX;
 
 using SWLOR.Game.Server.Perk;
@@ -31,7 +33,12 @@ namespace SWLOR.Game.Server.Service
         public static int ATTACK_FORCE = 2;  // Force effects
         public static int ATTACK_COMBATABILITY = 3; // Combat tricks like Provoke
         public static int ATTACK_DOT = 4; // Subsequent damage effects
-        
+
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
+        }
+
         public static void OnModuleUseFeat()
         {
             NWPlayer pc = Object.OBJECT_SELF;
@@ -369,8 +376,11 @@ namespace SWLOR.Game.Server.Service
             DataService.SubmitDataChange(entity, DatabaseActionType.Update);
         }
 
-        public static void OnHitCastSpell(NWPlayer oPC)
+        private static void OnHitCastSpell()
         {
+            NWPlayer oPC = Object.OBJECT_SELF;
+            if (!oPC.IsValid) return;
+
             NWObject oTarget = _.GetSpellTargetObject();
             NWItem oItem = _.GetSpellCastItem();
 

@@ -502,7 +502,7 @@
     <Compile Include="Event\Delayed\CraftCreateItem.cs" />
     <Compile Include="Event\Delayed\FinishAbilityUse.cs" />
     <Compile Include="Event\Delayed\FinishActionItem.cs" />
-    <Compile Include="Event\Feat\OnUseCraftingFeat.cs" />
+    <Compile Include="NWN\Events\Feat\OnUseCraftingFeat.cs" />
     <Compile Include="Event\Legacy\LegacyJVMItemEvent.cs" />
     <Compile Include="Event\Module\OnDMAction.cs" />
     <Compile Include="Event\Module\OnModuleApplyDamage.cs" />
@@ -1042,7 +1042,7 @@
     <Compile Include="Event\Dialog\AppearsWhen.cs" />
     <Compile Include="Event\Dialog\DialogEnd.cs" />
     <Compile Include="Event\Dialog\DialogStart.cs" />
-    <Compile Include="Event\Feat\OnHitCastSpell.cs" />
+    <Compile Include="NWN\Events\Feat\OnHitCastSpell.cs" />
     <Compile Include="Event\IRegisteredEvent.cs" />
     <Compile Include="Event\Legacy\LegacyJVMEvent.cs" />
     <Compile Include="Event\Module\OnModuleAcquireItem.cs" />

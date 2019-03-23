@@ -17,21 +17,18 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IBaseService _base;
         
         
-        private readonly IBasePermissionService _perm;
+        
 
         public EditBuildingPermissions(
              
             IDialogService dialog,
-            IBaseService @base,
-            
-            
-            IBasePermissionService perm) 
+            IBaseService @base) 
             : base(dialog)
         {
             _base = @base;
             
             
-            _perm = perm;
+            
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -94,7 +91,7 @@ namespace SWLOR.Game.Server.Conversation
             switch (responseID)
             {
                 case 1: // Change Player Permissions
-                    if (!_perm.HasStructurePermission(GetPC(), data.StructureID, StructurePermission.CanAdjustPermissions))
+                    if (!BasePermissionService.HasStructurePermission(GetPC(), data.StructureID, StructurePermission.CanAdjustPermissions))
                     {
                         GetPC().FloatingText("You do not have permission to change other players' permissions.");
                         return;
@@ -104,7 +101,7 @@ namespace SWLOR.Game.Server.Conversation
                     ChangePage("PlayerListPage");
                     break;
                 case 2: // Change Public Permissions
-                    if (!_perm.HasStructurePermission(GetPC(), data.StructureID, StructurePermission.CanAdjustPublicPermissions))
+                    if (!BasePermissionService.HasStructurePermission(GetPC(), data.StructureID, StructurePermission.CanAdjustPublicPermissions))
                     {
                         GetPC().FloatingText("You do not have permission to change this building's PUBLIC permissions.");
                         return;

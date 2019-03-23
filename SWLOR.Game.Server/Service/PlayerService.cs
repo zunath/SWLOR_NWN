@@ -17,24 +17,17 @@ namespace SWLOR.Game.Server.Service
     {
         
         private readonly IDialogService _dialog;
-        private readonly IBackgroundService _background;
         private readonly IRaceService _race;
         private readonly IDurabilityService _durability;
         private readonly ILanguageService _language;
 
         public PlayerService(
-            
-            
             IDialogService dialog,
-            IBackgroundService background,
             IRaceService race,
             IDurabilityService durability,
             ILanguageService language)
         {
-            
-            
             _dialog = dialog;
-            _background = background;
             _race = race;
             _durability = durability;
             _language = language;
@@ -158,7 +151,7 @@ namespace SWLOR.Game.Server.Service
                 _race.ApplyDefaultAppearance(player);
                 NWNXCreature.SetAlignmentLawChaos(player, 50);
                 NWNXCreature.SetAlignmentGoodEvil(player, 50);
-                _background.ApplyBackgroundBonuses(player);
+                BackgroundService.ApplyBackgroundBonuses(player);
 
                 PlayerStatService.ApplyStatChanges(player, null, true);
                 _language.InitializePlayerLanguages(player);

@@ -1,19 +1,13 @@
 ﻿using System;
 using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.CustomEffect
 {
     public class ForcePackEffect: ICustomEffect
     {
-        private readonly IAbilityService _ability;
-
-        public ForcePackEffect(IAbilityService ability)
-        {
-            _ability = ability;
-        }
-
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
             return null;
@@ -27,7 +21,7 @@ namespace SWLOR.Game.Server.CustomEffect
 
             if (currentTick % interval != 0) return;
 
-            _ability.RestoreFP(oTarget.Object, amount);
+            AbilityService.RestoreFP(oTarget.Object, amount);
         }
 
         public void WearOff(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)

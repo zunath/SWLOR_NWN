@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Service
 {
     public class SpaceService : ISpaceService
     {
-        private readonly IBasePermissionService _perm;
+        
         private readonly ILootService _loot;
         
         private readonly IPlayerService _player;
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Service
         private readonly ISerializationService _serialization;
         
         
-        public SpaceService(IBasePermissionService perm,
+        public SpaceService(
                             ILootService loot,
                             IPlayerService player,
                             ISerializationService serial)
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Service
             _loot = loot;
             
             
-            _perm = perm;
+            
             _player = player;
             
             _serialization = serial;
@@ -571,7 +571,7 @@ namespace SWLOR.Game.Server.Service
                         ErrorService.Trace(TraceComponent.Space, "Checking base " + @base.ID.ToString() + " for landing slots.");
 
                         // Do we have permission to dock here?
-                        if (_perm.HasBasePermission(player, @base.ID, BasePermission.CanDockStarship))
+                        if (BasePermissionService.HasBasePermission(player, @base.ID, BasePermission.CanDockStarship))
                         {
                             ErrorService.Trace(TraceComponent.Space, "Player has permission to land here.");
                             // Are there any docks in the base?

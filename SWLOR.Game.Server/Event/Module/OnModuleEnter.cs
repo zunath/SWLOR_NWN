@@ -14,7 +14,6 @@ namespace SWLOR.Game.Server.Event.Module
         private readonly IPlayerService _player;
         
         private readonly IQuestService _quest;
-        private readonly IActivityLoggingService _activityLogging;
         private readonly IMapPinService _mapPin;
         private readonly IObjectVisibilityService _objectVisibility;
         
@@ -31,7 +30,6 @@ namespace SWLOR.Game.Server.Event.Module
             IPlayerService player,
             
             IQuestService quest,
-            IActivityLoggingService activityLogging,
             IMapPinService mapPin,
             IObjectVisibilityService objectVisibility,
             
@@ -47,7 +45,6 @@ namespace SWLOR.Game.Server.Event.Module
             _player = player;
             
             _quest = quest;
-            _activityLogging = activityLogging;
             _mapPin = mapPin;
             _objectVisibility = objectVisibility;
             
@@ -81,7 +78,7 @@ namespace SWLOR.Game.Server.Event.Module
             _player.ShowMOTD(player);
             ApplyGhostwalk();
             _quest.OnClientEnter();
-            _activityLogging.OnModuleClientEnter();
+            ActivityLoggingService.OnModuleClientEnter();
             ApplyScriptEvents(player);
             _mapPin.OnModuleClientEnter();
             _objectVisibility.OnClientEnter();

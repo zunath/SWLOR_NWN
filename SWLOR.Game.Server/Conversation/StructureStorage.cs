@@ -16,19 +16,16 @@ namespace SWLOR.Game.Server.Conversation
     {
         
         
-        private readonly IBasePermissionService _perm;
+        
 
         public StructureStorage(
             
-            IDialogService dialog,
-            
-            
-            IBasePermissionService perm)
+            IDialogService dialog)
             : base(dialog)
         {
             
             
-            _perm = perm;
+            
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -61,12 +58,12 @@ namespace SWLOR.Game.Server.Conversation
             NWPlaceable container = (NWPlaceable) GetDialogTarget();
             Guid structureID = new Guid(container.GetLocalString("PC_BASE_STRUCTURE_ID"));
 
-            if (!_perm.HasStructurePermission(GetPC(), structureID, StructurePermission.CanAccessStructureInventory))
+            if (!BasePermissionService.HasStructurePermission(GetPC(), structureID, StructurePermission.CanAccessStructureInventory))
             {
                 SetResponseVisible("MainPage", 1, false);
             }
 
-            if(!_perm.HasStructurePermission(GetPC(), structureID, StructurePermission.CanRenameStructures))
+            if(!BasePermissionService.HasStructurePermission(GetPC(), structureID, StructurePermission.CanRenameStructures))
             {
                 SetResponseVisible("MainPage", 2, false);
             }

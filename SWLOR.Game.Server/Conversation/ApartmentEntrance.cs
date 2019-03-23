@@ -16,19 +16,19 @@ namespace SWLOR.Game.Server.Conversation
     public class ApartmentEntrance : ConversationBase
     {
         
-        private readonly IAreaService _area;
+        
         private readonly IBaseService _base;
 
         public ApartmentEntrance(
             
             IDialogService dialog,
             
-            IAreaService area,
+            
             IBaseService @base)
             : base(dialog)
         {
             
-            _area = area;
+            
             _base = @base;
         }
 

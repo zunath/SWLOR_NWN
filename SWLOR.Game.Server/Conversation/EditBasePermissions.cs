@@ -14,21 +14,18 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IBaseService _base;
         
         
-        private readonly IBasePermissionService _perm;
+        
 
         public EditBasePermissions(
              
             IDialogService dialog,
-            IBaseService @base,
-            
-            
-            IBasePermissionService perm) 
+            IBaseService @base) 
             : base(dialog)
         {
             _base = @base;
             
             
-            _perm = perm;
+            
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -91,7 +88,7 @@ namespace SWLOR.Game.Server.Conversation
             switch (responseID)
             {
                 case 1: // Change Permissions
-                    if (!_perm.HasBasePermission(GetPC(), data.PCBaseID, BasePermission.CanAdjustPermissions))
+                    if (!BasePermissionService.HasBasePermission(GetPC(), data.PCBaseID, BasePermission.CanAdjustPermissions))
                     {
                         GetPC().FloatingText("You do not have permission to change other players' permissions.");
                         return;
@@ -109,7 +106,7 @@ namespace SWLOR.Game.Server.Conversation
                         return;
                     }
 
-                    if (!_perm.HasBasePermission(GetPC(), data.PCBaseID, BasePermission.CanAdjustPublicPermissions))
+                    if (!BasePermissionService.HasBasePermission(GetPC(), data.PCBaseID, BasePermission.CanAdjustPublicPermissions))
                     {
                         GetPC().FloatingText("You do not have permission to change this base's public permissions.");
                         return;

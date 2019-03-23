@@ -9,18 +9,9 @@ using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class AuthorizationService: IAuthorizationService
+    public static class AuthorizationService
     {
-        
-        
-
-        public AuthorizationService( )
-        {
-            
-            
-        }
-
-        public bool IsPCRegisteredAsDM(NWPlayer player)
+        public static bool IsPCRegisteredAsDM(NWPlayer player)
         {
             if (player.IsDM) return true;
             if (!player.IsPlayer) return false;

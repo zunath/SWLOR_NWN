@@ -12,16 +12,9 @@ using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class ActivityLoggingService: IActivityLoggingService
+    public static class ActivityLoggingService
     {
-        
-        
-        public ActivityLoggingService( )
-        {
-            
-        }
-
-        public void OnModuleClientEnter()
+        public static void OnModuleClientEnter()
         {
             NWPlayer oPC = (_.GetEnteringObject());
             string name = oPC.Name;
@@ -52,7 +45,7 @@ namespace SWLOR.Game.Server.Service
             DataService.DataQueue.Enqueue(new DatabaseAction(entity, DatabaseActionType.Insert));
         }
 
-        public void OnModuleClientLeave()
+        public static void OnModuleClientLeave()
         {
             NWPlayer oPC = (_.GetExitingObject());
             string name = oPC.Name;
@@ -103,7 +96,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
         
-        public void OnModuleNWNXChat(NWPlayer sender)
+        public static void OnModuleNWNXChat(NWPlayer sender)
         {
             if (!sender.IsPlayer && !sender.IsDM) return;
             string text = NWNXChat.GetMessage();

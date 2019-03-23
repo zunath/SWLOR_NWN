@@ -11,25 +11,6 @@ namespace SWLOR.Game.Server.CustomEffect
 {
     public class MeditateEffect : ICustomEffect
     {
-        
-        private readonly IAbilityService _ability;
-        
-        
-        
-
-        public MeditateEffect(
-            
-            IAbilityService ability
-            
-            
-            )
-        {
-            
-            _ability = ability;
-            
-            
-            
-        }
 
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
@@ -86,7 +67,7 @@ namespace SWLOR.Game.Server.CustomEffect
             {
                 int amount = CalculateAmount(player);
 
-                _ability.RestoreFP(player, amount);
+                AbilityService.RestoreFP(player, amount);
                 Effect vfx = _.EffectVisualEffect(VFX_IMP_HEAD_MIND);
                 _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, player);
                 meditateTick = 0;

@@ -19,27 +19,16 @@ namespace SWLOR.Game.Server.Conversation
         
         
         private readonly IBaseService _base;
-        private readonly IAreaService _area;
-        private readonly IImpoundService _impound;
-        private readonly IBasePermissionService _perm;
+        
+        
 
         public ApartmentRental(
             
             IDialogService dialog,
-            
-            
-            IBaseService @base,
-            IAreaService area,
-            IImpoundService impound,
-            IBasePermissionService perm)
+            IBaseService @base)
             : base(dialog)
         {
-            
-            
             _base = @base;
-            _area = area;
-            _impound = impound;
-            _perm = perm;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -259,7 +248,7 @@ namespace SWLOR.Game.Server.Conversation
             NWPlayer player = GetPC();
             var data = _base.GetPlayerTempData(GetPC());
             var style = DataService.Single<BuildingStyle>(x => x.ID == data.BuildingStyleID);
-            var area = _area.CreateAreaInstance(player, style.Resref, "APARTMENT PREVIEW: " + style.Name, "PLAYER_HOME_ENTRANCE");
+            var area = AreaService.CreateAreaInstance(player, style.Resref, "APARTMENT PREVIEW: " + style.Name, "PLAYER_HOME_ENTRANCE");
             area.SetLocalInt("IS_BUILDING_PREVIEW", TRUE);
             _base.JumpPCToBuildingInterior(player, area);
         }
@@ -303,7 +292,7 @@ namespace SWLOR.Game.Server.Conversation
             
             // Grant all base permissions to owner.
             var allPermissions = Enum.GetValues(typeof(BasePermission)).Cast<BasePermission>().ToArray();
-            _perm.GrantBasePermissions(player, pcApartment.ID, allPermissions);
+            BasePermissionService.GrantBasePermissions(player, pcApartment.ID, allPermissions);
 
             _.TakeGoldFromCreature(purchasePrice, player, TRUE);
             

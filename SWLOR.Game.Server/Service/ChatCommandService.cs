@@ -14,17 +14,6 @@ namespace SWLOR.Game.Server.Service
 {
     public class ChatCommandService : IChatCommandService
     {
-        
-        private readonly IAuthorizationService _auth;
-        
-        public ChatCommandService(
-            
-            
-            IAuthorizationService auth)
-        {
-            
-            _auth = auth;
-        }
 
         public static bool CanHandleChat(NWObject sender, string message)
         {
@@ -140,7 +129,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             CommandDetailsAttribute attribute = command.GetType().GetCustomAttribute<CommandDetailsAttribute>();
-            bool isDM = sender.IsDM || _auth.IsPCRegisteredAsDM(sender);
+            bool isDM = sender.IsDM || AuthorizationService.IsPCRegisteredAsDM(sender);
 
             if (attribute != null &&
                 (attribute.Permissions.HasFlag(CommandPermissionType.Player) && sender.IsPlayer ||

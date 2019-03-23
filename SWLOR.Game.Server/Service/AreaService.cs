@@ -12,9 +12,9 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class AreaService : IAreaService
+    public static class AreaService
     {
-        public void OnModuleLoad()
+        public static void OnModuleLoad()
         {
             var areas = NWModule.Get().Areas;
             var dbAreas = DataService.GetAll<Area>().Where(x => x.IsActive).ToList();
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Service
         // Each tile is 10x10 meters. The "step" value in the config table determines how many meters we progress before checking for a valid location.
         // If you adjust this to get finer precision your database may explode with a ton of records. I chose a value that got me the 
         // accuracy I wanted, without too much overhead. Your mileage may vary.
-        private void BakeAreas()
+        private static void BakeAreas()
         {
             var config = DataService.GetAll<ServerConfiguration>().First();
             int Step = config.AreaBakeStep;
@@ -184,7 +184,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
         
-        public NWArea CreateAreaInstance(NWPlayer owner, string areaResref, string areaName, string entranceWaypointTag)
+        public static NWArea CreateAreaInstance(NWPlayer owner, string areaResref, string areaName, string entranceWaypointTag)
         {
             string tag = Guid.NewGuid().ToString();
             NWArea instance = _.CreateArea(areaResref, tag, areaName);
@@ -225,7 +225,7 @@ namespace SWLOR.Game.Server.Service
             return instance;
         }
 
-        public void DestroyAreaInstance(NWArea area)
+        public static void DestroyAreaInstance(NWArea area)
         {
             if (!area.IsInstance) return;
 

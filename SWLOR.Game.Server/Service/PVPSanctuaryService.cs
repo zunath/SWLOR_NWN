@@ -8,9 +8,9 @@ using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class PVPSanctuaryService: IPVPSanctuaryService
+    public static class PVPSanctuaryService
     {
-        public bool PlayerHasPVPSanctuary(NWPlayer player)
+        public static bool PlayerHasPVPSanctuary(NWPlayer player)
         {
             if (player == null) throw new ArgumentNullException(nameof(player));
             if (player.Object == null) throw new ArgumentNullException(nameof(player.Object));
@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Service
             return !pc.IsSanctuaryOverrideEnabled && now <= pc.DateSanctuaryEnds;
         }
 
-        public void SetPlayerPVPSanctuaryOverride(NWPlayer player, bool overrideStatus)
+        public static void SetPlayerPVPSanctuaryOverride(NWPlayer player, bool overrideStatus)
         {
             if (player == null) throw new ArgumentNullException(nameof(player));
             if (player.Object == null) throw new ArgumentNullException(nameof(player.Object));
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Service
             DataService.SubmitDataChange(pc, DatabaseActionType.Update);
         }
 
-        public bool IsPVPAttackAllowed(NWPlayer attacker, NWPlayer target)
+        public static bool IsPVPAttackAllowed(NWPlayer attacker, NWPlayer target)
         {
             // Check for sanctuary if this attack is PC versus PC
             if (target.IsPlayer && attacker.IsPlayer)

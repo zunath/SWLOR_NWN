@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Event.Module
     internal class OnModuleLoad: IRegisteredEvent
     {
         private readonly IFarmingService _farming;
-        private readonly IAreaService _area;
+        
         private readonly IBaseService _base;
         
         private readonly IObjectVisibilityService _objectVisibility;
@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Event.Module
 
         public OnModuleLoad(
             IFarmingService farming,
-            IAreaService area,
+            
             IBaseService @base,
             
             IObjectVisibilityService objectVisibility,
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Event.Module
             IDataPackageService dataPackage)
         {
             _farming = farming;
-            _area = area;
+            
             _base = @base;
             
             _objectVisibility = objectVisibility;
@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Event.Module
             _dataPackage.OnModuleLoad();
             _farming.OnModuleLoad();
             _base.OnModuleLoad();
-            _area.OnModuleLoad();
+            AreaService.OnModuleLoad();
             SpawnService.OnModuleLoad();
             CustomEffectService.OnModuleLoad();
             _objectVisibility.OnModuleLoad();

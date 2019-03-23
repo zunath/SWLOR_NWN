@@ -16,35 +16,6 @@ namespace SWLOR.Game.Server.Item.Medicine
     public class ForcePack: IActionItem
     {
 
-        
-        
-        
-        
-        
-        
-        private readonly IAbilityService _ability;
-        
-
-        public ForcePack(
-            
-            
-            
-            
-            
-            
-            IAbilityService ability
-            )
-        {
-            
-            
-            
-            
-            
-            
-            _ability = ability;
-            
-        }
-
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
             user.SendMessage("You begin applying a force pack to " + target.Name + "...");
@@ -79,7 +50,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                     blastHeal *= 2;
                 }
 
-                _ability.RestoreFP(target.Object, blastHeal);
+                AbilityService.RestoreFP(target.Object, blastHeal);
             }
 
             float interval = 6.0f;

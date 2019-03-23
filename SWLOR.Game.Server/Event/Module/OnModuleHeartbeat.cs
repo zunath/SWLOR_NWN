@@ -15,17 +15,17 @@ namespace SWLOR.Game.Server.Event.Module
 {
     internal class OnModuleHeartbeat : IRegisteredEvent
     {
-        private readonly IAbilityService _ability;
+        
         
         private readonly IBaseService _base;
         
         
         public OnModuleHeartbeat(
-            IAbilityService ability,
+            
             IBaseService @base
             )
         {
-            _ability = ability;
+            
             
             _base = @base;
             
@@ -157,7 +157,7 @@ namespace SWLOR.Game.Server.Event.Module
                         }
                     }
 
-                    entity = _ability.RestoreFP(oPC, amount, entity);
+                    entity = AbilityService.RestoreFP(oPC, amount, entity);
                 }
 
                 entity.CurrentFPTick = rate;

@@ -22,27 +22,12 @@ namespace SWLOR.Game.Server.Conversation
             public bool IsConfirming { get; set; }
             public NWItem TomeItem { get; set; }
         }
-
-        
-        
-        
-        
-        
-        private readonly IBackgroundService _background;
         
         public PerkRefund(
              
-            IDialogService dialog
-            
-            
-            ,
-            IBackgroundService background)
+            IDialogService dialog)
             : base(dialog)
         {
-            
-            
-            
-            _background = background;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -273,7 +258,7 @@ namespace SWLOR.Game.Server.Conversation
             var player = GetPC();
             if (IsGrantedByBackground(perkType))
             {
-                _background.ApplyBackgroundBonuses(player);
+                BackgroundService.ApplyBackgroundBonuses(player);
             }
         }
 

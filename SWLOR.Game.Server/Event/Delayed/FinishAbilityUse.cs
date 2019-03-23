@@ -12,26 +12,6 @@ namespace SWLOR.Game.Server.Event.Delayed
 {
     public class FinishAbilityUse : IRegisteredEvent
     {
-        
-        
-        private readonly IAbilityService _ability;
-        
-        
-
-        public FinishAbilityUse(
-            
-            
-            IAbilityService ability
-            
-            )
-        {
-            
-            
-            _ability = ability;
-            
-            
-        }
-
         public bool Run(params object[] args)
         {
             NWPlayer pc = (NWPlayer)args[0];
@@ -76,12 +56,12 @@ namespace SWLOR.Game.Server.Event.Delayed
 
                     if (target.IsNPC)
                     {
-                        _ability.ApplyEnmity(pc, (target.Object), entity);
+                        AbilityService.ApplyEnmity(pc, (target.Object), entity);
                     }
                 }
                 else if(executionType == PerkExecutionType.QueuedWeaponSkill)
                 {
-                    _ability.HandleQueueWeaponSkill(pc, entity, perk, featID);
+                    AbilityService.HandleQueueWeaponSkill(pc, entity, perk, featID);
                 }
 
 
@@ -103,7 +83,7 @@ namespace SWLOR.Game.Server.Event.Delayed
                 if(!hasChainspell && cooldown != null)
                 {
                     // Mark cooldown on category
-                    _ability.ApplyCooldown(pc, cooldown, perk, featID);
+                    AbilityService.ApplyCooldown(pc, cooldown, perk, featID);
                 }
                 pc.IsBusy = false;
                 pc.SetLocalInt(spellUUID, (int)SpellStatusType.Completed);

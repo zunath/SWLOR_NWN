@@ -208,12 +208,6 @@ namespace SWLOR.Game.Server
             builder.RegisterType<NWPlaceable>();
 
             // Services
-            builder.RegisterType<AbilityService>().As<IAbilityService>().SingleInstance();
-            builder.RegisterType<ActivityLoggingService>().As<IActivityLoggingService>().SingleInstance();
-            builder.RegisterType<AreaService>().As<IAreaService>().SingleInstance();
-            builder.RegisterType<AuthorizationService>().As<IAuthorizationService>().SingleInstance();
-            builder.RegisterType<BackgroundService>().As<IBackgroundService>().SingleInstance();
-            builder.RegisterType<BasePermissionService>().As<IBasePermissionService>().SingleInstance();
             builder.RegisterType<BaseService>().As<IBaseService>().SingleInstance();
             builder.RegisterType<BehaviourService>().As<IBehaviourService>().SingleInstance();
             builder.RegisterType<ChatCommandService>().As<IChatCommandService>().SingleInstance();
@@ -246,7 +240,6 @@ namespace SWLOR.Game.Server
             builder.RegisterType<PlayerMigrationService>().As<IPlayerMigrationService>().SingleInstance();
             builder.RegisterType<PlayerValidationService>().As<IPlayerValidationService>().SingleInstance();
             builder.RegisterType<PlayerService>().As<IPlayerService>().SingleInstance();
-            builder.RegisterType<PVPSanctuaryService>().As<IPVPSanctuaryService>().SingleInstance();
             builder.RegisterType<QuestService>().As<IQuestService>().SingleInstance();
             builder.RegisterType<RaceService>().As<IRaceService>().SingleInstance();
             builder.RegisterType<ResourceService>().As<IResourceService>().SingleInstance();

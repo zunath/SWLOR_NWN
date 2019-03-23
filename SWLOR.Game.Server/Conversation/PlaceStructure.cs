@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Conversation
         
         private readonly IBaseService _base;
         
-        private readonly IAreaService _area;
+        
         private readonly IDurabilityService _durability;
         private readonly ICraftService _craft;
 
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Conversation
             
             IBaseService @base,
             
-            IAreaService area,
+            
             IDurabilityService durability,
             ICraftService craft)
             : base(dialog)
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Conversation
             
             _base = @base;
             
-            _area = area;
+            
             _durability = durability;
             _craft = craft;
         }
@@ -483,7 +483,7 @@ namespace SWLOR.Game.Server.Conversation
             var data = _base.GetPlayerTempData(GetPC());
             int styleID = data.StructureItem.GetLocalInt("STRUCTURE_BUILDING_INTERIOR_ID");
             var style = DataService.Single<BuildingStyle>(x => x.ID == styleID);
-            var area = _area.CreateAreaInstance(GetPC(), style.Resref, "BUILDING PREVIEW: " + style.Name, "PLAYER_HOME_ENTRANCE");
+            var area = AreaService.CreateAreaInstance(GetPC(), style.Resref, "BUILDING PREVIEW: " + style.Name, "PLAYER_HOME_ENTRANCE");
             area.SetLocalInt("IS_BUILDING_PREVIEW", TRUE);
             NWPlayer player = GetPC();
 

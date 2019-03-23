@@ -18,24 +18,18 @@ namespace SWLOR.Game.Server.Conversation
         private readonly IBaseService _base;
         private readonly IPlayerService _player;
         
-        private readonly IAreaService _area;
-        private readonly IBasePermissionService _perm;
+        
+        
 
         public BuildingEntrance(
             
             IDialogService dialog,
             IBaseService @base,
-            IPlayerService player,
-            
-            IAreaService area,
-            IBasePermissionService perm)
+            IPlayerService player)
             : base(dialog)
         {
             _base = @base;
             _player = player;
-            
-            _area = area;
-            _perm = perm;
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -54,7 +48,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             NWPlaceable door = GetDialogTarget().Object;
             var structureID = new Guid(door.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            bool canEnterBuilding = _perm.HasStructurePermission(GetPC(), structureID, StructurePermission.CanEnterBuilding);
+            bool canEnterBuilding = BasePermissionService.HasStructurePermission(GetPC(), structureID, StructurePermission.CanEnterBuilding);
 
             SetHeader();
             SetResponseVisible("MainPage", 1, canEnterBuilding);
@@ -116,7 +110,7 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
             var structureID = new Guid(pcBaseStructureID);
-            bool canEnterBuilding = _perm.HasStructurePermission(GetPC(), structureID, StructurePermission.CanEnterBuilding);
+            bool canEnterBuilding = BasePermissionService.HasStructurePermission(GetPC(), structureID, StructurePermission.CanEnterBuilding);
 
             if (!canEnterBuilding)
             {

@@ -20,28 +20,18 @@ namespace SWLOR.Game.Server.Conversation
     {
         private readonly IBaseService _base;
         private readonly IDialogService _dialog;
-        
-        
-        private readonly IBasePermissionService _perm;
-        private readonly ISerializationService _serialization;
         private readonly ISpaceService _space;
         
 
         public ShipComputer(
             
             IDialogService dialog,
-            
-            IBasePermissionService perm,
-            ISerializationService serialization,
             IBaseService @base,
             
             ISpaceService space) 
             : base(dialog)
         {
             _dialog = dialog;
-            
-            _perm = perm;
-            _serialization = serialization;
             _space = space;
             _base = @base;
             
@@ -66,7 +56,7 @@ namespace SWLOR.Game.Server.Conversation
 
             List<string> options = new List<string>();
 
-            if (bSpace && _perm.HasStructurePermission(player, structure.ID, StructurePermission.CanFlyStarship))
+            if (bSpace && BasePermissionService.HasStructurePermission(player, structure.ID, StructurePermission.CanFlyStarship))
             {
                 // See if we are near enough to the planet to land.
                 if (_space.CanLandOnPlanet(player.Area))
@@ -77,18 +67,18 @@ namespace SWLOR.Game.Server.Conversation
                 options.Add("Pilot Ship");
                 options.Add("Hyperspace Jump");
             }
-            else if ( _perm.HasStructurePermission(player, structure.ID, StructurePermission.CanFlyStarship))
+            else if ( BasePermissionService.HasStructurePermission(player, structure.ID, StructurePermission.CanFlyStarship))
             {
                 options.Add("Take Off");
             }
 
-            if (!bSpace && _perm.HasBasePermission(player, structure.PCBaseID, BasePermission.CanManageBaseFuel))
+            if (!bSpace && BasePermissionService.HasBasePermission(player, structure.PCBaseID, BasePermission.CanManageBaseFuel))
             {
                 options.Add("Access Fuel Bay");
                 options.Add("Access Stronidium Bay");
             }
 
-            if (_perm.HasBasePermission(player, structure.PCBaseID, BasePermission.CanAccessStructureInventory))
+            if (BasePermissionService.HasBasePermission(player, structure.PCBaseID, BasePermission.CanAccessStructureInventory))
             {
                 if (!bSpace) options.Add("Access Resource Bay");
                 options.Add("Export Starcharts");

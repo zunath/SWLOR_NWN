@@ -10,10 +10,10 @@ using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class BackgroundService: IBackgroundService
+    public static class BackgroundService
     {
         
-        public void ApplyBackgroundBonuses(NWPlayer oPC)
+        public static void ApplyBackgroundBonuses(NWPlayer oPC)
         {
             var dbPlayer = DataService.Single<Player>(x => x.ID == oPC.GlobalID);
             string pcName = oPC.Name;

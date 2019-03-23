@@ -9,7 +9,6 @@ namespace SWLOR.Game.Server.Event.Module
     {
         
         private readonly IPlayerService _player;
-        private readonly IActivityLoggingService _activityLogging;
         
         private readonly IMapPinService _mapPin;
         private readonly IMapService _map;
@@ -19,7 +18,6 @@ namespace SWLOR.Game.Server.Event.Module
         public OnModuleLeave(
             
             IPlayerService player,
-            IActivityLoggingService activityLogging,
             
             IMapPinService mapPin,
             IMapService map,
@@ -28,7 +26,6 @@ namespace SWLOR.Game.Server.Event.Module
         {
             
             _player = player;
-            _activityLogging = activityLogging;
             
             _mapPin = mapPin;
             _map = map;
@@ -52,7 +49,7 @@ namespace SWLOR.Game.Server.Event.Module
 
             _player.SaveCharacter(pc);
             _player.SaveLocation(pc);
-            _activityLogging.OnModuleClientLeave();
+            ActivityLoggingService.OnModuleClientLeave();
             SkillService.OnModuleClientLeave();
             _mapPin.OnModuleClientLeave();
             _map.OnModuleLeave();

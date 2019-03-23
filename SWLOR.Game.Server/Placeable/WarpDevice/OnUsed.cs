@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 
@@ -12,20 +13,20 @@ namespace SWLOR.Game.Server.Placeable.WarpDevice
     {
         
         private readonly IKeyItemService _keyItem;
-        private readonly IAreaService _area;
+        
         private readonly IPlayerService _player;
         private readonly IDialogService _dialog;
 
         public OnUsed(
             
             IKeyItemService keyItem,
-            IAreaService area,
+            
             IPlayerService player,
             IDialogService dialog)
         {
             
             _keyItem = keyItem;
-            _area = area;
+            
             _player = player;
             _dialog = dialog;
         }
@@ -94,7 +95,7 @@ namespace SWLOR.Game.Server.Placeable.WarpDevice
                 }
 
                 // Otherwise no instance exists yet or this instance only allows one player. Make a new one for this player.
-                NWArea instance = _area.CreateAreaInstance(oPC, entranceWP.Area.Resref, entranceWP.Area.Name, destination);
+                NWArea instance = AreaService.CreateAreaInstance(oPC, entranceWP.Area.Resref, entranceWP.Area.Name, destination);
                 location = instance.GetLocalLocation("INSTANCE_ENTRANCE");
                 _player.SaveLocation(oPC);
             }

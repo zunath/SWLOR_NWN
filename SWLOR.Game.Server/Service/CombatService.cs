@@ -14,16 +14,6 @@ namespace SWLOR.Game.Server.Service
 {
     public class CombatService : ICombatService
     {
-        
-        
-        private readonly IAbilityService _ability;
-        
-        public CombatService(
-            IAbilityService ability)
-        {
-            _ability = ability;
-        }
-
         public void OnModuleApplyDamage()
         {
             DamageData data = NWNXDamage.GetDamageEventData();
@@ -214,7 +204,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             if (restoreAmount > 0)
-                _ability.RestoreFP(player, restoreAmount);
+                AbilityService.RestoreFP(player, restoreAmount);
         }
 
         private void HandleApplySneakAttackDamage()
@@ -281,7 +271,7 @@ namespace SWLOR.Game.Server.Service
 
             if (absorbed < 1) absorbed = 1;
 
-            _ability.RestoreFP(player, absorbed);
+            AbilityService.RestoreFP(player, absorbed);
         }
 
         private void HandleRecoveryBlast()

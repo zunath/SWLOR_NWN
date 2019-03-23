@@ -17,16 +17,15 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
     {
         
         private readonly IDialogService _dialog;
-        private readonly IBasePermissionService _perm;
+        
         
 
         public OnClicked(
-            IDialogService dialog,
-            IBasePermissionService perm)
+            IDialogService dialog)
         {
             
             _dialog = dialog;
-            _perm = perm;
+            
         }
 
         public bool Run(params object[] args)
@@ -47,7 +46,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
 
             // Does the player have permission to access the fuel bays?
-            if (_perm.HasBasePermission(clicker, structure.PCBaseID, BasePermission.CanManageBaseFuel))
+            if (BasePermissionService.HasBasePermission(clicker, structure.PCBaseID, BasePermission.CanManageBaseFuel))
             {
                 // Is the tower in reinforced mode? If so, fuel cannot be accessed.
                 var pcBase = DataService.Single<PCBase>(x => x.ID == structure.PCBaseID);

@@ -22,9 +22,9 @@ namespace SWLOR.Game.Server.Service
         private readonly IDialogService _dialog;
         private readonly IPlayerService _player;
         private readonly IImpoundService _impound;
-        private readonly IBasePermissionService _perm;
+        
         private readonly IDurabilityService _durability;
-        private readonly IAreaService _area;
+        
         private readonly ISpaceService _space;
         private readonly ISerializationService _serialization;
 
@@ -32,20 +32,20 @@ namespace SWLOR.Game.Server.Service
             IDialogService dialog,
             IPlayerService player,
             IImpoundService impound,
-            IBasePermissionService perm,
+            
             
             IDurabilityService durability,
-            IAreaService area,
+            
             ISpaceService space,
             ISerializationService serialization)
         {
             _dialog = dialog;
             _player = player;
             _impound = impound;
-            _perm = perm;
+            
             
             _durability = durability;
-            _area = area;
+            
             _space = space;
             _serialization = serialization;
         }
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     // Migration code : ensure owner has all permissions.
                     var allPermissions = Enum.GetValues(typeof(BasePermission)).Cast<BasePermission>().ToArray();
-                    _perm.GrantBasePermissions(@base.PlayerID, @base.ID, allPermissions);
+                    BasePermissionService.GrantBasePermissions(@base.PlayerID, @base.ID, allPermissions);
 
                     var structures = DataService.Where<PCBaseStructure>(x => x.PCBaseID == @base.ID);
                     foreach (var structure in structures)
@@ -347,7 +347,7 @@ namespace SWLOR.Game.Server.Service
 
             // Grant all base permissions to owner.
             var allPermissions = Enum.GetValues(typeof(BasePermission)).Cast<BasePermission>().ToArray();
-            _perm.GrantBasePermissions(player, pcBase.ID, allPermissions);
+            BasePermissionService.GrantBasePermissions(player, pcBase.ID, allPermissions);
 
             player.FloatingText("You purchase " + area.Name + " (" + sector + ") for " + purchasePrice + " credits.");
         }
@@ -577,15 +577,15 @@ namespace SWLOR.Game.Server.Service
 
             // Check whether player has permission to place or edit structures.
             var canPlaceOrEditStructures = buildingType == BuildingType.Apartment || buildingType == BuildingType.Exterior ?
-                _perm.HasBasePermission(player, pcBase.ID, BasePermission.CanPlaceEditStructures) :                 // Bases
-                _perm.HasStructurePermission(player, buildingStructureGuid, StructurePermission.CanPlaceEditStructures);    // Buildings
+                BasePermissionService.HasBasePermission(player, pcBase.ID, BasePermission.CanPlaceEditStructures) :                 // Bases
+                BasePermissionService.HasStructurePermission(player, buildingStructureGuid, StructurePermission.CanPlaceEditStructures);    // Buildings
 
             var baseStructure = DataService.Get<BaseStructure>(baseStructureID);
             var baseStructureType = DataService.Get<Data.Entity.BaseStructureType>(baseStructure.BaseStructureTypeID);
 
             if (baseStructureType.ID == (int)BaseStructureType.Starship)
             {
-                canPlaceOrEditStructures = _perm.HasBasePermission(player, pcBase.ID, BasePermission.CanDockStarship); 
+                canPlaceOrEditStructures = BasePermissionService.HasBasePermission(player, pcBase.ID, BasePermission.CanDockStarship); 
             }
 
             // Don't have permission.
@@ -700,7 +700,7 @@ namespace SWLOR.Game.Server.Service
 
                             // Grant all base permissions to owner.
                             var allPermissions = Enum.GetValues(typeof(BasePermission)).Cast<BasePermission>().ToArray();
-                            _perm.GrantBasePermissions(player, starkillerBase.ID, allPermissions);
+                            BasePermissionService.GrantBasePermissions(player, starkillerBase.ID, allPermissions);
                             var position = _.GetPositionFromLocation(targetLocation);
                             BuildingStyle extStyle = DataService.SingleOrDefault<BuildingStyle>(x => x.BaseStructureID == baseStructureID && x.BuildingTypeID == (int)BuildingType.Exterior);
 
@@ -1190,7 +1190,7 @@ namespace SWLOR.Game.Server.Service
                     player = (_.GetNextPC());
                 }
 
-                _area.DestroyAreaInstance(area);
+                AreaService.DestroyAreaInstance(area);
             });
         }
 
@@ -1381,7 +1381,7 @@ namespace SWLOR.Game.Server.Service
             // Check that the PC has permission to manage structures. 
             // Check whether player has permission to place or edit structures.
             //--------------------------------------------------------------------------
-            var canPlaceOrEditStructures = _perm.HasBasePermission(player, towerStructure.PCBaseID, BasePermission.CanPlaceEditStructures);
+            var canPlaceOrEditStructures = BasePermissionService.HasBasePermission(player, towerStructure.PCBaseID, BasePermission.CanPlaceEditStructures);
 
             // Don't have permission.
             if (!canPlaceOrEditStructures)
@@ -1483,7 +1483,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            NWArea instance = _area.CreateAreaInstance(player, style.Resref, name, "PLAYER_HOME_ENTRANCE");
+            NWArea instance = AreaService.CreateAreaInstance(player, style.Resref, name, "PLAYER_HOME_ENTRANCE");
             instance.SetLocalInt("BUILDING_TYPE", type);
 
             if (isBase) instance.SetLocalString("PC_BASE_ID", instanceID.ToString());

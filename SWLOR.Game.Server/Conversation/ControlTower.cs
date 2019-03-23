@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Conversation
     {
         private readonly IBaseService _base;
         
-        private readonly IBasePermissionService _perm;
+        
         private readonly ISerializationService _serialization;
         
 
@@ -25,14 +25,14 @@ namespace SWLOR.Game.Server.Conversation
              
             IDialogService dialog,
             
-            IBasePermissionService perm,
+            
             ISerializationService serialization,
             IBaseService @base
             ) 
             : base(dialog)
         {
             
-            _perm = perm;
+            
             _serialization = serialization;
             _base = @base;
             
@@ -118,13 +118,13 @@ namespace SWLOR.Game.Server.Conversation
 
             SetPageHeader("MainPage", header);
 
-            if (!_perm.HasBasePermission(GetPC(), structure.PCBaseID, BasePermission.CanManageBaseFuel))
+            if (!BasePermissionService.HasBasePermission(GetPC(), structure.PCBaseID, BasePermission.CanManageBaseFuel))
             {
                 SetResponseVisible("MainPage", 1, false);
                 SetResponseVisible("MainPage", 2, false);
             }
 
-            if (!_perm.HasBasePermission(GetPC(), structure.PCBaseID, BasePermission.CanAccessStructureInventory))
+            if (!BasePermissionService.HasBasePermission(GetPC(), structure.PCBaseID, BasePermission.CanAccessStructureInventory))
             {
                 SetResponseVisible("MainPage", 3, false);
             }

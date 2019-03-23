@@ -14,21 +14,19 @@ namespace SWLOR.Game.Server.Conversation
     {
         
         private readonly IBaseService _base;
-        private readonly IBasePermissionService _perm;
+        
         
 
         public EditPrimaryResidence(
              
             IDialogService dialog,
             
-            IBaseService @base,
-            IBasePermissionService perm
-            ) 
+            IBaseService @base) 
             : base(dialog)
         {
             
             _base = @base;
-            _perm = perm;
+            
             
         }
 
@@ -109,8 +107,8 @@ namespace SWLOR.Game.Server.Conversation
                 primaryResident = DataService.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseStructureID == structureID);
 
                 isPrimaryResident = dbPlayer.PrimaryResidencePCBaseStructureID != null && dbPlayer.PrimaryResidencePCBaseStructureID == structureID;
-                canEditPrimaryResidence = _perm.HasStructurePermission(player, structureID, StructurePermission.CanEditPrimaryResidence);
-                canRemovePrimaryResidence = _perm.HasStructurePermission(player, structureID, StructurePermission.CanRemovePrimaryResidence);
+                canEditPrimaryResidence = BasePermissionService.HasStructurePermission(player, structureID, StructurePermission.CanEditPrimaryResidence);
+                canRemovePrimaryResidence = BasePermissionService.HasStructurePermission(player, structureID, StructurePermission.CanRemovePrimaryResidence);
 
             }
             else if (data.BuildingType == BuildingType.Apartment)
@@ -119,8 +117,8 @@ namespace SWLOR.Game.Server.Conversation
                 primaryResident = DataService.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseID == pcBaseID);
 
                 isPrimaryResident = dbPlayer.PrimaryResidencePCBaseID != null && dbPlayer.PrimaryResidencePCBaseID == pcBaseID;
-                canEditPrimaryResidence = _perm.HasBasePermission(player, pcBaseID, BasePermission.CanEditPrimaryResidence);
-                canRemovePrimaryResidence = _perm.HasBasePermission(player, pcBaseID, BasePermission.CanRemovePrimaryResidence);
+                canEditPrimaryResidence = BasePermissionService.HasBasePermission(player, pcBaseID, BasePermission.CanEditPrimaryResidence);
+                canRemovePrimaryResidence = BasePermissionService.HasBasePermission(player, pcBaseID, BasePermission.CanRemovePrimaryResidence);
             }
             else
             {
@@ -207,8 +205,8 @@ namespace SWLOR.Game.Server.Conversation
                 currentResident = DataService.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseStructureID == structureID);
 
                 isPrimaryResident = newResident.PrimaryResidencePCBaseStructureID != null && newResident.PrimaryResidencePCBaseStructureID == structureID;
-                canEditPrimaryResidence = _perm.HasStructurePermission(player, structureID, StructurePermission.CanEditPrimaryResidence);
-                canRemovePrimaryResidence = _perm.HasStructurePermission(player, structureID, StructurePermission.CanRemovePrimaryResidence);
+                canEditPrimaryResidence = BasePermissionService.HasStructurePermission(player, structureID, StructurePermission.CanEditPrimaryResidence);
+                canRemovePrimaryResidence = BasePermissionService.HasStructurePermission(player, structureID, StructurePermission.CanRemovePrimaryResidence);
             }
             else if (data.BuildingType == BuildingType.Apartment)
             {
@@ -216,8 +214,8 @@ namespace SWLOR.Game.Server.Conversation
                 currentResident = DataService.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseID == pcBaseID);
 
                 isPrimaryResident = newResident.PrimaryResidencePCBaseID != null && newResident.PrimaryResidencePCBaseID == pcBaseID;
-                canEditPrimaryResidence = _perm.HasBasePermission(player, pcBaseID, BasePermission.CanEditPrimaryResidence);
-                canRemovePrimaryResidence = _perm.HasBasePermission(player, pcBaseID, BasePermission.CanRemovePrimaryResidence);
+                canEditPrimaryResidence = BasePermissionService.HasBasePermission(player, pcBaseID, BasePermission.CanEditPrimaryResidence);
+                canRemovePrimaryResidence = BasePermissionService.HasBasePermission(player, pcBaseID, BasePermission.CanRemovePrimaryResidence);
             }
             else
             {

@@ -11,20 +11,19 @@ namespace SWLOR.Game.Server.Event.Feat
     {
         
         private readonly IDurabilityService _durability;
-        private readonly IAbilityService _ability;
+        
         
         
 
         public OnHitCastSpell(
             
-            IDurabilityService durability,
-            IAbilityService ability
+            IDurabilityService durability
             
             )
         {
             
             _durability = durability;
-            _ability = ability;
+            
             
             
         }
@@ -36,7 +35,7 @@ namespace SWLOR.Game.Server.Event.Feat
             if (player.IsValid)
             {
                 _durability.OnHitCastSpell(player);
-                _ability.OnHitCastSpell(player);
+                AbilityService.OnHitCastSpell(player);
                 SkillService.OnHitCastSpell(player);
                 PerkService.OnHitCastSpell(player);
                 HandleItemSpecificCastSpell();

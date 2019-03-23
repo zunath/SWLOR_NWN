@@ -1,5 +1,6 @@
 ﻿
 using NWN;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.Contracts;
 
 namespace SWLOR.Game.Server.Event.Module
@@ -7,7 +8,7 @@ namespace SWLOR.Game.Server.Event.Module
     internal class OnModuleUseFeat : IRegisteredEvent
     {
         
-        private readonly IAbilityService _ability;
+        
         private readonly IPlayerService _player;
         private readonly IBaseService _base;
         private readonly ICraftService _craft;
@@ -15,14 +16,12 @@ namespace SWLOR.Game.Server.Event.Module
 
         public OnModuleUseFeat(
             
-            IAbilityService ability,
+            
             IPlayerService player,
             IBaseService @base,
             ICraftService craft,
             IChatCommandService chat)
         {
-            
-            _ability = ability;
             _player = player;
             _base = @base;
             _craft = craft;
@@ -31,7 +30,7 @@ namespace SWLOR.Game.Server.Event.Module
 
         public bool Run(params object[] args)
         {
-            _ability.OnModuleUseFeat();
+            AbilityService.OnModuleUseFeat();
             _player.OnModuleUseFeat();
             _base.OnModuleUseFeat();
             _craft.OnModuleUseFeat();

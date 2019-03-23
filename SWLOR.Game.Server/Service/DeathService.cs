@@ -18,19 +18,18 @@ namespace SWLOR.Game.Server.Service
         
         
         private readonly IDurabilityService _durability;
-        private readonly IAreaService _area;
+        
 
         public DeathService( 
             
             
-            IDurabilityService durability,
-            IAreaService area)
+            IDurabilityService durability)
         {
             
             
             
             _durability = durability;
-            _area = area;
+            
         }
         
 
@@ -88,7 +87,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     _.DelayCommand(12.0f, () =>
                     {
-                        _area.DestroyAreaInstance(area);
+                        AreaService.DestroyAreaInstance(area);
                     }); 
                 }
             }

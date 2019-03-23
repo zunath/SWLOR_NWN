@@ -12,16 +12,6 @@ namespace SWLOR.Game.Server.ChatCommand
     [CommandDetails("Displays all chat commands available to you.", CommandPermissionType.DM | CommandPermissionType.Player)]
     public class Help: IChatCommand
     {
-        
-        private readonly IAuthorizationService _auth;
-
-        public Help(
-            IAuthorizationService auth)
-        {
-            
-            _auth = auth;
-        }
-
         /// <summary>
         /// Displays all the chat commands available to a user
         /// </summary>
@@ -31,7 +21,7 @@ namespace SWLOR.Game.Server.ChatCommand
         /// <param name="args"></param>
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            bool isDM = user.IsDM || _auth.IsPCRegisteredAsDM(user);
+            bool isDM = user.IsDM || AuthorizationService.IsPCRegisteredAsDM(user);
 
             var classes = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())

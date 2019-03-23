@@ -18,18 +18,9 @@ using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class AbilityService : IAbilityService
+    public static class AbilityService
     {
         
-        private readonly IPVPSanctuaryService _pvpSanctuary;
-        
-        
-        
-        
-        
-        
-        
-
         // These variables are used throughout the engine to flag the type of damage being done to 
         // a creature.  The damage code reads this to determine what bonus effects to apply.
         // The LAST_ATTACK variable name should be appended with the GlobalID of the attacking
@@ -40,15 +31,8 @@ namespace SWLOR.Game.Server.Service
         public static int ATTACK_FORCE = 2;  // Force effects
         public static int ATTACK_COMBATABILITY = 3; // Combat tricks like Provoke
         public static int ATTACK_DOT = 4; // Subsequent damage effects
-
-        public AbilityService( 
-            IPVPSanctuaryService pvpSanctuary
-            )
-        {
-            _pvpSanctuary = pvpSanctuary;
-        }
         
-        public void OnModuleUseFeat()
+        public static void OnModuleUseFeat()
         {
             NWPlayer pc = Object.OBJECT_SELF;
             NWCreature target = NWNXEvents.OnFeatUsed_GetTarget().Object;
@@ -100,7 +84,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (perkAction.IsHostile() && target.IsPlayer)
                 {
-                    if (!_pvpSanctuary.IsPVPAttackAllowed(pc, target.Object)) return;
+                    if (!PVPSanctuaryService.IsPVPAttackAllowed(pc, target.Object)) return;
                 }
 
                 if (pc.Area.Resref != target.Area.Resref ||
@@ -183,7 +167,7 @@ namespace SWLOR.Game.Server.Service
             
         }
 
-        public void ApplyEnmity(NWPlayer pc, NWCreature target, Data.Entity.Perk perk)
+        public static void ApplyEnmity(NWPlayer pc, NWCreature target, Data.Entity.Perk perk)
         {
             switch ((EnmityAdjustmentRuleType)perk.EnmityAdjustmentRuleID)
             {
@@ -205,7 +189,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
         
-        private void ActivateAbility(NWPlayer pc,
+        private static void ActivateAbility(NWPlayer pc,
                                NWObject target,
                                Data.Entity.Perk entity,
                                IPerk perk,
@@ -305,7 +289,7 @@ namespace SWLOR.Game.Server.Service
                 spellFeatID);
         }
         
-        public void ApplyCooldown(NWPlayer pc, CooldownCategory cooldown, IPerk ability, int spellFeatID)
+        public static void ApplyCooldown(NWPlayer pc, CooldownCategory cooldown, IPerk ability, int spellFeatID)
         {
             float finalCooldown = ability.CooldownTime(pc, (float)cooldown.BaseCooldownTime, spellFeatID);
             int cooldownSeconds = (int)finalCooldown;
@@ -316,7 +300,7 @@ namespace SWLOR.Game.Server.Service
             DataService.SubmitDataChange(pcCooldown, DatabaseActionType.Update);
         }
 
-        private void CheckForSpellInterruption(NWPlayer pc, string spellUUID, Vector position)
+        private static void CheckForSpellInterruption(NWPlayer pc, string spellUUID, Vector position)
         {
             if (pc.GetLocalInt(spellUUID) == (int) SpellStatusType.Completed) return;
 
@@ -342,7 +326,7 @@ namespace SWLOR.Game.Server.Service
             _.DelayCommand(0.5f, () => { CheckForSpellInterruption(pc, spellUUID, position); });
         }
 
-        public void HandleQueueWeaponSkill(NWPlayer pc, Data.Entity.Perk entity, IPerk ability, int spellFeatID)
+        public static void HandleQueueWeaponSkill(NWPlayer pc, Data.Entity.Perk entity, IPerk ability, int spellFeatID)
         {
             int? cooldownCategoryID = ability.CooldownCategoryID(pc, entity.CooldownCategoryID, spellFeatID);
             var cooldownCategory = DataService.Get<CooldownCategory>(cooldownCategoryID);
@@ -367,7 +351,7 @@ namespace SWLOR.Game.Server.Service
             });
         }
 
-        public Player RestoreFP(NWPlayer oPC, int amount, Player entity)
+        public static Player RestoreFP(NWPlayer oPC, int amount, Player entity)
         {
             entity.CurrentFP = entity.CurrentFP + amount;
             if (entity.CurrentFP > entity.MaxFP)
@@ -378,14 +362,14 @@ namespace SWLOR.Game.Server.Service
             return entity;
         }
 
-        public void RestoreFP(NWPlayer oPC, int amount)
+        public static void RestoreFP(NWPlayer oPC, int amount)
         {
             Player entity = DataService.Get<Player>(oPC.GlobalID);
             RestoreFP(oPC, amount, entity);
             DataService.SubmitDataChange(entity, DatabaseActionType.Update);
         }
 
-        public void OnHitCastSpell(NWPlayer oPC)
+        public static void OnHitCastSpell(NWPlayer oPC)
         {
             NWObject oTarget = _.GetSpellTargetObject();
             NWItem oItem = _.GetSpellCastItem();
@@ -426,7 +410,7 @@ namespace SWLOR.Game.Server.Service
             });
         }
 
-        public void HandlePlasmaCellPerk(NWPlayer player, NWObject target)
+        public static void HandlePlasmaCellPerk(NWPlayer player, NWObject target)
         {
             if (!player.IsPlayer) return;
             if (_.GetHasFeat((int)CustomFeatType.PlasmaCell, player) == FALSE) return;  // Check if player has the perk
@@ -495,7 +479,7 @@ namespace SWLOR.Game.Server.Service
 
         }
 
-        private void HandleGrenadeProficiency(NWPlayer oPC, NWObject target)
+        private static void HandleGrenadeProficiency(NWPlayer oPC, NWObject target)
         {
             NWItem weapon = _.GetSpellCastItem();
             if (weapon.BaseItemType != BASE_ITEM_GRENADE) return;

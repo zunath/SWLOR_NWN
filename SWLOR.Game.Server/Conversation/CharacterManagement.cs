@@ -14,19 +14,14 @@ namespace SWLOR.Game.Server.Conversation
             public bool IsConfirmingDisableSanctuary { get; set; }
         }
 
-        private readonly IPVPSanctuaryService _pvpSanctuary;
-        
         private readonly IHelmetToggleService _helmetToggle;
 
         public CharacterManagement(
              
             IDialogService dialog,
-            IPVPSanctuaryService pvpSanctuary,
-            
             IHelmetToggleService helmetToggle) 
             : base(dialog)
         {
-            _pvpSanctuary = pvpSanctuary;
             
             _helmetToggle = helmetToggle;
         }
@@ -76,21 +71,21 @@ namespace SWLOR.Game.Server.Conversation
 
         private void ToggleDisablePVPProtectionOption()
         {
-            SetResponseVisible("MainPage", 1, _pvpSanctuary.PlayerHasPVPSanctuary(GetPC()));
+            SetResponseVisible("MainPage", 1, PVPSanctuaryService.PlayerHasPVPSanctuary(GetPC()));
         }
 
         private void HandleDisablePVPProtection()
         {
             Model dto = GetDialogCustomData<Model>();
             
-            if (!_pvpSanctuary.PlayerHasPVPSanctuary(GetPC()))
+            if (!PVPSanctuaryService.PlayerHasPVPSanctuary(GetPC()))
             {
                 return;
             }
 
             if (dto.IsConfirmingDisableSanctuary)
             {
-                _pvpSanctuary.SetPlayerPVPSanctuaryOverride(GetPC(), true);
+                PVPSanctuaryService.SetPlayerPVPSanctuaryOverride(GetPC(), true);
                 dto.IsConfirmingDisableSanctuary = false;
                 _.FloatingTextStringOnCreature(ColorTokenService.Red("PVP protection has been disabled. You may now attack and be attacked by other players."), GetPC().Object, _.FALSE);
                 SetResponseText("MainPage", 1, "Disable PVP Protection");

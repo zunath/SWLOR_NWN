@@ -16,19 +16,19 @@ namespace SWLOR.Game.Server.Conversation
     public class PublicStarport : ConversationBase
     {
         
-        private readonly IAreaService _area;
+        
         private readonly IBaseService _base;
 
         public PublicStarport(
             
             IDialogService dialog,
             
-            IAreaService area,
+            
             IBaseService @base)
             : base(dialog)
         {
             
-            _area = area;
+            
             _base = @base;
         }
 

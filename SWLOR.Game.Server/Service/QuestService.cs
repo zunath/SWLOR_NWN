@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Messaging.Contracts;
 using SWLOR.Game.Server.Messaging.Messages;
 using static NWN._;
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.Service
         private readonly IDialogService _dialog;
         private readonly IColorTokenService _color;
         private readonly IObjectVisibilityService _ovs;
-        private readonly IMessageHub _messageHub;
+        
 
         public QuestService(
             IDataService data,
@@ -38,8 +39,7 @@ namespace SWLOR.Game.Server.Service
             IMapPinService mapPin,
             IDialogService dialog,
             IColorTokenService color,
-            IObjectVisibilityService ovs,
-            IMessageHub messageHub)
+            IObjectVisibilityService ovs)
         {
             
             _data = data;
@@ -48,7 +48,6 @@ namespace SWLOR.Game.Server.Service
             _dialog = dialog;
             _color = color;
             _ovs = ovs;
-            _messageHub = messageHub;
         }
 
         public Quest GetQuestByID(int questID)
@@ -159,7 +158,7 @@ namespace SWLOR.Game.Server.Service
                 });
             }
 
-            _messageHub.Publish(new QuestCompletedMessage(player, questID));
+            MessageHub.Instance.Publish(new QuestCompletedMessage(player, questID));
         }
 
         public void OnModuleItemAcquired()

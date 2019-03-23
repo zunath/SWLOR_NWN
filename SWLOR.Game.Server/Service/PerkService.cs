@@ -6,6 +6,7 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Messaging.Contracts;
 using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.NWNX;
@@ -22,16 +23,13 @@ namespace SWLOR.Game.Server.Service
     {
         private readonly IColorTokenService _color;
         private readonly IDataService _data;
-        private readonly IMessageHub _messageHub;
         
         public PerkService(
             IColorTokenService color,
-            IDataService data,   
-            IMessageHub messageHub)
+            IDataService data)
         {
             _color = color;
             _data = data;
-            _messageHub = messageHub;
 
             SubscribeEvents();
         }
@@ -39,11 +37,11 @@ namespace SWLOR.Game.Server.Service
         private void SubscribeEvents()
         {
             // The player perk level cache gets refreshed on the following events.
-            _messageHub.Subscribe<SkillDecayedMessage>(message => CacheAllPerkLevels(message.Player));
-            _messageHub.Subscribe<SkillGainedMessage>(message => CacheAllPerkLevels(message.Player));
-            _messageHub.Subscribe<PerkUpgradedMessage>(message => CacheEffectivePerkLevel(message.Player, message.PerkID));
-            _messageHub.Subscribe<PerkRefundedMessage>(message => CacheEffectivePerkLevel(message.Player, message.PerkID));
-            _messageHub.Subscribe<QuestCompletedMessage>(message => CacheAllPerkLevels(message.Player));
+            MessageHub.Instance.Subscribe<SkillDecayedMessage>(message => CacheAllPerkLevels(message.Player));
+            MessageHub.Instance.Subscribe<SkillGainedMessage>(message => CacheAllPerkLevels(message.Player));
+            MessageHub.Instance.Subscribe<PerkUpgradedMessage>(message => CacheEffectivePerkLevel(message.Player, message.PerkID));
+            MessageHub.Instance.Subscribe<PerkRefundedMessage>(message => CacheEffectivePerkLevel(message.Player, message.PerkID));
+            MessageHub.Instance.Subscribe<QuestCompletedMessage>(message => CacheAllPerkLevels(message.Player));
         }
 
         private List<PCPerk> GetPCPerksByExecutionType(NWPlayer oPC, PerkExecutionType executionType)
@@ -373,7 +371,7 @@ namespace SWLOR.Game.Server.Service
                     perkScript.OnPurchased(oPC, pcPerk.PerkLevel);
                 });
 
-                _messageHub.Publish(new PerkUpgradedMessage(oPC, perkID));
+                MessageHub.Instance.Publish(new PerkUpgradedMessage(oPC, perkID));
             }
             else
             {

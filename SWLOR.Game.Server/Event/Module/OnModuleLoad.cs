@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Event.Module
             Console.WriteLine("Starting background thread manager...");
             _backgroundThreadManager.Start();
             
-            NWNXChat.RegisterChatScript("mod_onNWNXChat");
+            NWNXChat.RegisterChatScript("mod_on_nwnxchat");
             SetModuleEventScripts();
             SetAreaEventScripts();
             SetWeaponSettings();

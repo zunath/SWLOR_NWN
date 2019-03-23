@@ -1,20 +1,17 @@
 ﻿using NWN;
-
+using SWLOR.Game.Server.Bioware;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Skill;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Bioware;
-using SWLOR.Game.Server.Data.Entity;
-using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Messaging.Contracts;
-using SWLOR.Game.Server.Messaging.Messages;
 using static NWN._;
-using Object = NWN.Object;
 
 
 namespace SWLOR.Game.Server.Service
@@ -24,33 +21,27 @@ namespace SWLOR.Game.Server.Service
         private const string IPWeaponPenaltyTag = "SKILL_PENALTY_WEAPON_ITEM_PROPERTY";
         private const string IPEquipmentPenaltyTag = "SKILL_PENALTY_EQUIPMENT_ITEM_PROPERTY";
         
-        
         private readonly IRandomService _random;
-        
         private readonly IEnmityService _enmity;
         private readonly IPlayerStatService _playerStat;
         private readonly IItemService _item;
         private readonly IDataService _data;
-        private readonly IMessageHub _messageHub;
-        
+
+
         public SkillService(
-            
             IRandomService random,
-            
             IEnmityService enmity,
             IPlayerStatService playerStat,
             IItemService item,
-            IDataService data,
-            IMessageHub messageHub)
+            IDataService data)
         {
-            
+
             _random = random;
-            
+
             _enmity = enmity;
             _playerStat = playerStat;
             _item = item;
             _data = data;
-            _messageHub = messageHub;
         }
 
         public int SkillCap => 500;
@@ -94,7 +85,7 @@ namespace SWLOR.Game.Server.Service
         public void GiveSkillXP(NWPlayer oPC, int skillID, int xp, bool enableResidencyBonus = true)
         {
             if (skillID <= 0 || xp <= 0 || !oPC.IsPlayer) return;
-            
+
             if (enableResidencyBonus)
             {
                 xp = (int)(xp + xp * _playerStat.EffectiveResidencyBonus(oPC));
@@ -104,7 +95,7 @@ namespace SWLOR.Game.Server.Service
 
             // Check if the player has any undistributed skill ranks for this skill category.
             // If they haven't been distributed yet, the player CANNOT gain XP for this skill.
-            var pool = _data.SingleOrDefault<PCSkillPool>(x => x.PlayerID == oPC.GlobalID && 
+            var pool = _data.SingleOrDefault<PCSkillPool>(x => x.PlayerID == oPC.GlobalID &&
                                                                x.SkillCategoryID == skill.SkillCategoryID &&
                                                                x.Levels > 0);
             if (pool != null)
@@ -119,7 +110,7 @@ namespace SWLOR.Game.Server.Service
             int maxRank = skill.MaxRank;
             int originalRank = pcSkill.Rank;
             float xpBonusModifier = player.XPBonus * 0.01f;
-            
+
             // Guard against XP bonuses being too high.
             if (xpBonusModifier > 0.25)
                 xpBonusModifier = 0.25f;
@@ -145,7 +136,7 @@ namespace SWLOR.Game.Server.Service
             {
                 pcSkill.XP = req.XP - 1;
             }
-        
+
             while (pcSkill.XP >= req.XP)
             {
                 pcSkill.XP = pcSkill.XP - req.XP;
@@ -169,10 +160,10 @@ namespace SWLOR.Game.Server.Service
                     RemoveEquipmentPenalties(item);
                     ApplyEquipmentPenalties(oPC, item);
                 }
-                
-                _messageHub.Publish(new SkillGainedMessage(oPC, skillID));
+
+                MessageHub.Instance.Publish(new SkillGainedMessage(oPC, skillID));
             }
-        
+
             _data.SubmitDataChange(pcSkill, DatabaseActionType.Update);
 
             // Update player and apply stat changes only if a level up occurred.
@@ -186,12 +177,12 @@ namespace SWLOR.Game.Server.Service
         {
             if (!player.IsPlayer || skill == SkillType.Unknown) return 0;
 
-            return _data.Single<PCSkill>(x => x.PlayerID == player.GlobalID && x.SkillID == (int) skill).Rank;
+            return _data.Single<PCSkill>(x => x.PlayerID == player.GlobalID && x.SkillID == (int)skill).Rank;
         }
 
         public int GetPCSkillRank(NWPlayer player, int skillID)
         {
-            return GetPCSkillRank(player, (SkillType) skillID);
+            return GetPCSkillRank(player, (SkillType)skillID);
         }
 
         public PCSkill GetPCSkill(NWPlayer player, int skillID)
@@ -206,12 +197,12 @@ namespace SWLOR.Game.Server.Service
 
         public Skill GetSkill(int skillID)
         {
-            return GetSkill((SkillType) skillID);
+            return GetSkill((SkillType)skillID);
         }
 
         public Skill GetSkill(SkillType skillType)
         {
-            return _data.Get<Skill>((int) skillType);
+            return _data.Get<Skill>((int)skillType);
         }
 
         public int GetPCTotalSkillCount(NWPlayer player)
@@ -223,7 +214,7 @@ namespace SWLOR.Game.Server.Service
                 .Where(x => skills.Contains(x.SkillID));
             return pcSkills.Sum(x => x.Rank);
         }
-        
+
         public List<SkillCategory> GetActiveCategories()
         {
             return _data.Where<SkillCategory>(x => x.ID != 0).ToList();
@@ -237,18 +228,18 @@ namespace SWLOR.Game.Server.Service
                 .Select(s => s.ID);
 
             // Get all PC Skills with a matching category.
-            var pcSkills = _data.Where<PCSkill>(x => x.PlayerID == playerID && 
+            var pcSkills = _data.Where<PCSkill>(x => x.PlayerID == playerID &&
                                                      skillIDs.Contains(x.SkillID))
                 .ToList();
-            
+
             return pcSkills;
         }
-        
+
         public void ToggleSkillLock(Guid playerID, int skillID)
         {
             PCSkill pcSkill = _data.Single<PCSkill>(x => x.PlayerID == playerID && x.SkillID == skillID);
             pcSkill.IsLocked = !pcSkill.IsLocked;
-            
+
             _data.SubmitDataChange(pcSkill, DatabaseActionType.Update);
         }
 
@@ -299,14 +290,14 @@ namespace SWLOR.Game.Server.Service
 
                 List<Tuple<int, PlayerSkillPointTracker>> skillRegs = preg.GetSkillRegistrationPoints();
                 int totalPoints = preg.GetTotalSkillRegistrationPoints();
-                
+
                 // Retrieve all necessary PC skills up front
                 int[] skillIDsToSearchFor = skillRegs.Select(x => x.Item2.SkillID).ToArray();
 
                 var pcSkills = GetAllPCSkills(preg.Player)
                     .Where(x => skillIDsToSearchFor.Contains(x.SkillID))
                     .ToList();
-                
+
                 // Grant XP based on points acquired during combat.
                 foreach (Tuple<int, PlayerSkillPointTracker> skreg in skillRegs)
                 {
@@ -314,12 +305,12 @@ namespace SWLOR.Game.Server.Service
                     int skillRank = pcSkills.Single(x => x.SkillID == skillID).Rank;
 
                     int points = skreg.Item2.Points;
-                    
+
                     float percentage = points / (float)totalPoints;
                     float skillLDP = CalculatePartyLevelDifferencePenalty(partyLevel, skillRank);
                     float adjustedXP = baseXP * percentage * skillLDP;
                     adjustedXP = CalculateRegisteredSkillLevelAdjustedXP(adjustedXP, skillRank, skillRank);
-                    
+
                     GiveSkillXP(preg.Player, skillID, (int)adjustedXP);
                 }
 
@@ -383,7 +374,7 @@ namespace SWLOR.Game.Server.Service
 
             return levelDifferencePenalty;
         }
-        
+
         public void OnAreaExit()
         {
             NWPlayer oPC = _.GetExitingObject();
@@ -417,7 +408,7 @@ namespace SWLOR.Game.Server.Service
                 ForceEquipFistGlove(oPC);
             }
         }
-        
+
         public void OnModuleClientLeave()
         {
             NWPlayer oPC = _.GetExitingObject();
@@ -428,7 +419,7 @@ namespace SWLOR.Game.Server.Service
 
         public void OnModuleItemEquipped()
         {
-            using(new Profiler("SkillService::OnModuleItemEquipped()"))
+            using (new Profiler("SkillService::OnModuleItemEquipped()"))
             {
                 NWPlayer oPC = _.GetPCItemLastEquippedBy();
                 if (!oPC.IsInitializedAsPlayer) return; // Players who log in for the first time don't have an ID yet.
@@ -556,14 +547,14 @@ namespace SWLOR.Game.Server.Service
             if (totalSkillRanks < SkillCap) return true;
 
             // Find out if we have enough XP to remove. If we don't, make no changes and return false signifying no XP could be removed.
-            var pcSkills = _data.Where<PCSkill>(x =>x.PlayerID == oPC.GlobalID && x.SkillID != levelingSkill.SkillID);
+            var pcSkills = _data.Where<PCSkill>(x => x.PlayerID == oPC.GlobalID && x.SkillID != levelingSkill.SkillID);
             var totalXPs = pcSkills.Select(s =>
             {
                 var reqXP = _data.Where<SkillXPRequirement>(x => x.SkillID == s.SkillID && (x.Rank < s.Rank || x.Rank == 0 && s.XP > 0));
                 var totalXP = reqXP.Sum(x => x.XP);
-                return new {s.SkillID, TotalSkillXP = totalXP};
+                return new { s.SkillID, TotalSkillXP = totalXP };
             }).ToList();
-            
+
             int aggregateXP = 0;
             foreach (var p in totalXPs)
             {
@@ -618,10 +609,10 @@ namespace SWLOR.Game.Server.Service
                 {
                     // Get the XP amounts required per level, in ascending order, so we can see how many levels we're now meant to have. 
                     List<SkillXPRequirement> reqs = _data.Where<SkillXPRequirement>(x => x.SkillID == decaySkill.SkillID && x.Rank <= decaySkill.Rank).OrderBy(o => o.Rank).ToList();
-                    
+
 
                     // The first entry in the database is for rank 0, and if passed, will raise us to 1.  So start our count at 0.
-                    int newDecaySkillRank = 0; 
+                    int newDecaySkillRank = 0;
                     foreach (SkillXPRequirement req in reqs)
                     {
                         if (totalDecaySkillXP >= req.XP)
@@ -636,20 +627,20 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     decaySkill.Rank = newDecaySkillRank;
-                    decaySkill.XP = totalDecaySkillXP; 
+                    decaySkill.XP = totalDecaySkillXP;
                 }
 
                 PCSkill dbDecaySkill = new PCSkill
                 {
-                    SkillID = decaySkill.SkillID, 
-                    IsLocked = decaySkill.IsLocked, 
-                    ID = decaySkill.ID, 
-                    PlayerID = decaySkill.PlayerID, 
-                    Rank = decaySkill.Rank, 
+                    SkillID = decaySkill.SkillID,
+                    IsLocked = decaySkill.IsLocked,
+                    ID = decaySkill.ID,
+                    PlayerID = decaySkill.PlayerID,
+                    Rank = decaySkill.Rank,
                     XP = decaySkill.XP
                 };
                 _data.SubmitDataChange(dbDecaySkill, DatabaseActionType.Update);
-                _messageHub.Publish(new SkillDecayedMessage(oPC, decaySkill.SkillID, oldRank, decaySkill.Rank));
+                MessageHub.Instance.Publish(new SkillDecayedMessage(oPC, decaySkill.SkillID, oldRank, decaySkill.Rank));
             }
 
             _playerStat.ApplyStatChanges(oPC, null);
@@ -707,7 +698,7 @@ namespace SWLOR.Game.Server.Service
 
         public void RegisterPCToNPCForSkill(NWPlayer pc, NWObject npc, SkillType skill)
         {
-            RegisterPCToNPCForSkill(pc, npc, (int) skill);
+            RegisterPCToNPCForSkill(pc, npc, (int)skill);
         }
 
         private void RegisterPCToNPCForSkill(NWPlayer pc, NWObject npc, int skillID)
@@ -717,7 +708,7 @@ namespace SWLOR.Game.Server.Service
             if (skillID <= 0) return;
 
             int rank = GetPCSkillRank(pc, skillID);
-            
+
             CreatureSkillRegistration reg = GetCreatureSkillRegistration(npc.GlobalID);
             reg.AddSkillRegistrationPoint(pc, skillID, rank, rank);
         }

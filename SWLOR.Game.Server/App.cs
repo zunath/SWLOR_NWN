@@ -210,7 +210,6 @@ namespace SWLOR.Game.Server
             builder.RegisterType<BackgroundThreadManager>()
                 .As<IBackgroundThreadManager>()
                 .SingleInstance();
-            builder.RegisterInstance(MessageHub.Instance).As<IMessageHub>().SingleInstance();
             
             // Game Objects
             builder.RegisterType<NWObject>();

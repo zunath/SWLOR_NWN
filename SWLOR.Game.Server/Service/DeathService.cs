@@ -1,42 +1,22 @@
 ﻿using System;
 using System.Linq;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class DeathService : IDeathService
+    public static class DeathService
     {
-        
-        
-        
-        private readonly IDurabilityService _durability;
-        
-
-        public DeathService( 
-            
-            
-            IDurabilityService durability)
-        {
-            
-            
-            
-            _durability = durability;
-            
-        }
-        
 
         // Message which displays on the Respawn pop up menu
         private const string RespawnMessage = "You have died. You can wait for another player to revive you or respawn to go to your last respawn point.";
         
-        public void OnPlayerDeath()
+        public static void OnPlayerDeath()
         {
             NWPlayer player = _.GetLastPlayerDied();
             NWObject hostile = _.GetLastHostileActor(player.Object);
@@ -55,18 +35,18 @@ namespace SWLOR.Game.Server.Service
             for (int index = 0; index < NUM_INVENTORY_SLOTS; index++)
             {
                 NWItem equipped = _.GetItemInSlot(index, player);
-                _durability.RunItemDecay(player, equipped, RandomService.RandomFloat(0.02f, 0.07f));
+                DurabilityService.RunItemDecay(player, equipped, RandomService.RandomFloat(0.02f, 0.07f));
             }
 
             foreach (var item in player.InventoryItems)
             {
-                _durability.RunItemDecay(player, item, RandomService.RandomFloat(0.02f, 0.07f));
+                DurabilityService.RunItemDecay(player, item, RandomService.RandomFloat(0.02f, 0.07f));
             }
 
             _.PopUpDeathGUIPanel(player.Object, TRUE, TRUE, 0, RespawnMessage);
         }
         
-        public void OnPlayerRespawn()
+        public static void OnPlayerRespawn()
         {
             NWPlayer oPC = _.GetLastRespawnButtonPresser();
 
@@ -94,7 +74,7 @@ namespace SWLOR.Game.Server.Service
         }
         
 
-        public void SetRespawnLocation(NWPlayer player)
+        public static void SetRespawnLocation(NWPlayer player)
         {
             if (player == null) throw new ArgumentNullException(nameof(player), nameof(player) + " cannot be null.");
             if (player.Object == null) throw new ArgumentNullException(nameof(player.Object), nameof(player.Object) + " cannot be null.");
@@ -110,13 +90,13 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        public void TeleportPlayerToBindPoint(NWPlayer pc)
+        public static void TeleportPlayerToBindPoint(NWPlayer pc)
         {
             Player entity = DataService.Single<Player>(x => x.ID == pc.GlobalID);
             TeleportPlayerToBindPoint(pc, entity);
         }
 
-        private void TeleportPlayerToBindPoint(NWObject pc, Player entity)
+        private static void TeleportPlayerToBindPoint(NWObject pc, Player entity)
         {
             // Instances
             if (pc.Area.IsInstance)

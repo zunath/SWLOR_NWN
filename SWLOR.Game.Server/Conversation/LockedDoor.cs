@@ -1,30 +1,14 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
 {
     public class LockedDoor: ConversationBase
     {
-        
-        private readonly IKeyItemService _keyItem;
-
-        public LockedDoor(
-             
-            IDialogService dialog,
-            
-            IKeyItemService keyItem) 
-            : base(dialog)
-        {
-            
-            _keyItem = keyItem;
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -53,7 +37,7 @@ namespace SWLOR.Game.Server.Conversation
                 keyItemID = door.GetLocalInt("REQUIRED_KEY_ITEM_ID_" + count);
             }
             
-            bool hasKeyItems = _keyItem.PlayerHasAllKeyItems(player, keyItemIDs.ToArray());
+            bool hasKeyItems = KeyItemService.PlayerHasAllKeyItems(player, keyItemIDs.ToArray());
             string doorDialogue = door.GetLocalString("DOOR_DIALOGUE");
 
             if (!string.IsNullOrWhiteSpace(doorDialogue))

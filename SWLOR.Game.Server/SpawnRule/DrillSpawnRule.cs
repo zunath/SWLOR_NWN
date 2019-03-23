@@ -1,31 +1,14 @@
-﻿using NWN;
-using SWLOR.Game.Server.Bioware;
+﻿using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.SpawnRule.Contracts;
 
 namespace SWLOR.Game.Server.SpawnRule
 {
     public class DrillSpawnRule: ISpawnRule
     {
-        
-        private readonly IResourceService _resource;
-        
-        
-
-        public DrillSpawnRule(
-            
-            IResourceService resource
-            
-            )
-        {
-            
-            _resource = resource;
-            
-            
-        }
 
         public void Run(NWObject target, params object[] args)
         {
@@ -45,7 +28,7 @@ namespace SWLOR.Game.Server.SpawnRule
                 quality = ResourceQuality.High;
             }
 
-            var ip = _resource.GetRandomComponentBonusIP(quality);
+            var ip = ResourceService.GetRandomComponentBonusIP(quality);
             BiowareXP2.IPSafeAddItemProperty(target.Object, ip.Item1, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
 
             switch (ip.Item2)

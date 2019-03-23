@@ -1,37 +1,16 @@
 ﻿using System;
-using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
-using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
 
 namespace SWLOR.Game.Server.Conversation
 {
     public class BuildingEntrance : ConversationBase
     {
-        private readonly IBaseService _base;
-        private readonly IPlayerService _player;
-        
-        
-        
-
-        public BuildingEntrance(
-            
-            IDialogService dialog,
-            IBaseService @base,
-            IPlayerService player)
-            : base(dialog)
-        {
-            _base = @base;
-            _player = player;
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -60,7 +39,7 @@ namespace SWLOR.Game.Server.Conversation
             var structureID = new Guid(door.GetLocalString("PC_BASE_STRUCTURE_ID"));
             PCBaseStructure structure = DataService.Get<PCBaseStructure>(structureID);
             PCBase pcBase = DataService.Get<PCBase>(structure.PCBaseID);
-            Player owner = _player.GetPlayerEntity(pcBase.PlayerID);
+            Player owner = PlayerService.GetPlayerEntity(pcBase.PlayerID);
             string buildingName = owner.CharacterName + "'s Building";
             if (!string.IsNullOrWhiteSpace(structure.CustomName))
             {
@@ -123,21 +102,21 @@ namespace SWLOR.Game.Server.Conversation
             var interiorStyle = DataService.Get<BuildingStyle>(structure.InteriorStyleID);
 
             bool starship = pcBase.PCBaseTypeID == 3;
-            NWArea instance = _base.GetAreaInstance(structureID, false);
+            NWArea instance = BaseService.GetAreaInstance(structureID, false);
 
             if (instance == null)
             {
-                instance = _base.CreateAreaInstance(oPC, structureID, false);
+                instance = BaseService.CreateAreaInstance(oPC, structureID, false);
             }
 
-            _base.JumpPCToBuildingInterior(oPC, instance);
+            BaseService.JumpPCToBuildingInterior(oPC, instance);
         }
 
         private void DoKnockOnDoor()
         {
             NWPlaceable door = GetDialogTarget().Object;
             Guid structureID = new Guid(door.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            NWArea instance = _base.GetAreaInstance(structureID, false);
+            NWArea instance = BaseService.GetAreaInstance(structureID, false);
 
             _.FloatingTextStringOnCreature("You knock on the door.", GetPC().Object, _.FALSE);
 

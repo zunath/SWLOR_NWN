@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using NWN;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 
-using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static NWN._;
 
@@ -13,20 +12,6 @@ namespace SWLOR.Game.Server.Conversation
 {
     public class CraftingDevice: ConversationBase
     {
-        
-        private readonly ICraftService _craft;
-
-        public CraftingDevice(
-             
-            IDialogService dialog,
-            
-            ICraftService craft) 
-            : base(dialog)
-        {
-            
-            _craft = craft;
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -73,12 +58,12 @@ namespace SWLOR.Game.Server.Conversation
         {
             NWPlaceable device = (NWPlaceable)GetDialogTarget();
             int deviceID = device.GetLocalInt("CRAFT_DEVICE_ID");
-            List<CraftBlueprintCategory> categories = _craft.GetCategoriesAvailableToPCByDeviceID(GetPC().GlobalID, deviceID);
+            List<CraftBlueprintCategory> categories = CraftService.GetCategoriesAvailableToPCByDeviceID(GetPC().GlobalID, deviceID);
 
             ClearPageResponses("MainPage");
 
             var lastBlueprintId = GetPC().GetLocalInt("LAST_CRAFTED_BLUEPRINT_ID_" + deviceID);
-            var bp = _craft.GetBlueprintByID(lastBlueprintId);
+            var bp = CraftService.GetBlueprintByID(lastBlueprintId);
 
             if(bp != null)
                 AddResponseToPage("MainPage", bp.Quantity + "x " + bp.ItemName, bp.IsActive, new Tuple<int, Type>(bp.ID, typeof(CraftBlueprint)));
@@ -96,7 +81,7 @@ namespace SWLOR.Game.Server.Conversation
             NWObject device = GetDialogTarget();
             int deviceID = device.GetLocalInt("CRAFT_DEVICE_ID");
 
-            List<CraftBlueprint> blueprints = _craft.GetPCBlueprintsByDeviceAndCategoryID(GetPC().GlobalID, deviceID, categoryID);
+            List<CraftBlueprint> blueprints = CraftService.GetPCBlueprintsByDeviceAndCategoryID(GetPC().GlobalID, deviceID, categoryID);
 
             ClearPageResponses("BlueprintListPage");
             foreach (CraftBlueprint bp in blueprints)
@@ -137,7 +122,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadCraftPage(int blueprintID)
         {
-            var model = _craft.GetPlayerCraftingData(GetPC());
+            var model = CraftService.GetPlayerCraftingData(GetPC());
             model.BlueprintID = blueprintID;
             SwitchConversation("CraftItem");
         }
@@ -145,7 +130,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void OpenScrapperInventory()
         {
-            var model = _craft.GetPlayerCraftingData(GetPC());
+            var model = CraftService.GetPlayerCraftingData(GetPC());
             NWPlaceable container = _.CreateObject(OBJECT_TYPE_PLACEABLE, "cft_scrapper", GetPC().Location);
             container.IsLocked = false;
             model.IsAccessingStorage = true;

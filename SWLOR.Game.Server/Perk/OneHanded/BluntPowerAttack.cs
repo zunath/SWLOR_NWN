@@ -4,26 +4,13 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
     public class BluntPowerAttack : IPerk
     {
-        
-        
-        
-
-        public BluntPowerAttack(
-            
-            )
-        {
-            
-            
-            
-        }
-
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

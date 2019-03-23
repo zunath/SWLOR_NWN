@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Perk;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
 
@@ -21,13 +21,6 @@ namespace SWLOR.Game.Server.Conversation
             public Guid PCPerkID { get; set; }
             public bool IsConfirming { get; set; }
             public NWItem TomeItem { get; set; }
-        }
-        
-        public PerkRefund(
-             
-            IDialogService dialog)
-            : base(dialog)
-        {
         }
 
         public override PlayerDialog SetUp(NWPlayer player)

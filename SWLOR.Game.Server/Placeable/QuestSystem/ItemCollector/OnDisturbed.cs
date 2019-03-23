@@ -7,7 +7,7 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 using Object = NWN.Object;
 
@@ -15,27 +15,6 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
 {
     public class OnDisturbed : IRegisteredEvent
     {
-        
-        
-        private readonly IQuestService _quest;
-        
-        private readonly IDialogService _dialog;
-
-        public OnDisturbed(
-            
-            
-            IQuestService quest,
-            
-            IDialogService dialog)
-        {
-            
-            
-            _quest = quest;
-            
-            _dialog = dialog;
-        }
-
-
         public bool Run(params object[] args)
         {
             NWPlaceable container = Object.OBJECT_SELF;
@@ -82,7 +61,7 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
                     int remainingCount = DataService.GetAll<PCQuestItemProgress>().Count(x => x.PCQuestStatusID == status.ID);
                     if (remainingCount <= 0)
                     {
-                        _quest.AdvanceQuestState(player, owner, questID);
+                        QuestService.AdvanceQuestState(player, owner, questID);
                     }
 
                     player.SendMessage("You need " + progress.Remaining + " " + item.Name + " for this quest.");
@@ -95,7 +74,7 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
                     string conversation = _.GetLocalString(owner, "CONVERSATION");
                     if (!string.IsNullOrWhiteSpace(conversation))
                     {
-                        _dialog.StartConversation(player, owner, conversation);
+                        DialogService.StartConversation(player, owner, conversation);
                     }
                     else
                     {

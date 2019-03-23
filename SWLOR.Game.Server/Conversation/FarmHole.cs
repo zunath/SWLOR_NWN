@@ -1,20 +1,13 @@
 ﻿using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
 {
     public class FarmHole: ConversationBase
     {
-        public FarmHole(
-             
-            IDialogService dialog) 
-            : base(dialog)
-        {
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");

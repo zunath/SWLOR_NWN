@@ -3,53 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Bioware;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
-using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Event.Delayed
 {
     public class CraftCreateItem: IRegisteredEvent
     {
-        private readonly ICraftService _craft;
-        private readonly IComponentBonusService _componentBonus;
-        
-        private readonly IBaseService _base;
-        
-        
-        
-        private readonly IDurabilityService _durability;
-        
-
-        public CraftCreateItem(
-            ICraftService craft,
-            IComponentBonusService componentBonus,
-            
-            
-            IBaseService @base,
-            
-            
-            
-            IDurabilityService durability
-            )
-        {
-            _craft = craft;
-            _componentBonus = componentBonus;
-            
-            
-            _base = @base;
-            
-            
-            
-            _durability = durability;
-            
-        }
-
         public bool Run(params object[] args)
         {
             NWPlayer player = (NWPlayer) args[0];
@@ -79,22 +41,22 @@ namespace SWLOR.Game.Server.Event.Delayed
                 }
             }
 
-            var model = _craft.GetPlayerCraftingData(player);
+            var model = CraftService.GetPlayerCraftingData(player);
 
             CraftBlueprint blueprint = DataService.Single<CraftBlueprint>(x => x.ID == model.BlueprintID);
             BaseStructure baseStructure = blueprint.BaseStructureID == null ? null : DataService.Get<BaseStructure>(blueprint.BaseStructureID);
             PCSkill pcSkill = SkillService.GetPCSkill(player, blueprint.SkillID);
 
-            int pcEffectiveLevel = _craft.CalculatePCEffectiveLevel(player, pcSkill.Rank, (SkillType)blueprint.SkillID);
+            int pcEffectiveLevel = CraftService.CalculatePCEffectiveLevel(player, pcSkill.Rank, (SkillType)blueprint.SkillID);
             int itemLevel = model.AdjustedLevel;
-            int atmosphereBonus = _craft.CalculateAreaAtmosphereBonus(player.Area);
+            int atmosphereBonus = CraftService.CalculateAreaAtmosphereBonus(player.Area);
             float chance = CalculateBaseChanceToAddProperty(pcEffectiveLevel, itemLevel, atmosphereBonus);
             float equipmentBonus = CalculateEquipmentBonus(player, (SkillType)blueprint.SkillID);
 
             if (chance <= 1.0f)
             {
                 player.FloatingText(ColorTokenService.Red("Critical failure! You don't have enough skill to create that item. All components were lost."));
-                _craft.ClearPlayerCraftingData(player, true);
+                CraftService.ClearPlayerCraftingData(player, true);
                 return;
             }
 
@@ -122,7 +84,7 @@ namespace SWLOR.Game.Server.Event.Delayed
                 item.RecommendedLevel = itemLevel < 0 ? 0 : itemLevel;
                 item.SetLocalString("CRAFTER_PLAYER_ID", player.GlobalID.ToString());
 
-                _base.ApplyCraftedItemLocalVariables(item, baseStructure);
+                BaseService.ApplyCraftedItemLocalVariables(item, baseStructure);
             }
 
             if(RandomService.Random(1, 100) <= luckyBonus)
@@ -161,10 +123,10 @@ namespace SWLOR.Game.Server.Event.Delayed
             {
                 foreach (var item in craftedItems)
                 {
-                    var maxDur = _durability.GetMaxDurability(item);
+                    var maxDur = DurabilityService.GetMaxDurability(item);
                     maxDur += (float)baseStructure.Durability;
-                    _durability.SetMaxDurability(item, maxDur);
-                    _durability.SetDurability(item, maxDur);
+                    DurabilityService.SetMaxDurability(item, maxDur);
+                    DurabilityService.SetDurability(item, maxDur);
                 }
             }
             
@@ -189,7 +151,7 @@ namespace SWLOR.Game.Server.Event.Delayed
             }
 
             SkillService.GiveSkillXP(player, blueprint.SkillID, (int)xp);
-            _craft.ClearPlayerCraftingData(player, true);
+            CraftService.ClearPlayerCraftingData(player, true);
             player.SetLocalInt("LAST_CRAFTED_BLUEPRINT_ID_" + blueprint.CraftDeviceID, blueprint.ID);
         }
 
@@ -222,7 +184,7 @@ namespace SWLOR.Game.Server.Event.Delayed
                         // In other words, we want the custom item property "Component Bonus: AC UP" instead of the "AC Bonus" item property.
                         var componentIP = item.ItemProperties.FirstOrDefault(x => _.GetItemPropertyType(x) == (int)CustomItemPropertyType.ComponentType);
                         if (componentIP == null)
-                            _componentBonus.ApplyComponentBonus(item, ip);
+                            ComponentBonusService.ApplyComponentBonus(item, ip);
                         else
                             BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
 
@@ -274,7 +236,7 @@ namespace SWLOR.Game.Server.Event.Delayed
             var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
             int equipmentBonus = 0;
             float multiplier = 0.5f;
-            int atmosphere = _craft.CalculateAreaAtmosphereBonus(player.Area);
+            int atmosphere = CraftService.CalculateAreaAtmosphereBonus(player.Area);
 
             if (atmosphere >= 75)
             {

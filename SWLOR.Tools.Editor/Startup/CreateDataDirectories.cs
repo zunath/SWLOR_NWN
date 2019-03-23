@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Windows;
 using Autofac;
-using SWLOR.Game.Server.Data;
 using SWLOR.Tools.Editor.Attributes;
 
 namespace SWLOR.Tools.Editor.Startup

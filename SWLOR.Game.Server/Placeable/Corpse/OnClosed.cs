@@ -1,6 +1,4 @@
-﻿
-using System.Linq;
-using NWN;
+﻿using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using static NWN._;

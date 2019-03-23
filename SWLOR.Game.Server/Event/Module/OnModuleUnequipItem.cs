@@ -2,33 +2,13 @@
 using NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 
 namespace SWLOR.Game.Server.Event.Module
 {
     internal class OnModuleUnequipItem : IRegisteredEvent
     {
-        
-        
-        
-        private readonly IHelmetToggleService _helmetToggle;
-        
-
-        public OnModuleUnequipItem(
-            
-            
-            
-            IHelmetToggleService helmetToggle
-            )
-        {
-            
-            
-            
-            _helmetToggle = helmetToggle;
-            
-        }
-
         public bool Run(params object[] args)
         {
             NWObject equipper = Object.OBJECT_SELF;
@@ -39,7 +19,7 @@ namespace SWLOR.Game.Server.Event.Module
 
             SkillService.OnModuleItemUnequipped();
             PerkService.OnModuleItemUnequipped();
-            _helmetToggle.OnModuleItemUnequipped();
+            HelmetToggleService.OnModuleItemUnequipped();
             ItemService.OnModuleUnequipItem();
             
             return true;

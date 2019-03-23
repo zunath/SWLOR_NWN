@@ -2,24 +2,13 @@
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 
 namespace SWLOR.Game.Server.Placeable.Corpse
 {
     public class OnDisturbed: IRegisteredEvent
     {
-        
-        
-
-
-        public OnDisturbed(
-            )
-        {
-            
-            
-        }
-
         public bool Run(params object[] args)
         {
             NWCreature looter = _.GetLastDisturbed();

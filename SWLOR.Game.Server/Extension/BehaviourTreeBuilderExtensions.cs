@@ -1,5 +1,4 @@
 ﻿using FluentBehaviourTree;
-using SWLOR.Game.Server.AI.Contracts;
 using SWLOR.Game.Server.Event;
 
 namespace SWLOR.Game.Server.Extension

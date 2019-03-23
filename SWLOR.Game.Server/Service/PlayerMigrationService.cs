@@ -3,14 +3,14 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class PlayerMigrationService : IPlayerMigrationService
+    public static class PlayerMigrationService
     {
-        public void OnModuleEnter()
+        public static void OnModuleEnter()
         {
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;

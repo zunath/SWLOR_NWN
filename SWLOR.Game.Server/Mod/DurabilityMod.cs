@@ -1,22 +1,16 @@
 ﻿using System;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Mod.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 
 namespace SWLOR.Game.Server.Mod
 {
     public class DurabilityMod: IMod
     {
-        private readonly IDurabilityService _durability;
-
-        public DurabilityMod(IDurabilityService durability)
-        {
-            _durability = durability;
-        }
-
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            var maxDurability = _durability.GetMaxDurability(target);
+            var maxDurability = DurabilityService.GetMaxDurability(target);
             if (maxDurability >= 100)
                 return "You cannot improve that item's maximum durability any further.";
 
@@ -25,8 +19,8 @@ namespace SWLOR.Game.Server.Mod
 
         public void Apply(NWPlayer player, NWItem target, params string[] args)
         {
-            var maxDurability = _durability.GetMaxDurability(target);
-            var curDurability = _durability.GetDurability(target);
+            var maxDurability = DurabilityService.GetMaxDurability(target);
+            var curDurability = DurabilityService.GetDurability(target);
 
             int value = Convert.ToInt32(args[0]);
             float newValue = maxDurability + value;
@@ -34,8 +28,8 @@ namespace SWLOR.Game.Server.Mod
             maxDurability = newValue;
             curDurability += value;
 
-            _durability.SetMaxDurability(target, maxDurability);
-            _durability.SetDurability(target, curDurability);
+            DurabilityService.SetMaxDurability(target, maxDurability);
+            DurabilityService.SetDurability(target, curDurability);
         }
 
         public string Description(NWPlayer player, NWItem target, params string[] args)

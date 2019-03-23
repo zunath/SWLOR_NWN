@@ -2,39 +2,13 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceCombat
 {
     public class ForceLightning : IPerk
     {
-        
-        
-        
-        
-        
-        
-        private readonly ICombatService _combat;
-
-        public ForceLightning(
-            
-            
-            
-            
-            
-            
-            ICombatService combat)
-        {
-            
-            
-            
-            
-            
-            
-            _combat = combat;
-        }
-
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             if (_.GetDistanceBetween(oPC, oTarget) > 15.0f)
@@ -143,7 +117,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
                 player.SendMessage("Lucky force lightning!");
             }
             
-            var calc = _combat.CalculateForceDamage(
+            var calc = CombatService.CalculateForceDamage(
                 player,
                 target.Object,
                 ForceAbilityType.Electrical,
@@ -171,7 +145,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
                 _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_BEAM_LIGHTNING), target, 1.0f);
             });
             _.PlaySound("v_pro_lightning");
-            _combat.AddTemporaryForceDefense(target.Object, ForceAbilityType.Electrical);
+            CombatService.AddTemporaryForceDefense(target.Object, ForceAbilityType.Electrical);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

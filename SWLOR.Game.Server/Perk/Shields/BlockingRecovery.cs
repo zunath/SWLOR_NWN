@@ -3,28 +3,12 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.Perk.Shields
 {
     public class BlockingRecovery: IPerk
     {
-        
-        
-        
-        
-
-        public BlockingRecovery(
-            
-            
-            )
-        {
-            
-            
-            
-            
-        }
-
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

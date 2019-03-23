@@ -1,11 +1,7 @@
 ﻿using System;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
-using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
@@ -17,26 +13,6 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
 {
     public class OnDisturbed : IRegisteredEvent
     {
-        
-        
-        
-        private readonly ISpaceService _space;
-        
-        private readonly IBaseService _base;
-
-        public OnDisturbed(
-            
-            
-            
-            ISpaceService space,
-            
-            IBaseService @base)
-        {
-            
-            _space = space;
-            
-            _base = @base;
-        }
         public bool Run(params object[] args)
         {
             NWPlayer player = (_.GetLastDisturbed());
@@ -90,12 +66,12 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             // Handle Stronidium fuel process
             if (stronidiumOnly)
             {
-                maxFuel = _base.CalculateMaxReinforcedFuel(pcBase.ID);
+                maxFuel = BaseService.CalculateMaxReinforcedFuel(pcBase.ID);
 
                 // For starships only: Add the ship's cargo bonus to the max stronidium amount.
                 if (bay.Area.GetLocalInt("BUILDING_TYPE") == (int)Enumeration.BuildingType.Starship)
                 {
-                    maxFuel += 25 * _space.GetCargoBonus(_space.GetCargoBay(player.Area, null), (int)CustomItemPropertyType.StarshipStronidiumBonus);
+                    maxFuel += 25 * SpaceService.GetCargoBonus(SpaceService.GetCargoBay(player.Area, null), (int)CustomItemPropertyType.StarshipStronidiumBonus);
                 }
 
                 // Did the player put too much fuel inside? Return the excess to their inventory.
@@ -124,12 +100,12 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             // Handle Fuel Cell process
             else
             {
-                maxFuel = _base.CalculateMaxFuel(pcBase.ID);
+                maxFuel = BaseService.CalculateMaxFuel(pcBase.ID);
 
                 // For starships only: Add the ship's cargo bonus to the max fuel amount.
                 if (bay.Area.GetLocalInt("BUILDING_TYPE") == (int)Enumeration.BuildingType.Starship)
                 {
-                    maxFuel += 25 * _space.GetCargoBonus(_space.GetCargoBay(player.Area, null), (int)CustomItemPropertyType.StarshipFuelBonus);
+                    maxFuel += 25 * SpaceService.GetCargoBonus(SpaceService.GetCargoBay(player.Area, null), (int)CustomItemPropertyType.StarshipFuelBonus);
                 }
 
                 // Did the player put too much fuel inside? Return the excess to their inventory.
@@ -148,7 +124,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             // Submit a DB data change for the fuel or stronidium amount adjustment.
             DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
 
-            var tower = _base.GetBaseControlTower(structure.PCBaseID);
+            var tower = BaseService.GetBaseControlTower(structure.PCBaseID);
             var towerStructure = DataService.Single<BaseStructure>(x => x.ID == tower.BaseStructureID);
 
             if (towerStructure.BaseStructureTypeID == (int)BaseStructureType.Starship)

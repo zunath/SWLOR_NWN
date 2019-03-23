@@ -2,7 +2,7 @@
 
 using NWN;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 using Object = NWN.Object;
 
@@ -10,53 +10,6 @@ namespace SWLOR.Game.Server.Event.Module
 {
     internal class OnModuleEnter : IRegisteredEvent
     {
-        
-        private readonly IPlayerService _player;
-        
-        private readonly IQuestService _quest;
-        private readonly IMapPinService _mapPin;
-        private readonly IObjectVisibilityService _objectVisibility;
-        
-        private readonly IChatTextService _chatText;
-        private readonly IPlayerValidationService _playerValidation;
-        
-        private readonly IRaceService _race;
-        private readonly IPlayerMigrationService _migration;
-        private readonly IMarketService _market;
-        
-
-        public OnModuleEnter(
-            
-            IPlayerService player,
-            
-            IQuestService quest,
-            IMapPinService mapPin,
-            IObjectVisibilityService objectVisibility,
-            
-            IChatTextService chatText,
-            IPlayerValidationService playerValidation,
-            
-            IRaceService race,
-            IPlayerMigrationService migration,
-            IMarketService market
-            )
-        {
-            
-            _player = player;
-            
-            _quest = quest;
-            _mapPin = mapPin;
-            _objectVisibility = objectVisibility;
-            
-            _chatText = chatText;
-            _playerValidation = playerValidation;
-            
-            _race = race;
-            _migration = migration;
-            _market = market;
-            
-        }
-
         public bool Run(params object[] args)
         {
             NWPlayer player = GetEnteringPlayer();
@@ -68,24 +21,24 @@ namespace SWLOR.Game.Server.Event.Module
 
             player.DeleteLocalInt("IS_CUSTOMIZING_ITEM");
             _.ExecuteScript("dmfi_onclienter ", Object.OBJECT_SELF); // DMFI also calls "x3_mod_def_enter"
-            _playerValidation.OnModuleEnter();
-            _player.InitializePlayer(player);
+            PlayerValidationService.OnModuleEnter();
+            PlayerService.InitializePlayer(player);
             DataService.CachePlayerData(player);
             SkillService.OnModuleEnter();
             PerkService.OnModuleEnter();
-            _player.LoadCharacter(player);
-            _migration.OnModuleEnter();
-            _player.ShowMOTD(player);
+            PlayerService.LoadCharacter(player);
+            PlayerMigrationService.OnModuleEnter();
+            PlayerService.ShowMOTD(player);
             ApplyGhostwalk();
-            _quest.OnClientEnter();
+            QuestService.OnClientEnter();
             ActivityLoggingService.OnModuleClientEnter();
             ApplyScriptEvents(player);
-            _mapPin.OnModuleClientEnter();
-            _objectVisibility.OnClientEnter();
+            MapPinService.OnModuleClientEnter();
+            ObjectVisibilityService.OnClientEnter();
             CustomEffectService.OnModuleEnter();
-            _chatText.OnModuleEnter();
-            _race.OnModuleEnter();
-            _market.OnModuleEnter();
+            ChatTextService.OnModuleEnter();
+            RaceService.OnModuleEnter();
+            MarketService.OnModuleEnter();
             
             player.SetLocalInt("LOGGED_IN_ONCE", TRUE);
             return true;

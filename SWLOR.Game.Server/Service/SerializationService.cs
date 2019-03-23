@@ -3,19 +3,19 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.NWNX;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class SerializationService : ISerializationService
+    public static class SerializationService
     {
-        public string Serialize(NWObject @object)
+        public static string Serialize(NWObject @object)
         {
             return NWNXObject.Serialize(@object.Object);
         }
         
-        public NWCreature DeserializeCreature(string base64String, Location location)
+        public static NWCreature DeserializeCreature(string base64String, Location location)
         {
             if (location == null) throw new ArgumentException("Invalid target location during creature deserialization.");
 
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Service
             return creature;
         }
 
-        public NWItem DeserializeItem(string base64String, NWPlaceable target)
+        public static NWItem DeserializeItem(string base64String, NWPlaceable target)
         {
             if (target == null || !target.IsValid)
             {
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Service
             return result;
         }
 
-        public NWItem DeserializeItem(string base64String, Location targetLocation)
+        public static NWItem DeserializeItem(string base64String, Location targetLocation)
         {
             if (targetLocation == null)
             {
@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Service
             return item;
         }
 
-        public NWItem DeserializeItem(string base64String, NWCreature target)
+        public static NWItem DeserializeItem(string base64String, NWCreature target)
         {
             if (target == null || !target.IsValid)
             {

@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 
@@ -12,27 +12,6 @@ namespace SWLOR.Game.Server.Item
 {
     public class SSRepairKit : IActionItem
     {
-        
-        private readonly IBaseService _base;
-        
-        
-        
-        private readonly ISpaceService _space;
-        public SSRepairKit(
-            
-            IBaseService baseService,
-            
-            
-            
-            ISpaceService space)
-        {
-            
-            _base = baseService;
-            
-            
-            
-            _space = space;
-        }
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
@@ -122,7 +101,7 @@ namespace SWLOR.Game.Server.Item
             bool canRepair = (PerkService.GetPCPerkLevel(new NWPlayer(user), PerkType.CombatRepair) >= 1);
             PCBase pcBase = DataService.Get<PCBase>(pcbs.PCBaseID);
 
-            if (!canRepair && _space.IsLocationSpace(pcBase.ShipLocation))
+            if (!canRepair && SpaceService.IsLocationSpace(pcBase.ShipLocation))
             {
                 return "You need the Combat Repair perk to repair ships in space.";
             }

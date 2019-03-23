@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.Conversation.Contracts;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 
-using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
 
@@ -12,14 +12,6 @@ namespace SWLOR.Game.Server.Conversation
 {
     public abstract class ConversationBase: IConversation
     {
-        private readonly IDialogService _dialog;
-
-        protected ConversationBase( IDialogService dialog)
-        {
-            
-            _dialog = dialog;
-        }
-
         protected NWPlayer GetPC()
         {
             return (_.GetPCSpeaker());
@@ -27,13 +19,13 @@ namespace SWLOR.Game.Server.Conversation
 
         protected NWObject GetDialogTarget()
         {
-            PlayerDialog dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
+            PlayerDialog dialog = DialogService.LoadPlayerDialog(GetPC().GlobalID);
             return dialog.DialogTarget;
         }
 
         private CustomData GetDialogCustomData()
         {
-            PlayerDialog dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
+            PlayerDialog dialog = DialogService.LoadPlayerDialog(GetPC().GlobalID);
             return dialog.CustomData;
         }
 
@@ -62,7 +54,7 @@ namespace SWLOR.Game.Server.Conversation
 
         protected void ChangePage(string pageName, bool updateNavigationStack = true)
         {
-            PlayerDialog dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
+            PlayerDialog dialog = DialogService.LoadPlayerDialog(GetPC().GlobalID);
 
             if(updateNavigationStack && dialog.EnableBackButton)
                 dialog.NavigationStack.Push(new DialogNavigation(dialog.CurrentPageName, dialog.ActiveDialogName));
@@ -72,14 +64,14 @@ namespace SWLOR.Game.Server.Conversation
 
         protected void SetPageHeader(string pageName, string header)
         {
-            PlayerDialog dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
+            PlayerDialog dialog = DialogService.LoadPlayerDialog(GetPC().GlobalID);
             DialogPage page = dialog.GetPageByName(pageName);
             page.Header = header;
         }
 
         protected DialogPage GetPageByName(string pageName)
         {
-            PlayerDialog dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
+            PlayerDialog dialog = DialogService.LoadPlayerDialog(GetPC().GlobalID);
             return dialog.GetPageByName(pageName);
         }
 
@@ -90,55 +82,55 @@ namespace SWLOR.Game.Server.Conversation
 
         protected string GetCurrentPageName()
         {
-            PlayerDialog dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
+            PlayerDialog dialog = DialogService.LoadPlayerDialog(GetPC().GlobalID);
             return dialog.CurrentPageName;
         }
 
         protected DialogResponse GetResponseByID(string pageName, int responseID)
         {
-            PlayerDialog dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
+            PlayerDialog dialog = DialogService.LoadPlayerDialog(GetPC().GlobalID);
             DialogPage page = dialog.GetPageByName(pageName);
             return page.Responses[responseID - 1];
         }
 
         protected void SetResponseText(string pageName, int responseID, string responseText)
         {
-            PlayerDialog dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
+            PlayerDialog dialog = DialogService.LoadPlayerDialog(GetPC().GlobalID);
             DialogPage page = dialog.GetPageByName(pageName);
             page.Responses[responseID - 1].Text = responseText;
         }
 
         protected void SetResponseVisible(string pageName, int responseID, bool isVisible)
         {
-            PlayerDialog dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
+            PlayerDialog dialog = DialogService.LoadPlayerDialog(GetPC().GlobalID);
             DialogPage page = dialog.GetPageByName(pageName);
             page.Responses[responseID - 1].IsActive = isVisible;
         }
 
         protected void AddResponseToPage(string pageName, string text, bool isVisible = true, object customData = null)
         {
-            PlayerDialog dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
+            PlayerDialog dialog = DialogService.LoadPlayerDialog(GetPC().GlobalID);
             DialogPage page = dialog.GetPageByName(pageName);
             page.Responses.Add(new DialogResponse(text, isVisible, customData));
         }
 
         protected void AddResponseToPage(string pageName, DialogResponse response)
         {
-            PlayerDialog dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
+            PlayerDialog dialog = DialogService.LoadPlayerDialog(GetPC().GlobalID);
             DialogPage page = dialog.GetPageByName(pageName);
             page.Responses.Add(response);
         }
 
         protected void ClearPageResponses(string pageName)
         {
-            PlayerDialog dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
+            PlayerDialog dialog = DialogService.LoadPlayerDialog(GetPC().GlobalID);
             DialogPage page = dialog.GetPageByName(pageName);
             page.Responses.Clear();
         }
 
         protected void SwitchConversation(string conversationName)
         {
-            PlayerDialog dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
+            PlayerDialog dialog = DialogService.LoadPlayerDialog(GetPC().GlobalID);
             Stack<DialogNavigation> navigationStack = null;
 
             if (dialog.EnableBackButton)
@@ -146,8 +138,8 @@ namespace SWLOR.Game.Server.Conversation
                 navigationStack = dialog.NavigationStack;
                 navigationStack.Push(new DialogNavigation(dialog.CurrentPageName, dialog.ActiveDialogName));
             }
-            _dialog.LoadConversation(GetPC(), dialog.DialogTarget, conversationName, dialog.DialogNumber);
-            dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
+            DialogService.LoadConversation(GetPC(), dialog.DialogTarget, conversationName, dialog.DialogNumber);
+            dialog = DialogService.LoadPlayerDialog(GetPC().GlobalID);
             
             if(dialog.EnableBackButton && navigationStack != null)
                 dialog.NavigationStack = navigationStack;
@@ -164,7 +156,7 @@ namespace SWLOR.Game.Server.Conversation
 
         protected void ToggleBackButton(bool isOn)
         {
-            PlayerDialog dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
+            PlayerDialog dialog = DialogService.LoadPlayerDialog(GetPC().GlobalID);
             dialog.EnableBackButton = isOn;
             dialog.NavigationStack.Clear();
         }
@@ -173,25 +165,25 @@ namespace SWLOR.Game.Server.Conversation
         {
             get
             {
-                PlayerDialog dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
+                PlayerDialog dialog = DialogService.LoadPlayerDialog(GetPC().GlobalID);
                 return dialog.NavigationStack;
             }
             set
             {
-                PlayerDialog dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
+                PlayerDialog dialog = DialogService.LoadPlayerDialog(GetPC().GlobalID);
                 dialog.NavigationStack = value;
             }
         }
 
         protected void ClearNavigationStack()
         {
-            PlayerDialog dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
+            PlayerDialog dialog = DialogService.LoadPlayerDialog(GetPC().GlobalID);
             dialog.NavigationStack.Clear();
         }
 
         protected void EndConversation()
         {
-            _dialog.EndConversation(GetPC());
+            DialogService.EndConversation(GetPC());
         }
 
         public abstract PlayerDialog SetUp(NWPlayer player);

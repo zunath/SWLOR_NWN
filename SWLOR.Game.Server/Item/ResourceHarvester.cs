@@ -1,11 +1,10 @@
-﻿using System.Linq;
-using NWN;
+﻿using NWN;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 
@@ -13,35 +12,6 @@ namespace SWLOR.Game.Server.Item
 {
     public class ResourceHarvester : IActionItem
     {
-        
-        
-        
-        private readonly IResourceService _resource;
-        
-        
-        private readonly IDurabilityService _durability;
-        
-
-        public ResourceHarvester(
-            
-            
-            
-            IResourceService resource,
-            
-            
-            IDurabilityService durability
-            )
-        {
-            
-            
-            
-            _resource = resource;
-            
-            
-            _durability = durability;
-            
-        }
-
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
             _.ApplyEffectAtLocation(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_DUR_PARALYZE_HOLD), target.Location, Seconds(user, item, target, targetLocation, null));
@@ -55,13 +25,13 @@ namespace SWLOR.Game.Server.Item
             int tier = target.GetLocalInt("RESOURCE_TIER");
             int remaining = target.GetLocalInt("RESOURCE_COUNT") - 1;
             string itemResref = target.GetLocalString("RESOURCE_RESREF");
-            int ipBonusChance = _resource.CalculateChanceForComponentBonus(player, tier, quality);
+            int ipBonusChance = ResourceService.CalculateChanceForComponentBonus(player, tier, quality);
             int roll = RandomService.Random(1, 100);
             int rank = SkillService.GetPCSkillRank(player, SkillType.Harvesting);
             if (item.RecommendedLevel < rank)
                 rank = item.RecommendedLevel;
 
-            int difficulty = (tier-1) * 10 + _resource.GetDifficultyAdjustment(quality);
+            int difficulty = (tier-1) * 10 + ResourceService.GetDifficultyAdjustment(quality);
             int delta = difficulty - rank;
 
             int baseXP = 0;
@@ -87,7 +57,7 @@ namespace SWLOR.Game.Server.Item
 
             if (roll <= ipBonusChance)
             {
-                var ip = _resource.GetRandomComponentBonusIP(quality);
+                var ip = ResourceService.GetRandomComponentBonusIP(quality);
                 BiowareXP2.IPSafeAddItemProperty(resource, ip.Item1, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
 
                 switch (ip.Item2)
@@ -117,7 +87,7 @@ namespace SWLOR.Game.Server.Item
             }
 
             user.SendMessage("You harvest " + resource.Name + ".");
-            _durability.RunItemDecay(player, item, RandomService.RandomFloat(decayMinimum, decayMaximum));
+            DurabilityService.RunItemDecay(player, item, RandomService.RandomFloat(decayMinimum, decayMaximum));
             int xp = baseXP;
             SkillService.GiveSkillXP(player, SkillType.Harvesting, xp);
 
@@ -194,7 +164,7 @@ namespace SWLOR.Game.Server.Item
             ResourceQuality quality = (ResourceQuality)qualityID;
             int tier = target.GetLocalInt("RESOURCE_TIER");
             int rank = SkillService.GetPCSkillRank(player, SkillType.Harvesting);
-            int difficulty = (tier - 1) * 10 + _resource.GetDifficultyAdjustment(quality);
+            int difficulty = (tier - 1) * 10 + ResourceService.GetDifficultyAdjustment(quality);
             int delta = difficulty - rank;
 
             if (delta >= 5)

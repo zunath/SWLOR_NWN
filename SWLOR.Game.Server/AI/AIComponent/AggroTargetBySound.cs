@@ -1,9 +1,8 @@
-﻿using FluentBehaviourTree;
-using NWN;
+﻿using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 
 namespace SWLOR.Game.Server.AI.AIComponent
@@ -13,16 +12,6 @@ namespace SWLOR.Game.Server.AI.AIComponent
     /// </summary>
     public class AggroTargetBySound : IRegisteredEvent
     {
-        
-        
-
-        public AggroTargetBySound(
-            )
-        {
-            
-            
-        }
-
         public bool Run(object[] args)
         {
             NWCreature self = (NWCreature)args[0];

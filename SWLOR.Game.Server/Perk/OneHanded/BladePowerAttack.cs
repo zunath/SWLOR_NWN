@@ -1,30 +1,16 @@
-﻿using System;
-using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
     public class BladePowerAttack : IPerk
     {
-        
-        
-        
-
-        public BladePowerAttack(
-            
-            )
-        {
-            
-            
-            
-        }
-
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

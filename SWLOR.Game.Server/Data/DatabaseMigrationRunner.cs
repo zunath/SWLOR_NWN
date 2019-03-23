@@ -1,6 +1,4 @@
 ﻿using Autofac;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -9,7 +7,6 @@ using System.Linq;
 using System.Reflection;
 using Dapper;
 using SWLOR.Game.Server.Data.Entity;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Data

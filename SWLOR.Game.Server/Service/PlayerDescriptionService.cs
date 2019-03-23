@@ -2,14 +2,14 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.Service
 {
-    public class PlayerDescriptionService: IPlayerDescriptionService
+    public static class PlayerDescriptionService
     {
 
-        public void OnModuleChat()
+        public static void OnModuleChat()
         {
             NWPlayer sender = (_.GetPCChatSpeaker());
             if (sender.GetLocalInt("LISTENING_FOR_DESCRIPTION") != 1) return;
@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Service
             _.SendMessageToPC(sender.Object, "New description received. Please press the 'Next' button in the conversation window.");
         }
 
-        public void ChangePlayerDescription(NWPlayer player)
+        public static void ChangePlayerDescription(NWPlayer player)
         {
             if (player == null) throw new ArgumentNullException(nameof(player));
             if (player.Object == null) throw new ArgumentNullException(nameof(player.Object));

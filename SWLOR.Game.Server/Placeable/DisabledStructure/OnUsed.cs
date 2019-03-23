@@ -1,7 +1,6 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using static NWN._;
 
 namespace SWLOR.Game.Server.Placeable.DisabledStructure
 {

@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 
@@ -13,23 +13,6 @@ namespace SWLOR.Game.Server.Item
 {
     public class ResourceScanner: IActionItem
     {
-        
-        private readonly IResourceService _resource;
-        
-        private readonly IDurabilityService _durability;
-        
-        public ResourceScanner(
-            
-            IResourceService resource,
-            
-            IDurabilityService durability)
-        {
-            
-            _resource = resource;
-            
-            _durability = durability;
-        }
-
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
             _.ApplyEffectAtLocation(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_DUR_PARALYZE_HOLD), target.Location, Seconds(user, item, target, targetLocation, null));
@@ -44,14 +27,14 @@ namespace SWLOR.Game.Server.Item
             if (!target.IsValid || Equals(user, target))
             {
                 ScanArea(user, targetLocation);
-                _durability.RunItemDecay(player, item, RandomService.RandomFloat(0.02f, 0.08f));
+                DurabilityService.RunItemDecay(player, item, RandomService.RandomFloat(0.02f, 0.08f));
                 effectLocation = targetLocation;
 
             }
             else if(!string.IsNullOrWhiteSpace(target.GetLocalString("RESOURCE_RESREF")))
             {
                 ScanResource(user, target);
-                _durability.RunItemDecay(player, item, RandomService.RandomFloat(0.05f, 0.1f));
+                DurabilityService.RunItemDecay(player, item, RandomService.RandomFloat(0.05f, 0.1f));
                 effectLocation = target.Location;
             }
             else
@@ -99,7 +82,7 @@ namespace SWLOR.Game.Server.Item
         private void ScanResource(NWCreature user, NWObject target)
         {
             NWPlaceable resource = (target.Object);
-            user.SendMessage("[Resource Details]: " + _resource.GetResourceDescription(resource));
+            user.SendMessage("[Resource Details]: " + ResourceService.GetResourceDescription(resource));
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)

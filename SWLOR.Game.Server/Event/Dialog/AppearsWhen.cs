@@ -1,55 +1,47 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Conversation.Contracts;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 
-using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Event.Dialog
 {
     public class AppearsWhen: IRegisteredEvent
     {
-        
-        private readonly IDialogService _dialog;
-
-        public AppearsWhen(IDialogService dialogService)
-        {
-            _dialog = dialogService;
-        }
-
         public bool Run(params object[] args)
         {
             int nodeType = (int)args[0];
             int nodeID = (int)args[1];
             
             NWPlayer player = (_.GetPCSpeaker());
-            bool hasDialog = _dialog.HasPlayerDialog(player.GlobalID);
+            bool hasDialog = DialogService.HasPlayerDialog(player.GlobalID);
             if (!hasDialog) return false;
 
-            PlayerDialog dialog = _dialog.LoadPlayerDialog(player.GlobalID);
+            PlayerDialog dialog = DialogService.LoadPlayerDialog(player.GlobalID);
             DialogPage page = dialog.CurrentPage;
             int currentSelectionNumber = nodeID + 1;
             bool displayNode = false;
             string newNodeText = string.Empty;
-            int dialogOffset = (_dialog.NumberOfResponsesPerPage + 1) * (dialog.DialogNumber - 1);
+            int dialogOffset = (DialogService.NumberOfResponsesPerPage + 1) * (dialog.DialogNumber - 1);
 
-            if (currentSelectionNumber == _dialog.NumberOfResponsesPerPage + 1) // Next page
+            if (currentSelectionNumber == DialogService.NumberOfResponsesPerPage + 1) // Next page
             {
-                int displayCount = page.NumberOfResponses - (_dialog.NumberOfResponsesPerPage * dialog.PageOffset);
+                int displayCount = page.NumberOfResponses - (DialogService.NumberOfResponsesPerPage * dialog.PageOffset);
 
-                if (displayCount > _dialog.NumberOfResponsesPerPage)
+                if (displayCount > DialogService.NumberOfResponsesPerPage)
                 {
                     displayNode = true;
                 }
             }
-            else if (currentSelectionNumber == _dialog.NumberOfResponsesPerPage + 2) // Previous Page
+            else if (currentSelectionNumber == DialogService.NumberOfResponsesPerPage + 2) // Previous Page
             {
                 if (dialog.PageOffset > 0)
                 {
                     displayNode = true;
                 }
             }
-            else if (currentSelectionNumber == _dialog.NumberOfResponsesPerPage + 3) // Back
+            else if (currentSelectionNumber == DialogService.NumberOfResponsesPerPage + 3) // Back
             {
                 if (dialog.NavigationStack.Count > 0 && dialog.EnableBackButton)
                 {
@@ -58,7 +50,7 @@ namespace SWLOR.Game.Server.Event.Dialog
             }
             else if (nodeType == 2)
             {
-                int responseID = (dialog.PageOffset * _dialog.NumberOfResponsesPerPage) + nodeID;
+                int responseID = (dialog.PageOffset * DialogService.NumberOfResponsesPerPage) + nodeID;
                 if (responseID + 1 <= page.NumberOfResponses)
                 {
                     DialogResponse response = page.Responses[responseID];
@@ -83,7 +75,7 @@ namespace SWLOR.Game.Server.Event.Dialog
                     if (dialog.IsEnding)
                     {
                         convo.EndDialog();
-                        _dialog.RemovePlayerDialog(player.GlobalID);
+                        DialogService.RemovePlayerDialog(player.GlobalID);
                         player.DeleteLocalInt("DIALOG_SYSTEM_INITIALIZE_RAN");
                         return false;
                     }

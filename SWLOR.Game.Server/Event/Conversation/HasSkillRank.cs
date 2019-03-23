@@ -1,25 +1,12 @@
-﻿using System.Linq;
-using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data.Entity;
+﻿using NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.Event.Conversation
 {
     public class HasSkillRank : IRegisteredEvent
     {
-        
-        
-
-        public HasSkillRank(
-            
-            )
-        {
-            
-            
-        }
         public bool Run(params object[] args)
         {
             int index = (int) args[0];

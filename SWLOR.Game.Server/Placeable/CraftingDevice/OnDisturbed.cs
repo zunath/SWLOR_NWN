@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 using Object = NWN.Object;
 
@@ -13,23 +13,6 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
 {
     public class OnDisturbed: IRegisteredEvent
     {
-        
-        private readonly ICraftService _craft;
-        
-        private readonly IDialogService _dialog;
-        
-
-        public OnDisturbed(
-            ICraftService craft,
-            
-            IDialogService dialog)
-            
-        {
-            
-            _craft = craft;
-            
-            _dialog = dialog;
-        }
 
         public bool Run(params object[] args)
         {
@@ -59,7 +42,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
                 return;
             }
 
-            var model = _craft.GetPlayerCraftingData(oPC);
+            var model = CraftService.GetPlayerCraftingData(oPC);
             var mainComponent = DataService.Get<Data.Entity.ComponentType>(model.Blueprint.MainComponentTypeID);
             var secondaryComponent = DataService.Get<Data.Entity.ComponentType>(model.Blueprint.SecondaryComponentTypeID);
             var tertiaryComponent = DataService.Get<Data.Entity.ComponentType>(model.Blueprint.TertiaryComponentTypeID);
@@ -170,7 +153,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
             NWItem oItem = (_.GetInventoryDisturbItem());
             NWPlaceable device = (Object.OBJECT_SELF);
             NWPlaceable storage = (_.GetObjectByTag("craft_temp_store"));
-            var model = _craft.GetPlayerCraftingData(oPC);
+            var model = CraftService.GetPlayerCraftingData(oPC);
             if (oPC.IsBusy)
             {
                 ItemService.ReturnItem(device, oItem);
@@ -184,7 +167,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
                 device.DestroyAllInventoryItems();
                 device.IsLocked = false;
                 model.IsAccessingStorage = false;
-                _dialog.StartConversation(oPC, device, "CraftItem");
+                DialogService.StartConversation(oPC, device, "CraftItem");
                 return;
             }
 

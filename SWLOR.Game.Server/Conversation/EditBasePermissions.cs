@@ -1,32 +1,15 @@
 ﻿using System;
-using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
 {
     public class EditBasePermissions: ConversationBase
     {
-        private readonly IBaseService _base;
-        
-        
-        
-
-        public EditBasePermissions(
-             
-            IDialogService dialog,
-            IBaseService @base) 
-            : base(dialog)
-        {
-            _base = @base;
-            
-            
-            
-        }
 
         public override PlayerDialog SetUp(NWPlayer player)
         {
@@ -83,7 +66,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void MainResponses(int responseID)
         {
-            var data = _base.GetPlayerTempData(GetPC());
+            var data = BaseService.GetPlayerTempData(GetPC());
             
             switch (responseID)
             {
@@ -142,7 +125,7 @@ namespace SWLOR.Game.Server.Conversation
         private void BuildPlayerDetailsPage(NWPlayer player)
         {
             ClearPageResponses("PlayerDetailsPage");
-            var data = _base.GetPlayerTempData(GetPC());
+            var data = BaseService.GetPlayerTempData(GetPC());
             var permission = DataService.SingleOrDefault<PCBasePermission>(x => x.PlayerID == player.GlobalID && 
                                                                           x.PCBaseID == data.PCBaseID &&
                                                                           !x.IsPublicPermission);
@@ -240,7 +223,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void TogglePermission(Guid playerID, BasePermission permission, bool isPublicPermission)
         {
-            var data = _base.GetPlayerTempData(GetPC());
+            var data = BaseService.GetPlayerTempData(GetPC());
             var dbPermission = isPublicPermission ?
                 DataService.SingleOrDefault<PCBasePermission>(x => x.PCBaseID == data.PCBaseID &&
                                                              x.IsPublicPermission) :
@@ -312,7 +295,7 @@ namespace SWLOR.Game.Server.Conversation
         private void BuildPublicPermissionsPage()
         {
             ClearPageResponses("PublicPermissionsPage");
-            var data = _base.GetPlayerTempData(GetPC());
+            var data = BaseService.GetPlayerTempData(GetPC());
             var permission = DataService.SingleOrDefault<PCBasePermission>(x => x.PCBaseID == data.PCBaseID &&
                                                                           x.IsPublicPermission);
 
@@ -335,7 +318,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void PublicPermissionsResponses(int responseID)
         {
-            var data = _base.GetPlayerTempData(GetPC());
+            var data = BaseService.GetPlayerTempData(GetPC());
             var pcBase = DataService.Get<PCBase>(data.PCBaseID);
             var ownerPlayerID = pcBase.PlayerID;
 
@@ -355,7 +338,7 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void EndDialog()
         {
-            _base.ClearPlayerTempData(GetPC());
+            BaseService.ClearPlayerTempData(GetPC());
         }
     }
 }

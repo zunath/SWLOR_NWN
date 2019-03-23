@@ -1,21 +1,20 @@
 ﻿using System;
-using System.Linq;
 using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.NWNX;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class DurabilityService : IDurabilityService
+    public static class DurabilityService
     {
         private const float DefaultDurability = 5.0f;
         
-        private void InitializeDurability(NWItem item)
+        private static void InitializeDurability(NWItem item)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
@@ -43,7 +42,7 @@ namespace SWLOR.Game.Server.Service
             item.SetLocalInt("DURABILITY_INITIALIZED", 1);
         }
 
-        public float GetMaxDurability(NWItem item)
+        public static float GetMaxDurability(NWItem item)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
             
@@ -53,7 +52,7 @@ namespace SWLOR.Game.Server.Service
             return maxDurability;
         }
 
-        public void SetMaxDurability(NWItem item, float value)
+        public static void SetMaxDurability(NWItem item, float value)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
@@ -64,7 +63,7 @@ namespace SWLOR.Game.Server.Service
             InitializeDurability(item);
         }
 
-        public float GetDurability(NWItem item)
+        public static float GetDurability(NWItem item)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
@@ -80,7 +79,7 @@ namespace SWLOR.Game.Server.Service
             return durability;
         }
 
-        public void SetDurability(NWItem item, float value)
+        public static void SetDurability(NWItem item, float value)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
             if (value < 0.0f) value = 0.0f;
@@ -90,7 +89,7 @@ namespace SWLOR.Game.Server.Service
             item.SetLocalFloat("DURABILITY_CURRENT", value);
         }
         
-        public void OnModuleEquip()
+        public static void OnModuleEquip()
         {
             using (new Profiler("DurabilityService::OnModuleEquip()"))
             {
@@ -111,7 +110,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public string OnModuleExamine(string existingDescription, NWObject examinedObject)
+        public static string OnModuleExamine(string existingDescription, NWObject examinedObject)
         {
             if (examinedObject.ObjectType != OBJECT_TYPE_ITEM) return existingDescription;
 
@@ -128,12 +127,12 @@ namespace SWLOR.Game.Server.Service
             return existingDescription + "\n\n" + description;
         }
 
-        public void RunItemDecay(NWPlayer player, NWItem item)
+        public static void RunItemDecay(NWPlayer player, NWItem item)
         {
             RunItemDecay(player, item, 0.01f);
         }
 
-        public void RunItemDecay(NWPlayer player, NWItem item, float reduceAmount)
+        public static void RunItemDecay(NWPlayer player, NWItem item, float reduceAmount)
         {
             if (reduceAmount <= 0) return;
             if (player.IsPlot ||
@@ -178,7 +177,7 @@ namespace SWLOR.Game.Server.Service
             return durability.ToString("0.00");
         }
 
-        public void RunItemRepair(NWPlayer oPC, NWItem item, float amount, float maxReductionAmount)
+        public static void RunItemRepair(NWPlayer oPC, NWItem item, float amount, float maxReductionAmount)
         {
             // Prevent repairing for less than 0.01
             if (amount < 0.01f) return;
@@ -197,7 +196,7 @@ namespace SWLOR.Game.Server.Service
             oPC.SendMessage(ColorTokenService.Green("You repaired your " + item.Name + ". (" + durMessage + ")"));
         }
         
-        public void OnHitCastSpell(NWPlayer oTarget)
+        public static void OnHitCastSpell(NWPlayer oTarget)
         {
             NWItem oSpellOrigin = (_.GetSpellCastItem());
 

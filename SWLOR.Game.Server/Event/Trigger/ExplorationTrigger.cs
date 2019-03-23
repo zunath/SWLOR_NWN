@@ -2,7 +2,7 @@
 using NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Event.Trigger

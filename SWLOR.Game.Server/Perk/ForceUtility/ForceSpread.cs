@@ -2,26 +2,12 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.Perk.ForceUtility
 {
     public class ForceSpread: IPerk
     {
-        
-        
-        
-
-        public ForceSpread(
-            
-            
-            )
-        {
-            
-            
-            
-        }
-
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return true;

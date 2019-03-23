@@ -1,20 +1,12 @@
-﻿using NWN;
-using SWLOR.Game.Server.CustomEffect.Contracts;
+﻿using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.CustomEffect
 {
     public class PrecisionTargetingEffect : ICustomEffect
     {
-        
-
-        public PrecisionTargetingEffect()
-        {
-            
-        }
-
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
             PlayerStatService.ApplyStatChanges(oTarget.Object, null);

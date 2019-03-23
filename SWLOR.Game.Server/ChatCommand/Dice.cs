@@ -1,11 +1,8 @@
 ﻿using System;
-using NWN;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN._;
 
 namespace SWLOR.Game.Server.ChatCommand
 {

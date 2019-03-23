@@ -1,16 +1,15 @@
-﻿using NWN;
-using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.NWNX;
 
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.Service
 {
-    public class LocalVariableService: ILocalVariableService
+    public static class LocalVariableService
     {
-        public void CopyVariables(NWObject oSource, NWObject oCopy)
+        public static void CopyVariables(NWObject oSource, NWObject oCopy)
         {
             int variableCount = NWNXObject.GetLocalVariableCount(oSource);
             for (int variableIndex = 0; variableIndex < variableCount - 1; variableIndex++)

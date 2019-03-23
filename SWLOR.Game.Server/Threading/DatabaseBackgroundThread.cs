@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Service.Contracts;
+﻿
 using SWLOR.Game.Server.Threading.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using System;

@@ -2,20 +2,13 @@
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Event.Delayed
 {
     public class FinishActionItem: IRegisteredEvent
     {
-        
-
-        public FinishActionItem()
-        {
-            
-        }
-
         public bool Run(params object[] args)
         {
             string className = (string) args[0];

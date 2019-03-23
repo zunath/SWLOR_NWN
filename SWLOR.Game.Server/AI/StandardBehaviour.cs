@@ -6,7 +6,7 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.AI
 {
@@ -17,17 +17,17 @@ namespace SWLOR.Game.Server.AI
     {
         protected readonly BehaviourTreeBuilder _builder;
         
-        private readonly IDialogService _dialog;
+        
         
 
-        public StandardBehaviour(BehaviourTreeBuilder builder,
+        public StandardBehaviour(BehaviourTreeBuilder builder
             
             
-            IDialogService dialog)
+            )
         {
             _builder = builder;
             
-            _dialog = dialog;
+            
         }
 
         public override bool IgnoreNWNEvents => true;
@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.AI
             if (!string.IsNullOrWhiteSpace(convo))
             {
                 NWPlayer player = (_.GetLastSpeaker());
-                _dialog.StartConversation(player, Self, convo);
+                DialogService.StartConversation(player, Self, convo);
             }
             else if (!string.IsNullOrWhiteSpace(NWNXObject.GetDialogResref(Self)))
             {

@@ -6,26 +6,18 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class MarketService: IMarketService
+    public static class MarketService
     {
-        
-        
-        public MarketService(
-            
-            )
-        {
-            
-        }
 
         // Couldn't get any more specific than this. :)
-        public int NumberOfItemsAllowedToBeSoldAtATime => 50;
+        public static int NumberOfItemsAllowedToBeSoldAtATime => 50;
 
         /// <summary>
         /// Retrieves the temporary market data for a given player.
@@ -33,7 +25,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player to retrieve from.</param>
         /// <returns>The market data for the player specified.</returns>
-        public PCMarketData GetPlayerMarketData(NWPlayer player)
+        public static PCMarketData GetPlayerMarketData(NWPlayer player)
         {
             // Need to store the data outside of the conversation because of the constant
             // context switching between conversation and accessing placeable containers.
@@ -52,7 +44,7 @@ namespace SWLOR.Game.Server.Service
         /// Removes the temporary market data stored for a player.
         /// </summary>
         /// <param name="player"></param>
-        public void ClearPlayerMarketData(NWPlayer player)
+        public static void ClearPlayerMarketData(NWPlayer player)
         {
             player.Data.Remove("MARKET_MODEL");
         }
@@ -62,7 +54,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="terminal">The market terminal placeable</param>
         /// <returns>The ID which links up to the MarketRegion database table.</returns>
-        public int GetMarketRegionID(NWPlaceable terminal)
+        public static int GetMarketRegionID(NWPlaceable terminal)
         {
             int marketRegionID = terminal.GetLocalInt("GTN_REGION_ID");
             if (marketRegionID <= 0)
@@ -77,7 +69,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="playerID">The player ID to pay.</param>
         /// <param name="amount">The amount of gold to give them.</param>
-        public void GiveMarketGoldToPlayer(Guid playerID, int amount)
+        public static void GiveMarketGoldToPlayer(Guid playerID, int amount)
         {
             NWPlayer player = NWModule.Get().Players.SingleOrDefault(x => x.GlobalID == playerID);
 
@@ -99,7 +91,7 @@ namespace SWLOR.Game.Server.Service
         /// Call this on the module's OnEnter event.
         /// If a player sold items on the market while they were offline, they'll receive that money on entry.
         /// </summary>
-        public void OnModuleEnter()
+        public static void OnModuleEnter()
         {
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
@@ -128,7 +120,7 @@ namespace SWLOR.Game.Server.Service
         /// If a player is currently setting a "Seller Note", look for the text and apply it to their
         /// temporary market data object.
         /// </summary>
-        public void OnModuleNWNXChat()
+        public static void OnModuleNWNXChat()
         {
             NWPlayer player = NWNXChat.GetSender().Object;
             if (!CanHandleChat(player)) return;
@@ -154,7 +146,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="days">The number of days the listing will be posted.</param>
         /// <returns>The percentage, in decimal form, to apply when determining fees.</returns>
-        public float CalculateFeePercentage(int days)
+        public static float CalculateFeePercentage(int days)
         {
             const float Rate = 0.001f; // 0.1%
             return days * Rate;
@@ -166,7 +158,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="item">The item to use for the determination.</param>
         /// <returns>The market category ID or a value of -1 if item is not supported.</returns>
-        public int DetermineMarketCategory(NWItem item)
+        public static int DetermineMarketCategory(NWItem item)
         {
             // ===============================================================================
             // The following items are intentionally excluded from market transactions:

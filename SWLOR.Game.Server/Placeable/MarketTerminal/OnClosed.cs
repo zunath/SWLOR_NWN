@@ -1,8 +1,8 @@
-﻿using System;
-using NWN;
+﻿using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using static NWN._;
 using Object = NWN.Object;
 
@@ -10,24 +10,13 @@ namespace SWLOR.Game.Server.Placeable.MarketTerminal
 {
     public class OnClosed: IRegisteredEvent
     {
-        
-        private readonly IMarketService _market;
-
-        public OnClosed(
-            
-            IMarketService market)
-        {
-            
-            _market = market;
-        }
-
         public bool Run(params object[] args)
         {
             // Should only fire when a player walks away from the device.
             // Clean up temporary data.
             NWPlayer player = _.GetLastClosedBy();
             NWPlaceable device = Object.OBJECT_SELF;
-            var model = _market.GetPlayerMarketData(player);
+            var model = MarketService.GetPlayerMarketData(player);
             device.DestroyAllInventoryItems();
             device.IsLocked = false;
             
@@ -39,7 +28,7 @@ namespace SWLOR.Game.Server.Placeable.MarketTerminal
             // Only wipe the data if we're not returning from an item preview for item picking.
             if(!model.IsReturningFromItemPreview &&
                !model.IsReturningFromItemPicking)
-                _market.ClearPlayerMarketData(player);
+                MarketService.ClearPlayerMarketData(player);
             return true;
         }
     }

@@ -1,13 +1,9 @@
-﻿using FluentBehaviourTree;
-using SWLOR.Game.Server.AI.Contracts;
-
-using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Event;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
-using System;
 using System.Linq;
 using SWLOR.Game.Server.Service;
 
@@ -18,16 +14,6 @@ namespace SWLOR.Game.Server.AI.AIComponent
     /// </summary>
     public class AILinking : IRegisteredEvent
     {
-        
-        
-        
-        public AILinking(
-            )
-        {
-            
-            
-        }
-
         public bool Run(object[] args)
         {
             NWCreature self = (NWCreature)args[0];

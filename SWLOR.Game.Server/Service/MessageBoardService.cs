@@ -1,19 +1,18 @@
-﻿using NWN;
-using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class MessageBoardService : IMessageBoardService
+    public static class MessageBoardService
     {
         public static bool CanHandleChat(NWObject sender)
         {
             return sender.GetLocalInt("MESSAGE_BOARD_LISTENING") == TRUE;
         }
 
-        public void OnModuleNWNXChat()
+        public static void OnModuleNWNXChat()
         {
             NWPlayer player = NWNXChat.GetSender().Object;
             

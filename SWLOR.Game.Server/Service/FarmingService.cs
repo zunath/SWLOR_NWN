@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.Service
 {
-    public class FarmingService: IFarmingService
+    public static class FarmingService
     {
-        public void HarvestPlant(NWPlayer player, NWItem shovel, NWPlaceable plant)
+        public static void HarvestPlant(NWPlayer player, NWItem shovel, NWPlaceable plant)
         {
             string growingPlantID = plant.GetLocalString("GROWING_PLANT_ID");
             Guid? growingPlantGuid = null;
@@ -48,7 +46,7 @@ namespace SWLOR.Game.Server.Service
             player.FloatingText("You harvest the plant.");
         }
 
-        public string OnModuleExamine(string existingDescription, NWObject examinedObject)
+        public static string OnModuleExamine(string existingDescription, NWObject examinedObject)
         {
             int plantID = examinedObject.GetLocalInt("PLANT_ID");
             if (plantID <= 0) return existingDescription;
@@ -61,7 +59,7 @@ namespace SWLOR.Game.Server.Service
             return existingDescription;
         }
 
-        public void OnModuleLoad()
+        public static void OnModuleLoad()
         {
             List<GrowingPlant> plants = DataService.Where<GrowingPlant>(x => x.IsActive).ToList();
 
@@ -85,7 +83,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
         
-        public void RemoveGrowingPlant(NWPlaceable plant)
+        public static void RemoveGrowingPlant(NWPlaceable plant)
         {
             string growingPlantID = plant.GetLocalString("GROWING_PLANT_ID");
             Guid? growingPlantGuid = null;
@@ -99,12 +97,12 @@ namespace SWLOR.Game.Server.Service
             DataService.SubmitDataChange(growingPlant, DatabaseActionType.Update);
         }
 
-        public GrowingPlant GetGrowingPlantByID(Guid growingPlantID)
+        public static GrowingPlant GetGrowingPlantByID(Guid growingPlantID)
         {
             return DataService.Single<GrowingPlant>(x => x.ID == growingPlantID);
         }
 
-        public Plant GetPlantByID(int plantID)
+        public static Plant GetPlantByID(int plantID)
         {
             return DataService.Single<Plant>(x => x.ID == plantID);
         }

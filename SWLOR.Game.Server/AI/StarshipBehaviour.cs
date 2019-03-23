@@ -6,7 +6,7 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 
 namespace SWLOR.Game.Server.AI
@@ -19,21 +19,9 @@ namespace SWLOR.Game.Server.AI
         
         protected readonly BehaviourTreeBuilder _builder;
         
-        private readonly IDialogService _dialog;
-        
-        private readonly ISpaceService _space;
-
-        public StarshipBehaviour(BehaviourTreeBuilder builder,
-            
-            
-            IDialogService dialog,
-            ISpaceService space)
+        public StarshipBehaviour(BehaviourTreeBuilder builder)
         {
-            
             _builder = builder;
-            
-            _dialog = dialog;
-            _space = space;
         }
 
         public override bool IgnoreNWNEvents => true;
@@ -58,7 +46,7 @@ namespace SWLOR.Game.Server.AI
             NWCreature self = Object.OBJECT_SELF;
             NWCreature attacker = _.GetLastAttacker();
 
-            _space.OnPhysicalAttacked(self, attacker);
+            SpaceService.OnPhysicalAttacked(self, attacker);
         }
 
         public override void OnDeath()
@@ -86,7 +74,7 @@ namespace SWLOR.Game.Server.AI
             if (!string.IsNullOrWhiteSpace(convo))
             {
                 NWPlayer player = (_.GetLastSpeaker());
-                _dialog.StartConversation(player, Self, convo);
+                DialogService.StartConversation(player, Self, convo);
             }
             else if (!string.IsNullOrWhiteSpace(NWNXObject.GetDialogResref(Self)))
             {
@@ -97,13 +85,13 @@ namespace SWLOR.Game.Server.AI
         public override void OnPerception()
         {
             base.OnPerception();
-            _space.OnPerception(Object.OBJECT_SELF, _.GetLastPerceived());
+            SpaceService.OnPerception(Object.OBJECT_SELF, _.GetLastPerceived());
         }
 
         public override void OnHeartbeat()
         {
             base.OnHeartbeat();
-            _space.OnHeartbeat(Object.OBJECT_SELF);
+            SpaceService.OnHeartbeat(Object.OBJECT_SELF);
         }
 
         public override void OnBlocked()

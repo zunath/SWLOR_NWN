@@ -1,6 +1,4 @@
 ﻿using System;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
@@ -8,27 +6,13 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.PlantSeed
 {
     public class OnDisturbed: IRegisteredEvent
     {
-        
-        
-        
-        
-        
-        
-        private readonly IFarmingService _farming;
-        
-
-        public OnDisturbed(
-            IFarmingService farming)
-        {
-            _farming = farming;
-        }
 
         public bool Run(params object[] args)
         {
@@ -49,7 +33,7 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
                 return true;
             }
 
-            Plant plant = _farming.GetPlantByID(plantID);
+            Plant plant = FarmingService.GetPlantByID(plantID);
             if (plant == null)
             {
                 ItemService.ReturnItem(oPC, item);

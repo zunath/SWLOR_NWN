@@ -1,34 +1,15 @@
-﻿using System;
-using SWLOR.Game.Server.Data;
-using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
 {
     public class Shovel: ConversationBase
     {
-        private readonly IPlayerService _player;
-        
-        private readonly IFarmingService _farming;
-
-        public Shovel(
-             
-            IDialogService dialog,
-            IPlayerService player,
-            
-            IFarmingService farming) 
-            : base(dialog)
-        {
-            _player = player;
-            
-            _farming = farming;
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -129,7 +110,7 @@ namespace SWLOR.Game.Server.Conversation
 
             NWItem shovel = (GetPC().GetLocalObject("SHOVEL_ITEM"));
             NWObject plant = (GetPC().GetLocalObject("SHOVEL_TARGET_OBJECT"));
-            _farming.HarvestPlant(GetPC(), shovel, (NWPlaceable)plant);
+            FarmingService.HarvestPlant(GetPC(), shovel, (NWPlaceable)plant);
             EndConversation();
         }
 

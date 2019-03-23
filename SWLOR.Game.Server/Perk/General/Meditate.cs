@@ -1,30 +1,12 @@
 ﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using NWN;
 using SWLOR.Game.Server.CustomEffect;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.General
 {
     public class Meditate: IPerk
     {
-        
-        
-        
-
-        public Meditate( 
-            
-            )
-        {
-            
-            
-            
-        }
-
-
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return MeditateEffect.CanMeditate(oPC);

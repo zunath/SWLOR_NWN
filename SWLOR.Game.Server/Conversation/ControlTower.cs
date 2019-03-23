@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static NWN._;
 
@@ -15,29 +13,6 @@ namespace SWLOR.Game.Server.Conversation
 {
     public class ControlTower: ConversationBase
     {
-        private readonly IBaseService _base;
-        
-        
-        private readonly ISerializationService _serialization;
-        
-
-        public ControlTower(
-             
-            IDialogService dialog,
-            
-            
-            ISerializationService serialization,
-            IBaseService @base
-            ) 
-            : base(dialog)
-        {
-            
-            
-            _serialization = serialization;
-            _base = @base;
-            
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -59,24 +34,24 @@ namespace SWLOR.Game.Server.Conversation
             Guid pcBaseID = structure.PCBaseID;
             PCBase pcBase = DataService.Get<PCBase>(pcBaseID);
 
-            double currentCPU = _base.GetCPUInUse(pcBaseID);
-            double currentPower = _base.GetPowerInUse(pcBaseID);
-            double maxCPU = _base.GetMaxBaseCPU(pcBaseID);
-            double maxPower = _base.GetMaxBasePower(pcBaseID);
+            double currentCPU = BaseService.GetCPUInUse(pcBaseID);
+            double currentPower = BaseService.GetPowerInUse(pcBaseID);
+            double maxCPU = BaseService.GetMaxBaseCPU(pcBaseID);
+            double maxPower = BaseService.GetMaxBasePower(pcBaseID);
 
             int currentReinforcedFuel = pcBase.ReinforcedFuel;
             int currentFuel = pcBase.Fuel;
             int currentResources = DataService.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structure.ID).Count();
-            int maxReinforcedFuel = _base.CalculateMaxReinforcedFuel(pcBaseID);
-            int maxFuel = _base.CalculateMaxFuel(pcBaseID);
-            int maxResources = _base.CalculateResourceCapacity(pcBaseID);
+            int maxReinforcedFuel = BaseService.CalculateMaxReinforcedFuel(pcBaseID);
+            int maxFuel = BaseService.CalculateMaxFuel(pcBaseID);
+            int maxResources = BaseService.CalculateResourceCapacity(pcBaseID);
 
             string time;
             if (pcBase.DateFuelEnds > DateTime.UtcNow)
             {
                 TimeSpan deltaTime = pcBase.DateFuelEnds - DateTime.UtcNow;
 
-                var tower = _base.GetBaseControlTower(pcBaseID);
+                var tower = BaseService.GetBaseControlTower(pcBaseID);
                 var towerStructure = DataService.Single<BaseStructure>(x => x.ID == tower.BaseStructureID);
                 int fuelRating = towerStructure.FuelRating;
                 int minutes;
@@ -235,7 +210,7 @@ namespace SWLOR.Game.Server.Conversation
 
             foreach (var item in structureItems)
             {
-                _serialization.DeserializeItem(item.ItemObject, bay);
+                SerializationService.DeserializeItem(item.ItemObject, bay);
             }
 
             oPC.AssignCommand(() => _.ActionInteractObject(bay.Object));

@@ -1,28 +1,18 @@
 ﻿using System;
-using System.Linq;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.Contracts;
+
 
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class HelmetToggleService: IHelmetToggleService
+    public static class HelmetToggleService
     {
-        
-        
-        public HelmetToggleService()
-        {
-            
-        }
-
-        public void OnModuleItemEquipped()
+        public static void OnModuleItemEquipped()
         {
             using (new Profiler("HelmetToggleService::OnModuleItemEquipped()"))
             {
@@ -37,7 +27,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public void OnModuleItemUnequipped()
+        public static void OnModuleItemUnequipped()
         {
             using(new Profiler("HelmetToggleService::OnModuleItemUnequipped()"))
             {
@@ -52,7 +42,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public void ToggleHelmetDisplay(NWPlayer player)
+        public static void ToggleHelmetDisplay(NWPlayer player)
         {
             if (player == null) throw new ArgumentNullException(nameof(player));
 

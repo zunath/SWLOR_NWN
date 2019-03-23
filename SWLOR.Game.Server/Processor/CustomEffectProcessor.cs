@@ -1,32 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NWN;
 using SWLOR.Game.Server.CustomEffect.Contracts;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Processor.Contracts;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Processor
 {
     public class CustomEffectProcessor: IEventProcessor
     {
-        
-
-        public CustomEffectProcessor(
-            )
-        {
-            
-        }
-
-
         public void Run(object[] args)
         {
             ProcessPCCustomEffects();

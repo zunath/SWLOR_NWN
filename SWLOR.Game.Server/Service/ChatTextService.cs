@@ -1,19 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Dynamic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using Newtonsoft.Json;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using SWLOR.Game.Server.Service.Contracts;
 using static NWN._;
 using System.Text;
 using SWLOR.Game.Server.Data.Entity;
@@ -31,31 +21,10 @@ namespace SWLOR.Game.Server.Service
         public byte m_ColourBlue;
     };
 
-    public class ChatTextService : IChatTextService
+    public static class ChatTextService
     {
-        
-        
-        
-        
-        private readonly ILanguageService _language;
-        private readonly IEmoteStyleService _emoteStyle;
 
-        public ChatTextService(
-            
-            
-            
-            ILanguageService language,
-            IEmoteStyleService emoteStyle)
-        {
-            
-            
-            
-            
-            _language = language;
-            _emoteStyle = emoteStyle;
-        }
-
-        public void OnNWNXChat()
+        public static void OnNWNXChat()
         {
             ChatChannelType channel = (ChatChannelType)NWNXChat.GetChannel();
 
@@ -139,7 +108,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                if (_emoteStyle.GetEmoteStyle(sender) == EmoteStyle.Regular)
+                if (EmoteStyleService.GetEmoteStyle(sender) == EmoteStyle.Regular)
                 {
                     chatComponents = SplitMessageIntoComponents_Regular(message);
                 }
@@ -253,25 +222,25 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
-                SkillType language = _language.GetActiveLanguage(sender);
+                SkillType language = LanguageService.GetActiveLanguage(sender);
                 
                 // Wookiees cannot speak any other language (but they can understand them).
                 // Swap their language if they attempt to speak in any other language.
                 CustomRaceType race = (CustomRaceType) _.GetRacialType(sender);
                 if (race == CustomRaceType.Wookiee && language != SkillType.Shyriiwook)
                 {
-                    _language.SetActiveLanguage(sender, SkillType.Shyriiwook);
+                    LanguageService.SetActiveLanguage(sender, SkillType.Shyriiwook);
                     language = SkillType.Shyriiwook;
                 }
 
-                int colour = _language.GetColour(language);
+                int colour = LanguageService.GetColour(language);
                 byte r = (byte)(colour >> 24 & 0xFF);
                 byte g = (byte)(colour >> 16 & 0xFF);
                 byte b = (byte)(colour >> 8 & 0xFF);
 
                 if (language != SkillType.Basic)
                 {
-                    string languageName = _language.GetName(language);
+                    string languageName = LanguageService.GetName(language);
                     finalMessage.Append(ColorTokenService.Custom($"[{languageName}] ", r, g, b));
                 }
 
@@ -281,7 +250,7 @@ namespace SWLOR.Game.Server.Service
 
                     if (component.m_Translatable && language != SkillType.Basic)
                     {
-                        text = _language.TranslateSnippetForListener(sender, obj.Object, language, component.m_Text);
+                        text = LanguageService.TranslateSnippetForListener(sender, obj.Object, language, component.m_Text);
 
                         if (colour != 0)
                         {
@@ -329,7 +298,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public void OnModuleEnter()
+        public static void OnModuleEnter()
         {
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;

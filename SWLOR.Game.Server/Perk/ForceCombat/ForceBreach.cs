@@ -2,39 +2,13 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceCombat
 {
     public class ForceBreach : IPerk
     {
-        
-        
-        
-        
-        
-        
-        private readonly ICombatService _combat;
-
-        public ForceBreach(
-            
-            
-            
-            
-            
-            
-            ICombatService combat)
-        {
-            
-            
-            
-            
-            
-            
-            _combat = combat;
-        }
-
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             if (_.GetDistanceBetween(oPC, oTarget) > 15.0f)
@@ -143,7 +117,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
                 player.SendMessage("Lucky force breach!");
             }
 
-            var calc = _combat.CalculateForceDamage(
+            var calc = CombatService.CalculateForceDamage(
                 player,
                 target.Object,
                 ForceAbilityType.Light,
@@ -173,7 +147,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
             });
 
             _.PlaySound("v_useforce");
-            _combat.AddTemporaryForceDefense(target.Object, ForceAbilityType.Light);
+            CombatService.AddTemporaryForceDefense(target.Object, ForceAbilityType.Light);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

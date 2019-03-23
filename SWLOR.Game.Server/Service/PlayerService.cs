@@ -5,7 +5,7 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 using Object = NWN.Object;
 using SWLOR.Game.Server.Data.Entity;
@@ -13,27 +13,9 @@ using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class PlayerService : IPlayerService
+    public static class PlayerService
     {
-        
-        private readonly IDialogService _dialog;
-        private readonly IRaceService _race;
-        private readonly IDurabilityService _durability;
-        private readonly ILanguageService _language;
-
-        public PlayerService(
-            IDialogService dialog,
-            IRaceService race,
-            IDurabilityService durability,
-            ILanguageService language)
-        {
-            _dialog = dialog;
-            _race = race;
-            _durability = durability;
-            _language = language;
-        }
-
-        public void InitializePlayer(NWPlayer player)
+        public static void InitializePlayer(NWPlayer player)
         {
             if (player == null) throw new ArgumentNullException(nameof(player));
             if (player.Object == null) throw new ArgumentNullException(nameof(player.Object));
@@ -86,8 +68,8 @@ namespace SWLOR.Game.Server.Service
                 NWItem knife = (_.CreateItemOnObject("survival_knife", player));
                 knife.Name = player.Name + "'s Survival Knife";
                 knife.IsCursed = true;
-                _durability.SetMaxDurability(knife, 5);
-                _durability.SetDurability(knife, 5);
+                DurabilityService.SetMaxDurability(knife, 5);
+                DurabilityService.SetDurability(knife, 5);
                 
                 NWItem book = (_.CreateItemOnObject("player_guide", player));
                 book.Name = player.Name + "'s Player Guide";
@@ -148,13 +130,13 @@ namespace SWLOR.Game.Server.Service
                     DataService.SubmitDataChange(pcSkill, DatabaseActionType.Insert);
                 }
 
-                _race.ApplyDefaultAppearance(player);
+                RaceService.ApplyDefaultAppearance(player);
                 NWNXCreature.SetAlignmentLawChaos(player, 50);
                 NWNXCreature.SetAlignmentGoodEvil(player, 50);
                 BackgroundService.ApplyBackgroundBonuses(player);
 
                 PlayerStatService.ApplyStatChanges(player, null, true);
-                _language.InitializePlayerLanguages(player);
+                LanguageService.InitializePlayerLanguages(player);
 
                 _.DelayCommand(1.0f, () => _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(999), player));
 
@@ -163,7 +145,7 @@ namespace SWLOR.Game.Server.Service
 
         }
         
-        private Player CreateDBPCEntity(NWPlayer player)
+        private static Player CreateDBPCEntity(NWPlayer player)
         {
             CustomRaceType race = (CustomRaceType)player.RacialType;
             AssociationType assType; 
@@ -266,7 +248,7 @@ namespace SWLOR.Game.Server.Service
             return entity;
         }
 
-        public Player GetPlayerEntity(NWPlayer player)
+        public static Player GetPlayerEntity(NWPlayer player)
         {
             if(player == null) throw new ArgumentNullException(nameof(player));
             if(!player.IsPlayer) throw new ArgumentException(nameof(player) + " must be a player.", nameof(player));
@@ -274,13 +256,13 @@ namespace SWLOR.Game.Server.Service
             return DataService.Get<Player>(player.GlobalID);
         }
 
-        public Player GetPlayerEntity(Guid playerID)
+        public static Player GetPlayerEntity(Guid playerID)
         {
             if (playerID == null) throw new ArgumentException("Invalid player ID.", nameof(playerID));
             return DataService.Get<Player>(playerID);
         }
 
-        public void OnAreaEnter()
+        public static void OnAreaEnter()
         {
             NWPlayer player = (_.GetEnteringObject());
 
@@ -289,7 +271,7 @@ namespace SWLOR.Game.Server.Service
                 _.ExportSingleCharacter(player);
         }
 
-        public void LoadCharacter(NWPlayer player)
+        public static void LoadCharacter(NWPlayer player)
         {
             if (!player.IsPlayer) return;
 
@@ -324,7 +306,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public void ShowMOTD(NWPlayer player)
+        public static void ShowMOTD(NWPlayer player)
         {
             ServerConfiguration config = DataService.GetAll<ServerConfiguration>().First();
             string message = ColorTokenService.Green("Welcome to " + config.ServerName + "!\n\nMOTD: ") + ColorTokenService.White(config.MessageOfTheDay);
@@ -335,7 +317,7 @@ namespace SWLOR.Game.Server.Service
             });
         }
 
-        public void SaveCharacter(NWPlayer player)
+        public static void SaveCharacter(NWPlayer player)
         {
             if (!player.IsPlayer) return;
             Player entity = GetPlayerEntity(player);
@@ -345,7 +327,7 @@ namespace SWLOR.Game.Server.Service
             DataService.SubmitDataChange(entity, DatabaseActionType.Update);
         }
 
-        public void SaveLocation(NWPlayer player)
+        public static void SaveLocation(NWPlayer player)
         {
             if (!player.IsPlayer) return;
             if (player.GetLocalInt("IS_SHIP") == 1) return;
@@ -401,7 +383,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
                 
-        private void InitializeHotBar(NWPlayer player)
+        private static void InitializeHotBar(NWPlayer player)
         {
             var openRestMenu = NWNXPlayerQuickBarSlot.UseFeat((int)CustomFeatType.OpenRestMenu);
             var structure = NWNXPlayerQuickBarSlot.UseFeat((int) CustomFeatType.StructureManagementTool);
@@ -414,14 +396,14 @@ namespace SWLOR.Game.Server.Service
             NWNXPlayer.SetQuickBarSlot(player, 3, chatCommandTargeter);
         }
 
-        public void OnModuleUseFeat()
+        public static void OnModuleUseFeat()
         {
             NWPlayer pc = (Object.OBJECT_SELF);
             int featID = NWNXEvents.OnFeatUsed_GetFeatID();
 
             if (featID != (int)CustomFeatType.OpenRestMenu) return;
             pc.ClearAllActions();
-            _dialog.StartConversation(pc, pc, "RestMenu");
+            DialogService.StartConversation(pc, pc, "RestMenu");
         }
     }
 }

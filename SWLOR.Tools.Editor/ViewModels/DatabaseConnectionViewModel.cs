@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Linq;
-using System.Security;
 using Caliburn.Micro;
-using SWLOR.Game.Server.Data;
-using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Tools.Editor.Messages;
 using SWLOR.Tools.Editor.ViewModels.Contracts;
 

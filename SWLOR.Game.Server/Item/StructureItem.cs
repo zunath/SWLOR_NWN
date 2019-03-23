@@ -1,13 +1,9 @@
 ﻿using System;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject;
-using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Service;
 using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
@@ -17,23 +13,6 @@ namespace SWLOR.Game.Server.Item
 {
     public class StructureItem : IActionItem
     {
-        
-        
-        private readonly IDialogService _dialog;
-        private readonly IBaseService _base;
-
-        public StructureItem(
-            
-            
-            IDialogService dialog,
-            IBaseService @base)
-        {
-            
-            
-            _dialog = dialog;
-            _base = @base;
-        }
-
         public bool AllowLocationTarget()
         {
             return true;
@@ -50,7 +29,7 @@ namespace SWLOR.Game.Server.Item
             NWArea area = (_.GetAreaFromLocation(targetLocation));
             string parentStructureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
             string pcBaseID = area.GetLocalString("PC_BASE_ID");
-            var data = _base.GetPlayerTempData(player);
+            var data = BaseService.GetPlayerTempData(player);
             data.TargetLocation = targetLocation;
             data.TargetArea = area;
             data.BaseStructureID = item.GetLocalInt("BASE_STRUCTURE_ID");
@@ -83,14 +62,14 @@ namespace SWLOR.Game.Server.Item
             // Structure is being placed outside of a building.
             else
             {
-                string sector = _base.GetSectorOfLocation(targetLocation);
+                string sector = BaseService.GetSectorOfLocation(targetLocation);
                 PCBase pcBase = DataService.Single<PCBase>(x => x.AreaResref == area.Resref && x.Sector == sector);
                 data.PCBaseID = pcBase.ID;
                 data.ParentStructureID = null;
                 data.BuildingType = BuildingType.Exterior;
             }
 
-            _dialog.StartConversation(user, user, "PlaceStructure");
+            DialogService.StartConversation(user, user, "PlaceStructure");
         }
 
         public bool FaceTarget()
@@ -103,7 +82,7 @@ namespace SWLOR.Game.Server.Item
             int structureID = item.GetLocalInt("BASE_STRUCTURE_ID");
 
             // Intercept here to handle control tower upgrades.
-            string upgrade = _base.UpgradeControlTower(user, item, target);
+            string upgrade = BaseService.UpgradeControlTower(user, item, target);
             if (upgrade != "")
             {
                 return upgrade;
@@ -114,7 +93,7 @@ namespace SWLOR.Game.Server.Item
             }
             else
             {
-                return _base.CanPlaceStructure(user, item, targetLocation, structureID);
+                return BaseService.CanPlaceStructure(user, item, targetLocation, structureID);
             }
         }
 

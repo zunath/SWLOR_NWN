@@ -1,22 +1,13 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 
 namespace SWLOR.Game.Server.Trigger
 {
     public class SpaceEncounter: IRegisteredEvent
     {
-        
-        private readonly ISpaceService _space;
-
-        public SpaceEncounter( 
-                              ISpaceService space)
-        {
-            
-            _space = space;
-        }
-
         public bool Run(params object[] args)
         {
             // Check for timeout.  Refresh every game hour.
@@ -28,7 +19,7 @@ namespace SWLOR.Game.Server.Trigger
 
             if (_.GetTimeHour() > hour || _.GetCalendarDay() > day || _.GetCalendarMonth() > month || _.GetCalendarYear() > year)
             {
-                _space.CreateSpaceEncounter(Object.OBJECT_SELF, (NWPlayer)_.GetEnteringObject());
+                SpaceService.CreateSpaceEncounter(Object.OBJECT_SELF, (NWPlayer)_.GetEnteringObject());
                 self.SetLocalInt("HOUR", _.GetTimeHour());
                 self.SetLocalInt("DAY", _.GetCalendarDay());
                 self.SetLocalInt("MONTH", _.GetCalendarMonth());

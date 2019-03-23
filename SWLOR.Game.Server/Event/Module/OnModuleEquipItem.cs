@@ -1,7 +1,7 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 using Object = NWN.Object;
 
@@ -9,31 +9,6 @@ namespace SWLOR.Game.Server.Event.Module
 {
     internal class OnModuleEquipItem : IRegisteredEvent
     {
-        
-        private readonly IDurabilityService _durability;
-        
-        
-        
-        private readonly IHelmetToggleService _helmetToggle;
-        private readonly ISpaceService _space;
-
-        public OnModuleEquipItem(
-            IDurabilityService durability,
-            
-            
-            
-            IHelmetToggleService helmetToggle,
-            ISpaceService space)
-        {
-            
-            _durability = durability;
-            
-            
-            
-            _helmetToggle = helmetToggle;
-            _space = space;
-        }
-
         public bool Run(params object[] args)
         {
             NWObject equipper = Object.OBJECT_SELF;
@@ -42,13 +17,13 @@ namespace SWLOR.Game.Server.Event.Module
 
             if (equipper.GetLocalInt("IS_CUSTOMIZING_ITEM") == TRUE) return true; // Don't run heavy code when customizing equipment.
 
-            _durability.OnModuleEquip();
+            DurabilityService.OnModuleEquip();
             SkillService.OnModuleItemEquipped();
             PerkService.OnModuleItemEquipped();
             ItemService.OnModuleEquipItem();
             HandleEquipmentSwappingDelay();
-            _helmetToggle.OnModuleItemEquipped();
-            _space.OnModuleItemEquipped();
+            HelmetToggleService.OnModuleItemEquipped();
+            SpaceService.OnModuleItemEquipped();
             return true;
 
         }

@@ -1,5 +1,4 @@
 ﻿using NWN;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using static SWLOR.Game.Server.NWNX.NWNXCore;
 using System;

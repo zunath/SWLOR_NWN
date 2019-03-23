@@ -1,18 +1,11 @@
 ﻿using System;
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.Service
 {
-    public class MenuService: IMenuService
+    public static class MenuService
     {
-        
-
-        public MenuService()
-        {
-            
-        }
-
-        public string BuildBar(int currentValue, int requiredValue, int numberOfBars, string colorToken = null)
+        public static string BuildBar(int currentValue, int requiredValue, int numberOfBars, string colorToken = null)
         {
             if (currentValue < 0) throw new ArgumentOutOfRangeException(nameof(currentValue), "Must be zero or greater.");
             if (requiredValue <= 0) throw new ArgumentOutOfRangeException(nameof(requiredValue), "Must be one or greater.");

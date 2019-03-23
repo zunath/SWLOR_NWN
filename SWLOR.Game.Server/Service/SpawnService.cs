@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Processor;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
@@ -219,11 +217,8 @@ namespace SWLOR.Game.Server.Service
                 ObjectSpawn spawn = new ObjectSpawn(location, false, dbArea.ResourceSpawnTableID, 600.0f);
                 spawn.Spawn = plc;
 
-                App.Resolve<IObjectVisibilityService>(ovs =>
-                {
-                    ovs.ApplyVisibilityForObject(plc);
-                });
-
+                ObjectVisibilityService.ApplyVisibilityForObject(plc);
+                
                 if (dbSpawn.NPCGroupID != null && dbSpawn.NPCGroupID > 0)
                 {
                     plc.SetLocalInt("NPC_GROUP", Convert.ToInt32(dbSpawn.NPCGroupID));

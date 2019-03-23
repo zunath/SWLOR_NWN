@@ -1,7 +1,8 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static NWN._;
 
@@ -9,17 +10,6 @@ namespace SWLOR.Game.Server.Conversation
 {
     public class BuildingExit : ConversationBase
     {
-        private readonly IBaseService _base;
-
-        public BuildingExit(
-            
-            IDialogService dialog,
-            IBaseService @base)
-            : base(dialog)
-        {
-            _base = @base;
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -74,7 +64,7 @@ namespace SWLOR.Game.Server.Conversation
         private void DoExitBuilding()
         {
             NWPlaceable door = GetDialogTarget().Object;
-            _base.DoPlayerExitBuildingInstance(GetPC(), door);
+            BaseService.DoPlayerExitBuildingInstance(GetPC(), door);
         }
 
         private void DoPeekOutside()

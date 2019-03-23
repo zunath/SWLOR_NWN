@@ -1,5 +1,4 @@
-﻿using FluentBehaviourTree;
-using NWN;
+﻿using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 

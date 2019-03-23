@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using Object = NWN.Object;
 
 
@@ -15,20 +15,6 @@ namespace SWLOR.Game.Server.Placeable.Bank
 {
     public class OnOpened : IRegisteredEvent
     {
-        
-        
-        private readonly ISerializationService _serialization;
-
-        public OnOpened(
-            
-            
-            ISerializationService serialization)
-        {
-            
-            
-            _serialization = serialization;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlayer player = _.GetLastOpenedBy();
@@ -60,7 +46,7 @@ namespace SWLOR.Game.Server.Placeable.Bank
             var bankItems = DataService.Where<BankItem>(x => x.PlayerID == player.GlobalID && x.BankID == entity.ID);
             foreach (BankItem item in bankItems.Where(x => x.PlayerID == player.GlobalID))
             {
-                _serialization.DeserializeItem(item.ItemObject, terminal);
+                SerializationService.DeserializeItem(item.ItemObject, terminal);
             }
 
             terminal.IsLocked = true;

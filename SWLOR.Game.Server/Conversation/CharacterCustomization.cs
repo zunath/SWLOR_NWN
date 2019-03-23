@@ -1,11 +1,10 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
 using System;
 using System.Linq;
-using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Service;
 using static NWN._;
@@ -23,18 +22,6 @@ namespace SWLOR.Game.Server.Conversation
             public int TattooChannel { get; set; }
         }
 
-        
-        
-
-        public CharacterCustomization(
-            
-            IDialogService dialog
-            )
-            
-            : base(dialog)
-        {
-            
-        }
 
         public override PlayerDialog SetUp(NWPlayer player)
         {

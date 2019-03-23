@@ -1,32 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using NWN;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
 {
     public class KeyItems: ConversationBase
     {
-        private readonly IKeyItemService _keyItem;
-        
-
-        public KeyItems(
-             
-            IDialogService dialog,
-            IKeyItemService keyItem
-            ) 
-            : base(dialog)
-        {
-            _keyItem = keyItem;
-            
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
 
@@ -94,12 +77,12 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadKeyItemsOptions(int categoryID)
         {
-            List<PCKeyItem> items = _keyItem.GetPlayerKeyItemsByCategory(GetPC(), categoryID).ToList();
+            List<PCKeyItem> items = KeyItemService.GetPlayerKeyItemsByCategory(GetPC(), categoryID).ToList();
 
             ClearPageResponses("KeyItemsListPage");
             foreach (PCKeyItem item in items)
             {
-                var keyItem = _keyItem.GetKeyItemByID(item.KeyItemID);
+                var keyItem = KeyItemService.GetKeyItemByID(item.KeyItemID);
                 AddResponseToPage("KeyItemsListPage", keyItem.Name, true, item.KeyItemID);
             }
             ChangePage("KeyItemsListPage");
@@ -126,7 +109,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             DialogResponse response = GetResponseByID(GetCurrentPageName(), responseID);
             int keyItemID = (int)response.CustomData;
-            KeyItem entity = _keyItem.GetKeyItemByID(keyItemID);
+            KeyItem entity = KeyItemService.GetKeyItemByID(keyItemID);
 
             string header = ColorTokenService.Green("Key Item: ") + entity.Name + "\n\n";
             header += ColorTokenService.Green("Description: ") + entity.Description + "\n";

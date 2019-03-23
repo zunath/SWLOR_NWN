@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 using Object = NWN.Object;
 
@@ -16,25 +14,12 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
 {
     public class OnHeartbeat: IRegisteredEvent
     {
-        
-        
-        private readonly IBaseService _base;
-
-        public OnHeartbeat(
-            
-            
-            IBaseService @base)
-        {
-            
-            
-            _base = @base;
-        }
         public bool Run(params object[] args)
         {
             NWPlaceable tower = Object.OBJECT_SELF;
             Guid structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
             PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
-            int maxShieldHP = _base.CalculateMaxShieldHP(structure);
+            int maxShieldHP = BaseService.CalculateMaxShieldHP(structure);
             var pcBase = DataService.Get<PCBase>(structure.PCBaseID);
 
             // Regular fuel usage
@@ -102,7 +87,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
 
                     foreach (var instance in instances)
                     {
-                        _base.ToggleInstanceObjectPower(instance, false);
+                        BaseService.ToggleInstanceObjectPower(instance, false);
                     }
                 }
             }
@@ -124,7 +109,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
                     var instances = NWModule.Get().Areas.Where(x => x.GetLocalString("PC_BASE_STRUCTURE_ID") == structureID.ToString());
                     foreach (var instance in instances)
                     {
-                        _base.ToggleInstanceObjectPower(instance, true);
+                        BaseService.ToggleInstanceObjectPower(instance, true);
                     }
                 }
             }

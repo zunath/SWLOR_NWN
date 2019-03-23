@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using NWN;
-using SWLOR.Game.Server.Data;
+﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
-using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using Attribute = SWLOR.Game.Server.Data.Entity.Attribute;
 
@@ -20,24 +14,7 @@ namespace SWLOR.Game.Server.Conversation
             public int SelectedCategoryID { get; set; }
             public int SelectedSkillID { get; set; }
         }
-
         
-        
-        private readonly IMenuService _menu;
-        
-
-        public ViewSkills(
-            IDialogService dialog,
-            
-            
-            IMenuService menu)
-            : base(dialog)
-        {
-            
-            
-            _menu = menu;
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("CategoryPage");
@@ -151,7 +128,7 @@ namespace SWLOR.Game.Server.Conversation
             string header =
                     ColorTokenService.Green("Skill: ") + skill.Name + "\n" +
                     ColorTokenService.Green("Rank: ") + title + "\n" +
-                    ColorTokenService.Green("Exp: ") + _menu.BuildBar(pcSkill.XP, req.XP, 100, ColorTokenService.TokenStart(255, 127, 0)) + "\n" +
+                    ColorTokenService.Green("Exp: ") + MenuService.BuildBar(pcSkill.XP, req.XP, 100, ColorTokenService.TokenStart(255, 127, 0)) + "\n" +
                     primary +
                     secondary +
                     tertiary +

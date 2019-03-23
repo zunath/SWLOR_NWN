@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using NWN;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
-using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
@@ -20,29 +15,7 @@ namespace SWLOR.Game.Server.Conversation
             public int SelectedPerkID { get; set; }
             public bool IsConfirmingPurchase { get; set; }
         }
-
         
-        
-        private readonly IPlayerService _player;
-        
-        
-
-        public ViewPerks(
-             
-            IDialogService dialog,
-            
-            
-            IPlayerService player
-            )
-             
-            : base(dialog)
-        {
-            
-            
-            _player = player;
-            
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -84,7 +57,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private string GetMainPageHeader()
         {
-            Player pcEntity = _player.GetPlayerEntity(GetPC().GlobalID);
+            Player pcEntity = PlayerService.GetPlayerEntity(GetPC().GlobalID);
 
             int totalSP = SkillService.GetPCTotalSkillCount(GetPC());
             int totalPerks = PerkService.GetPCTotalPerkCount(GetPC().GlobalID);
@@ -140,7 +113,7 @@ namespace SWLOR.Game.Server.Conversation
             Model vm = GetDialogCustomData<Model>();
             Data.Entity.Perk perk = PerkService.GetPerkByID(vm.SelectedPerkID);
             PCPerk pcPerk = PerkService.GetPCPerkByID(GetPC().GlobalID, perk.ID);
-            Player player = _player.GetPlayerEntity(GetPC().GlobalID);
+            Player player = PlayerService.GetPlayerEntity(GetPC().GlobalID);
             var perkLevels = DataService.Where<PerkLevel>(x => x.PerkID == perk.ID).ToList();
 
             int rank = pcPerk?.PerkLevel ?? 0;

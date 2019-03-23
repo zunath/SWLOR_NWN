@@ -1,21 +1,13 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.QuestRule.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 
 namespace SWLOR.Game.Server.QuestRule
 {
     public class ShowQuestObjectRule: IQuestRule
     {
-        private readonly IObjectVisibilityService _ovs;
-        
-        public ShowQuestObjectRule(
-            IObjectVisibilityService ovs)
-        {
-            _ovs = ovs;
-        }
-
 
         public void Run(NWPlayer player, NWObject questSource, int questID, string[] args)
         {
@@ -28,7 +20,7 @@ namespace SWLOR.Game.Server.QuestRule
                 string visibilityObjectID = args[index];
 
                 var obj = AppCache.VisibilityObjects.Single(x => x.Key == visibilityObjectID).Value;
-                _ovs.AdjustVisibility(player, obj, true);
+                ObjectVisibilityService.AdjustVisibility(player, obj, true);
             }
             
         }

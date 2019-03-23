@@ -1,14 +1,14 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class RaceService : IRaceService
+    public static class RaceService
     {
-        public void OnModuleEnter()
+        public static void OnModuleEnter()
         {
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public void ApplyDefaultAppearance(NWPlayer player)
+        public static void ApplyDefaultAppearance(NWPlayer player)
         {
             CustomRaceType race = (CustomRaceType)player.RacialType;
             int maleHead;

@@ -1,21 +1,13 @@
 ﻿using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 
 namespace SWLOR.Game.Server.Event.Module
 {
     internal class OnModuleRest : IRegisteredEvent
     {
-        
-        private readonly IDialogService _dialog;
-
-        public OnModuleRest( IDialogService dialog)
-        {
-            
-            _dialog = dialog;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlayer player = (_.GetLastPCRested());
@@ -27,7 +19,7 @@ namespace SWLOR.Game.Server.Event.Module
 
             player.AssignCommand(() => _.ClearAllActions());
 
-            _dialog.StartConversation(player, player, "RestMenu");
+            DialogService.StartConversation(player, player, "RestMenu");
             
             return true;
         }

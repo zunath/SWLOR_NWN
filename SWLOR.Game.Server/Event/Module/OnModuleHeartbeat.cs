@@ -1,36 +1,16 @@
 ﻿using System;
 using System.Linq;
-using System.Threading;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.Event.Module
 {
     internal class OnModuleHeartbeat : IRegisteredEvent
     {
-        
-        
-        private readonly IBaseService _base;
-        
-        
-        public OnModuleHeartbeat(
-            
-            IBaseService @base
-            )
-        {
-            
-            
-            _base = @base;
-            
-        }
-
         public bool Run(params object[] args)
         {
             Guid[] playerIDs = NWModule.Get().Players.Where(x => x.IsPlayer).Select(x => x.GlobalID).ToArray();
@@ -48,7 +28,7 @@ namespace SWLOR.Game.Server.Event.Module
             }
             
             SaveCharacters();
-            _base.OnModuleHeartbeat();
+            BaseService.OnModuleHeartbeat();
             WeatherService.OnModuleHeartbeat();
 
             // todo: use for debugging the memleak issue. Leave in for now - will remove after it's been fixed.

@@ -1,33 +1,14 @@
-﻿using System.Linq;
-using NWN;
-using SWLOR.Game.Server.ChatCommand.Contracts;
-using SWLOR.Game.Server.Data.Contracts;
+﻿using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN._;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
     [CommandDetails("Enables or disables holonet chat channel.", CommandPermissionType.Player)]
     public class ToggleHolonet : IChatCommand
     {
-        
-        
-        
-
-        public ToggleHolonet(
-            
-            
-            )
-        {
-            
-            
-            
-        }
-
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             var player = DataService.Get<Player>(user.GlobalID);

@@ -1,6 +1,6 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.Contracts;
+
 using System.Collections.Generic;
 using System.Linq;
 using static NWN._;

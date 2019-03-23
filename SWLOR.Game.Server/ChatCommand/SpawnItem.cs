@@ -3,24 +3,13 @@ using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.ChatCommand
 {
     [CommandDetails("Spawns an item of a specific quantity on your character. Example: /spawnitem my_item 3", CommandPermissionType.DM)]
     public class SpawnItem: IChatCommand
     {
-        
-        
-
-        public SpawnItem(
-            
-            )
-        {
-            
-            
-        }
-
         /// <summary>
         /// Spawns an item by resref in the user's inventory.
         /// </summary>

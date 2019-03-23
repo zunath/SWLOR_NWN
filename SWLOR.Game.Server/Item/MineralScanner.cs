@@ -1,13 +1,11 @@
 ﻿using System.Linq;
 using NWN;
-
-using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 
@@ -15,32 +13,6 @@ namespace SWLOR.Game.Server.Item
 {
     public class MineralScanner : IActionItem
     {
-        
-        
-        
-        private readonly IBaseService _base;
-        
-        
-        private readonly IDurabilityService _durability;
-
-        public MineralScanner(
-            
-            
-            
-            IBaseService @base,
-            
-            
-            IDurabilityService durability)
-        {
-            
-            
-            
-            _base = @base;
-            
-            
-            _durability = durability;
-        }
-
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
             return null;
@@ -53,7 +25,7 @@ namespace SWLOR.Game.Server.Item
 
             NWArea area = _.GetAreaFromLocation(targetLocation);
             var items = DataService.Where<LootTableItem>(x => x.LootTableID == lootTableID).OrderByDescending(o => o.Weight);
-            string sector = _base.GetSectorOfLocation(targetLocation);
+            string sector = BaseService.GetSectorOfLocation(targetLocation);
             string sectorName = "Unknown";
 
             switch (sector)
@@ -73,7 +45,7 @@ namespace SWLOR.Game.Server.Item
                 user.SendMessage(name + " [Density: " + lti.Weight + "]");
             }
             
-            _durability.RunItemDecay(user.Object, item, RandomService.RandomFloat(0.02f, 0.08f));
+            DurabilityService.RunItemDecay(user.Object, item, RandomService.RandomFloat(0.02f, 0.08f));
         }
         
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
@@ -114,7 +86,7 @@ namespace SWLOR.Game.Server.Item
         {
             NWArea area = _.GetAreaFromLocation(targetLocation);
             var dbArea = DataService.Single<Area>(x => x.Resref == area.Resref);
-            var sector = _base.GetSectorOfLocation(targetLocation);
+            var sector = BaseService.GetSectorOfLocation(targetLocation);
             int lootTableID = 0;
 
             switch (sector)

@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 using Object = NWN.Object;
 
@@ -14,26 +14,6 @@ namespace SWLOR.Game.Server.Placeable.Bank
 {
     public class OnDisturbed : IRegisteredEvent
     {
-        
-        
-        
-        
-        private readonly ISerializationService _serialization;
-
-        public OnDisturbed(
-            
-            
-            
-            
-            ISerializationService serialization)
-        {
-            
-            
-            
-            
-            _serialization = serialization;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlaceable terminal = Object.OBJECT_SELF;
@@ -70,7 +50,7 @@ namespace SWLOR.Game.Server.Placeable.Bank
                         ItemTag = item.Tag,
                         ItemResref = item.Resref,
                         ItemID = item.GlobalID.ToString(),
-                        ItemObject = _serialization.Serialize(item),
+                        ItemObject = SerializationService.Serialize(item),
                         BankID = bankID,
                         PlayerID = player.GlobalID,
                         DateStored = DateTime.UtcNow

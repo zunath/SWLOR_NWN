@@ -1,33 +1,16 @@
-﻿using System.Linq;
-using SWLOR.Game.Server.Event;
+﻿using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
 {
     public class OnOpened : IRegisteredEvent
     {
-        
-        
-        private readonly IQuestService _quest;
-
-        public OnOpened(
-            
-            
-            IQuestService quest)
-        {
-            
-            
-            _quest = quest;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlaceable container = Object.OBJECT_SELF;
@@ -45,7 +28,7 @@ namespace SWLOR.Game.Server.Placeable.QuestSystem.ItemCollector
             var itemProgress = DataService.Where<PCQuestItemProgress>(x => x.PCQuestStatusID == status.ID);
             foreach (PCQuestItemProgress item in itemProgress)
             {
-                ItemVO tempItemModel = _quest.GetTempItemInformation(item.Resref, item.Remaining);
+                ItemVO tempItemModel = QuestService.GetTempItemInformation(item.Resref, item.Remaining);
                 text += tempItemModel.Quantity + "x " + tempItemModel.Name + "\n";
             }
 

@@ -1,9 +1,8 @@
-﻿using NWN;
-using SWLOR.Game.Server.Data.Entity;
+﻿using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
@@ -19,24 +18,7 @@ namespace SWLOR.Game.Server.Conversation
             public int SkillID { get; set; }
             public int DistributionType { get; set; }
         }
-
         
-        
-        
-
-        public DistributeSkillRanks(
-             
-            IDialogService dialog
-            
-            
-            ) 
-            : base(dialog)
-        {
-            
-            
-            
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");

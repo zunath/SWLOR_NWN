@@ -1,37 +1,17 @@
 ﻿using System;
 using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN._;
-using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Conversation
 {
     public class PublicStarport : ConversationBase
     {
-        
-        
-        private readonly IBaseService _base;
-
-        public PublicStarport(
-            
-            IDialogService dialog,
-            
-            
-            IBaseService @base)
-            : base(dialog)
-        {
-            
-            
-            _base = @base;
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -138,14 +118,14 @@ namespace SWLOR.Game.Server.Conversation
             var shipBase = DataService.Get<PCBase>(pcBaseID);
             var ship = DataService.SingleOrDefault<PCBaseStructure>(x => x.PCBaseID == shipBase.ID && x.InteriorStyleID != null);
 
-            NWArea instance = _base.GetAreaInstance(ship.ID, false);
+            NWArea instance = BaseService.GetAreaInstance(ship.ID, false);
 
             if (instance == null)
             {
-                instance = _base.CreateAreaInstance(oPC, ship.ID, false);
+                instance = BaseService.CreateAreaInstance(oPC, ship.ID, false);
             }
 
-            _base.JumpPCToBuildingInterior(oPC, instance);
+            BaseService.JumpPCToBuildingInterior(oPC, instance);
         }
 
         public override void EndDialog()

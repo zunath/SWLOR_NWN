@@ -5,10 +5,8 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
-using SWLOR.Game.Server.Event;
-using System;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 
@@ -22,18 +20,15 @@ namespace SWLOR.Game.Server.AI
         
         protected readonly BehaviourTreeBuilder _builder;
         
-        private readonly IDialogService _dialog;
+        
         
 
-        public DarkForceUser(BehaviourTreeBuilder builder,
-            
-            
-            IDialogService dialog)
+        public DarkForceUser(BehaviourTreeBuilder builder)
         {
             
             _builder = builder;
             
-            _dialog = dialog;
+            
         }
 
         public override bool IgnoreNWNEvents => true;
@@ -98,7 +93,7 @@ namespace SWLOR.Game.Server.AI
             if (!string.IsNullOrWhiteSpace(convo))
             {
                 NWPlayer player = (_.GetLastSpeaker());
-                _dialog.StartConversation(player, Self, convo);
+                DialogService.StartConversation(player, Self, convo);
             }
             else if (!string.IsNullOrWhiteSpace(NWNXObject.GetDialogResref(Self)))
             {

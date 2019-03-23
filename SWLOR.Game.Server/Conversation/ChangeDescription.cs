@@ -2,26 +2,13 @@
 
 using NWN;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
 {
     internal class ChangeDescription: ConversationBase
     {
-        
-        private readonly IPlayerDescriptionService _playerDescription;
-
-        public ChangeDescription(
-             
-            IDialogService dialog,
-            
-            IPlayerDescriptionService playerDescription) 
-            : base(dialog)
-        {
-            
-            _playerDescription = playerDescription;
-        }
 
         public override PlayerDialog SetUp(NWPlayer player)
         {
@@ -95,7 +82,7 @@ namespace SWLOR.Game.Server.Conversation
             switch (responseID)
             {
                 case 1: // Confirm Description Change
-                    _playerDescription.ChangePlayerDescription(GetPC());
+                    PlayerDescriptionService.ChangePlayerDescription(GetPC());
                     EndConversation();
                     break;
             }

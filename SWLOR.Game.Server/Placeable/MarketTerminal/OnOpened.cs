@@ -1,26 +1,18 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 
 namespace SWLOR.Game.Server.Placeable.MarketTerminal
 {
     public class OnOpened: IRegisteredEvent
     {
-        
-        private readonly IMarketService _market;
-
-        public OnOpened( IMarketService market)
-        {
-            
-            _market = market;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlaceable device = Object.OBJECT_SELF;
             NWPlayer player = _.GetLastOpenedBy();
-            var model = _market.GetPlayerMarketData(player);
+            var model = MarketService.GetPlayerMarketData(player);
 
             if (model.IsSellingItem)
             {

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static NWN._;
 
@@ -14,20 +13,6 @@ namespace SWLOR.Game.Server.Conversation
 {
     public class ItemImpoundRetrieval: ConversationBase
     {
-        
-        private readonly ISerializationService _serialization;
-
-        public ItemImpoundRetrieval(
-             
-            IDialogService dialog,
-            
-            ISerializationService serialization) 
-            : base(dialog)
-        {
-            
-            _serialization = serialization;
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -74,7 +59,7 @@ namespace SWLOR.Game.Server.Conversation
 
             item.DateRetrieved = DateTime.UtcNow;
             DataService.SubmitDataChange(item, DatabaseActionType.Update);
-            _serialization.DeserializeItem(item.ItemObject, player);
+            SerializationService.DeserializeItem(item.ItemObject, player);
             _.TakeGoldFromCreature(50, player, TRUE);
 
             LoadMainPage();

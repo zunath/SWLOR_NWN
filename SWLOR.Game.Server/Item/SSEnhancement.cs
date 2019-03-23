@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject;
 using System.Linq;
 using SWLOR.Game.Server.Service;
@@ -13,25 +13,6 @@ namespace SWLOR.Game.Server.Item
 {
     public class SSEnhancement : IActionItem
     {
-        
-        private readonly IBaseService _base;
-        
-        private readonly ISerializationService _serialization;
-        
-        public SSEnhancement(
-            
-            IBaseService baseService,
-            
-            ISerializationService serialization
-            )
-        {
-            
-            _base = baseService;
-            
-            _serialization = serialization;
-            
-        }
-
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
             return null;
@@ -53,7 +34,7 @@ namespace SWLOR.Game.Server.Item
                 ItemName = item.Name,
                 ItemResref = item.Resref,
                 ItemTag = item.Tag,
-                ItemObject = _serialization.Serialize(item)
+                ItemObject = SerializationService.Serialize(item)
             };
 
             DataService.SubmitDataChange(dbItem, DatabaseActionType.Insert);

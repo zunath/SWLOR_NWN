@@ -2,11 +2,10 @@
 using SWLOR.Game.Server.Enumeration;
 
 using NWN;
-using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Processor;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.Threading.Contracts;
 using static NWN._;
 using Object = NWN.Object;
@@ -15,30 +14,12 @@ namespace SWLOR.Game.Server.Event.Module
 {
     internal class OnModuleLoad: IRegisteredEvent
     {
-        private readonly IFarmingService _farming;
-        
-        private readonly IBaseService _base;
-        
-        private readonly IObjectVisibilityService _objectVisibility;
         private readonly IBackgroundThreadManager _backgroundThreadManager;
-        private readonly IDataPackageService _dataPackage;
 
         public OnModuleLoad(
-            IFarmingService farming,
-            
-            IBaseService @base,
-            
-            IObjectVisibilityService objectVisibility,
-            IBackgroundThreadManager backgroundThreadManager,
-            IDataPackageService dataPackage)
+            IBackgroundThreadManager backgroundThreadManager)
         {
-            _farming = farming;
-            
-            _base = @base;
-            
-            _objectVisibility = objectVisibility;
             _backgroundThreadManager = backgroundThreadManager;
-            _dataPackage = dataPackage;
         }
 
         public bool Run(params object[] args)
@@ -59,13 +40,13 @@ namespace SWLOR.Game.Server.Event.Module
             ObjectProcessingService.RegisterProcessingEvent<AppStateProcessor>();
             ObjectProcessingService.RegisterProcessingEvent<ServerRestartProcessor>();
             ObjectProcessingService.OnModuleLoad();
-            _dataPackage.OnModuleLoad();
-            _farming.OnModuleLoad();
-            _base.OnModuleLoad();
+            DataPackageService.OnModuleLoad();
+            FarmingService.OnModuleLoad();
+            BaseService.OnModuleLoad();
             AreaService.OnModuleLoad();
             SpawnService.OnModuleLoad();
             CustomEffectService.OnModuleLoad();
-            _objectVisibility.OnModuleLoad();
+            ObjectVisibilityService.OnModuleLoad();
 
             nowString = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
             Console.WriteLine(nowString + ": Module OnLoad finished!");

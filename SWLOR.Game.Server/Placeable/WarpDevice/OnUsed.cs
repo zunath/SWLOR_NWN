@@ -4,33 +4,13 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 
 namespace SWLOR.Game.Server.Placeable.WarpDevice
 {
     public class OnUsed: IRegisteredEvent
     {
-        
-        private readonly IKeyItemService _keyItem;
-        
-        private readonly IPlayerService _player;
-        private readonly IDialogService _dialog;
-
-        public OnUsed(
-            
-            IKeyItemService keyItem,
-            
-            IPlayerService player,
-            IDialogService dialog)
-        {
-            
-            _keyItem = keyItem;
-            
-            _player = player;
-            _dialog = dialog;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlayer oPC = _.GetLastUsedBy();
@@ -51,7 +31,7 @@ namespace SWLOR.Game.Server.Placeable.WarpDevice
 
             if (keyItemID > 0)
             {
-                if (!_keyItem.PlayerHasKeyItem(oPC, keyItemID))
+                if (!KeyItemService.PlayerHasKeyItem(oPC, keyItemID))
                 {
                     if (!string.IsNullOrWhiteSpace(missingKeyItemMessage))
                     {
@@ -90,14 +70,14 @@ namespace SWLOR.Game.Server.Placeable.WarpDevice
                 {
                     oPC.SetLocalString("INSTANCE_RESREF", entranceWP.Area.Resref);
                     oPC.SetLocalString("INSTANCE_DESTINATION_TAG", destination);
-                    _dialog.StartConversation(oPC, self, "InstanceSelection");
+                    DialogService.StartConversation(oPC, self, "InstanceSelection");
                     return false;
                 }
 
                 // Otherwise no instance exists yet or this instance only allows one player. Make a new one for this player.
                 NWArea instance = AreaService.CreateAreaInstance(oPC, entranceWP.Area.Resref, entranceWP.Area.Name, destination);
                 location = instance.GetLocalLocation("INSTANCE_ENTRANCE");
-                _player.SaveLocation(oPC);
+                PlayerService.SaveLocation(oPC);
             }
 
             oPC.AssignCommand(() =>

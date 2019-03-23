@@ -2,23 +2,12 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.Perk.ForceUtility
 {
     public class Chainspell: IPerk
     {
-        
-        
-
-        public Chainspell(
-            
-            )
-        {
-            
-            
-        }
-
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             NWItem armor = oPC.Chest;

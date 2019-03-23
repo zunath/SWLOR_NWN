@@ -4,7 +4,7 @@ using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
-using SWLOR.Game.Server.Service.Contracts;
+
 using System.Linq;
 using System.Reflection;
 using SWLOR.Game.Server.NWNX;
@@ -12,7 +12,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class ChatCommandService : IChatCommandService
+    public static class ChatCommandService
     {
 
         public static bool CanHandleChat(NWObject sender, string message)
@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Service
             return validTarget && validMessage;
         }
 
-        public void OnModuleNWNXChat(NWPlayer sender)
+        public static void OnModuleNWNXChat(NWPlayer sender)
         {
             string originalMessage = NWNXChat.GetMessage().Trim();
 
@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Service
 
         }
 
-        public void OnModuleUseFeat()
+        public static void OnModuleUseFeat()
         {
             NWPlayer pc = Object.OBJECT_SELF;
             int featID = NWNXEvents.OnFeatUsed_GetFeatID();
@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        private void ProcessChatCommand(IChatCommand command, NWPlayer sender, NWObject target, NWLocation targetLocation, string args)
+        private static void ProcessChatCommand(IChatCommand command, NWPlayer sender, NWObject target, NWLocation targetLocation, string args)
         {
             if (target == null)
             {

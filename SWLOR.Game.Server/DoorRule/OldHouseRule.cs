@@ -1,6 +1,5 @@
 ﻿using NWN;
 using SWLOR.Game.Server.DoorRule.Contracts;
-using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.DoorRule

@@ -1,10 +1,9 @@
 ﻿using FluentValidation.Results;
 using Newtonsoft.Json;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Processor;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
@@ -17,19 +16,19 @@ using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class DataPackageService : IDataPackageService
+    public static class DataPackageService
     {
         
         const string PackagesPath = "./DataPackages/";
-        private Queue<DatabaseAction> _queuedDBChanges;
+        private static readonly Queue<DatabaseAction> _queuedDBChanges;
 
-        public DataPackageService()
+        static DataPackageService()
         {
             
             _queuedDBChanges = new Queue<DatabaseAction>();
         }
 
-        public void OnModuleLoad()
+        public static void OnModuleLoad()
         {
             // Look for an existing DataPackages folder. If it's missing, create it.
             if (!Directory.Exists(PackagesPath))
@@ -82,7 +81,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private List<DataPackage> BuildPackageList()
+        private static List<DataPackage> BuildPackageList()
         {
             // Pull back all of the packages we've already attempted to import.
             var importedPackages = DataService.GetAll<DataPackage>();
@@ -121,7 +120,7 @@ namespace SWLOR.Game.Server.Service
             return packages.OrderBy(o => o.DateExported).ToList();
         }
 
-        private string ProcessDataPackageFile(DataPackageFile dpf)
+        private static string ProcessDataPackageFile(DataPackageFile dpf)
         {
             string errors = string.Empty;
 
@@ -186,7 +185,7 @@ namespace SWLOR.Game.Server.Service
             return errors;
         }
 
-        private string ValidateAndProcess<T>(IDataProcessor<T> processor, JObject dataObject)
+        private static string ValidateAndProcess<T>(IDataProcessor<T> processor, JObject dataObject)
         {
             string errors = string.Empty;
 

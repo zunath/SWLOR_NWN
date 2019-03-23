@@ -5,7 +5,6 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static NWN._;
 using Object = NWN.Object;
@@ -21,21 +20,7 @@ namespace SWLOR.Game.Server.Conversation
             public string Title { get; set; }
             public string Message { get; set; }
         }
-
         
-        
-
-        public MessageBoard(
-             
-            IDialogService dialog
-            
-            ) 
-            : base(dialog)
-        {
-            
-            
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");

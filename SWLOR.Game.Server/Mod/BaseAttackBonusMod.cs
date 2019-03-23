@@ -1,25 +1,13 @@
 ﻿using System;
-using System.Linq;
-using NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Mod.Contracts;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.Mod
 {
     public class BaseAttackBonusMod: IMod
     {
-        
-        
-
-        public BaseAttackBonusMod(
-            
-            )
-        {
-            
-            
-        }
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             if (!ItemService.ArmorBaseItemTypes.Contains(target.BaseItemType))

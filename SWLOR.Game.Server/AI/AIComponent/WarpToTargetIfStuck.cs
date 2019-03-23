@@ -1,8 +1,7 @@
-﻿using FluentBehaviourTree;
-using NWN;
+﻿using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject;
 using System.Linq;
 using SWLOR.Game.Server.Enumeration;
@@ -17,16 +16,6 @@ namespace SWLOR.Game.Server.AI.AIComponent
     /// </summary>
     public class WarpToTargetIfStuck : IRegisteredEvent
     {
-        
-        
-
-        public WarpToTargetIfStuck(
-            )
-        {
-            
-            
-        }
-
         public bool Run(object[] args)
         {
             NWCreature self = (NWCreature)args[0];

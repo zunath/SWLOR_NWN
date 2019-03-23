@@ -4,7 +4,6 @@ using System.Linq;
 using Autofac;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Tools.Editor.Startup

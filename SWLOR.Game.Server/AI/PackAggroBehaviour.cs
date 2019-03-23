@@ -1,10 +1,9 @@
 ﻿using FluentBehaviourTree;
-using NWN;
 using SWLOR.Game.Server.AI.AIComponent;
 using SWLOR.Game.Server.Extension;
 
 
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.AI
 {
@@ -14,11 +13,8 @@ namespace SWLOR.Game.Server.AI
     public class PackAggroBehaviour : StandardBehaviour
     {
         public PackAggroBehaviour(
-            BehaviourTreeBuilder builder,
-            
-            
-            IDialogService dialog)
-            : base(builder, dialog)
+            BehaviourTreeBuilder builder)
+            : base(builder)
         {
         }
 

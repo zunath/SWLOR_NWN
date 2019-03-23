@@ -3,7 +3,7 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static NWN._;
 
@@ -11,17 +11,6 @@ namespace SWLOR.Game.Server.Conversation
 {
     public class CoxxionTerminal: ConversationBase
     {
-        
-
-        public CoxxionTerminal(
-             
-            IDialogService dialog
-            ) 
-            : base(dialog)
-        {
-            
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");

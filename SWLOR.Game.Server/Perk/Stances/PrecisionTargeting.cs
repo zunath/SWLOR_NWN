@@ -1,18 +1,12 @@
 ﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.Perk.Stances
 {
     public class PrecisionTargeting : IPerk
     {
-        
-
-        public PrecisionTargeting()
-        {
-            
-        }
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return true;

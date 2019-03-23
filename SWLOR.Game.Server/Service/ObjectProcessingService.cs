@@ -1,8 +1,7 @@
 ﻿using System;
 using NWN;
-using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Processor.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service

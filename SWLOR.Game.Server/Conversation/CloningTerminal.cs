@@ -1,27 +1,12 @@
-﻿using NWN;
-using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
 {
     public class CloningTerminal: ConversationBase
     {
-        private readonly IDeathService _death;
-        
-
-        public CloningTerminal(
-             
-            IDialogService dialog,
-            IDeathService death
-            ) 
-            : base(dialog)
-        {
-            _death = death;
-            
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -42,7 +27,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             if (responseID == 1)
             {
-                _death.SetRespawnLocation(player);
+                DeathService.SetRespawnLocation(player);
                 EndConversation();
             }
         }

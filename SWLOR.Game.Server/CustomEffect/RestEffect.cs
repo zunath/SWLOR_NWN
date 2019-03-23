@@ -4,30 +4,13 @@ using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 
 namespace SWLOR.Game.Server.CustomEffect
 {
     public class RestEffect : ICustomEffect
     {
-        
-        
-        
-        
-
-        public RestEffect(
-            
-            
-            
-            )
-        {
-            
-            
-            
-            
-        }
-
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
             NWPlayer player = oTarget.Object;

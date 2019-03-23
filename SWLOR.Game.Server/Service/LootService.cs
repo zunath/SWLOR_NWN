@@ -1,20 +1,17 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class LootService: ILootService
+    public static class LootService
     {
-        public ItemVO PickRandomItemFromLootTable(int lootTableID)
+        public static ItemVO PickRandomItemFromLootTable(int lootTableID)
         {
             if (lootTableID <= 0) return null;
             var lootTableItems = DataService.Where<LootTableItem>(x => x.LootTableID == lootTableID).ToList();
@@ -39,7 +36,7 @@ namespace SWLOR.Game.Server.Service
             return result;
         }
 
-        public void OnCreatureDeath(NWCreature creature)
+        public static void OnCreatureDeath(NWCreature creature)
         {
             // Single loot table (without an index)
             int singleLootTableID = creature.GetLocalInt("LOOT_TABLE_ID");
@@ -66,7 +63,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private void RunLootAttempt(NWCreature target, int lootTableID, int chance, int attempts)
+        private static void RunLootAttempt(NWCreature target, int lootTableID, int chance, int attempts)
         {
             if (chance <= 0)
                 chance = 75;

@@ -5,31 +5,12 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.Placeable.ScavengePoint
 {
     public class OnDisturbed: IRegisteredEvent
     {
-        
-        private readonly IFarmingService _farming;
-        
-        
-        
-
-        public OnDisturbed(
-            
-            IFarmingService farming
-            
-            
-            )
-        {
-            
-            _farming = farming;
-            
-            
-            
-        }
 
         public bool Run(params object[] args)
         {
@@ -61,7 +42,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
                     }
 
                     point.Destroy();
-                    _farming.RemoveGrowingPlant(point);
+                    FarmingService.RemoveGrowingPlant(point);
                 }
             }
             return true;

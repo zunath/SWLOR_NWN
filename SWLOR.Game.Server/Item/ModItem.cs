@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
@@ -7,7 +6,7 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 using NWN;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 
@@ -15,32 +14,6 @@ namespace SWLOR.Game.Server.Item
 {
     public class ModItem : IActionItem
     {
-        
-        
-        
-        private readonly IModService _mod;
-        
-        
-        
-
-        public ModItem(
-            
-            
-            
-            IModService mod
-            
-            
-            )
-        {
-            
-            
-            
-            _mod = mod;
-            
-            
-            
-        }
-
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
             return null;
@@ -50,8 +23,8 @@ namespace SWLOR.Game.Server.Item
         {
             NWPlayer player = (user.Object);
             NWItem targetItem = (target.Object);
-            ModSlots slots = _mod.GetModSlots(targetItem);
-            CustomItemPropertyType modType = _mod.GetModType(modItem);
+            ModSlots slots = ModService.GetModSlots(targetItem);
+            CustomItemPropertyType modType = ModService.GetModType(modItem);
             int modID = modItem.GetLocalInt("RUNE_ID");
             string[] modArgs = modItem.GetLocalString("RUNE_VALUE").Split(',');
             int modLevel = modItem.RecommendedLevel;
@@ -106,7 +79,7 @@ namespace SWLOR.Game.Server.Item
 
                 if (usePrismatic)
                 {
-                    string prismaticText = _mod.PrismaticString();
+                    string prismaticText = ModService.PrismaticString();
                     targetItem.SetLocalInt("MOD_SLOT_PRISMATIC_" + (slots.FilledPrismaticSlots + 1), modID);
                     targetItem.SetLocalString("MOD_SLOT_PRISMATIC_DESC_" + (slots.FilledPrismaticSlots + 1), description);
                     player.SendMessage("Mod installed into " + prismaticText + " slot #" + (slots.FilledPrismaticSlots + 1));
@@ -194,8 +167,8 @@ namespace SWLOR.Game.Server.Item
             int requiredPerkLevel = modLevel / 5;
             if (requiredPerkLevel <= 0) requiredPerkLevel = 1;
             int perkLevel = 0;
-            CustomItemPropertyType modType = _mod.GetModType(mod);
-            ModSlots modSlots = _mod.GetModSlots(targetItem);
+            CustomItemPropertyType modType = ModService.GetModType(mod);
+            ModSlots modSlots = ModService.GetModSlots(targetItem);
             int modID = mod.GetLocalInt("RUNE_ID");
             string[] modArgs = mod.GetLocalString("RUNE_VALUE").Split(',');
 

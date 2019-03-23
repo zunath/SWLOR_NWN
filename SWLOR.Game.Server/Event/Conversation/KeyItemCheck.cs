@@ -1,27 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Event.Conversation
 {
     public class KeyItemCheck : IRegisteredEvent
     {
-        
-        private readonly IKeyItemService _keyItem;
-
-        public KeyItemCheck(
-            
-            IKeyItemService keyItem)
-        {
-            
-            _keyItem = keyItem;
-        }
-
         public bool Run(params object[] args)
         {
             int index = (int)args[0];
@@ -45,8 +32,8 @@ namespace SWLOR.Game.Server.Event.Conversation
             // Type 1 = ALL
             // Anything else = ANY
             return type == 1 ? 
-                _keyItem.PlayerHasAllKeyItems(player, requiredKeyItemIDs.ToArray()) : 
-                _keyItem.PlayerHasAnyKeyItem(player, requiredKeyItemIDs.ToArray());
+                KeyItemService.PlayerHasAllKeyItems(player, requiredKeyItemIDs.ToArray()) : 
+                KeyItemService.PlayerHasAnyKeyItem(player, requiredKeyItemIDs.ToArray());
         }
     }
 }

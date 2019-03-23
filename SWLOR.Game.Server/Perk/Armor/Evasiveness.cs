@@ -2,22 +2,12 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
     public class Evasiveness : IPerk
     {
-        
-        
-
-        public Evasiveness(
-            )
-        {
-            
-            
-        }
-
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             NWItem armor = oPC.Chest;

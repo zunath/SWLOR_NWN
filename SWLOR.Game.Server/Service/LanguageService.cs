@@ -2,19 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SWLOR.Game.Server.Data;
-using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Language;
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.Service
 {
-    public class LanguageService : ILanguageService
+    public static class LanguageService
     {
-        public string TranslateSnippetForListener(NWObject speaker, NWObject listener, SkillType language, string snippet)
+        public static string TranslateSnippetForListener(NWObject speaker, NWObject listener, SkillType language, string snippet)
         {
             Dictionary<SkillType, Type> map = new Dictionary<SkillType, Type>
             {
@@ -125,7 +123,7 @@ namespace SWLOR.Game.Server.Service
             return textAsForeignLanguage;
         }
 
-        public int GetColour(SkillType language)
+        public static int GetColour(SkillType language)
         {
             byte r = 0;
             byte g = 0;
@@ -150,7 +148,7 @@ namespace SWLOR.Game.Server.Service
             return r << 24 | g << 16 | b << 8;
         }
 
-        public string GetName(SkillType language)
+        public static string GetName(SkillType language)
         {
             switch (language)
             {
@@ -171,7 +169,7 @@ namespace SWLOR.Game.Server.Service
             return "Basic";
         }
 
-        public void InitializePlayerLanguages(NWPlayer player)
+        public static void InitializePlayerLanguages(NWPlayer player)
         {
             CustomRaceType race = (CustomRaceType)player.RacialType;
             BackgroundType background = (BackgroundType)player.Class1;
@@ -241,7 +239,7 @@ namespace SWLOR.Game.Server.Service
             
         }
 
-        public SkillType GetActiveLanguage(NWObject obj)
+        public static SkillType GetActiveLanguage(NWObject obj)
         {
             int ret = obj.GetLocalInt("ACTIVE_LANGUAGE");
 
@@ -253,7 +251,7 @@ namespace SWLOR.Game.Server.Service
             return (SkillType)ret;
         }
 
-        public void SetActiveLanguage(NWObject obj, SkillType language)
+        public static void SetActiveLanguage(NWObject obj, SkillType language)
         {
             if (language == SkillType.Basic)
             {
@@ -265,7 +263,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public SkillType[] GetLanguages()
+        public static SkillType[] GetLanguages()
         {
             // TODO - Can this be improved? DB query based on the category?
             return new SkillType[]

@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Linq;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class SearchService : ISearchService
+    public static class SearchService
     {
         private const string SearchSiteCopyResref = "srch_plc_copy";
         private const string SearchSiteIDVariableName = "SearchSiteID";
@@ -20,27 +18,7 @@ namespace SWLOR.Game.Server.Service
         private const string SearchSiteLootTableVariableName = "SearchLootTable";
         private const int ExtraSearchPerNumberLevels = 5;
         
-        private readonly IQuestService _quest;
-        private readonly ISerializationService _serialization;
-        private readonly ILocalVariableService _localVariable;
-        
-        private readonly IDurabilityService _durability;
-
-        public SearchService(
-            IQuestService quest,
-            ISerializationService serialization,
-            ILocalVariableService localVariable,
-            
-            IDurabilityService durability)
-        {
-            _quest = quest;
-            _serialization = serialization;
-            _localVariable = localVariable;
-            
-            _durability = durability;
-        }
-
-        public void OnChestClose(NWPlaceable oChest)
+        public static void OnChestClose(NWPlaceable oChest)
         {
             foreach (NWItem item in oChest.InventoryItems)
             {
@@ -48,7 +26,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public void OnChestDisturbed(NWPlaceable oChest)
+        public static void OnChestDisturbed(NWPlaceable oChest)
         {
             NWPlayer oPC = (_.GetLastDisturbed());
             if (!oPC.IsPlayer && !oPC.IsDM) return;
@@ -96,7 +74,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public void OnChestOpen(NWPlaceable oChest)
+        public static void OnChestOpen(NWPlaceable oChest)
         {
             NWPlayer oPC = (_.GetLastOpenedBy());
             if (!oPC.IsPlayer) return;
@@ -123,7 +101,7 @@ namespace SWLOR.Game.Server.Service
                 oChest.IsUseable = false;
             }
 
-            _quest.SpawnQuestItems(oChest, oPC);
+            QuestService.SpawnQuestItems(oChest, oPC);
 
             if (timeLock < DateTime.UtcNow || searchEntity == null)
             {
@@ -142,7 +120,7 @@ namespace SWLOR.Game.Server.Service
                 var searchItems = DataService.Where<PCSearchSiteItem>(x => x.PlayerID == oPC.GlobalID && x.SearchSiteID == searchEntity.SearchSiteID).ToList();
                 foreach (PCSearchSiteItem item in searchItems)
                 {
-                    NWItem oItem = _serialization.DeserializeItem(item.SearchItem, oChest);
+                    NWItem oItem = SerializationService.DeserializeItem(item.SearchItem, oChest);
 
                     // Prevent item duplication in containers
                     if (oItem.HasInventory)
@@ -156,7 +134,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public void OnChestUsed(NWPlaceable oChest)
+        public static void OnChestUsed(NWPlaceable oChest)
         {
             NWPlayer oPC = (_.GetLastUsedBy());
             if (!oPC.IsPlayer) return;
@@ -166,7 +144,7 @@ namespace SWLOR.Game.Server.Service
             oCopy.Name = oChest.Name;
             _.SetFacingPoint(oPC.Position);
 
-            _localVariable.CopyVariables(oChest, oCopy);
+            LocalVariableService.CopyVariables(oChest, oCopy);
 
             oPC.AssignCommand(() =>
             {
@@ -174,7 +152,7 @@ namespace SWLOR.Game.Server.Service
             });
         }
 
-        private void SaveChestInventory(NWPlayer oPC, NWPlaceable oChest, bool resetTimeLock)
+        private static void SaveChestInventory(NWPlayer oPC, NWPlaceable oChest, bool resetTimeLock)
         {
             int chestID = oChest.GetLocalInt(SearchSiteIDVariableName);
             PCSearchSite entity = DataService.SingleOrDefault<PCSearchSite>(x => x.PlayerID == oPC.GlobalID && x.SearchSiteID == chestID);
@@ -203,7 +181,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     PCSearchSiteItem itemEntity = new PCSearchSiteItem
                     {
-                        SearchItem = _serialization.Serialize(item),
+                        SearchItem = SerializationService.Serialize(item),
                         SearchSiteID = entity.SearchSiteID
                     };
 
@@ -213,7 +191,7 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        private void RunSearchCycle(NWPlayer oPC, NWPlaceable oChest, int iDC)
+        private static void RunSearchCycle(NWPlayer oPC, NWPlaceable oChest, int iDC)
         {
             int lootTable = oChest.GetLocalInt(SearchSiteLootTableVariableName);
             int skill = _.GetSkillRank(_.SKILL_SEARCH, oPC.Object);
@@ -230,9 +208,9 @@ namespace SWLOR.Game.Server.Service
                 if (!string.IsNullOrWhiteSpace(spawnItem.Resref) && spawnItem.Quantity > 0)
                 {
                     NWItem foundItem = (_.CreateItemOnObject(spawnItem.Resref, oChest.Object, spawnItem.Quantity, ""));
-                    float maxDurability = _durability.GetMaxDurability(foundItem);
+                    float maxDurability = DurabilityService.GetMaxDurability(foundItem);
                     if (maxDurability > -1)
-                        _durability.SetDurability(foundItem, RandomService.RandomFloat() * maxDurability + 1);
+                        DurabilityService.SetDurability(foundItem, RandomService.RandomFloat() * maxDurability + 1);
                 }
             }
             else
@@ -242,7 +220,7 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        private ItemVO PickResultItem(int lootTableID)
+        private static ItemVO PickResultItem(int lootTableID)
         {
             var lootTableItems = DataService.Where<LootTableItem>(x => x.LootTableID == lootTableID).ToList();
 

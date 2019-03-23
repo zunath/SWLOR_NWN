@@ -5,27 +5,18 @@ using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 
 namespace SWLOR.Game.Server.Placeable.CraftingDevice
 {
     public class OnOpened: IRegisteredEvent
     {
-        
-        private readonly ICraftService _craft;
-
-        public OnOpened(
-            ICraftService craft)
-        {
-            
-            _craft = craft;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlaceable device = (Object.OBJECT_SELF);
             NWPlayer oPC = (_.GetLastOpenedBy());
-            var model = _craft.GetPlayerCraftingData(oPC);
+            var model = CraftService.GetPlayerCraftingData(oPC);
             
             if (model.Access != CraftingAccessType.None)
             {

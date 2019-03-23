@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
-using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
-using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -19,27 +13,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             public StructureModeType Mode { get; set; }
         }
-
         
-        private readonly IBaseService _base;
-        
-        private readonly IImpoundService _impound;
-
-        public EditBuildingMode(
-             
-            IDialogService dialog,
-            
-            IBaseService @base,
-            
-            IImpoundService impound) 
-            : base(dialog)
-        {
-            
-            _base = @base;
-            
-            _impound = impound;
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -80,7 +54,7 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadMainPage()
         {
             var player = GetPC();
-            var data = _base.GetPlayerTempData(player);
+            var data = BaseService.GetPlayerTempData(player);
             var pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
             var structure = DataService.Get<PCBaseStructure>(pcBaseStructureID);
             var mode = DataService.Get<StructureMode>(structure.StructureModeID);
@@ -152,7 +126,7 @@ namespace SWLOR.Game.Server.Conversation
         private string GetWarning()
         {
             var player = GetPC();
-            var data = _base.GetPlayerTempData(player);
+            var data = BaseService.GetPlayerTempData(player);
             var pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
             var structure = DataService.Get<PCBaseStructure>(pcBaseStructureID);
             var modeType = (StructureModeType)structure.StructureModeID;
@@ -190,7 +164,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var model = GetDialogCustomData<Model>();
             var player = GetPC();
-            var data = _base.GetPlayerTempData(player);
+            var data = BaseService.GetPlayerTempData(player);
             var pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
             var structure = DataService.Get<PCBaseStructure>(pcBaseStructureID);
             var impoundedItems = 0;

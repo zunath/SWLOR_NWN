@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN._;
-using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Conversation
@@ -16,22 +13,6 @@ namespace SWLOR.Game.Server.Conversation
     public class ApartmentEntrance : ConversationBase
     {
         
-        
-        private readonly IBaseService _base;
-
-        public ApartmentEntrance(
-            
-            IDialogService dialog,
-            
-            
-            IBaseService @base)
-            : base(dialog)
-        {
-            
-            
-            _base = @base;
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -145,14 +126,14 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            NWArea instance = _base.GetAreaInstance(pcBaseID, true);
+            NWArea instance = BaseService.GetAreaInstance(pcBaseID, true);
 
             if (instance == null)
             {
-                instance = _base.CreateAreaInstance(oPC, pcBaseID, true);
+                instance = BaseService.CreateAreaInstance(oPC, pcBaseID, true);
             }
 
-            _base.JumpPCToBuildingInterior(oPC, instance);
+            BaseService.JumpPCToBuildingInterior(oPC, instance);
         }
 
         public override void EndDialog()

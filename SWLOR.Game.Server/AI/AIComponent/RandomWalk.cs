@@ -1,9 +1,8 @@
-﻿using FluentBehaviourTree;
-using NWN;
+﻿using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.AI.AIComponent
 {
@@ -12,18 +11,6 @@ namespace SWLOR.Game.Server.AI.AIComponent
     /// </summary>
     public class RandomWalk : IRegisteredEvent
     {
-        
-        
-        
-
-        public RandomWalk(
-            )
-        {
-            
-            
-            
-        }
-
         public bool Run(object[] args)
         {
             NWCreature self = (NWCreature)args[0];

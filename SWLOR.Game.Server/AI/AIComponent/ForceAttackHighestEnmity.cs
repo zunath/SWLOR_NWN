@@ -1,9 +1,8 @@
-﻿using FluentBehaviourTree;
-using NWN;
+﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+
 using System;
 using System.Linq;
 using SWLOR.Game.Server.Service;
@@ -16,21 +15,6 @@ namespace SWLOR.Game.Server.AI.AIComponent
     /// </summary>
     public class ForceAttackHighestEnmity : IRegisteredEvent
     {
-        private readonly ICombatService _combat;
-        
-        
-        
-
-        public ForceAttackHighestEnmity(ICombatService combat
-            
-            )
-        {
-            _combat = combat;
-            
-            
-            
-        }
-
         private bool UseFeat(int featID, string featName, NWCreature caster, NWCreature target)
         {
             // Note - this code is loosely based on code from AbilityService.  However, the perk interface
@@ -139,7 +123,7 @@ namespace SWLOR.Game.Server.AI.AIComponent
                         break;
                 }
 
-                var calc = _combat.CalculateForceDamage(
+                var calc = CombatService.CalculateForceDamage(
                     caster,
                     target.Object,
                     ForceAbilityType.Electrical,
@@ -175,7 +159,7 @@ namespace SWLOR.Game.Server.AI.AIComponent
                         caster.DeleteLocalInt("CASTING");
                     });
 
-                    _combat.AddTemporaryForceDefense(target.Object, ForceAbilityType.Electrical);
+                    CombatService.AddTemporaryForceDefense(target.Object, ForceAbilityType.Electrical);
                 });
             }
             else if (featID == (int)CustomFeatType.DrainLife)
@@ -211,7 +195,7 @@ namespace SWLOR.Game.Server.AI.AIComponent
                         break;
                 }
 
-                var calc = _combat.CalculateForceDamage(
+                var calc = CombatService.CalculateForceDamage(
                     caster,
                     target.Object,
                     ForceAbilityType.Dark,
@@ -242,7 +226,7 @@ namespace SWLOR.Game.Server.AI.AIComponent
                 });
 
 
-                _combat.AddTemporaryForceDefense(target.Object, ForceAbilityType.Dark);
+                CombatService.AddTemporaryForceDefense(target.Object, ForceAbilityType.Dark);
             }
             
             return true;

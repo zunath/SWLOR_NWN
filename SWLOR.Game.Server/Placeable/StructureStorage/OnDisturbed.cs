@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 using Object = NWN.Object;
 
@@ -16,25 +14,6 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
 {
     public class OnDisturbed : IRegisteredEvent
     {
-        
-        
-        
-        private readonly ISerializationService _serialization;
-        
-
-        public OnDisturbed(
-            
-            
-            ISerializationService serialization
-            )
-        {
-            
-            
-            
-            _serialization = serialization;
-            
-        }
-
         public bool Run(params object[] args)
         {
             NWPlayer oPC = (_.GetLastDisturbed());
@@ -78,7 +57,7 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
                         ItemTag = item.Tag,
                         PCBaseStructureID = structureID,
                         ItemGlobalID = item.GlobalID.ToString(),
-                        ItemObject = _serialization.Serialize(item)
+                        ItemObject = SerializationService.Serialize(item)
                     };
                     DataService.SubmitDataChange(itemEntity, DatabaseActionType.Insert);
                 }

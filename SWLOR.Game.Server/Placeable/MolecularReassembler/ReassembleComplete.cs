@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject;
 using ComponentType = SWLOR.Game.Server.Data.Entity.ComponentType;
 
@@ -13,38 +13,6 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
 {
     public class ReassembleComplete: IRegisteredEvent
     {
-        
-        private readonly ISerializationService _serialization;
-        
-        
-        private readonly ICraftService _craft;
-        
-        
-        
-        
-        
-
-        public ReassembleComplete(
-            
-            ISerializationService serialization,
-             
-            ICraftService craft
-            
-            
-            
-            
-            )
-        {
-            _serialization = serialization;
-            
-            _craft = craft;
-            
-            
-            
-            
-            
-        }
-
         private ComponentType _componentType;
         private NWPlayer _player;
         private EffectiveItemStats _playerItemStats;
@@ -67,7 +35,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
 
             string serializedSalvageItem = (string)args[1];
             NWPlaceable tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
-            NWItem item = _serialization.DeserializeItem(serializedSalvageItem, tempStorage);
+            NWItem item = SerializationService.DeserializeItem(serializedSalvageItem, tempStorage);
             int salvageComponentTypeID = (int) args[2];
             _componentType = DataService.Get<ComponentType>(salvageComponentTypeID);
             
@@ -161,7 +129,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
 
             while (amount > 0)
             {
-                int chanceToTransfer = _craft.CalculateReassemblyChance(_player, penalty);
+                int chanceToTransfer = CraftService.CalculateReassemblyChance(_player, penalty);
                 // Roll to see if the item can be created.
                 bool success = RandomService.Random(0, 100) <= chanceToTransfer;
 

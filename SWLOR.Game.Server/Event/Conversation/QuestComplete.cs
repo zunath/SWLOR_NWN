@@ -1,26 +1,16 @@
 ﻿using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.QuestRule.Contracts;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Event.Conversation
 {
     public class QuestComplete: IRegisteredEvent
     {
-        private readonly IQuestService _quest;
-        
-        public QuestComplete(
-            IQuestService quest)
-        {
-            _quest = quest;
-        }
-
         public bool Run(params object[] args)
         {
             int index = (int)args[0];
@@ -51,7 +41,7 @@ namespace SWLOR.Game.Server.Event.Conversation
                 }
             }
             
-            _quest.CompleteQuest(player, talkTo, questID, null);
+            QuestService.CompleteQuest(player, talkTo, questID, null);
 
             if (!string.IsNullOrWhiteSpace(rule))
             {

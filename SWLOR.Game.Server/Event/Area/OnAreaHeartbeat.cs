@@ -1,6 +1,4 @@
-﻿
-using System;
-using System.Linq;
+﻿using System.Linq;
 using NWN;
 using SWLOR.Game.Server.GameObject;
 using Object = NWN.Object;

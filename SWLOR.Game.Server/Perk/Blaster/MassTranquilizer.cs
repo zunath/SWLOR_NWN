@@ -1,24 +1,15 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
     public class MassTranquilizer : IPerk
     {
-        
-        
-        public MassTranquilizer(
-            )
-        {
-            
-        }
-
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return oPC.RightHand.CustomItemType == CustomItemType.BlasterRifle;

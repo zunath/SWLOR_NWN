@@ -1,38 +1,17 @@
 ﻿using System;
 using System.Linq;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
 {
     internal class RestMenu : ConversationBase
     {
-        
-        
-        
-        private readonly IMenuService _menu;
-
-        public RestMenu(
-            IDialogService dialog,
-            
-            
-            
-            IMenuService menu)
-            : base(dialog)
-        {
-            
-            
-            
-            _menu = menu;
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -136,7 +115,7 @@ namespace SWLOR.Game.Server.Conversation
             header += ColorTokenService.Green("Association: ") + association.Name + "\n\n";
             header += ColorTokenService.Green("Skill Points: ") + totalSkillCount + " / " + SkillService.SkillCap + "\n";
             header += ColorTokenService.Green("Unallocated SP: ") + playerEntity.UnallocatedSP + "\n";
-            header += ColorTokenService.Green("FP: ")  + (playerEntity.MaxFP > 0 ? _menu.BuildBar(playerEntity.CurrentFP, playerEntity.MaxFP, 100, ColorTokenService.TokenStart(32, 223, 219)) : "N/A") + "\n";
+            header += ColorTokenService.Green("FP: ")  + (playerEntity.MaxFP > 0 ? MenuService.BuildBar(playerEntity.CurrentFP, playerEntity.MaxFP, 100, ColorTokenService.TokenStart(32, 223, 219)) : "N/A") + "\n";
 
             return header;
         }

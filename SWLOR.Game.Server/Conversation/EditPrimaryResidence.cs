@@ -1,10 +1,9 @@
 ﻿using System;
-using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
 using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
 
@@ -12,24 +11,6 @@ namespace SWLOR.Game.Server.Conversation
 {
     public class EditPrimaryResidence: ConversationBase
     {
-        
-        private readonly IBaseService _base;
-        
-        
-
-        public EditPrimaryResidence(
-             
-            IDialogService dialog,
-            
-            IBaseService @base) 
-            : base(dialog)
-        {
-            
-            _base = @base;
-            
-            
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -59,7 +40,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void BuildMainPageHeader()
         {
-            var data = _base.GetPlayerTempData(GetPC());
+            var data = BaseService.GetPlayerTempData(GetPC());
             
             Player player;
             
@@ -92,7 +73,7 @@ namespace SWLOR.Game.Server.Conversation
         private void BuildMainPageResponses()
         {
             var player = GetPC();
-            var data = _base.GetPlayerTempData(player);
+            var data = BaseService.GetPlayerTempData(player);
 
             Player dbPlayer = DataService.Single<Player>(x => x.ID == player.GlobalID);
             Player primaryResident;
@@ -191,7 +172,7 @@ namespace SWLOR.Game.Server.Conversation
         private void DoSetAsResidence()
         {
             var player = GetPC();
-            var data = _base.GetPlayerTempData(player);
+            var data = BaseService.GetPlayerTempData(player);
             var newResident = DataService.Single<Player>(x => x.ID == player.GlobalID);
             
             Player currentResident;
@@ -262,7 +243,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void DoRevoke()
         {
-            var data = _base.GetPlayerTempData(GetPC());
+            var data = BaseService.GetPlayerTempData(GetPC());
             Player currentResident;
 
             if (data.BuildingType == BuildingType.Interior)
@@ -309,7 +290,7 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void EndDialog()
         {
-            _base.ClearPlayerTempData(GetPC());
+            BaseService.ClearPlayerTempData(GetPC());
         }
     }
 }

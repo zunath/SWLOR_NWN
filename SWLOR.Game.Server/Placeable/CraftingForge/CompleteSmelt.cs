@@ -1,25 +1,16 @@
 ﻿using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.Bioware;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.Placeable.CraftingForge
 {
     public class CompleteSmelt: IRegisteredEvent
     {
-        private readonly ICraftService _craft;
-
-        public CompleteSmelt(
-            ICraftService craft)
-        {
-            _craft = craft;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlayer player = (NWPlayer)args[0];
@@ -29,8 +20,8 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             player.IsBusy = false;
 
             int rank = SkillService.GetPCSkillRank(player, SkillType.Harvesting);
-            int level = _craft.GetIngotLevel(oreResref);
-            string ingotResref = _craft.GetIngotResref(oreResref);
+            int level = CraftService.GetIngotLevel(oreResref);
+            string ingotResref = CraftService.GetIngotResref(oreResref);
             if (level < 0 || string.IsNullOrWhiteSpace(ingotResref)) return false;
 
             int delta = rank - level;

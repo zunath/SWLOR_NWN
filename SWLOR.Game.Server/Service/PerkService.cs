@@ -7,12 +7,11 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Messaging.Contracts;
 using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.NWNX;
 
 using SWLOR.Game.Server.Perk;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;

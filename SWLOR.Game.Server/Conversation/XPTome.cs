@@ -1,12 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using NWN;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
-using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
@@ -19,16 +15,6 @@ namespace SWLOR.Game.Server.Conversation
             public int SkillID { get; set; }
         }
 
-        
-        
-
-        public XPTome(
-            IDialogService dialog
-            )    
-            : base(dialog)
-        {
-            
-        }
 
         public override PlayerDialog SetUp(NWPlayer player)
         {

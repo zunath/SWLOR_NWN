@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 
@@ -11,22 +11,6 @@ namespace SWLOR.Game.Server.Item
 {
     public class RepairKit : IActionItem
     {
-        private readonly IDurabilityService _durability;
-        
-        
-        
-        public RepairKit(
-            IDurabilityService durability
-            
-            
-            )
-        {
-            _durability = durability;
-            
-            
-            
-        }
-
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
             return null;
@@ -76,7 +60,7 @@ namespace SWLOR.Game.Server.Item
             else if (delta == -3) baseXP = 50;
             else if (delta == -4) baseXP = 25;
             SkillService.GiveSkillXP(user.Object, skillType, baseXP);
-            _durability.RunItemRepair(user.Object, target.Object, repairAmount, reductionAmount + maxDurabilityReductionPenalty);
+            DurabilityService.RunItemRepair(user.Object, target.Object, repairAmount, reductionAmount + maxDurabilityReductionPenalty);
         }
 
         private SkillType GetSkillType(NWItem item)
@@ -142,8 +126,8 @@ namespace SWLOR.Game.Server.Item
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
             NWItem targetItem = target.Object;
-            float maxDurability = _durability.GetMaxDurability(targetItem);
-            float durability = _durability.GetDurability(targetItem);
+            float maxDurability = DurabilityService.GetMaxDurability(targetItem);
+            float durability = DurabilityService.GetDurability(targetItem);
 
             if (target.ObjectType != OBJECT_TYPE_ITEM)
             {

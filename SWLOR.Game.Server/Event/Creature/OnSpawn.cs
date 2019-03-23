@@ -1,28 +1,19 @@
 ﻿using NWN;
 using SWLOR.Game.Server.AI.Contracts;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using static NWN._;
 
 namespace SWLOR.Game.Server.Event.Creature
 {
     public class OnSpawn : IRegisteredEvent
     {
-        private readonly IBehaviourService _behaviour;
-        private readonly ISpaceService _space;
-
-        public OnSpawn(IBehaviourService behaviour,
-                       ISpaceService space)
-        {
-            _behaviour = behaviour;
-            _space = space;
-        }
-
         public bool Run(params object[] args)
         {
             NWCreature self = Object.OBJECT_SELF;
 
-            _space.OnCreatureSpawn(self);
+            SpaceService.OnCreatureSpawn(self);
 
             // Don't modify AI behaviour for DM-spawned creatures.
             if (self.GetLocalInt("DM_SPAWNED") == TRUE) return false;
@@ -55,7 +46,7 @@ namespace SWLOR.Game.Server.Event.Creature
                     var result = behaviour.Behaviour
                         .End()
                         .Build();
-                    _behaviour.RegisterBehaviour(result, self);
+                    BehaviourService.RegisterBehaviour(result, self);
                 }
 
                 behaviour.OnSpawn();

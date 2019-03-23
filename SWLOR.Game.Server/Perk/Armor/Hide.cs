@@ -2,26 +2,13 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
     public class Hide: IPerk
     {
-        
-        
-        
-
-        public Hide(
-            
-            )
-        {
-            
-            
-            
-        }
-
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return oPC.Chest.CustomItemType == CustomItemType.LightArmor;

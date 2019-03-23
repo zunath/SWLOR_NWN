@@ -1,24 +1,13 @@
-﻿using NWN;
-using SWLOR.Game.Server.Service.Contracts;
+﻿using SWLOR.Game.Server.Service;
+
 
 namespace SWLOR.Game.Server.Event.Module
 {
     internal class OnModuleChat : IRegisteredEvent
     {
-        
-        private readonly IPlayerDescriptionService _playerDescription;
-
-        public OnModuleChat(
-            
-            IPlayerDescriptionService playerDescription)
-        {
-            
-            _playerDescription = playerDescription;
-        }
-
         public bool Run(params object[] args)
         {
-            _playerDescription.OnModuleChat();
+            PlayerDescriptionService.OnModuleChat();
             return true;
 
         }

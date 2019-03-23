@@ -1,5 +1,5 @@
 ﻿using NWN;
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.Event.Module
 {

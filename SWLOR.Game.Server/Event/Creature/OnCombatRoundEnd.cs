@@ -2,7 +2,7 @@
 using SWLOR.Game.Server.AI.Contracts;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.Event.Creature
 {

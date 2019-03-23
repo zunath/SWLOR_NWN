@@ -1,29 +1,18 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
 
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class ObjectVisibilityService : IObjectVisibilityService
+    public static class ObjectVisibilityService
     {
-        
-        
-        public ObjectVisibilityService(   
-            )
-        {
-            
-        }
-
-        public void OnModuleLoad()
+        public static void OnModuleLoad()
         {
             foreach (var area in NWModule.Get().Areas)
             {
@@ -42,7 +31,7 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        public void OnClientEnter()
+        public static void OnClientEnter()
         {
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
@@ -75,7 +64,7 @@ namespace SWLOR.Game.Server.Service
 
         }
 
-        public void ApplyVisibilityForObject(NWObject target)
+        public static void ApplyVisibilityForObject(NWObject target)
         {
             string visibilityObjectID = target.GetLocalString("VISIBILITY_OBJECT_ID");
             if (string.IsNullOrWhiteSpace(visibilityObjectID)) return;
@@ -111,7 +100,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public void AdjustVisibility(NWPlayer player, NWObject target, bool isVisible)
+        public static void AdjustVisibility(NWPlayer player, NWObject target, bool isVisible)
         {
             if (!player.IsPlayer) return;
             if (target.IsPlayer || target.IsDM) return;
@@ -148,7 +137,7 @@ namespace SWLOR.Game.Server.Service
                 NWNXVisibility.SetVisibilityOverride(player, target, VisibilityType.Hidden);
         }
 
-        public void AdjustVisibility(NWPlayer player, string targetGUID, bool isVisible)
+        public static void AdjustVisibility(NWPlayer player, string targetGUID, bool isVisible)
         {
             var obj = AppCache.VisibilityObjects.Single(x => x.Key == targetGUID);
             AdjustVisibility(player, obj.Value, isVisible);

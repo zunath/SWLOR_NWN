@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using SWLOR.Game.Server.Data;
+﻿using System.Linq;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
@@ -11,30 +7,13 @@ using NWN;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.CraftingForge
 {
     public class OnDisturbed: IRegisteredEvent
     {
-        
-        
-        
-        private readonly ICraftService _craft;
-        
-        
-
-        public OnDisturbed(
-            
-            
-            ICraftService craft)
-        {
-            
-            
-            _craft = craft;
-        }
-
         public bool Run(params object[] args)
         {
             if (_.GetInventoryDisturbType() != _.INVENTORY_DISTURB_TYPE_ADDED) return false;
@@ -83,7 +62,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
                 return false;
             }
 
-            int level = _craft.GetIngotLevel(item.Resref);
+            int level = CraftService.GetIngotLevel(item.Resref);
             int rank = SkillService.GetPCSkillRank(pc, SkillType.Harvesting);
             
             int delta = rank - level;
@@ -94,7 +73,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             }
 
             int pcPerkLevel = PerkService.GetPCPerkLevel(pc, PerkType.Refining);
-            int orePerkLevel = _craft.GetIngotPerkLevel(item.Resref);
+            int orePerkLevel = CraftService.GetIngotPerkLevel(item.Resref);
 
             if (pcPerkLevel < orePerkLevel)
             {

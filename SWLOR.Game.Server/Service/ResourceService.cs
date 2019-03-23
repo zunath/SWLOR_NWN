@@ -1,15 +1,15 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+
 using System;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class ResourceService : IResourceService
+    public static class ResourceService
     {
         
-        public string GetResourceDescription(NWPlaceable resource)
+        public static string GetResourceDescription(NWPlaceable resource)
         {
             NWPlaceable tempStorage = (_.GetObjectByTag("TEMP_ITEM_STORAGE"));
             string resref = resource.GetLocalString("RESOURCE_RESREF");
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Service
             return description;
         }
 
-        public int GetDifficultyAdjustment(ResourceQuality quality)
+        public static int GetDifficultyAdjustment(ResourceQuality quality)
         {
             switch (quality)
             {
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public int CalculateChanceForComponentBonus(NWPlayer player, int tier, ResourceQuality quality, bool scavenging = false)
+        public static int CalculateChanceForComponentBonus(NWPlayer player, int tier, ResourceQuality quality, bool scavenging = false)
         {
             int rank = (scavenging ? SkillService.GetPCSkillRank(player, SkillType.Scavenging) : SkillService.GetPCSkillRank(player, SkillType.Harvesting));
             int difficulty = (tier - 1) * 10 + GetDifficultyAdjustment(quality);
@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Service
 
 
 
-        public Tuple<ItemProperty, int> GetRandomComponentBonusIP(ResourceQuality quality)
+        public static Tuple<ItemProperty, int> GetRandomComponentBonusIP(ResourceQuality quality)
         {
             string[] commonIP =
             {

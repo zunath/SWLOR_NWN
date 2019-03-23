@@ -1,7 +1,4 @@
-﻿using NWN;
-using SWLOR.Game.Server.GameObject;
-
-using static SWLOR.Game.Server.NWNX.NWNXCore;
+﻿using static SWLOR.Game.Server.NWNX.NWNXCore;
 
 namespace SWLOR.Game.Server.NWNX
 {

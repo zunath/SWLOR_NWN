@@ -1,8 +1,7 @@
-﻿using System;
-using NWN;
+﻿using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+
 using System.Linq;
 using SWLOR.Game.Server.Service;
 
@@ -13,16 +12,6 @@ namespace SWLOR.Game.Server.AI.AIComponent
     /// </summary>
     public class CleanUpEnmity : IRegisteredEvent
     {
-        
-        
-
-        public CleanUpEnmity(
-            )
-        {
-            
-            
-        }
-
         public bool Run(object[] args)
         {
             NWCreature self = (NWCreature)args[0];

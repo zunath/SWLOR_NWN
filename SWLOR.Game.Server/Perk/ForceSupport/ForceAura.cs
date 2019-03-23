@@ -3,30 +3,13 @@ using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceSupport
 {
     public class ForceAura: IPerk
     {
-        
-        
-        
-        private readonly ICombatService _combat;
-
-        public ForceAura(
-            
-            
-            
-            ICombatService combat)
-        {
-            
-            
-            
-            _combat = combat;
-        }
-
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             if (_.GetDistanceBetween(oPC, oTarget) > 15.0f)
@@ -77,7 +60,7 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
                     break;
             }
 
-            int itemPotency = _combat.CalculateItemPotencyBonus(player.Object, ForceAbilityType.Light);
+            int itemPotency = CombatService.CalculateItemPotencyBonus(player.Object, ForceAbilityType.Light);
             int basePotency = (int) (player.Wisdom + player.Intelligence * 0.5f + player.Charisma * 0.25f);
             int finalPotency = itemPotency + basePotency;
             ticks += finalPotency * 10; // +10 seconds per potency

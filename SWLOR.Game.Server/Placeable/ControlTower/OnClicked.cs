@@ -1,33 +1,17 @@
 ﻿using System;
-using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.ControlTower
 {
     public class OnClicked: IRegisteredEvent
     {
-        
-        private readonly IDialogService _dialog;
-        
-        
-
-        public OnClicked(
-            IDialogService dialog)
-        {
-            
-            _dialog = dialog;
-            
-        }
-
         public bool Run(params object[] args)
         {
             NWPlayer clicker = (_.GetPlaceableLastClickedBy());
@@ -56,7 +40,7 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
                 }
                 else
                 {
-                    _dialog.StartConversation(clicker, tower, "ControlTower");
+                    DialogService.StartConversation(clicker, tower, "ControlTower");
                 }
             }
             else

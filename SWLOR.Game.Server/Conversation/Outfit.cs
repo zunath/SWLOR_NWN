@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Linq;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static NWN._;
 using Object = NWN.Object;
@@ -17,20 +14,6 @@ namespace SWLOR.Game.Server.Conversation
 {
     public class Outfit: ConversationBase
     {
-        
-        private readonly ISerializationService _serialization;
-        
-
-        public Outfit(
-            IDialogService dialog,
-            
-            ISerializationService serialization)
-            : base(dialog)
-        {
-            
-            _serialization = serialization;
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -144,7 +127,7 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            string clothesData = _serialization.Serialize(oClothes);
+            string clothesData = SerializationService.Serialize(oClothes);
             if (responseID == 1) entity.Outfit1 = clothesData;
             else if (responseID == 2) entity.Outfit2 = clothesData;
             else if (responseID == 3) entity.Outfit3 = clothesData;
@@ -179,16 +162,16 @@ namespace SWLOR.Game.Server.Conversation
             NWItem storedClothes = null;
             oClothes.SetLocalString("TEMP_OUTFIT_UUID", oPC.GlobalID.ToString());
 
-            if (outfitID == 1) storedClothes = _serialization.DeserializeItem(entity.Outfit1, oTempStorage);
-            else if (outfitID == 2) storedClothes = _serialization.DeserializeItem(entity.Outfit2, oTempStorage);
-            else if (outfitID == 3) storedClothes = _serialization.DeserializeItem(entity.Outfit3, oTempStorage);
-            else if (outfitID == 4) storedClothes = _serialization.DeserializeItem(entity.Outfit4, oTempStorage);
-            else if (outfitID == 5) storedClothes = _serialization.DeserializeItem(entity.Outfit5, oTempStorage);
-            else if (outfitID == 6) storedClothes = _serialization.DeserializeItem(entity.Outfit6, oTempStorage);
-            else if (outfitID == 7) storedClothes = _serialization.DeserializeItem(entity.Outfit7, oTempStorage);
-            else if (outfitID == 8) storedClothes = _serialization.DeserializeItem(entity.Outfit8, oTempStorage);
-            else if (outfitID == 9) storedClothes = _serialization.DeserializeItem(entity.Outfit9, oTempStorage);
-            else if (outfitID == 10) storedClothes = _serialization.DeserializeItem(entity.Outfit10, oTempStorage);
+            if (outfitID == 1) storedClothes = SerializationService.DeserializeItem(entity.Outfit1, oTempStorage);
+            else if (outfitID == 2) storedClothes = SerializationService.DeserializeItem(entity.Outfit2, oTempStorage);
+            else if (outfitID == 3) storedClothes = SerializationService.DeserializeItem(entity.Outfit3, oTempStorage);
+            else if (outfitID == 4) storedClothes = SerializationService.DeserializeItem(entity.Outfit4, oTempStorage);
+            else if (outfitID == 5) storedClothes = SerializationService.DeserializeItem(entity.Outfit5, oTempStorage);
+            else if (outfitID == 6) storedClothes = SerializationService.DeserializeItem(entity.Outfit6, oTempStorage);
+            else if (outfitID == 7) storedClothes = SerializationService.DeserializeItem(entity.Outfit7, oTempStorage);
+            else if (outfitID == 8) storedClothes = SerializationService.DeserializeItem(entity.Outfit8, oTempStorage);
+            else if (outfitID == 9) storedClothes = SerializationService.DeserializeItem(entity.Outfit9, oTempStorage);
+            else if (outfitID == 10) storedClothes = SerializationService.DeserializeItem(entity.Outfit10, oTempStorage);
 
             if (storedClothes == null) throw new Exception("Unable to locate stored clothes.");
 

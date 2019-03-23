@@ -1,12 +1,10 @@
 ﻿using System;
-
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject;
 using Object = NWN.Object;
 using System.Linq;
@@ -17,39 +15,6 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
 {
     public class OnOpened: IRegisteredEvent
     {
-        
-        
-        
-        
-        
-        private readonly IResourceService _resource;
-        
-        private readonly ILootService _loot;
-        private readonly IFarmingService _farming;
-        
-
-        public OnOpened(
-            
-            
-            
-            
-            IResourceService resource,
-            
-            ILootService loot,
-            IFarmingService farming
-            )
-        {
-            
-			
-            
-            
-            
-			_resource = resource;
-            
-            _loot = loot;
-            _farming = farming;
-            
-        }
 
         public bool Run(params object[] args)
         {
@@ -107,7 +72,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
                 if (roll >= dc)
                 {
                     oPC.FloatingText(ColorTokenService.SkillCheck("Search: *success*: (" + roll + " vs. DC: " + dc + ")"));
-                    ItemVO spawnItem = _loot.PickRandomItemFromLootTable(lootTableID);
+                    ItemVO spawnItem = LootService.PickRandomItemFromLootTable(lootTableID);
 
                     if (spawnItem == null)
                     {
@@ -130,11 +95,11 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
                             else if (chance < 95) quality = ResourceQuality.High;
                             else quality = ResourceQuality.VeryHigh;
 
-                            int ipBonusChance = _resource.CalculateChanceForComponentBonus(oPC, (level / 10 + 1), quality, true);
+                            int ipBonusChance = ResourceService.CalculateChanceForComponentBonus(oPC, (level / 10 + 1), quality, true);
 
                             if (RandomService.Random(1, 100) <= ipBonusChance)
                             {
-                                var ip = _resource.GetRandomComponentBonusIP(ResourceQuality.Normal);
+                                var ip = ResourceService.GetRandomComponentBonusIP(ResourceQuality.Normal);
                                 BiowareXP2.IPSafeAddItemProperty(resource, ip.Item1, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
 
                                 switch (ip.Item2)
@@ -174,7 +139,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
             string growingPlantID = point.GetLocalString("GROWING_PLANT_ID");
             if (!string.IsNullOrWhiteSpace(growingPlantID))
             {
-                Data.Entity.GrowingPlant growingPlant = _farming.GetGrowingPlantByID(new Guid(growingPlantID));
+                Data.Entity.GrowingPlant growingPlant = FarmingService.GetGrowingPlantByID(new Guid(growingPlantID));
                 chanceToFullyHarvest = chanceToFullyHarvest - (growingPlant.LongevityBonus);
             }
 

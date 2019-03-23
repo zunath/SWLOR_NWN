@@ -11,7 +11,7 @@ using SWLOR.Game.Server.Event.Delayed;
 using SWLOR.Game.Server.NWNX;
 
 using SWLOR.Game.Server.Perk;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 using Object = NWN.Object;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;

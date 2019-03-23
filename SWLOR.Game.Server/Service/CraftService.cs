@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
@@ -10,7 +8,7 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.Delayed;
 using SWLOR.Game.Server.NWNX;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 using ComponentType = SWLOR.Game.Server.Data.Entity.ComponentType;
@@ -18,19 +16,11 @@ using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class CraftService : ICraftService
+    public static class CraftService
     {
-        private readonly ISerializationService _serialization;
-        
-        public CraftService(
-            ISerializationService serialization)
-        {
-            _serialization = serialization;
-        }
-
         private const float BaseCraftDelay = 18.0f;
 
-        private List<CraftBlueprint> GetCraftBlueprintsAvailableToPlayer(Guid playerID)
+        private static List<CraftBlueprint> GetCraftBlueprintsAvailableToPlayer(Guid playerID)
         {
             var pcPerks = DataService.Where<PCPerk>(x => x.PlayerID == playerID).ToList();
             var pcSkills = DataService.Where<PCSkill>(x => x.PlayerID == playerID).ToList();
@@ -55,7 +45,7 @@ namespace SWLOR.Game.Server.Service
             }).ToList();
         }
 
-        public List<CraftBlueprintCategory> GetCategoriesAvailableToPCByDeviceID(Guid playerID, int deviceID)
+        public static List<CraftBlueprintCategory> GetCategoriesAvailableToPCByDeviceID(Guid playerID, int deviceID)
         {
             var blueprints = GetCraftBlueprintsAvailableToPlayer(playerID).Where(x => x.CraftDeviceID == deviceID);
             var categoryIDs = blueprints.Select(x => x.CraftCategoryID).Distinct();
@@ -65,14 +55,14 @@ namespace SWLOR.Game.Server.Service
             return categories.ToList();
         }
 
-        public List<CraftBlueprint> GetPCBlueprintsByDeviceAndCategoryID(Guid playerID, int deviceID, int categoryID)
+        public static List<CraftBlueprint> GetPCBlueprintsByDeviceAndCategoryID(Guid playerID, int deviceID, int categoryID)
         {
             return GetCraftBlueprintsAvailableToPlayer(playerID).Where(x => x.CraftDeviceID == deviceID &&
                                                                                       x.CraftCategoryID == categoryID)
                 .ToList();
         }
 
-        public string BuildBlueprintHeader(NWPlayer player, int blueprintID, bool showAddedComponentList)
+        public static string BuildBlueprintHeader(NWPlayer player, int blueprintID, bool showAddedComponentList)
         {
             var model = GetPlayerCraftingData(player);
             var bp = model.Blueprint;
@@ -161,24 +151,24 @@ namespace SWLOR.Game.Server.Service
             return header;
         }
 
-        public CraftBlueprint GetBlueprintByID(int craftBlueprintID)
+        public static CraftBlueprint GetBlueprintByID(int craftBlueprintID)
         {
             return DataService.SingleOrDefault<CraftBlueprint>(x => x.ID == craftBlueprintID);
         }
 
-        public List<CraftBlueprintCategory> GetCategoriesAvailableToPC(Guid playerID)
+        public static List<CraftBlueprintCategory> GetCategoriesAvailableToPC(Guid playerID)
         {
             var blueprints = GetCraftBlueprintsAvailableToPlayer(playerID).Select(x => x.CraftCategoryID).Distinct();
             return DataService.Where<CraftBlueprintCategory>(x => blueprints.Contains(x.ID)).ToList();
         }
 
-        public List<CraftBlueprint> GetPCBlueprintsByCategoryID(Guid playerID, int categoryID)
+        public static List<CraftBlueprint> GetPCBlueprintsByCategoryID(Guid playerID, int categoryID)
         {
             return GetCraftBlueprintsAvailableToPlayer(playerID).Where(x => x.CraftCategoryID == categoryID).ToList();
         }
 
 
-        public void CraftItem(NWPlayer oPC, NWPlaceable device)
+        public static void CraftItem(NWPlayer oPC, NWPlaceable device)
         {
             var model = GetPlayerCraftingData(oPC);
             CraftBlueprint blueprint = DataService.Single<CraftBlueprint>(x => x.ID == model.BlueprintID);
@@ -220,7 +210,7 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        public float CalculateCraftingDelay(NWPlayer oPC, int skillID)
+        public static float CalculateCraftingDelay(NWPlayer oPC, int skillID)
         {
             int atmosphere = CalculateAreaAtmosphereBonus(oPC.Area);
             PerkType perkType;
@@ -273,7 +263,7 @@ namespace SWLOR.Game.Server.Service
             return BaseCraftDelay * adjustedSpeed;
         }
 
-        public string CalculateDifficultyDescription(int pcLevel, int blueprintLevel)
+        public static string CalculateDifficultyDescription(int pcLevel, int blueprintLevel)
         {
             int delta = pcLevel - blueprintLevel;
             string difficulty = "";
@@ -322,7 +312,7 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        public int CalculatePCEffectiveLevel(NWPlayer player, int skillRank, SkillType skill)
+        public static int CalculatePCEffectiveLevel(NWPlayer player, int skillRank, SkillType skill)
         {
             int effectiveLevel = skillRank;
             BackgroundType background = (BackgroundType)player.Class1;
@@ -355,7 +345,7 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        public string GetIngotResref(string oreResref)
+        public static string GetIngotResref(string oreResref)
         {
             string ingotResref;
             switch (oreResref)
@@ -397,7 +387,7 @@ namespace SWLOR.Game.Server.Service
             return ingotResref;
         }
 
-        public int GetIngotLevel(string oreResref)
+        public static int GetIngotLevel(string oreResref)
         {
             int level;
             switch (oreResref)
@@ -439,7 +429,7 @@ namespace SWLOR.Game.Server.Service
             return level;
         }
 
-        public int GetIngotPerkLevel(string oreResref)
+        public static int GetIngotPerkLevel(string oreResref)
         {
             int level;
             switch (oreResref)
@@ -483,7 +473,7 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        public PCCraftingData GetPlayerCraftingData(NWPlayer player)
+        public static PCCraftingData GetPlayerCraftingData(NWPlayer player)
         {
             // Need to store the data outside of the conversation because of the constant
             // context switching between conversation and accessing placeable containers.
@@ -498,7 +488,7 @@ namespace SWLOR.Game.Server.Service
             return model;
         }
 
-        public void ClearPlayerCraftingData(NWPlayer player, bool destroyComponents = false)
+        public static void ClearPlayerCraftingData(NWPlayer player, bool destroyComponents = false)
         {
             var model = GetPlayerCraftingData(player);
 
@@ -529,7 +519,7 @@ namespace SWLOR.Game.Server.Service
 
             if (!string.IsNullOrWhiteSpace(model.SerializedSalvageItem))
             {
-                _serialization.DeserializeItem(model.SerializedSalvageItem, player);
+                SerializationService.DeserializeItem(model.SerializedSalvageItem, player);
             }
 
             player.Data.Remove("CRAFTING_MODEL");
@@ -542,7 +532,7 @@ namespace SWLOR.Game.Server.Service
             return sender.GetLocalInt("CRAFT_RENAMING_ITEM") == TRUE;
         }
 
-        public void OnNWNXChat()
+        public static void OnNWNXChat()
         {
             NWPlayer pc = NWNXChat.GetSender().Object;
             string newName = NWNXChat.GetMessage();
@@ -575,7 +565,7 @@ namespace SWLOR.Game.Server.Service
             pc.FloatingText("New name set!");
         }
 
-        public void OnModuleUseFeat()
+        public static void OnModuleUseFeat()
         {
             NWPlayer pc = Object.OBJECT_SELF;
             int featID = NWNXEvents.OnFeatUsed_GetFeatID();
@@ -606,7 +596,7 @@ namespace SWLOR.Game.Server.Service
             pc.SendMessage("Please enter in a name for this item. Length should be between 3 and 64 characters. Use this feat again to cancel this procedure.");
         }
 
-        public int CalculateAreaAtmosphereBonus(NWArea area)
+        public static int CalculateAreaAtmosphereBonus(NWArea area)
         {
             // Building IDs are stored on the instanced area's local variables.
             string pcStructureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
@@ -634,7 +624,7 @@ namespace SWLOR.Game.Server.Service
             return bonus;
         }
 
-        public string GetAreaAtmosphereBonusText(NWArea area)
+        public static string GetAreaAtmosphereBonusText(NWArea area)
         {
             int bonus = CalculateAreaAtmosphereBonus(area);
 
@@ -683,7 +673,7 @@ namespace SWLOR.Game.Server.Service
             return text;
         }
 
-        public void OnAreaEnter()
+        public static void OnAreaEnter()
         {
             NWArea area = Object.OBJECT_SELF;
             string bonuses = GetAreaAtmosphereBonusText(area);
@@ -694,7 +684,7 @@ namespace SWLOR.Game.Server.Service
             entering.SendMessage(bonuses);
         }
 
-        public int CalculateReassemblyChance(NWPlayer player, int penalty)
+        public static int CalculateReassemblyChance(NWPlayer player, int penalty)
         {
             const int BaseChance = 70;
             int harvesting = SkillService.GetPCSkillRank(player, SkillType.Harvesting);

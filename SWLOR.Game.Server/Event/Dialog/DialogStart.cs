@@ -1,7 +1,8 @@
 ﻿using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using static NWN._;
 using Object = NWN.Object;
 
@@ -9,15 +10,6 @@ namespace SWLOR.Game.Server.Event.Dialog
 {
     public class DialogStart: IRegisteredEvent
     {
-        
-        private readonly IDialogService _dialog;
-
-        public DialogStart( IDialogService dialogService)
-        {
-            
-            _dialog = dialogService;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlayer pc = (_.GetLastUsedBy());
@@ -31,12 +23,12 @@ namespace SWLOR.Game.Server.Event.Dialog
                 if (objectType == OBJECT_TYPE_PLACEABLE)
                 {
                     NWPlaceable talkTo = (Object.OBJECT_SELF);
-                    _dialog.StartConversation(pc, talkTo, conversation);
+                    DialogService.StartConversation(pc, talkTo, conversation);
                 }
                 else
                 {
                     NWCreature talkTo = (Object.OBJECT_SELF);
-                    _dialog.StartConversation(pc, talkTo, conversation);
+                    DialogService.StartConversation(pc, talkTo, conversation);
                 }
             }
             else

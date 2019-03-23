@@ -1,22 +1,14 @@
 ﻿using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.Event.Conversation
 {
     public class QuestCanAccept : IRegisteredEvent
     {
-        private readonly IQuestService _quest;
-        
-        public QuestCanAccept(
-            IQuestService quest)
-        {
-            _quest = quest;
-        }
         public bool Run(params object[] args)
         {
             int index = (int)args[0];
@@ -31,7 +23,7 @@ namespace SWLOR.Game.Server.Event.Conversation
                 return false;
             }
 
-            return _quest.CanAcceptQuest(player, questID, false);
+            return QuestService.CanAcceptQuest(player, questID, false);
         }
     }
 }

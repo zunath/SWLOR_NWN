@@ -1,32 +1,16 @@
 ﻿using System;
 using NWN;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.StructureStorage
 {
     public class OnUsed: IRegisteredEvent
     {
-        
-        
-        private readonly IDialogService _dialog;
-        
-
-        public OnUsed(
-            
-            IDialogService dialog)
-            
-        {
-            
-            
-            _dialog = dialog;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlayer oPC = (_.GetLastUsedBy());
@@ -39,7 +23,7 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
                 return false;
             }
             
-            _dialog.StartConversation(oPC, container, "StructureStorage");
+            DialogService.StartConversation(oPC, container, "StructureStorage");
             return true;
         }
     }

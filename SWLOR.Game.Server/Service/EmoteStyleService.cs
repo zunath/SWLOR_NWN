@@ -1,24 +1,12 @@
-﻿using SWLOR.Game.Server.Data;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
-using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class EmoteStyleService : IEmoteStyleService
+    public static class EmoteStyleService
     {
-        
-
-        public EmoteStyleService(
-            )
-        {
-            
-        }
-
-        public EmoteStyle GetEmoteStyle(NWObject obj)
+        public static EmoteStyle GetEmoteStyle(NWObject obj)
         {
             bool novelStyle = false;
 
@@ -32,7 +20,7 @@ namespace SWLOR.Game.Server.Service
             return novelStyle ? EmoteStyle.Novel : EmoteStyle.Regular;
         }
 
-        public void SetEmoteStyle(NWObject obj, EmoteStyle style)
+        public static void SetEmoteStyle(NWObject obj, EmoteStyle style)
         {
             if (obj.IsPlayer)
             {

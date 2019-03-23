@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Service.Contracts;
+﻿
 using SWLOR.Game.Server.Event;
 using NWN;
 using SWLOR.Game.Server.GameObject;

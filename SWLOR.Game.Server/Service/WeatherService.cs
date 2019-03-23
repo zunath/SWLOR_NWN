@@ -1,12 +1,6 @@
 ﻿using NWN;
-using System;
-using System.Linq;
-
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
-using System.Collections.Generic;
-using System.Text;
 using Object = NWN.Object;
 /*
     Name: WeatherService

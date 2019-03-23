@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static NWN._;
 
@@ -15,25 +13,6 @@ namespace SWLOR.Game.Server.Conversation
 {
     public class ManageLease: ConversationBase
     {
-        private readonly IBaseService _base;
-        private readonly ISpaceService _space;
-
-        public ManageLease(
-             
-            IDialogService dialog,
-            IBaseService @base,
-            
-            
-            
-            ISpaceService space) 
-            : base(dialog)
-        {
-            _base = @base;
-            
-            
-            
-            _space = space;
-        }
 
         public override PlayerDialog SetUp(NWPlayer player)
         {
@@ -109,7 +88,7 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
         {
-            var data = _base.GetPlayerTempData(GetPC());
+            var data = BaseService.GetPlayerTempData(GetPC());
             switch (beforeMovePage)
             {
                 case "BaseDetailsPage":
@@ -127,7 +106,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void MainResponses(int responseID)
         {
-            var data = _base.GetPlayerTempData(GetPC());
+            var data = BaseService.GetPlayerTempData(GetPC());
             DialogResponse response = GetResponseByID("MainPage", responseID);
             Guid pcBaseID = (Guid)response.CustomData;
             data.PCBaseID = pcBaseID;
@@ -137,7 +116,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadBaseDetailsPage()
         {
-            var data = _base.GetPlayerTempData(GetPC());
+            var data = BaseService.GetPlayerTempData(GetPC());
             PCBase pcBase = DataService.Single<PCBase>(x => x.ID == data.PCBaseID);
             Area dbArea = DataService.Single<Area>(x => x.Resref == pcBase.AreaResref);
             var owner = DataService.Get<Player>(pcBase.PlayerID);
@@ -159,7 +138,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 canCancelLease = false;
 
-                if (_space.IsLocationPublicStarport(pcBase.ShipLocation))
+                if (SpaceService.IsLocationPublicStarport(pcBase.ShipLocation))
                 {
                     SpaceStarport starport = DataService.SingleOrDefault<SpaceStarport>(x => x.ID.ToString() == pcBase.ShipLocation);
                     header = ColorTokenService.Green("Location: ") + starport.Name + " (" + starport.Planet + ")\n";
@@ -207,7 +186,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void ExtendLease(int days, int responseID, string optionText)
         {
-            var data = _base.GetPlayerTempData(GetPC());
+            var data = BaseService.GetPlayerTempData(GetPC());
             PCBase pcBase = DataService.Single<PCBase>(x => x.ID == data.PCBaseID);
             Area dbArea = DataService.Single<Area>(x => x.Resref == pcBase.AreaResref);
             bool canExtendLease = BasePermissionService.HasBasePermission(GetPC(), pcBase.ID, BasePermission.CanExtendLease);
@@ -265,7 +244,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void CancelLease()
         {
-            var data = _base.GetPlayerTempData(GetPC());
+            var data = BaseService.GetPlayerTempData(GetPC());
             bool canCancelLease = BasePermissionService.HasBasePermission(GetPC(), data.PCBaseID, BasePermission.CanCancelLease);
 
             if (!canCancelLease)
@@ -277,7 +256,7 @@ namespace SWLOR.Game.Server.Conversation
             if (data.IsConfirming)
             {
                 data.IsConfirming = false;
-                _base.ClearPCBaseByID(data.PCBaseID);
+                BaseService.ClearPCBaseByID(data.PCBaseID);
                 GetPC().FloatingText("Your lease has been canceled. Any property left behind has been delivered to the planetary government. Speak with them to retrieve it.");
                 
                 BuildMainPage();
@@ -293,7 +272,7 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void EndDialog()
         {
-            _base.ClearPlayerTempData(GetPC());
+            BaseService.ClearPlayerTempData(GetPC());
         }
     }
 }

@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Processor.Contracts;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
@@ -158,11 +156,8 @@ namespace SWLOR.Game.Server.Processor
                     });
                 }
 
-                App.Resolve<IObjectVisibilityService>(ovs =>
-                {
-                    ovs.ApplyVisibilityForObject(spawn.Spawn);
-                });
-
+                ObjectVisibilityService.ApplyVisibilityForObject(spawn.Spawn);
+                
                 spawn.Timer = 0.0f;
             }
         }

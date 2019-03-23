@@ -2,35 +2,13 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceCombat
 {
     public class DrainLife: IPerk
     {
-        
-        
-        private readonly ICombatService _combat;
-        
-        
-        
-
-        public DrainLife(
-            
-            
-            ICombatService combat
-            
-            
-            )
-        {
-            
-            
-            _combat = combat;
-            
-            
-            
-        }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
@@ -135,7 +113,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
                 player.SendMessage("Lucky drain life!");
             }
 
-            var calc = _combat.CalculateForceDamage(
+            var calc = CombatService.CalculateForceDamage(
                 player, 
                 target.Object, 
                 ForceAbilityType.Dark, 
@@ -157,7 +135,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
 
             _.PlaySound("v_pro_drain");
             SkillService.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceCombat, target.Object);
-            _combat.AddTemporaryForceDefense(target.Object, ForceAbilityType.Dark);
+            CombatService.AddTemporaryForceDefense(target.Object, ForceAbilityType.Dark);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

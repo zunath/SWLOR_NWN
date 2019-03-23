@@ -2,9 +2,8 @@
 using NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN._;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -15,21 +14,7 @@ namespace SWLOR.Game.Server.Conversation
             public string AreaResref { get; set; }
             public string DestinationTag { get; set; }
         }
-
         
-        private readonly IPlayerService _player;
-
-        public InstanceSelection(
-             
-            IDialogService dialog,
-            
-            IPlayerService player) : 
-            base(dialog)
-        {
-            
-            _player = player;
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -92,7 +77,7 @@ namespace SWLOR.Game.Server.Conversation
                 location = area.GetLocalLocation("INSTANCE_ENTRANCE");
             }
             
-            _player.SaveLocation(player);
+            PlayerService.SaveLocation(player);
 
             player.AssignCommand(() =>
             {

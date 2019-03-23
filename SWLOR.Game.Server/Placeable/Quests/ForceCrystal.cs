@@ -4,30 +4,13 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.Quests
 {
     public class ForceCrystal: IRegisteredEvent
     {
-        
-        private readonly IQuestService _quest;
-        
-        private readonly IObjectVisibilityService _ovs;
-
-        public ForceCrystal(
-            
-            IQuestService quest,
-            
-            IObjectVisibilityService ovs)
-        {
-            
-            _quest = quest;
-            
-            _ovs = ovs;
-        }
-
         public bool Run(params object[] args)
         {
             const int QuestID = 30;
@@ -58,10 +41,10 @@ namespace SWLOR.Game.Server.Placeable.Quests
             }
 
             _.CreateItemOnObject(cluster, player);
-            _quest.AdvanceQuestState(player, crystal, QuestID);
+            QuestService.AdvanceQuestState(player, crystal, QuestID);
 
             // Hide the "Source of Power?" placeable so the player can't use it again.
-            _ovs.AdjustVisibility(player, "81533EBB-2084-4C97-B004-8E1D8C395F56", false);
+            ObjectVisibilityService.AdjustVisibility(player, "81533EBB-2084-4C97-B004-8E1D8C395F56", false);
 
             NWObject tpWP = _.GetObjectByTag("FORCE_QUEST_LANDING");
             player.AssignCommand(() => _.ActionJumpToLocation(tpWP.Location));

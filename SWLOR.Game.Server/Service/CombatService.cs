@@ -5,16 +5,16 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
 
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class CombatService : ICombatService
+    public static class CombatService
     {
-        public void OnModuleApplyDamage()
+        public static void OnModuleApplyDamage()
         {
             DamageData data = NWNXDamage.GetDamageEventData();
 
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Service
             HandleStances();
         }
 
-        private void HandleWeaponStatBonuses()
+        private static void HandleWeaponStatBonuses()
         {
             DamageData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Service
             NWNXDamage.SetDamageEventData(data);
         }
 
-        private void HandleEvadeOrDeflectBlasterFire()
+        private static void HandleEvadeOrDeflectBlasterFire()
         {
             DamageData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private void HandleBattlemagePerk()
+        private static void HandleBattlemagePerk()
         {
             DamageData data = NWNXDamage.GetDamageEventData();
             if (data.Base <= 0) return;
@@ -207,7 +207,7 @@ namespace SWLOR.Game.Server.Service
                 AbilityService.RestoreFP(player, restoreAmount);
         }
 
-        private void HandleApplySneakAttackDamage()
+        private static void HandleApplySneakAttackDamage()
         {
             DamageData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
@@ -249,7 +249,7 @@ namespace SWLOR.Game.Server.Service
             damager.DeleteLocalInt("SNEAK_ATTACK_ACTIVE");
         }
 
-        private void HandleAbsorptionFieldEffect()
+        private static void HandleAbsorptionFieldEffect()
         {
             DamageData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
@@ -274,7 +274,7 @@ namespace SWLOR.Game.Server.Service
             AbilityService.RestoreFP(player, absorbed);
         }
 
-        private void HandleRecoveryBlast()
+        private static void HandleRecoveryBlast()
         {
             DamageData data = NWNXDamage.GetDamageEventData();
             NWObject damager = data.Damager;
@@ -301,7 +301,7 @@ namespace SWLOR.Game.Server.Service
             NWNXDamage.SetDamageEventData(data);
         }
 
-        private void HandleTranquilizerEffect()
+        private static void HandleTranquilizerEffect()
         {
             DamageData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
@@ -323,7 +323,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private void HandleStances()
+        private static void HandleStances()
         {
             DamageData data = NWNXDamage.GetDamageEventData();
             NWPlayer damager = data.Damager.Object;
@@ -352,7 +352,7 @@ namespace SWLOR.Game.Server.Service
             NWNXDamage.SetDamageEventData(data);
         }
 
-        private int CalculateForceAccuracy(
+        private static int CalculateForceAccuracy(
             NWCreature caster, 
             NWCreature target,
             ForceAbilityType abilityType)
@@ -434,7 +434,7 @@ namespace SWLOR.Game.Server.Service
             return (int)finalAccuracy;
         }
 
-        public void AddTemporaryForceDefense(NWCreature target, ForceAbilityType forceAbility, int amount = 5, int length = 5)
+        public static void AddTemporaryForceDefense(NWCreature target, ForceAbilityType forceAbility, int amount = 5, int length = 5)
         {
             if (amount <= 0) amount = 1;
             string variable = "TEMP_FORCE_DEFENSE_" + (int) forceAbility;
@@ -451,7 +451,7 @@ namespace SWLOR.Game.Server.Service
             target.SetLocalInt(variable, tempDefense);
         }
 
-        public ForceResistanceResult CalculateResistanceRating(
+        public static ForceResistanceResult CalculateResistanceRating(
             NWCreature caster,
             NWCreature target,
             ForceAbilityType forceAbility)
@@ -510,7 +510,7 @@ namespace SWLOR.Game.Server.Service
             return result;
         }
 
-        public int CalculateItemPotencyBonus(NWCreature caster, ForceAbilityType abilityType)
+        public static int CalculateItemPotencyBonus(NWCreature caster, ForceAbilityType abilityType)
         {
             if (!caster.IsPlayer) return 0;
             EffectiveItemStats itemStats = PlayerStatService.GetPlayerItemEffectiveStats(caster.Object);
@@ -537,7 +537,7 @@ namespace SWLOR.Game.Server.Service
             return itemBonus;
         }
 
-        public ForceDamageResult CalculateForceDamage(
+        public static ForceDamageResult CalculateForceDamage(
             NWCreature caster,
             NWCreature target,
             ForceAbilityType abilityType,
@@ -633,7 +633,7 @@ namespace SWLOR.Game.Server.Service
             return result;
         }
 
-        private string GetForceResistanceName(ResistanceType type)
+        private static string GetForceResistanceName(ResistanceType type)
         {
             switch (type)
             {

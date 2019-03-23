@@ -1,24 +1,14 @@
 ﻿using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.Event.Conversation
 {
     public class QuestAdvance : IRegisteredEvent
     {
-        
-        private readonly IQuestService _quest;
-        
-
-        public QuestAdvance(
-            IQuestService quest)
-        {
-            _quest = quest;
-        }
         public bool Run(params object[] args)
         {
             int index = (int)args[0];
@@ -32,7 +22,7 @@ namespace SWLOR.Game.Server.Event.Conversation
                 _.SpeakString("ERROR: Quest #" + index + " is improperly configured. Please notify an admin");
                 return false;
             }
-            _quest.AdvanceQuestState(player, talkTo, questID);
+            QuestService.AdvanceQuestState(player, talkTo, questID);
 
             return true;
         }

@@ -3,15 +3,13 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.NWNX;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class ModService : IModService
+    public static class ModService
     {
-        public CustomItemPropertyType GetModType(NWItem item)
+        public static CustomItemPropertyType GetModType(NWItem item)
         {
             CustomItemPropertyType ipType = CustomItemPropertyType.Unknown;
             foreach (var ip in item.ItemProperties)
@@ -30,7 +28,7 @@ namespace SWLOR.Game.Server.Service
             return ipType;
         }
 
-        public ModSlots GetModSlots(NWItem item)
+        public static ModSlots GetModSlots(NWItem item)
         {
             ModSlots modSlots = new ModSlots();
             foreach (var ip in item.ItemProperties)
@@ -90,18 +88,18 @@ namespace SWLOR.Game.Server.Service
             return modSlots;
         }
 
-        public bool IsRune(NWItem item)
+        public static bool IsRune(NWItem item)
         {
             return GetModType(item) != CustomItemPropertyType.Unknown;
         }
 
-        public string PrismaticString()
+        public static string PrismaticString()
         {
             return ColorTokenService.Red("p") + ColorTokenService.Orange("r") + ColorTokenService.Yellow("i") + ColorTokenService.Green("s") + ColorTokenService.Blue("m") +
                                    ColorTokenService.LightPurple("a") + ColorTokenService.Purple("t") + ColorTokenService.White("i") + ColorTokenService.Black("c");
         }
 
-        public string OnModuleExamine(string existingDescription, NWPlayer examiner, NWObject examinedObject)
+        public static string OnModuleExamine(string existingDescription, NWPlayer examiner, NWObject examinedObject)
         {
             if (examinedObject.ObjectType != _.OBJECT_TYPE_ITEM) return existingDescription;
             NWItem examinedItem = (examinedObject.Object);
@@ -132,7 +130,7 @@ namespace SWLOR.Game.Server.Service
             return existingDescription + "\n" + description;
         }
 
-        public void OnModuleApplyDamage()
+        public static void OnModuleApplyDamage()
         {
             var data = NWNXDamage.GetDamageEventData();
             if (data.Base <= 0) return;

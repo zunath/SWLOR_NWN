@@ -1,41 +1,32 @@
-﻿using System;
-using NWN;
+﻿using NWN;
 using SWLOR.Game.Server.Conversation.Contracts;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 
-using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Event.Dialog
 {
     public class ActionTaken: IRegisteredEvent
     {
-        private readonly IDialogService _dialogService;
-        
-
-        public ActionTaken( IDialogService dialogService)
-        {
-            _dialogService = dialogService;
-            
-        }
 
         public bool Run(params object[] args)
         {
             int nodeID = (int)args[0];
             NWPlayer player = (_.GetPCSpeaker());
-            PlayerDialog dialog = _dialogService.LoadPlayerDialog(player.GlobalID);
+            PlayerDialog dialog = DialogService.LoadPlayerDialog(player.GlobalID);
             int selectionNumber = nodeID + 1;
-            int responseID = nodeID + (_dialogService.NumberOfResponsesPerPage * dialog.PageOffset);
+            int responseID = nodeID + (DialogService.NumberOfResponsesPerPage * dialog.PageOffset);
 
-            if (selectionNumber == _dialogService.NumberOfResponsesPerPage + 1) // Next page
+            if (selectionNumber == DialogService.NumberOfResponsesPerPage + 1) // Next page
             {
                 dialog.PageOffset = dialog.PageOffset + 1;
             }
-            else if (selectionNumber == _dialogService.NumberOfResponsesPerPage + 2) // Previous page
+            else if (selectionNumber == DialogService.NumberOfResponsesPerPage + 2) // Previous page
             {
                 dialog.PageOffset = dialog.PageOffset - 1;
             }
-            else if (selectionNumber == _dialogService.NumberOfResponsesPerPage + 3) // Back
+            else if (selectionNumber == DialogService.NumberOfResponsesPerPage + 3) // Back
             {
                 string currentPageName = dialog.CurrentPageName;
                 var previous = dialog.NavigationStack.Pop();
@@ -50,8 +41,8 @@ namespace SWLOR.Game.Server.Event.Dialog
                 // Previous page was in a different conversation. Switch to it.
                 if (previous.DialogName != dialog.ActiveDialogName)
                 {
-                    _dialogService.LoadConversation(player, dialog.DialogTarget, previous.DialogName, dialog.DialogNumber);
-                    dialog = _dialogService.LoadPlayerDialog(player.GlobalID);
+                    DialogService.LoadConversation(player, dialog.DialogTarget, previous.DialogName, dialog.DialogNumber);
+                    dialog = DialogService.LoadPlayerDialog(player.GlobalID);
                     dialog.ResetPage();
 
                     dialog.CurrentPageName = previous.PageName;
@@ -70,7 +61,7 @@ namespace SWLOR.Game.Server.Event.Dialog
                     dialog.PageOffset = 0;
                 }
             }
-            else if (selectionNumber != _dialogService.NumberOfResponsesPerPage + 4) // End
+            else if (selectionNumber != DialogService.NumberOfResponsesPerPage + 4) // End
             {
                 App.ResolveByInterface<IConversation>("Conversation." + dialog.ActiveDialogName, convo =>
                 {

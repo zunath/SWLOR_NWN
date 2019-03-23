@@ -4,32 +4,12 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.Placeable.MolecularReassembler
 {
     public class OnDisturbed: IRegisteredEvent
     {
-        
-        private readonly IDialogService _dialog;
-        private readonly ICraftService _craft;
-        private readonly ISerializationService _serialization;
-        
-
-        public OnDisturbed(
-             
-            IDialogService dialog,
-            ICraftService craft,
-            ISerializationService serialization
-            )
-        {
-            
-            _dialog = dialog;
-            _craft = craft;
-            _serialization = serialization;
-            
-        }
-
         public bool Run(params object[] args)
         {
             if (_.GetInventoryDisturbType() != _.INVENTORY_DISTURB_TYPE_ADDED)
@@ -64,12 +44,12 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
             }
 
             // Serialize the item into a string and store it into the temporary data for this player. Destroy the physical item.
-            var model = _craft.GetPlayerCraftingData(player);
-            model.SerializedSalvageItem = _serialization.Serialize(item);
+            var model = CraftService.GetPlayerCraftingData(player);
+            model.SerializedSalvageItem = SerializationService.Serialize(item);
             item.Destroy();
 
             // Start the Molecular Reassembly conversation.
-            _dialog.StartConversation(player, device, "MolecularReassembly");
+            DialogService.StartConversation(player, device, "MolecularReassembly");
 
             return true;
         }

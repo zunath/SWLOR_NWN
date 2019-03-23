@@ -9,22 +9,13 @@ using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.ChatCommand
 {
     [CommandDetails("Toggles the Plasma Cell on and off.", CommandPermissionType.Player)]
     public class PlasmaCell : IChatCommand
     {
-        
-        
-        public PlasmaCell(
-            
-            )
-        {
-            
-            
-        }
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             if (!user.IsPlayer) return;

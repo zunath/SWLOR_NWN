@@ -1,29 +1,14 @@
-﻿using NWN;
-using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Lightsaber
 {
     public class SaberstaffMastery : IPerk
     {
-        
-        
-        
-
-        public SaberstaffMastery(
-            
-            
-            )
-        {
-            
-            
-            
-        }
-
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

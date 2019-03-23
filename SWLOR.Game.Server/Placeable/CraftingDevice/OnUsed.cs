@@ -5,21 +5,13 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.CraftingDevice
 {
     public class OnUsed: IRegisteredEvent
     {
-        private readonly IDialogService _dialog;
-        
-        public OnUsed(
-            IDialogService dialog)
-        {
-            _dialog = dialog;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlayer player = (_.GetLastUsedBy());
@@ -53,7 +45,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
                 player.SendMessage("You are too busy to do that right now.");
                 return false;
             }
-            _dialog.StartConversation(player, device, "CraftingDevice");
+            DialogService.StartConversation(player, device, "CraftingDevice");
             return true;
         }
     }

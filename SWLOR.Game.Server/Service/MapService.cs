@@ -4,26 +4,15 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.Contracts;
+
 using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class MapService : IMapService
+    public static class MapService
     {
-        
-        
-
-        public MapService(
-            
-            )
-        {
-            
-            
-        }
-
-        public void OnAreaEnter()
+        public static void OnAreaEnter()
         {
             NWArea area = (Object.OBJECT_SELF);
             NWPlayer player = _.GetEnteringObject();
@@ -38,7 +27,7 @@ namespace SWLOR.Game.Server.Service
             LoadMapProgression(area, player);
         }
 
-        public void OnAreaExit()
+        public static void OnAreaExit()
         {
             NWArea area = Object.OBJECT_SELF;
             NWPlayer player = _.GetExitingObject();
@@ -47,7 +36,7 @@ namespace SWLOR.Game.Server.Service
             SaveMapProgression(area, player);
         }
 
-        public void OnModuleLeave()
+        public static void OnModuleLeave()
         {
             NWPlayer player = _.GetExitingObject();
             NWArea area = _.GetArea(player);
@@ -56,7 +45,7 @@ namespace SWLOR.Game.Server.Service
             SaveMapProgression(area, player);
         }
 
-        private void SaveMapProgression(NWArea area, NWPlayer player)
+        private static void SaveMapProgression(NWArea area, NWPlayer player)
         {
             var map = DataService.GetAll<PCMapProgression>().SingleOrDefault(x => x.PlayerID == player.GlobalID && x.AreaResref == area.Resref);
             int areaSize = area.Width * area.Height;
@@ -93,7 +82,7 @@ namespace SWLOR.Game.Server.Service
             DataService.SubmitDataChange(map, action);
         }
 
-        private void LoadMapProgression(NWArea area, NWPlayer player)
+        private static void LoadMapProgression(NWArea area, NWPlayer player)
         {
             var map = DataService.GetAll<PCMapProgression>().SingleOrDefault(x => x.PlayerID == player.GlobalID && x.AreaResref == area.Resref);
             int areaSize = area.Width * area.Height;

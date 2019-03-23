@@ -2,7 +2,7 @@
 
 using NWN;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
@@ -13,19 +13,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             public bool IsConfirmingDisableSanctuary { get; set; }
         }
-
-        private readonly IHelmetToggleService _helmetToggle;
-
-        public CharacterManagement(
-             
-            IDialogService dialog,
-            IHelmetToggleService helmetToggle) 
-            : base(dialog)
-        {
-            
-            _helmetToggle = helmetToggle;
-        }
-
+        
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -57,7 +45,7 @@ namespace SWLOR.Game.Server.Conversation
                             HandleDisablePVPProtection();
                             break;
                         case 2: // Toggle Helmet Display
-                            _helmetToggle.ToggleHelmetDisplay(GetPC());
+                            HelmetToggleService.ToggleHelmetDisplay(GetPC());
                             break;
                     }
                     break;

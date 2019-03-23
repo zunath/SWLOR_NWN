@@ -1,10 +1,9 @@
 ﻿using FluentBehaviourTree;
-using NWN;
 using SWLOR.Game.Server.AI.AIComponent;
 using SWLOR.Game.Server.Extension;
 
 
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.AI
 {
@@ -14,11 +13,11 @@ namespace SWLOR.Game.Server.AI
     public class SoundAggroBehaviour : StandardBehaviour
     {
         public SoundAggroBehaviour(
-            BehaviourTreeBuilder builder,
+            BehaviourTreeBuilder builder
             
             
-            IDialogService dialog)
-            : base(builder, dialog)
+            )
+            : base(builder)
         {
         }
 

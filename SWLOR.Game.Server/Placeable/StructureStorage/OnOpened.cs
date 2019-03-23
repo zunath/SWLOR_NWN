@@ -1,26 +1,15 @@
 ﻿using System;
-using System.Linq;
-using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.StructureStorage
 {
     public class OnOpened : IRegisteredEvent
     {
-        private readonly ISerializationService _serialization;
-        
-
-        public OnOpened(
-            ISerializationService serialization)
-        {
-            _serialization = serialization;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlaceable chest = (Object.OBJECT_SELF);
@@ -30,7 +19,7 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
             var items = DataService.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structure.ID);
             foreach (var item in items)
             {
-                _serialization.DeserializeItem(item.ItemObject, chest);
+                SerializationService.DeserializeItem(item.ItemObject, chest);
             }
 
             chest.IsUseable = false;

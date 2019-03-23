@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using static NWN._;
 using Object = NWN.Object;
@@ -17,25 +15,6 @@ namespace SWLOR.Game.Server.Placeable.Drill
 {
     public class OnHeartbeat: IRegisteredEvent
     {
-        
-        
-        private readonly IBaseService _base;
-        private readonly ILootService _loot;
-        private readonly ISerializationService _serialization;
-
-        public OnHeartbeat(
-            
-            
-            IBaseService @base,
-            ILootService loot,
-            ISerializationService serialization)
-        {
-            
-            
-            _base = @base;
-            _loot = loot;
-            _serialization = serialization;
-        }
         public bool Run(params object[] args)
         {
             NWPlaceable drill = Object.OBJECT_SELF;
@@ -51,10 +30,10 @@ namespace SWLOR.Game.Server.Placeable.Drill
             Guid structureGUID = new Guid(structureID);
             PCBaseStructure pcStructure = DataService.Get<PCBaseStructure>(structureGUID);
             PCBase pcBase = DataService.Get<PCBase>(pcStructure.PCBaseID);
-            PCBaseStructure tower = _base.GetBaseControlTower(pcBase.ID);
+            PCBaseStructure tower = BaseService.GetBaseControlTower(pcBase.ID);
 
             // Check whether there's space in this tower.
-            int capacity = _base.CalculateResourceCapacity(pcBase.ID);
+            int capacity = BaseService.CalculateResourceCapacity(pcBase.ID);
             int count = DataService.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == tower.ID).Count() + 1;
             if (count > capacity) return false;
 
@@ -112,8 +91,8 @@ namespace SWLOR.Game.Server.Placeable.Drill
             
             pcStructure.DateNextActivity = now.AddMinutes(increaseMinutes);
 
-            var controlTower = _base.GetBaseControlTower(pcStructure.PCBaseID);
-            var itemDetails = _loot.PickRandomItemFromLootTable(lootTableID);
+            var controlTower = BaseService.GetBaseControlTower(pcStructure.PCBaseID);
+            var itemDetails = LootService.PickRandomItemFromLootTable(lootTableID);
 
             var tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
             NWItem item = _.CreateItemOnObject(itemDetails.Resref, tempStorage, itemDetails.Quantity);
@@ -140,7 +119,7 @@ namespace SWLOR.Game.Server.Placeable.Drill
                 ItemName = item.Name,
                 ItemResref = item.Resref,
                 ItemTag = item.Tag,
-                ItemObject = _serialization.Serialize(item)
+                ItemObject = SerializationService.Serialize(item)
             };
 
             DataService.SubmitDataChange(pcStructure, DatabaseActionType.Update);

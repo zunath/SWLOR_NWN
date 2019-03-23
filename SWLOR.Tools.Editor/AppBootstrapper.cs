@@ -18,7 +18,7 @@ using System.Windows.Controls;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.Threading;
 using IContainer = Autofac.IContainer;
 using SWLOR.Tools.Editor.ViewModels.Data;

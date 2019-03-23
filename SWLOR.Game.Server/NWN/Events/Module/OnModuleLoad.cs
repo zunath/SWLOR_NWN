@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using SWLOR.Game.Server.Enumeration;
-
 using NWN;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Processor;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Threading;
-using static NWN._;
 using Object = NWN.Object;
 
-namespace SWLOR.Game.Server.Event.Module
+namespace SWLOR.Game.Server.NWN.Events.Module
 {
     internal class OnModuleLoad: IRegisteredEvent
     {
@@ -69,12 +68,12 @@ namespace SWLOR.Game.Server.Event.Module
         private void SetAreaEventScripts()
         {
             Object area = _.GetFirstArea();
-            while (_.GetIsObjectValid(area) == TRUE)
+            while (_.GetIsObjectValid(area) == _.TRUE)
             {
-                _.SetEventScript(area, EVENT_SCRIPT_AREA_ON_ENTER, "area_on_enter");
-                _.SetEventScript(area, EVENT_SCRIPT_AREA_ON_EXIT, "area_on_exit");
-                _.SetEventScript(area, EVENT_SCRIPT_AREA_ON_HEARTBEAT, "area_on_hb");
-                _.SetEventScript(area, EVENT_SCRIPT_AREA_ON_USER_DEFINED_EVENT, "area_on_user");
+                _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_ENTER, "area_on_enter");
+                _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_EXIT, "area_on_exit");
+                _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_HEARTBEAT, "area_on_hb");
+                _.SetEventScript(area, _.EVENT_SCRIPT_AREA_ON_USER_DEFINED_EVENT, "area_on_user");
 
                 area = _.GetNextArea();
             }
@@ -83,22 +82,22 @@ namespace SWLOR.Game.Server.Event.Module
         private void SetModuleEventScripts()
         {
             // Vanilla NWN Event Hooks
-            _.SetEventScript(_.GetModule(), EVENT_SCRIPT_MODULE_ON_ACQUIRE_ITEM, "mod_on_acquire");
-            _.SetEventScript(_.GetModule(), EVENT_SCRIPT_MODULE_ON_ACTIVATE_ITEM, "mod_on_activate");
-            _.SetEventScript(_.GetModule(), EVENT_SCRIPT_MODULE_ON_CLIENT_ENTER, "mod_on_enter");
-            _.SetEventScript(_.GetModule(), EVENT_SCRIPT_MODULE_ON_CLIENT_EXIT, "mod_on_leave");
-            _.SetEventScript(_.GetModule(), EVENT_SCRIPT_MODULE_ON_PLAYER_CANCEL_CUTSCENE, "mod_on_csabort");
-            _.SetEventScript(_.GetModule(), EVENT_SCRIPT_MODULE_ON_HEARTBEAT, "mod_on_heartbeat");
-            _.SetEventScript(_.GetModule(), EVENT_SCRIPT_MODULE_ON_PLAYER_CHAT, "mod_on_chat");
-            _.SetEventScript(_.GetModule(), EVENT_SCRIPT_MODULE_ON_PLAYER_DEATH, "mod_on_death");
-            _.SetEventScript(_.GetModule(), EVENT_SCRIPT_MODULE_ON_PLAYER_DYING, "mod_on_dying");
-            _.SetEventScript(_.GetModule(), EVENT_SCRIPT_MODULE_ON_EQUIP_ITEM, "mod_on_equip");
-            _.SetEventScript(_.GetModule(), EVENT_SCRIPT_MODULE_ON_PLAYER_LEVEL_UP, "mod_on_levelup");
-            _.SetEventScript(_.GetModule(), EVENT_SCRIPT_MODULE_ON_RESPAWN_BUTTON_PRESSED, "mod_on_respawn");
-            _.SetEventScript(_.GetModule(), EVENT_SCRIPT_MODULE_ON_PLAYER_REST, "mod_on_rest");
-            _.SetEventScript(_.GetModule(), EVENT_SCRIPT_MODULE_ON_UNEQUIP_ITEM, "mod_on_unequip");
-            _.SetEventScript(_.GetModule(), EVENT_SCRIPT_MODULE_ON_LOSE_ITEM, "mod_on_unacquire");
-            _.SetEventScript(_.GetModule(), EVENT_SCRIPT_MODULE_ON_USER_DEFINED_EVENT, "mod_on_user");
+            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_ACQUIRE_ITEM, "mod_on_acquire");
+            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_ACTIVATE_ITEM, "mod_on_activate");
+            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_CLIENT_ENTER, "mod_on_enter");
+            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_CLIENT_EXIT, "mod_on_leave");
+            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_PLAYER_CANCEL_CUTSCENE, "mod_on_csabort");
+            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_HEARTBEAT, "mod_on_heartbeat");
+            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_PLAYER_CHAT, "mod_on_chat");
+            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_PLAYER_DEATH, "mod_on_death");
+            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_PLAYER_DYING, "mod_on_dying");
+            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_EQUIP_ITEM, "mod_on_equip");
+            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_PLAYER_LEVEL_UP, "mod_on_levelup");
+            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_RESPAWN_BUTTON_PRESSED, "mod_on_respawn");
+            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_PLAYER_REST, "mod_on_rest");
+            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_UNEQUIP_ITEM, "mod_on_unequip");
+            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_LOSE_ITEM, "mod_on_unacquire");
+            _.SetEventScript(_.GetModule(), _.EVENT_SCRIPT_MODULE_ON_USER_DEFINED_EVENT, "mod_on_user");
 
             // NWNX Hooks
             NWNXEvents.SubscribeEvent(EventType.StartCombatRoundBefore, "mod_on_attack");
@@ -145,17 +144,17 @@ namespace SWLOR.Game.Server.Event.Module
 
         private void SetWeaponSettings()
         {
-            NWNXWeapon.SetWeaponFocusFeat(CustomBaseItemType.Lightsaber, FEAT_WEAPON_FOCUS_LONG_SWORD);
-            NWNXWeapon.SetWeaponFocusFeat(CustomBaseItemType.Saberstaff, FEAT_WEAPON_FOCUS_TWO_BLADED_SWORD);
+            NWNXWeapon.SetWeaponFocusFeat(CustomBaseItemType.Lightsaber, _.FEAT_WEAPON_FOCUS_LONG_SWORD);
+            NWNXWeapon.SetWeaponFocusFeat(CustomBaseItemType.Saberstaff, _.FEAT_WEAPON_FOCUS_TWO_BLADED_SWORD);
 
-            NWNXWeapon.SetWeaponImprovedCriticalFeat(CustomBaseItemType.Lightsaber, FEAT_IMPROVED_CRITICAL_LONG_SWORD);
-            NWNXWeapon.SetWeaponImprovedCriticalFeat(CustomBaseItemType.Saberstaff, FEAT_IMPROVED_CRITICAL_TWO_BLADED_SWORD);
+            NWNXWeapon.SetWeaponImprovedCriticalFeat(CustomBaseItemType.Lightsaber, _.FEAT_IMPROVED_CRITICAL_LONG_SWORD);
+            NWNXWeapon.SetWeaponImprovedCriticalFeat(CustomBaseItemType.Saberstaff, _.FEAT_IMPROVED_CRITICAL_TWO_BLADED_SWORD);
 
-            NWNXWeapon.SetWeaponSpecializationFeat(CustomBaseItemType.Lightsaber, FEAT_WEAPON_SPECIALIZATION_LONG_SWORD);
-            NWNXWeapon.SetWeaponSpecializationFeat(CustomBaseItemType.Saberstaff, FEAT_WEAPON_SPECIALIZATION_TWO_BLADED_SWORD);
+            NWNXWeapon.SetWeaponSpecializationFeat(CustomBaseItemType.Lightsaber, _.FEAT_WEAPON_SPECIALIZATION_LONG_SWORD);
+            NWNXWeapon.SetWeaponSpecializationFeat(CustomBaseItemType.Saberstaff, _.FEAT_WEAPON_SPECIALIZATION_TWO_BLADED_SWORD);
 
-            NWNXWeapon.SetWeaponFinesseSize(CustomBaseItemType.Lightsaber, CREATURE_SIZE_MEDIUM);
-            NWNXWeapon.SetWeaponFinesseSize(CustomBaseItemType.Saberstaff, CREATURE_SIZE_MEDIUM);
+            NWNXWeapon.SetWeaponFinesseSize(CustomBaseItemType.Lightsaber, _.CREATURE_SIZE_MEDIUM);
+            NWNXWeapon.SetWeaponFinesseSize(CustomBaseItemType.Saberstaff, _.CREATURE_SIZE_MEDIUM);
         }
 
     }

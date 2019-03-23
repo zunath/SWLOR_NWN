@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Area;
+using SWLOR.Game.Server.NWN.Events.Module;
 using Object = NWN.Object;
 /*
     Name: WeatherService
@@ -49,6 +50,7 @@ namespace SWLOR.Game.Server.Service
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnAreaEnter>(message => OnAreaEnter());
+            MessageHub.Instance.Subscribe<OnModuleHeartbeat>(message => OnModuleHeartbeat());
         }
 
         // Feedback texts.
@@ -827,7 +829,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static void OnModuleHeartbeat()
+        private static void OnModuleHeartbeat()
         {
             NWObject oMod = _.GetModule();
             int nHour = _.GetTimeHour();

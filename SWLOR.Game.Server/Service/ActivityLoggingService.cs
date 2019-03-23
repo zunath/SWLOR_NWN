@@ -3,15 +3,27 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.DM;
+using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 
 using SWLOR.Game.Server.ValueObject;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class ActivityLoggingService
     {
-        public static void OnModuleClientEnter()
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnDMAction>(message => OnDMAction(message.ActionID));
+            MessageHub.Instance.Subscribe<OnModuleEnter>(message => OnModuleEnter());
+            MessageHub.Instance.Subscribe<OnModuleLeave>(message => OnModuleLeave());
+            MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
+        }
+
+        private static void OnModuleEnter()
         {
             NWPlayer oPC = (_.GetEnteringObject());
             string name = oPC.Name;
@@ -42,7 +54,7 @@ namespace SWLOR.Game.Server.Service
             DataService.DataQueue.Enqueue(new DatabaseAction(entity, DatabaseActionType.Insert));
         }
 
-        public static void OnModuleClientLeave()
+        private static void OnModuleLeave()
         {
             NWPlayer oPC = (_.GetExitingObject());
             string name = oPC.Name;
@@ -93,8 +105,9 @@ namespace SWLOR.Game.Server.Service
             }
         }
         
-        public static void OnModuleNWNXChat(NWPlayer sender)
+        private static void OnModuleNWNXChat()
         {
+            NWPlayer sender = Object.OBJECT_SELF;
             if (!sender.IsPlayer && !sender.IsDM) return;
             string text = NWNXChat.GetMessage();
             if (string.IsNullOrWhiteSpace(text)) return;
@@ -153,6 +166,64 @@ namespace SWLOR.Game.Server.Service
             // Bypass the caching logic
             DataService.DataQueue.Enqueue(new DatabaseAction(entity, DatabaseActionType.Insert));
         }
+
+        private static void OnDMAction(int actionTypeID)
+        {
+            string details = ProcessEventAndBuildDetails(actionTypeID);
+
+            NWObject dm = Object.OBJECT_SELF;
+
+            var record = new DMAction
+            {
+                DMActionTypeID = actionTypeID,
+                Name = dm.Name,
+                CDKey = _.GetPCPublicCDKey(dm),
+                DateOfAction = DateTime.UtcNow,
+                Details = details
+            };
+
+            // Don't cache DM actions.
+            DataService.DataQueue.Enqueue(new DatabaseAction(record, DatabaseActionType.Insert));
+        }
+
+        private static string ProcessEventAndBuildDetails(int eventID)
+        {
+            string details = string.Empty;
+            NWObject target;
+            int amount;
+
+            switch (eventID)
+            {
+                case 1: // Spawn Creature
+                    string areaName = NWNXEvents.OnDMSpawnObject_GetArea().Name;
+                    NWCreature creature = NWNXEvents.OnDMSpawnObject_GetObject().Object;
+                    int objectTypeID = NWNXEvents.OnDMSpawnObject_GetObjectType();
+                    float x = NWNXEvents.OnDMSpawnObject_GetPositionX();
+                    float y = NWNXEvents.OnDMSpawnObject_GetPositionY();
+                    float z = NWNXEvents.OnDMSpawnObject_GetPositionZ();
+                    creature.SetLocalInt("DM_SPAWNED", _.TRUE);
+                    details = areaName + "," + creature.Name + "," + objectTypeID + "," + x + "," + y + "," + z;
+                    break;
+                case 22: // Give XP
+                    amount = NWNXEvents.OnDMGiveXP_GetAmount();
+                    target = NWNXEvents.OnDMGiveXP_GetTarget();
+                    details = amount + "," + target.Name;
+                    break;
+                case 23: // Give Level
+                    amount = NWNXEvents.OnDMGiveLevels_GetAmount();
+                    target = NWNXEvents.OnDMGiveLevels_GetTarget();
+                    details = amount + "," + target.Name;
+                    break;
+                case 24: // Give Gold
+                    amount = NWNXEvents.OnDMGiveGold_GetAmount();
+                    target = NWNXEvents.OnDMGiveGold_GetTarget();
+                    details = amount + "," + target.Name;
+                    break;
+            }
+
+            return details;
+        }
+
 
     }
 }

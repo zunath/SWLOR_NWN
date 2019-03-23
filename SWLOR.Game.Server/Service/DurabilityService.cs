@@ -4,6 +4,7 @@ using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Feat;
+using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 
 using static NWN._;
@@ -20,6 +21,7 @@ namespace SWLOR.Game.Server.Service
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
+            MessageHub.Instance.Subscribe<OnModuleEquipItem>(message => OnModuleEquipItem());
         }
 
         private static void InitializeDurability(NWItem item)
@@ -97,25 +99,27 @@ namespace SWLOR.Game.Server.Service
             item.SetLocalFloat("DURABILITY_CURRENT", value);
         }
         
-        public static void OnModuleEquip()
+        private static void OnModuleEquipItem()
         {
-            using (new Profiler("DurabilityService::OnModuleEquip()"))
+            NWPlayer oPC = (_.GetPCItemLastEquippedBy());
+
+            // Don't run heavy code when customizing equipment.
+            if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return;
+            
+            NWItem oItem = (_.GetPCItemLastEquipped());
+            float durability = GetDurability(oItem);
+
+            if (durability <= 0 && durability != -1 && oItem.IsValid)
             {
-                NWPlayer oPC = (_.GetPCItemLastEquippedBy());
-                NWItem oItem = (_.GetPCItemLastEquipped());
-                float durability = GetDurability(oItem);
-
-                if (durability <= 0 && durability != -1 && oItem.IsValid)
+                oPC.AssignCommand(() =>
                 {
-                    oPC.AssignCommand(() =>
-                    {
-                        _.ClearAllActions();
-                        _.ActionUnequipItem(oItem.Object);
-                    });
+                    _.ClearAllActions();
+                    _.ActionUnequipItem(oItem.Object);
+                });
 
-                    oPC.FloatingText(ColorTokenService.Red("That item is broken and must be repaired before you can use it."));
-                }
+                oPC.FloatingText(ColorTokenService.Red("That item is broken and must be repaired before you can use it."));
             }
+        
         }
 
         public static string OnModuleExamine(string existingDescription, NWObject examinedObject)

@@ -4,7 +4,8 @@ using SWLOR.Game.Server.Conversation.Contracts;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using Object = NWN.Object;
 
@@ -13,7 +14,12 @@ namespace SWLOR.Game.Server.Service
     public static class DialogService
     {
         public const int NumberOfDialogs = 255;
-        
+
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnModuleRest>(message => OnModuleRest());
+        }
+
         private static void StorePlayerDialog(Guid globalID, PlayerDialog dialog)
         {
             if (dialog.DialogNumber <= 0)
@@ -132,5 +138,18 @@ namespace SWLOR.Game.Server.Service
             StorePlayerDialog(player.GlobalID, playerDialog);
         }
 
+        private static void OnModuleRest()
+        {
+            NWPlayer player = (_.GetLastPCRested());
+            int restType = _.GetLastRestEventType();
+
+            if (restType != _.REST_EVENTTYPE_REST_STARTED ||
+                !player.IsValid ||
+                player.IsDM) return;
+
+            player.AssignCommand(() => _.ClearAllActions());
+
+            StartConversation(player, player, "RestMenu");
+        }
     }
 }

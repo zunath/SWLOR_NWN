@@ -5,18 +5,21 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
-
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class DeathService
     {
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnModuleDeath>(message => OnModuleDeath());
+            MessageHub.Instance.Subscribe<OnModuleRespawn>(message => OnModuleRespawn());
+        }
 
-        // Message which displays on the Respawn pop up menu
-        private const string RespawnMessage = "You have died. You can wait for another player to revive you or respawn to go to your last respawn point.";
-        
-        public static void OnPlayerDeath()
+        private static void OnModuleDeath()
         {
             NWPlayer player = _.GetLastPlayerDied();
             NWObject hostile = _.GetLastHostileActor(player.Object);
@@ -43,10 +46,11 @@ namespace SWLOR.Game.Server.Service
                 DurabilityService.RunItemDecay(player, item, RandomService.RandomFloat(0.02f, 0.07f));
             }
 
+            const string RespawnMessage = "You have died. You can wait for another player to revive you or respawn to go to your last respawn point.";
             _.PopUpDeathGUIPanel(player.Object, TRUE, TRUE, 0, RespawnMessage);
         }
         
-        public static void OnPlayerRespawn()
+        private static void OnModuleRespawn()
         {
             NWPlayer oPC = _.GetLastRespawnButtonPresser();
 

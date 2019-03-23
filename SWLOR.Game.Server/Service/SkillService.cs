@@ -14,6 +14,7 @@ using System.Linq;
 using SWLOR.Game.Server.NWN.Events.Area;
 using SWLOR.Game.Server.NWN.Events.Creature;
 using SWLOR.Game.Server.NWN.Events.Feat;
+using SWLOR.Game.Server.NWN.Events.Module;
 using static NWN._;
 using Object = NWN.Object;
 
@@ -37,6 +38,11 @@ namespace SWLOR.Game.Server.Service
 
             // Feat Events
             MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
+
+            // Module Events
+            MessageHub.Instance.Subscribe<OnModuleEquipItem>(message => OnModuleEquipItem());
+            MessageHub.Instance.Subscribe<OnModuleUnequipItem>(message => OnModuleUnequipItem());
+            MessageHub.Instance.Subscribe<OnModuleLeave>(message => OnModuleLeave());
         }
 
         public static void RegisterPCToAllCombatTargetsForSkill(NWPlayer player, SkillType skillType, NWCreature target)
@@ -402,7 +408,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static void OnModuleClientLeave()
+        private static void OnModuleLeave()
         {
             NWPlayer oPC = _.GetExitingObject();
             if (!oPC.IsPlayer) return;
@@ -410,32 +416,31 @@ namespace SWLOR.Game.Server.Service
             RemovePlayerFromRegistrations(oPC);
         }
 
-        public static void OnModuleItemEquipped()
+        private static void OnModuleEquipItem()
         {
-            using (new Profiler("SkillService::OnModuleItemEquipped()"))
-            {
-                NWPlayer oPC = _.GetPCItemLastEquippedBy();
-                if (!oPC.IsInitializedAsPlayer) return; // Players who log in for the first time don't have an ID yet.
-                if (oPC.GetLocalInt("LOGGED_IN_ONCE") <= 0) return; // Don't fire heavy calculations if this is the player's first log in after a restart.
+            NWPlayer oPC = _.GetPCItemLastEquippedBy();
 
-                NWItem oItem = _.GetPCItemLastEquipped();
-                PlayerStatService.ApplyStatChanges(oPC, null);
-                ApplyWeaponPenalties(oPC, oItem);
-                ApplyEquipmentPenalties(oPC, oItem);
-            }
+            if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return; // Don't run heavy code when customizing equipment.
+            if (!oPC.IsInitializedAsPlayer) return; // Players who log in for the first time don't have an ID yet.
+            if (oPC.GetLocalInt("LOGGED_IN_ONCE") <= 0) return; // Don't fire heavy calculations if this is the player's first log in after a restart.
+
+            NWItem oItem = _.GetPCItemLastEquipped();
+            PlayerStatService.ApplyStatChanges(oPC, null);
+            ApplyWeaponPenalties(oPC, oItem);
+            ApplyEquipmentPenalties(oPC, oItem);
+        
         }
 
-        public static void OnModuleItemUnequipped()
-        {
-            using (new Profiler("SkillService::OnModuleItemUnequipped()"))
-            {
-                NWPlayer oPC = _.GetPCItemLastUnequippedBy();
-                NWItem oItem = _.GetPCItemLastUnequipped();
-                HandleGlovesUnequipEvent();
-                PlayerStatService.ApplyStatChanges(oPC, oItem);
-                RemoveWeaponPenalties(oItem);
-                RemoveEquipmentPenalties(oItem);
-            }
+        private static void OnModuleUnequipItem()
+        {    
+            NWPlayer oPC = _.GetPCItemLastUnequippedBy();
+            if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return; // Don't run heavy code when customizing equipment.
+            
+            NWItem oItem = _.GetPCItemLastUnequipped();
+            HandleGlovesUnequipEvent();
+            PlayerStatService.ApplyStatChanges(oPC, oItem);
+            RemoveWeaponPenalties(oItem);
+            RemoveEquipmentPenalties(oItem);
         }
 
         public static float CalculateRegisteredSkillLevelAdjustedXP(float xp, int registeredLevel, int skillRank)

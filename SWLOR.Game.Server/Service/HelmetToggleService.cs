@@ -4,42 +4,48 @@ using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
-
-
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class HelmetToggleService
     {
-        public static void OnModuleItemEquipped()
+        public static void SubscribeEvents()
         {
-            using (new Profiler("HelmetToggleService::OnModuleItemEquipped()"))
-            {
-                NWPlayer player = (_.GetPCItemLastEquippedBy());
-                if (!player.IsPlayer || !player.IsInitializedAsPlayer) return;
+            MessageHub.Instance.Subscribe<OnModuleEquipItem>(message => OnModuleEquipItem());
+            MessageHub.Instance.Subscribe<OnModuleUnequipItem>(message => OnModuleUnequipItem());
+        }
+        
+        private static void OnModuleEquipItem()
+        {
+            NWPlayer player = (_.GetPCItemLastEquippedBy());
+            if (player.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return; // Don't run heavy code when customizing equipment.
 
-                NWItem item = (_.GetPCItemLastEquipped());
-                if (item.BaseItemType != _.BASE_ITEM_HELMET) return;
+            if (!player.IsPlayer || !player.IsInitializedAsPlayer) return;
 
-                Player pc = DataService.Single<Player>(x => x.ID == player.GlobalID);
-                _.SetHiddenWhenEquipped(item.Object, !pc.DisplayHelmet == false ? 0 : 1);
-            }
+            NWItem item = (_.GetPCItemLastEquipped());
+            if (item.BaseItemType != _.BASE_ITEM_HELMET) return;
+
+            Player pc = DataService.Single<Player>(x => x.ID == player.GlobalID);
+            _.SetHiddenWhenEquipped(item.Object, !pc.DisplayHelmet == false ? 0 : 1);
+        
         }
 
-        public static void OnModuleItemUnequipped()
+        private static void OnModuleUnequipItem()
         {
-            using(new Profiler("HelmetToggleService::OnModuleItemUnequipped()"))
-            {
-                NWPlayer player = (_.GetPCItemLastUnequippedBy());
-                if (!player.IsPlayer) return;
+            NWPlayer player = (_.GetPCItemLastUnequippedBy());
 
-                NWItem item = (_.GetPCItemLastUnequipped());
-                if (item.BaseItemType != _.BASE_ITEM_HELMET) return;
+            if (player.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return; // Don't run heavy code when customizing equipment.
+            if (!player.IsPlayer) return;
 
-                Player pc = DataService.Single<Player>(x => x.ID == player.GlobalID);
-                _.SetHiddenWhenEquipped(item.Object, !pc.DisplayHelmet == false ? 0 : 1);
-            }
+            NWItem item = (_.GetPCItemLastUnequipped());
+            if (item.BaseItemType != _.BASE_ITEM_HELMET) return;
+
+            Player pc = DataService.Single<Player>(x => x.ID == player.GlobalID);
+            _.SetHiddenWhenEquipped(item.Object, !pc.DisplayHelmet == false ? 0 : 1);
+        
         }
 
         public static void ToggleHelmetDisplay(NWPlayer player)

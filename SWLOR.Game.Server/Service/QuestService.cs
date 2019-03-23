@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.NWN.Events.Creature;
+using SWLOR.Game.Server.NWN.Events.Module;
 using static NWN._;
 using Object = NWN.Object;
 using Quest = SWLOR.Game.Server.Data.Entity.Quest;
@@ -25,7 +26,12 @@ namespace SWLOR.Game.Server.Service
 
         public static void SubscribeEvents()
         {
+            // Creature Events
             MessageHub.Instance.Subscribe<OnCreatureDeath>(message => OnCreatureDeath());
+
+            // Module Events
+            MessageHub.Instance.Subscribe<OnModuleAcquireItem>(message => OnModuleItemAcquired());
+            MessageHub.Instance.Subscribe<OnModuleEnter>(message => OnModuleEnter());
         }
 
         public static Quest GetQuestByID(int questID)
@@ -139,7 +145,7 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Publish(new QuestCompletedMessage(player, questID));
         }
 
-        public static void OnModuleItemAcquired()
+        private static void OnModuleItemAcquired()
         {
             NWPlayer oPC = (_.GetModuleItemAcquiredBy());
             NWItem oItem = (_.GetModuleItemAcquired());
@@ -152,7 +158,7 @@ namespace SWLOR.Game.Server.Service
             oItem.IsCursed = true;
         }
 
-        public static void OnClientEnter()
+        private static void OnModuleEnter()
         {
             NWPlayer oPC = (_.GetEnteringObject());
 

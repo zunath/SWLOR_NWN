@@ -5,6 +5,8 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 
 using SWLOR.Game.Server.ValueObject;
@@ -15,9 +17,14 @@ namespace SWLOR.Game.Server.Service
 {
     public static class MarketService
     {
-
         // Couldn't get any more specific than this. :)
         public static int NumberOfItemsAllowedToBeSoldAtATime => 50;
+
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnModuleEnter>(message => OnModuleEnter());
+            MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
+        }
 
         /// <summary>
         /// Retrieves the temporary market data for a given player.
@@ -91,7 +98,7 @@ namespace SWLOR.Game.Server.Service
         /// Call this on the module's OnEnter event.
         /// If a player sold items on the market while they were offline, they'll receive that money on entry.
         /// </summary>
-        public static void OnModuleEnter()
+        private static void OnModuleEnter()
         {
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
@@ -120,7 +127,7 @@ namespace SWLOR.Game.Server.Service
         /// If a player is currently setting a "Seller Note", look for the text and apply it to their
         /// temporary market data object.
         /// </summary>
-        public static void OnModuleNWNXChat()
+        private static void OnModuleNWNXChat()
         {
             NWPlayer player = NWNXChat.GetSender().Object;
             if (!CanHandleChat(player)) return;

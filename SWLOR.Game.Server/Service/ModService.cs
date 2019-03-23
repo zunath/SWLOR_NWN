@@ -2,6 +2,8 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.ValueObject;
 
@@ -9,6 +11,11 @@ namespace SWLOR.Game.Server.Service
 {
     public static class ModService
     {
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnModuleApplyDamage>(message => OnModuleApplyDamage());
+        }
+
         public static CustomItemPropertyType GetModType(NWItem item)
         {
             CustomItemPropertyType ipType = CustomItemPropertyType.Unknown;
@@ -130,7 +137,7 @@ namespace SWLOR.Game.Server.Service
             return existingDescription + "\n" + description;
         }
 
-        public static void OnModuleApplyDamage()
+        private static void OnModuleApplyDamage()
         {
             var data = NWNXDamage.GetDamageEventData();
             if (data.Base <= 0) return;

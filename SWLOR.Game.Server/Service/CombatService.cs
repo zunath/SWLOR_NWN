@@ -3,6 +3,8 @@ using System.Globalization;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 
 
@@ -14,7 +16,12 @@ namespace SWLOR.Game.Server.Service
 {
     public static class CombatService
     {
-        public static void OnModuleApplyDamage()
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnModuleApplyDamage>(message => OnModuleApplyDamage());
+        }
+
+        private static void OnModuleApplyDamage()
         {
             DamageData data = NWNXDamage.GetDamageEventData();
 

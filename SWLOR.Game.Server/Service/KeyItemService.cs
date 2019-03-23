@@ -5,13 +5,19 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
 
 
 namespace SWLOR.Game.Server.Service
 {
     public static class KeyItemService
     {
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnModuleAcquireItem>(message => OnModuleItemAcquired());
+        }
+
         public static bool PlayerHasKeyItem(NWObject oPC, int keyItemID)
         {
             var entity = DataService.GetAll<PCKeyItem>().FirstOrDefault(x => x.PlayerID == oPC.GlobalID && x.KeyItemID == keyItemID);
@@ -71,7 +77,7 @@ namespace SWLOR.Game.Server.Service
             return DataService.Single<KeyItem>(x => x.ID == keyItemID);
         }
 
-        public static void OnModuleItemAcquired()
+        private static void OnModuleItemAcquired()
         {
             NWPlayer oPC = (_.GetModuleItemAcquiredBy());
 

@@ -9,6 +9,8 @@ using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 using static NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
@@ -19,6 +21,13 @@ namespace SWLOR.Game.Server.Service
 {
     public static class BaseService
     {
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnModuleHeartbeat>(message => OnModuleHeartbeat());
+            MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
+            MessageHub.Instance.Subscribe<OnModuleUseFeat>(message => OnModuleUseFeat());
+        }
+
         public static PCTempBaseData GetPlayerTempData(NWPlayer player)
         {
             if (!player.Data.ContainsKey("BASE_SERVICE_DATA"))
@@ -43,7 +52,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static void OnModuleUseFeat()
+        private static void OnModuleUseFeat()
         {
             NWPlayer player = (Object.OBJECT_SELF);
             int featID = NWNXEvents.OnFeatUsed_GetFeatID();
@@ -321,7 +330,7 @@ namespace SWLOR.Game.Server.Service
             player.FloatingText("You purchase " + area.Name + " (" + sector + ") for " + purchasePrice + " credits.");
         }
 
-        public static void OnModuleHeartbeat()
+        private static void OnModuleHeartbeat()
         {
             NWModule module = NWModule.Get();
             int ticks = module.GetLocalInt("BASE_SERVICE_TICKS") + 1;
@@ -1198,8 +1207,9 @@ namespace SWLOR.Game.Server.Service
             return validTarget && sender.GetLocalInt("LISTENING_FOR_NEW_CONTAINER_NAME") == TRUE;
         }
 
-        public static void OnModuleNWNXChat(NWPlayer sender)
+        private static void OnModuleNWNXChat()
         {
+            NWPlayer sender = Object.OBJECT_SELF;
             string text = NWNXChat.GetMessage().Trim();
 
             if (!CanHandleChat(sender, text))

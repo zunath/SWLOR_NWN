@@ -1,4 +1,6 @@
 ﻿using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 
 using static NWN._;
@@ -7,12 +9,17 @@ namespace SWLOR.Game.Server.Service
 {
     public static class MessageBoardService
     {
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
+        }
+
         public static bool CanHandleChat(NWObject sender)
         {
             return sender.GetLocalInt("MESSAGE_BOARD_LISTENING") == TRUE;
         }
 
-        public static void OnModuleNWNXChat()
+        private static void OnModuleNWNXChat()
         {
             NWPlayer player = NWNXChat.GetSender().Object;
             

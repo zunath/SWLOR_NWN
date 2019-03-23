@@ -3,6 +3,8 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 
 
@@ -12,6 +14,11 @@ namespace SWLOR.Game.Server.Service
 {
     public static class ObjectVisibilityService
     {
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnModuleEnter>(message => OnModuleEnter());
+        }
+
         public static void OnModuleLoad()
         {
             foreach (var area in NWModule.Get().Areas)
@@ -31,7 +38,7 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        public static void OnClientEnter()
+        private static void OnModuleEnter()
         {
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;

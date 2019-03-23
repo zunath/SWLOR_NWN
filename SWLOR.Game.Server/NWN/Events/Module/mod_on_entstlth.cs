@@ -1,5 +1,7 @@
 ﻿using SWLOR.Game.Server;
-using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
 
 // ReSharper disable once CheckNamespace
 namespace NWN.Scripts
@@ -11,7 +13,11 @@ namespace NWN.Scripts
         // ReSharper disable once UnusedMember.Local
         private static void Main()
         {
-            App.RunEvent<OnModuleEnterStealthAfter>();
+            NWObject stealther = Object.OBJECT_SELF;
+            _.SetActionMode(stealther, _.ACTION_MODE_STEALTH, _.FALSE);
+            _.FloatingTextStringOnCreature("NWN stealth mode is disabled on this server.", stealther, _.FALSE);
+            
+            MessageHub.Instance.Publish(new OnModuleEnterStealthAfter());
         }
     }
 }

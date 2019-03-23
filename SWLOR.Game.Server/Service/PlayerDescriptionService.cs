@@ -2,14 +2,20 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
 
 
 namespace SWLOR.Game.Server.Service
 {
     public static class PlayerDescriptionService
     {
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnModuleChat>(message => OnModuleChat());
+        }
 
-        public static void OnModuleChat()
+        private static void OnModuleChat()
         {
             NWPlayer sender = (_.GetPCChatSpeaker());
             if (sender.GetLocalInt("LISTENING_FOR_DESCRIPTION") != 1) return;

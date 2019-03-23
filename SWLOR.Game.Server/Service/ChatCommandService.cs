@@ -7,6 +7,8 @@ using SWLOR.Game.Server.GameObject;
 
 using System.Linq;
 using System.Reflection;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 using static NWN._;
 
@@ -14,6 +16,11 @@ namespace SWLOR.Game.Server.Service
 {
     public static class ChatCommandService
     {
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
+            MessageHub.Instance.Subscribe<OnModuleUseFeat>(message => OnModuleUseFeat());
+        }
 
         public static bool CanHandleChat(NWObject sender, string message)
         {
@@ -22,8 +29,9 @@ namespace SWLOR.Game.Server.Service
             return validTarget && validMessage;
         }
 
-        public static void OnModuleNWNXChat(NWPlayer sender)
+        private static void OnModuleNWNXChat()
         {
+            NWPlayer sender = Object.OBJECT_SELF;
             string originalMessage = NWNXChat.GetMessage().Trim();
 
             if (!CanHandleChat(sender, originalMessage))
@@ -88,7 +96,7 @@ namespace SWLOR.Game.Server.Service
 
         }
 
-        public static void OnModuleUseFeat()
+        private static void OnModuleUseFeat()
         {
             NWPlayer pc = Object.OBJECT_SELF;
             int featID = NWNXEvents.OnFeatUsed_GetFeatID();

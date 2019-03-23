@@ -1,21 +1,19 @@
 ﻿using NWN;
-
+using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Delayed;
+using SWLOR.Game.Server.Event.Legacy;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
-
-
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Feat;
+using SWLOR.Game.Server.NWN.Events.Module;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Bioware;
-using SWLOR.Game.Server.Event.Legacy;
-using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Feat;
-using SWLOR.Game.Server.NWNX;
 using static NWN._;
 using Object = NWN.Object;
 
@@ -25,6 +23,12 @@ namespace SWLOR.Game.Server.Service
     {
         public static void SubscribeEvents()
         {
+            // Module Events
+            MessageHub.Instance.Subscribe<OnModuleActivateItem>(message => OnModuleActivatedItem());
+            MessageHub.Instance.Subscribe<OnModuleEquipItem>(message => OnModuleEquipItem());
+            MessageHub.Instance.Subscribe<OnModuleUnequipItem>(message => OnModuleUnequipItem());
+
+            // Feat Events
             MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
         }
 
@@ -56,7 +60,7 @@ namespace SWLOR.Game.Server.Service
             return itemType;
         }
 
-        public static void OnModuleActivatedItem()
+        private static void OnModuleActivatedItem()
         {
             NWPlayer user = (_.GetItemActivator());
             NWItem oItem = (_.GetItemActivated());
@@ -402,13 +406,15 @@ namespace SWLOR.Game.Server.Service
             CustomBaseItemType.Lightsaber
         };
 
-        public static void OnModuleUnequipItem()
+        private static void OnModuleUnequipItem()
         {
             NWPlayer player = _.GetPCItemLastUnequippedBy();
+            if (player.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return; // Don't run heavy code when customizing equipment.
+
             NWItem oItem = _.GetPCItemLastUnequipped();
 
             // Remove lightsaber hum effect.
-            foreach (var effect in player.Effects.Where(x=> _.GetEffectTag(x) == "LIGHTSABER_HUM"))
+            foreach (var effect in player.Effects.Where(x => _.GetEffectTag(x) == "LIGHTSABER_HUM"))
             {
                 _.RemoveEffect(player, effect);
             }
@@ -417,7 +423,7 @@ namespace SWLOR.Game.Server.Service
             if (oItem.CustomItemType == CustomItemType.Lightsaber ||
                 oItem.CustomItemType == CustomItemType.Saberstaff)
             {
-  
+
                 player.AssignCommand(() =>
                 {
                     _.PlaySound("saberoff");
@@ -426,12 +432,26 @@ namespace SWLOR.Game.Server.Service
 
         }
 
-        public static void OnModuleEquipItem()
-        {
-            using (new Profiler("ItemService::OnModuleEquipItem()"))
-            {
 
-                int[] validItemTypes = {
+        // Players abuse an exploit in NWN which allows them to gain an extra attack.
+        // To work around this I force them to clear all actions.
+        private static void HandleEquipmentSwappingDelay()
+        {
+            NWPlayer oPC = (_.GetPCItemLastEquippedBy());
+            NWItem oItem = (_.GetPCItemLastEquipped());
+            NWItem rightHand = oPC.RightHand;
+            NWItem leftHand = oPC.LeftHand;
+
+            if (!oPC.IsInCombat) return;
+            if (Equals(oItem, rightHand) && Equals(oItem, leftHand)) return;
+            if (!Equals(oItem, leftHand)) return;
+
+            oPC.ClearAllActions();
+        }
+
+        private static void OnModuleEquipItem()
+        {
+            int[] validItemTypes = {
                     BASE_ITEM_ARMOR,
                     BASE_ITEM_ARROW,
                     BASE_ITEM_BASTARDSWORD,
@@ -490,56 +510,64 @@ namespace SWLOR.Game.Server.Service
 
             };
 
-                NWPlayer player = _.GetPCItemLastEquippedBy();
-                NWItem oItem = (_.GetPCItemLastEquipped());
-                int baseItemType = oItem.BaseItemType;
-                Effect eEffect = _.EffectVisualEffect(579);
-                eEffect = _.TagEffect(eEffect, "LIGHTSABER_HUM");
+            NWPlayer player = _.GetPCItemLastEquippedBy();
 
-                // Handle lightsaber sounds
-                if (oItem.CustomItemType == CustomItemType.Lightsaber ||
-                    oItem.CustomItemType == CustomItemType.Saberstaff)
+            if (player.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return; // Don't run heavy code when customizing equipment.
+
+            NWItem oItem = (_.GetPCItemLastEquipped());
+            int baseItemType = oItem.BaseItemType;
+            Effect eEffect = _.EffectVisualEffect(579);
+            eEffect = _.TagEffect(eEffect, "LIGHTSABER_HUM");
+
+            // Handle lightsaber sounds
+            if (oItem.CustomItemType == CustomItemType.Lightsaber ||
+                oItem.CustomItemType == CustomItemType.Saberstaff)
+            {
+                _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, eEffect, player);
+                player.AssignCommand(() =>
                 {
-                    _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, eEffect, player);
-                    player.AssignCommand(() =>  
-                    {   
-                        _.PlaySound("saberon");                 
-                    });
-                }
+                    _.PlaySound("saberon");
+                });
+            }
 
-                if (!validItemTypes.Contains(baseItemType)) return;
+            if (!validItemTypes.Contains(baseItemType))
+            {
+                HandleEquipmentSwappingDelay();
+                return;
+            }
 
-                AddOnHitProperty(oItem);
+            AddOnHitProperty(oItem);
 
-                // Check ammo every time
-                if (player.Arrows.IsValid)
+            // Check ammo every time
+            if (player.Arrows.IsValid)
+            {
+                AddOnHitProperty(player.Arrows);
+                player.Arrows.RecommendedLevel = oItem.RecommendedLevel;
+            }
+
+            if (player.Bolts.IsValid)
+            {
+                AddOnHitProperty(player.Bolts);
+                player.Bolts.RecommendedLevel = oItem.RecommendedLevel;
+            }
+
+            if (player.Bullets.IsValid)
+            {
+                AddOnHitProperty(player.Bullets);
+                player.Bullets.RecommendedLevel = oItem.RecommendedLevel;
+            }
+
+
+            if (baseItemType == BASE_ITEM_TORCH)
+            {
+                int charges = oItem.ReduceCharges();
+                if (charges <= 0)
                 {
-                    AddOnHitProperty(player.Arrows);
-                    player.Arrows.RecommendedLevel = oItem.RecommendedLevel;
-                }
-
-                if (player.Bolts.IsValid)
-                {
-                    AddOnHitProperty(player.Bolts);
-                    player.Bolts.RecommendedLevel = oItem.RecommendedLevel;
-                }
-
-                if (player.Bullets.IsValid)
-                {
-                    AddOnHitProperty(player.Bullets);
-                    player.Bullets.RecommendedLevel = oItem.RecommendedLevel;
-                }
-
-
-                if (baseItemType == BASE_ITEM_TORCH)
-                {
-                    int charges = oItem.ReduceCharges();
-                    if (charges <= 0)
-                    {
-                        oItem.Destroy();
-                    }
+                    oItem.Destroy();
                 }
             }
+
+            HandleEquipmentSwappingDelay();
         }
 
         private static void AddOnHitProperty(NWItem oItem)
@@ -711,7 +739,7 @@ namespace SWLOR.Game.Server.Service
             BASE_ITEM_BULLET,
             BASE_ITEM_DART
         };
-        
+
         private static readonly Dictionary<int, SkillType> _skillTypeMappings = new Dictionary<int, SkillType>()
         {
             // One-Handed Skills
@@ -788,13 +816,13 @@ namespace SWLOR.Game.Server.Service
                 if (item.CustomItemType == CustomItemType.LightArmor) return SkillType.LightArmor;
                 else if (item.CustomItemType == CustomItemType.HeavyArmor) return SkillType.HeavyArmor;
                 else if (item.CustomItemType == CustomItemType.ForceArmor) return SkillType.ForceArmor;
-                
+
                 // Training lightsabers are katana weapons with special local variables.
                 if (item.GetLocalInt("LIGHTSABER") == TRUE)
                 {
                     return SkillType.Lightsaber;
                 }
-                
+
                 if (!_skillTypeMappings.TryGetValue(type, out var result))
                 {
                     return SkillType.Unknown;

@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.NWN.Events.Feat;
+using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 
 using SWLOR.Game.Server.Perk;
@@ -33,6 +34,10 @@ namespace SWLOR.Game.Server.Service
 
             // Feat Events
             MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
+
+            // Module Events
+            MessageHub.Instance.Subscribe<OnModuleEquipItem>(message => OnModuleEquipItem());
+            MessageHub.Instance.Subscribe<OnModuleUnequipItem>(message => OnModuleUnequipItem());
         }
 
         private static List<PCPerk> GetPCPerksByExecutionType(NWPlayer oPC, PerkExecutionType executionType)
@@ -79,50 +84,49 @@ namespace SWLOR.Game.Server.Service
             CacheAllPerkLevels(player);
         }
 
-        public static void OnModuleItemEquipped()
+        private static void OnModuleEquipItem()
         {
-            using (new Profiler("PerkService::OnModuleItemEquipped()"))
+            NWPlayer oPC = (_.GetPCItemLastEquippedBy());
+            if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return; // Don't run heavy code when customizing equipment.
+
+            NWItem oItem = (_.GetPCItemLastEquipped());
+            if (!oPC.IsPlayer || !oPC.IsInitializedAsPlayer) return;
+            if (oPC.GetLocalInt("LOGGED_IN_ONCE") == FALSE) return;
+
+            var executionPerks = GetPCPerksByExecutionType(oPC, PerkExecutionType.EquipmentBased);
+            foreach (PCPerk pcPerk in executionPerks)
             {
-                NWPlayer oPC = (_.GetPCItemLastEquippedBy());
-                NWItem oItem = (_.GetPCItemLastEquipped());
-                if (!oPC.IsPlayer || !oPC.IsInitializedAsPlayer) return;
-                if (oPC.GetLocalInt("LOGGED_IN_ONCE") == FALSE) return;
+                var perk = DataService.Get<Data.Entity.Perk>(pcPerk.PerkID);
+                string jsName = perk.ScriptName;
+                if (string.IsNullOrWhiteSpace(jsName)) continue;
 
-                var executionPerks = GetPCPerksByExecutionType(oPC, PerkExecutionType.EquipmentBased);
-                foreach (PCPerk pcPerk in executionPerks)
+                App.ResolveByInterface<IPerk>("Perk." + jsName, (perkAction) =>
                 {
-                    var perk = DataService.Get<Data.Entity.Perk>(pcPerk.PerkID);
-                    string jsName = perk.ScriptName;
-                    if (string.IsNullOrWhiteSpace(jsName)) continue;
-
-                    App.ResolveByInterface<IPerk>("Perk." + jsName, (perkAction) =>
-                    {
-                        perkAction?.OnItemEquipped(oPC, oItem);
-                    });
-                }
+                    perkAction?.OnItemEquipped(oPC, oItem);
+                });
             }
+        
         }
 
-        public static void OnModuleItemUnequipped()
+        private static void OnModuleUnequipItem()
         {
-            using (new Profiler("PerkService::OnModuleItemUnequipped()"))
+            NWPlayer oPC = (_.GetPCItemLastUnequippedBy());
+
+            if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return; // Don't run heavy code when customizing equipment.
+            NWItem oItem = (_.GetPCItemLastUnequipped());
+            if (!oPC.IsPlayer) return;
+
+            var executionPerks = GetPCPerksByExecutionType(oPC, PerkExecutionType.EquipmentBased);
+            foreach (PCPerk pcPerk in executionPerks)
             {
-                NWPlayer oPC = (_.GetPCItemLastUnequippedBy());
-                NWItem oItem = (_.GetPCItemLastUnequipped());
-                if (!oPC.IsPlayer) return;
+                var perk = DataService.Get<Data.Entity.Perk>(pcPerk.PerkID);
+                string jsName = perk.ScriptName;
+                if (string.IsNullOrWhiteSpace(jsName)) continue;
 
-                var executionPerks = GetPCPerksByExecutionType(oPC, PerkExecutionType.EquipmentBased);
-                foreach (PCPerk pcPerk in executionPerks)
+                App.ResolveByInterface<IPerk>("Perk." + jsName, (perkAction) =>
                 {
-                    var perk = DataService.Get<Data.Entity.Perk>(pcPerk.PerkID);
-                    string jsName = perk.ScriptName;
-                    if (string.IsNullOrWhiteSpace(jsName)) continue;
-
-                    App.ResolveByInterface<IPerk>("Perk." + jsName, (perkAction) =>
-                    {
-                        perkAction?.OnItemUnequipped(oPC, oItem);
-                    });
-                }
+                    perkAction?.OnItemUnequipped(oPC, oItem);
+                });
             }
         }
 

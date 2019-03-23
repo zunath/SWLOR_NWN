@@ -16,6 +16,7 @@ using System.Text.RegularExpressions;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Creature;
+using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWN.Events.Player;
 using static NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
@@ -33,6 +34,11 @@ namespace SWLOR.Game.Server.Service
 
             // Player Events
             MessageHub.Instance.Subscribe<OnPlayerHeartbeat>(message => OnCreatureHeartbeat());
+
+            // Module Events
+            MessageHub.Instance.Subscribe<OnModuleEquipItem>(message => OnModuleEquipItem());
+            MessageHub.Instance.Subscribe<OnModuleLeave>(message => OnModuleLeave());
+            MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
         }
 
         private struct ShipStats
@@ -937,8 +943,9 @@ namespace SWLOR.Game.Server.Service
             _.DelayCommand(1.0f, ()=> { _.AssignCommand(copy, () => { _.ActionSit(chair); } ); });
         }
 
-        public static void OnModuleLeave(NWPlayer player)
+        private static void OnModuleLeave()
         {
+            NWPlayer player = _.GetExitingObject();
             // If a player logs out in space, clean things up. 
             if (player.GetLocalInt("IS_SHIP") == 1)
             {
@@ -951,7 +958,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static void OnNWNXChat()
+        private static void OnModuleNWNXChat()
         {
             // Is the speaker a pilot or gunner?
             NWPlayer speaker = Object.OBJECT_SELF;
@@ -1498,9 +1505,11 @@ namespace SWLOR.Game.Server.Service
             _.DelayCommand(3.0f, ()=>{ ShootValidTarget(creature); });
         }
 
-        public static void OnModuleItemEquipped()
+        private static void OnModuleEquipItem()
         {
             NWPlayer equipper = _.GetPCItemLastEquippedBy();
+            if (equipper.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return; // Don't run heavy code when customizing equipment.
+
             if (equipper.GetLocalInt("IS_SHIP") > 0)
             {
                 NWItem item = _.GetPCItemLastEquipped();

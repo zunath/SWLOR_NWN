@@ -7,6 +7,8 @@ using SWLOR.Game.Server.GameObject;
 using static NWN._;
 using System.Text;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Service
@@ -24,7 +26,13 @@ namespace SWLOR.Game.Server.Service
     public static class ChatTextService
     {
 
-        public static void OnNWNXChat()
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnModuleEnter>(message => OnModuleEnter());
+            MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
+        }
+
+        private static void OnModuleNWNXChat()
         {
             ChatChannelType channel = (ChatChannelType)NWNXChat.GetChannel();
 
@@ -298,7 +306,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static void OnModuleEnter()
+        private static void OnModuleEnter()
         {
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;

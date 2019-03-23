@@ -5,6 +5,8 @@ using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.Processor;
 
 using SWLOR.Game.Server.ValueObject;
@@ -12,7 +14,12 @@ using SWLOR.Game.Server.ValueObject;
 namespace SWLOR.Game.Server.Service
 {
     public static class CustomEffectService
-    {   
+    {
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnModuleEnter>(message => OnModuleEnter());
+        }
+
         public static void ApplyCustomEffect(NWCreature caster, NWCreature target, CustomEffectType effectType, int ticks, int level, string data)
         {
             ApplyCustomEffect(caster, target, (int) effectType, ticks, level, data);
@@ -56,7 +63,7 @@ namespace SWLOR.Game.Server.Service
             return effectLevel * 0.05f;
         }
 
-        public static void OnModuleEnter()
+        private static void OnModuleEnter()
         {
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;

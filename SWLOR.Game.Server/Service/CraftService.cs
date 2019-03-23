@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Event.Delayed;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Area;
 using SWLOR.Game.Server.NWN.Events.Feat;
+using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 
 using SWLOR.Game.Server.ValueObject;
@@ -31,6 +32,8 @@ namespace SWLOR.Game.Server.Service
                 NWPlayer player = Object.OBJECT_SELF;
                 DialogService.StartConversation(player, player, "ModifyItemAppearance");
             });
+            MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
+            MessageHub.Instance.Subscribe<OnModuleUseFeat>(message => OnModuleUseFeat());
         }
         
         private static List<CraftBlueprint> GetCraftBlueprintsAvailableToPlayer(Guid playerID)
@@ -545,7 +548,7 @@ namespace SWLOR.Game.Server.Service
             return sender.GetLocalInt("CRAFT_RENAMING_ITEM") == TRUE;
         }
 
-        public static void OnNWNXChat()
+        private static void OnModuleNWNXChat()
         {
             NWPlayer pc = NWNXChat.GetSender().Object;
             string newName = NWNXChat.GetMessage();
@@ -578,7 +581,7 @@ namespace SWLOR.Game.Server.Service
             pc.FloatingText("New name set!");
         }
 
-        public static void OnModuleUseFeat()
+        private static void OnModuleUseFeat()
         {
             NWPlayer pc = Object.OBJECT_SELF;
             int featID = NWNXEvents.OnFeatUsed_GetFeatID();

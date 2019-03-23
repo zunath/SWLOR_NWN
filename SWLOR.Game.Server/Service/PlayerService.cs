@@ -11,6 +11,7 @@ using Object = NWN.Object;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Area;
+using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Service
@@ -20,6 +21,10 @@ namespace SWLOR.Game.Server.Service
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnAreaEnter>(message => OnAreaEnter());
+            MessageHub.Instance.Subscribe<OnModuleEnter>(message => OnModuleEnter());
+            MessageHub.Instance.Subscribe<OnModuleHeartbeat>(message => OnModuleHeartbeat());
+            MessageHub.Instance.Subscribe<OnModuleLeave>(message => OnModuleLeave());
+            MessageHub.Instance.Subscribe<OnModuleUseFeat>(message => OnModuleUseFeat());
         }
 
         public static void InitializePlayer(NWPlayer player)
@@ -278,8 +283,9 @@ namespace SWLOR.Game.Server.Service
                 _.ExportSingleCharacter(player);
         }
 
-        public static void LoadCharacter(NWPlayer player)
+        private static void LoadCharacter()
         {
+            NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
 
             Player entity = GetPlayerEntity(player.GlobalID);
@@ -313,8 +319,17 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static void ShowMOTD(NWPlayer player)
+        private static void OnModuleEnter()
         {
+            LoadCharacter();
+            ShowMOTD();
+            ApplyGhostwalk();
+            ApplyScriptEvents();
+        }
+
+        private static void ShowMOTD()
+        {
+            NWPlayer player = _.GetEnteringObject();
             ServerConfiguration config = DataService.GetAll<ServerConfiguration>().First();
             string message = ColorTokenService.Green("Welcome to " + config.ServerName + "!\n\nMOTD: ") + ColorTokenService.White(config.MessageOfTheDay);
 
@@ -322,6 +337,48 @@ namespace SWLOR.Game.Server.Service
             {
                 player.SendMessage(message);
             });
+        }
+
+        private static void ApplyGhostwalk()
+        {
+            NWPlayer oPC = _.GetEnteringObject();
+
+            if (!oPC.IsPlayer) return;
+
+            Effect eGhostWalk = _.EffectCutsceneGhost();
+            eGhostWalk = _.TagEffect(eGhostWalk, "GHOST_WALK");
+            _.ApplyEffectToObject(_.DURATION_TYPE_PERMANENT, eGhostWalk, oPC.Object);
+
+        }
+
+        private static void ApplyScriptEvents()
+        {
+            NWPlayer player = _.GetEnteringObject();
+            if (!player.IsPlayer) return;
+
+            // As of 2018-03-28 only the OnDialogue, OnHeartbeat, and OnUserDefined events fire for PCs.
+            // The rest are included here for completeness sake.
+
+            //_.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_BLOCKED_BY_DOOR, "pc_on_blocked");
+            _.SetEventScript(player.Object, _.EVENT_SCRIPT_CREATURE_ON_DAMAGED, "pc_on_damaged");
+            //_.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_DEATH, "pc_on_death");
+            _.SetEventScript(player.Object, _.EVENT_SCRIPT_CREATURE_ON_DIALOGUE, "default");
+            //_.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_DISTURBED, "pc_on_disturb");
+            //_.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_END_COMBATROUND, "pc_on_endround");
+            _.SetEventScript(player.Object, _.EVENT_SCRIPT_CREATURE_ON_HEARTBEAT, "pc_on_heartbeat");
+            //_.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_MELEE_ATTACKED, "pc_on_attacked");
+            //_.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_NOTICE, "pc_on_notice");
+            //_.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_RESTED, "pc_on_rested");
+            //_.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_SPAWN_IN, "pc_on_spawn");
+            //_.SetEventScript(oPC.Object, EVENT_SCRIPT_CREATURE_ON_SPELLCASTAT, "pc_on_spellcast");
+            _.SetEventScript(player.Object, _.EVENT_SCRIPT_CREATURE_ON_USER_DEFINED_EVENT, "pc_on_user");
+        }
+
+        private static void OnModuleLeave()
+        {
+            NWPlayer player = _.GetExitingObject();
+            SaveCharacter(player);
+            SaveLocation(player);
         }
 
         public static void SaveCharacter(NWPlayer player)
@@ -403,7 +460,7 @@ namespace SWLOR.Game.Server.Service
             NWNXPlayer.SetQuickBarSlot(player, 3, chatCommandTargeter);
         }
 
-        public static void OnModuleUseFeat()
+        private static void OnModuleUseFeat()
         {
             NWPlayer pc = (Object.OBJECT_SELF);
             int featID = NWNXEvents.OnFeatUsed_GetFeatID();
@@ -411,6 +468,108 @@ namespace SWLOR.Game.Server.Service
             if (featID != (int)CustomFeatType.OpenRestMenu) return;
             pc.ClearAllActions();
             DialogService.StartConversation(pc, pc, "RestMenu");
+        }
+
+        private static void OnModuleHeartbeat()
+        {
+            Guid[] playerIDs = NWModule.Get().Players.Where(x => x.IsPlayer).Select(x => x.GlobalID).ToArray();
+            var entities = DataService.Where<Data.Entity.Player>(x => playerIDs.Contains(x.ID)).ToList();
+
+            foreach (var player in NWModule.Get().Players)
+            {
+                var entity = entities.SingleOrDefault(x => x.ID == player.GlobalID);
+                if (entity == null) continue;
+
+                HandleRegenerationTick(player, entity);
+                HandleFPRegenerationTick(player, entity);
+
+                DataService.SubmitDataChange(entity, DatabaseActionType.Update);
+            }
+
+            SaveCharacters();
+        }
+        
+        private static void HandleRegenerationTick(NWPlayer oPC, Data.Entity.Player entity)
+        {
+            entity.RegenerationTick = entity.RegenerationTick - 1;
+            int rate = 20;
+            int amount = entity.HPRegenerationAmount;
+
+            if (entity.RegenerationTick <= 0)
+            {
+                if (oPC.CurrentHP < oPC.MaxHP)
+                {
+                    var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(oPC);
+                    // CON bonus
+                    int con = oPC.ConstitutionModifier;
+                    if (con > 0)
+                    {
+                        amount += con;
+                    }
+                    amount += effectiveStats.HPRegen;
+
+                    if (oPC.Chest.CustomItemType == CustomItemType.HeavyArmor)
+                    {
+                        int sturdinessLevel = PerkService.GetPCPerkLevel(oPC, PerkType.Sturdiness);
+                        if (sturdinessLevel > 0)
+                        {
+                            amount += sturdinessLevel + 1;
+                        }
+                    }
+                    _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectHeal(amount), oPC.Object);
+                }
+
+                entity.RegenerationTick = rate;
+            }
+        }
+
+        private static void HandleFPRegenerationTick(NWPlayer oPC, Data.Entity.Player entity)
+        {
+            entity.CurrentFPTick = entity.CurrentFPTick - 1;
+            int rate = 20;
+            int amount = 1;
+
+            if (entity.CurrentFPTick <= 0)
+            {
+                if (entity.CurrentFP < entity.MaxFP)
+                {
+                    var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(oPC);
+                    // CHA bonus
+                    int cha = oPC.CharismaModifier;
+                    if (cha > 0)
+                    {
+                        amount += cha;
+                    }
+                    amount += effectiveStats.FPRegen;
+
+                    if (oPC.Chest.CustomItemType == CustomItemType.ForceArmor)
+                    {
+                        int clarityLevel = PerkService.GetPCPerkLevel(oPC, PerkType.Clarity);
+                        if (clarityLevel > 0)
+                        {
+                            amount += clarityLevel + 1;
+                        }
+                    }
+
+                    entity = AbilityService.RestoreFP(oPC, amount, entity);
+                }
+
+                entity.CurrentFPTick = rate;
+            }
+        }
+
+        // Export all characters every minute.
+        private static void SaveCharacters()
+        {
+            int currentTick = NWModule.Get().GetLocalInt("SAVE_CHARACTERS_TICK") + 1;
+
+            if (currentTick >= 10)
+            {
+                _.ExportAllCharacters();
+                currentTick = 0;
+            }
+
+            NWModule.Get().SetLocalInt("SAVE_CHARACTERS_TICK", currentTick);
         }
     }
 }

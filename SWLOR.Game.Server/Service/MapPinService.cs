@@ -4,15 +4,21 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class MapPinService
     {
-        public static void OnModuleClientEnter()
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnModuleEnter>(message => OnModuleClientEnter());
+            MessageHub.Instance.Subscribe<OnModuleLeave>(message => OnModuleLeave());
+        }
+
+        private static void OnModuleClientEnter()
         {
             NWPlayer oPC = (_.GetEnteringObject());
 
@@ -30,7 +36,7 @@ namespace SWLOR.Game.Server.Service
             oPC.SetLocalInt("MAP_PINS_LOADED", 1);
         }
 
-        public static void OnModuleClientLeave()
+        private static void OnModuleLeave()
         {
             NWPlayer oPC = (_.GetExitingObject());
 

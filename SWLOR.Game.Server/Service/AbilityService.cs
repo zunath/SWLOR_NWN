@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.Delayed;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Feat;
+using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 
 using SWLOR.Game.Server.Perk;
@@ -37,9 +38,10 @@ namespace SWLOR.Game.Server.Service
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
+            MessageHub.Instance.Subscribe<OnModuleUseFeat>(message => OnModuleUseFeat());
         }
 
-        public static void OnModuleUseFeat()
+        private static void OnModuleUseFeat()
         {
             NWPlayer pc = Object.OBJECT_SELF;
             NWCreature target = NWNXEvents.OnFeatUsed_GetTarget().Object;

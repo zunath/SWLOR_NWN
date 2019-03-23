@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Area;
+using SWLOR.Game.Server.NWN.Events.Module;
 using static NWN._;
 using Object = NWN.Object;
 
@@ -19,6 +20,7 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnAreaEnter>(message => OnAreaEnter());
             MessageHub.Instance.Subscribe<OnAreaExit>(message => OnAreaExit());
             MessageHub.Instance.Subscribe<OnAreaHeartbeat>(message => OnAreaHeartbeat());
+            MessageHub.Instance.Subscribe<OnModuleLeave>(message => OnModuleLeave());
         }
         
         private static void OnAreaEnter()
@@ -45,7 +47,7 @@ namespace SWLOR.Game.Server.Service
             SaveMapProgression(area, player);
         }
 
-        public static void OnModuleLeave()
+        private static void OnModuleLeave()
         {
             NWPlayer player = _.GetExitingObject();
             NWArea area = _.GetArea(player);

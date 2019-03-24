@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Service
         {
             RegisterSpawnRules();
             InitializeSpawns();
-            ObjectProcessingService.RegisterProcessingEvent<SpawnProcessor>();
+            ObjectProcessingService.RegisterProcessingEvent(new SpawnProcessor());
         }
 
         private static void RegisterSpawnRules()

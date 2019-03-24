@@ -15,7 +15,6 @@ namespace SWLOR.Game.Server
         public static Dictionary<string, int> EffectTicks { get; }
         public static Dictionary<Guid, CreatureSkillRegistration> CreatureSkillRegistrations;
         public static Dictionary<CasterSpellVO, int> NPCEffects { get; }
-        public static Dictionary<string, ProcessingEvent> ProcessingEvents { get; set; }
         public static Queue<string> UnregisterProcessingEvents { get; set; }
         public static Dictionary<Guid, EnmityTable> NPCEnmityTables { get; set; }
         public static Dictionary<Guid, CustomData> CustomObjectData { get; set; } 
@@ -33,7 +32,6 @@ namespace SWLOR.Game.Server
             EffectTicks = new Dictionary<string, int>();
             CreatureSkillRegistrations = new Dictionary<Guid, CreatureSkillRegistration>();
             NPCEffects = new Dictionary<CasterSpellVO, int>();
-            ProcessingEvents = new Dictionary<string, ProcessingEvent>();
             UnregisterProcessingEvents = new Queue<string>();
             NPCEnmityTables = new Dictionary<Guid, EnmityTable>();
             CustomObjectData = new Dictionary<Guid, CustomData>();

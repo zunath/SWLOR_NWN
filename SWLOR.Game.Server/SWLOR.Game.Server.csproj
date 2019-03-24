@@ -1383,7 +1383,6 @@
     <Compile Include="ValueObject\MapPin.cs" />
     <Compile Include="ValueObject\PCPerkHeader.cs" />
     <Compile Include="ValueObject\ModSlots.cs" />
-    <Compile Include="ValueObject\ProcessingEvent.cs" />
     <Compile Include="ValueObject\Profiler.cs" />
     <Compile Include="ValueObject\ResourceDetails.cs" />
     <Compile Include="ValueObject\Skill\CreatureSkillRegistration.cs" />

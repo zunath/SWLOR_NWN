@@ -9,7 +9,8 @@ namespace SWLOR.Game.Server.Service
     {
         public static void RegisterBehaviour(IBehaviourTreeNode node, NWCreature creature)
         {
-            string behaviourID = ObjectProcessingService.RegisterProcessingEvent<BehaviourProcessor>(node, creature);
+            var processor = new BehaviourProcessor(node, creature);
+            string behaviourID = ObjectProcessingService.RegisterProcessingEvent(processor);
             AppCache.NPCBehaviours.Add(behaviourID, creature);
         }
         

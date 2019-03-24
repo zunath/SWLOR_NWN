@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Processor
 {
     public class SpawnProcessor: IEventProcessor
     {
-        public void Run(object[] args)
+        public void Run()
         {
             var spawns = AppCache.AreaSpawns;
 

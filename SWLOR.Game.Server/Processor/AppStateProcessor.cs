@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Processor
 {
     public class AppStateProcessor: IEventProcessor
     {
-        public void Run(object[] args)
+        public void Run()
         {
             foreach (var npcTable in AppCache.NPCEnmityTables.ToArray())
             {

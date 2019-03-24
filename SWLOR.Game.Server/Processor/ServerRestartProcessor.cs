@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Processor
             }
         }
 
-        public void Run(object[] args)
+        public void Run()
         {
             if (IsDisabled)
             {

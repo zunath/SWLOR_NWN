@@ -5,7 +5,7 @@ namespace SWLOR.Game.Server.Processor
 {
     public class GarbageCollectorProcessor: IEventProcessor
     {
-        public void Run(object[] args)
+        public void Run()
         {
             Console.WriteLine("======================================================");
             Console.WriteLine("PlayerDialogs: " + AppCache.PlayerDialogs.Count);

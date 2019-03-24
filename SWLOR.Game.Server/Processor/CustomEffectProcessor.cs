@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Processor
 {
     public class CustomEffectProcessor: IEventProcessor
     {
-        public void Run(object[] args)
+        public void Run()
         {
             ProcessPCCustomEffects();
             ProcessNPCCustomEffects();

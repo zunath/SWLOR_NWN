@@ -1,16 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.Processor;
 using SWLOR.Game.Server.Processor.Contracts;
-
+using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class ObjectProcessingService
     {
+        private static readonly Dictionary<string, IEventProcessor> _processingEvents;
         private static DateTime _dateLastRun;
 
         public static void SubscribeEvents()
@@ -21,15 +24,16 @@ namespace SWLOR.Game.Server.Service
         static ObjectProcessingService()
         {
             _dateLastRun = DateTime.UtcNow;
+            _processingEvents = new Dictionary<string, IEventProcessor>();
         }
 
         private static void OnModuleLoad()
         {
-            RegisterProcessingEvent<AppStateProcessor>();
-            RegisterProcessingEvent<ServerRestartProcessor>();
+            RegisterProcessingEvent(new AppStateProcessor());
+            RegisterProcessingEvent(new ServerRestartProcessor());
             Events.MainLoopTick += Events_MainLoopTick;
         }
-
+        
         private static void Events_MainLoopTick(ulong frame)
         {
             RunProcessor();
@@ -45,38 +49,33 @@ namespace SWLOR.Game.Server.Service
             
             foreach (var toUnregister in AppCache.UnregisterProcessingEvents)
             {
-                AppCache.ProcessingEvents.Remove(toUnregister);
+                _processingEvents.Remove(toUnregister);
             }
             AppCache.UnregisterProcessingEvents.Clear();
 
-            foreach (var @event in AppCache.ProcessingEvents)
+            foreach (var @event in _processingEvents.Values)
             {
                 try
                 {
-                    App.ResolveByInterface<IEventProcessor>(@event.Value.ProcessorType.ToString(), (processor) =>
-                    {
-                        processor.Run(@event.Value.Args);
-                    });
+                    @event.Run();
                 }
                 catch (Exception ex)
                 {
-                    LoggingService.LogError(ex, "ObjectProcessingService. EventID = " + @event.Key);
+                    LoggingService.LogError(ex, "ObjectProcessingService. Event = " + @event);
                 }
             }
         }
 
-        public static string RegisterProcessingEvent<T>(params object[] args)
-            where T: IEventProcessor
+        public static string RegisterProcessingEvent(IEventProcessor processor)
         {
             string globalID = Guid.NewGuid().ToString();
-            ProcessingEvent @event = new ProcessingEvent(typeof(T), args);
-            AppCache.ProcessingEvents.Add(globalID, @event);
+            _processingEvents.Add(globalID, processor);
             return globalID;
         }
 
         public static void UnregisterProcessingEvent(string globalID)
         {
-            if (AppCache.ProcessingEvents.ContainsKey(globalID))
+            if (_processingEvents.ContainsKey(globalID))
             {
                 AppCache.UnregisterProcessingEvents.Enqueue(globalID);
             }

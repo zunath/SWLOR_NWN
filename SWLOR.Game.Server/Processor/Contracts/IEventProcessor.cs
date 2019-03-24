@@ -2,6 +2,6 @@
 {
     public interface IEventProcessor
     {
-        void Run(object[] args);
+        void Run();
     }
 }

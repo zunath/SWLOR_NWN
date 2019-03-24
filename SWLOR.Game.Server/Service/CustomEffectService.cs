@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleLoad()
         {
             RegisterCustomEffectHandlers();
-            ObjectProcessingService.RegisterProcessingEvent<CustomEffectProcessor>();
+            ObjectProcessingService.RegisterProcessingEvent(new CustomEffectProcessor());
         }
 
         private static void RegisterCustomEffectHandlers()

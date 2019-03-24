@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using FluentBehaviourTree;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Processor.Contracts;
@@ -9,20 +10,28 @@ namespace SWLOR.Game.Server.Processor
 {
     public class BehaviourProcessor: IEventProcessor
     {
-        public void Run(object[] args)
+        private readonly IBehaviourTreeNode _node;
+        private readonly NWCreature _creature;
+
+        public BehaviourProcessor(IBehaviourTreeNode node, NWCreature creature)
+        {
+            _node = node;
+            _creature = creature;
+        }
+
+        public void Run()
         {
             TimeData time = new TimeData(ObjectProcessingService.ProcessingTickInterval);
-            IBehaviourTreeNode node = (IBehaviourTreeNode)args[0];
-            NWCreature creature = (NWCreature)args[1];
-            bool hasPCs = NWModule.Get().Players.Count(x => x.Area.Resref == creature.Area.Resref) > 0;
+            
+            bool hasPCs = NWModule.Get().Players.Count(x => x.Area.Resref == _creature.Area.Resref) > 0;
 
-            if (creature.IsValid && 
-                !creature.IsDead && 
-                !creature.IsPossessedFamiliar && 
-                !creature.IsDMPossessed &&
+            if (_creature.IsValid && 
+                !_creature.IsDead && 
+                !_creature.IsPossessedFamiliar && 
+                !_creature.IsDMPossessed &&
                 hasPCs)
             {
-                node.Tick(time);
+                _node.Tick(time);
             }
         }
     }

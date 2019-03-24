@@ -4,20 +4,7 @@ using System.Reflection;
 using Autofac;
 using FluentBehaviourTree;
 using SWLOR.Game.Server.AI.Contracts;
-using SWLOR.Game.Server.ChatCommand.Contracts;
-using SWLOR.Game.Server.Conversation.Contracts;
-using SWLOR.Game.Server.CustomEffect.Contracts;
-using SWLOR.Game.Server.Data;
-using SWLOR.Game.Server.Event;
-using SWLOR.Game.Server.Item.Contracts;
-using SWLOR.Game.Server.Mod.Contracts;
-using SWLOR.Game.Server.AreaInstance.Contracts;
-using SWLOR.Game.Server.DoorRule.Contracts;
-using SWLOR.Game.Server.Perk;
-using SWLOR.Game.Server.Processor.Contracts;
-using SWLOR.Game.Server.QuestRule.Contracts;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server
@@ -60,39 +47,6 @@ namespace SWLOR.Game.Server
                 }
             }
         }
-
-        public delegate T2 AppResolveDelegate<in T1, out T2>(T1 obj);
-        public static T2 ResolveByInterface<T1, T2>(string typeName, AppResolveDelegate<T1, T2> action)
-        {
-            T2 result;
-            if (!typeof(T1).IsInterface)
-            {
-                throw new Exception(nameof(T1) + " must be an interface.");
-            }
-            string assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
-            typeName = typeName.Replace(assemblyName + ".", string.Empty);
-            string @namespace = assemblyName + "." + typeName;
-
-            using (new Profiler(typeName))
-            {
-                using (var scope = _container.BeginLifetimeScope())
-                {
-                    var resolved = scope.ResolveKeyed<T1>(@namespace);
-
-                    try
-                    {
-                        result = action.Invoke(resolved);
-                    }
-                    catch (Exception ex)
-                    {
-                        LoggingService.LogError(ex, typeof(T1).ToString());
-                        throw;
-                    }
-                }
-            }
-            
-            return result;
-        }
         
         public static bool IsKeyRegistered<T>(string key)
         {
@@ -111,7 +65,6 @@ namespace SWLOR.Game.Server
             var builder = new ContainerBuilder();
             
             // Interfaces
-            RegisterInterfaceImplementations<IConversation>(builder);
             RegisterInterfaceImplementations<IAIBehaviour>(builder);
             
             // Third Party

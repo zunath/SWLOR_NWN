@@ -146,12 +146,10 @@ namespace SWLOR.Game.Server.Conversation
 
             dialog.ResetPage();
             ChangePage(dialog.CurrentPageName, false);
-            
-            App.ResolveByInterface<IConversation>("Conversation." + dialog.ActiveDialogName, convo =>
-            {
-                convo.Initialize();
-                GetPC().SetLocalInt("DIALOG_SYSTEM_INITIALIZE_RAN", 1);
-            });   
+
+            var conversation = DialogService.GetConversation(dialog.ActiveDialogName);
+            conversation.Initialize();
+            GetPC().SetLocalInt("DIALOG_SYSTEM_INITIALIZE_RAN", 1);
         }
 
         protected void ToggleBackButton(bool isOn)

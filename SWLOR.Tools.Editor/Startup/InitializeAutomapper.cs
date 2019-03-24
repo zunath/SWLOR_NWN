@@ -28,7 +28,6 @@ namespace SWLOR.Tools.Editor.Startup
                 cfg.CreateMap<KeyItemViewModel, KeyItem>();
                 cfg.CreateMap<LootTableItemViewModel, LootTableItem>();
                 cfg.CreateMap<LootTableViewModel, LootTable>();
-                cfg.CreateMap<ModViewModel, Mod>();
                 cfg.CreateMap<NPCGroupViewModel, NPCGroup>();
                 cfg.CreateMap<PerkCategoryViewModel, PerkCategory>();
                 cfg.CreateMap<PerkViewModel, Perk>();
@@ -55,7 +54,6 @@ namespace SWLOR.Tools.Editor.Startup
                 cfg.CreateMap<KeyItem, KeyItemViewModel>();
                 cfg.CreateMap<LootTableItem, LootTableItemViewModel>();
                 cfg.CreateMap<LootTable, LootTableViewModel>();
-                cfg.CreateMap<Mod, ModViewModel>();
                 cfg.CreateMap<NPCGroup, NPCGroupViewModel>();
                 cfg.CreateMap<PerkCategory, PerkCategoryViewModel>();
                 cfg.CreateMap<Perk, PerkViewModel>();

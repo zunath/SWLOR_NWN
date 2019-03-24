@@ -1,19 +1,65 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.Mod.Contracts;
 using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.ValueObject;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class ModService
     {
+        private static readonly Dictionary<int, IModHandler> _modHandlers;
+
+        static ModService()
+        {
+            _modHandlers = new Dictionary<int, IModHandler>();
+        }
+
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnModuleApplyDamage>(message => OnModuleApplyDamage());
+            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
+        }
+
+        private static void OnModuleLoad()
+        {
+            RegisterModHandlers();
+        }
+
+        private static void RegisterModHandlers()
+        {
+            // Use reflection to get all of IModHandler implementations.
+            var classes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => typeof(IModHandler).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
+            foreach (var type in classes)
+            {
+                IModHandler instance = Activator.CreateInstance(type) as IModHandler;
+                if (instance == null)
+                {
+                    throw new NullReferenceException("Unable to activate instance of type: " + type);
+                }
+                _modHandlers.Add(instance.ModTypeID, instance);
+            }
+        }
+
+        public static IModHandler GetModHandler(int modTypeID)
+        {
+            if (!_modHandlers.ContainsKey(modTypeID))
+            {
+                throw new KeyNotFoundException("Mod type ID " + modTypeID + " is not registered. Did you add a script for it?");
+            }
+
+            return _modHandlers[modTypeID];
         }
 
         public static CustomItemPropertyType GetModType(NWItem item)

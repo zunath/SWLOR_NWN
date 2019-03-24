@@ -196,7 +196,6 @@ namespace SWLOR.Tools.Editor.ViewModels
             WriteDataFileAsync(BuildViewModel<GameTopicCategory, GameTopicCategoryViewModel>(DataService.GetAll<GameTopicCategory>()));
             WriteDataFileAsync(BuildViewModel<KeyItemCategory, KeyItemCategoryViewModel>(DataService.GetAll<KeyItemCategory>(), KeyItemCategoryMapping));
             WriteDataFileAsync(BuildViewModel<LootTable, LootTableViewModel>(DataService.GetAll<LootTable>(), LootTableMapping));
-            WriteDataFileAsync(BuildViewModel<Mod, ModViewModel>(DataService.GetAll<Mod>()));
             WriteDataFileAsync(BuildViewModel<NPCGroup, NPCGroupViewModel>(DataService.GetAll<NPCGroup>()));
             WriteDataFileAsync(BuildViewModel<Perk, PerkViewModel>(DataService.GetAll<Perk>()));
             WriteDataFileAsync(BuildViewModel<PerkCategory, PerkCategoryViewModel>(DataService.GetAll<PerkCategory>()));

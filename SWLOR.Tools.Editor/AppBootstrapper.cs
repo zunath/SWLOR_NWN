@@ -166,7 +166,6 @@ namespace SWLOR.Tools.Editor
             builder.RegisterType(typeof(ObjectListViewModel<KeyItemCategoryViewModel>)).As<IObjectListViewModel<KeyItemCategoryViewModel>>();
             builder.RegisterType(typeof(ObjectListViewModel<KeyItemViewModel>)).As<IObjectListViewModel<KeyItemViewModel>>();
             builder.RegisterType(typeof(ObjectListViewModel<LootTableViewModel>)).As<IObjectListViewModel<LootTableViewModel>>();
-            builder.RegisterType(typeof(ObjectListViewModel<ModViewModel>)).As<IObjectListViewModel<ModViewModel>>();
             builder.RegisterType(typeof(ObjectListViewModel<NPCGroupViewModel>)).As<IObjectListViewModel<NPCGroupViewModel>>();
             builder.RegisterType(typeof(ObjectListViewModel<PerkCategoryViewModel>)).As<IObjectListViewModel<PerkCategoryViewModel>>();
             builder.RegisterType(typeof(ObjectListViewModel<PerkViewModel>)).As<IObjectListViewModel<PerkViewModel>>();

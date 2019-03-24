@@ -4,8 +4,10 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class HPRegenMod: IMod
+    public class HPRegenMod: IModHandler
     {
+        public int ModTypeID => 6;
+
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             if (target.HPRegenBonus >= 20)

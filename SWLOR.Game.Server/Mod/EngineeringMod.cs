@@ -4,8 +4,10 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class EngineeringMod : IMod
+    public class EngineeringMod : IModHandler
     {
+        public int ModTypeID => 17;
+
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             if (target.CraftBonusEngineering >= 30)

@@ -181,10 +181,6 @@ namespace SWLOR.Tools.Editor.ViewModels
                             
                             package.LootTables.Add(lootTable);
                             break;
-                        case ResourceType.Mods:
-                            var mod = ProcessViewModel<ModViewModel, Mod>(item);
-                            package.Mods.Add(mod);
-                            break;
                         case ResourceType.NPCGroups:
                             var npcGroup = ProcessViewModel<NPCGroupViewModel, NPCGroup>(item);
                             package.NPCGroups.Add(npcGroup);

@@ -9,8 +9,10 @@ using SWLOR.Game.Server.Bioware;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class AbilityScoreMod: IMod
+    public class AbilityScoreMod: IModHandler
     {
+        public int ModTypeID => 1;
+
         private Tuple<int, int> GetExistingIPInfo(NWItem item, int abilityType)
         {
             Tuple<int, int> result = new Tuple<int, int>(0, 0);
@@ -62,8 +64,6 @@ namespace SWLOR.Game.Server.Mod
 
             return new Tuple<int, int, string>(type, amount, strType + " +" + amount);
         }
-
-        
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {

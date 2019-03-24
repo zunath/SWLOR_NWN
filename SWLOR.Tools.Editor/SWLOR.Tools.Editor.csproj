@@ -183,7 +183,6 @@
     <Compile Include="ViewModels\Data\KeyItemViewModel.cs" />
     <Compile Include="ViewModels\Data\LootTableItemViewModel.cs" />
     <Compile Include="ViewModels\Data\LootTableViewModel.cs" />
-    <Compile Include="ViewModels\Data\ModViewModel.cs" />
     <Compile Include="ViewModels\Data\NPCGroupViewModel.cs" />
     <Compile Include="ViewModels\Data\PerkCategoryViewModel.cs" />
     <Compile Include="ViewModels\Data\PerkViewModel.cs" />

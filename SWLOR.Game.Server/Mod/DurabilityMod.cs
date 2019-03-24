@@ -6,8 +6,10 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class DurabilityMod: IMod
+    public class DurabilityMod: IModHandler
     {
+        public int ModTypeID => 19;
+
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             var maxDurability = DurabilityService.GetMaxDurability(target);

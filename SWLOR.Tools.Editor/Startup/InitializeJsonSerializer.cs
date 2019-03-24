@@ -72,8 +72,6 @@ namespace SWLOR.Tools.Editor.Startup
                         return Create("ID", "Name", "LootTableItems");
                     case nameof(LootTableItem):
                         return Create("ID", "LootTableID", "Resref", "MaxQuantity", "Weight", "IsActive", "SpawnRule");
-                    case nameof(Mod):
-                        return Create("ID", "Name", "Script", "IsActive");
                     case nameof(NPCGroup):
                         return Create("ID", "Name");
                     case nameof(Perk):

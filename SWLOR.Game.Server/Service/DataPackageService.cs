@@ -161,8 +161,6 @@ namespace SWLOR.Game.Server.Service
             //    errors += ValidateAndProcess(new LootTableItemProcessor(), obj) + "\n";
             //foreach (var obj in dpf.LootTables)
             //    errors += ValidateAndProcess(new LootTableProcessor(), obj) + "\n";
-            foreach (var obj in dpf.Mods)
-                errors += ValidateAndProcess(new ModProcessor(), obj) + "\n";
             foreach (var obj in dpf.NPCGroups)
                 errors += ValidateAndProcess(new NPCGroupProcessor(), obj) + "\n";
             foreach (var obj in dpf.PerkCategories)

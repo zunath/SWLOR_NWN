@@ -6,8 +6,10 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class BaseAttackBonusMod: IMod
+    public class BaseAttackBonusMod: IModHandler
     {
+        public int ModTypeID => 4;
+
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             if (!ItemService.ArmorBaseItemTypes.Contains(target.BaseItemType))

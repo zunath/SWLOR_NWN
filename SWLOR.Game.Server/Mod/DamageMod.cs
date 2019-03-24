@@ -4,8 +4,10 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class DamageMod : IMod
+    public class DamageMod : IModHandler
     {
+        public int ModTypeID => 25;
+
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             if (target.DamageBonus >= 20)

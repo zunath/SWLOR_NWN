@@ -10,8 +10,10 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class EnhancementBonusMod : IMod
+    public class EnhancementBonusMod : IModHandler
     {
+        public int ModTypeID => 24;
+
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             if (!ItemService.WeaponBaseItemTypes.Contains(target.BaseItemType))

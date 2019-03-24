@@ -28,3 +28,7 @@ WHERE ID = 25
 -- Drop the ScriptName column on the Perk table. No longer needed since we're linking by ID now.
 EXEC dbo.ADM_Drop_Column @TableName = N'dbo.Perk' , -- nvarchar(200)
                          @ColumnName = N'ScriptName'  -- nvarchar(200)
+
+
+-- Mod table is no longer necessary or useful. Drop it.
+DROP TABLE dbo.Mod

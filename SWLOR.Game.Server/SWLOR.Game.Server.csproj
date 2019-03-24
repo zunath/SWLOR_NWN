@@ -292,7 +292,6 @@
     <Compile Include="Data\Entity\KeyItemCategory.cs" />
     <Compile Include="Data\Entity\LootTable.cs" />
     <Compile Include="Data\Entity\LootTableItem.cs" />
-    <Compile Include="Data\Entity\Mod.cs" />
     <Compile Include="Data\Entity\NPCGroup.cs" />
     <Compile Include="Data\Entity\PCBase.cs" />
     <Compile Include="Data\Entity\PCBasePermission.cs" />
@@ -362,7 +361,6 @@
     <Compile Include="Data\Processor\KeyItemProcessor.cs" />
     <Compile Include="Data\Processor\LootTableItemProcessor.cs" />
     <Compile Include="Data\Processor\LootTableProcessor.cs" />
-    <Compile Include="Data\Processor\ModProcessor.cs" />
     <Compile Include="Data\Processor\NPCGroupProcessor.cs" />
     <Compile Include="Data\Processor\PerkCategoryProcessor.cs" />
     <Compile Include="Data\Processor\PlantProcessor.cs" />
@@ -387,7 +385,6 @@
     <Compile Include="Data\Validator\KeyItemValidator.cs" />
     <Compile Include="Data\Validator\LootTableItemValidator.cs" />
     <Compile Include="Data\Validator\LootTableValidator.cs" />
-    <Compile Include="Data\Validator\ModValidator.cs" />
     <Compile Include="Data\Validator\NPCGroupValidator.cs" />
     <Compile Include="Data\Validator\PerkCategoryValidator.cs" />
     <Compile Include="Data\Validator\PlantValidator.cs" />
@@ -1211,7 +1208,7 @@
     <Compile Include="Mod\AttackBonusMod.cs" />
     <Compile Include="Mod\BaseAttackBonusMod.cs" />
     <Compile Include="Mod\CastingSpeedMod.cs" />
-    <Compile Include="Mod\Contracts\IMod.cs" />
+    <Compile Include="Mod\Contracts\IModHandler.cs" />
     <Compile Include="Mod\AbilityScoreMod.cs" />
     <Compile Include="Mod\CookingMod.cs" />
     <Compile Include="Mod\DamageMod.cs" />

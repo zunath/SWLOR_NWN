@@ -4,8 +4,10 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class FabricationMod : IMod
+    public class FabricationMod : IModHandler
     {
+        public int ModTypeID => 28;
+
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             if (target.CraftBonusFabrication >= 30)

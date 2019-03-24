@@ -198,9 +198,6 @@ namespace SWLOR.Tools.Editor.ViewModels
                 case ResourceType.LootTables:
                     AddMappedResource<LootTable, LootTableViewModel>(ActivePackage.LootTables, sourceCollection, targetCollection);
                     break;
-                case ResourceType.Mods:
-                    AddMappedResource<Mod, ModViewModel>(ActivePackage.Mods, sourceCollection, targetCollection);
-                    break;
                 case ResourceType.NPCGroups:
                     AddMappedResource<NPCGroup, NPCGroupViewModel>(ActivePackage.NPCGroups, sourceCollection, targetCollection);
                     break;

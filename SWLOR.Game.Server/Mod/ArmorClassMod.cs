@@ -6,8 +6,10 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class ArmorClassMod: IMod
+    public class ArmorClassMod: IModHandler
     {
+        public int ModTypeID => 2;
+
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             if (target.CustomAC >= 50)

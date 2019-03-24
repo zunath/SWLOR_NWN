@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.Lightsaber
 {
-    public class DeflectBlasterFire: IPerk
+    public class DeflectBlasterFire: IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

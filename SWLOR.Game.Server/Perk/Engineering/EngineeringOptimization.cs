@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.Engineering
 {
-    public class EngineeringOptimization : IPerk
+    public class EngineeringOptimization : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

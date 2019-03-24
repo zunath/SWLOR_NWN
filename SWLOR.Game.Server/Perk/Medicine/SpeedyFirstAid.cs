@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.Medicine
 {
-    public class SpeedyFirstAid : IPerk
+    public class SpeedyFirstAid : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

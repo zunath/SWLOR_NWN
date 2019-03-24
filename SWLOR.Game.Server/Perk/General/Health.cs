@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.General
 {
-    public class Health: IPerk
+    public class Health: IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

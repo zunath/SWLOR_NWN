@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.Medicine
 {
-    public class StimFiend: IPerk
+    public class StimFiend: IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

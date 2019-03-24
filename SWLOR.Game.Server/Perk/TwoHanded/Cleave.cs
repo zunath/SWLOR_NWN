@@ -7,7 +7,7 @@ using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Perk.TwoHanded
 {
-    public class Cleave : IPerk
+    public class Cleave : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

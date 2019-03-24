@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.AI
     /// <summary>
     /// The base class for creating new behaviours.
     /// </summary>
-    public abstract class BehaviourBase: IBehaviour
+    public abstract class BehaviourBase: IAIBehaviour
     {
         protected NWCreature Self { get; }
 

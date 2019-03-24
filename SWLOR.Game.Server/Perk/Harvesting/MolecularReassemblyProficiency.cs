@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.Harvesting
 {
-    public class MolecularReassemblyProficiency: IPerk
+    public class MolecularReassemblyProficiency: IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

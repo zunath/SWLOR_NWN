@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            App.ResolveByInterface<IPerk>("Perk." + perk.ScriptName, (perkAction) =>
+            App.ResolveByInterface<IPerkBehaviour>("Perk." + perk.ScriptName, (perkAction) =>
             {
                 if (perkAction == null) return;
 
@@ -68,15 +68,10 @@ namespace SWLOR.Game.Server.Service
                 // If player is disabling an existing stance, remove that effect.
                 if (perk.ExecutionTypeID == (int) PerkExecutionType.Stance)
                 {
-                    PCCustomEffect stanceEffect = DataService.GetAll<PCCustomEffect>().SingleOrDefault(x =>
-                    {
-                        var customEffect = DataService.Get<Data.Entity.CustomEffect>(x.CustomEffectID);
+                    PCCustomEffect stanceEffect = DataService.SingleOrDefault<PCCustomEffect>(x => x.StancePerkID == perk.ID &&
+                                                                                                   x.PlayerID == pc.GlobalID);
 
-                        return x.PlayerID == pc.GlobalID &&
-                               customEffect.CustomEffectCategoryID == (int) CustomEffectCategoryType.Stance;
-                    });
-
-                    if (stanceEffect != null && perk.ID == stanceEffect.StancePerkID)
+                    if (stanceEffect != null)
                     {
                         if (CustomEffectService.RemoveStance(pc))
                         {
@@ -190,7 +185,7 @@ namespace SWLOR.Game.Server.Service
                     }
                     break;
                 case EnmityAdjustmentRuleType.Custom:
-                    App.ResolveByInterface<IPerk>("Perk." + perk.ScriptName, (perkAction) =>
+                    App.ResolveByInterface<IPerkBehaviour>("Perk." + perk.ScriptName, (perkAction) =>
                     {
                         perkAction?.OnCustomEnmityRule(pc, perk.Enmity);
                     });
@@ -201,7 +196,7 @@ namespace SWLOR.Game.Server.Service
         private static void ActivateAbility(NWPlayer pc,
                                NWObject target,
                                Data.Entity.Perk entity,
-                               IPerk perk,
+                               IPerkBehaviour perkBehaviour,
                                int pcPerkLevel,
                                PerkExecutionType executionType,
                                int spellFeatID)
@@ -209,7 +204,7 @@ namespace SWLOR.Game.Server.Service
             string uuid = Guid.NewGuid().ToString();
             var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(pc);
             int itemBonus = effectiveStats.CastingSpeed;
-            float baseActivationTime = perk.CastingTime(pc, (float)entity.BaseCastingTime, spellFeatID);
+            float baseActivationTime = perkBehaviour.CastingTime(pc, (float)entity.BaseCastingTime, spellFeatID);
             float activationTime = baseActivationTime;
             int vfxID = -1;
             int animationID = -1;
@@ -298,7 +293,7 @@ namespace SWLOR.Game.Server.Service
                 spellFeatID);
         }
         
-        public static void ApplyCooldown(NWPlayer pc, CooldownCategory cooldown, IPerk ability, int spellFeatID)
+        public static void ApplyCooldown(NWPlayer pc, CooldownCategory cooldown, IPerkBehaviour ability, int spellFeatID)
         {
             float finalCooldown = ability.CooldownTime(pc, (float)cooldown.BaseCooldownTime, spellFeatID);
             int cooldownSeconds = (int)finalCooldown;
@@ -335,7 +330,7 @@ namespace SWLOR.Game.Server.Service
             _.DelayCommand(0.5f, () => { CheckForSpellInterruption(pc, spellUUID, position); });
         }
 
-        public static void HandleQueueWeaponSkill(NWPlayer pc, Data.Entity.Perk entity, IPerk ability, int spellFeatID)
+        public static void HandleQueueWeaponSkill(NWPlayer pc, Data.Entity.Perk entity, IPerkBehaviour ability, int spellFeatID)
         {
             int? cooldownCategoryID = ability.CooldownCategoryID(pc, entity.CooldownCategoryID, spellFeatID);
             var cooldownCategory = DataService.Get<CooldownCategory>(cooldownCategoryID);
@@ -403,7 +398,7 @@ namespace SWLOR.Game.Server.Service
             PCPerk entity = DataService.GetAll<PCPerk>().Single(x => x.PlayerID == oPC.GlobalID && x.PerkID == activeWeaponSkillID);
             var perk = DataService.Get<Data.Entity.Perk>(entity.PerkID);
             
-            App.ResolveByInterface<IPerk>("Perk." + perk.ScriptName, (script) =>
+            App.ResolveByInterface<IPerkBehaviour>("Perk." + perk.ScriptName, (script) =>
             {
                 if (script.CanCastSpell(oPC, oTarget))
                 {

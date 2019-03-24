@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.Medicine
 {
-    public class ResuscitationDevices : IPerk
+    public class ResuscitationDevices : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

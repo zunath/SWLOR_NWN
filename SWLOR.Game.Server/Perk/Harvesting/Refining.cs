@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.Harvesting
 {
-    public class Refining : IPerk
+    public class Refining : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

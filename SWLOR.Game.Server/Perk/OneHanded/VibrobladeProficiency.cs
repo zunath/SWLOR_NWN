@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
-    public class VibrobladeProficiency: IPerk
+    public class VibrobladeProficiency: IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

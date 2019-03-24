@@ -218,7 +218,7 @@ namespace SWLOR.Game.Server.Conversation
             GetPC().FloatingText("Perk refunded! You reclaimed " + refundAmount + " SP.");
             model.TomeItem.Destroy();
 
-            App.ResolveByInterface<IPerk>("Perk." + scriptName, perkAction =>
+            App.ResolveByInterface<IPerkBehaviour>("Perk." + scriptName, perkAction =>
             {
                 perkAction?.OnRemoved(player);
             });

@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.Piloting
 {
-    public class Racer: IPerk
+    public class Racer: IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

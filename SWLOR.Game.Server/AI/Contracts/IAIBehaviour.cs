@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.AI.Contracts
 {
-    public interface IBehaviour
+    public interface IAIBehaviour
     {
         BehaviourTreeBuilder Behaviour { get; }
         bool IgnoreNWNEvents { get; }

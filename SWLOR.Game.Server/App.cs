@@ -111,13 +111,11 @@ namespace SWLOR.Game.Server
             var builder = new ContainerBuilder();
             
             // Interfaces
-            RegisterInterfaceImplementations<IRegisteredEvent>(builder);
-            RegisterInterfaceImplementations<ICustomEffect>(builder, false, true);
             RegisterInterfaceImplementations<IChatCommand>(builder, true, true);
             RegisterInterfaceImplementations<IConversation>(builder);
             RegisterInterfaceImplementations<IActionItem>(builder, false, true);
-            RegisterInterfaceImplementations<IPerk>(builder, false, true);
-            RegisterInterfaceImplementations<IBehaviour>(builder);
+            RegisterInterfaceImplementations<IPerkBehaviour>(builder, false, true);
+            RegisterInterfaceImplementations<IAIBehaviour>(builder);
             RegisterInterfaceImplementations<IMod>(builder, false, true);
             RegisterInterfaceImplementations<ISpawnRule>(builder, false, true);
             RegisterInterfaceImplementations<IQuestRule>(builder, false, true);

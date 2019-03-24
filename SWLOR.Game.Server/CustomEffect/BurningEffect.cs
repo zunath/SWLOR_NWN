@@ -3,12 +3,16 @@ using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.CustomEffect
 {
-    public class BurningEffect: ICustomEffect
+    public class BurningEffect: ICustomEffectHandler
     {
+        public CustomEffectCategoryType CustomEffectCategoryType => CustomEffectCategoryType.NormalEffect;
+        public CustomEffectType CustomEffectType => CustomEffectType.Burning;
+
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
             return null;
@@ -33,5 +37,9 @@ namespace SWLOR.Game.Server.CustomEffect
         public void WearOff(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)
         {
         }
+
+        public string StartMessage => "You are on fire.";
+        public string ContinueMessage => "You continue to burn...";
+        public string WornOffMessage => "You are no longer on fire.";
     }
 }

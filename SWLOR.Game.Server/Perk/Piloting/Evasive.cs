@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.Piloting
 {
-    public class Evasive: IPerk
+    public class Evasive: IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

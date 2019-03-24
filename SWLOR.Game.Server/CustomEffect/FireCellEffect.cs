@@ -1,5 +1,6 @@
 ﻿using NWN;
 using SWLOR.Game.Server.CustomEffect.Contracts;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
@@ -7,8 +8,11 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.CustomEffect
 {
-    public class FireCellEffect: ICustomEffect
+    public class FireCellEffect: ICustomEffectHandler
     {
+        public CustomEffectCategoryType CustomEffectCategoryType => CustomEffectCategoryType.NormalEffect;
+        public CustomEffectType CustomEffectType => CustomEffectType.FireCell;
+
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
             oCaster.SendMessage("A fire cell lands on your target.");
@@ -30,5 +34,9 @@ namespace SWLOR.Game.Server.CustomEffect
         public void WearOff(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)
         {
         }
+
+        public string StartMessage => "You have been hit with a fire cell.";
+        public string ContinueMessage => "";
+        public string WornOffMessage => "The effect of the fire cell dissipates.";
     }
 }

@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.Gathering
 {
-    public class CarefulScavenger : IPerk
+    public class CarefulScavenger : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.Armorsmith
 {
-    public class CraftingModInstallationArmors : IPerk
+    public class CraftingModInstallationArmors : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

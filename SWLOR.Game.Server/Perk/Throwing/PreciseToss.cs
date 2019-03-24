@@ -8,7 +8,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Throwing
 {
-    public class PreciseToss: IPerk
+    public class PreciseToss: IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

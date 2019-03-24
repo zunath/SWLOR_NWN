@@ -7,7 +7,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceCombat
 {
-    public class ForceBreach : IPerk
+    public class ForceBreach : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

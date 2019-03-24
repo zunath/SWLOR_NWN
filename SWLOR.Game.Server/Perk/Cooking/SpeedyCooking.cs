@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.Cooking
 {
-    public class SpeedyCooking : IPerk
+    public class SpeedyCooking : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

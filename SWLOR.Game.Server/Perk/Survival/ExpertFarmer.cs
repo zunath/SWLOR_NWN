@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.Survival
 {
-    public class ExpertFarmer : IPerk
+    public class ExpertFarmer : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

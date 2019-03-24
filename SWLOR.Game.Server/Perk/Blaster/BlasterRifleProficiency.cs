@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class BlasterRifleProficiency : IPerk
+    public class BlasterRifleProficiency : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

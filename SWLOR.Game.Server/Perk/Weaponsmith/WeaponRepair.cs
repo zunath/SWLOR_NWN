@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.Weaponsmith
 {
-    public class WeaponRepair: IPerk
+    public class WeaponRepair: IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

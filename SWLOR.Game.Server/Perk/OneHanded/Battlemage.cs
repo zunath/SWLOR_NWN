@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
-    public class Battlemage: IPerk
+    public class Battlemage: IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

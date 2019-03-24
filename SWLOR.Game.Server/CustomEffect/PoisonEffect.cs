@@ -3,12 +3,16 @@ using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.CustomEffect
 {
-    public class PoisonEffect: ICustomEffect
+    public class PoisonEffect: ICustomEffectHandler
     {
+        public CustomEffectCategoryType CustomEffectCategoryType => CustomEffectCategoryType.NormalEffect;
+        public CustomEffectType CustomEffectType => CustomEffectType.Poison;
+
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
             return null;
@@ -38,5 +42,9 @@ namespace SWLOR.Game.Server.CustomEffect
         public void WearOff(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)
         {
         }
+
+        public string StartMessage => "You are poisoned.";
+        public string ContinueMessage => "Poison continues to course through your body.";
+        public string WornOffMessage => "You are no longer poisoned.";
     }
 }

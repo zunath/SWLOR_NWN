@@ -6,7 +6,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
-    public class CalledShot : IPerk
+    public class CalledShot : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

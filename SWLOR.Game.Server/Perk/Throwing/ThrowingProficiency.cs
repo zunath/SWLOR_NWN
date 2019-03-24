@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.Throwing
 {
-    public class ThrowingProficiency: IPerk
+    public class ThrowingProficiency: IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

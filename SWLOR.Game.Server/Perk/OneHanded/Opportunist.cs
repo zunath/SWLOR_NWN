@@ -7,7 +7,7 @@ using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
-    public class Opportunist : IPerk
+    public class Opportunist : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

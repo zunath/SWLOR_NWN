@@ -8,7 +8,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class RecoveryBlast: IPerk
+    public class RecoveryBlast: IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class Sturdiness : IPerk
+    public class Sturdiness : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

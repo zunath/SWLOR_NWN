@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.TwoHanded
 {
-    public class PolearmProficiency : IPerk
+    public class PolearmProficiency : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

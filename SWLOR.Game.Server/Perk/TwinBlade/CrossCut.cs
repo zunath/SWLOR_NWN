@@ -7,7 +7,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.TwinBlade
 {
-    public class CrossCut: IPerk
+    public class CrossCut: IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

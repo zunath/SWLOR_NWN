@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.Lightsaber
 {
-    public class LightsaberProficiency : IPerk
+    public class LightsaberProficiency : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

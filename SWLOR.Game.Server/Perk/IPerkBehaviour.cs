@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk
 {
-    public interface IPerk
+    public interface IPerkBehaviour
     {
         bool CanCastSpell(NWPlayer oPC, NWObject oTarget);
         string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget);

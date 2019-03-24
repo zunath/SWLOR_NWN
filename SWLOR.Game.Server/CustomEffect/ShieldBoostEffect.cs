@@ -9,8 +9,11 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.CustomEffect
 {
-    public class ShieldBoostEffect: ICustomEffect
+    public class ShieldBoostEffect: ICustomEffectHandler
     {
+        public CustomEffectCategoryType CustomEffectCategoryType => CustomEffectCategoryType.NormalEffect;
+        public CustomEffectType CustomEffectType => CustomEffectType.ShieldBoost;
+
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
             PlayerStatService.ApplyStatChanges(oTarget.Object, null);
@@ -46,5 +49,9 @@ namespace SWLOR.Game.Server.CustomEffect
         {
             PlayerStatService.ApplyStatChanges(oTarget.Object, null);
         }
+
+        public string StartMessage => "Your shield power increases.";
+        public string ContinueMessage => "";
+        public string WornOffMessage => "Your shield power returns to normal.";
     }
 }

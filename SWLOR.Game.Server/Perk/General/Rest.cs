@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.General
 {
-    public class Rest : IPerk
+    public class Rest : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

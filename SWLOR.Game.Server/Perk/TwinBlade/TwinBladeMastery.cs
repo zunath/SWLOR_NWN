@@ -8,7 +8,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.TwinBlade
 {
-    public class TwinBladeMastery : IPerk
+    public class TwinBladeMastery : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

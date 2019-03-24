@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.MartialArts
 {
-    public class MartialArtsProficiency : IPerk
+    public class MartialArtsProficiency : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

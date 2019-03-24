@@ -1,5 +1,6 @@
 ﻿using NWN;
 using SWLOR.Game.Server.CustomEffect.Contracts;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
@@ -7,8 +8,11 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.CustomEffect
 {
-    public class AcidCellEffect: ICustomEffect
+    public class AcidCellEffect: ICustomEffectHandler
     {
+        public CustomEffectCategoryType CustomEffectCategoryType => CustomEffectCategoryType.NormalEffect;
+        public CustomEffectType CustomEffectType => CustomEffectType.AcidCell;
+
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
             oCaster.SendMessage("An acid cell lands on your target.");
@@ -29,5 +33,9 @@ namespace SWLOR.Game.Server.CustomEffect
         public void WearOff(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)
         {
         }
+
+        public string StartMessage => "You have been hit with an acid cell.";
+        public string ContinueMessage => "";
+        public string WornOffMessage => "The effect of the acid cell dissipates.";
     }
 }

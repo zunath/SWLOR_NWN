@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class PlasmaCell: IPerk
+    public class PlasmaCell: IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

@@ -6,7 +6,7 @@ using NWN;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class DeflectDamage: IPerk
+    public class DeflectDamage: IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

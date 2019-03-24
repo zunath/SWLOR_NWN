@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.MartialArts
 {
-    public class EvadeBlasterFire : IPerk
+    public class EvadeBlasterFire : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

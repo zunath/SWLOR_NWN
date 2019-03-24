@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.Piloting
 {
-    public class CombatRepair: IPerk
+    public class CombatRepair: IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

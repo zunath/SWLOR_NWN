@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
-    public class BatonProficiency : IPerk
+    public class BatonProficiency : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

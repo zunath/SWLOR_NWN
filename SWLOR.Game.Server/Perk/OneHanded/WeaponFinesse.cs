@@ -7,7 +7,7 @@ using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
-    public class WeaponFinesse : IPerk
+    public class WeaponFinesse : IPerkBehaviour
     {
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)

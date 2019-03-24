@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Event.Delayed
             Data.Entity.Perk entity = DataService.Single<Data.Entity.Perk>(x => x.ID == perkID);
             PerkExecutionType executionType = (PerkExecutionType) entity.ExecutionTypeID;
 
-            return App.ResolveByInterface<IPerk, bool>("Perk." + entity.ScriptName, perk =>
+            return App.ResolveByInterface<IPerkBehaviour, bool>("Perk." + entity.ScriptName, perk =>
             {
                 int? cooldownID = perk.CooldownCategoryID(pc, entity.CooldownCategoryID, featID);
                 CooldownCategory cooldown = cooldownID == null ? 

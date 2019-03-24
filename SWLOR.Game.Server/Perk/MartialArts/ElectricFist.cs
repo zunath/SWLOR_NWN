@@ -6,7 +6,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.MartialArts
 {
-    public class ElectricFist: IPerk
+    public class ElectricFist: IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

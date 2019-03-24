@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.Fabrication
 {
-    public class FabricationOptimization : IPerk
+    public class FabricationOptimization : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

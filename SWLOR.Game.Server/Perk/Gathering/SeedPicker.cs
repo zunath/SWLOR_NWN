@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.Gathering
 {
-    public class SeedPicker : IPerk
+    public class SeedPicker : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

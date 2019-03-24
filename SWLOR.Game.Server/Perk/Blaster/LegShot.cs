@@ -7,7 +7,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class LegShot: IPerk
+    public class LegShot: IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

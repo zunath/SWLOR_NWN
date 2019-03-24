@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.Piloting
 {
-    public class Sniper: IPerk
+    public class Sniper: IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

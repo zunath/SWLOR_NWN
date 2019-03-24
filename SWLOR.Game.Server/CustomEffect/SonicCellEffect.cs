@@ -1,13 +1,17 @@
 ﻿using NWN;
 using SWLOR.Game.Server.CustomEffect.Contracts;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
 
 namespace SWLOR.Game.Server.CustomEffect
 {
-    public class SonicCellEffect: ICustomEffect
+    public class SonicCellEffect: ICustomEffectHandler
     {
+        public CustomEffectCategoryType CustomEffectCategoryType => CustomEffectCategoryType.NormalEffect;
+        public CustomEffectType CustomEffectType => CustomEffectType.SonicCell;
+
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
             oCaster.SendMessage("A sonic cell lands on your target.");
@@ -30,5 +34,9 @@ namespace SWLOR.Game.Server.CustomEffect
         public void WearOff(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)
         {
         }
+
+        public string StartMessage => "You have been hit with a sonic cell.";
+        public string ContinueMessage => "";
+        public string WornOffMessage => "The effect of the sonic cell dissipates.";
     }
 }

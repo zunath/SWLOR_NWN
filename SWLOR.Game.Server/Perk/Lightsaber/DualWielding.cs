@@ -7,7 +7,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Lightsaber
 {
-    public class DualWielding : IPerk
+    public class DualWielding : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

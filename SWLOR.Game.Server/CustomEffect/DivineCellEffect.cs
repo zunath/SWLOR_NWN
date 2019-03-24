@@ -1,5 +1,6 @@
 ﻿using NWN;
 using SWLOR.Game.Server.CustomEffect.Contracts;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
@@ -7,8 +8,11 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.CustomEffect
 {
-    public class DivineCellEffect: ICustomEffect
+    public class DivineCellEffect: ICustomEffectHandler
     {
+        public CustomEffectCategoryType CustomEffectCategoryType => CustomEffectCategoryType.NormalEffect;
+        public CustomEffectType CustomEffectType => CustomEffectType.DivineCell;
+
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
             oCaster.SendMessage("A divine cell lands on your target.");
@@ -31,5 +35,9 @@ namespace SWLOR.Game.Server.CustomEffect
         public void WearOff(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)
         {
         }
+
+        public string StartMessage => "You have been hit with a divine cell.";
+        public string ContinueMessage => "";
+        public string WornOffMessage => "The effect of the divine cell dissipates.";
     }
 }

@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Service
                 string jsName = perk.ScriptName;
                 if (string.IsNullOrWhiteSpace(jsName)) continue;
 
-                App.ResolveByInterface<IPerk>("Perk." + jsName, (perkAction) =>
+                App.ResolveByInterface<IPerkBehaviour>("Perk." + jsName, (perkAction) =>
                 {
                     perkAction?.OnItemEquipped(oPC, oItem);
                 });
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Service
                 string jsName = perk.ScriptName;
                 if (string.IsNullOrWhiteSpace(jsName)) continue;
 
-                App.ResolveByInterface<IPerk>("Perk." + jsName, (perkAction) =>
+                App.ResolveByInterface<IPerkBehaviour>("Perk." + jsName, (perkAction) =>
                 {
                     perkAction?.OnItemUnequipped(oPC, oItem);
                 });
@@ -170,9 +170,9 @@ namespace SWLOR.Game.Server.Service
                 var perkFeat = DataService.SingleOrDefault<PerkFeat>(x => x.PerkID == pcPerk.PerkID);
                 int featID = perkFeat == null ? -1 : perkFeat.FeatID;
 
-                if (!App.IsKeyRegistered<IPerk>("Perk." + perk.ScriptName)) continue;
+                if (!App.IsKeyRegistered<IPerkBehaviour>("Perk." + perk.ScriptName)) continue;
 
-                App.ResolveByInterface<IPerk>("Perk." + perk.ScriptName, (perkAction) =>
+                App.ResolveByInterface<IPerkBehaviour>("Perk." + perk.ScriptName, (perkAction) =>
                 {
                     if (type == BASE_ITEM_SMALLSHIELD || type == BASE_ITEM_LARGESHIELD || type == BASE_ITEM_TOWERSHIELD)
                     {
@@ -361,7 +361,7 @@ namespace SWLOR.Game.Server.Service
 
                 oPC.SendMessage(ColorTokenService.Green("Perk Purchased: " + perk.Name + " (Lvl. " + pcPerk.PerkLevel + ")"));
 
-                App.ResolveByInterface<IPerk>("Perk." + perk.ScriptName, (perkScript) =>
+                App.ResolveByInterface<IPerkBehaviour>("Perk." + perk.ScriptName, (perkScript) =>
                 {
                     if (perkScript == null) return;
                     perkScript.OnPurchased(oPC, pcPerk.PerkLevel);

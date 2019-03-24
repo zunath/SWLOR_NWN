@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.TwinBlade
 {
-    public class TwinVibrobladeProficiency : IPerk
+    public class TwinVibrobladeProficiency : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

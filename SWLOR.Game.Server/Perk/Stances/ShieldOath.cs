@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.Stances
 {
-    public class ShieldOath: IPerk
+    public class ShieldOath: IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

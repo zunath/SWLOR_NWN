@@ -7,7 +7,7 @@ using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Perk.Throwing
 {
-    public class RapidToss: IPerk
+    public class RapidToss: IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

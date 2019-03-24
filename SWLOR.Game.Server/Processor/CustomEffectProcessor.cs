@@ -27,12 +27,8 @@ namespace SWLOR.Game.Server.Processor
             {
                 if (!player.IsInitializedAsPlayer) continue; // Ignored to prevent a timing issue where new characters would be included in this processing.
 
-                List<PCCustomEffect> effects = DataService.Where<PCCustomEffect>(x =>
-                {
-                    var customEffect = DataService.Get<Data.Entity.CustomEffect>(x.CustomEffectID);
-                    return x.PlayerID == player.GlobalID &&
-                           customEffect.CustomEffectCategoryID != (int) CustomEffectCategoryType.Stance;
-                }).ToList();
+                List<PCCustomEffect> effects = DataService.Where<PCCustomEffect>(x => x.PlayerID == player.GlobalID &&
+                                                                                      x.StancePerkID == null).ToList();
 
                 foreach (var effect in effects)
                 {
@@ -45,17 +41,13 @@ namespace SWLOR.Game.Server.Processor
                     PCCustomEffect result = RunPCCustomEffectProcess(player, effect);
                     if (result == null)
                     {
-                        var customEffect = DataService.Get<Data.Entity.CustomEffect>(effect.CustomEffectID);
-                        string message = customEffect.WornOffMessage;
-                        string scriptHandler = customEffect.ScriptHandler;
+                        ICustomEffectHandler handler = CustomEffectService.GetCustomEffectHandler(effect.CustomEffectID);
+                        string message = handler.WornOffMessage;
                         player.SendMessage(message);
                         player.DeleteLocalInt("CUSTOM_EFFECT_ACTIVE_" + effect.CustomEffectID);
                         DataService.SubmitDataChange(effect, DatabaseActionType.Delete);
+                        handler.WearOff(null, player, effect.EffectiveLevel, effect.Data);
                         
-                        App.ResolveByInterface<ICustomEffect>("CustomEffect." + scriptHandler, (handler) =>
-                        {
-                            handler?.WearOff(null, player, effect.EffectiveLevel, effect.Data);
-                        });
                     }
                     else
                     {
@@ -73,36 +65,34 @@ namespace SWLOR.Game.Server.Processor
                 CasterSpellVO casterModel = entry.Key;
                 AppCache.NPCEffects[entry.Key] = entry.Value - 1;
                 Data.Entity.CustomEffect entity = DataService.Single<Data.Entity.CustomEffect>(x => x.ID == casterModel.CustomEffectID);
-                App.ResolveByInterface<ICustomEffect>("CustomEffect." + entity.ScriptHandler, (handler) =>
+                ICustomEffectHandler handler = CustomEffectService.GetCustomEffectHandler(casterModel.CustomEffectID);
+            
+                try
                 {
-                    try
+                    handler?.Tick(casterModel.Caster, casterModel.Target, AppCache.NPCEffects[entry.Key], casterModel.EffectiveLevel, casterModel.Data);
+                }
+                catch (Exception ex)
+                {
+                    ErrorService.LogError(ex, "CustomEffectService processor was unable to run specific effect script for custom effect ID: " + entity.ID);
+                }
+
+
+                // Kill the effect if it has expired, target is invalid, or target is dead.
+                if (entry.Value <= 0 ||
+                    !casterModel.Target.IsValid ||
+                    casterModel.Target.CurrentHP <= -11)
+                {
+                    handler?.WearOff(casterModel.Caster, casterModel.Target, casterModel.EffectiveLevel, casterModel.Data);
+
+                    if (casterModel.Caster.IsValid && casterModel.Caster.IsPlayer)
                     {
-                        handler?.Tick(casterModel.Caster, casterModel.Target, AppCache.NPCEffects[entry.Key], casterModel.EffectiveLevel, casterModel.Data);
-                    }
-                    catch (Exception ex)
-                    {
-                        ErrorService.LogError(ex, "CustomEffectService processor was unable to run specific effect script: " + entity.ScriptHandler);
+                        casterModel.Caster.SendMessage("Your effect '" + casterModel.EffectName + "' has worn off of " + casterModel.Target.Name);
                     }
 
+                    casterModel.Target.DeleteLocalInt("CUSTOM_EFFECT_ACTIVE_" + casterModel.CustomEffectID);
 
-                    // Kill the effect if it has expired, target is invalid, or target is dead.
-                    if (entry.Value <= 0 ||
-                        !casterModel.Target.IsValid ||
-                        casterModel.Target.CurrentHP <= -11)
-                    {
-                        handler?.WearOff(casterModel.Caster, casterModel.Target, casterModel.EffectiveLevel, casterModel.Data);
-
-                        if (casterModel.Caster.IsValid && casterModel.Caster.IsPlayer)
-                        {
-                            casterModel.Caster.SendMessage("Your effect '" + casterModel.EffectName + "' has worn off of " + casterModel.Target.Name);
-                        }
-
-                        casterModel.Target.DeleteLocalInt("CUSTOM_EFFECT_ACTIVE_" + casterModel.CustomEffectID);
-
-                        AppCache.NPCEffects.Remove(entry.Key);
-                    }
-                });
-
+                    AppCache.NPCEffects.Remove(entry.Key);
+                }
             }
         }
 
@@ -122,18 +112,14 @@ namespace SWLOR.Game.Server.Processor
                 effect.Ticks = effect.Ticks - 1;
 
             if (effect.Ticks == 0) return null;
-            var customEffect = DataService.Get<Data.Entity.CustomEffect>(effect.CustomEffectID);
+            ICustomEffectHandler handler = CustomEffectService.GetCustomEffectHandler(effect.CustomEffectID);
 
-            if (!string.IsNullOrWhiteSpace(customEffect.ContinueMessage) &&
+            if (!string.IsNullOrWhiteSpace(handler.ContinueMessage) &&
                 effect.Ticks % 6 == 0) // Only show the message once every six seconds
             {
-                oPC.SendMessage(customEffect.ContinueMessage);
+                oPC.SendMessage(handler.ContinueMessage);
             }
-
-            App.ResolveByInterface<ICustomEffect>("CustomEffect." + customEffect.ScriptHandler, (handler) =>
-            {
-                handler?.Tick(caster, oPC, effect.Ticks, effect.EffectiveLevel, effect.Data);
-            });
+            handler?.Tick(caster, oPC, effect.Ticks, effect.EffectiveLevel, effect.Data);
             
             return effect;
         }

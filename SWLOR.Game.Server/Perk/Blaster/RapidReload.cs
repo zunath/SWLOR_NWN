@@ -6,7 +6,7 @@ using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class RapidReload : IPerk
+    public class RapidReload : IPerkBehaviour
     {
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)

@@ -10,7 +10,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceSupport
 {
-    public class ForceHeal : IPerk
+    public class ForceHeal : IPerkBehaviour
     {
         private class ForceHealPotency
         {

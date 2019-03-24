@@ -34,9 +34,9 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("SCRIPT");
             if (string.IsNullOrWhiteSpace(creatureScript)) return;
-            if (!App.IsKeyRegistered<IBehaviour>("AI." + creatureScript)) return;
+            if (!App.IsKeyRegistered<IAIBehaviour>("AI." + creatureScript)) return;
 
-            App.ResolveByInterface<IBehaviour>("AI." + creatureScript, behaviour =>
+            App.ResolveByInterface<IAIBehaviour>("AI." + creatureScript, behaviour =>
             {
                 behaviour.OnBlocked();
             });
@@ -50,9 +50,9 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("SCRIPT");
             if (string.IsNullOrWhiteSpace(creatureScript)) return;
-            if (!App.IsKeyRegistered<IBehaviour>("AI." + creatureScript)) return;
+            if (!App.IsKeyRegistered<IAIBehaviour>("AI." + creatureScript)) return;
 
-            App.ResolveByInterface<IBehaviour>("AI." + creatureScript, behaviour =>
+            App.ResolveByInterface<IAIBehaviour>("AI." + creatureScript, behaviour =>
             {
                 behaviour.OnConversation();
             });
@@ -67,9 +67,9 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("SCRIPT");
             if (string.IsNullOrWhiteSpace(creatureScript)) return;
-            if (!App.IsKeyRegistered<IBehaviour>("AI." + creatureScript)) return;
+            if (!App.IsKeyRegistered<IAIBehaviour>("AI." + creatureScript)) return;
 
-            App.ResolveByInterface<IBehaviour>("AI." + creatureScript, behaviour =>
+            App.ResolveByInterface<IAIBehaviour>("AI." + creatureScript, behaviour =>
             {
                 behaviour.OnDamaged();
             });
@@ -89,9 +89,9 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("SCRIPT");
             if (string.IsNullOrWhiteSpace(creatureScript)) return;
-            if (!App.IsKeyRegistered<IBehaviour>("AI." + creatureScript)) return;
+            if (!App.IsKeyRegistered<IAIBehaviour>("AI." + creatureScript)) return;
 
-            App.ResolveByInterface<IBehaviour>("AI." + creatureScript, behaviour =>
+            App.ResolveByInterface<IAIBehaviour>("AI." + creatureScript, behaviour =>
             {
                 behaviour.OnDeath();
             });
@@ -105,9 +105,9 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("SCRIPT");
             if (string.IsNullOrWhiteSpace(creatureScript)) return;
-            if (!App.IsKeyRegistered<IBehaviour>("AI." + creatureScript)) return;
+            if (!App.IsKeyRegistered<IAIBehaviour>("AI." + creatureScript)) return;
 
-            App.ResolveByInterface<IBehaviour>("AI." + creatureScript, behaviour =>
+            App.ResolveByInterface<IAIBehaviour>("AI." + creatureScript, behaviour =>
             {
                 behaviour.OnDisturbed();
             });
@@ -123,9 +123,9 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("SCRIPT");
             if (string.IsNullOrWhiteSpace(creatureScript)) return;
-            if (!App.IsKeyRegistered<IBehaviour>("AI." + creatureScript)) return;
+            if (!App.IsKeyRegistered<IAIBehaviour>("AI." + creatureScript)) return;
 
-            App.ResolveByInterface<IBehaviour>("AI." + creatureScript, behaviour =>
+            App.ResolveByInterface<IAIBehaviour>("AI." + creatureScript, behaviour =>
             {
                 behaviour.OnHeartbeat();
             });
@@ -139,9 +139,9 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("SCRIPT");
             if (string.IsNullOrWhiteSpace(creatureScript)) return;
-            if (!App.IsKeyRegistered<IBehaviour>("AI." + creatureScript)) return;
+            if (!App.IsKeyRegistered<IAIBehaviour>("AI." + creatureScript)) return;
 
-            App.ResolveByInterface<IBehaviour>("AI." + creatureScript, behaviour =>
+            App.ResolveByInterface<IAIBehaviour>("AI." + creatureScript, behaviour =>
             {
                 behaviour.OnPerception();
             });
@@ -155,9 +155,9 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("SCRIPT");
             if (string.IsNullOrWhiteSpace(creatureScript)) return;
-            if (!App.IsKeyRegistered<IBehaviour>("AI." + creatureScript)) return;
+            if (!App.IsKeyRegistered<IAIBehaviour>("AI." + creatureScript)) return;
 
-            App.ResolveByInterface<IBehaviour>("AI." + creatureScript, behaviour =>
+            App.ResolveByInterface<IAIBehaviour>("AI." + creatureScript, behaviour =>
             {
                 behaviour.OnPhysicalAttacked();
             });
@@ -172,9 +172,9 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("SCRIPT");
             if (string.IsNullOrWhiteSpace(creatureScript)) return;
-            if (!App.IsKeyRegistered<IBehaviour>("AI." + creatureScript)) return;
+            if (!App.IsKeyRegistered<IAIBehaviour>("AI." + creatureScript)) return;
 
-            App.ResolveByInterface<IBehaviour>("AI." + creatureScript, behaviour =>
+            App.ResolveByInterface<IAIBehaviour>("AI." + creatureScript, behaviour =>
             {
                 behaviour.OnRested();
             });
@@ -190,9 +190,9 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("SCRIPT");
             if (string.IsNullOrWhiteSpace(creatureScript)) return;
-            if (!App.IsKeyRegistered<IBehaviour>("AI." + creatureScript)) return;
+            if (!App.IsKeyRegistered<IAIBehaviour>("AI." + creatureScript)) return;
 
-            App.ResolveByInterface<IBehaviour>("AI." + creatureScript, behaviour =>
+            App.ResolveByInterface<IAIBehaviour>("AI." + creatureScript, behaviour =>
             {
                 behaviour.OnCombatRoundEnd();
             });
@@ -210,9 +210,9 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("SCRIPT");
             if (string.IsNullOrWhiteSpace(creatureScript)) return;
-            if (!App.IsKeyRegistered<IBehaviour>("AI." + creatureScript)) return;
+            if (!App.IsKeyRegistered<IAIBehaviour>("AI." + creatureScript)) return;
 
-            App.ResolveByInterface<IBehaviour>("AI." + creatureScript, behaviour =>
+            App.ResolveByInterface<IAIBehaviour>("AI." + creatureScript, behaviour =>
             {
                 if (behaviour.IgnoreNWNEvents) self.SetLocalInt("IGNORE_NWN_EVENTS", 1);
                 if (behaviour.IgnoreOnBlocked) self.SetLocalInt("IGNORE_NWN_ON_BLOCKED_EVENT", 1);
@@ -249,9 +249,9 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("SCRIPT");
             if (string.IsNullOrWhiteSpace(creatureScript)) return;
-            if (!App.IsKeyRegistered<IBehaviour>("AI." + creatureScript)) return;
+            if (!App.IsKeyRegistered<IAIBehaviour>("AI." + creatureScript)) return;
 
-            App.ResolveByInterface<IBehaviour>("AI." + creatureScript, behaviour =>
+            App.ResolveByInterface<IAIBehaviour>("AI." + creatureScript, behaviour =>
             {
                 behaviour.OnSpellCastAt();
             });
@@ -265,9 +265,9 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("SCRIPT");
             if (string.IsNullOrWhiteSpace(creatureScript)) return;
-            if (!App.IsKeyRegistered<IBehaviour>("AI." + creatureScript)) return;
+            if (!App.IsKeyRegistered<IAIBehaviour>("AI." + creatureScript)) return;
 
-            App.ResolveByInterface<IBehaviour>("AI." + creatureScript, behaviour =>
+            App.ResolveByInterface<IAIBehaviour>("AI." + creatureScript, behaviour =>
             {
                 behaviour.OnUserDefined();
             });

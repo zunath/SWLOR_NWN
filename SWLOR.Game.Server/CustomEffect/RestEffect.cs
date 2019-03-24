@@ -9,8 +9,11 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.CustomEffect
 {
-    public class RestEffect : ICustomEffect
+    public class RestEffect : ICustomEffectHandler
     {
+        public CustomEffectCategoryType CustomEffectCategoryType => CustomEffectCategoryType.NormalEffect;
+        public CustomEffectType CustomEffectType => CustomEffectType.Rest;
+
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
             NWPlayer player = oTarget.Object;
@@ -124,5 +127,9 @@ namespace SWLOR.Game.Server.CustomEffect
 
             return canRest;
         }
+
+        public string StartMessage => "You begin to rest...";
+        public string ContinueMessage => "";
+        public string WornOffMessage => "You stop resting.";
     }
 }

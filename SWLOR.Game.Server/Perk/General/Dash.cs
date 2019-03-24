@@ -4,7 +4,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.General
 {
-    public class Dash: IPerk
+    public class Dash: IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

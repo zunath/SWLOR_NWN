@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.Stances
 {
-    public class PrecisionTargeting : IPerk
+    public class PrecisionTargeting : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

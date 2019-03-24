@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceUtility
 {
-    public class ForceSpread: IPerk
+    public class ForceSpread: IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

@@ -8,7 +8,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class MassTranquilizer : IPerk
+    public class MassTranquilizer : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

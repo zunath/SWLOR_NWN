@@ -213,7 +213,7 @@
     <Compile Include="Conversation\ViewPerks.cs" />
     <Compile Include="Conversation\ViewSkills.cs" />
     <Compile Include="Conversation\XPTome.cs" />
-    <Compile Include="AI\Contracts\IBehaviour.cs" />
+    <Compile Include="AI\Contracts\IAIBehaviour.cs" />
     <Compile Include="AI\BehaviourBase.cs" />
     <Compile Include="AI\SightAggroBehaviour.cs" />
     <Compile Include="AI\StandardBehaviour.cs" />
@@ -222,7 +222,6 @@
     <Compile Include="CustomEffect\ElectricCellEffect.cs" />
     <Compile Include="CustomEffect\AcidCellEffect.cs" />
     <Compile Include="CustomEffect\DivineCellEffect.cs" />
-    <Compile Include="CustomEffect\FoodEffect.cs" />
     <Compile Include="CustomEffect\ForcePackEffect.cs" />
     <Compile Include="CustomEffect\ShieldOathEffect.cs" />
     <Compile Include="CustomEffect\SonicCellEffect.cs" />
@@ -232,7 +231,7 @@
     <Compile Include="CustomEffect\BleedingEffect.cs" />
     <Compile Include="CustomEffect\BurningEffect.cs" />
     <Compile Include="CustomEffect\ChainspellEffect.cs" />
-    <Compile Include="CustomEffect\Contracts\ICustomEffect.cs" />
+    <Compile Include="CustomEffect\Contracts\ICustomEffectHandler.cs" />
     <Compile Include="CustomEffect\ForceBreachEffect.cs" />
     <Compile Include="CustomEffect\ForceShockEffect.cs" />
     <Compile Include="CustomEffect\ForceSpreadEffect.cs" />
@@ -510,7 +509,6 @@
     <Compile Include="Extension\BehaviourTreeBuilderExtensions.cs" />
     <Compile Include="GameObject\NWLocation.cs" />
     <Compile Include="Item\Enemy\BleedBite.cs" />
-    <Compile Include="Item\Food.cs" />
     <Compile Include="Item\Medicine\ForcePack.cs" />
     <Compile Include="Item\Medicine\ResuscitationKit.cs" />
     <Compile Include="Item\Medicine\StimPack.cs" />
@@ -1123,7 +1121,7 @@
     <Compile Include="NWN\Events\Legacy\jvm_script_1.cs" />
     <Compile Include="NWN\Events\Module\mod_on_examine.cs" />
     <Compile Include="NWN\Events\Player\pc_on_heartbeat.cs" />
-    <Compile Include="Perk\IPerk.cs" />
+    <Compile Include="Perk\IPerkBehaviour.cs" />
     <Compile Include="Placeable\CraftingForge\CompleteSmelt.cs" />
     <Compile Include="Placeable\CraftingForge\OnDisturbed.cs" />
     <Compile Include="Placeable\CraftingForge\OnHeartbeat.cs" />
@@ -2165,6 +2163,7 @@
     <EmbeddedResource Include="Data\Migrations\2019-03-02.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-03-03.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-03-11.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-03-24.1.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-07.1.sql" />

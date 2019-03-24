@@ -46,7 +46,7 @@ namespace NWN.Scripts
 
         private static void RegisterServiceSubscribeEvents()
         {
-            // Use reflection to get all of the SubscribeEvents() methods in the Service namespace.
+            // Use reflection to get all of the SubscribeEvents() methods in the SWLOR namespace.
             var typesInNamespace = Assembly.GetExecutingAssembly()
                 .GetTypes()
                 .Where(x => x.Namespace != null && x.Namespace.StartsWith("SWLOR.Game.Server"))

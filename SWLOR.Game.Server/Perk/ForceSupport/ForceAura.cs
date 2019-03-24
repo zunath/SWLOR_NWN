@@ -8,7 +8,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceSupport
 {
-    public class ForceAura: IPerk
+    public class ForceAura: IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

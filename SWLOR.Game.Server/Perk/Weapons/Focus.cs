@@ -9,7 +9,7 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Weapons
 {
-    public class Focus : IPerk
+    public class Focus : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

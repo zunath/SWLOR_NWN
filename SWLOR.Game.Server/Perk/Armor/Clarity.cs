@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class Clarity: IPerk
+    public class Clarity: IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

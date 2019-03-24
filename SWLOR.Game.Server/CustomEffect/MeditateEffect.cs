@@ -9,8 +9,10 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.CustomEffect
 {
-    public class MeditateEffect : ICustomEffect
+    public class MeditateEffect : ICustomEffectHandler
     {
+        public CustomEffectCategoryType CustomEffectCategoryType => CustomEffectCategoryType.NormalEffect;
+        public CustomEffectType CustomEffectType => CustomEffectType.Meditate;
 
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
@@ -126,5 +128,9 @@ namespace SWLOR.Game.Server.CustomEffect
             return canMeditate;
         }
 
+
+        public string StartMessage => "You begin to meditate...";
+        public string ContinueMessage => "";
+        public string WornOffMessage => "You stop meditating.";
     }
 }

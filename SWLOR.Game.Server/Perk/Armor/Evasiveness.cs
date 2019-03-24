@@ -6,7 +6,7 @@ using NWN;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class Evasiveness : IPerk
+    public class Evasiveness : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

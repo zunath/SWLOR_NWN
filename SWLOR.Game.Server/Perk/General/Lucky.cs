@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Perk.General
 {
-    public class Lucky : IPerk
+    public class Lucky : IPerkBehaviour
     {
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

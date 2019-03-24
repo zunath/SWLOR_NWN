@@ -503,7 +503,7 @@
     <Compile Include="Event\Delayed\FinishAbilityUse.cs" />
     <Compile Include="Event\Delayed\FinishActionItem.cs" />
     <Compile Include="NWN\Events\Feat\OnUseCraftingFeat.cs" />
-    <Compile Include="Event\Legacy\LegacyJVMItemEvent.cs" />
+    <Compile Include="NWN\Events\Legacy\LegacyJVMItemEvent.cs" />
     <Compile Include="NWN\Events\DM\OnDMAction.cs" />
     <Compile Include="NWN\Events\Module\OnModuleApplyDamage.cs" />
     <Compile Include="NWN\Events\Module\OnModuleAttack.cs" />
@@ -1040,7 +1040,7 @@
     <Compile Include="Placeable\CraftingDevice\OnUsed.cs" />
     <Compile Include="NWN\Events\Feat\OnHitCastSpell.cs" />
     <Compile Include="Event\IRegisteredEvent.cs" />
-    <Compile Include="Event\Legacy\LegacyJVMEvent.cs" />
+    <Compile Include="NWN\Events\Legacy\LegacyJVMEvent.cs" />
     <Compile Include="NWN\Events\Module\OnModuleAcquireItem.cs" />
     <Compile Include="NWN\Events\Module\OnModuleActivateItem.cs" />
     <Compile Include="NWN\Events\Module\OnModuleCutsceneAbort.cs" />
@@ -1060,7 +1060,7 @@
     <Compile Include="NWN\Events\Module\OnModuleUnequipItem.cs" />
     <Compile Include="NWN\Events\Module\OnModuleUserDefined.cs" />
     <Compile Include="NWN\Events\Player\OnPlayerHeartbeat.cs" />
-    <Compile Include="Event\Trigger\ExplorationTrigger.cs" />
+    <Compile Include="Trigger\ExplorationTrigger.cs" />
     <Compile Include="Extension\EnumerableExtensions.cs" />
     <Compile Include="Extension\ExceptionExtensions.cs" />
     <Compile Include="GameObject\NWArea.cs" />

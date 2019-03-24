@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Reflection;
+using SWLOR.Game.Server.Event;
 
-namespace SWLOR.Game.Server.Event.Legacy
+namespace SWLOR.Game.Server.NWN.Events.Legacy
 {
-    public class LegacyJVMItemEvent: IRegisteredEvent
+    public static class LegacyJVMItemEvent
     {
-        public bool Run(params object[] args)
+        public static void Run(string script)
         {
-            string script = (string) args[0];
-
             if (!script.StartsWith("Item."))
             {
                 script = "Item." + script;
@@ -19,12 +18,11 @@ namespace SWLOR.Game.Server.Event.Legacy
             if (type == null)
             {
                 Console.WriteLine("Unable to locate type for LegacyJVMItemEvent: " + script);
-                return false;
+                return;
             }
 
-            App.RunEvent(type);
-
-            return false;
+            IRegisteredEvent @event = Activator.CreateInstance(type) as IRegisteredEvent;
+            @event?.Run();
         }
     }
 }

@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Reflection;
+using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.ValueObject;
 using Object = NWN.Object;
 
-namespace SWLOR.Game.Server.Event.Legacy
+namespace SWLOR.Game.Server.NWN.Events.Legacy
 {
-    public class LegacyJVMEvent: IRegisteredEvent
+    public static class LegacyJVMEvent
     {
-        public bool Run(params object[] args)
+        public static void Run(string variableName)
         {
             NWObject self = (Object.OBJECT_SELF);
-            string script = self.GetLocalString((string) args[0]);
+            string script = self.GetLocalString(variableName);
 
             using (new Profiler("LegacyJVMEvent::" + script))
             {
@@ -20,14 +21,12 @@ namespace SWLOR.Game.Server.Event.Legacy
                 if (type == null)
                 {
                     Console.WriteLine("Unable to locate type for LegacyJVMEvent: " + script);
-                    return false;
+                    return;
                 }
 
-                App.RunEvent(type);
+                IRegisteredEvent @event = Activator.CreateInstance(type) as IRegisteredEvent;
+                @event?.Run();
             }
-
-
-            return true;
         }
     }
 }

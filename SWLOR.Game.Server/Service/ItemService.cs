@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Delayed;
-using SWLOR.Game.Server.Event.Legacy;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Messaging;
@@ -14,6 +13,7 @@ using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.NWN.Events.Legacy;
 using static NWN._;
 using Object = NWN.Object;
 
@@ -842,7 +842,7 @@ namespace SWLOR.Game.Server.Service
 
             if (!string.IsNullOrWhiteSpace(script))
             {
-                App.RunEvent<LegacyJVMItemEvent>(script);
+                LegacyJVMItemEvent.Run(script);
             }
 
         }

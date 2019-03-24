@@ -1,10 +1,10 @@
 ﻿using FluentBehaviourTree;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.AI.Contracts
 {
     public interface IAIBehaviour
     {
-        BehaviourTreeBuilder Behaviour { get; }
         bool IgnoreNWNEvents { get; }
 
         bool IgnoreOnBlocked { get; }
@@ -21,19 +21,21 @@ namespace SWLOR.Game.Server.AI.Contracts
         bool IgnoreOnSpellCastAt { get; }
         bool IgnoreOnUserDefined { get; }
 
-        void OnBlocked();
-        void OnCombatRoundEnd();
-        void OnConversation();
-        void OnDamaged();
-        void OnDeath();
-        void OnDisturbed();
-        void OnHeartbeat();
-        void OnPerception();
-        void OnPhysicalAttacked();
-        void OnRested();
-        void OnSpawn();
-        void OnSpellCastAt();
-        void OnUserDefined();
+        BehaviourTreeBuilder BuildBehaviour(NWCreature self);
+
+        void OnBlocked(NWCreature self);
+        void OnCombatRoundEnd(NWCreature self);
+        void OnConversation(NWCreature self);
+        void OnDamaged(NWCreature self);
+        void OnDeath(NWCreature self);
+        void OnDisturbed(NWCreature self);
+        void OnHeartbeat(NWCreature self);
+        void OnPerception(NWCreature self);
+        void OnPhysicalAttacked(NWCreature self);
+        void OnRested(NWCreature self);
+        void OnSpawn(NWCreature self);
+        void OnSpellCastAt(NWCreature self);
+        void OnUserDefined(NWCreature self);
 
     }
 }

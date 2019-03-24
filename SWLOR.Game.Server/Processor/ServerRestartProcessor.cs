@@ -2,6 +2,8 @@
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Processor.Contracts;
 using SWLOR.Game.Server.Service;
@@ -9,7 +11,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Processor
 {
-    public class ServerRestartProcessor: IEventProcessor
+    public static class ServerRestartProcessor
     {
         public static DateTime RestartTime { get; private set; }
         private static DateTime _nextNotification;
@@ -17,8 +19,13 @@ namespace SWLOR.Game.Server.Processor
         public static bool IsDisabled { get; private set; }
         private const int DefaultRestartMinutes = 300; // 300 = 5 hours
         private const int NotificationIntervalMinutes = 60;
-        
-        public ServerRestartProcessor()   
+
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<ObjectProcessorMessage>(message => Run());
+        }
+
+        static ServerRestartProcessor()   
         {
             if (!_isLoaded)
             {
@@ -46,7 +53,7 @@ namespace SWLOR.Game.Server.Processor
             }
         }
 
-        public void Run()
+        private static void Run()
         {
             if (IsDisabled)
             {

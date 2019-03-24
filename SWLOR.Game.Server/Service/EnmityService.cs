@@ -150,7 +150,7 @@ namespace SWLOR.Game.Server.Service
 
         public static EnmityTable GetEnmityTable(NWCreature npc)
         {
-            if (!npc.IsNPC && !npc.IsDMPossessed) throw new Exception("Only NPCs have enmity tables.");
+            if (!npc.IsNPC && !npc.IsDMPossessed) throw new Exception("Only NPCs have enmity tables. Object name = " + npc.Name);
 
             if (!AppCache.NPCEnmityTables.ContainsKey(npc.GlobalID))
             {
@@ -162,7 +162,7 @@ namespace SWLOR.Game.Server.Service
 
         public static bool IsOnEnmityTable(NWCreature npc, NWCreature target)
         {
-            if (!npc.IsNPC && !npc.IsDMPossessed) throw new Exception("Only NPCs have enmity tables.");
+            if (!npc.IsNPC && !npc.IsDMPossessed) throw new Exception("Only NPCs have enmity tables. Object name = " + npc.Name);
 
             EnmityTable table = GetEnmityTable(npc);
 
@@ -171,7 +171,7 @@ namespace SWLOR.Game.Server.Service
 
         public static bool IsEnmityTableEmpty(NWCreature npc)
         {
-            if (!npc.IsNPC && !npc.IsDMPossessed) throw new Exception("Only NPCs have enmity tables.");
+            if (!npc.IsNPC && !npc.IsDMPossessed) throw new Exception("Only NPCs have enmity tables. Object name = " + npc.Name);
 
             EnmityTable table = GetEnmityTable(npc);
             return table.Count <= 0;

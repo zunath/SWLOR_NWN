@@ -30,9 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac, Version=4.9.1.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <HintPath>..\packages\Autofac.4.9.1\lib\net45\Autofac.dll</HintPath>
-    </Reference>
     <Reference Include="Dapper, Version=1.60.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dapper.1.60.1\lib\net451\Dapper.dll</HintPath>
     </Reference>
@@ -78,7 +75,6 @@
     <Compile Include="AI\SoundAggroRandomWalkBehaviour.cs" />
     <Compile Include="AI\DarkForceUser.cs" />
     <Compile Include="AI\StarshipBehaviour.cs" />
-    <Compile Include="App.cs" />
     <Compile Include="AppCache.cs" />
     <Compile Include="AI\AIComponent\AggroTargetBySight.cs" />
     <Compile Include="AI\AIComponent\AggroTargetBySound.cs" />
@@ -410,6 +406,7 @@
     <Compile Include="Enumeration\BuildingType.cs" />
     <Compile Include="Enumeration\ChatChannelType.cs" />
     <Compile Include="Enumeration\TraceComponent.cs" />
+    <Compile Include="Messaging\Messages\ObjectProcessorMessage.cs" />
     <Compile Include="NWN\Events\Module\OnModuleEnterStealthAfter.cs" />
     <Compile Include="Extension\StringExtensions.cs" />
     <Compile Include="Language\TranslatorMirialan.cs" />
@@ -1230,13 +1227,8 @@
     <Compile Include="Mod\MindPotencyMod.cs" />
     <Compile Include="Mod\WeaponsmithMod.cs" />
     <Compile Include="Placeable\WeatherModifier\OnHeartbeat.cs" />
-    <Compile Include="Processor\AppStateProcessor.cs" />
-    <Compile Include="Processor\BehaviourProcessor.cs" />
     <Compile Include="Processor\Contracts\IEventProcessor.cs" />
-    <Compile Include="Processor\CustomEffectProcessor.cs" />
-    <Compile Include="Processor\GarbageCollectorProcessor.cs" />
     <Compile Include="Processor\ServerRestartProcessor.cs" />
-    <Compile Include="Processor\SpawnProcessor.cs" />
     <Compile Include="QuestRule\Contracts\IQuestRule.cs" />
     <Compile Include="QuestRule\CreditBonusRule.cs" />
     <Compile Include="QuestRule\GiveItemRule.cs" />
@@ -1251,7 +1243,6 @@
     <Compile Include="Service\BackgroundService.cs" />
     <Compile Include="Service\BasePermissionService.cs" />
     <Compile Include="Service\BaseService.cs" />
-    <Compile Include="Service\BehaviourService.cs" />
     <Compile Include="Service\ChatCommandService.cs" />
     <Compile Include="Service\ChatTextService.cs" />
     <Compile Include="Service\CombatService.cs" />

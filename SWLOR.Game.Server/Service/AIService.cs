@@ -1,15 +1,53 @@
-﻿using NWN;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using FluentBehaviourTree;
+using NWN;
 using SWLOR.Game.Server.AI.Contracts;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.NWN.Events.Creature;
+using SWLOR.Game.Server.NWN.Events.Module;
+using SWLOR.Game.Server.SpawnRule.Contracts;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class AIService
     {
+        private class AICreature
+        {
+            public IBehaviourTreeNode Node { get; set; }
+            public NWCreature Creature { get; set; }
+
+            public AICreature(IBehaviourTreeNode node, NWCreature creature)
+            {
+                Node = node;
+                Creature = creature;
+            }
+        }
+
+        private static readonly Dictionary<string, IAIBehaviour> _aiBehaviours;
+        public static BehaviourTreeBuilder BehaviourTree { get; }
+        private static readonly HashSet<AICreature> _aiCreatures;
+
+        static AIService()
+        {
+            _aiBehaviours = new Dictionary<string, IAIBehaviour>();
+            _aiCreatures = new HashSet<AICreature>();
+            BehaviourTree = new BehaviourTreeBuilder();
+        }
+        
         public static void SubscribeEvents()
         {
+            // Module Events
+            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
+
+            // SWLOR Events
+            MessageHub.Instance.Subscribe<ObjectProcessorMessage>(message => ProcessCreatureAI());
+
+            // Creature Events
             MessageHub.Instance.Subscribe<OnCreaturePhysicalAttacked>(message => OnCreaturePhysicalAttacked());
             MessageHub.Instance.Subscribe<OnCreatureBlocked>(message => OnCreatureBlocked());
             MessageHub.Instance.Subscribe<OnCreatureConversation>(message => OnCreatureConversation());
@@ -23,180 +61,142 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnCreatureSpawn>(message => OnCreatureSpawn());
             MessageHub.Instance.Subscribe<OnCreatureSpellCastAt>(message => OnCreatureSpellCastAt());
             MessageHub.Instance.Subscribe<OnCreatureUserDefined>(message => OnCreatureUserDefined());
+
         }
 
-
-        private static void OnCreatureBlocked()
+        private static void OnModuleLoad()
         {
-            NWCreature self = Object.OBJECT_SELF;
+            RegisterAIBehaviours();
+        }
 
+        private static void RegisterAIBehaviours()
+        {
+            // Use reflection to get all of AI behaviour implementations.
+            var classes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => typeof(IAIBehaviour).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
+            foreach (var type in classes)
+            {
+                IAIBehaviour instance = Activator.CreateInstance(type) as IAIBehaviour;
+                if (instance == null)
+                {
+                    throw new NullReferenceException("Unable to activate instance of type: " + type);
+                }
+                _aiBehaviours.Add(type.Name, instance);
+            }
+        }
+
+        private static IAIBehaviour GetAIBehaviour(string key)
+        {
+            if (!_aiBehaviours.ContainsKey(key))
+            {
+                throw new KeyNotFoundException("AI behaviour '" + key + "' is not registered. Did you create a class for it?");
+            }
+
+            return _aiBehaviours[key];
+        }
+
+        private static string GetBehaviourScript(NWCreature self)
+        {
             string creatureScript = self.GetLocalString("BEHAVIOUR");
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("SCRIPT");
-            if (string.IsNullOrWhiteSpace(creatureScript)) return;
-            if (!App.IsKeyRegistered<IAIBehaviour>("AI." + creatureScript)) return;
+            if (string.IsNullOrWhiteSpace(creatureScript) ||
+                creatureScript == "NWN_DEFAULT") return string.Empty;
 
-            App.ResolveByInterface<IAIBehaviour>("AI." + creatureScript, behaviour =>
-            {
-                behaviour.OnBlocked();
-            });
+            return creatureScript;
+        }
+
+        private static void OnCreatureBlocked()
+        {
+            string script = GetBehaviourScript(Object.OBJECT_SELF);
+            if (string.IsNullOrWhiteSpace(script)) return;
+            IAIBehaviour behaviour = GetAIBehaviour(script);
+            behaviour.OnBlocked(Object.OBJECT_SELF);
         }
 
         private static void OnCreatureConversation()
         {
-            NWCreature self = Object.OBJECT_SELF;
-
-            string creatureScript = self.GetLocalString("BEHAVIOUR");
-            if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");
-            if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("SCRIPT");
-            if (string.IsNullOrWhiteSpace(creatureScript)) return;
-            if (!App.IsKeyRegistered<IAIBehaviour>("AI." + creatureScript)) return;
-
-            App.ResolveByInterface<IAIBehaviour>("AI." + creatureScript, behaviour =>
-            {
-                behaviour.OnConversation();
-            });
-
+            string script = GetBehaviourScript(Object.OBJECT_SELF);
+            if (string.IsNullOrWhiteSpace(script)) return;
+            IAIBehaviour behaviour = GetAIBehaviour(script);
+            behaviour.OnConversation(Object.OBJECT_SELF);
         }
 
         private static void OnCreatureDamaged()
         {
-            NWCreature self = Object.OBJECT_SELF;
-
-            string creatureScript = self.GetLocalString("BEHAVIOUR");
-            if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");
-            if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("SCRIPT");
-            if (string.IsNullOrWhiteSpace(creatureScript)) return;
-            if (!App.IsKeyRegistered<IAIBehaviour>("AI." + creatureScript)) return;
-
-            App.ResolveByInterface<IAIBehaviour>("AI." + creatureScript, behaviour =>
-            {
-                behaviour.OnDamaged();
-            });
-
+            string script = GetBehaviourScript(Object.OBJECT_SELF);
+            if (string.IsNullOrWhiteSpace(script)) return;
+            IAIBehaviour behaviour = GetAIBehaviour(script);
+            behaviour.OnDamaged(Object.OBJECT_SELF);
         }
 
         private static void OnCreatureDeath()
         {
             NWCreature self = Object.OBJECT_SELF;
 
+            // Remove any custom object data from the cache.
             if (AppCache.CustomObjectData.ContainsKey(self.GlobalID))
             {
                 AppCache.CustomObjectData.Remove(self.GlobalID);
             }
 
-            string creatureScript = self.GetLocalString("BEHAVIOUR");
-            if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");
-            if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("SCRIPT");
-            if (string.IsNullOrWhiteSpace(creatureScript)) return;
-            if (!App.IsKeyRegistered<IAIBehaviour>("AI." + creatureScript)) return;
-
-            App.ResolveByInterface<IAIBehaviour>("AI." + creatureScript, behaviour =>
-            {
-                behaviour.OnDeath();
-            });
+            string script = GetBehaviourScript(Object.OBJECT_SELF);
+            if (string.IsNullOrWhiteSpace(script)) return;
+            IAIBehaviour behaviour = GetAIBehaviour(script);
+            behaviour.OnDeath(Object.OBJECT_SELF);
         }
 
         private static void OnCreatureDisturbed()
         {
-            NWCreature self = Object.OBJECT_SELF;
-
-            string creatureScript = self.GetLocalString("BEHAVIOUR");
-            if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");
-            if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("SCRIPT");
-            if (string.IsNullOrWhiteSpace(creatureScript)) return;
-            if (!App.IsKeyRegistered<IAIBehaviour>("AI." + creatureScript)) return;
-
-            App.ResolveByInterface<IAIBehaviour>("AI." + creatureScript, behaviour =>
-            {
-                behaviour.OnDisturbed();
-            });
-
+            string script = GetBehaviourScript(Object.OBJECT_SELF);
+            if (string.IsNullOrWhiteSpace(script)) return;
+            IAIBehaviour behaviour = GetAIBehaviour(script);
+            behaviour.OnDisturbed(Object.OBJECT_SELF);
         }
 
 
         private static void OnCreatureHeartbeat()
         {
-            NWCreature self = Object.OBJECT_SELF;
-
-            string creatureScript = self.GetLocalString("BEHAVIOUR");
-            if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");
-            if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("SCRIPT");
-            if (string.IsNullOrWhiteSpace(creatureScript)) return;
-            if (!App.IsKeyRegistered<IAIBehaviour>("AI." + creatureScript)) return;
-
-            App.ResolveByInterface<IAIBehaviour>("AI." + creatureScript, behaviour =>
-            {
-                behaviour.OnHeartbeat();
-            });
+            string script = GetBehaviourScript(Object.OBJECT_SELF);
+            if (string.IsNullOrWhiteSpace(script)) return;
+            IAIBehaviour behaviour = GetAIBehaviour(script);
+            behaviour.OnHeartbeat(Object.OBJECT_SELF);
         }
 
         private static void OnCreaturePerception()
         {
-            NWCreature self = Object.OBJECT_SELF;
-
-            string creatureScript = self.GetLocalString("BEHAVIOUR");
-            if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");
-            if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("SCRIPT");
-            if (string.IsNullOrWhiteSpace(creatureScript)) return;
-            if (!App.IsKeyRegistered<IAIBehaviour>("AI." + creatureScript)) return;
-
-            App.ResolveByInterface<IAIBehaviour>("AI." + creatureScript, behaviour =>
-            {
-                behaviour.OnPerception();
-            });
+            string script = GetBehaviourScript(Object.OBJECT_SELF);
+            if (string.IsNullOrWhiteSpace(script)) return;
+            IAIBehaviour behaviour = GetAIBehaviour(script);
+            behaviour.OnPerception(Object.OBJECT_SELF);
         }
 
         private static void OnCreaturePhysicalAttacked()
         {
-            NWCreature self = Object.OBJECT_SELF;
-
-            string creatureScript = self.GetLocalString("BEHAVIOUR");
-            if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");
-            if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("SCRIPT");
-            if (string.IsNullOrWhiteSpace(creatureScript)) return;
-            if (!App.IsKeyRegistered<IAIBehaviour>("AI." + creatureScript)) return;
-
-            App.ResolveByInterface<IAIBehaviour>("AI." + creatureScript, behaviour =>
-            {
-                behaviour.OnPhysicalAttacked();
-            });
-
+            string script = GetBehaviourScript(Object.OBJECT_SELF);
+            if (string.IsNullOrWhiteSpace(script)) return;
+            IAIBehaviour behaviour = GetAIBehaviour(script);
+            behaviour.OnPhysicalAttacked(Object.OBJECT_SELF);
         }
 
         private static void OnCreatureRested()
         {
-            NWCreature self = Object.OBJECT_SELF;
-
-            string creatureScript = self.GetLocalString("BEHAVIOUR");
-            if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");
-            if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("SCRIPT");
-            if (string.IsNullOrWhiteSpace(creatureScript)) return;
-            if (!App.IsKeyRegistered<IAIBehaviour>("AI." + creatureScript)) return;
-
-            App.ResolveByInterface<IAIBehaviour>("AI." + creatureScript, behaviour =>
-            {
-                behaviour.OnRested();
-            });
+            string script = GetBehaviourScript(Object.OBJECT_SELF);
+            if (string.IsNullOrWhiteSpace(script)) return;
+            IAIBehaviour behaviour = GetAIBehaviour(script);
+            behaviour.OnRested(Object.OBJECT_SELF);
         }
 
         private static void OnCreatureCombatRoundEnd()
         {
             NWCreature self = Object.OBJECT_SELF;
-
             WeatherService.OnCombatRoundEnd(self);
 
-            string creatureScript = self.GetLocalString("BEHAVIOUR");
-            if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");
-            if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("SCRIPT");
-            if (string.IsNullOrWhiteSpace(creatureScript)) return;
-            if (!App.IsKeyRegistered<IAIBehaviour>("AI." + creatureScript)) return;
-
-            App.ResolveByInterface<IAIBehaviour>("AI." + creatureScript, behaviour =>
-            {
-                behaviour.OnCombatRoundEnd();
-            });
-
+            string script = GetBehaviourScript(Object.OBJECT_SELF);
+            if (string.IsNullOrWhiteSpace(script)) return;
+            IAIBehaviour behaviour = GetAIBehaviour(script);
+            behaviour.OnCombatRoundEnd(Object.OBJECT_SELF);
         }
 
         private static void OnCreatureSpawn()
@@ -206,71 +206,77 @@ namespace SWLOR.Game.Server.Service
             // Don't modify AI behaviour for DM-spawned creatures.
             if (self.GetLocalInt("DM_SPAWNED") == _.TRUE) return;
 
-            string creatureScript = self.GetLocalString("BEHAVIOUR");
-            if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");
-            if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("SCRIPT");
-            if (string.IsNullOrWhiteSpace(creatureScript)) return;
-            if (!App.IsKeyRegistered<IAIBehaviour>("AI." + creatureScript)) return;
+            string script = GetBehaviourScript(Object.OBJECT_SELF);
+            if (string.IsNullOrWhiteSpace(script)) return;
+            IAIBehaviour ai = GetAIBehaviour(script);
+        
+            if (ai.IgnoreNWNEvents) self.SetLocalInt("IGNORE_NWN_EVENTS", 1);
+            if (ai.IgnoreOnBlocked) self.SetLocalInt("IGNORE_NWN_ON_BLOCKED_EVENT", 1);
+            if (ai.IgnoreOnCombatRoundEnd) self.SetLocalInt("IGNORE_NWN_ON_COMBAT_ROUND_END_EVENT", 1);
+            if (ai.IgnoreOnConversation) self.SetLocalInt("IGNORE_NWN_ON_CONVERSATION_EVENT", 1);
+            if (ai.IgnoreOnDamaged) self.SetLocalInt("IGNORE_NWN_ON_DAMAGED_EVENT", 1);
+            if (ai.IgnoreOnDeath) self.SetLocalInt("IGNORE_NWN_ON_DEATH_EVENT", 1);
+            if (ai.IgnoreOnDisturbed) self.SetLocalInt("IGNORE_NWN_ON_DISTURBED_EVENT", 1);
+            if (ai.IgnoreOnHeartbeat) self.SetLocalInt("IGNORE_NWN_ON_HEARTBEAT_EVENT", 1);
+            if (ai.IgnoreOnPerception) self.SetLocalInt("IGNORE_NWN_ON_PERCEPTION_EVENT", 1);
+            if (ai.IgnoreOnPhysicalAttacked) self.SetLocalInt("IGNORE_NWN_ON_PHYSICAL_ATTACKED_EVENT", 1);
+            if (ai.IgnoreOnRested) self.SetLocalInt("IGNORE_NWN_ON_RESTED_EVENT", 1);
+            if (ai.IgnoreOnSpawn) self.SetLocalInt("IGNORE_NWN_ON_SPAWN_EVENT", 1);
+            if (ai.IgnoreOnSpellCastAt) self.SetLocalInt("IGNORE_NWN_ON_SPELL_CAST_AT_EVENT", 1);
+            if (ai.IgnoreOnUserDefined) self.SetLocalInt("IGNORE_NWN_ON_USER_DEFINED_EVENT", 1);
 
-            App.ResolveByInterface<IAIBehaviour>("AI." + creatureScript, behaviour =>
-            {
-                if (behaviour.IgnoreNWNEvents) self.SetLocalInt("IGNORE_NWN_EVENTS", 1);
-                if (behaviour.IgnoreOnBlocked) self.SetLocalInt("IGNORE_NWN_ON_BLOCKED_EVENT", 1);
-                if (behaviour.IgnoreOnCombatRoundEnd) self.SetLocalInt("IGNORE_NWN_ON_COMBAT_ROUND_END_EVENT", 1);
-                if (behaviour.IgnoreOnConversation) self.SetLocalInt("IGNORE_NWN_ON_CONVERSATION_EVENT", 1);
-                if (behaviour.IgnoreOnDamaged) self.SetLocalInt("IGNORE_NWN_ON_DAMAGED_EVENT", 1);
-                if (behaviour.IgnoreOnDeath) self.SetLocalInt("IGNORE_NWN_ON_DEATH_EVENT", 1);
-                if (behaviour.IgnoreOnDisturbed) self.SetLocalInt("IGNORE_NWN_ON_DISTURBED_EVENT", 1);
-                if (behaviour.IgnoreOnHeartbeat) self.SetLocalInt("IGNORE_NWN_ON_HEARTBEAT_EVENT", 1);
-                if (behaviour.IgnoreOnPerception) self.SetLocalInt("IGNORE_NWN_ON_PERCEPTION_EVENT", 1);
-                if (behaviour.IgnoreOnPhysicalAttacked) self.SetLocalInt("IGNORE_NWN_ON_PHYSICAL_ATTACKED_EVENT", 1);
-                if (behaviour.IgnoreOnRested) self.SetLocalInt("IGNORE_NWN_ON_RESTED_EVENT", 1);
-                if (behaviour.IgnoreOnSpawn) self.SetLocalInt("IGNORE_NWN_ON_SPAWN_EVENT", 1);
-                if (behaviour.IgnoreOnSpellCastAt) self.SetLocalInt("IGNORE_NWN_ON_SPELL_CAST_AT_EVENT", 1);
-                if (behaviour.IgnoreOnUserDefined) self.SetLocalInt("IGNORE_NWN_ON_USER_DEFINED_EVENT", 1);
-
-                if (behaviour.Behaviour != null)
-                {
-                    var result = behaviour.Behaviour
-                        .End()
-                        .Build();
-                    BehaviourService.RegisterBehaviour(result, self);
-                }
-
-                behaviour.OnSpawn();
-            });
+            var behaviour = ai.BuildBehaviour(self);    
+            var result = behaviour
+                .End()
+                .Build();
+            _aiCreatures.Add(new AICreature(result, self));
+        
+            ai.OnSpawn(self);
         }
-
+        
         private static void OnCreatureSpellCastAt()
         {
-            NWCreature self = Object.OBJECT_SELF;
-
-            string creatureScript = self.GetLocalString("BEHAVIOUR");
-            if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");
-            if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("SCRIPT");
-            if (string.IsNullOrWhiteSpace(creatureScript)) return;
-            if (!App.IsKeyRegistered<IAIBehaviour>("AI." + creatureScript)) return;
-
-            App.ResolveByInterface<IAIBehaviour>("AI." + creatureScript, behaviour =>
-            {
-                behaviour.OnSpellCastAt();
-            });
+            string script = GetBehaviourScript(Object.OBJECT_SELF);
+            if (string.IsNullOrWhiteSpace(script)) return;
+            IAIBehaviour behaviour = GetAIBehaviour(script);
+            behaviour.OnSpellCastAt(Object.OBJECT_SELF);
         }
 
         private static void OnCreatureUserDefined()
         {
-            NWCreature self = Object.OBJECT_SELF;
+            string script = GetBehaviourScript(Object.OBJECT_SELF);
+            if (string.IsNullOrWhiteSpace(script)) return;
+            IAIBehaviour behaviour = GetAIBehaviour(script);
+            behaviour.OnUserDefined(Object.OBJECT_SELF);
+        }
 
-            string creatureScript = self.GetLocalString("BEHAVIOUR");
-            if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");
-            if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("SCRIPT");
-            if (string.IsNullOrWhiteSpace(creatureScript)) return;
-            if (!App.IsKeyRegistered<IAIBehaviour>("AI." + creatureScript)) return;
+        private static void ProcessCreatureAI()
+        {
+            TimeData time = new TimeData(ObjectProcessingService.ProcessingTickInterval);
 
-            App.ResolveByInterface<IAIBehaviour>("AI." + creatureScript, behaviour =>
+            // Iterate backwards so we can remove the creature if it's no longer valid.
+            for(int x = _aiCreatures.Count-1; x >= 0; x--)
             {
-                behaviour.OnUserDefined();
-            });
+                AICreature ai = _aiCreatures.ElementAt(x);
+                NWArea area = ai.Creature.Area;
+                bool areaHasPCs = NWModule.Get().Players.Count(p => p.Area.Resref == area.Resref) > 0;
+
+                // Is this creature invalid or dead? If so, remove it and move to the next one.
+                if (!ai.Creature.IsValid ||
+                    ai.Creature.IsDead)
+                {
+                    _aiCreatures.Remove(ai);
+                    continue;
+                }
+
+                // Are there no players in the area? Is the creature being possessed? If so, don't execute AI this frame. Move to the next one.
+                if (ai.Creature.IsPossessedFamiliar || ai.Creature.IsDMPossessed || !areaHasPCs)
+                    continue;
+
+                // Otherwise this is a valid creature and needs to have its AI processed.
+                ai.Node.Tick(time);
+
+            }
         }
     }
 }

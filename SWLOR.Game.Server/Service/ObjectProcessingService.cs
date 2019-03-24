@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.Processor;
 using SWLOR.Game.Server.Processor.Contracts;
@@ -13,7 +14,6 @@ namespace SWLOR.Game.Server.Service
 {
     public static class ObjectProcessingService
     {
-        private static readonly Dictionary<string, IEventProcessor> _processingEvents;
         private static DateTime _dateLastRun;
 
         public static void SubscribeEvents()
@@ -24,13 +24,10 @@ namespace SWLOR.Game.Server.Service
         static ObjectProcessingService()
         {
             _dateLastRun = DateTime.UtcNow;
-            _processingEvents = new Dictionary<string, IEventProcessor>();
         }
 
         private static void OnModuleLoad()
         {
-            RegisterProcessingEvent(new AppStateProcessor());
-            RegisterProcessingEvent(new ServerRestartProcessor());
             Events.MainLoopTick += Events_MainLoopTick;
         }
         
@@ -47,38 +44,7 @@ namespace SWLOR.Game.Server.Service
             if (delta.Seconds < 1) return;
             _dateLastRun = DateTime.UtcNow;
             
-            foreach (var toUnregister in AppCache.UnregisterProcessingEvents)
-            {
-                _processingEvents.Remove(toUnregister);
-            }
-            AppCache.UnregisterProcessingEvents.Clear();
-
-            foreach (var @event in _processingEvents.Values)
-            {
-                try
-                {
-                    @event.Run();
-                }
-                catch (Exception ex)
-                {
-                    LoggingService.LogError(ex, "ObjectProcessingService. Event = " + @event);
-                }
-            }
-        }
-
-        public static string RegisterProcessingEvent(IEventProcessor processor)
-        {
-            string globalID = Guid.NewGuid().ToString();
-            _processingEvents.Add(globalID, processor);
-            return globalID;
-        }
-
-        public static void UnregisterProcessingEvent(string globalID)
-        {
-            if (_processingEvents.ContainsKey(globalID))
-            {
-                AppCache.UnregisterProcessingEvents.Enqueue(globalID);
-            }
+            MessageHub.Instance.Publish(new ObjectProcessorMessage());
         }
     }
 }

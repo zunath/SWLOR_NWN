@@ -112,9 +112,10 @@ namespace SWLOR.Game.Server
             
             // Interfaces
             RegisterInterfaceImplementations<IConversation>(builder);
-            RegisterInterfaceImplementations<IActionItem>(builder, false, true);
-            RegisterInterfaceImplementations<IPerkBehaviour>(builder, false, true);
             RegisterInterfaceImplementations<IAIBehaviour>(builder);
+
+            
+            RegisterInterfaceImplementations<IPerkBehaviour>(builder, false, true);
             RegisterInterfaceImplementations<IMod>(builder, false, true);
             RegisterInterfaceImplementations<ISpawnRule>(builder, false, true);
             RegisterInterfaceImplementations<IQuestRule>(builder, false, true);

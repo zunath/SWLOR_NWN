@@ -19,17 +19,16 @@ namespace SWLOR.Game.Server.Event.Delayed
             Vector userPosition = (Vector) args[5];
             CustomData customData = (CustomData) args[6];
 
-            App.ResolveByInterface<IActionItem>("Item." + className, actionItem =>
-            {
-                ItemService.FinishActionItem(
-                    actionItem,
-                    user,
-                    itemObject,
-                    target,
-                    targetLocation,
-                    userPosition,
-                    customData);
-            });
+            IActionItem actionItem = ItemService.GetActionItemHandler(className);    
+            ItemService.FinishActionItem(
+                actionItem,
+                user,
+                itemObject,
+                target,
+                targetLocation,
+                userPosition,
+                customData);
+        
             return true;
         }
     }

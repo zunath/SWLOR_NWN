@@ -13,6 +13,7 @@ using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.NWN.Events.Legacy;
 using static NWN._;
 using Object = NWN.Object;
@@ -21,15 +22,58 @@ namespace SWLOR.Game.Server.Service
 {
     public static class ItemService
     {
+        private static readonly Dictionary<string, IActionItem> _actionItemHandlers;
+
+        static ItemService()
+        {
+            _actionItemHandlers = new Dictionary<string, IActionItem>();
+        }
+
         public static void SubscribeEvents()
         {
             // Module Events
             MessageHub.Instance.Subscribe<OnModuleActivateItem>(message => OnModuleActivatedItem());
             MessageHub.Instance.Subscribe<OnModuleEquipItem>(message => OnModuleEquipItem());
             MessageHub.Instance.Subscribe<OnModuleUnequipItem>(message => OnModuleUnequipItem());
+            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
 
             // Feat Events
             MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
+        }
+
+        private static void OnModuleLoad()
+        {
+            RegisterActionItemHandlers();
+        }
+
+        private static void RegisterActionItemHandlers()
+        {
+            // Use reflection to get all of IChatCommand handler implementations.
+            var classes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => typeof(IActionItem).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
+
+            foreach (var type in classes)
+            {
+                IActionItem instance = Activator.CreateInstance(type) as IActionItem;
+
+                if (instance == null)
+                {
+                    throw new NullReferenceException("Unable to activate instance of type: " + type);
+                }
+                string key = type.Name;
+                _actionItemHandlers.Add(key, instance);
+            }
+        }
+
+        public static IActionItem GetActionItemHandler(string key)
+        {
+            if (!_actionItemHandlers.ContainsKey(key))
+            {
+                throw new KeyNotFoundException("Action item '" + key + "' is not registered.");
+            }
+
+            return _actionItemHandlers[key];
         }
 
         public static string GetNameByResref(string resref)
@@ -84,61 +128,60 @@ namespace SWLOR.Game.Server.Service
             // Remove "Item." prefix if it exists.
             if (className.StartsWith("Item."))
                 className = className.Substring(5);
-
-            App.ResolveByInterface<IActionItem>("Item." + className, (item) =>
+            IActionItem item = GetActionItemHandler(className);
+        
+            string invalidTargetMessage = item.IsValidTarget(user, oItem, target, targetLocation);
+            if (!string.IsNullOrWhiteSpace(invalidTargetMessage))
             {
-                string invalidTargetMessage = item.IsValidTarget(user, oItem, target, targetLocation);
-                if (!string.IsNullOrWhiteSpace(invalidTargetMessage))
+                user.SendMessage(invalidTargetMessage);
+                return;
+            }
+
+            float maxDistance = item.MaxDistance(user, oItem, target, targetLocation);
+            if (maxDistance > 0.0f)
+            {
+                if (target.IsValid &&
+                    (_.GetDistanceBetween(user.Object, target.Object) > maxDistance ||
+                    user.Area.Resref != target.Area.Resref))
                 {
-                    user.SendMessage(invalidTargetMessage);
+                    user.SendMessage("Your target is too far away.");
                     return;
                 }
-
-                float maxDistance = item.MaxDistance(user, oItem, target, targetLocation);
-                if (maxDistance > 0.0f)
+                else if (!target.IsValid &&
+                         (_.GetDistanceBetweenLocations(user.Location, targetLocation) > maxDistance ||
+                         user.Area.Resref != ((NWArea)_.GetAreaFromLocation(targetLocation)).Resref))
                 {
-                    if (target.IsValid &&
-                        (_.GetDistanceBetween(user.Object, target.Object) > maxDistance ||
-                        user.Area.Resref != target.Area.Resref))
-                    {
-                        user.SendMessage("Your target is too far away.");
-                        return;
-                    }
-                    else if (!target.IsValid &&
-                             (_.GetDistanceBetweenLocations(user.Location, targetLocation) > maxDistance ||
-                             user.Area.Resref != ((NWArea)_.GetAreaFromLocation(targetLocation)).Resref))
-                    {
-                        user.SendMessage("That location is too far away.");
-                        return;
-                    }
+                    user.SendMessage("That location is too far away.");
+                    return;
                 }
+            }
 
-                CustomData customData = item.StartUseItem(user, oItem, target, targetLocation);
-                float delay = item.Seconds(user, oItem, target, targetLocation, customData);
-                int animationID = item.AnimationID();
-                bool faceTarget = item.FaceTarget();
-                Vector userPosition = user.Position;
+            CustomData customData = item.StartUseItem(user, oItem, target, targetLocation);
+            float delay = item.Seconds(user, oItem, target, targetLocation, customData);
+            int animationID = item.AnimationID();
+            bool faceTarget = item.FaceTarget();
+            Vector userPosition = user.Position;
 
-                user.AssignCommand(() =>
-                {
-                    user.IsBusy = true;
-                    if (faceTarget)
-                        _.SetFacingPoint(!target.IsValid ? _.GetPositionFromLocation(targetLocation) : target.Position);
-                    if (animationID > 0)
-                        _.ActionPlayAnimation(animationID, 1.0f, delay);
-                });
-
-                NWNXPlayer.StartGuiTimingBar(user, delay, string.Empty);
-                user.DelayEvent<FinishActionItem>(
-                    delay,
-                    className,
-                    user,
-                    oItem,
-                    target,
-                    targetLocation,
-                    userPosition,
-                    customData);
+            user.AssignCommand(() =>
+            {
+                user.IsBusy = true;
+                if (faceTarget)
+                    _.SetFacingPoint(!target.IsValid ? _.GetPositionFromLocation(targetLocation) : target.Position);
+                if (animationID > 0)
+                    _.ActionPlayAnimation(animationID, 1.0f, delay);
             });
+
+            NWNXPlayer.StartGuiTimingBar(user, delay, string.Empty);
+            user.DelayEvent<FinishActionItem>(
+                delay,
+                className,
+                user,
+                oItem,
+                target,
+                targetLocation,
+                userPosition,
+                customData);
+        
 
         }
 

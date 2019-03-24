@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Processor
                 }
                 catch (Exception ex)
                 {
-                    ErrorService.LogError(ex, "CustomEffectService processor was unable to run specific effect script for custom effect ID: " + entity.ID);
+                    LoggingService.LogError(ex, "CustomEffectService processor was unable to run specific effect script for custom effect ID: " + entity.ID);
                 }
 
 

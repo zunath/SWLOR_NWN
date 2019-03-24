@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Data
                     catch (Exception ex)
                     {
                         Console.WriteLine("ERROR: Unable to create database. Please check your permissions.");
-                        ErrorService.LogError(ex);
+                        LoggingService.LogError(ex);
                         return;
                     }
                     finally    
@@ -246,7 +246,7 @@ namespace SWLOR.Game.Server.Data
                 catch (Exception ex)
                 {
                     Console.WriteLine("ERROR: Database migration script named '" + resource + "' failed to apply. Canceling database migration process!");
-                    ErrorService.LogError(ex, nameof(DatabaseMigrationRunner));
+                    LoggingService.LogError(ex, nameof(DatabaseMigrationRunner));
                 }
             }
         }

@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Event.Delayed
             }
             catch (Exception ex)
             {
-                ErrorService.LogError(ex);
+                LoggingService.LogError(ex);
 
                 return false;
             }

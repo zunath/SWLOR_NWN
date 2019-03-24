@@ -159,13 +159,13 @@ namespace SWLOR.Game.Server.Service
 
             if (planetName == "Viscara")
             {
-                ErrorService.Trace(TraceComponent.Weather, "Planet is Viscara.");
+                LoggingService.Trace(TraceComponent.Weather, "Planet is Viscara.");
                 climate.Heat_Modifier = -2;
                 climate.Humidity_Modifier = +2;
             }
             else if (planetName == "Tattooine")
             {
-                ErrorService.Trace(TraceComponent.Weather, "Planet is Tattooine.");
+                LoggingService.Trace(TraceComponent.Weather, "Planet is Tattooine.");
                 climate.Heat_Modifier = +5;
                 climate.Humidity_Modifier = -8;
 
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Service
             }
             else if (planetName == "Mon Cala")
             {
-                ErrorService.Trace(TraceComponent.Weather, "Planet is Mon Cala.");
+                LoggingService.Trace(TraceComponent.Weather, "Planet is Mon Cala.");
                 climate.Humidity_Modifier = 0;
                 climate.Wind_Modifier = +1;
                 climate.Heat_Modifier = +1;
@@ -210,7 +210,7 @@ namespace SWLOR.Game.Server.Service
 
         public static bool AdjustWeather()
         {
-            ErrorService.Trace(TraceComponent.Weather, "Adjusting module weather");
+            LoggingService.Trace(TraceComponent.Weather, "Adjusting module weather");
             NWObject oMod = _.GetModule();
 
             //--------------------------------------------------------------------------
@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Service
             }
             else if (_.GetTimeHour() != oMod.GetLocalInt(VAR_WEATHER_CHANGE))
             {
-                ErrorService.Trace(TraceComponent.Weather, "No change needed... yet.");
+                LoggingService.Trace(TraceComponent.Weather, "No change needed... yet.");
                 return false;
             }
 
@@ -253,7 +253,7 @@ namespace SWLOR.Game.Server.Service
             nWind = _.d10(2) - 10;
             if (nWind < 1) nWind = 1 - nWind;
 
-            ErrorService.Trace(TraceComponent.Weather, "New weather settings: heat - " + _.IntToString(nHeat) +
+            LoggingService.Trace(TraceComponent.Weather, "New weather settings: heat - " + _.IntToString(nHeat) +
                                            ", humidity - " + _.IntToString(nHumidity) +
                                                ", wind - " + _.IntToString(nWind));
 
@@ -266,7 +266,7 @@ namespace SWLOR.Game.Server.Service
             //--------------------------------------------------------------------------
             int nNextChange = _.GetTimeHour() + (11 - nWind);
             if (nNextChange > 23) nNextChange -= 24;
-            ErrorService.Trace(TraceComponent.Weather, "Change the weather next at hour " + _.IntToString(nNextChange));
+            LoggingService.Trace(TraceComponent.Weather, "Change the weather next at hour " + _.IntToString(nNextChange));
             oMod.SetLocalInt(VAR_WEATHER_CHANGE, nNextChange);
 
             // Update all occupied areas with the new settings.
@@ -330,7 +330,7 @@ namespace SWLOR.Game.Server.Service
             if (nHeat > 4 && nHumidity > 7 &&
                 ((bStormy && _.d20() - nWind < 1) || (bStormy && _.d3() == 1)))
             {
-                ErrorService.Trace(TraceComponent.Weather, "A thunderstorm is now raging in " + _.GetName(oArea));
+                LoggingService.Trace(TraceComponent.Weather, "A thunderstorm is now raging in " + _.GetName(oArea));
                 _.SetSkyBox(_.SKYBOX_GRASS_STORM, oArea);
                 Thunderstorm(oArea);
                 oArea.SetLocalInt("GS_AM_SKY_OVERRIDE", 1);
@@ -382,7 +382,7 @@ namespace SWLOR.Game.Server.Service
                 bDustStorm = false;
             }
 
-            ErrorService.Trace(TraceComponent.Weather, "Area weather settings for area: " + _.GetName(oArea) +
+            LoggingService.Trace(TraceComponent.Weather, "Area weather settings for area: " + _.GetName(oArea) +
                                                   ", heat - " + _.IntToString(nHeat) +
                                               ", humidity - " + _.IntToString(nHumidity) +
                                                   ", wind - " + _.IntToString(nWind) +
@@ -398,7 +398,7 @@ namespace SWLOR.Game.Server.Service
 
         public static int GetWeather(NWObject oArea)
         {
-            ErrorService.Trace(TraceComponent.Weather, "Getting current weather for area: " + _.GetName(oArea));
+            LoggingService.Trace(TraceComponent.Weather, "Getting current weather for area: " + _.GetName(oArea));
 
             if (_.GetIsAreaInterior(oArea) == 1 || _.GetIsAreaAboveGround(oArea) == 0)
             {
@@ -681,7 +681,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void _DoWindKnockdown(NWObject oCreature)
         {
-            ErrorService.Trace(TraceComponent.Weather, "Checking whether " + _.GetName(oCreature) + " is blown over");
+            LoggingService.Trace(TraceComponent.Weather, "Checking whether " + _.GetName(oCreature) + " is blown over");
             int nDC = (_.GetHitDice(oCreature) / 2) + 10;
             int nDiscipline = _.GetSkillRank(_.SKILL_DISCIPLINE, oCreature);
             int nReflexSave = _.GetReflexSavingThrow(oCreature);
@@ -771,7 +771,7 @@ namespace SWLOR.Game.Server.Service
         {
             SetWeather();
 
-            ErrorService.Trace(TraceComponent.Weather, "Applying weather to creature: " + _.GetName(_.GetEnteringObject()));
+            LoggingService.Trace(TraceComponent.Weather, "Applying weather to creature: " + _.GetName(_.GetEnteringObject()));
 
             DoWeatherEffects(_.GetEnteringObject());
 
@@ -781,7 +781,7 @@ namespace SWLOR.Game.Server.Service
 
             if (nHour != nLastHour)
             {
-                ErrorService.Trace(TraceComponent.Weather, "Cleaning up old weather");
+                LoggingService.Trace(TraceComponent.Weather, "Cleaning up old weather");
 
                 // Clean up any old weather placeables.
                 foreach (NWObject oPlaceable in oArea.Objects)
@@ -795,7 +795,7 @@ namespace SWLOR.Game.Server.Service
 
                 // Create new ones depending on the current weather.
                 int nWeather = GetWeather();
-                ErrorService.Trace(TraceComponent.Weather, "Current weather: " + nWeather.ToString());
+                LoggingService.Trace(TraceComponent.Weather, "Current weather: " + nWeather.ToString());
                 
                 if (nWeather == WEATHER_FOGGY)
                 {
@@ -805,7 +805,7 @@ namespace SWLOR.Game.Server.Service
 
                     // We want one placeable per 8 tiles.
                     int nMax = (nSizeX * nSizeY) / 8;
-                    ErrorService.Trace(TraceComponent.Weather, "Creating up to " + nMax.ToString() + " mist objects.");
+                    LoggingService.Trace(TraceComponent.Weather, "Creating up to " + nMax.ToString() + " mist objects.");
 
                     for (int nCount = _.d6() ; nCount < nMax; nCount++)
                     {

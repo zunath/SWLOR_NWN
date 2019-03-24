@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class CustomEffectService
     {
-        private static Dictionary<CustomEffectType, ICustomEffectHandler> _customEffectHandlers;
+        private static readonly Dictionary<CustomEffectType, ICustomEffectHandler> _customEffectHandlers;
 
         static CustomEffectService()
         {

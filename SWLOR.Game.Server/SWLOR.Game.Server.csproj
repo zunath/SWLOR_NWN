@@ -1293,7 +1293,7 @@
     <Compile Include="Service\PlayerMigrationService.cs" />
     <Compile Include="Service\PlayerStatService.cs" />
     <Compile Include="Service\EnmityService.cs" />
-    <Compile Include="Service\ErrorService.cs" />
+    <Compile Include="Service\LoggingService.cs" />
     <Compile Include="Service\ExaminationService.cs" />
     <Compile Include="Service\FarmingService.cs" />
     <Compile Include="Service\HelmetToggleService.cs" />

@@ -2,12 +2,23 @@
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service
 {
-    public static class ErrorService
+    public static class LoggingService
     {
+        static LoggingService()
+        {
+            MessageHub.Instance.RegisterGlobalErrorHandler(OnMessageHubEventError);
+        }
+        
+        private static void OnMessageHubEventError(Guid id, Exception ex)
+        {
+            LogError(ex, "MessageHub: " + id);
+        }
+
         public static void LogError(Exception ex, string @event = "")
         {
             string stackTrace = ex.ToMessageAndCompleteStacktrace();

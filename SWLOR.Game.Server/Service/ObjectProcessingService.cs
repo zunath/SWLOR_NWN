@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Service
                 }
                 catch (Exception ex)
                 {
-                    ErrorService.LogError(ex, "ObjectProcessingService. EventID = " + @event.Key);
+                    LoggingService.LogError(ex, "ObjectProcessingService. EventID = " + @event.Key);
                 }
             }
         }

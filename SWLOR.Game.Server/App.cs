@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server
                     }
                     catch (Exception ex)
                     {
-                        ErrorService.LogError(ex, typeof(T).ToString());
+                        LoggingService.LogError(ex, typeof(T).ToString());
                     }
                 }
             }
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server
                     }
                     catch (Exception ex)
                     {
-                        ErrorService.LogError(ex, typeof(T1).ToString());
+                        LoggingService.LogError(ex, typeof(T1).ToString());
                         throw;
                     }
                 }
@@ -111,7 +111,6 @@ namespace SWLOR.Game.Server
             var builder = new ContainerBuilder();
             
             // Interfaces
-            RegisterInterfaceImplementations<IChatCommand>(builder, true, true);
             RegisterInterfaceImplementations<IConversation>(builder);
             RegisterInterfaceImplementations<IActionItem>(builder, false, true);
             RegisterInterfaceImplementations<IPerkBehaviour>(builder, false, true);

@@ -65,12 +65,12 @@ namespace SWLOR.Game.Server.Threading
                     catch (SqlException ex)
                     {
                         Console.WriteLine("****EXCEPTION ON DATABASE BACKGROUND THREAD****");
-                        ErrorService.LogError(ex, request.Action.ToString());
+                        LoggingService.LogError(ex, request.Action.ToString());
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine("****EXCEPTION ON DATABASE BACKGROUND THREAD****");
-                        ErrorService.LogError(ex, request.Action.ToString());
+                        LoggingService.LogError(ex, request.Action.ToString());
                     }
                 }
             }

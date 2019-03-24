@@ -385,7 +385,7 @@ namespace SWLOR.Game.Server.Service
             if (oItem.BaseItemType == BASE_ITEM_ARMOR) return;
 
             // Flag this attack as physical so that the damage scripts treat it properly.
-            ErrorService.Trace(TraceComponent.LastAttack, "Setting attack type from " + oPC.GlobalID + " against " + _.GetName(oTarget) + " to physical (" + ATTACK_PHYSICAL.ToString() + ")");
+            LoggingService.Trace(TraceComponent.LastAttack, "Setting attack type from " + oPC.GlobalID + " against " + _.GetName(oTarget) + " to physical (" + ATTACK_PHYSICAL.ToString() + ")");
             oTarget.SetLocalInt(LAST_ATTACK + oPC.GlobalID, ATTACK_PHYSICAL);
 
             HandleGrenadeProficiency(oPC, oTarget);

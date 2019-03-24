@@ -345,7 +345,7 @@ namespace SWLOR.Game.Server.Service
                 if (hyphen == -1)
                 {
                     // Something went wrong.
-                    ErrorService.Trace(TraceComponent.Space, "Unable to find planet name from dock area.");
+                    LoggingService.Trace(TraceComponent.Space, "Unable to find planet name from dock area.");
                     return "";
                 }
             }
@@ -403,7 +403,7 @@ namespace SWLOR.Game.Server.Service
 
             if (string.IsNullOrWhiteSpace(baseStructureID))
             {
-                ErrorService.Trace(TraceComponent.Space, "UpdateCargoBonus called for non-ship area.");
+                LoggingService.Trace(TraceComponent.Space, "UpdateCargoBonus called for non-ship area.");
                 return;
             }
 
@@ -448,7 +448,7 @@ namespace SWLOR.Game.Server.Service
             string structureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
             if (string.IsNullOrWhiteSpace(structureID))
             {
-                ErrorService.Trace(TraceComponent.Space, "Asked to set location of invalid ship area.");
+                LoggingService.Trace(TraceComponent.Space, "Asked to set location of invalid ship area.");
                 return;
             }
 
@@ -472,7 +472,7 @@ namespace SWLOR.Game.Server.Service
             string structureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
             if (string.IsNullOrWhiteSpace(structureID))
             {
-                ErrorService.Trace(TraceComponent.Space, "Asked to get location of invalid ship area.");
+                LoggingService.Trace(TraceComponent.Space, "Asked to get location of invalid ship area.");
                 return "";
             }
 
@@ -551,7 +551,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (_.GetName(area).StartsWith(planet))
                 {
-                    ErrorService.Trace(TraceComponent.Space, "Checking area " + _.GetName(area) + " for landing spots.");
+                    LoggingService.Trace(TraceComponent.Space, "Checking area " + _.GetName(area) + " for landing spots.");
 
                     // This area is on our planet.  
                     if (!area.Data.ContainsKey("BASE_SERVICE_STRUCTURES"))
@@ -562,12 +562,12 @@ namespace SWLOR.Game.Server.Service
                     var pcBases = DataService.Where<PCBase>(x => x.AreaResref == area.Resref && x.ApartmentBuildingID == null).ToList();
                     foreach (var @base in pcBases)
                     {
-                        ErrorService.Trace(TraceComponent.Space, "Checking base " + @base.ID.ToString() + " for landing slots.");
+                        LoggingService.Trace(TraceComponent.Space, "Checking base " + @base.ID.ToString() + " for landing slots.");
 
                         // Do we have permission to dock here?
                         if (BasePermissionService.HasBasePermission(player, @base.ID, BasePermission.CanDockStarship))
                         {
-                            ErrorService.Trace(TraceComponent.Space, "Player has permission to land here.");
+                            LoggingService.Trace(TraceComponent.Space, "Player has permission to land here.");
                             // Are there any docks in the base?
                             var structures = DataService.Where<PCBaseStructure>(x => x.PCBaseID == @base.ID);
                             foreach (var structure in structures)
@@ -575,7 +575,7 @@ namespace SWLOR.Game.Server.Service
                                 BaseStructure baseStructure = DataService.Get<BaseStructure>(structure.BaseStructureID);
                                 if (baseStructure.BaseStructureTypeID == (int)BaseStructureType.StarshipProduction)
                                 {
-                                    ErrorService.Trace(TraceComponent.Space, "Found a dock with ID " + baseStructure.ID.ToString());
+                                    LoggingService.Trace(TraceComponent.Space, "Found a dock with ID " + baseStructure.ID.ToString());
 
                                     // Found a dock.  Is it open?  Find the actual placeable object for the dock so we can check its vars.
                                     List<AreaStructure> areaStructures = area.Data["BASE_SERVICE_STRUCTURES"];
@@ -583,11 +583,11 @@ namespace SWLOR.Game.Server.Service
                                     {
                                         if (plc.PCBaseStructureID == structure.ID)
                                         {
-                                            ErrorService.Trace(TraceComponent.Space, "Found placeable object.");
+                                            LoggingService.Trace(TraceComponent.Space, "Found placeable object.");
 
                                             if (plc.Structure.GetLocalInt("DOCKED_STARSHIP") == 0)
                                             {
-                                                ErrorService.Trace(TraceComponent.Space, "Dock is currently open.");
+                                                LoggingService.Trace(TraceComponent.Space, "Dock is currently open.");
 
                                                 // We have permission to dock in this base.  Moreover, we have found a dock 
                                                 // which is not occupied.  (Possibly several!).  Add each dock to our list.
@@ -639,7 +639,7 @@ namespace SWLOR.Game.Server.Service
             // check that we are not already flying.
             if (((NWObject)ship.GetLocalObject("CREATURE")).IsValid)
             {
-                ErrorService.Trace(TraceComponent.Space, "Ship already exists.");
+                LoggingService.Trace(TraceComponent.Space, "Ship already exists.");
                 return;
             }
 
@@ -648,7 +648,7 @@ namespace SWLOR.Game.Server.Service
 
             if (string.IsNullOrWhiteSpace(shipID))
             {
-                ErrorService.Trace(TraceComponent.Space, "Error - tried to create a ship but can't find its structure ID.");
+                LoggingService.Trace(TraceComponent.Space, "Error - tried to create a ship but can't find its structure ID.");
                 return;
             }
 
@@ -660,12 +660,12 @@ namespace SWLOR.Game.Server.Service
                 string planet = GetPlanetFromLocation(shipBase.ShipLocation);
                 // Planet names may have spaces in them - so remove any spaces before looking for the tag.
                 NWObject waypoint = _.GetObjectByTag(Regex.Replace(planet, @"\s+", "") + "_Orbit");
-                ErrorService.Trace(TraceComponent.Space, "Found space waypoint " + waypoint.Name + " in " + waypoint.Area.Name);
+                LoggingService.Trace(TraceComponent.Space, "Found space waypoint " + waypoint.Name + " in " + waypoint.Area.Name);
 
                 if (!waypoint.IsValid)
                 {
                     // Uh oh.
-                    ErrorService.Trace(TraceComponent.Space, "Could not find orbit waypoint for planet " + planet);
+                    LoggingService.Trace(TraceComponent.Space, "Could not find orbit waypoint for planet " + planet);
                     return;
                 }
 
@@ -678,7 +678,7 @@ namespace SWLOR.Game.Server.Service
             ship.SetLocalObject("CREATURE", shipCreature);
 
             shipCreature.Name = ship.Name;
-            ErrorService.Trace(TraceComponent.Space, "Created ship " + shipCreature.Name + " in area " + shipCreature.Area.Name);
+            LoggingService.Trace(TraceComponent.Space, "Created ship " + shipCreature.Name + " in area " + shipCreature.Area.Name);
 
             // Once the ship has spawned (and had its base stats set), adjust them for any mods we have on board.
             _.AssignCommand(shipCreature, () => { UpdateCargoBonus(ship, shipCreature); });
@@ -694,12 +694,12 @@ namespace SWLOR.Game.Server.Service
                 PCBase shipBase = DataService.Get<PCBase>(shipStructure.PCBaseID);
                 
                 // Remove the ship object.
-                ErrorService.Trace(TraceComponent.Space, "Removing ship " + shipCreature.Name + " from " + shipCreature.Area.Name);
+                LoggingService.Trace(TraceComponent.Space, "Removing ship " + shipCreature.Name + " from " + shipCreature.Area.Name);
                 shipCreature.Destroy();
             }
             else
             {
-                ErrorService.Trace(TraceComponent.Space, "Could not find ship to remove from space.");
+                LoggingService.Trace(TraceComponent.Space, "Could not find ship to remove from space.");
             }
         }
 
@@ -735,7 +735,7 @@ namespace SWLOR.Game.Server.Service
 
             if (string.IsNullOrWhiteSpace(shipID))
             {
-                ErrorService.Trace(TraceComponent.Space, "Error - tried to fly a ship but can't find its structure ID.");
+                LoggingService.Trace(TraceComponent.Space, "Error - tried to fly a ship but can't find its structure ID.");
                 player.SendMessage("Sorry, we hit a problem.  Please report this message.");
                 return;
             }
@@ -1039,14 +1039,14 @@ namespace SWLOR.Game.Server.Service
             PCBase shipBase = DataService.Get<PCBase>(shipStructure.PCBaseID);
             string planet = GetPlanetFromLocation(shipBase.ShipLocation);
 
-            ErrorService.Trace(TraceComponent.Space, "Creating space encounter for " + player.Name + " near planet " + planet);
+            LoggingService.Trace(TraceComponent.Space, "Creating space encounter for " + player.Name + " near planet " + planet);
 
             HashSet<SpaceEncounter> encounters = DataService.Where<SpaceEncounter>(x => x.Planet == planet);
             int totalChance = 0;
 
             foreach (var encounter in encounters)
             {
-                ErrorService.Trace(TraceComponent.Space, "Found encounter: " + encounter.Type + " with base chance " + encounter.Chance);
+                LoggingService.Trace(TraceComponent.Space, "Found encounter: " + encounter.Type + " with base chance " + encounter.Chance);
 
                 if (encounter.Type == 1 || encounter.Type == 4)
                 {
@@ -1059,7 +1059,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 if (encounter.Chance < 1) encounter.Chance = 1;
-                ErrorService.Trace(TraceComponent.Space, "Modified chance: " + encounter.Chance);
+                LoggingService.Trace(TraceComponent.Space, "Modified chance: " + encounter.Chance);
 
                 totalChance += encounter.Chance;
             }
@@ -1192,7 +1192,7 @@ namespace SWLOR.Game.Server.Service
             if (attackStron == 0)
             {
                 attacker.FloatingText("Out of Stronidium!");
-                ErrorService.Trace(TraceComponent.Space, attacker.Name + " is out of stronidium");
+                LoggingService.Trace(TraceComponent.Space, attacker.Name + " is out of stronidium");
                 return;
             }
 
@@ -1202,7 +1202,7 @@ namespace SWLOR.Game.Server.Service
             int defendShields = target.GetLocalInt("SHIELDS");
             if (defendShields > defendStron) defendShields = defendStron;
 
-            ErrorService.Trace(TraceComponent.Space, "Attacker weapons: " + attackWeapons + ", defender shields " + defendShields);
+            LoggingService.Trace(TraceComponent.Space, "Attacker weapons: " + attackWeapons + ", defender shields " + defendShields);
 
             // Get the piloting skill of the attacker and defender
             int attackerPiloting = 0;
@@ -1240,7 +1240,7 @@ namespace SWLOR.Game.Server.Service
                 defenderPiloting += target.GetLocalInt("DC") > 0 ? target.GetLocalInt("DC") : 10;
             }
 
-            ErrorService.Trace(TraceComponent.Space, "Attacker skill " + attackerPiloting + ", defender skill " + defenderPiloting);
+            LoggingService.Trace(TraceComponent.Space, "Attacker skill " + attackerPiloting + ", defender skill " + defenderPiloting);
 
             // Make the shot... preparing some VFX.
             int damage = 0;
@@ -1252,7 +1252,7 @@ namespace SWLOR.Game.Server.Service
             float fTargetDistance = _.GetDistanceBetween(attacker, target);*/
 
             int check = _.d100();
-            ErrorService.Trace(TraceComponent.Space, "Check result " + check);
+            LoggingService.Trace(TraceComponent.Space, "Check result " + check);
 
             if (check < (100 * attackerPiloting) / (attackerPiloting + defenderPiloting))
             {
@@ -1275,7 +1275,7 @@ namespace SWLOR.Game.Server.Service
                 // Calculate damage. 
                 int overkill = (100 * attackerPiloting) / (attackerPiloting + defenderPiloting) - check; // how much we beat the check by.
                 float bonus = (float)overkill / 100.0f;
-                ErrorService.Trace(TraceComponent.Space, "Hit! Bonus % damage: " + bonus);
+                LoggingService.Trace(TraceComponent.Space, "Hit! Bonus % damage: " + bonus);
 
                 damage = (int)((float)attackWeapons * (1.0f + bonus)) - defendShields;
                 if (damage < 0) damage = 0;
@@ -1344,7 +1344,7 @@ namespace SWLOR.Game.Server.Service
                         if (obj.IsPC)
                         {
                             stronLoss -= PerkService.GetPCPerkLevel(new NWPlayer(obj), PerkType.SystemsOptimization);
-                            ErrorService.Trace(TraceComponent.Space, "Attacker's stronidium loss reduced by engineer, now " + stronLoss);
+                            LoggingService.Trace(TraceComponent.Space, "Attacker's stronidium loss reduced by engineer, now " + stronLoss);
 
                             if (stronLoss < 1)
                             {
@@ -1378,7 +1378,7 @@ namespace SWLOR.Game.Server.Service
                         if (obj.IsPC)
                         {
                             stronLoss -= PerkService.GetPCPerkLevel(new NWPlayer(obj), PerkType.SystemsOptimization);
-                            ErrorService.Trace(TraceComponent.Space, "Defender's stronidium loss reduced by engineer, now " + stronLoss);
+                            LoggingService.Trace(TraceComponent.Space, "Defender's stronidium loss reduced by engineer, now " + stronLoss);
 
                             if (stronLoss < 1)
                             {
@@ -1478,7 +1478,7 @@ namespace SWLOR.Game.Server.Service
                     _.GetDistanceBetween(creature, target) <= range &&
                     !target.HasAnyEffect(EFFECT_TYPE_INVISIBILITY, EFFECT_TYPE_SANCTUARY))
                 {
-                    ErrorService.Trace(TraceComponent.Space, "Found valid target: " + target.Name);
+                    LoggingService.Trace(TraceComponent.Space, "Found valid target: " + target.Name);
                     DoSpaceAttack(creature, target, hasGunner);
                     break;
                 }

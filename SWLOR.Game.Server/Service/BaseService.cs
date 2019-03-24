@@ -163,14 +163,14 @@ namespace SWLOR.Game.Server.Service
             // someone else's base.
             if (structureType == BaseStructureType.StarshipProduction)
             {
-                ErrorService.Trace(TraceComponent.Space, "Found starship dock.");
+                LoggingService.Trace(TraceComponent.Space, "Found starship dock.");
 
                 // See whether any starship is docked here.
                 PCBase starship = DataService.SingleOrDefault<PCBase>(x => x.ShipLocation == pcStructure.ID.ToString());
 
                 if (starship != null)
                 {
-                    ErrorService.Trace(TraceComponent.Space, "Found a starship docked in this dock.");
+                    LoggingService.Trace(TraceComponent.Space, "Found a starship docked in this dock.");
 
                     // Find the PCBaseStructure in the starship base that has an exterior listed.  This will be the actual
                     // starship. 
@@ -180,11 +180,11 @@ namespace SWLOR.Game.Server.Service
                     {
                         // We have a starship PCBase with no accompanying PCBaseStructure.  This is a bug (and crashes NWNX
                         // if we try to continue). 
-                        ErrorService.Trace(TraceComponent.Space, "Found PCBase " + starship.ID.ToString() + " with missing PCBaseStructure!");
+                        LoggingService.Trace(TraceComponent.Space, "Found PCBase " + starship.ID.ToString() + " with missing PCBaseStructure!");
                     }
                     else
                     {
-                        ErrorService.Trace(TraceComponent.Space, "Spawning starship with ID: " + shipExterior.ID.ToString());
+                        LoggingService.Trace(TraceComponent.Space, "Spawning starship with ID: " + shipExterior.ID.ToString());
                         SpawnStructure(area, shipExterior.ID);
                         plc.SetLocalInt("DOCKED_STARSHIP", 1);
                     }
@@ -759,7 +759,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void ClearPCBaseByID(Guid pcBaseID, bool displayExplosion = false, bool impoundItems = true)
         {
-            ErrorService.Trace(TraceComponent.Base, "Destroying base with base ID: " + pcBaseID.ToString());
+            LoggingService.Trace(TraceComponent.Base, "Destroying base with base ID: " + pcBaseID.ToString());
 
             var pcBase = DataService.Get<PCBase>(pcBaseID);
 
@@ -801,7 +801,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     // This is a dock with a starship parked.  Clear the docked starship base entry as well.
                     PCBase starkillerBase = DataService.SingleOrDefault<PCBase>(x => x.ShipLocation == structure.PCBaseStructureID.ToString());
-                    ErrorService.Trace(TraceComponent.Base, "Destroying child starship with base ID: " + starkillerBase.ID.ToString());
+                    LoggingService.Trace(TraceComponent.Base, "Destroying child starship with base ID: " + starkillerBase.ID.ToString());
                     ClearPCBaseByID(starkillerBase.ID);
                 }
 
@@ -1042,7 +1042,7 @@ namespace SWLOR.Game.Server.Service
                             if (!waypoint.IsValid)
                             {
                                 player.SendMessage("Could not find waypoint " + starport.Waypoint + ". This is a bug, please report it.");
-                                ErrorService.Trace(TraceComponent.Space, "Failed to find waypoint: " + starport.Waypoint);
+                                LoggingService.Trace(TraceComponent.Space, "Failed to find waypoint: " + starport.Waypoint);
                                 return; 
                             }
 
@@ -1063,7 +1063,7 @@ namespace SWLOR.Game.Server.Service
                             if (!dock.IsValid)
                             {
                                 player.SendMessage("Could not find dock " + pcBase.ShipLocation + ". This is a bug, please report it.");
-                                ErrorService.Trace(TraceComponent.Space, "Failed to find dock: " + pcBase.ShipLocation);
+                                LoggingService.Trace(TraceComponent.Space, "Failed to find dock: " + pcBase.ShipLocation);
                                 return;
                             }
 
@@ -1102,7 +1102,7 @@ namespace SWLOR.Game.Server.Service
                     List<AreaStructure> areaStructures = baseArea.Data["BASE_SERVICE_STRUCTURES"];
                     foreach (var plc in areaStructures)
                     {
-                        ErrorService.Trace(TraceComponent.Space, "Found area structure in " + _.GetName(plc.Structure.Location.Area) + " with name " + _.GetName(plc.Structure) + " and pcbs " + plc.PCBaseStructureID.ToString() + " and door " + plc.Structure.GetLocalInt("IS_DOOR").ToString());
+                        LoggingService.Trace(TraceComponent.Space, "Found area structure in " + _.GetName(plc.Structure.Location.Area) + " with name " + _.GetName(plc.Structure) + " and pcbs " + plc.PCBaseStructureID.ToString() + " and door " + plc.Structure.GetLocalInt("IS_DOOR").ToString());
                         if (plc.PCBaseStructureID == pcbs.ID && plc.Structure.GetLocalInt("IS_DOOR") == 1)
                         {
                             location = plc.Structure.Location;
@@ -1112,7 +1112,7 @@ namespace SWLOR.Game.Server.Service
 
                     if (!location.Area.IsValid)
                     {
-                        ErrorService.Trace(TraceComponent.None, "Player tried to exit from building, but we couldn't find its door placeable.");
+                        LoggingService.Trace(TraceComponent.None, "Player tried to exit from building, but we couldn't find its door placeable.");
                         player.SendMessage("Sorry, we can't find the exit to this building.  Please report this as a bug, thank you.");
                     }
                 }
@@ -1130,7 +1130,7 @@ namespace SWLOR.Game.Server.Service
 
                         while (entrance.IsValid)
                         {
-                            ErrorService.Trace(TraceComponent.Space, "Found apartment entrance in " + _.GetName(entrance.Location.Area) + " with ID " + entrance.GetLocalInt("APARTMENT_BUILDING_ID").ToString());
+                            LoggingService.Trace(TraceComponent.Space, "Found apartment entrance in " + _.GetName(entrance.Location.Area) + " with ID " + entrance.GetLocalInt("APARTMENT_BUILDING_ID").ToString());
                             if (entrance.GetLocalInt("APARTMENT_BUILDING_ID") == pcBase.ApartmentBuildingID)
                             {
                                 // Found it!
@@ -1144,14 +1144,14 @@ namespace SWLOR.Game.Server.Service
 
                         if (!location.Area.IsValid)
                         {
-                            ErrorService.Trace(TraceComponent.None, "Player tried to exit from apartment, but we couldn't find its door placeable.");
+                            LoggingService.Trace(TraceComponent.None, "Player tried to exit from apartment, but we couldn't find its door placeable.");
                             player.SendMessage("Sorry, we can't find the exit to this apartment.  Please report this as a bug, thank you.");
                         }
                     }
                     else
                     {
                         // Unknown type!
-                        ErrorService.Trace(TraceComponent.None, "Player tried to exit from an instance that has neither PC_BASE_ID nor PC_BASE_STRUCTURE_ID defined!");
+                        LoggingService.Trace(TraceComponent.None, "Player tried to exit from an instance that has neither PC_BASE_ID nor PC_BASE_STRUCTURE_ID defined!");
                         player.SendMessage("Sorry, we don't know where this door goes to.  Please report this as a bug, thank you.");
                         return;
                     }
@@ -1346,7 +1346,7 @@ namespace SWLOR.Game.Server.Service
             }
             catch (Exception e)
             {
-                ErrorService.LogError(e, "Failed to convert GUID: " + sTowerID);
+                LoggingService.LogError(e, "Failed to convert GUID: " + sTowerID);
                 return "System error - target had invalid GUID.  Please report this error.";
             }
 
@@ -1474,7 +1474,7 @@ namespace SWLOR.Game.Server.Service
                 SpawnStructure(instance, furniture.ID);
             }
 
-            ErrorService.Trace(TraceComponent.Space, "Created instance with ID " + instanceID.ToString() + ", name " + instance.Name);
+            LoggingService.Trace(TraceComponent.Space, "Created instance with ID " + instanceID.ToString() + ", name " + instance.Name);
 
             return instance;
         }
@@ -1499,7 +1499,7 @@ namespace SWLOR.Game.Server.Service
                 Guid? locationInstanceID = entity.LocationInstanceID;
                 if (locationInstanceID != null)
                 {
-                    ErrorService.Trace(TraceComponent.None, "Player logging in to an instance, ID " + locationInstanceID.ToString());
+                    LoggingService.Trace(TraceComponent.None, "Player logging in to an instance, ID " + locationInstanceID.ToString());
 
                     //--------------------------------------------------------------------------
                     // Find out whether this instance is an area, a base, or neither.
@@ -1509,7 +1509,7 @@ namespace SWLOR.Game.Server.Service
                         //--------------------------------------------------------------------------
                         // This is a base (i.e. apartment).
                         //--------------------------------------------------------------------------
-                        ErrorService.Trace(TraceComponent.None, "Player logging in to an apartment.");
+                        LoggingService.Trace(TraceComponent.None, "Player logging in to an apartment.");
     
                         area = GetAreaInstance((Guid)locationInstanceID, true);
                         if (area == null) area = CreateAreaInstance(player, (Guid)locationInstanceID, true);                        
@@ -1519,7 +1519,7 @@ namespace SWLOR.Game.Server.Service
                         //--------------------------------------------------------------------------
                         // Not a base - building or starship.
                         //--------------------------------------------------------------------------
-                        ErrorService.Trace(TraceComponent.None, "Player logging in to a building or starship.");
+                        LoggingService.Trace(TraceComponent.None, "Player logging in to a building or starship.");
                         area = GetAreaInstance((Guid)locationInstanceID, false);
                         if (area == null) area = CreateAreaInstance(player, (Guid)locationInstanceID, false);
                     }

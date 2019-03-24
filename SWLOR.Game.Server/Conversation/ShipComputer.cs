@@ -355,13 +355,13 @@ namespace SWLOR.Game.Server.Conversation
                 }
                 else
                 {
-                    ErrorService.Trace(TraceComponent.Space, "Landing in PC base dock, ID: " + dockStructureID.ToString());
+                    LoggingService.Trace(TraceComponent.Space, "Landing in PC base dock, ID: " + dockStructureID.ToString());
                     PCBaseStructure dock = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID == dockStructureID);
 
                     if (dock == null)
                     {
                         player.SendMessage("ERROR: Could not find landing dock by ID.  Please report this.");
-                        ErrorService.Trace(TraceComponent.Space, "Could not find landing dock ID " + dockStructureID.ToString());
+                        LoggingService.Trace(TraceComponent.Space, "Could not find landing dock ID " + dockStructureID.ToString());
                         return;
                     }
 
@@ -369,12 +369,12 @@ namespace SWLOR.Game.Server.Conversation
 
                     if (plc == null)
                     {
-                        ErrorService.Trace(TraceComponent.Space, "Failed to find dock placeable.");
+                        LoggingService.Trace(TraceComponent.Space, "Failed to find dock placeable.");
                         player.SendMessage("ERROR: Could not find landing dock placeable.  Please report this.");
                         return; 
                     }
 
-                    ErrorService.Trace(TraceComponent.Space, "Found dock, landing ship.");
+                    LoggingService.Trace(TraceComponent.Space, "Found dock, landing ship.");
 
                     // We've found our dock. Update our record of where the ship's exterior should spawn.
                     NWLocation loc = plc.Location;

@@ -115,8 +115,6 @@ namespace SWLOR.Game.Server
             RegisterInterfaceImplementations<IAIBehaviour>(builder);
 
             
-            RegisterInterfaceImplementations<ISpawnRule>(builder, false, true);
-            RegisterInterfaceImplementations<IQuestRule>(builder, false, true);
             RegisterInterfaceImplementations<IEventProcessor>(builder, false, true);
             RegisterInterfaceImplementations<IDoorRule>(builder, false, true);
             RegisterInterfaceImplementations<IAreaInstance>(builder, false, true);

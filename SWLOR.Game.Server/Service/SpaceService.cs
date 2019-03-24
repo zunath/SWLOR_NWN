@@ -1144,10 +1144,8 @@ namespace SWLOR.Game.Server.Service
 
                             if (!string.IsNullOrWhiteSpace(itemDetails.SpawnRule))
                             {
-                                App.ResolveByInterface<ISpawnRule>("SpawnRule." + itemDetails.SpawnRule, action =>
-                                {
-                                    action.Run(item);
-                                });
+                                var rule = SpawnService.GetSpawnRule(itemDetails.SpawnRule);
+                                rule.Run(item);
                             }
 
                             var dbItem = new PCBaseStructureItem

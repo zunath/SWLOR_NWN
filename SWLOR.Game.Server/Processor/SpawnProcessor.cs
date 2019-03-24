@@ -150,10 +150,8 @@ namespace SWLOR.Game.Server.Processor
 
                 if (!string.IsNullOrWhiteSpace(spawn.SpawnRule))
                 {
-                    App.ResolveByInterface<ISpawnRule>("SpawnRule." + spawn.SpawnRule, rule =>
-                    {
-                        rule.Run(spawn.Spawn);
-                    });
+                    var rule = SpawnService.GetSpawnRule(spawn.SpawnRule);
+                    rule.Run(spawn.Spawn);
                 }
 
                 ObjectVisibilityService.ApplyVisibilityForObject(spawn.Spawn);

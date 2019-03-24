@@ -1,9 +1,7 @@
-﻿using System.Linq;
-using NWN;
-using SWLOR.Game.Server.Event;
+﻿using NWN;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.QuestRule.Contracts;
 using SWLOR.Game.Server.Service;
+using System.Linq;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.NWN.Events.Conversation.Quest.FinishQuest
@@ -37,28 +35,27 @@ namespace SWLOR.Game.Server.NWN.Events.Conversation.Quest.FinishQuest
                     return false;
                 }
             }
-            
+
             QuestService.CompleteQuest(player, talkTo, questID, null);
 
             if (!string.IsNullOrWhiteSpace(rule))
             {
                 Data.Entity.Quest quest = DataService.Single<Data.Entity.Quest>(x => x.ID == questID);
-                App.ResolveByInterface<IQuestRule>("QuestRule." + rule, ruleAction =>
+                var ruleAction = QuestService.GetQuestRule(rule);
+
+                string[] argsArray = null;
+
+                if (string.IsNullOrWhiteSpace(ruleArgs))
                 {
-                    string[] argsArray = null;
+                    ruleArgs = quest.OnCompleteArgs;
+                }
 
-                    if (string.IsNullOrWhiteSpace(ruleArgs))
-                    {
-                        ruleArgs = quest.OnCompleteArgs;
-                    }
+                if (!string.IsNullOrWhiteSpace(ruleArgs))
+                {
+                    argsArray = ruleArgs.Split(',');
+                }
+                ruleAction.Run(player, talkTo, questID, argsArray);
 
-                    if (!string.IsNullOrWhiteSpace(ruleArgs))
-                    {
-                        argsArray = ruleArgs.Split(',');
-                    }
-                    ruleAction.Run(player, talkTo, questID, argsArray);
-                });
-                
             }
 
             return true;

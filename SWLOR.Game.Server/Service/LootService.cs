@@ -92,10 +92,8 @@ namespace SWLOR.Game.Server.Service
                         var item = _.CreateItemOnObject(model.Resref, target);
                         if (!string.IsNullOrWhiteSpace(model.SpawnRule))
                         {
-                            App.ResolveByInterface<ISpawnRule>("SpawnRule." + model.SpawnRule, action =>
-                            {
-                                action.Run(item);
-                            });
+                            var rule = SpawnService.GetSpawnRule(model.SpawnRule);
+                            rule.Run(item);
                         }
                     }
                 }

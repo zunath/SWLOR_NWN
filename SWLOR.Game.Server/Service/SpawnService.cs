@@ -6,6 +6,7 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.Mod.Contracts;
 using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.Processor;
 
@@ -17,6 +18,13 @@ namespace SWLOR.Game.Server.Service
 {
     public static class SpawnService
     {
+        private static readonly Dictionary<string, ISpawnRule> _spawnRules;
+
+        static SpawnService()
+        {
+            _spawnRules = new Dictionary<string, ISpawnRule>();
+        }
+
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
@@ -24,8 +32,36 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleLoad()
         {
+            RegisterSpawnRules();
             InitializeSpawns();
             ObjectProcessingService.RegisterProcessingEvent<SpawnProcessor>();
+        }
+
+        private static void RegisterSpawnRules()
+        {
+            // Use reflection to get all of SpawnRule implementations.
+            var classes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => typeof(ISpawnRule).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
+            foreach (var type in classes)
+            {
+                ISpawnRule instance = Activator.CreateInstance(type) as ISpawnRule;
+                if (instance == null)
+                {
+                    throw new NullReferenceException("Unable to activate instance of type: " + type);
+                }
+                _spawnRules.Add(type.Name, instance);
+            }
+        }
+
+        public static ISpawnRule GetSpawnRule(string key)
+        {
+            if (!_spawnRules.ContainsKey(key))
+            {
+                throw new KeyNotFoundException("Spawn rule '" + key + "' is not registered. Did you create a class for it?");
+            }
+
+            return _spawnRules[key];
         }
 
         private static void InitializeSpawns()
@@ -241,10 +277,8 @@ namespace SWLOR.Game.Server.Service
 
                 if (!string.IsNullOrWhiteSpace(dbSpawn.SpawnRule))
                 {
-                    App.ResolveByInterface<ISpawnRule>("SpawnRule." + dbSpawn.SpawnRule, rule =>
-                    {
-                        rule.Run(plc);
-                    });
+                    var rule = GetSpawnRule(dbSpawn.SpawnRule);
+                    rule.Run(plc);
                 }
 
                 areaSpawn.Placeables.Add(spawn);

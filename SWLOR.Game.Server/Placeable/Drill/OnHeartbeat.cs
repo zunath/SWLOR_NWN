@@ -106,10 +106,8 @@ namespace SWLOR.Game.Server.Placeable.Drill
 
             if (!string.IsNullOrWhiteSpace(itemDetails.SpawnRule))
             {
-                App.ResolveByInterface<ISpawnRule>("SpawnRule." + itemDetails.SpawnRule, action =>
-                {
-                    action.Run(item, retrievalRating);
-                });
+                var rule = SpawnService.GetSpawnRule(itemDetails.SpawnRule);
+                rule.Run(item, retrievalRating);
             }
 
             var dbItem = new PCBaseStructureItem

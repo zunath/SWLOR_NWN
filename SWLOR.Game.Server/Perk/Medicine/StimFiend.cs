@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.Medicine
 {
-    public class StimFiend: IPerkBehaviour
+    public class StimFiend: IPerkHandler
     {
+        public PerkType PerkType => PerkType.StimFiend;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

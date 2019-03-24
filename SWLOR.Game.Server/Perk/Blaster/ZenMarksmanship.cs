@@ -5,9 +5,10 @@ using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class ZenMarksmanship : IPerkBehaviour
+    public class ZenMarksmanship : IPerkHandler
     {
-
+        public PerkType PerkType => PerkType.ZenMarksmanship;
+        
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

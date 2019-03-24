@@ -7,8 +7,10 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class Provoke: IPerkBehaviour
+    public class Provoke: IPerkHandler
     {
+        public PerkType PerkType => PerkType.Provoke;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return oTarget.IsNPC && 

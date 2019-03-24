@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.TwoHanded
 {
-    public class PolearmProficiency : IPerkBehaviour
+    public class PolearmProficiency : IPerkHandler
     {
+        public PerkType PerkType => PerkType.PolearmProficiency;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

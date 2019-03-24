@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.Medicine
 {
-    public class MedicineEfficiency : IPerkBehaviour
+    public class MedicineEfficiency : IPerkHandler
     {
+        public PerkType PerkType => PerkType.MedicineEfficiency;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

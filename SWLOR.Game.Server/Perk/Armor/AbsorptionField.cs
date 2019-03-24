@@ -7,8 +7,10 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class AbsorptionField: IPerkBehaviour
+    public class AbsorptionField: IPerkHandler
     {
+        public PerkType PerkType => PerkType.AbsorptionField;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             NWItem armor = oPC.Chest;

@@ -9,8 +9,10 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Weapons
 {
-    public class ImprovedCritical : IPerkBehaviour
+    public abstract class ImprovedCriticalBase : IPerkHandler
     {
+        public abstract PerkType PerkType { get; }
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.Engineering
 {
-    public class EngineeringOptimization : IPerkBehaviour
+    public class EngineeringOptimization : IPerkHandler
     {
+        public PerkType PerkType => PerkType.EngineeringOptimization;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

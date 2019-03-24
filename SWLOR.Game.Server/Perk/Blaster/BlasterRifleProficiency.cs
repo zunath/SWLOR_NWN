@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class BlasterRifleProficiency : IPerkBehaviour
+    public class BlasterRifleProficiency : IPerkHandler
     {
+        public PerkType PerkType => PerkType.BlasterRifleProficiency;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

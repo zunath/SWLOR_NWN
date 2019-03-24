@@ -188,8 +188,7 @@ namespace SWLOR.Game.Server.Conversation
 
             var refundAmount = DataService.Where<PerkLevel>(x => x.PerkID == perk.ID && x.Level <= pcPerk.PerkLevel && x.Level >= minimumLevel).Sum(x => x.Price);
             var dbPlayer = DataService.Single<Player>(x => x.ID == player.GlobalID);
-            var scriptName = perk.ScriptName;
-
+            
             dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow.AddHours(24);
             RemovePerkItem(perk);
             RemovePerkFeat(perk);
@@ -218,11 +217,8 @@ namespace SWLOR.Game.Server.Conversation
             GetPC().FloatingText("Perk refunded! You reclaimed " + refundAmount + " SP.");
             model.TomeItem.Destroy();
 
-            App.ResolveByInterface<IPerkBehaviour>("Perk." + scriptName, perkAction =>
-            {
-                perkAction?.OnRemoved(player);
-            });
-
+            var handler = PerkService.GetPerkHandler(perk.ID);
+            handler.OnRemoved(player);
             MessageHub.Instance.Publish(new PerkRefundedMessage(player, pcPerk.PerkID));
         }
 

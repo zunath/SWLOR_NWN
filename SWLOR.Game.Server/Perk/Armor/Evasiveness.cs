@@ -6,8 +6,10 @@ using NWN;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class Evasiveness : IPerkBehaviour
+    public class Evasiveness : IPerkHandler
     {
+        public PerkType PerkType => PerkType.Evasiveness;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             NWItem armor = oPC.Chest;

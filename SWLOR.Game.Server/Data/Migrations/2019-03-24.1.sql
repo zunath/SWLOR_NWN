@@ -23,3 +23,8 @@ EXEC dbo.ADM_Drop_Column @TableName = N'dbo.CustomEffect' , -- nvarchar(200)
 -- Remove the food effect until we implement cooking.
 DELETE FROM dbo.CustomEffect
 WHERE ID = 25
+
+
+-- Drop the ScriptName column on the Perk table. No longer needed since we're linking by ID now.
+EXEC dbo.ADM_Drop_Column @TableName = N'dbo.Perk' , -- nvarchar(200)
+                         @ColumnName = N'ScriptName'  -- nvarchar(200)

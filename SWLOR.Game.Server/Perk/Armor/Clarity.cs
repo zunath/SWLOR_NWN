@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class Clarity: IPerkBehaviour
+    public class Clarity: IPerkHandler
     {
+        public PerkType PerkType => PerkType.Clarity;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
@@ -7,8 +8,10 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.MartialArts
 {
-    public class Chi: IPerkBehaviour
+    public class Chi: IPerkHandler
     {
+        public PerkType PerkType => PerkType.Chi;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return true;

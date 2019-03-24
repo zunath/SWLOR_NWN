@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.Engineering
 {
-    public class ElectronicRepair: IPerkBehaviour
+    public class ElectronicRepair: IPerkHandler
     {
+        public PerkType PerkType => PerkType.ElectronicRepair;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

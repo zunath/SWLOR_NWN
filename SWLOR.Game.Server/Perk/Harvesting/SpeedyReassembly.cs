@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.Harvesting
 {
-    public class SpeedyReassembly: IPerkBehaviour
+    public class SpeedyReassembly: IPerkHandler
     {
+        public PerkType PerkType => PerkType.SpeedyReassembly;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

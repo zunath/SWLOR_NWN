@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Service
             // Use reflection to get all of CustomEffectBehaviour implementations.
             var classes = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
-                .Where(p => typeof(ICustomEffectHandler).IsAssignableFrom(p) && p.IsClass).ToArray();
+                .Where(p => typeof(ICustomEffectHandler).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
             foreach (var type in classes)
             {
                 ICustomEffectHandler instance = Activator.CreateInstance(type) as ICustomEffectHandler;

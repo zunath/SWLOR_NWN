@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class PlasmaCell: IPerkBehaviour
+    public class PlasmaCell: IPerkHandler
     {
+        public PerkType PerkType => PerkType.PlasmaCell;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

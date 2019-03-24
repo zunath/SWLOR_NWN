@@ -5,8 +5,10 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.General
 {
-    public class Meditate: IPerkBehaviour
+    public class Meditate: IPerkHandler
     {
+        public PerkType PerkType => PerkType.Meditate;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return MeditateEffect.CanMeditate(oPC);

@@ -7,8 +7,10 @@ using SWLOR.Game.Server.NWNX;
 using static NWN._;
 namespace SWLOR.Game.Server.Perk.Lightsaber
 {
-    public class WeaponFinesse : IPerkBehaviour
+    public class SaberFinesse : IPerkHandler
     {
+        public PerkType PerkType => PerkType.SaberFinesse;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

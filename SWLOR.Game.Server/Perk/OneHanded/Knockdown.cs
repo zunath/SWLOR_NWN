@@ -7,8 +7,10 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
-    public class Knockdown: IPerkBehaviour
+    public class Knockdown: IPerkHandler
     {
+        public PerkType PerkType => PerkType.Knockdown;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             NWItem weapon = oPC.RightHand;

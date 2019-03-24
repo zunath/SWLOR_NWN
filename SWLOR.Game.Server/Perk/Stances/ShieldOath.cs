@@ -5,8 +5,10 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.Stances
 {
-    public class ShieldOath: IPerkBehaviour
+    public class ShieldOath: IPerkHandler
     {
+        public PerkType PerkType => PerkType.ShieldOath;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return true;

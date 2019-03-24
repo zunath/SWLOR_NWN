@@ -7,8 +7,10 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceCombat
 {
-    public class DrainLife: IPerkBehaviour
+    public class DrainLife: IPerkHandler
     {
+        public PerkType PerkType => PerkType.DrainLife;
+
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {

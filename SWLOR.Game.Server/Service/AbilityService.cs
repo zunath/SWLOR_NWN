@@ -1,20 +1,16 @@
-using System;
-using System.Linq;
-
-using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.GameObject;
-
 using NWN;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Delayed;
+using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Feat;
 using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
-
 using SWLOR.Game.Server.Perk;
-
+using System;
+using System.Linq;
 using static NWN._;
 using Object = NWN.Object;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
@@ -23,7 +19,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class AbilityService
     {
-        
+
         // These variables are used throughout the engine to flag the type of damage being done to 
         // a creature.  The damage code reads this to determine what bonus effects to apply.
         // The LAST_ATTACK variable name should be appended with the GlobalID of the attacking
@@ -52,123 +48,121 @@ namespace SWLOR.Game.Server.Service
             if (perk == null) return;
 
             // Check to see if we are a spaceship.  Spaceships can't use abilities...
-            if (pc.GetLocalInt("IS_SHIP") > 0 || pc.GetLocalInt("IS_GUNNER")>0)
+            if (pc.GetLocalInt("IS_SHIP") > 0 || pc.GetLocalInt("IS_GUNNER") > 0)
             {
                 pc.SendMessage("You cannot use that ability while piloting a ship.");
                 return;
             }
 
-            App.ResolveByInterface<IPerkBehaviour>("Perk." + perk.ScriptName, (perkAction) =>
+            var perkAction = PerkService.GetPerkHandler(perkFeat.PerkID);
+            
+            Player playerEntity = DataService.Get<Player>(pc.GlobalID);
+            int pcPerkLevel = PerkService.GetPCPerkLevel(pc, perk.ID);
+
+            // If player is disabling an existing stance, remove that effect.
+            if (perk.ExecutionTypeID == (int)PerkExecutionType.Stance)
             {
-                if (perkAction == null) return;
+                PCCustomEffect stanceEffect = DataService.SingleOrDefault<PCCustomEffect>(x => x.StancePerkID == perk.ID &&
+                                                                                               x.PlayerID == pc.GlobalID);
 
-                Player playerEntity =  DataService.Get<Player>(pc.GlobalID);
-                int pcPerkLevel = PerkService.GetPCPerkLevel(pc, perk.ID);
-
-                // If player is disabling an existing stance, remove that effect.
-                if (perk.ExecutionTypeID == (int) PerkExecutionType.Stance)
+                if (stanceEffect != null)
                 {
-                    PCCustomEffect stanceEffect = DataService.SingleOrDefault<PCCustomEffect>(x => x.StancePerkID == perk.ID &&
-                                                                                                   x.PlayerID == pc.GlobalID);
-
-                    if (stanceEffect != null)
+                    if (CustomEffectService.RemoveStance(pc))
                     {
-                        if (CustomEffectService.RemoveStance(pc))
-                        {
-                            return;
-                        }
+                        return;
                     }
                 }
+            }
 
-                if (pcPerkLevel <= 0)
-                {
-                    pc.SendMessage("You do not meet the prerequisites to use this ability.");
-                    return;
-                }
+            if (pcPerkLevel <= 0)
+            {
+                pc.SendMessage("You do not meet the prerequisites to use this ability.");
+                return;
+            }
 
-                if (perkAction.IsHostile() && target.IsPlayer)
-                {
-                    if (!PVPSanctuaryService.IsPVPAttackAllowed(pc, target.Object)) return;
-                }
+            if (perkAction.IsHostile() && target.IsPlayer)
+            {
+                if (!PVPSanctuaryService.IsPVPAttackAllowed(pc, target.Object)) return;
+            }
 
-                if (pc.Area.Resref != target.Area.Resref ||
-                        _.LineOfSightObject(pc.Object, target.Object) == 0)
-                {
-                    pc.SendMessage("You cannot see your target.");
-                    return;
-                }
+            if (pc.Area.Resref != target.Area.Resref ||
+                    _.LineOfSightObject(pc.Object, target.Object) == 0)
+            {
+                pc.SendMessage("You cannot see your target.");
+                return;
+            }
 
-                if (!perkAction.CanCastSpell(pc, target))
-                {
-                    pc.SendMessage(perkAction.CannotCastSpellMessage(pc, target) ?? "That ability cannot be used at this time.");
-                    return;
-                }
+            if (!perkAction.CanCastSpell(pc, target))
+            {
+                pc.SendMessage(perkAction.CannotCastSpellMessage(pc, target) ?? "That ability cannot be used at this time.");
+                return;
+            }
 
-                int fpCost = perkAction.FPCost(pc, perkAction.FPCost(pc, perk.BaseFPCost, featID), featID);
-                if (playerEntity.CurrentFP < fpCost)
-                {
-                    pc.SendMessage("You do not have enough FP. (Required: " + fpCost + ". You have: " + playerEntity.CurrentFP + ")");
-                    return;
-                }
+            int fpCost = perkAction.FPCost(pc, perkAction.FPCost(pc, perk.BaseFPCost, featID), featID);
+            if (playerEntity.CurrentFP < fpCost)
+            {
+                pc.SendMessage("You do not have enough FP. (Required: " + fpCost + ". You have: " + playerEntity.CurrentFP + ")");
+                return;
+            }
 
-                if (pc.IsBusy || pc.CurrentHP <= 0)
-                {
-                    pc.SendMessage("You are too busy to activate that ability.");
-                    return;
-                }
+            if (pc.IsBusy || pc.CurrentHP <= 0)
+            {
+                pc.SendMessage("You are too busy to activate that ability.");
+                return;
+            }
 
-                // Check cooldown
-                int? cooldownCategoryID = perkAction.CooldownCategoryID(pc, perk.CooldownCategoryID, featID);
-                PCCooldown pcCooldown = DataService.GetAll<PCCooldown>().SingleOrDefault(x => x.PlayerID == pc.GlobalID && 
-                                                                                        x.CooldownCategoryID == cooldownCategoryID);
-                if (pcCooldown == null)
+            // Check cooldown
+            int? cooldownCategoryID = perkAction.CooldownCategoryID(pc, perk.CooldownCategoryID, featID);
+            PCCooldown pcCooldown = DataService.GetAll<PCCooldown>().SingleOrDefault(x => x.PlayerID == pc.GlobalID &&
+                                                                                    x.CooldownCategoryID == cooldownCategoryID);
+            if (pcCooldown == null)
+            {
+                pcCooldown = new PCCooldown
                 {
-                    pcCooldown = new PCCooldown
-                    {
-                        CooldownCategoryID = Convert.ToInt32(cooldownCategoryID),
-                        DateUnlocked = DateTime.UtcNow.AddSeconds(-1),
-                        PlayerID = pc.GlobalID
-                    };
+                    CooldownCategoryID = Convert.ToInt32(cooldownCategoryID),
+                    DateUnlocked = DateTime.UtcNow.AddSeconds(-1),
+                    PlayerID = pc.GlobalID
+                };
 
-                    DataService.SubmitDataChange(pcCooldown, DatabaseActionType.Insert);
-                }
+                DataService.SubmitDataChange(pcCooldown, DatabaseActionType.Insert);
+            }
 
-                DateTime unlockDateTime = pcCooldown.DateUnlocked;
-                DateTime now = DateTime.UtcNow;
+            DateTime unlockDateTime = pcCooldown.DateUnlocked;
+            DateTime now = DateTime.UtcNow;
 
-                if (unlockDateTime > now)
-                {
-                    string timeToWait = TimeService.GetTimeToWaitLongIntervals(now, unlockDateTime, false);
-                    pc.SendMessage("That ability can be used in " + timeToWait + ".");
-                    return;
-                }
-                
-                // Force Abilities (aka Spells)
-                if (perk.ExecutionTypeID== (int)PerkExecutionType.ForceAbility)
-                {
-                    target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_FORCE);
-                    ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.ForceAbility, featID);
-                }
-                // Combat Abilities
-                else if (perk.ExecutionTypeID == (int)PerkExecutionType.CombatAbility)
-                {
-                    target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_PHYSICAL);
-                    ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.CombatAbility, featID);
-                }
-                // Queued Weapon Skills
-                else if (perk.ExecutionTypeID == (int)PerkExecutionType.QueuedWeaponSkill)
-                {
-                    target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_PHYSICAL);
-                    HandleQueueWeaponSkill(pc, perk, perkAction, featID);
-                }
-                // Stances
-                else if (perk.ExecutionTypeID == (int) PerkExecutionType.Stance)
-                {
-                    target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_COMBATABILITY);
-                    ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.Stance, featID);
-                }
-            });
-            
+            if (unlockDateTime > now)
+            {
+                string timeToWait = TimeService.GetTimeToWaitLongIntervals(now, unlockDateTime, false);
+                pc.SendMessage("That ability can be used in " + timeToWait + ".");
+                return;
+            }
+
+            // Force Abilities (aka Spells)
+            if (perk.ExecutionTypeID == (int)PerkExecutionType.ForceAbility)
+            {
+                target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_FORCE);
+                ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.ForceAbility, featID);
+            }
+            // Combat Abilities
+            else if (perk.ExecutionTypeID == (int)PerkExecutionType.CombatAbility)
+            {
+                target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_PHYSICAL);
+                ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.CombatAbility, featID);
+            }
+            // Queued Weapon Skills
+            else if (perk.ExecutionTypeID == (int)PerkExecutionType.QueuedWeaponSkill)
+            {
+                target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_PHYSICAL);
+                HandleQueueWeaponSkill(pc, perk, perkAction, featID);
+            }
+            // Stances
+            else if (perk.ExecutionTypeID == (int)PerkExecutionType.Stance)
+            {
+                target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_COMBATABILITY);
+                ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.Stance, featID);
+            }
+
+
         }
 
         public static void ApplyEnmity(NWPlayer pc, NWCreature target, Data.Entity.Perk perk)
@@ -185,18 +179,16 @@ namespace SWLOR.Game.Server.Service
                     }
                     break;
                 case EnmityAdjustmentRuleType.Custom:
-                    App.ResolveByInterface<IPerkBehaviour>("Perk." + perk.ScriptName, (perkAction) =>
-                    {
-                        perkAction?.OnCustomEnmityRule(pc, perk.Enmity);
-                    });
+                    var handler = PerkService.GetPerkHandler(perk.ID);
+                    handler.OnCustomEnmityRule(pc, perk.Enmity);
                     break;
             }
         }
-        
+
         private static void ActivateAbility(NWPlayer pc,
                                NWObject target,
                                Data.Entity.Perk entity,
-                               IPerkBehaviour perkBehaviour,
+                               IPerkHandler perkHandler,
                                int pcPerkLevel,
                                PerkExecutionType executionType,
                                int spellFeatID)
@@ -204,7 +196,7 @@ namespace SWLOR.Game.Server.Service
             string uuid = Guid.NewGuid().ToString();
             var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(pc);
             int itemBonus = effectiveStats.CastingSpeed;
-            float baseActivationTime = perkBehaviour.CastingTime(pc, (float)entity.BaseCastingTime, spellFeatID);
+            float baseActivationTime = perkHandler.CastingTime(pc, (float)entity.BaseCastingTime, spellFeatID);
             float activationTime = baseActivationTime;
             int vfxID = -1;
             int animationID = -1;
@@ -252,7 +244,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
             }
-            
+
             if (_.GetActionMode(pc.Object, ACTION_MODE_STEALTH) == 1)
                 _.SetActionMode(pc.Object, ACTION_MODE_STEALTH, 0);
 
@@ -264,14 +256,14 @@ namespace SWLOR.Game.Server.Service
                 vfxID = VFX_DUR_IOUNSTONE_YELLOW;
                 animationID = ANIMATION_LOOPING_CONJURE1;
             }
-            
+
             if (vfxID > -1)
             {
                 var vfx = _.EffectVisualEffect(vfxID);
                 vfx = _.TagEffect(vfx, "ACTIVATION_VFX");
                 _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, vfx, pc.Object, activationTime + 0.2f);
             }
-            
+
             if (animationID > -1)
             {
                 pc.AssignCommand(() => _.ActionPlayAnimation(animationID, 1.0f, activationTime - 0.1f));
@@ -282,7 +274,7 @@ namespace SWLOR.Game.Server.Service
             pc.SetLocalInt(uuid, (int)SpellStatusType.Started);
 
             NWNXPlayer.StartGuiTimingBar(pc, (int)activationTime, "");
-            
+
             int perkID = entity.ID;
             pc.DelayEvent<FinishAbilityUse>(activationTime + 0.2f,
                 pc,
@@ -292,8 +284,8 @@ namespace SWLOR.Game.Server.Service
                 pcPerkLevel,
                 spellFeatID);
         }
-        
-        public static void ApplyCooldown(NWPlayer pc, CooldownCategory cooldown, IPerkBehaviour ability, int spellFeatID)
+
+        public static void ApplyCooldown(NWPlayer pc, CooldownCategory cooldown, IPerkHandler ability, int spellFeatID)
         {
             float finalCooldown = ability.CooldownTime(pc, (float)cooldown.BaseCooldownTime, spellFeatID);
             int cooldownSeconds = (int)finalCooldown;
@@ -306,7 +298,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void CheckForSpellInterruption(NWPlayer pc, string spellUUID, Vector position)
         {
-            if (pc.GetLocalInt(spellUUID) == (int) SpellStatusType.Completed) return;
+            if (pc.GetLocalInt(spellUUID) == (int)SpellStatusType.Completed) return;
 
             Vector currentPosition = pc.Position;
 
@@ -326,11 +318,11 @@ namespace SWLOR.Game.Server.Service
                 pc.SendMessage("Your ability has been interrupted.");
                 return;
             }
-            
+
             _.DelayCommand(0.5f, () => { CheckForSpellInterruption(pc, spellUUID, position); });
         }
 
-        public static void HandleQueueWeaponSkill(NWPlayer pc, Data.Entity.Perk entity, IPerkBehaviour ability, int spellFeatID)
+        public static void HandleQueueWeaponSkill(NWPlayer pc, Data.Entity.Perk entity, IPerkHandler ability, int spellFeatID)
         {
             int? cooldownCategoryID = ability.CooldownCategoryID(pc, entity.CooldownCategoryID, spellFeatID);
             var cooldownCategory = DataService.Get<CooldownCategory>(cooldownCategoryID);
@@ -397,24 +389,23 @@ namespace SWLOR.Game.Server.Service
 
             PCPerk entity = DataService.GetAll<PCPerk>().Single(x => x.PlayerID == oPC.GlobalID && x.PerkID == activeWeaponSkillID);
             var perk = DataService.Get<Data.Entity.Perk>(entity.PerkID);
-            
-            App.ResolveByInterface<IPerkBehaviour>("Perk." + perk.ScriptName, (script) =>
-            {
-                if (script.CanCastSpell(oPC, oTarget))
-                {
-                    script.OnImpact(oPC, oTarget, entity.PerkLevel, activeWeaponSkillFeatID);
-                    
-                    if (oTarget.IsNPC)
-                    {
-                        ApplyEnmity(oPC, oTarget.Object, perk);
-                    }
-                }
-                else oPC.SendMessage(script.CannotCastSpellMessage(oPC, oTarget) ?? "That ability cannot be used at this time.");
+            var handler = PerkService.GetPerkHandler(activeWeaponSkillID);
 
-                oPC.DeleteLocalString("ACTIVE_WEAPON_SKILL_UUID");
-                oPC.DeleteLocalInt("ACTIVE_WEAPON_SKILL");
-                oPC.DeleteLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID");
-            });
+            if (handler.CanCastSpell(oPC, oTarget))
+            {
+                handler.OnImpact(oPC, oTarget, entity.PerkLevel, activeWeaponSkillFeatID);
+
+                if (oTarget.IsNPC)
+                {
+                    ApplyEnmity(oPC, oTarget.Object, perk);
+                }
+            }
+            else oPC.SendMessage(handler.CannotCastSpellMessage(oPC, oTarget) ?? "That ability cannot be used at this time.");
+
+            oPC.DeleteLocalString("ACTIVE_WEAPON_SKILL_UUID");
+            oPC.DeleteLocalInt("ACTIVE_WEAPON_SKILL");
+            oPC.DeleteLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID");
+
         }
 
         public static void HandlePlasmaCellPerk(NWPlayer player, NWObject target)

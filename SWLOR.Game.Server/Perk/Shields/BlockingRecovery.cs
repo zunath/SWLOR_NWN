@@ -7,8 +7,10 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.Shields
 {
-    public class BlockingRecovery: IPerkBehaviour
+    public class BlockingRecovery: IPerkHandler
     {
+        public PerkType PerkType => PerkType.BlockingRecovery;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

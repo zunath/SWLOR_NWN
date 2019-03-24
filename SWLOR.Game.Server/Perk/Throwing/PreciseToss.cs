@@ -8,8 +8,10 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Throwing
 {
-    public class PreciseToss: IPerkBehaviour
+    public class PreciseToss: IPerkHandler
     {
+        public PerkType PerkType => PerkType.PreciseToss;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return oPC.RightHand.CustomItemType == CustomItemType.Throwing;

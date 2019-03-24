@@ -6,8 +6,10 @@ using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class RapidShot : IPerkBehaviour
+    public class RapidShot : IPerkHandler
     {
+        public PerkType PerkType => PerkType.RapidShot;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

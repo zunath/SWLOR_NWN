@@ -8,8 +8,10 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceCombat
 {
-    public class ForcePush: IPerkBehaviour
+    public class ForcePush: IPerkHandler
     {
+        public PerkType PerkType => PerkType.ForcePush;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             if (_.GetDistanceBetween(oPC, oTarget) > 15.0f)

@@ -1,20 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using NWN;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using NWN;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.NWN.Events.Feat;
 using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
-
 using SWLOR.Game.Server.Perk;
-
 using SWLOR.Game.Server.ValueObject;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using static NWN._;
 using Object = NWN.Object;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
@@ -23,6 +20,13 @@ namespace SWLOR.Game.Server.Service
 {
     public static class PerkService
     {
+        private static readonly Dictionary<PerkType, IPerkHandler> _perkHandlers;
+
+        static PerkService()
+        {
+            _perkHandlers = new Dictionary<PerkType, IPerkHandler>();
+        }
+
         public static void SubscribeEvents()
         {
             // The player perk level cache gets refreshed on the following events.
@@ -38,6 +42,45 @@ namespace SWLOR.Game.Server.Service
             // Module Events
             MessageHub.Instance.Subscribe<OnModuleEquipItem>(message => OnModuleEquipItem());
             MessageHub.Instance.Subscribe<OnModuleUnequipItem>(message => OnModuleUnequipItem());
+            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
+        }
+
+        private static void OnModuleLoad()
+        {
+            RegisterPerkHandlers();
+        }
+
+        private static void RegisterPerkHandlers()
+        {
+            // Use reflection to get all of IPerkHandler implementations.
+            var classes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => typeof(IPerkHandler).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
+            foreach (var type in classes)
+            {
+                IPerkHandler instance = Activator.CreateInstance(type) as IPerkHandler;
+                if (instance == null)
+                {
+                    throw new NullReferenceException("Unable to activate instance of type: " + type);
+                }
+                _perkHandlers.Add(instance.PerkType, instance);
+            }
+        }
+
+        public static IPerkHandler GetPerkHandler(PerkType perkType)
+        {
+            if (!_perkHandlers.ContainsKey(perkType))
+            {
+                throw new KeyNotFoundException("PerkType '" + perkType + "' is not registered. Did you make the perk script?");
+            }
+
+            return _perkHandlers[perkType];
+        }
+
+        public static IPerkHandler GetPerkHandler(int perkID)
+        {
+            PerkType perkType = (PerkType)perkID;
+            return GetPerkHandler(perkType);
         }
 
         private static List<PCPerk> GetPCPerksByExecutionType(NWPlayer oPC, PerkExecutionType executionType)
@@ -77,10 +120,10 @@ namespace SWLOR.Game.Server.Service
 
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
-            
+
             // Are the player's perks already cached? This has already run for this player. Exit.
             if (AppCache.PlayerEffectivePerkLevels.ContainsKey(player.GlobalID)) return;
-            
+
             CacheAllPerkLevels(player);
         }
 
@@ -96,16 +139,10 @@ namespace SWLOR.Game.Server.Service
             var executionPerks = GetPCPerksByExecutionType(oPC, PerkExecutionType.EquipmentBased);
             foreach (PCPerk pcPerk in executionPerks)
             {
-                var perk = DataService.Get<Data.Entity.Perk>(pcPerk.PerkID);
-                string jsName = perk.ScriptName;
-                if (string.IsNullOrWhiteSpace(jsName)) continue;
-
-                App.ResolveByInterface<IPerkBehaviour>("Perk." + jsName, (perkAction) =>
-                {
-                    perkAction?.OnItemEquipped(oPC, oItem);
-                });
+                var handler = GetPerkHandler(pcPerk.PerkID);
+                handler.OnItemEquipped(oPC, oItem);
             }
-        
+
         }
 
         private static void OnModuleUnequipItem()
@@ -119,14 +156,8 @@ namespace SWLOR.Game.Server.Service
             var executionPerks = GetPCPerksByExecutionType(oPC, PerkExecutionType.EquipmentBased);
             foreach (PCPerk pcPerk in executionPerks)
             {
-                var perk = DataService.Get<Data.Entity.Perk>(pcPerk.PerkID);
-                string jsName = perk.ScriptName;
-                if (string.IsNullOrWhiteSpace(jsName)) continue;
-
-                App.ResolveByInterface<IPerkBehaviour>("Perk." + jsName, (perkAction) =>
-                {
-                    perkAction?.OnItemUnequipped(oPC, oItem);
-                });
+                var handler = GetPerkHandler(pcPerk.PerkID);
+                handler.OnItemUnequipped(oPC, oItem);
             }
         }
 
@@ -153,33 +184,28 @@ namespace SWLOR.Game.Server.Service
 
                 // Only pull back perks which have a Shield On Hit execution type.
                 var perk = DataService.Get<Data.Entity.Perk>(x.PerkID);
-                if (perk.ExecutionTypeID != (int) PerkExecutionType.ShieldOnHit)
+                if (perk.ExecutionTypeID != (int)PerkExecutionType.ShieldOnHit)
                     return false;
 
                 // If player's effective level is zero, it's not in effect.
                 int effectiveLevel = GetPCEffectivePerkLevel(oPC, x.PerkID);
                 if (effectiveLevel <= 0) return false;
-                
+
                 return true;
             });
 
-            foreach (PCPerk pcPerk in pcPerks)
+            if (type == BASE_ITEM_SMALLSHIELD || type == BASE_ITEM_LARGESHIELD || type == BASE_ITEM_TOWERSHIELD)
             {
-                var perk = GetPerkByID(pcPerk.PerkID);
-                if (string.IsNullOrWhiteSpace(perk.ScriptName) || perk.ExecutionTypeID == (int)PerkExecutionType.None) continue;
-                var perkFeat = DataService.SingleOrDefault<PerkFeat>(x => x.PerkID == pcPerk.PerkID);
-                int featID = perkFeat == null ? -1 : perkFeat.FeatID;
-
-                if (!App.IsKeyRegistered<IPerkBehaviour>("Perk." + perk.ScriptName)) continue;
-
-                App.ResolveByInterface<IPerkBehaviour>("Perk." + perk.ScriptName, (perkAction) =>
+                foreach (PCPerk pcPerk in pcPerks)
                 {
-                    if (type == BASE_ITEM_SMALLSHIELD || type == BASE_ITEM_LARGESHIELD || type == BASE_ITEM_TOWERSHIELD)
-                    {
-                        perkAction.OnImpact(oPC, oItem, pcPerk.PerkLevel, featID);
-                    }
-                });
-                
+                    var perk = GetPerkByID(pcPerk.PerkID);
+                    if (perk.ExecutionTypeID == (int)PerkExecutionType.None) continue;
+                    var perkFeat = DataService.SingleOrDefault<PerkFeat>(x => x.PerkID == pcPerk.PerkID);
+                    int featID = perkFeat == null ? -1 : perkFeat.FeatID;
+
+                    var handler = GetPerkHandler(pcPerk.PerkID);
+                    handler.OnImpact(oPC, oItem, pcPerk.PerkLevel, featID);
+                }
             }
         }
 
@@ -217,7 +243,7 @@ namespace SWLOR.Game.Server.Service
                 // Check the player's quest completion status against the perk requirements.
                 foreach (var questReq in questRequirements)
                 {
-                    var pcQuest = DataService.SingleOrDefault<PCQuestStatus>(q => q.PlayerID == player.GlobalID && 
+                    var pcQuest = DataService.SingleOrDefault<PCQuestStatus>(q => q.PlayerID == player.GlobalID &&
                                                                             q.QuestID == questReq.RequiredQuestID);
                     if (pcQuest == null || pcQuest.CompletionDate == null)
                         return false;
@@ -226,7 +252,7 @@ namespace SWLOR.Game.Server.Service
                 return true;
             }).ToList();
         }
-        
+
         public static Data.Entity.Perk GetPerkByID(int perkID)
         {
             return DataService.Single<Data.Entity.Perk>(x => x.ID == perkID);
@@ -267,7 +293,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var req in skillRequirements)
             {
-                PCSkill pcSkill = DataService.Single<PCSkill>(x => x.PlayerID == dbPlayer.ID && 
+                PCSkill pcSkill = DataService.Single<PCSkill>(x => x.PlayerID == dbPlayer.ID &&
                                                              x.SkillID == req.SkillID);
 
                 if (pcSkill.Rank < req.RequiredRank) return false;
@@ -275,8 +301,8 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var req in questRequirements)
             {
-                var pcQuest = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == dbPlayer.ID && 
-                                                               x.QuestID == req.RequiredQuestID && 
+                var pcQuest = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == dbPlayer.ID &&
+                                                               x.QuestID == req.RequiredQuestID &&
                                                                x.CompletionDate != null);
                 if (pcQuest == null) return false;
             }
@@ -319,7 +345,7 @@ namespace SWLOR.Game.Server.Service
 
                 // Look for any perk levels to grant.
                 var perkFeatsToGrant = DataService.Where<PerkFeat>(x => x.PerkID == perkID && x.PerkLevelUnlocked == pcPerk.PerkLevel);
-                
+
                 // If at least one feat ID is assigned, add the feat(s) to the player if it doesn't exist yet.
                 if (perkFeatsToGrant.Count > 0)
                 {
@@ -361,12 +387,8 @@ namespace SWLOR.Game.Server.Service
 
                 oPC.SendMessage(ColorTokenService.Green("Perk Purchased: " + perk.Name + " (Lvl. " + pcPerk.PerkLevel + ")"));
 
-                App.ResolveByInterface<IPerkBehaviour>("Perk." + perk.ScriptName, (perkScript) =>
-                {
-                    if (perkScript == null) return;
-                    perkScript.OnPurchased(oPC, pcPerk.PerkLevel);
-                });
-
+                var handler = GetPerkHandler(perkID);
+                handler.OnPurchased(oPC, pcPerk.PerkLevel);
                 MessageHub.Instance.Publish(new PerkUpgradedMessage(oPC, perkID));
             }
             else
@@ -379,7 +401,7 @@ namespace SWLOR.Game.Server.Service
         {
             DoPerkUpgrade(player, (int)perkType, freeUpgrade);
         }
-        
+
         /// <summary>
         /// Returns the EFFECTIVE perk level of a player.
         /// This takes into account the player's skills. If they are too low to use the perk, the level will be

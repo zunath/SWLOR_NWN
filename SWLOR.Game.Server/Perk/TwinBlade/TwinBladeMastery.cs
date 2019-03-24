@@ -8,8 +8,10 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.TwinBlade
 {
-    public class TwinBladeMastery : IPerkBehaviour
+    public class TwinBladeMastery : IPerkHandler
     {
+        public PerkType PerkType => PerkType.TwinBladeMastery;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;
@@ -87,7 +89,7 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
                 return;
             }
 
-            int perkLevel = PerkService.GetPCPerkLevel(oPC, PerkType.TwinVibrobladeMastery);
+            int perkLevel = PerkService.GetPCPerkLevel(oPC, PerkType.TwinBladeMastery);
             NWNXCreature.AddFeat(oPC, _.FEAT_TWO_WEAPON_FIGHTING);
 
             if (perkLevel >= 2)

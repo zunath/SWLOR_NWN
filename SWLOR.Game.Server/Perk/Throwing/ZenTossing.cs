@@ -7,8 +7,10 @@ using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Perk.Throwing
 {
-    public class ZenTossing : IPerkBehaviour
+    public class ZenTossing : IPerkHandler
     {
+        public PerkType PerkType => PerkType.ZenTossing;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

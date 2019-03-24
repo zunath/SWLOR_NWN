@@ -6,8 +6,10 @@ using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class Mobility : IPerkBehaviour
+    public class Mobility : IPerkHandler
     {
+        public PerkType PerkType => PerkType.Mobility;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

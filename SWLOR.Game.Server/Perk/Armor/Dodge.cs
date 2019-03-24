@@ -5,8 +5,10 @@ using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class Dodge: IPerkBehaviour
+    public class Dodge: IPerkHandler
     {
+        public PerkType PerkType => PerkType.Dodge;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

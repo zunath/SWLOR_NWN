@@ -8,8 +8,10 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class RecoveryBlast: IPerkBehaviour
+    public class RecoveryBlast: IPerkHandler
     {
+        public PerkType PerkType => PerkType.RecoveryBlast;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return oPC.RightHand.CustomItemType == CustomItemType.BlasterRifle;

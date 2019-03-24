@@ -1,4 +1,5 @@
 ﻿using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
@@ -6,8 +7,10 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.MartialArts
 {
-    public class ElectricFist: IPerkBehaviour
+    public class ElectricFist: IPerkHandler
     {
+        public PerkType PerkType => PerkType.ElectricFist;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return !oPC.RightHand.IsValid && !oPC.LeftHand.IsValid;

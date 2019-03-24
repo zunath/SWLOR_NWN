@@ -7,8 +7,10 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.TwinBlade
 {
-    public class CrossCut: IPerkBehaviour
+    public class CrossCut: IPerkHandler
     {
+        public PerkType PerkType => PerkType.CrossCut;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return oPC.RightHand.CustomItemType == CustomItemType.TwinBlade;

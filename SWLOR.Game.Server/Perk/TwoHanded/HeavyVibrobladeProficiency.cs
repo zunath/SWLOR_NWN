@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.TwoHanded
 {
-    public class HeavyVibrobladeProficiency : IPerkBehaviour
+    public class HeavyVibrobladeProficiency : IPerkHandler
     {
+        public PerkType PerkType => PerkType.HeavyVibrobladeProficiency;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

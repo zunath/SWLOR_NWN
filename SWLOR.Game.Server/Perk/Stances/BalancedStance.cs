@@ -5,8 +5,10 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.Stances
 {
-    public class BalancedStance: IPerkBehaviour
+    public class BalancedStance: IPerkHandler
     {
+        public PerkType PerkType => PerkType.BalancedStance;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return true;

@@ -231,16 +231,16 @@ namespace SWLOR.Game.Server.Item
                 switch (modType)
                 {
                     case CustomItemPropertyType.RedMod:
-                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.CombatModInstallationElectronics);
+                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.CombatModInstallationEngineering);
                         break;
                     case CustomItemPropertyType.BlueMod:
-                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.ForceModInstallationElectronics);
+                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.ForceModInstallationEngineering);
                         break;
                     case CustomItemPropertyType.GreenMod:
-                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.CraftingModInstallationElectronics);
+                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.CraftingModInstallationEngineering);
                         break;
                     case CustomItemPropertyType.YellowMod:
-                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.SpecialModInstallationElectronics);
+                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.SpecialModInstallationEngineering);
                         break;
                     default:
                         perkLevel = 0;

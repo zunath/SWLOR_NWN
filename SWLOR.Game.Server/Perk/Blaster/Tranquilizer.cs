@@ -8,8 +8,10 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class Tranquilizer: IPerkBehaviour
+    public class Tranquilizer: IPerkHandler
     {
+        public PerkType PerkType => PerkType.Tranquilizer;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return oPC.RightHand.CustomItemType == CustomItemType.BlasterRifle;

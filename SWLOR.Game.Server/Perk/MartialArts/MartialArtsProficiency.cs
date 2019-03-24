@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.MartialArts
 {
-    public class MartialArtsProficiency : IPerkBehaviour
+    public class MartialArtsProficiency : IPerkHandler
     {
+        public PerkType PerkType => PerkType.MartialArtsProficiency;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

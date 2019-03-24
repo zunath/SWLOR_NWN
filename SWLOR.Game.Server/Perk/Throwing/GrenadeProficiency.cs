@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.Throwing
 {
-    public class GrenadeProficiency: IPerkBehaviour
+    public class GrenadeProficiency: IPerkHandler
     {
+        public PerkType PerkType => PerkType.GrenadeProficiency;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

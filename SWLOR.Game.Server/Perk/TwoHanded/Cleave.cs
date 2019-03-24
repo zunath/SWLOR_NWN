@@ -7,8 +7,10 @@ using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Perk.TwoHanded
 {
-    public class Cleave : IPerkBehaviour
+    public class Cleave : IPerkHandler
     {
+        public PerkType PerkType => PerkType.Cleave;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

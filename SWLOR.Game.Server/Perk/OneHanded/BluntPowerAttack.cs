@@ -9,8 +9,10 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
-    public class BluntPowerAttack : IPerkBehaviour
+    public class BluntPowerAttack : IPerkHandler
     {
+        public PerkType PerkType => PerkType.BluntPowerAttack;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

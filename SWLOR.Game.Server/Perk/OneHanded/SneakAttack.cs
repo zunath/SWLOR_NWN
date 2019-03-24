@@ -5,8 +5,10 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
-    public class SneakAttack: IPerkBehaviour
+    public class SneakAttack: IPerkHandler
     {
+        public PerkType PerkType => PerkType.SneakAttack;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             NWItem weapon = oPC.RightHand;

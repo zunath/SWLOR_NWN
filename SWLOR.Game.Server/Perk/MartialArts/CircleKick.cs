@@ -7,8 +7,10 @@ using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Perk.MartialArts
 {
-    public class CircleKick : IPerkBehaviour
+    public class CircleKick : IPerkHandler
     {
+        public PerkType PerkType => PerkType.CircleKick;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

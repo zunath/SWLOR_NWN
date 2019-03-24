@@ -1,9 +1,11 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk
 {
-    public interface IPerkBehaviour
+    public interface IPerkHandler
     {
+        PerkType PerkType { get; }
         bool CanCastSpell(NWPlayer oPC, NWObject oTarget);
         string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget);
         int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID);

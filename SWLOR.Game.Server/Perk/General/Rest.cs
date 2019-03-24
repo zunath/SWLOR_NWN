@@ -5,8 +5,10 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.General
 {
-    public class Rest : IPerkBehaviour
+    public class Rest : IPerkHandler
     {
+        public PerkType PerkType => PerkType.Rest;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return RestEffect.CanRest(oPC);

@@ -1,11 +1,14 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
 
 namespace SWLOR.Game.Server.Perk.General
 {
-    public class Health: IPerkBehaviour
+    public class Health: IPerkHandler
     {
+        public PerkType PerkType => PerkType.Health;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

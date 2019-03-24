@@ -7,8 +7,10 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.Shields
 {
-    public class ExpulsionManeuver : IPerkBehaviour
+    public class ExpulsionManeuver : IPerkHandler
     {
+        public PerkType PerkType => PerkType.ExpulsionManeuver;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

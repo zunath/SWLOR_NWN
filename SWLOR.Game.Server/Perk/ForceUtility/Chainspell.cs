@@ -6,8 +6,10 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceUtility
 {
-    public class Chainspell: IPerkBehaviour
+    public class Chainspell: IPerkHandler
     {
+        public PerkType PerkType => PerkType.Chainspell;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             NWItem armor = oPC.Chest;

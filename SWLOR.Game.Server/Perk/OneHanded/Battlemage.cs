@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
-    public class Battlemage: IPerkBehaviour
+    public class Battlemage: IPerkHandler
     {
+        public PerkType PerkType => PerkType.Battlemage;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

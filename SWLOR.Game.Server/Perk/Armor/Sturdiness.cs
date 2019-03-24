@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class Sturdiness : IPerkBehaviour
+    public class Sturdiness : IPerkHandler
     {
+        public PerkType PerkType => PerkType.Sturdiness;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.Fabrication
 {
-    public class FabricationEfficiency: IPerkBehaviour
+    public class FabricationEfficiency: IPerkHandler
     {
+        public PerkType PerkType => PerkType.FabricationEfficiency;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

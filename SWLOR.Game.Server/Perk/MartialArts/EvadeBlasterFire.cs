@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.MartialArts
 {
-    public class EvadeBlasterFire : IPerkBehaviour
+    public class EvadeBlasterFire : IPerkHandler
     {
+        public PerkType PerkType => PerkType.EvadeBlasterFire;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

@@ -1,11 +1,14 @@
 ﻿using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.General
 {
-    public class Dash: IPerkBehaviour
+    public class Dash: IPerkHandler
     {
+        public PerkType PerkType => PerkType.Dash;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return true;

@@ -7,8 +7,10 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class ShieldBoost: IPerkBehaviour
+    public class ShieldBoost: IPerkHandler
     {
+        public PerkType PerkType => PerkType.ShieldBoost;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return oPC.Chest.CustomItemType == CustomItemType.HeavyArmor;

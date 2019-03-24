@@ -6,8 +6,10 @@ using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class Expertise : IPerkBehaviour
+    public class Expertise : IPerkHandler
     {
+        public PerkType PerkType => PerkType.Expertise;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

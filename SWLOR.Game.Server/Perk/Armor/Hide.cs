@@ -7,8 +7,10 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class Hide: IPerkBehaviour
+    public class Hide: IPerkHandler
     {
+        public PerkType PerkType => PerkType.Hide;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return oPC.Chest.CustomItemType == CustomItemType.LightArmor;

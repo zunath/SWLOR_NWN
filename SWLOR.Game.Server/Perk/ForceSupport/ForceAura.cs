@@ -8,8 +8,10 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceSupport
 {
-    public class ForceAura: IPerkBehaviour
+    public class ForceAura: IPerkHandler
     {
+        public PerkType PerkType => PerkType.ForceAura;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             if (_.GetDistanceBetween(oPC, oTarget) > 15.0f)

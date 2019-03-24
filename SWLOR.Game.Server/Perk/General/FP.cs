@@ -1,11 +1,14 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
 
 namespace SWLOR.Game.Server.Perk.General
 {
-    public class FP : IPerkBehaviour
+    public class FP : IPerkHandler
     {
+        public PerkType PerkType => PerkType.FP;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

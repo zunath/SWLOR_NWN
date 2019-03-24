@@ -8,6 +8,8 @@ using System.Linq;
 using SWLOR.Game.Server.AreaInstance.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
 using static NWN._;
 using Object = NWN.Object;
 
@@ -15,7 +17,12 @@ namespace SWLOR.Game.Server.Service
 {
     public static class AreaService
     {
-        public static void OnModuleLoad()
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
+        }
+        
+        private static void OnModuleLoad()
         {
             var areas = NWModule.Get().Areas;
             var dbAreas = DataService.GetAll<Area>().Where(x => x.IsActive).ToList();

@@ -13,22 +13,27 @@ using System.Security.Cryptography;
 using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class DataPackageService
     {
-        
         const string PackagesPath = "./DataPackages/";
         private static readonly Queue<DatabaseAction> _queuedDBChanges;
 
         static DataPackageService()
         {
-            
             _queuedDBChanges = new Queue<DatabaseAction>();
         }
 
-        public static void OnModuleLoad()
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
+        }
+
+        private static void OnModuleLoad()
         {
             // Look for an existing DataPackages folder. If it's missing, create it.
             if (!Directory.Exists(PackagesPath))

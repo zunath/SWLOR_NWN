@@ -6,12 +6,19 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
 
 
 namespace SWLOR.Game.Server.Service
 {
     public static class FarmingService
     {
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
+        }
+
         public static void HarvestPlant(NWPlayer player, NWItem shovel, NWPlaceable plant)
         {
             string growingPlantID = plant.GetLocalString("GROWING_PLANT_ID");
@@ -59,7 +66,7 @@ namespace SWLOR.Game.Server.Service
             return existingDescription;
         }
 
-        public static void OnModuleLoad()
+        private static void OnModuleLoad()
         {
             List<GrowingPlant> plants = DataService.Where<GrowingPlant>(x => x.IsActive).ToList();
 

@@ -17,9 +17,10 @@ namespace SWLOR.Game.Server.Service
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnModuleEnter>(message => OnModuleEnter());
+            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
         }
 
-        public static void OnModuleLoad()
+        private static void OnModuleLoad()
         {
             foreach (var area in NWModule.Get().Areas)
             {

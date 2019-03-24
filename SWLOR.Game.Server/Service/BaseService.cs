@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnModuleHeartbeat>(message => OnModuleHeartbeat());
             MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
             MessageHub.Instance.Subscribe<OnModuleUseFeat>(message => OnModuleUseFeat());
+            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
         }
 
         public static PCTempBaseData GetPlayerTempData(NWPlayer player)
@@ -70,7 +71,7 @@ namespace SWLOR.Game.Server.Service
             DialogService.StartConversation(player, player, "BaseManagementTool");
         }
 
-        public static void OnModuleLoad()
+        private static void OnModuleLoad()
         {
             foreach (var area in NWModule.Get().Areas)
             {

@@ -1,5 +1,8 @@
 ﻿using System;
 using NWN;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
+using SWLOR.Game.Server.Processor;
 using SWLOR.Game.Server.Processor.Contracts;
 
 using SWLOR.Game.Server.ValueObject;
@@ -10,13 +13,20 @@ namespace SWLOR.Game.Server.Service
     {
         private static DateTime _dateLastRun;
 
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
+        }
+
         static ObjectProcessingService()
         {
             _dateLastRun = DateTime.UtcNow;
         }
 
-        public static void OnModuleLoad()
+        private static void OnModuleLoad()
         {
+            RegisterProcessingEvent<AppStateProcessor>();
+            RegisterProcessingEvent<ServerRestartProcessor>();
             Events.MainLoopTick += Events_MainLoopTick;
         }
 

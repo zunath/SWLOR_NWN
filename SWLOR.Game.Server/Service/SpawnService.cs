@@ -5,6 +5,8 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.Processor;
 
 using SWLOR.Game.Server.SpawnRule.Contracts;
@@ -15,7 +17,12 @@ namespace SWLOR.Game.Server.Service
 {
     public static class SpawnService
     {
-        public static void OnModuleLoad()
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
+        }
+
+        private static void OnModuleLoad()
         {
             InitializeSpawns();
             ObjectProcessingService.RegisterProcessingEvent<SpawnProcessor>();

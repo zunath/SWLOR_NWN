@@ -1,7 +1,9 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN.Events.Conversation.Quest.CollectQuestItem;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.NWN.Events.Conversation.Skill
 {
@@ -9,36 +11,39 @@ namespace SWLOR.Game.Server.NWN.Events.Conversation.Skill
     {
         public static bool Check(int index, string method)
         {
-            NWPlayer player = _.GetPCSpeaker();
-            NWObject talkTo = Object.OBJECT_SELF;
-
-            int count = 1;
-            string varName = "SKILL_" + index + "_REQ_";
-            int skillID = talkTo.GetLocalInt(varName + count);
-            bool displayNode = true;
-
-            while(skillID > 0)
+            using (new Profiler(nameof(HasSkillRank)))
             {
-                int requiredLevel = talkTo.GetLocalInt(varName + "LEVEL_" + count);
-                bool meetsRequirement = SkillService.GetPCSkillRank(player, skillID) >= requiredLevel;
+                NWPlayer player = _.GetPCSpeaker();
+                NWObject talkTo = Object.OBJECT_SELF;
 
-                // OR = Any one of the listed skills can be met and the node will appear.
-                if (method == "OR")
+                int count = 1;
+                string varName = "SKILL_" + index + "_REQ_";
+                int skillID = talkTo.GetLocalInt(varName + count);
+                bool displayNode = true;
+
+                while (skillID > 0)
                 {
-                    if (meetsRequirement) return true;
-                    else displayNode = false;
-                }
-                // AND = ALL listed skills must be met in order for the node to appear.
-                else
-                {
-                    if (!meetsRequirement) return false;
+                    int requiredLevel = talkTo.GetLocalInt(varName + "LEVEL_" + count);
+                    bool meetsRequirement = SkillService.GetPCSkillRank(player, skillID) >= requiredLevel;
+
+                    // OR = Any one of the listed skills can be met and the node will appear.
+                    if (method == "OR")
+                    {
+                        if (meetsRequirement) return true;
+                        else displayNode = false;
+                    }
+                    // AND = ALL listed skills must be met in order for the node to appear.
+                    else
+                    {
+                        if (!meetsRequirement) return false;
+                    }
+
+                    count++;
+                    skillID = talkTo.GetLocalInt(varName + count);
                 }
 
-                count++;
-                skillID = talkTo.GetLocalInt(varName + count);
+                return displayNode;
             }
-            
-            return displayNode;
         }
     }
 }

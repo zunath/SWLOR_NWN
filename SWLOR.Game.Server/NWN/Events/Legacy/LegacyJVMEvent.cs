@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.NWN.Events.Legacy
             NWObject self = (Object.OBJECT_SELF);
             string script = self.GetLocalString(variableName);
 
-            using (new Profiler("LegacyJVMEvent::" + script))
+            using (new Profiler("LegacyJVMEvent." + script))
             {
                 Type type = Type.GetType(Assembly.GetExecutingAssembly().GetName().Name + "." + script);
 

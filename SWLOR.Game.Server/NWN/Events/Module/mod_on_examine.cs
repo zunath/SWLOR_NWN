@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.ValueObject;
 
 // ReSharper disable once CheckNamespace
 namespace NWN.Scripts
@@ -18,32 +19,36 @@ namespace NWN.Scripts
         {
             // Breaking the rules for the examine event because the result of the services is used in the following 
             // service call. We still signal an event for this, but in general all of the logic should go into this method.
-            NWPlayer examiner = (Object.OBJECT_SELF);
-            NWObject examinedObject = NWNXEvents.OnExamineObject_GetTarget();
-            if (ExaminationService.OnModuleExamine(examiner, examinedObject))
+
+            using (new Profiler(nameof(mod_on_examine)))
             {
-                MessageHub.Instance.Publish(new OnModuleExamine());
-                return;
-            }
+                NWPlayer examiner = (Object.OBJECT_SELF);
+                NWObject examinedObject = NWNXEvents.OnExamineObject_GetTarget();
+                if (ExaminationService.OnModuleExamine(examiner, examinedObject))
+                {
+                    MessageHub.Instance.Publish(new OnModuleExamine());
+                    return;
+                }
 
-            string description = _.GetDescription(examinedObject.Object, _.TRUE) + "\n\n";
+                string description = _.GetDescription(examinedObject.Object, _.TRUE) + "\n\n";
 
-            if (examinedObject.IsCreature)
-            {
-                int racialID = Convert.ToInt32(_.Get2DAString("racialtypes", "Name", _.GetRacialType(examinedObject)));
-                string racialtype = _.GetStringByStrRef(racialID);
-                description += ColorTokenService.Green("Racial Type: ") + racialtype;
-            }
+                if (examinedObject.IsCreature)
+                {
+                    int racialID = Convert.ToInt32(_.Get2DAString("racialtypes", "Name", _.GetRacialType(examinedObject)));
+                    string racialtype = _.GetStringByStrRef(racialID);
+                    description += ColorTokenService.Green("Racial Type: ") + racialtype;
+                }
 
-            description = ModService.OnModuleExamine(description, examiner, examinedObject);
-            description = ItemService.OnModuleExamine(description, examiner, examinedObject);
-            description = DurabilityService.OnModuleExamine(description, examinedObject);
-            description = FarmingService.OnModuleExamine(description, examinedObject);
+                description = ModService.OnModuleExamine(description, examiner, examinedObject);
+                description = ItemService.OnModuleExamine(description, examiner, examinedObject);
+                description = DurabilityService.OnModuleExamine(description, examinedObject);
+                description = FarmingService.OnModuleExamine(description, examinedObject);
 
-            if (!string.IsNullOrWhiteSpace(description))
-            {
-                _.SetDescription(examinedObject.Object, description, _.FALSE);
-                _.SetDescription(examinedObject.Object, description);
+                if (!string.IsNullOrWhiteSpace(description))
+                {
+                    _.SetDescription(examinedObject.Object, description, _.FALSE);
+                    _.SetDescription(examinedObject.Object, description);
+                }
             }
 
             MessageHub.Instance.Publish(new OnModuleExamine());

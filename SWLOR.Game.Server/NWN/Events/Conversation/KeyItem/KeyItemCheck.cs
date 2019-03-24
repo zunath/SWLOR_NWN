@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using NWN;
+using NWN.Scripts;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.ValueObject;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.NWN.Events.Conversation.KeyItem
@@ -11,27 +13,30 @@ namespace SWLOR.Game.Server.NWN.Events.Conversation.KeyItem
     {
         public static bool Check(int index, int type)
         {
-            NWPlayer player = _.GetPCSpeaker();
-            NWObject talkingTo = Object.OBJECT_SELF;
-
-            int count = 1;
-            List<int> requiredKeyItemIDs = new List<int>();
-
-            int keyItemID = talkingTo.GetLocalInt($"KEY_ITEM_{index}_REQ_{count}");
-
-            while (keyItemID > 0)
+            using (new Profiler(nameof(KeyItemCheck)))
             {
-                requiredKeyItemIDs.Add(keyItemID);
+                NWPlayer player = _.GetPCSpeaker();
+                NWObject talkingTo = Object.OBJECT_SELF;
 
-                count++;
-                keyItemID = talkingTo.GetLocalInt($"KEY_ITEM_{index}_REQ_{count}");
+                int count = 1;
+                List<int> requiredKeyItemIDs = new List<int>();
+
+                int keyItemID = talkingTo.GetLocalInt($"KEY_ITEM_{index}_REQ_{count}");
+
+                while (keyItemID > 0)
+                {
+                    requiredKeyItemIDs.Add(keyItemID);
+
+                    count++;
+                    keyItemID = talkingTo.GetLocalInt($"KEY_ITEM_{index}_REQ_{count}");
+                }
+
+                // Type 1 = ALL
+                // Anything else = ANY
+                return type == 1 ?
+                    KeyItemService.PlayerHasAllKeyItems(player, requiredKeyItemIDs.ToArray()) :
+                    KeyItemService.PlayerHasAnyKeyItem(player, requiredKeyItemIDs.ToArray());
             }
-
-            // Type 1 = ALL
-            // Anything else = ANY
-            return type == 1 ? 
-                KeyItemService.PlayerHasAllKeyItems(player, requiredKeyItemIDs.ToArray()) : 
-                KeyItemService.PlayerHasAnyKeyItem(player, requiredKeyItemIDs.ToArray());
         }
     }
 }

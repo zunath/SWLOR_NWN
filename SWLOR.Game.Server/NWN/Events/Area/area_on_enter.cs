@@ -1,6 +1,7 @@
 ﻿using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Area;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.ValueObject;
 
 // ReSharper disable once CheckNamespace
 namespace NWN.Scripts
@@ -11,11 +12,14 @@ namespace NWN.Scripts
     {
         public static void Main()
         {
-            // Location loading code is in the BaseService, to support
-            // logging on within an instance.  This must be called before
-            // the other services.
-            BaseService.OnAreaEnter();
-            
+            using (new Profiler(nameof(area_on_enter)))
+            {
+                // Location loading code is in the BaseService, to support
+                // logging on within an instance.  This must be called before
+                // the other services.
+                BaseService.OnAreaEnter();
+            }
+
             MessageHub.Instance.Publish(new OnAreaEnter());
         }
     }

@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Threading;
+using SWLOR.Game.Server.ValueObject;
 
 // ReSharper disable once CheckNamespace
 namespace NWN.Scripts
@@ -22,20 +23,23 @@ namespace NWN.Scripts
             string nowString = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
             Console.WriteLine(nowString + ": Module OnLoad executing...");
 
-            DatabaseMigrationRunner.Start();
+            using (new Profiler(nameof(mod_on_load)))
+            {
+                DatabaseMigrationRunner.Start();
 
-            Console.WriteLine("Starting background thread manager...");
-            BackgroundThreadManager.Start();
+                Console.WriteLine("Starting background thread manager...");
+                BackgroundThreadManager.Start();
 
-            NWNXChat.RegisterChatScript("mod_on_nwnxchat");
-            SetModuleEventScripts();
-            SetAreaEventScripts();
-            SetWeaponSettings();
+                NWNXChat.RegisterChatScript("mod_on_nwnxchat");
+                SetModuleEventScripts();
+                SetAreaEventScripts();
+                SetWeaponSettings();
 
-            // Bioware default
-            _.ExecuteScript("x2_mod_def_load", Object.OBJECT_SELF);
-            
-            RegisterServiceSubscribeEvents();
+                // Bioware default
+                _.ExecuteScript("x2_mod_def_load", Object.OBJECT_SELF);
+
+                RegisterServiceSubscribeEvents();
+            }
             
             MessageHub.Instance.Publish(new OnModuleLoad());
 

@@ -6,8 +6,10 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Conversation.Quest.CollectQuestItem;
 using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.SpawnRule.Contracts;
+using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using Object = NWN.Object;
 
@@ -193,171 +195,184 @@ namespace SWLOR.Game.Server.Service
 
         public static void OnActionsTaken(int nodeID)
         {
-            NWPlayer player = (_.GetPCSpeaker());
-            PlayerDialog dialog = LoadPlayerDialog(player.GlobalID);
-            IConversation convo = GetConversation(dialog.ActiveDialogName);
-            int selectionNumber = nodeID + 1;
-            int responseID = nodeID + (NumberOfResponsesPerPage * dialog.PageOffset);
+            using (new Profiler(nameof(DialogService) + "." + nameof(OnActionsTaken)))
+            {
+                NWPlayer player = (_.GetPCSpeaker());
+                PlayerDialog dialog = LoadPlayerDialog(player.GlobalID);
+                IConversation convo = GetConversation(dialog.ActiveDialogName);
+                int selectionNumber = nodeID + 1;
+                int responseID = nodeID + (NumberOfResponsesPerPage * dialog.PageOffset);
 
-            if (selectionNumber == NumberOfResponsesPerPage + 1) // Next page
-            {
-                dialog.PageOffset = dialog.PageOffset + 1;
-            }
-            else if (selectionNumber == NumberOfResponsesPerPage + 2) // Previous page
-            {
-                dialog.PageOffset = dialog.PageOffset - 1;
-            }
-            else if (selectionNumber == NumberOfResponsesPerPage + 3) // Back
-            {
-                string currentPageName = dialog.CurrentPageName;
-                var previous = dialog.NavigationStack.Pop();
-
-                // This might be a little confusing but we're passing the active page as the "old page" to the Back() method.
-                // This is because we need to run any dialog-specific clean up prior to moving the conversation backwards.
-                convo.Back(player, currentPageName, previous.PageName);
-                
-                // Previous page was in a different conversation. Switch to it.
-                if (previous.DialogName != dialog.ActiveDialogName)
+                if (selectionNumber == NumberOfResponsesPerPage + 1) // Next page
                 {
-                    LoadConversation(player, dialog.DialogTarget, previous.DialogName, dialog.DialogNumber);
-                    dialog = LoadPlayerDialog(player.GlobalID);
-                    dialog.ResetPage();
-
-                    dialog.CurrentPageName = previous.PageName;
-                    dialog.PageOffset = 0;
-                    // ActiveDialogName will have changed by this point. Get the new conversation.
-                    convo = GetConversation(dialog.ActiveDialogName);
-                    convo.Initialize();
-                    player.SetLocalInt("DIALOG_SYSTEM_INITIALIZE_RAN", 1);
+                    dialog.PageOffset = dialog.PageOffset + 1;
                 }
-                // Otherwise it's in the same conversation. Switch to that.
-                else
+                else if (selectionNumber == NumberOfResponsesPerPage + 2) // Previous page
                 {
-                    dialog.CurrentPageName = previous.PageName;
-                    dialog.PageOffset = 0;
+                    dialog.PageOffset = dialog.PageOffset - 1;
                 }
-            }
-            else if (selectionNumber != NumberOfResponsesPerPage + 4) // End
-            {
-                convo.DoAction(player, dialog.CurrentPageName, responseID + 1);
+                else if (selectionNumber == NumberOfResponsesPerPage + 3) // Back
+                {
+                    string currentPageName = dialog.CurrentPageName;
+                    var previous = dialog.NavigationStack.Pop();
+
+                    // This might be a little confusing but we're passing the active page as the "old page" to the Back() method.
+                    // This is because we need to run any dialog-specific clean up prior to moving the conversation backwards.
+                    convo.Back(player, currentPageName, previous.PageName);
+
+                    // Previous page was in a different conversation. Switch to it.
+                    if (previous.DialogName != dialog.ActiveDialogName)
+                    {
+                        LoadConversation(player, dialog.DialogTarget, previous.DialogName, dialog.DialogNumber);
+                        dialog = LoadPlayerDialog(player.GlobalID);
+                        dialog.ResetPage();
+
+                        dialog.CurrentPageName = previous.PageName;
+                        dialog.PageOffset = 0;
+                        // ActiveDialogName will have changed by this point. Get the new conversation.
+                        convo = GetConversation(dialog.ActiveDialogName);
+                        convo.Initialize();
+                        player.SetLocalInt("DIALOG_SYSTEM_INITIALIZE_RAN", 1);
+                    }
+                    // Otherwise it's in the same conversation. Switch to that.
+                    else
+                    {
+                        dialog.CurrentPageName = previous.PageName;
+                        dialog.PageOffset = 0;
+                    }
+                }
+                else if (selectionNumber != NumberOfResponsesPerPage + 4) // End
+                {
+                    convo.DoAction(player, dialog.CurrentPageName, responseID + 1);
+                }
             }
         }
 
         public static bool OnAppearsWhen(int nodeType, int nodeID)
         {
-            NWPlayer player = (_.GetPCSpeaker());
-            bool hasDialog = HasPlayerDialog(player.GlobalID);
-            if (!hasDialog) return false;
-
-            PlayerDialog dialog = LoadPlayerDialog(player.GlobalID);
-            DialogPage page = dialog.CurrentPage;
-            var convo = GetConversation(dialog.ActiveDialogName);
-            int currentSelectionNumber = nodeID + 1;
-            bool displayNode = false;
-            string newNodeText = string.Empty;
-            int dialogOffset = (NumberOfResponsesPerPage + 1) * (dialog.DialogNumber - 1);
-
-            if (currentSelectionNumber == NumberOfResponsesPerPage + 1) // Next page
+            using (new Profiler(nameof(DialogService) + "." + nameof(OnAppearsWhen)))
             {
-                int displayCount = page.NumberOfResponses - (NumberOfResponsesPerPage * dialog.PageOffset);
 
-                if (displayCount > NumberOfResponsesPerPage)
-                {
-                    displayNode = true;
-                }
-            }
-            else if (currentSelectionNumber == NumberOfResponsesPerPage + 2) // Previous Page
-            {
-                if (dialog.PageOffset > 0)
-                {
-                    displayNode = true;
-                }
-            }
-            else if (currentSelectionNumber == NumberOfResponsesPerPage + 3) // Back
-            {
-                if (dialog.NavigationStack.Count > 0 && dialog.EnableBackButton)
-                {
-                    displayNode = true;
-                }
-            }
-            else if (nodeType == 2)
-            {
-                int responseID = (dialog.PageOffset * NumberOfResponsesPerPage) + nodeID;
-                if (responseID + 1 <= page.NumberOfResponses)
-                {
-                    DialogResponse response = page.Responses[responseID];
+                NWPlayer player = (_.GetPCSpeaker());
+                bool hasDialog = HasPlayerDialog(player.GlobalID);
+                if (!hasDialog) return false;
 
-                    if (response != null)
+                PlayerDialog dialog = LoadPlayerDialog(player.GlobalID);
+                DialogPage page = dialog.CurrentPage;
+                var convo = GetConversation(dialog.ActiveDialogName);
+                int currentSelectionNumber = nodeID + 1;
+                bool displayNode = false;
+                string newNodeText = string.Empty;
+                int dialogOffset = (NumberOfResponsesPerPage + 1) * (dialog.DialogNumber - 1);
+
+                if (currentSelectionNumber == NumberOfResponsesPerPage + 1) // Next page
+                {
+                    int displayCount = page.NumberOfResponses - (NumberOfResponsesPerPage * dialog.PageOffset);
+
+                    if (displayCount > NumberOfResponsesPerPage)
                     {
-                        newNodeText = response.Text;
-                        displayNode = response.IsActive;
+                        displayNode = true;
                     }
                 }
-            }
-            else if (nodeType == 1)
-            {
-                if (player.GetLocalInt("DIALOG_SYSTEM_INITIALIZE_RAN") != 1)
+                else if (currentSelectionNumber == NumberOfResponsesPerPage + 2) // Previous Page
                 {
-                    convo.Initialize();
-                    player.SetLocalInt("DIALOG_SYSTEM_INITIALIZE_RAN", 1);
+                    if (dialog.PageOffset > 0)
+                    {
+                        displayNode = true;
+                    }
+                }
+                else if (currentSelectionNumber == NumberOfResponsesPerPage + 3) // Back
+                {
+                    if (dialog.NavigationStack.Count > 0 && dialog.EnableBackButton)
+                    {
+                        displayNode = true;
+                    }
+                }
+                else if (nodeType == 2)
+                {
+                    int responseID = (dialog.PageOffset * NumberOfResponsesPerPage) + nodeID;
+                    if (responseID + 1 <= page.NumberOfResponses)
+                    {
+                        DialogResponse response = page.Responses[responseID];
+
+                        if (response != null)
+                        {
+                            newNodeText = response.Text;
+                            displayNode = response.IsActive;
+                        }
+                    }
+                }
+                else if (nodeType == 1)
+                {
+                    if (player.GetLocalInt("DIALOG_SYSTEM_INITIALIZE_RAN") != 1)
+                    {
+                        convo.Initialize();
+                        player.SetLocalInt("DIALOG_SYSTEM_INITIALIZE_RAN", 1);
+                    }
+
+                    if (dialog.IsEnding)
+                    {
+                        convo.EndDialog();
+                        RemovePlayerDialog(player.GlobalID);
+                        player.DeleteLocalInt("DIALOG_SYSTEM_INITIALIZE_RAN");
+                        return false;
+                    }
+
+                    page = dialog.CurrentPage;
+                    newNodeText = page.Header;
+
+                    _.SetCustomToken(90000 + dialogOffset, newNodeText);
+                    return true;
                 }
 
-                if (dialog.IsEnding)
-                {
-                    convo.EndDialog();
-                    RemovePlayerDialog(player.GlobalID);
-                    player.DeleteLocalInt("DIALOG_SYSTEM_INITIALIZE_RAN");
-                    return false;
-                }
-
-                page = dialog.CurrentPage;
-                newNodeText = page.Header;
-
-                _.SetCustomToken(90000 + dialogOffset, newNodeText);
-                return true;
+                _.SetCustomToken(90001 + nodeID + dialogOffset, newNodeText);
+                return displayNode;
             }
-
-            _.SetCustomToken(90001 + nodeID + dialogOffset, newNodeText);
-            return displayNode;
         }
 
         public static void OnDialogStart()
         {
-            NWPlayer pc = (_.GetLastUsedBy());
-            if (!pc.IsValid) pc = (_.GetPCSpeaker());
-
-            string conversation = _.GetLocalString(Object.OBJECT_SELF, "CONVERSATION");
-
-            if (!string.IsNullOrWhiteSpace(conversation))
+            using (new Profiler(nameof(DialogService) + "." + nameof(OnDialogStart)))
             {
-                int objectType = _.GetObjectType(Object.OBJECT_SELF);
-                if (objectType == _.OBJECT_TYPE_PLACEABLE)
+                NWPlayer pc = (_.GetLastUsedBy());
+                if (!pc.IsValid) pc = (_.GetPCSpeaker());
+
+                string conversation = _.GetLocalString(Object.OBJECT_SELF, "CONVERSATION");
+
+                if (!string.IsNullOrWhiteSpace(conversation))
                 {
-                    NWPlaceable talkTo = (Object.OBJECT_SELF);
-                    StartConversation(pc, talkTo, conversation);
+                    int objectType = _.GetObjectType(Object.OBJECT_SELF);
+                    if (objectType == _.OBJECT_TYPE_PLACEABLE)
+                    {
+                        NWPlaceable talkTo = (Object.OBJECT_SELF);
+                        StartConversation(pc, talkTo, conversation);
+                    }
+                    else
+                    {
+                        NWCreature talkTo = (Object.OBJECT_SELF);
+                        StartConversation(pc, talkTo, conversation);
+                    }
                 }
                 else
                 {
-                    NWCreature talkTo = (Object.OBJECT_SELF);
-                    StartConversation(pc, talkTo, conversation);
+                    _.ActionStartConversation(pc.Object, "", _.TRUE, _.FALSE);
                 }
-            }
-            else
-            {
-                _.ActionStartConversation(pc.Object, "", _.TRUE, _.FALSE);
             }
         }
 
         public static void OnDialogEnd()
         {
-            NWPlayer player = (_.GetPCSpeaker());
-            if (!HasPlayerDialog(player.GlobalID)) return;
+            using (new Profiler(nameof(DialogService) + "." + nameof(OnDialogEnd)))
+            {
+                NWPlayer player = (_.GetPCSpeaker());
+                if (!HasPlayerDialog(player.GlobalID)) return;
 
-            PlayerDialog dialog = LoadPlayerDialog(player.GlobalID);
-            var convo = GetConversation(dialog.ActiveDialogName);
-            convo.EndDialog();
-            RemovePlayerDialog(player.GlobalID);
-            player.DeleteLocalInt("DIALOG_SYSTEM_INITIALIZE_RAN");
+                PlayerDialog dialog = LoadPlayerDialog(player.GlobalID);
+                var convo = GetConversation(dialog.ActiveDialogName);
+                convo.EndDialog();
+                RemovePlayerDialog(player.GlobalID);
+                player.DeleteLocalInt("DIALOG_SYSTEM_INITIALIZE_RAN");
+            }
         }
     }
 }

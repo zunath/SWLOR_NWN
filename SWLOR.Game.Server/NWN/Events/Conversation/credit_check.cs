@@ -1,6 +1,6 @@
-﻿using SWLOR.Game.Server;
-
+﻿
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.ValueObject;
 
 // ReSharper disable once CheckNamespace
 namespace NWN.Scripts
@@ -11,15 +11,19 @@ namespace NWN.Scripts
     {
         public static int Main()
         {
-            NWPlayer oPC = _.GetPCSpeaker();
-            NWObject oNPC = Object.OBJECT_SELF;
-            int nGold = _.GetGold(oPC);
-            int reqGold = _.GetLocalInt(oNPC, "gold");
-            if (nGold > reqGold)
+            using (new Profiler(nameof(credit_check)))
             {
-                return _.TRUE;
+                NWPlayer oPC = _.GetPCSpeaker();
+                NWObject oNPC = Object.OBJECT_SELF;
+                int nGold = _.GetGold(oPC);
+                int reqGold = _.GetLocalInt(oNPC, "gold");
+                if (nGold > reqGold)
+                {
+                    return _.TRUE;
+                }
+
+                return _.FALSE;
             }
-            return _.FALSE;
         }
     }
 }

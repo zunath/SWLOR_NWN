@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Perk.MartialArts
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
         {
-            ApplyFeatChanges(oPC, null);
+            ApplyFeatChanges(oPC, oItem);
         }
 
         public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
@@ -80,8 +80,11 @@ namespace SWLOR.Game.Server.Perk.MartialArts
         {
             NWItem mainHand = oPC.RightHand;
             NWItem offHand = oPC.LeftHand;
+            NWItem fist = oPC.Arms;
             CustomItemType mainType = mainHand.CustomItemType;
             CustomItemType offType = offHand.CustomItemType;
+            CustomItemType glovesType = fist.CustomItemType;
+
             bool receivesFeat = true;
 
             if (unequippingItem != null && Equals(unequippingItem, mainHand))
@@ -93,10 +96,12 @@ namespace SWLOR.Game.Server.Perk.MartialArts
                 offHand = (new Object());
             }
 
-            if ((!mainHand.IsValid && !offHand.IsValid) ||
-                (mainType != CustomItemType.MartialArtWeapon || offType != CustomItemType.MartialArtWeapon))
+            if (mainType != CustomItemType.MartialArtWeapon)
             {
-                receivesFeat = false;
+                if (mainType != CustomItemType.None)
+                {
+                    receivesFeat = false;
+                }
             }
 
             if (receivesFeat)

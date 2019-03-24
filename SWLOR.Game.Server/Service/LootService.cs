@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
@@ -6,6 +7,8 @@ using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Creature;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
+using static NWN._;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -43,7 +46,16 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnCreatureDeath()
         {
+            ProcessLoot();
+            ProcessCorpse();
+        }
+
+        private static void ProcessLoot()
+        {
             NWCreature creature = Object.OBJECT_SELF;
+
+            Console.WriteLine("Running loot creature = " + creature.Name);
+
             // Single loot table (without an index)
             int singleLootTableID = creature.GetLocalInt("LOOT_TABLE_ID");
             if (singleLootTableID > 0)
@@ -61,7 +73,7 @@ namespace SWLOR.Game.Server.Service
             {
                 int chance = creature.GetLocalInt("LOOT_TABLE_CHANCE_" + lootTableNumber);
                 int attempts = creature.GetLocalInt("LOOT_TABLE_ATTEMPTS_" + lootTableNumber);
-                
+
                 RunLootAttempt(creature, lootTableID, chance, attempts);
 
                 lootTableNumber++;
@@ -89,7 +101,7 @@ namespace SWLOR.Game.Server.Service
 
                     for (int x = 1; x <= spawnQuantity; x++)
                     {
-                        var item = _.CreateItemOnObject(model.Resref, target);
+                        var item = CreateItemOnObject(model.Resref, target);
                         if (!string.IsNullOrWhiteSpace(model.SpawnRule))
                         {
                             var rule = SpawnService.GetSpawnRule(model.SpawnRule);
@@ -99,5 +111,73 @@ namespace SWLOR.Game.Server.Service
                 }
             }
         }
+
+
+        private static void ProcessCorpse()
+        {
+            SetIsDestroyable(FALSE);
+
+            NWObject self = Object.OBJECT_SELF;
+            if (self.Tag == "spaceship_copy") return;
+
+            Vector lootPosition = Vector(self.Position.m_X, self.Position.m_Y, self.Position.m_Z - 0.11f);
+            Location spawnLocation = Location(self.Area, lootPosition, self.Facing);
+
+            NWPlaceable container = CreateObject(OBJECT_TYPE_PLACEABLE, "corpse", spawnLocation);
+            container.SetLocalObject("CORPSE_BODY", self);
+            container.Name = self.Name + "'s Corpse";
+
+            container.AssignCommand(() =>
+            {
+                TakeGoldFromCreature(self.Gold, self);
+            });
+
+            // Dump equipped items in container
+            for (int slot = 0; slot < NUM_INVENTORY_SLOTS; slot++)
+            {
+                if (slot == INVENTORY_SLOT_CARMOUR ||
+                    slot == INVENTORY_SLOT_CWEAPON_B ||
+                    slot == INVENTORY_SLOT_CWEAPON_L ||
+                    slot == INVENTORY_SLOT_CWEAPON_R)
+                    continue;
+
+                NWItem item = GetItemInSlot(slot, self);
+                if (item.IsValid && !item.IsCursed && item.IsDroppable)
+                {
+                    NWItem copy = CopyItem(item, container, TRUE);
+
+                    if (slot == INVENTORY_SLOT_HEAD ||
+                        slot == INVENTORY_SLOT_CHEST)
+                    {
+                        copy.SetLocalObject("CORPSE_ITEM_COPY", item);
+                    }
+                    else
+                    {
+                        item.Destroy();
+                    }
+                }
+            }
+
+            foreach (var item in self.InventoryItems)
+            {
+                CopyItem(item, container, TRUE);
+                item.Destroy();
+            }
+
+            DelayCommand(360.0f, () =>
+            {
+                if (!container.IsValid) return;
+
+                NWObject body = container.GetLocalObject("CORPSE_BODY");
+                body.AssignCommand(() => SetIsDestroyable(TRUE));
+                body.DestroyAllInventoryItems();
+                body.Destroy();
+
+                container.DestroyAllInventoryItems();
+                container.Destroy();
+            });
+
+        }
+
     }
 }

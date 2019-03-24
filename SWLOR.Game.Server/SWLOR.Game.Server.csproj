@@ -1038,10 +1038,6 @@
     <Compile Include="Placeable\CraftingDevice\OnDisturbed.cs" />
     <Compile Include="Placeable\CraftingDevice\OnOpened.cs" />
     <Compile Include="Placeable\CraftingDevice\OnUsed.cs" />
-    <Compile Include="Event\Dialog\ActionTaken.cs" />
-    <Compile Include="Event\Dialog\AppearsWhen.cs" />
-    <Compile Include="Event\Dialog\DialogEnd.cs" />
-    <Compile Include="Event\Dialog\DialogStart.cs" />
     <Compile Include="NWN\Events\Feat\OnHitCastSpell.cs" />
     <Compile Include="Event\IRegisteredEvent.cs" />
     <Compile Include="Event\Legacy\LegacyJVMEvent.cs" />
@@ -2089,9 +2085,7 @@
     <None Include="ServerFiles\HakPaks\swlor_gui\cg_package.gui" />
     <None Include="ServerFiles\HakPaks\swlor_gui\cg_race.gui" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Event\Module\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="Data\Migrations\2018-11-09.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-10.1.sql" />

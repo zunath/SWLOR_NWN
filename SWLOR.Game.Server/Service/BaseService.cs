@@ -12,6 +12,7 @@ using System.Linq;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.SpawnRule.Contracts;
 using static NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
@@ -21,6 +22,13 @@ namespace SWLOR.Game.Server.Service
 {
     public static class BaseService
     {
+        private static readonly Dictionary<string, IDoorRule> _doorRules;
+
+        static BaseService()
+        {
+            _doorRules = new Dictionary<string, IDoorRule>();
+        }
+
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnModuleHeartbeat>(message => OnModuleHeartbeat());
@@ -73,6 +81,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleLoad()
         {
+            RegisterDoorRules();
             foreach (var area in NWModule.Get().Areas)
             {
                 if (!area.Data.ContainsKey("BASE_SERVICE_STRUCTURES"))
@@ -96,6 +105,34 @@ namespace SWLOR.Game.Server.Service
                 }
 
             }
+        }
+
+        private static void RegisterDoorRules()
+        {
+            // Use reflection to get all of SpawnRule implementations.
+            var classes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => typeof(IDoorRule).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
+            foreach (var type in classes)
+            {
+                IDoorRule instance = Activator.CreateInstance(type) as IDoorRule;
+                if (instance == null)
+                {
+                    throw new NullReferenceException("Unable to activate instance of type: " + type);
+                }
+                _doorRules.Add(type.Name, instance);
+            }
+        }
+
+
+        public static IDoorRule GetDoorRule(string key)
+        {
+            if (!_doorRules.ContainsKey(key))
+            {
+                throw new KeyNotFoundException("Door rule '" + key + "' is not registered. Did you create a class for it?");
+            }
+
+            return _doorRules[key];
         }
 
         public static NWPlaceable SpawnStructure(NWArea area, Guid pcBaseStructureID)
@@ -250,7 +287,8 @@ namespace SWLOR.Game.Server.Service
             NWLocation location = locationOverride ?? building.Location;
 
             string pcBaseStructureID = building.GetLocalString("PC_BASE_STRUCTURE_ID");
-            NWPlaceable door = App.ResolveByInterface<IDoorRule, NWPlaceable>("DoorRule." + spawnRule, rule => rule.Run(area, location));
+            var doorRule = GetDoorRule(spawnRule);
+            NWPlaceable door = doorRule.Run(area, location);
             door.SetLocalString("PC_BASE_STRUCTURE_ID", pcBaseStructureID);
             door.SetLocalInt("IS_DOOR", TRUE);
 

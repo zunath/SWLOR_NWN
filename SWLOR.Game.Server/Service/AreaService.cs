@@ -17,13 +17,49 @@ namespace SWLOR.Game.Server.Service
 {
     public static class AreaService
     {
+        private static readonly Dictionary<string, IAreaInstance> _areaInstances;
+
+        static AreaService()
+        {
+            _areaInstances = new Dictionary<string, IAreaInstance>();
+        }
+
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
         }
         
+        private static void RegisterAreaInstances()
+        {
+            // Use reflection to get all of Area instance implementations.
+            var classes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => typeof(IAreaInstance).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
+            foreach (var type in classes)
+            {
+                IAreaInstance instance = Activator.CreateInstance(type) as IAreaInstance;
+                if (instance == null)
+                {
+                    throw new NullReferenceException("Unable to activate instance of type: " + type);
+                }
+                _areaInstances.Add(type.Name, instance);
+            }
+
+        }
+
+        public static IAreaInstance GetAreaInstance(string key)
+        {
+            if (!_areaInstances.ContainsKey(key))
+            {
+                throw new KeyNotFoundException("Spawn rule '" + key + "' is not registered. Did you create a class for it?");
+            }
+
+            return _areaInstances[key];
+        }
+
         private static void OnModuleLoad()
         {
+            RegisterAreaInstances();
             var areas = NWModule.Get().Areas;
             var dbAreas = DataService.GetAll<Area>().Where(x => x.IsActive).ToList();
             dbAreas.ForEach(x => x.IsActive = false);
@@ -221,13 +257,11 @@ namespace SWLOR.Game.Server.Service
 
             SpawnService.InitializeAreaSpawns(instance);
             
-            string spawnScript = instance.GetLocalString("INSTANCE_ON_SPAWN");
-            if (!string.IsNullOrWhiteSpace(spawnScript))
+            string rule = instance.GetLocalString("INSTANCE_ON_SPAWN");
+            if (!string.IsNullOrWhiteSpace(rule))
             {
-                App.ResolveByInterface<IAreaInstance>("AreaInstance." + spawnScript, s =>
-                {
-                    s.Run(instance);
-                });
+                IAreaInstance instanceRule = GetAreaInstance(rule);
+                instanceRule.Run(instance);
             }
 
             return instance;

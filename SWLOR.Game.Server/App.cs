@@ -113,11 +113,7 @@ namespace SWLOR.Game.Server
             // Interfaces
             RegisterInterfaceImplementations<IConversation>(builder);
             RegisterInterfaceImplementations<IAIBehaviour>(builder);
-
             
-            RegisterInterfaceImplementations<IDoorRule>(builder, false, true);
-            RegisterInterfaceImplementations<IAreaInstance>(builder, false, true);
-
             // Third Party
             builder.RegisterType<BehaviourTreeBuilder>().SingleInstance();
             

@@ -59,16 +59,18 @@ namespace SWLOR.Game.Server.Mod
 
         private int GetExistingAB(NWItem item)
         {
+            int currentAB = 0;
             foreach (var ip in item.ItemProperties)
             {
                 int type = _.GetItemPropertyType(ip);
                 if (type == NWScript.ITEM_PROPERTY_ATTACK_BONUS)
                 {
-                    return _.GetItemPropertyCostTableValue(ip);
+                    int bonus =  _.GetItemPropertyCostTableValue(ip);
+                    if (bonus > currentAB) currentAB = bonus;
                 }
             }
 
-            return 0;
+            return currentAB;
         }
     }
 }

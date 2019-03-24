@@ -41,7 +41,8 @@ namespace SWLOR.Game.Server.AI
                 _.ClearAllActions();
 
                 NWObject self = Object.OBJECT_SELF;
-                App.RunEvent<ForceAttackHighestEnmity>(self);
+                ForceAttackHighestEnmity component = new ForceAttackHighestEnmity();
+                component.Run(new object[] {self});
             }
         }
 

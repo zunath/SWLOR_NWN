@@ -1,16 +1,14 @@
 ﻿using NWN;
+using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
-
-namespace SWLOR.Game.Server.Event.Conversation
+namespace SWLOR.Game.Server.NWN.Events.Conversation.Skill
 {
-    public class HasSkillRank : IRegisteredEvent
+    public static class HasSkillRank
     {
-        public bool Run(params object[] args)
+        public static bool Check(int index, string method)
         {
-            int index = (int) args[0];
-            string method = (string) args[1];
             NWPlayer player = _.GetPCSpeaker();
             NWObject talkTo = Object.OBJECT_SELF;
 
@@ -39,9 +37,7 @@ namespace SWLOR.Game.Server.Event.Conversation
                 count++;
                 skillID = talkTo.GetLocalInt(varName + count);
             }
-
             
-
             return displayNode;
         }
     }

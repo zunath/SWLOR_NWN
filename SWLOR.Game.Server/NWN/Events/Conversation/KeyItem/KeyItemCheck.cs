@@ -1,18 +1,16 @@
 ﻿using System.Collections.Generic;
 using NWN;
+using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-
 using Object = NWN.Object;
 
-namespace SWLOR.Game.Server.Event.Conversation
+namespace SWLOR.Game.Server.NWN.Events.Conversation.KeyItem
 {
-    public class KeyItemCheck : IRegisteredEvent
+    public static class KeyItemCheck
     {
-        public bool Run(params object[] args)
+        public static bool Check(int index, int type)
         {
-            int index = (int)args[0];
-            int type = (int) args[1];
             NWPlayer player = _.GetPCSpeaker();
             NWObject talkingTo = Object.OBJECT_SELF;
 

@@ -1,5 +1,6 @@
 using SWLOR.Game.Server;
-using SWLOR.Game.Server.Event.Conversation;
+
+using SWLOR.Game.Server.NWN.Events.Conversation.Quest.OnQuestState;
 using static NWN._;
 
 // ReSharper disable once CheckNamespace
@@ -11,7 +12,7 @@ namespace NWN.Scripts
     {
         public static int Main()
         {
-            return App.RunEvent<QuestCheckState>(9, 8) ? TRUE : FALSE;
+            return QuestCheckState.Check(9, 8) ? TRUE : FALSE;
         }
     }
 }

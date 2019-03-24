@@ -1,5 +1,6 @@
 ﻿using SWLOR.Game.Server;
-using SWLOR.Game.Server.Event.Conversation;
+
+using SWLOR.Game.Server.GameObject;
 
 // ReSharper disable once CheckNamespace
 namespace NWN.Scripts
@@ -8,9 +9,17 @@ namespace NWN.Scripts
     internal class credit_check
 #pragma warning restore IDE1006 // Naming Styles
     {
-        public static void Main()
+        public static int Main()
         {
-            App.RunEvent<HasCredits>();
+            NWPlayer oPC = _.GetPCSpeaker();
+            NWObject oNPC = Object.OBJECT_SELF;
+            int nGold = _.GetGold(oPC);
+            int reqGold = _.GetLocalInt(oNPC, "gold");
+            if (nGold > reqGold)
+            {
+                return _.TRUE;
+            }
+            return _.FALSE;
         }
     }
 }

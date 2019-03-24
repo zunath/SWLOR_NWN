@@ -1,17 +1,16 @@
 ﻿using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-
 using Object = NWN.Object;
 
-namespace SWLOR.Game.Server.Event.Conversation
+namespace SWLOR.Game.Server.NWN.Events.Conversation.Quest.HasQuest
 {
-    public class QuestCheck: IRegisteredEvent
+    public static class QuestCheck
     {
-
-        public bool Run(params object[] args)
+        public static bool Check(params object[] args)
         {
             int index = (int) args[0];
             NWPlayer player = _.GetPCSpeaker();
@@ -19,7 +18,7 @@ namespace SWLOR.Game.Server.Event.Conversation
             int questID = talkingTo.GetLocalInt("QUEST_ID_" + index);
             if (questID <= 0) questID = talkingTo.GetLocalInt("QST_ID_" + index);
 
-            if (DataService.GetAll<Quest>().All(x => x.ID != questID))
+            if (DataService.GetAll<Data.Entity.Quest>().All(x => x.ID != questID))
             {
                 _.SpeakString("ERROR: Quest #" + index + " is improperly configured. Please notify an admin");
                 return false;

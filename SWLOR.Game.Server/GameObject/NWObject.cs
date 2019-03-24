@@ -255,7 +255,8 @@ namespace SWLOR.Game.Server.GameObject
         {
             _.DelayCommand(seconds, () =>
             {
-                App.RunEvent<T>(args);
+                IRegisteredEvent @event = Activator.CreateInstance<T>();
+                @event.Run(args);
             });
         }
 

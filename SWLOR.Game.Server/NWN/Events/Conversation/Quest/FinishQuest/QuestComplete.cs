@@ -1,26 +1,23 @@
 ﻿using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.QuestRule.Contracts;
 using SWLOR.Game.Server.Service;
-
 using Object = NWN.Object;
 
-namespace SWLOR.Game.Server.Event.Conversation
+namespace SWLOR.Game.Server.NWN.Events.Conversation.Quest.FinishQuest
 {
-    public class QuestComplete: IRegisteredEvent
+    public static class QuestComplete
     {
-        public bool Run(params object[] args)
+        public static bool Check(int index, int customRuleIndex)
         {
-            int index = (int)args[0];
-            int customRuleIndex = (int) args[1];
             NWPlayer player = _.GetPCSpeaker();
             NWObject talkTo = Object.OBJECT_SELF;
             int questID = talkTo.GetLocalInt("QUEST_ID_" + index);
             if (questID <= 0) questID = talkTo.GetLocalInt("QST_ID_" + index);
 
-            if (DataService.GetAll<Quest>().All(x => x.ID != questID))
+            if (DataService.GetAll<Data.Entity.Quest>().All(x => x.ID != questID))
             {
                 _.SpeakString("ERROR: Quest #" + index + " is improperly configured. Please notify an admin");
                 return false;
@@ -45,7 +42,7 @@ namespace SWLOR.Game.Server.Event.Conversation
 
             if (!string.IsNullOrWhiteSpace(rule))
             {
-                Quest quest = DataService.Single<Quest>(x => x.ID == questID);
+                Data.Entity.Quest quest = DataService.Single<Data.Entity.Quest>(x => x.ID == questID);
                 App.ResolveByInterface<IQuestRule>("QuestRule." + rule, ruleAction =>
                 {
                     string[] argsArray = null;

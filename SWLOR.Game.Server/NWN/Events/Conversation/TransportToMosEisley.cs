@@ -1,9 +1,10 @@
 ﻿using NWN;
+using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 
 using Object = NWN.Object;
 
-namespace SWLOR.Game.Server.Event.Conversation
+namespace SWLOR.Game.Server.NWN.Events.Conversation
 {
     public class TransportToMosEisley : IRegisteredEvent
     {

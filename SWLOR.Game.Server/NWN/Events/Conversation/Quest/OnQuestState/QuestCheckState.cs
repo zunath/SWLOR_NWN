@@ -1,16 +1,16 @@
 ﻿using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-
 using Object = NWN.Object;
 
-namespace SWLOR.Game.Server.Event.Conversation
+namespace SWLOR.Game.Server.NWN.Events.Conversation.Quest.OnQuestState
 {
-    public class QuestCheckState : IRegisteredEvent
+    public static class QuestCheckState
     {
-        public bool Run(params object[] args)
+        public static bool Check(params object[] args)
         {
             int index = (int) args[0];
             int state = (int) args[1];
@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Event.Conversation
             int questID = talkTo.GetLocalInt("QUEST_ID_" + index);
             if (questID <= 0) questID = talkTo.GetLocalInt("QST_ID_" + index);
 
-            if (DataService.GetAll<Quest>().All(x => x.ID != questID))
+            if (DataService.GetAll<Data.Entity.Quest>().All(x => x.ID != questID))
             {
                 _.SpeakString("ERROR: Quest #" + index + " State #" + state + " is improperly configured. Please notify an admin");
                 return false;

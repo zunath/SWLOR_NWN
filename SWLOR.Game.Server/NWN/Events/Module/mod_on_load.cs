@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using SWLOR.Game.Server;
+using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Module;
@@ -20,6 +21,8 @@ namespace NWN.Scripts
         {
             string nowString = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
             Console.WriteLine(nowString + ": Module OnLoad executing...");
+
+            DatabaseMigrationRunner.Start();
 
             Console.WriteLine("Starting background thread manager...");
             BackgroundThreadManager.Start();

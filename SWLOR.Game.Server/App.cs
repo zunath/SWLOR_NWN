@@ -31,54 +31,7 @@ namespace SWLOR.Game.Server
         {
             BuildIOCContainer();
         }
-
-        public static bool RunEvent<T>(params object[] args)
-            where T: IRegisteredEvent
-        {
-            string typeName = typeof(T).ToString();
-            using (new Profiler(typeName))
-            {
-                try
-                {
-                    bool success;
-                    using (var scope = _container.BeginLifetimeScope())
-                    {
-                        IRegisteredEvent @event = scope.ResolveKeyed<IRegisteredEvent>(typeName);
-                        success = @event.Run(args);
-                    }
-                    return success;
-                }
-                catch (Exception ex)
-                {
-                    ErrorService.LogError(ex, typeName);
-                    throw;
-                }
-            }
-        }
-
-        public static bool RunEvent(Type type, params object[] args)
-        {
-            using (new Profiler(type.ToString()))
-            {
-                try
-                {
-                    bool success;
-                    using (var scope = _container.BeginLifetimeScope())
-                    {
-                        IRegisteredEvent @event = scope.ResolveKeyed<IRegisteredEvent>(type.ToString());
-                        success = @event.Run(args);
-                    }
-
-                    return success;
-                }
-                catch (Exception ex)
-                {
-                    ErrorService.LogError(ex, type.ToString());
-                    throw;
-                }
-            }
-        }
-
+        
         public delegate void AppResolveDelegate<in T>(T obj);
         public static void ResolveByInterface<T>(string typeName, AppResolveDelegate<T> action)
         {
@@ -157,9 +110,6 @@ namespace SWLOR.Game.Server
         {
             var builder = new ContainerBuilder();
             
-            builder.RegisterType<DatabaseMigrationRunner>()
-                .As<IStartable>()
-                .SingleInstance();
             // Interfaces
             RegisterInterfaceImplementations<IRegisteredEvent>(builder);
             RegisterInterfaceImplementations<ICustomEffect>(builder, false, true);

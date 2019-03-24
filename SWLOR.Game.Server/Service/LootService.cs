@@ -53,9 +53,7 @@ namespace SWLOR.Game.Server.Service
         private static void ProcessLoot()
         {
             NWCreature creature = Object.OBJECT_SELF;
-
-            Console.WriteLine("Running loot creature = " + creature.Name);
-
+            
             // Single loot table (without an index)
             int singleLootTableID = creature.GetLocalInt("LOOT_TABLE_ID");
             if (singleLootTableID > 0)

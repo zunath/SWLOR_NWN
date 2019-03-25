@@ -1,5 +1,4 @@
 ﻿using Caliburn.Micro;
-using SWLOR.Game.Server.Data;
 using SWLOR.Tools.Editor.ViewModels.Contracts;
 using SWLOR.Tools.Editor.ViewModels.Data;
 

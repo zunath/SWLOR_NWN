@@ -1,9 +1,9 @@
 ﻿using System;
-using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
 using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
 
@@ -11,26 +11,6 @@ namespace SWLOR.Game.Server.Conversation
 {
     public class EditPrimaryResidence: ConversationBase
     {
-        private readonly IDataService _data;
-        private readonly IBaseService _base;
-        private readonly IBasePermissionService _perm;
-        private readonly IColorTokenService _color;
-
-        public EditPrimaryResidence(
-            INWScript script, 
-            IDialogService dialog,
-            IDataService data,
-            IBaseService @base,
-            IBasePermissionService perm,
-            IColorTokenService color) 
-            : base(script, dialog)
-        {
-            _data = data;
-            _base = @base;
-            _perm = perm;
-            _color = color;
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -60,19 +40,19 @@ namespace SWLOR.Game.Server.Conversation
 
         private void BuildMainPageHeader()
         {
-            var data = _base.GetPlayerTempData(GetPC());
+            var data = BaseService.GetPlayerTempData(GetPC());
             
             Player player;
             
             if (data.BuildingType == BuildingType.Interior || data.BuildingType == BuildingType.Starship)
             {
                 Guid structureID = data.StructureID;
-                player = _data.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseStructureID == structureID);
+                player = DataService.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseStructureID == structureID);
             }
             else if (data.BuildingType == BuildingType.Apartment)
             {
                 Guid pcBaseID = data.PCBaseID;
-                player = _data.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseID == pcBaseID);
+                player = DataService.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseID == pcBaseID);
             }
             else
             {
@@ -85,7 +65,7 @@ namespace SWLOR.Game.Server.Conversation
             string header = "Selecting a primary residence grants your character benefits such as increased XP gain and bonuses. These are modified based on the structures you place inside your primary residence.\n\n" +
                             "You may only have one primary residence at a time. A building or starship may only have one primary resident at a time.\n\n" +
                             "Your primary residence may be revoked by the base owner or any player with permission to do so.\n\n";
-            header += _color.Green("Primary Resident: ") + residentName + "\n";
+            header += ColorTokenService.Green("Primary Resident: ") + residentName + "\n";
 
             SetPageHeader("MainPage", header);
         }
@@ -93,9 +73,9 @@ namespace SWLOR.Game.Server.Conversation
         private void BuildMainPageResponses()
         {
             var player = GetPC();
-            var data = _base.GetPlayerTempData(player);
+            var data = BaseService.GetPlayerTempData(player);
 
-            Player dbPlayer = _data.Single<Player>(x => x.ID == player.GlobalID);
+            Player dbPlayer = DataService.Single<Player>(x => x.ID == player.GlobalID);
             Player primaryResident;
 
             bool isPrimaryResident;
@@ -105,21 +85,21 @@ namespace SWLOR.Game.Server.Conversation
             if (data.BuildingType == BuildingType.Interior || data.BuildingType == BuildingType.Starship) 
             {
                 Guid structureID = data.StructureID;
-                primaryResident = _data.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseStructureID == structureID);
+                primaryResident = DataService.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseStructureID == structureID);
 
                 isPrimaryResident = dbPlayer.PrimaryResidencePCBaseStructureID != null && dbPlayer.PrimaryResidencePCBaseStructureID == structureID;
-                canEditPrimaryResidence = _perm.HasStructurePermission(player, structureID, StructurePermission.CanEditPrimaryResidence);
-                canRemovePrimaryResidence = _perm.HasStructurePermission(player, structureID, StructurePermission.CanRemovePrimaryResidence);
+                canEditPrimaryResidence = BasePermissionService.HasStructurePermission(player, structureID, StructurePermission.CanEditPrimaryResidence);
+                canRemovePrimaryResidence = BasePermissionService.HasStructurePermission(player, structureID, StructurePermission.CanRemovePrimaryResidence);
 
             }
             else if (data.BuildingType == BuildingType.Apartment)
             {
                 Guid pcBaseID = data.PCBaseID;
-                primaryResident = _data.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseID == pcBaseID);
+                primaryResident = DataService.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseID == pcBaseID);
 
                 isPrimaryResident = dbPlayer.PrimaryResidencePCBaseID != null && dbPlayer.PrimaryResidencePCBaseID == pcBaseID;
-                canEditPrimaryResidence = _perm.HasBasePermission(player, pcBaseID, BasePermission.CanEditPrimaryResidence);
-                canRemovePrimaryResidence = _perm.HasBasePermission(player, pcBaseID, BasePermission.CanRemovePrimaryResidence);
+                canEditPrimaryResidence = BasePermissionService.HasBasePermission(player, pcBaseID, BasePermission.CanEditPrimaryResidence);
+                canRemovePrimaryResidence = BasePermissionService.HasBasePermission(player, pcBaseID, BasePermission.CanRemovePrimaryResidence);
             }
             else
             {
@@ -192,8 +172,8 @@ namespace SWLOR.Game.Server.Conversation
         private void DoSetAsResidence()
         {
             var player = GetPC();
-            var data = _base.GetPlayerTempData(player);
-            var newResident = _data.Single<Player>(x => x.ID == player.GlobalID);
+            var data = BaseService.GetPlayerTempData(player);
+            var newResident = DataService.Single<Player>(x => x.ID == player.GlobalID);
             
             Player currentResident;
             bool isPrimaryResident;
@@ -203,20 +183,20 @@ namespace SWLOR.Game.Server.Conversation
             if (data.BuildingType == BuildingType.Interior || data.BuildingType == BuildingType.Starship)
             {
                 Guid structureID = data.StructureID;
-                currentResident = _data.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseStructureID == structureID);
+                currentResident = DataService.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseStructureID == structureID);
 
                 isPrimaryResident = newResident.PrimaryResidencePCBaseStructureID != null && newResident.PrimaryResidencePCBaseStructureID == structureID;
-                canEditPrimaryResidence = _perm.HasStructurePermission(player, structureID, StructurePermission.CanEditPrimaryResidence);
-                canRemovePrimaryResidence = _perm.HasStructurePermission(player, structureID, StructurePermission.CanRemovePrimaryResidence);
+                canEditPrimaryResidence = BasePermissionService.HasStructurePermission(player, structureID, StructurePermission.CanEditPrimaryResidence);
+                canRemovePrimaryResidence = BasePermissionService.HasStructurePermission(player, structureID, StructurePermission.CanRemovePrimaryResidence);
             }
             else if (data.BuildingType == BuildingType.Apartment)
             {
                 Guid pcBaseID = data.PCBaseID;
-                currentResident = _data.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseID == pcBaseID);
+                currentResident = DataService.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseID == pcBaseID);
 
                 isPrimaryResident = newResident.PrimaryResidencePCBaseID != null && newResident.PrimaryResidencePCBaseID == pcBaseID;
-                canEditPrimaryResidence = _perm.HasBasePermission(player, pcBaseID, BasePermission.CanEditPrimaryResidence);
-                canRemovePrimaryResidence = _perm.HasBasePermission(player, pcBaseID, BasePermission.CanRemovePrimaryResidence);
+                canEditPrimaryResidence = BasePermissionService.HasBasePermission(player, pcBaseID, BasePermission.CanEditPrimaryResidence);
+                canRemovePrimaryResidence = BasePermissionService.HasBasePermission(player, pcBaseID, BasePermission.CanRemovePrimaryResidence);
             }
             else
             {
@@ -254,7 +234,7 @@ namespace SWLOR.Game.Server.Conversation
                 newResident.PrimaryResidencePCBaseID = data.PCBaseID;
             }
 
-            _data.SubmitDataChange(newResident, DatabaseActionType.Update);
+            DataService.SubmitDataChange(newResident, DatabaseActionType.Update);
             BuildMainPageHeader();
             BuildMainPageResponses();
             ClearNavigationStack();
@@ -263,18 +243,18 @@ namespace SWLOR.Game.Server.Conversation
 
         private void DoRevoke()
         {
-            var data = _base.GetPlayerTempData(GetPC());
+            var data = BaseService.GetPlayerTempData(GetPC());
             Player currentResident;
 
             if (data.BuildingType == BuildingType.Interior)
             {
                 var structureID = data.StructureID;
-                currentResident = _data.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseStructureID == structureID);
+                currentResident = DataService.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseStructureID == structureID);
             }
             else if (data.BuildingType == BuildingType.Apartment)
             {
                 var pcBaseID = data.PCBaseID;
-                currentResident = _data.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseID == pcBaseID);
+                currentResident = DataService.SingleOrDefault<Player>(x => x.PrimaryResidencePCBaseID == pcBaseID);
             }
             else
             {
@@ -285,7 +265,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 currentResident.PrimaryResidencePCBaseStructureID = null;
                 currentResident.PrimaryResidencePCBaseID = null;
-                _data.SubmitDataChange(currentResident, DatabaseActionType.Update);
+                DataService.SubmitDataChange(currentResident, DatabaseActionType.Update);
 
                 NotifyPlayer(currentResident.ID);
             }
@@ -310,7 +290,7 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void EndDialog()
         {
-            _base.ClearPlayerTempData(GetPC());
+            BaseService.ClearPlayerTempData(GetPC());
         }
     }
 }

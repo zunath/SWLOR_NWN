@@ -1,46 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using SWLOR.Game.Server.Bioware.Contracts;
-using SWLOR.Game.Server.Data;
+﻿using System.Linq;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.NWNX.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Bioware;
+using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Service;
+
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.CraftingForge
 {
     public class OnDisturbed: IRegisteredEvent
     {
-        private readonly INWScript _;
-        private readonly IPerkService _perk;
-        private readonly ISkillService _skill;
-        private readonly ICraftService _craft;
-        private readonly IBiowarePosition _biowarePosition;
-        private readonly INWNXPlayer _nwnxPlayer;
-
-        public OnDisturbed(INWScript script,
-            IPerkService perk,
-            ISkillService skill,
-            ICraftService craft,
-            IBiowarePosition biowarePosition,
-            INWNXPlayer nwnxPlayer)
-        {
-            _ = script;
-            _perk = perk;
-            _skill = skill;
-            _craft = craft;
-            _biowarePosition = biowarePosition;
-            _nwnxPlayer = nwnxPlayer;
-        }
-
         public bool Run(params object[] args)
         {
-            if (_.GetInventoryDisturbType() != NWScript.INVENTORY_DISTURB_TYPE_ADDED) return false;
+            if (_.GetInventoryDisturbType() != _.INVENTORY_DISTURB_TYPE_ADDED) return false;
 
             NWPlayer pc = (_.GetLastDisturbed());
             NWItem item = (_.GetInventoryDisturbItem());
@@ -60,7 +36,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
                 return false;
             }
 
-            if (_.GetIsObjectValid(forge.GetLocalObject("FORGE_USER")) == NWScript.TRUE)
+            if (_.GetIsObjectValid(forge.GetLocalObject("FORGE_USER")) == _.TRUE)
             {
                 ReturnItemToPC(pc, item, "This forge is currently in use. Please wait...");
                 return false;
@@ -86,8 +62,8 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
                 return false;
             }
 
-            int level = _craft.GetIngotLevel(item.Resref);
-            int rank = _skill.GetPCSkillRank(pc, SkillType.Harvesting);
+            int level = CraftService.GetIngotLevel(item.Resref);
+            int rank = SkillService.GetPCSkillRank(pc, SkillType.Harvesting);
             
             int delta = rank - level;
             if (delta <= -4)
@@ -96,8 +72,8 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
                 return false;
             }
 
-            int pcPerkLevel = _perk.GetPCPerkLevel(pc, PerkType.Refining);
-            int orePerkLevel = _craft.GetIngotPerkLevel(item.Resref);
+            int pcPerkLevel = PerkService.GetPCPerkLevel(pc, PerkType.Refining);
+            int orePerkLevel = CraftService.GetIngotPerkLevel(item.Resref);
 
             if (pcPerkLevel < orePerkLevel)
             {
@@ -120,9 +96,9 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
                 NWPlaceable flames = (forge.GetLocalObject("FORGE_FLAMES"));
                 if (!flames.IsValid)
                 {
-                    Vector flamePosition = _biowarePosition.GetChangedPosition(forge.Position, 0.36f, forge.Facing);
+                    Vector flamePosition = BiowarePosition.GetChangedPosition(forge.Position, 0.36f, forge.Facing);
                     Location flameLocation = _.Location(forge.Area.Object, flamePosition, 0.0f);
-                    flames = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "forge_flame", flameLocation));
+                    flames = (_.CreateObject(_.OBJECT_TYPE_PLACEABLE, "forge_flame", flameLocation));
                     forge.SetLocalObject("FORGE_FLAMES", flames.Object);
                 }
 
@@ -135,10 +111,10 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             }
 
             // Ready to smelt
-            float baseCraftDelay = 18.0f - (18.0f * _perk.GetPCPerkLevel(pc, PerkType.SpeedyRefining) * 0.1f);
+            float baseCraftDelay = 18.0f - (18.0f * PerkService.GetPCPerkLevel(pc, PerkType.SpeedyRefining) * 0.1f);
 
             pc.IsBusy = true;
-            _nwnxPlayer.StartGuiTimingBar(pc, baseCraftDelay, string.Empty);
+            NWNXPlayer.StartGuiTimingBar(pc, baseCraftDelay, string.Empty);
 
             // Any component bonuses on the ore get applied to the end product.
             var itemProperties = item.ItemProperties.Where(x =>
@@ -149,8 +125,8 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
 
             pc.DelayEvent<CompleteSmelt>(baseCraftDelay, pc, itemResref, itemProperties);
             
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, _.EffectCutsceneImmobilize(), pc.Object, baseCraftDelay);
-            pc.AssignCommand(() => _.ActionPlayAnimation(NWScript.ANIMATION_LOOPING_GET_MID, 1.0f, baseCraftDelay));
+            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, _.EffectCutsceneImmobilize(), pc.Object, baseCraftDelay);
+            pc.AssignCommand(() => _.ActionPlayAnimation(_.ANIMATION_LOOPING_GET_MID, 1.0f, baseCraftDelay));
             item.Destroy();
         }
 
@@ -175,14 +151,14 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
 
         private void ReturnItemToPC(NWPlayer pc, NWItem item, string message)
         {
-            _.CopyItem(item.Object, pc.Object, NWScript.TRUE);
+            _.CopyItem(item.Object, pc.Object, _.TRUE);
             item.Destroy();
             pc.SendMessage(message);
         }
 
         private int CalculatePerkCoalBonusCharges(NWPlayer pc)
         {
-            int perkLevel = _perk.GetPCPerkLevel(pc, PerkType.RefineryManagement);
+            int perkLevel = PerkService.GetPCPerkLevel(pc, PerkType.RefineryManagement);
 
             switch (perkLevel)
             {

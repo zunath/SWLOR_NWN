@@ -1,37 +1,68 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.NWNX.Contracts;
-
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.CustomEffect.Contracts;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.Mod.Contracts;
+using SWLOR.Game.Server.NWN.Events.Module;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.ValueObject;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class ModService : IModService
+    public static class ModService
     {
-        private readonly INWScript _;
-        private readonly IColorTokenService _color;
-        private readonly INWNXDamage _nwnxDamage;
-        private readonly ISkillService _skill;
-        private readonly IItemService _item;
+        private static readonly Dictionary<int, IModHandler> _modHandlers;
 
-        public ModService(INWScript script,
-            IColorTokenService color,
-            INWNXDamage nwnxDamage,
-            ISkillService skill,
-            IItemService item)
+        static ModService()
         {
-            _ = script;
-            _color = color;
-            _nwnxDamage = nwnxDamage;
-            _skill = skill;
-            _item = item;
+            _modHandlers = new Dictionary<int, IModHandler>();
         }
 
-        public CustomItemPropertyType GetModType(NWItem item)
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnModuleApplyDamage>(message => OnModuleApplyDamage());
+            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
+        }
+
+        private static void OnModuleLoad()
+        {
+            RegisterModHandlers();
+        }
+
+        private static void RegisterModHandlers()
+        {
+            // Use reflection to get all of IModHandler implementations.
+            var classes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => typeof(IModHandler).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
+            foreach (var type in classes)
+            {
+                IModHandler instance = Activator.CreateInstance(type) as IModHandler;
+                if (instance == null)
+                {
+                    throw new NullReferenceException("Unable to activate instance of type: " + type);
+                }
+                _modHandlers.Add(instance.ModTypeID, instance);
+            }
+        }
+
+        public static IModHandler GetModHandler(int modTypeID)
+        {
+            if (!_modHandlers.ContainsKey(modTypeID))
+            {
+                throw new KeyNotFoundException("Mod type ID " + modTypeID + " is not registered. Did you add a script for it?");
+            }
+
+            return _modHandlers[modTypeID];
+        }
+
+        public static CustomItemPropertyType GetModType(NWItem item)
         {
             CustomItemPropertyType ipType = CustomItemPropertyType.Unknown;
             foreach (var ip in item.ItemProperties)
@@ -50,7 +81,7 @@ namespace SWLOR.Game.Server.Service
             return ipType;
         }
 
-        public ModSlots GetModSlots(NWItem item)
+        public static ModSlots GetModSlots(NWItem item)
         {
             ModSlots modSlots = new ModSlots();
             foreach (var ip in item.ItemProperties)
@@ -110,39 +141,39 @@ namespace SWLOR.Game.Server.Service
             return modSlots;
         }
 
-        public bool IsRune(NWItem item)
+        public static bool IsRune(NWItem item)
         {
             return GetModType(item) != CustomItemPropertyType.Unknown;
         }
 
-        public string PrismaticString()
+        public static string PrismaticString()
         {
-            return _color.Red("p") + _color.Orange("r") + _color.Yellow("i") + _color.Green("s") + _color.Blue("m") +
-                                   _color.LightPurple("a") + _color.Purple("t") + _color.White("i") + _color.Black("c");
+            return ColorTokenService.Red("p") + ColorTokenService.Orange("r") + ColorTokenService.Yellow("i") + ColorTokenService.Green("s") + ColorTokenService.Blue("m") +
+                                   ColorTokenService.LightPurple("a") + ColorTokenService.Purple("t") + ColorTokenService.White("i") + ColorTokenService.Black("c");
         }
 
-        public string OnModuleExamine(string existingDescription, NWPlayer examiner, NWObject examinedObject)
+        public static string OnModuleExamine(string existingDescription, NWPlayer examiner, NWObject examinedObject)
         {
-            if (examinedObject.ObjectType != NWScript.OBJECT_TYPE_ITEM) return existingDescription;
+            if (examinedObject.ObjectType != _.OBJECT_TYPE_ITEM) return existingDescription;
             NWItem examinedItem = (examinedObject.Object);
             string description = string.Empty;
             ModSlots slot = GetModSlots(examinedItem);
             
             for (int red = 1; red <= slot.FilledRedSlots; red++)
             {
-                description += _color.Red("Red Slot #" + red + ": ") + examinedItem.GetLocalString("MOD_SLOT_RED_DESC_" + red) + "\n";
+                description += ColorTokenService.Red("Red Slot #" + red + ": ") + examinedItem.GetLocalString("MOD_SLOT_RED_DESC_" + red) + "\n";
             }
             for (int blue = 1; blue <= slot.FilledBlueSlots; blue++)
             {
-                description += _color.Red("Blue Slot #" + blue + ": ") + examinedItem.GetLocalString("MOD_SLOT_BLUE_DESC_" + blue) + "\n";
+                description += ColorTokenService.Red("Blue Slot #" + blue + ": ") + examinedItem.GetLocalString("MOD_SLOT_BLUE_DESC_" + blue) + "\n";
             }
             for (int green = 1; green <= slot.FilledGreenSlots; green++)
             {
-                description += _color.Red("Green Slot #" + green + ": ") + examinedItem.GetLocalString("MOD_SLOT_GREEN_DESC_" + green) + "\n";
+                description += ColorTokenService.Red("Green Slot #" + green + ": ") + examinedItem.GetLocalString("MOD_SLOT_GREEN_DESC_" + green) + "\n";
             }
             for (int yellow = 1; yellow <= slot.FilledYellowSlots; yellow++)
             {
-                description += _color.Red("Yellow Slot #" + yellow + ": ") + examinedItem.GetLocalString("MOD_SLOT_YELLOW_DESC_" + yellow) + "\n";
+                description += ColorTokenService.Red("Yellow Slot #" + yellow + ": ") + examinedItem.GetLocalString("MOD_SLOT_YELLOW_DESC_" + yellow) + "\n";
             }
             for (int prismatic = 1; prismatic <= slot.FilledPrismaticSlots; prismatic++)
             {
@@ -152,9 +183,9 @@ namespace SWLOR.Game.Server.Service
             return existingDescription + "\n" + description;
         }
 
-        public void OnModuleApplyDamage()
+        private static void OnModuleApplyDamage()
         {
-            var data = _nwnxDamage.GetDamageEventData();
+            var data = NWNXDamage.GetDamageEventData();
             if (data.Base <= 0) return;
 
             NWObject damager = data.Damager;
@@ -169,10 +200,10 @@ namespace SWLOR.Game.Server.Service
 
             NWPlayer player = (damager.Object);
             int itemLevel = weapon.RecommendedLevel;
-            SkillType skill = _item.GetSkillTypeForItem(weapon);
+            SkillType skill = ItemService.GetSkillTypeForItem(weapon);
             if (skill == SkillType.Unknown) return;
 
-            int rank = _skill.GetPCSkillRank(player, skill);
+            int rank = SkillService.GetPCSkillRank(player, skill);
             int delta = itemLevel - rank;
             if (delta >= 1) damageBonus--;
             damageBonus = damageBonus - delta / 5;
@@ -180,7 +211,7 @@ namespace SWLOR.Game.Server.Service
             if (damageBonus <= 0) damageBonus = 0;
             
             data.Base += damageBonus;
-            _nwnxDamage.SetDamageEventData(data);
+            NWNXDamage.SetDamageEventData(data);
         }
     }
 }

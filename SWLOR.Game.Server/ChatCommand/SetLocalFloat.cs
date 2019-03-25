@@ -1,5 +1,4 @@
-﻿using System;
-using NWN;
+﻿using NWN;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -9,13 +8,6 @@ namespace SWLOR.Game.Server.ChatCommand
     [CommandDetails("Sets a local float on a target.", CommandPermissionType.DM)]
     public class SetLocalFloat : IChatCommand
     {
-        private readonly INWScript _;
-
-        public SetLocalFloat(INWScript script)
-        {
-            _ = script;
-        }
-
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             if (!target.IsValid)

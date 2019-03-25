@@ -1,5 +1,5 @@
-﻿using SWLOR.Game.Server;
-using SWLOR.Game.Server.Event.Player;
+﻿using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Player;
 
 // ReSharper disable once CheckNamespace
 namespace NWN.Scripts
@@ -11,7 +11,7 @@ namespace NWN.Scripts
         // ReSharper disable once UnusedMember.Local
         private static void Main()
         {
-            App.RunEvent<OnPlayerDamaged>();
+            MessageHub.Instance.Publish(new OnPlayerDamaged());
         }
     }
 }

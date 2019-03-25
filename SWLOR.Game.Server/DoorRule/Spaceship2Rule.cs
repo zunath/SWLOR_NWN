@@ -6,13 +6,6 @@ namespace SWLOR.Game.Server.DoorRule
 {
     public class Starship2Rule: IDoorRule
     {
-        private readonly INWScript _;
-
-        public Starship2Rule(INWScript script)
-        {
-            _ = script;
-        }
-
         public NWPlaceable Run(NWArea area, Location location, float orientationOverride = 0f, float sqrtValue = 0f)
         {
             float orientationAdjustment = orientationOverride != 0f ? orientationOverride : 270.0f;
@@ -31,7 +24,7 @@ namespace SWLOR.Game.Server.DoorRule
             position.m_Y = position.m_Y - mod;
             Location doorLocation = _.Location(area.Object, position, _.GetFacingFromLocation(location));
 
-            return _.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "building_ent1", doorLocation);
+            return _.CreateObject(_.OBJECT_TYPE_PLACEABLE, "building_ent1", doorLocation);
         }
     }
 }

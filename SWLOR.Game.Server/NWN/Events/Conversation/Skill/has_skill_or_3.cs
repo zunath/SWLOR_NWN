@@ -1,6 +1,7 @@
 ﻿using SWLOR.Game.Server;
-using SWLOR.Game.Server.Event.Conversation;
-using static NWN.NWScript;
+
+using SWLOR.Game.Server.NWN.Events.Conversation.Skill;
+using static NWN._;
 
 // ReSharper disable once CheckNamespace
 namespace NWN.Scripts
@@ -11,7 +12,7 @@ namespace NWN.Scripts
     {
         public static int Main()
         {
-            return App.RunEvent<HasSkillRank>(3, "OR") ? TRUE : FALSE;
+            return HasSkillRank.Check(3, "OR") ? TRUE : FALSE;
         }
     }
 }

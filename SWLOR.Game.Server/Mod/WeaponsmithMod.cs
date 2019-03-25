@@ -4,8 +4,10 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class WeaponsmithMod : IMod
+    public class WeaponsmithMod : IModHandler
     {
+        public int ModTypeID => 18;
+
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             if (target.CraftBonusWeaponsmith >= 30)

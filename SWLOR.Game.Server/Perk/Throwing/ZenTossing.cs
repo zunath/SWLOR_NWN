@@ -2,21 +2,14 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.NWNX;
+
 
 namespace SWLOR.Game.Server.Perk.Throwing
 {
-    public class ZenTossing : IPerk
+    public class ZenTossing : IPerkHandler
     {
-        private readonly INWScript _;
-        private readonly INWNXCreature _nwnxCreature;
-
-        public ZenTossing(INWScript script,
-            INWNXCreature nwnxCreature)
-        {
-            _ = script;
-            _nwnxCreature = nwnxCreature;
-        }
+        public PerkType PerkType => PerkType.ZenTossing;
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
@@ -59,7 +52,7 @@ namespace SWLOR.Game.Server.Perk.Throwing
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_ZEN_ARCHERY);
+            NWNXCreature.RemoveFeat(oPC, _.FEAT_ZEN_ARCHERY);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
@@ -87,11 +80,11 @@ namespace SWLOR.Game.Server.Perk.Throwing
             if (Equals(equipped, oItem) ||
                 equipped.CustomItemType != CustomItemType.Throwing)
             {
-                _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_ZEN_ARCHERY);
+                NWNXCreature.RemoveFeat(oPC, _.FEAT_ZEN_ARCHERY);
                 return;
             }
 
-            _nwnxCreature.AddFeat(oPC, NWScript.FEAT_ZEN_ARCHERY);
+            NWNXCreature.AddFeat(oPC, _.FEAT_ZEN_ARCHERY);
         }
 
         public bool IsHostile()

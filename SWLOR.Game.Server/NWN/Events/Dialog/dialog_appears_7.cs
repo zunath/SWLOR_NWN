@@ -1,5 +1,5 @@
-﻿using SWLOR.Game.Server;
-using SWLOR.Game.Server.Event.Dialog;
+﻿
+using SWLOR.Game.Server.Service;
 
 // ReSharper disable once CheckNamespace
 namespace NWN.Scripts
@@ -11,7 +11,7 @@ namespace NWN.Scripts
         // ReSharper disable once UnusedMember.Local
         private static int Main()
         {
-            return App.RunEvent<AppearsWhen>(2, 7) ? 1 : 0;
+            return DialogService.OnAppearsWhen(2, 7) ? 1 : 0;
         }
     }
 }

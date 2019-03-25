@@ -4,8 +4,10 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class MindPotencyMod : IMod
+    public class MindPotencyMod : IModHandler
     {
+        public int ModTypeID => 9;
+
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             if (target.MindPotencyBonus >= 50)

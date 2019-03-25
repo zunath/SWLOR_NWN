@@ -1,5 +1,6 @@
 ﻿using SWLOR.Game.Server;
-using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
 
 
 // ReSharper disable once CheckNamespace
@@ -12,7 +13,9 @@ namespace NWN.Scripts
         // ReSharper disable once UnusedMember.Local
         private static void Main()
         {
-            App.RunEvent<OnModuleUnacquireItem>();
+            // Bioware default
+            _.ExecuteScript("x2_mod_def_unaqu", Object.OBJECT_SELF);
+            MessageHub.Instance.Publish(new OnModuleUnacquireItem());
         }
     }
 }

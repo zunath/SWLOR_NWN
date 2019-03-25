@@ -1,26 +1,19 @@
-﻿using SWLOR.Game.Server.Service.Contracts;
-using SWLOR.Game.Server.Threading.Contracts;
+﻿
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Data.SqlClient;
 using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Threading
 {
-    public class DatabaseBackgroundThread : IDatabaseThread
+    public class DatabaseBackgroundThread
     {
-        private readonly IErrorService _error;
-        private readonly IDataService _data;
         private readonly string _connectionString;
         
-        public DatabaseBackgroundThread(
-            IErrorService error,
-            IDataService data)
-        {
-            _error = error;
-            _data = data;
-            
+        public DatabaseBackgroundThread()
+        {   
             _connectionString = new SqlConnectionStringBuilder()
             {
                 DataSource = Environment.GetEnvironmentVariable("SQL_SERVER_IP_ADDRESS"),
@@ -32,13 +25,13 @@ namespace SWLOR.Game.Server.Threading
 
         public void Run()
         {
-            if (_data.DataQueue.IsEmpty) return;
+            if (DataService.DataQueue.IsEmpty) return;
 
             using (var connection = new SqlConnection(_connectionString))
             {
-                while (!_data.DataQueue.IsEmpty)
+                while (!DataService.DataQueue.IsEmpty)
                 {
-                    if (!_data.DataQueue.TryDequeue(out DatabaseAction request))
+                    if (!DataService.DataQueue.TryDequeue(out DatabaseAction request))
                     {
                         Console.WriteLine("DATABASE WORKER: Was unable to process an object. Will try again...");
                         return;
@@ -72,12 +65,12 @@ namespace SWLOR.Game.Server.Threading
                     catch (SqlException ex)
                     {
                         Console.WriteLine("****EXCEPTION ON DATABASE BACKGROUND THREAD****");
-                        _error.LogError(ex, request.Action.ToString());
+                        LoggingService.LogError(ex, request.Action.ToString());
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine("****EXCEPTION ON DATABASE BACKGROUND THREAD****");
-                        _error.LogError(ex, request.Action.ToString());
+                        LoggingService.LogError(ex, request.Action.ToString());
                     }
                 }
             }

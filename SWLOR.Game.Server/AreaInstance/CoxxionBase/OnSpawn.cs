@@ -2,19 +2,12 @@
 using NWN;
 using SWLOR.Game.Server.AreaInstance.Contracts;
 using SWLOR.Game.Server.GameObject;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.AreaInstance.CoxxionBase
 {
     public class OnSpawn: IAreaInstance
     {
-        private readonly INWScript _;
-
-        public OnSpawn(INWScript script)
-        {
-            _ = script;
-        }
-
         public void Run(NWArea area)
         {
             var doors = new List<NWObject>();

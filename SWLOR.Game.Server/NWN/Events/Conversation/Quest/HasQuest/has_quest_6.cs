@@ -1,6 +1,7 @@
 ﻿using SWLOR.Game.Server;
-using SWLOR.Game.Server.Event.Conversation;
-using static NWN.NWScript;
+
+using SWLOR.Game.Server.NWN.Events.Conversation.Quest.HasQuest;
+using static NWN._;
 
 // ReSharper disable once CheckNamespace
 namespace NWN.Scripts
@@ -11,7 +12,7 @@ namespace NWN.Scripts
     {
         public static int Main()
         {
-            return App.RunEvent<QuestCheck>(6) ? TRUE : FALSE;
+            return QuestCheck.Check(6) ? TRUE : FALSE;
         }
     }
 }

@@ -4,23 +4,14 @@ using System.Reflection;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 
 namespace SWLOR.Game.Server.ChatCommand
 {
     [CommandDetails("Displays all chat commands available to you.", CommandPermissionType.DM | CommandPermissionType.Player)]
     public class Help: IChatCommand
     {
-        private readonly IColorTokenService _color;
-        private readonly IAuthorizationService _auth;
-
-        public Help(IColorTokenService color,
-            IAuthorizationService auth)
-        {
-            _color = color;
-            _auth = auth;
-        }
-
         /// <summary>
         /// Displays all the chat commands available to a user
         /// </summary>
@@ -30,7 +21,7 @@ namespace SWLOR.Game.Server.ChatCommand
         /// <param name="args"></param>
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            bool isDM = user.IsDM || _auth.IsPCRegisteredAsDM(user);
+            bool isDM = user.IsDM || AuthorizationService.IsPCRegisteredAsDM(user);
 
             var classes = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
@@ -46,7 +37,7 @@ namespace SWLOR.Game.Server.ChatCommand
                 if (attribute.Permissions.HasFlag(CommandPermissionType.Player) && user.IsPlayer ||
                     attribute.Permissions.HasFlag(CommandPermissionType.DM) && isDM)
                 {
-                    user.SendMessage(_color.Green("/" + @class.Name.ToLower()) + _color.White(": " + attribute.Description));
+                    user.SendMessage(ColorTokenService.Green("/" + @class.Name.ToLower()) + ColorTokenService.White(": " + attribute.Description));
                 }
             }
         }

@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.Survival
 {
-    public class FarmingEfficiency : IPerk
+    public class FarmingEfficiency : IPerkHandler
     {
+        public PerkType PerkType => PerkType.FarmingEfficiency;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

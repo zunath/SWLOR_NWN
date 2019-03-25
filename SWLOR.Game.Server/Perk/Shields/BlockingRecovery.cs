@@ -2,27 +2,14 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 
 namespace SWLOR.Game.Server.Perk.Shields
 {
-    public class BlockingRecovery: IPerk
+    public class BlockingRecovery: IPerkHandler
     {
-        private readonly INWScript _;
-        private readonly IPerkService _perk;
-        private readonly IRandomService _random;
-        private readonly IPlayerStatService _playerStat;
-
-        public BlockingRecovery(INWScript script,
-            IPerkService perk,
-            IRandomService random,
-            IPlayerStatService playerStat)
-        {
-            _ = script;
-            _perk = perk;
-            _random = random;
-            _playerStat = playerStat;
-        }
+        public PerkType PerkType => PerkType.BlockingRecovery;
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
@@ -56,7 +43,7 @@ namespace SWLOR.Game.Server.Perk.Shields
 
         public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
         {
-            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
+            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
             int chance;
             int amount;
 
@@ -86,13 +73,13 @@ namespace SWLOR.Game.Server.Perk.Shields
                     return;
             }
 
-            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
+            int luck = PerkService.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
             chance += luck;
 
-            if (_random.Random(100) + 1 <= chance)
+            if (RandomService.Random(100) + 1 <= chance)
             {
                 Effect heal = _.EffectHeal(amount);
-                _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, heal, player.Object);
+                _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, heal, player.Object);
             }
         }
 

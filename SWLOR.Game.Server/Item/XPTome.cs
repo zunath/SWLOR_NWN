@@ -2,23 +2,14 @@
 using SWLOR.Game.Server.Item.Contracts;
 
 using NWN;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Item
 {
     public class XPTome: IActionItem
     {
-        private readonly INWScript _;
-        private readonly IDialogService _dialog;
-
-        public XPTome(INWScript script,
-            IDialogService dialog)
-        {
-            _ = script;
-            _dialog = dialog;
-        }
-
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
             return null;
@@ -29,7 +20,7 @@ namespace SWLOR.Game.Server.Item
             user.SetLocalObject("XP_TOME_OBJECT", item.Object);
             user.ClearAllActions();
             
-            _dialog.StartConversation(user, user, "XPTome");
+            DialogService.StartConversation(user, user, "XPTome");
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)

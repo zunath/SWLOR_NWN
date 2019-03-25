@@ -4,8 +4,10 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class HPMod: IMod
+    public class HPMod: IModHandler
     {
+        public int ModTypeID => 5;
+
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             if (target.HPBonus >= 100)

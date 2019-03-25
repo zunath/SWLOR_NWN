@@ -2,30 +2,15 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.ValueObject;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Item
 {
     public class RepairKit : IActionItem
     {
-        private readonly IDurabilityService _durability;
-        private readonly IPerkService _perk;
-        private readonly IRandomService _random;
-        private readonly ISkillService _skill;
-        public RepairKit(
-            IDurabilityService durability,
-            IPerkService perk,
-            IRandomService random,
-            ISkillService skill)
-        {
-            _durability = durability;
-            _perk = perk;
-            _random = random;
-            _skill = skill;
-        }
-
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
             return null;
@@ -44,25 +29,25 @@ namespace SWLOR.Game.Server.Item
             int baseXP = 0;
             if (skillType == SkillType.Armorsmith)
             {
-                skillRank = (_skill.GetPCSkillRank(user.Object, skillType));
-                repairAmount += item.CraftBonusArmorsmith + (_perk.GetPCPerkLevel(user.Object, PerkType.ArmorRepair) * 2);
+                skillRank = (SkillService.GetPCSkillRank(user.Object, skillType));
+                repairAmount += item.CraftBonusArmorsmith + (PerkService.GetPCPerkLevel(user.Object, PerkType.ArmorRepair) * 2);
                 delta = level - skillRank;
             }
             else if (skillType == SkillType.Weaponsmith)
             {
-                skillRank = (_skill.GetPCSkillRank(user.Object, skillType));
-                repairAmount += item.CraftBonusWeaponsmith + (_perk.GetPCPerkLevel(user.Object, PerkType.WeaponRepair) * 2);
+                skillRank = (SkillService.GetPCSkillRank(user.Object, skillType));
+                repairAmount += item.CraftBonusWeaponsmith + (PerkService.GetPCPerkLevel(user.Object, PerkType.WeaponRepair) * 2);
                 delta = level - skillRank;
             }
             else if (skillType == SkillType.Engineering)
             {
-                skillRank = (_skill.GetPCSkillRank(user.Object, skillType));
-                repairAmount += item.CraftBonusEngineering + (_perk.GetPCPerkLevel(user.Object, PerkType.ElectronicRepair) * 2);
+                skillRank = (SkillService.GetPCSkillRank(user.Object, skillType));
+                repairAmount += item.CraftBonusEngineering + (PerkService.GetPCPerkLevel(user.Object, PerkType.ElectronicRepair) * 2);
                 delta = level - skillRank;
             }
             float minReduction = 0.05f * tech;
             float maxReduction = 0.15f * tech;
-            float reductionAmount = _random.RandomFloat(minReduction, maxReduction);
+            float reductionAmount = RandomService.RandomFloat(minReduction, maxReduction);
             if (delta >= 6) baseXP = 400;
             else if (delta == 5) baseXP = 350;
             else if (delta == 4) baseXP = 325;
@@ -74,8 +59,8 @@ namespace SWLOR.Game.Server.Item
             else if (delta == -2) baseXP = 100;
             else if (delta == -3) baseXP = 50;
             else if (delta == -4) baseXP = 25;
-            _skill.GiveSkillXP(user.Object, skillType, baseXP);
-            _durability.RunItemRepair(user.Object, target.Object, repairAmount, reductionAmount + maxDurabilityReductionPenalty);
+            SkillService.GiveSkillXP(user.Object, skillType, baseXP);
+            DurabilityService.RunItemRepair(user.Object, target.Object, repairAmount, reductionAmount + maxDurabilityReductionPenalty);
         }
 
         private SkillType GetSkillType(NWItem item)
@@ -141,8 +126,8 @@ namespace SWLOR.Game.Server.Item
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
             NWItem targetItem = target.Object;
-            float maxDurability = _durability.GetMaxDurability(targetItem);
-            float durability = _durability.GetDurability(targetItem);
+            float maxDurability = DurabilityService.GetMaxDurability(targetItem);
+            float durability = DurabilityService.GetDurability(targetItem);
 
             if (target.ObjectType != OBJECT_TYPE_ITEM)
             {

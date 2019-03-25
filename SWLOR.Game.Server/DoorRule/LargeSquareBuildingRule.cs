@@ -1,19 +1,12 @@
 ﻿using NWN;
 using SWLOR.Game.Server.DoorRule.Contracts;
 using SWLOR.Game.Server.GameObject;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.DoorRule
 {
     public class LargeSquareBuildingRule: IDoorRule
     {
-        private readonly INWScript _;
-
-        public LargeSquareBuildingRule(INWScript script)
-        {
-            _ = script;
-        }
-
         public NWPlaceable Run(NWArea area, Location location, float orientationOverride = -1f, float sqrtValue = -1f)
         {
             float orientationAdjustment = orientationOverride != 0f ? orientationOverride : 90f;

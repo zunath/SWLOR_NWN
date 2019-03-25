@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
-    public class FinesseVibrobladeProficiency : IPerk
+    public class FinesseVibrobladeProficiency : IPerkHandler
     {
+        public PerkType PerkType => PerkType.FinesseVibrobladeProficiency;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

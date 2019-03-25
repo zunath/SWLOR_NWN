@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using NWN;
-using SWLOR.Game.Server.Data;
+﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 
-using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
@@ -17,21 +14,7 @@ namespace SWLOR.Game.Server.Conversation
             public List<CraftBlueprint> CraftBlueprints { get; set; }
             public List<CraftBlueprintCategory> CraftCategories { get; set; }
         }
-
-        private readonly ICraftService _craft;
-        private readonly ISkillService _skill;
-
-        public ViewBlueprints(
-            INWScript script,
-            IDialogService dialog,
-            ICraftService craft,
-            ISkillService skill)
-            : base(script, dialog)
-        {
-            _craft = craft;
-            _skill = skill;
-        }
-
+        
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -65,7 +48,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             Model vm = GetDialogCustomData<Model>();
 
-            vm.CraftCategories = _craft.GetCategoriesAvailableToPC(GetPC().GlobalID);
+            vm.CraftCategories = CraftService.GetCategoriesAvailableToPC(GetPC().GlobalID);
 
             foreach (CraftBlueprintCategory category in vm.CraftCategories)
             {
@@ -113,7 +96,7 @@ namespace SWLOR.Game.Server.Conversation
             DialogResponse response = GetResponseByID("CraftCategoriesPage", responseID);
             int categoryID = (int) response.CustomData;
             
-            vm.CraftBlueprints = _craft.GetPCBlueprintsByCategoryID(GetPC().GlobalID, categoryID);
+            vm.CraftBlueprints = CraftService.GetPCBlueprintsByCategoryID(GetPC().GlobalID, categoryID);
 
             foreach (CraftBlueprint bp in vm.CraftBlueprints)
             {
@@ -134,10 +117,10 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            var model = _craft.GetPlayerCraftingData(GetPC());
-            model.Blueprint = _craft.GetBlueprintByID(blueprintID);
+            var model = CraftService.GetPlayerCraftingData(GetPC());
+            model.Blueprint = CraftService.GetBlueprintByID(blueprintID);
             model.BlueprintID = blueprintID;
-            model.PlayerSkillRank = _skill.GetPCSkillRank(GetPC(), model.Blueprint.SkillID);
+            model.PlayerSkillRank = SkillService.GetPCSkillRank(GetPC(), model.Blueprint.SkillID);
             model.MainMinimum = model.Blueprint.MainMinimum;
             model.MainMaximum = model.Blueprint.MainMaximum;
             model.SecondaryMinimum = model.Blueprint.SecondaryMinimum;
@@ -145,7 +128,7 @@ namespace SWLOR.Game.Server.Conversation
             model.TertiaryMinimum = model.Blueprint.TertiaryMinimum;
             model.TertiaryMaximum = model.Blueprint.TertiaryMaximum;
 
-            string header = _craft.BuildBlueprintHeader(GetPC(), blueprintID, false);
+            string header = CraftService.BuildBlueprintHeader(GetPC(), blueprintID, false);
 
             SetPageHeader("BlueprintDetailsPage", header);
             ChangePage("BlueprintDetailsPage");
@@ -153,7 +136,7 @@ namespace SWLOR.Game.Server.Conversation
         
         public override void EndDialog()
         {
-            _craft.ClearPlayerCraftingData(GetPC());
+            CraftService.ClearPlayerCraftingData(GetPC());
         }
     }
 }

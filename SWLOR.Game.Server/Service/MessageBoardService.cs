@@ -1,22 +1,17 @@
-﻿using NWN;
-using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+﻿using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
+using SWLOR.Game.Server.NWNX;
+
+using static NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class MessageBoardService : IMessageBoardService
+    public static class MessageBoardService
     {
-        private readonly INWScript _;
-        private readonly INWNXChat _nwnxChat;
-
-        public MessageBoardService(
-            INWScript script,
-            INWNXChat nwnxChat)
+        public static void SubscribeEvents()
         {
-            _ = script;
-            _nwnxChat = nwnxChat;
+            MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
         }
 
         public static bool CanHandleChat(NWObject sender)
@@ -24,13 +19,13 @@ namespace SWLOR.Game.Server.Service
             return sender.GetLocalInt("MESSAGE_BOARD_LISTENING") == TRUE;
         }
 
-        public void OnModuleNWNXChat()
+        private static void OnModuleNWNXChat()
         {
-            NWPlayer player = _nwnxChat.GetSender().Object;
+            NWPlayer player = NWNXChat.GetSender().Object;
             
             if (!CanHandleChat(player)) return;
-            string message = _nwnxChat.GetMessage();
-            _nwnxChat.SkipMessage();
+            string message = NWNXChat.GetMessage();
+            NWNXChat.SkipMessage();
 
             player.SetLocalString("MESSAGE_BOARD_TEXT", message);
             player.SendMessage("Please click the 'Set Title' or 'Set Message' option in the menu.");

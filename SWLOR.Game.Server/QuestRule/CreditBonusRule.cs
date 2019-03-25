@@ -7,12 +7,6 @@ namespace SWLOR.Game.Server.QuestRule
 {
     public class CreditBonusRule: IQuestRule
     {
-        private readonly INWScript _;
-
-        public CreditBonusRule(INWScript script)
-        {
-            _ = script;
-        }
         
         public void Run(NWPlayer player, NWObject questSource, int questID, string[] args)
         {

@@ -1,7 +1,4 @@
-﻿using Autofac;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
@@ -9,32 +6,23 @@ using System.Linq;
 using System.Reflection;
 using Dapper;
 using SWLOR.Game.Server.Data.Entity;
-using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Data
 {
     /// <summary>
-    /// Autofac calls this script automatically at boot-time (because of the IStartable contract).
-    /// It will look for the database supplied by the end user. If it doesn't exist, it will create it with the necessary DDL.
+    /// This will look for the database supplied by the end user. If it doesn't exist, it will create it with the necessary DDL.
     /// It will then grab all migration scripts and run those sequentially until the database is at the current version.
     /// Scripts are located in Data/Migrations/ and all of the sql files should be marked as "Embedded Resource" so the app can pick them up.
     /// WARNING: Your scripts cannot end with a GO call at the moment. Make sure the final command in a migration script is a DB operation.
     /// </summary>
-    public class DatabaseMigrationRunner: IStartable
+    public static class DatabaseMigrationRunner
     {
-        private readonly IDataService _data;
-        private readonly IErrorService _error;
+        private static readonly string _masterConnectionString;
+        private static readonly string _swlorConnectionString;
 
-        private readonly string _masterConnectionString;
-        private readonly string _swlorConnectionString;
-
-        public DatabaseMigrationRunner(
-            IDataService data,
-            IErrorService error)
+        static DatabaseMigrationRunner()
         {
-            _data = data;
-            _error = error;
-
             var ip = Environment.GetEnvironmentVariable("SQL_SERVER_IP_ADDRESS");
             var user = Environment.GetEnvironmentVariable("SQL_SERVER_USERNAME");
             var password = Environment.GetEnvironmentVariable("SQL_SERVER_PASSWORD");
@@ -58,25 +46,25 @@ namespace SWLOR.Game.Server.Data
         /// <summary>
         /// Returns the folder name containing the sql migration files.
         /// </summary>
-        private string FolderName => $"{Assembly.GetExecutingAssembly().GetName().Name}.Data.Migrations";
+        private static string FolderName => $"{Assembly.GetExecutingAssembly().GetName().Name}.Data.Migrations";
 
         /// <inheritdoc />
         /// <summary>
         /// This is fired automatically by Autofac. It's the entry point to the migration runner.
         /// </summary>
-        public void Start()
+        public static void Start()
         {
             Console.WriteLine("Starting database migration runner. This can take a few moments...");
 
             BuildDatabase();
             ApplyMigrations();
-            _data.Initialize(true);
+            DataService.Initialize(true);
         }
 
         /// <summary>
         /// Builds the database if it doesn't exist. Nothing happens if there is already a database created.
         /// </summary>
-        private void BuildDatabase()
+        private static void BuildDatabase()
         {
             bool exists = CheckDatabaseExists(_masterConnectionString, Environment.GetEnvironmentVariable("SQL_SERVER_DATABASE"));
 
@@ -97,7 +85,7 @@ namespace SWLOR.Game.Server.Data
                     catch (Exception ex)
                     {
                         Console.WriteLine("ERROR: Unable to create database. Please check your permissions.");
-                        _error.LogError(ex);
+                        LoggingService.LogError(ex);
                         return;
                     }
                     finally    
@@ -149,7 +137,7 @@ namespace SWLOR.Game.Server.Data
         /// Ordering is done based on date and version number. 
         /// Follow the established pattern when adding new migration scripts
         /// </summary>
-        private void ApplyMigrations()
+        private static void ApplyMigrations()
         {
             var resources = GetScriptResources();
             foreach (var resource in resources)
@@ -163,7 +151,7 @@ namespace SWLOR.Game.Server.Data
         /// </summary>
         /// <param name="resourceName">The full resource file path.</param>
         /// <returns></returns>
-        private string GetFileNameFromScriptResourceName(string resourceName)
+        private static string GetFileNameFromScriptResourceName(string resourceName)
         {
             return resourceName.Remove(0, FolderName.Length + 1); // Length of name plus the period afterwards.
         }
@@ -173,7 +161,7 @@ namespace SWLOR.Game.Server.Data
         /// Only the scripts which haven't been applied to the database will be retrieved.
         /// </summary>
         /// <returns></returns>
-        private IEnumerable<string> GetScriptResources()
+        private static IEnumerable<string> GetScriptResources()
         {
             DatabaseVersion currentVersion;
             using (var connection = new SqlConnection(_swlorConnectionString))
@@ -219,7 +207,7 @@ namespace SWLOR.Game.Server.Data
         /// </summary>
         /// <param name="fileName">The file, in yyyy-MM-dd.v format, where y is year, M is month, d is year, and v is version number.</param>
         /// <returns>A tuple containing the date and version number</returns>
-        private Tuple<DateTime, int> GetVersionInformation(string fileName)
+        private static Tuple<DateTime, int> GetVersionInformation(string fileName)
         {
             // Remove file extension (.sql), split by period denoting date and version number.
             string fileNameNoExtension = Path.GetFileNameWithoutExtension(fileName);
@@ -234,8 +222,8 @@ namespace SWLOR.Game.Server.Data
         /// <summary>
         /// Applies an individual migration script to the database.
         /// </summary>
-        /// <param name="resource">The full resource path of the script, including namespace.</param>
-        private void ApplyMigrationScript(string resource)
+        /// <param name="resource">The full resource path of the including namespace.</param>
+        private static void ApplyMigrationScript(string resource)
         {
             string fileName = GetFileNameFromScriptResourceName(resource);
             Console.WriteLine("Applying migration script: " + resource);
@@ -257,7 +245,7 @@ namespace SWLOR.Game.Server.Data
                 catch (Exception ex)
                 {
                     Console.WriteLine("ERROR: Database migration script named '" + resource + "' failed to apply. Canceling database migration process!");
-                    _error.LogError(ex, nameof(DatabaseMigrationRunner));
+                    LoggingService.LogError(ex, nameof(DatabaseMigrationRunner));
                 }
             }
         }
@@ -265,9 +253,9 @@ namespace SWLOR.Game.Server.Data
         /// <summary>
         /// Retrieves an embedded resource, reads the file, and returns the SQL.
         /// </summary>
-        /// <param name="resource">The fulle resource path of the script, including namespace.</param>
+        /// <param name="resource">The fulle resource path of the including namespace.</param>
         /// <returns>The SQL commands</returns>
-        private string ReadResourceFile(string resource)
+        private static string ReadResourceFile(string resource)
         {
             var executingAssembly = Assembly.GetExecutingAssembly();
             string sql;
@@ -287,7 +275,7 @@ namespace SWLOR.Game.Server.Data
         /// Adds a database version record to the database, preventing this script from running again in the future.
         /// </summary>
         /// <param name="fileName">The file name, WITHOUT namespacing.</param>
-        private void AddDatabaseVersionRecord(string fileName)
+        private static void AddDatabaseVersionRecord(string fileName)
         {
             var versionInfo = GetVersionInformation(fileName);
             var version = new DatabaseVersion
@@ -306,7 +294,7 @@ namespace SWLOR.Game.Server.Data
 
         // Code I pulled from StackOverflow: https://stackoverflow.com/questions/40814/execute-a-large-sql-script-with-go-commands
         // Can't execute the entire script at once. You have to split out the "GO"s
-        private void ExecuteBatchNonQuery(string sql, SqlConnection conn)
+        private static void ExecuteBatchNonQuery(string sql, SqlConnection conn)
         {
             string sqlBatch = string.Empty;
             SqlCommand cmd = new SqlCommand(string.Empty, conn);

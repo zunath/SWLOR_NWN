@@ -1,29 +1,15 @@
-﻿using System;
-using System.Linq;
-using System.Reflection;
-using NWN;
-using SWLOR.Game.Server.ChatCommand.Contracts;
+﻿using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 
 namespace SWLOR.Game.Server.ChatCommand
 {
     [CommandDetails("Sets the lease bonus or penalty on a particular player. Range must be between -99 and 500.", CommandPermissionType.DM)]
     public class SetLeaseRate : IChatCommand
     {
-        private readonly INWScript _;
-        private readonly IDataService _data;
-
-        public SetLeaseRate(
-            INWScript script,
-            IDataService data)
-        {
-            _ = script;
-            _data = data;
-        }
-
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             if (!target.IsPlayer)
@@ -33,10 +19,10 @@ namespace SWLOR.Game.Server.ChatCommand
             }
 
             NWPlayer player = target.Object;
-            var dbPlayer = _data.Get<Player>(player.GlobalID);
+            var dbPlayer = DataService.Get<Player>(player.GlobalID);
             int leaseRate = int.Parse(args[0]);
             dbPlayer.LeaseRate = leaseRate;
-            _data.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
 
             user.SendMessage(player.Name + ": Lease rate set to " + dbPlayer.LeaseRate + "%");
 

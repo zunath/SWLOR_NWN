@@ -1,37 +1,30 @@
 ﻿using System;
-using System.Linq;
 using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Feat;
+using SWLOR.Game.Server.NWN.Events.Module;
+using SWLOR.Game.Server.NWNX;
+
+using static NWN._;
+
 using SWLOR.Game.Server.ValueObject;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class DurabilityService : IDurabilityService
+    public static class DurabilityService
     {
         private const float DefaultDurability = 5.0f;
 
-        private readonly INWScript _;
-        private readonly IColorTokenService _color;
-        private readonly INWNXProfiler _nwnxProfiler;
-        private readonly INWNXCreature _creature;
-
-        public DurabilityService(
-            INWScript script,
-            IColorTokenService color,
-            INWNXProfiler nwnxProfiler,
-            INWNXCreature creature)
+        public static void SubscribeEvents()
         {
-            _ = script;
-            _color = color;
-            _nwnxProfiler = nwnxProfiler;
-            _creature = creature;
+            MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
+            MessageHub.Instance.Subscribe<OnModuleEquipItem>(message => OnModuleEquipItem());
         }
-        
-        private void InitializeDurability(NWItem item)
+
+        private static void InitializeDurability(NWItem item)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
@@ -59,7 +52,7 @@ namespace SWLOR.Game.Server.Service
             item.SetLocalInt("DURABILITY_INITIALIZED", 1);
         }
 
-        public float GetMaxDurability(NWItem item)
+        public static float GetMaxDurability(NWItem item)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
             
@@ -69,7 +62,7 @@ namespace SWLOR.Game.Server.Service
             return maxDurability;
         }
 
-        public void SetMaxDurability(NWItem item, float value)
+        public static void SetMaxDurability(NWItem item, float value)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
@@ -80,7 +73,7 @@ namespace SWLOR.Game.Server.Service
             InitializeDurability(item);
         }
 
-        public float GetDurability(NWItem item)
+        public static float GetDurability(NWItem item)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
@@ -96,7 +89,7 @@ namespace SWLOR.Game.Server.Service
             return durability;
         }
 
-        public void SetDurability(NWItem item, float value)
+        public static void SetDurability(NWItem item, float value)
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
             if (value < 0.0f) value = 0.0f;
@@ -106,50 +99,52 @@ namespace SWLOR.Game.Server.Service
             item.SetLocalFloat("DURABILITY_CURRENT", value);
         }
         
-        public void OnModuleEquip()
+        private static void OnModuleEquipItem()
         {
-            using (new Profiler("DurabilityService::OnModuleEquip()"))
+            NWPlayer oPC = (_.GetPCItemLastEquippedBy());
+
+            // Don't run heavy code when customizing equipment.
+            if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return;
+            
+            NWItem oItem = (_.GetPCItemLastEquipped());
+            float durability = GetDurability(oItem);
+
+            if (durability <= 0 && durability != -1 && oItem.IsValid)
             {
-                NWPlayer oPC = (_.GetPCItemLastEquippedBy());
-                NWItem oItem = (_.GetPCItemLastEquipped());
-                float durability = GetDurability(oItem);
-
-                if (durability <= 0 && durability != -1 && oItem.IsValid)
+                oPC.AssignCommand(() =>
                 {
-                    oPC.AssignCommand(() =>
-                    {
-                        _.ClearAllActions();
-                        _.ActionUnequipItem(oItem.Object);
-                    });
+                    _.ClearAllActions();
+                    _.ActionUnequipItem(oItem.Object);
+                });
 
-                    oPC.FloatingText(_color.Red("That item is broken and must be repaired before you can use it."));
-                }
+                oPC.FloatingText(ColorTokenService.Red("That item is broken and must be repaired before you can use it."));
             }
+        
         }
 
-        public string OnModuleExamine(string existingDescription, NWObject examinedObject)
+        public static string OnModuleExamine(string existingDescription, NWObject examinedObject)
         {
             if (examinedObject.ObjectType != OBJECT_TYPE_ITEM) return existingDescription;
 
             NWItem examinedItem = (examinedObject.Object);
             if (examinedItem.GetLocalFloat("DURABILITY_MAX") <= 0f) return existingDescription;
 
-            string description = _color.Orange("Durability: ");
+            string description = ColorTokenService.Orange("Durability: ");
             float durability = GetDurability(examinedItem);
-            if (durability <= 0.0f) description += _color.Red(Convert.ToString(durability));
-            else description += _color.White(FormatDurability(durability));
+            if (durability <= 0.0f) description += ColorTokenService.Red(Convert.ToString(durability));
+            else description += ColorTokenService.White(FormatDurability(durability));
 
-            description += _color.White(" / " + FormatDurability(GetMaxDurability(examinedItem)));
+            description += ColorTokenService.White(" / " + FormatDurability(GetMaxDurability(examinedItem)));
 
             return existingDescription + "\n\n" + description;
         }
 
-        public void RunItemDecay(NWPlayer player, NWItem item)
+        public static void RunItemDecay(NWPlayer player, NWItem item)
         {
             RunItemDecay(player, item, 0.01f);
         }
 
-        public void RunItemDecay(NWPlayer player, NWItem item, float reduceAmount)
+        public static void RunItemDecay(NWPlayer player, NWItem item, float reduceAmount)
         {
             if (reduceAmount <= 0) return;
             if (player.IsPlot ||
@@ -165,7 +160,7 @@ namespace SWLOR.Game.Server.Service
             
             float durability = GetDurability(item);
             string sItemName = item.Name;
-            int apr = _creature.GetAttacksPerRound(player, 1);
+            int apr = NWNXCreature.GetAttacksPerRound(player, 1);
             // Reduce by 0.001 each time it's run. Player only receives notifications when it drops a full point.
             // I.E: Dropping from 29.001 to 29.
             // Note that players only see two decimal places in-game on purpose.
@@ -174,13 +169,13 @@ namespace SWLOR.Game.Server.Service
 
             if (displayMessage)
             {
-                player.SendMessage(_color.Red("Your " + sItemName + " has been damaged. (" + FormatDurability(durability) + " / " + GetMaxDurability(item)));
+                player.SendMessage(ColorTokenService.Red("Your " + sItemName + " has been damaged. (" + FormatDurability(durability) + " / " + GetMaxDurability(item)));
             }
 
             if (durability <= 0.00f)
             {
                 item.Destroy();
-                player.SendMessage(_color.Red("Your " + sItemName + " has broken!"));
+                player.SendMessage(ColorTokenService.Red("Your " + sItemName + " has broken!"));
             }
             else
             {
@@ -194,7 +189,7 @@ namespace SWLOR.Game.Server.Service
             return durability.ToString("0.00");
         }
 
-        public void RunItemRepair(NWPlayer oPC, NWItem item, float amount, float maxReductionAmount)
+        public static void RunItemRepair(NWPlayer oPC, NWItem item, float amount, float maxReductionAmount)
         {
             // Prevent repairing for less than 0.01
             if (amount < 0.01f) return;
@@ -210,11 +205,13 @@ namespace SWLOR.Game.Server.Service
             SetMaxDurability(item, maxDurability);
             SetDurability(item, durability);
             string durMessage = FormatDurability(durability) + " / " + FormatDurability(maxDurability);
-            oPC.SendMessage(_color.Green("You repaired your " + item.Name + ". (" + durMessage + ")"));
+            oPC.SendMessage(ColorTokenService.Green("You repaired your " + item.Name + ". (" + durMessage + ")"));
         }
         
-        public void OnHitCastSpell(NWPlayer oTarget)
+        private static void OnHitCastSpell()
         {
+            NWPlayer oTarget = Object.OBJECT_SELF;
+            if (!oTarget.IsValid) return;
             NWItem oSpellOrigin = (_.GetSpellCastItem());
 
             NWItem decayItem = oSpellOrigin;

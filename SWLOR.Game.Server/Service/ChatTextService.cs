@@ -1,22 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Dynamic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using Newtonsoft.Json;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 using System.Text;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
+using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -30,34 +23,18 @@ namespace SWLOR.Game.Server.Service
         public byte m_ColourBlue;
     };
 
-    public class ChatTextService : IChatTextService
+    public static class ChatTextService
     {
-        private readonly INWScript _;
-        private readonly IColorTokenService _color;
-        private readonly INWNXChat _nwnxChat;
-        private readonly IDataService _data;
-        private readonly ILanguageService _language;
-        private readonly IEmoteStyleService _emoteStyle;
 
-        public ChatTextService(
-            INWScript script,
-            IColorTokenService color,
-            INWNXChat nwnxChat,
-            IDataService data,
-            ILanguageService language,
-            IEmoteStyleService emoteStyle)
+        public static void SubscribeEvents()
         {
-            _ = script;
-            _color = color;
-            _nwnxChat = nwnxChat;
-            _data = data;
-            _language = language;
-            _emoteStyle = emoteStyle;
+            MessageHub.Instance.Subscribe<OnModuleEnter>(message => OnModuleEnter());
+            MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
         }
 
-        public void OnNWNXChat()
+        private static void OnModuleNWNXChat()
         {
-            ChatChannelType channel = (ChatChannelType)_nwnxChat.GetChannel();
+            ChatChannelType channel = (ChatChannelType)NWNXChat.GetChannel();
 
             // So we're going to play with a couple of channels here.
 
@@ -82,8 +59,8 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            NWObject sender = _nwnxChat.GetSender();
-            string message = _nwnxChat.GetMessage();
+            NWObject sender = NWNXChat.GetSender();
+            string message = NWNXChat.GetMessage();
 
             if (string.IsNullOrWhiteSpace(message))
             {
@@ -104,12 +81,12 @@ namespace SWLOR.Game.Server.Service
             if (channel == ChatChannelType.PlayerDM)
             {
                 // Simply echo the message back to the player.
-                _nwnxChat.SendMessage((int)ChatChannelType.ServerMessage, "(Sent to DM) " + message, sender, sender);
+                NWNXChat.SendMessage((int)ChatChannelType.ServerMessage, "(Sent to DM) " + message, sender, sender);
                 return;
             }
 
             // At this point, every channel left is one we want to manually handle.
-            _nwnxChat.SkipMessage();
+            NWNXChat.SkipMessage();
 
             // If this is a shout message, and the holonet is disabled, we disallow it.
             if (channel == ChatChannelType.PlayerShout && sender.IsPC && sender.GetLocalInt("DISPLAY_HOLONET") == FALSE)
@@ -139,7 +116,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                if (_emoteStyle.GetEmoteStyle(sender) == EmoteStyle.Regular)
+                if (EmoteStyleService.GetEmoteStyle(sender) == EmoteStyle.Regular)
                 {
                     chatComponents = SplitMessageIntoComponents_Regular(message);
                 }
@@ -173,7 +150,7 @@ namespace SWLOR.Game.Server.Service
             if (channel == ChatChannelType.PlayerShout)
             {
                 recipients.AddRange(NWModule.Get().Players.Where(player => player.GetLocalInt("DISPLAY_HOLONET") == TRUE));
-                recipients.AddRange(App.GetAppState().ConnectedDMs);
+                recipients.AddRange(AppCache.ConnectedDMs);
             }
             // This is the normal party chat, plus everyone within 20 units of the sender.
             else if (channel == ChatChannelType.PlayerParty)
@@ -181,7 +158,7 @@ namespace SWLOR.Game.Server.Service
                 // Can an NPC use the playerparty channel? I feel this is safe ...
                 NWPlayer player = sender.Object;
                 recipients.AddRange(player.PartyMembers.Cast<NWObject>().Where(x => x != sender));
-                recipients.AddRange(App.GetAppState().ConnectedDMs);
+                recipients.AddRange(AppCache.ConnectedDMs);
 
                 needsAreaCheck = true;
                 distanceCheck = 20.0f;
@@ -202,7 +179,7 @@ namespace SWLOR.Game.Server.Service
             if (needsAreaCheck)
             {
                 recipients.AddRange(sender.Area.Objects.Where(obj => obj.IsPC && _.GetDistanceBetween(sender, obj) <= distanceCheck));
-                recipients.AddRange(App.GetAppState().ConnectedDMs.Where(dm => dm.Area == sender.Area && _.GetDistanceBetween(sender, dm) <= distanceCheck));
+                recipients.AddRange(AppCache.ConnectedDMs.Where(dm => dm.Area == sender.Area && _.GetDistanceBetween(sender, dm) <= distanceCheck));
             }
 
             // Now we have a list of who is going to actually receive a message, we need to modify
@@ -253,26 +230,26 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
-                SkillType language = _language.GetActiveLanguage(sender);
+                SkillType language = LanguageService.GetActiveLanguage(sender);
                 
                 // Wookiees cannot speak any other language (but they can understand them).
                 // Swap their language if they attempt to speak in any other language.
                 CustomRaceType race = (CustomRaceType) _.GetRacialType(sender);
                 if (race == CustomRaceType.Wookiee && language != SkillType.Shyriiwook)
                 {
-                    _language.SetActiveLanguage(sender, SkillType.Shyriiwook);
+                    LanguageService.SetActiveLanguage(sender, SkillType.Shyriiwook);
                     language = SkillType.Shyriiwook;
                 }
 
-                int colour = _language.GetColour(language);
+                int colour = LanguageService.GetColour(language);
                 byte r = (byte)(colour >> 24 & 0xFF);
                 byte g = (byte)(colour >> 16 & 0xFF);
                 byte b = (byte)(colour >> 8 & 0xFF);
 
                 if (language != SkillType.Basic)
                 {
-                    string languageName = _language.GetName(language);
-                    finalMessage.Append(_color.Custom($"[{languageName}] ", r, g, b));
+                    string languageName = LanguageService.GetName(language);
+                    finalMessage.Append(ColorTokenService.Custom($"[{languageName}] ", r, g, b));
                 }
 
                 foreach (ChatComponent component in chatComponents)
@@ -281,17 +258,17 @@ namespace SWLOR.Game.Server.Service
 
                     if (component.m_Translatable && language != SkillType.Basic)
                     {
-                        text = _language.TranslateSnippetForListener(sender, obj.Object, language, component.m_Text);
+                        text = LanguageService.TranslateSnippetForListener(sender, obj.Object, language, component.m_Text);
 
                         if (colour != 0)
                         {
-                            text = _color.Custom(text, r, g, b);
+                            text = ColorTokenService.Custom(text, r, g, b);
                         }
                     }
 
                     if (component.m_CustomColour)
                     {
-                        text = _color.Custom(text, component.m_ColourRed, component.m_ColourGreen, component.m_ColourBlue);
+                        text = ColorTokenService.Custom(text, component.m_ColourRed, component.m_ColourGreen, component.m_ColourBlue);
                     }
 
                     finalMessage.Append(text);
@@ -318,23 +295,23 @@ namespace SWLOR.Game.Server.Service
 
                 if (channel == ChatChannelType.PlayerShout)
                 {
-                    finalMessageColoured = _color.Custom(finalMessageColoured, 0, 180, 255);
+                    finalMessageColoured = ColorTokenService.Custom(finalMessageColoured, 0, 180, 255);
                 }
                 else if (channel == ChatChannelType.PlayerParty)
                 {
-                    finalMessageColoured = _color.Orange(finalMessageColoured);
+                    finalMessageColoured = ColorTokenService.Orange(finalMessageColoured);
                 }
 
-                _nwnxChat.SendMessage((int)finalChannel, finalMessageColoured, sender, obj);
+                NWNXChat.SendMessage((int)finalChannel, finalMessageColoured, sender, obj);
             }
         }
 
-        public void OnModuleEnter()
+        private static void OnModuleEnter()
         {
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
 
-            var dbPlayer = _data.Single<Player>(x => x.ID == player.GlobalID);
+            var dbPlayer = DataService.Single<Player>(x => x.ID == player.GlobalID);
             player.SetLocalInt("DISPLAY_HOLONET", dbPlayer.DisplayHolonet ? TRUE : FALSE);
         }
         

@@ -8,13 +8,6 @@ namespace SWLOR.Game.Server.Placeable.Resource
 {
     public class OnHeartbeat: IRegisteredEvent
     {
-        private readonly INWScript _;
-
-        public OnHeartbeat(INWScript script)
-        {
-            _ = script;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlaceable objSelf = (Object.OBJECT_SELF);
@@ -25,11 +18,11 @@ namespace SWLOR.Game.Server.Placeable.Resource
             if (string.IsNullOrWhiteSpace(propResref)) return false;
 
             Location location = objSelf.Location;
-            NWPlaceable prop = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, propResref, location));
+            NWPlaceable prop = (_.CreateObject(_.OBJECT_TYPE_PLACEABLE, propResref, location));
             objSelf.SetLocalObject("RESOURCE_PROP_OBJ", prop.Object);
             objSelf.SetLocalInt("RESOURCE_PROP_SPAWNED", 1);
 
-            _.SetEventScript(objSelf, NWScript.EVENT_SCRIPT_PLACEABLE_ON_HEARTBEAT, string.Empty);
+            _.SetEventScript(objSelf, _.EVENT_SCRIPT_PLACEABLE_ON_HEARTBEAT, string.Empty);
             return true;
         }
     }

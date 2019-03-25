@@ -1,32 +1,17 @@
 ﻿using System;
-using System.Linq;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Item
 {
     public class WaterJug: IActionItem
     {
-        private readonly IRandomService _random;
-        private readonly IDataService _data;
-        private readonly ISkillService _skill;
-
-        public WaterJug(IRandomService random, 
-            IDataService data,
-            ISkillService skill)
-        {
-            _random = random;
-            _data = data;
-            _skill = skill;
-        }
-
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
             return null;
@@ -41,8 +26,8 @@ namespace SWLOR.Game.Server.Item
                 user.SendMessage("Water jugs can only target growing plants.");
                 return;
             }
-            GrowingPlant growingPlant = _data.Single<GrowingPlant>(x => x.ID == new Guid(growingPlantID));
-            var plant = _data.Get<Plant>(growingPlant.PlantID);
+            GrowingPlant growingPlant = DataService.Single<GrowingPlant>(x => x.ID == new Guid(growingPlantID));
+            var plant = DataService.Get<Plant>(growingPlant.PlantID);
 
             if (growingPlant.WaterStatus <= 0)
             {
@@ -65,14 +50,14 @@ namespace SWLOR.Game.Server.Item
 
             growingPlant.WaterStatus = 0;
             growingPlant.RemainingTicks = remainingTicks;
-            _data.SubmitDataChange(growingPlant, DatabaseActionType.Update);
+            DataService.SubmitDataChange(growingPlant, DatabaseActionType.Update);
 
             user.SendMessage("You water the plant.");
             
-            int rank = _skill.GetPCSkillRank((NWPlayer)user, SkillType.Farming);
+            int rank = SkillService.GetPCSkillRank((NWPlayer)user, SkillType.Farming);
             
-            int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(100, plant.Level, rank);
-            _skill.GiveSkillXP((NWPlayer)user, SkillType.Farming, xp);
+            int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(100, plant.Level, rank);
+            SkillService.GiveSkillXP((NWPlayer)user, SkillType.Farming, xp);
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)

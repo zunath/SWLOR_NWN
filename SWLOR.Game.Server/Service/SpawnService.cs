@@ -3,47 +3,69 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.Messaging.Messages;
+using SWLOR.Game.Server.Mod.Contracts;
+using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.Processor;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class SpawnService : ISpawnService
+    public static class SpawnService
     {
-        private readonly INWScript _;
-        private readonly IDataService _data;
-        private readonly IObjectProcessingService _processor;
-        private readonly AppCache _cache;
-        private readonly IRandomService _random;
+        private static readonly Dictionary<string, ISpawnRule> _spawnRules;
 
-        public SpawnService(
-            INWScript script,
-            IDataService data,
-            IRandomService random,
-            IObjectProcessingService processor,
-            AppCache cache)
+        static SpawnService()
         {
-            _ = script;
-            _data = data;
-            _random = random;
-            _processor = processor;
-            _cache = cache;
+            _spawnRules = new Dictionary<string, ISpawnRule>();
         }
 
-        public void OnModuleLoad()
+        public static void SubscribeEvents()
         {
+            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
+            MessageHub.Instance.Subscribe<ObjectProcessorMessage>(message => ProcessSpawns());
+        }
+
+        private static void OnModuleLoad()
+        {
+            RegisterSpawnRules();
             InitializeSpawns();
-            _processor.RegisterProcessingEvent<SpawnProcessor>();
         }
 
-        private void InitializeSpawns()
+        private static void RegisterSpawnRules()
+        {
+            // Use reflection to get all of SpawnRule implementations.
+            var classes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => typeof(ISpawnRule).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
+            foreach (var type in classes)
+            {
+                ISpawnRule instance = Activator.CreateInstance(type) as ISpawnRule;
+                if (instance == null)
+                {
+                    throw new NullReferenceException("Unable to activate instance of type: " + type);
+                }
+                _spawnRules.Add(type.Name, instance);
+            }
+        }
+
+        public static ISpawnRule GetSpawnRule(string key)
+        {
+            if (!_spawnRules.ContainsKey(key))
+            {
+                throw new KeyNotFoundException("Spawn rule '" + key + "' is not registered. Did you create a class for it?");
+            }
+
+            return _spawnRules[key];
+        }
+
+        private static void InitializeSpawns()
         {
             foreach (var area in NWModule.Get().Areas)
             {
@@ -51,7 +73,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public void InitializeAreaSpawns(NWArea area)
+        public static void InitializeAreaSpawns(NWArea area)
         {
             var areaSpawn = new AreaSpawn();
 
@@ -81,9 +103,9 @@ namespace SWLOR.Game.Server.Service
                     if (string.IsNullOrWhiteSpace(spawnResref) && spawnTableID > 0)
                     {
                         // Pick a random record.   
-                        var spawnObjects = _data.Where<SpawnObject>(x => x.SpawnID == spawnTableID).ToList();
+                        var spawnObjects = DataService.Where<SpawnObject>(x => x.SpawnID == spawnTableID).ToList();
                         int count = spawnObjects.Count;
-                        int index = count <= 0 ? 0 : _random.Random(count);
+                        int index = count <= 0 ? 0 : RandomService.Random(count);
                         var dbSpawn = spawnObjects[index];
 
                         if (dbSpawn != null)
@@ -162,7 +184,7 @@ namespace SWLOR.Game.Server.Service
                 obj = _.GetNextObjectInArea(area.Object);
             }
 
-            _cache.AreaSpawns.Add(area, areaSpawn);
+            AppCache.AreaSpawns.Add(area, areaSpawn);
 
             _.DelayCommand(1.0f, () =>
             {
@@ -170,28 +192,28 @@ namespace SWLOR.Game.Server.Service
             });
         }
         
-        public Location GetRandomSpawnPoint(NWArea area)
+        public static Location GetRandomSpawnPoint(NWArea area)
         {
-            Area dbArea = _data.Single<Area>(x => x.Resref == area.Resref);
-            var walkmeshes = _data.Where<AreaWalkmesh>(x => x.AreaID == dbArea.ID).ToList();
+            Area dbArea = DataService.Single<Area>(x => x.Resref == area.Resref);
+            var walkmeshes = DataService.Where<AreaWalkmesh>(x => x.AreaID == dbArea.ID).ToList();
             int count = walkmeshes.Count;
-            var index = count <= 0 ? 0 : _random.Random(count);
+            var index = count <= 0 ? 0 : RandomService.Random(count);
 
             var spawnPoint = walkmeshes[index];
             
             return _.Location(area.Object,
                 _.Vector((float)spawnPoint.LocationX, (float)spawnPoint.LocationY, (float)spawnPoint.LocationZ),
-                _random.RandomFloat(0, 360));
+                RandomService.RandomFloat(0, 360));
 
         }
 
-        private void SpawnResources(NWArea area, AreaSpawn areaSpawn)
+        private static void SpawnResources(NWArea area, AreaSpawn areaSpawn)
         {
-            var dbArea = _data.GetAll<Area>().Single(x => x.Resref == area.Resref);
+            var dbArea = DataService.GetAll<Area>().Single(x => x.Resref == area.Resref);
 
             if (dbArea.ResourceSpawnTableID <= 0 ||
                 !dbArea.AutoSpawnResources) return;
-            var possibleSpawns = _data.Where<SpawnObject>(x => x.SpawnID == dbArea.ResourceSpawnTableID).ToList();
+            var possibleSpawns = DataService.Where<SpawnObject>(x => x.SpawnID == dbArea.ResourceSpawnTableID).ToList();
 
             // 1024 size = 32x32
             // 256  size = 16x16
@@ -232,18 +254,15 @@ namespace SWLOR.Game.Server.Service
 
             for (int x = 1; x <= maxSpawns; x++)
             {
-                int index = _random.GetRandomWeightedIndex(weights);
+                int index = RandomService.GetRandomWeightedIndex(weights);
                 var dbSpawn = possibleSpawns.ElementAt(index);
                 Location location = GetRandomSpawnPoint(area);
                 NWPlaceable plc = (_.CreateObject(OBJECT_TYPE_PLACEABLE, dbSpawn.Resref, location));
                 ObjectSpawn spawn = new ObjectSpawn(location, false, dbArea.ResourceSpawnTableID, 600.0f);
                 spawn.Spawn = plc;
 
-                App.Resolve<IObjectVisibilityService>(ovs =>
-                {
-                    ovs.ApplyVisibilityForObject(plc);
-                });
-
+                ObjectVisibilityService.ApplyVisibilityForObject(plc);
+                
                 if (dbSpawn.NPCGroupID != null && dbSpawn.NPCGroupID > 0)
                 {
                     plc.SetLocalInt("NPC_GROUP", Convert.ToInt32(dbSpawn.NPCGroupID));
@@ -259,28 +278,26 @@ namespace SWLOR.Game.Server.Service
 
                 if (!string.IsNullOrWhiteSpace(dbSpawn.SpawnRule))
                 {
-                    App.ResolveByInterface<ISpawnRule>("SpawnRule." + dbSpawn.SpawnRule, rule =>
-                    {
-                        rule.Run(plc);
-                    });
+                    var rule = GetSpawnRule(dbSpawn.SpawnRule);
+                    rule.Run(plc);
                 }
 
                 areaSpawn.Placeables.Add(spawn);
             }
         }
 
-        public IReadOnlyCollection<ObjectSpawn> GetAreaPlaceableSpawns(NWArea area)
+        public static IReadOnlyCollection<ObjectSpawn> GetAreaPlaceableSpawns(NWArea area)
         {
-            var areaSpawn = _cache.AreaSpawns[area];
+            var areaSpawn = AppCache.AreaSpawns[area];
             return new ReadOnlyCollection<ObjectSpawn>(areaSpawn.Placeables);
         }
-        public IReadOnlyCollection<ObjectSpawn> GetAreaCreatureSpawns(NWArea area)
+        public static IReadOnlyCollection<ObjectSpawn> GetAreaCreatureSpawns(NWArea area)
         {
-            var areaSpawn = _cache.AreaSpawns[area];
+            var areaSpawn = AppCache.AreaSpawns[area];
             return new ReadOnlyCollection<ObjectSpawn>(areaSpawn.Creatures);
         }
 
-        public void AssignScriptEvents(NWCreature creature)
+        public static void AssignScriptEvents(NWCreature creature)
         {
             if (string.IsNullOrWhiteSpace(_.GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_HEARTBEAT)))
             {
@@ -333,6 +350,150 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(_.GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_BLOCKED_BY_DOOR)))
             {
                 _.SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_BLOCKED_BY_DOOR, "x2_def_onblocked");
+            }
+        }
+
+        private static void ProcessSpawns()
+        {
+            foreach (var spawn in AppCache.AreaSpawns)
+            {
+                // Check for a valid area - otherwise it causes hangs sometimes when the server shuts down.
+                if (!spawn.Key.IsValid) continue;
+
+                AreaSpawn areaSpawn = spawn.Value;
+                int pcsInArea = NWModule.Get().Players.Count(x => x.Area.Equals(spawn.Key));
+
+                // No players in area. Process the despawner.
+                if (pcsInArea <= 0 && areaSpawn.HasSpawned)
+                {
+                    areaSpawn.SecondsEmpty += ObjectProcessingService.ProcessingTickInterval;
+
+                    if (areaSpawn.SecondsEmpty >= 1200) // 20 minutes have passed with no players in the area.
+                    {
+                        areaSpawn.SecondsEmpty = 0.0f;
+                        areaSpawn.HasSpawned = false;
+
+                        foreach (var plc in areaSpawn.Placeables)
+                        {
+                            NWPlaceable prop = plc.Spawn.GetLocalObject("RESOURCE_PROP_OBJ");
+                            if (prop.IsValid)
+                            {
+                                prop.Destroy();
+                            }
+
+                            if (plc.Spawn.IsValid)
+                            {
+                                plc.Spawn.Destroy();
+                            }
+                        }
+
+                        foreach (var creature in areaSpawn.Creatures)
+                        {
+                            if (creature.Spawn.IsValid)
+                            {
+                                creature.Spawn.Destroy();
+                            }
+                        }
+                    }
+                }
+                // Players in the area
+                else if (pcsInArea > 0)
+                {
+                    bool forceSpawn = !areaSpawn.HasSpawned;
+
+                    foreach (var plc in areaSpawn.Placeables.Where(x => x.Respawns || !x.Respawns && !x.HasSpawnedOnce))
+                    {
+                        ProcessSpawn(plc, OBJECT_TYPE_PLACEABLE, spawn.Key, forceSpawn);
+                    }
+
+                    foreach (var creature in areaSpawn.Creatures.Where(x => x.Respawns || !x.Respawns && !x.HasSpawnedOnce))
+                    {
+                        ProcessSpawn(creature, OBJECT_TYPE_CREATURE, spawn.Key, forceSpawn);
+                    }
+
+                    areaSpawn.SecondsEmpty = 0.0f;
+                    areaSpawn.HasSpawned = true;
+
+                }
+            }
+        }
+
+
+        private static void ProcessSpawn(ObjectSpawn spawn, int objectType, NWArea area, bool forceSpawn)
+        {
+            // Don't process anything that's valid.
+            if (spawn.Spawn.IsValid) return;
+
+            spawn.Timer += ObjectProcessingService.ProcessingTickInterval;
+
+            // Time to respawn!
+            if (spawn.Timer >= spawn.RespawnTime || forceSpawn)
+            {
+                string resref = spawn.Resref;
+                int npcGroupID = spawn.NPCGroupID;
+                int deathVFXID = spawn.DeathVFXID;
+                string behaviour = spawn.BehaviourScript;
+                NWLocation location = spawn.IsStaticSpawnPoint ? spawn.SpawnLocation : null;
+
+                spawn.HasSpawnedOnce = true;
+
+                // Look for a spawn out of the database set. Update spawn data if one is found.
+                if (string.IsNullOrWhiteSpace(resref))
+                {
+                    var dbSpawn = DataService.Where<SpawnObject>(x => x.SpawnID == spawn.SpawnTableID)
+                        .OrderBy(o => Guid.NewGuid()).First();
+
+                    resref = dbSpawn.Resref;
+                    npcGroupID = dbSpawn.NPCGroupID ?? 0;
+                    deathVFXID = dbSpawn.DeathVFXID;
+                    behaviour = dbSpawn.BehaviourScript;
+
+                    if (!string.IsNullOrWhiteSpace(dbSpawn.SpawnRule))
+                    {
+                        spawn.SpawnRule = dbSpawn.SpawnRule;
+                    }
+                    else
+                    {
+                        // Clear the saved spawn rule since we now have a new resref etc.
+                        spawn.SpawnRule = null;
+                    }
+                }
+
+                if (location == null)
+                {
+                    location = SpawnService.GetRandomSpawnPoint(area);
+                }
+
+                spawn.Spawn = _.CreateObject(objectType, resref, location);
+
+                if (!spawn.Spawn.IsValid)
+                {
+                    Console.WriteLine("ERROR: Cannot locate object with resref " + resref + ". Error occurred in area " + area.Name + " (" + area.Resref + ")");
+                    return;
+                }
+
+                if (npcGroupID > 0)
+                    spawn.Spawn.SetLocalInt("NPC_GROUP", npcGroupID);
+
+                if (deathVFXID > 0)
+                    spawn.Spawn.SetLocalInt("DEATH_VFX", deathVFXID);
+
+                if (!string.IsNullOrWhiteSpace(behaviour) &&
+                    string.IsNullOrWhiteSpace(spawn.Spawn.GetLocalString("BEHAVIOUR")))
+                    spawn.Spawn.SetLocalString("BEHAVIOUR", behaviour);
+
+                if (objectType == OBJECT_TYPE_CREATURE)
+                    SpawnService.AssignScriptEvents(spawn.Spawn.Object);
+
+                if (!string.IsNullOrWhiteSpace(spawn.SpawnRule))
+                {
+                    var rule = SpawnService.GetSpawnRule(spawn.SpawnRule);
+                    rule.Run(spawn.Spawn);
+                }
+
+                ObjectVisibilityService.ApplyVisibilityForObject(spawn.Spawn);
+
+                spawn.Timer = 0.0f;
             }
         }
     }

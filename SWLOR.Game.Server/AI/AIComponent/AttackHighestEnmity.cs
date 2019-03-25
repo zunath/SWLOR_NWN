@@ -1,9 +1,9 @@
-﻿using FluentBehaviourTree;
-using NWN;
+﻿using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+
 using System.Linq;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.AI.AIComponent
 {
@@ -12,20 +12,10 @@ namespace SWLOR.Game.Server.AI.AIComponent
     /// </summary>
     public class AttackHighestEnmity : IRegisteredEvent
     {
-        private readonly IEnmityService _enmity;
-        private readonly INWScript _;
-
-        public AttackHighestEnmity(IEnmityService enmity,
-            INWScript script)
-        {
-            _enmity = enmity;
-            _ = script;
-        }
-
         public bool Run(object[] args)
         {
             NWCreature self = (NWCreature)args[0];
-            var enmityTable = _enmity.GetEnmityTable(self);
+            var enmityTable = EnmityService.GetEnmityTable(self);
             var target = enmityTable.Values
                 .OrderByDescending(o => o.TotalAmount)
                 .FirstOrDefault(x => x.TargetObject.IsValid &&

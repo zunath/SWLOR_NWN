@@ -1,26 +1,14 @@
 ﻿using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
 {
     internal class ChangeDescription: ConversationBase
     {
-        private readonly IColorTokenService _color;
-        private readonly IPlayerDescriptionService _playerDescription;
-
-        public ChangeDescription(
-            INWScript script, 
-            IDialogService dialog,
-            IColorTokenService color,
-            IPlayerDescriptionService playerDescription) 
-            : base(script, dialog)
-        {
-            _color = color;
-            _playerDescription = playerDescription;
-        }
 
         public override PlayerDialog SetUp(NWPlayer player)
         {
@@ -44,7 +32,7 @@ namespace SWLOR.Game.Server.Conversation
         public override void Initialize()
         {
             string header = "Please type the new description for your character into the chat box. Then press the 'Next' button.\n\n";
-            header += _color.Green("Current Description: ") + "\n\n";
+            header += ColorTokenService.Green("Current Description: ") + "\n\n";
             header += _.GetDescription(GetPC().Object);
             SetPageHeader("MainPage", header);
             GetPC().SetLocalInt("LISTENING_FOR_DESCRIPTION", 1);
@@ -76,12 +64,12 @@ namespace SWLOR.Game.Server.Conversation
 
                     if (string.IsNullOrWhiteSpace(newDescription))
                     {
-                        _.FloatingTextStringOnCreature("Type in a new description to the chat bar and then press 'Next'.", GetPC().Object, NWScript.FALSE);
+                        _.FloatingTextStringOnCreature("Type in a new description to the chat bar and then press 'Next'.", GetPC().Object, _.FALSE);
                         return;
                     }
 
                     string header = "Your new description follows. If you need to make a change, click 'Back', type in a new description, and then hit 'Next' again.\n\n";
-                    header += _color.Green("New Description: ") + "\n\n";
+                    header += ColorTokenService.Green("New Description: ") + "\n\n";
                     header += newDescription;
                     SetPageHeader("ConfirmSetPage", header);
                     ChangePage("ConfirmSetPage");
@@ -94,7 +82,7 @@ namespace SWLOR.Game.Server.Conversation
             switch (responseID)
             {
                 case 1: // Confirm Description Change
-                    _playerDescription.ChangePlayerDescription(GetPC());
+                    PlayerDescriptionService.ChangePlayerDescription(GetPC());
                     EndConversation();
                     break;
             }

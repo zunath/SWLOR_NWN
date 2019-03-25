@@ -1,36 +1,17 @@
 ﻿using System;
-using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.ControlTower
 {
     public class OnClicked: IRegisteredEvent
     {
-        private readonly INWScript _;
-        private readonly IDialogService _dialog;
-        private readonly IBasePermissionService _perm;
-        private readonly IDataService _data;
-
-        public OnClicked(
-            INWScript script,
-            IDialogService dialog,
-            IBasePermissionService perm,
-            IDataService data)
-        {
-            _ = script;
-            _dialog = dialog;
-            _perm = perm;
-            _data = data;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlayer clicker = (_.GetPlaceableLastClickedBy());
@@ -46,20 +27,20 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
                 return false;
             }
             Guid structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.ID == structureID);
+            PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
 
             // Does the player have permission to access the fuel bays?
-            if (_perm.HasBasePermission(clicker, structure.PCBaseID, BasePermission.CanManageBaseFuel))
+            if (BasePermissionService.HasBasePermission(clicker, structure.PCBaseID, BasePermission.CanManageBaseFuel))
             {
                 // Is the tower in reinforced mode? If so, fuel cannot be accessed.
-                var pcBase = _data.Single<PCBase>(x => x.ID == structure.PCBaseID);
+                var pcBase = DataService.Single<PCBase>(x => x.ID == structure.PCBaseID);
                 if (pcBase.IsInReinforcedMode)
                 {
                     clicker.SendMessage("This tower is currently in reinforced mode and cannot be accessed.");
                 }
                 else
                 {
-                    _dialog.StartConversation(clicker, tower, "ControlTower");
+                    DialogService.StartConversation(clicker, tower, "ControlTower");
                 }
             }
             else

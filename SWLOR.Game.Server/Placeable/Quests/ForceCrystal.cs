@@ -3,30 +3,14 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.Quests
 {
     public class ForceCrystal: IRegisteredEvent
     {
-        private readonly INWScript _;
-        private readonly IQuestService _quest;
-        private readonly IDataService _data;
-        private readonly IObjectVisibilityService _ovs;
-
-        public ForceCrystal(
-            INWScript script,
-            IQuestService quest,
-            IDataService data,
-            IObjectVisibilityService ovs)
-        {
-            _ = script;
-            _quest = quest;
-            _data = data;
-            _ovs = ovs;
-        }
-
         public bool Run(params object[] args)
         {
             const int QuestID = 30;
@@ -34,8 +18,8 @@ namespace SWLOR.Game.Server.Placeable.Quests
             NWPlayer player = _.GetLastUsedBy();
 
             // Check player's current quest state. If they aren't on stage 2 of the quest only show a message.
-            var status = _data.Single<PCQuestStatus>(x => x.PlayerID == player.GlobalID && x.QuestID == QuestID);
-            var currentState = _data.Single<QuestState>(x => x.ID == status.CurrentQuestStateID);
+            var status = DataService.Single<PCQuestStatus>(x => x.PlayerID == player.GlobalID && x.QuestID == QuestID);
+            var currentState = DataService.Single<QuestState>(x => x.ID == status.CurrentQuestStateID);
 
             if (currentState.Sequence != 2)
             {
@@ -57,10 +41,10 @@ namespace SWLOR.Game.Server.Placeable.Quests
             }
 
             _.CreateItemOnObject(cluster, player);
-            _quest.AdvanceQuestState(player, crystal, QuestID);
+            QuestService.AdvanceQuestState(player, crystal, QuestID);
 
             // Hide the "Source of Power?" placeable so the player can't use it again.
-            _ovs.AdjustVisibility(player, "81533EBB-2084-4C97-B004-8E1D8C395F56", false);
+            ObjectVisibilityService.AdjustVisibility(player, "81533EBB-2084-4C97-B004-8E1D8C395F56", false);
 
             NWObject tpWP = _.GetObjectByTag("FORCE_QUEST_LANDING");
             player.AssignCommand(() => _.ActionJumpToLocation(tpWP.Location));

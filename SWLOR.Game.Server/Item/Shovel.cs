@@ -1,20 +1,14 @@
 ﻿using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using NWN;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Item
 {
     public class Shovel: IActionItem
     {
-        private readonly IDialogService _dialog;
-
-        public Shovel(IDialogService dialog)
-        {
-            _dialog = dialog;
-        }
-
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
             return null;
@@ -35,7 +29,7 @@ namespace SWLOR.Game.Server.Item
             user.SetLocalLocation("SHOVEL_TARGET_LOCATION", targetLocation);
             user.SetLocalObject("SHOVEL_TARGET_OBJECT", target.Object);
             user.ClearAllActions();
-            _dialog.StartConversation(user, user, "Shovel");
+            DialogService.StartConversation(user, user, "Shovel");
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)

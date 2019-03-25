@@ -1,37 +1,19 @@
 ﻿using System;
-using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.Service
 {
-    public class BackgroundService: IBackgroundService
+    public static class BackgroundService
     {
-        private readonly IDataService _data;
-        private readonly INWScript _;
-        private readonly IPerkService _perk;
-        private readonly IPlayerStatService _stat;
-
-        public BackgroundService(
-            IDataService data, 
-            INWScript script, 
-            IPerkService perk,
-            IPlayerStatService stat)
-        {
-            _data = data;
-            _ = script;
-            _perk = perk;
-            _stat = stat;
-        }
         
-        public void ApplyBackgroundBonuses(NWPlayer oPC)
+        public static void ApplyBackgroundBonuses(NWPlayer oPC)
         {
-            var dbPlayer = _data.Single<Player>(x => x.ID == oPC.GlobalID);
+            var dbPlayer = DataService.Single<Player>(x => x.ID == oPC.GlobalID);
             string pcName = oPC.Name;
             int classID = oPC.Class1;
 
@@ -44,7 +26,7 @@ namespace SWLOR.Game.Server.Service
             {
                 case BackgroundType.Freelancer:
                     dbPlayer.UnallocatedSP = dbPlayer.UnallocatedSP + 3;
-                    _data.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+                    DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
                     break;
                 case BackgroundType.Smuggler:
                     item1Resref = "blaster_s";
@@ -68,29 +50,29 @@ namespace SWLOR.Game.Server.Service
                     item1Resref = "greatsword_s";
                     break;
                 case BackgroundType.Armorsmith:
-                    _perk.DoPerkUpgrade(oPC, PerkType.ArmorBlueprints, true);
+                    PerkService.DoPerkUpgrade(oPC, PerkType.ArmorBlueprints, true);
                     break;
                 case BackgroundType.Weaponsmith:
-                    _perk.DoPerkUpgrade(oPC, PerkType.WeaponBlueprints, true);
+                    PerkService.DoPerkUpgrade(oPC, PerkType.WeaponBlueprints, true);
                     break;
                 case BackgroundType.Chef:
-                    _perk.DoPerkUpgrade(oPC, PerkType.FoodRecipes, true);
+                    PerkService.DoPerkUpgrade(oPC, PerkType.FoodRecipes, true);
                     break;
                 case BackgroundType.Engineer:
-                    _perk.DoPerkUpgrade(oPC, PerkType.EngineeringBlueprints, true);
+                    PerkService.DoPerkUpgrade(oPC, PerkType.EngineeringBlueprints, true);
                     break;
                 case BackgroundType.Fabricator:
-                    _perk.DoPerkUpgrade(oPC, PerkType.FabricationBlueprints, true);
+                    PerkService.DoPerkUpgrade(oPC, PerkType.FabricationBlueprints, true);
                     break;
                 case BackgroundType.Harvester:
                     item1Resref = "scanner_r_h";
                     item2Resref = "harvest_r_h";
                     break;
                 case BackgroundType.Scavenger:
-                    _perk.DoPerkUpgrade(oPC, PerkType.ScavengingExpert, true);
+                    PerkService.DoPerkUpgrade(oPC, PerkType.ScavengingExpert, true);
                     break;
                 case BackgroundType.Medic:
-                    _perk.DoPerkUpgrade(oPC, PerkType.ImmediateImprovement, true);
+                    PerkService.DoPerkUpgrade(oPC, PerkType.ImmediateImprovement, true);
                     break;
                 case BackgroundType.Mandalorian:
                     item1Resref = "man_armor";

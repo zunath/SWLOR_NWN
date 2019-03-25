@@ -1,24 +1,17 @@
 ﻿using System;
-using SWLOR.Game.Server.Bioware.Contracts;
+
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Mod.Contracts;
 
 using NWN;
+using SWLOR.Game.Server.Bioware;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class AbilityScoreMod: IMod
+    public class AbilityScoreMod: IModHandler
     {
-        private readonly INWScript _;
-        private readonly IBiowareXP2 _biowareXP2;
-
-        public AbilityScoreMod(INWScript script,
-            IBiowareXP2 biowareXP2)
-        {
-            _ = script;
-            _biowareXP2 = biowareXP2;
-        }
+        public int ModTypeID => 1;
 
         private Tuple<int, int> GetExistingIPInfo(NWItem item, int abilityType)
         {
@@ -26,7 +19,7 @@ namespace SWLOR.Game.Server.Mod
             foreach (var ip in item.ItemProperties)
             {
                 int type = _.GetItemPropertyType(ip);
-                if (type == NWScript.ITEM_PROPERTY_ABILITY_BONUS)
+                if (type == _.ITEM_PROPERTY_ABILITY_BONUS)
                 {
                     int currentAbilityType = _.GetItemPropertySubType(ip);
                     if (currentAbilityType == abilityType)
@@ -50,29 +43,27 @@ namespace SWLOR.Game.Server.Mod
             switch (strType)
             {
                 case "STR":
-                    type = NWScript.ABILITY_STRENGTH;
+                    type = _.ABILITY_STRENGTH;
                     break;
                 case "CON":
-                    type = NWScript.ABILITY_CONSTITUTION;
+                    type = _.ABILITY_CONSTITUTION;
                     break;
                 case "DEX":
-                    type = NWScript.ABILITY_DEXTERITY;
+                    type = _.ABILITY_DEXTERITY;
                     break;
                 case "WIS":
-                    type = NWScript.ABILITY_WISDOM;
+                    type = _.ABILITY_WISDOM;
                     break;
                 case "INT":
-                    type = NWScript.ABILITY_INTELLIGENCE;
+                    type = _.ABILITY_INTELLIGENCE;
                     break;
                 case "CHA":
-                    type = NWScript.ABILITY_CHARISMA;
+                    type = _.ABILITY_CHARISMA;
                     break;
             }
 
             return new Tuple<int, int, string>(type, amount, strType + " +" + amount);
         }
-
-        
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
@@ -93,7 +84,7 @@ namespace SWLOR.Game.Server.Mod
             ItemProperty ip = _.ItemPropertyAbilityBonus(data.Item1, newValue);
             ip = _.TagItemProperty(ip, "RUNE_IP");
 
-            _biowareXP2.IPSafeAddItemProperty(target, ip, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
+            BiowareXP2.IPSafeAddItemProperty(target, ip, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
         }
 
         public string Description(NWPlayer player, NWItem target, params string[] args)

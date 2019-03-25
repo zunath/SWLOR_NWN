@@ -1,6 +1,4 @@
 ﻿using System.Windows.Forms;
-using SWLOR.Game.Server.Extension;
-using SWLOR.Tools.Editor.Messages;
 using SWLOR.Tools.Editor.ViewModels.Contracts;
 using Screen = Caliburn.Micro.Screen;
 

@@ -1,38 +1,19 @@
 ﻿using System;
-using System.Linq;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Conversation
 {
     public class Outfit: ConversationBase
     {
-        private readonly IColorTokenService _color;
-        private readonly ISerializationService _serialization;
-        private readonly IDataService _data;
-
-        public Outfit(
-            INWScript script, 
-            IDialogService dialog,
-            IColorTokenService color,
-            ISerializationService serialization,
-            IDataService data) 
-            : base(script, dialog)
-        {
-            _color = color;
-            _data = data;
-            _serialization = serialization;
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -100,7 +81,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private PCOutfit GetPlayerOutfits(NWPlayer oPC)
         {
-            return _data.SingleOrDefault<PCOutfit>(x => x.PlayerID == oPC.GlobalID);
+            return DataService.SingleOrDefault<PCOutfit>(x => x.PlayerID == oPC.GlobalID);
         }
 
         private bool CanModifyClothes()
@@ -142,11 +123,11 @@ namespace SWLOR.Game.Server.Conversation
 
             if (!oClothes.IsValid)
             {
-                oPC.FloatingText(_color.Red("You do not have clothes equipped"));
+                oPC.FloatingText(ColorTokenService.Red("You do not have clothes equipped"));
                 return;
             }
 
-            string clothesData = _serialization.Serialize(oClothes);
+            string clothesData = SerializationService.Serialize(oClothes);
             if (responseID == 1) entity.Outfit1 = clothesData;
             else if (responseID == 2) entity.Outfit2 = clothesData;
             else if (responseID == 3) entity.Outfit3 = clothesData;
@@ -158,7 +139,7 @@ namespace SWLOR.Game.Server.Conversation
             else if (responseID == 9) entity.Outfit9 = clothesData;
             else if (responseID == 10) entity.Outfit10 = clothesData;
 
-            _data.SubmitDataChange(entity, action);
+            DataService.SubmitDataChange(entity, action);
             ShowSaveOutfitOptions();
         }
 
@@ -181,16 +162,16 @@ namespace SWLOR.Game.Server.Conversation
             NWItem storedClothes = null;
             oClothes.SetLocalString("TEMP_OUTFIT_UUID", oPC.GlobalID.ToString());
 
-            if (outfitID == 1) storedClothes = _serialization.DeserializeItem(entity.Outfit1, oTempStorage);
-            else if (outfitID == 2) storedClothes = _serialization.DeserializeItem(entity.Outfit2, oTempStorage);
-            else if (outfitID == 3) storedClothes = _serialization.DeserializeItem(entity.Outfit3, oTempStorage);
-            else if (outfitID == 4) storedClothes = _serialization.DeserializeItem(entity.Outfit4, oTempStorage);
-            else if (outfitID == 5) storedClothes = _serialization.DeserializeItem(entity.Outfit5, oTempStorage);
-            else if (outfitID == 6) storedClothes = _serialization.DeserializeItem(entity.Outfit6, oTempStorage);
-            else if (outfitID == 7) storedClothes = _serialization.DeserializeItem(entity.Outfit7, oTempStorage);
-            else if (outfitID == 8) storedClothes = _serialization.DeserializeItem(entity.Outfit8, oTempStorage);
-            else if (outfitID == 9) storedClothes = _serialization.DeserializeItem(entity.Outfit9, oTempStorage);
-            else if (outfitID == 10) storedClothes = _serialization.DeserializeItem(entity.Outfit10, oTempStorage);
+            if (outfitID == 1) storedClothes = SerializationService.DeserializeItem(entity.Outfit1, oTempStorage);
+            else if (outfitID == 2) storedClothes = SerializationService.DeserializeItem(entity.Outfit2, oTempStorage);
+            else if (outfitID == 3) storedClothes = SerializationService.DeserializeItem(entity.Outfit3, oTempStorage);
+            else if (outfitID == 4) storedClothes = SerializationService.DeserializeItem(entity.Outfit4, oTempStorage);
+            else if (outfitID == 5) storedClothes = SerializationService.DeserializeItem(entity.Outfit5, oTempStorage);
+            else if (outfitID == 6) storedClothes = SerializationService.DeserializeItem(entity.Outfit6, oTempStorage);
+            else if (outfitID == 7) storedClothes = SerializationService.DeserializeItem(entity.Outfit7, oTempStorage);
+            else if (outfitID == 8) storedClothes = SerializationService.DeserializeItem(entity.Outfit8, oTempStorage);
+            else if (outfitID == 9) storedClothes = SerializationService.DeserializeItem(entity.Outfit9, oTempStorage);
+            else if (outfitID == 10) storedClothes = SerializationService.DeserializeItem(entity.Outfit10, oTempStorage);
 
             if (storedClothes == null) throw new Exception("Unable to locate stored clothes.");
 
@@ -277,34 +258,34 @@ namespace SWLOR.Game.Server.Conversation
 
             ClearPageResponses("SaveOutfitPage");
 
-            string responseText = entity.Outfit1 == null ? _color.Red("Save in Slot 1") : _color.Green("Save in Slot 1");
+            string responseText = entity.Outfit1 == null ? ColorTokenService.Red("Save in Slot 1") : ColorTokenService.Green("Save in Slot 1");
             AddResponseToPage("SaveOutfitPage", responseText);
 
-            responseText = entity.Outfit2 == null ? _color.Red("Save in Slot 2") : _color.Green("Save in Slot 2");
+            responseText = entity.Outfit2 == null ? ColorTokenService.Red("Save in Slot 2") : ColorTokenService.Green("Save in Slot 2");
             AddResponseToPage("SaveOutfitPage", responseText);
 
-            responseText = entity.Outfit3 == null ? _color.Red("Save in Slot 3") : _color.Green("Save in Slot 3");
+            responseText = entity.Outfit3 == null ? ColorTokenService.Red("Save in Slot 3") : ColorTokenService.Green("Save in Slot 3");
             AddResponseToPage("SaveOutfitPage", responseText);
 
-            responseText = entity.Outfit4 == null ? _color.Red("Save in Slot 4") : _color.Green("Save in Slot 4");
+            responseText = entity.Outfit4 == null ? ColorTokenService.Red("Save in Slot 4") : ColorTokenService.Green("Save in Slot 4");
             AddResponseToPage("SaveOutfitPage", responseText);
 
-            responseText = entity.Outfit5 == null ? _color.Red("Save in Slot 5") : _color.Green("Save in Slot 5");
+            responseText = entity.Outfit5 == null ? ColorTokenService.Red("Save in Slot 5") : ColorTokenService.Green("Save in Slot 5");
             AddResponseToPage("SaveOutfitPage", responseText);
 
-            responseText = entity.Outfit6 == null ? _color.Red("Save in Slot 6") : _color.Green("Save in Slot 6");
+            responseText = entity.Outfit6 == null ? ColorTokenService.Red("Save in Slot 6") : ColorTokenService.Green("Save in Slot 6");
             AddResponseToPage("SaveOutfitPage", responseText);
 
-            responseText = entity.Outfit7 == null ? _color.Red("Save in Slot 7") : _color.Green("Save in Slot 7");
+            responseText = entity.Outfit7 == null ? ColorTokenService.Red("Save in Slot 7") : ColorTokenService.Green("Save in Slot 7");
             AddResponseToPage("SaveOutfitPage", responseText);
 
-            responseText = entity.Outfit8 == null ? _color.Red("Save in Slot 8") : _color.Green("Save in Slot 8");
+            responseText = entity.Outfit8 == null ? ColorTokenService.Red("Save in Slot 8") : ColorTokenService.Green("Save in Slot 8");
             AddResponseToPage("SaveOutfitPage", responseText);
 
-            responseText = entity.Outfit9 == null ? _color.Red("Save in Slot 9") : _color.Green("Save in Slot 9");
+            responseText = entity.Outfit9 == null ? ColorTokenService.Red("Save in Slot 9") : ColorTokenService.Green("Save in Slot 9");
             AddResponseToPage("SaveOutfitPage", responseText);
 
-            responseText = entity.Outfit10 == null ? _color.Red("Save in Slot 10") : _color.Green("Save in Slot 10");
+            responseText = entity.Outfit10 == null ? ColorTokenService.Red("Save in Slot 10") : ColorTokenService.Green("Save in Slot 10");
             AddResponseToPage("SaveOutfitPage", responseText);
         }
 

@@ -1,16 +1,17 @@
-﻿using SWLOR.Game.Server;
-using SWLOR.Game.Server.Event.Area;
+﻿
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Area;
 
 // ReSharper disable once CheckNamespace
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    internal class area_on_user
+    internal static class area_on_user
 #pragma warning restore IDE1006 // Naming Styles
     {
         public static void Main()
         {
-            App.RunEvent<OnAreaUserDefined>();
+            MessageHub.Instance.Publish(new OnAreaUserDefined());
         }
     }
 }

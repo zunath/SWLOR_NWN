@@ -1,6 +1,7 @@
 ﻿using SWLOR.Game.Server;
-using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Event.Creature;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Creature;
+
 
 // ReSharper disable once CheckNamespace
 namespace NWN.Scripts
@@ -11,7 +12,7 @@ namespace NWN.Scripts
     {
         public static void Main()
         {
-            App.RunEvent<OnSpawn>();
+            MessageHub.Instance.Publish(new OnCreatureSpawn());
         }
     }
 }

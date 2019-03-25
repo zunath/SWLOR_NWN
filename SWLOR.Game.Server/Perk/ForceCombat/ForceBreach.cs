@@ -1,38 +1,15 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using SWLOR.Game.Server.Service;
+
+using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceCombat
 {
-    public class ForceBreach : IPerk
+    public class ForceBreach : IPerkHandler
     {
-        private readonly INWScript _;
-        private readonly IPerkService _perk;
-        private readonly IRandomService _random;
-        private readonly ISkillService _skill;
-        private readonly ICustomEffectService _customEffect;
-        private readonly IPlayerStatService _playerStat;
-        private readonly ICombatService _combat;
-
-        public ForceBreach(
-            INWScript script,
-            IPerkService perk,
-            IRandomService random,
-            ISkillService skill,
-            ICustomEffectService customEffect,
-            IPlayerStatService playerStat,
-            ICombatService combat)
-        {
-            _ = script;
-            _perk = perk;
-            _random = random;
-            _skill = skill;
-            _customEffect = customEffect;
-            _playerStat = playerStat;
-            _combat = combat;
-        }
+        public PerkType PerkType => PerkType.ForceBreach;
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
@@ -70,7 +47,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
 
         public void OnImpact(NWPlayer player, NWObject target, int level, int spellFeatID)
         {
-            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
+            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
             int length;
             int dotAmount;
             
@@ -135,14 +112,14 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
                 default: return;
             }
 
-            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
-            if (_random.Random(100) + 1 <= luck)
+            int luck = PerkService.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
+            if (RandomService.Random(100) + 1 <= luck)
             {
                 length = length * 2;
                 player.SendMessage("Lucky force breach!");
             }
 
-            var calc = _combat.CalculateForceDamage(
+            var calc = CombatService.CalculateForceDamage(
                 player,
                 target.Object,
                 ForceAbilityType.Light,
@@ -160,10 +137,10 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
             
             if (length > 0.0f && dotAmount > 0)
             {
-                _customEffect.ApplyCustomEffect(player, target.Object, CustomEffectType.ForceBreach, length, level, dotAmount.ToString());
+                CustomEffectService.ApplyCustomEffect(player, target.Object, CustomEffectType.ForceBreach, length, level, dotAmount.ToString());
             }
 
-            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceCombat, target.Object);
+            SkillService.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceCombat, target.Object);
 
             player.AssignCommand(() =>
             {
@@ -172,7 +149,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
             });
 
             _.PlaySound("v_useforce");
-            _combat.AddTemporaryForceDefense(target.Object, ForceAbilityType.Light);
+            CombatService.AddTemporaryForceDefense(target.Object, ForceAbilityType.Light);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

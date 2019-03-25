@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.Harvesting
 {
-    public class MolecularReassemblyProficiency: IPerk
+    public class MolecularReassemblyProficiency: IPerkHandler
     {
+        public PerkType PerkType => PerkType.MolecularReassemblyProficiency;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

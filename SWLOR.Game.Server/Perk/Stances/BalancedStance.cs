@@ -1,20 +1,14 @@
-﻿using System;
-using SWLOR.Game.Server.CustomEffect.Contracts;
-using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 
 namespace SWLOR.Game.Server.Perk.Stances
 {
-    public class BalancedStance: IPerk
+    public class BalancedStance: IPerkHandler
     {
-        private readonly ICustomEffectService _customEffect;
+        public PerkType PerkType => PerkType.BalancedStance;
 
-        public BalancedStance(ICustomEffectService customEffect)
-        {
-            _customEffect = customEffect;
-        }
-        
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return true;
@@ -47,7 +41,7 @@ namespace SWLOR.Game.Server.Perk.Stances
 
         public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
         {
-            _customEffect.ApplyStance(
+            CustomEffectService.ApplyStance(
                 player, 
                 CustomEffectType.BalancedStance, 
                 PerkType.BalancedStance, 

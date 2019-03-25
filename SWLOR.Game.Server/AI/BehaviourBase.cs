@@ -8,17 +8,8 @@ namespace SWLOR.Game.Server.AI
     /// <summary>
     /// The base class for creating new behaviours.
     /// </summary>
-    public abstract class BehaviourBase: IBehaviour
+    public abstract class BehaviourBase: IAIBehaviour
     {
-        protected NWCreature Self { get; }
-
-        protected BehaviourBase()
-        {
-            Self = (Object.OBJECT_SELF);
-        }
-
-        public virtual BehaviourTreeBuilder Behaviour => null;
-
         public virtual bool IgnoreNWNEvents => false;
         public virtual bool IgnoreOnBlocked => false;
         public virtual bool IgnoreOnCombatRoundEnd => false;
@@ -34,56 +25,60 @@ namespace SWLOR.Game.Server.AI
         public virtual bool IgnoreOnSpellCastAt => false;
         public virtual bool IgnoreOnUserDefined => false;
 
-
-        public virtual void OnBlocked()
+        public virtual BehaviourTreeBuilder BuildBehaviour(NWCreature self)
+        {
+            return new BehaviourTreeBuilder();
+        }
+        
+        public virtual void OnBlocked(NWCreature self)
         {
         }
 
-        public virtual void OnCombatRoundEnd()
+        public virtual void OnCombatRoundEnd(NWCreature self)
         {
         }
 
-        public virtual void OnConversation()
+        public virtual void OnConversation(NWCreature self)
         {
         }
 
-        public virtual void OnDamaged()
+        public virtual void OnDamaged(NWCreature self)
         {
         }
 
-        public virtual void OnDeath()
+        public virtual void OnDeath(NWCreature self)
         {
         }
 
-        public virtual void OnDisturbed()
+        public virtual void OnDisturbed(NWCreature self)
         {
         }
 
-        public virtual void OnHeartbeat()
+        public virtual void OnHeartbeat(NWCreature self)
         {
         }
 
-        public virtual void OnPerception()
+        public virtual void OnPerception(NWCreature self)
         {
         }
 
-        public virtual void OnPhysicalAttacked()
+        public virtual void OnPhysicalAttacked(NWCreature self)
         {
         }
 
-        public virtual void OnRested()
+        public virtual void OnRested(NWCreature self)
         {
         }
 
-        public virtual void OnSpawn()
+        public virtual void OnSpawn(NWCreature self)
         {
         }
 
-        public virtual void OnSpellCastAt()
+        public virtual void OnSpellCastAt(NWCreature self)
         {
         }
 
-        public virtual void OnUserDefined()
+        public virtual void OnUserDefined(NWCreature self)
         {
         }
 

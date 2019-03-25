@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.Piloting
 {
-    public class CombatRepair: IPerk
+    public class CombatRepair: IPerkHandler
     {
+        public PerkType PerkType => PerkType.CombatRepair;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

@@ -1,6 +1,4 @@
 ﻿using Caliburn.Micro;
-using SWLOR.Game.Server.Extension;
-using SWLOR.Tools.Editor.Messages;
 using SWLOR.Tools.Editor.ViewModels.Contracts;
 
 namespace SWLOR.Tools.Editor.ViewModels

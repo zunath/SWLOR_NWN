@@ -4,29 +4,16 @@ using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Service;
+
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.Scrapper
 {
     public class OnDisturbed: IRegisteredEvent
     {
-        private readonly INWScript _;
-        private readonly IItemService _item;
-        private readonly INWNXObject _nwnxObject;
-
-        public OnDisturbed(
-            INWScript script,
-            IItemService item,
-            INWNXObject nwnxObject)
-        {
-            _ = script;
-            _item = item;
-            _nwnxObject = nwnxObject;
-        }
-
         public bool Run(params object[] args)
         {
             int type = _.GetInventoryDisturbType();
@@ -39,7 +26,7 @@ namespace SWLOR.Game.Server.Placeable.Scrapper
             // Not a component. Return the item.
             if (componentIP == null)
             {
-                _item.ReturnItem(player, item);
+                ItemService.ReturnItem(player, item);
                 player.FloatingText("You cannot scrap this item.");
                 return false;
             }
@@ -47,7 +34,7 @@ namespace SWLOR.Game.Server.Placeable.Scrapper
             // Item is a component but it was crafted. Cannot scrap crafted items.
             if (!string.IsNullOrWhiteSpace(item.GetLocalString("CRAFTER_PLAYER_ID")))
             {
-                _item.ReturnItem(player, item);
+                ItemService.ReturnItem(player, item);
                 player.FloatingText("You cannot scrap crafted items.");
                 return false;
             }
@@ -63,10 +50,10 @@ namespace SWLOR.Game.Server.Placeable.Scrapper
             }
             
             // Remove local variables (except the global ID)
-            int varCount = _nwnxObject.GetLocalVariableCount(item);
+            int varCount = NWNXObject.GetLocalVariableCount(item);
             for (int index = varCount-1; index >= 0; index--)
             {
-                var localVar = _nwnxObject.GetLocalVariable(item, index);
+                var localVar = NWNXObject.GetLocalVariable(item, index);
 
                 if (localVar.Key != "GLOBAL_ID")
                 {

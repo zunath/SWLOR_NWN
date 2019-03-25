@@ -1,9 +1,8 @@
 ﻿using Caliburn.Micro;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Tools.Editor.Messages;
 using SWLOR.Tools.Editor.ViewModels.Contracts;
 using SWLOR.Tools.Editor.ViewModels.Data;
@@ -16,6 +15,7 @@ using System.Windows.Forms;
 using AutoMapper;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Service;
 using SWLOR.Tools.Editor.Attributes;
 using ApartmentBuildingViewModel = SWLOR.Tools.Editor.ViewModels.Data.ApartmentBuildingViewModel;
 using LootTableItemViewModel = SWLOR.Tools.Editor.ViewModels.Data.LootTableItemViewModel;
@@ -35,7 +35,7 @@ namespace SWLOR.Tools.Editor.ViewModels
         private readonly IErrorViewModel _errorVM;
         private readonly IYesNoViewModel _yesNo;
         private readonly IEventAggregator _eventAggregator;
-        private readonly IDataService _data;
+        
         private readonly BackgroundWorker _worker;
 
         public DataSyncViewModel(
@@ -43,15 +43,13 @@ namespace SWLOR.Tools.Editor.ViewModels
             IWindowManager windowManager,
             IErrorViewModel errorVM,
             IYesNoViewModel yesNo,
-            IEventAggregator eventAggregator,
-            IDataService data)
+            IEventAggregator eventAggregator)
         {
             _dbConnectionVm = dbConnectionVm;
             _windowManager = windowManager;
             _errorVM = errorVM;
             _yesNo = yesNo;
             _eventAggregator = eventAggregator;
-            _data = data;
 
             _worker = new BackgroundWorker();
             _worker.DoWork += PerformDataSyncAsync;
@@ -181,32 +179,31 @@ namespace SWLOR.Tools.Editor.ViewModels
         private void PerformDataSyncAsync(object sender, DoWorkEventArgs e)
         {
             _progress = 0;
-            _lootTableItems = _data.GetAll<LootTableItem>().ToList();
-            _keyItems = _data.GetAll<KeyItem>().ToList();
+            _lootTableItems = DataService.GetAll<LootTableItem>().ToList();
+            _keyItems = DataService.GetAll<KeyItem>().ToList();
 
-            WriteDataFileAsync(BuildViewModel<ApartmentBuilding, ApartmentBuildingViewModel>(_data.GetAll<ApartmentBuilding>()));
-            WriteDataFileAsync(BuildViewModel<BaseStructure, BaseStructureViewModel>(_data.GetAll<BaseStructure>()));
-            WriteDataFileAsync(BuildViewModel<BuildingStyle, BuildingStyleViewModel>(_data.GetAll<BuildingStyle>()));
-            WriteDataFileAsync(BuildViewModel<CooldownCategory, CooldownCategoryViewModel>(_data.GetAll<CooldownCategory>()));
-            WriteDataFileAsync(BuildViewModel<CraftBlueprint, CraftBlueprintViewModel>(_data.GetAll<CraftBlueprint>()));
-            WriteDataFileAsync(BuildViewModel<CraftBlueprintCategory, CraftBlueprintCategoryViewModel>(_data.GetAll<CraftBlueprintCategory>()));
-            WriteDataFileAsync(BuildViewModel<CraftDevice, CraftDeviceViewModel>(_data.GetAll<CraftDevice>()));
-            WriteDataFileAsync(BuildViewModel<CustomEffect, CustomEffectViewModel>(_data.GetAll<CustomEffect>()));
-            WriteDataFileAsync(BuildViewModel<Download, DownloadViewModel>(_data.GetAll<Download>()));
-            WriteDataFileAsync(BuildViewModel<FameRegion, FameRegionViewModel>(_data.GetAll<FameRegion>()));
-            WriteDataFileAsync(BuildViewModel<GameTopic, GameTopicViewModel>(_data.GetAll<GameTopic>()));
-            WriteDataFileAsync(BuildViewModel<GameTopicCategory, GameTopicCategoryViewModel>(_data.GetAll<GameTopicCategory>()));
-            WriteDataFileAsync(BuildViewModel<KeyItemCategory, KeyItemCategoryViewModel>(_data.GetAll<KeyItemCategory>(), KeyItemCategoryMapping));
-            WriteDataFileAsync(BuildViewModel<LootTable, LootTableViewModel>(_data.GetAll<LootTable>(), LootTableMapping));
-            WriteDataFileAsync(BuildViewModel<Mod, ModViewModel>(_data.GetAll<Mod>()));
-            WriteDataFileAsync(BuildViewModel<NPCGroup, NPCGroupViewModel>(_data.GetAll<NPCGroup>()));
-            WriteDataFileAsync(BuildViewModel<Perk, PerkViewModel>(_data.GetAll<Perk>()));
-            WriteDataFileAsync(BuildViewModel<PerkCategory, PerkCategoryViewModel>(_data.GetAll<PerkCategory>()));
-            WriteDataFileAsync(BuildViewModel<Plant, PlantViewModel>(_data.GetAll<Plant>()));
-            WriteDataFileAsync(BuildViewModel<Quest, QuestViewModel>(_data.GetAll<Quest>()));
-            WriteDataFileAsync(BuildViewModel<Skill, SkillViewModel>(_data.GetAll<Skill>()));
-            WriteDataFileAsync(BuildViewModel<SkillCategory, SkillCategoryViewModel>(_data.GetAll<SkillCategory>()));
-            WriteDataFileAsync(BuildViewModel<Spawn, SpawnViewModel>(_data.GetAll<Spawn>()));
+            WriteDataFileAsync(BuildViewModel<ApartmentBuilding, ApartmentBuildingViewModel>(DataService.GetAll<ApartmentBuilding>()));
+            WriteDataFileAsync(BuildViewModel<BaseStructure, BaseStructureViewModel>(DataService.GetAll<BaseStructure>()));
+            WriteDataFileAsync(BuildViewModel<BuildingStyle, BuildingStyleViewModel>(DataService.GetAll<BuildingStyle>()));
+            WriteDataFileAsync(BuildViewModel<CooldownCategory, CooldownCategoryViewModel>(DataService.GetAll<CooldownCategory>()));
+            WriteDataFileAsync(BuildViewModel<CraftBlueprint, CraftBlueprintViewModel>(DataService.GetAll<CraftBlueprint>()));
+            WriteDataFileAsync(BuildViewModel<CraftBlueprintCategory, CraftBlueprintCategoryViewModel>(DataService.GetAll<CraftBlueprintCategory>()));
+            WriteDataFileAsync(BuildViewModel<CraftDevice, CraftDeviceViewModel>(DataService.GetAll<CraftDevice>()));
+            WriteDataFileAsync(BuildViewModel<CustomEffect, CustomEffectViewModel>(DataService.GetAll<CustomEffect>()));
+            WriteDataFileAsync(BuildViewModel<Download, DownloadViewModel>(DataService.GetAll<Download>()));
+            WriteDataFileAsync(BuildViewModel<FameRegion, FameRegionViewModel>(DataService.GetAll<FameRegion>()));
+            WriteDataFileAsync(BuildViewModel<GameTopic, GameTopicViewModel>(DataService.GetAll<GameTopic>()));
+            WriteDataFileAsync(BuildViewModel<GameTopicCategory, GameTopicCategoryViewModel>(DataService.GetAll<GameTopicCategory>()));
+            WriteDataFileAsync(BuildViewModel<KeyItemCategory, KeyItemCategoryViewModel>(DataService.GetAll<KeyItemCategory>(), KeyItemCategoryMapping));
+            WriteDataFileAsync(BuildViewModel<LootTable, LootTableViewModel>(DataService.GetAll<LootTable>(), LootTableMapping));
+            WriteDataFileAsync(BuildViewModel<NPCGroup, NPCGroupViewModel>(DataService.GetAll<NPCGroup>()));
+            WriteDataFileAsync(BuildViewModel<Perk, PerkViewModel>(DataService.GetAll<Perk>()));
+            WriteDataFileAsync(BuildViewModel<PerkCategory, PerkCategoryViewModel>(DataService.GetAll<PerkCategory>()));
+            WriteDataFileAsync(BuildViewModel<Plant, PlantViewModel>(DataService.GetAll<Plant>()));
+            WriteDataFileAsync(BuildViewModel<Quest, QuestViewModel>(DataService.GetAll<Quest>()));
+            WriteDataFileAsync(BuildViewModel<Skill, SkillViewModel>(DataService.GetAll<Skill>()));
+            WriteDataFileAsync(BuildViewModel<SkillCategory, SkillCategoryViewModel>(DataService.GetAll<SkillCategory>()));
+            WriteDataFileAsync(BuildViewModel<Spawn, SpawnViewModel>(DataService.GetAll<Spawn>()));
         }
 
         private LootTableViewModel LootTableMapping(LootTableViewModel source)

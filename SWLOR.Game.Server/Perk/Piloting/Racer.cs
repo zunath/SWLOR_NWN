@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.Piloting
 {
-    public class Racer: IPerk
+    public class Racer: IPerkHandler
     {
+        public PerkType PerkType => PerkType.Racer;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

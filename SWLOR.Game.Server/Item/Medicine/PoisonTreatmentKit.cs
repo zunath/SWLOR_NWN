@@ -1,38 +1,16 @@
 ﻿using NWN;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.ValueObject;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Item.Medicine
 {
     public class PoisonTreatmentKit: IActionItem
     {
-        private readonly INWScript _;
-        private readonly ISkillService _skill;
-        private readonly ICustomEffectService _customEffect;
-        private readonly IRandomService _random;
-        private readonly IPerkService _perk;
-        private readonly IPlayerStatService _playerStat;
-
-        public PoisonTreatmentKit(INWScript script,
-            ISkillService skill,
-            ICustomEffectService customEffect,
-            IRandomService random,
-            IPerkService perk,
-            IPlayerStatService playerStat)
-        {
-            _ = script;
-            _skill = skill;
-            _customEffect = customEffect;
-            _random = random;
-            _perk = perk;
-            _playerStat = playerStat;
-        }
-
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
             user.SendMessage("You begin treating " + target.Name + "'s wounds...");
@@ -41,7 +19,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            _customEffect.RemovePCCustomEffect(target.Object, CustomEffectType.Poison);
+            CustomEffectService.RemovePCCustomEffect(target.Object, CustomEffectType.Poison);
 
             foreach (Effect effect in target.Effects)
             {
@@ -57,25 +35,25 @@ namespace SWLOR.Game.Server.Item.Medicine
 
             user.SendMessage("You successfully treat " + target.Name + "'s infection.");
 
-            int rank = _skill.GetPCSkillRank(user.Object, SkillType.Medicine);
+            int rank = SkillService.GetPCSkillRank(user.Object, SkillType.Medicine);
             
             if(target.IsPlayer){
-                int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, rank);
-                _skill.GiveSkillXP(user.Object, SkillType.Medicine, xp);
+                int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, rank);
+                SkillService.GiveSkillXP(user.Object, SkillType.Medicine, xp);
             }
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
             NWPlayer player = (user.Object);
-            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
+            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
 
-            if (_random.Random(100) + 1 <= _perk.GetPCPerkLevel(player, PerkType.SpeedyFirstAid) * 10)
+            if (RandomService.Random(100) + 1 <= PerkService.GetPCPerkLevel(player, PerkType.SpeedyFirstAid) * 10)
             {
                 return 0.1f;
             }
 
-            int rank = _skill.GetPCSkillRank(player, SkillType.Medicine);
+            int rank = SkillService.GetPCSkillRank(player, SkillType.Medicine);
             return 12.0f - (rank + effectiveStats.Medicine / 2) * 0.1f;
         }
 
@@ -91,13 +69,13 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            return 3.5f + _perk.GetPCPerkLevel(user.Object, PerkType.RangedHealing);
+            return 3.5f + PerkService.GetPCPerkLevel(user.Object, PerkType.RangedHealing);
         }
 
         public bool ReducesItemCharge(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            int consumeChance = _perk.GetPCPerkLevel(user.Object, PerkType.FrugalMedic) * 10;
-            return _random.Random(100) + 1 > consumeChance;
+            int consumeChance = PerkService.GetPCPerkLevel(user.Object, PerkType.FrugalMedic) * 10;
+            return RandomService.Random(100) + 1 > consumeChance;
         }
 
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
@@ -120,7 +98,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 }
             }
 
-            if (_customEffect.DoesPCHaveCustomEffect(target.Object, CustomEffectType.Poison))
+            if (CustomEffectService.DoesPCHaveCustomEffect(target.Object, CustomEffectType.Poison))
             {
                 hasEffect = true;
             }
@@ -130,7 +108,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return "This player is not diseased or poisoned.";
             }
 
-            int rank = _skill.GetPCSkillRank(user.Object, SkillType.Medicine);
+            int rank = SkillService.GetPCSkillRank(user.Object, SkillType.Medicine);
 
             if (rank < item.RecommendedLevel)
             {

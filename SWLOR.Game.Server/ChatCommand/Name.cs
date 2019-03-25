@@ -1,21 +1,12 @@
-﻿using NWN;
-using SWLOR.Game.Server.ChatCommand.Contracts;
+﻿using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
     [CommandDetails("Changes the name of a target.", CommandPermissionType.DM)]
     public class Name : IChatCommand
     {
-        private readonly INWScript _;
-
-        public Name(INWScript script)
-        {
-            _ = script;
-        }
-
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             if (target.IsPlayer || target.IsDM)

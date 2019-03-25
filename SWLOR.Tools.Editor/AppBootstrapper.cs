@@ -18,11 +18,10 @@ using System.Windows.Controls;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.Threading;
 using IContainer = Autofac.IContainer;
 using SWLOR.Tools.Editor.ViewModels.Data;
-using SWLOR.Game.Server.Threading.Contracts;
 
 namespace SWLOR.Tools.Editor
 {
@@ -123,11 +122,6 @@ namespace SWLOR.Tools.Editor
 
         protected virtual void ConfigureContainer(ContainerBuilder builder)
         {
-            // SWLOR.Game.Server Registrations
-            builder.RegisterType<DatabaseBackgroundThread>().As<IDatabaseThread>().SingleInstance();
-            builder.RegisterType<DataService>().As<IDataService>().SingleInstance();
-
-
             // Singletons
             builder.RegisterType<AppSettings>().SingleInstance();
 
@@ -135,7 +129,6 @@ namespace SWLOR.Tools.Editor
             builder.RegisterType<CreateDataDirectories>().As<IStartable>().SingleInstance();
             builder.RegisterType<InitializeJsonSerializer>().As<IStartable>().SingleInstance();
             builder.RegisterType<InitializeAutomapper>().As<IStartable>().SingleInstance();
-            builder.RegisterType<BackgroundThreadManager>().As<IBackgroundThreadManager>().SingleInstance();
 
             // Other Startup Events
             builder.RegisterType<PostBootstrap>().As<IPostBootstrap>().SingleInstance();
@@ -173,7 +166,6 @@ namespace SWLOR.Tools.Editor
             builder.RegisterType(typeof(ObjectListViewModel<KeyItemCategoryViewModel>)).As<IObjectListViewModel<KeyItemCategoryViewModel>>();
             builder.RegisterType(typeof(ObjectListViewModel<KeyItemViewModel>)).As<IObjectListViewModel<KeyItemViewModel>>();
             builder.RegisterType(typeof(ObjectListViewModel<LootTableViewModel>)).As<IObjectListViewModel<LootTableViewModel>>();
-            builder.RegisterType(typeof(ObjectListViewModel<ModViewModel>)).As<IObjectListViewModel<ModViewModel>>();
             builder.RegisterType(typeof(ObjectListViewModel<NPCGroupViewModel>)).As<IObjectListViewModel<NPCGroupViewModel>>();
             builder.RegisterType(typeof(ObjectListViewModel<PerkCategoryViewModel>)).As<IObjectListViewModel<PerkCategoryViewModel>>();
             builder.RegisterType(typeof(ObjectListViewModel<PerkViewModel>)).As<IObjectListViewModel<PerkViewModel>>();

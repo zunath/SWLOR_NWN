@@ -1,8 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using Caliburn.Micro;
-using Newtonsoft.Json;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Tools.Editor.Messages;
 using SWLOR.Tools.Editor.ViewModels.Contracts;
 using SWLOR.Tools.Editor.ViewModels.Data;
 

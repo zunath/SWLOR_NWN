@@ -2,25 +2,14 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.NWNX.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.NWNX;
+
 
 namespace SWLOR.Game.Server.Perk.TwoHanded
 {
-    public class Cleave : IPerk
+    public class Cleave : IPerkHandler
     {
-        private readonly INWScript _;
-        private readonly INWNXCreature _nwnxCreature;
-        private readonly IPerkService _perk;
-
-        public Cleave(INWScript script,
-            INWNXCreature nwnxCreature,
-            IPerkService perk)
-        {
-            _ = script;
-            _nwnxCreature = nwnxCreature;
-            _perk = perk;
-        }
+        public PerkType PerkType => PerkType.Cleave;
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
@@ -63,7 +52,7 @@ namespace SWLOR.Game.Server.Perk.TwoHanded
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_CLEAVE);
+            NWNXCreature.RemoveFeat(oPC, _.FEAT_CLEAVE);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
@@ -90,11 +79,11 @@ namespace SWLOR.Game.Server.Perk.TwoHanded
 
             if (Equals(equipped, oItem) || equipped.CustomItemType != CustomItemType.HeavyVibroblade)
             {
-                _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_CLEAVE);
+                NWNXCreature.RemoveFeat(oPC, _.FEAT_CLEAVE);
                 return;
             }
 
-            _nwnxCreature.AddFeat(oPC, NWScript.FEAT_CLEAVE);
+            NWNXCreature.AddFeat(oPC, _.FEAT_CLEAVE);
         }
 
         public bool IsHostile()

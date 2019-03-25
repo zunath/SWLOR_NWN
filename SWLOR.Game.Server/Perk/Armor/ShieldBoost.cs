@@ -1,26 +1,15 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using SWLOR.Game.Server.Service;
+
+using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class ShieldBoost: IPerk
+    public class ShieldBoost: IPerkHandler
     {
-        private readonly INWScript _;
-        private readonly IPerkService _perk;
-        private readonly ICustomEffectService _customEffect;
-
-        public ShieldBoost(
-            INWScript script,
-            IPerkService perk,
-            ICustomEffectService customEffect)
-        {
-            _ = script;
-            _perk = perk;
-            _customEffect = customEffect;
-        }
+        public PerkType PerkType => PerkType.ShieldBoost;
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
@@ -60,7 +49,7 @@ namespace SWLOR.Game.Server.Perk.Armor
             vfx = _.TagEffect(vfx, "SHIELD_BOOST_VFX");
 
             _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, vfx, target, duration);
-            _customEffect.ApplyCustomEffect(player, target.Object, CustomEffectType.ShieldBoost, duration, perkLevel, null);
+            CustomEffectService.ApplyCustomEffect(player, target.Object, CustomEffectType.ShieldBoost, duration, perkLevel, null);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

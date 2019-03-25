@@ -4,8 +4,10 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class RestMod : IMod
+    public class RestMod : IModHandler
     {
+        public int ModTypeID => 15;
+
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             if (target.RestBonus >= 2)

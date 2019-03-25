@@ -2,24 +2,14 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using SWLOR.Game.Server.Service;
+
+using static NWN._;
 
 namespace SWLOR.Game.Server.Placeable
 {
     public class GenericConversation: IRegisteredEvent
     {
-        private readonly INWScript _;
-        private readonly IDialogService _dialog;
-
-        public GenericConversation(
-            INWScript script,
-            IDialogService dialog)
-        {
-            _ = script;
-            _dialog = dialog;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlaceable placeable = (Object.OBJECT_SELF);
@@ -34,7 +24,7 @@ namespace SWLOR.Game.Server.Placeable
 
             if (!string.IsNullOrWhiteSpace(conversation))
             {
-                _dialog.StartConversation(user, target, conversation);
+                DialogService.StartConversation(user, target, conversation);
             }
             else
             {

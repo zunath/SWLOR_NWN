@@ -2,33 +2,17 @@
 using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+
 using System;
-using static NWN.NWScript;
+using SWLOR.Game.Server.Service;
+using static NWN._;
 
 namespace SWLOR.Game.Server.CustomEffect
 {
-    public class MeditateEffect : ICustomEffect
+    public class MeditateEffect : ICustomEffectHandler
     {
-        private readonly INWScript _;
-        private readonly IAbilityService _ability;
-        private readonly IPerkService _perk;
-        private readonly ICustomEffectService _customEffect;
-        private readonly IPlayerStatService _playerStat;
-
-        public MeditateEffect(
-            INWScript script,
-            IAbilityService ability,
-            IPerkService perk,
-            ICustomEffectService customEffect,
-            IPlayerStatService playerStat)
-        {
-            _ = script;
-            _ability = ability;
-            _perk = perk;
-            _customEffect = customEffect;
-            _playerStat = playerStat;
-        }
+        public CustomEffectCategoryType CustomEffectCategoryType => CustomEffectCategoryType.NormalEffect;
+        public CustomEffectType CustomEffectType => CustomEffectType.Meditate;
 
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
@@ -70,7 +54,7 @@ namespace SWLOR.Game.Server.CustomEffect
                 !player.IsValid)
             {
                 player.IsBusy = false;
-                _customEffect.RemovePCCustomEffect(player, CustomEffectType.Meditate);
+                CustomEffectService.RemovePCCustomEffect(player, CustomEffectType.Meditate);
                 return;
             }
 
@@ -85,7 +69,7 @@ namespace SWLOR.Game.Server.CustomEffect
             {
                 int amount = CalculateAmount(player);
 
-                _ability.RestoreFP(player, amount);
+                AbilityService.RestoreFP(player, amount);
                 Effect vfx = _.EffectVisualEffect(VFX_IMP_HEAD_MIND);
                 _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, player);
                 meditateTick = 0;
@@ -103,8 +87,8 @@ namespace SWLOR.Game.Server.CustomEffect
 
         private int CalculateAmount(NWPlayer player)
         {
-            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
-            int perkLevel = _perk.GetPCPerkLevel(player, PerkType.Meditate);
+            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
+            int perkLevel = PerkService.GetPCPerkLevel(player, PerkType.Meditate);
             int amount;
             switch (perkLevel)
             {
@@ -144,5 +128,9 @@ namespace SWLOR.Game.Server.CustomEffect
             return canMeditate;
         }
 
+
+        public string StartMessage => "You begin to meditate...";
+        public string ContinueMessage => "";
+        public string WornOffMessage => "You stop meditating.";
     }
 }

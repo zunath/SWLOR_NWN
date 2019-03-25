@@ -1,5 +1,4 @@
-﻿using FluentBehaviourTree;
-using NWN;
+﻿using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 
@@ -10,13 +9,6 @@ namespace SWLOR.Game.Server.AI.AIComponent
     /// </summary>
     public class EquipBestRanged : IRegisteredEvent
     {
-        private readonly INWScript _;
-
-        public EquipBestRanged(INWScript script)
-        {
-            _ = script;
-        }
-
         public bool Run(object[] args)
         {
             NWCreature self = (NWCreature)args[0];

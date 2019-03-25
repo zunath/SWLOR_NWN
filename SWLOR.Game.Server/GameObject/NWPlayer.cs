@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using NWN;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.GameObject

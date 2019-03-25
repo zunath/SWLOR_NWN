@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -9,7 +8,6 @@ using AutoMapper;
 using Caliburn.Micro;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Tools.Editor.Enumeration;
@@ -199,9 +197,6 @@ namespace SWLOR.Tools.Editor.ViewModels
                     break;
                 case ResourceType.LootTables:
                     AddMappedResource<LootTable, LootTableViewModel>(ActivePackage.LootTables, sourceCollection, targetCollection);
-                    break;
-                case ResourceType.Mods:
-                    AddMappedResource<Mod, ModViewModel>(ActivePackage.Mods, sourceCollection, targetCollection);
                     break;
                 case ResourceType.NPCGroups:
                     AddMappedResource<NPCGroup, NPCGroupViewModel>(ActivePackage.NPCGroups, sourceCollection, targetCollection);

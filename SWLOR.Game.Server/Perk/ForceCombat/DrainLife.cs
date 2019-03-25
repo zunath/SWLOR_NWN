@@ -1,35 +1,16 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using SWLOR.Game.Server.Service;
+
+using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceCombat
 {
-    public class DrainLife: IPerk
+    public class DrainLife: IPerkHandler
     {
-        private readonly INWScript _;
-        private readonly ISkillService _skill;
-        private readonly ICombatService _combat;
-        private readonly IPerkService _perk;
-        private readonly IRandomService _random;
-        private readonly IPlayerStatService _stat;
+        public PerkType PerkType => PerkType.DrainLife;
 
-        public DrainLife(
-            INWScript script,
-            ISkillService skill,
-            ICombatService combat,
-            IPerkService perk,
-            IRandomService random,
-            IPlayerStatService stat)
-        {
-            _ = script;
-            _skill = skill;
-            _combat = combat;
-            _perk = perk;
-            _random = random;
-            _stat = stat;
-        }
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
@@ -126,15 +107,15 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
                 default: return;
             }
 
-            var effectiveStats = _stat.GetPlayerItemEffectiveStats(player);
-            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
-            if (_random.Random(100) + 1 <= luck)
+            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
+            int luck = PerkService.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
+            if (RandomService.Random(100) + 1 <= luck)
             {
                 recoveryPercent = 1.0f;
                 player.SendMessage("Lucky drain life!");
             }
 
-            var calc = _combat.CalculateForceDamage(
+            var calc = CombatService.CalculateForceDamage(
                 player, 
                 target.Object, 
                 ForceAbilityType.Dark, 
@@ -155,8 +136,8 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
             });
 
             _.PlaySound("v_pro_drain");
-            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceCombat, target.Object);
-            _combat.AddTemporaryForceDefense(target.Object, ForceAbilityType.Dark);
+            SkillService.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceCombat, target.Object);
+            CombatService.AddTemporaryForceDefense(target.Object, ForceAbilityType.Dark);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

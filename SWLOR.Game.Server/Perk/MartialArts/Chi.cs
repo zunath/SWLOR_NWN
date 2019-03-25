@@ -1,23 +1,16 @@
 ﻿using System.Linq;
 using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using SWLOR.Game.Server.Service;
+
+using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.MartialArts
 {
-    public class Chi: IPerk
+    public class Chi: IPerkHandler
     {
-        private readonly INWScript _;
-        private readonly IRandomService _random;
-
-        public Chi(
-            INWScript script,
-            IRandomService random)
-        {
-            _ = script;
-            _random = random;
-        }
+        public PerkType PerkType => PerkType.Chi;
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
@@ -76,7 +69,7 @@ namespace SWLOR.Game.Server.Perk.MartialArts
             float percentage = perkLevel * 0.10f;
             int heal = (int)(target.MaxHP * percentage);
 
-            heal = _random.Random(minimum, heal);
+            heal = RandomService.Random(minimum, heal);
 
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(heal), target);
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_HEALING_G), target);

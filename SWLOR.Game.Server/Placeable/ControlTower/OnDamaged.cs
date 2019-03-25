@@ -5,35 +5,16 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+
+using static NWN._;
 using Object = NWN.Object;
 using System.Globalization;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Placeable.ControlTower
 {
     public class OnDamaged: IRegisteredEvent
     {
-        private readonly INWScript _;
-        private readonly IDataService _data;
-        private readonly IRandomService _random;
-        private readonly IBaseService _base;
-        private readonly IDurabilityService _durability;
-
-        public OnDamaged(
-            INWScript script,
-            IDataService data,
-            IRandomService random,
-            IBaseService @base,
-            IDurabilityService durability)
-        {
-            _ = script;
-            _data = data;
-            _random = random;
-            _base = @base;
-            _durability = durability;
-        }
-
         public bool Run(params object[] args)
         {
             NWCreature attacker = (_.GetLastDamager(Object.OBJECT_SELF));
@@ -41,16 +22,16 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             NWItem weapon = (_.GetLastWeaponUsed(attacker.Object));
             int damage = _.GetTotalDamageDealt();
             var structureID = tower.GetLocalString("PC_BASE_STRUCTURE_ID");
-            PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.ID == new Guid(structureID));
-            int maxShieldHP = _base.CalculateMaxShieldHP(structure);
-            PCBase pcBase = _data.Get<PCBase>(structure.PCBaseID);
-            var playerIDs = _data.Where<PCBasePermission>(x => x.PCBaseID == structure.PCBaseID && 
+            PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID == new Guid(structureID));
+            int maxShieldHP = BaseService.CalculateMaxShieldHP(structure);
+            PCBase pcBase = DataService.Get<PCBase>(structure.PCBaseID);
+            var playerIDs = DataService.Where<PCBasePermission>(x => x.PCBaseID == structure.PCBaseID && 
                                                                !x.IsPublicPermission)
                                  .Select(s => s.PlayerID);
             var toNotify = NWModule.Get().Players.Where(x => playerIDs.Contains(x.GlobalID));
             DateTime timer = DateTime.UtcNow.AddSeconds(30);
             string clock = timer.ToString(CultureInfo.InvariantCulture);
-            string sector = _base.GetSectorOfLocation(attacker.Location);
+            string sector = BaseService.GetSectorOfLocation(attacker.Location);
             if (DateTime.UtcNow <= DateTime.Parse(clock))
             {
                 foreach(NWPlayer player in toNotify)
@@ -83,15 +64,15 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
             // HP is tracked in the database. Heal the placeable so it doesn't get destroyed.
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(9999), tower.Object);
 
-            var durability = _durability.GetDurability(weapon) - _random.RandomFloat(0.01f, 0.03f);
-            _durability.SetDurability(weapon, durability);
+            var durability = DurabilityService.GetDurability(weapon) - RandomService.RandomFloat(0.01f, 0.03f);
+            DurabilityService.SetDurability(weapon, durability);
 
             // If the shields have fallen to zero, the tower will begin to take structure damage.
             if (pcBase.ShieldHP <= 0)
             {
                 pcBase.ShieldHP = 0;
                 
-                structure.Durability -= _random.RandomFloat(0.5f, 2.0f);
+                structure.Durability -= RandomService.RandomFloat(0.5f, 2.0f);
                 if (structure.Durability < 0.0f) structure.Durability = 0.0f;
                 attacker.SendMessage("Structure Durability: " + structure.Durability.ToString("0.00"));
 
@@ -99,13 +80,13 @@ namespace SWLOR.Game.Server.Placeable.ControlTower
                 if (structure.Durability <= 0.0f)
                 {
                     structure.Durability = 0.0f;
-                    _base.ClearPCBaseByID(pcBase.ID, true, false);
+                    BaseService.ClearPCBaseByID(pcBase.ID, true, false);
                     return true;
                 }
             }
 
-            _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
-            _data.SubmitDataChange(structure, DatabaseActionType.Update);
+            DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
+            DataService.SubmitDataChange(structure, DatabaseActionType.Update);
             return true;
         }
     }

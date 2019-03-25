@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace SWLOR.Tools.Editor.Messages
+﻿namespace SWLOR.Tools.Editor.Messages
 {
     public class DataObjectsLoadedFromDisk
     {

@@ -5,37 +5,16 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Conversation
 {
     public class MarketTerminal: ConversationBase
     {
-        private readonly IColorTokenService _color;
-        private readonly IMarketService _market;
-        private readonly IDataService _data;
-        private readonly ISerializationService _serialization;
-        private readonly ITimeService _time;
-
-        public MarketTerminal(
-            INWScript script, 
-            IDialogService dialog,
-            IColorTokenService color,
-            IMarketService market,
-            IDataService data,
-            ISerializationService serialization,
-            ITimeService time) 
-            : base(script, dialog)
-        {
-            _color = color;
-            _market = market;
-            _data = data;
-            _serialization = serialization;
-            _time = time;
-        }
 
         public override PlayerDialog SetUp(NWPlayer player)
         {
@@ -43,14 +22,14 @@ namespace SWLOR.Game.Server.Conversation
 
             // Entry point into conversation for selecting Buy or Sell
             DialogPage mainPage = new DialogPage(
-                _color.Green("Galactic Trade Network"),
+                ColorTokenService.Green("Galactic Trade Network"),
                 "Buy",
                 "Sell",
                 "Manage Market Listings");
 
             // Page for selecting browse method - either by category or by seller
             DialogPage buyPage = new DialogPage(
-                _color.Green("Galactic Trade Network - Buy"),
+                ColorTokenService.Green("Galactic Trade Network - Buy"),
                 "Browse by Category",
                 "Browse by Seller");
 
@@ -72,14 +51,14 @@ namespace SWLOR.Game.Server.Conversation
             
             // Page for selling an item.
             DialogPage sellItemPage = new DialogPage(
-                _color.Green("Galactic Trade Network - Sell Item"),
-                _color.Green("Refresh"),
+                ColorTokenService.Green("Galactic Trade Network - Sell Item"),
+                ColorTokenService.Green("Refresh"),
                 "Pick an Item",
                 "Change Price",
                 "Change Seller Note",
                 "Remove Seller Note",
                 "Change Listing Length",
-                _color.Green("List the Item"));
+                ColorTokenService.Green("List the Item"));
 
             // Page for setting a price on an item.
             DialogPage changePricePage = new DialogPage(
@@ -108,13 +87,13 @@ namespace SWLOR.Game.Server.Conversation
 
             // Page for viewing items currently being sold by the player.
             DialogPage marketListingsPage = new DialogPage(
-                _color.Green("Galactic Trade Market - Manage Market Listings"));
+                ColorTokenService.Green("Galactic Trade Market - Manage Market Listings"));
 
             // Page for viewing detailed information about a market listing.
             DialogPage marketListingDetailsPage = new DialogPage(
                 "<SET LATER>",
-                _color.Green("Refresh"),
-                _color.Red("Remove Listing"));
+                ColorTokenService.Green("Refresh"),
+                ColorTokenService.Red("Remove Listing"));
 
             dialog.AddPage("MainPage", mainPage);
             dialog.AddPage("BuyPage", buyPage);
@@ -133,7 +112,7 @@ namespace SWLOR.Game.Server.Conversation
         public override void Initialize()
         {
             var player = GetPC();
-            var model = _market.GetPlayerMarketData(player);
+            var model = MarketService.GetPlayerMarketData(player);
 
             // Player is returning from an item preview.
             // Send them to the Item Details page.
@@ -204,7 +183,7 @@ namespace SWLOR.Game.Server.Conversation
         private void MainPageResponses(int responseID)
         {
             var player = GetPC();
-            var model = _market.GetPlayerMarketData(player);
+            var model = MarketService.GetPlayerMarketData(player);
 
             switch (responseID)
             {
@@ -242,22 +221,22 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadBrowseByCategoryPage()
         {
-            string header = _color.Green("Galactic Trade Network - Browse by Category") + "\n\n";
+            string header = ColorTokenService.Green("Galactic Trade Network - Browse by Category") + "\n\n";
             header += "Please select a category.";
             SetPageHeader("BrowseByCategoryPage", header);
 
             NWPlaceable terminal = Object.OBJECT_SELF;
-            int marketRegionID = _market.GetMarketRegionID(terminal);
-            IEnumerable<PCMarketListing> listings = _data.Where<PCMarketListing>(x => x.DateExpires > DateTime.UtcNow &&
+            int marketRegionID = MarketService.GetMarketRegionID(terminal);
+            IEnumerable<PCMarketListing> listings = DataService.Where<PCMarketListing>(x => x.DateExpires > DateTime.UtcNow &&
                                                                                       x.MarketRegionID == marketRegionID &&
                                                                                       x.DateSold == null &&
                                                                                       x.DateRemoved == null);
             IEnumerable<int> categoryIDs = listings.Select(s => s.MarketCategoryID).Distinct();
-            IEnumerable<MarketCategory> categories = _data.Where<MarketCategory>(x => categoryIDs.Contains(x.ID))
+            IEnumerable<MarketCategory> categories = DataService.Where<MarketCategory>(x => categoryIDs.Contains(x.ID))
                 .OrderBy(o => o.Name);
 
             ClearPageResponses("BrowseByCategoryPage");
-            AddResponseToPage("BrowseByCategoryPage", _color.Green("Refresh"), true, -1);
+            AddResponseToPage("BrowseByCategoryPage", ColorTokenService.Green("Refresh"), true, -1);
             foreach (var category in categories)
             {
                 AddResponseToPage("BrowseByCategoryPage", category.Name, true, category.ID);
@@ -276,7 +255,7 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            var model = _market.GetPlayerMarketData(GetPC());
+            var model = MarketService.GetPlayerMarketData(GetPC());
             model.BrowseMode = MarketBrowseMode.ByCategory;
             model.BrowseCategoryID = categoryID;
             LoadItemListPage();
@@ -285,22 +264,22 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadBrowseBySellerPage()
         {
-            string header = _color.Green("Galactic Trade Network - Browse by Seller") + "\n\n";
+            string header = ColorTokenService.Green("Galactic Trade Network - Browse by Seller") + "\n\n";
             header += "Please select a seller.";
             SetPageHeader("BrowseBySellerPage", header);
 
             NWPlaceable terminal = Object.OBJECT_SELF;
-            int marketRegionID = _market.GetMarketRegionID(terminal);
-            IEnumerable<PCMarketListing> listings = _data.Where<PCMarketListing>(x => x.DateExpires > DateTime.UtcNow &&
+            int marketRegionID = MarketService.GetMarketRegionID(terminal);
+            IEnumerable<PCMarketListing> listings = DataService.Where<PCMarketListing>(x => x.DateExpires > DateTime.UtcNow &&
                                                                                       x.MarketRegionID == marketRegionID &&
                                                                                       x.DateSold == null &&
                                                                                       x.DateRemoved == null);
             IEnumerable<Guid> playerIDs = listings.Select(s => s.SellerPlayerID).Distinct();
-            IEnumerable<Player> players = _data.Where<Player>(x => playerIDs.Contains(x.ID))
+            IEnumerable<Player> players = DataService.Where<Player>(x => playerIDs.Contains(x.ID))
                 .OrderBy(o => o.CharacterName);
 
             ClearPageResponses("BrowseBySellerPage");
-            AddResponseToPage("BrowseBySellerPage", _color.Green("Refresh"), true, Guid.Empty);
+            AddResponseToPage("BrowseBySellerPage", ColorTokenService.Green("Refresh"), true, Guid.Empty);
             foreach (var player in players)
             {
                 AddResponseToPage("BrowseBySellerPage", player.CharacterName, true, player.ID);
@@ -319,7 +298,7 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            var model = _market.GetPlayerMarketData(GetPC());
+            var model = MarketService.GetPlayerMarketData(GetPC());
             model.BrowseMode = MarketBrowseMode.BySeller;
             model.BrowsePlayerID = playerID;
             LoadItemListPage();
@@ -328,15 +307,15 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadItemListPage()
         {
-            var model = _market.GetPlayerMarketData(GetPC());
+            var model = MarketService.GetPlayerMarketData(GetPC());
             IEnumerable<PCMarketListing> listings;
             DateTime now = DateTime.UtcNow;
-            int marketRegionID = _market.GetMarketRegionID(Object.OBJECT_SELF);
+            int marketRegionID = MarketService.GetMarketRegionID(Object.OBJECT_SELF);
             
             // Pull items by category
             if (model.BrowseMode == MarketBrowseMode.ByCategory)
             {
-                listings = _data.Where<PCMarketListing>(x => x.DateExpires > now &&
+                listings = DataService.Where<PCMarketListing>(x => x.DateExpires > now &&
                                                              x.MarketRegionID == marketRegionID &&
                                                              x.MarketCategoryID == model.BrowseCategoryID &&
                                                              x.DateSold == null &&
@@ -345,7 +324,7 @@ namespace SWLOR.Game.Server.Conversation
             // Pull items being sold by a specific player
             else
             {
-                listings = _data.Where<PCMarketListing>(x => x.DateExpires > now &&
+                listings = DataService.Where<PCMarketListing>(x => x.DateExpires > now &&
                                                              x.MarketRegionID == marketRegionID &&
                                                              x.SellerPlayerID == model.BrowsePlayerID &&
                                                              x.DateSold == null &&
@@ -354,7 +333,7 @@ namespace SWLOR.Game.Server.Conversation
 
             // Build the response list.
             ClearPageResponses("ItemListPage");
-            AddResponseToPage("ItemListPage", _color.Green("Refresh"), true, Guid.Empty);
+            AddResponseToPage("ItemListPage", ColorTokenService.Green("Refresh"), true, Guid.Empty);
             foreach (var listing in listings)
             {
                 string listingName = BuildItemName(listing);
@@ -388,7 +367,7 @@ namespace SWLOR.Game.Server.Conversation
 
             // If the item no longer exists on the market (expired, bought, or listing removed)
             // notify the player and refresh the item list page.
-            var listing = _data.SingleOrDefault<PCMarketListing>(x => x.ID == listingID && 
+            var listing = DataService.SingleOrDefault<PCMarketListing>(x => x.ID == listingID && 
                                                                       x.DateSold == null);
             if (listing == null || listing.DateExpires <= DateTime.UtcNow)
             {
@@ -397,7 +376,7 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            var model = _market.GetPlayerMarketData(player);
+            var model = MarketService.GetPlayerMarketData(player);
             model.BrowseListingID = listingID;
             LoadItemDetailsPage();
             ChangePage("ItemDetailsPage");
@@ -406,20 +385,20 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadItemDetailsPage()
         {
             var player = GetPC();
-            var model = _market.GetPlayerMarketData(player);
-            var listing = _data.Single<PCMarketListing>(x => x.ID == model.BrowseListingID);
+            var model = MarketService.GetPlayerMarketData(player);
+            var listing = DataService.Single<PCMarketListing>(x => x.ID == model.BrowseListingID);
             string sellerNote = listing.Note;
             if (string.IsNullOrWhiteSpace(listing.Note))
                 sellerNote = "[UNSPECIFIED]";
 
-            string header = _color.Green("Galactic Trade Network") + "\n\n";
-            header += _color.Green("Name: ") + listing.ItemStackSize + "x " + listing.ItemName + "\n";
+            string header = ColorTokenService.Green("Galactic Trade Network") + "\n\n";
+            header += ColorTokenService.Green("Name: ") + listing.ItemStackSize + "x " + listing.ItemName + "\n";
 
             if(listing.ItemRecommendedLevel > 0)
-                header += _color.Green("Recommended Level: ") + listing.ItemRecommendedLevel + "\n";
+                header += ColorTokenService.Green("Recommended Level: ") + listing.ItemRecommendedLevel + "\n";
 
-            header += _color.Green("Price: ") + listing.Price + " credits\n";
-            header += _color.Green("Seller Note: ") + sellerNote + "\n";
+            header += ColorTokenService.Green("Price: ") + listing.Price + " credits\n";
+            header += ColorTokenService.Green("Seller Note: ") + sellerNote + "\n";
 
             SetPageHeader("ItemDetailsPage", header);
 
@@ -438,8 +417,8 @@ namespace SWLOR.Game.Server.Conversation
         private void ItemDetailsPageResponses(int responseID)
         {
             var buyer = GetPC();
-            var model = _market.GetPlayerMarketData(buyer);
-            var listing = _data.SingleOrDefault<PCMarketListing>(x => x.ID == model.BrowseListingID && 
+            var model = MarketService.GetPlayerMarketData(buyer);
+            var listing = DataService.SingleOrDefault<PCMarketListing>(x => x.ID == model.BrowseListingID && 
                                                                       x.DateSold == null);
             NWPlaceable terminal = GetDialogTarget().Object;
             
@@ -456,7 +435,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 case 1: // Examine Item
                     _.CreateItemOnObject("exit_preview", terminal);
-                    NWItem item = _serialization.DeserializeItem(listing.ItemObject, terminal);
+                    NWItem item = SerializationService.DeserializeItem(listing.ItemObject, terminal);
                     item.IsCursed = true;
                     OpenTerminalInventory();
                     break;
@@ -479,15 +458,15 @@ namespace SWLOR.Game.Server.Conversation
                         _.TakeGoldFromCreature(listing.Price, buyer, TRUE);
 
                         // Give gold to seller.
-                        _market.GiveMarketGoldToPlayer(listing.SellerPlayerID, listing.Price);
+                        MarketService.GiveMarketGoldToPlayer(listing.SellerPlayerID, listing.Price);
 
                         // Give the item to the buyer.
-                        _serialization.DeserializeItem(listing.ItemObject, buyer);
+                        SerializationService.DeserializeItem(listing.ItemObject, buyer);
 
                         // Mark the listing as sold.
                         listing.DateSold = DateTime.UtcNow;
                         listing.BuyerPlayerID = buyer.GlobalID;
-                        _data.SubmitDataChange(listing, DatabaseActionType.Update);
+                        DataService.SubmitDataChange(listing, DatabaseActionType.Update);
                         
                         model.IsConfirming = false;
                         SetResponseText("ItemDetailsPage", 2, "Buy Item");
@@ -508,21 +487,21 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadSellItemPage()
         {
             var player = GetPC();
-            var model = _market.GetPlayerMarketData(player);
+            var model = MarketService.GetPlayerMarketData(player);
             string header;
 
             // A null or empty item object signifies that an item hasn't been selected for selling yet.
             // Hide all options except for "Pick Item"
             if (string.IsNullOrWhiteSpace(model.ItemObject))
             {
-                int numberItemsSelling = _data
+                int numberItemsSelling = DataService
                     .Where<PCMarketListing>(x => x.SellerPlayerID == player.GlobalID &&
                                                  x.DateRemoved == null &&
                                                  x.DateSold == null)
                     .Count;
-                bool canSellAnotherItem = numberItemsSelling < _market.NumberOfItemsAllowedToBeSoldAtATime;
-                header = _color.Green("Galactic Trade Network - Sell Item") + "\n\n";
-                header += _color.Green("Items Selling: ") + numberItemsSelling + " / " + _market.NumberOfItemsAllowedToBeSoldAtATime + "\n\n";
+                bool canSellAnotherItem = numberItemsSelling < MarketService.NumberOfItemsAllowedToBeSoldAtATime;
+                header = ColorTokenService.Green("Galactic Trade Network - Sell Item") + "\n\n";
+                header += ColorTokenService.Green("Items Selling: ") + numberItemsSelling + " / " + MarketService.NumberOfItemsAllowedToBeSoldAtATime + "\n\n";
 
                 if (canSellAnotherItem)
                 {
@@ -544,8 +523,8 @@ namespace SWLOR.Game.Server.Conversation
             // Otherwise an item has already been picked.
             else
             {
-                MarketCategory category = _data.Get<MarketCategory>(model.ItemMarketCategoryID);
-                float feeRate = _market.CalculateFeePercentage(model.LengthDays);
+                MarketCategory category = DataService.Get<MarketCategory>(model.ItemMarketCategoryID);
+                float feeRate = MarketService.CalculateFeePercentage(model.LengthDays);
                 int fees = (int)(model.SellPrice * feeRate);
                 if (fees < 1) fees = 1;
                 bool canListItem = model.SellPrice > 0;
@@ -553,25 +532,25 @@ namespace SWLOR.Game.Server.Conversation
                 if (string.IsNullOrWhiteSpace(sellerNote))
                     sellerNote = "[NOT SPECIFIED]";
                 
-                header = _color.Green("Galactic Trade Network - Sell Item") + "\n\n";
-                header += _color.Green("Item: ") + model.ItemStackSize + "x " + model.ItemName + "\n";
-                header += _color.Green("Category: ") + category.Name + "\n";
+                header = ColorTokenService.Green("Galactic Trade Network - Sell Item") + "\n\n";
+                header += ColorTokenService.Green("Item: ") + model.ItemStackSize + "x " + model.ItemName + "\n";
+                header += ColorTokenService.Green("Category: ") + category.Name + "\n";
 
                 if(model.ItemRecommendedLevel > 0)
-                    header += _color.Green("Recommended Level: ") + model.ItemRecommendedLevel + "\n";
+                    header += ColorTokenService.Green("Recommended Level: ") + model.ItemRecommendedLevel + "\n";
 
-                header += _color.Green("Sell Price: ") + model.SellPrice + " credits\n";
-                header += _color.Green("Fees: ") + fees + " credits\n";
-                header += _color.Green("Listing Length: ") + model.LengthDays + " days\n";
-                header += _color.Green("Seller Note: ") + sellerNote + "\n\n";
+                header += ColorTokenService.Green("Sell Price: ") + model.SellPrice + " credits\n";
+                header += ColorTokenService.Green("Fees: ") + fees + " credits\n";
+                header += ColorTokenService.Green("Listing Length: ") + model.LengthDays + " days\n";
+                header += ColorTokenService.Green("Seller Note: ") + sellerNote + "\n\n";
 
                 if (canListItem)
                 {
-                    header += _color.Green("This item can be listed now.");
+                    header += ColorTokenService.Green("This item can be listed now.");
                 }
                 else
                 {
-                    header += _color.Red("This item cannot be listed yet. Please confirm all details - such as pricing - have been set.");
+                    header += ColorTokenService.Red("This item cannot be listed yet. Please confirm all details - such as pricing - have been set.");
                 }
 
                 SetResponseVisible("SellItemPage", 1, true);  // Refresh
@@ -590,7 +569,7 @@ namespace SWLOR.Game.Server.Conversation
         private void SellItemPageResponses(int responseID)
         {
             var player = GetPC();
-            var model = _market.GetPlayerMarketData(player);
+            var model = MarketService.GetPlayerMarketData(player);
 
             switch (responseID)
             {
@@ -625,9 +604,9 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadChangePricePage()
         {
             var player = GetPC();
-            var model = _market.GetPlayerMarketData(player);
-            string header = _color.Green("Galactic Trade Network - Change Sell Price") + "\n\n";
-            header += _color.Green("Current Price: ") + model.SellPrice;
+            var model = MarketService.GetPlayerMarketData(player);
+            string header = ColorTokenService.Green("Galactic Trade Network - Change Sell Price") + "\n\n";
+            header += ColorTokenService.Green("Current Price: ") + model.SellPrice;
 
             SetPageHeader("ChangePricePage", header);
         }
@@ -635,7 +614,7 @@ namespace SWLOR.Game.Server.Conversation
         private void ChangePricePageResponses(int responseID)
         {
             var player = GetPC();
-            var model = _market.GetPlayerMarketData(player);
+            var model = MarketService.GetPlayerMarketData(player);
 
             switch (responseID)
             {
@@ -688,13 +667,13 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadChangeListingLengthPage()
         {
             var player = GetPC();
-            var model = _market.GetPlayerMarketData(player);
-            float feePercentage = _market.CalculateFeePercentage(model.LengthDays) * 100;
+            var model = MarketService.GetPlayerMarketData(player);
+            float feePercentage = MarketService.CalculateFeePercentage(model.LengthDays) * 100;
             
-            string header = _color.Green("Galactic Trade Network - Change Listing Length") + "\n\n";
+            string header = ColorTokenService.Green("Galactic Trade Network - Change Listing Length") + "\n\n";
             header += "Items will be listed, by default, for 7 days (real world time). You may increase or decrease this length as you see fit. A fee of 0.1% per day will be applied to the listing. (7 days = 0.7% fee).\n\n";
-            header += _color.Green("Days to List: ") + model.LengthDays + "\n";
-            header += _color.Green("Fees: ") + feePercentage.ToString("0.0") + "%";
+            header += ColorTokenService.Green("Days to List: ") + model.LengthDays + "\n";
+            header += ColorTokenService.Green("Fees: ") + feePercentage.ToString("0.0") + "%";
 
             SetPageHeader("ChangeListingLengthPage", header);
         }
@@ -702,7 +681,7 @@ namespace SWLOR.Game.Server.Conversation
         private void ChangeListingLengthPageResponses(int responseID)
         {
             var player = GetPC();
-            var model = _market.GetPlayerMarketData(player);
+            var model = MarketService.GetPlayerMarketData(player);
 
             switch (responseID)
             {
@@ -738,9 +717,9 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var terminal = Object.OBJECT_SELF;
-            var model = _market.GetPlayerMarketData(player);
-            var marketRegionID = _market.GetMarketRegionID(terminal);
-            var feeRate = _market.CalculateFeePercentage(model.LengthDays);
+            var model = MarketService.GetPlayerMarketData(player);
+            var marketRegionID = MarketService.GetMarketRegionID(terminal);
+            var feeRate = MarketService.CalculateFeePercentage(model.LengthDays);
             int fees = (int)(model.SellPrice * feeRate);
             if (fees < 1) fees = 1;
 
@@ -772,7 +751,7 @@ namespace SWLOR.Game.Server.Conversation
                 ItemStackSize = model.ItemStackSize
             };
 
-            _data.SubmitDataChange(listing, DatabaseActionType.Insert);
+            DataService.SubmitDataChange(listing, DatabaseActionType.Insert);
             player.FloatingText("Item listed for sale!");
             ClearNavigationStack();
             ClearModelData();
@@ -781,13 +760,13 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadManageMarketListingsPage()
         {
-            string header = _color.Green("Galactic Trade Market - Manage Market Listings") + "\n\n";
+            string header = ColorTokenService.Green("Galactic Trade Market - Manage Market Listings") + "\n\n";
             header += "The following is a list of items you are currently selling. Pick one to edit or remove the listing.";
             SetPageHeader("MarketListingsPage", header);
 
             var player = GetPC();
-            var regionID = _market.GetMarketRegionID(Object.OBJECT_SELF);
-            var listings = _data.Where<PCMarketListing>(x => x.SellerPlayerID == player.GlobalID && 
+            var regionID = MarketService.GetMarketRegionID(Object.OBJECT_SELF);
+            var listings = DataService.Where<PCMarketListing>(x => x.SellerPlayerID == player.GlobalID && 
                                                              x.DateSold == null &&
                                                              x.DateRemoved == null &&
                                                              x.MarketRegionID == regionID);
@@ -799,7 +778,7 @@ namespace SWLOR.Game.Server.Conversation
 
                 // Display an EXPIRED tag on the item name if the listing has expired.
                 if (listing.DateExpires < DateTime.UtcNow)
-                    itemName += _color.Red(" [EXPIRED]");
+                    itemName += ColorTokenService.Red(" [EXPIRED]");
 
                 AddResponseToPage("MarketListingsPage", itemName, true, listing.ID);
             }
@@ -809,11 +788,11 @@ namespace SWLOR.Game.Server.Conversation
         {
             var response = GetResponseByID("MarketListingsPage", responseID);
             var player = GetPC();
-            var model = _market.GetPlayerMarketData(player);
+            var model = MarketService.GetPlayerMarketData(player);
             model.ManageListingID = (Guid)response.CustomData;
 
             // Populate the temporary data model for use on other pages.
-            var listing = _data.Get<PCMarketListing>(model.ManageListingID);
+            var listing = DataService.Get<PCMarketListing>(model.ManageListingID);
             model.ItemID = new Guid(listing.ItemID);
             model.ItemName = listing.ItemName;
             model.ItemTag = listing.ItemTag;
@@ -834,30 +813,30 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadManageMarketListingDetailsPage()
         {
             var player = GetPC();
-            var model = _market.GetPlayerMarketData(player);
-            var category = _data.Get<MarketCategory>(model.ItemMarketCategoryID);
+            var model = MarketService.GetPlayerMarketData(player);
+            var category = DataService.Get<MarketCategory>(model.ItemMarketCategoryID);
 
             // Build the header
-            string header = _color.Green("Galactic Trade Market - Manage Market Listing") + "\n\n";
-            header += _color.Green("Item: ") + model.ItemStackSize + "x " + model.ItemName + "\n";
-            header += _color.Green("Category: ") + category.Name + "\n";
+            string header = ColorTokenService.Green("Galactic Trade Market - Manage Market Listing") + "\n\n";
+            header += ColorTokenService.Green("Item: ") + model.ItemStackSize + "x " + model.ItemName + "\n";
+            header += ColorTokenService.Green("Category: ") + category.Name + "\n";
 
             if (model.ItemRecommendedLevel > 0)
-                header += _color.Green("Recommended Level: ") + model.ItemRecommendedLevel + "\n";
+                header += ColorTokenService.Green("Recommended Level: ") + model.ItemRecommendedLevel + "\n";
 
-            header += _color.Green("Sell Price: ") + model.SellPrice + " credits\n";
-            header += _color.Green("Seller Note: ") + model.SellerNote + "\n\n";
+            header += ColorTokenService.Green("Sell Price: ") + model.SellPrice + " credits\n";
+            header += ColorTokenService.Green("Seller Note: ") + model.SellerNote + "\n\n";
 
             if (model.IsListingExpired)
             {
-                header += _color.Red("This listing has expired.");
+                header += ColorTokenService.Red("This listing has expired.");
             }
             else
             {
                 DateTime now = DateTime.UtcNow;
                 var delta = model.ListingExpirationDate - now;
-                string expirationTime = _time.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
-                header += _color.Green("This listing expires in " + expirationTime + ".");
+                string expirationTime = TimeService.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
+                header += ColorTokenService.Green("This listing expires in " + expirationTime + ".");
             }
 
             SetPageHeader("MarketListingDetailsPage", header);
@@ -867,7 +846,7 @@ namespace SWLOR.Game.Server.Conversation
         private void ManageMarketListingDetailsResponses(int responseID)
         {
             var player = GetPC();
-            var model = _market.GetPlayerMarketData(player);
+            var model = MarketService.GetPlayerMarketData(player);
 
             switch (responseID)
             {
@@ -876,7 +855,7 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case 2: // Remove Listing
 
-                    var listing = _data.Get<PCMarketListing>(model.ManageListingID);
+                    var listing = DataService.Get<PCMarketListing>(model.ManageListingID);
 
                     // Start by verifying the item is still in a valid state.
                     if (listing.DateRemoved != null ||
@@ -892,12 +871,12 @@ namespace SWLOR.Game.Server.Conversation
 
                     if (model.IsConfirming)
                     {
-                        SetResponseText("MarketListingDetailsPage", 2, _color.Red("Remove Listing"));
+                        SetResponseText("MarketListingDetailsPage", 2, ColorTokenService.Red("Remove Listing"));
                         model.IsConfirming = false;
                         
-                        _serialization.DeserializeItem(listing.ItemObject, player);
+                        SerializationService.DeserializeItem(listing.ItemObject, player);
                         listing.DateRemoved = DateTime.UtcNow;
-                        _data.SubmitDataChange(listing, DatabaseActionType.Update);
+                        DataService.SubmitDataChange(listing, DatabaseActionType.Update);
 
                         ClearModelData();
                         LoadManageMarketListingsPage();
@@ -906,7 +885,7 @@ namespace SWLOR.Game.Server.Conversation
                     }
                     else
                     {
-                        SetResponseText("MarketListingDetailsPage", 2, _color.Red("CONFIRM REMOVE LISTING"));
+                        SetResponseText("MarketListingDetailsPage", 2, ColorTokenService.Red("CONFIRM REMOVE LISTING"));
                         model.IsConfirming = true;
                     }
 
@@ -916,7 +895,7 @@ namespace SWLOR.Game.Server.Conversation
         
         public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
         {
-            var model = _market.GetPlayerMarketData(player);
+            var model = MarketService.GetPlayerMarketData(player);
 
             // Leaving the Item Details page.
             if (beforeMovePage == "ItemDetailsPage")
@@ -933,7 +912,7 @@ namespace SWLOR.Game.Server.Conversation
             else if (beforeMovePage == "MarketListingDetailsPage")
             {
                 ClearModelData();
-                SetResponseText("MarketListingDetailsPage", 2, _color.Red("Remove Listing"));
+                SetResponseText("MarketListingDetailsPage", 2, ColorTokenService.Red("Remove Listing"));
             }
             // Returning to the Sell Item page.
             else if (afterMovePage == "SellItemPage")
@@ -961,13 +940,13 @@ namespace SWLOR.Game.Server.Conversation
         private void ReturnSellingItem()
         {
             var player = GetPC();
-            var model = _market.GetPlayerMarketData(player);
+            var model = MarketService.GetPlayerMarketData(player);
 
             if (!model.IsSellingItem) return; // Prevent the "Manage Listings" page from firing this.
 
             if (!string.IsNullOrWhiteSpace(model.ItemObject))
             {
-                _serialization.DeserializeItem(model.ItemObject, player);
+                SerializationService.DeserializeItem(model.ItemObject, player);
             }
 
             ClearModelData();
@@ -976,7 +955,7 @@ namespace SWLOR.Game.Server.Conversation
         private void ClearModelData()
         {
             var player = GetPC();
-            var model = _market.GetPlayerMarketData(player);
+            var model = MarketService.GetPlayerMarketData(player);
 
             model.ItemID = Guid.Empty;
             model.ItemName = string.Empty;
@@ -995,20 +974,20 @@ namespace SWLOR.Game.Server.Conversation
         public override void EndDialog()
         {
             var pc = GetPC();
-            var model = _market.GetPlayerMarketData(pc);
+            var model = MarketService.GetPlayerMarketData(pc);
 
             // We'll only wipe the data if the player isn't accessing the inventory or otherwise
             // changing contexts.
             if (!model.IsAccessingInventory)
             {
                 ReturnSellingItem();
-                _market.ClearPlayerMarketData(pc);
+                MarketService.ClearPlayerMarketData(pc);
             }
         }
 
         private void OpenTerminalInventory()
         {
-            var model = _market.GetPlayerMarketData(GetPC());
+            var model = MarketService.GetPlayerMarketData(GetPC());
             NWPlaceable terminal = GetDialogTarget().Object;
             terminal.IsLocked = false;
             model.IsAccessingInventory = true;

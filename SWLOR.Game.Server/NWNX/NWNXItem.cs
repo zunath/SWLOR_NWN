@@ -1,22 +1,15 @@
-﻿using NWN;
-using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.GameObject;
 
-using SWLOR.Game.Server.NWNX.Contracts;
+using static SWLOR.Game.Server.NWNX.NWNXCore;
 
 namespace SWLOR.Game.Server.NWNX
 {
-    public class NWNXItem : NWNXBase, INWNXItem
+    public static class NWNXItem
     {
-        public NWNXItem(INWScript script)
-            : base(script)
-        {
-        }
-
-
         private const string NWNX_Item = "NWNX_Item";
 
         // Set oItem's weight. Will not persist through saving.
-        public void SetWeight(NWItem oItem, int w)
+        public static void SetWeight(NWItem oItem, int w)
         {
             string sFunc = "SetWeight";
 
@@ -29,7 +22,7 @@ namespace SWLOR.Game.Server.NWNX
         // Set oItem's base value in gold pieces (Total cost = base_value +
         // additional_value). Will not persist through saving.
         // NOTE: Equivalent to SetGoldPieceValue NWNX2 function
-        public void SetBaseGoldPieceValue(NWItem oItem, int g)
+        public static void SetBaseGoldPieceValue(NWItem oItem, int g)
         {
             string sFunc = "SetBaseGoldPieceValue";
 
@@ -41,7 +34,7 @@ namespace SWLOR.Game.Server.NWNX
 
         // Set oItem's additional value in gold pieces (Total cost = base_value +
         // additional_value). Will persist through saving.
-        public void SetAddGoldPieceValue(NWItem oItem, int g)
+        public static void SetAddGoldPieceValue(NWItem oItem, int g)
         {
             string sFunc = "SetAddGoldPieceValue";
 
@@ -52,7 +45,7 @@ namespace SWLOR.Game.Server.NWNX
         }
 
         // Get oItem's base value in gold pieces.
-        public int GetBaseGoldPieceValue(NWItem oItem)
+        public static int GetBaseGoldPieceValue(NWItem oItem)
         {
             string sFunc = "GetBaseGoldPieceValue";
 
@@ -63,7 +56,7 @@ namespace SWLOR.Game.Server.NWNX
         }
 
         // Get oItem's additional value in gold pieces.
-        public int GetAddGoldPieceValue(NWItem oItem)
+        public static int GetAddGoldPieceValue(NWItem oItem)
         {
             string sFunc = "GetAddGoldPieceValue";
 
@@ -76,7 +69,7 @@ namespace SWLOR.Game.Server.NWNX
         // Set oItem's base item type. This will not be visible until the
         // item is refreshed (e.g. drop and take the item, or logging out
         // and back in).
-        public void SetBaseItemType(NWItem oItem, int nBaseItem)
+        public static void SetBaseItemType(NWItem oItem, int nBaseItem)
         {
             string sFunc = "SetBaseItemType";
 
@@ -107,7 +100,7 @@ namespace SWLOR.Game.Server.NWNX
         //
         // [1] When specifying per-part coloring, the value 255 corresponds with the logical
         // function 'clear colour override', which clears the per-part override for that part.
-        public void SetItemAppearance(NWItem oItem, int nType, int nIndex, int nValue)
+        public static void SetItemAppearance(NWItem oItem, int nType, int nIndex, int nValue)
         {
             string sFunc = "SetItemAppearance";
 
@@ -122,7 +115,7 @@ namespace SWLOR.Game.Server.NWNX
 
         // Return a String containing the entire appearance for oItem which can later be
         // passed to RestoreItemAppearance().
-        public string GetEntireItemAppearance(NWItem oItem)
+        public static string GetEntireItemAppearance(NWItem oItem)
         {
             string sFunc = "GetEntireItemAppearance";
 
@@ -133,7 +126,7 @@ namespace SWLOR.Game.Server.NWNX
         }
 
         // Restore an item's appearance with the value returned by GetEntireItemAppearance().
-        public void RestoreItemAppearance(NWItem oItem, string sApp)
+        public static void RestoreItemAppearance(NWItem oItem, string sApp)
         {
             string sFunc = "RestoreItemAppearance";
 
@@ -141,6 +134,17 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem.Object);
 
             NWNX_CallFunction(NWNX_Item, sFunc);
+        }
+
+
+        public static int GetBaseArmorClass(NWItem oItem)
+        {
+            string sFunc = "GetBaseArmorClass";
+
+            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem);
+
+            NWNX_CallFunction(NWNX_Item, sFunc);
+            return NWNX_GetReturnValueInt(NWNX_Item, sFunc);
         }
     }
 }

@@ -1,11 +1,11 @@
 ﻿using NWN;
-using SWLOR.Game.Server.Bioware.Contracts;
+using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
-using SWLOR.Game.Server.NWNX.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.ValueObject;
 using ComponentType = SWLOR.Game.Server.Data.Entity.ComponentType;
 
@@ -13,44 +13,6 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
 {
     public class ReassembleComplete: IRegisteredEvent
     {
-        private readonly INWScript _;
-        private readonly ISerializationService _serialization;
-        private readonly IDataService _data;
-        private readonly INWNXItemProperty _nwnxItemProperty;
-        private readonly IBiowareXP2 _biowareXP2;
-        private readonly ICraftService _craft;
-        private readonly IRandomService _random;
-        private readonly IColorTokenService _color;
-        private readonly IPerkService _perk;
-        private readonly IPlayerStatService _playerStat;
-        private readonly ISkillService _skill;
-
-        public ReassembleComplete(
-            INWScript script,
-            ISerializationService serialization,
-            IDataService data, 
-            INWNXItemProperty nwnxItemProperty,
-            IBiowareXP2 biowareXP2,
-            ICraftService craft,
-            IRandomService random,
-            IColorTokenService color,
-            IPerkService perk,
-            IPlayerStatService playerStat,
-            ISkillService skill)
-        {
-            _ = script;
-            _serialization = serialization;
-            _data = data;
-            _nwnxItemProperty = nwnxItemProperty;
-            _biowareXP2 = biowareXP2;
-            _craft = craft;
-            _random = random;
-            _color = color;
-            _perk = perk;
-            _playerStat = playerStat;
-            _skill = skill;
-        }
-
         private ComponentType _componentType;
         private NWPlayer _player;
         private EffectiveItemStats _playerItemStats;
@@ -59,7 +21,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
         public bool Run(params object[] args)
         {
             _player = (NWPlayer) args[0];
-            _playerItemStats = _playerStat.GetPlayerItemEffectiveStats(_player);
+            _playerItemStats = PlayerStatService.GetPlayerItemEffectiveStats(_player);
             int xp = 100; // Always grant at least this much XP to player.
 
             // Remove the immobilization effect
@@ -73,9 +35,9 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
 
             string serializedSalvageItem = (string)args[1];
             NWPlaceable tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
-            NWItem item = _serialization.DeserializeItem(serializedSalvageItem, tempStorage);
+            NWItem item = SerializationService.DeserializeItem(serializedSalvageItem, tempStorage);
             int salvageComponentTypeID = (int) args[2];
-            _componentType = _data.Get<ComponentType>(salvageComponentTypeID);
+            _componentType = DataService.Get<ComponentType>(salvageComponentTypeID);
             
             // Create an item with no bonuses every time.
             _.CreateItemOnObject(_componentType.ReassembledResref, _player);
@@ -84,7 +46,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
             foreach (var prop in item.ItemProperties)
             {
                 int propTypeID = _.GetItemPropertyType(prop);
-                if (propTypeID == NWScript.ITEM_PROPERTY_ATTACK_BONUS)
+                if (propTypeID == _.ITEM_PROPERTY_ATTACK_BONUS)
                 {
                     // Get the amount of Attack Bonus
                     int amount = _.GetItemPropertyCostTableValue(prop);
@@ -140,7 +102,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
             
             item.Destroy();
 
-            _skill.GiveSkillXP(_player, SkillType.Harvesting, xp);
+            SkillService.GiveSkillXP(_player, SkillType.Harvesting, xp);
             return true;
         }
 
@@ -148,7 +110,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
         {
             string resref = _componentType.ReassembledResref;
             int penalty = 0;
-            int luck = _perk.GetPCPerkLevel(_player, PerkType.Lucky) + (_playerItemStats.Luck / 3);
+            int luck = PerkService.GetPCPerkLevel(_player, PerkType.Lucky) + (_playerItemStats.Luck / 3);
             int xp = 0;
 
             ItemPropertyUnpacked bonusIP = new ItemPropertyUnpacked
@@ -167,12 +129,12 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
 
             while (amount > 0)
             {
-                int chanceToTransfer = _craft.CalculateReassemblyChance(_player, penalty);
+                int chanceToTransfer = CraftService.CalculateReassemblyChance(_player, penalty);
                 // Roll to see if the item can be created.
-                bool success = _random.Random(0, 100) <= chanceToTransfer;
+                bool success = RandomService.Random(0, 100) <= chanceToTransfer;
 
                 // Do a lucky roll if we failed the first time.
-                if (!success && luck > 0 && _random.Random(0, 100) <= luck)
+                if (!success && luck > 0 && RandomService.Random(0, 100) <= luck)
                 {
                     _player.SendMessage("Lucky reassemble!");
                     success = true;
@@ -185,17 +147,17 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
                         int levelIncrease = (int)(maxBonuses * levelsPerBonus);
                         // Roll succeeded. Create item.
                         bonusIP.CostTableValue = maxBonuses;
-                        ItemProperty bonusIPPacked = _nwnxItemProperty.PackIP(bonusIP);
+                        ItemProperty bonusIPPacked = NWNXItemProperty.PackIP(bonusIP);
                         NWItem item = _.CreateItemOnObject(resref, _player);
                         item.RecommendedLevel = levelIncrease;
-                        _biowareXP2.IPSafeAddItemProperty(item, bonusIPPacked, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
+                        BiowareXP2.IPSafeAddItemProperty(item, bonusIPPacked, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
 
-                        xp += (150 * maxBonuses + _random.Random(0, 5));
+                        xp += (150 * maxBonuses + RandomService.Random(0, 5));
                     }
                     else
                     {
-                        _player.SendMessage(_color.Red("You failed to create a component. (+" + maxBonuses + ")"));
-                        xp += (50 + _random.Random(0, 5));
+                        _player.SendMessage(ColorTokenService.Red("You failed to create a component. (+" + maxBonuses + ")"));
+                        xp += (50 + RandomService.Random(0, 5));
                     }
                     // Penalty to chance increases regardless if item was created or not.
                     penalty += (maxBonuses * 5);
@@ -207,17 +169,17 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
                     {
                         int levelIncrease = (int)(amount * levelsPerBonus);
                         bonusIP.CostTableValue = amount;
-                        ItemProperty bonusIPPacked = _nwnxItemProperty.PackIP(bonusIP);
+                        ItemProperty bonusIPPacked = NWNXItemProperty.PackIP(bonusIP);
                         NWItem item = _.CreateItemOnObject(resref, _player);
                         item.RecommendedLevel = levelIncrease;
-                        _biowareXP2.IPSafeAddItemProperty(item, bonusIPPacked, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
+                        BiowareXP2.IPSafeAddItemProperty(item, bonusIPPacked, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
 
-                        xp += (150 * amount + _random.Random(0, 5));
+                        xp += (150 * amount + RandomService.Random(0, 5));
                     }
                     else
                     {
-                        _player.SendMessage(_color.Red("You failed to create a component. (+" + amount + ")"));
-                        xp += (50 + _random.Random(0, 5));
+                        _player.SendMessage(ColorTokenService.Red("You failed to create a component. (+" + amount + ")"));
+                        xp += (50 + RandomService.Random(0, 5));
                     }
                     break;
                 }

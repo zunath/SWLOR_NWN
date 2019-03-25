@@ -1,18 +1,16 @@
 ﻿using System;
 using SWLOR.Game.Server.CustomEffect.Contracts;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 
 namespace SWLOR.Game.Server.CustomEffect
 {
-    public class ForcePackEffect: ICustomEffect
+    public class ForcePackEffect: ICustomEffectHandler
     {
-        private readonly IAbilityService _ability;
-
-        public ForcePackEffect(IAbilityService ability)
-        {
-            _ability = ability;
-        }
+        public CustomEffectCategoryType CustomEffectCategoryType => CustomEffectCategoryType.NormalEffect;
+        public CustomEffectType CustomEffectType => CustomEffectType.ForcePack;
 
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
@@ -27,11 +25,15 @@ namespace SWLOR.Game.Server.CustomEffect
 
             if (currentTick % interval != 0) return;
 
-            _ability.RestoreFP(oTarget.Object, amount);
+            AbilityService.RestoreFP(oTarget.Object, amount);
         }
 
         public void WearOff(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)
         {
         }
+
+        public string StartMessage => "A force pack has been applied on you.";
+        public string ContinueMessage => "";
+        public string WornOffMessage => "The force pack wears off.";
     }
 }

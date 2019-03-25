@@ -2,13 +2,16 @@
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.Messaging.Messages;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Processor.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 
 namespace SWLOR.Game.Server.Processor
 {
-    public class ServerRestartProcessor: IEventProcessor
+    public static class ServerRestartProcessor
     {
         public static DateTime RestartTime { get; private set; }
         private static DateTime _nextNotification;
@@ -16,22 +19,14 @@ namespace SWLOR.Game.Server.Processor
         public static bool IsDisabled { get; private set; }
         private const int DefaultRestartMinutes = 300; // 300 = 5 hours
         private const int NotificationIntervalMinutes = 60;
-        private readonly INWScript _;
-        private readonly INWNXAdmin _nwnxAdmin;
-        private readonly ITimeService _time;
-        private readonly IDataService _data;
 
-        public ServerRestartProcessor(
-            INWScript script,
-            INWNXAdmin nwnxAdmin,
-            ITimeService time,
-            IDataService data)
+        public static void SubscribeEvents()
         {
-            _ = script;
-            _nwnxAdmin = nwnxAdmin;
-            _time = time;
-            _data = data;
+            MessageHub.Instance.Subscribe<ObjectProcessorMessage>(message => Run());
+        }
 
+        static ServerRestartProcessor()   
+        {
             if (!_isLoaded)
             {
                 string autoRebootMinutes = Environment.GetEnvironmentVariable("AUTO_REBOOT_MINUTES");
@@ -58,7 +53,7 @@ namespace SWLOR.Game.Server.Processor
             }
         }
 
-        public void Run(object[] args)
+        private static void Run()
         {
             if (IsDisabled)
             {
@@ -75,12 +70,12 @@ namespace SWLOR.Game.Server.Processor
                     _.BootPC(player, "Server is automatically rebooting. This is a temporary solution until we can fix performance problems. Thank you for your patience and understanding.");
                 }
 
-                _nwnxAdmin.ShutdownServer();
+                NWNXAdmin.ShutdownServer();
             }
             else if(now >= _nextNotification)
             {
                 var delta = RestartTime - now;
-                string rebootString = _time.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
+                string rebootString = TimeService.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
                 string message = "Server will automatically reboot in " + rebootString;
                 foreach (var player in NWModule.Get().Players)
                 {
@@ -88,7 +83,7 @@ namespace SWLOR.Game.Server.Processor
                     player.FloatingText(message);
 
                     // If the player has a lease which is expiring in <= 24 hours, notify them.
-                    int leasesExpiring = _data.Where<PCBase>(x => x.DateRentDue.AddHours(-24) <= now && x.PlayerID == player.GlobalID).Count;
+                    int leasesExpiring = DataService.Where<PCBase>(x => x.DateRentDue.AddHours(-24) <= now && x.PlayerID == player.GlobalID).Count;
 
                     if (leasesExpiring > 0)
                     {

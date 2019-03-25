@@ -4,8 +4,10 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class LuckMod: IMod
+    public class LuckMod: IModHandler
     {
+        public int ModTypeID => 21;
+
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             if (target.LuckBonus >= 5)

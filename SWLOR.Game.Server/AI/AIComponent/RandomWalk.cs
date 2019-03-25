@@ -1,8 +1,8 @@
-﻿using FluentBehaviourTree;
-using NWN;
+﻿using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 
 namespace SWLOR.Game.Server.AI.AIComponent
 {
@@ -11,26 +11,13 @@ namespace SWLOR.Game.Server.AI.AIComponent
     /// </summary>
     public class RandomWalk : IRegisteredEvent
     {
-        private readonly INWScript _;
-        private readonly IEnmityService _enmity;
-        private readonly IRandomService _random;
-
-        public RandomWalk(INWScript script,
-            IEnmityService enmity,
-            IRandomService random)
-        {
-            _ = script;
-            _enmity = enmity;
-            _random = random;
-        }
-
         public bool Run(object[] args)
         {
             NWCreature self = (NWCreature)args[0];
 
-            if (self.IsInCombat || !_enmity.IsEnmityTableEmpty(self))
+            if (self.IsInCombat || !EnmityService.IsEnmityTableEmpty(self))
             {
-                if (_.GetCurrentAction(self.Object) == NWScript.ACTION_RANDOMWALK)
+                if (_.GetCurrentAction(self.Object) == _.ACTION_RANDOMWALK)
                 {
                     self.ClearAllActions();
                 }
@@ -38,10 +25,10 @@ namespace SWLOR.Game.Server.AI.AIComponent
                 return false;
             }
 
-            if (_.GetCurrentAction(self.Object) == NWScript.ACTION_INVALID &&
-                _.IsInConversation(self.Object) == NWScript.FALSE &&
-                _.GetCurrentAction(self.Object) != NWScript.ACTION_RANDOMWALK &&
-                _random.Random(100) <= 25)
+            if (_.GetCurrentAction(self.Object) == _.ACTION_INVALID &&
+                _.IsInConversation(self.Object) == _.FALSE &&
+                _.GetCurrentAction(self.Object) != _.ACTION_RANDOMWALK &&
+                RandomService.Random(100) <= 25)
             {
                 self.AssignCommand(() => _.ActionRandomWalk());
             }

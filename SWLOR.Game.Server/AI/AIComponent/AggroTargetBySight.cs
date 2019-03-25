@@ -1,12 +1,11 @@
-﻿using FluentBehaviourTree;
-using SWLOR.Game.Server.AI.Contracts;
-using SWLOR.Game.Server.Bioware.Contracts;
-using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Event;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using SWLOR.Game.Server.Service;
+
+using static NWN._;
 
 namespace SWLOR.Game.Server.AI.AIComponent
 {
@@ -15,19 +14,6 @@ namespace SWLOR.Game.Server.AI.AIComponent
     /// </summary>
     public class AggroTargetBySight: IRegisteredEvent
     {
-        private readonly INWScript _;
-        private readonly IEnmityService _enmity;
-        private readonly IBiowarePosition _biowarePos;
-
-        public AggroTargetBySight(INWScript script,
-            IEnmityService enmity,
-            IBiowarePosition biowarePos)
-        {
-            _ = script;
-            _enmity = enmity;
-            _biowarePos = biowarePos;
-        }
-
         public bool Run(object[] args)
         {
             NWCreature self = (NWCreature)args[0];
@@ -38,18 +24,18 @@ namespace SWLOR.Game.Server.AI.AIComponent
             if (aggroRange <= 0.0f) aggroRange = 10.0f;
             Location targetLocation = _.Location(
                 self.Area.Object,
-                _biowarePos.GetChangedPosition(self.Position, aggroRange, self.Facing),
+                BiowarePosition.GetChangedPosition(self.Position, aggroRange, self.Facing),
                 self.Facing + 180.0f);
             
             NWCreature creature = _.GetFirstObjectInShape(SHAPE_SPELLCYLINDER, aggroRange, targetLocation, TRUE, OBJECT_TYPE_CREATURE, self.Position);
             while (creature.IsValid)
             {
                 if (_.GetIsEnemy(creature.Object, self.Object) == TRUE &&
-                    !_enmity.IsOnEnmityTable(self, creature) &&
+                    !EnmityService.IsOnEnmityTable(self, creature) &&
                     _.GetDistanceBetween(self.Object, creature.Object) <= aggroRange &&
                     !creature.HasAnyEffect(EFFECT_TYPE_INVISIBILITY, EFFECT_TYPE_SANCTUARY))
                 {
-                    _enmity.AdjustEnmity(self, creature, 0, 1);
+                    EnmityService.AdjustEnmity(self, creature, 0, 1);
                 }
                 
                 creature = _.GetNextObjectInShape(SHAPE_SPELLCYLINDER, aggroRange, targetLocation, TRUE, OBJECT_TYPE_CREATURE, self.Position);

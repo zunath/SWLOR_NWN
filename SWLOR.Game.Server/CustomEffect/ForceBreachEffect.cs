@@ -1,20 +1,17 @@
 ﻿using System;
 using NWN;
 using SWLOR.Game.Server.CustomEffect.Contracts;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.CustomEffect
 {
-    public class ForceBreachEffect : ICustomEffect
+    public class ForceBreachEffect : ICustomEffectHandler
     {
-        private readonly INWScript _;
-
-        public ForceBreachEffect(INWScript script)
-        {
-            _ = script;
-        }
+        public CustomEffectCategoryType CustomEffectCategoryType => CustomEffectCategoryType.NormalEffect;
+        public CustomEffectType CustomEffectType => CustomEffectType.ForceBreach;
 
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
@@ -36,5 +33,9 @@ namespace SWLOR.Game.Server.CustomEffect
         public void WearOff(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data = "")
         {
         }
+
+        public string StartMessage => "You have been breached by the force.";
+        public string ContinueMessage => "You continue to be breached by the force.";
+        public string WornOffMessage => "You are no longer breached by the force.";
     }
 }

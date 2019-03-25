@@ -4,9 +4,10 @@ using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.NWNX.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Service;
+
+using static NWN._;
 
 namespace SWLOR.Game.Server.AI
 {
@@ -15,101 +16,75 @@ namespace SWLOR.Game.Server.AI
     /// </summary>
     public class StarshipBehaviour : BehaviourBase
     {
-        private readonly INWScript _;
-        protected readonly BehaviourTreeBuilder _builder;
-        private readonly IEnmityService _enmity;
-        private readonly IDialogService _dialog;
-        private readonly INWNXObject _nwnxObject;
-        private readonly ISpaceService _space;
-
-        public StarshipBehaviour(BehaviourTreeBuilder builder,
-            INWScript script,
-            IEnmityService enmity,
-            IDialogService dialog,
-            INWNXObject nwnxObject,
-            ISpaceService space)
-        {
-            _ = script;
-            _builder = builder;
-            _enmity = enmity;
-            _dialog = dialog;
-            _nwnxObject = nwnxObject;
-            _space = space;
-        }
-
         public override bool IgnoreNWNEvents => true;
 
-        public override BehaviourTreeBuilder Behaviour
+        public override BehaviourTreeBuilder BuildBehaviour(NWCreature self)
         {
-            get
-            {
-                if (!Self.IsValid) return null;
+            if (!self.IsValid) return null;
 
-                return _builder
-                    .Parallel("StarshipBehaviour", 5, 1)
-                    .Do<CleanUpEnmity>(Self);
-            }
+            return AIService.BehaviourTree
+                .Parallel("StarshipBehaviour", 5, 1)
+                .Do<CleanUpEnmity>(self);
+        
         } 
 
-        public override void OnPhysicalAttacked()
+        public override void OnPhysicalAttacked(NWCreature self)
         {
-            base.OnPhysicalAttacked();
-            _enmity.OnNPCPhysicallyAttacked();
-
-            NWCreature self = Object.OBJECT_SELF;
+            base.OnPhysicalAttacked(self);
+            EnmityService.OnNPCPhysicallyAttacked();
             NWCreature attacker = _.GetLastAttacker();
 
-            _space.OnPhysicalAttacked(self, attacker);
+            SpaceService.OnPhysicalAttacked(self, attacker);
         }
 
-        public override void OnDeath()
+        public override void OnDeath(NWCreature self)
         {
-            base.OnDeath();
+            base.OnDeath(self);
 
-            int vfx = Self.GetLocalInt("DEATH_VFX");
+            int vfx = self.GetLocalInt("DEATH_VFX");
             if (vfx > 0)
             {
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(vfx), Self);
+                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(vfx), self);
             }
         }
 
-        public override void OnDamaged()
+        public override void OnDamaged(NWCreature self)
         {
-            base.OnDamaged();
-            _enmity.OnNPCDamaged();
+            base.OnDamaged(self);
+            EnmityService.OnNPCDamaged();
         }
 
-        public override void OnConversation()
+        public override void OnConversation(NWCreature self)
         {
-            base.OnConversation();
-            string convo = Self.GetLocalString("CONVERSATION");
+            base.OnConversation(self);
+            string convo = self.GetLocalString("CONVERSATION");
             
             if (!string.IsNullOrWhiteSpace(convo))
             {
                 NWPlayer player = (_.GetLastSpeaker());
-                _dialog.StartConversation(player, Self, convo);
+                DialogService.StartConversation(player, self, convo);
             }
-            else if (!string.IsNullOrWhiteSpace(_nwnxObject.GetDialogResref(Self)))
+            else if (!string.IsNullOrWhiteSpace(NWNXObject.GetDialogResref(self)))
             {
-                _.BeginConversation(_nwnxObject.GetDialogResref(Self));
+                _.BeginConversation(NWNXObject.GetDialogResref(self));
             }
         }
 
-        public override void OnPerception()
+        public override void OnPerception(NWCreature self)
         {
-            base.OnPerception();
-            _space.OnPerception(Object.OBJECT_SELF, _.GetLastPerceived());
+            base.OnPerception(self);
+            SpaceService.OnPerception(Object.OBJECT_SELF, _.GetLastPerceived());
         }
 
-        public override void OnHeartbeat()
+        public override void OnHeartbeat(NWCreature self)
         {
-            base.OnHeartbeat();
-            _space.OnHeartbeat(Object.OBJECT_SELF);
+            base.OnHeartbeat(self);
+            SpaceService.OnHeartbeat(Object.OBJECT_SELF);
         }
 
-        public override void OnBlocked()
+        public override void OnBlocked(NWCreature self)
         {
-            base.OnBlocked();
+            base.OnBlocked(self);
 
             return;
         }

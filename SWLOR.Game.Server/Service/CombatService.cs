@@ -3,62 +3,34 @@ using System.Globalization;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
-using SWLOR.Game.Server.NWNX.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
+
+
 using SWLOR.Game.Server.ValueObject;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class CombatService : ICombatService
+    public static class CombatService
     {
-        private readonly INWScript _;
-        private readonly INWNXDamage _nwnxDamage;
-        private readonly IPerkService _perk;
-        private readonly IRandomService _random;
-        private readonly IAbilityService _ability;
-        private readonly IEnmityService _enmity;
-        private readonly IErrorService _error;
-        private readonly IPlayerStatService _playerStat;
-        private readonly ICustomEffectService _customEffect;
-        private readonly IColorTokenService _color;
-        
-        public CombatService(
-            INWScript script,
-            INWNXDamage nwnxDamage,
-            IPerkService perk,
-            IRandomService random,
-            IAbilityService ability,
-            IEnmityService enmity,
-            IErrorService error,
-            IPlayerStatService playerStat,
-            ICustomEffectService customEffect,
-            IColorTokenService color)
+        public static void SubscribeEvents()
         {
-            _ = script;
-            _nwnxDamage = nwnxDamage;
-            _perk = perk;
-            _random = random;
-            _ability = ability;
-            _enmity = enmity;
-            _error = error;
-            _playerStat = playerStat;
-            _customEffect = customEffect;
-            _color = color;
+            MessageHub.Instance.Subscribe<OnModuleApplyDamage>(message => OnModuleApplyDamage());
         }
 
-        public void OnModuleApplyDamage()
+        private static void OnModuleApplyDamage()
         {
-            DamageData data = _nwnxDamage.GetDamageEventData();
+            DamageEventData data = NWNXDamage.GetDamageEventData();
 
             NWPlayer player = data.Damager.Object;
             NWCreature target = Object.OBJECT_SELF;
 
             int attackType = target.GetLocalInt(AbilityService.LAST_ATTACK + player.GlobalID);
 
-            _error.Trace(TraceComponent.LastAttack, "Last attack from " + player.GlobalID + " on " + _.GetName(target) + " was type " + attackType.ToString());
+            LoggingService.Trace(TraceComponent.LastAttack, "Last attack from " + player.GlobalID + " on " + _.GetName(target) + " was type " + attackType.ToString());
 
             if (attackType == AbilityService.ATTACK_PHYSICAL)
             {
@@ -75,9 +47,9 @@ namespace SWLOR.Game.Server.Service
             HandleStances();
         }
 
-        private void HandleWeaponStatBonuses()
+        private static void HandleWeaponStatBonuses()
         {
-            DamageData data = _nwnxDamage.GetDamageEventData();
+            DamageEventData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
 
             NWPlayer player = data.Damager.Object;
@@ -97,12 +69,12 @@ namespace SWLOR.Game.Server.Service
                 data.Base += statBonus;
             }
 
-            _nwnxDamage.SetDamageEventData(data);
+            NWNXDamage.SetDamageEventData(data);
         }
 
-        private void HandleEvadeOrDeflectBlasterFire()
+        private static void HandleEvadeOrDeflectBlasterFire()
         {
-            DamageData data = _nwnxDamage.GetDamageEventData();
+            DamageEventData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
             NWCreature damager = data.Damager.Object;
             NWCreature target = Object.OBJECT_SELF;
@@ -127,7 +99,7 @@ namespace SWLOR.Game.Server.Service
                 !target.RightHand.IsValid && !target.LeftHand.IsValid))
             {
                 // Martial Arts (weapon or unarmed) uses the Evade Blaster Fire perk which is primarily DEX based.
-                perkLevel = _perk.GetPCPerkLevel(target.Object, PerkType.EvadeBlasterFire);
+                perkLevel = PerkService.GetPCPerkLevel(target.Object, PerkType.EvadeBlasterFire);
                 modifier = target.DexterityModifier;
                 action = "evade";
             }
@@ -137,7 +109,7 @@ namespace SWLOR.Game.Server.Service
                       targetWeapon.GetLocalInt("LIGHTSABER") == TRUE))
             {
                 // Lightsabers (lightsaber or saberstaff) uses the Deflect Blaster Fire perk which is primarily CHA based.
-                perkLevel = _perk.GetPCPerkLevel(target.Object, PerkType.DeflectBlasterFire);
+                perkLevel = PerkService.GetPCPerkLevel(target.Object, PerkType.DeflectBlasterFire);
                 modifier = target.CharismaModifier;
                 action = "deflect";
             }
@@ -181,23 +153,23 @@ namespace SWLOR.Game.Server.Service
             cooldown = DateTime.UtcNow.AddSeconds(delay);
             target.SetLocalString("EVADE_OR_DEFLECT_BLASTER_FIRE_COOLDOWN", cooldown.ToString(CultureInfo.InvariantCulture));
 
-            int roll = _random.D100(1);
+            int roll = RandomService.D100(1);
 
             if (roll <= chanceToDeflect)
             {
-                target.SendMessage(_color.Gray("You " + action + " a blaster shot."));
+                target.SendMessage(ColorTokenService.Gray("You " + action + " a blaster shot."));
                 data.AdjustAllByPercent(-1);
-                _nwnxDamage.SetDamageEventData(data);
+                NWNXDamage.SetDamageEventData(data);
             }
             else
             {
-                target.SendMessage(_color.Gray("You fail to " + action + " a blaster shot. (" + roll + " vs " + chanceToDeflect + ")"));
+                target.SendMessage(ColorTokenService.Gray("You fail to " + action + " a blaster shot. (" + roll + " vs " + chanceToDeflect + ")"));
             }
         }
 
-        private void HandleBattlemagePerk()
+        private static void HandleBattlemagePerk()
         {
-            DamageData data = _nwnxDamage.GetDamageEventData();
+            DamageEventData data = NWNXDamage.GetDamageEventData();
             if (data.Base <= 0) return;
 
             NWObject target = Object.OBJECT_SELF;
@@ -209,10 +181,10 @@ namespace SWLOR.Game.Server.Service
             if (weapon.CustomItemType != CustomItemType.Baton) return;
             if (player.Chest.CustomItemType != CustomItemType.ForceArmor) return;
 
-            int perkRank = _perk.GetPCPerkLevel(player, PerkType.Battlemage);
+            int perkRank = PerkService.GetPCPerkLevel(player, PerkType.Battlemage);
 
             int restoreAmount = 0;
-            bool metRoll = _random.Random(100) + 1 <= 50;
+            bool metRoll = RandomService.Random(100) + 1 <= 50;
 
             switch (perkRank)
             {
@@ -239,12 +211,12 @@ namespace SWLOR.Game.Server.Service
             }
 
             if (restoreAmount > 0)
-                _ability.RestoreFP(player, restoreAmount);
+                AbilityService.RestoreFP(player, restoreAmount);
         }
 
-        private void HandleApplySneakAttackDamage()
+        private static void HandleApplySneakAttackDamage()
         {
-            DamageData data = _nwnxDamage.GetDamageEventData();
+            DamageEventData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
             NWObject damager = data.Damager;
             int sneakAttackType = damager.GetLocalInt("SNEAK_ATTACK_ACTIVE");
@@ -253,7 +225,7 @@ namespace SWLOR.Game.Server.Service
             {
                 NWPlayer player = damager.Object;
                 NWCreature target = Object.OBJECT_SELF;
-                int perkRank = _perk.GetPCPerkByID(damager.GlobalID, (int)PerkType.SneakAttack).PerkLevel;
+                int perkRank = PerkService.GetPCPerkByID(damager.GlobalID, (int)PerkType.SneakAttack).PerkLevel;
                 int perkBonus = 1;
 
                 // Rank 4 increases damage bonus by 2x (total: 3x)
@@ -269,36 +241,36 @@ namespace SWLOR.Game.Server.Service
                     perkRate = 0.5f * perkBonus;
                 }
 
-                var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
+                var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
                 float damageRate = 1.0f + perkRate + effectiveStats.SneakAttack * 0.05f;
                 data.Base = (int)(data.Base * damageRate);
 
                 if (target.IsNPC)
                 {
-                    _enmity.AdjustEnmity(target, player, 5 * data.Base);
+                    EnmityService.AdjustEnmity(target, player, 5 * data.Base);
                 }
 
-                _nwnxDamage.SetDamageEventData(data);
+                NWNXDamage.SetDamageEventData(data);
             }
 
             damager.DeleteLocalInt("SNEAK_ATTACK_ACTIVE");
         }
 
-        private void HandleAbsorptionFieldEffect()
+        private static void HandleAbsorptionFieldEffect()
         {
-            DamageData data = _nwnxDamage.GetDamageEventData();
+            DamageEventData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
             NWObject target = Object.OBJECT_SELF;
             if (!target.IsPlayer) return;
 
             NWPlayer player = target.Object;
-            int effectLevel = _customEffect.GetCustomEffectLevel(player, CustomEffectType.AbsorptionField);
+            int effectLevel = CustomEffectService.GetCustomEffectLevel(player, CustomEffectType.AbsorptionField);
             if (effectLevel <= 0) return;
 
             // Remove effect if player activates ability and removes the armor.
             if (player.Chest.CustomItemType != CustomItemType.ForceArmor)
             {
-                _customEffect.RemovePCCustomEffect(player, CustomEffectType.AbsorptionField);
+                CustomEffectService.RemovePCCustomEffect(player, CustomEffectType.AbsorptionField);
             }
 
             float absorptionRate = effectLevel * 0.1f;
@@ -306,12 +278,12 @@ namespace SWLOR.Game.Server.Service
 
             if (absorbed < 1) absorbed = 1;
 
-            _ability.RestoreFP(player, absorbed);
+            AbilityService.RestoreFP(player, absorbed);
         }
 
-        private void HandleRecoveryBlast()
+        private static void HandleRecoveryBlast()
         {
-            DamageData data = _nwnxDamage.GetDamageEventData();
+            DamageEventData data = NWNXDamage.GetDamageEventData();
             NWObject damager = data.Damager;
             bool isActive = damager.GetLocalInt("RECOVERY_BLAST_ACTIVE") == TRUE;
             damager.DeleteLocalInt("RECOVERY_BLAST_ACTIVE");
@@ -333,12 +305,12 @@ namespace SWLOR.Game.Server.Service
             data.Sonic = 0;
             data.Base = 0;
 
-            _nwnxDamage.SetDamageEventData(data);
+            NWNXDamage.SetDamageEventData(data);
         }
 
-        private void HandleTranquilizerEffect()
+        private static void HandleTranquilizerEffect()
         {
-            DamageData data = _nwnxDamage.GetDamageEventData();
+            DamageEventData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
             NWObject self = Object.OBJECT_SELF;
 
@@ -358,15 +330,15 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private void HandleStances()
+        private static void HandleStances()
         {
-            DamageData data = _nwnxDamage.GetDamageEventData();
+            DamageEventData data = NWNXDamage.GetDamageEventData();
             NWPlayer damager = data.Damager.Object;
             NWItem damagerWeapon = _.GetLastWeaponUsed(damager);
 
             if (damager.IsPlayer)
             {
-                CustomEffectType stance = _customEffect.GetCurrentStanceType(damager);
+                CustomEffectType stance = CustomEffectService.GetCurrentStanceType(damager);
 
                 switch (stance)
                 {
@@ -384,23 +356,23 @@ namespace SWLOR.Game.Server.Service
                 }
             }
             
-            _nwnxDamage.SetDamageEventData(data);
+            NWNXDamage.SetDamageEventData(data);
         }
 
-        private int CalculateForceAccuracy(
+        private static int CalculateForceAccuracy(
             NWCreature caster, 
             NWCreature target,
             ForceAbilityType abilityType)
         {
             EffectiveItemStats casterItemStats = caster.IsPlayer ? 
-                _playerStat.GetPlayerItemEffectiveStats(caster.Object) : 
+                PlayerStatService.GetPlayerItemEffectiveStats(caster.Object) : 
                 null;
             float casterPrimary;
             float casterSecondary;
             float casterItemAccuracy = casterItemStats?.ForceAccuracy ?? 0;
 
             EffectiveItemStats targetItemStats = target.IsPlayer ? 
-                _playerStat.GetPlayerItemEffectiveStats(target.Object) : 
+                PlayerStatService.GetPlayerItemEffectiveStats(target.Object) : 
                 null;
             float targetPrimary;
             float targetSecondary;
@@ -469,7 +441,7 @@ namespace SWLOR.Game.Server.Service
             return (int)finalAccuracy;
         }
 
-        public void AddTemporaryForceDefense(NWCreature target, ForceAbilityType forceAbility, int amount = 5, int length = 5)
+        public static void AddTemporaryForceDefense(NWCreature target, ForceAbilityType forceAbility, int amount = 5, int length = 5)
         {
             if (amount <= 0) amount = 1;
             string variable = "TEMP_FORCE_DEFENSE_" + (int) forceAbility;
@@ -486,7 +458,7 @@ namespace SWLOR.Game.Server.Service
             target.SetLocalInt(variable, tempDefense);
         }
 
-        public ForceResistanceResult CalculateResistanceRating(
+        public static ForceResistanceResult CalculateResistanceRating(
             NWCreature caster,
             NWCreature target,
             ForceAbilityType forceAbility)
@@ -498,19 +470,19 @@ namespace SWLOR.Game.Server.Service
             // resistance.  The more checks you succeed, the lower the resistance. 
             int successes = 0;
             
-            if (_random.D100(1) <= accuracy)
+            if (RandomService.D100(1) <= accuracy)
             {
                 successes++;
 
-                if (_random.D100(1) <= accuracy)
+                if (RandomService.D100(1) <= accuracy)
                 {
                     successes++;
 
-                    if (_random.D100(1) <= accuracy)
+                    if (RandomService.D100(1) <= accuracy)
                     {
                         successes++;
 
-                        if (_random.D100(1) <= accuracy)
+                        if (RandomService.D100(1) <= accuracy)
                         {
                             successes++;
                         }
@@ -545,10 +517,10 @@ namespace SWLOR.Game.Server.Service
             return result;
         }
 
-        public int CalculateItemPotencyBonus(NWCreature caster, ForceAbilityType abilityType)
+        public static int CalculateItemPotencyBonus(NWCreature caster, ForceAbilityType abilityType)
         {
             if (!caster.IsPlayer) return 0;
-            EffectiveItemStats itemStats = _playerStat.GetPlayerItemEffectiveStats(caster.Object);
+            EffectiveItemStats itemStats = PlayerStatService.GetPlayerItemEffectiveStats(caster.Object);
             
             int itemBonus = itemStats.ForcePotency;
             switch (abilityType)
@@ -572,7 +544,7 @@ namespace SWLOR.Game.Server.Service
             return itemBonus;
         }
 
-        public ForceDamageResult CalculateForceDamage(
+        public static ForceDamageResult CalculateForceDamage(
             NWCreature caster,
             NWCreature target,
             ForceAbilityType abilityType,
@@ -646,7 +618,7 @@ namespace SWLOR.Game.Server.Service
             int damage = (int)((itemBonus + basePotency + (delta * multiplier)) * resistance.Amount);
 
             if (damage > 0)
-                damage += _random.D8(1);
+                damage += RandomService.D8(1);
 
             if (damage <= 1)
                 damage = 1;
@@ -668,7 +640,7 @@ namespace SWLOR.Game.Server.Service
             return result;
         }
 
-        private string GetForceResistanceName(ResistanceType type)
+        private static string GetForceResistanceName(ResistanceType type)
         {
             switch (type)
             {

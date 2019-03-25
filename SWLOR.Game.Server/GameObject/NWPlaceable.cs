@@ -1,4 +1,5 @@
-﻿using Object = NWN.Object;
+﻿using NWN;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.GameObject
 {

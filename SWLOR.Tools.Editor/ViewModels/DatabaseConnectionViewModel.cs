@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Linq;
-using System.Security;
 using Caliburn.Micro;
-using SWLOR.Game.Server.Data;
-using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Tools.Editor.Messages;
 using SWLOR.Tools.Editor.ViewModels.Contracts;
 
@@ -19,16 +16,14 @@ namespace SWLOR.Tools.Editor.ViewModels
     {
         private readonly AppSettings _appSettings;
         private readonly IEventAggregator _eventAggregator;
-        private readonly IDataService _data;
+        
 
         public DatabaseConnectionViewModel(
             IEventAggregator eventAggregator, 
-            IDataService data,
             AppSettings appSettings)
         {
             _appSettings = appSettings;
             _eventAggregator = eventAggregator;
-            _data = data;
 
             NotConnected = true;
             IPAddress = string.Empty;
@@ -107,10 +102,10 @@ namespace SWLOR.Tools.Editor.ViewModels
                 _appSettings.DatabaseName = Database;
                 _appSettings.DatabasePassword = Password;
 
-                _data.Initialize(IPAddress, Database, Username, Password, false);
+                DataService.Initialize(IPAddress, Database, Username, Password, false);
 
                 // Attempt to grab some data from the new connection, to ensure it's running.
-                _data.Get<ServerConfiguration>(1);
+                DataService.Get<ServerConfiguration>(1);
                 
                 Password = string.Empty;
                 _eventAggregator.PublishOnUIThread(new DatabaseConnectionSucceeded());

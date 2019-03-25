@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Linq;
-using AutoMapper;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Tools.Editor.Enumeration;
 using SWLOR.Tools.Editor.ViewModels.Data;
@@ -33,7 +30,6 @@ namespace SWLOR.Tools.Editor.ViewModels
                 new ResourceGroup("Key Item Categories", ResourceType.KeyItemCategories, nameof(KeyItemCategory), typeof(KeyItemCategoryViewModel)),
                 new ResourceGroup("Key Items", ResourceType.KeyItems, nameof(KeyItem), typeof(KeyItemViewModel)),
                 new ResourceGroup("Loot Tables", ResourceType.LootTables, nameof(LootTable), typeof(LootTableViewModel)),
-                new ResourceGroup("Mods", ResourceType.Mods, nameof(Mod), typeof(ModViewModel)),
                 new ResourceGroup("NPC Groups", ResourceType.NPCGroups, nameof(NPCGroup), typeof(NPCGroupViewModel)),
                 new ResourceGroup("Perk Categories", ResourceType.PerkCategories, nameof(PerkCategory), typeof(PerkCategoryViewModel)),
                 new ResourceGroup("Plants", ResourceType.Plants, nameof(Plant), typeof(PlantViewModel)),

@@ -1,5 +1,5 @@
-﻿using FluentBehaviourTree;
-using SWLOR.Game.Server.AI.Contracts;
+﻿using System;
+using FluentBehaviourTree;
 using SWLOR.Game.Server.Event;
 
 namespace SWLOR.Game.Server.Extension
@@ -11,7 +11,8 @@ namespace SWLOR.Game.Server.Extension
         {
             return builder.Do(typeof(T).ToString(), t =>
             {
-                bool success = App.RunEvent<T>(args);
+                IRegisteredEvent @event = Activator.CreateInstance<T>();
+                bool success = @event.Run(args);
 
                 return success ?
                     BehaviourTreeStatus.Running :

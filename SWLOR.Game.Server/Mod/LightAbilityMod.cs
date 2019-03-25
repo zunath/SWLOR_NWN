@@ -5,8 +5,10 @@ using SWLOR.Game.Server.Mod.Contracts;
 namespace SWLOR.Game.Server.Mod
 {
     // This is the Light Potency Mod class. The class name is maintained for backwards compatibility purposes.
-    public class LightAbilityMod: IMod
+    public class LightAbilityMod: IModHandler
     {
+        public int ModTypeID => 7;
+
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             if (target.LightPotencyBonus >= 50)

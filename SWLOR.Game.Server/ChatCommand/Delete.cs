@@ -1,35 +1,19 @@
 ﻿using System;
 using System.Globalization;
-using System.Linq;
 using NWN;
 using SWLOR.Game.Server.ChatCommand.Contracts;
-using SWLOR.Game.Server.Data;
-using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Service;
+
 
 namespace SWLOR.Game.Server.ChatCommand
 {
     [CommandDetails("Permanently deletes your character.", CommandPermissionType.Player)]
     public class Delete : IChatCommand
     {
-        private readonly INWScript _;
-        private readonly INWNXAdmin _admin;
-        private readonly IDataService _data;
-
-        public Delete(
-            INWScript script,
-            INWNXAdmin admin,
-            IDataService data)
-        {
-            _ = script;
-            _admin = admin;
-            _data = data;
-        }
-
         /// <summary>
         /// Deletes a player's character. Player must submit the command twice within 30 seconds.
         /// </summary>
@@ -63,12 +47,12 @@ namespace SWLOR.Game.Server.ChatCommand
             }
             else
             {
-                Player dbPlayer = _data.Get<Player>(user.GlobalID);
+                Player dbPlayer = DataService.Get<Player>(user.GlobalID);
                 dbPlayer.IsDeleted = true;
-                _data.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+                DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
 
                 _.BootPC(user, "Your character has been deleted.");
-                _admin.DeletePlayerCharacter(user, true);
+                NWNXAdmin.DeletePlayerCharacter(user, true);
 
             }
         }

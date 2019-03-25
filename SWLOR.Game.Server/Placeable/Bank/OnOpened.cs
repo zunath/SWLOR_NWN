@@ -6,7 +6,8 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using Object = NWN.Object;
 
 
@@ -14,20 +15,6 @@ namespace SWLOR.Game.Server.Placeable.Bank
 {
     public class OnOpened : IRegisteredEvent
     {
-        private readonly INWScript _;
-        private readonly IDataService _data;
-        private readonly ISerializationService _serialization;
-
-        public OnOpened(
-            INWScript script,
-            IDataService data,
-            ISerializationService serialization)
-        {
-            _ = script;
-            _data = data;
-            _serialization = serialization;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlayer player = _.GetLastOpenedBy();
@@ -42,7 +29,7 @@ namespace SWLOR.Game.Server.Placeable.Bank
                 return false;
             }
 
-            Data.Entity.Bank entity = _data.SingleOrDefault<Data.Entity.Bank>(x => x.ID == bankID);
+            Data.Entity.Bank entity = DataService.SingleOrDefault<Data.Entity.Bank>(x => x.ID == bankID);
             
             if (entity == null)
             {
@@ -53,13 +40,13 @@ namespace SWLOR.Game.Server.Placeable.Bank
                     AreaTag = area.Tag,
                     ID = bankID
                 };
-                _data.SubmitDataChange(entity, DatabaseActionType.Insert);
+                DataService.SubmitDataChange(entity, DatabaseActionType.Insert);
             }
             
-            var bankItems = _data.Where<BankItem>(x => x.PlayerID == player.GlobalID && x.BankID == entity.ID);
+            var bankItems = DataService.Where<BankItem>(x => x.PlayerID == player.GlobalID && x.BankID == entity.ID);
             foreach (BankItem item in bankItems.Where(x => x.PlayerID == player.GlobalID))
             {
-                _serialization.DeserializeItem(item.ItemObject, terminal);
+                SerializationService.DeserializeItem(item.ItemObject, terminal);
             }
 
             terminal.IsLocked = true;

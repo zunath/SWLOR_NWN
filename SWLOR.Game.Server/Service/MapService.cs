@@ -1,35 +1,35 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Area;
+using SWLOR.Game.Server.NWN.Events.Module;
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class MapService : IMapService
+    public static class MapService
     {
-        private readonly INWScript _;
-        private readonly IDataService _data;
-
-        public MapService(
-            INWScript script,
-            IDataService data)
+        public static void SubscribeEvents()
         {
-            _ = script;
-            _data = data;
+            MessageHub.Instance.Subscribe<OnAreaEnter>(message => OnAreaEnter());
+            MessageHub.Instance.Subscribe<OnAreaExit>(message => OnAreaExit());
+            MessageHub.Instance.Subscribe<OnAreaHeartbeat>(message => OnAreaHeartbeat());
+            MessageHub.Instance.Subscribe<OnModuleLeave>(message => OnModuleLeave());
         }
-
-        public void OnAreaEnter()
+        
+        private static void OnAreaEnter()
         {
             NWArea area = (Object.OBJECT_SELF);
             NWPlayer player = _.GetEnteringObject();
-
+            
             if (!player.IsPlayer) return;
-
+            
             if (area.GetLocalInt("AUTO_EXPLORED") == TRUE)
             {
                 _.ExploreAreaForPlayer(area.Object, player);
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Service
             LoadMapProgression(area, player);
         }
 
-        public void OnAreaExit()
+        private static void OnAreaExit()
         {
             NWArea area = Object.OBJECT_SELF;
             NWPlayer player = _.GetExitingObject();
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Service
             SaveMapProgression(area, player);
         }
 
-        public void OnModuleLeave()
+        private static void OnModuleLeave()
         {
             NWPlayer player = _.GetExitingObject();
             NWArea area = _.GetArea(player);
@@ -56,9 +56,9 @@ namespace SWLOR.Game.Server.Service
             SaveMapProgression(area, player);
         }
 
-        private void SaveMapProgression(NWArea area, NWPlayer player)
+        private static void SaveMapProgression(NWArea area, NWPlayer player)
         {
-            var map = _data.GetAll<PCMapProgression>().SingleOrDefault(x => x.PlayerID == player.GlobalID && x.AreaResref == area.Resref);
+            var map = DataService.GetAll<PCMapProgression>().SingleOrDefault(x => x.PlayerID == player.GlobalID && x.AreaResref == area.Resref);
             int areaSize = area.Width * area.Height;
             DatabaseActionType action = DatabaseActionType.Update;
 
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Service
             {
                 if (map != null)
                 {
-                    _data.SubmitDataChange(map, DatabaseActionType.Delete);
+                    DataService.SubmitDataChange(map, DatabaseActionType.Delete);
                 }
 
                 map = new PCMapProgression
@@ -90,12 +90,12 @@ namespace SWLOR.Game.Server.Service
             }
             
             map.Progression = progression;
-            _data.SubmitDataChange(map, action);
+            DataService.SubmitDataChange(map, action);
         }
 
-        private void LoadMapProgression(NWArea area, NWPlayer player)
+        private static void LoadMapProgression(NWArea area, NWPlayer player)
         {
-            var map = _data.GetAll<PCMapProgression>().SingleOrDefault(x => x.PlayerID == player.GlobalID && x.AreaResref == area.Resref);
+            var map = DataService.GetAll<PCMapProgression>().SingleOrDefault(x => x.PlayerID == player.GlobalID && x.AreaResref == area.Resref);
             int areaSize = area.Width * area.Height;
 
             // No progression set - do a save which will create the record.
@@ -123,6 +123,23 @@ namespace SWLOR.Game.Server.Service
                     count++;
                 }
             }
+        }
+
+
+        private static void OnAreaHeartbeat()
+        {
+            NWArea area = Object.OBJECT_SELF;
+            
+            if (area.GetLocalInt("HIDE_MINIMAP") == _.TRUE)
+            {
+                var players = NWModule.Get().Players.Where(x => x.Area.Equals(area) && x.IsPlayer);
+
+                foreach (var player in players)
+                {
+                    _.ExploreAreaForPlayer(area, player, _.FALSE);
+                }
+            }
+
         }
 
     }

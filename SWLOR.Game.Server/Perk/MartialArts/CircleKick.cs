@@ -2,21 +2,14 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.NWNX;
+
 
 namespace SWLOR.Game.Server.Perk.MartialArts
 {
-    public class CircleKick : IPerk
+    public class CircleKick : IPerkHandler
     {
-        private readonly INWScript _;
-        private readonly INWNXCreature _nwnxCreature;
-
-        public CircleKick(INWScript script,
-            INWNXCreature nwnxCreature)
-        {
-            _ = script;
-            _nwnxCreature = nwnxCreature;
-        }
+        public PerkType PerkType => PerkType.CircleKick;
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
@@ -59,7 +52,7 @@ namespace SWLOR.Game.Server.Perk.MartialArts
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_CIRCLE_KICK);
+            NWNXCreature.RemoveFeat(oPC, _.FEAT_CIRCLE_KICK);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
@@ -101,11 +94,11 @@ namespace SWLOR.Game.Server.Perk.MartialArts
 
             if (receivesFeat)
             {
-                _nwnxCreature.AddFeat(oPC, NWScript.FEAT_CIRCLE_KICK);
+                NWNXCreature.AddFeat(oPC, _.FEAT_CIRCLE_KICK);
             }
             else
             {
-                _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_CIRCLE_KICK);
+                NWNXCreature.RemoveFeat(oPC, _.FEAT_CIRCLE_KICK);
             }
         }
         public bool IsHostile()

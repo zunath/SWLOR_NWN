@@ -9,13 +9,6 @@ namespace SWLOR.Game.Server.ChatCommand
     [CommandDetails("Sets the world time to 8 PM.", CommandPermissionType.DM)]
     public class Night : IChatCommand
     {
-        private readonly INWScript _;
-        
-        public Night(INWScript script)
-        {
-            _ = script;
-        }
-
         /// <summary>
         /// Sets the world time to 8 PM.
         /// </summary>

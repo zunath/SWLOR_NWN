@@ -4,30 +4,23 @@ using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.Service
 {
-    public class BasePermissionService : IBasePermissionService
+    public static class BasePermissionService
     {
-        private readonly IDataService _data;
-
-        public BasePermissionService(IDataService data)
-        {
-            _data = data;
-        }
-
-        public bool HasBasePermission(NWPlayer player, Guid pcBaseID, BasePermission permission)
+        public static bool HasBasePermission(NWPlayer player, Guid pcBaseID, BasePermission permission)
         {
             if (player.IsDM) return true;
 
             return HasBasePermission(player.GlobalID, pcBaseID, permission);
         }
 
-        public bool HasBasePermission(Guid player, Guid pcBaseID, BasePermission permission)
+        public static bool HasBasePermission(Guid player, Guid pcBaseID, BasePermission permission)
         {
             // Public permissions take priority over all other permissions. Check those first.
-            var publicBasePermission = _data.SingleOrDefault<PCBasePermission>(x => x.PCBaseID == pcBaseID &&
+            var publicBasePermission = DataService.SingleOrDefault<PCBasePermission>(x => x.PCBaseID == pcBaseID &&
                                                                                 x.IsPublicPermission);
 
             if (publicBasePermission != null)
@@ -49,7 +42,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // No matching public permissions. Now check the base permissions for this player.
-            var dbPermission = _data.GetAll<PCBasePermission>()
+            var dbPermission = DataService.GetAll<PCBasePermission>()
                 .SingleOrDefault(x => x.PCBaseID == pcBaseID && 
                                       x.PlayerID == player &&
                                       !x.IsPublicPermission);
@@ -74,14 +67,14 @@ namespace SWLOR.Game.Server.Service
             return false;
         }
 
-        public bool HasStructurePermission(NWPlayer player, Guid pcBaseStructureID, StructurePermission permission)
+        public static bool HasStructurePermission(NWPlayer player, Guid pcBaseStructureID, StructurePermission permission)
         {
             if (player.IsDM) return true;
 
-            var dbStructure = _data.GetAll<PCBaseStructure>().Single(x => x.ID == pcBaseStructureID);
+            var dbStructure = DataService.GetAll<PCBaseStructure>().Single(x => x.ID == pcBaseStructureID);
 
             // Public base permissions take priority over all other permissions. Check those first.
-            var publicBasePermission = _data.SingleOrDefault<PCBasePermission>(x => x.PCBaseID == dbStructure.PCBaseID &&
+            var publicBasePermission = DataService.SingleOrDefault<PCBasePermission>(x => x.PCBaseID == dbStructure.PCBaseID &&
                                                                                 x.IsPublicPermission);
 
             if (publicBasePermission != null)
@@ -100,7 +93,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Public structure permissions are the next thing we check.
-            var publicStructurePermission = _data.SingleOrDefault<PCBaseStructurePermission>(x => x.PCBaseStructureID == dbStructure.ID &&
+            var publicStructurePermission = DataService.SingleOrDefault<PCBaseStructurePermission>(x => x.PCBaseStructureID == dbStructure.ID &&
                                                                                                   x.IsPublicPermission);
 
             if (publicStructurePermission != null)
@@ -119,7 +112,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Base permissions take priority over structure permissions. Check those next.
-            var basePermission = _data.SingleOrDefault<PCBasePermission>(x => x.PlayerID == player.GlobalID && 
+            var basePermission = DataService.SingleOrDefault<PCBasePermission>(x => x.PlayerID == player.GlobalID && 
                                                                               x.PCBaseID == dbStructure.PCBaseID &&
                                                                               !x.IsPublicPermission);
 
@@ -140,7 +133,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Didn't find a base permission. Check the structure permissions.
-            var structurePermission = _data.GetAll<PCBaseStructurePermission>()
+            var structurePermission = DataService.GetAll<PCBaseStructurePermission>()
                 .SingleOrDefault(x => x.PCBaseStructureID == pcBaseStructureID && 
                                       x.PlayerID == player.GlobalID &&
                                       !x.IsPublicPermission);
@@ -162,14 +155,14 @@ namespace SWLOR.Game.Server.Service
             return false;
         }
 
-        public void GrantBasePermissions(NWPlayer player, Guid pcBaseID, params BasePermission[] permissions)
+        public static void GrantBasePermissions(NWPlayer player, Guid pcBaseID, params BasePermission[] permissions)
         {
             GrantBasePermissions(player.GlobalID, pcBaseID, permissions);
         }
 
-        public void GrantBasePermissions(Guid player, Guid pcBaseID, params BasePermission[] permissions)
+        public static void GrantBasePermissions(Guid player, Guid pcBaseID, params BasePermission[] permissions)
         {
-            var dbPermission = _data.GetAll<PCBasePermission>()
+            var dbPermission = DataService.GetAll<PCBasePermission>()
                 .SingleOrDefault(x => x.PCBaseID == pcBaseID && 
                                       x.PlayerID == player &&
                                       !x.IsPublicPermission);
@@ -239,12 +232,12 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            _data.SubmitDataChange(dbPermission, action);
+            DataService.SubmitDataChange(dbPermission, action);
         }
 
-        public void GrantStructurePermissions(NWPlayer player, Guid pcBaseStructureID, params StructurePermission[] permissions)
+        public static void GrantStructurePermissions(NWPlayer player, Guid pcBaseStructureID, params StructurePermission[] permissions)
         {
-            var dbPermission = _data.SingleOrDefault<PCBaseStructurePermission>(x => x.PCBaseStructureID == pcBaseStructureID && 
+            var dbPermission = DataService.SingleOrDefault<PCBaseStructurePermission>(x => x.PCBaseStructureID == pcBaseStructureID && 
                                                                                      x.PlayerID == player.GlobalID && 
                                                                                      !x.IsPublicPermission);
             var action = DatabaseActionType.Update;
@@ -301,7 +294,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            _data.SubmitDataChange(dbPermission, action);
+            DataService.SubmitDataChange(dbPermission, action);
         }        
     }
 }

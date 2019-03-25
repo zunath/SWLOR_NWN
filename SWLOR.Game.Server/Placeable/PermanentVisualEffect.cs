@@ -1,19 +1,12 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Placeable
 {
     public class PermanentVisualEffect: IRegisteredEvent
     {
-        private readonly INWScript _;
-
-        public PermanentVisualEffect(INWScript script)
-        {
-            _ = script;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlaceable self = Object.OBJECT_SELF;

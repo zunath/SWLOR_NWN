@@ -4,8 +4,10 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class MeditateMod : IMod
+    public class MeditateMod : IModHandler
     {
+        public int ModTypeID => 22;
+
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             if (target.MeditateBonus >= 2)

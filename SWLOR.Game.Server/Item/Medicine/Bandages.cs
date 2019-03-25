@@ -1,38 +1,17 @@
 ﻿using NWN;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.ValueObject;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Item.Medicine
 {
     public class Bandages: IActionItem
     {
-        private readonly INWScript _;
-        private readonly ISkillService _skill;
-        private readonly ICustomEffectService _customEffect;
-        private readonly IRandomService _random;
-        private readonly IPerkService _perk;
-        private readonly IPlayerStatService _playerStat;
-
-        public Bandages(INWScript script,
-            ISkillService skill,
-            ICustomEffectService customEffect,
-            IRandomService random,
-            IPerkService perk,
-            IPlayerStatService playerStat)
-        {
-            _ = script;
-            _skill = skill;
-            _customEffect = customEffect;
-            _random = random;
-            _perk = perk;
-            _playerStat = playerStat;
-        }
-
+        
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
             user.SendMessage("You begin treating " + target.Name + "'s wounds...");
@@ -42,12 +21,12 @@ namespace SWLOR.Game.Server.Item.Medicine
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
             NWPlayer player = (user.Object);
-            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
+            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
 
-            _customEffect.RemovePCCustomEffect(target.Object, CustomEffectType.Bleeding);
+            CustomEffectService.RemovePCCustomEffect(target.Object, CustomEffectType.Bleeding);
             player.SendMessage("You finish bandaging " + target.Name + "'s wounds.");
             
-            int rank = _skill.GetPCSkillRank(player, SkillType.Medicine);
+            int rank = SkillService.GetPCSkillRank(player, SkillType.Medicine);
             
             int healAmount = 2 + effectiveStats.Medicine / 2;
             healAmount += item.MedicineBonus;
@@ -56,19 +35,19 @@ namespace SWLOR.Game.Server.Item.Medicine
                 _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(healAmount), target);
             }
             if(target.IsPlayer){
-                int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(100, item.RecommendedLevel, rank);
-                _skill.GiveSkillXP(player, SkillType.Medicine, xp);
+                int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(100, item.RecommendedLevel, rank);
+                SkillService.GiveSkillXP(player, SkillType.Medicine, xp);
             }
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            if (_random.Random(100) + 1 <= _perk.GetPCPerkLevel(user.Object, PerkType.SpeedyFirstAid) * 10)
+            if (RandomService.Random(100) + 1 <= PerkService.GetPCPerkLevel(user.Object, PerkType.SpeedyFirstAid) * 10)
             {
                 return 0.1f;
             }
 
-            int rank = _skill.GetPCSkillRank(user.Object, SkillType.Medicine);
+            int rank = SkillService.GetPCSkillRank(user.Object, SkillType.Medicine);
             float seconds = 6.0f - (rank * 0.2f);
             if (seconds < 1.0f) seconds = 1.0f;
             return seconds;
@@ -86,7 +65,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            return 3.5f + _perk.GetPCPerkLevel(user.Object, PerkType.RangedHealing);
+            return 3.5f + PerkService.GetPCPerkLevel(user.Object, PerkType.RangedHealing);
         }
 
         public bool ReducesItemCharge(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
@@ -106,7 +85,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return "Bandages cannot be used on targets with more than 40 HP.";
             }
 
-            int rank = _skill.GetPCSkillRank(user.Object, SkillType.Medicine);
+            int rank = SkillService.GetPCSkillRank(user.Object, SkillType.Medicine);
             if (rank < item.RecommendedLevel)
             {
                 return "Your skill level is too low to use this item.";

@@ -1,14 +1,11 @@
 ﻿using System;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
-using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
-using static NWN.NWScript;
+using SWLOR.Game.Server.Service;
+using static NWN._;
 using Object = NWN.Object;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 
@@ -16,31 +13,6 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
 {
     public class OnDisturbed : IRegisteredEvent
     {
-        private readonly INWScript _;
-        private readonly IDataService _data;
-        private readonly IItemService _item;
-        private readonly ISpaceService _space;
-        private readonly ITimeService _time;
-        private readonly IColorTokenService _color;
-        private readonly IBaseService _base;
-
-        public OnDisturbed(
-            INWScript script,
-            IDataService data,
-            IItemService item,
-            ISpaceService space,
-            ITimeService time,
-            IColorTokenService color,
-            IBaseService @base)
-        {
-            _ = script;
-            _data = data;
-            _item = item;
-            _space = space;
-            _time = time;
-            _color = color;
-            _base = @base;
-        }
         public bool Run(params object[] args)
         {
             NWPlayer player = (_.GetLastDisturbed());
@@ -56,7 +28,7 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             {
                 if (item.Resref != allowedResref)
                 {
-                    _item.ReturnItem(player, item);
+                    ItemService.ReturnItem(player, item);
                     player.SendMessage("Only " + (stronidiumOnly ? "Stronidium" : "Fuel Cells") + " may be placed inside this fuel bay.");
                     return false;
                 }
@@ -70,8 +42,8 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
                 }
             }
 
-            var structure = _data.Single<PCBaseStructure>(x => x.ID == new Guid(structureID));
-            var pcBase = _data.Get<PCBase>(structure.PCBaseID);
+            var structure = DataService.Single<PCBaseStructure>(x => x.ID == new Guid(structureID));
+            var pcBase = DataService.Get<PCBase>(structure.PCBaseID);
 
             // Calculate how much fuel exists in the bay's inventory.
             int fuelCount = 0;
@@ -94,12 +66,12 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             // Handle Stronidium fuel process
             if (stronidiumOnly)
             {
-                maxFuel = _base.CalculateMaxReinforcedFuel(pcBase.ID);
+                maxFuel = BaseService.CalculateMaxReinforcedFuel(pcBase.ID);
 
                 // For starships only: Add the ship's cargo bonus to the max stronidium amount.
                 if (bay.Area.GetLocalInt("BUILDING_TYPE") == (int)Enumeration.BuildingType.Starship)
                 {
-                    maxFuel += 25 * _space.GetCargoBonus(_space.GetCargoBay(player.Area, null), (int)CustomItemPropertyType.StarshipStronidiumBonus);
+                    maxFuel += 25 * SpaceService.GetCargoBonus(SpaceService.GetCargoBay(player.Area, null), (int)CustomItemPropertyType.StarshipStronidiumBonus);
                 }
 
                 // Did the player put too much fuel inside? Return the excess to their inventory.
@@ -128,12 +100,12 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             // Handle Fuel Cell process
             else
             {
-                maxFuel = _base.CalculateMaxFuel(pcBase.ID);
+                maxFuel = BaseService.CalculateMaxFuel(pcBase.ID);
 
                 // For starships only: Add the ship's cargo bonus to the max fuel amount.
                 if (bay.Area.GetLocalInt("BUILDING_TYPE") == (int)Enumeration.BuildingType.Starship)
                 {
-                    maxFuel += 25 * _space.GetCargoBonus(_space.GetCargoBay(player.Area, null), (int)CustomItemPropertyType.StarshipFuelBonus);
+                    maxFuel += 25 * SpaceService.GetCargoBonus(SpaceService.GetCargoBay(player.Area, null), (int)CustomItemPropertyType.StarshipFuelBonus);
                 }
 
                 // Did the player put too much fuel inside? Return the excess to their inventory.
@@ -150,10 +122,10 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             }
 
             // Submit a DB data change for the fuel or stronidium amount adjustment.
-            _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+            DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
 
-            var tower = _base.GetBaseControlTower(structure.PCBaseID);
-            var towerStructure = _data.Single<BaseStructure>(x => x.ID == tower.BaseStructureID);
+            var tower = BaseService.GetBaseControlTower(structure.PCBaseID);
+            var towerStructure = DataService.Single<BaseStructure>(x => x.ID == tower.BaseStructureID);
 
             if (towerStructure.BaseStructureTypeID == (int)BaseStructureType.Starship)
             {
@@ -169,8 +141,8 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
             {
                 int seconds = 6 * fuelCount;
                 TimeSpan timeSpan = TimeSpan.FromSeconds(seconds);
-                player.SendMessage(_color.Gray("Reinforcement mode will last for " +
-                                               _time.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false) +
+                player.SendMessage(ColorTokenService.Gray("Reinforcement mode will last for " +
+                                               TimeService.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false) +
                                                " (" + fuelCount + " / " + maxFuel + " units"));
             }
             // Regular fuel cells - Every unit lasts for 45, 15, or 5 minutes depending on the size of the tower.
@@ -193,8 +165,8 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
                 }
 
                 TimeSpan timeSpan = TimeSpan.FromMinutes(minutes * fuelCount);
-                player.SendMessage(_color.Gray("Fuel will last for " +
-                                               _time.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false) +
+                player.SendMessage(ColorTokenService.Gray("Fuel will last for " +
+                                               TimeService.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false) +
                                                " (" + fuelCount + " / " + maxFuel + " units)"));
             }
 

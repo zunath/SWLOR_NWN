@@ -1,7 +1,6 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using NWN;
 using static SWLOR.Game.Server.NWNX.NWNXCore;
 
 namespace SWLOR.Game.Server.NWNX
@@ -19,15 +18,14 @@ namespace SWLOR.Game.Server.NWNX
         {
             string sFunc = "GetLocalVariableCount";
 
-            NWNX_PushArgumentObject(NWNX_Object, sFunc, obj.Object);
+            NWNX_PushArgumentObject(NWNX_Object, sFunc, obj);
             NWNX_CallFunction(NWNX_Object, sFunc);
 
             return NWNX_GetReturnValueInt(NWNX_Object, sFunc);
         }
 
         /// <summary>
-        /// Gets the local variable at the provided index of the provided object.
-        /// Index bounds: 0 >= index "less than" GetLocalVariableCount(obj).
+        /// Returns a local variable at the specified index.
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="index"></param>
@@ -37,7 +35,7 @@ namespace SWLOR.Game.Server.NWNX
             string sFunc = "GetLocalVariable";
 
             NWNX_PushArgumentInt(NWNX_Object, sFunc, index);
-            NWNX_PushArgumentObject(NWNX_Object, sFunc, obj.Object);
+            NWNX_PushArgumentObject(NWNX_Object, sFunc, obj);
             NWNX_CallFunction(NWNX_Object, sFunc);
 
             LocalVariable var = new LocalVariable();
@@ -47,7 +45,7 @@ namespace SWLOR.Game.Server.NWNX
         }
 
         /// <summary>
-        /// Returns an NWObject from the provided NWObject ID.
+        /// Returns an object from the provided object ID.
         /// This is the counterpart to ObjectToString.
         /// </summary>
         /// <param name="id"></param>
@@ -58,7 +56,7 @@ namespace SWLOR.Game.Server.NWNX
 
             NWNX_PushArgumentString(NWNX_Object, sFunc, id);
             NWNX_CallFunction(NWNX_Object, sFunc);
-            return (NWNX_GetReturnValueObject(NWNX_Object, sFunc));
+            return NWNX_GetReturnValueObject(NWNX_Object, sFunc);
         }
 
         /// <summary>
@@ -73,7 +71,7 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.m_X);
             NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.m_Y);
             NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.m_Z);
-            NWNX_PushArgumentObject(NWNX_Object, sFunc, obj.Object);
+            NWNX_PushArgumentObject(NWNX_Object, sFunc, obj);
             NWNX_CallFunction(NWNX_Object, sFunc);
 
         }
@@ -88,7 +86,7 @@ namespace SWLOR.Game.Server.NWNX
             string sFunc = "SetCurrentHitPoints";
 
             NWNX_PushArgumentInt(NWNX_Object, sFunc, hp);
-            NWNX_PushArgumentObject(NWNX_Object, sFunc, creature.Object);
+            NWNX_PushArgumentObject(NWNX_Object, sFunc, creature);
 
             NWNX_CallFunction(NWNX_Object, sFunc);
         }
@@ -98,53 +96,22 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="creature"></param>
         /// <param name="hp"></param>
-        public static void SetMaxHitPoints(NWObject creature, int hp)
+        public static void SetMaxHitPoints(NWCreature creature, int hp)
         {
             string sFunc = "SetMaxHitPoints";
 
             NWNX_PushArgumentInt(NWNX_Object, sFunc, hp);
-            NWNX_PushArgumentObject(NWNX_Object, sFunc, creature.Object);
+            NWNX_PushArgumentObject(NWNX_Object, sFunc, creature);
 
             NWNX_CallFunction(NWNX_Object, sFunc);
         }
 
         /// <summary>
-        /// Get the name of the portrait NWObject is using.
-        /// </summary>
-        /// <param name="creature"></param>
-        /// <returns></returns>
-        public static string GetPortrait(NWObject creature)
-        {
-            string sFunc = "GetPortrait";
-
-            NWNX_PushArgumentObject(NWNX_Object, sFunc, creature.Object);
-
-            NWNX_CallFunction(NWNX_Object, sFunc);
-            return NWNX_GetReturnValueString(NWNX_Object, sFunc);
-        }
-
-        /// <summary>
-        /// Set the portrait NWObject is using. The portrait String must be no more than 15 characters long.
-        /// </summary>
-        /// <param name="creature"></param>
-        /// <param name="portrait"></param>
-        public static void SetPortrait(NWObject creature, string portrait)
-        {
-            string sFunc = "SetPortrait";
-
-            NWNX_PushArgumentString(NWNX_Object, sFunc, portrait);
-            NWNX_PushArgumentObject(NWNX_Object, sFunc, creature.Object);
-
-            NWNX_CallFunction(NWNX_Object, sFunc);
-        }
-        
-        /// <summary>
-        /// Serialize the full NWObject (including locals, inventory, etc) to base64 string
-        /// Only works on Creatures and Items currently.
+        /// Serialize the full object (including locals, inventory, etc) to base64 string
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static string Serialize(Object obj)
+        public static string Serialize(NWObject obj)
         {
             string sFunc = "Serialize";
 
@@ -155,12 +122,12 @@ namespace SWLOR.Game.Server.NWNX
         }
 
         /// <summary>
-        /// Deserialize the object. The NWObject will be created outside of the world and
+        /// Deserialize the object. The object will be created outside of the world and
         /// needs to be manually positioned at a location/inventory.
         /// </summary>
         /// <param name="serialized"></param>
         /// <returns></returns>
-        public static Object Deserialize(string serialized)
+        public static NWObject Deserialize(string serialized)
         {
             string sFunc = "Deserialize";
 
@@ -169,7 +136,6 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Object, sFunc);
             return NWNX_GetReturnValueObject(NWNX_Object, sFunc);
         }
-
 
         /// <summary>
         /// Returns the dialog resref of the object.
@@ -180,14 +146,14 @@ namespace SWLOR.Game.Server.NWNX
         {
             string sFunc = "GetDialogResref";
 
-            NWNX_PushArgumentObject(NWNX_Object, sFunc, obj.Object);
+            NWNX_PushArgumentObject(NWNX_Object, sFunc, obj);
 
             NWNX_CallFunction(NWNX_Object, sFunc);
             return NWNX_GetReturnValueString(NWNX_Object, sFunc);
         }
 
         /// <summary>
-        /// Sets the dialog resref of the object
+        /// Sets the dialog resref of the object.
         /// </summary>
         /// <param name="obj"></param>
         /// <param name="dialog"></param>
@@ -196,7 +162,7 @@ namespace SWLOR.Game.Server.NWNX
             string sFunc = "SetDialogResref";
 
             NWNX_PushArgumentString(NWNX_Object, sFunc, dialog);
-            NWNX_PushArgumentObject(NWNX_Object, sFunc, obj.Object);
+            NWNX_PushArgumentObject(NWNX_Object, sFunc, obj);
 
             NWNX_CallFunction(NWNX_Object, sFunc);
         }
@@ -212,7 +178,7 @@ namespace SWLOR.Game.Server.NWNX
             string sFunc = "SetAppearance";
 
             NWNX_PushArgumentInt(NWNX_Object, sFunc, app);
-            NWNX_PushArgumentObject(NWNX_Object, sFunc, obj.Object);
+            NWNX_PushArgumentObject(NWNX_Object, sFunc, obj);
 
             NWNX_CallFunction(NWNX_Object, sFunc);
         }
@@ -226,11 +192,85 @@ namespace SWLOR.Game.Server.NWNX
         {
             string sFunc = "GetAppearance";
 
-            NWNX_PushArgumentObject(NWNX_Object, sFunc, obj.Object);
+            NWNX_PushArgumentObject(NWNX_Object, sFunc, obj);
 
             NWNX_CallFunction(NWNX_Object, sFunc);
             return NWNX_GetReturnValueInt(NWNX_Object, sFunc);
         }
+
+        /// <summary>
+        /// Return true if obj has visual effect nVFX applied to it
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="nVFX"></param>
+        /// <returns></returns>
+        public static bool GetHasVisualEffect(NWObject obj, int nVFX)
+        {
+            string sFunc = "GetHasVisualEffect";
+
+            NWNX_PushArgumentInt(NWNX_Object, sFunc, nVFX);
+            NWNX_PushArgumentObject(NWNX_Object, sFunc, obj);
+
+            NWNX_CallFunction(NWNX_Object, sFunc);
+
+            return NWNX_GetReturnValueInt(NWNX_Object, sFunc) == _.TRUE;
+        }
+
+        /// <summary>
+        /// Return true if an item of baseitem type can fit in object's inventory
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="baseitem"></param>
+        /// <returns></returns>
+        public static bool CheckFit(NWItem item, int baseitem)
+        {
+            string sFunc = "CheckFit";
+
+            NWNX_PushArgumentInt(NWNX_Object, sFunc, baseitem);
+            NWNX_PushArgumentObject(NWNX_Object, sFunc, item);
+
+            NWNX_CallFunction(NWNX_Object, sFunc);
+
+            return NWNX_GetReturnValueInt(NWNX_Object, sFunc) == _.TRUE;
+        }
+
+        /// <summary>
+        /// Return damage immunity (in percent) against given damage type
+        /// Use DAMAGE_TYPE_* constants for damageType
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="damageType"></param>
+        /// <returns></returns>
+        public static int GetDamageImmunity(NWObject obj, int damageType)
+        {
+            string sFunc = "GetDamageImmunity";
+
+            NWNX_PushArgumentInt(NWNX_Object, sFunc, damageType);
+            NWNX_PushArgumentObject(NWNX_Object, sFunc, obj);
+
+            NWNX_CallFunction(NWNX_Object, sFunc);
+
+            return NWNX_GetReturnValueInt(NWNX_Object, sFunc);
+        }
+
+        /// <summary>
+        /// Add or move obj to area at pos
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="area"></param>
+        /// <param name="pos"></param>
+        public static void AddToArea(NWObject obj, NWArea area, Vector pos)
+        {
+            string sFunc = "AddToArea";
+
+            NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.m_Z);
+            NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.m_Y);
+            NWNX_PushArgumentFloat(NWNX_Object, sFunc, pos.m_X);
+            NWNX_PushArgumentObject(NWNX_Object, sFunc, area);
+            NWNX_PushArgumentObject(NWNX_Object, sFunc, obj);
+            NWNX_CallFunction(NWNX_Object, sFunc);
+        }
+
 
     }
 }

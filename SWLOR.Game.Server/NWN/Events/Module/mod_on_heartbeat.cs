@@ -38,8 +38,8 @@ namespace NWN.Scripts
                 }
             }
 
-            ThreadPool.GetMaxThreads(out int workers, out int completionPort);
-            Console.WriteLine("Max threads: " + workers + " workers, " + completionPort + " completionPorts");
+            //ThreadPool.GetMaxThreads(out int workers, out int completionPort);
+            //Console.WriteLine("Max threads: " + workers + " workers, " + completionPort + " completionPorts");
             Console.WriteLine("Null thread count: " + nullThreadCount);
 
 

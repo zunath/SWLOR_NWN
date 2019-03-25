@@ -172,5 +172,41 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction("NWNX_Administration", "SET_SERVER_NAME");
         }
 
+        /// <summary>
+        /// Get an AdministrationOption value
+        /// </summary>
+        /// <param name="option"></param>
+        /// <returns></returns>
+        public static int GetPlayOption(AdministrationOption option)
+        {
+            NWNX_PushArgumentInt("NWNX_Administration", "GET_PLAY_OPTION", (int)option);
+            NWNX_CallFunction("NWNX_Administration", "GET_PLAY_OPTION");
+
+            return NWNX_GetReturnValueInt("NWNX_Administration", "GET_PLAY_OPTION");
+        }
+
+        /// <summary>
+        /// Set an AdministrationOption value
+        /// </summary>
+        /// <param name="option"></param>
+        /// <param name="value"></param>
+        public static void SetPlayOption(AdministrationOption option, int value)
+        {
+            NWNX_PushArgumentInt("NWNX_Administration", "SET_PLAY_OPTION", value);
+            NWNX_PushArgumentInt("NWNX_Administration", "SET_PLAY_OPTION", (int)option);
+            NWNX_CallFunction("NWNX_Administration", "SET_PLAY_OPTION");
+        }
+
+        /// <summary>
+        /// Delete the temporary user resource data (TURD) of a playerName + characterName
+        /// </summary>
+        /// <param name="playerName">Name of the player's user account</param>
+        /// <param name="characterName">Name of the character</param>
+        public static void DeleteTURD(string playerName, string characterName)
+        {
+            NWNX_PushArgumentString("NWNX_Administration", "DELETE_TURD", characterName);
+            NWNX_PushArgumentString("NWNX_Administration", "DELETE_TURD", playerName);
+            NWNX_CallFunction("NWNX_Administration", "DELETE_TURD");
+        }
     }
 }

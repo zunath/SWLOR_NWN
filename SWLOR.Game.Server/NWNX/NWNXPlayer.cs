@@ -11,8 +11,23 @@ namespace SWLOR.Game.Server.NWNX
     {
         private const string NWNX_Player = "NWNX_Player";
 
+        /// <summary> 
+        /// Force display placeable examine window for player
+        /// If used on a placeable in a different area than the player, the portait will not be shown.
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="placeable"></param>
+        public static void ForcePlaceableExamineWindow(NWPlayer player, NWPlaceable placeable)
+        {
+            string sFunc = "ForcePlaceableExamineWindow";
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, placeable.Object);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player.Object);
+
+            NWNX_CallFunction(NWNX_Player, sFunc);
+        }
+
         /// <summary>
-        /// // Force opens the target object's inventory for the player.
+        /// Force opens the target object's inventory for the player.
         /// A few notes about this function:
         /// - If the placeable is in a different area than the player, the portrait will not be shown
         /// - The placeable's open/close animations will be played
@@ -23,11 +38,11 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="player"></param>
         /// <param name="placeable"></param>
-        public static void ForcePlaceableExamineWindow(NWPlayer player, NWPlaceable placeable)
+        public static void ForcePlaceableInventoryWindow(NWPlayer player, NWPlaceable placeable)
         {
-            string sFunc = "ForcePlaceableExamineWindow";
-            NWNX_PushArgumentObject(NWNX_Player, sFunc, placeable.Object);
-            NWNX_PushArgumentObject(NWNX_Player, sFunc, player.Object);
+            string sFunc = "ForcePlaceableInventoryWindow";
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, placeable);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
 
             NWNX_CallFunction(NWNX_Player, sFunc);
         }
@@ -356,5 +371,57 @@ namespace SWLOR.Game.Server.NWNX
 
             NWNX_CallFunction(NWNX_Player, sFunc);
         }
+
+
+        /// <summary>
+        /// Apply visualeffect to target that only player can see
+        /// Note: Only works with instant effects: VFX_COM_*, VFX_FNF_*, VFX_IMP_*
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="target"></param>
+        /// <param name="visualeffect"></param>
+        public static void ApplyInstantVisualEffectToObject(NWPlayer player, NWObject target, int visualeffect)
+        {
+            string sFunc = "ApplyInstantVisualEffectToObject";
+            NWNX_PushArgumentInt(NWNX_Player, sFunc, visualeffect);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, target);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
+
+            NWNX_CallFunction(NWNX_Player, sFunc);
+        }
+
+        /// <summary>
+        /// // Refreshes the players character sheet
+        /// Note: You may need to use DelayCommand if you're manipulating values
+        /// through nwnx and forcing a UI refresh, 0.5s seemed to be fine
+        /// </summary>
+        /// <param name="player"></param>
+        public static void UpdateCharacterSheet(NWPlayer player)
+        {
+            string sFunc = "UpdateCharacterSheet";
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
+
+            NWNX_CallFunction(NWNX_Player, sFunc);
+        }
+
+        /// <summary>
+        /// Allows player to open target's inventory
+        /// Target must be a creature or another player
+        /// Note: only works if player and target are in the same area
+        /// </summary>
+        /// <param name="player"></param>
+        /// <param name="target"></param>
+        /// <param name="open"></param>
+        public static void OpenInventory(NWPlayer player, NWObject target, bool open = true)
+        {
+            string sFunc = "OpenInventory";
+
+            NWNX_PushArgumentInt(NWNX_Player, sFunc, open ? 1 : 0);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, target);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, player);
+
+            NWNX_CallFunction(NWNX_Player, sFunc);
+        }
+
     }
 }

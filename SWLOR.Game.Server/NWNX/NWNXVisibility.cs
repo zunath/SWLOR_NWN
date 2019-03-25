@@ -5,7 +5,6 @@ namespace SWLOR.Game.Server.NWNX
 {
     public static class NWNXVisibility
     {
-
         private const string NWNX_Visibility = "NWNX_Visibility";
 
 

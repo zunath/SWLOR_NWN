@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.NWNX
         }
 
         /// <summary>
-        /// // Set the return value of the event.
+        /// Set the return value of the event.
         ///
         /// THIS SHOULD ONLY BE CALLED FROM WITHIN AN EVENT HANDLER.
         /// ONLY WORKS WITH THE FOLLOWING EVENTS:
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_PushArgumentString("NWNX_Events", "EVENT_RESULT", data);
             NWNX_CallFunction("NWNX_Events", "EVENT_RESULT");
         }
-
+        
         private static int GetEventDataInt(string tag)
         {
             string data = GetEventDataString(tag);

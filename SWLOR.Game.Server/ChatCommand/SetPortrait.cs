@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.ChatCommand
             }
 
             NWPlayer player = target.Object;
-            NWNXObject.SetPortrait(player, args[0]);
+            _.SetPortraitResRef(player, args[0]);
             player.FloatingText("Your portrait has been changed.");
         }
 

@@ -135,5 +135,16 @@ namespace SWLOR.Game.Server.NWNX
 
             NWNX_CallFunction(NWNX_Item, sFunc);
         }
+
+
+        public static int GetBaseArmorClass(NWItem oItem)
+        {
+            string sFunc = "GetBaseArmorClass";
+
+            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem);
+
+            NWNX_CallFunction(NWNX_Item, sFunc);
+            return NWNX_GetReturnValueInt(NWNX_Item, sFunc);
+        }
     }
 }

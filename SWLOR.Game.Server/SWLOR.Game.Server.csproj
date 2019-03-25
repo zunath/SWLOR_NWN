@@ -83,7 +83,7 @@
     <Compile Include="AI\AIComponent\EquipBestMelee.cs" />
     <Compile Include="AI\AIComponent\EquipBestRanged.cs" />
     <Compile Include="AI\AIComponent\RandomWalk.cs" />
-    <Compile Include="AreaInstance\CoxxionBase\OnSpawn.cs" />
+    <Compile Include="AreaInstance\CoxxionBase.cs" />
     <Compile Include="AreaInstance\Contracts\IAreaInstance.cs" />
     <Compile Include="AreaInstance\ExitAreaInstance.cs" />
     <Compile Include="Bioware\BiowarePosition.cs" />

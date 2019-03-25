@@ -3,6 +3,7 @@ using System.Threading;
 using SWLOR.Game.Server;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Module;
+using SWLOR.Game.Server.ValueObject;
 
 
 // ReSharper disable once CheckNamespace
@@ -19,28 +20,26 @@ namespace NWN.Scripts
 
 
             // TODO DEBUGGING
-            System.Diagnostics.Process ThisProcess = System.Diagnostics.Process.GetCurrentProcess();
+            //System.Diagnostics.Process ThisProcess = System.Diagnostics.Process.GetCurrentProcess();
 
-            int nullThreadCount = 0;
-            foreach (System.Diagnostics.ProcessThread OneThread in ThisProcess.Threads)
-            {
-                if (OneThread != null)
-                {
-                    Console.WriteLine(OneThread.Id + ": " +
-                                      OneThread.ThreadState + ": " +
-                                      OneThread.StartTime + ": " +
-                                      OneThread.TotalProcessorTime + "<BR>");
-                }
-                else
-                {
+            //int nullThreadCount = 0;
+            //foreach (System.Diagnostics.ProcessThread OneThread in ThisProcess.Threads)
+            //{
+            //    if (OneThread != null)
+            //    {
+            //        Console.WriteLine(OneThread.Id + ": " +
+            //                          OneThread.ThreadState + ": " +
+            //                          OneThread.StartTime + ": " +
+            //                          OneThread.TotalProcessorTime + "<BR>");
+            //    }
+            //    else
+            //    {
 
-                    nullThreadCount++;
-                }
-            }
-
-            //ThreadPool.GetMaxThreads(out int workers, out int completionPort);
-            //Console.WriteLine("Max threads: " + workers + " workers, " + completionPort + " completionPorts");
-            Console.WriteLine("Null thread count: " + nullThreadCount);
+            //        nullThreadCount++;
+            //    }
+            //}
+            
+            //Console.WriteLine("Null thread count: " + nullThreadCount);
 
 
 

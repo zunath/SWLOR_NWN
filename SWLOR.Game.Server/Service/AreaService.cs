@@ -261,7 +261,7 @@ namespace SWLOR.Game.Server.Service
             if (!string.IsNullOrWhiteSpace(rule))
             {
                 IAreaInstance instanceRule = GetAreaInstance(rule);
-                instanceRule.Run(instance);
+                instanceRule.OnSpawn(instance);
             }
 
             return instance;

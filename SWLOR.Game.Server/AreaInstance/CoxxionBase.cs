@@ -2,18 +2,17 @@
 using NWN;
 using SWLOR.Game.Server.AreaInstance.Contracts;
 using SWLOR.Game.Server.GameObject;
-using static NWN._;
 
-namespace SWLOR.Game.Server.AreaInstance.CoxxionBase
+namespace SWLOR.Game.Server.AreaInstance
 {
-    public class OnSpawn: IAreaInstance
+    public class CoxxionBase: IAreaInstance
     {
-        public void Run(NWArea area)
+        public void OnSpawn(NWArea area)
         {
             var doors = new List<NWObject>();
             
             var obj = _.GetFirstObjectInArea(area);
-            while (_.GetIsObjectValid(obj) == TRUE)
+            while (_.GetIsObjectValid(obj) == _.TRUE)
             {
                 int colorID = _.GetLocalInt(obj, "DOOR_COLOR");
 

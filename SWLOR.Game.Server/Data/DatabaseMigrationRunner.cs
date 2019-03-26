@@ -18,31 +18,6 @@ namespace SWLOR.Game.Server.Data
     /// </summary>
     public static class DatabaseMigrationRunner
     {
-        private static readonly string _masterConnectionString;
-        private static readonly string _swlorConnectionString;
-
-        static DatabaseMigrationRunner()
-        {
-            var ip = Environment.GetEnvironmentVariable("SQL_SERVER_IP_ADDRESS");
-            var user = Environment.GetEnvironmentVariable("SQL_SERVER_USERNAME");
-            var password = Environment.GetEnvironmentVariable("SQL_SERVER_PASSWORD");
-            var database = Environment.GetEnvironmentVariable("SQL_SERVER_DATABASE");
-            _masterConnectionString = new SqlConnectionStringBuilder()
-            {
-                DataSource = ip,
-                InitialCatalog = "MASTER",
-                UserID = user,
-                Password = password
-            }.ToString();
-            _swlorConnectionString = new SqlConnectionStringBuilder()
-            {
-                DataSource = ip,
-                InitialCatalog = database,
-                UserID = user,
-                Password = password
-            }.ToString();
-        }
-        
         /// <summary>
         /// Returns the folder name containing the sql migration files.
         /// </summary>
@@ -66,13 +41,13 @@ namespace SWLOR.Game.Server.Data
         /// </summary>
         private static void BuildDatabase()
         {
-            bool exists = CheckDatabaseExists(_masterConnectionString, Environment.GetEnvironmentVariable("SQL_SERVER_DATABASE"));
+            bool exists = CheckDatabaseExists(DataService.MasterConnectionString, Environment.GetEnvironmentVariable("SQL_SERVER_DATABASE"));
 
             if (!exists)
             {
                 Console.WriteLine("Database not found. Generating database...");
 
-                using (var connection = new SqlConnection(_masterConnectionString))
+                using (var connection = new SqlConnection(DataService.MasterConnectionString))
                 {
                     connection.Open();
                     try
@@ -88,13 +63,9 @@ namespace SWLOR.Game.Server.Data
                         LoggingService.LogError(ex);
                         return;
                     }
-                    finally    
-                    {
-                        connection.Close();
-                    }
                 }
 
-                using (var connection = new SqlConnection(_swlorConnectionString))
+                using (var connection = new SqlConnection(DataService.SWLORConnectionString))
                 {
                     Console.WriteLine("Creating tables, procedures, views, etc...");
                     string sql = ReadResourceFile(FolderName + ".Initialization.sql");
@@ -110,25 +81,18 @@ namespace SWLOR.Game.Server.Data
 
         private static bool CheckDatabaseExists(string connectionString, string databaseName)
         {
+            bool result;
+
             using (var connection = new SqlConnection(connectionString))
             {
+                connection.Open();
                 using (var command = new SqlCommand($"SELECT db_id('{databaseName}')", connection))
                 {
-                    bool result;
-                    connection.Open();
-                    try
-                    {
-                        result = (command.ExecuteScalar() != DBNull.Value);
-                    }
-                    finally
-                    {
-                        connection.Close();
-                        connection.Dispose();
-                    }
-                    
-                    return result;
+                    result = (command.ExecuteScalar() != DBNull.Value);
                 }
             }
+
+            return result;
         }
 
         /// <summary> 
@@ -164,7 +128,7 @@ namespace SWLOR.Game.Server.Data
         private static IEnumerable<string> GetScriptResources()
         {
             DatabaseVersion currentVersion;
-            using (var connection = new SqlConnection(_swlorConnectionString))
+            using (var connection = new SqlConnection(DataService.SWLORConnectionString))
             {
                 string sql = "select top 1 ID, ScriptName, DateApplied, VersionDate, VersionNumber FROM DatabaseVersion ORDER BY VersionDate DESC, VersionNumber DESC";
                 currentVersion = connection.QueryFirstOrDefault<DatabaseVersion>(sql);
@@ -228,7 +192,7 @@ namespace SWLOR.Game.Server.Data
             string fileName = GetFileNameFromScriptResourceName(resource);
             Console.WriteLine("Applying migration script: " + resource);
 
-            using (var connection = new SqlConnection(_swlorConnectionString))
+            using (var connection = new SqlConnection(DataService.SWLORConnectionString))
             {
                 try
                 {
@@ -286,7 +250,7 @@ namespace SWLOR.Game.Server.Data
                 VersionNumber = versionInfo.Item2
             };
 
-            using (var connection = new SqlConnection(_swlorConnectionString))
+            using (var connection = new SqlConnection(DataService.SWLORConnectionString))
             {
                 connection.Insert(version);
             }

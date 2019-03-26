@@ -26,10 +26,10 @@ namespace NWN.Scripts
             using (new Profiler(nameof(mod_on_load)))
             {
                 DatabaseMigrationRunner.Start();
-
+                
                 Console.WriteLine("Starting background thread manager...");
                 BackgroundThreadManager.Start();
-
+                
                 NWNXChat.RegisterChatScript("mod_on_nwnxchat");
                 SetModuleEventScripts();
                 SetAreaEventScripts();

@@ -23,11 +23,13 @@ namespace SWLOR.Game.Server.Threading
         private static void ProcessDatabaseThread()
         {
             Console.WriteLine("DB thread starting");
+            _dbThread.Start();
             while (!_isShuttingDown)
             {
                 _dbThread.Run();
             }
 
+            _dbThread.Stop();
             _threadHasShutDown = true;
         }
 

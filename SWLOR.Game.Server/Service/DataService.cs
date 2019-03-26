@@ -27,26 +27,43 @@ namespace SWLOR.Game.Server.Service
     public static class DataService
     {
         public static ConcurrentQueue<DatabaseAction> DataQueue { get; }
-        private static string _connectionString;
         private static bool _cacheInitialized;
-
+        public static string MasterConnectionString { get; }
+        public static string SWLORConnectionString { get; private set; }
         public static Dictionary<Type, Dictionary<object, object>> Cache { get; }
+        private static SqlConnection _connection;
 
         static DataService()
         {
             DataQueue = new ConcurrentQueue<DatabaseAction>();
             Cache = new Dictionary<Type, Dictionary<object, object>>();
+
+            var ip = Environment.GetEnvironmentVariable("SQL_SERVER_IP_ADDRESS");
+            var user = Environment.GetEnvironmentVariable("SQL_SERVER_USERNAME");
+            var password = Environment.GetEnvironmentVariable("SQL_SERVER_PASSWORD");
+            var database = Environment.GetEnvironmentVariable("SQL_SERVER_DATABASE");
+
+
+            MasterConnectionString = new SqlConnectionStringBuilder()
+            {
+                DataSource = ip,
+                InitialCatalog = "MASTER",
+                UserID = user,
+                Password = password
+            }.ToString();
+            SWLORConnectionString = new SqlConnectionStringBuilder()
+            {
+                DataSource = ip,
+                InitialCatalog = database,
+                UserID = user,
+                Password = password
+            }.ToString();
+
         }
 
         public static void Initialize(bool initializeCache)
         {
-            _connectionString = new SqlConnectionStringBuilder()
-            {
-                DataSource = Environment.GetEnvironmentVariable("SQL_SERVER_IP_ADDRESS"),
-                InitialCatalog = Environment.GetEnvironmentVariable("SQL_SERVER_DATABASE"),
-                UserID = Environment.GetEnvironmentVariable("SQL_SERVER_USERNAME"),
-                Password = Environment.GetEnvironmentVariable("SQL_SERVER_PASSWORD")
-            }.ToString();
+            _connection = new SqlConnection(SWLORConnectionString);
 
             if (initializeCache)
                 InitializeCache();
@@ -54,13 +71,15 @@ namespace SWLOR.Game.Server.Service
 
         public static void Initialize(string ip, string database, string user, string password, bool initializeCache)
         {
-            _connectionString = new SqlConnectionStringBuilder()
+            SWLORConnectionString = new SqlConnectionStringBuilder()
             {
                 DataSource = ip,
                 InitialCatalog = database,
                 UserID = user,
                 Password = password
             }.ToString();
+
+            _connection = new SqlConnection(SWLORConnectionString);
 
             if (initializeCache)
                 InitializeCache();
@@ -181,11 +200,7 @@ namespace SWLOR.Game.Server.Service
         {
             const string Sql = "SELECT * FROM dbo.PCMarketListing WHERE DateSold IS NULL AND DateRemoved IS NULL";
 
-            IEnumerable<PCMarketListing> results;
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                results = connection.Query<PCMarketListing>(Sql);
-            }
+            var results = _connection.Query<PCMarketListing>(Sql);
             
             foreach (var result in results)
             {
@@ -202,56 +217,53 @@ namespace SWLOR.Game.Server.Service
         {
             if (!player.IsPlayer) return;
 
-            using (var connection = new SqlConnection(_connectionString))
+            using (var multi = _connection.QueryMultiple("GetPlayerData", new { PlayerID = player.GlobalID }, commandType: CommandType.StoredProcedure))
             {
-                using (var multi = connection.QueryMultiple("GetPlayerData", new {PlayerID = player.GlobalID}, commandType: CommandType.StoredProcedure))
-                {
-                    foreach(var item in multi.Read<PCCooldown>().ToList())
-                        SetIntoCache<PCCooldown>(item.ID, item);
-                    foreach (var item in multi.Read<PCCraftedBlueprint>().ToList())
-                        SetIntoCache<PCCraftedBlueprint>(item.ID, item);
+                foreach (var item in multi.Read<PCCooldown>().ToList())
+                    SetIntoCache<PCCooldown>(item.ID, item);
+                foreach (var item in multi.Read<PCCraftedBlueprint>().ToList())
+                    SetIntoCache<PCCraftedBlueprint>(item.ID, item);
 
-                    foreach (var item in multi.Read<PCCustomEffect>().ToList())
-                        SetIntoCache<PCCustomEffect>(item.ID, item);
-                    foreach (var item in multi.Read<PCImpoundedItem>().ToList())
-                        SetIntoCache<PCImpoundedItem>(item.ID, item);
-                    foreach (var item in multi.Read<PCKeyItem>().ToList())
-                        SetIntoCache<PCKeyItem>(item.ID, item);
-                    foreach (var item in multi.Read<PCMapPin>().ToList())
-                        SetIntoCache<PCMapPin>(item.ID, item);
-                    foreach (var item in multi.Read<PCMapProgression>().ToList())
-                        SetIntoCache<PCMapProgression>(item.ID, item);
-                    foreach (var item in multi.Read<PCObjectVisibility>().ToList())
-                        SetIntoCache<PCObjectVisibility>(item.ID, item);
+                foreach (var item in multi.Read<PCCustomEffect>().ToList())
+                    SetIntoCache<PCCustomEffect>(item.ID, item);
+                foreach (var item in multi.Read<PCImpoundedItem>().ToList())
+                    SetIntoCache<PCImpoundedItem>(item.ID, item);
+                foreach (var item in multi.Read<PCKeyItem>().ToList())
+                    SetIntoCache<PCKeyItem>(item.ID, item);
+                foreach (var item in multi.Read<PCMapPin>().ToList())
+                    SetIntoCache<PCMapPin>(item.ID, item);
+                foreach (var item in multi.Read<PCMapProgression>().ToList())
+                    SetIntoCache<PCMapProgression>(item.ID, item);
+                foreach (var item in multi.Read<PCObjectVisibility>().ToList())
+                    SetIntoCache<PCObjectVisibility>(item.ID, item);
 
-                    var outfit = multi.Read<PCOutfit>().SingleOrDefault();
+                var outfit = multi.Read<PCOutfit>().SingleOrDefault();
 
-                    if(outfit != null)
-                        SetIntoCache<PCOutfit>(outfit.PlayerID, outfit);
+                if (outfit != null)
+                    SetIntoCache<PCOutfit>(outfit.PlayerID, outfit);
 
-                    foreach (var item in multi.Read<PCOverflowItem>().ToList())
-                        SetIntoCache<PCOverflowItem>(item.ID, item);
-                    foreach (var item in multi.Read<PCPerk>().ToList())
-                        SetIntoCache<PCPerk>(item.ID, item);
-                    foreach (var item in multi.Read<PCQuestItemProgress>().ToList())
-                        SetIntoCache<PCQuestItemProgress>(item.ID, item);
-                    foreach (var item in multi.Read<PCQuestKillTargetProgress>().ToList())
-                        SetIntoCache<PCQuestKillTargetProgress>(item.ID, item);
-                    foreach (var item in multi.Read<PCQuestStatus>().ToList())
-                        SetIntoCache<PCQuestStatus>(item.ID, item);
-                    foreach (var item in multi.Read<PCRegionalFame>().ToList())
-                        SetIntoCache<PCRegionalFame>(item.ID, item);
-                    foreach (var item in multi.Read<PCSearchSite>().ToList())
-                        SetIntoCache<PCSearchSite>(item.ID, item);
-                    foreach (var item in multi.Read<PCSearchSiteItem>().ToList())
-                        SetIntoCache<PCSearchSiteItem>(item.ID, item);
-                    foreach(var item in multi.Read<PCSkill>().ToList())
-                        SetIntoCache<PCSkill>(item.ID, item);
-                    foreach(var item in multi.Read<BankItem>().ToList())
-                        SetIntoCache<BankItem>(item.ID, item);
-                    foreach(var item in multi.Read<PCSkillPool>().ToList())
-                        SetIntoCache<PCSkillPool>(item.ID, item);
-                }
+                foreach (var item in multi.Read<PCOverflowItem>().ToList())
+                    SetIntoCache<PCOverflowItem>(item.ID, item);
+                foreach (var item in multi.Read<PCPerk>().ToList())
+                    SetIntoCache<PCPerk>(item.ID, item);
+                foreach (var item in multi.Read<PCQuestItemProgress>().ToList())
+                    SetIntoCache<PCQuestItemProgress>(item.ID, item);
+                foreach (var item in multi.Read<PCQuestKillTargetProgress>().ToList())
+                    SetIntoCache<PCQuestKillTargetProgress>(item.ID, item);
+                foreach (var item in multi.Read<PCQuestStatus>().ToList())
+                    SetIntoCache<PCQuestStatus>(item.ID, item);
+                foreach (var item in multi.Read<PCRegionalFame>().ToList())
+                    SetIntoCache<PCRegionalFame>(item.ID, item);
+                foreach (var item in multi.Read<PCSearchSite>().ToList())
+                    SetIntoCache<PCSearchSite>(item.ID, item);
+                foreach (var item in multi.Read<PCSearchSiteItem>().ToList())
+                    SetIntoCache<PCSearchSiteItem>(item.ID, item);
+                foreach (var item in multi.Read<PCSkill>().ToList())
+                    SetIntoCache<PCSkill>(item.ID, item);
+                foreach (var item in multi.Read<BankItem>().ToList())
+                    SetIntoCache<BankItem>(item.ID, item);
+                foreach (var item in multi.Read<PCSkillPool>().ToList())
+                    SetIntoCache<PCSkillPool>(item.ID, item);
             }
 
             Get<Player>(player.GlobalID);
@@ -448,12 +460,9 @@ namespace SWLOR.Game.Server.Service
             if (cached != null)
                 return cached;
 
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                cached = connection.Get<T>(id);
-                SetIntoCache<T>(id, cached);
-            }
-
+            cached = _connection.Get<T>(id);
+            SetIntoCache<T>(id, cached);
+            
             return cached;
         }
 
@@ -488,11 +497,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Can't find anything in the cache so pull back the records from the database.
-            IEnumerable<T> results;
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                results = connection.GetAll<T>();
-            }
+            IEnumerable<T> results = _connection.GetAll<T>();
             
             // Add the records to the cache.
             foreach (var result in results)
@@ -576,74 +581,47 @@ namespace SWLOR.Game.Server.Service
 
         public static void StoredProcedure(string procedureName, params SqlParameter[] args)
         {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                connection.Execute(BuildSQLQuery(procedureName, args), args);
-            }
+            _connection.Execute(BuildSQLQuery(procedureName, args), args);
         }
 
         public static IEnumerable<T> StoredProcedure<T>(string procedureName, params SqlParameter[] args)
         {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                return connection.Query<T>(procedureName, args, commandType: CommandType.StoredProcedure);
-            }
+            return _connection.Query<T>(procedureName, args, commandType: CommandType.StoredProcedure);
         }
 
         public static IEnumerable<TResult> StoredProcedure<T1, T2, TResult>(string procedureName, Func<T1, T2, TResult> map, string splitOn, SqlParameter arg)
         {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                return connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
-            }
+            return _connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
         }
 
         public static IEnumerable<TResult> StoredProcedure<T1, T2, T3, TResult>(string procedureName, Func<T1, T2, T3, TResult> map, string splitOn, SqlParameter arg)
         {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                return connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
-            }
+            return _connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
         }
 
         public static IEnumerable<TResult> StoredProcedure<T1, T2, T3, T4, TResult>(string procedureName, Func<T1, T2, T3, T4, TResult> map, string splitOn, SqlParameter arg)
         {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                return connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
-            }
+            return _connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
         }
 
         public static IEnumerable<TResult> StoredProcedure<T1, T2, T3, T4, T5, TResult>(string procedureName, Func<T1, T2, T3, T4, T5, TResult> map, string splitOn, SqlParameter arg)
         {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                return connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
-            }
+            return _connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
         }
 
         public static IEnumerable<TResult> StoredProcedure<T1, T2, T3, T4, T5, T6, TResult>(string procedureName, Func<T1, T2, T3, T4, T5, T6, TResult> map, string splitOn, SqlParameter arg)
         {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                return connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
-            }
+            return _connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
         }
 
         public static IEnumerable<TResult> StoredProcedure<T1, T2, T3, T4, T5, T6, T7, TResult>(string procedureName, Func<T1, T2, T3, T4, T5, T6, T7, TResult> map, string splitOn, SqlParameter arg)
         {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                return connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
-            }
+            return _connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
         }
 
         public static T StoredProcedureSingle<T>(string procedureName, params SqlParameter[] args)
         {
-            using (var connection = new SqlConnection(_connectionString))
-            {
-                return connection.Query<T>(procedureName, args, commandType: CommandType.StoredProcedure).SingleOrDefault();
-            }
+            return _connection.Query<T>(procedureName, args, commandType: CommandType.StoredProcedure).SingleOrDefault();
         }
 
         private static string BuildSQLQuery(string procedureName, params SqlParameter[] args)

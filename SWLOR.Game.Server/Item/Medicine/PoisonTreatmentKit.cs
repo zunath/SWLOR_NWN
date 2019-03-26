@@ -11,6 +11,8 @@ namespace SWLOR.Game.Server.Item.Medicine
 {
     public class PoisonTreatmentKit: IActionItem
     {
+        public string CustomKey => "Medicine.PoisonTreatmentKit";
+
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
             user.SendMessage("You begin treating " + target.Name + "'s wounds...");

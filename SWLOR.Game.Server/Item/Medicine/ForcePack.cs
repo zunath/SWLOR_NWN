@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 {
     public class ForcePack: IActionItem
     {
+        public string CustomKey => "Medicine.ForcePack";
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {

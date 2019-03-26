@@ -34,25 +34,29 @@ namespace SWLOR.Game.Server.Service
                 _.ClearPersonalReputation(player.Object, factionMember);
                 factionMember = _.GetNextFactionMember(hostile.Object, FALSE);
             }
+            
+            const string RespawnMessage = "You have died. You can wait for another player to revive you or respawn to go to your last respawn point.";
+            _.PopUpDeathGUIPanel(player.Object, TRUE, TRUE, 0, RespawnMessage);
+        }
 
+        private static void ApplyDurabilityLoss(NWPlayer player)
+        {
             for (int index = 0; index < NUM_INVENTORY_SLOTS; index++)
             {
                 NWItem equipped = _.GetItemInSlot(index, player);
-                DurabilityService.RunItemDecay(player, equipped, RandomService.RandomFloat(0.02f, 0.07f));
+                DurabilityService.RunItemDecay(player, equipped, RandomService.RandomFloat(0.10f, 0.50f));
             }
 
             foreach (var item in player.InventoryItems)
             {
-                DurabilityService.RunItemDecay(player, item, RandomService.RandomFloat(0.02f, 0.07f));
+                DurabilityService.RunItemDecay(player, item, RandomService.RandomFloat(0.10f, 0.50f));
             }
-
-            const string RespawnMessage = "You have died. You can wait for another player to revive you or respawn to go to your last respawn point.";
-            _.PopUpDeathGUIPanel(player.Object, TRUE, TRUE, 0, RespawnMessage);
         }
-        
+
         private static void OnModuleRespawn()
         {
             NWPlayer oPC = _.GetLastRespawnButtonPresser();
+            ApplyDurabilityLoss(oPC);
 
             int amount = oPC.MaxHP / 2;
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectResurrection(), oPC.Object);

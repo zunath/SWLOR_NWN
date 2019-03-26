@@ -62,6 +62,11 @@ namespace SWLOR.Game.Server.Service
                     throw new NullReferenceException("Unable to activate instance of type: " + type);
                 }
                 string key = type.Name;
+
+                // If the class has defined a custom key, use that instead.
+                if (!string.IsNullOrWhiteSpace(instance.CustomKey))
+                    key = instance.CustomKey;
+
                 _actionItemHandlers.Add(key, instance);
             }
         }

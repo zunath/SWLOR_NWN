@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Item
 {
     public class StarchartDisk: IActionItem
     {
+        public string CustomKey => null;
+
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
             return null;

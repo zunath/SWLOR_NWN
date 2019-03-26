@@ -11,7 +11,8 @@ namespace SWLOR.Game.Server.Item.Medicine
 {
     public class Bandages: IActionItem
     {
-        
+        public string CustomKey => "Medicine.Bandages";
+
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
             user.SendMessage("You begin treating " + target.Name + "'s wounds...");

@@ -11,6 +11,8 @@ namespace SWLOR.Game.Server.Item
 {
     public class RepairKit : IActionItem
     {
+        public string CustomKey => null;
+
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
             return null;

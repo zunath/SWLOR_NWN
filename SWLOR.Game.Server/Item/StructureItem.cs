@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Item
 {
     public class StructureItem : IActionItem
     {
+        public string CustomKey => null;
+
         public bool AllowLocationTarget()
         {
             return true;

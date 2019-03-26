@@ -12,6 +12,8 @@ namespace SWLOR.Game.Server.Item.Medicine
 {
     public class ResuscitationKit : IActionItem
     {
+        public string CustomKey => "Medicine.ResuscitationKit";
+
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
             user.SendMessage("You begin resuscitating " + target.Name + "...");

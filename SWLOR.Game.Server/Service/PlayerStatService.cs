@@ -352,7 +352,6 @@ namespace SWLOR.Game.Server.Service
 
                         }
 
-
                         using(new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::ItemLoop::CalcBAB"))
                         {
                             // Calculate base attack bonus
@@ -360,7 +359,7 @@ namespace SWLOR.Game.Server.Service
                             {
                                 int itemLevel = item.RecommendedLevel;
                                 int delta = itemLevel - rank;
-                                int itemBAB = item.BaseAttackBonus / 3;
+                                int itemBAB = item.BaseAttackBonus;
                                 if (delta >= 1) itemBAB--;
                                 if (delta > 0) itemBAB = itemBAB - delta / 5;
 

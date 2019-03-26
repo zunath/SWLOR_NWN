@@ -464,7 +464,7 @@ namespace SWLOR.Game.Server.Conversation
             // These IDs are pulled from the HairColors.jpg file found in the ServerFiles/Reference folder.
             int[] HumanHairColors = { 0, 1, 2, 3, 4, 5, 9, 10, 11, 12, 13, 14, 15, 23, 167};
             int[] BothanHairColors = { 2, 3, };
-            int[] ChissHairColors = { 23, 51, 63 };
+            int[] ChissHairColors = { 23, 51, 63, 16, 17, 24, 25, 31, 32, 33, 164, 165, 166, 167, 170, 171 };
             int[] ZabrakHairColors = { 0 };
             int[] TwilekHairColors = { }; // All
             int[] MirialanHairColors = { 0, 1, 2, 3, 4, 5, 6, 7, 14, 15, 16, 17, 167 };

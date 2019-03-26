@@ -73,6 +73,12 @@ namespace SWLOR.Game.Server.Service
 
             var dbStructure = DataService.GetAll<PCBaseStructure>().Single(x => x.ID == pcBaseStructureID);
 
+            // Check whether this is an item of furniture in a building.  If so, check the building's permissions.
+            if (!String.IsNullOrWhiteSpace(dbStructure.ParentPCBaseStructureID.ToString()))
+            {
+                return HasStructurePermission(player, (Guid)dbStructure.ParentPCBaseStructureID, permission);
+            }
+
             // Public base permissions take priority over all other permissions. Check those first.
             var publicBasePermission = DataService.SingleOrDefault<PCBasePermission>(x => x.PCBaseID == dbStructure.PCBaseID &&
                                                                                 x.IsPublicPermission);

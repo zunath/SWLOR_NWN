@@ -18,11 +18,12 @@ namespace SWLOR.Game.Server.Mod
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            if (target.CustomAC >= 36) // Actually applies to the PC at 1/3 total, so 36 == 12
+            if (target.CustomAC >= 51) // Actually applies to the PC at 1/3 total, so 51 == 17
                 return "You cannot improve that item's AC any further.";
 
-            if (!ItemService.ArmorBaseItemTypes.Contains(target.BaseItemType))
-                return "This mod can only be applied to armors.";
+            if (!ItemService.ArmorBaseItemTypes.Contains(target.BaseItemType) &&
+                !ItemService.ShieldBaseItemTypes.Contains(target.BaseItemType))
+                return "This mod can only be applied to armors and shields.";
 
             return null;
         }

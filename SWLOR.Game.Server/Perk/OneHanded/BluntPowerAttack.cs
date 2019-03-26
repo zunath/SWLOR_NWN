@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
         {
-            if (oItem.CustomItemType != CustomItemType.Vibroblade) return;
+            if (oItem.CustomItemType != CustomItemType.Baton) return;
             ApplyFeatChanges(oPC, null);
         }
 

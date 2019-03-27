@@ -1,4 +1,5 @@
 ﻿using SWLOR.Game.Server;
+using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Module;
 
@@ -10,7 +11,7 @@ namespace NWN.Scripts
 #pragma warning restore IDE1006 // Naming Styles
     {
         // ReSharper disable once UnusedMember.Local
-        private static void Main()
+        public static void Main()
         {
             MessageHub.Instance.Publish(new OnModuleApplyDamage());
         }

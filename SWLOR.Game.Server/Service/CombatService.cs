@@ -2,9 +2,9 @@
 using System.Globalization;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 
 
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Service
 
             int attackType = target.GetLocalInt(AbilityService.LAST_ATTACK + player.GlobalID);
 
-            LoggingService.Trace(TraceComponent.LastAttack, "Last attack from " + player.GlobalID + " on " + _.GetName(target) + " was type " + attackType.ToString());
+            LoggingService.Trace(TraceComponent.LastAttack, "Last attack from " + player.GlobalID + " on " + _.GetName(target) + " was type " + attackType);
 
             if (attackType == AbilityService.ATTACK_PHYSICAL)
             {

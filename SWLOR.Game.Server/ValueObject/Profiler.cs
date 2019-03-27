@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.ValueObject
     {
         public Profiler(string name)
         {
-            NWNXProfiler.PushPerfScope(name);
+            NWNXProfiler.PushPerfScope(name, "MonoScript", "Script");
         }
 
         public void Dispose()

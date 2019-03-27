@@ -82,7 +82,13 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Damage, sFunc);
         }
 
-
+        /// <summary>
+        /// Set Attack Event Script
+        /// If oOwner is OBJECT_INVALID, this sets the script globally for all creatures
+        /// If oOwner is valid, it will set it only for that creature.
+        /// </summary>
+        /// <param name="sScript"></param>
+        /// <param name="oOwner"></param>
         public static void SetAttackEventScript(string sScript, NWObject oOwner = null)
         {
             if (oOwner == null) oOwner = new Object();
@@ -96,6 +102,10 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Damage, sFunc);
         }
 
+        /// <summary>
+        /// Get Attack Event Data (to use only on Attack Event Script)
+        /// </summary>
+        /// <returns></returns>
         public static AttackEventData GetAttackEventData()
         {
             string sFunc = "GetAttackEventData";
@@ -125,6 +135,10 @@ namespace SWLOR.Game.Server.NWNX
             return data;
         }
 
+        /// <summary>
+        /// Set Attack Event Data (to use only on Attack Event Script)
+        /// </summary>
+        /// <param name="data"></param>
         public static void SetAttackEventData(AttackEventData data)
         {
             string sFunc = "SetAttackEventData";
@@ -146,7 +160,12 @@ namespace SWLOR.Game.Server.NWNX
             NWNX_CallFunction(NWNX_Damage, sFunc);
         }
 
-
+        /// <summary>
+        /// Deal damage to target - permits multiple damage types and checks enhancement bonus for overcoming DR
+        /// </summary>
+        /// <param name="data"></param>
+        /// <param name="oTarget"></param>
+        /// <param name="oSource"></param>
         public static void DealDamage(DamageData data, NWObject oTarget, NWObject oSource)
         {
             string sFunc = "DealDamage";

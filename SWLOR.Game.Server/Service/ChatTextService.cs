@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             NWObject sender = NWNXChat.GetSender();
-            string message = NWNXChat.GetMessage();
+            string message = NWNXChat.GetMessage().Trim();
 
             if (string.IsNullOrWhiteSpace(message))
             {
@@ -89,13 +89,14 @@ namespace SWLOR.Game.Server.Service
             NWNXChat.SkipMessage();
 
             // If this is a shout message, and the holonet is disabled, we disallow it.
-            if (channel == ChatChannelType.PlayerShout && sender.IsPC && sender.GetLocalInt("DISPLAY_HOLONET") == FALSE)
+            if (channel == ChatChannelType.PlayerShout && sender.IsPC && 
+                sender.GetLocalInt("DISPLAY_HOLONET") == FALSE)
             {
                 NWPlayer player = sender.Object;
                 player.SendMessage("You have disabled the holonet and cannot send this message.");
                 return;
             }
-
+            
             List<ChatComponent> chatComponents;
 
             // Quick early out - if we start with "//" or "((", this is an OOC message.
@@ -113,6 +114,13 @@ namespace SWLOR.Game.Server.Service
 
                 chatComponents = new List<ChatComponent>();
                 chatComponents.Add(component);
+
+                if (channel == ChatChannelType.PlayerShout)
+                {
+                    _.SendMessageToPC(sender, "Out-of-character messages cannot be sent on the Holonet.");
+                    return;
+                }
+
             }
             else
             {

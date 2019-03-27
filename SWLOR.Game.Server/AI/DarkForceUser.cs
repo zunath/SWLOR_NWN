@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Linq;
 using SWLOR.Game.Server.GameObject;
-
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using static NWN._;
 using SWLOR.Game.Server.Service;
-using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.AI
 {
@@ -15,16 +13,12 @@ namespace SWLOR.Game.Server.AI
     /// </summary>
     public class DarkForceUser : BehaviourBase
     {
-        public override bool IgnoreNWNEvents => true;
-
-        private void DoForceAttack()
+        private void DoForceAttack(NWCreature self)
         {
             // Trigger ForceAttackHighestEmnity if not doing anything. 
             if (_.GetCurrentAction() == _.ACTION_ATTACKOBJECT)
             {
                 _.ClearAllActions();
-
-                NWCreature self = Object.OBJECT_SELF;
                 ForceAttackHighestEnmity(self);
             }
         }
@@ -32,13 +26,13 @@ namespace SWLOR.Game.Server.AI
         public override void OnPhysicalAttacked(NWCreature self)
         {
             base.OnPhysicalAttacked(self);
-            DoForceAttack();
+            DoForceAttack(self);
         }
         
         public override void OnDamaged(NWCreature self)
         {
             base.OnDamaged(self);
-            DoForceAttack();
+            DoForceAttack(self);
         }
         
         private bool UseFeat(int featID, string featName, NWCreature caster, NWCreature target)

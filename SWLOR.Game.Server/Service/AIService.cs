@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.AI.Contracts;
@@ -233,8 +234,10 @@ namespace SWLOR.Game.Server.Service
 
         private static void ProcessCreatureAI()
         {
+            //Stopwatch sw = new Stopwatch();
+            //sw.Start();
             // Iterate backwards so we can remove the creature if it's no longer valid.
-            for(int x = _aiCreatures.Count-1; x >= 0; x--)
+            for (int x = _aiCreatures.Count-1; x >= 0; x--)
             {
                 NWCreature creature = _aiCreatures.ElementAt(x);
                 NWArea area = creature.Area;
@@ -257,6 +260,10 @@ namespace SWLOR.Game.Server.Service
                 IAIBehaviour behaviour = GetAIBehaviour(script);
                 behaviour.OnProcessObject(creature);
             }
+
+            //sw.Stop();
+            //var ts = sw.Elapsed;
+            //Console.WriteLine(TimeService.GetTimeLongIntervals(ts.Days, ts.Hours, ts.Minutes, ts.Seconds, true));
         }
     }
 }

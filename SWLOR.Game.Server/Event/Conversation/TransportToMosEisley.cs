@@ -1,7 +1,6 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Events.Conversation.Quest.CollectQuestItem;
 using SWLOR.Game.Server.ValueObject;
 using Object = NWN.Object;
 

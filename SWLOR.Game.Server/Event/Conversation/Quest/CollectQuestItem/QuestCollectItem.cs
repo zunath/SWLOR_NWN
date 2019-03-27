@@ -4,7 +4,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 
-namespace SWLOR.Game.Server.NWN.Events.Conversation.Quest.CollectQuestItem
+namespace SWLOR.Game.Server.Event.Conversation.Quest.CollectQuestItem
 {
     public static class QuestCollectItem
     {

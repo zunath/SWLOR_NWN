@@ -6,7 +6,6 @@ using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Conversation.Quest.CollectQuestItem;
 using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;

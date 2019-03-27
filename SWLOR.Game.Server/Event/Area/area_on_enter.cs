@@ -1,5 +1,5 @@
-﻿using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Area;
+﻿using SWLOR.Game.Server.Event.Area;
+using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 

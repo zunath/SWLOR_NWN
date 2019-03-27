@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="oOwner"></param>
         public static void SetDamageEventScript(string script, NWObject oOwner = null)
         {
-            if (oOwner == null) oOwner = (new Object());
+            if (oOwner == null) oOwner = new NWObject(Object.OBJECT_INVALID);
 
             string sFunc = "SetEventScript";
 

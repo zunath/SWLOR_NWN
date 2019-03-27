@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Service
         // a creature.  The damage code reads this to determine what bonus effects to apply.
         // The LAST_ATTACK variable name should be appended with the GlobalID of the attacking
         // (N)PC so that attacks from different creatures are treated correctly. 
-        public static string LAST_ATTACK = "LAST_ATTACK_";
+        public const string LAST_ATTACK = "LAST_ATTACK_";
 
         public static int ATTACK_PHYSICAL = 1;  // Weapon attacks and weapon skills
         public static int ATTACK_FORCE = 2;  // Force effects

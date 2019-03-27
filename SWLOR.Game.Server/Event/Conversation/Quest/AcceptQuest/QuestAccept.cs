@@ -1,11 +1,9 @@
 ﻿using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
-
-namespace SWLOR.Game.Server.NWN.Events.Conversation.Quest.AcceptQuest
+namespace SWLOR.Game.Server.Event.Conversation.Quest.AcceptQuest
 {
     public static class QuestAccept
     {

@@ -1,6 +1,5 @@
 using SWLOR.Game.Server;
-
-using SWLOR.Game.Server.NWN.Events.Conversation.KeyItem;
+using SWLOR.Game.Server.Event.Conversation.KeyItem;
 using static NWN._;
 
 // ReSharper disable once CheckNamespace

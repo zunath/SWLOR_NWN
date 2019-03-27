@@ -1,11 +1,9 @@
 ﻿using NWN;
-using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN.Events.Conversation.Quest.CollectQuestItem;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 
-namespace SWLOR.Game.Server.NWN.Events.Conversation.Skill
+namespace SWLOR.Game.Server.Event.Conversation.Skill
 {
     public static class HasSkillRank
     {

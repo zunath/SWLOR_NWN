@@ -11,7 +11,7 @@ using SWLOR.Game.Server.ValueObject.Skill;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.NWN.Events.Area;
+using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.NWN.Events.Creature;
 using SWLOR.Game.Server.NWN.Events.Feat;
 using SWLOR.Game.Server.NWN.Events.Module;

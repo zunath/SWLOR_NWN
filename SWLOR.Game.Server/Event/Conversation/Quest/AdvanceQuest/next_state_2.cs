@@ -1,6 +1,5 @@
 using SWLOR.Game.Server;
-
-using SWLOR.Game.Server.NWN.Events.Conversation.Quest.AdvanceQuest;
+using SWLOR.Game.Server.Event.Conversation.Quest.AdvanceQuest;
 using static NWN._;
 
 // ReSharper disable once CheckNamespace

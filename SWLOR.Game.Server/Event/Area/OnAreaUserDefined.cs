@@ -1,6 +1,4 @@
-﻿using SWLOR.Game.Server.Event;
-
-namespace SWLOR.Game.Server.NWN.Events.Area
+﻿namespace SWLOR.Game.Server.Event.Area
 {
     internal class OnAreaUserDefined
     {

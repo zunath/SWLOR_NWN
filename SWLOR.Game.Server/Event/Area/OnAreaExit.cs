@@ -1,7 +1,4 @@
-﻿using SWLOR.Game.Server.Event;
-using SWLOR.Game.Server.Service;
-
-namespace SWLOR.Game.Server.NWN.Events.Area
+﻿namespace SWLOR.Game.Server.Event.Area
 {
     internal class OnAreaExit
     {

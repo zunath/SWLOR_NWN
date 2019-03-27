@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.AI;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
@@ -20,5 +21,6 @@ namespace SWLOR.Game.Server.Data.Entity
         public int? NPCGroupID { get; set; }
         public string BehaviourScript { get; set; }
         public int DeathVFXID { get; set; }
+        public AIFlags AIFlags { get; set; }
     }
 }

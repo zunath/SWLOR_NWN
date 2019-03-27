@@ -1,4 +1,5 @@
 ﻿using NWN;
+using SWLOR.Game.Server.AI;
 using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.ValueObject
@@ -19,6 +20,7 @@ namespace SWLOR.Game.Server.ValueObject
         public int DeathVFXID { get; set; }
         public bool Respawns { get; set; }
         public bool HasSpawnedOnce { get; set; }
+        public AIFlags AIFlags { get; set; }
 
         public NWPlaceable SpawnPlaceable => (Spawn.Object);
         public NWCreature SpawnCreature => (Spawn.Object);

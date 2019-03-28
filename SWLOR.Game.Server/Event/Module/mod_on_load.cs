@@ -23,21 +23,30 @@ namespace NWN.Scripts
             string nowString = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
             Console.WriteLine(nowString + ": Module OnLoad executing...");
 
-            using (new Profiler(nameof(mod_on_load)))
+            using (new Profiler(nameof(mod_on_load) + ":DatabaseMigrator"))
             {
                 DatabaseMigrationRunner.Start();
-                
+            }
+
+            using (new Profiler(nameof(mod_on_load) + ":DBBackgroundThread"))
+            {
                 Console.WriteLine("Starting background thread manager...");
                 BackgroundThreadManager.Start();
-                
+            }
+
+            using (new Profiler(nameof(mod_on_load) + ":SetEventScripts"))
+            {
                 NWNXChat.RegisterChatScript("mod_on_nwnxchat");
                 SetModuleEventScripts();
                 SetAreaEventScripts();
                 SetWeaponSettings();
 
-                // Bioware default
-                _.ExecuteScript("x2_mod_def_load", Object.OBJECT_SELF);
+            }
+            // Bioware default
+            _.ExecuteScript("x2_mod_def_load", Object.OBJECT_SELF);
 
+            using (new Profiler(nameof(mod_on_load) + ":RegisterSubscribeEvents"))
+            {
                 RegisterServiceSubscribeEvents();
             }
             

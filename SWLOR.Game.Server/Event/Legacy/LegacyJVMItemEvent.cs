@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Reflection;
-using SWLOR.Game.Server.Event;
+using SWLOR.Game.Server.ValueObject;
 
-namespace SWLOR.Game.Server.NWN.Events.Legacy
+namespace SWLOR.Game.Server.Event.Legacy
 {
     public static class LegacyJVMItemEvent
     {
@@ -13,16 +13,19 @@ namespace SWLOR.Game.Server.NWN.Events.Legacy
                 script = "Item." + script;
             }
 
-            Type type = Type.GetType(Assembly.GetExecutingAssembly().GetName().Name + "." + script);
-
-            if (type == null)
+            using (new Profiler(nameof(LegacyJVMEvent) + "." + script))
             {
-                Console.WriteLine("Unable to locate type for LegacyJVMItemEvent: " + script);
-                return;
-            }
+                Type type = Type.GetType(Assembly.GetExecutingAssembly().GetName().Name + "." + script);
 
-            IRegisteredEvent @event = Activator.CreateInstance(type) as IRegisteredEvent;
-            @event?.Run();
+                if (type == null)
+                {
+                    Console.WriteLine("Unable to locate type for LegacyJVMItemEvent: " + script);
+                    return;
+                }
+
+                IRegisteredEvent @event = Activator.CreateInstance(type) as IRegisteredEvent;
+                @event?.Run();
+            }
         }
     }
 }

@@ -267,6 +267,9 @@ namespace SWLOR.Game.Server.AI
             // Check distance
             if (GetDistanceBetween(self, nearby) > aggroRange) return;
 
+            // Is creature dead?
+            if (nearby.IsDead) return;
+
             // Does the nearby creature have line of sight to the creature being attacked?
             if (LineOfSightObject(self, nearby) == FALSE) return;
 
@@ -287,9 +290,12 @@ namespace SWLOR.Game.Server.AI
 
             // Check distance. If too far away stop processing.
             if (_.GetDistanceBetween(self, nearby) > linkRange) return;
-
+            
             // Is the nearby object an NPC?
             if (!nearby.IsNPC) return;
+
+            // Is the nearby creature dead?
+            if (nearby.IsDead) return;
 
             // Is the nearby creature an enemy?
             if (_.GetIsEnemy(nearby, self) == TRUE) return;
@@ -301,10 +307,11 @@ namespace SWLOR.Game.Server.AI
             var nearbyEnmityTable = EnmityService.GetEnmityTable(nearby).OrderByDescending(x => x.Value).FirstOrDefault();
             if (nearbyEnmityTable.Value == null) return;
 
-            Console.WriteLine("Target = " + nearbyEnmityTable.Value.TargetObject.Name); // todo debug
-
-            // Add the target of the nearby creature to this creature's enmity table.
             var target = nearbyEnmityTable.Value.TargetObject;
+            // Is the target dead?
+            if (target.IsDead) return;
+            
+            // Add the target of the nearby creature to this creature's enmity table.
             EnmityService.AdjustEnmity(self, target, 0, 1);
         }
 

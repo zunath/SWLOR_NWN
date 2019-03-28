@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Service
 
         // Returns time in the following manner:
         // 2 days, 12 hours, 5 minutes, 45 seconds
-        public static string GetTimeLongIntervals(int days, int hours, int minutes, int seconds, bool showIfZero)
+        public static string GetTimeLongIntervals(int days, int hours, int minutes, int seconds, bool showIfZero, int milli = 0)
         {
             string result = "";
 
@@ -53,6 +53,8 @@ namespace SWLOR.Game.Server.Service
                 result += hours + (hours == 1 ? " hour, " : " hours, ");
             if (showIfZero || minutes > 0)
                 result += minutes + (minutes == 1 ? " minute, " : " minutes, ");
+            if (showIfZero || milli > 0)
+                result += milli + (milli == 1 ? " milli, " : " millis, ");
 
             // Always show seconds regardless if showIfZero == false. This is due to milliseconds.
             result += seconds + (seconds == 1 ? " second" : " seconds");

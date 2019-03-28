@@ -234,8 +234,8 @@ namespace SWLOR.Game.Server.Service
 
         private static void ProcessCreatureAI()
         {
-            //Stopwatch sw = new Stopwatch();
-            //sw.Start();
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             // Iterate backwards so we can remove the creature if it's no longer valid.
             for (int x = _aiCreatures.Count-1; x >= 0; x--)
             {
@@ -261,9 +261,9 @@ namespace SWLOR.Game.Server.Service
                 behaviour.OnProcessObject(creature);
             }
 
-            //sw.Stop();
-            //var ts = sw.Elapsed;
-            //Console.WriteLine(TimeService.GetTimeLongIntervals(ts.Days, ts.Hours, ts.Minutes, ts.Seconds, true));
+            sw.Stop();
+            var ts = sw.Elapsed;
+            Console.WriteLine(TimeService.GetTimeLongIntervals(ts.Days, ts.Hours, ts.Minutes, ts.Seconds, true, ts.Milliseconds));
         }
     }
 }

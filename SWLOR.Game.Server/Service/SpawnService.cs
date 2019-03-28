@@ -368,60 +368,20 @@ namespace SWLOR.Game.Server.Service
                 if (!spawn.Key.IsValid) continue;
 
                 AreaSpawn areaSpawn = spawn.Value;
-                int pcsInArea = NWModule.Get().Players.Count(x => x.Area.Equals(spawn.Key));
+                bool forceSpawn = !areaSpawn.HasSpawned;
 
-                // No players in area. Process the despawner.
-                if (pcsInArea <= 0 && areaSpawn.HasSpawned)
+                foreach (var plc in areaSpawn.Placeables.Where(x => x.Respawns || !x.Respawns && !x.HasSpawnedOnce))
                 {
-                    areaSpawn.SecondsEmpty += ObjectProcessingService.ProcessingTickInterval;
-
-                    if (areaSpawn.SecondsEmpty >= 1200) // 20 minutes have passed with no players in the area.
-                    {
-                        areaSpawn.SecondsEmpty = 0.0f;
-                        areaSpawn.HasSpawned = false;
-
-                        foreach (var plc in areaSpawn.Placeables)
-                        {
-                            NWPlaceable prop = plc.Spawn.GetLocalObject("RESOURCE_PROP_OBJ");
-                            if (prop.IsValid)
-                            {
-                                prop.Destroy();
-                            }
-
-                            if (plc.Spawn.IsValid)
-                            {
-                                plc.Spawn.Destroy();
-                            }
-                        }
-
-                        foreach (var creature in areaSpawn.Creatures)
-                        {
-                            if (creature.Spawn.IsValid)
-                            {
-                                creature.Spawn.Destroy();
-                            }
-                        }
-                    }
+                    ProcessSpawn(plc, OBJECT_TYPE_PLACEABLE, spawn.Key, forceSpawn);
                 }
-                // Players in the area
-                else if (pcsInArea > 0)
+
+                foreach (var creature in areaSpawn.Creatures.Where(x => x.Respawns || !x.Respawns && !x.HasSpawnedOnce))
                 {
-                    bool forceSpawn = !areaSpawn.HasSpawned;
-
-                    foreach (var plc in areaSpawn.Placeables.Where(x => x.Respawns || !x.Respawns && !x.HasSpawnedOnce))
-                    {
-                        ProcessSpawn(plc, OBJECT_TYPE_PLACEABLE, spawn.Key, forceSpawn);
-                    }
-
-                    foreach (var creature in areaSpawn.Creatures.Where(x => x.Respawns || !x.Respawns && !x.HasSpawnedOnce))
-                    {
-                        ProcessSpawn(creature, OBJECT_TYPE_CREATURE, spawn.Key, forceSpawn);
-                    }
-
-                    areaSpawn.SecondsEmpty = 0.0f;
-                    areaSpawn.HasSpawned = true;
-
+                    ProcessSpawn(creature, OBJECT_TYPE_CREATURE, spawn.Key, forceSpawn);
                 }
+
+                areaSpawn.SecondsEmpty = 0.0f;
+                areaSpawn.HasSpawned = true;
             }
         }
 

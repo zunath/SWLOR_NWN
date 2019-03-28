@@ -1,10 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using SWLOR.Game.Server.GameObject;
 using NWN;
 using SWLOR.Game.Server.AI.Contracts;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 using static NWN._;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.AI
 {
@@ -27,6 +29,9 @@ namespace SWLOR.Game.Server.AI
         public virtual bool IgnoreOnSpawn => false;
         public virtual bool IgnoreOnSpellCastAt => false;
         public virtual bool IgnoreOnUserDefined => false;
+
+        private const float DefaultAggroRange = 10.0f;
+        private const float DefaultLinkRange = 12.0f;
 
         private AIFlags GetAIFlags(NWCreature self)
         {
@@ -84,7 +89,7 @@ namespace SWLOR.Game.Server.AI
         public virtual void OnHeartbeat(NWCreature self)
         {
             var flags = GetAIFlags(self);
-            if (flags.HasFlag(AIFlags.RandomWalk))
+            if ((flags & AIFlags.RandomWalk) != 0)
                 RandomWalk(self);
         }
 
@@ -115,20 +120,10 @@ namespace SWLOR.Game.Server.AI
 
         public void OnProcessObject(NWCreature self)
         {
-            var flags = GetAIFlags(self);
-
             CleanUpEnmity(self);
             AttackHighestEnmity(self);
-
-            // Target nearby enemy flag
-            if(flags.HasFlag(AIFlags.AggroNearby))
-                AggroTargetInRange(self);
-
             EquipBestWeapon(self);
-
-            // Target nearby player who is attacking 
-            if (flags.HasFlag(AIFlags.Link))
-                Link(self);
+            ProcessNearbyCreatures(self);
 
             OnAIProcessing(self);
         }
@@ -143,8 +138,9 @@ namespace SWLOR.Game.Server.AI
             var table = EnmityService.GetEnmityTable(self);
             if (table.Count <= 0) return;
 
-            foreach (var enmity in table.ToArray())
+            for(int x = table.Count-1; x >= 0; x--)
             {
+                var enmity = table.ElementAt(x);
                 var val = enmity.Value;
                 var target = val.TargetObject;
 
@@ -152,7 +148,8 @@ namespace SWLOR.Game.Server.AI
                 if (target == null ||
                     !target.IsValid ||
                     !target.Area.Equals(self.Area) ||
-                    target.CurrentHP <= -11)
+                    target.CurrentHP <= -11 ||
+                    target.IsDead)
                 {
                     EnmityService.GetEnmityTable(self).Remove(enmity.Key);
                     continue;
@@ -210,29 +207,105 @@ namespace SWLOR.Game.Server.AI
             }
         }
 
-        protected void AggroTargetInRange(NWCreature self)
+        private void ProcessNearbyCreatures(NWCreature self)
         {
-            if (self.IsInCombat) return;
+            var flags = GetAIFlags(self);
 
-            float aggroRange = self.GetLocalFloat("AGGRO_RANGE");
-            if (aggroRange <= 0.0f) aggroRange = 10.0f;
+            // Does this creature have one of the supported flags? If not, exit early.
+            if ((flags & AIFlags.AggroNearby) == 0 && (flags & AIFlags.Link) == 0) return;
 
+            // Aggro & Link Flags - Only process if not currently aggro'd to someone else.
+            if ((flags & AIFlags.AggroNearby) != 0 || (flags & AIFlags.Link) != 0)
+            {
+                if (!EnmityService.IsEnmityTableEmpty(self)) return;
+            }
+
+            // Cycle through each nearby creature. Process their flags individually if necessary.
             int nth = 1;
-            NWCreature creature = GetNearestObject(OBJECT_TYPE_CREATURE, self.Object, nth);
+            NWCreature creature = _.GetNearestObject(OBJECT_TYPE_CREATURE, self, nth);
             while (creature.IsValid)
             {
-                if (GetIsEnemy(creature.Object, self.Object) == TRUE &&
-                    !EnmityService.IsOnEnmityTable(self, creature) &&
-                    !creature.HasAnyEffect(EFFECT_TYPE_SANCTUARY) &&
-                    GetDistanceBetween(self.Object, creature.Object) <= aggroRange &&
-                    LineOfSightObject(self.Object, creature.Object) == TRUE)
+                float aggroRange = GetAggroRange(creature);
+                float linkRange = GetLinkRange(creature);
+
+                float distance = _.GetDistanceBetween(creature, self);
+                if (distance > aggroRange && distance > linkRange) break;
+
+                if ((flags & AIFlags.AggroNearby) != 0)
                 {
-                    EnmityService.AdjustEnmity(self, creature, 0, 1);
+                    AggroTargetInRange(self, creature);
                 }
 
+                if ((flags & AIFlags.Link) != 0)
+                {
+                    Link(self, creature);
+                }
                 nth++;
-                creature = GetNearestObject(OBJECT_TYPE_CREATURE, self.Object, nth);
+                creature = _.GetNearestObject(OBJECT_TYPE_CREATURE, self, nth);
             }
+        }
+
+        private float GetAggroRange(NWCreature creature)
+        {
+            float aggroRange = creature.GetLocalFloat("AGGRO_RANGE");
+            if (aggroRange <= 0.0f) aggroRange = DefaultAggroRange;
+
+            return aggroRange;
+        }
+
+        private float GetLinkRange(NWCreature creature)
+        {
+            float linkRange = creature.GetLocalFloat("LINK_RANGE");
+            if (linkRange <= 0.0f) linkRange = DefaultLinkRange;
+
+            return linkRange;
+        }
+
+        protected void AggroTargetInRange(NWCreature self, NWCreature nearby)
+        {
+            float aggroRange = GetAggroRange(self);
+            // Check distance
+            if (GetDistanceBetween(self, nearby) > aggroRange) return;
+
+            // Does the nearby creature have line of sight to the creature being attacked?
+            if (LineOfSightObject(self, nearby) == FALSE) return;
+
+            // Is the nearby creature not an enemy?
+            if (GetIsEnemy(nearby, self.Object) == FALSE) return;
+
+            // Does the nearby creature have sanctuary?
+            if (nearby.HasAnyEffect(EFFECT_TYPE_SANCTUARY)) return;
+
+            // Success. Increase enmity on the nearby target.
+            EnmityService.AdjustEnmity(self, nearby, 0, 1);
+        }
+
+        private static void Link(NWCreature self, NWCreature nearby)
+        {
+            float linkRange = self.GetLocalFloat("LINK_RANGE");
+            if (linkRange <= 0.0f) linkRange = 12.0f;
+
+            // Check distance. If too far away stop processing.
+            if (_.GetDistanceBetween(self, nearby) > linkRange) return;
+
+            // Is the nearby object an NPC?
+            if (!nearby.IsNPC) return;
+
+            // Is the nearby creature an enemy?
+            if (_.GetIsEnemy(nearby, self) == TRUE) return;
+
+            // Does the calling creature have the same racial type as the nearby creature?
+            if (self.RacialType != nearby.RacialType) return;
+
+            // Does the nearby creature have anything on its enmity table?
+            var nearbyEnmityTable = EnmityService.GetEnmityTable(nearby).OrderByDescending(x => x.Value).FirstOrDefault();
+            if (nearbyEnmityTable.Value == null) return;
+
+            Console.WriteLine("Target = " + nearbyEnmityTable.Value.TargetObject.Name); // todo debug
+
+            // Add the target of the nearby creature to this creature's enmity table.
+            var target = nearbyEnmityTable.Value.TargetObject;
+            EnmityService.AdjustEnmity(self, target, 0, 1);
         }
 
         private static void RandomWalk(NWCreature self)
@@ -251,30 +324,5 @@ namespace SWLOR.Game.Server.AI
             }
         }
 
-        private static void Link(NWCreature self)
-        {
-            if (EnmityService.IsEnmityTableEmpty(self)) return;
-            float aggroRange = self.GetLocalFloat("LINK_RANGE");
-            if (aggroRange <= 0.0f) aggroRange = 12.0f;
-
-            int nth = 1;
-            NWCreature creature = _.GetNearestObject(OBJECT_TYPE_CREATURE, self, nth);
-            var target = EnmityService.GetEnmityTable(self).OrderByDescending(x => x.Value).First().Value.TargetObject;
-
-            while (creature.IsValid)
-            {
-                if (!creature.IsPlayer &&
-                    _.GetIsEnemy(creature, self) == FALSE &&
-                    !EnmityService.IsOnEnmityTable(creature, target) &&
-                    _.GetDistanceBetween(self, creature) <= aggroRange &&
-                    self.RacialType == creature.RacialType)
-                {
-                    EnmityService.AdjustEnmity(creature, target, 0, 1);
-                }
-                nth++;
-                creature = _.GetNearestObject(OBJECT_TYPE_CREATURE, self, nth);
-            }
-
-        }
     }
 }

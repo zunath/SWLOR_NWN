@@ -41,6 +41,7 @@ namespace SWLOR.Game.Server.Service
                 HandleBattlemagePerk();
             }
 
+            HandleShieldProtection();
             HandleAbsorptionFieldEffect();
             HandleRecoveryBlast();
             HandleTranquilizerEffect();
@@ -214,7 +215,43 @@ namespace SWLOR.Game.Server.Service
                 AbilityService.RestoreFP(player, restoreAmount);
         }
 
-        private static void HandleApplySneakAttackDamage()
+        private void HandleShieldProtection()
+        {
+            DamageData data = _nwnxDamage.GetDamageEventData();
+            if (data.Total <= 0) return;
+
+            NWCreature target = Object.OBJECT_SELF;
+
+            NWItem shield = target.LeftHand;
+
+            if (ItemService.ShieldBaseItemTypes.Contains(shield.BaseItemType))
+            {
+                // Apply damage scaling based on shield presence
+                // TODO add a line of perks here to make this more effective.
+                // 5 perk ranks at 4% per rank or 10 at 20% per rank.
+
+                // DI = 10% + 1% / 3 AC bonuses on the shield. 
+                double damageMultiplier = 1.0 - (0.1 + 0.01 * shield.AC / 3);
+
+                data.Bludgeoning = (int) (data.Bludgeoning * damageMultiplier);
+                data.Pierce = (int)(data.Pierce * damageMultiplier);
+                data.Slash = (int)(data.Slash * damageMultiplier);
+                data.Magical = (int)(data.Magical * damageMultiplier);
+                data.Acid = (int)(data.Acid * damageMultiplier);
+                data.Cold = (int)(data.Cold * damageMultiplier);
+                data.Divine = (int)(data.Divine * damageMultiplier);
+                data.Electrical = (int)(data.Electrical * damageMultiplier);
+                data.Fire = (int)(data.Fire * damageMultiplier);
+                data.Negative = (int)(data.Negative * damageMultiplier);
+                data.Positive = (int)(data.Positive * damageMultiplier);
+                data.Sonic = (int)(data.Sonic * damageMultiplier);
+                data.Base = (int)(data.Base * damageMultiplier);
+
+                _nwnxDamage.SetDamageEventData(data);
+            }
+        }
+
+        private void HandleApplySneakAttackDamage()
         {
             DamageEventData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;

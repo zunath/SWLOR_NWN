@@ -219,22 +219,22 @@ namespace SWLOR.Game.Server.Service
 
             using (var multi = _connection.QueryMultiple("GetPlayerData", new { PlayerID = player.GlobalID }, commandType: CommandType.StoredProcedure))
             {
-                foreach (var item in multi.Read<PCCooldown>().ToList())
+                foreach (var item in multi.Read<PCCooldown>())
                     SetIntoCache<PCCooldown>(item.ID, item);
-                foreach (var item in multi.Read<PCCraftedBlueprint>().ToList())
+                foreach (var item in multi.Read<PCCraftedBlueprint>())
                     SetIntoCache<PCCraftedBlueprint>(item.ID, item);
 
-                foreach (var item in multi.Read<PCCustomEffect>().ToList())
+                foreach (var item in multi.Read<PCCustomEffect>())
                     SetIntoCache<PCCustomEffect>(item.ID, item);
-                foreach (var item in multi.Read<PCImpoundedItem>().ToList())
+                foreach (var item in multi.Read<PCImpoundedItem>())
                     SetIntoCache<PCImpoundedItem>(item.ID, item);
-                foreach (var item in multi.Read<PCKeyItem>().ToList())
+                foreach (var item in multi.Read<PCKeyItem>())
                     SetIntoCache<PCKeyItem>(item.ID, item);
-                foreach (var item in multi.Read<PCMapPin>().ToList())
+                foreach (var item in multi.Read<PCMapPin>())
                     SetIntoCache<PCMapPin>(item.ID, item);
-                foreach (var item in multi.Read<PCMapProgression>().ToList())
+                foreach (var item in multi.Read<PCMapProgression>())
                     SetIntoCache<PCMapProgression>(item.ID, item);
-                foreach (var item in multi.Read<PCObjectVisibility>().ToList())
+                foreach (var item in multi.Read<PCObjectVisibility>())
                     SetIntoCache<PCObjectVisibility>(item.ID, item);
 
                 var outfit = multi.Read<PCOutfit>().SingleOrDefault();
@@ -242,27 +242,27 @@ namespace SWLOR.Game.Server.Service
                 if (outfit != null)
                     SetIntoCache<PCOutfit>(outfit.PlayerID, outfit);
 
-                foreach (var item in multi.Read<PCOverflowItem>().ToList())
+                foreach (var item in multi.Read<PCOverflowItem>())
                     SetIntoCache<PCOverflowItem>(item.ID, item);
-                foreach (var item in multi.Read<PCPerk>().ToList())
+                foreach (var item in multi.Read<PCPerk>())
                     SetIntoCache<PCPerk>(item.ID, item);
-                foreach (var item in multi.Read<PCQuestItemProgress>().ToList())
+                foreach (var item in multi.Read<PCQuestItemProgress>())
                     SetIntoCache<PCQuestItemProgress>(item.ID, item);
-                foreach (var item in multi.Read<PCQuestKillTargetProgress>().ToList())
+                foreach (var item in multi.Read<PCQuestKillTargetProgress>())
                     SetIntoCache<PCQuestKillTargetProgress>(item.ID, item);
-                foreach (var item in multi.Read<PCQuestStatus>().ToList())
+                foreach (var item in multi.Read<PCQuestStatus>())
                     SetIntoCache<PCQuestStatus>(item.ID, item);
-                foreach (var item in multi.Read<PCRegionalFame>().ToList())
+                foreach (var item in multi.Read<PCRegionalFame>())
                     SetIntoCache<PCRegionalFame>(item.ID, item);
-                foreach (var item in multi.Read<PCSearchSite>().ToList())
+                foreach (var item in multi.Read<PCSearchSite>())
                     SetIntoCache<PCSearchSite>(item.ID, item);
-                foreach (var item in multi.Read<PCSearchSiteItem>().ToList())
+                foreach (var item in multi.Read<PCSearchSiteItem>())
                     SetIntoCache<PCSearchSiteItem>(item.ID, item);
-                foreach (var item in multi.Read<PCSkill>().ToList())
+                foreach (var item in multi.Read<PCSkill>())
                     SetIntoCache<PCSkill>(item.ID, item);
-                foreach (var item in multi.Read<BankItem>().ToList())
+                foreach (var item in multi.Read<BankItem>())
                     SetIntoCache<BankItem>(item.ID, item);
-                foreach (var item in multi.Read<PCSkillPool>().ToList())
+                foreach (var item in multi.Read<PCSkillPool>())
                     SetIntoCache<PCSkillPool>(item.ID, item);
             }
 

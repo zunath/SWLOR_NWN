@@ -227,11 +227,11 @@ namespace SWLOR.Game.Server.Service
             if (ItemService.ShieldBaseItemTypes.Contains(shield.BaseItemType))
             {
                 // Apply damage scaling based on shield presence
-                // TODO add a line of perks here to make this more effective.
-                // 5 perk ranks at 4% per rank or 10 at 2% per rank.
+                int perkLevel = PerkService.GetPCPerkLevel(target.Object, PerkType.ShieldProficiency);
+                float perkBonus = 0.02f * perkLevel;
 
-                // DI = 10% + 1% / 3 AC bonuses on the shield. 
-                double damageMultiplier = 1.0 - (0.1 + 0.01 * shield.AC / 3);
+                // DI = 10% + 1% / 3 AC bonuses on the shield + 2% per perk bonus. 
+                double damageMultiplier = 1.0 - ((0.1 + 0.01 * shield.AC / 3) + perkBonus);
 
                 data.Bludgeoning = (int) (data.Bludgeoning * damageMultiplier);
                 data.Pierce = (int)(data.Pierce * damageMultiplier);

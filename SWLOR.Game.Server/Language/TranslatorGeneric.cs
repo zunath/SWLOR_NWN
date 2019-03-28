@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SWLOR.Game.Server.Language
+﻿namespace SWLOR.Game.Server.Language
 {
     public class TranslatorGeneric : ITranslator
     {

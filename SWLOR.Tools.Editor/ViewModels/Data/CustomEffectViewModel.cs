@@ -1,8 +1,5 @@
-﻿using System.Collections.ObjectModel;
-using Newtonsoft.Json;
-using SWLOR.Game.Server.Data;
+﻿using Newtonsoft.Json;
 using SWLOR.Game.Server.Data.Entity;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Tools.Editor.Attributes;
 
 namespace SWLOR.Tools.Editor.ViewModels.Data

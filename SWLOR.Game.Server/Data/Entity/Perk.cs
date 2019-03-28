@@ -1,7 +1,3 @@
-
-using System;
-using System.Collections.Generic;
-
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
@@ -12,7 +8,6 @@ namespace SWLOR.Game.Server.Data.Entity
         public Perk()
         {
             Name = "";
-            ScriptName = "";
             Description = "";
         }
 
@@ -20,7 +15,6 @@ namespace SWLOR.Game.Server.Data.Entity
         public int ID { get; set; }
         public string Name { get; set; }
         public bool IsActive { get; set; }
-        public string ScriptName { get; set; }
         public int BaseFPCost { get; set; }
         public double BaseCastingTime { get; set; }
         public string Description { get; set; }

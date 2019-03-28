@@ -1,13 +1,13 @@
 ﻿using System;
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.Service
 {
-    public class TimeService : ITimeService
+    public static class TimeService
     {
         // Returns time in the following manner:
         // 2 days, 12 hours, 5 minutes, 45 seconds
-        public string GetTimeToWaitLongIntervals(DateTime firstDate, DateTime secondDate, bool showIfZero)
+        public static string GetTimeToWaitLongIntervals(DateTime firstDate, DateTime secondDate, bool showIfZero)
         {
             TimeSpan period;
 
@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Service
 
         // Returns time in the following manner:
         // 2D, 12H, 5M, 45S
-        public string GetTimeToWaitShortIntervals(DateTime firstDate, DateTime secondDate, bool showIfZero)
+        public static string GetTimeToWaitShortIntervals(DateTime firstDate, DateTime secondDate, bool showIfZero)
         {
             TimeSpan period;
 
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Service
 
         // Returns time in the following manner:
         // 2 days, 12 hours, 5 minutes, 45 seconds
-        public string GetTimeLongIntervals(int days, int hours, int minutes, int seconds, bool showIfZero)
+        public static string GetTimeLongIntervals(int days, int hours, int minutes, int seconds, bool showIfZero)
         {
             string result = "";
 
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Service
 
         // Returns time in the following manner:
         // 2D, 12H, 5M, 45S
-        public string GetTimeShortIntervals(int days, int hours, int minutes, int seconds, bool showIfZero)
+        public static string GetTimeShortIntervals(int days, int hours, int minutes, int seconds, bool showIfZero)
         {
             string result = "";
 

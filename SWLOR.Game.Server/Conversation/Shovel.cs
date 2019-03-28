@@ -1,33 +1,15 @@
-﻿using System;
-using SWLOR.Game.Server.Data;
-using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
 {
     public class Shovel: ConversationBase
     {
-        private readonly IPlayerService _player;
-        private readonly ISkillService _skill;
-        private readonly IFarmingService _farming;
-
-        public Shovel(
-            INWScript script, 
-            IDialogService dialog,
-            IPlayerService player,
-            ISkillService skill,
-            IFarmingService farming) 
-            : base(script, dialog)
-        {
-            _player = player;
-            _skill = skill;
-            _farming = farming;
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -102,9 +84,9 @@ namespace SWLOR.Game.Server.Conversation
         {
             Location targetLocation = GetPC().GetLocalLocation("SHOVEL_TARGET_LOCATION");
 
-            _.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "farm_small_hole", targetLocation);
-            _.FloatingTextStringOnCreature("You dig a hole.", GetPC().Object, NWScript.FALSE);
-            _skill.GiveSkillXP(GetPC(), SkillType.Farming, 50);
+            _.CreateObject(_.OBJECT_TYPE_PLACEABLE, "farm_small_hole", targetLocation);
+            _.FloatingTextStringOnCreature("You dig a hole.", GetPC().Object, _.FALSE);
+            SkillService.GiveSkillXP(GetPC(), SkillType.Farming, 50);
             EndConversation();
         }
 
@@ -128,7 +110,7 @@ namespace SWLOR.Game.Server.Conversation
 
             NWItem shovel = (GetPC().GetLocalObject("SHOVEL_ITEM"));
             NWObject plant = (GetPC().GetLocalObject("SHOVEL_TARGET_OBJECT"));
-            _farming.HarvestPlant(GetPC(), shovel, (NWPlaceable)plant);
+            FarmingService.HarvestPlant(GetPC(), shovel, (NWPlaceable)plant);
             EndConversation();
         }
 

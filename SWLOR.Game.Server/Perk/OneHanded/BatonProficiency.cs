@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
-    public class BatonProficiency : IPerk
+    public class BatonProficiency : IPerkHandler
     {
+        public PerkType PerkType => PerkType.BatonProficiency;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

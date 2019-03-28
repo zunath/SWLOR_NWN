@@ -1,43 +1,87 @@
 ﻿using NWN;
-using SWLOR.Game.Server.Bioware.Contracts;
+using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Delayed;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
-using SWLOR.Game.Server.NWNX.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Feat;
+using SWLOR.Game.Server.NWN.Events.Module;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static NWN.NWScript;
+using SWLOR.Game.Server.ChatCommand.Contracts;
+using SWLOR.Game.Server.NWN.Events.Legacy;
+using static NWN._;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class ItemService : IItemService
+    public static class ItemService
     {
-        private readonly INWScript _;
-        private readonly IBiowareXP2 _xp2;
-        private readonly IColorTokenService _color;
-        private readonly INWNXPlayer _nwnxPlayer;
-        private readonly IDataService _data;
+        private static readonly Dictionary<string, IActionItem> _actionItemHandlers;
 
-        public ItemService(
-            INWScript script,
-            IBiowareXP2 xp2,
-            IColorTokenService color,
-            INWNXPlayer nwnxPlayer,
-            IDataService data)
+        static ItemService()
         {
-            _ = script;
-            _xp2 = xp2;
-            _color = color;
-            _nwnxPlayer = nwnxPlayer;
-            _data = data;
+            _actionItemHandlers = new Dictionary<string, IActionItem>();
         }
 
-        public string GetNameByResref(string resref)
+        public static void SubscribeEvents()
+        {
+            // Module Events
+            MessageHub.Instance.Subscribe<OnModuleActivateItem>(message => OnModuleActivatedItem());
+            MessageHub.Instance.Subscribe<OnModuleEquipItem>(message => OnModuleEquipItem());
+            MessageHub.Instance.Subscribe<OnModuleUnequipItem>(message => OnModuleUnequipItem());
+            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
+
+            // Feat Events
+            MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
+        }
+
+        private static void OnModuleLoad()
+        {
+            RegisterActionItemHandlers();
+        }
+
+        private static void RegisterActionItemHandlers()
+        {
+            // Use reflection to get all of IChatCommand handler implementations.
+            var classes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => typeof(IActionItem).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
+
+            foreach (var type in classes)
+            {
+                IActionItem instance = Activator.CreateInstance(type) as IActionItem;
+
+                if (instance == null)
+                {
+                    throw new NullReferenceException("Unable to activate instance of type: " + type);
+                }
+                string key = type.Name;
+
+                // If the class has defined a custom key, use that instead.
+                if (!string.IsNullOrWhiteSpace(instance.CustomKey))
+                    key = instance.CustomKey;
+
+                _actionItemHandlers.Add(key, instance);
+            }
+        }
+
+        public static IActionItem GetActionItemHandler(string key)
+        {
+            if (!_actionItemHandlers.ContainsKey(key))
+            {
+                throw new KeyNotFoundException("Action item '" + key + "' is not registered.");
+            }
+
+            return _actionItemHandlers[key];
+        }
+
+        public static string GetNameByResref(string resref)
         {
             NWPlaceable tempStorage = (_.GetObjectByTag("TEMP_ITEM_STORAGE"));
             if (!tempStorage.IsValid)
@@ -51,7 +95,7 @@ namespace SWLOR.Game.Server.Service
             return name;
         }
 
-        public CustomItemType GetCustomItemTypeByResref(string resref)
+        public static CustomItemType GetCustomItemTypeByResref(string resref)
         {
             NWPlaceable tempStorage = (_.GetObjectByTag("TEMP_ITEM_STORAGE"));
             if (!tempStorage.IsValid)
@@ -65,7 +109,7 @@ namespace SWLOR.Game.Server.Service
             return itemType;
         }
 
-        public void OnModuleActivatedItem()
+        private static void OnModuleActivatedItem()
         {
             NWPlayer user = (_.GetItemActivator());
             NWItem oItem = (_.GetItemActivated());
@@ -89,65 +133,64 @@ namespace SWLOR.Game.Server.Service
             // Remove "Item." prefix if it exists.
             if (className.StartsWith("Item."))
                 className = className.Substring(5);
-
-            App.ResolveByInterface<IActionItem>("Item." + className, (item) =>
+            IActionItem item = GetActionItemHandler(className);
+        
+            string invalidTargetMessage = item.IsValidTarget(user, oItem, target, targetLocation);
+            if (!string.IsNullOrWhiteSpace(invalidTargetMessage))
             {
-                string invalidTargetMessage = item.IsValidTarget(user, oItem, target, targetLocation);
-                if (!string.IsNullOrWhiteSpace(invalidTargetMessage))
+                user.SendMessage(invalidTargetMessage);
+                return;
+            }
+
+            float maxDistance = item.MaxDistance(user, oItem, target, targetLocation);
+            if (maxDistance > 0.0f)
+            {
+                if (target.IsValid &&
+                    (_.GetDistanceBetween(user.Object, target.Object) > maxDistance ||
+                    user.Area.Resref != target.Area.Resref))
                 {
-                    user.SendMessage(invalidTargetMessage);
+                    user.SendMessage("Your target is too far away.");
                     return;
                 }
-
-                float maxDistance = item.MaxDistance(user, oItem, target, targetLocation);
-                if (maxDistance > 0.0f)
+                else if (!target.IsValid &&
+                         (_.GetDistanceBetweenLocations(user.Location, targetLocation) > maxDistance ||
+                         user.Area.Resref != ((NWArea)_.GetAreaFromLocation(targetLocation)).Resref))
                 {
-                    if (target.IsValid &&
-                        (_.GetDistanceBetween(user.Object, target.Object) > maxDistance ||
-                        user.Area.Resref != target.Area.Resref))
-                    {
-                        user.SendMessage("Your target is too far away.");
-                        return;
-                    }
-                    else if (!target.IsValid &&
-                             (_.GetDistanceBetweenLocations(user.Location, targetLocation) > maxDistance ||
-                             user.Area.Resref != ((NWArea)_.GetAreaFromLocation(targetLocation)).Resref))
-                    {
-                        user.SendMessage("That location is too far away.");
-                        return;
-                    }
+                    user.SendMessage("That location is too far away.");
+                    return;
                 }
+            }
 
-                CustomData customData = item.StartUseItem(user, oItem, target, targetLocation);
-                float delay = item.Seconds(user, oItem, target, targetLocation, customData);
-                int animationID = item.AnimationID();
-                bool faceTarget = item.FaceTarget();
-                Vector userPosition = user.Position;
+            CustomData customData = item.StartUseItem(user, oItem, target, targetLocation);
+            float delay = item.Seconds(user, oItem, target, targetLocation, customData);
+            int animationID = item.AnimationID();
+            bool faceTarget = item.FaceTarget();
+            Vector userPosition = user.Position;
 
-                user.AssignCommand(() =>
-                {
-                    user.IsBusy = true;
-                    if (faceTarget)
-                        _.SetFacingPoint(!target.IsValid ? _.GetPositionFromLocation(targetLocation) : target.Position);
-                    if (animationID > 0)
-                        _.ActionPlayAnimation(animationID, 1.0f, delay);
-                });
-
-                _nwnxPlayer.StartGuiTimingBar(user, delay, string.Empty);
-                user.DelayEvent<FinishActionItem>(
-                    delay,
-                    className,
-                    user,
-                    oItem,
-                    target,
-                    targetLocation,
-                    userPosition,
-                    customData);
+            user.AssignCommand(() =>
+            {
+                user.IsBusy = true;
+                if (faceTarget)
+                    _.SetFacingPoint(!target.IsValid ? _.GetPositionFromLocation(targetLocation) : target.Position);
+                if (animationID > 0)
+                    _.ActionPlayAnimation(animationID, 1.0f, delay);
             });
+
+            NWNXPlayer.StartGuiTimingBar(user, delay, string.Empty);
+            user.DelayEvent<FinishActionItem>(
+                delay,
+                className,
+                user,
+                oItem,
+                target,
+                targetLocation,
+                userPosition,
+                customData);
+        
 
         }
 
-        public string OnModuleExamine(string existingDescription, NWPlayer examiner, NWObject examinedObject)
+        public static string OnModuleExamine(string existingDescription, NWPlayer examiner, NWObject examinedObject)
         {
             if (examinedObject.ObjectType != OBJECT_TYPE_ITEM) return existingDescription;
 
@@ -156,214 +199,214 @@ namespace SWLOR.Game.Server.Service
 
             if (examinedItem.RecommendedLevel > 0)
             {
-                description += _color.Orange("Recommended Level: ") + examinedItem.RecommendedLevel + "\n";
+                description += ColorTokenService.Orange("Recommended Level: ") + examinedItem.RecommendedLevel + "\n";
             }
             if (examinedItem.LevelIncrease > 0)
             {
-                description += _color.Orange("Level Increase: ") + examinedItem.LevelIncrease + "\n";
+                description += ColorTokenService.Orange("Level Increase: ") + examinedItem.LevelIncrease + "\n";
             }
             if (examinedItem.AssociatedSkillType > 0)
             {
-                Skill skill = _data.Get<Skill>((int)examinedItem.AssociatedSkillType);
-                description += _color.Orange("Associated Skill: ") + skill.Name + "\n";
+                Skill skill = DataService.Get<Skill>((int)examinedItem.AssociatedSkillType);
+                description += ColorTokenService.Orange("Associated Skill: ") + skill.Name + "\n";
             }
             if (examinedItem.CustomAC > 0)
             {
                 if (ArmorBaseItemTypes.Contains(examinedItem.BaseItemType))
                 {
-                    description += _color.Orange("AC: ") + examinedItem.CustomAC + " (/3)\n";
+                    description += ColorTokenService.Orange("AC: ") + examinedItem.CustomAC + " (/3)\n";
                 }
                 else
                 {
-                    description += _color.Red("AC (ignored due to item type): ") + examinedItem.CustomAC + " (/3)\n";
+                    description += ColorTokenService.Red("AC (ignored due to item type): ") + examinedItem.CustomAC + " (/3)\n";
                 }
             }
             if (examinedItem.HPBonus > 0)
             {
-                description += _color.Orange("HP Bonus: ") + examinedItem.HPBonus / 2 + "\n";
+                description += ColorTokenService.Orange("HP Bonus: ") + examinedItem.HPBonus / 2 + "\n";
             }
             if (examinedItem.FPBonus > 0)
             {
-                description += _color.Orange("FP Bonus: ") + examinedItem.FPBonus / 2+ "\n";
+                description += ColorTokenService.Orange("FP Bonus: ") + examinedItem.FPBonus / 2+ "\n";
             }
             if (examinedItem.StructureBonus > 0)
             {
-                description += _color.Orange("Structure Bonus: ") + examinedItem.StructureBonus + "\n";
+                description += ColorTokenService.Orange("Structure Bonus: ") + examinedItem.StructureBonus + "\n";
             }
             if (examinedItem.StrengthBonus > 0)
             {
-                description += _color.Orange("Strength Bonus: ") + examinedItem.StrengthBonus + " (/3)\n";
+                description += ColorTokenService.Orange("Strength Bonus: ") + examinedItem.StrengthBonus + " (/3)\n";
             }
             if (examinedItem.DexterityBonus > 0)
             {
-                description += _color.Orange("Dexterity Bonus: ") + examinedItem.DexterityBonus + " (/3)\n";
+                description += ColorTokenService.Orange("Dexterity Bonus: ") + examinedItem.DexterityBonus + " (/3)\n";
             }
             if (examinedItem.ConstitutionBonus > 0)
             {
-                description += _color.Orange("Constitution Bonus: ") + examinedItem.ConstitutionBonus + " (/3)\n";
+                description += ColorTokenService.Orange("Constitution Bonus: ") + examinedItem.ConstitutionBonus + " (/3)\n";
             }
             if (examinedItem.WisdomBonus > 0)
             {
-                description += _color.Orange("Wisdom Bonus: ") + examinedItem.WisdomBonus + " (/3)\n";
+                description += ColorTokenService.Orange("Wisdom Bonus: ") + examinedItem.WisdomBonus + " (/3)\n";
             }
             if (examinedItem.IntelligenceBonus > 0)
             {
-                description += _color.Orange("Intelligence Bonus: ") + examinedItem.IntelligenceBonus + " (/3)\n";
+                description += ColorTokenService.Orange("Intelligence Bonus: ") + examinedItem.IntelligenceBonus + " (/3)\n";
             }
             if (examinedItem.CharismaBonus > 0)
             {
-                description += _color.Orange("Charisma Bonus: ") + examinedItem.CharismaBonus + " (/3)\n";
+                description += ColorTokenService.Orange("Charisma Bonus: ") + examinedItem.CharismaBonus + " (/3)\n";
             }
             if (examinedItem.CastingSpeed > 0)
             {
-                description += _color.Orange("Activation Speed: +") + examinedItem.CastingSpeed + "%\n";
+                description += ColorTokenService.Orange("Activation Speed: +") + examinedItem.CastingSpeed + "%\n";
             }
             else if (examinedItem.CastingSpeed < 0)
             {
-                description += _color.Orange("Activation Penalty: -") + examinedItem.CastingSpeed + "%\n";
+                description += ColorTokenService.Orange("Activation Penalty: -") + examinedItem.CastingSpeed + "%\n";
             }
             if (examinedItem.HarvestingBonus > 0)
             {
-                description += _color.Orange("Harvesting Bonus: ") + examinedItem.HarvestingBonus + "\n";
+                description += ColorTokenService.Orange("Harvesting Bonus: ") + examinedItem.HarvestingBonus + "\n";
             }
             if (examinedItem.CraftBonusArmorsmith > 0)
             {
-                description += _color.Orange("Armorsmith Bonus: ") + examinedItem.CraftBonusArmorsmith + " (/8)\n";
+                description += ColorTokenService.Orange("Armorsmith Bonus: ") + examinedItem.CraftBonusArmorsmith + " (/8)\n";
             }
             if (examinedItem.CraftBonusEngineering > 0)
             {
-                description += _color.Orange("Engineering Bonus: ") + examinedItem.CraftBonusEngineering + " (/8)\n";
+                description += ColorTokenService.Orange("Engineering Bonus: ") + examinedItem.CraftBonusEngineering + " (/8)\n";
             }
             if (examinedItem.CraftBonusFabrication > 0)
             {
-                description += _color.Orange("Fabrication Bonus: ") + examinedItem.CraftBonusFabrication + " (/8)\n";
+                description += ColorTokenService.Orange("Fabrication Bonus: ") + examinedItem.CraftBonusFabrication + " (/8)\n";
             }
             if (examinedItem.CraftBonusWeaponsmith > 0)
             {
-                description += _color.Orange("Weaponsmith Bonus: ") + examinedItem.CraftBonusWeaponsmith + " (/8)\n";
+                description += ColorTokenService.Orange("Weaponsmith Bonus: ") + examinedItem.CraftBonusWeaponsmith + " (/8)\n";
             }
             if (examinedItem.CraftBonusCooking > 0)
             {
-                description += _color.Orange("Cooking Bonus: ") + examinedItem.CraftBonusCooking + " (/8)\n";
+                description += ColorTokenService.Orange("Cooking Bonus: ") + examinedItem.CraftBonusCooking + " (/8)\n";
             }
             if (examinedItem.CraftTierLevel > 0)
             {
-                description += _color.Orange("Tool Level: ") + examinedItem.CraftTierLevel + "\n";
+                description += ColorTokenService.Orange("Tool Level: ") + examinedItem.CraftTierLevel + "\n";
             }
             if (examinedItem.EnmityRate != 0)
             {
-                description += _color.Orange("Enmity: ") + examinedItem.EnmityRate + "%\n";
+                description += ColorTokenService.Orange("Enmity: ") + examinedItem.EnmityRate + "%\n";
             }
             if (examinedItem.ForcePotencyBonus > 0)
             {
-                description += _color.Orange("Force Potency Bonus: ") + examinedItem.ForcePotencyBonus + "\n";
+                description += ColorTokenService.Orange("Force Potency Bonus: ") + examinedItem.ForcePotencyBonus + "\n";
             }
             if (examinedItem.ForceAccuracyBonus > 0)
             {
-                description += _color.Orange("Force Accuracy Bonus: ") + examinedItem.ForceAccuracyBonus + "\n";
+                description += ColorTokenService.Orange("Force Accuracy Bonus: ") + examinedItem.ForceAccuracyBonus + "\n";
             }
             if (examinedItem.ForceDefenseBonus > 0)
             {
-                description += _color.Orange("Force Defense Bonus: ") + examinedItem.ForceDefenseBonus + "\n";
+                description += ColorTokenService.Orange("Force Defense Bonus: ") + examinedItem.ForceDefenseBonus + "\n";
             }
             if (examinedItem.ElectricalPotencyBonus > 0)
             {
-                description += _color.Orange("Electrical Potency Bonus: ") + examinedItem.ElectricalPotencyBonus + "\n";
+                description += ColorTokenService.Orange("Electrical Potency Bonus: ") + examinedItem.ElectricalPotencyBonus + "\n";
             }
             if (examinedItem.MindPotencyBonus > 0)
             {
-                description += _color.Orange("Mind Potency Bonus: ") + examinedItem.MindPotencyBonus + "\n";
+                description += ColorTokenService.Orange("Mind Potency Bonus: ") + examinedItem.MindPotencyBonus + "\n";
             }
             if (examinedItem.LightPotencyBonus > 0)
             {
-                description += _color.Orange("Light Potency Bonus: ") + examinedItem.LightPotencyBonus + "\n";
+                description += ColorTokenService.Orange("Light Potency Bonus: ") + examinedItem.LightPotencyBonus + "\n";
             }
             if (examinedItem.DarkPotencyBonus > 0)
             {
-                description += _color.Orange("Dark Potency Bonus: ") + examinedItem.DarkPotencyBonus + "\n";
+                description += ColorTokenService.Orange("Dark Potency Bonus: ") + examinedItem.DarkPotencyBonus + "\n";
             }
             if (examinedItem.ElectricalDefenseBonus > 0)
             {
-                description += _color.Orange("Electrical Defense Bonus: ") + examinedItem.ElectricalDefenseBonus + "\n";
+                description += ColorTokenService.Orange("Electrical Defense Bonus: ") + examinedItem.ElectricalDefenseBonus + "\n";
             }
             if (examinedItem.MindDefenseBonus > 0)
             {
-                description += _color.Orange("Mind Defense Bonus: ") + examinedItem.MindDefenseBonus + "\n";
+                description += ColorTokenService.Orange("Mind Defense Bonus: ") + examinedItem.MindDefenseBonus + "\n";
             }
             if (examinedItem.LightDefenseBonus > 0)
             {
-                description += _color.Orange("Light Defense Bonus: ") + examinedItem.LightDefenseBonus + "\n";
+                description += ColorTokenService.Orange("Light Defense Bonus: ") + examinedItem.LightDefenseBonus + "\n";
             }
             if (examinedItem.DarkDefenseBonus > 0)
             {
-                description += _color.Orange("Dark Defense Bonus: ") + examinedItem.DarkDefenseBonus + "\n";
+                description += ColorTokenService.Orange("Dark Defense Bonus: ") + examinedItem.DarkDefenseBonus + "\n";
             }
             if (examinedItem.LuckBonus > 0)
             {
-                description += _color.Orange("Luck Bonus: ") + examinedItem.LuckBonus + "\n";
+                description += ColorTokenService.Orange("Luck Bonus: ") + examinedItem.LuckBonus + "\n";
             }
             if (examinedItem.MeditateBonus > 0)
             {
-                description += _color.Orange("Meditate Bonus: ") + examinedItem.MeditateBonus + "\n";
+                description += ColorTokenService.Orange("Meditate Bonus: ") + examinedItem.MeditateBonus + "\n";
             }
             if (examinedItem.RestBonus > 0)
             {
-                description += _color.Orange("Rest Bonus: ") + examinedItem.RestBonus + "\n";
+                description += ColorTokenService.Orange("Rest Bonus: ") + examinedItem.RestBonus + "\n";
             }
             if (examinedItem.ScanningBonus > 0)
             {
-                description += _color.Orange("Scanning Bonus: ") + examinedItem.ScanningBonus + "\n";
+                description += ColorTokenService.Orange("Scanning Bonus: ") + examinedItem.ScanningBonus + "\n";
             }
             if (examinedItem.ScavengingBonus > 0)
             {
-                description += _color.Orange("Scavenging Bonus: ") + examinedItem.ScavengingBonus + "\n";
+                description += ColorTokenService.Orange("Scavenging Bonus: ") + examinedItem.ScavengingBonus + "\n";
             }
             if (examinedItem.MedicineBonus > 0)
             {
-                description += _color.Orange("Medicine Bonus: ") + examinedItem.MedicineBonus + "\n";
+                description += ColorTokenService.Orange("Medicine Bonus: ") + examinedItem.MedicineBonus + "\n";
             }
             if (examinedItem.HPRegenBonus > 0)
             {
-                description += _color.Orange("HP Regen Bonus: ") + examinedItem.HPRegenBonus + "\n";
+                description += ColorTokenService.Orange("HP Regen Bonus: ") + examinedItem.HPRegenBonus + "\n";
             }
             if (examinedItem.FPRegenBonus > 0)
             {
-                description += _color.Orange("FP Regen Bonus: ") + examinedItem.FPRegenBonus + "\n";
+                description += ColorTokenService.Orange("FP Regen Bonus: ") + examinedItem.FPRegenBonus + "\n";
             }
             if (examinedItem.PilotingBonus > 0)
             {
-                description += _color.Orange("Piloting Bonus: ") + examinedItem.PilotingBonus + "\n";
+                description += ColorTokenService.Orange("Piloting Bonus: ") + examinedItem.PilotingBonus + "\n";
             }
             if (examinedItem.BaseAttackBonus > 0)
             {
                 if (WeaponBaseItemTypes.Contains(examinedItem.BaseItemType))
                 {
-                    description += _color.Orange("Base Attack Bonus: ") + examinedItem.BaseAttackBonus + " (/3)\n";
+                    description += ColorTokenService.Orange("Base Attack Bonus: ") + examinedItem.BaseAttackBonus + " (/3)\n";
                 }
                 else
                 {
-                    description += _color.Red("Base Attack Bonus (ignored due to item type): ") + examinedItem.BaseAttackBonus + "\n";
+                    description += ColorTokenService.Red("Base Attack Bonus (ignored due to item type): ") + examinedItem.BaseAttackBonus + "\n";
                 }
             }
             if (examinedItem.SneakAttackBonus > 0)
             {
-                description += _color.Orange("Sneak Attack Bonus: ") + examinedItem.SneakAttackBonus + "\n";
+                description += ColorTokenService.Orange("Sneak Attack Bonus: ") + examinedItem.SneakAttackBonus + "\n";
             }
             if (examinedItem.DamageBonus > 0)
             {
                 if (WeaponBaseItemTypes.Contains(examinedItem.BaseItemType))
                 {
-                    description += _color.Orange("Damage Bonus: ") + examinedItem.DamageBonus + "\n";
+                    description += ColorTokenService.Orange("Damage Bonus: ") + examinedItem.DamageBonus + "\n";
                 }
                 else
                 {
-                    description += _color.Red("Damage Bonus (ignored due to item type): ") + examinedItem.DamageBonus + "\n";
+                    description += ColorTokenService.Red("Damage Bonus (ignored due to item type): ") + examinedItem.DamageBonus + "\n";
                 }
             }
             if (examinedItem.CustomItemType != CustomItemType.None)
             {
                 string itemTypeProper = string.Concat(examinedItem.CustomItemType.ToString().Select(x => char.IsUpper(x) ? " " + x : x.ToString())).TrimStart(' ');
-                description += _color.Orange("Item Type: ") + itemTypeProper + "\n";
+                description += ColorTokenService.Orange("Item Type: ") + itemTypeProper + "\n";
             }
 
             // Check for properties that can only be applied to limited things, and flag them here.
@@ -457,13 +500,15 @@ namespace SWLOR.Game.Server.Service
             CustomBaseItemType.Lightsaber
         };
 
-        public void OnModuleUnequipItem()
+        private static void OnModuleUnequipItem()
         {
             NWPlayer player = _.GetPCItemLastUnequippedBy();
+            if (player.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return; // Don't run heavy code when customizing equipment.
+
             NWItem oItem = _.GetPCItemLastUnequipped();
 
             // Remove lightsaber hum effect.
-            foreach (var effect in player.Effects.Where(x=> _.GetEffectTag(x) == "LIGHTSABER_HUM"))
+            foreach (var effect in player.Effects.Where(x => _.GetEffectTag(x) == "LIGHTSABER_HUM"))
             {
                 _.RemoveEffect(player, effect);
             }
@@ -472,7 +517,7 @@ namespace SWLOR.Game.Server.Service
             if (oItem.CustomItemType == CustomItemType.Lightsaber ||
                 oItem.CustomItemType == CustomItemType.Saberstaff)
             {
-  
+
                 player.AssignCommand(() =>
                 {
                     _.PlaySound("saberoff");
@@ -481,12 +526,26 @@ namespace SWLOR.Game.Server.Service
 
         }
 
-        public void OnModuleEquipItem()
-        {
-            using (new Profiler("ItemService::OnModuleEquipItem()"))
-            {
 
-                int[] validItemTypes = {
+        // Players abuse an exploit in NWN which allows them to gain an extra attack.
+        // To work around this I force them to clear all actions.
+        private static void HandleEquipmentSwappingDelay()
+        {
+            NWPlayer oPC = (_.GetPCItemLastEquippedBy());
+            NWItem oItem = (_.GetPCItemLastEquipped());
+            NWItem rightHand = oPC.RightHand;
+            NWItem leftHand = oPC.LeftHand;
+
+            if (!oPC.IsInCombat) return;
+            if (Equals(oItem, rightHand) && Equals(oItem, leftHand)) return;
+            if (!Equals(oItem, leftHand)) return;
+
+            oPC.ClearAllActions();
+        }
+
+        private static void OnModuleEquipItem()
+        {
+            int[] validItemTypes = {
                     BASE_ITEM_ARMOR,
                     BASE_ITEM_ARROW,
                     BASE_ITEM_BASTARDSWORD,
@@ -545,59 +604,67 @@ namespace SWLOR.Game.Server.Service
 
             };
 
-                NWPlayer player = _.GetPCItemLastEquippedBy();
-                NWItem oItem = (_.GetPCItemLastEquipped());
-                int baseItemType = oItem.BaseItemType;
-                Effect eEffect = _.EffectVisualEffect(579);
-                eEffect = _.TagEffect(eEffect, "LIGHTSABER_HUM");
+            NWPlayer player = _.GetPCItemLastEquippedBy();
 
-                // Handle lightsaber sounds
-                if (oItem.CustomItemType == CustomItemType.Lightsaber ||
-                    oItem.CustomItemType == CustomItemType.Saberstaff)
+            if (player.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return; // Don't run heavy code when customizing equipment.
+
+            NWItem oItem = (_.GetPCItemLastEquipped());
+            int baseItemType = oItem.BaseItemType;
+            Effect eEffect = _.EffectVisualEffect(579);
+            eEffect = _.TagEffect(eEffect, "LIGHTSABER_HUM");
+
+            // Handle lightsaber sounds
+            if (oItem.CustomItemType == CustomItemType.Lightsaber ||
+                oItem.CustomItemType == CustomItemType.Saberstaff)
+            {
+                _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, eEffect, player);
+                player.AssignCommand(() =>
                 {
-                    _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, eEffect, player);
-                    player.AssignCommand(() =>  
-                    {   
-                        _.PlaySound("saberon");                 
-                    });
-                }
+                    _.PlaySound("saberon");
+                });
+            }
 
-                if (!validItemTypes.Contains(baseItemType)) return;
+            if (!validItemTypes.Contains(baseItemType))
+            {
+                HandleEquipmentSwappingDelay();
+                return;
+            }
 
-                AddOnHitProperty(oItem);
+            AddOnHitProperty(oItem);
 
-                // Check ammo every time
-                if (player.Arrows.IsValid)
+            // Check ammo every time
+            if (player.Arrows.IsValid)
+            {
+                AddOnHitProperty(player.Arrows);
+                player.Arrows.RecommendedLevel = oItem.RecommendedLevel;
+            }
+
+            if (player.Bolts.IsValid)
+            {
+                AddOnHitProperty(player.Bolts);
+                player.Bolts.RecommendedLevel = oItem.RecommendedLevel;
+            }
+
+            if (player.Bullets.IsValid)
+            {
+                AddOnHitProperty(player.Bullets);
+                player.Bullets.RecommendedLevel = oItem.RecommendedLevel;
+            }
+
+
+            if (baseItemType == BASE_ITEM_TORCH)
+            {
+                int charges = oItem.ReduceCharges();
+                if (charges <= 0)
                 {
-                    AddOnHitProperty(player.Arrows);
-                    player.Arrows.RecommendedLevel = oItem.RecommendedLevel;
-                }
-
-                if (player.Bolts.IsValid)
-                {
-                    AddOnHitProperty(player.Bolts);
-                    player.Bolts.RecommendedLevel = oItem.RecommendedLevel;
-                }
-
-                if (player.Bullets.IsValid)
-                {
-                    AddOnHitProperty(player.Bullets);
-                    player.Bullets.RecommendedLevel = oItem.RecommendedLevel;
-                }
-
-
-                if (baseItemType == BASE_ITEM_TORCH)
-                {
-                    int charges = oItem.ReduceCharges();
-                    if (charges <= 0)
-                    {
-                        oItem.Destroy();
-                    }
+                    oItem.Destroy();
                 }
             }
+
+            HandleEquipmentSwappingDelay();
         }
 
-        private void AddOnHitProperty(NWItem oItem)
+        private static void AddOnHitProperty(NWItem oItem)
         {
             foreach (ItemProperty ip in oItem.ItemProperties)
             {
@@ -611,10 +678,10 @@ namespace SWLOR.Game.Server.Service
             }
 
             // No item property found. Add it to the item.
-            _xp2.IPSafeAddItemProperty(oItem, _.ItemPropertyOnHitCastSpell(IP_CONST_ONHIT_CASTSPELL_ONHIT_UNIQUEPOWER, 40), 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(oItem, _.ItemPropertyOnHitCastSpell(IP_CONST_ONHIT_CASTSPELL_ONHIT_UNIQUEPOWER, 40), 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
         }
 
-        public void ReturnItem(NWObject target, NWItem item)
+        public static void ReturnItem(NWObject target, NWItem item)
         {
             if (_.GetHasInventory(item) == TRUE)
             {
@@ -631,7 +698,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public void StripAllItemProperties(NWItem item)
+        public static void StripAllItemProperties(NWItem item)
         {
             foreach (var ip in item.ItemProperties)
             {
@@ -639,7 +706,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public void FinishActionItem(IActionItem actionItem, NWPlayer user, NWItem item, NWObject target, Location targetLocation, Vector userStartPosition, CustomData customData)
+        public static void FinishActionItem(IActionItem actionItem, NWPlayer user, NWItem item, NWObject target, Location targetLocation, Vector userStartPosition, CustomData customData)
         {
             user.IsBusy = false;
 
@@ -693,7 +760,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public ItemProperty GetCustomItemPropertyByItemTag(string tag)
+        public static ItemProperty GetCustomItemPropertyByItemTag(string tag)
         {
             NWPlaceable container = (_.GetObjectByTag("item_props"));
             NWItem item = container.InventoryItems.SingleOrDefault(x => x.Tag == tag);
@@ -766,7 +833,7 @@ namespace SWLOR.Game.Server.Service
             BASE_ITEM_BULLET,
             BASE_ITEM_DART
         };
-        
+
         private static readonly Dictionary<int, SkillType> _skillTypeMappings = new Dictionary<int, SkillType>()
         {
             // One-Handed Skills
@@ -829,7 +896,7 @@ namespace SWLOR.Game.Server.Service
             {CustomBaseItemType.Saberstaff, SkillType.Lightsaber}
         };
 
-        public SkillType GetSkillTypeForItem(NWItem item)
+        public static SkillType GetSkillTypeForItem(NWItem item)
         {
             using (new Profiler("ItemService::GetSkillTypeForItem"))
             {
@@ -843,19 +910,35 @@ namespace SWLOR.Game.Server.Service
                 if (item.CustomItemType == CustomItemType.LightArmor) return SkillType.LightArmor;
                 else if (item.CustomItemType == CustomItemType.HeavyArmor) return SkillType.HeavyArmor;
                 else if (item.CustomItemType == CustomItemType.ForceArmor) return SkillType.ForceArmor;
-                
+
                 // Training lightsabers are katana weapons with special local variables.
                 if (item.GetLocalInt("LIGHTSABER") == TRUE)
                 {
                     return SkillType.Lightsaber;
                 }
-                
+
                 if (!_skillTypeMappings.TryGetValue(type, out var result))
                 {
                     return SkillType.Unknown;
                 }
                 return result;
             }
+        }
+
+        private static void OnHitCastSpell()
+        {
+            NWObject target = Object.OBJECT_SELF;
+            if (!target.IsValid) return;
+
+            NWObject oSpellOrigin = (_.GetSpellCastItem());
+            // Item specific
+            string script = oSpellOrigin.GetLocalString("JAVA_SCRIPT");
+
+            if (!string.IsNullOrWhiteSpace(script))
+            {
+                LegacyJVMItemEvent.Run(script);
+            }
+
         }
     }
 }

@@ -1,40 +1,20 @@
 ﻿using System;
 using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.SpawnRule.Contracts;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.Drill
 {
     public class OnHeartbeat: IRegisteredEvent
     {
-        private readonly INWScript _;
-        private readonly IDataService _data;
-        private readonly IBaseService _base;
-        private readonly ILootService _loot;
-        private readonly ISerializationService _serialization;
-
-        public OnHeartbeat(
-            INWScript script,
-            IDataService data,
-            IBaseService @base,
-            ILootService loot,
-            ISerializationService serialization)
-        {
-            _ = script;
-            _data = data;
-            _base = @base;
-            _loot = loot;
-            _serialization = serialization;
-        }
         public bool Run(params object[] args)
         {
             NWPlaceable drill = Object.OBJECT_SELF;
@@ -48,16 +28,16 @@ namespace SWLOR.Game.Server.Placeable.Drill
             }
 
             Guid structureGUID = new Guid(structureID);
-            PCBaseStructure pcStructure = _data.Get<PCBaseStructure>(structureGUID);
-            PCBase pcBase = _data.Get<PCBase>(pcStructure.PCBaseID);
-            PCBaseStructure tower = _base.GetBaseControlTower(pcBase.ID);
+            PCBaseStructure pcStructure = DataService.Get<PCBaseStructure>(structureGUID);
+            PCBase pcBase = DataService.Get<PCBase>(pcStructure.PCBaseID);
+            PCBaseStructure tower = BaseService.GetBaseControlTower(pcBase.ID);
 
             // Check whether there's space in this tower.
-            int capacity = _base.CalculateResourceCapacity(pcBase.ID);
-            int count = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == tower.ID).Count() + 1;
+            int capacity = BaseService.CalculateResourceCapacity(pcBase.ID);
+            int count = DataService.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == tower.ID).Count() + 1;
             if (count > capacity) return false;
 
-            BaseStructure baseStructure = _data.Get<BaseStructure>(pcStructure.BaseStructureID);
+            BaseStructure baseStructure = DataService.Get<BaseStructure>(pcStructure.BaseStructureID);
             DateTime now = DateTime.UtcNow;
 
             var outOfPowerEffect = drill.Effects.SingleOrDefault(x => _.GetEffectTag(x) == "CONTROL_TOWER_OUT_OF_POWER");
@@ -85,13 +65,13 @@ namespace SWLOR.Game.Server.Placeable.Drill
             if (pcStructure.DateNextActivity == null)
             {
                 pcStructure.DateNextActivity = now.AddMinutes(increaseMinutes);
-                _data.SubmitDataChange(pcStructure, DatabaseActionType.Update);
+                DataService.SubmitDataChange(pcStructure, DatabaseActionType.Update);
             }
 
             if (!(now >= pcStructure.DateNextActivity)) return true;
 
             // Time to spawn a new item and reset the timer.
-            var dbArea = _data.Single<Area>(x => x.Resref == pcBase.AreaResref);
+            var dbArea = DataService.Single<Area>(x => x.Resref == pcBase.AreaResref);
             string sector = pcBase.Sector;
             int lootTableID = 0;
 
@@ -111,8 +91,8 @@ namespace SWLOR.Game.Server.Placeable.Drill
             
             pcStructure.DateNextActivity = now.AddMinutes(increaseMinutes);
 
-            var controlTower = _base.GetBaseControlTower(pcStructure.PCBaseID);
-            var itemDetails = _loot.PickRandomItemFromLootTable(lootTableID);
+            var controlTower = BaseService.GetBaseControlTower(pcStructure.PCBaseID);
+            var itemDetails = LootService.PickRandomItemFromLootTable(lootTableID);
 
             var tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
             NWItem item = _.CreateItemOnObject(itemDetails.Resref, tempStorage, itemDetails.Quantity);
@@ -126,10 +106,8 @@ namespace SWLOR.Game.Server.Placeable.Drill
 
             if (!string.IsNullOrWhiteSpace(itemDetails.SpawnRule))
             {
-                App.ResolveByInterface<ISpawnRule>("SpawnRule." + itemDetails.SpawnRule, action =>
-                {
-                    action.Run(item, retrievalRating);
-                });
+                var rule = SpawnService.GetSpawnRule(itemDetails.SpawnRule);
+                rule.Run(item, retrievalRating);
             }
 
             var dbItem = new PCBaseStructureItem
@@ -139,11 +117,11 @@ namespace SWLOR.Game.Server.Placeable.Drill
                 ItemName = item.Name,
                 ItemResref = item.Resref,
                 ItemTag = item.Tag,
-                ItemObject = _serialization.Serialize(item)
+                ItemObject = SerializationService.Serialize(item)
             };
 
-            _data.SubmitDataChange(pcStructure, DatabaseActionType.Update);
-            _data.SubmitDataChange(dbItem, DatabaseActionType.Insert);
+            DataService.SubmitDataChange(pcStructure, DatabaseActionType.Update);
+            DataService.SubmitDataChange(dbItem, DatabaseActionType.Insert);
             item.Destroy();
             return true;
         }

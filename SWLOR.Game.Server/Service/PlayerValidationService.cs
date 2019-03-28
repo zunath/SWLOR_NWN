@@ -1,33 +1,14 @@
 ﻿using System;
 using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class PlayerValidationService : IPlayerValidationService
+    public static class PlayerValidationService
     {
-        private readonly INWScript _;
-        private readonly INWNXAdmin _nwnxAdmin;
-        private readonly IDataService _data;
-
-        public PlayerValidationService(
-            INWScript script,
-            INWNXAdmin nwnxAdmin,
-            IDataService data)
-        {
-            _ = script;
-            _nwnxAdmin = nwnxAdmin;
-            _data = data;
-        }
-
-        public void OnModuleEnter()
+        public static void OnModuleEnter()
         {
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
@@ -42,11 +23,11 @@ namespace SWLOR.Game.Server.Service
             if (!string.IsNullOrWhiteSpace(error))
             {
                 _.BootPC(player, error);
-                _nwnxAdmin.DeletePlayerCharacter(player, true);
+                NWNXAdmin.DeletePlayerCharacter(player, true);
             }
         }
 
-        private string ValidateName(NWPlayer player)
+        private static string ValidateName(NWPlayer player)
         {
             string error = string.Empty;
             string name = player.Name.ToLower();
@@ -64,7 +45,7 @@ namespace SWLOR.Game.Server.Service
             return error;
         }
 
-        private string ValidateBackground(NWPlayer player)
+        private static string ValidateBackground(NWPlayer player)
         {
             int classID = _.GetClassByPosition(1, player);
             bool isPlayerClass = Convert.ToInt32(_.Get2DAString("classes", "PlayerClass", classID)) == 1;
@@ -79,7 +60,7 @@ namespace SWLOR.Game.Server.Service
             return error;
         }
 
-        private readonly string[] ReservedWords =
+        private static readonly string[] ReservedWords =
         {
             "darth", "malak", "revan", "jedi", "sith", "yoda", "luke", "skywalker", "starkiller", "vader", "han", "solo", "boba", "bobba", "fett",
             "admiral", "ackbar", "c-3p0", "c3p0", "c-3po", "r2d2", "r2-d2", "qui-gon", "jinn", "greedo", "hutt", "the", "jabba", "mace", "windu", 

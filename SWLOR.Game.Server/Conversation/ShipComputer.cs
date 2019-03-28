@@ -1,59 +1,21 @@
 ﻿using System;
 using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN.NWScript;
+using static NWN._;
 using System.Collections.Generic;
 using System.Collections;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Conversation
 {
     public class ShipComputer: ConversationBase
     {
-        private readonly IBaseService _base;
-        private readonly IDataService _data;
-        private readonly IDialogService _dialog;
-        private readonly IErrorService _error;
-        private readonly IPerkService _perk;
-        private readonly IBasePermissionService _perm;
-        private readonly ISerializationService _serialization;
-        private readonly ISpaceService _space;
-        private readonly IColorTokenService _color;
-        private readonly ITimeService _time;
-
-        public ShipComputer(
-            INWScript script,
-            IDialogService dialog,
-            IDataService data,
-            IErrorService error,
-            IPerkService perk,
-            IBasePermissionService perm,
-            ISerializationService serialization,
-            IBaseService @base,
-            IColorTokenService color,
-            ISpaceService space,
-            ITimeService time) 
-            : base(script, dialog)
-        {
-            _data = data;
-            _dialog = dialog;
-            _error = error;
-            _perk = perk;
-            _perm = perm;
-            _serialization = serialization;
-            _space = space;
-            _base = @base;
-            _color = color;
-            _time = time;
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -66,17 +28,17 @@ namespace SWLOR.Game.Server.Conversation
                 return null;
             }
 
-            PCBaseStructure structure = _data.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == structureID);
-            PCBase pcBase = _data.SingleOrDefault<PCBase>(x => x.ID == structure.PCBaseID);
+            PCBaseStructure structure = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == structureID);
+            PCBase pcBase = DataService.SingleOrDefault<PCBase>(x => x.ID == structure.PCBaseID);
 
-            bool bSpace = _space.IsLocationSpace(pcBase.ShipLocation);
+            bool bSpace = SpaceService.IsLocationSpace(pcBase.ShipLocation);
 
             List<string> options = new List<string>();
 
-            if (bSpace && _perm.HasStructurePermission(player, structure.ID, StructurePermission.CanFlyStarship))
+            if (bSpace && BasePermissionService.HasStructurePermission(player, structure.ID, StructurePermission.CanFlyStarship))
             {
                 // See if we are near enough to the planet to land.
-                if (_space.CanLandOnPlanet(player.Area))
+                if (SpaceService.CanLandOnPlanet(player.Area))
                 {
                     options.Add("Land");
                 }
@@ -84,18 +46,18 @@ namespace SWLOR.Game.Server.Conversation
                 options.Add("Pilot Ship");
                 options.Add("Hyperspace Jump");
             }
-            else if ( _perm.HasStructurePermission(player, structure.ID, StructurePermission.CanFlyStarship))
+            else if ( BasePermissionService.HasStructurePermission(player, structure.ID, StructurePermission.CanFlyStarship))
             {
                 options.Add("Take Off");
             }
 
-            if (!bSpace && _perm.HasBasePermission(player, structure.PCBaseID, BasePermission.CanManageBaseFuel))
+            if (!bSpace && BasePermissionService.HasBasePermission(player, structure.PCBaseID, BasePermission.CanManageBaseFuel))
             {
                 options.Add("Access Fuel Bay");
                 options.Add("Access Stronidium Bay");
             }
 
-            if (_perm.HasBasePermission(player, structure.PCBaseID, BasePermission.CanAccessStructureInventory))
+            if (BasePermissionService.HasBasePermission(player, structure.PCBaseID, BasePermission.CanAccessStructureInventory))
             {
                 if (!bSpace) options.Add("Access Resource Bay");
                 options.Add("Export Starcharts");
@@ -106,12 +68,12 @@ namespace SWLOR.Game.Server.Conversation
             dialog.AddPage("MainPage", mainPage);
 
             // Hyperspace destinations.
-            string[] responses = _space.GetHyperspaceDestinationList(pcBase);
+            string[] responses = SpaceService.GetHyperspaceDestinationList(pcBase);
             DialogPage destinationPage = new DialogPage("Please select a destination to fly to.", responses);
             dialog.AddPage("HyperDestPage", destinationPage);
 
             // Landing destinations.            
-            Hashtable landingspots = _space.GetLandingDestinationList(player, pcBase);
+            Hashtable landingspots = SpaceService.GetLandingDestinationList(player, pcBase);
             List<String> responseList = landingspots.Keys.Cast<String>().ToList();
             DialogPage landingPage = new DialogPage("Where do you want to land?", responseList.ToArray());
             dialog.AddPage("LandingDestPage", landingPage);
@@ -128,39 +90,39 @@ namespace SWLOR.Game.Server.Conversation
         public override void Initialize()
         {
             Guid structureID = new Guid(_.GetLocalString(_.GetArea(GetDialogTarget()), "PC_BASE_STRUCTURE_ID"));
-            PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.ID == structureID); 
-            PCBase pcBase = _data.Get<PCBase>(structure.PCBaseID);
-            BaseStructure baseStructure = _data.Get<BaseStructure>(structure.BaseStructureID);
+            PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID); 
+            PCBase pcBase = DataService.Get<PCBase>(structure.PCBaseID);
+            BaseStructure baseStructure = DataService.Get<BaseStructure>(structure.BaseStructureID);
 
-            NWPlaceable bay = _space.GetCargoBay(GetPC().Area, null);
+            NWPlaceable bay = SpaceService.GetCargoBay(GetPC().Area, null);
 
             int currentReinforcedFuel = pcBase.ReinforcedFuel;
             int currentFuel = pcBase.Fuel;
-            int currentResources = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structure.ID).Count();
-            int maxReinforcedFuel = _base.CalculateMaxReinforcedFuel(pcBase.ID) + 25 * _space.GetCargoBonus(bay, (int)CustomItemPropertyType.StarshipStronidiumBonus);
-            int maxFuel = _base.CalculateMaxFuel(pcBase.ID) + 25 * _space.GetCargoBonus(bay, (int)CustomItemPropertyType.StarshipFuelBonus);
-            int maxResources = _base.CalculateResourceCapacity(pcBase.ID);
+            int currentResources = DataService.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structure.ID).Count();
+            int maxReinforcedFuel = BaseService.CalculateMaxReinforcedFuel(pcBase.ID) + 25 * SpaceService.GetCargoBonus(bay, (int)CustomItemPropertyType.StarshipStronidiumBonus);
+            int maxFuel = BaseService.CalculateMaxFuel(pcBase.ID) + 25 * SpaceService.GetCargoBonus(bay, (int)CustomItemPropertyType.StarshipFuelBonus);
+            int maxResources = BaseService.CalculateResourceCapacity(pcBase.ID);
 
             string locationDescription = "";
 
-            if (_space.IsLocationSpace(pcBase.ShipLocation))
+            if (SpaceService.IsLocationSpace(pcBase.ShipLocation))
             {
-                locationDescription = "Ship is in orbit around " + _color.Cyan(_space.GetPlanetFromLocation(pcBase.ShipLocation)) + ".\n";
+                locationDescription = "Ship is in orbit around " + ColorTokenService.Cyan(SpaceService.GetPlanetFromLocation(pcBase.ShipLocation)) + ".\n";
             }
-            else if (_space.IsLocationPublicStarport(pcBase.ShipLocation))
+            else if (SpaceService.IsLocationPublicStarport(pcBase.ShipLocation))
             {
-                locationDescription = "Ship is docked in the public starport on " + _color.Cyan(_space.GetPlanetFromLocation(pcBase.ShipLocation)) + ".\n";
+                locationDescription = "Ship is docked in the public starport on " + ColorTokenService.Cyan(SpaceService.GetPlanetFromLocation(pcBase.ShipLocation)) + ".\n";
             }
             else
             {
-                locationDescription = "Ship is docked on " + _color.Cyan(_space.GetPlanetFromLocation(pcBase.ShipLocation)) + ".\n";
+                locationDescription = "Ship is docked on " + ColorTokenService.Cyan(SpaceService.GetPlanetFromLocation(pcBase.ShipLocation)) + ".\n";
             }
 
             string header = locationDescription;
-            header += _color.Green("Fuel: ") + currentFuel + " / " + maxFuel + "\n";
-            header += _color.Green("Reinforced Fuel: ") + currentReinforcedFuel + " / " + maxReinforcedFuel + "\n";
-            header += _color.Green("Resource Bay: ") + currentResources + " / " + maxResources + "\n";
-            header += _color.Green("Hull integrity: ") + structure.Durability + " / " + baseStructure.Durability + "\n";
+            header += ColorTokenService.Green("Fuel: ") + currentFuel + " / " + maxFuel + "\n";
+            header += ColorTokenService.Green("Reinforced Fuel: ") + currentReinforcedFuel + " / " + maxReinforcedFuel + "\n";
+            header += ColorTokenService.Green("Resource Bay: ") + currentResources + " / " + maxResources + "\n";
+            header += ColorTokenService.Green("Hull integrity: ") + structure.Durability + " / " + baseStructure.Durability + "\n";
   
             header += "The computer awaits your orders.";
 
@@ -170,15 +132,15 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void DoAction(NWPlayer player, string pageName, int responseID)
         {
-            PlayerDialog dialog = _dialog.LoadPlayerDialog(GetPC().GlobalID);
+            PlayerDialog dialog = DialogService.LoadPlayerDialog(GetPC().GlobalID);
             Guid structureID = new Guid(_.GetLocalString(player.Area, "PC_BASE_STRUCTURE_ID"));
-            PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.ID == structureID);
-            PCBase pcBase = _data.Get<PCBase>(structure.PCBaseID);
+            PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
+            PCBase pcBase = DataService.Get<PCBase>(structure.PCBaseID);
 
             DialogPage page = dialog.GetPageByName(pageName);
             DialogResponse response = page.Responses[responseID - 1];
 
-            bool carefulPilot = _perk.GetPCPerkLevel(player, PerkType.CarefulPilot) > 0;
+            bool carefulPilot = PerkService.GetPCPerkLevel(player, PerkType.CarefulPilot) > 0;
                 
             if (pageName == "MainPage")
             {
@@ -189,8 +151,8 @@ namespace SWLOR.Game.Server.Conversation
                 }
                 else if (response.Text == "Pilot Ship")
                 {
-                    _space.CreateShipInSpace(player.Area); // In case we logged in here.
-                    _space.DoFlyShip(GetPC(), GetPC().Area);
+                    SpaceService.CreateShipInSpace(player.Area); // In case we logged in here.
+                    SpaceService.DoFlyShip(GetPC(), GetPC().Area);
                     EndConversation();
                 }
                 else if (response.Text == "Hyperspace Jump")
@@ -209,26 +171,26 @@ namespace SWLOR.Game.Server.Conversation
                     else
                     {
                         // Fuel is good - we have liftoff.
-                        if (!_space.DoPilotingSkillCheck(GetPC(), 2, carefulPilot))
+                        if (!SpaceService.DoPilotingSkillCheck(GetPC(), 2, carefulPilot))
                         {
                             // Failed our skill check.  Deduct fuel but don't do anything else.
                             GetPC().FloatingText("The ship shudders a bit, but your awkwardness on the throttle shows, and it doesn't make it off the dock.  Try again.");
                             pcBase.Fuel -= 1;
-                            _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                            DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
                             return;
                         }
 
                         EndConversation();
 
                         // Save details of the current dock for later.
-                        PCBaseStructure dock = _data.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == pcBase.ShipLocation);
+                        PCBaseStructure dock = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID.ToString() == pcBase.ShipLocation);
 
                         pcBase.Fuel -= 1;
                         pcBase.DateRentDue = DateTime.UtcNow.AddDays(99);
-                        pcBase.ShipLocation = _space.GetPlanetFromLocation(pcBase.ShipLocation) + " - Orbit";
-                        _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                        pcBase.ShipLocation = SpaceService.GetPlanetFromLocation(pcBase.ShipLocation) + " - Orbit";
+                        DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
 
-                        _space.CreateShipInSpace(player.Area);
+                        SpaceService.CreateShipInSpace(player.Area);
 
                         // Give the impression of movement
                         foreach (var creature in player.Area.Objects)
@@ -239,13 +201,13 @@ namespace SWLOR.Game.Server.Conversation
                             }
                         }
 
-                        _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, _.EffectVisualEffect(356), player);
+                        _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(356), player);
 
                         // Clean up the base structure, if we were in a PC dock not public starport.
                         // Get a reference to our placeable (and door), and delete them with some VFX. 
                         if (dock != null)
                         {
-                            PCBase dockBase = _data.SingleOrDefault<PCBase>(x => x.ID == dock.PCBaseID);
+                            PCBase dockBase = DataService.SingleOrDefault<PCBase>(x => x.ID == dock.PCBaseID);
 
                             IEnumerable<NWArea> areas = NWModule.Get().Areas;
                             NWArea landingArea = new NWArea(_.GetFirstArea());
@@ -266,7 +228,7 @@ namespace SWLOR.Game.Server.Conversation
                                     // Found our dock.  Clear its variable and play some VFX.
                                     plc.Structure.SetLocalInt("DOCKED_STARSHIP", 0);
                                     DoDustClouds(plc.Structure.Location);
-                                    _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, _.EffectVisualEffect(356), plc.Structure);
+                                    _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(356), plc.Structure);
                                 }
                                 else if (plc.PCBaseStructureID == structure.ID)
                                 {
@@ -290,7 +252,7 @@ namespace SWLOR.Game.Server.Conversation
                 }
                 else if (response.Text == "Access Resource Bay")
                 {
-                    NWPlaceable bay = _space.GetCargoBay(player.Area, GetPC());
+                    NWPlaceable bay = SpaceService.GetCargoBay(player.Area, GetPC());
                     if (bay != null) GetPC().AssignCommand(() => _.ActionInteractObject(bay.Object));
                     EndConversation();
                 }
@@ -299,7 +261,7 @@ namespace SWLOR.Game.Server.Conversation
                     NWItem item = _.CreateItemOnObject("starcharts", player, 1, _.Random(10000).ToString());
 
                     // Initialise the list, in case it hasn't been populated yet.
-                    _space.GetHyperspaceDestinationList(pcBase);
+                    SpaceService.GetHyperspaceDestinationList(pcBase);
 
                     item.SetLocalInt("Starcharts", (int)pcBase.Starcharts);
                 }
@@ -315,27 +277,27 @@ namespace SWLOR.Game.Server.Conversation
                 else
                 {
                     // Fuel is good - make the jump
-                    if (!_space.DoPilotingSkillCheck(GetPC(), 13, carefulPilot))
+                    if (!SpaceService.DoPilotingSkillCheck(GetPC(), 13, carefulPilot))
                     {
                         // Failed our skill check.  Deduct fuel but don't do anything else.
                         GetPC().FloatingText("Jump failed!  You forgot to whatsit the thingummyjig.");
                         pcBase.Fuel -= 50;
-                        _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                        DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
                         EndConversation();
                         return;
                     }
 
                     // Move the ship out of the old orbit.
-                    _space.RemoveShipInSpace(player.Area);
+                    SpaceService.RemoveShipInSpace(player.Area);
 
                     // Fade to black for hyperspace.
                     EndConversation();
                     pcBase.Fuel -= 50;
                     pcBase.ShipLocation = response.Text + " - Orbit";
-                    _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                    DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
 
                     // Put the ship in its new orbit.
-                    _space.CreateShipInSpace(player.Area);
+                    SpaceService.CreateShipInSpace(player.Area);
 
                     // Give the impression of movement - would be great to have the actual hyperspace jump graphics here.
                     foreach (var creature in player.Area.Objects)
@@ -352,14 +314,14 @@ namespace SWLOR.Game.Server.Conversation
             else if (pageName == "LandingDestPage")
             {
                 // Skill check. 
-                if (!_space.DoPilotingSkillCheck(GetPC(), 5, carefulPilot))
+                if (!SpaceService.DoPilotingSkillCheck(GetPC(), 5, carefulPilot))
                 {
                     // Failed our skill check.  Land anyway but burn more fuel.
                     if (pcBase.Fuel > 0)
                     {
                         GetPC().FloatingText("You overshoot the landing spot, burning extra fuel getting your ship into position.");
                         pcBase.Fuel -= 1;
-                        _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                        DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
                     }
                 }
 
@@ -367,7 +329,7 @@ namespace SWLOR.Game.Server.Conversation
                 Guid dockStructureID = dialog.CustomData["LAND_" + response.Text];
 
                 // This could be a public startport ID or a private dock base structure ID.  
-                SpaceStarport starport = _data.SingleOrDefault<SpaceStarport>(x => x.ID == dockStructureID);
+                SpaceStarport starport = DataService.SingleOrDefault<SpaceStarport>(x => x.ID == dockStructureID);
                 if (starport != null)
                 {
                     // We have a public starport.  
@@ -383,7 +345,7 @@ namespace SWLOR.Game.Server.Conversation
                         // Land.
                         pcBase.ShipLocation = starport.ID.ToString();
                         pcBase.DateRentDue = DateTime.UtcNow.AddDays(1);
-                        _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                        DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
 
                         // Notify PC.
                         player.SendMessage("You have paid your first day's berthing fees. Use the Base Management System to extend your lease if you plan to stay longer, or your ship will be impounded.");
@@ -393,26 +355,26 @@ namespace SWLOR.Game.Server.Conversation
                 }
                 else
                 {
-                    _error.Trace(TraceComponent.Space, "Landing in PC base dock, ID: " + dockStructureID.ToString());
-                    PCBaseStructure dock = _data.SingleOrDefault<PCBaseStructure>(x => x.ID == dockStructureID);
+                    LoggingService.Trace(TraceComponent.Space, "Landing in PC base dock, ID: " + dockStructureID.ToString());
+                    PCBaseStructure dock = DataService.SingleOrDefault<PCBaseStructure>(x => x.ID == dockStructureID);
 
                     if (dock == null)
                     {
                         player.SendMessage("ERROR: Could not find landing dock by ID.  Please report this.");
-                        _error.Trace(TraceComponent.Space, "Could not find landing dock ID " + dockStructureID.ToString());
+                        LoggingService.Trace(TraceComponent.Space, "Could not find landing dock ID " + dockStructureID.ToString());
                         return;
                     }
 
-                    NWPlaceable plc = _base.FindPlaceableFromStructureID(dock.ID.ToString());
+                    NWPlaceable plc = BaseService.FindPlaceableFromStructureID(dock.ID.ToString());
 
                     if (plc == null)
                     {
-                        _error.Trace(TraceComponent.Space, "Failed to find dock placeable.");
+                        LoggingService.Trace(TraceComponent.Space, "Failed to find dock placeable.");
                         player.SendMessage("ERROR: Could not find landing dock placeable.  Please report this.");
                         return; 
                     }
 
-                    _error.Trace(TraceComponent.Space, "Found dock, landing ship.");
+                    LoggingService.Trace(TraceComponent.Space, "Found dock, landing ship.");
 
                     // We've found our dock. Update our record of where the ship's exterior should spawn.
                     NWLocation loc = plc.Location;
@@ -422,14 +384,14 @@ namespace SWLOR.Game.Server.Conversation
                     structure.LocationZ = loc.Z;
                     structure.LocationOrientation = _.GetFacingFromLocation(loc);
 
-                    _data.SubmitDataChange(structure, DatabaseActionType.Update);
+                    DataService.SubmitDataChange(structure, DatabaseActionType.Update);
 
                     // And update the base to mark the parent dock as the location.
                     pcBase.ShipLocation = dock.ID.ToString();
-                    _data.SubmitDataChange(pcBase, DatabaseActionType.Update);
+                    DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
 
                     // Now use the Base Service to spawn the ship exterior.
-                    _base.SpawnStructure(plc.Area, structure.ID);
+                    BaseService.SpawnStructure(plc.Area, structure.ID);
 
                     // Mark the dock as occupied.
                     plc.SetLocalInt("DOCKED_STARSHIP", 1);
@@ -444,12 +406,12 @@ namespace SWLOR.Game.Server.Conversation
                     }
 
                     // And shake the screen, because stuff.
-                    _.ApplyEffectAtLocation(NWScript.DURATION_TYPE_INSTANT, _.EffectVisualEffect(356), loc);
+                    _.ApplyEffectAtLocation(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(356), loc);
                     DoDustClouds(loc);            
                 }
 
                 // We're landing.  Make sure any pilot or gunner get out of flight mode.  
-                _space.LandCrew(player.Area);
+                SpaceService.LandCrew(player.Area);
 
                 // If we are still here, we landed successfully.  Shake the screen about and notify PCs on the ship.
                 // Give the impression of movement
@@ -461,8 +423,8 @@ namespace SWLOR.Game.Server.Conversation
                     }
                 }
 
-                _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, _.EffectVisualEffect(356), player);
-                _space.RemoveShipInSpace(player.Area);
+                _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(356), player);
+                SpaceService.RemoveShipInSpace(player.Area);
 
                 EndConversation();
             }
@@ -498,8 +460,8 @@ namespace SWLOR.Game.Server.Conversation
             }
 
             Guid structureID = new Guid(_.GetLocalString(area, "PC_BASE_STRUCTURE_ID"));
-            var structure = _data.Single<PCBaseStructure>(x => x.ID == structureID);
-            var pcBase = _data.Get<PCBase>(structure.PCBaseID);
+            var structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
+            var pcBase = DataService.Get<PCBase>(structure.PCBaseID);
             Location location = oPC.Location;
             bay = _.CreateObject(OBJECT_TYPE_PLACEABLE, "fuel_bay", location);
             bay.AssignCommand(() => _.SetFacingPoint(oPC.Position));

@@ -1,10 +1,6 @@
-﻿namespace SWLOR.Game.Server.Event.Module
+﻿namespace SWLOR.Game.Server.NWN.Events.Module
 {
-    internal class OnModuleAttack : IRegisteredEvent
+    internal class OnModuleAttack
     {
-        public bool Run(params object[] args)
-        {
-            return true;
-        }
     }
 }

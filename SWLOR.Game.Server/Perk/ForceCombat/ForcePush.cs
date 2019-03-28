@@ -1,36 +1,17 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.ValueObject;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceCombat
 {
-    public class ForcePush: IPerk
+    public class ForcePush: IPerkHandler
     {
-        private readonly INWScript _;
-        private readonly IPerkService _perk;
-        private readonly IRandomService _random;
-        private readonly IPlayerStatService _playerStat;
-        private readonly ISkillService _skill;
-        private readonly ICombatService _combat;
+        public PerkType PerkType => PerkType.ForcePush;
 
-        public ForcePush(
-            INWScript script,
-            IPerkService perk,
-            IRandomService random,
-            IPlayerStatService playerStat,
-            ISkillService skill,
-            ICombatService combat)
-        {
-            _ = script;
-            _perk = perk;
-            _random = random;
-            _playerStat = playerStat;
-            _skill = skill;
-            _combat = combat;
-        }
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             if (_.GetDistanceBetween(oPC, oTarget) > 15.0f)
@@ -73,32 +54,32 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
             switch (level)
             {
                 case 1:
-                    damage = _random.D4(1);
+                    damage = RandomService.D4(1);
                     length = 3;
                     break;
                 case 2:
-                    damage = _random.D4(1);
+                    damage = RandomService.D4(1);
                     length = 6;
                     break;
                 case 3:
-                    damage = _random.D6(1);
+                    damage = RandomService.D6(1);
                     length = 6;
                     break;
                 case 4:
-                    damage = _random.D8(1);
+                    damage = RandomService.D8(1);
                     length = 6;
                     break;
                 case 5:
-                    damage = _random.D8(1);
+                    damage = RandomService.D8(1);
                     length = 9;
                     break;
 
                 default: return;
             }
-            _skill.RegisterPCToNPCForSkill(player, target, SkillType.ForceCombat);
+            SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceCombat);
             
             // Resistance affects length for this perk.
-            ForceResistanceResult resistance = _combat.CalculateResistanceRating(player, target.Object, ForceAbilityType.Mind);
+            ForceResistanceResult resistance = CombatService.CalculateResistanceRating(player, target.Object, ForceAbilityType.Mind);
             length = length * resistance.Amount;
 
             if (length <= 0.0f || resistance.Type != ResistanceType.Zero)
@@ -107,9 +88,9 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
                 return;
             }
 
-            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
-            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
-            if (_random.Random(100) + 1 <= luck)
+            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
+            int luck = PerkService.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
+            if (RandomService.Random(100) + 1 <= luck)
             {
                 length = length * 2;
                 player.SendMessage("Lucky force push!");
@@ -118,7 +99,7 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
             _.PlaySound("v_imp_frcpush");
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_POSITIVE), target);
             _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectKnockdown(), target, length);
-            _combat.AddTemporaryForceDefense(target.Object, ForceAbilityType.Light);
+            CombatService.AddTemporaryForceDefense(target.Object, ForceAbilityType.Light);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

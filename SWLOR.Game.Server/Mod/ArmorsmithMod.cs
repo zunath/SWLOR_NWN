@@ -4,8 +4,10 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class ArmorsmithMod: IMod
+    public class ArmorsmithMod: IModHandler
     {
+        public int ModTypeID => 13;
+
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             if (target.CraftBonusArmorsmith >= 30)

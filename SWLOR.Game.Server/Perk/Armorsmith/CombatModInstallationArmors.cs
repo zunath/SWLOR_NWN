@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.Armorsmith
 {
-    public class CombatModInstallationArmors : IPerk
+    public class CombatModInstallationArmors : IPerkHandler
     {
+        public PerkType PerkType => PerkType.CombatModInstallationArmors;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

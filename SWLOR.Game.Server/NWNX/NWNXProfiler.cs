@@ -1,26 +1,23 @@
-﻿using NWN;
-using SWLOR.Game.Server.GameObject;
-
-using SWLOR.Game.Server.NWNX.Contracts;
+﻿using static SWLOR.Game.Server.NWNX.NWNXCore;
 
 namespace SWLOR.Game.Server.NWNX
 {
-    public class NWNXProfiler : NWNXBase, INWNXProfiler
+    public static class NWNXProfiler
     {
-        public NWNXProfiler(INWScript script)
-            : base(script)
-        {
-        }
-
-        public void PushPerfScope(string name)
+        public static void PushPerfScope(string name, string tag0_tag = "", string tag0_value = "")
         {
             NWNX_PushArgumentString("NWNX_Profiler", "PUSH_PERF_SCOPE", name);
-            NWNX_PushArgumentString("NWNX_Profiler", "PUSH_PERF_SCOPE", "Script");
-            NWNX_PushArgumentString("NWNX_Profiler", "PUSH_PERF_SCOPE", "MonoScript");
+
+            if (tag0_value != "" && tag0_tag != "")
+            {
+                NWNX_PushArgumentString("NWNX_Profiler", "PUSH_PERF_SCOPE", tag0_value);
+                NWNX_PushArgumentString("NWNX_Profiler", "PUSH_PERF_SCOPE", tag0_tag);
+            }
+
             NWNX_CallFunction("NWNX_Profiler", "PUSH_PERF_SCOPE");
         }
 
-        public void PopPerfScope()
+        public static void PopPerfScope()
         {
             NWNX_CallFunction("NWNX_Profiler", "POP_PERF_SCOPE");
         }

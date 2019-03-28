@@ -2,20 +2,13 @@
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
     [CommandDetails("Plays a greet animation.", CommandPermissionType.Player | CommandPermissionType.DM)]
     public class Greet : IChatCommand
     {
-        private readonly INWScript _;
-
-        public Greet(INWScript script)
-        {
-            _ = script;
-        }
-
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             user.AssignCommand(() =>

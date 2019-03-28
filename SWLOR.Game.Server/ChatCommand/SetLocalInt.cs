@@ -9,13 +9,6 @@ namespace SWLOR.Game.Server.ChatCommand
     [CommandDetails("Sets a local integer on a target.", CommandPermissionType.DM)]
     public class SetLocalInt : IChatCommand
     {
-        private readonly INWScript _;
-
-        public SetLocalInt(INWScript script)
-        {
-            _ = script;
-        }
-
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             if (!target.IsValid)

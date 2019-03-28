@@ -4,13 +4,16 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using SWLOR.Game.Server.Service;
+
+using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceSupport
 {
-    public class ForceHeal : IPerk
+    public class ForceHeal : IPerkHandler
     {
+        public PerkType PerkType => PerkType.ForceHeal;
+
         private class ForceHealPotency
         {
             public int PowerFloor { get; }
@@ -27,12 +30,12 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
             }
         }
 
-        private readonly INWScript _;
-        private readonly IPerkService _perk;
-        private readonly IRandomService _random;
-        private readonly ISkillService _skill;
-        private readonly ICustomEffectService _customEffect;
-        private readonly IPlayerStatService _playerStat;
+        
+        
+        
+        
+        
+        
         private static readonly Dictionary<int, ForceHealPotency> _potencyLookup = new Dictionary<int, ForceHealPotency>
         {
             {1, new ForceHealPotency(0, 1f, 10, 65)},         // Rank 1, Tier 1
@@ -59,21 +62,7 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
 
 
         };
-
-        public ForceHeal(INWScript script,
-            IPerkService perk,
-            IRandomService random,
-            ISkillService skill,
-            ICustomEffectService customEffect,
-            IPlayerStatService playerStat)
-        {
-            _ = script;
-            _perk = perk;
-            _random = random;
-            _skill = skill;
-            _customEffect = customEffect;
-            _playerStat = playerStat;
-        }
+        
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
@@ -167,8 +156,8 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
 
         public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
         {
-            var spread = _customEffect.GetForceSpreadDetails(player);
-            int skillRank = _skill.GetPCSkillRank(player, SkillType.ForceSupport);
+            var spread = CustomEffectService.GetForceSpreadDetails(player);
+            int skillRank = SkillService.GetPCSkillRank(player, SkillType.ForceSupport);
             
             if (spread.Level <= 0)
                 HealTarget(player, target, perkLevel, skillRank, (CustomFeatType)spellFeatID);
@@ -183,11 +172,11 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
                     HealTarget(player, member, perkLevel, skillRank, (CustomFeatType)spellFeatID);
                 }
 
-                _customEffect.SetForceSpreadUses(player, spread.Uses);
-                _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceUtility, null);
+                CustomEffectService.SetForceSpreadUses(player, spread.Uses);
+                SkillService.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceUtility, null);
             }
             _.PlaySound("v_imp_heal");
-            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceSupport, target.Object);
+            SkillService.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceSupport, target.Object);
         }
         
 
@@ -197,7 +186,7 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
         // Completely stolen from: https://www.bg-wiki.com/index.php?title=Cure_Formula&oldid=537717 and tweaked.
         private void HealTarget(NWPlayer oPC, NWObject oTarget, int perkLevel, int skillRank, CustomFeatType spellFeat)
         {
-            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(oPC);
+            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(oPC);
 
             int itemPotency = effectiveStats.ForcePotency + effectiveStats.LightPotency;
             int power = (oPC.Wisdom / 2) + (oPC.Charisma / 4) + ((skillRank + itemPotency) / 2);
@@ -390,8 +379,8 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
                 amount = potencyStats.HardCap;
             
             // Do a lucky check. Increases damage by 50% if successful.
-            int luck = _perk.GetPCPerkLevel(oPC, PerkType.Lucky) + effectiveStats.Luck;
-            if (_random.Random(100) + 1 <= luck)
+            int luck = PerkService.GetPCPerkLevel(oPC, PerkType.Lucky) + effectiveStats.Luck;
+            if (RandomService.Random(100) + 1 <= luck)
             {
                 amount = (int) (amount * 1.5f);
                 oPC.SendMessage("Lucky heal!");
@@ -407,7 +396,7 @@ namespace SWLOR.Game.Server.Perk.ForceSupport
                 _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, oTarget.Object);
             });            
 
-            _skill.RegisterPCToAllCombatTargetsForSkill(oPC, SkillType.ForceSupport, null);
+            SkillService.RegisterPCToAllCombatTargetsForSkill(oPC, SkillType.ForceSupport, null);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

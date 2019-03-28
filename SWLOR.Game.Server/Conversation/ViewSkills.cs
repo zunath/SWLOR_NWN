@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using NWN;
-using SWLOR.Game.Server.Data;
+﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
-using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using Attribute = SWLOR.Game.Server.Data.Entity.Attribute;
 
@@ -20,27 +14,7 @@ namespace SWLOR.Game.Server.Conversation
             public int SelectedCategoryID { get; set; }
             public int SelectedSkillID { get; set; }
         }
-
-        private readonly ISkillService _skill;
-        private readonly IColorTokenService _color;
-        private readonly IMenuService _menu;
-        private readonly IDataService _data;
-
-        public ViewSkills(
-            INWScript script, 
-            IDialogService dialog,
-            ISkillService skill,
-            IColorTokenService color,
-            IMenuService menu,
-            IDataService data) 
-            : base(script, dialog)
-        {
-            _skill = skill;
-            _color = color;
-            _menu = menu;
-            _data = data;
-        }
-
+        
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("CategoryPage");
@@ -70,12 +44,12 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadCategoryResponses()
         {
-            List<SkillCategory> categories = _skill.GetActiveCategories();
+            List<SkillCategory> categories = SkillService.GetActiveCategories();
             ClearPageResponses("CategoryPage");
 
             // If player has skill levels to distribute, display the option to distribute them.
-            var showDistribution = _data.Where<PCSkillPool>(x => x.PlayerID == GetPC().GlobalID && x.Levels > 0).Count > 0;
-            AddResponseToPage("CategoryPage", _color.Green("Distribute Skill Ranks"), showDistribution);
+            var showDistribution = DataService.Where<PCSkillPool>(x => x.PlayerID == GetPC().GlobalID && x.Levels > 0).Count > 0;
+            AddResponseToPage("CategoryPage", ColorTokenService.Green("Distribute Skill Ranks"), showDistribution);
             
             foreach (SkillCategory category in categories)
             {
@@ -86,12 +60,12 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadSkillResponses()
         {
             Model vm = GetDialogCustomData<Model>();
-            List<PCSkill> skills = _skill.GetPCSkillsForCategory(GetPC().GlobalID, vm.SelectedCategoryID);
+            List<PCSkill> skills = SkillService.GetPCSkillsForCategory(GetPC().GlobalID, vm.SelectedCategoryID);
 
             ClearPageResponses("SkillListPage");
             foreach (PCSkill pcSkill in skills)
             {
-                Skill skill = _skill.GetSkill(pcSkill.SkillID);
+                Skill skill = SkillService.GetSkill(pcSkill.SkillID);
                 AddResponseToPage("SkillListPage", skill.Name + " (Lvl. " + pcSkill.Rank + ")", true, skill.ID);
             }
         }
@@ -99,9 +73,9 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadSkillDetails()
         {
             Model vm = GetDialogCustomData<Model>();
-            Skill skill = _skill.GetSkill(vm.SelectedSkillID);
-            PCSkill pcSkill = _skill.GetPCSkill(GetPC(), vm.SelectedSkillID);
-            SkillXPRequirement req = _data.Single<SkillXPRequirement>(x => x.Rank == pcSkill.Rank && x.SkillID == skill.ID); 
+            Skill skill = SkillService.GetSkill(vm.SelectedSkillID);
+            PCSkill pcSkill = SkillService.GetPCSkill(GetPC(), vm.SelectedSkillID);
+            SkillXPRequirement req = DataService.Single<SkillXPRequirement>(x => x.Rank == pcSkill.Rank && x.SkillID == skill.ID); 
             string header = CreateSkillDetailsHeader(pcSkill, req);
             SetPageHeader("SkillDetailsPage", header);
 
@@ -113,7 +87,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private string CreateSkillDetailsHeader(PCSkill pcSkill, SkillXPRequirement req)
         {
-            Skill skill = _skill.GetSkill(pcSkill.SkillID);
+            Skill skill = SkillService.GetSkill(pcSkill.SkillID);
             string title;
             if (pcSkill.Rank <= 3) title = "Untrained";
             else if (pcSkill.Rank <= 7) title = "Neophyte";
@@ -128,10 +102,10 @@ namespace SWLOR.Game.Server.Conversation
 
             title += " (" + pcSkill.Rank + ")";
 
-            string decayLock = _color.Green("Decay Lock: ") + _color.White("Unlocked");
+            string decayLock = ColorTokenService.Green("Decay Lock: ") + ColorTokenService.White("Unlocked");
             if (pcSkill.IsLocked)
             {
-                decayLock = _color.Green("Decay Lock: ") + _color.Red("Locked");
+                decayLock = ColorTokenService.Green("Decay Lock: ") + ColorTokenService.Red("Locked");
             }
 
 
@@ -141,26 +115,26 @@ namespace SWLOR.Game.Server.Conversation
             if (!skill.ContributesToSkillCap)
             {
                 decayLock = string.Empty;
-                noContributeMessage = _color.Green("This skill does not contribute to your cumulative skill cap.") + "\n\n";
+                noContributeMessage = ColorTokenService.Green("This skill does not contribute to your cumulative skill cap.") + "\n\n";
             }
 
-            Attribute primaryAttribute = _data.Get<Attribute>(skill.Primary);
-            Attribute secondaryAttribute = _data.Get<Attribute>(skill.Secondary);
-            Attribute tertiaryAttribute = _data.Get<Attribute>(skill.Tertiary);
-            string primary = _color.Green("Primary (+" + PlayerStatService.PrimaryIncrease + "): ") + primaryAttribute.Name + "\n";
-            string secondary = _color.Green("Secondary (+" + PlayerStatService.SecondaryIncrease + "): ") + secondaryAttribute.Name + "\n";
-            string tertiary = _color.Green("Tertiary (+" + PlayerStatService.TertiaryIncrease + "): ") + tertiaryAttribute.Name + "\n";
+            Attribute primaryAttribute = DataService.Get<Attribute>(skill.Primary);
+            Attribute secondaryAttribute = DataService.Get<Attribute>(skill.Secondary);
+            Attribute tertiaryAttribute = DataService.Get<Attribute>(skill.Tertiary);
+            string primary = ColorTokenService.Green("Primary (+" + PlayerStatService.PrimaryIncrease + "): ") + primaryAttribute.Name + "\n";
+            string secondary = ColorTokenService.Green("Secondary (+" + PlayerStatService.SecondaryIncrease + "): ") + secondaryAttribute.Name + "\n";
+            string tertiary = ColorTokenService.Green("Tertiary (+" + PlayerStatService.TertiaryIncrease + "): ") + tertiaryAttribute.Name + "\n";
 
             string header =
-                    _color.Green("Skill: ") + skill.Name + "\n" +
-                    _color.Green("Rank: ") + title + "\n" +
-                    _color.Green("Exp: ") + _menu.BuildBar(pcSkill.XP, req.XP, 100, _color.TokenStart(255, 127, 0)) + "\n" +
+                    ColorTokenService.Green("Skill: ") + skill.Name + "\n" +
+                    ColorTokenService.Green("Rank: ") + title + "\n" +
+                    ColorTokenService.Green("Exp: ") + MenuService.BuildBar(pcSkill.XP, req.XP, 100, ColorTokenService.TokenStart(255, 127, 0)) + "\n" +
                     primary +
                     secondary +
                     tertiary +
                     noContributeMessage +
                     decayLock + "\n\n" +
-                    _color.Green("Description: ") + skill.Description + "\n";
+                    ColorTokenService.Green("Description: ") + skill.Description + "\n";
 
             return header;
         }
@@ -221,7 +195,7 @@ namespace SWLOR.Game.Server.Conversation
             switch (responseID)
             {
                 case 1: // Toggle Lock
-                    _skill.ToggleSkillLock(GetPC().GlobalID, vm.SelectedSkillID);
+                    SkillService.ToggleSkillLock(GetPC().GlobalID, vm.SelectedSkillID);
                     LoadSkillDetails();
                     break;
             }

@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using NWN;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
-
-using SWLOR.Game.Server.Service.Contracts;
-using SWLOR.Game.Server.ValueObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
@@ -20,30 +15,7 @@ namespace SWLOR.Game.Server.Conversation
             public int SelectedPerkID { get; set; }
             public bool IsConfirmingPurchase { get; set; }
         }
-
-        private readonly IPerkService _perk;
-        private readonly ISkillService _skill;
-        private readonly IPlayerService _player;
-        private readonly IColorTokenService _color;
-        private readonly IDataService _data;
-
-        public ViewPerks(
-            INWScript script, 
-            IDialogService dialog,
-            IPerkService perk,
-            ISkillService skill,
-            IPlayerService player,
-            IColorTokenService color,
-            IDataService data) 
-            : base(script, dialog)
-        {
-            _perk = perk;
-            _skill = skill;
-            _player = player;
-            _color = color;
-            _data = data;
-        }
-
+        
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -85,24 +57,24 @@ namespace SWLOR.Game.Server.Conversation
 
         private string GetMainPageHeader()
         {
-            Player pcEntity = _player.GetPlayerEntity(GetPC().GlobalID);
+            Player pcEntity = PlayerService.GetPlayerEntity(GetPC().GlobalID);
 
-            int totalSP = _skill.GetPCTotalSkillCount(GetPC());
-            int totalPerks = _perk.GetPCTotalPerkCount(GetPC().GlobalID);
+            int totalSP = SkillService.GetPCTotalSkillCount(GetPC());
+            int totalPerks = PerkService.GetPCTotalPerkCount(GetPC().GlobalID);
 
-            return _color.Green("Total SP: ") + totalSP + " / " + _skill.SkillCap + "\n" +
-                    _color.Green("Available SP: ") + pcEntity.UnallocatedSP + "\n" +
-                    _color.Green("Total Perks: ") + totalPerks + "\n";
+            return ColorTokenService.Green("Total SP: ") + totalSP + " / " + SkillService.SkillCap + "\n" +
+                    ColorTokenService.Green("Available SP: ") + pcEntity.UnallocatedSP + "\n" +
+                    ColorTokenService.Green("Total Perks: ") + totalPerks + "\n";
         }
 
         private void BuildViewMyPerks()
         {
-            List<PCPerk> perks = _data.Where<PCPerk>(x => x.PlayerID == GetPC().GlobalID).ToList();
+            List<PCPerk> perks = DataService.Where<PCPerk>(x => x.PlayerID == GetPC().GlobalID).ToList();
 
-            string header = _color.Green("Perks purchased:") + "\n\n";
+            string header = ColorTokenService.Green("Perks purchased:") + "\n\n";
             foreach (PCPerk pcPerk in perks)
             {
-                var perk = _data.Get<Data.Entity.Perk>(pcPerk.PerkID);
+                var perk = DataService.Get<Data.Entity.Perk>(pcPerk.PerkID);
                 header += perk.Name + " (Lvl. " + pcPerk.PerkLevel + ") \n";
             }
 
@@ -112,9 +84,9 @@ namespace SWLOR.Game.Server.Conversation
 
         private void BuildCategoryList()
         {
-            var perksAvailable = _perk.GetPerksAvailableToPC(GetPC());
+            var perksAvailable = PerkService.GetPerksAvailableToPC(GetPC());
             var categoryIDs = perksAvailable.Select(x => x.PerkCategoryID).Distinct();
-            List<PerkCategory> categories = _data.Where<PerkCategory>(x => categoryIDs.Contains(x.ID)).ToList();
+            List<PerkCategory> categories = DataService.Where<PerkCategory>(x => categoryIDs.Contains(x.ID)).ToList();
 
             ClearPageResponses("CategoryPage");
             foreach (PerkCategory category in categories)
@@ -126,7 +98,7 @@ namespace SWLOR.Game.Server.Conversation
         private void BuildPerkList()
         {
             Model vm = GetDialogCustomData<Model>();
-            var perksAvailable = _perk.GetPerksAvailableToPC(GetPC());
+            var perksAvailable = PerkService.GetPerksAvailableToPC(GetPC());
             List<Data.Entity.Perk> perks = perksAvailable.Where(x => x.PerkCategoryID == vm.SelectedCategoryID).ToList();
 
             ClearPageResponses("PerkListPage");
@@ -139,19 +111,19 @@ namespace SWLOR.Game.Server.Conversation
         private void BuildPerkDetails()
         {
             Model vm = GetDialogCustomData<Model>();
-            Data.Entity.Perk perk = _perk.GetPerkByID(vm.SelectedPerkID);
-            PCPerk pcPerk = _perk.GetPCPerkByID(GetPC().GlobalID, perk.ID);
-            Player player = _player.GetPlayerEntity(GetPC().GlobalID);
-            var perkLevels = _data.Where<PerkLevel>(x => x.PerkID == perk.ID).ToList();
+            Data.Entity.Perk perk = PerkService.GetPerkByID(vm.SelectedPerkID);
+            PCPerk pcPerk = PerkService.GetPCPerkByID(GetPC().GlobalID, perk.ID);
+            Player player = PlayerService.GetPlayerEntity(GetPC().GlobalID);
+            var perkLevels = DataService.Where<PerkLevel>(x => x.PerkID == perk.ID).ToList();
 
             int rank = pcPerk?.PerkLevel ?? 0;
             int maxRank = perkLevels.Count();
             string currentBonus = "N/A";
             string nextBonus = "N/A";
             string price = "N/A";
-            PerkLevel currentPerkLevel = _perk.FindPerkLevel(perkLevels, rank);
-            PerkLevel nextPerkLevel = _perk.FindPerkLevel(perkLevels, rank + 1);
-            SetResponseVisible("PerkDetailsPage", 1, _perk.CanPerkBeUpgraded(GetPC(), vm.SelectedPerkID));
+            PerkLevel currentPerkLevel = PerkService.FindPerkLevel(perkLevels, rank);
+            PerkLevel nextPerkLevel = PerkService.FindPerkLevel(perkLevels, rank + 1);
+            SetResponseVisible("PerkDetailsPage", 1, PerkService.CanPerkBeUpgraded(GetPC(), vm.SelectedPerkID));
 
             if (rank > 0)
             {
@@ -168,46 +140,46 @@ namespace SWLOR.Game.Server.Conversation
                     price = nextPerkLevel.Price + " SP (Available: " + player.UnallocatedSP + " SP)";
                 }
             }
-            var perkCategory = _data.Get<PerkCategory>(perk.PerkCategoryID);
+            var perkCategory = DataService.Get<PerkCategory>(perk.PerkCategoryID);
             var cooldownCategory = perk.CooldownCategoryID == null ? 
                 null : 
-                _data.Get<CooldownCategory>(perk.CooldownCategoryID);
+                DataService.Get<CooldownCategory>(perk.CooldownCategoryID);
 
-            string header = _color.Green("Name: ") + perk.Name + "\n" +
-                    _color.Green("Category: ") + perkCategory.Name + "\n" +
-                    _color.Green("Rank: ") + rank + " / " + maxRank + "\n" +
-                    _color.Green("Price: ") + price + "\n" +
-                    (perk.BaseFPCost > 0 ? _color.Green("FP: ") + perk.BaseFPCost : "") + "\n" +
-                    (cooldownCategory != null && cooldownCategory.BaseCooldownTime > 0 ? _color.Green("Cooldown: ") + cooldownCategory.BaseCooldownTime + "s" : "") + "\n" +
-                    _color.Green("Description: ") + perk.Description + "\n" +
-                    _color.Green("Current Bonus: ") + currentBonus + "\n" +
-                    _color.Green("Next Bonus: ") + nextBonus + "\n";
+            string header = ColorTokenService.Green("Name: ") + perk.Name + "\n" +
+                    ColorTokenService.Green("Category: ") + perkCategory.Name + "\n" +
+                    ColorTokenService.Green("Rank: ") + rank + " / " + maxRank + "\n" +
+                    ColorTokenService.Green("Price: ") + price + "\n" +
+                    (perk.BaseFPCost > 0 ? ColorTokenService.Green("FP: ") + perk.BaseFPCost : "") + "\n" +
+                    (cooldownCategory != null && cooldownCategory.BaseCooldownTime > 0 ? ColorTokenService.Green("Cooldown: ") + cooldownCategory.BaseCooldownTime + "s" : "") + "\n" +
+                    ColorTokenService.Green("Description: ") + perk.Description + "\n" +
+                    ColorTokenService.Green("Current Bonus: ") + currentBonus + "\n" +
+                    ColorTokenService.Green("Next Bonus: ") + nextBonus + "\n";
 
             if (nextPerkLevel != null)
             {
                 List<PerkLevelSkillRequirement> requirements = 
-                    _data.Where<PerkLevelSkillRequirement>(x => x.PerkLevelID == nextPerkLevel.ID).ToList();
+                    DataService.Where<PerkLevelSkillRequirement>(x => x.PerkLevelID == nextPerkLevel.ID).ToList();
                 if (requirements.Count > 0)
                 {
-                    header += "\n" + _color.Green("Next Upgrade Skill Requirements:\n\n");
+                    header += "\n" + ColorTokenService.Green("Next Upgrade Skill Requirements:\n\n");
                     
                     bool hasRequirement = false;
                     foreach (PerkLevelSkillRequirement req in requirements)
                     {
                         if (req.RequiredRank > 0)
                         {
-                            PCSkill pcSkill = _skill.GetPCSkill(GetPC(), req.SkillID);
-                            Skill skill = _skill.GetSkill(pcSkill.SkillID);
+                            PCSkill pcSkill = SkillService.GetPCSkill(GetPC(), req.SkillID);
+                            Skill skill = SkillService.GetSkill(pcSkill.SkillID);
 
                             string detailLine = skill.Name + " Rank " + req.RequiredRank;
                             
                             if (pcSkill.Rank >= req.RequiredRank)
                             {
-                                header += _color.Green(detailLine) + "\n";
+                                header += ColorTokenService.Green(detailLine) + "\n";
                             }
                             else
                             {
-                                header += _color.Red(detailLine) + "\n";
+                                header += ColorTokenService.Red(detailLine) + "\n";
                             }
 
                             hasRequirement = true;
@@ -305,7 +277,7 @@ namespace SWLOR.Game.Server.Conversation
                     if (vm.IsConfirmingPurchase)
                     {
                         SetResponseText("PerkDetailsPage", 1, "Purchase Upgrade");
-                        _perk.DoPerkUpgrade(GetPC(), vm.SelectedPerkID);
+                        PerkService.DoPerkUpgrade(GetPC(), vm.SelectedPerkID);
                         vm.IsConfirmingPurchase = false;
                         BuildPerkDetails();
                         SetPageHeader("MainPage", GetMainPageHeader());

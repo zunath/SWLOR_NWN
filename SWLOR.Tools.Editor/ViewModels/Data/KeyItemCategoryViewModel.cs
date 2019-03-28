@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using Newtonsoft.Json;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Tools.Editor.Attributes;
 

@@ -2,48 +2,25 @@
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
-using SWLOR.Game.Server.NWNX.Contracts;
-using static NWN.NWScript;
+using SWLOR.Game.Server.NWNX;
+using static NWN._;
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class PlayerStatService : IPlayerStatService
+    public static class PlayerStatService
     {
         public const float PrimaryIncrease = 0.1f;
         public const float SecondaryIncrease = 0.05f;
         public const float TertiaryIncrease = 0.025f;
         private const int MaxAttributeBonus = 35;
-
-        private readonly INWScript _;
-        private readonly ICustomEffectService _customEffect;
-        private readonly IItemService _item;
-        private readonly IDataService _data;
-        private readonly IPerkService _perk;
-        private readonly INWNXCreature _nwnxCreature;
-
-        public PlayerStatService(
-            INWScript script,
-            ICustomEffectService customEffect,
-            INWNXCreature nwnxCreature,
-            IItemService item,
-            IDataService data,
-            IPerkService perk)
-        {
-            _ = script;
-            _customEffect = customEffect;
-            _item = item;
-            _data = data;
-            _perk = perk;
-            _nwnxCreature = nwnxCreature;
-        }
-
-        public void ApplyStatChanges(NWPlayer player, NWItem ignoreItem, bool isInitialization = false)
+        
+        public static void ApplyStatChanges(NWPlayer player, NWItem ignoreItem, bool isInitialization = false)
         {
             if (!player.IsPlayer) return;
             if (!player.IsInitializedAsPlayer) return;
@@ -55,8 +32,8 @@ namespace SWLOR.Game.Server.Service
                  ignoreItem.BaseItemType == BASE_ITEM_ARROW ||
                  ignoreItem.BaseItemType == BASE_ITEM_BULLET)) return;
 
-            Player pcEntity = _data.Get<Player>(player.GlobalID);
-            List<PCSkill> skills = _data.Where<PCSkill>(x => x.PlayerID == player.GlobalID && x.Rank > 0).ToList();
+            Player pcEntity = DataService.Get<Player>(player.GlobalID);
+            List<PCSkill> skills = DataService.Where<PCSkill>(x => x.PlayerID == player.GlobalID && x.Rank > 0).ToList();
             EffectiveItemStats itemBonuses = GetPlayerItemEffectiveStats(player, ignoreItem);
             
             float strBonus = 0.0f;
@@ -70,7 +47,7 @@ namespace SWLOR.Game.Server.Service
             {
                 foreach (PCSkill pcSkill in skills)
                 {
-                    Skill skill = _data.Get<Skill>(pcSkill.SkillID);
+                    Skill skill = DataService.Get<Skill>(pcSkill.SkillID);
                     CustomAttribute primary = (CustomAttribute) skill.Primary;
                     CustomAttribute secondary = (CustomAttribute) skill.Secondary;
                     CustomAttribute tertiary = (CustomAttribute) skill.Tertiary;
@@ -127,25 +104,25 @@ namespace SWLOR.Game.Server.Service
             if (chaBonus > 55) chaBonus = 55;
 
             // Apply attributes
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_STRENGTH, (int) strBonus + pcEntity.STRBase);
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_DEXTERITY, (int) dexBonus + pcEntity.DEXBase);
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_CONSTITUTION, (int) conBonus + pcEntity.CONBase);
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_INTELLIGENCE, (int) intBonus + pcEntity.INTBase);
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_WISDOM, (int) wisBonus + pcEntity.WISBase);
-            _nwnxCreature.SetRawAbilityScore(player, ABILITY_CHARISMA, (int) chaBonus + pcEntity.CHABase);
+            NWNXCreature.SetRawAbilityScore(player, ABILITY_STRENGTH, (int) strBonus + pcEntity.STRBase);
+            NWNXCreature.SetRawAbilityScore(player, ABILITY_DEXTERITY, (int) dexBonus + pcEntity.DEXBase);
+            NWNXCreature.SetRawAbilityScore(player, ABILITY_CONSTITUTION, (int) conBonus + pcEntity.CONBase);
+            NWNXCreature.SetRawAbilityScore(player, ABILITY_INTELLIGENCE, (int) intBonus + pcEntity.INTBase);
+            NWNXCreature.SetRawAbilityScore(player, ABILITY_WISDOM, (int) wisBonus + pcEntity.WISBase);
+            NWNXCreature.SetRawAbilityScore(player, ABILITY_CHARISMA, (int) chaBonus + pcEntity.CHABase);
 
             // Apply AC
             using (new Profiler("PlayerStatService::ApplyStatChanges::CalcAC"))
             {
                 int ac = EffectiveArmorClass(itemBonuses, player);
-                _nwnxCreature.SetBaseAC(player, ac);
+                NWNXCreature.SetBaseAC(player, ac);
             }
 
             // Apply BAB
             using (new Profiler("PlayerStatService::ApplyStatChanges::CalcBAB"))
             {
                 int bab = CalculateBAB(player, ignoreItem, itemBonuses);
-                _nwnxCreature.SetBaseAttackBonus(player, bab);
+                NWNXCreature.SetBaseAttackBonus(player, bab);
             }
 
             // Apply HP
@@ -155,19 +132,19 @@ namespace SWLOR.Game.Server.Service
                 for (int level = 1; level <= 5; level++)
                 {
                     hp--;
-                    _nwnxCreature.SetMaxHitPointsByLevel(player, level, 1);
+                    NWNXCreature.SetMaxHitPointsByLevel(player, level, 1);
                 }
 
                 for (int level = 1; level <= 5; level++)
                 {
                     if (hp > 255) // Levels can only contain a max of 255 HP
                     {
-                        _nwnxCreature.SetMaxHitPointsByLevel(player, level, 255);
+                        NWNXCreature.SetMaxHitPointsByLevel(player, level, 255);
                         hp = hp - 254;
                     }
                     else // Remaining value gets set to the level. (<255 hp)
                     {
-                        _nwnxCreature.SetMaxHitPointsByLevel(player, level, hp + 1);
+                        NWNXCreature.SetMaxHitPointsByLevel(player, level, hp + 1);
                         break;
                     }
                 }
@@ -190,7 +167,7 @@ namespace SWLOR.Game.Server.Service
                     pcEntity.CurrentFP = pcEntity.MaxFP;
                 }
 
-                _data.SubmitDataChange(pcEntity, DatabaseActionType.Update);
+                DataService.SubmitDataChange(pcEntity, DatabaseActionType.Update);
             }
         }
 
@@ -214,12 +191,12 @@ namespace SWLOR.Game.Server.Service
             return adjustedValue;
         }
 
-        private int EffectiveMaxHitPoints(NWPlayer player, EffectiveItemStats stats)
+        private static int EffectiveMaxHitPoints(NWPlayer player, EffectiveItemStats stats)
         {
             int hp = 25 + player.ConstitutionModifier * 5;
-            float effectPercentBonus = _customEffect.CalculateEffectHPBonusPercent(player);
+            float effectPercentBonus = CustomEffectService.CalculateEffectHPBonusPercent(player);
             
-            hp += _perk.GetPCPerkLevel(player, PerkType.Health) * 5;
+            hp += PerkService.GetPCPerkLevel(player, PerkType.Health) * 5;
             hp += stats.HP;
             hp = hp + (int)(hp * effectPercentBonus);
 
@@ -229,11 +206,11 @@ namespace SWLOR.Game.Server.Service
             return hp;
         }
 
-        private int EffectiveMaxFP(NWPlayer player, EffectiveItemStats stats)
+        private static int EffectiveMaxFP(NWPlayer player, EffectiveItemStats stats)
         {
             int fp = 20;
             fp += (player.IntelligenceModifier + player.WisdomModifier + player.CharismaModifier) * 5;
-            fp += _perk.GetPCPerkLevel(player, PerkType.FP) * 5;
+            fp += PerkService.GetPCPerkLevel(player, PerkType.FP) * 5;
             fp += stats.FP;
 
             if (fp < 0) fp = 0;
@@ -241,13 +218,13 @@ namespace SWLOR.Game.Server.Service
             return fp;
         }
 
-        private int EffectiveArmorClass(EffectiveItemStats stats, NWPlayer player)
+        private static int EffectiveArmorClass(EffectiveItemStats stats, NWPlayer player)
         {
-            int baseAC = stats.AC / 3 + _customEffect.CalculateEffectAC(player);
+            int baseAC = stats.AC / 3 + CustomEffectService.CalculateEffectAC(player);
             int totalAC = _.GetAC(player) - baseAC;
             
             // Shield Oath and Precision Targeting affect a percentage of the TOTAL armor class on a creature.
-            var stance = _customEffect.GetCurrentStanceType(player);
+            var stance = CustomEffectService.GetCurrentStanceType(player);
             if (stance == CustomEffectType.ShieldOath)
             {
                 int bonus = (int) (totalAC * 0.2f);
@@ -264,11 +241,11 @@ namespace SWLOR.Game.Server.Service
             return baseAC;
         }
         
-        public EffectiveItemStats GetPlayerItemEffectiveStats(NWPlayer player, NWItem ignoreItem = null)
+        public static EffectiveItemStats GetPlayerItemEffectiveStats(NWPlayer player, NWItem ignoreItem = null)
         {
             using (new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats"))
             {
-                var pcSkills = _data.Where<PCSkill>(x => x.PlayerID == player.GlobalID);
+                var pcSkills = DataService.Where<PCSkill>(x => x.PlayerID == player.GlobalID);
                 
                 int heavyRank = pcSkills.Single(x => x.SkillID == (int)SkillType.HeavyArmor).Rank;
                 int lightRank = pcSkills.Single(x => x.SkillID == (int)SkillType.LightArmor).Rank;
@@ -286,7 +263,7 @@ namespace SWLOR.Game.Server.Service
                         NWItem item = _.GetItemInSlot(itemSlot, player);
 
                         if (!item.IsValid || item.Equals(ignoreItem)) continue;
-                        SkillType skill = _item.GetSkillTypeForItem(item);
+                        SkillType skill = ItemService.GetSkillTypeForItem(item);
                         int rank;
 
                         // Have we already processed this particular item? Skip over it.
@@ -413,7 +390,7 @@ namespace SWLOR.Game.Server.Service
                     if (stats.EnmityRate < 0.5f) stats.EnmityRate = 0.5f;
                     else if (stats.EnmityRate > 1.5f) stats.EnmityRate = 1.5f;
 
-                    var stance = _customEffect.GetCurrentStanceType(player);
+                    var stance = CustomEffectService.GetCurrentStanceType(player);
                     if (stance == CustomEffectType.ShieldOath)
                     {
                         stats.EnmityRate = stats.EnmityRate + 0.2f;
@@ -424,9 +401,24 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public float EffectiveResidencyBonus(NWPlayer player)
+        private static readonly HashSet<int> ACBaseItemTypes = new HashSet<int>()
         {
-            var dbPlayer = _data.Get<Player>(player.GlobalID);
+            BASE_ITEM_AMULET,
+            BASE_ITEM_ARMOR,
+            BASE_ITEM_BELT,
+            BASE_ITEM_CLOAK,
+            BASE_ITEM_HELMET,
+            BASE_ITEM_GLOVES,
+            BASE_ITEM_BRACER,
+            BASE_ITEM_BOOTS,
+            BASE_ITEM_LARGESHIELD,
+            BASE_ITEM_SMALLSHIELD,
+            BASE_ITEM_TOWERSHIELD
+        };
+
+        public static float EffectiveResidencyBonus(NWPlayer player)
+        {
+            var dbPlayer = DataService.Get<Player>(player.GlobalID);
 
             // Player doesn't have either kind of residence. Return 0f
             if (dbPlayer.PrimaryResidencePCBaseID == null &&
@@ -441,18 +433,18 @@ namespace SWLOR.Game.Server.Service
             // Apartments - Pull structures directly from the table based on the PCBaseID
             if (dbPlayer.PrimaryResidencePCBaseID != null)
             {
-                structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == dbPlayer.PrimaryResidencePCBaseID).ToList();
+                structures = DataService.Where<PCBaseStructure>(x => x.PCBaseID == dbPlayer.PrimaryResidencePCBaseID).ToList();
                 
             }
             // Buildings - Get the building's PCBaseID and then grab its children
             else
             {
-                structures = _data.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == dbPlayer.PrimaryResidencePCBaseStructureID).ToList();
+                structures = DataService.Where<PCBaseStructure>(x => x.ParentPCBaseStructureID == dbPlayer.PrimaryResidencePCBaseStructureID).ToList();
             }
 
             var atmoStructures = structures.Where(x =>
             {
-                var baseStructure = _data.Get<BaseStructure>(x.BaseStructureID);
+                var baseStructure = DataService.Get<BaseStructure>(x.BaseStructureID);
                 return baseStructure.HasAtmosphere;
             }).ToList();
             
@@ -462,7 +454,7 @@ namespace SWLOR.Game.Server.Service
             return bonus;
         }
         
-        private int CalculateBAB(NWPlayer oPC, NWItem ignoreItem, EffectiveItemStats stats)
+        private static int CalculateBAB(NWPlayer oPC, NWItem ignoreItem, EffectiveItemStats stats)
         {
             NWItem weapon = oPC.RightHand;
 
@@ -496,7 +488,7 @@ namespace SWLOR.Game.Server.Service
             }
             if (!weapon.IsValid) return 0;
 
-            SkillType itemSkill = _item.GetSkillTypeForItem(weapon);
+            SkillType itemSkill = ItemService.GetSkillTypeForItem(weapon);
             if (itemSkill == SkillType.Unknown ||
                 itemSkill == SkillType.LightArmor ||
                 itemSkill == SkillType.HeavyArmor ||
@@ -504,7 +496,7 @@ namespace SWLOR.Game.Server.Service
                 itemSkill == SkillType.Shields) return 0;
 
             int weaponSkillID = (int)itemSkill;
-            PCSkill skill = _data.Single<PCSkill>(x => x.PlayerID == oPC.GlobalID && x.SkillID == weaponSkillID);
+            PCSkill skill = DataService.Single<PCSkill>(x => x.PlayerID == oPC.GlobalID && x.SkillID == weaponSkillID);
             if (skill == null) return 0;
             int skillBAB = skill.Rank / 10;
             int perkBAB = 0;
@@ -583,7 +575,7 @@ namespace SWLOR.Game.Server.Service
             if (proficiencyPerk != PerkType.Unknown &&
                 proficiencySkill != SkillType.Unknown)
             {
-                perkBAB += _perk.GetPCPerkLevel(oPC, proficiencyPerk);
+                perkBAB += PerkService.GetPCPerkLevel(oPC, proficiencyPerk);
             }
 
             if (receivesBackgroundBonus)

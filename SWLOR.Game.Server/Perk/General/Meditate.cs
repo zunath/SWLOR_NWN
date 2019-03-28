@@ -1,28 +1,13 @@
 ﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using NWN;
 using SWLOR.Game.Server.CustomEffect;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.General
 {
-    public class Meditate: IPerk
+    public class Meditate: IPerkHandler
     {
-        private readonly INWScript _;
-        private readonly IPerkService _perk;
-        private readonly ICustomEffectService _customEffect;
-
-        public Meditate(INWScript script, 
-            IPerkService perk,
-            ICustomEffectService customEffect)
-        {
-            _ = script;
-            _perk = perk;
-            _customEffect = customEffect;
-        }
-
+        public PerkType PerkType => PerkType.Meditate;
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
@@ -46,7 +31,7 @@ namespace SWLOR.Game.Server.Perk.General
 
         public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellFeatID)
         {
-            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.Meditate);
+            int perkLevel = PerkService.GetPCPerkLevel(oPC, PerkType.Meditate);
 
             switch (perkLevel)
             {
@@ -71,7 +56,7 @@ namespace SWLOR.Game.Server.Perk.General
 
         public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
         {
-            _customEffect.ApplyCustomEffect(player, player, CustomEffectType.Meditate, -1, 0, null);
+            CustomEffectService.ApplyCustomEffect(player, player, CustomEffectType.Meditate, -1, 0, null);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

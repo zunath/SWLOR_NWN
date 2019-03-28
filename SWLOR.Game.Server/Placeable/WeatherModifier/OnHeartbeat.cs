@@ -1,22 +1,14 @@
-﻿using SWLOR.Game.Server.Service.Contracts;
+﻿
 using SWLOR.Game.Server.Event;
 using NWN;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.WeatherModifier
 {
     public class OnHeartbeat : IRegisteredEvent
     {
-        private readonly INWScript _;
-        private readonly IWeatherService _weather;
-
-        public OnHeartbeat(INWScript script, IWeatherService weather)
-        {
-            _ = script;
-            _weather = weather;
-        }
-
         public bool Run(params object[] args)
         {
             NWObject oSelf = Object.OBJECT_SELF;
@@ -28,38 +20,38 @@ namespace SWLOR.Game.Server.Placeable.WeatherModifier
             int nSand = oSelf.GetLocalInt("WEATHER_SAND_STORM");
 
             NWArea oArea = _.GetArea(oSelf);
-            _weather.SetAreaHeatModifier(oArea, nHeat);
-            _weather.SetAreaHumidityModifier(oArea, nWet);
-            _weather.SetAreaWindModifier(oArea, nWind);
-            _weather.SetAreaAcidRain(oArea, nAcid);
+            WeatherService.SetAreaHeatModifier(oArea, nHeat);
+            WeatherService.SetAreaHumidityModifier(oArea, nWet);
+            WeatherService.SetAreaWindModifier(oArea, nWind);
+            WeatherService.SetAreaAcidRain(oArea, nAcid);
 
             if (nDust > 0)
             {
-                _.SetFogColor(NWScript.FOG_TYPE_SUN, NWScript.FOG_COLOR_BROWN, oArea);
-                _.SetFogColor(NWScript.FOG_TYPE_MOON, NWScript.FOG_COLOR_BROWN, oArea);
-                _.SetFogAmount(NWScript.FOG_TYPE_SUN, 80, oArea);
-                _.SetFogAmount(NWScript.FOG_TYPE_MOON, 80, oArea);
+                _.SetFogColor(_.FOG_TYPE_SUN, _.FOG_COLOR_BROWN, oArea);
+                _.SetFogColor(_.FOG_TYPE_MOON, _.FOG_COLOR_BROWN, oArea);
+                _.SetFogAmount(_.FOG_TYPE_SUN, 80, oArea);
+                _.SetFogAmount(_.FOG_TYPE_MOON, 80, oArea);
 
                 oArea.SetLocalInt("DUST_STORM", 1);
 
                 foreach (NWObject player in oArea.Objects)
                 {
-                    if (player.IsPC) _weather.DoWeatherEffects(player);
+                    if (player.IsPC) WeatherService.DoWeatherEffects(player);
                 }
             }
 
             if (nSand > 0)
             {
-                _.SetFogColor(NWScript.FOG_TYPE_SUN, NWScript.FOG_COLOR_ORANGE_DARK, oArea);
-                _.SetFogColor(NWScript.FOG_TYPE_MOON, NWScript.FOG_COLOR_ORANGE_DARK, oArea);
-                _.SetFogAmount(NWScript.FOG_TYPE_SUN, 80, oArea);
-                _.SetFogAmount(NWScript.FOG_TYPE_MOON, 80, oArea);
+                _.SetFogColor(_.FOG_TYPE_SUN, _.FOG_COLOR_ORANGE_DARK, oArea);
+                _.SetFogColor(_.FOG_TYPE_MOON, _.FOG_COLOR_ORANGE_DARK, oArea);
+                _.SetFogAmount(_.FOG_TYPE_SUN, 80, oArea);
+                _.SetFogAmount(_.FOG_TYPE_MOON, 80, oArea);
 
                 oArea.SetLocalInt("SAND_STORM", 1);
 
                 foreach (NWObject player in oArea.Objects)
                 {
-                    if (player.IsPC) _weather.DoWeatherEffects(player);
+                    if (player.IsPC) WeatherService.DoWeatherEffects(player);
                 }
             }
             _.DestroyObject(oSelf);

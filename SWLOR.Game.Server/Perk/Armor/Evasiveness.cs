@@ -2,21 +2,13 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class Evasiveness : IPerk
+    public class Evasiveness : IPerkHandler
     {
-        private readonly INWScript _;
-        private readonly IPerkService _perk;
-
-        public Evasiveness(INWScript script,
-            IPerkService perk)
-        {
-            _ = script;
-            _perk = perk;
-        }
+        public PerkType PerkType => PerkType.Evasiveness;
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
@@ -81,13 +73,13 @@ namespace SWLOR.Game.Server.Perk.Armor
             }
 
             Effect effect = _.EffectConcealment(concealment);
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, effect, player.Object, length);
+            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, player.Object, length);
 
-            effect = _.EffectVisualEffect(NWScript.VFX_DUR_AURA_CYAN);
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, effect, player.Object, length);
+            effect = _.EffectVisualEffect(_.VFX_DUR_AURA_CYAN);
+            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, player.Object, length);
 
-            effect = _.EffectVisualEffect(NWScript.VFX_IMP_AC_BONUS);
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, effect, player.Object);
+            effect = _.EffectVisualEffect(_.VFX_IMP_AC_BONUS);
+            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, effect, player.Object);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

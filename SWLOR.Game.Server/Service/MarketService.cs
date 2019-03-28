@@ -5,32 +5,26 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
+using SWLOR.Game.Server.NWNX;
+
 using SWLOR.Game.Server.ValueObject;
-using static NWN.NWScript;
+using static NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class MarketService: IMarketService
+    public static class MarketService
     {
-        private readonly INWScript _;
-        private readonly IDataService _data;
-        private readonly INWNXChat _nwnxChat;
-        
-        public MarketService(
-            INWScript script,
-            IDataService data,
-            INWNXChat nwnxChat)
-        {
-            _ = script;
-            _data = data;
-            _nwnxChat = nwnxChat;
-        }
-
         // Couldn't get any more specific than this. :)
-        public int NumberOfItemsAllowedToBeSoldAtATime => 50;
+        public static int NumberOfItemsAllowedToBeSoldAtATime => 50;
+
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnModuleEnter>(message => OnModuleEnter());
+            MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
+        }
 
         /// <summary>
         /// Retrieves the temporary market data for a given player.
@@ -38,7 +32,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player to retrieve from.</param>
         /// <returns>The market data for the player specified.</returns>
-        public PCMarketData GetPlayerMarketData(NWPlayer player)
+        public static PCMarketData GetPlayerMarketData(NWPlayer player)
         {
             // Need to store the data outside of the conversation because of the constant
             // context switching between conversation and accessing placeable containers.
@@ -57,7 +51,7 @@ namespace SWLOR.Game.Server.Service
         /// Removes the temporary market data stored for a player.
         /// </summary>
         /// <param name="player"></param>
-        public void ClearPlayerMarketData(NWPlayer player)
+        public static void ClearPlayerMarketData(NWPlayer player)
         {
             player.Data.Remove("MARKET_MODEL");
         }
@@ -67,7 +61,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="terminal">The market terminal placeable</param>
         /// <returns>The ID which links up to the MarketRegion database table.</returns>
-        public int GetMarketRegionID(NWPlaceable terminal)
+        public static int GetMarketRegionID(NWPlaceable terminal)
         {
             int marketRegionID = terminal.GetLocalInt("GTN_REGION_ID");
             if (marketRegionID <= 0)
@@ -82,7 +76,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="playerID">The player ID to pay.</param>
         /// <param name="amount">The amount of gold to give them.</param>
-        public void GiveMarketGoldToPlayer(Guid playerID, int amount)
+        public static void GiveMarketGoldToPlayer(Guid playerID, int amount)
         {
             NWPlayer player = NWModule.Get().Players.SingleOrDefault(x => x.GlobalID == playerID);
 
@@ -95,28 +89,28 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Player is offline. Put the gold into their "Till" and give it to them the next time they log on.
-            Player dbPlayer = _data.Get<Player>(playerID);
+            Player dbPlayer = DataService.Get<Player>(playerID);
             dbPlayer.GoldTill += amount;
-            _data.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
         }
 
         /// <summary>
         /// Call this on the module's OnEnter event.
         /// If a player sold items on the market while they were offline, they'll receive that money on entry.
         /// </summary>
-        public void OnModuleEnter()
+        private static void OnModuleEnter()
         {
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
 
-            Player dbPlayer = _data.Get<Player>(player.GlobalID);
+            Player dbPlayer = DataService.Get<Player>(player.GlobalID);
 
             if (dbPlayer.GoldTill > 0)
             {
                 player.FloatingText("You sold goods on the GTN Market while you were offline. " + dbPlayer.GoldTill + " credits have been transferred to your account.");
                 _.GiveGoldToCreature(player, dbPlayer.GoldTill);
                 dbPlayer.GoldTill = 0;
-                _data.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+                DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
             }
         }
 
@@ -133,9 +127,9 @@ namespace SWLOR.Game.Server.Service
         /// If a player is currently setting a "Seller Note", look for the text and apply it to their
         /// temporary market data object.
         /// </summary>
-        public void OnModuleNWNXChat()
+        private static void OnModuleNWNXChat()
         {
-            NWPlayer player = _nwnxChat.GetSender().Object;
+            NWPlayer player = NWNXChat.GetSender().Object;
             if (!CanHandleChat(player)) return;
 
             var model = GetPlayerMarketData(player);
@@ -144,12 +138,12 @@ namespace SWLOR.Game.Server.Service
             if (!model.IsSettingSellerNote) return;
             model.IsSettingSellerNote = false;
 
-            var message = _nwnxChat.GetMessage();
+            var message = NWNXChat.GetMessage();
             message = message.Truncate(1024);
             model.SellerNote = message;
 
             player.FloatingText("Seller note set! Please click 'Refresh' to see the changes.");
-            _nwnxChat.SkipMessage();
+            NWNXChat.SkipMessage();
         }
 
         /// <summary>
@@ -159,7 +153,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="days">The number of days the listing will be posted.</param>
         /// <returns>The percentage, in decimal form, to apply when determining fees.</returns>
-        public float CalculateFeePercentage(int days)
+        public static float CalculateFeePercentage(int days)
         {
             const float Rate = 0.001f; // 0.1%
             return days * Rate;
@@ -171,7 +165,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="item">The item to use for the determination.</param>
         /// <returns>The market category ID or a value of -1 if item is not supported.</returns>
-        public int DetermineMarketCategory(NWItem item)
+        public static int DetermineMarketCategory(NWItem item)
         {
             // ===============================================================================
             // The following items are intentionally excluded from market transactions:
@@ -364,7 +358,7 @@ namespace SWLOR.Game.Server.Service
             int baseStructureID = item.GetLocalInt("BASE_STRUCTURE_ID");
             if (baseStructureID > 0)
             {
-                var baseStructure = _data.Get<BaseStructure>(baseStructureID);
+                var baseStructure = DataService.Get<BaseStructure>(baseStructureID);
                 var baseStructureType = (BaseStructureType) baseStructure.BaseStructureTypeID;
 
                 switch (baseStructureType)

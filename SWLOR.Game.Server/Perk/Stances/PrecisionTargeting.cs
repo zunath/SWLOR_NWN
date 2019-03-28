@@ -1,17 +1,14 @@
 ﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 
 namespace SWLOR.Game.Server.Perk.Stances
 {
-    public class PrecisionTargeting : IPerk
+    public class PrecisionTargeting : IPerkHandler
     {
-        private readonly ICustomEffectService _customEffect;
+        public PerkType PerkType => PerkType.PrecisionTargeting;
 
-        public PrecisionTargeting(ICustomEffectService customEffect)
-        {
-            _customEffect = customEffect;
-        }
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return true;
@@ -44,7 +41,7 @@ namespace SWLOR.Game.Server.Perk.Stances
 
         public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
         {
-            _customEffect.ApplyStance(
+            CustomEffectService.ApplyStance(
                 player,
                 CustomEffectType.PrecisionTargeting,
                 PerkType.PrecisionTargeting,

@@ -154,7 +154,7 @@ INSERT INTO dbo.LootTableItem (LootTableID, Resref, MaxQuantity, Weight, IsActiv
  (40, 'Mon Cala Coral Isles', 1),
  (41, 'Mon Cala Eco-Terrorists', 1);
 
- INSERT INTO dbo.SpawnObject (ID, SpawnID, Resref, Weight, SpawnRule, NPCGroupID, BehaviourScript, DeathVFXID) VALUES
+ INSERT INTO dbo.SpawnObject (ID, SpawnID, Resref, Weight, SpawnRule, NPCGroupID, BehaviourDeathVFXID) VALUES
  (100, 40, 'viper', 20, '', NULL, 'SightAggroBehaviour', 0),
  (101, 40, 'mc_aradile', 40, '', NULL, 'SightAggroBehaviour', 0),
  (102, 40, 'mc_amphihydrus', 10, '', NULL, 'DarkForceUser', 0),

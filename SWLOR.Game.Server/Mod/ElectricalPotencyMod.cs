@@ -4,8 +4,10 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class ElectricalPotencyMod : IMod
+    public class ElectricalPotencyMod : IModHandler
     {
+        public int ModTypeID => 29;
+
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             if (target.ElectricalPotencyBonus >= 50)

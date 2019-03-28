@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.Throwing
 {
-    public class ThrowingProficiency: IPerk
+    public class ThrowingProficiency: IPerkHandler
     {
+        public PerkType PerkType => PerkType.ThrowingProficiency;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

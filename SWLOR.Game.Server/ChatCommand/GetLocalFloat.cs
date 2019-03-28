@@ -9,13 +9,6 @@ namespace SWLOR.Game.Server.ChatCommand
     [CommandDetails("Gets a local float on a target.", CommandPermissionType.DM)]
     public class GetLocalFloat : IChatCommand
     {
-        private readonly INWScript _;
-
-        public GetLocalFloat(INWScript script)
-        {
-            _ = script;
-        }
-
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             if (!target.IsValid)

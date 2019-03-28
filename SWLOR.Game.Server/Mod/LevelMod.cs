@@ -4,8 +4,10 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class LevelMod: IMod
+    public class LevelMod: IModHandler
     {
+        public int ModTypeID => 27;
+
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             int value = Convert.ToInt32(args[0]);

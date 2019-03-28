@@ -2,26 +2,15 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.NWNX.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.NWNX;
+
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
-    public class WeaponFinesse : IPerk
+    public class WeaponFinesse : IPerkHandler
     {
-        private readonly INWScript _;
-        private readonly INWNXCreature _nwnxCreature;
-        private readonly IPerkService _perk;
-
-        public WeaponFinesse(INWScript script,
-            INWNXCreature nwnxCreature,
-            IPerkService perk)
-        {
-            _ = script;
-            _nwnxCreature = nwnxCreature;
-            _perk = perk;
-        }
-
+        public PerkType PerkType => PerkType.WeaponFinesse;
+        
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;
@@ -63,7 +52,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_WEAPON_FINESSE);
+            NWNXCreature.RemoveFeat(oPC, _.FEAT_WEAPON_FINESSE);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
@@ -91,11 +80,11 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
             if (Equals(equipped, oItem) || equipped.CustomItemType != CustomItemType.FinesseVibroblade)
             {
-                _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_WEAPON_FINESSE);
+                NWNXCreature.RemoveFeat(oPC, _.FEAT_WEAPON_FINESSE);
                 return;
             }
 
-            _nwnxCreature.AddFeat(oPC, NWScript.FEAT_WEAPON_FINESSE);
+            NWNXCreature.AddFeat(oPC, _.FEAT_WEAPON_FINESSE);
         }
 
         public bool IsHostile()

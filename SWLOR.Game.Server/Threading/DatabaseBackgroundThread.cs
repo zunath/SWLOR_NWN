@@ -1,86 +1,76 @@
-﻿using SWLOR.Game.Server.Service.Contracts;
-using SWLOR.Game.Server.Threading.Contracts;
+﻿
+using SWLOR.Game.Server.Data;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Data.SqlClient;
-using SWLOR.Game.Server.Data;
-using SWLOR.Game.Server.Enumeration;
+using System.Threading;
 
 namespace SWLOR.Game.Server.Threading
 {
-    public class DatabaseBackgroundThread : IDatabaseThread
+    public class DatabaseBackgroundThread
     {
-        private readonly IErrorService _error;
-        private readonly IDataService _data;
-        private readonly string _connectionString;
+        private SqlConnection _connection;
         
-        public DatabaseBackgroundThread(
-            IErrorService error,
-            IDataService data)
+        public void Start()
         {
-            _error = error;
-            _data = data;
-            
-            _connectionString = new SqlConnectionStringBuilder()
-            {
-                DataSource = Environment.GetEnvironmentVariable("SQL_SERVER_IP_ADDRESS"),
-                InitialCatalog = Environment.GetEnvironmentVariable("SQL_SERVER_DATABASE"),
-                UserID = Environment.GetEnvironmentVariable("SQL_SERVER_USERNAME"),
-                Password = Environment.GetEnvironmentVariable("SQL_SERVER_PASSWORD")
-            }.ToString();
+            _connection = new SqlConnection(DataService.SWLORConnectionString);
+            _connection.Open();
+        }
+
+        public void Stop()
+        {
+            _connection.Close();
         }
 
         public void Run()
         {
-            if (_data.DataQueue.IsEmpty) return;
-
-            using (var connection = new SqlConnection(_connectionString))
+            while (!DataService.DataQueue.IsEmpty)
             {
-                while (!_data.DataQueue.IsEmpty)
+                if (!DataService.DataQueue.TryDequeue(out DatabaseAction request))
                 {
-                    if (!_data.DataQueue.TryDequeue(out DatabaseAction request))
+                    Console.WriteLine("DATABASE WORKER: Was unable to process an object. Will try again...");
+                    return;
+                }
+
+                try
+                {
+                    if (request.Action == DatabaseActionType.Insert)
                     {
-                        Console.WriteLine("DATABASE WORKER: Was unable to process an object. Will try again...");
-                        return;
+                        foreach (var record in request.Data)
+                        {
+                            _connection.Insert(record.GetType(), record);
+                        }
+                    }
+                    else if (request.Action == DatabaseActionType.Update)
+                    {
+                        foreach (var record in request.Data)
+                        {
+                            _connection.Update(record.GetType(), record);
+                        }
+                    }
+                    else if (request.Action == DatabaseActionType.Delete)
+                    {
+                        foreach (var record in request.Data)
+                        {
+                            _connection.Delete(record.GetType(), record);
+                        }
                     }
 
-                    try
-                    {
-                        if (request.Action == DatabaseActionType.Insert)
-                        {
-                            foreach(var record in request.Data)
-                            {
-                                connection.Insert(record.GetType(), record);
-                            }
-                        }
-                        else if (request.Action == DatabaseActionType.Update)
-                        {
-                            foreach (var record in request.Data)
-                            {
-                                connection.Update(record.GetType(), record);
-                            }
-                        }
-                        else if (request.Action == DatabaseActionType.Delete)
-                        {
-                            foreach (var record in request.Data)
-                            {
-                                connection.Delete(record.GetType(), record);
-                            }
-                        }
-
-                    }
-                    catch (SqlException ex)
-                    {
-                        Console.WriteLine("****EXCEPTION ON DATABASE BACKGROUND THREAD****");
-                        _error.LogError(ex, request.Action.ToString());
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("****EXCEPTION ON DATABASE BACKGROUND THREAD****");
-                        _error.LogError(ex, request.Action.ToString());
-                    }
+                }
+                catch (SqlException ex)
+                {
+                    Console.WriteLine("****EXCEPTION ON DATABASE BACKGROUND THREAD****");
+                    LoggingService.LogError(ex, request.Action.ToString());
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("****EXCEPTION ON DATABASE BACKGROUND THREAD****");
+                    LoggingService.LogError(ex, request.Action.ToString());
                 }
             }
         }
+
     }
 }

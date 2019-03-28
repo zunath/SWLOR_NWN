@@ -8,13 +8,6 @@ namespace SWLOR.Game.Server.Placeable.Stores
 {
     public class GenericStore: IRegisteredEvent
     {
-        private readonly INWScript _;
-
-        public GenericStore(INWScript script)
-        {
-            _ = script;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlaceable self = (Object.OBJECT_SELF);

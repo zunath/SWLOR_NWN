@@ -1,41 +1,18 @@
-﻿using System.Linq;
-using NWN;
+﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Placeable.MolecularReassembler;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN.NWScript;
+using static NWN._;
 using ComponentType = SWLOR.Game.Server.Data.Entity.ComponentType;
 
 namespace SWLOR.Game.Server.Conversation
 {
     public class MolecularReassembly: ConversationBase
     {
-        private readonly IColorTokenService _color;
-        private readonly IDataService _data;
-        private readonly ICraftService _craft;
-        private readonly ISerializationService _serialization;
-        private readonly INWNXPlayer _nwnxPlayer;
-
-        public MolecularReassembly(
-            INWScript script, 
-            IDialogService dialog,
-            IColorTokenService color,
-            IDataService data,
-            ICraftService craft,
-            ISerializationService serialization,
-            INWNXPlayer nwnxPlayer) 
-            : base(script, dialog)
-        {
-            _color = color;
-            _data = data;
-            _craft = craft;
-            _serialization = serialization;
-            _nwnxPlayer = nwnxPlayer;
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -68,14 +45,14 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadMainPage()
         {
-            string header = _color.Green("Molecular Reassembler") + "\n\n";
+            string header = ColorTokenService.Green("Molecular Reassembler") + "\n\n";
             header += "This device can be used to salvage equipment and reassemble them into components.\n\n";
             header += "Please select the type of item you wish to create. The new item(s) created will have a chance to receive property bonuses from the salvaged item.\n\n";
             header += "Start by selecting a component type now.";
             SetPageHeader("MainPage", header);
 
             ClearPageResponses("MainPage");
-            var componentTypes = _data.Where<ComponentType>(x => !string.IsNullOrWhiteSpace(x.ReassembledResref));
+            var componentTypes = DataService.Where<ComponentType>(x => !string.IsNullOrWhiteSpace(x.ReassembledResref));
             foreach (var type in componentTypes)
             {
                 AddResponseToPage("MainPage", type.Name, true, type.ID);
@@ -85,7 +62,7 @@ namespace SWLOR.Game.Server.Conversation
         private void MainPageResponses(int responseID)
         {
             var player = GetPC();
-            var model = _craft.GetPlayerCraftingData(player);
+            var model = CraftService.GetPlayerCraftingData(player);
             DialogResponse response = GetResponseByID("MainPage", responseID);
             model.SalvageComponentTypeID = (int)response.CustomData;
 
@@ -96,12 +73,12 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadSalvagePage()
         {
             var player = GetPC();
-            var model = _craft.GetPlayerCraftingData(player);
+            var model = CraftService.GetPlayerCraftingData(player);
             NWPlaceable tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
-            var item = _serialization.DeserializeItem(model.SerializedSalvageItem, tempStorage);
-            var componentType = _data.Get<ComponentType>(model.SalvageComponentTypeID);
-            string header = _color.Green("Item: ") + item.Name + "\n\n";
-            header += "Reassembling this item will create the following " + _color.Green(componentType.Name) + " component(s). Chance to create depends on your perks, skills, and harvesting bonus on items.\n\n";
+            var item = SerializationService.DeserializeItem(model.SerializedSalvageItem, tempStorage);
+            var componentType = DataService.Get<ComponentType>(model.SalvageComponentTypeID);
+            string header = ColorTokenService.Green("Item: ") + item.Name + "\n\n";
+            header += "Reassembling this item will create the following " + ColorTokenService.Green(componentType.Name) + " component(s). Chance to create depends on your perks, skills, and harvesting bonus on items.\n\n";
 
             // Always create one item with zero bonuses.
             header += componentType.Name + " (No Bonuses) [RL: 0] " + GetChanceColor(100) + "\n";
@@ -173,10 +150,10 @@ namespace SWLOR.Game.Server.Conversation
         {
             string message = "-" + chance + "%-";
             if (chance <= 50)
-                return _color.Red(message);
+                return ColorTokenService.Red(message);
             else if (chance <= 80)
-                return _color.Yellow(message);
-            else return _color.Green(message);
+                return ColorTokenService.Yellow(message);
+            else return ColorTokenService.Green(message);
         }
 
         private string ProcessPropertyDetails(int amount, string componentName, string propertyName, int maxBonuses, float levelsPerBonus = 1.0f)
@@ -189,7 +166,7 @@ namespace SWLOR.Game.Server.Conversation
                 if (amount >= maxBonuses)
                 {
                     int levelIncrease = (int)(maxBonuses * levelsPerBonus);
-                    int chanceToTransfer = _craft.CalculateReassemblyChance(player, penalty);
+                    int chanceToTransfer = CraftService.CalculateReassemblyChance(player, penalty);
                     result += componentName + " (+" + maxBonuses + " " + propertyName + ") [RL: " + levelIncrease + "] " + GetChanceColor(chanceToTransfer) + "\n";
                     penalty += (maxBonuses * 5);
                     amount -= maxBonuses;
@@ -197,7 +174,7 @@ namespace SWLOR.Game.Server.Conversation
                 else
                 {
                     int levelIncrease = (int)(amount * levelsPerBonus);
-                    int chanceToTransfer = _craft.CalculateReassemblyChance(player, penalty);
+                    int chanceToTransfer = CraftService.CalculateReassemblyChance(player, penalty);
                     result += componentName + " (+" + amount + " " + propertyName + ") [RL: " + levelIncrease + "] " + GetChanceColor(chanceToTransfer)+ "\n";
                     break;
                 }
@@ -209,7 +186,7 @@ namespace SWLOR.Game.Server.Conversation
         private void SalvagePageResponses(int responseID)
         {
             var player = GetPC();
-            var model = _craft.GetPlayerCraftingData(player);
+            var model = CraftService.GetPlayerCraftingData(player);
 
             switch (responseID)
             {
@@ -217,8 +194,8 @@ namespace SWLOR.Game.Server.Conversation
                     if (model.IsConfirmingReassemble)
                     {
                         // Calculate delay, fire off delayed event, and show timing bar.
-                        float delay = _craft.CalculateCraftingDelay(player, (int) SkillType.Harvesting);
-                        _nwnxPlayer.StartGuiTimingBar(player, delay, string.Empty);
+                        float delay = CraftService.CalculateCraftingDelay(player, (int) SkillType.Harvesting);
+                        NWNXPlayer.StartGuiTimingBar(player, delay, string.Empty);
                         player.DelayEvent<ReassembleComplete>(delay, player, model.SerializedSalvageItem, model.SalvageComponentTypeID);
 
                         // Make the player play an animation.
@@ -254,7 +231,7 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
         {
-            var model = _craft.GetPlayerCraftingData(player);
+            var model = CraftService.GetPlayerCraftingData(player);
             model.IsConfirmingReassemble = false;
             SetResponseText("SalvagePage", 1, "Reassemble Component(s)");
         }
@@ -262,7 +239,7 @@ namespace SWLOR.Game.Server.Conversation
         public override void EndDialog()
         {
             var player = GetPC();
-            _craft.ClearPlayerCraftingData(player);
+            CraftService.ClearPlayerCraftingData(player);
         }
     }
 }

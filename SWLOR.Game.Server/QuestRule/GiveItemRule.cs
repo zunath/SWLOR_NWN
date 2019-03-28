@@ -7,13 +7,6 @@ namespace SWLOR.Game.Server.QuestRule
 {
     public class GiveItemRule : IQuestRule
     {
-        private readonly INWScript _;
-
-        public GiveItemRule(INWScript script)
-        {
-            _ = script;
-        }
-
         public void Run(NWPlayer player, NWObject questSource, int questID, string[] args)
         {
             string resref = args[0];

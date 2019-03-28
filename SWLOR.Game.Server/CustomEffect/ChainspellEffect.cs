@@ -2,17 +2,14 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.CustomEffect
 {
-    public class ChainspellEffect: ICustomEffect
+    public class ChainspellEffect: ICustomEffectHandler
     {
-        private readonly INWScript _;
-
-        public ChainspellEffect(INWScript script)
-        {
-            _ = script;
-        }
+        public CustomEffectCategoryType CustomEffectCategoryType => CustomEffectCategoryType.NormalEffect;
+        public CustomEffectType CustomEffectType => CustomEffectType.Chainspell;
 
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
@@ -21,11 +18,15 @@ namespace SWLOR.Game.Server.CustomEffect
 
         public void Tick(NWCreature oCaster, NWObject oTarget, int currentTick, int effectiveLevel, string data)
         {
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(NWScript.VFX_IMP_EVIL_HELP), oTarget.Object, 1.0f);
+            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(_.VFX_IMP_EVIL_HELP), oTarget.Object, 1.0f);
         }
 
         public void WearOff(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)
         {
         }
+
+        public string StartMessage => "You receive the effect of chainspell.";
+        public string ContinueMessage => "";
+        public string WornOffMessage => "You no longer have the effect of chainspell.";
     }
 }

@@ -4,9 +4,9 @@ using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Conversation
@@ -20,21 +20,7 @@ namespace SWLOR.Game.Server.Conversation
             public string Title { get; set; }
             public string Message { get; set; }
         }
-
-        private readonly IDataService _data;
-        private readonly IColorTokenService _color;
-
-        public MessageBoard(
-            INWScript script, 
-            IDialogService dialog,
-            IDataService data,
-            IColorTokenService color) 
-            : base(script, dialog)
-        {
-            _data = data;
-            _color = color;
-        }
-
+        
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -82,16 +68,16 @@ namespace SWLOR.Game.Server.Conversation
             DateTime now = DateTime.UtcNow;
             Guid boardID = new Guid(terminal.GetLocalString("MESSAGE_BOARD_ID"));
             bool isDM = player.IsDM;
-            var messages = _data.Where<Message>(x => x.BoardID == boardID && x.DateExpires > now && x.DateRemoved == null)
+            var messages = DataService.Where<Message>(x => x.BoardID == boardID && x.DateExpires > now && x.DateRemoved == null)
                 .OrderByDescending(o => o.DatePosted);
 
             ClearPageResponses("MainPage");
-            AddResponseToPage("MainPage", _color.Green("Create New Post"), !isDM);
+            AddResponseToPage("MainPage", ColorTokenService.Green("Create New Post"), !isDM);
             foreach (var message in messages)
             {
                 string title = message.Title;
                 if (message.PlayerID == player.GlobalID)
-                    title = _color.Cyan(title);
+                    title = ColorTokenService.Cyan(title);
                 AddResponseToPage("MainPage", title, true, message.ID);
             }
         }
@@ -116,11 +102,11 @@ namespace SWLOR.Game.Server.Conversation
         {
             NWPlayer player = GetPC();
             Model model = GetDialogCustomData<Model>();
-            Message message = _data.Get<Message>(model.MessageID);
-            Player poster = _data.Get<Player>(message.PlayerID);
-            string header = _color.Green("Title: ") + message.Title + "\n";
-            header += _color.Green("Posted By: ") + poster.CharacterName + "\n";
-            header += _color.Green("Date: ") + message.DatePosted + "\n\n";
+            Message message = DataService.Get<Message>(model.MessageID);
+            Player poster = DataService.Get<Player>(message.PlayerID);
+            string header = ColorTokenService.Green("Title: ") + message.Title + "\n";
+            header += ColorTokenService.Green("Posted By: ") + poster.CharacterName + "\n";
+            header += ColorTokenService.Green("Date: ") + message.DatePosted + "\n\n";
             header += message.Text;
 
             SetPageHeader("PostDetailsPage", header);
@@ -132,7 +118,7 @@ namespace SWLOR.Game.Server.Conversation
         private void PostDetailsPageResponses(int responseID)
         {
             var model = GetDialogCustomData<Model>();
-            var message = _data.Get<Message>(model.MessageID);
+            var message = DataService.Get<Message>(model.MessageID);
 
             switch (responseID)
             {
@@ -142,7 +128,7 @@ namespace SWLOR.Game.Server.Conversation
                         model.IsConfirming = false;
                         SetResponseText("PostDetailsPage", 1, "Remove Post");
                         message.DateRemoved = DateTime.UtcNow;
-                        _data.SubmitDataChange(message, DatabaseActionType.Update);
+                        DataService.SubmitDataChange(message, DatabaseActionType.Update);
                         ClearNavigationStack();
                         LoadMainPage();
                         ChangePage("MainPage", false);
@@ -164,8 +150,8 @@ namespace SWLOR.Game.Server.Conversation
             int price = terminal.GetLocalInt("PRICE");
             string header = "Please enter text and then click the 'Set Title' or 'Set Message' buttons. Titles must be 256 characters or less. Messages must be 4000 characters or less.\n\n";
             header += "Posting a message costs " + price + " credits. Posts last for 30 days (real world time) before they will expire.\n\n";
-            header += _color.Green("Title: ") + model.Title + "\n";
-            header += _color.Green("Message: ") + model.Message + "\n";
+            header += ColorTokenService.Green("Title: ") + model.Title + "\n";
+            header += ColorTokenService.Green("Message: ") + model.Message + "\n";
 
             SetPageHeader("CreatePostPage", header);
 
@@ -246,7 +232,7 @@ namespace SWLOR.Game.Server.Conversation
                             DateExpires = now.AddDays(30),
                             DateRemoved = null
                         };
-                        _data.SubmitDataChange(post, DatabaseActionType.Insert);
+                        DataService.SubmitDataChange(post, DatabaseActionType.Insert);
                         _.TakeGoldFromCreature(price, player, TRUE);
 
                         player.DeleteLocalInt("MESSAGE_BOARD_LISTENING");

@@ -1,23 +1,6 @@
-﻿using NWN;
-using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
-
-namespace SWLOR.Game.Server.Event.Feat
+﻿namespace SWLOR.Game.Server.NWN.Events.Feat
 {
-    public class OnUseCraftingFeat: IRegisteredEvent
+    public class OnUseCraftingFeat
     {
-        private readonly IDialogService _dialog;
-
-        public OnUseCraftingFeat(IDialogService dialog)
-        {
-            _dialog = dialog;
-        }
-
-        public bool Run(params object[] args)
-        {
-            NWPlayer player = Object.OBJECT_SELF;
-            _dialog.StartConversation(player, player, "ModifyItemAppearance");
-            return true;
-        }
     }
 }

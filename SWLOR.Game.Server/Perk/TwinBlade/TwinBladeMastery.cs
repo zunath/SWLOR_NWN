@@ -2,25 +2,15 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.NWNX.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Service;
+
 
 namespace SWLOR.Game.Server.Perk.TwinBlade
 {
-    public class TwinBladeMastery : IPerk
+    public class TwinBladeMastery : IPerkHandler
     {
-        private readonly INWScript _;
-        private readonly INWNXCreature _nwnxCreature;
-        private readonly IPerkService _perk;
-
-        public TwinBladeMastery(INWScript script,
-            INWNXCreature nwnxCreature,
-            IPerkService perk)
-        {
-            _ = script;
-            _nwnxCreature = nwnxCreature;
-            _perk = perk;
-        }
+        public PerkType PerkType => PerkType.TwinBladeMastery;
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
@@ -84,9 +74,9 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
 
         private void RemoveFeats(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_TWO_WEAPON_FIGHTING);
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_AMBIDEXTERITY);
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
+            NWNXCreature.RemoveFeat(oPC, _.FEAT_TWO_WEAPON_FIGHTING);
+            NWNXCreature.RemoveFeat(oPC, _.FEAT_AMBIDEXTERITY);
+            NWNXCreature.RemoveFeat(oPC, _.FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
         }
 
         private void ApplyFeatChanges(NWPlayer oPC, NWItem unequippedItem)
@@ -99,16 +89,16 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
                 return;
             }
 
-            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.TwinVibrobladeMastery);
-            _nwnxCreature.AddFeat(oPC, NWScript.FEAT_TWO_WEAPON_FIGHTING);
+            int perkLevel = PerkService.GetPCPerkLevel(oPC, PerkType.TwinBladeMastery);
+            NWNXCreature.AddFeat(oPC, _.FEAT_TWO_WEAPON_FIGHTING);
 
             if (perkLevel >= 2)
             {
-                _nwnxCreature.AddFeat(oPC, NWScript.FEAT_AMBIDEXTERITY);
+                NWNXCreature.AddFeat(oPC, _.FEAT_AMBIDEXTERITY);
             }
             if (perkLevel >= 3)
             {
-                _nwnxCreature.AddFeat(oPC, NWScript.FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
+                NWNXCreature.AddFeat(oPC, _.FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
             }
         }
 

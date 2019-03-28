@@ -4,18 +4,18 @@
 //using SWLOR.Game.Server.DoorRule.Contracts;
 //using SWLOR.Game.Server.Enumeration;
 //using SWLOR.Game.Server.GameObject;
-//using static NWN.NWScript;
+//using static NWN._;
 
 //namespace SWLOR.Game.Server.ChatCommand
 //{
 //    [CommandDetails("debugging.", CommandPermissionType.DM)]
 //    public class MoveDoor : IChatCommand
 //    {
-//        private readonly INWScript _;
+//        
 
 //        public MoveDoor(INWScript script)
 //        {
-//            _ = script;
+//            
 //        }
 
 //        public void DoAction(NWPlayer user, params string[] args)

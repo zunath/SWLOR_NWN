@@ -9,13 +9,6 @@ namespace SWLOR.Game.Server.ChatCommand
     [CommandDetails("Sets a local string on a target.", CommandPermissionType.DM)]
     public class SetLocalString : IChatCommand
     {
-        private readonly INWScript _;
-
-        public SetLocalString(INWScript script)
-        {
-            _ = script;
-        }
-
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             if (!target.IsValid)

@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.Gathering
 {
-    public class SeedPicker : IPerk
+    public class SeedPicker : IPerkHandler
     {
+        public PerkType PerkType => PerkType.SeedPicker;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

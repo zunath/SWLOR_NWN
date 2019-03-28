@@ -1,36 +1,18 @@
 ﻿using System;
 using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN.NWScript;
-using BuildingType = SWLOR.Game.Server.Enumeration.BuildingType;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Conversation
 {
     public class ApartmentEntrance : ConversationBase
     {
-        private readonly IDataService _data;
-        private readonly IAreaService _area;
-        private readonly IBaseService _base;
-
-        public ApartmentEntrance(
-            INWScript script,
-            IDialogService dialog,
-            IDataService data,
-            IAreaService area,
-            IBaseService @base)
-            : base(script, dialog)
-        {
-            _data = data;
-            _area = area;
-            _base = @base;
-        }
-
+        
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -72,15 +54,15 @@ namespace SWLOR.Game.Server.Conversation
             var player = GetPC();
 
             // Get apartments owned by player.
-            var apartments = _data.GetAll<PCBase>().Where(x => x.PlayerID == player.GlobalID &&
+            var apartments = DataService.GetAll<PCBase>().Where(x => x.PlayerID == player.GlobalID &&
                                                          x.ApartmentBuildingID == apartmentBuildingID &&
                                                          x.DateRentDue > DateTime.UtcNow)
                                              .OrderBy(o => o.DateInitialPurchase)
                                              .ToList();
 
             // Get apartments owned by other players and the current player currently has access to.
-            var permissions = _data.GetAll<PCBasePermission>().Where(x => x.PlayerID == player.GlobalID);
-            var permissionedApartments = _data.Where<PCBase>(x =>
+            var permissions = DataService.GetAll<PCBasePermission>().Where(x => x.PlayerID == player.GlobalID);
+            var permissionedApartments = DataService.Where<PCBase>(x =>
             {
                 if (x.ApartmentBuildingID != apartmentBuildingID ||
                     x.DateRentDue <= DateTime.UtcNow ||
@@ -109,7 +91,7 @@ namespace SWLOR.Game.Server.Conversation
 
             foreach (var apartment in permissionedApartments)
             {
-                var owner = _data.Get<Player>(apartment.PlayerID);
+                var owner = DataService.Get<Player>(apartment.PlayerID);
                 string name = owner.CharacterName + "'s Apartment [" + owner.CharacterName + "]";
 
                 if (!string.IsNullOrWhiteSpace(apartment.CustomName))
@@ -133,11 +115,8 @@ namespace SWLOR.Game.Server.Conversation
         {
             NWPlayer oPC = GetPC();
 
-            var apartment = _data.Get<PCBase>(pcBaseID);
-            var structures = _data.Where<PCBaseStructure>(x => x.PCBaseID == apartment.ID);
-            var buildingStyle = _data.Get<BuildingStyle>(apartment.BuildingStyleID);
-            var owner = _data.Get<Player>(apartment.PlayerID);
-            var permission = _data.SingleOrDefault<PCBasePermission>(x => x.PlayerID == oPC.GlobalID && 
+            var apartment = DataService.Get<PCBase>(pcBaseID);
+            var permission = DataService.SingleOrDefault<PCBasePermission>(x => x.PlayerID == oPC.GlobalID && 
                                                                           x.PCBaseID == pcBaseID &&
                                                                           !x.IsPublicPermission);
 
@@ -147,14 +126,14 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            NWArea instance = _base.GetAreaInstance(pcBaseID, true);
+            NWArea instance = BaseService.GetAreaInstance(pcBaseID, true);
 
             if (instance == null)
             {
-                instance = _base.CreateAreaInstance(oPC, pcBaseID, true);
+                instance = BaseService.CreateAreaInstance(oPC, pcBaseID, true);
             }
 
-            _base.JumpPCToBuildingInterior(oPC, instance);
+            BaseService.JumpPCToBuildingInterior(oPC, instance);
         }
 
         public override void EndDialog()

@@ -1,12 +1,11 @@
 ﻿using NWN;
 using SWLOR.Game.Server.ChatCommand.Contracts;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using System;
 using SWLOR.Game.Server.Data.Entity;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.ChatCommand
@@ -14,17 +13,6 @@ namespace SWLOR.Game.Server.ChatCommand
     [CommandDetails("Report a bug to the developers. Please include as much detail as possible.", CommandPermissionType.Player | CommandPermissionType.DM)]
     public class Bug : IChatCommand
     {
-        private readonly INWScript _;
-        private readonly IDataService _data;
-
-        public Bug(
-            INWScript script,
-            IDataService data)
-        {
-            _ = script;
-            _data = data;
-        }
-
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             string message = string.Empty;
@@ -55,7 +43,7 @@ namespace SWLOR.Game.Server.ChatCommand
             };
 
             // Bypass the cache and save directly to the DB.
-            _data.DataQueue.Enqueue(new DatabaseAction(report, DatabaseActionType.Insert));
+            DataService.DataQueue.Enqueue(new DatabaseAction(report, DatabaseActionType.Insert));
 
             user.SendMessage("Bug report submitted! Thank you for your report.");
         }

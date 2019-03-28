@@ -1,6 +1,6 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
@@ -8,33 +8,60 @@ using System.Linq;
 using SWLOR.Game.Server.AreaInstance.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
-using static NWN.NWScript;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
+using static NWN._;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class AreaService : IAreaService
+    public static class AreaService
     {
-        private readonly INWScript _;
-        private readonly IDataService _data;
-        private readonly ISpawnService _spawn;
-        private readonly AppCache _cache;
+        private static readonly Dictionary<string, IAreaInstance> _areaInstances;
 
-        public AreaService(
-            INWScript script,
-            IDataService data,
-            ISpawnService spawn,
-            AppCache cache)
+        static AreaService()
         {
-            _ = script;
-            _data = data;
-            _spawn = spawn;
-            _cache = cache;
+            _areaInstances = new Dictionary<string, IAreaInstance>();
         }
 
-        public void OnModuleLoad()
+        public static void SubscribeEvents()
         {
+            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
+        }
+        
+        private static void RegisterAreaInstances()
+        {
+            // Use reflection to get all of Area instance implementations.
+            var classes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => typeof(IAreaInstance).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
+            foreach (var type in classes)
+            {
+                IAreaInstance instance = Activator.CreateInstance(type) as IAreaInstance;
+                if (instance == null)
+                {
+                    throw new NullReferenceException("Unable to activate instance of type: " + type);
+                }
+                _areaInstances.Add(type.Name, instance);
+            }
+
+        }
+
+        public static IAreaInstance GetAreaInstance(string key)
+        {
+            if (!_areaInstances.ContainsKey(key))
+            {
+                throw new KeyNotFoundException("Spawn rule '" + key + "' is not registered. Did you create a class for it?");
+            }
+
+            return _areaInstances[key];
+        }
+
+        private static void OnModuleLoad()
+        {
+            RegisterAreaInstances();
             var areas = NWModule.Get().Areas;
-            var dbAreas = _data.GetAll<Area>().Where(x => x.IsActive).ToList();
+            var dbAreas = DataService.GetAll<Area>().Where(x => x.IsActive).ToList();
             dbAreas.ForEach(x => x.IsActive = false);
 
             foreach (var area in areas)
@@ -88,7 +115,7 @@ namespace SWLOR.Game.Server.Service
                 if (dbArea.MaxResourceQuality < dbArea.ResourceQuality)
                     dbArea.MaxResourceQuality = dbArea.ResourceQuality;
 
-                _data.SubmitDataChange(dbArea, action);
+                DataService.SubmitDataChange(dbArea, action);
             }
             
             string arg = Environment.GetEnvironmentVariable("AREA_BAKING_ENABLED");
@@ -104,8 +131,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Cache both areas and area walkmeshes now that they're built, if they aren't already.
-            _data.GetAll<Area>();
-            _data.GetAll<AreaWalkmesh>();
+            DataService.GetAll<Area>();
+            DataService.GetAll<AreaWalkmesh>();
         }
 
         // Area baking process
@@ -114,15 +141,15 @@ namespace SWLOR.Game.Server.Service
         // Each tile is 10x10 meters. The "step" value in the config table determines how many meters we progress before checking for a valid location.
         // If you adjust this to get finer precision your database may explode with a ton of records. I chose a value that got me the 
         // accuracy I wanted, without too much overhead. Your mileage may vary.
-        private void BakeAreas()
+        private static void BakeAreas()
         {
-            var config = _data.GetAll<ServerConfiguration>().First();
+            var config = DataService.GetAll<ServerConfiguration>().First();
             int Step = config.AreaBakeStep;
             const float MinDistance = 6.0f;
 
             foreach (var area in NWModule.Get().Areas)
             {
-                var dbArea = _data.Single<Area>(x => x.Resref == area.Resref);
+                var dbArea = DataService.Single<Area>(x => x.Resref == area.Resref);
 
                 int arraySizeX = dbArea.Width * (10 / Step);
                 int arraySizeY = dbArea.Height * (10 / Step);
@@ -156,15 +183,15 @@ namespace SWLOR.Game.Server.Service
                 {
                     dbArea.Walkmesh = walkmesh;
                     dbArea.DateLastBaked = DateTime.UtcNow;
-                    _data.SubmitDataChange(dbArea, DatabaseActionType.Update);
+                    DataService.SubmitDataChange(dbArea, DatabaseActionType.Update);
 
                     Console.WriteLine("Baking area because its walkmesh has changed since last run: " + area.Name);
 
-                    var walkmeshes = _data.Where<AreaWalkmesh>(x => x.AreaID == dbArea.ID).ToList();
+                    var walkmeshes = DataService.Where<AreaWalkmesh>(x => x.AreaID == dbArea.ID).ToList();
                     for(int x = walkmeshes.Count-1; x >= 0; x--)
                     {
                         var mesh = walkmeshes.ElementAt(x);
-                        _data.SubmitDataChange(mesh, DatabaseActionType.Delete);
+                        DataService.SubmitDataChange(mesh, DatabaseActionType.Delete);
                     }
                     
                     Console.WriteLine("Cleared old walkmesh. Adding new one now.");
@@ -188,7 +215,7 @@ namespace SWLOR.Game.Server.Service
                                 LocationZ = z
                             };
 
-                            _data.SubmitDataChange(mesh, DatabaseActionType.Insert);
+                            DataService.SubmitDataChange(mesh, DatabaseActionType.Insert);
 
                             records++;
                         }
@@ -201,7 +228,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
         
-        public NWArea CreateAreaInstance(NWPlayer owner, string areaResref, string areaName, string entranceWaypointTag)
+        public static NWArea CreateAreaInstance(NWPlayer owner, string areaResref, string areaName, string entranceWaypointTag)
         {
             string tag = Guid.NewGuid().ToString();
             NWArea instance = _.CreateArea(areaResref, tag, areaName);
@@ -222,33 +249,31 @@ namespace SWLOR.Game.Server.Service
             if (!entranceWP.IsValid)
             {
                 owner.SendMessage("ERROR: Couldn't locate entrance waypoint with tag '" + entranceWaypointTag + "'. Notify an admin.");
-                return new NWN.Object();
+                return new Object();
             }
 
             instance.SetLocalLocation("INSTANCE_ENTRANCE", entranceWP.Location);
             entranceWP.Destroy(); // Destroy it so we don't get dupes.
 
-            _spawn.InitializeAreaSpawns(instance);
+            SpawnService.InitializeAreaSpawns(instance);
             
-            string spawnScript = instance.GetLocalString("INSTANCE_ON_SPAWN");
-            if (!string.IsNullOrWhiteSpace(spawnScript))
+            string rule = instance.GetLocalString("INSTANCE_ON_SPAWN");
+            if (!string.IsNullOrWhiteSpace(rule))
             {
-                App.ResolveByInterface<IAreaInstance>("AreaInstance." + spawnScript, s =>
-                {
-                    s.Run(instance);
-                });
+                IAreaInstance instanceRule = GetAreaInstance(rule);
+                instanceRule.OnSpawn(instance);
             }
 
             return instance;
         }
 
-        public void DestroyAreaInstance(NWArea area)
+        public static void DestroyAreaInstance(NWArea area)
         {
             if (!area.IsInstance) return;
 
-            if (_cache.AreaSpawns.ContainsKey(area))
+            if (AppCache.AreaSpawns.ContainsKey(area))
             {
-                _cache.AreaSpawns.Remove(area);
+                AppCache.AreaSpawns.Remove(area);
             }
 
             _.DestroyArea(area);

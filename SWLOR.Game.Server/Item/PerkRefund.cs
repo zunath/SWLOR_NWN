@@ -2,22 +2,15 @@
 using SWLOR.Game.Server.Item.Contracts;
 
 using NWN;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Item
 {
     public class PerkRefund : IActionItem
     {
-        private readonly INWScript _;
-        private readonly IDialogService _dialog;
-
-        public PerkRefund(INWScript script,
-            IDialogService dialog)
-        {
-            _ = script;
-            _dialog = dialog;
-        }
+        public string CustomKey => null;
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
@@ -29,7 +22,7 @@ namespace SWLOR.Game.Server.Item
             user.SetLocalObject("PERK_REFUND_OBJECT", item.Object);
             user.ClearAllActions();
 
-            _dialog.StartConversation(user, user, "PerkRefund");
+            DialogService.StartConversation(user, user, "PerkRefund");
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)

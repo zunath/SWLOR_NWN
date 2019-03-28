@@ -3,23 +3,14 @@ using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.ScavengePoint
 {
     public class OnClosed: IRegisteredEvent
     {
-        private readonly INWScript _;
-        private readonly IFarmingService _farming;
-
-        public OnClosed(INWScript script,
-            IFarmingService farming)
-        {
-            _ = script;
-            _farming = farming;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlaceable point = (Object.OBJECT_SELF);
@@ -34,11 +25,11 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
                 string seed = point.GetLocalString("SCAVENGE_POINT_SEED");
                 if (!string.IsNullOrWhiteSpace(seed))
                 {
-                    _.CreateObject(NWScript.OBJECT_TYPE_ITEM, seed, point.Location);
+                    _.CreateObject(_.OBJECT_TYPE_ITEM, seed, point.Location);
                 }
 
                 point.Destroy();
-                _farming.RemoveGrowingPlant(point);
+                FarmingService.RemoveGrowingPlant(point);
             }
             return false;
         }

@@ -1,21 +1,10 @@
 ﻿
 using NWN;
+using SWLOR.Game.Server.Event;
 
-namespace SWLOR.Game.Server.Event.Module
+namespace SWLOR.Game.Server.NWN.Events.Module
 {
-    internal class OnModuleUnacquireItem : IRegisteredEvent
+    internal class OnModuleUnacquireItem
     {
-        private readonly INWScript _;
-
-        public OnModuleUnacquireItem(INWScript script)
-        {
-            _ = script;
-        }
-
-        public bool Run(params object[] args)
-        {
-            _.ExecuteScript("x2_mod_def_unaqu", Object.OBJECT_SELF);
-            return true;
-        }
     }
 }

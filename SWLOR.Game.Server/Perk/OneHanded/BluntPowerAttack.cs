@@ -2,26 +2,16 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.NWNX.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.Service;
+
+using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
-    public class BluntPowerAttack : IPerk
+    public class BluntPowerAttack : IPerkHandler
     {
-        private readonly INWScript _;
-        private readonly INWNXCreature _nwnxCreature;
-        private readonly IPerkService _perk;
-
-        public BluntPowerAttack(INWScript script,
-            INWNXCreature nwnxCreature,
-            IPerkService perk)
-        {
-            _ = script;
-            _nwnxCreature = nwnxCreature;
-            _perk = perk;
-        }
+        public PerkType PerkType => PerkType.BluntPowerAttack;
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
@@ -64,13 +54,13 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, FEAT_POWER_ATTACK);
-            _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_POWER_ATTACK);
+            NWNXCreature.RemoveFeat(oPC, FEAT_POWER_ATTACK);
+            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_POWER_ATTACK);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
         {
-            if (oItem.CustomItemType != CustomItemType.Vibroblade) return;
+            if (oItem.CustomItemType != CustomItemType.Baton) return;
             ApplyFeatChanges(oPC, null);
         }
 
@@ -92,8 +82,8 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
             if (Equals(equipped, oItem) || equipped.CustomItemType != CustomItemType.Baton)
             {
-                _nwnxCreature.RemoveFeat(oPC, FEAT_POWER_ATTACK);
-                _nwnxCreature.RemoveFeat(oPC, FEAT_IMPROVED_POWER_ATTACK);
+                NWNXCreature.RemoveFeat(oPC, FEAT_POWER_ATTACK);
+                NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_POWER_ATTACK);
                 if (_.GetActionMode(oPC, ACTION_MODE_POWER_ATTACK) == TRUE)
                 {
                     _.SetActionMode(oPC, ACTION_MODE_POWER_ATTACK, FALSE);
@@ -105,12 +95,12 @@ namespace SWLOR.Game.Server.Perk.OneHanded
                 return;
             }
 
-            int perkLevel = _perk.GetPCPerkLevel(oPC, PerkType.BluntPowerAttack);
-            _nwnxCreature.AddFeat(oPC, FEAT_POWER_ATTACK);
+            int perkLevel = PerkService.GetPCPerkLevel(oPC, PerkType.BluntPowerAttack);
+            NWNXCreature.AddFeat(oPC, FEAT_POWER_ATTACK);
 
             if (perkLevel >= 2)
             {
-                _nwnxCreature.AddFeat(oPC, FEAT_IMPROVED_POWER_ATTACK);
+                NWNXCreature.AddFeat(oPC, FEAT_IMPROVED_POWER_ATTACK);
             }
         }
 

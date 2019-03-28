@@ -4,8 +4,10 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class CastingSpeedMod : IMod
+    public class CastingSpeedMod : IModHandler
     {
+        public int ModTypeID => 10;
+
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             if (target.CastingSpeed >= 25)

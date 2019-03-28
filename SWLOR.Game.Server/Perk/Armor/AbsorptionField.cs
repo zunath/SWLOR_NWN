@@ -1,26 +1,15 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using SWLOR.Game.Server.Service;
+
+using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class AbsorptionField: IPerk
+    public class AbsorptionField: IPerkHandler
     {
-        private readonly INWScript _;
-        private readonly ICustomEffectService _customEffect;
-        private readonly IPerkService _perk;
-
-        public AbsorptionField(
-            INWScript script,
-            ICustomEffectService customEffect,
-            IPerkService perk)
-        {
-            _ = script;
-            _customEffect = customEffect;
-            _perk = perk;
-        }
+        public PerkType PerkType => PerkType.AbsorptionField;
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
@@ -55,7 +44,7 @@ namespace SWLOR.Game.Server.Perk.Armor
 
         public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
         {
-            _customEffect.ApplyCustomEffect(player, player, CustomEffectType.AbsorptionField, 20, perkLevel, null);
+            CustomEffectService.ApplyCustomEffect(player, player, CustomEffectType.AbsorptionField, 20, perkLevel, null);
 
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_GLOBE_USE), target);
         }

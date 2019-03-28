@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.ValueObject;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.GameObject
@@ -12,14 +12,10 @@ namespace SWLOR.Game.Server.GameObject
     public class NWObject
     {
         public virtual Object Object { get; }
-        protected readonly INWScript _;
-        private readonly AppCache _cache;
-
+        
         public NWObject(Object nwnObject)
         {
             Object = nwnObject;
-            _ = App.GetNWScript();
-            _cache = App.GetAppState();
         }
 
         public virtual bool IsInitializedAsPlayer
@@ -259,7 +255,8 @@ namespace SWLOR.Game.Server.GameObject
         {
             _.DelayCommand(seconds, () =>
             {
-                App.RunEvent<T>(args);
+                IRegisteredEvent @event = Activator.CreateInstance<T>();
+                @event.Run(args);
             });
         }
 
@@ -328,12 +325,12 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                if (!_cache.CustomObjectData.ContainsKey(GlobalID))
+                if (!AppCache.CustomObjectData.ContainsKey(GlobalID))
                 {
-                    _cache.CustomObjectData.Add(GlobalID, new CustomData(this));
+                    AppCache.CustomObjectData.Add(GlobalID, new CustomData(this));
                 }
 
-                return _cache.CustomObjectData[GlobalID];
+                return AppCache.CustomObjectData[GlobalID];
             }
         }
 

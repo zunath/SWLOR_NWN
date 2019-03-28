@@ -1,10 +1,9 @@
 ﻿using FluentValidation.Results;
 using Newtonsoft.Json;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Processor;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Service.Contracts;
+
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
@@ -14,22 +13,27 @@ using System.Security.Cryptography;
 using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class DataPackageService : IDataPackageService
+    public static class DataPackageService
     {
-        private readonly IDataService _data;
         const string PackagesPath = "./DataPackages/";
-        private Queue<DatabaseAction> _queuedDBChanges;
+        private static readonly Queue<DatabaseAction> _queuedDBChanges;
 
-        public DataPackageService(IDataService data)
+        static DataPackageService()
         {
-            _data = data;
             _queuedDBChanges = new Queue<DatabaseAction>();
         }
 
-        public void OnModuleLoad()
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
+        }
+
+        private static void OnModuleLoad()
         {
             // Look for an existing DataPackages folder. If it's missing, create it.
             if (!Directory.Exists(PackagesPath))
@@ -68,7 +72,7 @@ namespace SWLOR.Game.Server.Service
                     package.ImportedSuccessfully = false;
                 }
 
-                _data.SubmitDataChange(package, DatabaseActionType.Insert);
+                DataService.SubmitDataChange(package, DatabaseActionType.Insert);
                 
                 if (package.ImportedSuccessfully)
                 {
@@ -82,10 +86,10 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private List<DataPackage> BuildPackageList()
+        private static List<DataPackage> BuildPackageList()
         {
             // Pull back all of the packages we've already attempted to import.
-            var importedPackages = _data.GetAll<DataPackage>();
+            var importedPackages = DataService.GetAll<DataPackage>();
 
             List<DataPackage> packages = new List<DataPackage>();
             string[] files = Directory.GetFiles(PackagesPath, "*.json");
@@ -121,7 +125,7 @@ namespace SWLOR.Game.Server.Service
             return packages.OrderBy(o => o.DateExported).ToList();
         }
 
-        private string ProcessDataPackageFile(DataPackageFile dpf)
+        private static string ProcessDataPackageFile(DataPackageFile dpf)
         {
             string errors = string.Empty;
 
@@ -157,8 +161,6 @@ namespace SWLOR.Game.Server.Service
             //    errors += ValidateAndProcess(new LootTableItemProcessor(), obj) + "\n";
             //foreach (var obj in dpf.LootTables)
             //    errors += ValidateAndProcess(new LootTableProcessor(), obj) + "\n";
-            foreach (var obj in dpf.Mods)
-                errors += ValidateAndProcess(new ModProcessor(), obj) + "\n";
             foreach (var obj in dpf.NPCGroups)
                 errors += ValidateAndProcess(new NPCGroupProcessor(), obj) + "\n";
             foreach (var obj in dpf.PerkCategories)
@@ -180,13 +182,13 @@ namespace SWLOR.Game.Server.Service
                 while (_queuedDBChanges.Count > 0)
                 {
                     var change = _queuedDBChanges.Dequeue();
-                    _data.SubmitDataChange(change);
+                    DataService.SubmitDataChange(change);
                 }
             }
             return errors;
         }
 
-        private string ValidateAndProcess<T>(IDataProcessor<T> processor, JObject dataObject)
+        private static string ValidateAndProcess<T>(IDataProcessor<T> processor, JObject dataObject)
         {
             string errors = string.Empty;
 
@@ -203,7 +205,7 @@ namespace SWLOR.Game.Server.Service
             {
                 try
                 {
-                    var result = processor.Process(_data, dataObject);
+                    var result = processor.Process(dataObject);
 
                     if (result == null)
                     {

@@ -421,14 +421,14 @@ namespace SWLOR.Game.Server.Service
                     {
                         case (int)ComponentBonusType.ACUp:
                         {
-                            description += _color.Cyan("AC can only be applied to Shields, Armor and Helmets.  On other items, it will be ignored.\n");
+                            description += ColorTokenService.Cyan("AC can only be applied to Shields, Armor and Helmets.  On other items, it will be ignored.\n");
                             break;
                         }
                         case (int)ComponentBonusType.DamageUp:
                         case (int)ComponentBonusType.AttackBonusUp:
                         case (int)ComponentBonusType.BaseAttackBonusUp:
                         {
-                            description += _color.Cyan("Damage Up, Attack Bonus Up and Base Attack Bonus Up can only be applied to weapons (including gloves).  On other items, it will be ignored.\n");
+                            description += ColorTokenService.Cyan("Damage Up, Attack Bonus Up and Base Attack Bonus Up can only be applied to weapons (including gloves).  On other items, it will be ignored.\n");
                             break;
                         }
                     }

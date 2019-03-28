@@ -33,11 +33,8 @@
     <Reference Include="Dapper, Version=1.60.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Dapper.1.60.1\lib\net451\Dapper.dll</HintPath>
     </Reference>
-    <Reference Include="FluentBehaviourTree, Version=0.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\FluentBehaviourTree.0.0.4.0\lib\net35\FluentBehaviourTree.dll</HintPath>
-    </Reference>
     <Reference Include="FluentValidation, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7de548da2fbae0f0, processorArchitecture=MSIL">
-      <HintPath>..\packages\FluentValidation.8.1.3\lib\net45\FluentValidation.dll</HintPath>
+      <HintPath>..\packages\FluentValidation.8.2.0\lib\net45\FluentValidation.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -67,22 +64,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AI\AIComponent\AILinking.cs" />
-    <Compile Include="AI\AIComponent\ForceAttackHighestEnmity.cs" />
-    <Compile Include="AI\AIComponent\WarpToTargetIfStuck.cs" />
-    <Compile Include="AI\PackAggroBehaviour.cs" />
-    <Compile Include="AI\SoundAggroBehaviour.cs" />
-    <Compile Include="AI\SoundAggroRandomWalkBehaviour.cs" />
+    <Compile Include="AI\AIFlags.cs" />
     <Compile Include="AI\DarkForceUser.cs" />
+    <Compile Include="AI\StandardBehaviour.cs" />
     <Compile Include="AI\StarshipBehaviour.cs" />
     <Compile Include="AppCache.cs" />
-    <Compile Include="AI\AIComponent\AggroTargetBySight.cs" />
-    <Compile Include="AI\AIComponent\AggroTargetBySound.cs" />
-    <Compile Include="AI\AIComponent\AttackHighestEnmity.cs" />
-    <Compile Include="AI\AIComponent\CleanUpEnmity.cs" />
-    <Compile Include="AI\AIComponent\EquipBestMelee.cs" />
-    <Compile Include="AI\AIComponent\EquipBestRanged.cs" />
-    <Compile Include="AI\AIComponent\RandomWalk.cs" />
     <Compile Include="AreaInstance\CoxxionBase.cs" />
     <Compile Include="AreaInstance\Contracts\IAreaInstance.cs" />
     <Compile Include="AreaInstance\ExitAreaInstance.cs" />
@@ -211,8 +197,6 @@
     <Compile Include="Conversation\XPTome.cs" />
     <Compile Include="AI\Contracts\IAIBehaviour.cs" />
     <Compile Include="AI\BehaviourBase.cs" />
-    <Compile Include="AI\SightAggroBehaviour.cs" />
-    <Compile Include="AI\StandardBehaviour.cs" />
     <Compile Include="CustomEffect\AbsorptionFieldEffect.cs" />
     <Compile Include="CustomEffect\BalancedStanceEffect.cs" />
     <Compile Include="CustomEffect\ElectricCellEffect.cs" />
@@ -613,7 +597,6 @@
     <Compile Include="Event\Module\OnModuleNWNXChat.cs" />
     <Compile Include="Event\Module\OnModuleUseFeat.cs" />
     <Compile Include="Event\Player\OnPlayerDamaged.cs" />
-    <Compile Include="Extension\BehaviourTreeBuilderExtensions.cs" />
     <Compile Include="GameObject\NWLocation.cs" />
     <Compile Include="Item\Enemy\BleedBite.cs" />
     <Compile Include="Item\Medicine\ForcePack.cs" />
@@ -2178,6 +2161,7 @@
     <EmbeddedResource Include="Data\Migrations\2019-03-11.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-03-24.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-03-27.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-03-27.2.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-07.1.sql" />

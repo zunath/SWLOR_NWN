@@ -3,11 +3,9 @@ using System.IO;
 using Caliburn.Micro;
 using Newtonsoft.Json;
 using SWLOR.Tools.Editor.Attributes;
-using SWLOR.Tools.Editor.Enumeration;
 using SWLOR.Tools.Editor.Extensions;
 using SWLOR.Tools.Editor.Messages;
 using SWLOR.Tools.Editor.ViewModels.Contracts;
-using SWLOR.Tools.Editor.ViewModels.Data;
 
 namespace SWLOR.Tools.Editor.ViewModels
 {

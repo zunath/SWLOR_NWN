@@ -1,6 +1,4 @@
-﻿using System;
-using NUnit.Framework;
-using SWLOR.Game.Server.ValueObject;
+﻿using NUnit.Framework;
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Tests.ValueObject.Dialog

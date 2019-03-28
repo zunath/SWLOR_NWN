@@ -1,11 +1,6 @@
 ﻿namespace SWLOR.Game.Server.Event.Area
 {
-    internal class OnAreaUserDefined: IRegisteredEvent
+    internal class OnAreaUserDefined
     {
-        public bool Run(params object[] args)
-        {
-            return true;
-
-        }
     }
 }

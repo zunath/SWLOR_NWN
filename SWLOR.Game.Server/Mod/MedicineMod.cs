@@ -4,8 +4,10 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class MedicineMod : IMod
+    public class MedicineMod : IModHandler
     {
+        public int ModTypeID => 23;
+
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             if (target.MedicineBonus >= 50)

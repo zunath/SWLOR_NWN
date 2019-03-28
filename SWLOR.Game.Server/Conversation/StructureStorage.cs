@@ -1,46 +1,28 @@
 ﻿using System;
-using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Conversation
 {
     public class StructureStorage : ConversationBase
     {
-        private readonly IColorTokenService _color;
-        private readonly IDataService _data;
-        private readonly IBasePermissionService _perm;
-
-        public StructureStorage(
-            INWScript script,
-            IDialogService dialog,
-            IColorTokenService color,
-            IDataService data,
-            IBasePermissionService perm)
-            : base(script, dialog)
-        {
-            _color = color;
-            _data = data;
-            _perm = perm;
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
             DialogPage mainPage = new DialogPage(
-                _color.Green("Persistent Storage Menu") + "\n\nPlease select an option.",
+                ColorTokenService.Green("Persistent Storage Menu") + "\n\nPlease select an option.",
                 "Open Storage",
                 "Change Container Name"
             );
 
             DialogPage changeNamePage = new DialogPage(
-                _color.Green("Change Container Name") + "\n\nPlease type a name for the container into your chat bar and then press enter. After that's done click the 'Next' button on this conversation window.",
+                ColorTokenService.Green("Change Container Name") + "\n\nPlease type a name for the container into your chat bar and then press enter. After that's done click the 'Next' button on this conversation window.",
                 "Next"
             );
 
@@ -60,12 +42,12 @@ namespace SWLOR.Game.Server.Conversation
             NWPlaceable container = (NWPlaceable) GetDialogTarget();
             Guid structureID = new Guid(container.GetLocalString("PC_BASE_STRUCTURE_ID"));
 
-            if (!_perm.HasStructurePermission(GetPC(), structureID, StructurePermission.CanAccessStructureInventory))
+            if (!BasePermissionService.HasStructurePermission(GetPC(), structureID, StructurePermission.CanAccessStructureInventory))
             {
                 SetResponseVisible("MainPage", 1, false);
             }
 
-            if(!_perm.HasStructurePermission(GetPC(), structureID, StructurePermission.CanRenameStructures))
+            if(!BasePermissionService.HasStructurePermission(GetPC(), structureID, StructurePermission.CanRenameStructures))
             {
                 SetResponseVisible("MainPage", 2, false);
             }
@@ -125,8 +107,8 @@ namespace SWLOR.Game.Server.Conversation
                         return;
                     }
 
-                    string header = _color.Green("Change Container Name") + "\n\n";
-                    header += _color.Green("New Container Name: ") + name + "\n\n";
+                    string header = ColorTokenService.Green("Change Container Name") + "\n\n";
+                    header += ColorTokenService.Green("New Container Name: ") + name + "\n\n";
                     header += "Are you sure you want to change your container to this name?";
 
                     SetPageHeader("ConfirmChangeNamePage", header);
@@ -142,11 +124,11 @@ namespace SWLOR.Game.Server.Conversation
                 case 1: // Confirm Change Name
                     string name = GetPC().GetLocalString("NEW_CONTAINER_NAME");
                     Guid structureID = new Guid(GetDialogTarget().GetLocalString("PC_BASE_STRUCTURE_ID"));
-                    var structure = _data.Single<PCBaseStructure>(x => x.ID == structureID);
+                    var structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
                     structure.CustomName = name;
                     GetDialogTarget().Name = name;
                     GetPC().DeleteLocalString("NEW_CONTAINER_NAME");
-                    _data.SubmitDataChange(structure, DatabaseActionType.Update);
+                    DataService.SubmitDataChange(structure, DatabaseActionType.Update);
                     EndConversation();
                     break;
             }

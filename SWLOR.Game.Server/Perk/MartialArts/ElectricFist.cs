@@ -1,22 +1,15 @@
 ﻿using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using SWLOR.Game.Server.Service;
+
+using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.MartialArts
 {
-    public class ElectricFist: IPerk
+    public class ElectricFist: IPerkHandler
     {
-        private readonly INWScript _;
-        private readonly IRandomService _random;
-
-        public ElectricFist(
-            INWScript script,
-            IRandomService random)
-        {
-            _ = script;
-            _random = random;
-        }
+        public PerkType PerkType => PerkType.ElectricFist;
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
@@ -56,43 +49,43 @@ namespace SWLOR.Game.Server.Perk.MartialArts
             switch (perkLevel)
             {
                 case 1:
-                    damage = _random.D8(1);
+                    damage = RandomService.D8(1);
                     duration = 3;
                     break;
                 case 2:
-                    damage = _random.D8(2);
+                    damage = RandomService.D8(2);
                     duration = 3;
                     break;
                 case 3:
-                    damage = _random.D8(3);
+                    damage = RandomService.D8(3);
                     duration = 3;
                     break;
                 case 4:
-                    damage = _random.D8(3);
+                    damage = RandomService.D8(3);
                     duration = 6;
                     break;
                 case 5:
-                    damage = _random.D8(4);
+                    damage = RandomService.D8(4);
                     duration = 6;
                     break;
                 case 6:
-                    damage = _random.D8(5);
+                    damage = RandomService.D8(5);
                     duration = 6;
                     break;
                 case 7:
-                    damage = _random.D8(6);
+                    damage = RandomService.D8(6);
                     duration = 6;
                     break;
                 case 8:
-                    damage = _random.D8(7);
+                    damage = RandomService.D8(7);
                     duration = 6;
                     break;
                 case 9:
-                    damage = _random.D8(7);
+                    damage = RandomService.D8(7);
                     duration = 9;
                     break;
                 case 10:
-                    damage = _random.D8(8);
+                    damage = RandomService.D8(8);
                     duration = 9;
                     break;
                 default: return;

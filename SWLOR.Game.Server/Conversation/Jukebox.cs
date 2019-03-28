@@ -2,24 +2,14 @@
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
 {
     public class Jukebox: ConversationBase
     {
-        private readonly IDataService _data;
-
-        public Jukebox(
-            INWScript script, 
-            IDialogService dialog,
-            IDataService data) 
-            : base(script, dialog)
-        {
-            _data = data;
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -34,7 +24,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             ClearPageResponses("MainPage");
 
-            var songs = _data.Where<JukeboxSong>(x => x.IsActive).OrderBy(o => o.DisplayName);
+            var songs = DataService.Where<JukeboxSong>(x => x.IsActive).OrderBy(o => o.DisplayName);
             foreach (var song in songs)
             {
                 AddResponseToPage("MainPage", song.DisplayName, true, song.ID);
@@ -45,7 +35,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             DialogResponse response = GetResponseByID("MainPage", responseID);
             int jukeboxSongID = (int)response.CustomData;
-            JukeboxSong song = _data.Get<JukeboxSong>(jukeboxSongID);
+            JukeboxSong song = DataService.Get<JukeboxSong>(jukeboxSongID);
 
             player.FloatingText("Song Selected: " + song.DisplayName);
 

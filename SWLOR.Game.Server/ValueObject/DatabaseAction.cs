@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Enumeration;

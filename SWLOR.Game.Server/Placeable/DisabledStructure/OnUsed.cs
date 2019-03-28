@@ -1,19 +1,11 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Placeable.DisabledStructure
 {
     public class OnUsed: IRegisteredEvent
     {
-        private readonly INWScript _;
-
-        public OnUsed(INWScript script)
-        {
-            _ = script;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlayer user = (_.GetLastUsedBy());

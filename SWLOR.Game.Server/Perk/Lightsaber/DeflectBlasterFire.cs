@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.Lightsaber
 {
-    public class DeflectBlasterFire: IPerk
+    public class DeflectBlasterFire: IPerkHandler
     {
+        public PerkType PerkType => PerkType.DeflectBlasterFire;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

@@ -1,22 +1,13 @@
-﻿using NWN;
-using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX.Contracts;
-using static NWN.NWScript;
+using SWLOR.Game.Server.NWNX;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class PointBlankShot: IPerk
+    public class PointBlankShot: IPerkHandler
     {
-        private readonly INWScript _;
-        private readonly INWNXCreature _nwnxCreature;
-
-        public PointBlankShot(INWScript script,
-            INWNXCreature nwnxCreature)
-        {
-            _ = script;
-            _nwnxCreature = nwnxCreature;
-        }
+        public PerkType PerkType => PerkType.PointBlankShot;
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
@@ -59,7 +50,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, FEAT_POINT_BLANK_SHOT);
+            NWNXCreature.RemoveFeat(oPC, FEAT_POINT_BLANK_SHOT);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
@@ -83,11 +74,11 @@ namespace SWLOR.Game.Server.Perk.Blaster
             
             if (Equals(armor, oItem) || armor.CustomItemType != CustomItemType.LightArmor)
             {
-                _nwnxCreature.RemoveFeat(oPC, FEAT_POINT_BLANK_SHOT);
+                NWNXCreature.RemoveFeat(oPC, FEAT_POINT_BLANK_SHOT);
                 return;
             }
 
-            _nwnxCreature.AddFeat(oPC, FEAT_POINT_BLANK_SHOT);
+            NWNXCreature.AddFeat(oPC, FEAT_POINT_BLANK_SHOT);
         }
 
         public bool IsHostile()

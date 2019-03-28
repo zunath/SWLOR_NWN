@@ -2,20 +2,20 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
+
 
 namespace SWLOR.Game.Server.Service
 {
-    public class PlayerDescriptionService: IPlayerDescriptionService
+    public static class PlayerDescriptionService
     {
-        private readonly INWScript _;
-
-        public PlayerDescriptionService(INWScript script)
+        public static void SubscribeEvents()
         {
-            _ = script;
+            MessageHub.Instance.Subscribe<OnModuleChat>(message => OnModuleChat());
         }
 
-        public void OnModuleChat()
+        private static void OnModuleChat()
         {
             NWPlayer sender = (_.GetPCChatSpeaker());
             if (sender.GetLocalInt("LISTENING_FOR_DESCRIPTION") != 1) return;
@@ -29,16 +29,16 @@ namespace SWLOR.Game.Server.Service
             _.SendMessageToPC(sender.Object, "New description received. Please press the 'Next' button in the conversation window.");
         }
 
-        public void ChangePlayerDescription(NWPlayer player)
+        public static void ChangePlayerDescription(NWPlayer player)
         {
             if (player == null) throw new ArgumentNullException(nameof(player));
             if (player.Object == null) throw new ArgumentNullException(nameof(player.Object));
 
             string newDescription = player.GetLocalString("NEW_DESCRIPTION_TO_SET");
             _.SetDescription(player.Object, newDescription);
-            _.SetDescription(player.Object, newDescription, NWScript.FALSE);
+            _.SetDescription(player.Object, newDescription, _.FALSE);
 
-            _.FloatingTextStringOnCreature("New description set!", player.Object, NWScript.FALSE);
+            _.FloatingTextStringOnCreature("New description set!", player.Object, _.FALSE);
         }
     }
 }

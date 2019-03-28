@@ -1,14 +1,10 @@
-﻿using FluentBehaviourTree;
-using SWLOR.Game.Server.AI.AIComponent;
-using SWLOR.Game.Server.Extension;
+﻿using System;
+using System.Linq;
 using SWLOR.Game.Server.GameObject;
-
 using NWN;
-using SWLOR.Game.Server.NWNX.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
-using SWLOR.Game.Server.Event;
-using System;
+using SWLOR.Game.Server.Enumeration;
+using static NWN._;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.AI
 {
@@ -17,107 +13,282 @@ namespace SWLOR.Game.Server.AI
     /// </summary>
     public class DarkForceUser : BehaviourBase
     {
-        private readonly INWScript _;
-        protected readonly BehaviourTreeBuilder _builder;
-        private readonly IEnmityService _enmity;
-        private readonly IDialogService _dialog;
-        private readonly INWNXObject _nwnxObject;
-
-        public DarkForceUser(BehaviourTreeBuilder builder,
-            INWScript script,
-            IEnmityService enmity,
-            IDialogService dialog,
-            INWNXObject nwnxObject)
-        {
-            _ = script;
-            _builder = builder;
-            _enmity = enmity;
-            _dialog = dialog;
-            _nwnxObject = nwnxObject;
-        }
-
-        public override bool IgnoreNWNEvents => true;
-
-        private void DoForceAttack()
+        private void DoForceAttack(NWCreature self)
         {
             // Trigger ForceAttackHighestEmnity if not doing anything. 
-            if (_.GetCurrentAction() == NWScript.ACTION_ATTACKOBJECT)
+            if (_.GetCurrentAction() == _.ACTION_ATTACKOBJECT)
             {
                 _.ClearAllActions();
-
-                NWObject self = NWN.Object.OBJECT_SELF;
-                App.RunEvent<ForceAttackHighestEnmity>(self);
+                ForceAttackHighestEnmity(self);
             }
         }
-
-        public override BehaviourTreeBuilder Behaviour
+        
+        public override void OnPhysicalAttacked(NWCreature self)
         {
-            get
+            base.OnPhysicalAttacked(self);
+            DoForceAttack(self);
+        }
+        
+        public override void OnDamaged(NWCreature self)
+        {
+            base.OnDamaged(self);
+            DoForceAttack(self);
+        }
+
+        protected override void OnAIProcessing(NWCreature self)
+        {
+            ForceAttackHighestEnmity(self);
+        }
+
+        private bool UseFeat(int featID, string featName, NWCreature caster, NWCreature target)
+        {
+            // Note - this code is loosely based on code from AbilityService.  However, the perk interface
+            // is written assuming players will always be using perks.  To allow NPCs to use them requires some hackery.
+            int perkLevel = (int)caster.ChallengeRating / 5;
+            if (perkLevel < 1) perkLevel = 1;
+
+            if (caster.Area.Resref != target.Area.Resref ||
+                    _.LineOfSightObject(caster.Object, target.Object) == 0)
             {
-                if (!Self.IsValid) return null;
-
-                return _builder
-                    .Parallel("StandardBehaviour", 5, 1)
-                    .Do<CleanUpEnmity>(Self)
-                    .Do<ForceAttackHighestEnmity>(Self);
+                return false;
             }
-        } 
 
-        public override void OnPhysicalAttacked()
-        {
-            base.OnPhysicalAttacked();
-            _enmity.OnNPCPhysicallyAttacked();
-
-            DoForceAttack();
-        }
-
-        public override void OnDeath()
-        {
-            base.OnDeath();
-
-            int vfx = Self.GetLocalInt("DEATH_VFX");
-            if (vfx > 0)
+            // Give NPCs a bit longer range than most PCs.
+            if (_.GetDistanceBetween(caster, target) > 20.0f)
             {
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(vfx), Self);
+                return false;
             }
-        }
 
-        public override void OnDamaged()
-        {
-            base.OnDamaged();
-            _enmity.OnNPCDamaged();
-
-            DoForceAttack();
-        }
-
-        public override void OnConversation()
-        {
-            base.OnConversation();
-            string convo = Self.GetLocalString("CONVERSATION");
-            
-            if (!string.IsNullOrWhiteSpace(convo))
+            // Note - NPCs are assumed to have infinite FPs.
+            if (_.GetIsDead(caster) == 1)
             {
-                NWPlayer player = (_.GetLastSpeaker());
-                _dialog.StartConversation(player, Self, convo);
+                return false;
             }
-            else if (!string.IsNullOrWhiteSpace(_nwnxObject.GetDialogResref(Self)))
+
+            // Cooldown of 1 round.
+            string timeout = caster.GetLocalString("TIMEOUT_" + featName);
+            DateTime unlockTime = DateTime.UtcNow;
+            if (!string.IsNullOrWhiteSpace(timeout)) unlockTime = DateTime.Parse(timeout);
+            DateTime now = DateTime.UtcNow;
+
+            if (unlockTime > now)
             {
-                _.BeginConversation(_nwnxObject.GetDialogResref(Self));
+                return false;
             }
+            else
+            {
+                unlockTime = now.AddSeconds(6);
+                caster.SetLocalString("TIMEOUT_" + featName, unlockTime.ToString());
+            }
+
+            // Do the actual force attack.  Code taken from perks. 
+            if (featID == (int)CustomFeatType.ForceLightning)
+            {
+                int length;
+                int dotAmount;
+
+                int basePotency;
+                const float Tier1Modifier = 1.0f;
+                const float Tier2Modifier = 1.6f;
+                const float Tier3Modifier = 2.2f;
+                const float Tier4Modifier = 0;
+
+                switch (perkLevel)
+                {
+                    case 1:
+                        basePotency = 15;
+                        length = 0;
+                        dotAmount = 0;
+                        break;
+                    case 2:
+                        basePotency = 20;
+                        length = 6;
+                        dotAmount = 4;
+                        break;
+                    case 3:
+                        basePotency = 25;
+                        length = 6;
+                        dotAmount = 6;
+                        break;
+                    case 4:
+                        basePotency = 40;
+                        length = 12;
+                        dotAmount = 6;
+                        break;
+                    case 5:
+                        basePotency = 50;
+                        length = 12;
+                        dotAmount = 6;
+                        break;
+                    case 6:
+                        basePotency = 60;
+                        length = 12;
+                        dotAmount = 6;
+                        break;
+                    case 7:
+                        basePotency = 70;
+                        length = 12;
+                        dotAmount = 6;
+                        break;
+                    case 8:
+                        basePotency = 80;
+                        length = 12;
+                        dotAmount = 8;
+                        break;
+                    case 9:
+                        basePotency = 90;
+                        length = 12;
+                        dotAmount = 8;
+                        break;
+                    default:
+                        basePotency = 100;
+                        length = 12;
+                        dotAmount = 10;
+                        break;
+                }
+
+                var calc = CombatService.CalculateForceDamage(
+                    caster,
+                    target.Object,
+                    ForceAbilityType.Electrical,
+                    basePotency,
+                    Tier1Modifier,
+                    Tier2Modifier,
+                    Tier3Modifier,
+                    Tier4Modifier);
+
+                caster.AssignCommand(() => {
+                    _.SetFacingPoint(target.Location.Position);
+                    _.ActionPlayAnimation(ANIMATION_LOOPING_CONJURE1, 1.0f, 1.0f);
+                });
+
+                caster.SetLocalInt("CASTING", 1);
+
+                _.DelayCommand(1.0f, () =>
+                {
+                    caster.AssignCommand(() =>
+                    {
+                        Effect damage = _.EffectDamage(calc.Damage, DAMAGE_TYPE_ELECTRICAL);
+                        _.ApplyEffectToObject(DURATION_TYPE_INSTANT, damage, target);
+                    });
+
+                    if (length > 0.0f && dotAmount > 0)
+                    {
+                        CustomEffectService.ApplyCustomEffect(caster, target.Object, CustomEffectType.ForceShock, length, perkLevel, dotAmount.ToString());
+                    }
+
+                    caster.AssignCommand(() =>
+                    {
+                        _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_BEAM_LIGHTNING), target, 1.0f);
+                        caster.DeleteLocalInt("CASTING");
+                    });
+
+                    CombatService.AddTemporaryForceDefense(target.Object, ForceAbilityType.Electrical);
+                });
+            }
+            else if (featID == (int)CustomFeatType.DrainLife)
+            {
+                float recoveryPercent;
+                int basePotency;
+                const float Tier1Modifier = 1;
+                const float Tier2Modifier = 2;
+                const float Tier3Modifier = 0;
+                const float Tier4Modifier = 0;
+
+                switch (perkLevel)
+                {
+                    case 1:
+                        basePotency = 10;
+                        recoveryPercent = 0.2f;
+                        break;
+                    case 2:
+                        basePotency = 15;
+                        recoveryPercent = 0.2f;
+                        break;
+                    case 3:
+                        basePotency = 20;
+                        recoveryPercent = 0.4f;
+                        break;
+                    case 4:
+                        basePotency = 25;
+                        recoveryPercent = 0.4f;
+                        break;
+                    default:
+                        basePotency = 30;
+                        recoveryPercent = 0.5f;
+                        break;
+                }
+
+                var calc = CombatService.CalculateForceDamage(
+                    caster,
+                    target.Object,
+                    ForceAbilityType.Dark,
+                    basePotency,
+                    Tier1Modifier,
+                    Tier2Modifier,
+                    Tier3Modifier,
+                    Tier4Modifier);
+
+                caster.AssignCommand(() => {
+                    _.SetFacingPoint(target.Location.Position);
+                    _.ActionPlayAnimation(ANIMATION_LOOPING_CONJURE1, 1.0f, 1.0f);
+                });
+                caster.SetLocalInt("CASTING", 1);
+
+                _.DelayCommand(1.0f, () =>
+                {
+                    _.AssignCommand(caster, () =>
+                    {
+                        int heal = (int)(calc.Damage * recoveryPercent);
+                        if (heal > target.CurrentHP) heal = target.CurrentHP;
+
+                        _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(calc.Damage), target);
+                        _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(heal), caster);
+                        _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_BEAM_MIND), target, 1.0f);
+                        caster.DeleteLocalInt("CASTING");
+                    });
+                });
+
+
+                CombatService.AddTemporaryForceDefense(target.Object, ForceAbilityType.Dark);
+            }
+
+            return true;
         }
 
-        public override void OnBlocked()
+        private void ForceAttackHighestEnmity(NWCreature self)
         {
-            base.OnBlocked();
+            if (self.GetLocalInt("CASTING") == 1) return;
+            var enmityTable = EnmityService.GetEnmityTable(self);
+            var target = enmityTable.Values
+                .OrderByDescending(o => o.TotalAmount)
+                .FirstOrDefault(x => x.TargetObject.IsValid &&
+                                     x.TargetObject.Area.Equals(self.Area));
 
-            NWObject door = (_.GetBlockingDoor());
-            if (!door.IsValid) return;
-
-            if (_.GetIsDoorActionPossible(door.Object, DOOR_ACTION_OPEN) == TRUE)
+            if (target == null) return;
+            self.AssignCommand(() =>
             {
-                _.DoDoorAction(door.Object, DOOR_ACTION_OPEN);
-            }
-        }
+                bool bDone = false;
 
+                // See which force feats we have, and pick one to use. 
+                if (_.GetHasFeat((int)CustomFeatType.ForceLightning, self) == 1)
+                {
+                    _.ClearAllActions();
+                    bDone = UseFeat((int)CustomFeatType.ForceLightning, "ForceLightning", self, target.TargetObject);
+                }
+
+                if (!bDone && _.GetHasFeat((int)CustomFeatType.DrainLife, self) == 1)
+                {
+                    _.ClearAllActions();
+                    bDone = UseFeat((int)CustomFeatType.DrainLife, "DrainLife", self, target.TargetObject);
+                }
+
+                if (!bDone)
+                {
+                    // No abilities available right now, run away!
+                    _.ActionMoveAwayFromObject(target.TargetObject, 1);
+                }
+            });
+        }
     }
 }

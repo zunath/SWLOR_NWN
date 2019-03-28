@@ -3,18 +3,15 @@ using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.CustomEffect
 {
-    public class BurningEffect: ICustomEffect
+    public class BurningEffect: ICustomEffectHandler
     {
-        private readonly INWScript _;
-
-        public BurningEffect(INWScript script)
-        {
-            _ = script;
-        }
+        public CustomEffectCategoryType CustomEffectCategoryType => CustomEffectCategoryType.NormalEffect;
+        public CustomEffectType CustomEffectType => CustomEffectType.Burning;
 
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
@@ -29,16 +26,20 @@ namespace SWLOR.Game.Server.CustomEffect
 
             oCaster.AssignCommand(() =>
             {
-                Effect damage = _.EffectDamage(amount, NWScript.DAMAGE_TYPE_FIRE);
-                _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, damage, oTarget.Object);
+                Effect damage = _.EffectDamage(amount, _.DAMAGE_TYPE_FIRE);
+                _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, damage, oTarget.Object);
             });
 
-            Effect vfx = _.EffectVisualEffect(NWScript.VFX_COM_HIT_FIRE);
-            _.ApplyEffectToObject(NWScript.DURATION_TYPE_INSTANT, vfx, oTarget.Object);
+            Effect vfx = _.EffectVisualEffect(_.VFX_COM_HIT_FIRE);
+            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, vfx, oTarget.Object);
         }
 
         public void WearOff(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)
         {
         }
+
+        public string StartMessage => "You are on fire.";
+        public string ContinueMessage => "You continue to burn...";
+        public string WornOffMessage => "You are no longer on fire.";
     }
 }

@@ -6,13 +6,6 @@ namespace SWLOR.Game.Server.Placeable.FuelBay
 {
     public class OnOpened: IRegisteredEvent
     {
-        private readonly INWScript _;
-
-        public OnOpened(INWScript script)
-        {
-            _ = script;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlaceable chest = (Object.OBJECT_SELF);

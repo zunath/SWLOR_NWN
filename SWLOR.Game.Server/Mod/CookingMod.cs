@@ -4,8 +4,10 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class CookingMod : IMod
+    public class CookingMod : IModHandler
     {
+        public int ModTypeID => 14;
+
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             if (target.CraftBonusCooking >= 30)

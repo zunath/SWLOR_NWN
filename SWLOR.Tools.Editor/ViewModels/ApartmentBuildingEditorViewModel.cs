@@ -1,6 +1,4 @@
 ﻿using Caliburn.Micro;
-using SWLOR.Tools.Editor.Enumeration;
-using SWLOR.Tools.Editor.Messages;
 using SWLOR.Tools.Editor.ViewModels.Contracts;
 using SWLOR.Tools.Editor.ViewModels.Data;
 

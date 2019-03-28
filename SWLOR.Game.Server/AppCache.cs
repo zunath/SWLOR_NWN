@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
@@ -8,36 +11,32 @@ using SWLOR.Game.Server.ValueObject.Skill;
 
 namespace SWLOR.Game.Server
 {
-    public class AppCache
+    public static class AppCache
     {
-        public Dictionary<Guid, PlayerDialog> PlayerDialogs { get; }
-        public Dictionary<int, bool> DialogFilesInUse { get; }
-        public Dictionary<string, int> EffectTicks { get; }
-        public Dictionary<Guid, CreatureSkillRegistration> CreatureSkillRegistrations;
-        public Dictionary<CasterSpellVO, int> NPCEffects { get; }
-        public Dictionary<string, ProcessingEvent> ProcessingEvents { get; set; }
-        public Queue<string> UnregisterProcessingEvents { get; set; }
-        public Dictionary<Guid, EnmityTable> NPCEnmityTables { get; set; }
-        public Dictionary<Guid, CustomData> CustomObjectData { get; set; } 
-        public Dictionary<string, NWCreature> NPCBehaviours { get; set; }
-        public Dictionary<NWArea, AreaSpawn> AreaSpawns { get; set; }
-        public Dictionary<string, NWObject> VisibilityObjects { get; set; }
-        public List<Guid> PCEffectsForRemoval { get; set; }
-        public List<NWObject> ConnectedDMs { get; set; }
-        public Dictionary<Guid, Dictionary<int, int>> PlayerEffectivePerkLevels { get; set; }
+        public static Dictionary<Guid, PlayerDialog> PlayerDialogs { get; }
+        public static Dictionary<int, bool> DialogFilesInUse { get; }
+        public static Dictionary<string, int> EffectTicks { get; }
+        public static Dictionary<Guid, CreatureSkillRegistration> CreatureSkillRegistrations;
+        public static Dictionary<CasterSpellVO, int> NPCEffects { get; }
+        public static Queue<string> UnregisterProcessingEvents { get; set; }
+        public static Dictionary<Guid, EnmityTable> NPCEnmityTables { get; set; }
+        public static Dictionary<Guid, CustomData> CustomObjectData { get; set; } 
+        public static Dictionary<NWArea, AreaSpawn> AreaSpawns { get; set; }
+        public static Dictionary<string, NWObject> VisibilityObjects { get; set; }
+        public static List<Guid> PCEffectsForRemoval { get; set; }
+        public static List<NWObject> ConnectedDMs { get; set; }
+        public static Dictionary<Guid, Dictionary<int, int>> PlayerEffectivePerkLevels { get; set; }
 
-        public AppCache()
+        static AppCache()
         {
             PlayerDialogs = new Dictionary<Guid, PlayerDialog>();
             DialogFilesInUse = new Dictionary<int, bool>();
             EffectTicks = new Dictionary<string, int>();
             CreatureSkillRegistrations = new Dictionary<Guid, CreatureSkillRegistration>();
             NPCEffects = new Dictionary<CasterSpellVO, int>();
-            ProcessingEvents = new Dictionary<string, ProcessingEvent>();
             UnregisterProcessingEvents = new Queue<string>();
             NPCEnmityTables = new Dictionary<Guid, EnmityTable>();
             CustomObjectData = new Dictionary<Guid, CustomData>();
-            NPCBehaviours = new Dictionary<string, NWCreature>();
             AreaSpawns = new Dictionary<NWArea, AreaSpawn>();
             VisibilityObjects = new Dictionary<string, NWObject>();
             PCEffectsForRemoval = new List<Guid>();
@@ -48,6 +47,31 @@ namespace SWLOR.Game.Server
             {
                 DialogFilesInUse.Add(x, false);
             }
+        }
+
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<ObjectProcessorMessage>(message => Clean());
+        }
+
+        private static void Clean()
+        {
+            foreach (var npcTable in NPCEnmityTables.ToArray())
+            {
+                if (!npcTable.Value.NPCObject.IsValid)
+                {
+                    NPCEnmityTables.Remove(npcTable.Key);
+                }
+            }
+            foreach (var customData in CustomObjectData.ToArray())
+            {
+                NWObject owner = customData.Value.Owner;
+                if (!owner.IsValid)
+                {
+                    CustomObjectData.Remove(customData.Key);
+                }
+            }
+
         }
 
     }

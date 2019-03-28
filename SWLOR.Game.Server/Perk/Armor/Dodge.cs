@@ -1,18 +1,13 @@
 ﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using NWN;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Perk.Armor
 {
-    public class Dodge: IPerk
+    public class Dodge: IPerkHandler
     {
-        private readonly INWNXCreature _nwnxCreature;
-
-        public Dodge(INWNXCreature nwnxCreature)
-        {
-            _nwnxCreature = nwnxCreature;
-        }
+        public PerkType PerkType => PerkType.Dodge;
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
@@ -55,7 +50,7 @@ namespace SWLOR.Game.Server.Perk.Armor
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_DODGE);
+            NWNXCreature.RemoveFeat(oPC, _.FEAT_DODGE);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
@@ -82,11 +77,11 @@ namespace SWLOR.Game.Server.Perk.Armor
             
             if (equipped.Equals(oItem) || equipped.CustomItemType != CustomItemType.LightArmor)
             {
-                _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_DODGE);
+                NWNXCreature.RemoveFeat(oPC, _.FEAT_DODGE);
                 return;
             }
 
-            _nwnxCreature.AddFeat(oPC, NWScript.FEAT_DODGE);
+            NWNXCreature.AddFeat(oPC, _.FEAT_DODGE);
         }
 
         public bool IsHostile()

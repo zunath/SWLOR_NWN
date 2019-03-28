@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using NWN;
+using SWLOR.Game.Server.AI;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Messaging.Messages;
-using SWLOR.Game.Server.Mod.Contracts;
 using SWLOR.Game.Server.NWN.Events.Module;
-using SWLOR.Game.Server.Processor;
-
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
 using static NWN._;
@@ -78,7 +76,7 @@ namespace SWLOR.Game.Server.Service
             var areaSpawn = new AreaSpawn();
 
             // Check for manually placed spawns
-            NWObject obj = _.GetFirstObjectInArea(area.Object);
+            NWObject obj = GetFirstObjectInArea(area.Object);
             while (obj.IsValid)
             {
                 bool isSpawn = obj.ObjectType == OBJECT_TYPE_WAYPOINT && obj.GetLocalInt("IS_SPAWN") == TRUE;
@@ -97,6 +95,7 @@ namespace SWLOR.Game.Server.Service
                     float respawnTime = obj.GetLocalFloat("SPAWN_RESPAWN_SECONDS");
                     string spawnRule = obj.GetLocalString("SPAWN_RULE");
                     int deathVFXID = obj.GetLocalInt("SPAWN_DEATH_VFX");
+                    AIFlags aiFlags = (AIFlags)obj.GetLocalInt("SPAWN_AI_FLAGS");
                     bool useResref = true;
 
                     // No resref specified but a table was, look in the database for a random record.
@@ -124,6 +123,9 @@ namespace SWLOR.Game.Server.Service
 
                             if (deathVFXID <= 0)
                                 deathVFXID = dbSpawn.DeathVFXID;
+
+                            if (aiFlags == AIFlags.None)
+                                aiFlags = dbSpawn.AIFlags;
                         }
                     }
 
@@ -164,6 +166,11 @@ namespace SWLOR.Game.Server.Service
                             newSpawn.SpawnRule = spawnRule;
                         }
 
+                        if (aiFlags == AIFlags.None)
+                        {
+                            newSpawn.AIFlags = aiFlags;
+                        }
+
                         // Instance spawns are one-shot.
                         if (isInstance)
                         {
@@ -181,12 +188,12 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
-                obj = _.GetNextObjectInArea(area.Object);
+                obj = GetNextObjectInArea(area.Object);
             }
 
             AppCache.AreaSpawns.Add(area, areaSpawn);
 
-            _.DelayCommand(1.0f, () =>
+            DelayCommand(1.0f, () =>
             {
                 SpawnResources(area, areaSpawn);
             });
@@ -201,8 +208,8 @@ namespace SWLOR.Game.Server.Service
 
             var spawnPoint = walkmeshes[index];
             
-            return _.Location(area.Object,
-                _.Vector((float)spawnPoint.LocationX, (float)spawnPoint.LocationY, (float)spawnPoint.LocationZ),
+            return Location(area.Object,
+                Vector((float)spawnPoint.LocationX, (float)spawnPoint.LocationY, (float)spawnPoint.LocationZ),
                 RandomService.RandomFloat(0, 360));
 
         }
@@ -257,7 +264,7 @@ namespace SWLOR.Game.Server.Service
                 int index = RandomService.GetRandomWeightedIndex(weights);
                 var dbSpawn = possibleSpawns.ElementAt(index);
                 Location location = GetRandomSpawnPoint(area);
-                NWPlaceable plc = (_.CreateObject(OBJECT_TYPE_PLACEABLE, dbSpawn.Resref, location));
+                NWPlaceable plc = (CreateObject(OBJECT_TYPE_PLACEABLE, dbSpawn.Resref, location));
                 ObjectSpawn spawn = new ObjectSpawn(location, false, dbArea.ResourceSpawnTableID, 600.0f);
                 spawn.Spawn = plc;
 
@@ -299,57 +306,57 @@ namespace SWLOR.Game.Server.Service
 
         public static void AssignScriptEvents(NWCreature creature)
         {
-            if (string.IsNullOrWhiteSpace(_.GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_HEARTBEAT)))
+            if (string.IsNullOrWhiteSpace(GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_HEARTBEAT)))
             {
-                _.SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_HEARTBEAT, "x2_def_heartbeat");
+                SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_HEARTBEAT, "x2_def_heartbeat");
             }
-            if (string.IsNullOrWhiteSpace(_.GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_NOTICE)))
+            if (string.IsNullOrWhiteSpace(GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_NOTICE)))
             {
-                _.SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_NOTICE, "x2_def_percept");
+                SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_NOTICE, "x2_def_percept");
             }
-            if (string.IsNullOrWhiteSpace(_.GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_SPELLCASTAT)))
+            if (string.IsNullOrWhiteSpace(GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_SPELLCASTAT)))
             {
-                _.SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_SPELLCASTAT, "x2_def_spellcast");
+                SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_SPELLCASTAT, "x2_def_spellcast");
             }
-            if (string.IsNullOrWhiteSpace(_.GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_MELEE_ATTACKED)))
+            if (string.IsNullOrWhiteSpace(GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_MELEE_ATTACKED)))
             {
-                _.SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_MELEE_ATTACKED, "x2_def_attacked");
+                SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_MELEE_ATTACKED, "x2_def_attacked");
             }
-            if (string.IsNullOrWhiteSpace(_.GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_DAMAGED)))
+            if (string.IsNullOrWhiteSpace(GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_DAMAGED)))
             {
-                _.SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_DAMAGED, "x2_def_ondamage");
+                SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_DAMAGED, "x2_def_ondamage");
             }
-            if (string.IsNullOrWhiteSpace(_.GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_DISTURBED)))
+            if (string.IsNullOrWhiteSpace(GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_DISTURBED)))
             {
-                _.SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_DISTURBED, "x2_def_ondisturb");
+                SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_DISTURBED, "x2_def_ondisturb");
             }
-            if (string.IsNullOrWhiteSpace(_.GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_END_COMBATROUND)))
+            if (string.IsNullOrWhiteSpace(GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_END_COMBATROUND)))
             {
-                _.SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_END_COMBATROUND, "x2_def_endcombat");
+                SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_END_COMBATROUND, "x2_def_endcombat");
             }
-            if (string.IsNullOrWhiteSpace(_.GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_DIALOGUE)))
+            if (string.IsNullOrWhiteSpace(GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_DIALOGUE)))
             {
-                _.SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_DIALOGUE, "x2_def_onconv");
+                SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_DIALOGUE, "x2_def_onconv");
             }
-            if (string.IsNullOrWhiteSpace(_.GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_SPAWN_IN)))
+            if (string.IsNullOrWhiteSpace(GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_SPAWN_IN)))
             {
-                _.SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_SPAWN_IN, "x2_def_spawn");
+                SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_SPAWN_IN, "x2_def_spawn");
             }
-            if (string.IsNullOrWhiteSpace(_.GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_RESTED)))
+            if (string.IsNullOrWhiteSpace(GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_RESTED)))
             {
-                _.SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_RESTED, "x2_def_rested");
+                SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_RESTED, "x2_def_rested");
             }
-            if (string.IsNullOrWhiteSpace(_.GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_DEATH)))
+            if (string.IsNullOrWhiteSpace(GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_DEATH)))
             {
-                _.SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_DEATH, "x2_def_ondeath");
+                SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_DEATH, "x2_def_ondeath");
             }
-            if (string.IsNullOrWhiteSpace(_.GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_USER_DEFINED_EVENT)))
+            if (string.IsNullOrWhiteSpace(GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_USER_DEFINED_EVENT)))
             {
-                _.SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_USER_DEFINED_EVENT, "x2_def_userdef");
+                SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_USER_DEFINED_EVENT, "x2_def_userdef");
             }
-            if (string.IsNullOrWhiteSpace(_.GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_BLOCKED_BY_DOOR)))
+            if (string.IsNullOrWhiteSpace(GetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_BLOCKED_BY_DOOR)))
             {
-                _.SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_BLOCKED_BY_DOOR, "x2_def_onblocked");
+                SetEventScript(creature, EVENT_SCRIPT_CREATURE_ON_BLOCKED_BY_DOOR, "x2_def_onblocked");
             }
         }
 
@@ -361,60 +368,20 @@ namespace SWLOR.Game.Server.Service
                 if (!spawn.Key.IsValid) continue;
 
                 AreaSpawn areaSpawn = spawn.Value;
-                int pcsInArea = NWModule.Get().Players.Count(x => x.Area.Equals(spawn.Key));
+                bool forceSpawn = !areaSpawn.HasSpawned;
 
-                // No players in area. Process the despawner.
-                if (pcsInArea <= 0 && areaSpawn.HasSpawned)
+                foreach (var plc in areaSpawn.Placeables.Where(x => x.Respawns || !x.Respawns && !x.HasSpawnedOnce))
                 {
-                    areaSpawn.SecondsEmpty += ObjectProcessingService.ProcessingTickInterval;
-
-                    if (areaSpawn.SecondsEmpty >= 1200) // 20 minutes have passed with no players in the area.
-                    {
-                        areaSpawn.SecondsEmpty = 0.0f;
-                        areaSpawn.HasSpawned = false;
-
-                        foreach (var plc in areaSpawn.Placeables)
-                        {
-                            NWPlaceable prop = plc.Spawn.GetLocalObject("RESOURCE_PROP_OBJ");
-                            if (prop.IsValid)
-                            {
-                                prop.Destroy();
-                            }
-
-                            if (plc.Spawn.IsValid)
-                            {
-                                plc.Spawn.Destroy();
-                            }
-                        }
-
-                        foreach (var creature in areaSpawn.Creatures)
-                        {
-                            if (creature.Spawn.IsValid)
-                            {
-                                creature.Spawn.Destroy();
-                            }
-                        }
-                    }
+                    ProcessSpawn(plc, OBJECT_TYPE_PLACEABLE, spawn.Key, forceSpawn);
                 }
-                // Players in the area
-                else if (pcsInArea > 0)
+
+                foreach (var creature in areaSpawn.Creatures.Where(x => x.Respawns || !x.Respawns && !x.HasSpawnedOnce))
                 {
-                    bool forceSpawn = !areaSpawn.HasSpawned;
-
-                    foreach (var plc in areaSpawn.Placeables.Where(x => x.Respawns || !x.Respawns && !x.HasSpawnedOnce))
-                    {
-                        ProcessSpawn(plc, OBJECT_TYPE_PLACEABLE, spawn.Key, forceSpawn);
-                    }
-
-                    foreach (var creature in areaSpawn.Creatures.Where(x => x.Respawns || !x.Respawns && !x.HasSpawnedOnce))
-                    {
-                        ProcessSpawn(creature, OBJECT_TYPE_CREATURE, spawn.Key, forceSpawn);
-                    }
-
-                    areaSpawn.SecondsEmpty = 0.0f;
-                    areaSpawn.HasSpawned = true;
-
+                    ProcessSpawn(creature, OBJECT_TYPE_CREATURE, spawn.Key, forceSpawn);
                 }
+
+                areaSpawn.SecondsEmpty = 0.0f;
+                areaSpawn.HasSpawned = true;
             }
         }
 
@@ -434,6 +401,7 @@ namespace SWLOR.Game.Server.Service
                 int deathVFXID = spawn.DeathVFXID;
                 string behaviour = spawn.BehaviourScript;
                 NWLocation location = spawn.IsStaticSpawnPoint ? spawn.SpawnLocation : null;
+                AIFlags aiFlags = spawn.AIFlags;
 
                 spawn.HasSpawnedOnce = true;
 
@@ -447,6 +415,7 @@ namespace SWLOR.Game.Server.Service
                     npcGroupID = dbSpawn.NPCGroupID ?? 0;
                     deathVFXID = dbSpawn.DeathVFXID;
                     behaviour = dbSpawn.BehaviourScript;
+                    aiFlags = dbSpawn.AIFlags;
 
                     if (!string.IsNullOrWhiteSpace(dbSpawn.SpawnRule))
                     {
@@ -461,10 +430,10 @@ namespace SWLOR.Game.Server.Service
 
                 if (location == null)
                 {
-                    location = SpawnService.GetRandomSpawnPoint(area);
+                    location = GetRandomSpawnPoint(area);
                 }
 
-                spawn.Spawn = _.CreateObject(objectType, resref, location);
+                spawn.Spawn = CreateObject(objectType, resref, location);
 
                 if (!spawn.Spawn.IsValid)
                 {
@@ -482,12 +451,14 @@ namespace SWLOR.Game.Server.Service
                     string.IsNullOrWhiteSpace(spawn.Spawn.GetLocalString("BEHAVIOUR")))
                     spawn.Spawn.SetLocalString("BEHAVIOUR", behaviour);
 
+                spawn.Spawn.SetLocalInt("AI_FLAGS", (int) aiFlags);
+
                 if (objectType == OBJECT_TYPE_CREATURE)
-                    SpawnService.AssignScriptEvents(spawn.Spawn.Object);
+                    AssignScriptEvents(spawn.Spawn.Object);
 
                 if (!string.IsNullOrWhiteSpace(spawn.SpawnRule))
                 {
-                    var rule = SpawnService.GetSpawnRule(spawn.SpawnRule);
+                    var rule = GetSpawnRule(spawn.SpawnRule);
                     rule.Run(spawn.Spawn);
                 }
 

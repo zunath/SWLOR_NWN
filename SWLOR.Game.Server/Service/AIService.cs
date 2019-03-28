@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using FluentBehaviourTree;
 using NWN;
 using SWLOR.Game.Server.AI.Contracts;
 using SWLOR.Game.Server.GameObject;
@@ -9,34 +9,19 @@ using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.NWN.Events.Creature;
 using SWLOR.Game.Server.NWN.Events.Module;
-using SWLOR.Game.Server.SpawnRule.Contracts;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class AIService
     {
-        private class AICreature
-        {
-            public IBehaviourTreeNode Node { get; set; }
-            public NWCreature Creature { get; set; }
-
-            public AICreature(IBehaviourTreeNode node, NWCreature creature)
-            {
-                Node = node;
-                Creature = creature;
-            }
-        }
-
         private static readonly Dictionary<string, IAIBehaviour> _aiBehaviours;
-        public static BehaviourTreeBuilder BehaviourTree { get; }
-        private static readonly HashSet<AICreature> _aiCreatures;
+        private static readonly HashSet<NWCreature> _aiCreatures;
 
         static AIService()
         {
             _aiBehaviours = new Dictionary<string, IAIBehaviour>();
-            _aiCreatures = new HashSet<AICreature>();
-            BehaviourTree = new BehaviourTreeBuilder();
+            _aiCreatures = new HashSet<NWCreature>();
         }
         
         public static void SubscribeEvents()
@@ -101,8 +86,10 @@ namespace SWLOR.Game.Server.Service
             string creatureScript = self.GetLocalString("BEHAVIOUR");
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("SCRIPT");
+
+            // Fall back to standard behaviour if a script can't be found.
             if (string.IsNullOrWhiteSpace(creatureScript) ||
-                creatureScript == "NWN_DEFAULT") return string.Empty;
+                !_aiBehaviours.ContainsKey(creatureScript)) return "StandardBehaviour";
 
             return creatureScript;
         }
@@ -224,13 +211,8 @@ namespace SWLOR.Game.Server.Service
             if (ai.IgnoreOnSpawn) self.SetLocalInt("IGNORE_NWN_ON_SPAWN_EVENT", 1);
             if (ai.IgnoreOnSpellCastAt) self.SetLocalInt("IGNORE_NWN_ON_SPELL_CAST_AT_EVENT", 1);
             if (ai.IgnoreOnUserDefined) self.SetLocalInt("IGNORE_NWN_ON_USER_DEFINED_EVENT", 1);
-
-            var behaviour = ai.BuildBehaviour(self);    
-            var result = behaviour
-                .End()
-                .Build();
-            _aiCreatures.Add(new AICreature(result, self));
-        
+            
+            _aiCreatures.Add(self);
             ai.OnSpawn(self);
         }
         
@@ -252,30 +234,29 @@ namespace SWLOR.Game.Server.Service
 
         private static void ProcessCreatureAI()
         {
-            TimeData time = new TimeData(ObjectProcessingService.ProcessingTickInterval);
-
             // Iterate backwards so we can remove the creature if it's no longer valid.
-            for(int x = _aiCreatures.Count-1; x >= 0; x--)
+            for (int x = _aiCreatures.Count-1; x >= 0; x--)
             {
-                AICreature ai = _aiCreatures.ElementAt(x);
-                NWArea area = ai.Creature.Area;
+                NWCreature creature = _aiCreatures.ElementAt(x);
+                NWArea area = creature.Area;
                 bool areaHasPCs = NWModule.Get().Players.Count(p => p.Area.Resref == area.Resref) > 0;
 
                 // Is this creature invalid or dead? If so, remove it and move to the next one.
-                if (!ai.Creature.IsValid ||
-                    ai.Creature.IsDead)
+                if (!creature.IsValid ||
+                    creature.IsDead)
                 {
-                    _aiCreatures.Remove(ai);
+                    _aiCreatures.Remove(creature);
                     continue;
                 }
 
                 // Are there no players in the area? Is the creature being possessed? If so, don't execute AI this frame. Move to the next one.
-                if (ai.Creature.IsPossessedFamiliar || ai.Creature.IsDMPossessed || !areaHasPCs)
+                if (creature.IsPossessedFamiliar || creature.IsDMPossessed || !areaHasPCs)
                     continue;
 
-                // Otherwise this is a valid creature and needs to have its AI processed.
-                ai.Node.Tick(time);
-
+                string script = GetBehaviourScript(creature);
+                if (string.IsNullOrWhiteSpace(script)) continue;
+                IAIBehaviour behaviour = GetAIBehaviour(script);
+                behaviour.OnProcessObject(creature);
             }
         }
     }

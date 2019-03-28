@@ -1,5 +1,4 @@
-﻿using FluentBehaviourTree;
-using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.AI.Contracts
 {
@@ -20,8 +19,7 @@ namespace SWLOR.Game.Server.AI.Contracts
         bool IgnoreOnSpawn { get; }
         bool IgnoreOnSpellCastAt { get; }
         bool IgnoreOnUserDefined { get; }
-
-        BehaviourTreeBuilder BuildBehaviour(NWCreature self);
+        
 
         void OnBlocked(NWCreature self);
         void OnCombatRoundEnd(NWCreature self);
@@ -36,6 +34,6 @@ namespace SWLOR.Game.Server.AI.Contracts
         void OnSpawn(NWCreature self);
         void OnSpellCastAt(NWCreature self);
         void OnUserDefined(NWCreature self);
-
+        void OnProcessObject(NWCreature self);
     }
 }

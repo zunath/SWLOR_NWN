@@ -4,8 +4,10 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class EnmityMod: IMod
+    public class EnmityMod: IModHandler
     {
+        public int ModTypeID => 20;
+
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             int value = Convert.ToInt32(args[0]);

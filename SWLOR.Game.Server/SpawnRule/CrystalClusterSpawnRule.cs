@@ -1,28 +1,18 @@
 ﻿using System;
-using System.Linq;
-using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.SpawnRule.Contracts;
 
 namespace SWLOR.Game.Server.SpawnRule
 {
     public class CrystalClusterSpawnRule : ISpawnRule
     {
-        private readonly IRandomService _random;
-        private readonly IDataService _data;
-
-        public CrystalClusterSpawnRule(IRandomService random, IDataService data)
-        {
-            _random = random;
-            _data = data;
-        }
-
         public void Run(NWObject target, params object[] args)
         {
-            int roll = _random.Random(0, 100);
+            int roll = RandomService.Random(0, 100);
             ResourceQuality quality = ResourceQuality.Low;
             string qualityName = "Sparse";
 
@@ -30,7 +20,7 @@ namespace SWLOR.Game.Server.SpawnRule
             const int HighQualityChance = 10;
             const int VeryHighQualityChance = 2;
 
-            var dbArea = _data.Single<Area>(x => x.Resref == target.Area.Resref);
+            var dbArea = DataService.Single<Area>(x => x.Resref == target.Area.Resref);
             int tier = dbArea.ResourceQuality;
             int maxTier = dbArea.MaxResourceQuality;
             
@@ -56,7 +46,7 @@ namespace SWLOR.Game.Server.SpawnRule
                 qualityName = "Thick";
             }
 
-            roll = _random.Random(0, 100);
+            roll = RandomService.Random(0, 100);
             if (roll <= 3)
             {
                 tier++;
@@ -68,15 +58,15 @@ namespace SWLOR.Game.Server.SpawnRule
                 tier = maxTier;
 
             string resref = GetResourceResref(tier);
-            int quantity = _random.Random(3, 10);
+            int quantity = RandomService.Random(3, 10);
 
-            roll = _random.Random(0, 100);
+            roll = RandomService.Random(0, 100);
 
             if (roll <= 2)
             {
                 string[] coloredResrefs = {"p_crystal_red", "p_crystal_green", "p_crystal_blue", "p_crystal_yellow"};
 
-                roll = _random.Random(0, 3);
+                roll = RandomService.Random(0, 3);
                 resref = coloredResrefs[roll];
             }
             

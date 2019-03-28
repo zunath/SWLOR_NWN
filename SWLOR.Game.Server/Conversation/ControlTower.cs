@@ -1,45 +1,18 @@
 ﻿using System;
 using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Conversation
 {
     public class ControlTower: ConversationBase
     {
-        private readonly IBaseService _base;
-        private readonly IDataService _data;
-        private readonly IBasePermissionService _perm;
-        private readonly ISerializationService _serialization;
-        private readonly IColorTokenService _color;
-        private readonly ITimeService _time;
-
-        public ControlTower(
-            INWScript script, 
-            IDialogService dialog,
-            IDataService data,
-            IBasePermissionService perm,
-            ISerializationService serialization,
-            IBaseService @base,
-            IColorTokenService color,
-            ITimeService time) 
-            : base(script, dialog)
-        {
-            _data = data;
-            _perm = perm;
-            _serialization = serialization;
-            _base = @base;
-            _color = color;
-            _time = time;
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -57,29 +30,29 @@ namespace SWLOR.Game.Server.Conversation
         public override void Initialize()
         {
             Guid structureID = new Guid(GetDialogTarget().GetLocalString("PC_BASE_STRUCTURE_ID"));
-            PCBaseStructure structure = _data.Single<PCBaseStructure>(x => x.ID == structureID);
+            PCBaseStructure structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
             Guid pcBaseID = structure.PCBaseID;
-            PCBase pcBase = _data.Get<PCBase>(pcBaseID);
+            PCBase pcBase = DataService.Get<PCBase>(pcBaseID);
 
-            double currentCPU = _base.GetCPUInUse(pcBaseID);
-            double currentPower = _base.GetPowerInUse(pcBaseID);
-            double maxCPU = _base.GetMaxBaseCPU(pcBaseID);
-            double maxPower = _base.GetMaxBasePower(pcBaseID);
+            double currentCPU = BaseService.GetCPUInUse(pcBaseID);
+            double currentPower = BaseService.GetPowerInUse(pcBaseID);
+            double maxCPU = BaseService.GetMaxBaseCPU(pcBaseID);
+            double maxPower = BaseService.GetMaxBasePower(pcBaseID);
 
             int currentReinforcedFuel = pcBase.ReinforcedFuel;
             int currentFuel = pcBase.Fuel;
-            int currentResources = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structure.ID).Count();
-            int maxReinforcedFuel = _base.CalculateMaxReinforcedFuel(pcBaseID);
-            int maxFuel = _base.CalculateMaxFuel(pcBaseID);
-            int maxResources = _base.CalculateResourceCapacity(pcBaseID);
+            int currentResources = DataService.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structure.ID).Count();
+            int maxReinforcedFuel = BaseService.CalculateMaxReinforcedFuel(pcBaseID);
+            int maxFuel = BaseService.CalculateMaxFuel(pcBaseID);
+            int maxResources = BaseService.CalculateResourceCapacity(pcBaseID);
 
             string time;
             if (pcBase.DateFuelEnds > DateTime.UtcNow)
             {
                 TimeSpan deltaTime = pcBase.DateFuelEnds - DateTime.UtcNow;
 
-                var tower = _base.GetBaseControlTower(pcBaseID);
-                var towerStructure = _data.Single<BaseStructure>(x => x.ID == tower.BaseStructureID);
+                var tower = BaseService.GetBaseControlTower(pcBaseID);
+                var towerStructure = DataService.Single<BaseStructure>(x => x.ID == tower.BaseStructureID);
                 int fuelRating = towerStructure.FuelRating;
                 int minutes;
 
@@ -99,34 +72,34 @@ namespace SWLOR.Game.Server.Conversation
                 }
                 
                 TimeSpan timeSpan = TimeSpan.FromMinutes(minutes * currentFuel) + deltaTime;
-                time = _time.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false);
+                time = TimeService.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false);
 
                 time = "Fuel will expire in " + time;
             }
             else
             {
-                time = _color.Red("Fuel has expired.");
+                time = ColorTokenService.Red("Fuel has expired.");
             }
 
              
 
-            string header = _color.Green("Power: ") + currentPower + " / " + maxPower + "\n";
-            header += _color.Green("CPU: ") + currentCPU + " / " + maxCPU + "\n";
-            header += _color.Green("Fuel: ") + currentFuel + " / " + maxFuel + "\n";
-            header += _color.Green("Reinforced Fuel: ") + currentReinforcedFuel + " / " + maxReinforcedFuel + "\n";
-            header += _color.Green("Resource Bay: ") + currentResources + " / " + maxResources + "\n";
+            string header = ColorTokenService.Green("Power: ") + currentPower + " / " + maxPower + "\n";
+            header += ColorTokenService.Green("CPU: ") + currentCPU + " / " + maxCPU + "\n";
+            header += ColorTokenService.Green("Fuel: ") + currentFuel + " / " + maxFuel + "\n";
+            header += ColorTokenService.Green("Reinforced Fuel: ") + currentReinforcedFuel + " / " + maxReinforcedFuel + "\n";
+            header += ColorTokenService.Green("Resource Bay: ") + currentResources + " / " + maxResources + "\n";
             header += time + "\n";
             header += "What would you like to do with this control tower?";
 
             SetPageHeader("MainPage", header);
 
-            if (!_perm.HasBasePermission(GetPC(), structure.PCBaseID, BasePermission.CanManageBaseFuel))
+            if (!BasePermissionService.HasBasePermission(GetPC(), structure.PCBaseID, BasePermission.CanManageBaseFuel))
             {
                 SetResponseVisible("MainPage", 1, false);
                 SetResponseVisible("MainPage", 2, false);
             }
 
-            if (!_perm.HasBasePermission(GetPC(), structure.PCBaseID, BasePermission.CanAccessStructureInventory))
+            if (!BasePermissionService.HasBasePermission(GetPC(), structure.PCBaseID, BasePermission.CanAccessStructureInventory))
             {
                 SetResponseVisible("MainPage", 3, false);
             }
@@ -179,8 +152,8 @@ namespace SWLOR.Game.Server.Conversation
             }
 
             var structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            var structure = _data.Single<PCBaseStructure>(x => x.ID == structureID);
-            var pcBase = _data.Get<PCBase>(structure.PCBaseID);
+            var structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
+            var pcBase = DataService.Get<PCBase>(structure.PCBaseID);
             Location location = oPC.Location;
             bay = _.CreateObject(OBJECT_TYPE_PLACEABLE, "fuel_bay", location);
             bay.AssignCommand(() => _.SetFacingPoint(oPC.Position));
@@ -227,7 +200,7 @@ namespace SWLOR.Game.Server.Conversation
             }
             
             Guid structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            var structureItems = _data.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structureID);
+            var structureItems = DataService.Where<PCBaseStructureItem>(x => x.PCBaseStructureID == structureID);
             Location location = oPC.Location;
             bay = _.CreateObject(OBJECT_TYPE_PLACEABLE, "resource_bay", location);
 
@@ -237,7 +210,7 @@ namespace SWLOR.Game.Server.Conversation
 
             foreach (var item in structureItems)
             {
-                _serialization.DeserializeItem(item.ItemObject, bay);
+                SerializationService.DeserializeItem(item.ItemObject, bay);
             }
 
             oPC.AssignCommand(() => _.ActionInteractObject(bay.Object));

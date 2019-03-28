@@ -4,8 +4,10 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class LightDefenseMod : IMod
+    public class LightDefenseMod : IModHandler
     {
+        public int ModTypeID => 31;
+
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             if (target.LightDefenseBonus >= 20)

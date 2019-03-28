@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using NWN;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN.NWScript;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -14,21 +14,7 @@ namespace SWLOR.Game.Server.Conversation
             public string AreaResref { get; set; }
             public string DestinationTag { get; set; }
         }
-
-        private readonly IAreaService _area;
-        private readonly IPlayerService _player;
-
-        public InstanceSelection(
-            INWScript script, 
-            IDialogService dialog,
-            IAreaService area,
-            IPlayerService player) : 
-            base(script, dialog)
-        {
-            _area = area;
-            _player = player;
-        }
-
+        
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -73,7 +59,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (responseID == 1) // Create new instance
             {
-                var instance = _area.CreateAreaInstance(player, model.AreaResref, string.Empty, model.DestinationTag);
+                var instance = AreaService.CreateAreaInstance(player, model.AreaResref, string.Empty, model.DestinationTag);
                 location = instance.GetLocalLocation("INSTANCE_ENTRANCE");
             }
             else
@@ -91,7 +77,7 @@ namespace SWLOR.Game.Server.Conversation
                 location = area.GetLocalLocation("INSTANCE_ENTRANCE");
             }
             
-            _player.SaveLocation(player);
+            PlayerService.SaveLocation(player);
 
             player.AssignCommand(() =>
             {

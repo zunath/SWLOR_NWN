@@ -5,27 +5,18 @@ using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 
 namespace SWLOR.Game.Server.Placeable.CraftingDevice
 {
     public class OnOpened: IRegisteredEvent
     {
-        private readonly INWScript _;
-        private readonly ICraftService _craft;
-
-        public OnOpened(INWScript script,
-            ICraftService craft)
-        {
-            _ = script;
-            _craft = craft;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlaceable device = (Object.OBJECT_SELF);
             NWPlayer oPC = (_.GetLastOpenedBy());
-            var model = _craft.GetPlayerCraftingData(oPC);
+            var model = CraftService.GetPlayerCraftingData(oPC);
             
             if (model.Access != CraftingAccessType.None)
             {
@@ -64,7 +55,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingDevice
                 foreach (var item in list)
                 {
                     NWItem storageItem = storageItems.Single(x => x.GlobalID == item.GlobalID);
-                    _.CopyItem(storageItem.Object, device.Object, NWScript.TRUE);
+                    _.CopyItem(storageItem.Object, device.Object, _.TRUE);
                 }
 
                 oPC.FloatingText("Place the components inside the container and then click the item named '" + menuItem.Name + "' to continue.");

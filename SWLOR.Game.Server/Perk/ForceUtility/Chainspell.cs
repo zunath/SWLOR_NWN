@@ -1,22 +1,14 @@
 ﻿using System;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 
 namespace SWLOR.Game.Server.Perk.ForceUtility
 {
-    public class Chainspell: IPerk
+    public class Chainspell: IPerkHandler
     {
-        private readonly ICustomEffectService _customEffect;
-        private readonly ISkillService _skill;
-
-        public Chainspell(
-            ICustomEffectService customEffect,
-            ISkillService skill)
-        {
-            _customEffect = customEffect;
-            _skill = skill;
-        }
+        public PerkType PerkType => PerkType.Chainspell;
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
@@ -67,8 +59,8 @@ namespace SWLOR.Game.Server.Perk.ForceUtility
                 default: throw new ArgumentOutOfRangeException();
             }
 
-            _customEffect.ApplyCustomEffect(player, player, CustomEffectType.Chainspell, duration, perkLevel, null);
-            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceUtility, null);
+            CustomEffectService.ApplyCustomEffect(player, player, CustomEffectType.Chainspell, duration, perkLevel, null);
+            SkillService.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceUtility, null);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

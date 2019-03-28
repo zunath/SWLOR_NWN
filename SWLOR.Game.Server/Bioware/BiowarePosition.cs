@@ -1,5 +1,4 @@
-﻿using SWLOR.Game.Server.Bioware.Contracts;
-using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.GameObject;
 
 using NWN;
 
@@ -8,21 +7,14 @@ namespace SWLOR.Game.Server.Bioware
     /// <summary>
     /// Position utility functions converted to C# from Bioware's x2_io_position file.
     /// </summary>
-    public class BiowarePosition : IBiowarePosition
+    public static class BiowarePosition
     {
-        private readonly INWScript _;
-
-        public BiowarePosition(INWScript script)
-        {
-            _ = script;
-        }
-
         /// <summary>
         /// Causes object to face another object.
         /// </summary>
         /// <param name="objectToFace">The object to face towards</param>
         /// <param name="facer">The object which will change facing</param>
-        public void TurnToFaceObject(NWObject objectToFace, NWObject facer)
+        public static void TurnToFaceObject(NWObject objectToFace, NWObject facer)
         {
             facer.AssignCommand(() =>
             {
@@ -35,7 +27,7 @@ namespace SWLOR.Game.Server.Bioware
         /// </summary>
         /// <param name="locationToFace">The location to face towards</param>
         /// <param name="facer">The object which will change facing</param>
-        public void TurnToFaceLocation(Location locationToFace, NWObject facer)
+        public static void TurnToFaceLocation(Location locationToFace, NWObject facer)
         {
             facer.AssignCommand(() =>
             {
@@ -48,7 +40,7 @@ namespace SWLOR.Game.Server.Bioware
         /// <param name="fDistance"></param>
         /// <param name="fAngle"></param>
         /// <returns></returns>
-        public float GetChangeInX(float fDistance, float fAngle)
+        public static float GetChangeInX(float fDistance, float fAngle)
         {
             return fDistance * _.cos(fAngle);
         }
@@ -59,7 +51,7 @@ namespace SWLOR.Game.Server.Bioware
         /// <param name="fDistance"></param>
         /// <param name="fAngle"></param>
         /// <returns></returns>
-        public float GetChangeInY(float fDistance, float fAngle)
+        public static float GetChangeInY(float fDistance, float fAngle)
         {
             return fDistance * _.sin(fAngle);
         }
@@ -71,7 +63,7 @@ namespace SWLOR.Game.Server.Bioware
         /// <param name="fDistance"></param>
         /// <param name="fAngle"></param>
         /// <returns></returns>
-        public Vector GetChangedPosition(Vector vOriginal, float fDistance, float fAngle)
+        public static Vector GetChangedPosition(Vector vOriginal, float fDistance, float fAngle)
         {
             float changedZ = vOriginal.m_Z;
 
@@ -92,7 +84,7 @@ namespace SWLOR.Game.Server.Bioware
         /// <param name="o1"></param>
         /// <param name="o2"></param>
         /// <returns></returns>
-        public float GetRelativeFacing(NWObject o1, NWObject o2)
+        public static float GetRelativeFacing(NWObject o1, NWObject o2)
         {
             float diffX = o2.Position.m_X - o1.Position.m_X;
             float diffY = o2.Position.m_Y - o1.Position.m_Y;

@@ -1,21 +1,12 @@
-﻿
-using System.Linq;
-using NWN;
+﻿using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Placeable.Corpse
 {
     public class OnClosed: IRegisteredEvent
     {
-        private readonly INWScript _;
-
-        public OnClosed(INWScript script)
-        {
-            _ = script;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlaceable container = Object.OBJECT_SELF;

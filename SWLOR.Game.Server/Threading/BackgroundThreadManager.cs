@@ -1,30 +1,18 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Threading;
-using SWLOR.Game.Server.Threading.Contracts;
 
 namespace SWLOR.Game.Server.Threading
 {
-    public class BackgroundThreadManager: IBackgroundThreadManager
+    public static class BackgroundThreadManager
     {
-        private readonly IDatabaseThread _dbThread;
-        private readonly Thread _dbWorker;
-        private volatile bool _isShuttingDown;
-        private volatile bool _threadHasShutDown;
+        private static readonly DatabaseBackgroundThread _dbThread;
+        private static readonly Thread _dbWorker;
+        private static volatile bool _isShuttingDown;
+        private static volatile bool _threadHasShutDown;
 
-        public BackgroundThreadManager(
-            IDatabaseThread databaseThread)
+        static BackgroundThreadManager()
         {
-            // Temporarily double thread limit to try to get us running for longer than 8 hours.
-            // Not a long-term solution, but we'll see if it works in the meantime.
-            const int MaxThreads = 250;
-            bool success = ThreadPool.SetMaxThreads(MaxThreads, MaxThreads);
-            if (!success)
-            {
-                throw new Exception("Failed to set max threads to " + MaxThreads + ".");
-            }
-
-            _dbThread = databaseThread;
+            _dbThread = new DatabaseBackgroundThread();
             _dbWorker = new Thread(x => ProcessDatabaseThread());
             _dbWorker.IsBackground = true;
             _isShuttingDown = false;
@@ -32,24 +20,26 @@ namespace SWLOR.Game.Server.Threading
             AppDomain.CurrentDomain.ProcessExit += CurrentDomainOnProcessExit;
         }
         
-        private void ProcessDatabaseThread()
+        private static void ProcessDatabaseThread()
         {
             Console.WriteLine("DB thread starting");
+            _dbThread.Start();
             while (!_isShuttingDown)
             {
                 _dbThread.Run();
             }
 
+            _dbThread.Stop();
             _threadHasShutDown = true;
         }
 
-        public void Start()
+        public static void Start()
         {
             Console.WriteLine("Starting database thread...");
             _dbWorker.Start();
         }
 
-        private void CurrentDomainOnProcessExit(object sender, EventArgs e)
+        private static void CurrentDomainOnProcessExit(object sender, EventArgs e)
         {
             Console.WriteLine("Shutting down database thread. Please be patient while all data is committed to the database.");
             _isShuttingDown = true;

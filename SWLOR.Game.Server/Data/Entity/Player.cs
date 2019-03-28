@@ -2,7 +2,6 @@
 
 using SWLOR.Game.Server.Data.Contracts;
 using System;
-using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Data.Entity
 {

@@ -8,13 +8,6 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
 {
     public class OnOpened: IRegisteredEvent
     {
-        private readonly INWScript _;
-
-        public OnOpened(INWScript script)
-        {
-            _ = script;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlaceable container = (Object.OBJECT_SELF);

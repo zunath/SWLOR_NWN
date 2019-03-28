@@ -1,43 +1,23 @@
 ﻿using System;
 using System.Linq;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
 {
     internal class RestMenu : ConversationBase
     {
-        private readonly IDataService _data;
-        private readonly IColorTokenService _color;
-        private readonly ISkillService _skill;
-        private readonly IMenuService _menu;
-
-        public RestMenu(INWScript script,
-            IDialogService dialog,
-            IColorTokenService color,
-            IDataService data,
-            ISkillService skill,
-            IMenuService menu)
-            : base(script, dialog)
-        {
-            _color = color;
-            _data = data;
-            _skill = skill;
-            _menu = menu;
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
             DialogPage mainPage = new DialogPage(
                 BuildMainPageHeader(player),
-                _color.Green("Open Overflow Inventory"),
+                ColorTokenService.Green("Open Overflow Inventory"),
                 "View Skills",
                 "View Perks",
                 "View Blueprints",
@@ -54,7 +34,7 @@ namespace SWLOR.Game.Server.Conversation
         public override void Initialize()
         {
             Guid playerID = GetPC().GlobalID;
-            long overflowCount = _data.Where<PCOverflowItem>(x => x.PlayerID == playerID).LongCount();
+            long overflowCount = DataService.Where<PCOverflowItem>(x => x.PlayerID == playerID).LongCount();
 
             if (overflowCount <= 0)
             {
@@ -72,7 +52,7 @@ namespace SWLOR.Game.Server.Conversation
                     {
                         // Open Overflow Inventory
                         case 1:
-                            NWObject storage = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "overflow_storage", player.Location));
+                            NWObject storage = (_.CreateObject(_.OBJECT_TYPE_PLACEABLE, "overflow_storage", player.Location));
                             player.AssignCommand(() => _.ActionInteractObject(storage.Object));
                             break;
                         // View Skills
@@ -102,7 +82,7 @@ namespace SWLOR.Game.Server.Conversation
                         // Open Trash Can (Destroy Items)
                         case 8:
                             EndConversation();
-                            NWPlaceable trashCan = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, "reo_trash_can", player.Location));
+                            NWPlaceable trashCan = (_.CreateObject(_.OBJECT_TYPE_PLACEABLE, "reo_trash_can", player.Location));
 
                             player.AssignCommand(() => _.ActionInteractObject(trashCan.Object));
                             _.DelayCommand(0.2f, () => trashCan.IsUseable = false);
@@ -123,19 +103,19 @@ namespace SWLOR.Game.Server.Conversation
 
         private string BuildMainPageHeader(NWPlayer player)
         {
-            Player playerEntity = _data.Single<Player>(x => x.ID == player.GlobalID);
-            var association = _data.Get<Association>(playerEntity.AssociationID);
-            int totalSkillCount = _data.Where<PCSkill>(x =>
+            Player playerEntity = DataService.Single<Player>(x => x.ID == player.GlobalID);
+            var association = DataService.Get<Association>(playerEntity.AssociationID);
+            int totalSkillCount = DataService.Where<PCSkill>(x =>
             {
-                var skill = _data.Get<Skill>(x.SkillID);
+                var skill = DataService.Get<Skill>(x.SkillID);
                 return x.PlayerID == player.GlobalID && skill.ContributesToSkillCap;
             }).Sum(s => s.Rank);
 
-            string header = _color.Green("Name: ") + player.Name + "\n";
-            header += _color.Green("Association: ") + association.Name + "\n\n";
-            header += _color.Green("Skill Points: ") + totalSkillCount + " / " + _skill.SkillCap + "\n";
-            header += _color.Green("Unallocated SP: ") + playerEntity.UnallocatedSP + "\n";
-            header += _color.Green("FP: ")  + (playerEntity.MaxFP > 0 ? _menu.BuildBar(playerEntity.CurrentFP, playerEntity.MaxFP, 100, _color.TokenStart(32, 223, 219)) : "N/A") + "\n";
+            string header = ColorTokenService.Green("Name: ") + player.Name + "\n";
+            header += ColorTokenService.Green("Association: ") + association.Name + "\n\n";
+            header += ColorTokenService.Green("Skill Points: ") + totalSkillCount + " / " + SkillService.SkillCap + "\n";
+            header += ColorTokenService.Green("Unallocated SP: ") + playerEntity.UnallocatedSP + "\n";
+            header += ColorTokenService.Green("FP: ")  + (playerEntity.MaxFP > 0 ? MenuService.BuildBar(playerEntity.CurrentFP, playerEntity.MaxFP, 100, ColorTokenService.TokenStart(32, 223, 219)) : "N/A") + "\n";
 
             return header;
         }

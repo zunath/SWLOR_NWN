@@ -1,44 +1,19 @@
 ﻿using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Bioware.Contracts;
-using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.ValueObject;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Item
 {
     public class MineralScanner : IActionItem
     {
-        private readonly INWScript _;
-        private readonly IPerkService _perk;
-        private readonly IDataService _data;
-        private readonly IBaseService _base;
-        private readonly IItemService _item;
-        private readonly IRandomService _random;
-        private readonly IDurabilityService _durability;
-
-        public MineralScanner(
-            INWScript script,
-            IPerkService perk,
-            IDataService data,
-            IBaseService @base,
-            IItemService item,
-            IRandomService random,
-            IDurabilityService durability)
-        {
-            _ = script;
-            _perk = perk;
-            _data = data;
-            _base = @base;
-            _item = item;
-            _random = random;
-            _durability = durability;
-        }
+        public string CustomKey => null;
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
@@ -51,8 +26,8 @@ namespace SWLOR.Game.Server.Item
             if (lootTableID <= 0) return;
 
             NWArea area = _.GetAreaFromLocation(targetLocation);
-            var items = _data.Where<LootTableItem>(x => x.LootTableID == lootTableID).OrderByDescending(o => o.Weight);
-            string sector = _base.GetSectorOfLocation(targetLocation);
+            var items = DataService.Where<LootTableItem>(x => x.LootTableID == lootTableID).OrderByDescending(o => o.Weight);
+            string sector = BaseService.GetSectorOfLocation(targetLocation);
             string sectorName = "Unknown";
 
             switch (sector)
@@ -68,11 +43,11 @@ namespace SWLOR.Game.Server.Item
 
             foreach (var lti in items)
             {
-                string name = _item.GetNameByResref(lti.Resref);
+                string name = ItemService.GetNameByResref(lti.Resref);
                 user.SendMessage(name + " [Density: " + lti.Weight + "]");
             }
             
-            _durability.RunItemDecay(user.Object, item, _random.RandomFloat(0.02f, 0.08f));
+            DurabilityService.RunItemDecay(user.Object, item, RandomService.RandomFloat(0.02f, 0.08f));
         }
         
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
@@ -83,7 +58,7 @@ namespace SWLOR.Game.Server.Item
             if (user.IsPlayer)
             {
                 var player = (user.Object);
-                scanningTime = BaseScanningTime - BaseScanningTime * (_perk.GetPCPerkLevel(player, PerkType.SpeedyScanner) * 0.1f);
+                scanningTime = BaseScanningTime - BaseScanningTime * (PerkService.GetPCPerkLevel(player, PerkType.SpeedyResourceScanner) * 0.1f);
 
             }
             return scanningTime;
@@ -112,8 +87,8 @@ namespace SWLOR.Game.Server.Item
         private int GetLootTable(Location targetLocation)
         {
             NWArea area = _.GetAreaFromLocation(targetLocation);
-            var dbArea = _data.Single<Area>(x => x.Resref == area.Resref);
-            var sector = _base.GetSectorOfLocation(targetLocation);
+            var dbArea = DataService.Single<Area>(x => x.Resref == area.Resref);
+            var sector = BaseService.GetSectorOfLocation(targetLocation);
             int lootTableID = 0;
 
             switch (sector)

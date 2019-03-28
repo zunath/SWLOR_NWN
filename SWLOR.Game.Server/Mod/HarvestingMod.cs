@@ -4,8 +4,10 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class HarvestingMod : IMod
+    public class HarvestingMod : IModHandler
     {
+        public int ModTypeID => 16;
+
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             if (target.HarvestingBonus >= 30)

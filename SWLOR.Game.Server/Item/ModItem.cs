@@ -1,45 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Mod.Contracts;
-
-using NWN;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
 using SWLOR.Game.Server.ValueObject;
-using static NWN.NWScript;
+using System.Collections.Generic;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Item
 {
     public class ModItem : IActionItem
     {
-        private readonly INWScript _;
-        private readonly IPerkService _perk;
-        private readonly IItemService _item;
-        private readonly IModService _mod;
-        private readonly IDataService _data;
-        private readonly IColorTokenService _color;
-        private readonly ISkillService _skill;
-
-        public ModItem(
-            INWScript script,
-            IPerkService perk,
-            IItemService item,
-            IModService mod,
-            IDataService data,
-            IColorTokenService color,
-            ISkillService skill)
-        {
-            _perk = perk;
-            _item = item;
-            _ = script;
-            _mod = mod;
-            _data = data;
-            _color = color;
-            _skill = skill;
-        }
+        public string CustomKey => null;
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
@@ -50,91 +23,87 @@ namespace SWLOR.Game.Server.Item
         {
             NWPlayer player = (user.Object);
             NWItem targetItem = (target.Object);
-            ModSlots slots = _mod.GetModSlots(targetItem);
-            CustomItemPropertyType modType = _mod.GetModType(modItem);
+            ModSlots slots = ModService.GetModSlots(targetItem);
+            CustomItemPropertyType modType = ModService.GetModType(modItem);
             int modID = modItem.GetLocalInt("RUNE_ID");
             string[] modArgs = modItem.GetLocalString("RUNE_VALUE").Split(',');
             int modLevel = modItem.RecommendedLevel;
             int levelIncrease = modItem.LevelIncrease;
 
-            var dbMod = _data.Single<Data.Entity.Mod>(x => x.ID == modID && x.IsActive);
-            App.ResolveByInterface<IMod>("Mod." + dbMod.Script, mod =>
+            var mod = ModService.GetModHandler(modID);
+            mod.Apply(player, targetItem, modArgs);
+
+            string description = mod.Description(player, targetItem, modArgs);
+            bool usePrismatic = false;
+            switch (modType)
             {
-                mod.Apply(player, targetItem, modArgs);
+                case CustomItemPropertyType.RedMod:
+                    if (slots.FilledRedSlots < slots.RedSlots)
+                    {
+                        targetItem.SetLocalInt("MOD_SLOT_RED_" + (slots.FilledRedSlots + 1), modID);
+                        targetItem.SetLocalString("MOD_SLOT_RED_DESC_" + (slots.FilledRedSlots + 1), description);
+                        player.SendMessage("Mod installed into " + ColorTokenService.Red("red") + " slot #" + (slots.FilledRedSlots + 1));
+                    }
+                    else usePrismatic = true;
+                    break;
+                case CustomItemPropertyType.BlueMod:
+                    if (slots.FilledBlueSlots < slots.BlueSlots)
+                    {
+                        targetItem.SetLocalInt("MOD_SLOT_BLUE_" + (slots.FilledBlueSlots + 1), modID);
+                        targetItem.SetLocalString("MOD_SLOT_BLUE_DESC_" + (slots.FilledBlueSlots + 1), description);
+                        player.SendMessage("Mod installed into " + ColorTokenService.Blue("blue") + " slot #" + (slots.FilledBlueSlots + 1));
+                    }
+                    else usePrismatic = true;
+                    break;
+                case CustomItemPropertyType.GreenMod:
+                    if (slots.FilledBlueSlots < slots.GreenSlots)
+                    {
+                        targetItem.SetLocalInt("MOD_SLOT_GREEN_" + (slots.FilledGreenSlots + 1), modID);
+                        targetItem.SetLocalString("MOD_SLOT_GREEN_DESC_" + (slots.FilledGreenSlots + 1), description);
+                        player.SendMessage("Mod installed into " + ColorTokenService.Green("green") + " slot #" + (slots.FilledGreenSlots + 1));
+                    }
+                    else usePrismatic = true;
+                    break;
+                case CustomItemPropertyType.YellowMod:
+                    if (slots.FilledBlueSlots < slots.YellowSlots)
+                    {
+                        targetItem.SetLocalInt("MOD_SLOT_YELLOW_" + (slots.FilledYellowSlots + 1), modID);
+                        targetItem.SetLocalString("MOD_SLOT_YELLOW_DESC_" + (slots.FilledYellowSlots + 1), description);
+                        player.SendMessage("Mod installed into " + ColorTokenService.Yellow("yellow") + " slot #" + (slots.FilledYellowSlots + 1));
+                    }
+                    else usePrismatic = true;
+                    break;
+            }
 
-                string description = mod.Description(player, targetItem, modArgs);
-                bool usePrismatic = false;
-                switch (modType)
-                {
-                    case CustomItemPropertyType.RedMod:
-                        if (slots.FilledRedSlots < slots.RedSlots)
-                        {
-                            targetItem.SetLocalInt("MOD_SLOT_RED_" + (slots.FilledRedSlots + 1), modID);
-                            targetItem.SetLocalString("MOD_SLOT_RED_DESC_" + (slots.FilledRedSlots + 1), description);
-                            player.SendMessage("Mod installed into " + _color.Red("red") + " slot #" + (slots.FilledRedSlots + 1));
-                        }
-                        else usePrismatic = true;
-                        break;
-                    case CustomItemPropertyType.BlueMod:
-                        if (slots.FilledBlueSlots < slots.BlueSlots)
-                        {
-                            targetItem.SetLocalInt("MOD_SLOT_BLUE_" + (slots.FilledBlueSlots + 1), modID);
-                            targetItem.SetLocalString("MOD_SLOT_BLUE_DESC_" + (slots.FilledBlueSlots + 1), description);
-                            player.SendMessage("Mod installed into " + _color.Blue("blue") + " slot #" + (slots.FilledBlueSlots + 1));
-                        }
-                        else usePrismatic = true;
-                        break;
-                    case CustomItemPropertyType.GreenMod:
-                        if (slots.FilledBlueSlots < slots.GreenSlots)
-                        {
-                            targetItem.SetLocalInt("MOD_SLOT_GREEN_" + (slots.FilledGreenSlots + 1), modID);
-                            targetItem.SetLocalString("MOD_SLOT_GREEN_DESC_" + (slots.FilledGreenSlots + 1), description);
-                            player.SendMessage("Mod installed into " + _color.Green("green") + " slot #" + (slots.FilledGreenSlots + 1));
-                        }
-                        else usePrismatic = true;
-                        break;
-                    case CustomItemPropertyType.YellowMod:
-                        if (slots.FilledBlueSlots < slots.YellowSlots)
-                        {
-                            targetItem.SetLocalInt("MOD_SLOT_YELLOW_" + (slots.FilledYellowSlots + 1), modID);
-                            targetItem.SetLocalString("MOD_SLOT_YELLOW_DESC_" + (slots.FilledYellowSlots + 1), description);
-                            player.SendMessage("Mod installed into " + _color.Yellow("yellow") + " slot #" + (slots.FilledYellowSlots + 1));
-                        }
-                        else usePrismatic = true;
-                        break;
-                }
+            if (usePrismatic)
+            {
+                string prismaticText = ModService.PrismaticString();
+                targetItem.SetLocalInt("MOD_SLOT_PRISMATIC_" + (slots.FilledPrismaticSlots + 1), modID);
+                targetItem.SetLocalString("MOD_SLOT_PRISMATIC_DESC_" + (slots.FilledPrismaticSlots + 1), description);
+                player.SendMessage("Mod installed into " + prismaticText + " slot #" + (slots.FilledPrismaticSlots + 1));
+            }
 
-                if (usePrismatic)
-                {
-                    string prismaticText = _mod.PrismaticString();
-                    targetItem.SetLocalInt("MOD_SLOT_PRISMATIC_" + (slots.FilledPrismaticSlots + 1), modID);
-                    targetItem.SetLocalString("MOD_SLOT_PRISMATIC_DESC_" + (slots.FilledPrismaticSlots + 1), description);
-                    player.SendMessage("Mod installed into " + prismaticText + " slot #" + (slots.FilledPrismaticSlots + 1));
-                }
+            targetItem.RecommendedLevel += levelIncrease;
+            modItem.Destroy();
 
-                targetItem.RecommendedLevel += levelIncrease;
-                modItem.Destroy();
+            SkillType skillType;
+            if (ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
+            {
+                skillType = SkillType.Armorsmith;
+            }
+            else if (WeaponsmithBaseItemTypes.Contains(targetItem.BaseItemType))
+            {
+                skillType = SkillType.Weaponsmith;
+            }
+            else if (EngineeringBaseItemTypes.Contains(targetItem.BaseItemType))
+            {
+                skillType = SkillType.Engineering;
+            }
+            else return;
 
-                SkillType skillType;
-                if (ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
-                {
-                    skillType = SkillType.Armorsmith;
-                }
-                else if (WeaponsmithBaseItemTypes.Contains(targetItem.BaseItemType))
-                {
-                    skillType = SkillType.Weaponsmith;
-                }
-                else if (EngineeringBaseItemTypes.Contains(targetItem.BaseItemType))
-                {
-                    skillType = SkillType.Engineering;
-                }
-                else return;
-
-                int rank = _skill.GetPCSkillRank(player, skillType);
-                int xp = (int)_skill.CalculateRegisteredSkillLevelAdjustedXP(400, modLevel, rank);
-                _skill.GiveSkillXP(player, skillType, xp);
-            });
-            
+            int rank = SkillService.GetPCSkillRank(player, skillType);
+            int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(400, modLevel, rank);
+            SkillService.GiveSkillXP(player, skillType, xp);
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
@@ -145,17 +114,17 @@ namespace SWLOR.Game.Server.Item
 
             if (ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
             {
-                perkBonus = _perk.GetPCPerkLevel(userPlayer, PerkType.SpeedyArmorsmith) * 0.1f;
+                perkBonus = PerkService.GetPCPerkLevel(userPlayer, PerkType.SpeedyArmorsmith) * 0.1f;
             }
             else if (WeaponsmithBaseItemTypes.Contains(targetItem.BaseItemType))
             {
-                perkBonus = _perk.GetPCPerkLevel(userPlayer, PerkType.SpeedyWeaponsmith) * 0.1f;
+                perkBonus = PerkService.GetPCPerkLevel(userPlayer, PerkType.SpeedyWeaponsmith) * 0.1f;
             }
             else if (EngineeringBaseItemTypes.Contains(targetItem.BaseItemType))
             {
-                perkBonus = _perk.GetPCPerkLevel(userPlayer, PerkType.SpeedyEngineering) * 0.1f;
+                perkBonus = PerkService.GetPCPerkLevel(userPlayer, PerkType.SpeedyEngineering) * 0.1f;
             }
-            
+
 
             float seconds = 18.0f - (18.0f * perkBonus);
             if (seconds <= 0.1f) seconds = 0.1f;
@@ -194,8 +163,8 @@ namespace SWLOR.Game.Server.Item
             int requiredPerkLevel = modLevel / 5;
             if (requiredPerkLevel <= 0) requiredPerkLevel = 1;
             int perkLevel = 0;
-            CustomItemPropertyType modType = _mod.GetModType(mod);
-            ModSlots modSlots = _mod.GetModSlots(targetItem);
+            CustomItemPropertyType modType = ModService.GetModType(mod);
+            ModSlots modSlots = ModService.GetModSlots(targetItem);
             int modID = mod.GetLocalInt("RUNE_ID");
             string[] modArgs = mod.GetLocalString("RUNE_VALUE").Split(',');
 
@@ -216,16 +185,16 @@ namespace SWLOR.Game.Server.Item
                 switch (modType)
                 {
                     case CustomItemPropertyType.RedMod:
-                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.CombatModInstallationWeapons);
+                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.CombatModInstallationWeapons);
                         break;
                     case CustomItemPropertyType.BlueMod:
-                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.ForceModInstallationWeapons);
+                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.ForceModInstallationWeapons);
                         break;
                     case CustomItemPropertyType.GreenMod:
-                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.CraftingModInstallationWeapons);
+                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.CraftingModInstallationWeapons);
                         break;
                     case CustomItemPropertyType.YellowMod:
-                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.SpecialModInstallationWeapons);
+                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.SpecialModInstallationWeapons);
                         break;
                     default:
                         perkLevel = 0;
@@ -237,16 +206,16 @@ namespace SWLOR.Game.Server.Item
                 switch (modType)
                 {
                     case CustomItemPropertyType.RedMod:
-                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.CombatModInstallationArmors);
+                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.CombatModInstallationArmors);
                         break;
                     case CustomItemPropertyType.BlueMod:
-                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.ForceModInstallationArmors);
+                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.ForceModInstallationArmors);
                         break;
                     case CustomItemPropertyType.GreenMod:
-                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.CraftingModInstallationArmors);
+                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.CraftingModInstallationArmors);
                         break;
                     case CustomItemPropertyType.YellowMod:
-                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.SpecialModInstallationArmors);
+                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.SpecialModInstallationArmors);
                         break;
                     default:
                         perkLevel = 0;
@@ -258,16 +227,16 @@ namespace SWLOR.Game.Server.Item
                 switch (modType)
                 {
                     case CustomItemPropertyType.RedMod:
-                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.CombatModInstallationElectronics);
+                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.CombatModInstallationEngineering);
                         break;
                     case CustomItemPropertyType.BlueMod:
-                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.ForceModInstallationElectronics);
+                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.ForceModInstallationEngineering);
                         break;
                     case CustomItemPropertyType.GreenMod:
-                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.CraftingModInstallationElectronics);
+                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.CraftingModInstallationEngineering);
                         break;
                     case CustomItemPropertyType.YellowMod:
-                        perkLevel = _perk.GetPCPerkLevel(player, PerkType.SpecialModInstallationElectronics);
+                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.SpecialModInstallationEngineering);
                         break;
                     default:
                         perkLevel = 0;
@@ -293,18 +262,9 @@ namespace SWLOR.Game.Server.Item
             // Item must be in the user's inventory.
             if (!targetItem.Possessor.Equals(player)) return "Targeted item must be in your inventory.";
 
-            // Look for a database entry for this mod type.
-            var dbMod = _data.SingleOrDefault<Data.Entity.Mod>(x => x.ID == modID && x.IsActive);
-            if (dbMod == null)
-            {
-                return "Couldn't find a matching mod ID in the database. Inform an admin of this issue.";
-            }
-
+            var handler = ModService.GetModHandler(modID);
             // Run the individual mod's rules for application. Will return the error message or a null.
-            string canApply = App.ResolveByInterface<IMod, string>("Mod." + dbMod.Script, 
-                (modRules) => modRules.CanApply(player, targetItem, modArgs));
-
-            return canApply;
+            return handler.CanApply(player, targetItem, modArgs);
         }
 
         public bool AllowLocationTarget()

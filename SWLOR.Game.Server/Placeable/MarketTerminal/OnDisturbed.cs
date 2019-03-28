@@ -1,38 +1,15 @@
-﻿using System;
-using NWN;
+﻿using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using SWLOR.Game.Server.Service;
+
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.MarketTerminal
 {
     public class OnDisturbed: IRegisteredEvent
     {
-        private readonly INWScript _;
-        private readonly IMarketService _market;
-        private readonly IItemService _item;
-        private readonly IDialogService _dialog;
-        private readonly ISerializationService _serialization;
-        private readonly IColorTokenService _color;
-
-        public OnDisturbed(
-            INWScript script, 
-            IMarketService market,
-            IItemService item,
-            IDialogService dialog,
-            ISerializationService serialization,
-            IColorTokenService color)
-        {
-            _ = script;
-            _market = market;
-            _item = item;
-            _dialog = dialog;
-            _serialization = serialization;
-            _color = color;
-        }
-
         public bool Run(params object[] args)
         {
             int type = _.GetInventoryDisturbType();
@@ -53,13 +30,13 @@ namespace SWLOR.Game.Server.Placeable.MarketTerminal
             NWPlayer player = _.GetLastDisturbed();
             NWItem item = _.GetInventoryDisturbItem();
             NWPlaceable device = Object.OBJECT_SELF;
-            var model = _market.GetPlayerMarketData(player);
+            var model = MarketService.GetPlayerMarketData(player);
 
             // Serializing containers can be tricky so for the time being we'll leave them disabled.
             if (_.GetHasInventory(item) == TRUE)
             {
-                _item.ReturnItem(player, item);
-                player.SendMessage(_color.Red("Containers cannot be sold on the market."));
+                ItemService.ReturnItem(player, item);
+                player.SendMessage(ColorTokenService.Red("Containers cannot be sold on the market."));
                 return;
             }
             
@@ -67,10 +44,10 @@ namespace SWLOR.Game.Server.Placeable.MarketTerminal
             if (model.IsSellingItem)
             {
                 // Check the item's category. If one cannot be determined, the player cannot put it on the market.
-                int marketCategoryID = _market.DetermineMarketCategory(item);
+                int marketCategoryID = MarketService.DetermineMarketCategory(item);
                 if (marketCategoryID <= 0)
                 {
-                    _item.ReturnItem(player, item);
+                    ItemService.ReturnItem(player, item);
                     player.FloatingText("This item cannot be placed on the market.");
                     return;
                 }
@@ -82,7 +59,7 @@ namespace SWLOR.Game.Server.Placeable.MarketTerminal
                 model.ItemTag = item.Tag;
                 model.ItemResref = item.Resref;
                 model.ItemMarketCategoryID = marketCategoryID;
-                model.ItemObject = _serialization.Serialize(item);
+                model.ItemObject = SerializationService.Serialize(item);
                 model.SellPrice = 0;
                 model.LengthDays = 7;
                 
@@ -92,11 +69,11 @@ namespace SWLOR.Game.Server.Placeable.MarketTerminal
                 device.IsLocked = false;
                 model.IsReturningFromItemPicking = true;
                 model.IsAccessingInventory = false;
-                _dialog.StartConversation(player, device, "MarketTerminal");
+                DialogService.StartConversation(player, device, "MarketTerminal");
             }
             else
             {
-                _item.ReturnItem(player, item);
+                ItemService.ReturnItem(player, item);
             }
         }
 
@@ -105,7 +82,7 @@ namespace SWLOR.Game.Server.Placeable.MarketTerminal
             NWPlayer player = _.GetLastDisturbed();
             NWItem item = _.GetInventoryDisturbItem();
             NWPlaceable device = Object.OBJECT_SELF;
-            var model = _market.GetPlayerMarketData(player);
+            var model = MarketService.GetPlayerMarketData(player);
 
             // Done previewing an item. Return to menu.
             if (item.Resref == "exit_preview")
@@ -115,7 +92,7 @@ namespace SWLOR.Game.Server.Placeable.MarketTerminal
                 device.IsLocked = false;
                 model.IsAccessingInventory = false;
                 model.IsReturningFromItemPreview = true;
-                _dialog.StartConversation(player, device, "MarketTerminal");
+                DialogService.StartConversation(player, device, "MarketTerminal");
             }
         }
 

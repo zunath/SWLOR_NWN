@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.Engineering
 {
-    public class CraftingModInstallationEngineering : IPerk
+    public class CraftingModInstallationEngineering : IPerkHandler
     {
+        public PerkType PerkType => PerkType.CraftingModInstallationEngineering;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

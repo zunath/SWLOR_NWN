@@ -2,26 +2,15 @@
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using SWLOR.Game.Server.Service;
+
+using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class Tranquilizer: IPerk
+    public class Tranquilizer: IPerkHandler
     {
-        private readonly INWScript _;
-        private readonly IPerkService _perk;
-        private readonly IRandomService _random;
-
-        public Tranquilizer(
-            INWScript script, 
-            IPerkService perk,
-            IRandomService random)
-        {
-            _ = script;
-            _perk = perk;
-            _random = random;
-        }
+        public PerkType PerkType => PerkType.Tranquilizer;
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
@@ -55,7 +44,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
         {
-            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky);
+            int luck = PerkService.GetPCPerkLevel(player, PerkType.Lucky);
             float duration;
 
             switch (perkLevel)
@@ -93,7 +82,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
                 default: return;
             }
 
-            if (_random.D100(1) <= luck)
+            if (RandomService.D100(1) <= luck)
             {
                 duration *= 2;
                 player.SendMessage("Lucky shot!");

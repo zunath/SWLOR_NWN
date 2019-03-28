@@ -7,13 +7,6 @@ namespace SWLOR.Game.Server.Placeable.Resource
 {
     public class OnUsed: IRegisteredEvent
     {
-        private readonly INWScript _;
-
-        public OnUsed(INWScript script)
-        {
-            _ = script;
-        }
-
         public bool Run(params object[] args)
         {
             NWCreature user = (_.GetLastUsedBy());

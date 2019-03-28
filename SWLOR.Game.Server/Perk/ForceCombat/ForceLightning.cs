@@ -1,38 +1,15 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using SWLOR.Game.Server.Service;
+
+using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceCombat
 {
-    public class ForceLightning : IPerk
+    public class ForceLightning : IPerkHandler
     {
-        private readonly INWScript _;
-        private readonly IPerkService _perk;
-        private readonly IRandomService _random;
-        private readonly ISkillService _skill;
-        private readonly ICustomEffectService _customEffect;
-        private readonly IPlayerStatService _playerStat;
-        private readonly ICombatService _combat;
-
-        public ForceLightning(
-            INWScript script,
-            IPerkService perk,
-            IRandomService random,
-            ISkillService skill,
-            ICustomEffectService customEffect,
-            IPlayerStatService playerStat,
-            ICombatService combat)
-        {
-            _ = script;
-            _perk = perk;
-            _random = random;
-            _skill = skill;
-            _customEffect = customEffect;
-            _playerStat = playerStat;
-            _combat = combat;
-        }
+        public PerkType PerkType => PerkType.ForceLightning;
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
@@ -134,15 +111,15 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
                 default: return;
             }
 
-            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
-            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
-            if (_random.Random(100) + 1 <= luck)
+            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
+            int luck = PerkService.GetPCPerkLevel(player, PerkType.Lucky) + effectiveStats.Luck;
+            if (RandomService.Random(100) + 1 <= luck)
             {
                 length = length * 2;
                 player.SendMessage("Lucky force lightning!");
             }
             
-            var calc = _combat.CalculateForceDamage(
+            var calc = CombatService.CalculateForceDamage(
                 player,
                 target.Object,
                 ForceAbilityType.Electrical,
@@ -160,17 +137,17 @@ namespace SWLOR.Game.Server.Perk.ForceCombat
 
             if (length > 0.0f && dotAmount > 0)
             {
-                _customEffect.ApplyCustomEffect(player, target.Object, CustomEffectType.ForceShock, length, level, dotAmount.ToString());
+                CustomEffectService.ApplyCustomEffect(player, target.Object, CustomEffectType.ForceShock, length, level, dotAmount.ToString());
             }
 
-            _skill.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceCombat, target.Object);
+            SkillService.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceCombat, target.Object);
 
             player.AssignCommand(() =>
             {
                 _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_BEAM_LIGHTNING), target, 1.0f);
             });
             _.PlaySound("v_pro_lightning");
-            _combat.AddTemporaryForceDefense(target.Object, ForceAbilityType.Electrical);
+            CombatService.AddTemporaryForceDefense(target.Object, ForceAbilityType.Electrical);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

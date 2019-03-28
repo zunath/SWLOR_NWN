@@ -1,24 +1,14 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using SWLOR.Game.Server.Service;
+
+using static NWN._;
 
 namespace SWLOR.Game.Server.Placeable.Corpse
 {
     public class OnDisturbed: IRegisteredEvent
     {
-        private readonly INWScript _;
-        private readonly IItemService _item;
-
-
-        public OnDisturbed(INWScript script,
-            IItemService item)
-        {
-            _ = script;
-            _item = item;
-        }
-
         public bool Run(params object[] args)
         {
             NWCreature looter = _.GetLastDisturbed();
@@ -32,7 +22,7 @@ namespace SWLOR.Game.Server.Placeable.Corpse
 
             if (type == INVENTORY_DISTURB_TYPE_ADDED)
             {
-                _item.ReturnItem(looter, item);
+                ItemService.ReturnItem(looter, item);
                 looter.SendMessage("You cannot place items inside of corpses.");
             }
             else if (type == INVENTORY_DISTURB_TYPE_REMOVED)

@@ -212,7 +212,11 @@ namespace SWLOR.Game.Server.Service
             }
             if (examinedItem.CustomAC > 0)
             {
-                if (ArmorBaseItemTypes.Contains(examinedItem.BaseItemType))
+                if (ShieldBaseItemTypes.Contains(examinedItem.BaseItemType))
+                {
+                    description += _color.Orange("Damage Immunity: " + (10 + examinedItem.CustomAC / 3) + "\n");
+                }
+                else if (ArmorBaseItemTypes.Contains(examinedItem.BaseItemType))
                 {
                     description += ColorTokenService.Orange("AC: ") + examinedItem.CustomAC + " (/3)\n";
                 }
@@ -443,7 +447,11 @@ namespace SWLOR.Game.Server.Service
         public static HashSet<int> ArmorBaseItemTypes = new HashSet<int>()
         {
             BASE_ITEM_ARMOR,
-            BASE_ITEM_HELMET,
+            BASE_ITEM_HELMET
+        };
+
+        public static HashSet<int> ShieldBaseItemTypes = new HashSet<int>()
+        {
             BASE_ITEM_LARGESHIELD,
             BASE_ITEM_SMALLSHIELD,
             BASE_ITEM_TOWERSHIELD

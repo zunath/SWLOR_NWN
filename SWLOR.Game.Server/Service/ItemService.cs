@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Event.Delayed;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Feat;
 using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.ValueObject;
@@ -14,7 +13,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.ChatCommand.Contracts;
-using SWLOR.Game.Server.NWN.Events.Legacy;
+using SWLOR.Game.Server.Event.Feat;
+using SWLOR.Game.Server.Event.Legacy;
 using static NWN._;
 using Object = NWN.Object;
 

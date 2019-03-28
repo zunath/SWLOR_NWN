@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Reflection;
-using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.ValueObject;
 using Object = NWN.Object;
 
-namespace SWLOR.Game.Server.NWN.Events.Legacy
+namespace SWLOR.Game.Server.Event.Legacy
 {
     public static class LegacyJVMEvent
     {

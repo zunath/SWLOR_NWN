@@ -362,26 +362,29 @@ namespace SWLOR.Game.Server.Service
 
         private static void ProcessSpawns()
         {
-            foreach (var spawn in AppCache.AreaSpawns)
+            using (new Profiler(nameof(SpawnService) + "." + nameof(ProcessSpawns)))
             {
-                // Check for a valid area - otherwise it causes hangs sometimes when the server shuts down.
-                if (!spawn.Key.IsValid) continue;
-
-                AreaSpawn areaSpawn = spawn.Value;
-                bool forceSpawn = !areaSpawn.HasSpawned;
-
-                foreach (var plc in areaSpawn.Placeables.Where(x => x.Respawns || !x.Respawns && !x.HasSpawnedOnce))
+                foreach (var spawn in AppCache.AreaSpawns)
                 {
-                    ProcessSpawn(plc, OBJECT_TYPE_PLACEABLE, spawn.Key, forceSpawn);
-                }
+                    // Check for a valid area - otherwise it causes hangs sometimes when the server shuts down.
+                    if (!spawn.Key.IsValid) continue;
 
-                foreach (var creature in areaSpawn.Creatures.Where(x => x.Respawns || !x.Respawns && !x.HasSpawnedOnce))
-                {
-                    ProcessSpawn(creature, OBJECT_TYPE_CREATURE, spawn.Key, forceSpawn);
-                }
+                    AreaSpawn areaSpawn = spawn.Value;
+                    bool forceSpawn = !areaSpawn.HasSpawned;
 
-                areaSpawn.SecondsEmpty = 0.0f;
-                areaSpawn.HasSpawned = true;
+                    foreach (var plc in areaSpawn.Placeables.Where(x => x.Respawns || !x.Respawns && !x.HasSpawnedOnce))
+                    {
+                        ProcessSpawn(plc, OBJECT_TYPE_PLACEABLE, spawn.Key, forceSpawn);
+                    }
+
+                    foreach (var creature in areaSpawn.Creatures.Where(x => x.Respawns || !x.Respawns && !x.HasSpawnedOnce))
+                    {
+                        ProcessSpawn(creature, OBJECT_TYPE_CREATURE, spawn.Key, forceSpawn);
+                    }
+
+                    areaSpawn.SecondsEmpty = 0.0f;
+                    areaSpawn.HasSpawned = true;
+                }
             }
         }
 

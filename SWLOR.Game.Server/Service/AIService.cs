@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.NWN.Events.Creature;
 using SWLOR.Game.Server.NWN.Events.Module;
+using SWLOR.Game.Server.ValueObject;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
@@ -234,29 +235,32 @@ namespace SWLOR.Game.Server.Service
 
         private static void ProcessCreatureAI()
         {
-            // Iterate backwards so we can remove the creature if it's no longer valid.
-            for (int x = _aiCreatures.Count-1; x >= 0; x--)
+            using (new Profiler(nameof(AIService) + "." + nameof(ProcessCreatureAI)))
             {
-                NWCreature creature = _aiCreatures.ElementAt(x);
-                NWArea area = creature.Area;
-                bool areaHasPCs = NWModule.Get().Players.Count(p => p.Area.Resref == area.Resref) > 0;
-
-                // Is this creature invalid or dead? If so, remove it and move to the next one.
-                if (!creature.IsValid ||
-                    creature.IsDead)
+                // Iterate backwards so we can remove the creature if it's no longer valid.
+                for (int x = _aiCreatures.Count - 1; x >= 0; x--)
                 {
-                    _aiCreatures.Remove(creature);
-                    continue;
+                    NWCreature creature = _aiCreatures.ElementAt(x);
+                    NWArea area = creature.Area;
+                    bool areaHasPCs = NWModule.Get().Players.Count(p => p.Area.Resref == area.Resref) > 0;
+
+                    // Is this creature invalid or dead? If so, remove it and move to the next one.
+                    if (!creature.IsValid ||
+                        creature.IsDead)
+                    {
+                        _aiCreatures.Remove(creature);
+                        continue;
+                    }
+
+                    // Are there no players in the area? Is the creature being possessed? If so, don't execute AI this frame. Move to the next one.
+                    if (creature.IsPossessedFamiliar || creature.IsDMPossessed || !areaHasPCs)
+                        continue;
+
+                    string script = GetBehaviourScript(creature);
+                    if (string.IsNullOrWhiteSpace(script)) continue;
+                    IAIBehaviour behaviour = GetAIBehaviour(script);
+                    behaviour.OnProcessObject(creature);
                 }
-
-                // Are there no players in the area? Is the creature being possessed? If so, don't execute AI this frame. Move to the next one.
-                if (creature.IsPossessedFamiliar || creature.IsDMPossessed || !areaHasPCs)
-                    continue;
-
-                string script = GetBehaviourScript(creature);
-                if (string.IsNullOrWhiteSpace(script)) continue;
-                IAIBehaviour behaviour = GetAIBehaviour(script);
-                behaviour.OnProcessObject(creature);
             }
         }
     }

@@ -215,9 +215,9 @@ namespace SWLOR.Game.Server.Service
                 AbilityService.RestoreFP(player, restoreAmount);
         }
 
-        private void HandleShieldProtection()
+        private static void HandleShieldProtection()
         {
-            DamageData data = _nwnxDamage.GetDamageEventData();
+            DamageEventData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
 
             NWCreature target = Object.OBJECT_SELF;
@@ -228,7 +228,7 @@ namespace SWLOR.Game.Server.Service
             {
                 // Apply damage scaling based on shield presence
                 // TODO add a line of perks here to make this more effective.
-                // 5 perk ranks at 4% per rank or 10 at 20% per rank.
+                // 5 perk ranks at 4% per rank or 10 at 2% per rank.
 
                 // DI = 10% + 1% / 3 AC bonuses on the shield. 
                 double damageMultiplier = 1.0 - (0.1 + 0.01 * shield.AC / 3);
@@ -247,11 +247,11 @@ namespace SWLOR.Game.Server.Service
                 data.Sonic = (int)(data.Sonic * damageMultiplier);
                 data.Base = (int)(data.Base * damageMultiplier);
 
-                _nwnxDamage.SetDamageEventData(data);
+                NWNXDamage.SetDamageEventData(data);
             }
         }
 
-        private void HandleApplySneakAttackDamage()
+        private static void HandleApplySneakAttackDamage()
         {
             DamageEventData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;

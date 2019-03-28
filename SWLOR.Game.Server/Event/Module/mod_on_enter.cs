@@ -19,19 +19,42 @@ namespace NWN.Scripts
             // The order of the following procedures matters.
             NWPlayer player = _.GetEnteringObject();
 
-            using (new Profiler(nameof(mod_on_enter)))
-            {   
+            using (new Profiler(nameof(mod_on_enter) + ":AddDMToCache"))
+            {
                 if (player.IsDM)
                 {
                     AppCache.ConnectedDMs.Add(player);
                 }
+            }
 
+            using (new Profiler(nameof(mod_on_enter) + ":BiowareDefault"))
+            {
                 player.DeleteLocalInt("IS_CUSTOMIZING_ITEM");
                 _.ExecuteScript("dmfi_onclienter ", Object.OBJECT_SELF); // DMFI also calls "x3_mod_def_enter"
+            }
+
+            using (new Profiler(nameof(mod_on_enter) + ":PlayerValidation"))
+            {
                 PlayerValidationService.OnModuleEnter();
+            }
+
+            using (new Profiler(nameof(mod_on_enter) + ":InitializePlayer"))
+            {
                 PlayerService.InitializePlayer(player);
+            }
+
+            using (new Profiler(nameof(mod_on_enter) + ":CachePlayerData"))
+            {
                 DataService.CachePlayerData(player);
+            }
+
+            using (new Profiler(nameof(mod_on_enter) + ":SkillServiceEnter"))
+            {
                 SkillService.OnModuleEnter();
+            }
+
+            using (new Profiler(nameof(mod_on_enter) + ":PerkServiceEnter"))
+            {
                 PerkService.OnModuleEnter();
             }
             

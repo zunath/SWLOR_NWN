@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Event.Delayed
 {
@@ -14,21 +15,24 @@ namespace SWLOR.Game.Server.Event.Delayed
     {
         public bool Run(params object[] args)
         {
-            NWPlayer player = (NWPlayer) args[0];
-
-            try
+            using(new Profiler(nameof(CraftCreateItem)))
             {
-                RunCreateItem(player);
-                player.IsBusy = false;
-            }
-            catch (Exception ex)
-            {
-                LoggingService.LogError(ex);
+                NWPlayer player = (NWPlayer)args[0];
 
-                return false;
-            }
+                try
+                {
+                    RunCreateItem(player);
+                    player.IsBusy = false;
+                }
+                catch (Exception ex)
+                {
+                    LoggingService.LogError(ex);
 
-            return true;
+                    return false;
+                }
+
+                return true;
+            }
         }
         
         private void RunCreateItem(NWPlayer player)

@@ -3,6 +3,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.ValueObject;
 
 
 // ReSharper disable once CheckNamespace
@@ -17,20 +18,29 @@ namespace NWN.Scripts
         {
             NWPlayer pc = (_.GetExitingObject());
 
-            if (pc.IsDM)
+            using (new Profiler(nameof(mod_on_leave) + ":RemoveDMFromCache"))
             {
-                AppCache.ConnectedDMs.Remove(pc);
+                if (pc.IsDM)
+                {
+                    AppCache.ConnectedDMs.Remove(pc);
+                }
             }
 
-            if (pc.IsPlayer)
+            using(new Profiler(nameof(mod_on_leave) + ":ExportSingleCharacter"))
             {
-                _.ExportSingleCharacter(pc.Object);
+                if (pc.IsPlayer)
+                {
+                    _.ExportSingleCharacter(pc.Object);
+                }
             }
+
 
             MessageHub.Instance.Publish(new OnModuleLeave());
 
-
-            DataService.RemoveCachedPlayerData(pc); // Ensure this is called LAST.
+            using (new Profiler(nameof(mod_on_leave) + ":RemovePlayerCache"))
+            {
+                DataService.RemoveCachedPlayerData(pc); // Ensure this is called LAST.
+            }
         }
     }
 }

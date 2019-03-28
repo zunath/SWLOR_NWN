@@ -34,7 +34,12 @@ namespace SWLOR.Game.Server.AI
             base.OnDamaged(self);
             DoForceAttack(self);
         }
-        
+
+        protected override void OnAIProcessing(NWCreature self)
+        {
+            ForceAttackHighestEnmity(self);
+        }
+
         private bool UseFeat(int featID, string featName, NWCreature caster, NWCreature target)
         {
             // Note - this code is loosely based on code from AbilityService.  However, the perk interface
@@ -260,34 +265,28 @@ namespace SWLOR.Game.Server.AI
                 .FirstOrDefault(x => x.TargetObject.IsValid &&
                                      x.TargetObject.Area.Equals(self.Area));
 
+            if (target == null) return;
             self.AssignCommand(() =>
             {
-                if (target == null)
+                bool bDone = false;
+
+                // See which force feats we have, and pick one to use. 
+                if (_.GetHasFeat((int)CustomFeatType.ForceLightning, self) == 1)
                 {
                     _.ClearAllActions();
+                    bDone = UseFeat((int)CustomFeatType.ForceLightning, "ForceLightning", self, target.TargetObject);
                 }
-                else
+
+                if (!bDone && _.GetHasFeat((int)CustomFeatType.DrainLife, self) == 1)
                 {
-                    bool bDone = false;
+                    _.ClearAllActions();
+                    bDone = UseFeat((int)CustomFeatType.DrainLife, "DrainLife", self, target.TargetObject);
+                }
 
-                    // See which force feats we have, and pick one to use. 
-                    if (_.GetHasFeat((int)CustomFeatType.ForceLightning, self) == 1)
-                    {
-                        _.ClearAllActions();
-                        bDone = UseFeat((int)CustomFeatType.ForceLightning, "ForceLightning", self, target.TargetObject);
-                    }
-
-                    if (!bDone && _.GetHasFeat((int)CustomFeatType.DrainLife, self) == 1)
-                    {
-                        _.ClearAllActions();
-                        bDone = UseFeat((int)CustomFeatType.DrainLife, "DrainLife", self, target.TargetObject);
-                    }
-
-                    if (!bDone)
-                    {
-                        // No abilities available right now, run away!
-                        _.ActionMoveAwayFromObject(target.TargetObject, 1);
-                    }
+                if (!bDone)
+                {
+                    // No abilities available right now, run away!
+                    _.ActionMoveAwayFromObject(target.TargetObject, 1);
                 }
             });
         }

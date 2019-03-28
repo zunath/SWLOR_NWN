@@ -398,9 +398,12 @@ namespace SWLOR.Game.Server.Service
 
         private static void ProcessCustomEffects()
         {
-            ProcessPCCustomEffects();
-            ProcessNPCCustomEffects();
-            ClearRemovedPCEffects();
+            using(new Profiler(nameof(CustomEffectService) + "." + nameof(ProcessCustomEffects)))
+            {
+                ProcessPCCustomEffects();
+                ProcessNPCCustomEffects();
+                ClearRemovedPCEffects();
+            }
         }
 
         private static void ProcessPCCustomEffects()

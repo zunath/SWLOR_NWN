@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.NWN.Events.Feat
+﻿namespace SWLOR.Game.Server.Event.Feat
 {
     public class OnHitCastSpell
     {

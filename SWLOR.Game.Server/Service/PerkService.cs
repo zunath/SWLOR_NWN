@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Perk;
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using SWLOR.Game.Server.Event.Feat;
 using static NWN._;
@@ -21,20 +22,24 @@ namespace SWLOR.Game.Server.Service
     public static class PerkService
     {
         private static readonly Dictionary<PerkType, IPerkHandler> _perkHandlers;
+        private static readonly Dictionary<int, HashSet<int>> _perkRequirementsBySkill;
+        private static readonly Dictionary<int, HashSet<int>> _perkRequirementsByQuest;
 
         static PerkService()
         {
             _perkHandlers = new Dictionary<PerkType, IPerkHandler>();
+            _perkRequirementsBySkill = new Dictionary<int, HashSet<int>>();
+            _perkRequirementsByQuest = new Dictionary<int, HashSet<int>>();
         }
 
         public static void SubscribeEvents()
         {
             // The player perk level cache gets refreshed on the following events.
-            MessageHub.Instance.Subscribe<SkillDecayedMessage>(message => CacheAllPerkLevels(message.Player));
-            MessageHub.Instance.Subscribe<SkillGainedMessage>(message => CacheAllPerkLevels(message.Player));
+            MessageHub.Instance.Subscribe<SkillDecayedMessage>(message => CachePerkIDsRequiringSkill(message.Player, message.SkillID));
+            MessageHub.Instance.Subscribe<SkillGainedMessage>(message => CachePerkIDsRequiringSkill(message.Player, message.SkillID));
             MessageHub.Instance.Subscribe<PerkUpgradedMessage>(message => CacheEffectivePerkLevel(message.Player, message.PerkID));
             MessageHub.Instance.Subscribe<PerkRefundedMessage>(message => CacheEffectivePerkLevel(message.Player, message.PerkID));
-            MessageHub.Instance.Subscribe<QuestCompletedMessage>(message => CacheAllPerkLevels(message.Player));
+            MessageHub.Instance.Subscribe<QuestCompletedMessage>(message => CachePerkIDsRequiringQuest(message.Player, message.QuestID));
 
             // Feat Events
             MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
@@ -48,6 +53,7 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleLoad()
         {
             RegisterPerkHandlers();
+            OrganizePerkRequirements();
         }
 
         private static void RegisterPerkHandlers()
@@ -64,6 +70,58 @@ namespace SWLOR.Game.Server.Service
                     throw new NullReferenceException("Unable to activate instance of type: " + type);
                 }
                 _perkHandlers.Add(instance.PerkType, instance);
+            }
+        }
+
+        private static void OrganizePerkRequirements()
+        {
+            // Calculating effective perk levels can be expensive. To aid with the performance,
+            // organize skill IDs and quest IDs by which perks require them.
+            // That way, later checks are much quicker than iterating through the data cache for this info.
+            foreach (var perk in DataService.GetAll<Data.Entity.Perk>())
+            {
+                var perkLevelIDs = DataService.Where<PerkLevel>(x => x.PerkID == perk.ID).Select(s => s.ID);
+                // Check for a skill requirement on this perk. We don't care WHICH perk level has which skill requirement,
+                // we only care to know that there IS one.
+                var skillReqs = DataService.Where<PerkLevelSkillRequirement>(x => perkLevelIDs.Contains(x.PerkLevelID)).Distinct();
+                
+                foreach (var skillReq in skillReqs)
+                {
+                    // Add a new skill hashset if it doesn't exist yet.
+                    if (!_perkRequirementsBySkill.ContainsKey(skillReq.SkillID))
+                    {
+                        _perkRequirementsBySkill.Add(skillReq.SkillID, new HashSet<int>());
+                    }
+
+                    // Get the perk ID hashset and see if this perk is already contained.
+                    // If not, add it.
+                    var perkIDs = _perkRequirementsBySkill[skillReq.SkillID];
+                    if (!perkIDs.Contains(perk.ID))
+                    {
+                        _perkRequirementsBySkill[skillReq.SkillID].Add(perk.ID);
+                    }
+                }
+
+                // Now check for a quest requirement on this perk. Again, we don't care which perk level has which quest requirement,
+                // we only care to know that there IS one.
+                var questReqs = DataService.Where<PerkLevelQuestRequirement>(x => perkLevelIDs.Contains(x.PerkLevelID)).Distinct();
+
+                foreach (var questReq in questReqs)
+                {
+                    // Add a new quest hashset if it doesn't exist yet.
+                    if (!_perkRequirementsByQuest.ContainsKey(questReq.RequiredQuestID))
+                    {
+                        _perkRequirementsByQuest.Add(questReq.RequiredQuestID, new HashSet<int>());
+                    }
+
+                    // Get the perk ID hashset and see if this perk is already contained.
+                    // If not, add it.
+                    var perkIDs = _perkRequirementsByQuest[questReq.RequiredQuestID];
+                    if (!perkIDs.Contains(perk.ID))
+                    {
+                        _perkRequirementsByQuest[questReq.RequiredQuestID].Add(perk.ID);
+                    }
+                }
             }
         }
 
@@ -103,12 +161,27 @@ namespace SWLOR.Game.Server.Service
 
         }
 
-        private static void CacheAllPerkLevels(NWPlayer player)
+        private static void CachePerkIDsRequiringSkill(NWPlayer player, int skillID)
         {
-            var perks = DataService.Where<PCPerk>(x => x.PlayerID == player.GlobalID);
-            foreach (var perk in perks)
+            if (_perkRequirementsBySkill.TryGetValue(skillID, out var perkIDs))
             {
-                CacheEffectivePerkLevel(player, perk.PerkID);
+                CacheEffectivePerkLevels(player, perkIDs);
+            }
+        }
+
+        private static void CachePerkIDsRequiringQuest(NWPlayer player, int questID)
+        {
+            if (_perkRequirementsByQuest.TryGetValue(questID, out var perkIDs))
+            {
+                CacheEffectivePerkLevels(player, perkIDs);
+            }
+        }
+
+        private static void CacheEffectivePerkLevels(NWPlayer player, IEnumerable<int> perkIDs)
+        {
+            foreach (var perkID in perkIDs)
+            {
+                CacheEffectivePerkLevel(player, perkID);
             }
         }
 
@@ -124,7 +197,9 @@ namespace SWLOR.Game.Server.Service
             // Are the player's perks already cached? This has already run for this player. Exit.
             if (AppCache.PlayerEffectivePerkLevels.ContainsKey(player.GlobalID)) return;
 
-            CacheAllPerkLevels(player);
+            // Get all of the player's perks.
+            var perks = DataService.Where<PCPerk>(x => x.PlayerID == player.GlobalID).Select(s => s.PerkID);
+            CacheEffectivePerkLevels(player, perks);
         }
 
         private static void OnModuleEquipItem()

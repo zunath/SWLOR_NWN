@@ -40,17 +40,24 @@ namespace SWLOR.Game.Server.Service
 
             // Must not be an OOC message
             if (message.IsOutOfCharacter) return;
+            
+            // Grab the current timestamp
+            string timestampString = sender.GetLocalString("RP_SYSTEM_LAST_MESSAGE_TIMESTAMP");
 
-            // Update the local timestamp variable on the sender.
+            // Regardless if the message makes it through spam prevention, we want to update the latest timestamp.
             DateTime now = DateTime.UtcNow;
             sender.SetLocalString("RP_SYSTEM_LAST_MESSAGE_TIMESTAMP", now.ToString(CultureInfo.InvariantCulture));
 
-            // Very rudimentary spam protection.
-            DateTime lastSend = DateTime.Parse(sender.GetLocalString("RP_SYSTEM_LAST_MESSAGE_TIMESTAMP"));
-            if (now <= lastSend.AddSeconds(1))
+            // If there was a timestamp then we'll check for spam and prevent it from counting towards
+            // the RP XP points.
+            if (!string.IsNullOrWhiteSpace(timestampString))
             {
-                Console.WriteLine("Spam preventing firing");
-                return;
+                DateTime lastSend = DateTime.Parse(timestampString);
+                if (now <= lastSend.AddSeconds(1))
+                {
+                    Console.WriteLine("Spam preventing firing");
+                    return;
+                }
             }
             
             // Validate whether player should receive an RP Point
@@ -90,7 +97,7 @@ namespace SWLOR.Game.Server.Service
             if (!player.IsPlayer) return;
 
             var dbPlayer = DataService.Get<Player>(player.GlobalID);
-            if (dbPlayer.RoleplayPoints >= 150)
+            if (dbPlayer.RoleplayPoints >= 50)
             {
                 float residencyBonus = PlayerStatService.EffectiveResidencyBonus(player);
                 const int BaseXP = 500;

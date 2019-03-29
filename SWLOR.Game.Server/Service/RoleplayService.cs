@@ -1,79 +1,121 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.Messaging.Messages;
+using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
-using SWLOR.Game.Server.NWNX.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
-
 namespace SWLOR.Game.Server.Service
 {
-    public class RoleplayService
+    public static class RoleplayService
     {
-        private readonly INWScript _;
-        private readonly INWNXChat _nwnxChat;
-        private readonly IDataService _data;
-
-        public RoleplayService(
-            INWScript script,
-            INWNXChat nwnxChat,
-            IDataService data)
+        private static readonly ChatChannelType[] ValidChannels =
         {
-            _ = script;
-            _nwnxChat = nwnxChat;
-            _data = data;
-        }
-
-        private static readonly int[] ValidChannels =
-        {
-            NWNXChat.NWNX_CHAT_CHANNEL_PLAYER_PARTY,
-            NWNXChat.NWNX_CHAT_CHANNEL_PLAYER_SHOUT,
-            NWNXChat.NWNX_CHAT_CHANNEL_PLAYER_TALK,
-            NWNXChat.NWNX_CHAT_CHANNEL_PLAYER_WHISPER
+            ChatChannelType.PlayerParty,
+            ChatChannelType.PlayerShout,
+            ChatChannelType.PlayerTalk,
+            ChatChannelType.PlayerWhisper
         };
 
-        public void OnNWNXChat()
+        public static void SubscribeEvents()
         {
-            int channel = _nwnxChat.GetChannel();
+            MessageHub.Instance.Subscribe<ChatProcessedMessage>(OnChatProcessed);
+            MessageHub.Instance.Subscribe<OnModuleHeartbeat>(message => OnModuleHeartbeat());
+        }
+
+        private static void OnChatProcessed(ChatProcessedMessage message)
+        {
+            var sender = message.Sender;
+            var channel = message.Channel;
 
             // Must be one of the valid channels
-            if (!ValidChannels.Contains(channel)) return;
-            var sender = _nwnxChat.GetSender();
+            if (!ValidChannels.Contains(message.Channel)) return;
 
             // Must be a player
-            if (!sender.IsPlayer) return;
+            if (!message.Sender.IsPlayer) return;
+
+            // Must not be an OOC message
+            if (message.IsOutOfCharacter) return;
 
             // Validate whether player should receive an RP Point
             bool canReceivePoint = CanReceiveRPPoint(sender.Object, channel);
+            if (!canReceivePoint) return;
+            
+            // Player was allowed to gain this RP point.
+            var dbPlayer = DataService.Get<Player>(sender.GlobalID);
+            dbPlayer.RoleplayPoints++;
+            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
 
-            var dbPlayer = _data.Get<Player>(sender.GlobalID);
-
+            Console.WriteLine("RP Points = " + dbPlayer.RoleplayPoints);
         }
 
-        private bool CanReceiveRPPoint(NWPlayer player, int channel)
+        private static void OnModuleHeartbeat()
+        {
+            var module = NWModule.Get();
+            var ticks = module.GetLocalInt("RP_SYSTEM_TICKS") + 1;
+
+            // Is it time to process RP points?
+            if (ticks >= 300) // 300 ticks * 6 seconds per HB = 1800 seconds = 30 minutes
+            {
+                foreach (var player in module.Players)
+                {
+                    ProcessPlayerRoleplayXP(player);
+                }
+
+                ticks = 0;
+            }
+
+            module.SetLocalInt("RP_SYSTEM_TICKS", ticks);
+        }
+
+        private static void ProcessPlayerRoleplayXP(NWPlayer player)
+        {
+            // Only fire for players, not DMs.
+            if (!player.IsPlayer) return;
+
+            var dbPlayer = DataService.Get<Player>(player.GlobalID);
+            if (dbPlayer.RoleplayPoints >= 150)
+            {
+                int xp = 250; // todo calc with residency bonus
+                dbPlayer.RoleplayXP += xp;
+                dbPlayer.RoleplayPoints = 0;
+                DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+
+                player.SendMessage("You gained " + xp + " roleplay XP.");
+            }
+        }
+
+        private static bool CanReceiveRPPoint(NWPlayer player, ChatChannelType channel)
         {
             // Party - Must be in a party with another PC.
-            if (channel == NWNXChat.NWNX_CHAT_CHANNEL_PLAYER_PARTY)
+            if (channel == ChatChannelType.PlayerParty)
             {
-
+                return player.PartyMembers.Any(x => x.GlobalID != player.GlobalID);
             }
 
-            // Shout - Another player must be online.
-            else if (channel == NWNXChat.NWNX_CHAT_CHANNEL_PLAYER_SHOUT)
+            // Shout (Holonet) - Another player must be online.
+            else if (channel == ChatChannelType.PlayerShout)
             {
-
+                return NWModule.Get().Players.Count() > 1;
             }
 
-            // Talk - Another player must be nearby.
-            else if(channel == NWNXChat.NWNX_CHAT_CHANNEL_PLAYER_TALK)
+            // Talk - Another player must be nearby. (20.0 units)
+            else if(channel == ChatChannelType.PlayerTalk)
             {
+                return NWModule.Get().Players.Any(nearby => 
+                    player.GlobalID != nearby.GlobalID &&
+                    _.GetDistanceBetween(player, nearby) <= 20.0f);
             }
-
-
-            // Whisper - Another player must be nearby.
-            else if (channel == NWNXChat.NWNX_CHAT_CHANNEL_PLAYER_WHISPER)
+            
+            // Whisper - Another player must be nearby. (4.0 units)
+            else if (channel == ChatChannelType.PlayerWhisper)
             {
-
+                return NWModule.Get().Players.Any(nearby => 
+                    player.GlobalID != nearby.GlobalID &&
+                    _.GetDistanceBetween(player, nearby) <= 4.0f);
             }
 
             return false;

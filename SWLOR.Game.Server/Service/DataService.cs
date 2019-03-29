@@ -12,6 +12,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using SWLOR.Game.Server.Data;
@@ -216,7 +217,7 @@ namespace SWLOR.Game.Server.Service
         public static void CachePlayerData(NWPlayer player)
         {
             if (!player.IsPlayer) return;
-
+            
             using (var multi = _connection.QueryMultiple("GetPlayerData", new { PlayerID = player.GlobalID }, commandType: CommandType.StoredProcedure))
             {
                 foreach (var item in multi.Read<PCCooldown>())

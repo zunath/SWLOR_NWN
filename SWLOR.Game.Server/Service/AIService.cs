@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.NWN.Events.Creature;
 using SWLOR.Game.Server.NWN.Events.Module;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.ValueObject;
 using Object = NWN.Object;
 
@@ -17,12 +18,12 @@ namespace SWLOR.Game.Server.Service
     public static class AIService
     {
         private static readonly Dictionary<string, IAIBehaviour> _aiBehaviours;
-        private static readonly HashSet<NWCreature> _aiCreatures;
+        private static readonly Dictionary<NWArea, HashSet<NWCreature>> _areaAICreatures;
 
         static AIService()
         {
             _aiBehaviours = new Dictionary<string, IAIBehaviour>();
-            _aiCreatures = new HashSet<NWCreature>();
+            _areaAICreatures = new Dictionary<NWArea, HashSet<NWCreature>>();
         }
         
         public static void SubscribeEvents()
@@ -31,7 +32,7 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
 
             // SWLOR Events
-            MessageHub.Instance.Subscribe<ObjectProcessorMessage>(message => ProcessCreatureAI());
+            MessageHub.Instance.Subscribe<ObjectProcessorMessage>(message => ProcessAreaAI());
 
             // Creature Events
             MessageHub.Instance.Subscribe<OnCreaturePhysicalAttacked>(message => OnCreaturePhysicalAttacked());
@@ -53,6 +54,7 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleLoad()
         {
             RegisterAIBehaviours();
+            RegisterAreaAICreatures();
         }
 
         private static void RegisterAIBehaviours()
@@ -69,6 +71,14 @@ namespace SWLOR.Game.Server.Service
                     throw new NullReferenceException("Unable to activate instance of type: " + type);
                 }
                 _aiBehaviours.Add(type.Name, instance);
+            }
+        }
+
+        private static void RegisterAreaAICreatures()
+        {
+            foreach (var area in NWModule.Get().Areas)
+            {
+                _areaAICreatures.Add(area, new HashSet<NWCreature>());
             }
         }
 
@@ -212,8 +222,8 @@ namespace SWLOR.Game.Server.Service
             if (ai.IgnoreOnSpawn) self.SetLocalInt("IGNORE_NWN_ON_SPAWN_EVENT", 1);
             if (ai.IgnoreOnSpellCastAt) self.SetLocalInt("IGNORE_NWN_ON_SPELL_CAST_AT_EVENT", 1);
             if (ai.IgnoreOnUserDefined) self.SetLocalInt("IGNORE_NWN_ON_USER_DEFINED_EVENT", 1);
-            
-            _aiCreatures.Add(self);
+
+            _areaAICreatures[self.Area].Add(self);
             ai.OnSpawn(self);
         }
         
@@ -233,34 +243,47 @@ namespace SWLOR.Game.Server.Service
             behaviour.OnUserDefined(Object.OBJECT_SELF);
         }
 
-        private static void ProcessCreatureAI()
+        private static void ProcessAreaAI()
         {
-            using (new Profiler(nameof(AIService) + "." + nameof(ProcessCreatureAI)))
+            using (new Profiler(nameof(AIService) + "." + nameof(ProcessAreaAI)))
             {
-                // Iterate backwards so we can remove the creature if it's no longer valid.
-                for (int x = _aiCreatures.Count - 1; x >= 0; x--)
+                foreach (var area in NWModule.Get().Areas)
                 {
-                    NWCreature creature = _aiCreatures.ElementAt(x);
-                    NWArea area = creature.Area;
-                    bool areaHasPCs = NWModule.Get().Players.Count(p => p.Area.Resref == area.Resref) > 0;
+                    // We don't process AI for empty areas.
+                    if (NWNXArea.GetNumberOfPlayersInArea(area) <= 0) continue;
 
-                    // Is this creature invalid or dead? If so, remove it and move to the next one.
-                    if (!creature.IsValid ||
-                        creature.IsDead)
-                    {
-                        _aiCreatures.Remove(creature);
-                        continue;
-                    }
-
-                    // Are there no players in the area? Is the creature being possessed? If so, don't execute AI this frame. Move to the next one.
-                    if (creature.IsPossessedFamiliar || creature.IsDMPossessed || !areaHasPCs)
-                        continue;
-
-                    string script = GetBehaviourScript(creature);
-                    if (string.IsNullOrWhiteSpace(script)) continue;
-                    IAIBehaviour behaviour = GetAIBehaviour(script);
-                    behaviour.OnProcessObject(creature);
+                    var creatures = _areaAICreatures[area];
+                    ProcessCreatureAI(ref creatures);
                 }
+            }
+        }
+
+        private static void ProcessCreatureAI(ref HashSet<NWCreature> creatures)
+        {
+            // Iterate backwards so we can remove the creature if it's no longer valid.
+            for (int x = creatures.Count - 1; x >= 0; x--)
+            {
+                NWCreature creature = creatures.ElementAt(x);
+                NWArea area = creature.Area;
+                bool areaHasPCs = NWModule.Get().Players.Count(p => p.Area.Resref == area.Resref) > 0;
+
+                // Is this creature invalid or dead? If so, remove it and move to the next one.
+                if (!creature.IsValid ||
+                    creature.IsDead)
+                {
+                    Console.WriteLine();
+                    creatures.Remove(creature);
+                    continue;
+                }
+
+                // Are there no players in the area? Is the creature being possessed? If so, don't execute AI this frame. Move to the next one.
+                if (creature.IsPossessedFamiliar || creature.IsDMPossessed || !areaHasPCs)
+                    continue;
+
+                string script = GetBehaviourScript(creature);
+                if (string.IsNullOrWhiteSpace(script)) continue;
+                IAIBehaviour behaviour = GetAIBehaviour(script);
+                behaviour.OnProcessObject(creature);
             }
         }
     }

@@ -392,6 +392,10 @@
     <Compile Include="Enumeration\TraceComponent.cs" />
     <Compile Include="Messaging\Messages\ObjectProcessorMessage.cs" />
     <Compile Include="NWNX\AdministrationOption.cs" />
+    <Compile Include="NWNX\AreaColorType.cs" />
+    <Compile Include="NWNX\AreaDayNightCycle.cs" />
+    <Compile Include="NWNX\AreaPVPSetting.cs" />
+    <Compile Include="NWNX\AreaWeatherChance.cs" />
     <Compile Include="NWNX\AttackEventData.cs" />
     <Compile Include="NWNX\DamageData.cs" />
     <Compile Include="Event\Area\area_on_enter.cs" />
@@ -548,6 +552,7 @@
     <Compile Include="Enumeration\PerkType.cs" />
     <Compile Include="Enumeration\QuestType.cs" />
     <Compile Include="NWNX\ItemPropertyUnpacked.cs" />
+    <Compile Include="NWNX\NWNXArea.cs" />
     <Compile Include="NWNX\NWNXItemProperty.cs" />
     <Compile Include="NWNX\NWNXVisibility.cs" />
     <Compile Include="NWNX\QuickBarSlotType.cs" />

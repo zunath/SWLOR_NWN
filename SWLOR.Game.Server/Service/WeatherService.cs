@@ -163,9 +163,9 @@ namespace SWLOR.Game.Server.Service
                 climate.Heat_Modifier = -2;
                 climate.Humidity_Modifier = +2;
             }
-            else if (planetName == "Tattooine")
+            else if (planetName == "Tatooine")
             {
-                LoggingService.Trace(TraceComponent.Weather, "Planet is Tattooine.");
+                LoggingService.Trace(TraceComponent.Weather, "Planet is Tatooine.");
                 climate.Heat_Modifier = +5;
                 climate.Humidity_Modifier = -8;
 

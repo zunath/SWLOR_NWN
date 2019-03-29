@@ -33,6 +33,8 @@ namespace SWLOR.Game.Server.Service
 
             // SWLOR Events
             MessageHub.Instance.Subscribe<ObjectProcessorMessage>(message => ProcessAreaAI());
+            MessageHub.Instance.Subscribe<AreaInstanceCreatedMessage>(message => OnAreaInstanceCreated(message.Instance));
+            MessageHub.Instance.Subscribe<AreaInstanceDestroyedMessage>(message => OnAreaInstanceDestroyed(message.Instance));
 
             // Creature Events
             MessageHub.Instance.Subscribe<OnCreaturePhysicalAttacked>(message => OnCreaturePhysicalAttacked());
@@ -284,6 +286,20 @@ namespace SWLOR.Game.Server.Service
                 IAIBehaviour behaviour = GetAIBehaviour(script);
                 behaviour.OnProcessObject(creature);
             }
+        }
+
+        private static void OnAreaInstanceCreated(NWArea instance)
+        {
+            if (_areaAICreatures.ContainsKey(instance)) return;
+
+            _areaAICreatures.Add(instance, new HashSet<NWCreature>());
+        }
+
+        private static void OnAreaInstanceDestroyed(NWArea instance)
+        {
+            if (!_areaAICreatures.ContainsKey(instance)) return;
+
+            _areaAICreatures.Remove(instance);
         }
     }
 }

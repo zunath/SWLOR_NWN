@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.NWN.Events.DM
+﻿namespace SWLOR.Game.Server.Event.DM
 {
     public class OnDMAction
     {

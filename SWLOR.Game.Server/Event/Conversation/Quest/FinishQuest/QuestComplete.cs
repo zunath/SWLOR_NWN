@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Event.Conversation.Quest.FinishQuest
     {
         public static bool Check(int index, int customRuleIndex)
         {
-            using (new Profiler(nameof(QuestComplete)))
+            using (new Profiler(nameof(QuestComplete) + ".Index" + index + ".Rule" + customRuleIndex))
             {
                 NWPlayer player = _.GetPCSpeaker();
                 NWObject talkTo = Object.OBJECT_SELF;

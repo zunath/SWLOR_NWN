@@ -88,6 +88,9 @@ namespace SWLOR.Game.Server.AI
 
         public virtual void OnHeartbeat(NWCreature self)
         {
+            // No sense processing for empty and invalid (limbo) areas.
+            if (!self.Area.IsValid || NWNXArea.GetNumberOfPlayersInArea(self.Area) <= 0) return;
+
             var flags = GetAIFlags(self);
             if ((flags & AIFlags.RandomWalk) != 0)
                 RandomWalk(self);
@@ -147,7 +150,7 @@ namespace SWLOR.Game.Server.AI
                 // Remove invalid objects from the enmity table
                 if (target == null ||
                     !target.IsValid ||
-                    !target.Area.Equals(self.Area) ||
+                    target.Area.Resref != self.Area.Resref ||
                     target.CurrentHP <= -11 ||
                     target.IsDead)
                 {

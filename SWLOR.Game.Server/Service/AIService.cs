@@ -271,7 +271,6 @@ namespace SWLOR.Game.Server.Service
                 if (!creature.IsValid ||
                     creature.IsDead)
                 {
-                    Console.WriteLine();
                     creatures.Remove(creature);
                     continue;
                 }

@@ -2,29 +2,15 @@
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using SWLOR.Game.Server.Service;
+
+using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Throwing
 {
-    public class PreciseToss: IPerk
+    public class PreciseToss: IPerkHandler
     {
-        private readonly INWScript _;
-        private readonly IPerkService _perk;
-        private readonly IRandomService _random;
-        private readonly ICustomEffectService _customEffect;
-
-        public PreciseToss(
-            INWScript script,
-            IPerkService perk,
-            IRandomService random,
-            ICustomEffectService customEffect)
-        {
-            _perk = perk;
-            _ = script;
-            _random = random;
-            _customEffect = customEffect;
-        }
+        public PerkType PerkType => PerkType.PreciseToss;
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
@@ -65,47 +51,47 @@ namespace SWLOR.Game.Server.Perk.Throwing
             switch (level)
             {
                 case 1:
-                    damage = _random.D4(1);
+                    damage = RandomService.D4(1);
                     seconds = 6;
                     dotDamage = 1;
                     break;
                 case 2:
-                    damage = _random.D8(1);
+                    damage = RandomService.D8(1);
                     seconds = 6;
                     dotDamage = 1;
                     break;
                 case 3:
-                    damage = _random.D8(2);
+                    damage = RandomService.D8(2);
                     seconds = 6;
                     dotDamage = 1;
                     break;
                 case 4:
-                    damage = _random.D8(2);
+                    damage = RandomService.D8(2);
                     seconds = 12;
                     dotDamage = 2;
                     break;
                 case 5:
-                    damage = _random.D8(3);
+                    damage = RandomService.D8(3);
                     seconds = 12;
                     dotDamage = 2;
                     break;
                 case 6:
-                    damage = _random.D8(4);
+                    damage = RandomService.D8(4);
                     seconds = 12;
                     dotDamage = 2;
                     break;
                 case 7:
-                    damage = _random.D8(5);
+                    damage = RandomService.D8(5);
                     seconds = 12;
                     dotDamage = 3;
                     break;
                 case 8:
-                    damage = _random.D8(5);
+                    damage = RandomService.D8(5);
                     seconds = 18;
                     dotDamage = 3;
                     break;
                 case 9:
-                    damage = _random.D8(6);
+                    damage = RandomService.D8(6);
                     seconds = 24;
                     dotDamage = 3;
                     break;
@@ -113,7 +99,7 @@ namespace SWLOR.Game.Server.Perk.Throwing
             }
 
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_PIERCING), target);
-            _customEffect.ApplyCustomEffect(player, target.Object, CustomEffectType.Bleeding, seconds, level, Convert.ToString(dotDamage));
+            CustomEffectService.ApplyCustomEffect(player, target.Object, CustomEffectType.Bleeding, seconds, level, Convert.ToString(dotDamage));
 
 
         }

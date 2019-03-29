@@ -26,7 +26,6 @@
         // 21 is open
         ShieldOath = 22,
         PrecisionTargeting = 23,
-        ForcePack = 24,
-        FoodEffect = 25
+        ForcePack = 24
     }
 }

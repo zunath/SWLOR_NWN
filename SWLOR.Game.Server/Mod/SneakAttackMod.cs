@@ -4,8 +4,10 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class SneakAttackMod: IMod
+    public class SneakAttackMod: IModHandler
     {
+        public int ModTypeID => 26;
+
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             if (target.SneakAttackBonus >= 20)

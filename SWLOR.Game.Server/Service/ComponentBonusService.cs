@@ -1,32 +1,16 @@
 ﻿using System;
 using NWN;
-using SWLOR.Game.Server.Bioware.Contracts;
+using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+
 
 namespace SWLOR.Game.Server.Service
 {
-    public class ComponentBonusService : IComponentBonusService
+    public static class ComponentBonusService
     {
-        private readonly INWScript _;
-        private readonly IItemService _item;
-        private readonly IBiowareXP2 _biowareXP2;
-        private readonly IDurabilityService _durability;
-
-        public ComponentBonusService(
-            INWScript script,
-            IItemService item,
-            IBiowareXP2 biowareXP2,
-            IDurabilityService durability)
-        {
-            _ = script;
-            _item = item;
-            _biowareXP2 = biowareXP2;
-            _durability = durability;
-        }
-
-        public void ApplyComponentBonus(NWItem product, ItemProperty sourceIP)
+        
+        public static void ApplyComponentBonus(NWItem product, ItemProperty sourceIP)
         {
             ComponentBonusType bonusType = (ComponentBonusType)_.GetItemPropertySubType(sourceIP);
             int amount = _.GetItemPropertyCostTableValue(sourceIP);
@@ -60,9 +44,9 @@ namespace SWLOR.Game.Server.Service
                         sourceTag = "rslot_prismatic";
                         break;
                     case ComponentBonusType.DurabilityUp:
-                        var maxDur = _durability.GetMaxDurability(product) + amount;
-                        _durability.SetMaxDurability(product, maxDur);
-                        _durability.SetDurability(product, maxDur);
+                        var maxDur = DurabilityService.GetMaxDurability(product) + amount;
+                        DurabilityService.SetMaxDurability(product, maxDur);
+                        DurabilityService.SetDurability(product, maxDur);
                         break;
                     case ComponentBonusType.ChargesUp:
                         product.Charges += amount;
@@ -238,12 +222,12 @@ namespace SWLOR.Game.Server.Service
 
                 if (!string.IsNullOrWhiteSpace(sourceTag))
                 {
-                    prop = _item.GetCustomItemPropertyByItemTag(sourceTag);
+                    prop = ItemService.GetCustomItemPropertyByItemTag(sourceTag);
                 }
 
                 if (prop == null) return;
 
-                _biowareXP2.IPSafeAddItemProperty(product, prop, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
+                BiowareXP2.IPSafeAddItemProperty(product, prop, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
             }
 
         }

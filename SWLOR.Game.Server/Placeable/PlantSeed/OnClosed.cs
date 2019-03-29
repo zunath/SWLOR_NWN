@@ -2,21 +2,13 @@
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 
 namespace SWLOR.Game.Server.Placeable.PlantSeed
 {
     public class OnClosed: IRegisteredEvent
     {
-        private readonly INWScript _;
-        private readonly IItemService _item;
-
-        public OnClosed(INWScript script, IItemService item)
-        {
-            _ = script;
-            _item = item;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlaceable container = (Object.OBJECT_SELF);
@@ -24,7 +16,7 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
             
             foreach (NWItem item in container.InventoryItems)
             {
-                _item.ReturnItem(oPC, item);
+                ItemService.ReturnItem(oPC, item);
             }
 
             container.Destroy();

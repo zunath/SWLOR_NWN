@@ -1,17 +1,14 @@
 ﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 
 namespace SWLOR.Game.Server.Perk.Stances
 {
-    public class ShieldOath: IPerk
+    public class ShieldOath: IPerkHandler
     {
-        private readonly ICustomEffectService _customEffect;
+        public PerkType PerkType => PerkType.ShieldOath;
 
-        public ShieldOath(ICustomEffectService customEffect)
-        {
-            _customEffect = customEffect;
-        }
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return true;
@@ -44,7 +41,7 @@ namespace SWLOR.Game.Server.Perk.Stances
 
         public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
         {
-            _customEffect.ApplyStance(
+            CustomEffectService.ApplyStance(
                 player,
                 CustomEffectType.ShieldOath,
                 PerkType.ShieldOath,

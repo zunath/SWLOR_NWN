@@ -1,46 +1,38 @@
-﻿using NWN;
+﻿using System;
+using System.Collections.Generic;
+using NWN;
 using SWLOR.Game.Server.ChatCommand;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
+
+
 using System.Linq;
 using System.Reflection;
+using SWLOR.Game.Server.CustomEffect.Contracts;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
-using static NWN.NWScript;
+using static NWN._;
+using LoopingAnimationCommand = SWLOR.Game.Server.ChatCommand.LoopingAnimationCommand;
+using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class ChatCommandService : IChatCommandService
+    public static class ChatCommandService
     {
-        private readonly INWScript _;
-        private readonly INWNXChat _nwnxChat;
-        private readonly IColorTokenService _color;
-        private readonly IAuthorizationService _auth;
-        private readonly INWNXEvents _nwnxEvents;
-        private readonly INWNXCreature _nwnxCreature;
-        private readonly INWNXPlayer _nwnxPlayer;
-        private readonly INWNXPlayerQuickBarSlot _nwnxQBS;
+        private static readonly Dictionary<string, IChatCommand> _chatCommands;
 
-        public ChatCommandService(
-            INWNXChat nwnxChat,
-            IColorTokenService color,
-            IAuthorizationService auth,
-            INWNXEvents nwnxEvents,
-            INWNXCreature nwnxCreature,
-            INWScript script,
-            INWNXPlayer nwnxPlayer,
-            INWNXPlayerQuickBarSlot nwnxQBS)
+        static ChatCommandService()
         {
-            _nwnxChat = nwnxChat;
-            _color = color;
-            _auth = auth;
-            _nwnxEvents = nwnxEvents;
-            _nwnxCreature = nwnxCreature;
-            _ = script;
-            _nwnxPlayer = nwnxPlayer;
-            _nwnxQBS = nwnxQBS;
+            _chatCommands = new Dictionary<string, IChatCommand>();
+        }
+
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
+            MessageHub.Instance.Subscribe<OnModuleUseFeat>(message => OnModuleUseFeat());
+            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
         }
 
         public static bool CanHandleChat(NWObject sender, string message)
@@ -50,9 +42,54 @@ namespace SWLOR.Game.Server.Service
             return validTarget && validMessage;
         }
 
-        public void OnModuleNWNXChat(NWPlayer sender)
+        private static void OnModuleLoad()
         {
-            string originalMessage = _nwnxChat.GetMessage().Trim();
+            RegisterChatCommandHandlers();
+        }
+
+
+        private static void RegisterChatCommandHandlers()
+        {
+            // Use reflection to get all of IChatCommand handler implementations.
+            var classes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => typeof(IChatCommand).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
+
+            foreach (var type in classes)
+            {
+                IChatCommand instance = Activator.CreateInstance(type) as IChatCommand;
+                
+                if (instance == null)
+                {
+                    throw new NullReferenceException("Unable to activate instance of type: " + type);
+                }
+                // We use the lower-case class name as the key because later on we do a lookup based on text entered by the player.
+                string key = type.Name.ToLower();
+                _chatCommands.Add(key, instance);
+            }
+        }
+
+        private static bool IsChatCommandRegistered(string commandName)
+        {
+            commandName = commandName.ToLower();
+            return _chatCommands.ContainsKey(commandName);
+        }
+
+        private static IChatCommand GetChatCommandHandler(string commandName)
+        {
+            commandName = commandName.ToLower();
+            if (!_chatCommands.ContainsKey(commandName))
+            {
+                throw new ArgumentException("Chat command handler '" + commandName + "' is not registered.");
+            }
+
+            return _chatCommands[commandName];
+        }
+
+        private static void OnModuleNWNXChat()
+        {
+            NWPlayer sender = Object.OBJECT_SELF;
+            string originalMessage = NWNXChat.GetMessage().Trim();
 
             if (!CanHandleChat(sender, originalMessage))
             {
@@ -69,62 +106,61 @@ namespace SWLOR.Game.Server.Service
             string command = split[0].Substring(1, split[0].Length - 1);
             split.RemoveAt(0);
 
-            _nwnxChat.SkipMessage();
+            NWNXChat.SkipMessage();
 
-            if (!App.IsKeyRegistered<IChatCommand>("ChatCommand." + command))
+            if (!IsChatCommandRegistered(command))
             {
-                sender.SendMessage(_color.Red("Invalid chat command. Use '/help' to get a list of available commands."));
+                sender.SendMessage(ColorTokenService.Red("Invalid chat command. Use '/help' to get a list of available commands."));
                 return;
             }
 
-            App.ResolveByInterface<IChatCommand>("ChatCommand." + command, chatCommand =>
+            IChatCommand chatCommand = GetChatCommandHandler(command);
+            string args = string.Join(" ", split);
+
+            if (!chatCommand.RequiresTarget)
             {
-                string args = string.Join(" ", split);
-
-                if (!chatCommand.RequiresTarget)
+                ProcessChatCommand(chatCommand, sender, null, null, args);
+            }
+            else
+            {
+                string error = chatCommand.ValidateArguments(sender, split.ToArray());
+                if (!string.IsNullOrWhiteSpace(error))
                 {
-                    ProcessChatCommand(chatCommand, sender, null, null, args);
+                    sender.SendMessage(error);
+                    return;
                 }
-                else
+
+                sender.SetLocalString("CHAT_COMMAND", command);
+                sender.SetLocalString("CHAT_COMMAND_ARGS", args);
+                sender.SendMessage("Please use your 'Chat Command Targeter' feat to select the target of this chat command.");
+
+                if (_.GetHasFeat((int) CustomFeatType.ChatCommandTargeter, sender) == FALSE || sender.IsDM)
                 {
-                    string error = chatCommand.ValidateArguments(sender, split.ToArray());
-                    if (!string.IsNullOrWhiteSpace(error))
+                    NWNXCreature.AddFeatByLevel(sender, (int)CustomFeatType.ChatCommandTargeter, 1);
+
+                    if(sender.IsDM)
                     {
-                        sender.SendMessage(error);
-                        return;
-                    }
-
-                    sender.SetLocalString("CHAT_COMMAND", command);
-                    sender.SetLocalString("CHAT_COMMAND_ARGS", args);
-                    sender.SendMessage("Please use your 'Chat Command Targeter' feat to select the target of this chat command.");
-
-                    if (_.GetHasFeat((int) CustomFeatType.ChatCommandTargeter, sender) == FALSE || sender.IsDM)
-                    {
-                        _nwnxCreature.AddFeatByLevel(sender, (int)CustomFeatType.ChatCommandTargeter, 1);
-
-                        if(sender.IsDM)
+                        var qbs = NWNXPlayer.GetQuickBarSlot(sender, 11);
+                        if (qbs.ObjectType == QuickBarSlotType.Empty)
                         {
-                            var qbs = _nwnxPlayer.GetQuickBarSlot(sender, 11);
-                            if (qbs.ObjectType == QuickBarSlotType.Empty)
-                            {
-                                _nwnxPlayer.SetQuickBarSlot(sender, 11, _nwnxQBS.UseFeat((int)CustomFeatType.ChatCommandTargeter));
-                            }
+                            NWNXPlayer.SetQuickBarSlot(sender, 11, NWNXPlayerQuickBarSlot.UseFeat((int)CustomFeatType.ChatCommandTargeter));
                         }
                     }
                 }
-            });
+            }
+        
 
         }
 
-        public void OnModuleUseFeat()
+        private static void OnModuleUseFeat()
         {
             NWPlayer pc = Object.OBJECT_SELF;
-            int featID = _nwnxEvents.OnFeatUsed_GetFeatID();
+            int featID = NWNXEvents.OnFeatUsed_GetFeatID();
 
             if (featID != (int)CustomFeatType.ChatCommandTargeter) return;
 
-            var target = _nwnxEvents.OnFeatUsed_GetTarget();
-            var targetLocation = _nwnxEvents.OnFeatUsed_GetTargetLocation();
+            var target = NWNXEvents.OnFeatUsed_GetTarget();
+            var targetLocation = NWNXEvents.OnFeatUsed_GetTargetLocation();
             string command = pc.GetLocalString("CHAT_COMMAND");
             string args = pc.GetLocalString("CHAT_COMMAND_ARGS");
 
@@ -133,18 +169,16 @@ namespace SWLOR.Game.Server.Service
                 pc.SendMessage("Please enter a chat command and then use this feat. Type /help to learn more about the available chat commands.");
                 return;
             }
-            
-            App.ResolveByInterface<IChatCommand>("ChatCommand." + command, chatCommand =>
-            {
-                ProcessChatCommand(chatCommand, pc, target, targetLocation, args);
-            });
 
+            IChatCommand chatCommand = GetChatCommandHandler(command);
+            ProcessChatCommand(chatCommand, pc, target, targetLocation, args);
+            
             pc.DeleteLocalString("CHAT_COMMAND");
             pc.DeleteLocalString("CHAT_COMMAND_ARGS");
         }
 
 
-        private void ProcessChatCommand(IChatCommand command, NWPlayer sender, NWObject target, NWLocation targetLocation, string args)
+        private static void ProcessChatCommand(IChatCommand command, NWPlayer sender, NWObject target, NWLocation targetLocation, string args)
         {
             if (target == null)
             {
@@ -157,7 +191,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             CommandDetailsAttribute attribute = command.GetType().GetCustomAttribute<CommandDetailsAttribute>();
-            bool isDM = sender.IsDM || _auth.IsPCRegisteredAsDM(sender);
+            bool isDM = sender.IsDM || AuthorizationService.IsPCRegisteredAsDM(sender);
 
             if (attribute != null &&
                 (attribute.Permissions.HasFlag(CommandPermissionType.Player) && sender.IsPlayer ||
@@ -177,7 +211,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                sender.SendMessage(_color.Red("Invalid chat command. Use '/help' to get a list of available commands."));
+                sender.SendMessage(ColorTokenService.Red("Invalid chat command. Use '/help' to get a list of available commands."));
             }
         }
     }

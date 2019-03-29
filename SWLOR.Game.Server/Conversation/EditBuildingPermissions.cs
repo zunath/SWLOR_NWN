@@ -1,38 +1,15 @@
 ﻿using System;
-using System.Linq;
-using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
 {
     public class EditBuildingPermissions: ConversationBase
     {
-        private readonly IBaseService _base;
-        private readonly IColorTokenService _color;
-        private readonly IDataService _data;
-        private readonly IBasePermissionService _perm;
-
-        public EditBuildingPermissions(
-            INWScript script, 
-            IDialogService dialog,
-            IBaseService @base,
-            IColorTokenService color,
-            IDataService data,
-            IBasePermissionService perm) 
-            : base(script, dialog)
-        {
-            _base = @base;
-            _color = color;
-            _data = data;
-            _perm = perm;
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -88,12 +65,12 @@ namespace SWLOR.Game.Server.Conversation
 
         private void MainResponses(int responseID)
         {
-            var data = _base.GetPlayerTempData(GetPC());
+            var data = BaseService.GetPlayerTempData(GetPC());
 
             switch (responseID)
             {
                 case 1: // Change Player Permissions
-                    if (!_perm.HasStructurePermission(GetPC(), data.StructureID, StructurePermission.CanAdjustPermissions))
+                    if (!BasePermissionService.HasStructurePermission(GetPC(), data.StructureID, StructurePermission.CanAdjustPermissions))
                     {
                         GetPC().FloatingText("You do not have permission to change other players' permissions.");
                         return;
@@ -103,7 +80,7 @@ namespace SWLOR.Game.Server.Conversation
                     ChangePage("PlayerListPage");
                     break;
                 case 2: // Change Public Permissions
-                    if (!_perm.HasStructurePermission(GetPC(), data.StructureID, StructurePermission.CanAdjustPublicPermissions))
+                    if (!BasePermissionService.HasStructurePermission(GetPC(), data.StructureID, StructurePermission.CanAdjustPublicPermissions))
                     {
                         GetPC().FloatingText("You do not have permission to change this building's PUBLIC permissions.");
                         return;
@@ -139,8 +116,8 @@ namespace SWLOR.Game.Server.Conversation
         private void BuildPlayerDetailsPage(NWPlayer player)
         {
             ClearPageResponses("PlayerDetailsPage");
-            var data = _base.GetPlayerTempData(GetPC());
-            var permission = _data.SingleOrDefault<PCBaseStructurePermission>(x => x.PlayerID == player.GlobalID && 
+            var data = BaseService.GetPlayerTempData(GetPC());
+            var permission = DataService.SingleOrDefault<PCBaseStructurePermission>(x => x.PlayerID == player.GlobalID && 
                                                                                    x.PCBaseStructureID == data.StructureID &&
                                                                                    !x.IsPublicPermission);
 
@@ -159,21 +136,21 @@ namespace SWLOR.Game.Server.Conversation
 
             bool isStarship = GetPC().Area.GetLocalInt("BUILDING_TYPE") == (int)Enumeration.BuildingType.Starship;
 
-            string header = _color.Green("Name: ") + player.Name + "\n\n";
+            string header = ColorTokenService.Green("Name: ") + player.Name + "\n\n";
 
-            header += _color.Green("Permissions:\n\n");
-            header += "Can Place/Edit Structures: " + (canPlaceEditStructures ? _color.Green("YES") : _color.Red("NO")) + "\n";
-            header += "Can Access Structure Inventory: " + (canAccessStructureInventory ? _color.Green("YES") : _color.Red("NO")) + "\n";
-            header += "Can Enter Building: " + (canEnterBuilding ? _color.Green("YES") : _color.Red("NO")) + "\n";
-            header += "Can Adjust Permissions: " + (canAdjustPermissions ? _color.Green("YES") : _color.Red("NO")) + "\n";
-            header += "Can Retrieve Structures: " + (canRetrieveStructures ? _color.Green("YES") : _color.Red("NO")) + "\n";
-            header += "Can Rename Structures: " + (canRenameStructures ? _color.Green("YES") : _color.Red("NO")) + "\n";
-            header += "Can Edit Primary Residence: " + (canEditPrimaryResidence ? _color.Green("YES") : _color.Red("NO")) + "\n";
-            header += "Can Remove Primary Residence: " + (canRemovePrimaryResidence ? _color.Green("YES") : _color.Red("NO")) + "\n";
-            header += "Can Change Structure Mode: " + (canChangeStructureMode ? _color.Green("YES") : _color.Red("NO")) + "\n";
-            header += "Can Adjust PUBLIC Permissions: " + (canAdjustPublicPermissions ? _color.Green("YES") : _color.Red("NO")) + "\n";
+            header += ColorTokenService.Green("Permissions:\n\n");
+            header += "Can Place/Edit Structures: " + (canPlaceEditStructures ? ColorTokenService.Green("YES") : ColorTokenService.Red("NO")) + "\n";
+            header += "Can Access Structure Inventory: " + (canAccessStructureInventory ? ColorTokenService.Green("YES") : ColorTokenService.Red("NO")) + "\n";
+            header += "Can Enter Building: " + (canEnterBuilding ? ColorTokenService.Green("YES") : ColorTokenService.Red("NO")) + "\n";
+            header += "Can Adjust Permissions: " + (canAdjustPermissions ? ColorTokenService.Green("YES") : ColorTokenService.Red("NO")) + "\n";
+            header += "Can Retrieve Structures: " + (canRetrieveStructures ? ColorTokenService.Green("YES") : ColorTokenService.Red("NO")) + "\n";
+            header += "Can Rename Structures: " + (canRenameStructures ? ColorTokenService.Green("YES") : ColorTokenService.Red("NO")) + "\n";
+            header += "Can Edit Primary Residence: " + (canEditPrimaryResidence ? ColorTokenService.Green("YES") : ColorTokenService.Red("NO")) + "\n";
+            header += "Can Remove Primary Residence: " + (canRemovePrimaryResidence ? ColorTokenService.Green("YES") : ColorTokenService.Red("NO")) + "\n";
+            header += "Can Change Structure Mode: " + (canChangeStructureMode ? ColorTokenService.Green("YES") : ColorTokenService.Red("NO")) + "\n";
+            header += "Can Adjust PUBLIC Permissions: " + (canAdjustPublicPermissions ? ColorTokenService.Green("YES") : ColorTokenService.Red("NO")) + "\n";
 
-            if (isStarship) header += "Can Fly Starship: " + (canFlyStarship ? _color.Green("YES") :_color.Red("NO")) + "\n";
+            if (isStarship) header += "Can Fly Starship: " + (canFlyStarship ? ColorTokenService.Green("YES") :ColorTokenService.Red("NO")) + "\n";
 
             SetPageHeader("PlayerDetailsPage", header);
 
@@ -239,11 +216,11 @@ namespace SWLOR.Game.Server.Conversation
 
         private void TogglePermission(Guid playerID, StructurePermission permission, bool isPublicPermission)
         {
-            var data = _base.GetPlayerTempData(GetPC());
+            var data = BaseService.GetPlayerTempData(GetPC());
             var dbPermission = isPublicPermission ? 
-                _data.SingleOrDefault<PCBaseStructurePermission>(x => x.PCBaseStructureID == data.StructureID &&
+                DataService.SingleOrDefault<PCBaseStructurePermission>(x => x.PCBaseStructureID == data.StructureID &&
                                                                       x.IsPublicPermission) :
-                _data.SingleOrDefault<PCBaseStructurePermission>(x => x.PlayerID == playerID && 
+                DataService.SingleOrDefault<PCBaseStructurePermission>(x => x.PlayerID == playerID && 
                                                                       x.PCBaseStructureID == data.StructureID &&
                                                                       !x.IsPublicPermission);
             var action = DatabaseActionType.Update;
@@ -298,14 +275,14 @@ namespace SWLOR.Game.Server.Conversation
                     throw new ArgumentOutOfRangeException(nameof(permission), permission, null);
             }
 
-            _data.SubmitDataChange(dbPermission, action);
+            DataService.SubmitDataChange(dbPermission, action);
         }
 
         private void BuildPublicPermissionsPage()
         {
             ClearPageResponses("PublicPermissionsPage");
-            var data = _base.GetPlayerTempData(GetPC());
-            var permission = _data.SingleOrDefault<PCBaseStructurePermission>(x => x.PCBaseStructureID == data.StructureID &&
+            var data = BaseService.GetPlayerTempData(GetPC());
+            var permission = DataService.SingleOrDefault<PCBaseStructurePermission>(x => x.PCBaseStructureID == data.StructureID &&
                                                                                    x.IsPublicPermission);
 
             // Intentionally excluded permissions:
@@ -314,8 +291,8 @@ namespace SWLOR.Game.Server.Conversation
             // CanAdjustPublicPermissions
             bool canEnterBuilding = permission?.CanEnterBuilding ?? false;
 
-            string header = _color.Green("Public Permissions: ") + "\n\n";
-            header += "Can Enter Building: " + (canEnterBuilding ? _color.Green("YES") : _color.Red("NO")) + "\n";
+            string header = ColorTokenService.Green("Public Permissions: ") + "\n\n";
+            header += "Can Enter Building: " + (canEnterBuilding ? ColorTokenService.Green("YES") : ColorTokenService.Red("NO")) + "\n";
 
             SetPageHeader("PublicPermissionsPage", header);
 
@@ -324,9 +301,9 @@ namespace SWLOR.Game.Server.Conversation
 
         private void PublicPermissionsResponses(int responseID)
         {
-            var data = _base.GetPlayerTempData(GetPC());
-            var pcStructure = _data.Get<PCBaseStructure>(data.StructureID);
-            var pcBase = _data.Get<PCBase>(pcStructure.PCBaseID);
+            var data = BaseService.GetPlayerTempData(GetPC());
+            var pcStructure = DataService.Get<PCBaseStructure>(data.StructureID);
+            var pcBase = DataService.Get<PCBase>(pcStructure.PCBaseID);
             var ownerPlayerID = pcBase.PlayerID;
 
             switch (responseID)
@@ -341,7 +318,7 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void EndDialog()
         {
-            _base.ClearPlayerTempData(GetPC());
+            BaseService.ClearPlayerTempData(GetPC());
         }
     }
 }

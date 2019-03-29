@@ -1,20 +1,14 @@
 ﻿using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 
 namespace SWLOR.Game.Server.ChatCommand
 {
     [CommandDetails("Customizes your character appearance. Only available for use in the entry area or DM customization area.", CommandPermissionType.Player)]
     public class Customize: IChatCommand
     {
-        private readonly IDialogService _dialog;
-
-        public Customize(IDialogService dialog)
-        {
-            _dialog = dialog;
-        }
-
         /// <summary>
         /// Opens the character customization menu.
         /// </summary>
@@ -24,7 +18,7 @@ namespace SWLOR.Game.Server.ChatCommand
         /// <param name="args"></param>
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            _dialog.StartConversation(user, user, "CharacterCustomization");
+            DialogService.StartConversation(user, user, "CharacterCustomization");
         }
 
         public string ValidateArguments(NWPlayer user, params string[] args)

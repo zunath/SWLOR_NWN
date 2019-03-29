@@ -1,28 +1,16 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using SWLOR.Game.Server.Service;
+
+using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class MassTranquilizer : IPerk
+    public class MassTranquilizer : IPerkHandler
     {
-        private readonly INWScript _;
-        private readonly IPerkService _perk;
-        private readonly IRandomService _random;
-
-        public MassTranquilizer(
-            INWScript script,
-            IPerkService perk,
-            IRandomService random)
-        {
-            _ = script;
-            _perk = perk;
-            _random = random;
-        }
+        public PerkType PerkType => PerkType.MassTranquilizer;
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
@@ -56,9 +44,9 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
         {
-            int massLevel = _perk.GetPCPerkLevel(player, PerkType.MassTranquilizer);
-            int tranqLevel = _perk.GetPCPerkLevel(player, PerkType.Tranquilizer);
-            int luck = _perk.GetPCPerkLevel(player, PerkType.Lucky);
+            int massLevel = PerkService.GetPCPerkLevel(player, PerkType.MassTranquilizer);
+            int tranqLevel = PerkService.GetPCPerkLevel(player, PerkType.Tranquilizer);
+            int luck = PerkService.GetPCPerkLevel(player, PerkType.Lucky);
             float duration;
             float range = 5 * massLevel;
             
@@ -100,7 +88,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
                 default: return;
             }
 
-            if (_random.D100(1) <= luck)
+            if (RandomService.D100(1) <= luck)
             {
                 duration *= 2;
                 player.SendMessage("Lucky shot!");

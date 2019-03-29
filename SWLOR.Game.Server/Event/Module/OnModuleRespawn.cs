@@ -1,20 +1,9 @@
-﻿using SWLOR.Game.Server.Service.Contracts;
+﻿using SWLOR.Game.Server.Event;
+using SWLOR.Game.Server.Service;
 
-namespace SWLOR.Game.Server.Event.Module
+namespace SWLOR.Game.Server.NWN.Events.Module
 {
-    internal class OnModuleRespawn : IRegisteredEvent
+    internal class OnModuleRespawn
     {
-        private readonly IDeathService _death;
-
-        public OnModuleRespawn(IDeathService death)
-        {
-            _death = death;
-        }
-
-        public bool Run(params object[] args)
-        {
-            _death.OnPlayerRespawn();
-            return true;
-        }
     }
 }

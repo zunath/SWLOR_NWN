@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.General
 {
-    public class Lucky : IPerk
+    public class Lucky : IPerkHandler
     {
+        public PerkType PerkType => PerkType.Lucky;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

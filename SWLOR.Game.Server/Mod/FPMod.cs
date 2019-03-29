@@ -4,8 +4,10 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class FPMod : IMod
+    public class FPMod : IModHandler
     {
+        public int ModTypeID => 11;
+
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             if (target.FPBonus >= 100)

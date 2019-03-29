@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.Piloting
 {
-    public class Evasive: IPerk
+    public class Evasive: IPerkHandler
     {
+        public PerkType PerkType => PerkType.Evasive;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

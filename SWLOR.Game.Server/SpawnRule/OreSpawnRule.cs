@@ -1,32 +1,22 @@
 ﻿using System;
-using System.Linq;
-using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.SpawnRule.Contracts;
 
 namespace SWLOR.Game.Server.SpawnRule
 {
     public class OreSpawnRule : ISpawnRule
     {
-        private readonly IRandomService _random;
-        private readonly IDataService _data;
-
-        public OreSpawnRule(IRandomService random, IDataService data)
-        {
-            _random = random;
-            _data = data;
-        }
-
         public void Run(NWObject target, params object[] args)
         {
-            int roll = _random.Random(0, 100);
+            int roll = RandomService.Random(0, 100);
             ResourceQuality quality = ResourceQuality.Low;
             string qualityName = "Low Quality";
 
-            var dbArea = _data.Single<Area>(x => x.Resref == target.Area.Resref);
+            var dbArea = DataService.Single<Area>(x => x.Resref == target.Area.Resref);
             int tier = dbArea.ResourceQuality;
             int maxTier = dbArea.MaxResourceQuality;
 
@@ -97,7 +87,7 @@ namespace SWLOR.Game.Server.SpawnRule
                 qualityName = "Normal Quality";
             }
             
-            roll = _random.Random(0, 100);
+            roll = RandomService.Random(0, 100);
             if (roll <= 3)
             {
                 tier++;
@@ -110,7 +100,7 @@ namespace SWLOR.Game.Server.SpawnRule
 
             target.SetLocalInt("RESOURCE_QUALITY", (int)quality);
             target.SetLocalInt("RESOURCE_TIER", tier);
-            target.SetLocalInt("RESOURCE_COUNT", _random.Random(3, 10));
+            target.SetLocalInt("RESOURCE_COUNT", RandomService.Random(3, 10));
             target.SetLocalString("RESOURCE_RESREF", GetResourceResref(tier));
             target.SetLocalString("RESOURCE_QUALITY_NAME", qualityName);
         }

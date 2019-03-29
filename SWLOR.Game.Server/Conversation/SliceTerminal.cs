@@ -1,26 +1,13 @@
 ﻿using NWN;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
 {
     public class SliceTerminal: ConversationBase
     {
-        private readonly IKeyItemService _keyItem;
-        private readonly IObjectVisibilityService _ovs;
-        
-        public SliceTerminal(
-            INWScript script, 
-            IDialogService dialog,
-            IKeyItemService keyItem,
-            IObjectVisibilityService ovs) 
-            : base(script, dialog)
-        {
-            _keyItem = keyItem;
-            _ovs = ovs;
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("MainPage");
@@ -61,13 +48,13 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            _keyItem.GivePlayerKeyItem(GetPC(), keyItemID);
+            KeyItemService.GivePlayerKeyItem(GetPC(), keyItemID);
 
             string visibilityObjectID = self.GetLocalString("VISIBILITY_OBJECT_ID");
 
             if (!string.IsNullOrWhiteSpace(visibilityObjectID))
             {
-                _ovs.AdjustVisibility(GetPC(), self, false);
+                ObjectVisibilityService.AdjustVisibility(GetPC(), self, false);
             }
 
             EndConversation();

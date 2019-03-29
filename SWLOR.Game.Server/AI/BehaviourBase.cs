@@ -88,8 +88,8 @@ namespace SWLOR.Game.Server.AI
 
         public virtual void OnHeartbeat(NWCreature self)
         {
-            // No sense processing for empty areas.
-            if (NWNXArea.GetNumberOfPlayersInArea(self.Area) <= 0) return;
+            // No sense processing for empty and invalid (limbo) areas.
+            if (!self.Area.IsValid || NWNXArea.GetNumberOfPlayersInArea(self.Area) <= 0) return;
 
             var flags = GetAIFlags(self);
             if ((flags & AIFlags.RandomWalk) != 0)

@@ -187,19 +187,14 @@ namespace SWLOR.Game.Server.Service
 
         public static void OnModuleEnter()
         {
-            // The first time a player logs in, build their effective perk level cache.
-            // This cache gets used all over to determine whether the player can use a perk.
-            // It's cheaper for us to perform this calculation up front than to do it later.
-
+            // The first time a player logs in, add an entry to the effective perk level cache.
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
 
             // Are the player's perks already cached? This has already run for this player. Exit.
             if (AppCache.PlayerEffectivePerkLevels.ContainsKey(player.GlobalID)) return;
 
-            // Get all of the player's perks.
-            var perks = DataService.Where<PCPerk>(x => x.PlayerID == player.GlobalID).Select(s => s.PerkID);
-            CacheEffectivePerkLevels(player, perks);
+            AppCache.PlayerEffectivePerkLevels.Add(player.GlobalID, new Dictionary<int, int>());
         }
 
         private static void OnModuleEquipItem()
@@ -487,14 +482,20 @@ namespace SWLOR.Game.Server.Service
         {
             // Effective levels are cached because they're so frequently used.
             // They get recached on the following events:
-            //      - Player log-in
             //      - Player gains a skill rank
             //      - Player's skill decays
             //      - Player buys a perk
             //      - Player refunds a perk
             //      - Player completes a quest
-            if (!AppCache.PlayerEffectivePerkLevels.ContainsKey(player.GlobalID)) return 0;
+            //      - If a request for the value doesn't exist.
+
             var levels = AppCache.PlayerEffectivePerkLevels[player.GlobalID];
+            if (!levels.ContainsKey(perkID))
+            {
+                // This value has not been cached since the player logged in. 
+                // Cache it if possible.
+                CacheEffectivePerkLevel(player, perkID);
+            }
             if (!levels.ContainsKey(perkID)) return 0;
             return levels[perkID];
         }

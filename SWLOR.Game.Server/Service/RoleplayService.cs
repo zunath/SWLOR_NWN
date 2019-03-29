@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
@@ -40,6 +41,18 @@ namespace SWLOR.Game.Server.Service
             // Must not be an OOC message
             if (message.IsOutOfCharacter) return;
 
+            // Update the local timestamp variable on the sender.
+            DateTime now = DateTime.UtcNow;
+            sender.SetLocalString("RP_SYSTEM_LAST_MESSAGE_TIMESTAMP", now.ToString(CultureInfo.InvariantCulture));
+
+            // Very rudimentary spam protection.
+            DateTime lastSend = DateTime.Parse(sender.GetLocalString("RP_SYSTEM_LAST_MESSAGE_TIMESTAMP"));
+            if (now <= lastSend.AddSeconds(1))
+            {
+                Console.WriteLine("Spam preventing firing");
+                return;
+            }
+            
             // Validate whether player should receive an RP Point
             bool canReceivePoint = CanReceiveRPPoint(sender.Object, channel);
             if (!canReceivePoint) return;
@@ -79,7 +92,9 @@ namespace SWLOR.Game.Server.Service
             var dbPlayer = DataService.Get<Player>(player.GlobalID);
             if (dbPlayer.RoleplayPoints >= 150)
             {
-                int xp = 250; // todo calc with residency bonus
+                float residencyBonus = PlayerStatService.EffectiveResidencyBonus(player);
+                const int BaseXP = 500;
+                int xp = (int)(BaseXP + BaseXP * residencyBonus);
                 dbPlayer.RoleplayXP += xp;
                 dbPlayer.RoleplayPoints = 0;
                 DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);

@@ -8,6 +8,7 @@ using static NWN._;
 using System.Text;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 
@@ -100,15 +101,16 @@ namespace SWLOR.Game.Server.Service
             List<ChatComponent> chatComponents;
 
             // Quick early out - if we start with "//" or "((", this is an OOC message.
+            bool isOOC = false;
             if (message.Length >= 2 && (message.Substring(0, 2) == "//" || message.Substring(0, 2) == "(("))
             {
                 ChatComponent component = new ChatComponent
                 {
                     m_Text = message,
                     m_CustomColour = true,
-                    m_ColourRed = 255,
-                    m_ColourGreen = 0,
-                    m_ColourBlue = 255,
+                    m_ColourRed = 64,
+                    m_ColourGreen = 64,
+                    m_ColourBlue = 64,
                     m_Translatable = false
                 };
 
@@ -121,6 +123,7 @@ namespace SWLOR.Game.Server.Service
                     return;
                 }
 
+                isOOC = true;
             }
             else
             {
@@ -312,6 +315,8 @@ namespace SWLOR.Game.Server.Service
 
                 NWNXChat.SendMessage((int)finalChannel, finalMessageColoured, sender, obj);
             }
+
+            MessageHub.Instance.Publish(new ChatProcessedMessage(sender, channel, isOOC));
         }
 
         private static void OnModuleEnter()

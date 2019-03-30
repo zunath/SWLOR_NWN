@@ -22,8 +22,7 @@ namespace SWLOR.Game.Server.Data
         /// Returns the folder name containing the sql migration files.
         /// </summary>
         private static string FolderName => $"{Assembly.GetExecutingAssembly().GetName().Name}.Data.Migrations";
-
-        /// <inheritdoc />
+        
         /// <summary>
         /// This is fired automatically by Autofac. It's the entry point to the migration runner.
         /// </summary>

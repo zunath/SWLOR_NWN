@@ -115,6 +115,7 @@ namespace SWLOR.Game.Server.Conversation
             header += ColorTokenService.Green("Association: ") + association.Name + "\n\n";
             header += ColorTokenService.Green("Skill Points: ") + totalSkillCount + " / " + SkillService.SkillCap + "\n";
             header += ColorTokenService.Green("Unallocated SP: ") + playerEntity.UnallocatedSP + "\n";
+            header += ColorTokenService.Green("Roleplay XP: ") + playerEntity.RoleplayXP + "\n";
             header += ColorTokenService.Green("FP: ")  + (playerEntity.MaxFP > 0 ? MenuService.BuildBar(playerEntity.CurrentFP, playerEntity.MaxFP, 100, ColorTokenService.TokenStart(32, 223, 219)) : "N/A") + "\n";
 
             return header;

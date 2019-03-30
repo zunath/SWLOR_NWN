@@ -74,3 +74,11 @@ INCLUDE (BankID, ItemID, ItemName, ItemTag, ItemResref, ItemObject, DateStored);
 CREATE NONCLUSTERED INDEX IX_PCSkillPool_PlayerID
 ON dbo.PCSkillPool(PlayerID)
 INCLUDE (SkillCategoryID, Levels);
+
+CREATE NONCLUSTERED INDEX IX_PCImpoundedItem_DateRetrieved
+ON dbo.PCImpoundedItem(DateRetrieved)
+INCLUDE (PlayerID, ItemName, ItemTag, ItemResref, ItemObject, DateImpounded);
+
+CREATE NONCLUSTERED INDEX IX_PCImpoundedItem_DateImpounded
+ON dbo.PCImpoundedItem(DateImpounded)
+INCLUDE (PlayerID, ItemName, ItemTag, ItemResref, ItemObject, DateRetrieved);

@@ -75,12 +75,12 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static void GiveSkillXP(NWPlayer oPC, SkillType skill, int xp, bool enableResidencyBonus = true)
+        public static void GiveSkillXP(NWPlayer oPC, SkillType skill, int xp, bool enableResidencyBonus = true, bool enableTotalSkillPointPenalty = true)
         {
-            GiveSkillXP(oPC, (int)skill, xp, enableResidencyBonus);
+            GiveSkillXP(oPC, (int)skill, xp, enableResidencyBonus, enableTotalSkillPointPenalty);
         }
 
-        public static void GiveSkillXP(NWPlayer oPC, int skillID, int xp, bool enableResidencyBonus = true)
+        public static void GiveSkillXP(NWPlayer oPC, int skillID, int xp, bool enableResidencyBonus = true, bool enableTotalSkillPointPenalty = true)
         {
             if (skillID <= 0 || xp <= 0 || !oPC.IsPlayer) return;
 
@@ -113,7 +113,13 @@ namespace SWLOR.Game.Server.Service
             if (xpBonusModifier > 0.25)
                 xpBonusModifier = 0.25f;
 
-            xp = CalculateTotalSkillPointsPenalty(player.TotalSPAcquired, xp);
+            // An XP penalty will be applied depending on how many skill points a player has earned so far.
+            // This can be disabled with the enableTotalSkillPointPenalty flag.
+            if (enableTotalSkillPointPenalty)
+            {
+                xp = CalculateTotalSkillPointsPenalty(player.TotalSPAcquired, xp);
+            }
+
             xp = xp + (int)(xp * xpBonusModifier);
 
             // Run the skill decay rules.

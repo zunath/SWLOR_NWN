@@ -102,6 +102,7 @@
     <Compile Include="ChatCommand\GetLocalString.cs" />
     <Compile Include="ChatCommand\GetPlot.cs" />
     <Compile Include="ChatCommand\GetXPBonus.cs" />
+    <Compile Include="ChatCommand\GiveRPXP.cs" />
     <Compile Include="ChatCommand\Greet.cs" />
     <Compile Include="ChatCommand\Help.cs" />
     <Compile Include="ChatCommand\Interact.cs" />
@@ -392,6 +393,7 @@
     <Compile Include="Enumeration\TraceComponent.cs" />
     <Compile Include="Messaging\Messages\AreaInstanceCreatedMessage.cs" />
     <Compile Include="Messaging\Messages\AreaInstanceDestroyedMessage.cs" />
+    <Compile Include="Messaging\Messages\ChatProcessedMessage.cs" />
     <Compile Include="Messaging\Messages\ObjectProcessorMessage.cs" />
     <Compile Include="NWNX\AdministrationOption.cs" />
     <Compile Include="NWNX\AreaColorType.cs" />
@@ -1321,6 +1323,7 @@
     <Compile Include="Service\RandomService.cs" />
     <Compile Include="Service\ModService.cs" />
     <Compile Include="Service\ResourceService.cs" />
+    <Compile Include="Service\RoleplayService.cs" />
     <Compile Include="Service\SearchService.cs" />
     <Compile Include="Service\SerializationService.cs" />
     <Compile Include="Service\SkillService.cs" />
@@ -2166,6 +2169,7 @@
     <EmbeddedResource Include="Data\Migrations\2019-03-02.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-03-03.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-03-11.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-03-29.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-03-24.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-03-27.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-03-27.2.sql" />

@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.NWN.Events.Player
+﻿namespace SWLOR.Game.Server.Event.Player
 {
     public class OnPlayerDamaged
     {

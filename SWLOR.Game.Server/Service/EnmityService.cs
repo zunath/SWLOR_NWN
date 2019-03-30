@@ -4,8 +4,8 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Event.Player;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN.Events.Player;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Service

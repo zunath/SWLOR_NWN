@@ -254,6 +254,13 @@ namespace SWLOR.Game.Server.Service
                     // We don't process AI for empty areas.
                     if (NWNXArea.GetNumberOfPlayersInArea(area) <= 0) continue;
 
+                    // Safety check - If the area isn't in the cache, report it.
+                    if (!_areaAICreatures.ContainsKey(area))
+                    {
+                        Console.WriteLine("Area " + area.Name + " not registered with AI service. Tag: " + area.Tag + ", Resref = " + area.Resref);
+                        return;
+                    }
+
                     var creatures = _areaAICreatures[area];
                     ProcessCreatureAI(ref creatures);
                 }
@@ -267,7 +274,11 @@ namespace SWLOR.Game.Server.Service
             {
                 NWCreature creature = creatures.ElementAt(x);
                 NWArea area = creature.Area;
-                bool areaHasPCs = NWModule.Get().Players.Count(p => p.Area.Resref == area.Resref) > 0;
+                
+                // Limbo check.
+                if (!area.IsValid) continue;
+
+                bool areaHasPCs = NWNXArea.GetNumberOfPlayersInArea(area) > 0;
 
                 // Is this creature invalid or dead? If so, remove it and move to the next one.
                 if (!creature.IsValid ||

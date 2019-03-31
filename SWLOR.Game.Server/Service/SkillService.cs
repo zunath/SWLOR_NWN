@@ -74,13 +74,33 @@ namespace SWLOR.Game.Server.Service
                 creature = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, 1, player.Object, nth, CREATURE_TYPE_PLAYER_CHAR, 0);
             }
         }
-
-        public static void GiveSkillXP(NWPlayer oPC, SkillType skill, int xp, bool enableResidencyBonus = true, bool enableTotalSkillPointPenalty = true)
+        
+        /// <summary>
+        /// Gives XP towards a specific player's skill. XP bonuses granted by residency and DM bonuses can be enabled or disabled.
+        /// Penalties can also be enabled or disabled.
+        /// </summary>
+        /// <param name="oPC">The player character receiving the XP</param>
+        /// <param name="skill">The type of the skill we're granting XP to.</param>
+        /// <param name="xp">The amount of XP to give.</param>
+        /// <param name="enableResidencyBonus">If enabled, a player's primary residence will be factored into the XP gain.</param>
+        /// <param name="enableTotalSkillPointPenalty">If enabled, penalties will be applied to the XP if the player falls into the ranges of the skill penalties.</param>
+        /// <param name="enableDMBonus">If enabled, bonuses granted by DMs will be applied.</param>
+        public static void GiveSkillXP(NWPlayer oPC, SkillType skill, int xp, bool enableResidencyBonus = true, bool enableTotalSkillPointPenalty = true, bool enableDMBonus = true)
         {
             GiveSkillXP(oPC, (int)skill, xp, enableResidencyBonus, enableTotalSkillPointPenalty);
         }
 
-        public static void GiveSkillXP(NWPlayer oPC, int skillID, int xp, bool enableResidencyBonus = true, bool enableTotalSkillPointPenalty = true)
+        /// <summary>
+        /// Gives XP towards a specific player's skill. XP bonuses granted by residency and DM bonuses can be enabled or disabled.
+        /// Penalties can also be enabled or disabled.
+        /// </summary>
+        /// <param name="oPC">The player character receiving the XP</param>
+        /// <param name="skillID">The ID of the skill we're granting XP to.</param>
+        /// <param name="xp">The amount of XP to give.</param>
+        /// <param name="enableResidencyBonus">If enabled, a player's primary residence will be factored into the XP gain.</param>
+        /// <param name="enableTotalSkillPointPenalty">If enabled, penalties will be applied to the XP if the player falls into the ranges of the skill penalties.</param>
+        /// <param name="enableDMBonus">If enabled, bonuses granted by DMs will be applied.</param>
+        public static void GiveSkillXP(NWPlayer oPC, int skillID, int xp, bool enableResidencyBonus = true, bool enableTotalSkillPointPenalty = true, bool enableDMBonus = true)
         {
             if (skillID <= 0 || xp <= 0 || !oPC.IsPlayer) return;
 
@@ -120,8 +140,13 @@ namespace SWLOR.Game.Server.Service
                 xp = CalculateTotalSkillPointsPenalty(player.TotalSPAcquired, xp);
             }
 
-            xp = xp + (int)(xp * xpBonusModifier);
-
+            // Characters can receive permanent XP bonuses from DMs. If this skill XP distribution
+            // shouldn't grant that bonus, it can be disabled with the enableDMBonus flag.
+            if(enableDMBonus)
+            {
+                xp = xp + (int)(xp * xpBonusModifier);
+            }
+            
             // Run the skill decay rules.
             // If the method returns false, that means all skills are locked.
             // So we can't give the player any XP.

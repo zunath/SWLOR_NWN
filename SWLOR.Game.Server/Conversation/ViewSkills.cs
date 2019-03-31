@@ -300,7 +300,10 @@ namespace SWLOR.Game.Server.Conversation
                     {
                         if (vm.IsConfirming)
                         {
-                            SkillService.GiveSkillXP(player, vm.SelectedSkillID, vm.RPXPDistributing, false, false);
+                            // Give the distributed XP to a particular skill.
+                            // We disable residency bonuses, DM bonuses, and skill penalties during this distribution because
+                            // those are calculated when we give the player RP XP.
+                            SkillService.GiveSkillXP(player, vm.SelectedSkillID, vm.RPXPDistributing, false, false, false);
                             dbPlayer.RoleplayXP -= vm.RPXPDistributing;
                             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
                             vm.IsConfirming = false;

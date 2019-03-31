@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if(!skill.ContributesToSkillCap)
             {
-                SetResponseVisible("SkillDetailsPage", 1, false);
+                SetResponseVisible("SkillDetailsPage", 2, false);
             }
         }
 

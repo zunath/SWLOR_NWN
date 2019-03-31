@@ -227,11 +227,11 @@ namespace SWLOR.Game.Server.Service
             }
             if (examinedItem.HPBonus > 0)
             {
-                description += ColorTokenService.Orange("HP Bonus: ") + examinedItem.HPBonus / 2 + "\n";
+                description += ColorTokenService.Orange("HP Bonus: ") + examinedItem.HPBonus + "\n";
             }
             if (examinedItem.FPBonus > 0)
             {
-                description += ColorTokenService.Orange("FP Bonus: ") + examinedItem.FPBonus / 2+ "\n";
+                description += ColorTokenService.Orange("FP Bonus: ") + examinedItem.FPBonus + "\n";
             }
             if (examinedItem.StructureBonus > 0)
             {
@@ -385,7 +385,7 @@ namespace SWLOR.Game.Server.Service
             {
                 if (WeaponBaseItemTypes.Contains(examinedItem.BaseItemType))
                 {
-                    description += ColorTokenService.Orange("Base Attack Bonus: ") + examinedItem.BaseAttackBonus + " (/3)\n";
+                    description += ColorTokenService.Orange("Base Attack Bonus: ") + examinedItem.BaseAttackBonus + "\n";
                 }
                 else
                 {

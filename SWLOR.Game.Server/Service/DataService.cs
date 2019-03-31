@@ -218,6 +218,9 @@ namespace SWLOR.Game.Server.Service
         {
             if (!player.IsPlayer) return;
             
+            Console.WriteLine("Starting CachePlayerData for ID = " + player.GlobalID);
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             using (var multi = _connection.QueryMultiple("GetPlayerData", new { PlayerID = player.GlobalID }, commandType: CommandType.StoredProcedure))
             {
                 foreach (var item in multi.Read<PCCooldown>())
@@ -266,6 +269,8 @@ namespace SWLOR.Game.Server.Service
                 foreach (var item in multi.Read<PCSkillPool>())
                     SetIntoCache<PCSkillPool>(item.ID, item);
             }
+            sw.Stop();
+            Console.WriteLine("CachePlayerData took " + sw.ElapsedMilliseconds + " ms to run. Player ID = " + player.GlobalID);
 
             Get<Player>(player.GlobalID);
         }

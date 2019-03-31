@@ -486,8 +486,8 @@ namespace SWLOR.Game.Server.Service
         {
             if (planet == "Viscara")
                 return (int) Planet.Viscara;
-            if (planet == "Tattooine")
-                return (int) Planet.Tattooine;
+            if (planet == "Tatooine")
+                return (int) Planet.Tatooine;
             if (planet == "Mon Cala")
                 return (int)Planet.MonCala;
 
@@ -499,7 +499,7 @@ namespace SWLOR.Game.Server.Service
             switch (destination)
             {
                 case (int)Planet.Viscara: return "Viscara";
-                case (int)Planet.Tattooine: return "Tattooine";
+                case (int)Planet.Tatooine: return "Tatooine";
                 case (int)Planet.MonCala: return "Mon Cala";
                 default: return "";
             }
@@ -521,7 +521,7 @@ namespace SWLOR.Game.Server.Service
             List<String> list = new List<string>();
 
             if (((int)destinations & (int)Planet.Viscara) == (int)Planet.Viscara && PlanetToDestination(planet) != (int)Planet.Viscara) list.Add(DestinationToPlanet((int)Planet.Viscara));
-            if (((int)destinations & (int)Planet.Tattooine) == (int)Planet.Tattooine && PlanetToDestination(planet) != (int)Planet.Tattooine) list.Add(DestinationToPlanet((int)Planet.Tattooine));
+            if (((int)destinations & (int)Planet.Tatooine) == (int)Planet.Tatooine && PlanetToDestination(planet) != (int)Planet.Tatooine) list.Add(DestinationToPlanet((int)Planet.Tatooine));
             if (((int)destinations & (int)Planet.MonCala) == (int)Planet.MonCala && PlanetToDestination(planet) != (int)Planet.MonCala) list.Add(DestinationToPlanet((int)Planet.MonCala));
 
             return list.ToArray();

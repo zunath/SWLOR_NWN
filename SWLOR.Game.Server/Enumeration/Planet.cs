@@ -12,7 +12,7 @@
     public enum Planet
     {
         Viscara = 1,
-        Tattooine = 2,
+        Tatooine = 2,
         MonCala = 4
     }
 }

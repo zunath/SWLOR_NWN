@@ -489,6 +489,13 @@ namespace SWLOR.Game.Server.Service
             //      - Player completes a quest
             //      - If a request for the value doesn't exist.
 
+            // Player entry doesn't exist in the cache. Add it now.
+            if (!AppCache.PlayerEffectivePerkLevels.ContainsKey(player.GlobalID))
+            {
+                AppCache.PlayerEffectivePerkLevels.Add(player.GlobalID, new Dictionary<int, int>());
+            }
+
+            // If the cache doesn't contain this perkID, we need to cache it.
             var levels = AppCache.PlayerEffectivePerkLevels[player.GlobalID];
             if (!levels.ContainsKey(perkID))
             {

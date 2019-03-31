@@ -82,3 +82,6 @@ INCLUDE (PlayerID, ItemName, ItemTag, ItemResref, ItemObject, DateImpounded);
 CREATE NONCLUSTERED INDEX IX_PCImpoundedItem_DateImpounded
 ON dbo.PCImpoundedItem(DateImpounded)
 INCLUDE (PlayerID, ItemName, ItemTag, ItemResref, ItemObject, DateRetrieved);
+
+CREATE NONCLUSTERED INDEX IX_PCImpoundedItem_PlayerID_DateRetrieved 
+ON dbo.PCImpoundedItem(PlayerID, DateRetrieved)

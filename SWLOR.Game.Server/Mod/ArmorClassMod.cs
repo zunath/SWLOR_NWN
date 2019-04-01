@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Mod
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            if (target.CustomAC > MaxValue) // Actually applies to the PC at 1/3 total, so 51 == 17
+            if (target.CustomAC >= MaxValue) // Actually applies to the PC at 1/3 total, so 51 == 17
                 return "You cannot improve that item's AC any further.";
 
             if (!ItemService.ArmorBaseItemTypes.Contains(target.BaseItemType) &&
@@ -25,7 +25,8 @@ namespace SWLOR.Game.Server.Mod
 
         public void Apply(NWPlayer player, NWItem target, params string[] args)
         {
-            int amount = Convert.ToInt32(args[0]);
+            int tier = Convert.ToInt32(args[0]);
+            int amount = tier * 3;
             int newValue = target.CustomAC + amount;
             if (newValue > MaxValue) newValue = MaxValue;
 

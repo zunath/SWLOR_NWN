@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Mod
         public void Apply(NWPlayer player, NWItem target, params string[] args)
         {
             int tier = Convert.ToInt32(args[0]);
-            int amount = tier * 3;
+            int amount = tier * 5;
             int newValue = target.FPBonus + amount;
             if (newValue > MaxValue) newValue = MaxValue;
             target.FPBonus = newValue;

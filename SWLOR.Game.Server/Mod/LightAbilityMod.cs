@@ -8,10 +8,11 @@ namespace SWLOR.Game.Server.Mod
     public class LightAbilityMod: IModHandler
     {
         public int ModTypeID => 7;
+        private const int MaxValue = 51;
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            if (target.LightPotencyBonus >= 50)
+            if (target.LightPotencyBonus >= MaxValue)
                 return "You cannot improve that item's Light Potency bonus any further.";
 
             return null;
@@ -21,7 +22,7 @@ namespace SWLOR.Game.Server.Mod
         {
             int value = Convert.ToInt32(args[0]);
             int newValue = target.LightPotencyBonus + value;
-            if (newValue > 50) newValue = 50;
+            if (newValue > MaxValue) newValue = MaxValue;
             target.LightPotencyBonus = newValue;
         }
 

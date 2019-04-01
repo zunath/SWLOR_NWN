@@ -2169,7 +2169,7 @@
     <EmbeddedResource Include="Data\Migrations\2019-02-23.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-23.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-26.1.sql" />
-    <EmbeddedResource Include="Data\Migrations\2019-02-26.2.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-03-31.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-27.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-27.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-27.3.sql" />

@@ -7,10 +7,11 @@ namespace SWLOR.Game.Server.Mod
     public class ElectricalDefenseMod : IModHandler
     {
         public int ModTypeID => 33;
+        private const int MaxValue = 51;
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            if (target.ElectricalDefenseBonus >= 20)
+            if (target.ElectricalDefenseBonus >= MaxValue)
                 return "You cannot improve that item's electrical defense bonus any further.";
 
             return null;
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Mod
         {
             int value = Convert.ToInt32(args[0]);
             int newValue = target.ElectricalDefenseBonus + value;
-            if (newValue > 20) newValue = 20;
+            if (newValue > MaxValue) newValue = MaxValue;
             target.ElectricalDefenseBonus = newValue;
         }
 

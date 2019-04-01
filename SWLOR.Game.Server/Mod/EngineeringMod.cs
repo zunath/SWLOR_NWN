@@ -7,10 +7,11 @@ namespace SWLOR.Game.Server.Mod
     public class EngineeringMod : IModHandler
     {
         public int ModTypeID => 17;
+        private const int MaxValue = 51;
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            if (target.CraftBonusEngineering >= 30)
+            if (target.CraftBonusEngineering >= MaxValue)
                 return "You cannot improve that item's engineering bonus any further.";
 
             return null;
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Mod
         {
             int value = Convert.ToInt32(args[0]);
             int newValue = target.CraftBonusEngineering + value;
-            if (newValue > 30) newValue = 30;
+            if (newValue > MaxValue) newValue = MaxValue;
             target.CraftBonusEngineering = newValue;
         }
 

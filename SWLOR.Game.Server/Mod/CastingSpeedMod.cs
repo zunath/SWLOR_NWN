@@ -7,10 +7,11 @@ namespace SWLOR.Game.Server.Mod
     public class CastingSpeedMod : IModHandler
     {
         public int ModTypeID => 10;
+        private const int MaxValue = 51;
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            if (target.CastingSpeed >= 25)
+            if (target.CastingSpeed >= MaxValue)
                 return "You cannot improve that item's casting speed any further.";
 
             return null;
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Mod
         {
             int value = Convert.ToInt32(args[0]);
             int newValue = target.CastingSpeed + value;
-            if (newValue > 25) newValue = 25;
+            if (newValue > MaxValue) newValue = MaxValue;
             target.CastingSpeed = newValue;
         }
 

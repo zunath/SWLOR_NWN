@@ -7,10 +7,11 @@ namespace SWLOR.Game.Server.Mod
     public class FPMod : IModHandler
     {
         public int ModTypeID => 11;
+        private const int MaxValue = 100;
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            if (target.FPBonus >= 100)
+            if (target.FPBonus >= MaxValue)
                 return "You cannot improve that item's FP bonus any further.";
 
             return null;
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Mod
         {
             int value = Convert.ToInt32(args[0]);
             int newValue = target.FPBonus + value;
-            if (newValue > 100) newValue = 100;
+            if (newValue > MaxValue) newValue = MaxValue;
             target.FPBonus = newValue;
         }
 

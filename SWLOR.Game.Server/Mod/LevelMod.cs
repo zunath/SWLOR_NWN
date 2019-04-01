@@ -7,15 +7,17 @@ namespace SWLOR.Game.Server.Mod
     public class LevelMod: IModHandler
     {
         public int ModTypeID => 27;
+        private const int MinValue = 0;
+        private const int MaxValue = 120;
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             int value = Convert.ToInt32(args[0]);
             int level = target.RecommendedLevel;
 
-            if (value > 0 && level >= 120)
+            if (value > MinValue && level >= MaxValue)
                 return "You can't raise that item's recommended level any further.";
-            else if (value < 0 && level <= 0)
+            else if (value < MinValue && level <= MinValue)
                 return "You can't lower that item's recommended level any further.";
 
             return null;
@@ -26,8 +28,8 @@ namespace SWLOR.Game.Server.Mod
             int value = Convert.ToInt32(args[0]);
             int level = target.RecommendedLevel + value;
 
-            if (level > 120) level = 120;
-            else if (level < 0) level = 0;
+            if (level > MaxValue) level = MaxValue;
+            else if (level < MinValue) level = MinValue;
 
             target.RecommendedLevel = level;
         }

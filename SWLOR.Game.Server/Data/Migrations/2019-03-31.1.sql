@@ -126,18 +126,18 @@ UPDATE dbo.CraftBlueprint SET ItemName = 'Fabrication +9' WHERE ID=310
 UPDATE dbo.CraftBlueprint SET ItemName = 'Medicine +3' WHERE ID=137
 UPDATE dbo.CraftBlueprint SET ItemName = 'Medicine +6' WHERE ID=170
 UPDATE dbo.CraftBlueprint SET ItemName = 'Medicine +9' WHERE ID=200
-UPDATE dbo.CraftBlueprint SET ItemName = 'FP +1' WHERE ID=130
-UPDATE dbo.CraftBlueprint SET ItemName = 'FP +2' WHERE ID=163
-UPDATE dbo.CraftBlueprint SET ItemName = 'FP +3' WHERE ID=193
+UPDATE dbo.CraftBlueprint SET ItemName = 'FP +5' WHERE ID=130
+UPDATE dbo.CraftBlueprint SET ItemName = 'FP +10' WHERE ID=163
+UPDATE dbo.CraftBlueprint SET ItemName = 'FP +15' WHERE ID=193
 UPDATE dbo.CraftBlueprint SET ItemName = 'FP Regen +1' WHERE ID=143
 UPDATE dbo.CraftBlueprint SET ItemName = 'FP Regen +2' WHERE ID=176
 UPDATE dbo.CraftBlueprint SET ItemName = 'FP Regen +3' WHERE ID=206
 UPDATE dbo.CraftBlueprint SET ItemName = 'Harvesting +3' WHERE ID=133
 UPDATE dbo.CraftBlueprint SET ItemName = 'Harvesting +6' WHERE ID=166
 UPDATE dbo.CraftBlueprint SET ItemName = 'Harvesting +9' WHERE ID=196
-UPDATE dbo.CraftBlueprint SET ItemName = 'Hit Points +1' WHERE ID=126
-UPDATE dbo.CraftBlueprint SET ItemName = 'Hit Points +2' WHERE ID=159
-UPDATE dbo.CraftBlueprint SET ItemName = 'Hit Points +3' WHERE ID=189
+UPDATE dbo.CraftBlueprint SET ItemName = 'Hit Points +5' WHERE ID=126
+UPDATE dbo.CraftBlueprint SET ItemName = 'Hit Points +10' WHERE ID=159
+UPDATE dbo.CraftBlueprint SET ItemName = 'Hit Points +15' WHERE ID=189
 UPDATE dbo.CraftBlueprint SET ItemName = 'HP Regen +1' WHERE ID=141
 UPDATE dbo.CraftBlueprint SET ItemName = 'HP Regen +2' WHERE ID=174
 UPDATE dbo.CraftBlueprint SET ItemName = 'HP Regen +3' WHERE ID=204

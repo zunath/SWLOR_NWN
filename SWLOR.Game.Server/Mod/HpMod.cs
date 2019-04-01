@@ -19,8 +19,9 @@ namespace SWLOR.Game.Server.Mod
 
         public void Apply(NWPlayer player, NWItem target, params string[] args)
         {
-            int value = Convert.ToInt32(args[0]);
-            int newValue = target.HPBonus + value;
+            int tier = Convert.ToInt32(args[0]);
+            int amount = tier * 3;
+            int newValue = target.HPBonus + amount;
             if (newValue > MaxValue) newValue = MaxValue;
             target.HPBonus = newValue;
         }

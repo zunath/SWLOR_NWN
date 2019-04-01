@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Mod
     public class CastingSpeedMod : IModHandler
     {
         public int ModTypeID => 10;
-        private const int MaxValue = 51;
+        private const int MaxValue = 20;
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {

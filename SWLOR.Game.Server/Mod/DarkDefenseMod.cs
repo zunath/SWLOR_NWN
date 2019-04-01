@@ -7,10 +7,11 @@ namespace SWLOR.Game.Server.Mod
     public class DarkDefenseMod : IModHandler
     {
         public int ModTypeID => 30;
+        private const int MaxValue = 51;
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            if (target.DarkDefenseBonus >= 20)
+            if (target.DarkDefenseBonus >= MaxValue)
                 return "You cannot improve that item's dark defense bonus any further.";
 
             return null;
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Mod
         {
             int value = Convert.ToInt32(args[0]);
             int newValue = target.DarkDefenseBonus + value;
-            if (newValue > 20) newValue = 20;
+            if (newValue > MaxValue) newValue = MaxValue;
             target.DarkDefenseBonus = newValue;
         }
 

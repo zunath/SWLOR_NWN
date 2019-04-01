@@ -7,10 +7,11 @@ namespace SWLOR.Game.Server.Mod
     public class MindPotencyMod : IModHandler
     {
         public int ModTypeID => 9;
+        private const int MaxValue = 51;
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            if (target.MindPotencyBonus >= 50)
+            if (target.MindPotencyBonus >= MaxValue)
                 return "You cannot improve that item's Mind Potency bonus any further.";
 
             return null;
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Mod
         {
             int value = Convert.ToInt32(args[0]);
             int newValue = target.MindPotencyBonus + value;
-            if (newValue > 50) newValue = 50;
+            if (newValue > MaxValue) newValue = MaxValue;
             target.MindPotencyBonus = newValue;
         }
 

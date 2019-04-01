@@ -7,10 +7,11 @@ namespace SWLOR.Game.Server.Mod
     public class HarvestingMod : IModHandler
     {
         public int ModTypeID => 16;
+        private const int MaxValue = 51;
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            if (target.HarvestingBonus >= 30)
+            if (target.HarvestingBonus >= MaxValue)
                 return "You cannot improve that item's harvesting bonus any further.";
 
             return null;
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Mod
         {
             int value = Convert.ToInt32(args[0]);
             int newValue = target.HarvestingBonus + value;
-            if (newValue > 30) newValue = 30;
+            if (newValue > MaxValue) newValue = MaxValue;
             target.HarvestingBonus = newValue;
         }
 

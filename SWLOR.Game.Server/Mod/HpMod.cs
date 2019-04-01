@@ -7,10 +7,11 @@ namespace SWLOR.Game.Server.Mod
     public class HPMod: IModHandler
     {
         public int ModTypeID => 5;
+        private const int MaxValue = 100;
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            if (target.HPBonus >= 100)
+            if (target.HPBonus >= MaxValue)
                 return "You cannot improve that item's HP bonus any further.";
 
             return null;
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Mod
         {
             int value = Convert.ToInt32(args[0]);
             int newValue = target.HPBonus + value;
-            if (newValue > 100) newValue = 100;
+            if (newValue > MaxValue) newValue = MaxValue;
             target.HPBonus = newValue;
         }
 

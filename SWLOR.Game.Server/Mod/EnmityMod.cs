@@ -7,6 +7,7 @@ namespace SWLOR.Game.Server.Mod
     public class EnmityMod: IModHandler
     {
         public int ModTypeID => 20;
+        private const int MaxValue = 50;
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
@@ -14,12 +15,12 @@ namespace SWLOR.Game.Server.Mod
 
             if (value < 0)
             {
-                if (target.EnmityRate <= 50)
+                if (target.EnmityRate <= -MaxValue)
                     return "You cannot improve that item's enmity reduction any further.";
             }
             else if (value > 0)
             {
-                if (target.EnmityRate >= 50)
+                if (target.EnmityRate >= MaxValue)
                     return "You cannot improve that item's enmity generation any further.";
             }
 
@@ -30,8 +31,8 @@ namespace SWLOR.Game.Server.Mod
         {
             int value = Convert.ToInt32(args[0]);
             int newValue = target.EnmityRate + value;
-            if (newValue > 50) newValue = 50;
-            else if (newValue < -50) newValue = -50;
+            if (newValue > MaxValue) newValue = MaxValue;
+            else if (newValue < -MaxValue) newValue = -MaxValue;
 
             target.EnmityRate = newValue;
         }

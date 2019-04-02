@@ -262,6 +262,10 @@ namespace SWLOR.Game.Server.Item
             // Item must be in the user's inventory.
             if (!targetItem.Possessor.Equals(player)) return "Targeted item must be in your inventory.";
 
+            // It's possible that this mod is no longer usable. Notify the player if we can't find one registered.
+            if (!ModService.IsModHandlerRegistered(modID))
+                return "Unfortunately, this mod can no longer be used.";
+
             var handler = ModService.GetModHandler(modID);
             // Run the individual mod's rules for application. Will return the error message or a null.
             return handler.CanApply(player, targetItem, modArgs);

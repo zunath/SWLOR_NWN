@@ -78,6 +78,25 @@ namespace SWLOR.Game.Server.Service
                 dbPlayer.VersionNumber = 4;
             }
 
+            // VERSION 5: We're doing another Force rework, so remove any force feats the player may have acquired.
+            if (dbPlayer.VersionNumber < 5)
+            {
+                NWNXCreature.RemoveFeat(player, 1135); // Force Breach
+                NWNXCreature.RemoveFeat(player, 1136); // Force Lightning
+                NWNXCreature.RemoveFeat(player, 1137); // Force Heal I
+                NWNXCreature.RemoveFeat(player, 1140); // Absorption Field
+                NWNXCreature.RemoveFeat(player, 1143); // Force Spread
+                NWNXCreature.RemoveFeat(player, 1145); // Force Push
+                NWNXCreature.RemoveFeat(player, 1125); // Force Aura
+                NWNXCreature.RemoveFeat(player, 1152); // Drain Life
+                NWNXCreature.RemoveFeat(player, 1134); // Chainspell
+                NWNXCreature.RemoveFeat(player, 1162); // Force Heal II
+                NWNXCreature.RemoveFeat(player, 1163); // Force Heal III
+                NWNXCreature.RemoveFeat(player, 1164); // Force Heal IV
+
+                dbPlayer.VersionNumber = 5;
+            }
+
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
         }
 

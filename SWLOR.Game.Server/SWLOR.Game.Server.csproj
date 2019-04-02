@@ -380,6 +380,7 @@
     <Compile Include="DoorRule\Spaceship2Rule.cs" />
     <Compile Include="DoorRule\Spaceship1Rule.cs" />
     <Compile Include="DoorRule\SmallRoundBuildingRule.cs" />
+    <Compile Include="Enumeration\ForceBalanceType.cs" />
     <Compile Include="Enumeration\MarketBrowseMode.cs" />
     <Compile Include="Enumeration\Planet.cs" />
     <Compile Include="Enumeration\AddItemPropertyPolicy.cs" />
@@ -390,6 +391,7 @@
     <Compile Include="Enumeration\BaseStructureType.cs" />
     <Compile Include="Enumeration\BuildingType.cs" />
     <Compile Include="Enumeration\ChatChannelType.cs" />
+    <Compile Include="Enumeration\SpecializationType.cs" />
     <Compile Include="Enumeration\TraceComponent.cs" />
     <Compile Include="Event\Store\OnCloseStore.cs" />
     <Compile Include="Event\Store\OnOpenStore.cs" />
@@ -950,9 +952,6 @@
     <Compile Include="Perk\Cooking\CookingEfficiency.cs" />
     <Compile Include="Perk\Cooking\CookingOptimization.cs" />
     <Compile Include="Perk\Harvesting\StronidiumRefining.cs" />
-    <Compile Include="Perk\ForceUtility\Chainspell.cs" />
-    <Compile Include="Perk\ForceCombat\DrainLife.cs" />
-    <Compile Include="Perk\ForceCombat\ForceLightning.cs" />
     <Compile Include="Perk\Engineering\CombatModInstallationEngineering.cs" />
     <Compile Include="Perk\Engineering\CraftingModInstallationEngineering.cs" />
     <Compile Include="Perk\Engineering\ElectronicRepair.cs" />
@@ -971,9 +970,6 @@
     <Compile Include="Perk\Lightsaber\DualWielding.cs" />
     <Compile Include="Perk\Lightsaber\SaberstaffMastery.cs" />
     <Compile Include="Perk\Lightsaber\SaberFinesse.cs" />
-    <Compile Include="Perk\ForceSupport\ForceAura.cs" />
-    <Compile Include="Perk\ForceCombat\ForcePush.cs" />
-    <Compile Include="Perk\ForceUtility\ForceSpread.cs" />
     <Compile Include="Perk\MartialArts\Chi.cs" />
     <Compile Include="Perk\MartialArts\ElectricFist.cs" />
     <Compile Include="Perk\Medicine\ImmediateForcePack.cs" />
@@ -991,7 +987,6 @@
     <Compile Include="Perk\Armorsmith\ForceModInstallationArmors.cs" />
     <Compile Include="Perk\Armorsmith\ArmorBlueprints.cs" />
     <Compile Include="Perk\Armorsmith\SpecialModInstallationArmors.cs" />
-    <Compile Include="Perk\Armor\Clarity.cs" />
     <Compile Include="Perk\Armor\Provoke.cs" />
     <Compile Include="Perk\Armor\Sturdiness.cs" />
     <Compile Include="Perk\Blaster\BlasterPistolProficiency.cs" />
@@ -1020,8 +1015,6 @@
     <Compile Include="Perk\General\FP.cs" />
     <Compile Include="Perk\General\Meditate.cs" />
     <Compile Include="Perk\Harvesting\SpeedyHarvester.cs" />
-    <Compile Include="Perk\ForceCombat\ForceBreach.cs" />
-    <Compile Include="Perk\ForceSupport\ForceHeal.cs" />
     <Compile Include="Perk\MartialArts\CircleKick.cs" />
     <Compile Include="Perk\MartialArts\EvadeBlasterFire.cs" />
     <Compile Include="Perk\Harvesting\RefineryManagement.cs" />
@@ -2092,7 +2085,11 @@
     <None Include="ServerFiles\HakPaks\swlor_gui\cg_package.gui" />
     <None Include="ServerFiles\HakPaks\swlor_gui\cg_race.gui" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Perk\ForceAlter\" />
+    <Folder Include="Perk\ForceControl\" />
+    <Folder Include="Perk\ForceSense\" />
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Data\Migrations\2018-11-09.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-10.1.sql" />
@@ -2183,6 +2180,7 @@
     <EmbeddedResource Include="Data\Migrations\2019-03-27.3.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-03-28.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-03-29.2.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-04-01.1.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-07.1.sql" />

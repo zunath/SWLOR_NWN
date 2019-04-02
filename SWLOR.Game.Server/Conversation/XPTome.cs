@@ -1,12 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using NWN;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
-
-using SWLOR.Game.Server.Service.Contracts;
-using SWLOR.Game.Server.ValueObject;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
@@ -19,19 +15,6 @@ namespace SWLOR.Game.Server.Conversation
             public int SkillID { get; set; }
         }
 
-        private readonly ISkillService _skill;
-        private readonly IDataService _data;
-
-        public XPTome(
-            INWScript script, 
-            IDialogService dialog,
-            ISkillService skill,
-            IDataService data) 
-            : base(script, dialog)
-        {
-            _skill = skill;
-            _data = data;
-        }
 
         public override PlayerDialog SetUp(NWPlayer player)
         {
@@ -59,9 +42,9 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
-            List<SkillCategory> categories = _skill.GetActiveCategories().Where(x =>
+            List<SkillCategory> categories = SkillService.GetActiveCategories().Where(x =>
             {
-                var skills = _data.Where<Skill>(s => s.SkillCategoryID == x.ID && s.ContributesToSkillCap);
+                var skills = DataService.Where<Skill>(s => s.SkillCategoryID == x.ID && s.ContributesToSkillCap);
                 return skills.Any();
             }).ToList();
 
@@ -100,12 +83,12 @@ namespace SWLOR.Game.Server.Conversation
             DialogResponse response = GetResponseByID("CategoryPage", responseID);
             int categoryID = (int)response.CustomData;
             
-            List<PCSkill> pcSkills = _skill.GetPCSkillsForCategory(GetPC().GlobalID, categoryID);
+            List<PCSkill> pcSkills = SkillService.GetPCSkillsForCategory(GetPC().GlobalID, categoryID);
 
             ClearPageResponses("SkillListPage");
             foreach (PCSkill pcSkill in pcSkills)
             {
-                Skill skill = _skill.GetSkill(pcSkill.SkillID);
+                Skill skill = SkillService.GetSkill(pcSkill.SkillID);
                 AddResponseToPage("SkillListPage", skill.Name, true, pcSkill.SkillID);
             }
 
@@ -116,7 +99,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             DialogResponse response = GetResponseByID("SkillListPage", responseID);
             int skillID = (int)response.CustomData;
-            Skill skill = _skill.GetSkill(skillID);
+            Skill skill = SkillService.GetSkill(skillID);
             string header = "Are you sure you want to improve your " + skill.Name + " skill?";
             SetPageHeader("ConfirmPage", header);
 
@@ -132,7 +115,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (vm.Item != null && vm.Item.IsValid)
             {
-                var skill = _data.Get<Skill>(vm.SkillID);
+                var skill = DataService.Get<Skill>(vm.SkillID);
                 if (!skill.ContributesToSkillCap)
                 {
                     GetPC().FloatingText("You cannot raise that skill with this tome.");
@@ -140,7 +123,7 @@ namespace SWLOR.Game.Server.Conversation
                 }
 
                 int xp = vm.Item.GetLocalInt("XP_TOME_AMOUNT");
-                _skill.GiveSkillXP(GetPC(), vm.SkillID, xp, false);
+                SkillService.GiveSkillXP(GetPC(), vm.SkillID, xp, false, false);
                 vm.Item.Destroy();
             }
 

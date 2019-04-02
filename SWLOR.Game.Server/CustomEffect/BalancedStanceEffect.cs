@@ -1,19 +1,16 @@
 ﻿using System.Linq;
 using NWN;
 using SWLOR.Game.Server.CustomEffect.Contracts;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.CustomEffect
 {
-    public class BalancedStanceEffect: ICustomEffect
+    public class BalancedStanceEffect: ICustomEffectHandler
     {
-        private readonly INWScript _;
-
-        public BalancedStanceEffect(INWScript script)
-        {
-            _ = script;
-        }
+        public CustomEffectCategoryType CustomEffectCategoryType => CustomEffectCategoryType.Stance;
+        public CustomEffectType CustomEffectType => CustomEffectType.BalancedStance;
 
         public string Apply(NWCreature oCaster, NWObject target, int effectiveLevel)
         {
@@ -40,5 +37,9 @@ namespace SWLOR.Game.Server.CustomEffect
 
             _.RemoveEffect(oCaster, effect);
         }
+
+        public string StartMessage => "You shift to a balanced stance.";
+        public string ContinueMessage => "";
+        public string WornOffMessage => "";
     }
 }

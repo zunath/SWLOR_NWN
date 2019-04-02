@@ -4,8 +4,10 @@ using SWLOR.Game.Server.Mod.Contracts;
 
 namespace SWLOR.Game.Server.Mod
 {
-    public class DarkDefenseMod : IMod
+    public class DarkDefenseMod : IModHandler
     {
+        public int ModTypeID => 30;
+
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
             if (target.DarkDefenseBonus >= 20)

@@ -1,21 +1,14 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.NWNX;
+
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class RapidShot : IPerk
+    public class RapidShot : IPerkHandler
     {
-        private readonly INWScript _;
-        private readonly INWNXCreature _nwnxCreature;
-
-        public RapidShot(INWScript script,
-            INWNXCreature nwnxCreature)
-        {
-            _ = script;
-            _nwnxCreature = nwnxCreature;
-        }
+        public PerkType PerkType => PerkType.RapidShot;
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
@@ -58,7 +51,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_RAPID_SHOT);
+            NWNXCreature.RemoveFeat(oPC, _.FEAT_RAPID_SHOT);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
@@ -90,11 +83,11 @@ namespace SWLOR.Game.Server.Perk.Blaster
                 equippedArmor.CustomItemType != CustomItemType.LightArmor ||
                 equippedWeapon.CustomItemType != CustomItemType.BlasterPistol)
             {
-                _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_RAPID_SHOT);
+                NWNXCreature.RemoveFeat(oPC, _.FEAT_RAPID_SHOT);
                 return;
             }
 
-            _nwnxCreature.AddFeat(oPC, NWScript.FEAT_RAPID_SHOT);
+            NWNXCreature.AddFeat(oPC, _.FEAT_RAPID_SHOT);
         }
 
         public bool IsHostile()

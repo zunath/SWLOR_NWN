@@ -1,22 +1,20 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class RaceService : IRaceService
+    public static class RaceService
     {
-        private readonly INWScript _;
-
-        public RaceService(
-            INWScript script)
+        public static void SubscribeEvents()
         {
-            _ = script;
+            MessageHub.Instance.Subscribe<OnModuleEnter>(message => OnModuleEnter());
         }
 
-        public void OnModuleEnter()
+        private static void OnModuleEnter()
         {
             NWPlayer player = _.GetEnteringObject();
             if (!player.IsPlayer) return;
@@ -29,7 +27,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public void ApplyDefaultAppearance(NWPlayer player)
+        public static void ApplyDefaultAppearance(NWPlayer player)
         {
             CustomRaceType race = (CustomRaceType)player.RacialType;
             int maleHead;

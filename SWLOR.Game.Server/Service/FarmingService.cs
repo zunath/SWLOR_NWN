@@ -1,36 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
+
 
 namespace SWLOR.Game.Server.Service
 {
-    public class FarmingService: IFarmingService
+    public static class FarmingService
     {
-        private readonly INWScript _;
-        private readonly IDataService _data;
-        private readonly IRandomService _random;
-        private readonly IColorTokenService _color;
-
-        public FarmingService(INWScript script, 
-            IDataService data,
-            IRandomService random,
-            IColorTokenService color)
+        public static void SubscribeEvents()
         {
-            _ = script;
-            _data = data;
-            _random = random;
-            _color = color;
+            MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
         }
 
-        public void HarvestPlant(NWPlayer player, NWItem shovel, NWPlaceable plant)
+        public static void HarvestPlant(NWPlayer player, NWItem shovel, NWPlaceable plant)
         {
             string growingPlantID = plant.GetLocalString("GROWING_PLANT_ID");
             Guid? growingPlantGuid = null;
@@ -46,8 +35,8 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            GrowingPlant growingPlant = _data.Single<GrowingPlant>(x => x.ID == growingPlantGuid);
-            Plant plantEntity = _data.Get<Plant>(growingPlant.PlantID);
+            GrowingPlant growingPlant = DataService.Single<GrowingPlant>(x => x.ID == growingPlantGuid);
+            Plant plantEntity = DataService.Get<Plant>(growingPlant.PlantID);
 
             if (string.IsNullOrWhiteSpace(plantEntity.SeedResref))
             {
@@ -56,7 +45,7 @@ namespace SWLOR.Game.Server.Service
             }
             
             growingPlant.IsActive = false;
-            _data.SubmitDataChange(growingPlant, DatabaseActionType.Update);
+            DataService.SubmitDataChange(growingPlant, DatabaseActionType.Update);
 
             _.CreateItemOnObject(plantEntity.SeedResref, player.Object);
             plant.Destroy();
@@ -64,26 +53,26 @@ namespace SWLOR.Game.Server.Service
             player.FloatingText("You harvest the plant.");
         }
 
-        public string OnModuleExamine(string existingDescription, NWObject examinedObject)
+        public static string OnModuleExamine(string existingDescription, NWObject examinedObject)
         {
             int plantID = examinedObject.GetLocalInt("PLANT_ID");
             if (plantID <= 0) return existingDescription;
-            if (examinedObject.ObjectType != NWScript.OBJECT_TYPE_ITEM) return existingDescription;
+            if (examinedObject.ObjectType != _.OBJECT_TYPE_ITEM) return existingDescription;
 
-            Plant plant = _data.SingleOrDefault<Plant>(x => x.ID == plantID);
+            Plant plant = DataService.SingleOrDefault<Plant>(x => x.ID == plantID);
             if (plant == null) return existingDescription;
 
-            existingDescription += _color.Orange("This item can be planted. Farming skill required: " + plant.Level) + "\n\n";
+            existingDescription += ColorTokenService.Orange("This item can be planted. Farming skill required: " + plant.Level) + "\n\n";
             return existingDescription;
         }
 
-        public void OnModuleLoad()
+        private static void OnModuleLoad()
         {
-            List<GrowingPlant> plants = _data.Where<GrowingPlant>(x => x.IsActive).ToList();
+            List<GrowingPlant> plants = DataService.Where<GrowingPlant>(x => x.IsActive).ToList();
 
             foreach (GrowingPlant growingPlant in plants)
             {
-                var plant = _data.Get<Plant>(growingPlant.PlantID);
+                var plant = DataService.Get<Plant>(growingPlant.PlantID);
                 string resref = "growing_plant";
                 if (growingPlant.RemainingTicks <= 0)
                     resref = plant.Resref;
@@ -91,7 +80,7 @@ namespace SWLOR.Game.Server.Service
                 NWArea area = (_.GetObjectByTag(growingPlant.LocationAreaTag));
                 Vector position = _.Vector((float)growingPlant.LocationX, (float)growingPlant.LocationY, (float)growingPlant.LocationZ);
                 Location location = _.Location(area.Object, position, (float)growingPlant.LocationOrientation);
-                NWPlaceable plantPlc = (_.CreateObject(NWScript.OBJECT_TYPE_PLACEABLE, resref, location));
+                NWPlaceable plantPlc = (_.CreateObject(_.OBJECT_TYPE_PLACEABLE, resref, location));
                 plantPlc.SetLocalString("GROWING_PLANT_ID", growingPlant.ID.ToString());
 
                 if (growingPlant.RemainingTicks > 0)
@@ -101,7 +90,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
         
-        public void RemoveGrowingPlant(NWPlaceable plant)
+        public static void RemoveGrowingPlant(NWPlaceable plant)
         {
             string growingPlantID = plant.GetLocalString("GROWING_PLANT_ID");
             Guid? growingPlantGuid = null;
@@ -110,19 +99,19 @@ namespace SWLOR.Game.Server.Service
 
             if (growingPlantGuid == null) return;
 
-            GrowingPlant growingPlant = _data.Single<GrowingPlant>(x => x.ID == growingPlantGuid);
+            GrowingPlant growingPlant = DataService.Single<GrowingPlant>(x => x.ID == growingPlantGuid);
             growingPlant.IsActive = false;
-            _data.SubmitDataChange(growingPlant, DatabaseActionType.Update);
+            DataService.SubmitDataChange(growingPlant, DatabaseActionType.Update);
         }
 
-        public GrowingPlant GetGrowingPlantByID(Guid growingPlantID)
+        public static GrowingPlant GetGrowingPlantByID(Guid growingPlantID)
         {
-            return _data.Single<GrowingPlant>(x => x.ID == growingPlantID);
+            return DataService.Single<GrowingPlant>(x => x.ID == growingPlantID);
         }
 
-        public Plant GetPlantByID(int plantID)
+        public static Plant GetPlantByID(int plantID)
         {
-            return _data.Single<Plant>(x => x.ID == plantID);
+            return DataService.Single<Plant>(x => x.ID == plantID);
         }
 
     }

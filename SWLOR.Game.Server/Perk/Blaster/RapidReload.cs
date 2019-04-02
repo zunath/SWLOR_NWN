@@ -1,21 +1,15 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWNX.Contracts;
+using SWLOR.Game.Server.NWNX;
+
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
-    public class RapidReload : IPerk
+    public class RapidReload : IPerkHandler
     {
-        private readonly INWScript _;
-        private readonly INWNXCreature _nwnxCreature;
 
-        public RapidReload(INWScript script,
-            INWNXCreature nwnxCreature)
-        {
-            _ = script;
-            _nwnxCreature = nwnxCreature;
-        }
+        public PerkType PerkType => PerkType.RapidReload;
 
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
@@ -58,7 +52,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         public void OnRemoved(NWPlayer oPC)
         {
-            _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_RAPID_RELOAD);
+            NWNXCreature.RemoveFeat(oPC, _.FEAT_RAPID_RELOAD);
         }
 
         public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
@@ -82,15 +76,15 @@ namespace SWLOR.Game.Server.Perk.Blaster
         private void ApplyFeatChanges(NWPlayer oPC, NWItem oItem)
         {
             NWItem armor = oItem ?? oPC.Chest;
-            if (armor.BaseItemType != NWScript.BASE_ITEM_ARMOR) return;
+            if (armor.BaseItemType != _.BASE_ITEM_ARMOR) return;
 
             if (Equals(armor, oItem) || armor.CustomItemType != CustomItemType.LightArmor)
             {
-                _nwnxCreature.RemoveFeat(oPC, NWScript.FEAT_RAPID_RELOAD);
+                NWNXCreature.RemoveFeat(oPC, _.FEAT_RAPID_RELOAD);
                 return;
             }
 
-            _nwnxCreature.AddFeat(oPC, NWScript.FEAT_RAPID_RELOAD);
+            NWNXCreature.AddFeat(oPC, _.FEAT_RAPID_RELOAD);
         }
 
         public bool IsHostile()

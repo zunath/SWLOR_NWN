@@ -1,40 +1,25 @@
-﻿using NWN;
-using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+﻿using SWLOR.Game.Server.GameObject;
+
 using SWLOR.Game.Server.ValueObject.Dialog;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Conversation
 {
-    class ShipGunControls : ConversationBase
+    public class ShipGunControls : ConversationBase
     {
-        private ISpaceService _space;
-
-        public ShipGunControls(
-            INWScript script,
-            IDialogService dialog,
-            ISpaceService space) : base(script, dialog)
-        {
-            _space = space;
-        }
-
         public override PlayerDialog SetUp(NWPlayer player)
         {
             string header;
             DialogPage mainOptions;
 
-            if (!_space.IsLocationSpace(_space.GetShipLocation(player.Area)))
+            if (!SpaceService.IsLocationSpace(SpaceService.GetShipLocation(player.Area)))
             {
                 header = "You can only crew the guns while the ship is in space.";
                 mainOptions = new DialogPage(header);
             }
             else
             {
-                _space.CreateShipInSpace(player.Area);
+                SpaceService.CreateShipInSpace(player.Area);
 
                 header = "Crewing the ship's guns allows the ship to fire in any direction using the gunner's Piloting skill. " +
                     "If the target is in front of the ship, both the pilot's and the gunner's skills are added to the shot. " +
@@ -60,7 +45,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             if (responseID == 1)
             {
-                _space.DoCrewGuns(player, player.Area);
+                SpaceService.DoCrewGuns(player, player.Area);
             }
 
             EndConversation();

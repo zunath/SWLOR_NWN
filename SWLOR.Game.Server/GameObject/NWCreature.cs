@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 using NWN;
-using static NWN.NWScript;
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.GameObject

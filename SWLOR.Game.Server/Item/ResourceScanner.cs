@@ -1,45 +1,19 @@
 ﻿using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Bioware.Contracts;
+using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 using SWLOR.Game.Server.ValueObject;
-using static NWN.NWScript;
+using static NWN._;
 
 namespace SWLOR.Game.Server.Item
 {
     public class ResourceScanner: IActionItem
     {
-        private readonly INWScript _;
-        private readonly ISpawnService _spawn;
-        private readonly IRandomService _random;
-        private readonly IPerkService _perk;
-        private readonly IResourceService _resource;
-        private readonly ISkillService _skill;
-        private readonly IDurabilityService _durability;
-        private readonly IBiowarePosition _biowarePosition;
-
-        public ResourceScanner(
-            INWScript script,
-            ISpawnService spawn,
-            IRandomService random,
-            IPerkService perk,
-            IResourceService resource,
-            ISkillService skill,
-            IDurabilityService durability,
-            IBiowarePosition biowarePosition)
-        {
-            _ = script;
-            _spawn = spawn;
-            _random = random;
-            _perk = perk;
-            _resource = resource;
-            _skill = skill;
-            _durability = durability;
-            _biowarePosition = biowarePosition;
-        }
+        public string CustomKey => null;
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
@@ -55,14 +29,14 @@ namespace SWLOR.Game.Server.Item
             if (!target.IsValid || Equals(user, target))
             {
                 ScanArea(user, targetLocation);
-                _durability.RunItemDecay(player, item, _random.RandomFloat(0.02f, 0.08f));
+                DurabilityService.RunItemDecay(player, item, RandomService.RandomFloat(0.02f, 0.08f));
                 effectLocation = targetLocation;
 
             }
             else if(!string.IsNullOrWhiteSpace(target.GetLocalString("RESOURCE_RESREF")))
             {
                 ScanResource(user, target);
-                _durability.RunItemDecay(player, item, _random.RandomFloat(0.05f, 0.1f));
+                DurabilityService.RunItemDecay(player, item, RandomService.RandomFloat(0.05f, 0.1f));
                 effectLocation = target.Location;
             }
             else
@@ -76,7 +50,7 @@ namespace SWLOR.Game.Server.Item
             if (user.IsPlayer && user.GetLocalInt(target.GlobalID.ToString()) == FALSE)
             {
                 int scanningBonus = item.ScanningBonus;
-                _skill.GiveSkillXP(player, SkillType.Harvesting, 150);
+                SkillService.GiveSkillXP(player, SkillType.Harvesting, 150);
                 user.SetLocalInt(target.GlobalID.ToString(), 1 + scanningBonus); 
             }
         }
@@ -84,7 +58,7 @@ namespace SWLOR.Game.Server.Item
         private void ScanArea(NWCreature user, Location targetLocation)
         {
             NWArea area = (_.GetAreaFromLocation(targetLocation));
-            var spawns = _spawn.GetAreaPlaceableSpawns(area);
+            var spawns = SpawnService.GetAreaPlaceableSpawns(area);
             var spawn = spawns
                 .Where(x => !string.IsNullOrWhiteSpace(x.SpawnPlaceable.GetLocalString("RESOURCE_RESREF")) &&
                             x.SpawnPlaceable.IsValid)
@@ -101,7 +75,7 @@ namespace SWLOR.Game.Server.Item
                 int cellX = (int)(position.m_X / 10);
                 int cellY = (int)(position.m_Y / 10);
 
-                _biowarePosition.TurnToFaceLocation(spawn.SpawnLocation, user);
+                BiowarePosition.TurnToFaceLocation(spawn.SpawnLocation, user);
 
                 user.FloatingText("Nearest resource is located at coordinates (" + cellX + ", " + cellY + ")");
             }
@@ -110,7 +84,7 @@ namespace SWLOR.Game.Server.Item
         private void ScanResource(NWCreature user, NWObject target)
         {
             NWPlaceable resource = (target.Object);
-            user.SendMessage("[Resource Details]: " + _resource.GetResourceDescription(resource));
+            user.SendMessage("[Resource Details]: " + ResourceService.GetResourceDescription(resource));
         }
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
@@ -121,7 +95,7 @@ namespace SWLOR.Game.Server.Item
             if (user.IsPlayer)
             {
                 var player = (user.Object);
-                scanningTime = BaseScanningTime - BaseScanningTime * (_perk.GetPCPerkLevel(player, PerkType.SpeedyScanner) * 0.1f);
+                scanningTime = BaseScanningTime - BaseScanningTime * (PerkService.GetPCPerkLevel(player, PerkType.SpeedyResourceScanner) * 0.1f);
 
             }
             return scanningTime;

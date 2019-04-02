@@ -1,35 +1,16 @@
 ﻿using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+
 using System;
 using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class ResourceService : IResourceService
+    public static class ResourceService
     {
-        private readonly INWScript _;
-        private readonly IItemService _item;
-        private readonly IRandomService _random;
-        private readonly ISkillService _skill;
-        private readonly IPlayerStatService _playerStat;
-
-        public ResourceService(
-            INWScript script,
-            IItemService item,
-            IRandomService random,
-            ISkillService skill,
-            IPlayerStatService playerStat)
-        {
-            _ = script;
-            _item = item;
-            _random = random;
-            _skill = skill;
-            _playerStat = playerStat;
-        }
         
-        public string GetResourceDescription(NWPlaceable resource)
+        public static string GetResourceDescription(NWPlaceable resource)
         {
             NWPlaceable tempStorage = (_.GetObjectByTag("TEMP_ITEM_STORAGE"));
             string resref = resource.GetLocalString("RESOURCE_RESREF");
@@ -66,7 +47,7 @@ namespace SWLOR.Game.Server.Service
             return description;
         }
 
-        public int GetDifficultyAdjustment(ResourceQuality quality)
+        public static int GetDifficultyAdjustment(ResourceQuality quality)
         {
             switch (quality)
             {
@@ -79,9 +60,9 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public int CalculateChanceForComponentBonus(NWPlayer player, int tier, ResourceQuality quality, bool scavenging = false)
+        public static int CalculateChanceForComponentBonus(NWPlayer player, int tier, ResourceQuality quality, bool scavenging = false)
         {
-            int rank = (scavenging ? _skill.GetPCSkillRank(player, SkillType.Scavenging) : _skill.GetPCSkillRank(player, SkillType.Harvesting));
+            int rank = (scavenging ? SkillService.GetPCSkillRank(player, SkillType.Scavenging) : SkillService.GetPCSkillRank(player, SkillType.Harvesting));
             int difficulty = (tier - 1) * 10 + GetDifficultyAdjustment(quality);
             int delta = difficulty - rank;
 
@@ -106,7 +87,7 @@ namespace SWLOR.Game.Server.Service
                 case -6: chance = 27; break;
             }
 
-            var effectiveStats = _playerStat.GetPlayerItemEffectiveStats(player);
+            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
             int itemBonus = (scavenging ? effectiveStats.Scavenging : effectiveStats.Harvesting) / 2;
             if (itemBonus > 30) itemBonus = 30;
             chance += itemBonus;
@@ -256,7 +237,7 @@ namespace SWLOR.Game.Server.Service
             return 8;
         }
 
-        public Tuple<ItemProperty, int> GetRandomComponentBonusIP(ResourceQuality quality)
+        public static Tuple<ItemProperty, int> GetRandomComponentBonusIP(ResourceQuality quality)
         {
             string[] commonIP =
             {
@@ -439,7 +420,7 @@ namespace SWLOR.Game.Server.Service
 
             string[] setToUse = null;
 
-            int index = _random.GetRandomWeightedIndex(chance);
+            int index = RandomService.GetRandomWeightedIndex(chance);
 
             switch (index)
             {
@@ -451,11 +432,11 @@ namespace SWLOR.Game.Server.Service
 
             if (setToUse == null) throw new NullReferenceException(nameof(setToUse));
 
-            index = _random.Random(0, setToUse.Length - 1);
+            index = RandomService.Random(0, setToUse.Length - 1);
 
             string itemTag = setToUse[index];
 
-            return new Tuple<ItemProperty, int>(_item.GetCustomItemPropertyByItemTag(itemTag), Colorize(itemTag)); 
+            return new Tuple<ItemProperty, int>(ItemService.GetCustomItemPropertyByItemTag(itemTag), Colorize(itemTag)); 
         }
     }
 }

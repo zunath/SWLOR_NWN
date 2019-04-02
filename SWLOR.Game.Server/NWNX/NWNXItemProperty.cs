@@ -1,19 +1,14 @@
 ﻿using NWN;
 using System;
-using SWLOR.Game.Server.NWNX.Contracts;
+using static SWLOR.Game.Server.NWNX.NWNXCore;
 
 namespace SWLOR.Game.Server.NWNX
 {
-    public class NWNXItemProperty : NWNXBase, INWNXItemProperty
+    public static class NWNXItemProperty
     {
-        public NWNXItemProperty(INWScript script)
-            : base(script)
-        {
-        }
-
         private const string NWNX_ItemProperty = "NWNX_ItemProperty";
 
-        public ItemPropertyUnpacked UnpackIP(ItemProperty ip)
+        public static ItemPropertyUnpacked UnpackIP(ItemProperty ip)
         {
             const string FunctionName = "UnpackIP";
 
@@ -40,7 +35,7 @@ namespace SWLOR.Game.Server.NWNX
             return n;
         }
 
-        public ItemProperty PackIP(ItemPropertyUnpacked n)
+        public static ItemProperty PackIP(ItemPropertyUnpacked n)
         {
             const string sFunc = "PackIP";
 

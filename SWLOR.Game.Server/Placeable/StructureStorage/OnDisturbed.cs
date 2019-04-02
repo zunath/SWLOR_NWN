@@ -1,39 +1,19 @@
 ﻿using System;
 using System.Linq;
 using NWN;
-using SWLOR.Game.Server.Data.Contracts;
-using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using SWLOR.Game.Server.Service;
+
+using static NWN._;
 using Object = NWN.Object;
 
 namespace SWLOR.Game.Server.Placeable.StructureStorage
 {
     public class OnDisturbed : IRegisteredEvent
     {
-        private readonly INWScript _;
-        private readonly IDataService _data;
-        private readonly IColorTokenService _color;
-        private readonly ISerializationService _serialization;
-        private readonly IItemService _item;
-
-        public OnDisturbed(INWScript script,
-            IDataService data,
-            IColorTokenService color,
-            ISerializationService serialization,
-            IItemService item)
-        {
-            _ = script;
-            _data = data;
-            _color = color;
-            _serialization = serialization;
-            _item = item;
-        }
-
         public bool Run(params object[] args)
         {
             NWPlayer oPC = (_.GetLastDisturbed());
@@ -41,8 +21,8 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
             NWPlaceable container = (Object.OBJECT_SELF);
             int disturbType = _.GetInventoryDisturbType();
             var structureID = new Guid(container.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            var structure = _data.Single<PCBaseStructure>(x => x.ID == structureID);
-            var baseStructure = _data.Get<BaseStructure>(structure.BaseStructureID);
+            var structure = DataService.Single<PCBaseStructure>(x => x.ID == structureID);
+            var baseStructure = DataService.Get<BaseStructure>(structure.BaseStructureID);
             int itemLimit = baseStructure.Storage + structure.StructureBonus;
 
             int itemCount = container.InventoryItems.Count();
@@ -53,20 +33,20 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
                 if (_.GetHasInventory(item) == TRUE)
                 {
                     item.SetLocalInt("RETURNING_ITEM", TRUE);
-                    _item.ReturnItem(oPC, item);
-                    oPC.SendMessage(_color.Red("Containers cannot currently be stored inside banks."));
+                    ItemService.ReturnItem(oPC, item);
+                    oPC.SendMessage(ColorTokenService.Red("Containers cannot currently be stored inside banks."));
                     return false;
                 }
                 
                 if (itemCount > itemLimit)
                 {
-                    _item.ReturnItem(oPC, item);
-                    oPC.SendMessage(_color.Red("No more items can be placed inside."));
+                    ItemService.ReturnItem(oPC, item);
+                    oPC.SendMessage(ColorTokenService.Red("No more items can be placed inside."));
                 }
                 else if (item.BaseItemType == BASE_ITEM_GOLD)
                 {
-                    _item.ReturnItem(oPC, item);
-                    oPC.SendMessage(_color.Red("Credits cannot be placed inside."));
+                    ItemService.ReturnItem(oPC, item);
+                    oPC.SendMessage(ColorTokenService.Red("Credits cannot be placed inside."));
                 }
                 else
                 {
@@ -77,9 +57,9 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
                         ItemTag = item.Tag,
                         PCBaseStructureID = structureID,
                         ItemGlobalID = item.GlobalID.ToString(),
-                        ItemObject = _serialization.Serialize(item)
+                        ItemObject = SerializationService.Serialize(item)
                     };
-                    _data.SubmitDataChange(itemEntity, DatabaseActionType.Insert);
+                    DataService.SubmitDataChange(itemEntity, DatabaseActionType.Insert);
                 }
             }
             else if (disturbType == INVENTORY_DISTURB_TYPE_REMOVED)
@@ -90,12 +70,12 @@ namespace SWLOR.Game.Server.Placeable.StructureStorage
                 }
                 else
                 {
-                    var dbItem = _data.Single<PCBaseStructureItem>(x => x.ItemGlobalID == item.GlobalID.ToString());
-                    _data.SubmitDataChange(dbItem, DatabaseActionType.Delete);
+                    var dbItem = DataService.Single<PCBaseStructureItem>(x => x.ItemGlobalID == item.GlobalID.ToString());
+                    DataService.SubmitDataChange(dbItem, DatabaseActionType.Delete);
                 }
             }
 
-            oPC.SendMessage(_color.White("Item Limit: " + itemCount + " / ") + _color.Red(itemLimit.ToString()));
+            oPC.SendMessage(ColorTokenService.White("Item Limit: " + itemCount + " / ") + ColorTokenService.Red(itemLimit.ToString()));
 
             return true;
         }

@@ -1,30 +1,31 @@
 ﻿using System;
 using System.Reflection;
+using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Event.Legacy
 {
-    public class LegacyJVMItemEvent: IRegisteredEvent
+    public static class LegacyJVMItemEvent
     {
-        public bool Run(params object[] args)
+        public static void Run(string script)
         {
-            string script = (string) args[0];
-
             if (!script.StartsWith("Item."))
             {
                 script = "Item." + script;
             }
 
-            Type type = Type.GetType(Assembly.GetExecutingAssembly().GetName().Name + "." + script);
-
-            if (type == null)
+            using (new Profiler(nameof(LegacyJVMEvent) + "." + script))
             {
-                Console.WriteLine("Unable to locate type for LegacyJVMItemEvent: " + script);
-                return false;
+                Type type = Type.GetType(Assembly.GetExecutingAssembly().GetName().Name + "." + script);
+
+                if (type == null)
+                {
+                    Console.WriteLine("Unable to locate type for LegacyJVMItemEvent: " + script);
+                    return;
+                }
+
+                IRegisteredEvent @event = Activator.CreateInstance(type) as IRegisteredEvent;
+                @event?.Run();
             }
-
-            App.RunEvent(type);
-
-            return false;
         }
     }
 }

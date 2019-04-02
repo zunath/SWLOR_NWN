@@ -2,20 +2,14 @@
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 
 namespace SWLOR.Game.Server.ChatCommand
 {
     [CommandDetails("Displays your current coordinates in the area.", CommandPermissionType.Player | CommandPermissionType.DM)]
     public class Coord : IChatCommand
     {
-        private readonly IBaseService _base;
-
-        public Coord(IBaseService @base)
-        {
-            _base = @base;
-        }
-
         /// <summary>
         /// Returns the X and Y position, in tiles, of the user.
         /// </summary>
@@ -32,7 +26,7 @@ namespace SWLOR.Game.Server.ChatCommand
             string sector = "N/A"; 
 
             if(area.Width == 32 && area.Height == 32)
-                sector = _base.GetSectorOfLocation(user.Location);
+                sector = BaseService.GetSectorOfLocation(user.Location);
 
             user.SendMessage($"Current Area Coordinates: ({cellX}, {cellY}) [Sector: " + sector + "]");
         }

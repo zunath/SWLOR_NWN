@@ -1,22 +1,19 @@
-﻿using NWN;
-using SWLOR.Game.Server.CustomEffect.Contracts;
+﻿using SWLOR.Game.Server.CustomEffect.Contracts;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
+using SWLOR.Game.Server.Service;
+
 
 namespace SWLOR.Game.Server.CustomEffect
 {
-    public class PrecisionTargetingEffect : ICustomEffect
+    public class PrecisionTargetingEffect : ICustomEffectHandler
     {
-        private readonly IPlayerStatService _stat;
-
-        public PrecisionTargetingEffect(IPlayerStatService stat)
-        {
-            _stat = stat;
-        }
+        public CustomEffectCategoryType CustomEffectCategoryType => CustomEffectCategoryType.Stance;
+        public CustomEffectType CustomEffectType => CustomEffectType.PrecisionTargeting;
 
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
-            _stat.ApplyStatChanges(oTarget.Object, null);
+            PlayerStatService.ApplyStatChanges(oTarget.Object, null);
             return null;
         }
 
@@ -26,7 +23,11 @@ namespace SWLOR.Game.Server.CustomEffect
 
         public void WearOff(NWCreature oCaster, NWObject oTarget, int effectiveLevel, string data)
         {
-            _stat.ApplyStatChanges(oTarget.Object, null);
+            PlayerStatService.ApplyStatChanges(oTarget.Object, null);
         }
+
+        public string StartMessage => "You shift to a precision targeting stance.";
+        public string ContinueMessage => "";
+        public string WornOffMessage => "";
     }
 }

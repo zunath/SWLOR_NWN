@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using NWN;
-using SWLOR.Game.Server.Data;
+﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.Contracts;
-using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using Attribute = SWLOR.Game.Server.Data.Entity.Attribute;
 
@@ -19,28 +14,10 @@ namespace SWLOR.Game.Server.Conversation
         {
             public int SelectedCategoryID { get; set; }
             public int SelectedSkillID { get; set; }
+            public int RPXPDistributing { get; set; }
+            public bool IsConfirming { get; set; }
         }
-
-        private readonly ISkillService _skill;
-        private readonly IColorTokenService _color;
-        private readonly IMenuService _menu;
-        private readonly IDataService _data;
-
-        public ViewSkills(
-            INWScript script, 
-            IDialogService dialog,
-            ISkillService skill,
-            IColorTokenService color,
-            IMenuService menu,
-            IDataService data) 
-            : base(script, dialog)
-        {
-            _skill = skill;
-            _color = color;
-            _menu = menu;
-            _data = data;
-        }
-
+        
         public override PlayerDialog SetUp(NWPlayer player)
         {
             PlayerDialog dialog = new PlayerDialog("CategoryPage");
@@ -54,12 +31,27 @@ namespace SWLOR.Game.Server.Conversation
 
             DialogPage skillDetailsPage = new DialogPage(
                 "<SET LATER>",
+                "Distribute Roleplay XP",
                 "Toggle Decay Lock"
             );
+
+            DialogPage distributeRPXPPage = new DialogPage(
+                "<SET LATER>",
+                "Select All RP XP",
+                "Increase by 1000",
+                "Increase by 100",
+                "Increase by 10",
+                "Increase by 1",
+                "Decrease by 1000",
+                "Decrease by 100",
+                "Decrease by 10",
+                "Decrease by 1",
+                "Distribute Roleplay XP");
 
             dialog.AddPage("CategoryPage", mainPage);
             dialog.AddPage("SkillListPage", skillListPage);
             dialog.AddPage("SkillDetailsPage", skillDetailsPage);
+            dialog.AddPage("DistributeRPXPPage", distributeRPXPPage);
             return dialog;
         }
 
@@ -70,12 +62,12 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadCategoryResponses()
         {
-            List<SkillCategory> categories = _skill.GetActiveCategories();
+            List<SkillCategory> categories = SkillService.GetActiveCategories();
             ClearPageResponses("CategoryPage");
 
             // If player has skill levels to distribute, display the option to distribute them.
-            var showDistribution = _data.Where<PCSkillPool>(x => x.PlayerID == GetPC().GlobalID && x.Levels > 0).Count > 0;
-            AddResponseToPage("CategoryPage", _color.Green("Distribute Skill Ranks"), showDistribution);
+            var showDistribution = DataService.Where<PCSkillPool>(x => x.PlayerID == GetPC().GlobalID && x.Levels > 0).Count > 0;
+            AddResponseToPage("CategoryPage", ColorTokenService.Green("Distribute Skill Ranks"), showDistribution);
             
             foreach (SkillCategory category in categories)
             {
@@ -86,12 +78,12 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadSkillResponses()
         {
             Model vm = GetDialogCustomData<Model>();
-            List<PCSkill> skills = _skill.GetPCSkillsForCategory(GetPC().GlobalID, vm.SelectedCategoryID);
+            List<PCSkill> skills = SkillService.GetPCSkillsForCategory(GetPC().GlobalID, vm.SelectedCategoryID);
 
             ClearPageResponses("SkillListPage");
             foreach (PCSkill pcSkill in skills)
             {
-                Skill skill = _skill.GetSkill(pcSkill.SkillID);
+                Skill skill = SkillService.GetSkill(pcSkill.SkillID);
                 AddResponseToPage("SkillListPage", skill.Name + " (Lvl. " + pcSkill.Rank + ")", true, skill.ID);
             }
         }
@@ -99,21 +91,22 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadSkillDetails()
         {
             Model vm = GetDialogCustomData<Model>();
-            Skill skill = _skill.GetSkill(vm.SelectedSkillID);
-            PCSkill pcSkill = _skill.GetPCSkill(GetPC(), vm.SelectedSkillID);
-            SkillXPRequirement req = _data.Single<SkillXPRequirement>(x => x.Rank == pcSkill.Rank && x.SkillID == skill.ID); 
+            Skill skill = SkillService.GetSkill(vm.SelectedSkillID);
+            PCSkill pcSkill = SkillService.GetPCSkill(GetPC(), vm.SelectedSkillID);
+            SkillXPRequirement req = DataService.Single<SkillXPRequirement>(x => x.Rank == pcSkill.Rank && x.SkillID == skill.ID); 
             string header = CreateSkillDetailsHeader(pcSkill, req);
             SetPageHeader("SkillDetailsPage", header);
 
             if(!skill.ContributesToSkillCap)
             {
-                SetResponseVisible("SkillDetailsPage", 1, false);
+                SetResponseVisible("SkillDetailsPage", 2, false);
             }
         }
 
         private string CreateSkillDetailsHeader(PCSkill pcSkill, SkillXPRequirement req)
         {
-            Skill skill = _skill.GetSkill(pcSkill.SkillID);
+            Player player = DataService.Get<Player>(pcSkill.PlayerID);
+            Skill skill = SkillService.GetSkill(pcSkill.SkillID);
             string title;
             if (pcSkill.Rank <= 3) title = "Untrained";
             else if (pcSkill.Rank <= 7) title = "Neophyte";
@@ -128,41 +121,41 @@ namespace SWLOR.Game.Server.Conversation
 
             title += " (" + pcSkill.Rank + ")";
 
-            string decayLock = _color.Green("Decay Lock: ") + _color.White("Unlocked");
+            string decayLock = ColorTokenService.Green("Decay Lock: ") + ColorTokenService.White("Unlocked");
             if (pcSkill.IsLocked)
             {
-                decayLock = _color.Green("Decay Lock: ") + _color.Red("Locked");
+                decayLock = ColorTokenService.Green("Decay Lock: ") + ColorTokenService.Red("Locked");
             }
-
-
+            
             // Skills which don't contribute to the cap cannot be locked (there's no reason for it.)
             // Display a message explaining this to the player instead.
             string noContributeMessage = string.Empty;
             if (!skill.ContributesToSkillCap)
             {
                 decayLock = string.Empty;
-                noContributeMessage = _color.Green("This skill does not contribute to your cumulative skill cap.") + "\n\n";
+                noContributeMessage = ColorTokenService.Green("This skill does not contribute to your cumulative skill cap.") + "\n\n";
             }
 
-            Attribute primaryAttribute = _data.Get<Attribute>(skill.Primary);
-            Attribute secondaryAttribute = _data.Get<Attribute>(skill.Secondary);
-            Attribute tertiaryAttribute = _data.Get<Attribute>(skill.Tertiary);
-            string primary = _color.Green("Primary (+" + PlayerStatService.PrimaryIncrease + "): ") + primaryAttribute.Name + "\n";
-            string secondary = _color.Green("Secondary (+" + PlayerStatService.SecondaryIncrease + "): ") + secondaryAttribute.Name + "\n";
-            string tertiary = _color.Green("Tertiary (+" + PlayerStatService.TertiaryIncrease + "): ") + tertiaryAttribute.Name + "\n";
+            string rpXP = ColorTokenService.Green("Roleplay XP: ") + player.RoleplayXP + "\n";
 
-            string header =
-                    _color.Green("Skill: ") + skill.Name + "\n" +
-                    _color.Green("Rank: ") + title + "\n" +
-                    _color.Green("Exp: ") + _menu.BuildBar(pcSkill.XP, req.XP, 100, _color.TokenStart(255, 127, 0)) + "\n" +
+            Attribute primaryAttribute = DataService.Get<Attribute>(skill.Primary);
+            Attribute secondaryAttribute = DataService.Get<Attribute>(skill.Secondary);
+            Attribute tertiaryAttribute = DataService.Get<Attribute>(skill.Tertiary);
+            string primary = ColorTokenService.Green("Primary (+" + PlayerStatService.PrimaryIncrease + "): ") + primaryAttribute.Name + "\n";
+            string secondary = ColorTokenService.Green("Secondary (+" + PlayerStatService.SecondaryIncrease + "): ") + secondaryAttribute.Name + "\n";
+            string tertiary = ColorTokenService.Green("Tertiary (+" + PlayerStatService.TertiaryIncrease + "): ") + tertiaryAttribute.Name + "\n";
+
+            return
+                    ColorTokenService.Green("Skill: ") + skill.Name + "\n" +
+                    ColorTokenService.Green("Rank: ") + title + "\n" +
+                    ColorTokenService.Green("Exp: ") + MenuService.BuildBar(pcSkill.XP, req.XP, 100, ColorTokenService.TokenStart(255, 127, 0)) + "\n" +
+                    rpXP +
                     primary +
                     secondary +
                     tertiary +
                     noContributeMessage +
                     decayLock + "\n\n" +
-                    _color.Green("Description: ") + skill.Description + "\n";
-
-            return header;
+                    ColorTokenService.Green("Description: ") + skill.Description + "\n";
         }
 
         public override void DoAction(NWPlayer player, string pageName, int responseID)
@@ -178,11 +171,17 @@ namespace SWLOR.Game.Server.Conversation
                 case "SkillDetailsPage":
                     HandleSkillDetailsResponse(responseID);
                     break;
+                case "DistributeRPXPPage":
+                    HandleDistributeRPXPResponse(responseID);
+                    break;
             }
         }
 
         public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
         {
+            Model vm = GetDialogCustomData<Model>();
+            vm.IsConfirming = false;
+            vm.RPXPDistributing = 0;
         }
 
         private void HandleCategoryResponse(int responseID)
@@ -196,9 +195,8 @@ namespace SWLOR.Game.Server.Conversation
 
             Model vm = GetDialogCustomData<Model>();
             DialogResponse response = GetResponseByID("CategoryPage", responseID);
-            int categoryID = (int)response.CustomData;
             
-            vm.SelectedCategoryID = categoryID;
+            vm.SelectedCategoryID = (int)response.CustomData;
             LoadSkillResponses();
             ChangePage("SkillListPage");
         }
@@ -220,12 +218,111 @@ namespace SWLOR.Game.Server.Conversation
             
             switch (responseID)
             {
-                case 1: // Toggle Lock
-                    _skill.ToggleSkillLock(GetPC().GlobalID, vm.SelectedSkillID);
+                case 1: // Distribute Roleplay XP
+                    LoadDistributeRPXPPage();
+                    ChangePage("DistributeRPXPPage");
+                    break;
+                case 2: // Toggle Decay Lock
+                    SkillService.ToggleSkillLock(GetPC().GlobalID, vm.SelectedSkillID);
                     LoadSkillDetails();
                     break;
             }
+        }
 
+        private void LoadDistributeRPXPPage()
+        {
+            NWPlayer player = GetPC();
+            Player dbPlayer = DataService.Get<Player>(player.GlobalID);
+            Model vm = GetDialogCustomData<Model>();
+            Skill skill = SkillService.GetSkill(vm.SelectedSkillID);
+
+            string header = ColorTokenService.Green("Roleplay XP Distribution") + "\n\n";
+            header += ColorTokenService.Green("Skill: ") + skill.Name + "\n";
+            header += ColorTokenService.Green("Available RP XP: ") + dbPlayer.RoleplayXP + "\n";
+            header += ColorTokenService.Green("Currently Distributing: ") + vm.RPXPDistributing + " RP XP\n";
+
+            if(vm.IsConfirming)
+            {
+                SetResponseText("DistributeRPXPPage", 10, "CONFIRM DISTRIBUTE ROLEPLAY XP (" + vm.RPXPDistributing + ")");
+            }
+            else
+            {
+                SetResponseText("DistributeRPXPPage", 10, "Distribute Roleplay XP (" + vm.RPXPDistributing + ")");
+            }
+
+            SetPageHeader("DistributeRPXPPage", header);
+        }
+
+        private void HandleDistributeRPXPResponse(int responseID)
+        {
+            NWPlayer player = GetPC();
+            Player dbPlayer = DataService.Get<Player>(player.GlobalID);
+            Model vm = GetDialogCustomData<Model>();
+
+            switch (responseID)
+            {
+                case 1: // Select All RP XP
+                    vm.RPXPDistributing = dbPlayer.RoleplayXP;
+                    break;
+                case 2: // Increase by 1000
+                    vm.RPXPDistributing += 1000;
+                    break;
+                case 3: // Increase by 100
+                    vm.RPXPDistributing += 100;
+                    break;
+                case 4: // Increase by 10
+                    vm.RPXPDistributing += 10;
+                    break;
+                case 5: // Increase by 1
+                    vm.RPXPDistributing += 1;
+                    break;
+                case 6: // Decrease by 1000
+                    vm.RPXPDistributing -= 1000;
+                    break;
+                case 7: // Decrease by 100
+                    vm.RPXPDistributing -= 100;
+                    break;
+                case 8: // Decrease by 10
+                    vm.RPXPDistributing -= 10;
+                    break;
+                case 9: // Decrease by 1
+                    vm.RPXPDistributing -= 1;
+                    break;
+                case 10: // Distribute Roleplay XP
+
+                    // Make sure the player specified how much they want to distribute.
+                    if (vm.RPXPDistributing <= 0)
+                    {
+                        player.SendMessage("Please specify how much RP XP you'd like to distribute into this skill.");
+                        vm.IsConfirming = false;
+                    }
+                    else
+                    {
+                        if (vm.IsConfirming)
+                        {
+                            // Give the distributed XP to a particular skill.
+                            // We disable residency bonuses, DM bonuses, and skill penalties during this distribution because
+                            // those are calculated when we give the player RP XP.
+                            SkillService.GiveSkillXP(player, vm.SelectedSkillID, vm.RPXPDistributing, false, false, false);
+                            dbPlayer.RoleplayXP -= vm.RPXPDistributing;
+                            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+                            vm.IsConfirming = false;
+                            vm.RPXPDistributing = 0;
+                        }
+                        else
+                        {
+                            vm.IsConfirming = true;
+                        }
+                    }
+                    break;
+            }
+
+            if (vm.RPXPDistributing > dbPlayer.RoleplayXP)
+                vm.RPXPDistributing = dbPlayer.RoleplayXP;
+            else if (vm.RPXPDistributing < 0)
+                vm.RPXPDistributing = 0;
+
+            LoadDistributeRPXPPage();
         }
 
         public override void EndDialog()

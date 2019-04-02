@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Perk.Cooking
 {
-    public class SpeedyCooking : IPerk
+    public class SpeedyCooking : IPerkHandler
     {
+        public PerkType PerkType => PerkType.SpeedyCooking;
+
         public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             return false;

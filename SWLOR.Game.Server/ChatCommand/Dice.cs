@@ -1,32 +1,30 @@
 ﻿using System;
-using NWN;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service.Contracts;
-using static NWN.NWScript;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
     [CommandDetails("Rolls dice. Use /dice help for more information", CommandPermissionType.Player | CommandPermissionType.DM)]
     public class Dice : IChatCommand
     {
-        private readonly INWScript _;
-        private readonly IRandomService _random;
-        private readonly IColorTokenService _color;
+        
+        
+        
 
         private string GenericError;
 
         public Dice(
-            INWScript script,
-            IRandomService random,
-            IColorTokenService color)
+            
+            
+            )
         {
-            _ = script;
-            _random = random;
-            _color = color;
+            
+            
+            
 
-            GenericError = _color.Red("Please enter /dice help for more information on how to use this command.");
+            GenericError = ColorTokenService.Red("Please enter /dice help for more information on how to use this command.");
         }
 
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
@@ -100,25 +98,25 @@ namespace SWLOR.Game.Server.ChatCommand
             switch (sides)
             {
                 case 2:
-                    value = _random.D2(number);
+                    value = RandomService.D2(number);
                     break;
                 case 4:
-                    value = _random.D4(number);
+                    value = RandomService.D4(number);
                     break;
                 case 6:
-                    value = _random.D6(number);
+                    value = RandomService.D6(number);
                     break;
                 case 8:
-                    value = _random.D8(number);
+                    value = RandomService.D8(number);
                     break;
                 case 10:
-                    value = _random.D10(number);
+                    value = RandomService.D10(number);
                     break;
                 case 20:
-                    value = _random.D20(number);
+                    value = RandomService.D20(number);
                     break;
                 case 100:
-                    value = _random.D100(number);
+                    value = RandomService.D100(number);
                     break;
                 default:
                     value = 0;
@@ -126,7 +124,7 @@ namespace SWLOR.Game.Server.ChatCommand
             }
 
             string dieRoll = number + "d" + sides;
-            string message = _color.SkillCheck("Dice Roll: ") + dieRoll + ": " + value;
+            string message = ColorTokenService.SkillCheck("Dice Roll: ") + dieRoll + ": " + value;
             user.SpeakString(message);
         }
 

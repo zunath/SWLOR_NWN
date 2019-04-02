@@ -1,11 +1,6 @@
-﻿namespace SWLOR.Game.Server.Event.Module
+﻿namespace SWLOR.Game.Server.NWN.Events.Module
 {
-    internal class OnModuleLevelUp : IRegisteredEvent
+    internal class OnModuleLevelUp
     {
-        public bool Run(params object[] args)
-        {
-            return true;
-
-        }
     }
 }

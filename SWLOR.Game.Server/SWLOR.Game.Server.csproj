@@ -638,11 +638,6 @@
     <Compile Include="Language\TranslatorShyriiwook.cs" />
     <Compile Include="Language\TranslatorTwileki.cs" />
     <Compile Include="Language\TranslatorZabraki.cs" />
-    <Compile Include="Mod\ElectricalDefenseMod.cs" />
-    <Compile Include="Mod\MindDefenseMod.cs" />
-    <Compile Include="Mod\LightDefenseMod.cs" />
-    <Compile Include="Mod\DarkDefenseMod.cs" />
-    <Compile Include="Mod\ElectricalPotencyMod.cs" />
     <Compile Include="Mod\FabricationMod.cs" />
     <Compile Include="Mod\RestMod.cs" />
     <Compile Include="NWNX\DamageEventData.cs" />
@@ -1230,7 +1225,6 @@
     <Compile Include="Placeable\TrashCan\OnOpened.cs" />
     <Compile Include="Placeable\TutorialPortal\OnUsed.cs" />
     <Compile Include="Placeable\WarpDevice\OnUsed.cs" />
-    <Compile Include="Mod\LightAbilityMod.cs" />
     <Compile Include="Mod\ArmorClassMod.cs" />
     <Compile Include="Mod\ArmorsmithMod.cs" />
     <Compile Include="Mod\AttackBonusMod.cs" />
@@ -1244,7 +1238,6 @@
     <Compile Include="Mod\EngineeringMod.cs" />
     <Compile Include="Mod\EnhancementBonusMod.cs" />
     <Compile Include="Mod\EnmityMod.cs" />
-    <Compile Include="Mod\DarkAbilityMod.cs" />
     <Compile Include="Mod\MedicineMod.cs" />
     <Compile Include="Mod\HPRegenMod.cs" />
     <Compile Include="Mod\HPMod.cs" />
@@ -1255,7 +1248,6 @@
     <Compile Include="Mod\MeditateMod.cs" />
     <Compile Include="Mod\HarvestingMod.cs" />
     <Compile Include="Mod\SneakAttackMod.cs" />
-    <Compile Include="Mod\MindPotencyMod.cs" />
     <Compile Include="Mod\WeaponsmithMod.cs" />
     <Compile Include="Placeable\WeatherModifier\OnHeartbeat.cs" />
     <Compile Include="Processor\Contracts\IEventProcessor.cs" />
@@ -2181,6 +2173,7 @@
     <EmbeddedResource Include="Data\Migrations\2019-03-28.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-03-29.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-04-01.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-04-02.1.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-07.1.sql" />

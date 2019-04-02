@@ -23,11 +23,11 @@ namespace SWLOR.Game.Server.Event.Delayed
                 int pcPerkLevel = (int) args[4];
                 int featID = (int) args[5];
 
-                Data.Entity.Perk entity = DataService.Single<Data.Entity.Perk>(x => x.ID == perkID);
-                PerkExecutionType executionType = (PerkExecutionType) entity.ExecutionTypeID;
+                Data.Entity.Perk dbPerk = DataService.Single<Data.Entity.Perk>(x => x.ID == perkID);
+                PerkExecutionType executionType = dbPerk.ExecutionTypeID;
                 IPerkHandler perk = PerkService.GetPerkHandler(perkID);
 
-                int? cooldownID = perk.CooldownCategoryID(pc, entity.CooldownCategoryID, featID);
+                int? cooldownID = perk.CooldownCategoryID(pc, dbPerk.CooldownCategoryID, featID);
                 CooldownCategory cooldown = cooldownID == null ? null : DataService.SingleOrDefault<CooldownCategory>(x => x.ID == cooldownID);
 
                 if (pc.GetLocalInt(spellUUID) == (int) SpellStatusType.Interrupted || // Moved during casting
@@ -45,25 +45,26 @@ namespace SWLOR.Game.Server.Event.Delayed
                 {
                     perk.OnImpact(pc, target, pcPerkLevel, featID);
 
-                    if (entity.CastAnimationID != null && entity.CastAnimationID > 0)
+                    if (dbPerk.CastAnimationID != null && dbPerk.CastAnimationID > 0)
                     {
-                        pc.AssignCommand(() => { _.ActionPlayAnimation((int) entity.CastAnimationID, 1f, 1f); });
+                        pc.AssignCommand(() => { _.ActionPlayAnimation((int) dbPerk.CastAnimationID, 1f, 1f); });
                     }
 
                     if (target.IsNPC)
                     {
-                        AbilityService.ApplyEnmity(pc, (target.Object), entity);
+                        AbilityService.ApplyEnmity(pc, (target.Object), dbPerk);
                     }
                 }
                 else if (executionType == PerkExecutionType.QueuedWeaponSkill)
                 {
-                    AbilityService.HandleQueueWeaponSkill(pc, entity, perk, featID);
+                    AbilityService.HandleQueueWeaponSkill(pc, dbPerk, perk, featID);
                 }
 
 
                 // Adjust FP only if spell cost > 0
                 Data.Entity.Player pcEntity = DataService.Single<Data.Entity.Player>(x => x.ID == pc.GlobalID);
-                int fpCost = perk.FPCost(pc, entity.BaseFPCost, featID);
+                PerkLevel perkLevel = DataService.Single<PerkLevel>(x => x.PerkID == perkID && x.Level == pcPerkLevel);
+                int fpCost = perk.FPCost(pc, perkLevel.BaseFPCost, featID);
 
                 if (fpCost > 0)
                 {

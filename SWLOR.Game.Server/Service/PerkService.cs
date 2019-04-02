@@ -148,7 +148,7 @@ namespace SWLOR.Game.Server.Service
             {
                 // Filter on equipment-based execution type.
                 var perk = DataService.Get<Data.Entity.Perk>(x.PerkID);
-                bool matchesExecutionType = perk.ExecutionTypeID == (int)executionType;
+                bool matchesExecutionType = perk.ExecutionTypeID == executionType;
                 if (!matchesExecutionType) return false;
 
                 // Filter out any perks the PC doesn't meet the requirements for.
@@ -254,7 +254,7 @@ namespace SWLOR.Game.Server.Service
 
                 // Only pull back perks which have a Shield On Hit execution type.
                 var perk = DataService.Get<Data.Entity.Perk>(x.PerkID);
-                if (perk.ExecutionTypeID != (int)PerkExecutionType.ShieldOnHit)
+                if (perk.ExecutionTypeID != PerkExecutionType.ShieldOnHit)
                     return false;
 
                 // If player's effective level is zero, it's not in effect.

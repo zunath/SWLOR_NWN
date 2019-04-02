@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Service
             int pcPerkLevel = PerkService.GetPCPerkLevel(pc, perk.ID);
 
             // If player is disabling an existing stance, remove that effect.
-            if (perk.ExecutionTypeID == (int)PerkExecutionType.Stance)
+            if (perk.ExecutionTypeID == PerkExecutionType.Stance)
             {
                 PCCustomEffect stanceEffect = DataService.SingleOrDefault<PCCustomEffect>(x => x.StancePerkID == perk.ID &&
                                                                                                x.PlayerID == pc.GlobalID);
@@ -98,7 +98,8 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            int fpCost = perkAction.FPCost(pc, perkAction.FPCost(pc, perk.BaseFPCost, featID), featID);
+            PerkLevel perkLevel = DataService.Single<PerkLevel>(x => x.PerkID == perkFeat.PerkID && x.Level == pcPerkLevel);
+            int fpCost = perkAction.FPCost(pc, perkAction.FPCost(pc, perkLevel.BaseFPCost, featID), featID);
             if (playerEntity.CurrentFP < fpCost)
             {
                 pc.SendMessage("You do not have enough FP. (Required: " + fpCost + ". You have: " + playerEntity.CurrentFP + ")");
@@ -138,25 +139,25 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Force Abilities (aka Spells)
-            if (perk.ExecutionTypeID == (int)PerkExecutionType.ForceAbility)
+            if (perk.ExecutionTypeID == PerkExecutionType.ForceAbility)
             {
                 target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_FORCE);
                 ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.ForceAbility, featID);
             }
             // Combat Abilities
-            else if (perk.ExecutionTypeID == (int)PerkExecutionType.CombatAbility)
+            else if (perk.ExecutionTypeID == PerkExecutionType.CombatAbility)
             {
                 target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_PHYSICAL);
                 ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.CombatAbility, featID);
             }
             // Queued Weapon Skills
-            else if (perk.ExecutionTypeID == (int)PerkExecutionType.QueuedWeaponSkill)
+            else if (perk.ExecutionTypeID == PerkExecutionType.QueuedWeaponSkill)
             {
                 target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_PHYSICAL);
                 HandleQueueWeaponSkill(pc, perk, perkAction, featID);
             }
             // Stances
-            else if (perk.ExecutionTypeID == (int)PerkExecutionType.Stance)
+            else if (perk.ExecutionTypeID == PerkExecutionType.Stance)
             {
                 target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_COMBATABILITY);
                 ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.Stance, featID);

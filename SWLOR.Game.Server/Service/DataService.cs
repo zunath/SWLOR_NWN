@@ -20,7 +20,6 @@ using Attribute = SWLOR.Game.Server.Data.Entity.Attribute;
 using BaseStructureType = SWLOR.Game.Server.Data.Entity.BaseStructureType;
 using ComponentType = SWLOR.Game.Server.Data.Entity.ComponentType;
 using PCBaseType = SWLOR.Game.Server.Data.Entity.PCBaseType;
-using PerkExecutionType = SWLOR.Game.Server.Data.Entity.PerkExecutionType;
 using QuestType = SWLOR.Game.Server.Data.Entity.QuestType;
 
 namespace SWLOR.Game.Server.Service
@@ -163,7 +162,6 @@ namespace SWLOR.Game.Server.Service
             GetAll<Data.Entity.Perk>();
             GetAll<PerkFeat>();
             GetAll<PerkCategory>();
-            GetAll<PerkExecutionType>();
             GetAll<PerkLevel>();
             GetAll<PerkLevelQuestRequirement>();
             GetAll<PerkLevelSkillRequirement>();

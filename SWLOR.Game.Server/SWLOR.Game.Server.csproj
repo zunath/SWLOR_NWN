@@ -302,7 +302,6 @@
     <Compile Include="Data\Entity\PCSkillPool.cs" />
     <Compile Include="Data\Entity\Perk.cs" />
     <Compile Include="Data\Entity\PerkCategory.cs" />
-    <Compile Include="Data\Entity\PerkExecutionType.cs" />
     <Compile Include="Data\Entity\PerkFeat.cs" />
     <Compile Include="Data\Entity\PerkLevel.cs" />
     <Compile Include="Data\Entity\PerkLevelQuestRequirement.cs" />
@@ -2173,7 +2172,6 @@
     <EmbeddedResource Include="Data\Migrations\2019-03-28.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-03-29.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-04-01.1.sql" />
-    <EmbeddedResource Include="Data\Migrations\2019-04-02.1.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-07.1.sql" />

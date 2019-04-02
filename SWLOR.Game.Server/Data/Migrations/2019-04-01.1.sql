@@ -225,5 +225,371 @@ VALUES ( 45 ,    -- ID - int
          1 , -- IsActive - bit
          35      -- Sequence - int
     )
+	
 
--- Now we'll do the new perk inserts
+-- Disable the force Defense/Potency mod blueprints
+UPDATE dbo.CraftBlueprint
+SET IsActive = 0
+WHERE ID IN (333,334,352,129,162,192,389,405,412,195,323,329,364,367,368,128,161,191,371,381,384,132,165,180)
+
+-- Rename Activation Speed to Cooldown Reduction
+UPDATE dbo.CraftBlueprint
+SET ItemName = 'Cooldown Reduction +1'
+WHERE ID = 121
+
+UPDATE dbo.CraftBlueprint
+SET ItemName = 'Cooldown Reduction +2'
+WHERE ID = 152
+
+UPDATE dbo.CraftBlueprint
+SET ItemName = 'Cooldown Reduction +3'
+WHERE ID = 184
+
+GO  
+
+-- Add perks for the force rebalance.
+-- Force Alter 40 = General, 41 = Guardian, 42 = Consular 49 = Sentinel
+-- Force Control 43 = General 44 = Guardian 45 = consular, 50 = sentinel
+-- Force Sense 46 = General, 47 = Guardian 48 = Consular 51 = Sentinel
+INSERT INTO dbo.PerkCategory ( ID ,  Name ,  IsActive ,  Sequence ) VALUES
+(46, N'Force Sense - General', 1, 36),
+(47, N'Force Sense - Guardian', 1, 37),
+(48, N'Force Sense - Consular', 1, 38),
+(49, N'Force Alter - Sentinel', 1, 39),
+(50, N'Force Control - Sentinel', 1, 40),
+(51, N'Force Sense - Sentinel', 1, 41);
+
+-- Remove PC cooldowns
+DELETE FROM dbo.PCCooldown
+WHERE CooldownCategoryID IN (2 ,4 ,5 ,6 ,7 ,8 ,9 ,10,11,12,16,17,20,21,28,34,35,36)
+
+-- Remove the old cooldown categories
+DELETE FROM dbo.CooldownCategory
+WHERE ID IN (2 ,4 ,5 ,6 ,7 ,8 ,9 ,10,11,12,16,17,20,21,28,34,35,36)
+
+
+-- Add new cooldown categories
+INSERT INTO dbo.CooldownCategory ( ID ,Name ,BaseCooldownTime ) VALUES
+( 2 , N'Force Speed' , 600.0),
+( 4 , N'Absorb Energy' , 600.0),
+( 5 , N'Force Body' , 600.0),
+( 6 , N'Mind Shield' , 600.0),
+( 7 , N'Rage' , 600.0),
+( 8 , N'Force Persuade' , 600.0),
+( 9 , N'Confusion' , 600.0),
+( 10 , N'Force Stun' , 600.0),
+( 11 , N'Sith Alchemy' , 600.0),
+( 12 , N'Throw Saber' , 600.0),
+( 16 , N'Premonition' , 600.0),
+( 17 , N'Comprehend Speech' , 600.0),
+( 20 , N'Force Detection' , 600.0),
+( 21 , N'Farseeing' , 600.0),
+( 28 , N'Battle Meditation' , 600.0),
+( 34 , N'Animal Bond' , 600.0),
+( 35 , N'Drain Life' , 600.0),
+( 36 , N'Force Lightning' , 600.0),
+( 37 , N'Force Push' , 600.0),
+( 38 , N'Force Breach' , 600.0),
+( 39 , N'Force Heal' , 600.0)
+
+
+-- Definitions for each perk
+INSERT INTO dbo.Perk (ID, PerkCategoryID, CooldownCategoryID, ExecutionTypeID, IsTargetSelfOnly, Name, IsActive, Description, Enmity, EnmityAdjustmentRuleID, ForceBalanceTypeID) VALUES
+ (3, 45, 2, 3, 1, 'Force Speed', 1, 'Increases movement speed and dexterity.  At higher ranks grants additional attacks.', 0, 0, 0),
+ (4, 46, 4, 3, 1, 'Absorb Energy', 1, 'Absorbs a percentage of damage that the caster would take, from all sources.', 20, 2, 0),
+ (5, 43, 5, 3, 1, 'Force Body', 1, 'Converts a percentage of the casters current HP into FP.', 0, 0, 0),
+ (13, 45, 6, 3, 0, 'Mind Shield', 1, 'Protects the target from mind affecting powers and abilities.', 20, 2, 1),
+ (19, 45, 7, 3, 1, 'Rage', 1, 'Increases STR and CON at the cost of AC and HP damage each round.  At higher ranks grants additional attacks, that do not stack with Force Speed.', 10, 2, 2),
+ (76, 42, 8, 3, 0, 'Force Persuade', 1, 'Applies Domination effect to humanoid creatures with lower WIS than the caster.', 0, 0, 1),
+ (78, 42, 9, 3, 0, 'Confusion', 1, 'Applies Confusion effect to organic creatures with lower WIS than the caster.', 0, 0, 1),
+ (126, 42, 10, 3, 0, 'Force Stun', 1, 'Tranquilises an enemy or slows their reaction time.', 10, 1, 1),
+ (173, 42, 11, 3, 0, 'Sith Alchemy', 1, 'The power to transform living (or recently-living) flesh.', 0, 0, 2),
+ (174, 41, 12, 3, 0, 'Throw Saber', 1, 'The caster throws their lightsaber at nearby enemies and pulls it back to their hand.', 10, 1, 0),
+ (175, 51, 16, 3, 1, 'Premonition', 1, 'The caster sees a short way into the future, allowing them to avoid an untimely fate.', 0, 0, 0),
+ (176, 51, 17, 3, 1, 'Comprehend Speech', 1, 'The caster improves their ability to understand other languages.', 0, 0, 0),
+ (177, 51, 20, 3, 1, 'Force Detection', 1, 'The caster senses nearby hidden creatures.', 0, 0, 0),
+ (178, 46, 21, 3, 1, 'Farseeing', 1,  'The caster gets a vision of another character.', 0, 0, 0),
+ (179, 46, 28, 3, 1, 'Battle Meditation', 1, 'The caster boosts their nearby allies at the expense of their own abilities.', 10, 2, 0),
+ (180, 51, 34, 3, 0, 'Animal Bond', 1, 'The caster convinces a creature to travel and fight with them.', 0, 0, 0),
+ (181, 42, 35, 3, 0, 'Drain Life', 1, 'Steals HP from a single target every second.', 0, 0, 2),
+ (182, 42, 36, 3, 0, 'Force Lightning', 1, 'The caster convinces a creature to travel and fight with them.', 0, 0, 2),
+ (183, 49, 37, 3, 0, 'Force Push', 1, 'The caster convinces a creature to travel and fight with them.', 0, 0, 0),
+ (184, 42, 38, 3, 0, 'Force Breach', 1, 'The caster convinces a creature to travel and fight with them.', 0, 0, 0),
+ (185, 45, 39, 3, 0, 'Force Heal', 1, 'The caster convinces a creature to travel and fight with them.', 0, 0, 1)
+ ;
+
+-- Levels for each perk.
+ALTER TABLE dbo.PerkLevel
+ADD SpecializationID INT NOT NULL DEFAULT 0
+CONSTRAINT FK_PerkLevel_SpecializationID FOREIGN KEY REFERENCES dbo.Specialization(ID);
+
+ALTER TABLE dbo.PerkLevel ADD BaseFPCost INT NOT NULL DEFAULT 0;
+GO
+
+DECLARE @PerkLevelID INT;
+
+ INSERT INTO dbo.PerkLevel (PerkID, Level, Price, Description, SpecializationID, BaseFPCost) VALUES
+ (181,1,4, 'Steals 5 HP from a single target every second.', 2, 4),
+ (181,2,4, 'Steals 6 HP from a single target every second.', 2, 4),
+ (181,3,5, 'Steals 7 HP from a single target every second.', 2, 4),
+ (181,4,5, 'Steals 8 HP from a single target every second.', 2, 4),
+ (181,5,6, 'Steals 10 HP from a single target every second.', 2, 4),
+ (182,1,4, 'Damages a single target for 10 HP every second.', 2, 2),
+ (182,2,4, 'Damages a single target for 12 HP every second.', 2, 2),
+ (182,3,5, 'Damages a single target for 14 HP every second.', 2, 2),
+ (182,4,5, 'Damages a single target for 16 HP every second.', 2, 2),
+ (182,5,6, 'Damages a single target for 20 HP every second.', 2, 2),
+ (183,1,2, 'Knockdown a small target. If resisted, target is slowed for 6 seconds.', 0, 4),
+ (183,2,3, 'Knockdown a medium or smaller target. If resisted, target is slowed for 6 seconds.', 0, 6),
+ (183,3,4, 'Knockdown a large or smaller target. If resisted, target is slowed for 6 seconds.', 3, 8),
+ (183,4,5, 'Knockdown any size target. If resisted, target is slowed for 6 seconds.', 3, 10),
+ (184,1,4, 'Deals 100 damage to a single target.', 2, 8),
+ (184,2,5, 'Deals 125 damage to a single target.', 2, 10),
+ (184,3,6, 'Deals 160 damage to a single target.', 2, 12),
+ (184,4,7, 'Deals 200 damage to a single target.', 2, 14),
+ (184,5,8, 'Deals 250 damage to a single target.', 2, 16),
+ (185,1,2, 'Heals a single target for 2 HP every second.', 0, 1),
+ (185,2,2, 'Heals a single target for 3 HP every second.', 0, 1),
+ (185,3,3, 'Heals a single target for 5 HP every second.', 0, 1),
+ (185,4,3, 'Heals a single target for 7 HP every second.', 2, 1),
+ (185,5,4, 'Heals a single target for 10 HP every second.', 2, 1),
+ (3,1,2,'Increases movement speed by 10% and Dexterity by 2.', 0, 2),
+ (3,2,2,'Increases movement speed by 20% and Dexterity by 4.', 0, 4),
+ (3,3,3,'Increases movement speed by 30%, Dexterity by 6 and grants an extra attack.', 0, 6),
+ (3,4,3,'Increases movement speed by 40%, Dexterity by 8 and grants an extra attack.', 1, 8),
+ (3,5,12,'Increases movement speed by 50%, Dexterity by 10 and grants two extra attacks and Epic Dodge.', 1, 20), 
+ (4,1,2,'Grants 10% immunity to all damage while the caster retains concentration.', 0, 2),
+ (4,2,2,'Grants 20% immunity to all damage while the caster retains concentration.', 0, 4),
+ (4,3,3,'Grants 30% immunity to all damage while the caster retains concentration.', 0, 6),
+ (4,4,3,'Grants 40% immunity to all damage while the caster retains concentration.', 2, 8),
+ (4,5,4,'Grants 50% immunity to all damage while the caster retains concentration.', 2, 10),
+ (5,1,3,'Converts 10% of the casters current HP into FP.', 0, 0),
+ (5,2,4,'Converts 20% of the casters current HP into FP.', 0, 0),
+ (5,3,5,'Converts 35% of the casters current HP into FP.', 0, 0),
+ (5,4,6,'Converts 50% of the casters current HP into FP.', 0, 0),
+ (13,1,4,'Immune to Tranquilisation effects while concentrating.', 0, 1),
+ (13,2,6,'Immune to Tranquilisation, Confusion and Persuade effects while concentrating.', 0, 2),
+ (13,3,8,'Immune to Tranquilisation, Confusion, Persuade and Drain effects while concentrating.', 1, 3),
+ (19,1,2,'Increases Strength and Dexterity by 2 while concentrating but reduces AC by 2 and deals 2 damage per round.', 0, 2),
+ (19,2,2,'Increases Strength and Dexterity by 4 while concentrating but reduces AC by 2 and deals 4 damage per round.', 0, 4),
+ (19,3,5,'Increases Strength and Dexterity by 6 while concentrating and grants an extra attack but reduces AC by 4 and deals 6 damage per round.', 0, 6),
+ (19,4,5,'Increases Strength and Dexterity by 8 while concentrating and grants an extra attack but reduces AC by 4 and deals 8 damage per round.', 1, 8),
+ (19,5,8,'Increases Strength and Dexterity by 10 while concentrating and grants two extra attacks but reduces AC by 2 and deals 10 damage per round.', 1, 10),
+ (76,1,7,'Applies Domination effect to a single humanoid target with lower WIS than the caster, while the caster concentrates.', 0, 8),
+ (76,2,7,'Applies Domination effect to all hostile humanoid targets within 5m with lower WIS than the caster, while the caster concentrates.', 2, 20),
+ (78,1,7,'Applies Confusion effect to a single non-mechanical target with lower WIS than the caster, while the caster concentrates.', 0, 8),
+ (78,2,7,'Applies Confusion effect to all hostile non-mechanical targets within 10m with lower WIS than the caster, while the caster concentrates.', 2, 20),
+ (126,1,4,'Single target is Tranquilised while the caster concentrates or, if resisted, gets -5 to AB and AC.', 0, 8),
+ (126,2,7,'Target and nearest other enemy within 10m is Tranquilised while the caster concentrates or, if resisted, get -5 to AB and AC.', 2, 12),
+ (126,3,10,'Target and all other enemies within 10 are Tranquilised while the caster concentrates or, if resisted, get -5 to AB and AC.', 2, 20),
+ (173,1,0,'Unlocks Sith Alchemy.', 2, 0),
+ (173,2,7,'When used on a corpse, raises the creature as a henchman while the caster concentrates.', 2, 25),
+ (173,3,7,'Alchemist can create monsters.', 2, 300),
+ (173,4,0,'Alchemist can employ monsters as henchmen while they concentrate.', 2, 5),
+ (174,1,2,'Throw your equipped lightsaber up to 5m for (saber damage + INT modifier) * 100%.  This ability hits automatically.', 0, 4),
+ (174,2,2,'Throw your equipped lightsaber up to 10m for (saber damage + INT modifier) * 125%.  This ability hits automatically.', 0, 5),
+ (174,3,2,'Throw your equipped lightsaber up to 15m for (saber damage + INT modifier) * 160%.  This ability hits automatically.', 0, 6),
+ (174,4,2,'Throw your equipped lightsaber up to 15m for (saber damage + INT modifier) * 200%.  This ability hits automatically and will chain to a second target within 5m of the first.', 1, 8),
+ (174,5,2,'Throw your equipped lightsaber up to 15m for (saber damage + INT modifier) * 250%.  This ability hits automatically and will chain to a second and third target within 5m each.', 1, 10),
+ (175,1,4,'The next time the caster would die in the next 30 minutes, they are instead healed to 25% of their max HP.', 0, 5),
+ (175,2,7,'The next time the caster would die in the next 30 minutes, they are instead healed to 50% of their max HP.', 0, 5),
+ (175,3,10,'For 12s after casting, the caster is immune to all damage, and the next time the caster would die in the next 30 minutes, they are instead healed to 25% of their max HP.', 3, 16),
+ (176,1,3,'The caster counts has having 5 extra ranks in all languages for the purpose of understanding others speaking, so long as they concentrate.', 0, 1),
+ (176,2,4,'The caster counts has having 10 extra ranks in all languages for the purpose of understanding others speaking, so long as they concentrate.', 0, 2),
+ (176,3,5,'The caster counts has having 15 extra ranks in all languages for the purpose of understanding others speaking, so long as they concentrate.', 3, 3),
+ (176,4,6,'The caster counts has having 20 extra ranks in all languages for the purpose of understanding others speaking, so long as they concentrate.', 3, 4),
+ (177,1,2,'The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).', 0, 1),
+ (177,2,2,'The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).', 0, 2),
+ (177,3,3,'The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).', 3, 3),
+ (177,4,3,'The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).', 3, 4),
+ (177,5,4,'The caster gets improved detection of hidden creatures while they concentrate.  ((Will do something when the stealth system is introduced)).', 3, 5),
+ (178,1,10,'The caster attempts to view what another character is currently doing.', 0, 30),
+ (179,1,4, 'The caster gets -5 AB & AC but their nearby party members get +5 AB & AC', 0, 1),
+ (179,2,6, 'The caster gets -10 AB & AC but their nearby party members get +10 AB & AC', 0, 2),
+ (179,3,8, 'The caster and nearby enemies get -10 AB & AC but the nearby party members get +10 AB & AC', 0, 3),
+ (180,1,2, 'The caster befriends an animal or beast with up to Challenge Rating 4.', 0, 4),
+ (180,2,2, 'The caster befriends an animal or beast with up to Challenge Rating 8.', 0, 8),
+ (180,3,3, 'The caster befriends an animal or beast with up to Challenge Rating 12.', 0, 12),
+ (180,4,3, 'The caster befriends an animal or beast with up to Challenge Rating 16.', 3, 16),
+ (180,5,4, 'The caster befriends an animal or beast with up to Challenge Rating 20.', 3, 20),
+ (180,6,5, 'The caster befriends an animal or beast with any Challenge Rating.', 3, 30)
+ ;
+ 
+SET @PerkLevelID = SCOPE_IDENTITY();
+
+-- Add the skill requirement for each perk level.
+ INSERT INTO dbo.PerkLevelSkillRequirement (PerkLevelID, SkillID, RequiredRank) VALUES
+  
+  -- Drain Life
+  (@PerkLevelID-83,19,30),
+  (@PerkLevelID-82,19,45),
+  (@PerkLevelID-81,19,60),
+  (@PerkLevelID-80,19,75),
+  (@PerkLevelID-79,19,90),
+  
+  -- Force Lightning
+  (@PerkLevelID-78,19,30),
+  (@PerkLevelID-77,19,45),
+  (@PerkLevelID-76,19,60),
+  (@PerkLevelID-75,19,75),
+  (@PerkLevelID-74,19,90),
+
+  -- Force Push
+  (@PerkLevelID-73,19,0),
+  (@PerkLevelID-72,19,10),
+  (@PerkLevelID-71,19,20),
+  (@PerkLevelID-70,19,30),
+
+  -- Force Breach
+  (@PerkLevelID-69,19,50),
+  (@PerkLevelID-68,19,60),
+  (@PerkLevelID-67,19,70),
+  (@PerkLevelID-66,19,80),
+  (@PerkLevelID-65,19,90),
+
+  -- Force Heal
+  (@PerkLevelID-64,19,0),
+  (@PerkLevelID-63,19,10),
+  (@PerkLevelID-62,19,20),
+  (@PerkLevelID-61,19,30),
+  (@PerkLevelID-60,19,40),
+
+  -- Force Speed
+  (@PerkLevelID-59,20,0),
+  (@PerkLevelID-58,20,10),
+  (@PerkLevelID-57,20,25),
+  (@PerkLevelID-56,20,40),
+  (@PerkLevelID-55,20,80),
+
+  -- Absorb Energy
+  (@PerkLevelID-54,20,0),
+  (@PerkLevelID-53,20,15),
+  (@PerkLevelID-52,20,30),
+  (@PerkLevelID-51,20,45),
+  (@PerkLevelID-50,20,60),
+
+  -- Force Body
+  (@PerkLevelID-49,20,10),
+  (@PerkLevelID-48,20,25),
+  (@PerkLevelID-47,20,40),
+  (@PerkLevelID-46,20,55),
+
+  -- Mind Shield
+  (@PerkLevelID-45,20,10),
+  (@PerkLevelID-44,20,30),
+  (@PerkLevelID-43,20,50),
+  
+  -- Rage
+  (@PerkLevelID-42,20,10),
+  (@PerkLevelID-41,20,30),
+  (@PerkLevelID-40,20,50),
+  (@PerkLevelID-39,20,70),
+  (@PerkLevelID-38,20,90),
+
+  -- Force Persuade
+  (@PerkLevelID-37,19,40),
+  (@PerkLevelID-36,19,80),
+
+  -- Confusion
+  (@PerkLevelID-35,19,40),
+  (@PerkLevelID-34,19,80),
+
+  -- Force Stun
+  (@PerkLevelID-33,19,10),
+  (@PerkLevelID-32,19,50),
+  (@PerkLevelID-31,19,80),
+
+  -- Sith Alchemy
+  (@PerkLevelID-30,19,0),
+  (@PerkLevelID-29,19,80),
+  (@PerkLevelID-28,19,90),
+  (@PerkLevelID-27,19,90),
+
+  -- Throw Saber
+  (@PerkLevelID-26,19,10),
+  (@PerkLevelID-25,19,20),
+  (@PerkLevelID-24,19,30),
+  (@PerkLevelID-23,19,40),
+  (@PerkLevelID-22,19,50),
+
+  -- Premonition
+  (@PerkLevelID-21,21,0),
+  (@PerkLevelID-20,21,20),
+  (@PerkLevelID-19,21,50),
+
+  -- Comprehend Speech
+  (@PerkLevelID-18,21,0),
+  (@PerkLevelID-17,21,15),
+  (@PerkLevelID-16,21,30),
+  (@PerkLevelID-15,21,45),
+
+  -- Force Detection
+  (@PerkLevelID-14,21,0),
+  (@PerkLevelID-13,21,5),
+  (@PerkLevelID-12,21,20),
+  (@PerkLevelID-11,21,35),
+  (@PerkLevelID-10,21,50),
+
+  -- Farseeing
+  (@PerkLevelID-9,21,80),
+
+  -- Battle Meditation
+  (@PerkLevelID-8,21,40),
+  (@PerkLevelID-7,21,60),
+  (@PerkLevelID-6,21,80),
+
+  -- Animal Bond
+  (@PerkLevelID-5,21,10),
+  (@PerkLevelID-4,21,25),
+  (@PerkLevelID-3,21,40),
+  (@PerkLevelID-2,21,55),
+  (@PerkLevelID-1,21,70),
+  (@PerkLevelID, 21, 85)
+  ;
+ 
+INSERT INTO dbo.Quest ( ID ,
+                        Name ,
+                        JournalTag ,
+                        FameRegionID ,
+                        RequiredFameAmount ,
+                        AllowRewardSelection ,
+                        RewardGold ,
+                        RewardKeyItemID ,
+                        RewardFame ,
+                        IsRepeatable ,
+                        MapNoteTag ,
+                        StartKeyItemID ,
+                        RemoveStartKeyItemAfterCompletion ,
+                        OnAcceptRule ,
+                        OnAdvanceRule ,
+                        OnCompleteRule ,
+                        OnKillTargetRule ,
+                        OnAcceptArgs ,
+                        OnAdvanceArgs ,
+                        OnCompleteArgs ,
+                        OnKillTargetArgs )
+VALUES ( 99 ,    -- ID - int
+         N'Sith Alchemy' ,  -- Name - nvarchar(100)
+         N'' ,  -- JournalTag - nvarchar(32)
+         1 ,    -- FameRegionID - int
+         0 ,    -- RequiredFameAmount - int
+         0 , -- AllowRewardSelection - bit
+         0 ,    -- RewardGold - int
+         NULL ,    -- RewardKeyItemID - int
+         0 ,    -- RewardFame - int
+         0 , -- IsRepeatable - bit
+         N'' ,  -- MapNoteTag - nvarchar(32)
+         NULL ,    -- StartKeyItemID - int
+         0 , -- RemoveStartKeyItemAfterCompletion - bit
+         N'' ,  -- OnAcceptRule - nvarchar(32)
+         N'' ,  -- OnAdvanceRule - nvarchar(32)
+         N'' ,  -- OnCompleteRule - nvarchar(32)
+         N'' ,  -- OnKillTargetRule - nvarchar(32)
+         N'' ,  -- OnAcceptArgs - nvarchar(256)
+         N'' ,  -- OnAdvanceArgs - nvarchar(256)
+         N'' ,  -- OnCompleteArgs - nvarchar(256)
+         N''    -- OnKillTargetArgs - nvarchar(256)
+    )
+
+-- Set the Sith Alchemy perk level 1 to be gated on the above quest.
+INSERT INTO dbo.PerkLevelQuestRequirement (PerkLevelID, RequiredQuestID) VALUES (@PerkLevelID-30, 99);

@@ -119,7 +119,9 @@ namespace SWLOR.Game.Server.Conversation
             int rank = pcPerk?.PerkLevel ?? 0;
             int maxRank = perkLevels.Count();
             string currentBonus = "N/A";
+            string currentFPCost = "N/A";
             string nextBonus = "N/A";
+            string nextFPCost = "N/A";
             string price = "N/A";
             PerkLevel currentPerkLevel = PerkService.FindPerkLevel(perkLevels, rank);
             PerkLevel nextPerkLevel = PerkService.FindPerkLevel(perkLevels, rank + 1);
@@ -130,6 +132,7 @@ namespace SWLOR.Game.Server.Conversation
                 if (currentPerkLevel != null)
                 {
                     currentBonus = currentPerkLevel.Description;
+                    currentFPCost = currentPerkLevel.BaseFPCost > 0 ? ("Current FP: " + currentPerkLevel.BaseFPCost): string.Empty;
                 }
             }
             if (rank + 1 <= maxRank)
@@ -138,6 +141,7 @@ namespace SWLOR.Game.Server.Conversation
                 {
                     nextBonus = nextPerkLevel.Description;
                     price = nextPerkLevel.Price + " SP (Available: " + player.UnallocatedSP + " SP)";
+                    nextFPCost = nextPerkLevel.BaseFPCost > 0 ? ("Next FP: " + nextPerkLevel.BaseFPCost) : string.Empty;
                 }
             }
             var perkCategory = DataService.Get<PerkCategory>(perk.PerkCategoryID);
@@ -149,10 +153,11 @@ namespace SWLOR.Game.Server.Conversation
                     ColorTokenService.Green("Category: ") + perkCategory.Name + "\n" +
                     ColorTokenService.Green("Rank: ") + rank + " / " + maxRank + "\n" +
                     ColorTokenService.Green("Price: ") + price + "\n" +
-                    (perk.BaseFPCost > 0 ? ColorTokenService.Green("FP: ") + perk.BaseFPCost : "") + "\n" +
+                    currentFPCost +
                     (cooldownCategory != null && cooldownCategory.BaseCooldownTime > 0 ? ColorTokenService.Green("Cooldown: ") + cooldownCategory.BaseCooldownTime + "s" : "") + "\n" +
                     ColorTokenService.Green("Description: ") + perk.Description + "\n" +
                     ColorTokenService.Green("Current Bonus: ") + currentBonus + "\n" +
+                    nextFPCost +
                     ColorTokenService.Green("Next Bonus: ") + nextBonus + "\n";
 
             if (nextPerkLevel != null)

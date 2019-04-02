@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
 
                             if (_random.Random(1, 100) <= ipBonusChance)
                             {
-                                var ip = _resource.GetRandomComponentBonusIP(ResourceQuality.Normal);
+                                var ip = _resource.GetRandomComponentBonusIP(quality);
                                 _biowareXP2.IPSafeAddItemProperty(resource, ip.Item1, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
 
                                 switch (ip.Item2)
@@ -148,6 +148,18 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
                                         break;
                                     case 3:
                                         resource.Name = _color.Orange(resource.Name);
+                                        break;
+                                    case 4:
+                                        resource.Name = _color.LightPurple(resource.Name);
+                                        break;
+                                    case 5:
+                                        resource.Name = _color.Yellow(resource.Name);
+                                        break;
+                                    case 6:
+                                        resource.Name = _color.Red(resource.Name);
+                                        break;
+                                    case 7:
+                                        resource.Name = _color.Cyan(resource.Name);
                                         break;
                                 }
                             }

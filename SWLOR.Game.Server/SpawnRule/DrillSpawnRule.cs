@@ -61,6 +61,18 @@ namespace SWLOR.Game.Server.SpawnRule
                 case 3:
                     target.Name = _color.Orange(target.Name);
                     break;
+                case 4:
+                    target.Name = _color.LightPurple(target.Name);
+                    break;
+                case 5:
+                    target.Name = _color.Yellow(target.Name);
+                    break;
+                case 6:
+                    target.Name = _color.Red(target.Name);
+                    break;
+                case 7:
+                    target.Name = _color.Cyan(target.Name);
+                    break;
             }
         }
     }

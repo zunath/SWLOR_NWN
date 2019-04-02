@@ -5,9 +5,9 @@
         Unknown = -1,
         SpeedyFabrication = 1, 
         FabricationBlueprints = 2, 
-        ForceBreach = 3,
-        ForceLightning = 4,
-        ForceHeal = 5,
+        // 3 is free
+        // 4 is free
+        // 5 is free
         SpeedyReassembly = 6,
         Rest = 7,
         StimFiend = 8,
@@ -15,13 +15,13 @@
         SpeedyMedicine = 10,
         AbsorptionField = 11,
         Hide = 12,
-        ForceSpread = 13,
+        // 13 is free
         StronidiumRefining = 14,
         Lucky = 15,
         Health = 16,
         FP = 17,
         SpeedyHarvester = 18,
-        ForcePush = 19,
+        // 19 is free
         SpeedyFirstAid = 20,
         HealingKitExpert = 21,
         ImmediateImprovement = 22,
@@ -78,9 +78,9 @@
         GrenadeProficiency = 73,
         Tranquilizer = 74,
         MassTranquilizer = 75,
-        ForceAura = 76,
+        // 76 is free
         PreciseToss = 77,
-        DrainLife = 78,
+        // 78 is free
         SpeedyRefining = 79,
         ProcessingEfficiency = 80,
         RefineryManagement = 81,
@@ -128,7 +128,7 @@
         SneakAttack = 123,
         ArmorBlueprints = 124,
         Battlemage = 125,
-        Chainspell = 126,
+        // 126 is free
         Clarity = 127,
         Sturdiness = 128,
         LightsaberProficiency = 129,

@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Data.Contracts;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
@@ -26,5 +27,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public int Enmity { get; set; }
         public int EnmityAdjustmentRuleID { get; set; }
         public int? CastAnimationID { get; set; }
+        public SpecializationType Specialization { get; set; }
+        public ForceBalanceType ForceBalance { get; set; }
     }
 }

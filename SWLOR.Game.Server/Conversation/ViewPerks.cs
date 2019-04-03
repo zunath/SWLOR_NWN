@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Conversation
             int rank = pcPerk?.PerkLevel ?? 0;
             int maxRank = perkLevels.Count();
             string currentBonus = "N/A";
-            string currentFPCost = "N/A";
+            string currentFPCost = string.Empty;
             string nextBonus = "N/A";
             string nextFPCost = "N/A";
             string price = "N/A";
@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Conversation
                 if (currentPerkLevel != null)
                 {
                     currentBonus = currentPerkLevel.Description;
-                    currentFPCost = currentPerkLevel.BaseFPCost > 0 ? ("Current FP: " + currentPerkLevel.BaseFPCost): string.Empty;
+                    currentFPCost = currentPerkLevel.BaseFPCost > 0 ? (ColorTokenService.Green("Current FP: ") + currentPerkLevel.BaseFPCost + "\n"): string.Empty;
                 }
             }
             if (rank + 1 <= maxRank)
@@ -141,7 +141,7 @@ namespace SWLOR.Game.Server.Conversation
                 {
                     nextBonus = nextPerkLevel.Description;
                     price = nextPerkLevel.Price + " SP (Available: " + player.UnallocatedSP + " SP)";
-                    nextFPCost = nextPerkLevel.BaseFPCost > 0 ? ("Next FP: " + nextPerkLevel.BaseFPCost) : string.Empty;
+                    nextFPCost = nextPerkLevel.BaseFPCost > 0 ? (ColorTokenService.Green("Next FP: ") + nextPerkLevel.BaseFPCost + "\n") : string.Empty;
                 }
             }
             var perkCategory = DataService.Get<PerkCategory>(perk.PerkCategoryID);

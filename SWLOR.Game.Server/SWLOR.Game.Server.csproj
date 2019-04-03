@@ -945,6 +945,27 @@
     <Compile Include="Perk\Blaster\Tranquilizer.cs" />
     <Compile Include="Perk\Cooking\CookingEfficiency.cs" />
     <Compile Include="Perk\Cooking\CookingOptimization.cs" />
+    <Compile Include="Perk\ForceAlter\Confusion.cs" />
+    <Compile Include="Perk\ForceAlter\DrainLife.cs" />
+    <Compile Include="Perk\ForceAlter\ForceBreach.cs" />
+    <Compile Include="Perk\ForceAlter\ForceLightning.cs" />
+    <Compile Include="Perk\ForceAlter\ForcePersuade.cs" />
+    <Compile Include="Perk\ForceAlter\ForcePush.cs" />
+    <Compile Include="Perk\ForceAlter\ForceStun.cs" />
+    <Compile Include="Perk\ForceAlter\SithAlchemy.cs" />
+    <Compile Include="Perk\ForceAlter\ThrowSaber.cs" />
+    <Compile Include="Perk\ForceControl\AbsorbEnergy.cs" />
+    <Compile Include="Perk\ForceControl\ForceBody.cs" />
+    <Compile Include="Perk\ForceControl\ForceHeal.cs" />
+    <Compile Include="Perk\ForceControl\ForceSpeed.cs" />
+    <Compile Include="Perk\ForceControl\MindShield.cs" />
+    <Compile Include="Perk\ForceControl\Rage.cs" />
+    <Compile Include="Perk\ForceSense\AnimalBond.cs" />
+    <Compile Include="Perk\ForceSense\BattleMeditation.cs" />
+    <Compile Include="Perk\ForceSense\ComprehendSpeech.cs" />
+    <Compile Include="Perk\ForceSense\Farseeing.cs" />
+    <Compile Include="Perk\ForceSense\ForceDetection.cs" />
+    <Compile Include="Perk\ForceSense\Premonition.cs" />
     <Compile Include="Perk\Harvesting\StronidiumRefining.cs" />
     <Compile Include="Perk\Engineering\CombatModInstallationEngineering.cs" />
     <Compile Include="Perk\Engineering\CraftingModInstallationEngineering.cs" />
@@ -2076,11 +2097,7 @@
     <None Include="ServerFiles\HakPaks\swlor_gui\cg_package.gui" />
     <None Include="ServerFiles\HakPaks\swlor_gui\cg_race.gui" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Perk\ForceAlter\" />
-    <Folder Include="Perk\ForceControl\" />
-    <Folder Include="Perk\ForceSense\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <EmbeddedResource Include="Data\Migrations\2018-11-09.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-10.1.sql" />

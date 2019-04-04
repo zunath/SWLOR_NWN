@@ -38,7 +38,6 @@ namespace SWLOR.Game.Server.Service
                 HandleWeaponStatBonuses();
                 HandleEvadeOrDeflectBlasterFire();
                 HandleApplySneakAttackDamage();
-                HandleBattlemagePerk();
             }
 
             HandleShieldProtection();
@@ -167,54 +166,7 @@ namespace SWLOR.Game.Server.Service
                 target.SendMessage(ColorTokenService.Gray("You fail to " + action + " a blaster shot. (" + roll + " vs " + chanceToDeflect + ")"));
             }
         }
-
-        private static void HandleBattlemagePerk()
-        {
-            DamageEventData data = NWNXDamage.GetDamageEventData();
-            if (data.Base <= 0) return;
-
-            NWObject target = Object.OBJECT_SELF;
-            if (!data.Damager.IsPlayer || !target.IsNPC) return;
-            if (_.GetHasFeat((int)CustomFeatType.Battlemage, data.Damager.Object) == FALSE) return;
-
-            NWPlayer player = data.Damager.Object;
-            NWItem weapon = _.GetLastWeaponUsed(player.Object);
-            if (weapon.CustomItemType != CustomItemType.Baton) return;
-            if (player.Chest.CustomItemType != CustomItemType.ForceArmor) return;
-
-            int perkRank = PerkService.GetPCPerkLevel(player, PerkType.Battlemage);
-
-            int restoreAmount = 0;
-            bool metRoll = RandomService.Random(100) + 1 <= 50;
-
-            switch (perkRank)
-            {
-                case 1 when metRoll:
-                    restoreAmount = 1;
-                    break;
-                case 2:
-                    restoreAmount = 1;
-                    break;
-                case 3:
-                    restoreAmount = 1;
-                    if (metRoll) restoreAmount++;
-                    break;
-                case 4:
-                    restoreAmount = 2;
-                    break;
-                case 5:
-                    restoreAmount = 2;
-                    if (metRoll) restoreAmount++;
-                    break;
-                case 6:
-                    restoreAmount = 3;
-                    break;
-            }
-
-            if (restoreAmount > 0)
-                AbilityService.RestoreFP(player, restoreAmount);
-        }
-
+        
         private static void HandleShieldProtection()
         {
             DamageEventData data = NWNXDamage.GetDamageEventData();

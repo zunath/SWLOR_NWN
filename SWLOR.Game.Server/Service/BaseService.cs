@@ -379,6 +379,7 @@ namespace SWLOR.Game.Server.Service
             {
                 List<Tuple<Guid, string>> playerIDs = new List<Tuple<Guid, string>>();
                 var pcBases = DataService.Where<PCBase>(x => x.DateRentDue <= DateTime.UtcNow).ToList();
+                var players = module.Players.ToList();
 
                 foreach (var pcBase in pcBases)
                 {
@@ -387,7 +388,28 @@ namespace SWLOR.Game.Server.Service
                     ClearPCBaseByID(pcBase.ID);
                 }
 
-                var players = module.Players.ToList();
+                // Find all land bases that don't currently have control towers
+                pcBases = DataService.Where<PCBase>(x =>
+                {
+                    var baseStructures = DataService.Where<PCBaseStructure>(y => y.PCBaseID == x.ID && (y.BaseStructureID == 1||y.BaseStructureID ==2|| y.BaseStructureID==3));
+                    return x.PCBaseTypeID == 1 && baseStructures.Count > 0;
+                }).ToList();
+
+                foreach (var pcBase in pcBases)
+                {
+                    Area dbArea = DataService.Single<Area>(x => x.Resref == pcBase.AreaResref);
+
+                    if (pcBase.DateInitialPurchase < DateTime.UtcNow.AddHours(-6))
+                    {
+                        playerIDs.Add(new Tuple<Guid, string>(pcBase.PlayerID, dbArea.Name + " (" + pcBase.Sector + ")"));
+                        ClearPCBaseByID(pcBase.ID);
+                    }
+                    else
+                    {
+                        players.FirstOrDefault(x => x.GlobalID == pcBase.PlayerID)?.FloatingText("You must put a control tower down within 6 hours of purchase or lose your land in " + dbArea.Name + " (" + pcBase.Sector + ")");
+                    }
+                }
+
                 foreach (var removed in playerIDs)
                 {
                     var existing = players.FirstOrDefault(x => x.GlobalID == removed.Item1);

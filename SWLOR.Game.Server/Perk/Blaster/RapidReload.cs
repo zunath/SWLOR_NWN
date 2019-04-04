@@ -8,19 +8,13 @@ namespace SWLOR.Game.Server.Perk.Blaster
 {
     public class RapidReload : IPerkHandler
     {
-
         public PerkType PerkType => PerkType.RapidReload;
 
-        public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
-            return false;
+            return string.Empty;
         }
-
-        public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
-        {
-            return null;
-        }
-
+        
         public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)
         {
             return baseFPCost;

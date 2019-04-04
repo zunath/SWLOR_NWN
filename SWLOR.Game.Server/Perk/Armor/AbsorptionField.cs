@@ -11,17 +11,15 @@ namespace SWLOR.Game.Server.Perk.Armor
     {
         public PerkType PerkType => PerkType.AbsorptionField;
 
-        public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             NWItem armor = oPC.Chest;
-            return armor.CustomItemType == CustomItemType.ForceArmor;
-        }
+            if (armor.CustomItemType != CustomItemType.ForceArmor)
+                return "You must be equipped with force armor to use that ability.";
 
-        public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
-        {
-            return "You must be equipped with force armor to use that combat ability.";
+            return string.Empty;
         }
-
+        
         public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)
         {
             return baseFPCost;

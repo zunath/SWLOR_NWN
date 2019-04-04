@@ -11,14 +11,12 @@ namespace SWLOR.Game.Server.Perk.Blaster
     {
         public PerkType PerkType => PerkType.LegShot;
 
-        public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
-            return oPC.RightHand.CustomItemType == CustomItemType.BlasterPistol;
-        }
+            if (oPC.RightHand.CustomItemType != CustomItemType.BlasterPistol)
+                return "Must be equipped with a blaster pistol to use that ability.";
 
-        public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
-        {
-            return "Must be equipped with a blaster pistol to use that ability.";
+            return string.Empty;
         }
 
         public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)

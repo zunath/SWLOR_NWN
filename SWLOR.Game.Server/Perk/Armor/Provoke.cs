@@ -11,24 +11,19 @@ namespace SWLOR.Game.Server.Perk.Armor
     {
         public PerkType PerkType => PerkType.Provoke;
 
-        public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
-        {
-            return oTarget.IsNPC && 
-                oPC.Chest.CustomItemType == CustomItemType.HeavyArmor &&
-                _.GetDistanceBetween(oPC.Object, oTarget.Object) <= 9.0f;
-        }
-
-        public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             if (!oTarget.IsNPC) return "Only NPCs may be targeted with Provoke.";
+
             float distance = _.GetDistanceBetween(oPC.Object, oTarget.Object);
             if (distance > 9.0f) return "Target is too far away.";
 
             if (oPC.Chest.CustomItemType != CustomItemType.HeavyArmor)
                 return "You must be equipped with heavy armor to use that combat ability.";
-            return null;
-        }
 
+            return string.Empty;
+        }
+        
         public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)
         {
             return baseFPCost;

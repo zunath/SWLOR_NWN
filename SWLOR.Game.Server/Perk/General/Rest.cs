@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using System;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.CustomEffect;
 using SWLOR.Game.Server.Service;
@@ -9,14 +10,12 @@ namespace SWLOR.Game.Server.Perk.General
     {
         public PerkType PerkType => PerkType.Rest;
 
-        public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
-            return RestEffect.CanRest(oPC);
-        }
+            if (!RestEffect.CanRest(oPC))
+                return "You cannot rest while you or a party member are in combat.";
 
-        public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
-        {
-            return "You cannot rest while you or a party member are in combat.";
+            return string.Empty;
         }
 
         public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)

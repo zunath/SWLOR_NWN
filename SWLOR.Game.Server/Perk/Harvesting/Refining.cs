@@ -7,14 +7,9 @@ namespace SWLOR.Game.Server.Perk.Harvesting
     {
         public PerkType PerkType => PerkType.Refining;
 
-        public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
-            return false;
-        }
-
-        public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
-        {
-            return null;
+            return string.Empty;
         }
 
         public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)

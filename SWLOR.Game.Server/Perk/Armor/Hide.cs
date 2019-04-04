@@ -11,14 +11,12 @@ namespace SWLOR.Game.Server.Perk.Armor
     {
         public PerkType PerkType => PerkType.Hide;
 
-        public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
-            return oPC.Chest.CustomItemType == CustomItemType.LightArmor;
-        }
+            if (oPC.Chest.CustomItemType != CustomItemType.LightArmor)
+                return "Must be equipped with light armor to use that ability.";
 
-        public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
-        {
-            return "Must be equipped with light armor to use that ability.";
+            return string.Empty;
         }
 
         public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)

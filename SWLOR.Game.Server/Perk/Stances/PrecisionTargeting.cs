@@ -9,16 +9,11 @@ namespace SWLOR.Game.Server.Perk.Stances
     {
         public PerkType PerkType => PerkType.PrecisionTargeting;
 
-        public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
-            return true;
+            return string.Empty;
         }
-
-        public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
-        {
-            return null;
-        }
-
+        
         public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)
         {
             return baseFPCost;

@@ -92,9 +92,10 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            if (!perkAction.CanCastSpell(pc, target))
+            string canCast = perkAction.CanCastSpell(pc, target);
+            if (!string.IsNullOrWhiteSpace(canCast))
             {
-                pc.SendMessage(perkAction.CannotCastSpellMessage(pc, target) ?? "That ability cannot be used at this time.");
+                pc.SendMessage(canCast);
                 return;
             }
 
@@ -392,7 +393,8 @@ namespace SWLOR.Game.Server.Service
             var perk = DataService.Get<Data.Entity.Perk>(entity.PerkID);
             var handler = PerkService.GetPerkHandler(activeWeaponSkillID);
 
-            if (handler.CanCastSpell(oPC, oTarget))
+            string canCast = handler.CanCastSpell(oPC, oTarget);
+            if (string.IsNullOrWhiteSpace(canCast))
             {
                 handler.OnImpact(oPC, oTarget, entity.PerkLevel, activeWeaponSkillFeatID);
 
@@ -401,7 +403,7 @@ namespace SWLOR.Game.Server.Service
                     ApplyEnmity(oPC, oTarget.Object, perk);
                 }
             }
-            else oPC.SendMessage(handler.CannotCastSpellMessage(oPC, oTarget) ?? "That ability cannot be used at this time.");
+            else oPC.SendMessage(canCast);
 
             oPC.DeleteLocalString("ACTIVE_WEAPON_SKILL_UUID");
             oPC.DeleteLocalInt("ACTIVE_WEAPON_SKILL");

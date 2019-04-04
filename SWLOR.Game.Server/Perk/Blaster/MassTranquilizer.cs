@@ -12,16 +12,14 @@ namespace SWLOR.Game.Server.Perk.Blaster
     {
         public PerkType PerkType => PerkType.MassTranquilizer;
 
-        public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
-            return oPC.RightHand.CustomItemType == CustomItemType.BlasterRifle;
-        }
+            if (oPC.RightHand.CustomItemType != CustomItemType.BlasterRifle)
+                return "Must be equipped with a blaster rifle to use that ability.";
 
-        public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
-        {
-            return "Must be equipped with a blaster rifle to use that ability.";
+            return string.Empty;
         }
-
+        
         public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)
         {
             return baseFPCost;

@@ -11,17 +11,15 @@ namespace SWLOR.Game.Server.Perk.OneHanded
     {
         public PerkType PerkType => PerkType.Knockdown;
 
-        public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             NWItem weapon = oPC.RightHand;
-            return weapon.CustomItemType == CustomItemType.Baton;
-        }
+            if (weapon.CustomItemType != CustomItemType.Baton)
+                return "You must be equipped with a baton weapon to use that ability.";
 
-        public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
-        {
-            return "You must be equipped with a baton weapon to use Knockdown.";
+            return string.Empty;
         }
-
+        
         public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)
         {
             return baseFPCost;

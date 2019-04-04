@@ -11,13 +11,11 @@ namespace SWLOR.Game.Server.Perk.MartialArts
     {
         public PerkType PerkType => PerkType.ElectricFist;
 
-        public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
-            return !oPC.RightHand.IsValid && !oPC.LeftHand.IsValid;
-        }
+            if (!oPC.RightHand.IsValid && !oPC.LeftHand.IsValid)
+                return string.Empty;
 
-        public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
-        {
             return "Must be equipped with a power glove in order to use that ability.";
         }
 

@@ -43,16 +43,11 @@ namespace SWLOR.Game.Server.Perk.ForceControl
         }
 
         public PerkType PerkType => PerkType.ForceSpeed;
-        public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
-            return true;
+            return string.Empty;
         }
-
-        public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
-        {
-            return null;
-        }
-
+        
         public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)
         {
             int perkLevel = PerkService.GetPCPerkLevel(oPC, PerkType.ForceSpeed);

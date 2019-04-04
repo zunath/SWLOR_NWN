@@ -10,15 +10,13 @@ namespace SWLOR.Game.Server.Perk.Armor
     {
         public PerkType PerkType => PerkType.Evasiveness;
 
-        public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             NWItem armor = oPC.Chest;
-            return armor.CustomItemType == CustomItemType.LightArmor;
-        }
+            if (armor.CustomItemType != CustomItemType.LightArmor)
+                return "You must be equipped with light armor to use that ability.";
 
-        public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
-        {
-            return "You must be equipped with light armor to use that combat ability.";
+            return string.Empty;
         }
 
         public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)

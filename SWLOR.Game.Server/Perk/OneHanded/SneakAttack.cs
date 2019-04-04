@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using System;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
@@ -9,18 +10,16 @@ namespace SWLOR.Game.Server.Perk.OneHanded
     {
         public PerkType PerkType => PerkType.SneakAttack;
 
-        public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
             NWItem weapon = oPC.RightHand;
             NWItem armor = oPC.Chest;
 
-            return weapon.CustomItemType == CustomItemType.FinesseVibroblade &&
-                   armor.CustomItemType == CustomItemType.LightArmor;
-        }
+            if (weapon.CustomItemType != CustomItemType.FinesseVibroblade &&
+                armor.CustomItemType != CustomItemType.LightArmor)
+                return "You must be equipped with a finesse blade and light armor to use that ability";
 
-        public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
-        {
-            return "You must be equipped with a finesse blade and light armor to use that ability.";
+            return string.Empty;
         }
 
         public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)

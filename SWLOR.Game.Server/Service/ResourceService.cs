@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using System;
+using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -94,7 +95,147 @@ namespace SWLOR.Game.Server.Service
             return chance;
         }
 
+        private int Colorize(string tag)
+        {
+            // Returns an index representing the colour to use for a particular property.
+            // AC = Green = 0
+            // Skill Up = Blue = 1
+            // Activation Speed = purple = 2
+            // Charges = orange = 3
+            // Ability Up = light purple = 4
+            // Misc (sneak attack, emnity up/down) = Yellow = 5
+            // Attack, damage = red = 6
+            // HP, FP, HP regen, FP regen, rest, meditate = Cyan = 7
+            HashSet<string> greenIP = new HashSet<string>
+            {
+                 "compbon_ac1",
+                 "compbon_ac2",
+                 "compbon_ac3"
+            };
 
+            HashSet<string> blueIP = new HashSet<string>
+            {
+                "compbon_arm1",
+                "compbon_cooking1",
+                "compbon_eng1",
+                "compbon_harv1",
+                "compbon_wpn1",
+                "compbon_faid1",
+                "compbon_fab1",
+                "compbon_scanup1",
+                "compbon_arm2",
+                "compbon_cooking2",
+                "compbon_eng2",
+                "compbon_harv2",
+                "compbon_wpn2",
+                "compbon_faid2",
+                "compbon_fab2",
+                "compbon_scanup2",
+                "compbon_arm3",
+                "compbon_cooking3",
+                "compbon_eng3",
+                "compbon_harv3",
+                "compbon_wpn3",
+                "compbon_faid3",
+                "compbon_fab3",
+                "compbon_scanup3",
+            };
+
+            HashSet<string> purpleIP = new HashSet<string>
+            {
+                "compbon_cspd1",
+                "compbon_cspd2",
+                "compbon_cspd3"
+            };
+
+            HashSet<string> orangeIP = new HashSet<string>
+            {
+                "compbon_charges1",
+                "compbon_charges2",
+                "compbon_charges3"
+            };
+
+            HashSet<string> lightPurpleIP = new HashSet<string>
+            {
+                "compbon_str1",
+                "compbon_dex1",
+                "compbon_con1",
+                "compbon_wis1",
+                "compbon_int1",
+                "compbon_cha1",
+                "compbon_luck1",
+                "compbon_str2",
+                "compbon_dex2",
+                "compbon_con2",
+                "compbon_wis2",
+                "compbon_int2",
+                "compbon_cha2",
+                "compbon_luck2",
+                "compbon_luck3",
+                "compbon_str3",
+                "compbon_dex3",
+                "compbon_con3",
+                "compbon_wis3",
+                "compbon_int3",
+                "compbon_cha3"
+            };
+
+            HashSet<string> yellowIP = new HashSet<string>
+            {
+                "compbon_enmdown1",
+                "compbon_enmup1",
+                "compbon_snkatk1",
+                "compbon_enmdown2",
+                "compbon_enmup2",
+                "compbon_snkatk2",
+                "compbon_enmdown3",
+                "compbon_enmup3",
+                "compbon_snkatk3"
+            };
+
+            HashSet<string> redIP = new HashSet<string>
+            {
+                "compbon_dmg1",
+                "compbon_ab1",
+                "compbon_dmg2",
+                "compbon_ab2",
+                "compbon_dmg3",
+                "compbon_ab3"
+            };
+
+            HashSet<string> cyanIP = new HashSet<string>
+            {
+                "compbon_hpregen1",
+                "compbon_fpregen1",
+                "compbon_rest1",
+                "compbon_med1",
+                "compbon_hp2",
+                "compbon_fp2",
+                "compbon_hpregen2",
+                "compbon_fpregen2",
+                "compbon_rest2",
+                "compbon_med2",
+                "compbon_hpregen3",
+                "compbon_fpregen3",
+                "compbon_rest3",
+                "compbon_med3",
+                "compbon_hp4",
+                "compbon_fp4",
+                "compbon_hp6",
+                "compbon_fp6"
+            };
+
+            if (greenIP.Contains(tag)) return 0;
+            if (blueIP.Contains(tag)) return 1;
+            if (purpleIP.Contains(tag)) return 2;
+            if (orangeIP.Contains(tag)) return 3;
+            if (lightPurpleIP.Contains(tag)) return 4;
+            if (yellowIP.Contains(tag)) return 5;
+            if (redIP.Contains(tag)) return 6;
+            if (cyanIP.Contains(tag)) return 7;
+
+            return 8;
+        }
 
         public static Tuple<ItemProperty, int> GetRandomComponentBonusIP(ResourceQuality quality)
         {
@@ -107,8 +248,6 @@ namespace SWLOR.Game.Server.Service
                 "compbon_charges2",
                 "compbon_cooking1",
                 "compbon_dmg1",
-                "compbon_dur1",
-                "compbon_dur2",
                 "compbon_eng1",
                 "compbon_enmdown1",
                 "compbon_epup1",
@@ -148,7 +287,6 @@ namespace SWLOR.Game.Server.Service
                 "compbon_charges3",
                 "compbon_cooking2",
                 "compbon_dmg2",
-                "compbon_dur3",
                 "compbon_eng2",
                 "compbon_enmdown2",
                 "compbon_epup2",
@@ -298,7 +436,7 @@ namespace SWLOR.Game.Server.Service
 
             string itemTag = setToUse[index];
 
-            return new Tuple<ItemProperty, int>(ItemService.GetCustomItemPropertyByItemTag(itemTag), index); 
+            return new Tuple<ItemProperty, int>(ItemService.GetCustomItemPropertyByItemTag(itemTag), Colorize(itemTag)); 
         }
     }
 }

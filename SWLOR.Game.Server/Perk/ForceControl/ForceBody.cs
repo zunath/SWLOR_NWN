@@ -1,5 +1,8 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using NWN;
+using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
 {
@@ -8,6 +11,16 @@ namespace SWLOR.Game.Server.Perk.ForceControl
         public PerkType PerkType => PerkType.ForceBody;
         public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
         {
+            if (oPC.CurrentHP <= 1)
+                return "You do not have enough HP to use this ability.";
+
+            if (oPC.IsPlayer)
+            {
+                var dbPlayer = DataService.Get<Player>(oPC.GlobalID);
+                if (dbPlayer.CurrentFP >= dbPlayer.MaxFP)
+                    return "Your FP is already at maximum.";
+            }
+
             return string.Empty;
         }
 
@@ -23,6 +36,14 @@ namespace SWLOR.Game.Server.Perk.ForceControl
 
         public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellFeatID)
         {
+            switch ((CustomFeatType)spellFeatID)
+            {
+                case CustomFeatType.ForceBody1: return 900f; // 15 minutes
+                case CustomFeatType.ForceBody2: return 600f; // 10 minutes
+                case CustomFeatType.ForceBody3: return 420f; // 7 minutes
+                case CustomFeatType.ForceBody4: return 300f; // 5 minutes
+            }
+
             return baseCooldownTime;
         }
 
@@ -33,6 +54,35 @@ namespace SWLOR.Game.Server.Perk.ForceControl
 
         public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
         {
+            float percent = 0.0f;
+
+            switch ((CustomFeatType)spellFeatID)
+            {
+                case CustomFeatType.ForceBody1:
+                    percent = 0.10f;
+                    break;
+                case CustomFeatType.ForceBody2:
+                    percent = 0.20f;
+                    break;
+                case CustomFeatType.ForceBody3:
+                    percent = 0.35f;
+                    break;
+                case CustomFeatType.ForceBody4:
+                    percent = 0.50f;
+                    break;
+            }
+
+            int recovery = (int)(target.CurrentHP * percent);
+            if (recovery < 1) recovery = 1;
+
+            // Damage user.
+            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectDamage(recovery), player);
+
+            // Recover FP on target.
+            AbilityService.RestoreFP(target.Object, recovery);
+
+            // Grant XP
+            SkillService.GiveSkillXP(player, SkillType.ForceControl, recovery);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

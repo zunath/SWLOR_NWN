@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.AI
             }
 
             // Do the actual force attack.  Code taken from perks. 
-            if (featID == (int)CustomFeatType.ForceLightning)
+            if (featID == (int)CustomFeatType.ForceLightning1)
             {
                 int length;
                 int dotAmount;
@@ -186,7 +186,7 @@ namespace SWLOR.Game.Server.AI
                     CombatService.AddTemporaryForceDefense(target.Object, ForceAbilityType.Electrical);
                 });
             }
-            else if (featID == (int)CustomFeatType.DrainLife)
+            else if (featID == (int)CustomFeatType.DrainLife1)
             {
                 float recoveryPercent;
                 int basePotency;
@@ -271,16 +271,16 @@ namespace SWLOR.Game.Server.AI
                 bool bDone = false;
 
                 // See which force feats we have, and pick one to use. 
-                if (_.GetHasFeat((int)CustomFeatType.ForceLightning, self) == 1)
+                if (_.GetHasFeat((int)CustomFeatType.ForceLightning1, self) == 1)
                 {
                     _.ClearAllActions();
-                    bDone = UseFeat((int)CustomFeatType.ForceLightning, "ForceLightning", self, target.TargetObject);
+                    bDone = UseFeat((int)CustomFeatType.ForceLightning1, "ForceLightning", self, target.TargetObject);
                 }
 
-                if (!bDone && _.GetHasFeat((int)CustomFeatType.DrainLife, self) == 1)
+                if (!bDone && _.GetHasFeat((int)CustomFeatType.DrainLife1, self) == 1)
                 {
                     _.ClearAllActions();
-                    bDone = UseFeat((int)CustomFeatType.DrainLife, "DrainLife", self, target.TargetObject);
+                    bDone = UseFeat((int)CustomFeatType.DrainLife1, "DrainLife", self, target.TargetObject);
                 }
 
                 if (!bDone)

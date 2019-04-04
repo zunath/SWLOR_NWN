@@ -50,15 +50,13 @@ namespace SWLOR.Game.Server.Perk.ForceControl
         
         public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)
         {
-            int perkLevel = PerkService.GetPCPerkLevel(oPC, PerkType.ForceSpeed);
-
-            switch (perkLevel)
+            switch ((CustomFeatType)spellFeatID)
             {
-                case 1: return 2;
-                case 2: return 4;
-                case 3: return 6;
-                case 4: return 8;
-                case 5: return 20;
+                case CustomFeatType.ForceSpeed1: return 2;
+                case CustomFeatType.ForceSpeed2: return 4;
+                case CustomFeatType.ForceSpeed3: return 6;
+                case CustomFeatType.ForceSpeed4: return 8;
+                case CustomFeatType.ForceSpeed5: return 20;
             }
 
             return baseFPCost;
@@ -83,45 +81,48 @@ namespace SWLOR.Game.Server.Perk.ForceControl
         {
             Effect effect;
             float duration;
-            switch (perkLevel)
+            switch ((CustomFeatType)spellFeatID)
             {
-                case 1:
+                case CustomFeatType.ForceSpeed1:
                     effect = _.EffectMovementSpeedIncrease(10);
                     effect = _.EffectLinkEffects(effect, _.EffectAbilityIncrease(_.ABILITY_DEXTERITY, 2));
                     duration = 60f;
                     break;
-                case 2:
+                case CustomFeatType.ForceSpeed2:
                     effect = _.EffectMovementSpeedIncrease(20);
                     effect = _.EffectLinkEffects(effect, _.EffectAbilityIncrease(_.ABILITY_DEXTERITY, 4));
                     duration = 90f;
                     break;
-                case 3:
+                case CustomFeatType.ForceSpeed3:
                     effect = _.EffectMovementSpeedIncrease(30);
                     effect = _.EffectLinkEffects(effect, _.EffectAbilityIncrease(_.ABILITY_DEXTERITY, 6));
                     effect = _.EffectLinkEffects(effect, _.EffectModifyAttacks(1));
                     duration = 120f;
                     break;
-                case 4:
+                case CustomFeatType.ForceSpeed4:
                     effect = _.EffectMovementSpeedIncrease(40);
                     effect = _.EffectLinkEffects(effect, _.EffectAbilityIncrease(_.ABILITY_DEXTERITY, 8));
                     effect = _.EffectLinkEffects(effect, _.EffectModifyAttacks(1));
                     duration = 150f;
                     break;
-                case 5:
+                case CustomFeatType.ForceSpeed5:
                     effect = _.EffectMovementSpeedIncrease(50);
                     effect = _.EffectLinkEffects(effect, _.EffectAbilityIncrease(_.ABILITY_DEXTERITY, 6));
                     effect = _.EffectLinkEffects(effect, _.EffectModifyAttacks(1));
                     duration = 180f;
+                    NWNXCreature.AddFeatByLevel(target.Object, _.FEAT_EPIC_DODGE, 1);
+                    effect = NWNXEffect.SetEffectExpiredScript(effect, "force_speed_exp");
                     break;
                 default:
                     throw new ArgumentException(nameof(perkLevel) + " invalid. Value " + perkLevel + " is unhandled.");
             }
-
-            effect = NWNXEffect.SetEffectExpiredScript(effect, "force_speed_exp");
-
+            
             _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, target, duration);
             _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_IMP_AC_BONUS), target);
-            NWNXCreature.AddFeatByLevel(target.Object, _.FEAT_EPIC_DODGE, 1);
+            
+            int skillLevel = SkillService.GetPCSkillRank(player, SkillType.ForceControl);
+            int xp = skillLevel * 10 + 10;
+            SkillService.GiveSkillXP(player, SkillType.ForceControl, xp);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

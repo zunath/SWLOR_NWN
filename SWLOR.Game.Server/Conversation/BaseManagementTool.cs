@@ -690,6 +690,10 @@ namespace SWLOR.Game.Server.Conversation
                     DataService.SubmitDataChange(item, DatabaseActionType.Delete);
                     impoundedCount++;
                 }
+
+                // Reset the purchase time of the base to avoid it being confiscated.
+                pcBase.DateInitialPurchase = DateTime.UtcNow;
+                DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
             }
             else if (structureType == BaseStructureType.Building)
             {

@@ -110,17 +110,6 @@ namespace SWLOR.Game.Server.Conversation
             header += ProcessPropertyDetails(item.HPBonus, componentType.Name, "HP", 5, 0.5f);
             header += ProcessPropertyDetails(item.FPBonus, componentType.Name, "FP", 5, 0.5f);
             header += ProcessPropertyDetails(item.EnmityRate, componentType.Name, "Enmity", 3);
-            header += ProcessPropertyDetails(item.ForcePotencyBonus, componentType.Name, "Force Potency", 3);
-            header += ProcessPropertyDetails(item.ForceAccuracyBonus, componentType.Name, "Force Accuracy", 3);
-            header += ProcessPropertyDetails(item.ForceDefenseBonus, componentType.Name, "Force Defense", 3);
-            header += ProcessPropertyDetails(item.ElectricalPotencyBonus, componentType.Name, "Electrical Potency", 3);
-            header += ProcessPropertyDetails(item.MindPotencyBonus, componentType.Name, "Mind Potency", 3);
-            header += ProcessPropertyDetails(item.LightPotencyBonus, componentType.Name, "Light Potency", 3);
-            header += ProcessPropertyDetails(item.DarkPotencyBonus, componentType.Name, "Dark Potency", 3);
-            header += ProcessPropertyDetails(item.ElectricalDefenseBonus, componentType.Name, "Electrical Defense", 3);
-            header += ProcessPropertyDetails(item.MindDefenseBonus, componentType.Name, "Mind Defense", 3);
-            header += ProcessPropertyDetails(item.LightDefenseBonus, componentType.Name, "Light Defense", 3);
-            header += ProcessPropertyDetails(item.DarkDefenseBonus, componentType.Name, "Dark Defense", 3);
             header += ProcessPropertyDetails(item.LuckBonus, componentType.Name, "Luck", 3);
             header += ProcessPropertyDetails(item.MeditateBonus, componentType.Name, "Meditate", 3);
             header += ProcessPropertyDetails(item.RestBonus, componentType.Name, "Rest", 3);

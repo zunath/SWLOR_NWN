@@ -1358,6 +1358,7 @@
     <Compile Include="Threading\DatabaseBackgroundThread.cs" />
     <Compile Include="Trigger\SpaceEncounter.cs" />
     <Compile Include="Trigger\QuestTrigger.cs" />
+    <Compile Include="ValueObject\AbilityResistanceResult.cs" />
     <Compile Include="ValueObject\AreaSpawn.cs" />
     <Compile Include="ValueObject\AreaStructure.cs" />
     <Compile Include="ValueObject\ColorNames.cs" />

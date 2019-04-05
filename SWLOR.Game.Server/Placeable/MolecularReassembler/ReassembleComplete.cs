@@ -70,18 +70,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
             xp += ProcessProperty(item.HPBonus, 5, ComponentBonusType.HPUp, 0.5f);
             xp += ProcessProperty(item.FPBonus, 5, ComponentBonusType.FPUp, 0.5f);
             xp += ProcessProperty(item.EnmityRate, 3, ComponentBonusType.EnmityUp);
-            xp += ProcessProperty(item.ForcePotencyBonus, 3, ComponentBonusType.ForcePotencyUp);
-            xp += ProcessProperty(item.ForceAccuracyBonus, 3, ComponentBonusType.ForceAccuracyUp);
-            xp += ProcessProperty(item.ForceDefenseBonus, 3, ComponentBonusType.ForceDefenseUp);
-            xp += ProcessProperty(item.ElectricalPotencyBonus, 3, ComponentBonusType.ElectricalPotencyUp);
-            xp += ProcessProperty(item.MindPotencyBonus, 3, ComponentBonusType.MindPotencyUp);
-            xp += ProcessProperty(item.LightPotencyBonus, 3, ComponentBonusType.LightPotencyUp);
-            xp += ProcessProperty(item.DarkPotencyBonus, 3, ComponentBonusType.DarkPotencyUp);
-            xp += ProcessProperty(item.ElectricalDefenseBonus, 3, ComponentBonusType.ElectricalDefenseUp);
-            xp += ProcessProperty(item.MindDefenseBonus, 3, ComponentBonusType.MindDefenseUp);
-            xp += ProcessProperty(item.LightDefenseBonus, 3, ComponentBonusType.LightDefenseUp);
-            xp += ProcessProperty(item.DarkDefenseBonus, 3, ComponentBonusType.DarkDefenseUp);
-
+            
             xp += ProcessProperty(item.LuckBonus, 3, ComponentBonusType.LuckUp);
             xp += ProcessProperty(item.MeditateBonus, 3, ComponentBonusType.MeditateUp);
             xp += ProcessProperty(item.RestBonus, 3, ComponentBonusType.RestUp);

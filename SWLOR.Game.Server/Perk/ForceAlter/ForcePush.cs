@@ -1,5 +1,7 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
@@ -13,6 +15,14 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         
         public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)
         {
+            switch ((CustomFeatType) spellFeatID)
+            {
+                case CustomFeatType.ForcePush1: return 4;
+                case CustomFeatType.ForcePush2: return 6;
+                case CustomFeatType.ForcePush3: return 8;
+                case CustomFeatType.ForcePush4: return 10;
+            }
+
             return baseFPCost;
         }
 
@@ -33,6 +43,39 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
         public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
         {
+            float duration = 0.0f;
+
+            switch ((CustomFeatType) spellFeatID)
+            {
+                case CustomFeatType.ForcePush1:
+                    duration = 6f;
+                    break;
+                case CustomFeatType.ForcePush2:
+                    duration = 12f;
+                    break;
+                case CustomFeatType.ForcePush3:
+                    duration = 18f;
+                    break;
+                case CustomFeatType.ForcePush4:
+                    duration = 24f;
+                    break;
+            }
+
+            var result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Universal);
+
+            // Resisted - Only apply slow for six seconds
+            if (result.IsResisted)
+            {
+                _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, _.EffectSlow(), target, 6.0f);
+            }
+
+            // Not resisted - Apply knockdown for the specified duration
+            else
+            {
+                _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, _.EffectKnockdown(), target, duration);
+            }
+
+            SkillService.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceAlter, target.Object);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

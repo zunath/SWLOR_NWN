@@ -147,15 +147,17 @@ namespace SWLOR.Game.Server.AI
                         break;
                 }
 
-                var calc = CombatService.CalculateForceDamage(
-                    caster,
-                    target.Object,
-                    ForceAbilityType.Electrical,
-                    basePotency,
-                    Tier1Modifier,
-                    Tier2Modifier,
-                    Tier3Modifier,
-                    Tier4Modifier);
+                // todo calc using new formulas
+
+                //var calc = CombatService.CalculateForceDamage(
+                //    caster,
+                //    target.Object,
+                //    ForceAbilityType.Electrical,
+                //    basePotency,
+                //    Tier1Modifier,
+                //    Tier2Modifier,
+                //    Tier3Modifier,
+                //    Tier4Modifier);
 
                 caster.AssignCommand(() => {
                     _.SetFacingPoint(target.Location.Position);
@@ -166,11 +168,13 @@ namespace SWLOR.Game.Server.AI
 
                 _.DelayCommand(1.0f, () =>
                 {
-                    caster.AssignCommand(() =>
-                    {
-                        Effect damage = _.EffectDamage(calc.Damage, DAMAGE_TYPE_ELECTRICAL);
-                        _.ApplyEffectToObject(DURATION_TYPE_INSTANT, damage, target);
-                    });
+                    // todo calc using new formulas
+
+                    //caster.AssignCommand(() =>
+                    //{
+                    //    Effect damage = _.EffectDamage(calc.Damage, DAMAGE_TYPE_ELECTRICAL);
+                    //    _.ApplyEffectToObject(DURATION_TYPE_INSTANT, damage, target);
+                    //});
 
                     if (length > 0.0f && dotAmount > 0)
                     {
@@ -182,8 +186,6 @@ namespace SWLOR.Game.Server.AI
                         _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_BEAM_LIGHTNING), target, 1.0f);
                         caster.DeleteLocalInt("CASTING");
                     });
-
-                    CombatService.AddTemporaryForceDefense(target.Object, ForceAbilityType.Electrical);
                 });
             }
             else if (featID == (int)CustomFeatType.DrainLife1)
@@ -219,15 +221,18 @@ namespace SWLOR.Game.Server.AI
                         break;
                 }
 
-                var calc = CombatService.CalculateForceDamage(
-                    caster,
-                    target.Object,
-                    ForceAbilityType.Dark,
-                    basePotency,
-                    Tier1Modifier,
-                    Tier2Modifier,
-                    Tier3Modifier,
-                    Tier4Modifier);
+
+                // todo calc using new formulas
+
+                //var calc = CombatService.CalculateForceDamage(
+                //    caster,
+                //    target.Object,
+                //    ForceAbilityType.Dark,
+                //    basePotency,
+                //    Tier1Modifier,
+                //    Tier2Modifier,
+                //    Tier3Modifier,
+                //    Tier4Modifier);
 
                 caster.AssignCommand(() => {
                     _.SetFacingPoint(target.Location.Position);
@@ -235,22 +240,21 @@ namespace SWLOR.Game.Server.AI
                 });
                 caster.SetLocalInt("CASTING", 1);
 
-                _.DelayCommand(1.0f, () =>
-                {
-                    _.AssignCommand(caster, () =>
-                    {
-                        int heal = (int)(calc.Damage * recoveryPercent);
-                        if (heal > target.CurrentHP) heal = target.CurrentHP;
 
-                        _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(calc.Damage), target);
-                        _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(heal), caster);
-                        _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_BEAM_MIND), target, 1.0f);
-                        caster.DeleteLocalInt("CASTING");
-                    });
-                });
+                // todo calc using new formulas
+                //_.DelayCommand(1.0f, () =>
+                //{
+                //    _.AssignCommand(caster, () =>
+                //    {
+                //        int heal = (int)(calc.Damage * recoveryPercent);
+                //        if (heal > target.CurrentHP) heal = target.CurrentHP;
 
-
-                CombatService.AddTemporaryForceDefense(target.Object, ForceAbilityType.Dark);
+                //        _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(calc.Damage), target);
+                //        _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(heal), caster);
+                //        _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectVisualEffect(VFX_BEAM_MIND), target, 1.0f);
+                //        caster.DeleteLocalInt("CASTING");
+                //    });
+                //});
             }
 
             return true;

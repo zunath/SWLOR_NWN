@@ -301,50 +301,6 @@ namespace SWLOR.Game.Server.Service
             {
                 description += ColorTokenService.Orange("Enmity: ") + examinedItem.EnmityRate + "%\n";
             }
-            if (examinedItem.ForcePotencyBonus > 0)
-            {
-                description += ColorTokenService.Orange("Force Potency Bonus: ") + examinedItem.ForcePotencyBonus + "\n";
-            }
-            if (examinedItem.ForceAccuracyBonus > 0)
-            {
-                description += ColorTokenService.Orange("Force Accuracy Bonus: ") + examinedItem.ForceAccuracyBonus + "\n";
-            }
-            if (examinedItem.ForceDefenseBonus > 0)
-            {
-                description += ColorTokenService.Orange("Force Defense Bonus: ") + examinedItem.ForceDefenseBonus + "\n";
-            }
-            if (examinedItem.ElectricalPotencyBonus > 0)
-            {
-                description += ColorTokenService.Orange("Electrical Potency Bonus: ") + examinedItem.ElectricalPotencyBonus + "\n";
-            }
-            if (examinedItem.MindPotencyBonus > 0)
-            {
-                description += ColorTokenService.Orange("Mind Potency Bonus: ") + examinedItem.MindPotencyBonus + "\n";
-            }
-            if (examinedItem.LightPotencyBonus > 0)
-            {
-                description += ColorTokenService.Orange("Light Potency Bonus: ") + examinedItem.LightPotencyBonus + "\n";
-            }
-            if (examinedItem.DarkPotencyBonus > 0)
-            {
-                description += ColorTokenService.Orange("Dark Potency Bonus: ") + examinedItem.DarkPotencyBonus + "\n";
-            }
-            if (examinedItem.ElectricalDefenseBonus > 0)
-            {
-                description += ColorTokenService.Orange("Electrical Defense Bonus: ") + examinedItem.ElectricalDefenseBonus + "\n";
-            }
-            if (examinedItem.MindDefenseBonus > 0)
-            {
-                description += ColorTokenService.Orange("Mind Defense Bonus: ") + examinedItem.MindDefenseBonus + "\n";
-            }
-            if (examinedItem.LightDefenseBonus > 0)
-            {
-                description += ColorTokenService.Orange("Light Defense Bonus: ") + examinedItem.LightDefenseBonus + "\n";
-            }
-            if (examinedItem.DarkDefenseBonus > 0)
-            {
-                description += ColorTokenService.Orange("Dark Defense Bonus: ") + examinedItem.DarkDefenseBonus + "\n";
-            }
             if (examinedItem.LuckBonus > 0)
             {
                 description += ColorTokenService.Orange("Luck Bonus: ") + examinedItem.LuckBonus + "\n";

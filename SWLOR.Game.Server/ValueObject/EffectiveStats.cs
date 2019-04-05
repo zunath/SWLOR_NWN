@@ -5,23 +5,6 @@
         public int CastingSpeed { get; set; }
         public float EnmityRate { get; set; }
         
-        // Overall force bonuses
-        public int ForcePotency { get; set; }
-        public int ForceAccuracy { get; set; }
-        public int ForceDefense { get; set; }
-        
-        // Individual force potency bonuses
-        public int ElectricalPotency { get; set; }
-        public int MindPotency { get; set; }
-        public int LightPotency { get; set; }
-        public int DarkPotency { get; set; }
-
-        // Individual force defense bonuses
-        public int ElectricalDefense { get; set; }
-        public int MindDefense { get; set; }
-        public int LightDefense { get; set; }
-        public int DarkDefense { get; set; }
-
         public int Luck { get; set; }
         public int Meditate { get; set; }
         public int Rest { get; set; }

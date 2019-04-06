@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Perk.Survival
     {
         public PerkType PerkType => PerkType.FarmingEfficiency;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             return string.Empty;
         }

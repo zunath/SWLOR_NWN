@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
     {
         public PerkType PerkType => PerkType.SaberFinesse;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             return string.Empty;
         }

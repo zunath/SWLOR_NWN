@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Perk.Weapons
     {
         public abstract PerkType PerkType { get; }
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             return string.Empty;
         }

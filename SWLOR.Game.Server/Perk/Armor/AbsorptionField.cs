@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Perk.Armor
     {
         public PerkType PerkType => PerkType.AbsorptionField;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             NWItem armor = oPC.Chest;
             if (armor.CustomItemType != CustomItemType.ForceArmor)

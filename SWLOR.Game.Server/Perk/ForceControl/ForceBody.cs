@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
     public class ForceBody: IPerkHandler
     {
         public PerkType PerkType => PerkType.ForceBody;
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             if (oPC.CurrentHP <= 1)
                 return "You do not have enough HP to use this ability.";

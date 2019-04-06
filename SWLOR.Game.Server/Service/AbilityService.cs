@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            string canCast = perkAction.CanCastSpell(pc, target);
+            string canCast = perkAction.CanCastSpell(pc, target, featID);
             if (!string.IsNullOrWhiteSpace(canCast))
             {
                 pc.SendMessage(canCast);
@@ -393,7 +393,7 @@ namespace SWLOR.Game.Server.Service
             var perk = DataService.Get<Data.Entity.Perk>(entity.PerkID);
             var handler = PerkService.GetPerkHandler(activeWeaponSkillID);
 
-            string canCast = handler.CanCastSpell(oPC, oTarget);
+            string canCast = handler.CanCastSpell(oPC, oTarget, activeWeaponSkillFeatID);
             if (string.IsNullOrWhiteSpace(canCast))
             {
                 handler.OnImpact(oPC, oTarget, entity.PerkLevel, activeWeaponSkillFeatID);

@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Perk.Engineering
     {
         public PerkType PerkType => PerkType.EngineeringBlueprints;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             return string.Empty;
         }

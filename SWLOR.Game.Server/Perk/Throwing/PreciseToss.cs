@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Perk.Throwing
     {
         public PerkType PerkType => PerkType.PreciseToss;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             if (oPC.RightHand.CustomItemType != CustomItemType.Throwing)
                 return "Must be equipped with a throwing weapon to use that ability.";

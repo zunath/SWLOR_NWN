@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Perk.Stances
     {
         public PerkType PerkType => PerkType.ShieldOath;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             return string.Empty;
         }

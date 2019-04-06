@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Perk.General
     {
         public PerkType PerkType => PerkType.Meditate;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             if (!MeditateEffect.CanMeditate(oPC))
                 return "You cannot meditate while you or a party member are in combat.";

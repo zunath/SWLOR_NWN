@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Perk.Fabrication
     {
         public PerkType PerkType => PerkType.FabricationOptimization;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             return string.Empty;
         }

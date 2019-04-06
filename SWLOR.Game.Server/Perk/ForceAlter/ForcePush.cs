@@ -8,8 +8,29 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
     public class ForcePush: IPerkHandler
     {
         public PerkType PerkType => PerkType.ForcePush;
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
+            int size = _.GetCreatureSize(oTarget);
+            int maxSize = _.CREATURE_SIZE_INVALID;
+            switch ((CustomFeatType) spellFeatID)
+            {
+                case CustomFeatType.ForcePush1:
+                    maxSize = _.CREATURE_SIZE_SMALL;
+                    break;
+                case CustomFeatType.ForcePush2:
+                    maxSize = _.CREATURE_SIZE_MEDIUM;
+                    break;
+                case CustomFeatType.ForcePush3:
+                    maxSize = _.CREATURE_SIZE_LARGE;
+                    break;
+                case CustomFeatType.ForcePush4:
+                    maxSize = _.CREATURE_SIZE_HUGE;
+                    break;
+            }
+
+            if (size > maxSize)
+                return "Your target is too large to force push.";
+
             return string.Empty;
         }
         
@@ -76,6 +97,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             }
 
             SkillService.RegisterPCToAllCombatTargetsForSkill(player, SkillType.ForceAlter, target.Object);
+            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_COM_BLOOD_SPARK_SMALL), target);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

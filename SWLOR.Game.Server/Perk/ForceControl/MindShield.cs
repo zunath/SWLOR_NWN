@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
     public class MindShield: IPerkHandler
     {
         public PerkType PerkType => PerkType.MindShield;
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             return string.Empty;
         }

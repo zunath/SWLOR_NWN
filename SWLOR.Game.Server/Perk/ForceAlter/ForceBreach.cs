@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
     public class ForceBreach: IPerkHandler
     {
         public PerkType PerkType => PerkType.ForceBreach;
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             return string.Empty;
         }

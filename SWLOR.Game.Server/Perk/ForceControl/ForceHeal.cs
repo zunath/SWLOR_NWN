@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
     public class ForceHeal: IPerkHandler
     {
         public PerkType PerkType => PerkType.ForceHeal;
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             return string.Empty;
         }

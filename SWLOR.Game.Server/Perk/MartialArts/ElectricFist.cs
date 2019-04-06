@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Perk.MartialArts
     {
         public PerkType PerkType => PerkType.ElectricFist;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             if (!oPC.RightHand.IsValid && !oPC.LeftHand.IsValid)
                 return string.Empty;

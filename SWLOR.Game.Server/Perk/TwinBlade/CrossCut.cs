@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
     {
         public PerkType PerkType => PerkType.CrossCut;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             if (oPC.RightHand.CustomItemType != CustomItemType.TwinBlade)
                 return "Must be equipped with a twin blade to use that ability.";

@@ -359,7 +359,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="defender">The creature being targeted by the ability.</param>
         /// <param name="skill">The skill used for this ability.</param>
         /// <param name="balanceType">The force balance type to use for this ability.</param>
-        /// <returns>true if resisted, false if not resisted</returns>
+        /// <returns>Data regarding the ability resistance roll</returns>
         public static AbilityResistanceResult CalculateAbilityResistance(NWCreature attacker, NWCreature defender, SkillType skill, ForceBalanceType balanceType, bool sendRollMessage = true)
         {
             int abilityScoreType;
@@ -411,10 +411,25 @@ namespace SWLOR.Game.Server.Service
                 defenderAffinity = GetBalanceAffinity(defender.Object, balanceType);
             }
 
-            float attackerTotal = attackerSkill + attackerAbility + attackerAffinity;
-            float defenderTotal = defenderSkill + defenderAbility + defenderAffinity;
+            float attackerCR = attacker.IsPlayer ? 0f : attacker.ChallengeRating * 5f;
+            float defenderCR = defender.IsPlayer ? 0f : defender.ChallengeRating * 5f;
+
+            float attackerTotal = attackerSkill + attackerAbility + attackerAffinity + attackerCR;
+            float defenderTotal = defenderSkill + defenderAbility + defenderAffinity + defenderCR;
             float divisor = attackerTotal + defenderTotal + 1; // +1 to prevent division by zero.
-            
+
+            //Console.WriteLine("attackerCR = " + attackerCR);
+            //Console.WriteLine("defenderCR = " + defenderCR);
+            //Console.WriteLine("attackerSkill = " + attackerSkill);
+            //Console.WriteLine("attackerAbility = " + attackerAbility);
+            //Console.WriteLine("attackerAffinity = " + attackerAffinity);
+            //Console.WriteLine("defenderSkill = " + defenderSkill);
+            //Console.WriteLine("defenderAbility = " + defenderAbility);
+            //Console.WriteLine("defenderAffinity = " + defenderAffinity);
+            //Console.WriteLine("attackerTotal = " + attackerTotal);
+            //Console.WriteLine("defenderTotal = " + defenderTotal);
+            //Console.WriteLine("divisor = " + divisor);
+
             result.DC = (int) (attackerTotal / divisor) * 100;
             result.Roll = RandomService.D100(1);
 

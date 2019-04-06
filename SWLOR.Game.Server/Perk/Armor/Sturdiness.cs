@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Perk.Armor
     {
         public PerkType PerkType => PerkType.Sturdiness;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             return string.Empty;
         }

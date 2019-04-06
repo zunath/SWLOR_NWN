@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Perk
     public interface IPerkHandler
     {
         PerkType PerkType { get; }
-        string CanCastSpell(NWPlayer oPC, NWObject oTarget);
+        string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID);
         int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID);
         float CastingTime(NWPlayer oPC, float baseCastingTime, int spellFeatID);
         float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellFeatID);

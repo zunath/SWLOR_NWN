@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Perk.TwoHanded
     {
         public PerkType PerkType => PerkType.HeavyVibrobladeProficiency;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             return string.Empty;
         }

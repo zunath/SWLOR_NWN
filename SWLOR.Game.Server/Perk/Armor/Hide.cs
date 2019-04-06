@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Perk.Armor
     {
         public PerkType PerkType => PerkType.Hide;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             if (oPC.Chest.CustomItemType != CustomItemType.LightArmor)
                 return "Must be equipped with light armor to use that ability.";

@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
     {
         public PerkType PerkType => PerkType.TwinBladeMastery;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             return string.Empty;
         }

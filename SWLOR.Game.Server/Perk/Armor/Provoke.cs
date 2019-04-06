@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Perk.Armor
     {
         public PerkType PerkType => PerkType.Provoke;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             if (!oTarget.IsNPC) return "Only NPCs may be targeted with Provoke.";
 

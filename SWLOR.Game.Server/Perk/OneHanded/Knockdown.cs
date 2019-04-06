@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
     {
         public PerkType PerkType => PerkType.Knockdown;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             NWItem weapon = oPC.RightHand;
             if (weapon.CustomItemType != CustomItemType.Baton)

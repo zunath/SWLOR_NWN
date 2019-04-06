@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Perk.General
     {
         public PerkType PerkType => PerkType.Rest;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             if (!RestEffect.CanRest(oPC))
                 return "You cannot rest while you or a party member are in combat.";

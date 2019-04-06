@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Perk.Piloting
     {
         public PerkType PerkType => PerkType.Sniper;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             return string.Empty;
         }

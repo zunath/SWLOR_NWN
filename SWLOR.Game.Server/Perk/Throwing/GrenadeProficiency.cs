@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Perk.Throwing
     {
         public PerkType PerkType => PerkType.GrenadeProficiency;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             return string.Empty;
         }

@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Perk.Armor
     public class ShieldProficiency: IPerkHandler
     {
         public PerkType PerkType => PerkType.ShieldProficiency;
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             return string.Empty;
         }

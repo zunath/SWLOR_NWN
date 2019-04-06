@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
     public class Farseeing: IPerkHandler
     {
         public PerkType PerkType => PerkType.Farseeing;
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             return string.Empty;
         }

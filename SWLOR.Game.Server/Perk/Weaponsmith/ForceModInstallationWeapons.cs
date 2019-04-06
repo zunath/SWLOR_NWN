@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Perk.Weaponsmith
     {
         public PerkType PerkType => PerkType.ForceModInstallationWeapons;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             return string.Empty;
         }

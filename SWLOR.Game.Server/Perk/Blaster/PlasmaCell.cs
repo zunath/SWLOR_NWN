@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
     {
         public PerkType PerkType => PerkType.PlasmaCell;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             return string.Empty;
         }

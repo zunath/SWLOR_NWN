@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
     public class ForceDetection: IPerkHandler
     {
         public PerkType PerkType => PerkType.ForceDetection;
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             return string.Empty;
         }

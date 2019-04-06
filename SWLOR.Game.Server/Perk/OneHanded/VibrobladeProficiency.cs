@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
     {
         public PerkType PerkType => PerkType.VibrobladeProficiency;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             return string.Empty;
         }

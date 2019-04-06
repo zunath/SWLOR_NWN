@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
     {
         public PerkType PerkType => PerkType.RecoveryBlast;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             if (oPC.RightHand.CustomItemType != CustomItemType.BlasterRifle)
                 return "Must be equipped with a blaster rifle to use that ability.";

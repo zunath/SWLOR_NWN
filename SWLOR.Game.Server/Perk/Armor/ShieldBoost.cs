@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Perk.Armor
     {
         public PerkType PerkType => PerkType.ShieldBoost;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             if (oPC.Chest.CustomItemType != CustomItemType.HeavyArmor)
                 return "Must be equipped with heavy armor to use that ability.";

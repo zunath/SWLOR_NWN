@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Perk.Cooking
     {
         public PerkType PerkType => PerkType.SpeedyCooking;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             return string.Empty;
         }

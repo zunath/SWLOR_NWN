@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
     public class ForcePersuade: IPerkHandler
     {
         public PerkType PerkType => PerkType.ForcePersuade;
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             return string.Empty;
         }

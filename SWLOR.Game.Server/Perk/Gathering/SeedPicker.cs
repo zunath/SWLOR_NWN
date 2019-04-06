@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Perk.Gathering
     {
         public PerkType PerkType => PerkType.SeedPicker;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
         {
             return string.Empty;
         }

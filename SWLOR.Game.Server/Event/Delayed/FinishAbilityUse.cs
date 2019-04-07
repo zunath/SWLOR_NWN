@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Event.Delayed
                 NWObject target = (NWObject) args[3];
                 int pcPerkLevel = (int) args[4];
                 int featID = (int) args[5];
+                float armorPenalty = (float) args[6];
 
                 Data.Entity.Perk dbPerk = DataService.Single<Data.Entity.Perk>(x => x.ID == perkID);
                 PerkExecutionType executionType = dbPerk.ExecutionTypeID;
@@ -73,14 +74,11 @@ namespace SWLOR.Game.Server.Event.Delayed
                     pc.SendMessage(ColorTokenService.Custom("FP: " + pcEntity.CurrentFP + " / " + pcEntity.MaxFP, 32, 223, 219));
 
                 }
-
-                bool hasChainspell = CustomEffectService.DoesPCHaveCustomEffect(pc, CustomEffectType.Chainspell) &&
-                                     executionType == PerkExecutionType.ForceAbility;
-
-                if (!hasChainspell && cooldown != null)
+                
+                if (cooldown != null)
                 {
                     // Mark cooldown on category
-                    AbilityService.ApplyCooldown(pc, cooldown, perk, featID);
+                    AbilityService.ApplyCooldown(pc, cooldown, perk, featID, armorPenalty);
                 }
 
                 pc.IsBusy = false;

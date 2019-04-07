@@ -718,3 +718,11 @@ INSERT INTO dbo.PerkFeat ( PerkID , FeatID , PerkLevelUnlocked ) VALUES
 (180, 1244, 4),
 (180, 1245, 5),
 (180, 1246, 6)
+
+
+
+-- Remove custom effects
+
+-- Remove Chainspell
+DELETE FROM dbo.CustomEffect
+WHERE ID = 6

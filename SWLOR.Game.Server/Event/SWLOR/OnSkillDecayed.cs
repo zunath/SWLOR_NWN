@@ -1,16 +1,16 @@
 ﻿
 using SWLOR.Game.Server.GameObject;
 
-namespace SWLOR.Game.Server.Messaging.Messages
+namespace SWLOR.Game.Server.Event.SWLOR
 {
-    public class SkillDecayedMessage
+    public class OnSkillDecayed
     {
         public NWPlayer Player { get; set; }
         public int SkillID { get; set; }
         public int OldLevel { get; set; }
         public int NewLevel { get; set; }
 
-        public SkillDecayedMessage(NWPlayer player, int skillID, int oldLevel, int newLevel)
+        public OnSkillDecayed(NWPlayer player, int skillID, int oldLevel, int newLevel)
         {
             Player = player;
             SkillID = skillID;

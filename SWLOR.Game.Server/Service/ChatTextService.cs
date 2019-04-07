@@ -7,8 +7,8 @@ using SWLOR.Game.Server.GameObject;
 using static NWN._;
 using System.Text;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 
@@ -316,7 +316,7 @@ namespace SWLOR.Game.Server.Service
                 NWNXChat.SendMessage((int)finalChannel, finalMessageColoured, sender, obj);
             }
 
-            MessageHub.Instance.Publish(new ChatProcessedMessage(sender, channel, isOOC));
+            MessageHub.Instance.Publish(new OnChatProcessed(sender, channel, isOOC));
         }
 
         private static void OnModuleEnter()

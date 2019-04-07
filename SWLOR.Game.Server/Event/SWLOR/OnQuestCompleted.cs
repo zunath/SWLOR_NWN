@@ -1,13 +1,13 @@
 ﻿using SWLOR.Game.Server.GameObject;
 
-namespace SWLOR.Game.Server.Messaging.Messages
+namespace SWLOR.Game.Server.Event.SWLOR
 {
-    public class QuestCompletedMessage
+    public class OnQuestCompleted
     {
         public NWPlayer Player { get; set; }
         public int QuestID { get; set; }
 
-        public QuestCompletedMessage(NWPlayer player, int questID)
+        public OnQuestCompleted(NWPlayer player, int questID)
         {
             Player = player;
             QuestID = questID;

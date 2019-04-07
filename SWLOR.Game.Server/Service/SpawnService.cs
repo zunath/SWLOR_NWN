@@ -5,9 +5,9 @@ using System.Linq;
 using NWN;
 using SWLOR.Game.Server.AI;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Service
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
-            MessageHub.Instance.Subscribe<ObjectProcessorMessage>(message => ProcessSpawns());
+            MessageHub.Instance.Subscribe<OnObjectProcessorRan>(message => ProcessSpawns());
         }
 
         private static void OnModuleLoad()

@@ -4,9 +4,9 @@ using System.Diagnostics;
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.AI.Contracts;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.NWN.Events.Creature;
 using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
@@ -32,9 +32,9 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
 
             // SWLOR Events
-            MessageHub.Instance.Subscribe<ObjectProcessorMessage>(message => ProcessAreaAI());
-            MessageHub.Instance.Subscribe<AreaInstanceCreatedMessage>(message => OnAreaInstanceCreated(message.Instance));
-            MessageHub.Instance.Subscribe<AreaInstanceDestroyedMessage>(message => OnAreaInstanceDestroyed(message.Instance));
+            MessageHub.Instance.Subscribe<OnObjectProcessorRan>(message => ProcessAreaAI());
+            MessageHub.Instance.Subscribe<OnAreaInstanceCreated>(message => OnAreaInstanceCreated(message.Instance));
+            MessageHub.Instance.Subscribe<OnAreaInstanceDestroyed>(message => OnAreaInstanceDestroyed(message.Instance));
 
             // Creature Events
             MessageHub.Instance.Subscribe<OnCreaturePhysicalAttacked>(message => OnCreaturePhysicalAttacked());

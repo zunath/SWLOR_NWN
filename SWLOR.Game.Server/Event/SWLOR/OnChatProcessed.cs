@@ -1,15 +1,15 @@
 ﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
-namespace SWLOR.Game.Server.Messaging.Messages
+namespace SWLOR.Game.Server.Event.SWLOR
 {
-    public class ChatProcessedMessage
+    public class OnChatProcessed
     {
         public NWObject Sender { get; set; }
         public ChatChannelType Channel { get; set; }
         public bool IsOutOfCharacter { get; set; }
 
-        public ChatProcessedMessage(NWObject sender, ChatChannelType channel, bool isOutOfCharacter)
+        public OnChatProcessed(NWObject sender, ChatChannelType channel, bool isOutOfCharacter)
         {
             Sender = sender;
             Channel = channel;

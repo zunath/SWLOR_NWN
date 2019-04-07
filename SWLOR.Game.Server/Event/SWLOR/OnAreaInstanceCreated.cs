@@ -1,12 +1,12 @@
 ﻿using SWLOR.Game.Server.GameObject;
 
-namespace SWLOR.Game.Server.Messaging.Messages
+namespace SWLOR.Game.Server.Event.SWLOR
 {
-    public class AreaInstanceCreatedMessage
+    public class OnAreaInstanceCreated
     {
         public NWArea Instance { get; set; }
 
-        public AreaInstanceCreatedMessage(NWArea instance)
+        public OnAreaInstanceCreated(NWArea instance)
         {
             Instance = instance;
         }

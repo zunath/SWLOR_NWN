@@ -4,8 +4,6 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Messaging.Messages;
-
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Skill;
 using System;
@@ -13,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Event.Feat;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.NWN.Events.Creature;
 using SWLOR.Game.Server.NWN.Events.Module;
 using static NWN._;
@@ -190,7 +189,7 @@ namespace SWLOR.Game.Server.Service
                     ApplyEquipmentPenalties(oPC, item);
                 }
 
-                MessageHub.Instance.Publish(new SkillGainedMessage(oPC, skillID));
+                MessageHub.Instance.Publish(new OnSkillGained(oPC, skillID));
             }
 
             DataService.SubmitDataChange(pcSkill, DatabaseActionType.Update);
@@ -669,7 +668,7 @@ namespace SWLOR.Game.Server.Service
                     XP = decaySkill.XP
                 };
                 DataService.SubmitDataChange(dbDecaySkill, DatabaseActionType.Update);
-                MessageHub.Instance.Publish(new SkillDecayedMessage(oPC, decaySkill.SkillID, oldRank, decaySkill.Rank));
+                MessageHub.Instance.Publish(new OnSkillDecayed(oPC, decaySkill.SkillID, oldRank, decaySkill.Rank));
             }
 
             PlayerStatService.ApplyStatChanges(oPC, null);

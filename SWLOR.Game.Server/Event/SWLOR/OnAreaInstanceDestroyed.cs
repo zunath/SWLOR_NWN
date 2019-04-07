@@ -1,12 +1,12 @@
 ﻿using SWLOR.Game.Server.GameObject;
 
-namespace SWLOR.Game.Server.Messaging.Messages
+namespace SWLOR.Game.Server.Event.SWLOR
 {
-    public class AreaInstanceDestroyedMessage
+    public class OnAreaInstanceDestroyed
     {
         public NWArea Instance { get; set; }
 
-        public AreaInstanceDestroyedMessage(NWArea instance)
+        public OnAreaInstanceDestroyed(NWArea instance)
         {
             Instance = instance;
         }

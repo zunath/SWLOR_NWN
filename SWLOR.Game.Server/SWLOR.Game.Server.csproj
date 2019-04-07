@@ -211,7 +211,6 @@
     <Compile Include="CustomEffect\ForceAuraEffect.cs" />
     <Compile Include="CustomEffect\BleedingEffect.cs" />
     <Compile Include="CustomEffect\BurningEffect.cs" />
-    <Compile Include="CustomEffect\ChainspellEffect.cs" />
     <Compile Include="CustomEffect\Contracts\ICustomEffectHandler.cs" />
     <Compile Include="CustomEffect\ForceBreachEffect.cs" />
     <Compile Include="CustomEffect\ForceShockEffect.cs" />

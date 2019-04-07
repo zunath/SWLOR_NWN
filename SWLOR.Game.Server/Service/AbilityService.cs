@@ -220,28 +220,27 @@ namespace SWLOR.Game.Server.Service
                 activationTime = 1.0f;
 
             // Force ability armor penalties
+            float armorPenalty = 0.0f;
             if (executionType == PerkExecutionType.ForceAbility)
             {
-                float armorPenalty = 0.0f;
                 string penaltyMessage = string.Empty;
                 foreach (var item in pc.EquippedItems)
                 {
                     if (item.CustomItemType == CustomItemType.HeavyArmor)
                     {
                         armorPenalty = 2;
-                        penaltyMessage = "Heavy armor slows your force activation speed by 100%.";
+                        penaltyMessage = "Heavy armor slows your force cooldown by 100%.";
                         break;
                     }
                     else if (item.CustomItemType == CustomItemType.LightArmor)
                     {
                         armorPenalty = 1.25f;
-                        penaltyMessage = "Light armor slows your force activation speed by 25%.";
+                        penaltyMessage = "Light armor slows your force cooldown by 25%.";
                     }
                 }
 
                 if (armorPenalty > 0.0f)
                 {
-                    activationTime = baseActivationTime * armorPenalty;
                     pc.SendMessage(penaltyMessage);
                 }
 
@@ -275,7 +274,10 @@ namespace SWLOR.Game.Server.Service
             CheckForSpellInterruption(pc, uuid, pc.Position);
             pc.SetLocalInt(uuid, (int)SpellStatusType.Started);
 
-            NWNXPlayer.StartGuiTimingBar(pc, (int)activationTime, "");
+            if (activationTime > 0)
+            {
+                NWNXPlayer.StartGuiTimingBar(pc, (int)activationTime, string.Empty);
+            }
 
             int perkID = entity.ID;
             pc.DelayEvent<FinishAbilityUse>(activationTime + 0.2f,
@@ -284,12 +286,15 @@ namespace SWLOR.Game.Server.Service
                 perkID,
                 target,
                 pcPerkLevel,
-                spellFeatID);
+                spellFeatID,
+                armorPenalty);
         }
 
-        public static void ApplyCooldown(NWPlayer pc, CooldownCategory cooldown, IPerkHandler ability, int spellFeatID)
+        public static void ApplyCooldown(NWPlayer pc, CooldownCategory cooldown, IPerkHandler ability, int spellFeatID, float percentAdjustment)
         {
-            float finalCooldown = ability.CooldownTime(pc, (float)cooldown.BaseCooldownTime, spellFeatID);
+            if (percentAdjustment <= 0.0f) percentAdjustment = 1.0f;
+
+            float finalCooldown = ability.CooldownTime(pc, (float)cooldown.BaseCooldownTime, spellFeatID) * percentAdjustment;
             int cooldownSeconds = (int)finalCooldown;
             int cooldownMillis = (int)((finalCooldown - cooldownSeconds) * 100);
 
@@ -334,7 +339,7 @@ namespace SWLOR.Game.Server.Service
             pc.SetLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID", spellFeatID);
             pc.SendMessage("Weapon skill '" + entity.Name + "' queued for next attack.");
 
-            ApplyCooldown(pc, cooldownCategory, ability, spellFeatID);
+            ApplyCooldown(pc, cooldownCategory, ability, spellFeatID, 0.0f);
 
             // Player must attack within 30 seconds after queueing or else it wears off.
             _.DelayCommand(30f, () =>

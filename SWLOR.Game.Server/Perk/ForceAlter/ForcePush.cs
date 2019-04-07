@@ -84,6 +84,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
             var result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Universal);
 
+
             // Resisted - Only apply slow for six seconds
             if (result.IsResisted)
             {
@@ -93,6 +94,14 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             // Not resisted - Apply knockdown for the specified duration
             else
             {
+                // Check lucky chance.
+                int luck = PerkService.GetPCPerkLevel(player, PerkType.Lucky);
+                if (RandomService.D100(1) <= luck)
+                {
+                    duration *= 2;
+                    player.SendMessage("Lucky Force Push!");
+                }
+
                 _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, _.EffectKnockdown(), target, duration);
             }
 

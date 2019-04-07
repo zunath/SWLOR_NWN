@@ -435,7 +435,8 @@ namespace SWLOR.Game.Server.Service
 
             if (sendRollMessage)
             {
-                string message = ColorTokenService.SavingThrow("Roll: " + result.Roll + " VS " + result.DC + " DC");
+                string resisted = result.IsResisted ? ColorTokenService.Red(" [RESISTED " + result.Delta + "%]") : string.Empty;
+                string message = ColorTokenService.SavingThrow("Roll: " + result.Roll + " VS " + result.DC + " DC") + resisted;
                 attacker.SendMessage(message);
                 defender.SendMessage(message);
             }

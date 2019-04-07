@@ -77,7 +77,15 @@ namespace SWLOR.Game.Server.Perk.ForceControl
 
             // Damage user.
             _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectDamage(recovery), player);
-
+            
+            // Check lucky chance.
+            int luck = PerkService.GetPCPerkLevel(player, PerkType.Lucky);
+            if (RandomService.D100(1) <= luck)
+            {
+                recovery *= 2;
+                player.SendMessage("Lucky Force Body!");
+            }
+            
             // Recover FP on target.
             AbilityService.RestoreFP(target.Object, recovery);
 

@@ -127,13 +127,30 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            NWArea instance = BaseService.GetAreaInstance(pcBaseID, true);
+            // If we're swapping from one apartment to another (without going to an intermediary non-instance)
+            // we'll run a check to see if we need to kill the current instance.
+            var area = door.Area;
+            _.DelayCommand(1.0f, () =>
+            {
+                NWPlayer player = (_.GetFirstPC());
+                while (player.IsValid)
+                {
+                    if (Equals(player.Area, area)) return;
+                    player = (_.GetNextPC());
+                }
 
+                AreaService.DestroyAreaInstance(area);
+            });
+
+
+            // Get or create the new apartment instance.
+            NWArea instance = BaseService.GetAreaInstance(pcBaseID, true);
             if (instance == null)
             {
                 instance = BaseService.CreateAreaInstance(oPC, pcBaseID, true);
             }
 
+            // Port the player to the new instance.
             BaseService.JumpPCToBuildingInterior(oPC, instance, apartmentBuildingID);
         }
 

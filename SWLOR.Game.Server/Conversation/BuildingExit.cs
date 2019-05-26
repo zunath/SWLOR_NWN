@@ -16,7 +16,8 @@ namespace SWLOR.Game.Server.Conversation
             DialogPage mainPage = new DialogPage(
                 "Please select an option.",
                 "Exit the building",
-                "Peek outside"
+                "Peek outside",
+                "Enter Another Apartment"
             );
 
             dialog.AddPage("MainPage", mainPage);
@@ -30,8 +31,10 @@ namespace SWLOR.Game.Server.Conversation
             BuildingType type = (BuildingType)area.GetLocalInt("BUILDING_TYPE");
             bool isPreview = area.GetLocalInt("IS_BUILDING_PREVIEW") == TRUE;
             bool canPeek = type == BuildingType.Interior && !isPreview;
+            bool canChangeApartment = type == BuildingType.Apartment && !isPreview;
 
             SetResponseVisible("MainPage", 2, canPeek);
+            SetResponseVisible("MainPage", 3, canChangeApartment);
         }
 
         public override void DoAction(NWPlayer player, string pageName, int responseID)
@@ -57,6 +60,9 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case 2: // Peek outside
                     DoPeekOutside();
+                    break;
+                case 3: // Enter Another Apartment
+                    SwitchConversation("ApartmentEntrance");
                     break;
             }
         }

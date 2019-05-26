@@ -1004,37 +1004,6 @@ namespace SWLOR.Game.Server.Service
 
         public static void JumpPCToBuildingInterior(NWPlayer player, NWArea area, int apartmentBuildingID = -1)
         {
-            NWObject exit = null;
-
-            // Loop through the area to find the building exit placeable.
-            NWObject @object = (_.GetFirstObjectInArea(area.Object));
-            while (@object.IsValid)
-            {
-                if (@object.Tag == "building_exit")
-                {
-                    exit = @object;
-                }
-
-                @object = (_.GetNextObjectInArea(area.Object));
-            }
-
-            // Couldn't find an exit. Simply send error message to player.
-            if (exit == null)
-            {
-                player.FloatingText("ERROR: Couldn't find the building interior's exit. Inform an admin of this issue.");
-                return;
-            }
-            
-            // Assign some local variables to the exit object, for later use.
-            exit.SetLocalLocation("PLAYER_HOME_EXIT_LOCATION", player.Location);
-            exit.SetLocalInt("IS_BUILDING_DOOR", 1);
-
-            // Assign apartment building ID to the exit only if we're working with an actual apartment.
-            if (apartmentBuildingID > 0)
-            {
-                exit.SetLocalInt("APARTMENT_BUILDING_ID", apartmentBuildingID);
-            }
-
             // Got everything set up. Port the player to the area.
             Location location = area.GetLocalLocation("INSTANCE_ENTRANCE");
             player.AssignCommand(() =>
@@ -1486,7 +1455,7 @@ namespace SWLOR.Game.Server.Service
                 style = DataService.Get<BuildingStyle>(pcBase.BuildingStyleID);
                 type = (int)BuildingType.Apartment;
                 name = pcBase.CustomName;
-
+                
                 if (string.IsNullOrWhiteSpace(name))
                 {
                     Player owner = DataService.Get<Player>(pcBase.PlayerID);
@@ -1511,12 +1480,16 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            // Create the area instance, assign the building type, and then assign local variables to the exit placeable for later use.
             NWArea instance = AreaService.CreateAreaInstance(player, style.Resref, name, "PLAYER_HOME_ENTRANCE");
             instance.SetLocalInt("BUILDING_TYPE", type);
+            AssignAreaInstanceExitVariables(instance, player, pcBase.ApartmentBuildingID ?? 0);
 
+            // Store the base ID or the structure ID as a local variable.
             if (isBase) instance.SetLocalString("PC_BASE_ID", instanceID.ToString());
             else instance.SetLocalString("PC_BASE_STRUCTURE_ID", instanceID.ToString());
 
+            // Spawn the furniture.
             foreach (var furniture in furnitureStructures)
             {
                 SpawnStructure(instance, furniture.ID);
@@ -1525,6 +1498,38 @@ namespace SWLOR.Game.Server.Service
             LoggingService.Trace(TraceComponent.Space, "Created instance with ID " + instanceID.ToString() + ", name " + instance.Name);
 
             return instance;
+        }
+
+        private static void AssignAreaInstanceExitVariables(NWArea area, NWPlayer player, int apartmentBuildingID)
+        {
+            NWObject exit = null;
+            // Loop through the area to find the building exit placeable.
+            NWObject @object = (_.GetFirstObjectInArea(area.Object));
+            while (@object.IsValid)
+            {
+                if (@object.Tag == "building_exit")
+                {
+                    exit = @object;
+                }
+
+                @object = (_.GetNextObjectInArea(area.Object));
+            }
+
+            // Couldn't find an exit. Bail out.
+            if (exit == null)
+            {
+                return;
+            }
+
+            // Assign some local variables to the exit object, for later use.
+            exit.SetLocalLocation("PLAYER_HOME_EXIT_LOCATION", player.Location);
+            exit.SetLocalInt("IS_BUILDING_DOOR", 1);
+
+            // Assign apartment building ID to the exit only if we're working with an actual apartment.
+            if (apartmentBuildingID > 0)
+            {
+                exit.SetLocalInt("APARTMENT_BUILDING_ID", apartmentBuildingID);
+            }
         }
 
         public static void OnAreaEnter()

@@ -150,6 +150,7 @@
     <Compile Include="Conversation\MessageBoard.cs" />
     <Compile Include="Conversation\MolecularReassembly.cs" />
     <Compile Include="Conversation\Jukebox.cs" />
+    <Compile Include="Conversation\PlanetTransport.cs" />
     <Compile Include="Conversation\PublicStarport.cs" />
     <Compile Include="Conversation\ApartmentEntrance.cs" />
     <Compile Include="Conversation\ApartmentRental.cs" />
@@ -396,6 +397,7 @@
     <Compile Include="Event\Store\OnOpenStore.cs" />
     <Compile Include="Event\Store\on_close_store.cs" />
     <Compile Include="Event\Store\on_open_store.cs" />
+    <Compile Include="Event\SWLOR\OnAbilityConcentration.cs" />
     <Compile Include="Event\SWLOR\OnAreaInstanceCreated.cs" />
     <Compile Include="Event\SWLOR\OnAreaInstanceDestroyed.cs" />
     <Compile Include="Event\SWLOR\OnChatProcessed.cs" />

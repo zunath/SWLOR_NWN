@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
                             if (RandomService.Random(1, 100) <= ipBonusChance)
                             {
                                 var ip = ResourceService.GetRandomComponentBonusIP(quality);
-                                _biowareXP2.IPSafeAddItemProperty(resource, ip.Item1, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
+                                BiowareXP2.IPSafeAddItemProperty(resource, ip.Item1, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
 
                                 switch (ip.Item2)
                                 {
@@ -117,16 +117,16 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
                                         resource.Name = ColorTokenService.Orange(resource.Name);
                                         break;
                                     case 4:
-                                        resource.Name = _color.LightPurple(resource.Name);
+                                        resource.Name = ColorTokenService.LightPurple(resource.Name);
                                         break;
                                     case 5:
-                                        resource.Name = _color.Yellow(resource.Name);
+                                        resource.Name = ColorTokenService.Yellow(resource.Name);
                                         break;
                                     case 6:
-                                        resource.Name = _color.Red(resource.Name);
+                                        resource.Name = ColorTokenService.Red(resource.Name);
                                         break;
                                     case 7:
-                                        resource.Name = _color.Cyan(resource.Name);
+                                        resource.Name = ColorTokenService.Cyan(resource.Name);
                                         break;
                                 }
                             }

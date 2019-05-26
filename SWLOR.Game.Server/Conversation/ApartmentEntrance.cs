@@ -113,9 +113,10 @@ namespace SWLOR.Game.Server.Conversation
 
         private void EnterApartment(Guid pcBaseID)
         {
+            NWPlaceable door = Object.OBJECT_SELF;
             NWPlayer oPC = GetPC();
 
-            var apartment = DataService.Get<PCBase>(pcBaseID);
+            int apartmentBuildingID = door.GetLocalInt("APARTMENT_BUILDING_ID");
             var permission = DataService.SingleOrDefault<PCBasePermission>(x => x.PlayerID == oPC.GlobalID && 
                                                                           x.PCBaseID == pcBaseID &&
                                                                           !x.IsPublicPermission);
@@ -133,7 +134,7 @@ namespace SWLOR.Game.Server.Conversation
                 instance = BaseService.CreateAreaInstance(oPC, pcBaseID, true);
             }
 
-            BaseService.JumpPCToBuildingInterior(oPC, instance);
+            BaseService.JumpPCToBuildingInterior(oPC, instance, apartmentBuildingID);
         }
 
         public override void EndDialog()

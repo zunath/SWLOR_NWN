@@ -1002,10 +1002,11 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        public static void JumpPCToBuildingInterior(NWPlayer player, NWArea area)
+        public static void JumpPCToBuildingInterior(NWPlayer player, NWArea area, int apartmentBuildingID = -1)
         {
             NWObject exit = null;
 
+            // Loop through the area to find the building exit placeable.
             NWObject @object = (_.GetFirstObjectInArea(area.Object));
             while (@object.IsValid)
             {
@@ -1017,15 +1018,24 @@ namespace SWLOR.Game.Server.Service
                 @object = (_.GetNextObjectInArea(area.Object));
             }
 
+            // Couldn't find an exit. Simply send error message to player.
             if (exit == null)
             {
                 player.FloatingText("ERROR: Couldn't find the building interior's exit. Inform an admin of this issue.");
                 return;
             }
             
+            // Assign some local variables to the exit object, for later use.
             exit.SetLocalLocation("PLAYER_HOME_EXIT_LOCATION", player.Location);
             exit.SetLocalInt("IS_BUILDING_DOOR", 1);
 
+            // Assign apartment building ID to the exit only if we're working with an actual apartment.
+            if (apartmentBuildingID > 0)
+            {
+                exit.SetLocalInt("APARTMENT_BUILDING_ID", apartmentBuildingID);
+            }
+
+            // Got everything set up. Port the player to the area.
             Location location = area.GetLocalLocation("INSTANCE_ENTRANCE");
             player.AssignCommand(() =>
             {

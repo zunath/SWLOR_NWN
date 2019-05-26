@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Service
             return chance;
         }
 
-        private int Colorize(string tag)
+        private static int Colorize(string tag)
         {
             // Returns an index representing the colour to use for a particular property.
             // AC = Green = 0

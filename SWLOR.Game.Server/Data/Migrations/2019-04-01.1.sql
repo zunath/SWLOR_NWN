@@ -726,3 +726,18 @@ INSERT INTO dbo.PerkFeat ( PerkID , FeatID , PerkLevelUnlocked ) VALUES
 -- Remove Chainspell
 DELETE FROM dbo.CustomEffect
 WHERE ID = 6
+
+
+
+-- New perk execution types
+INSERT INTO dbo.PerkExecutionType ( ID ,
+                                    Name )
+VALUES ( 7 , -- ID - int
+         N'Concentration Ability' -- Name - nvarchar(32)
+    )
+
+
+-- Mark concentration execution type
+UPDATE dbo.Perk
+SET ExecutionTypeID = 7
+WHERE ID IN (4, 13, 19, 76, 126, 173, 176, 178, 179, 180, 181, 182, 185)

@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Event.Delayed
                 {
                     pcEntity.ActiveConcentrationPerkID = perkID;
                     submitDataChangeUpdate = true;
-                    pc.SendMessage("Concentration Ability Activated: " + dbPerk.Name);
+                    pc.SendMessage("Concentration ability activated: " + dbPerk.Name);
 
                     // The Skill Increase effect icon and name has been overwritten. Apply the effect to the player now.
                     // This doesn't do anything - it simply gives a visual cue that the player has an active concentration effect.

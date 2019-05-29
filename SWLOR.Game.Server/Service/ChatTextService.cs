@@ -7,6 +7,7 @@ using SWLOR.Game.Server.GameObject;
 using static NWN._;
 using System.Text;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Module;

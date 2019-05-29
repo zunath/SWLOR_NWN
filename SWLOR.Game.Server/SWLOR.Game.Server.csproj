@@ -150,7 +150,6 @@
     <Compile Include="Conversation\MessageBoard.cs" />
     <Compile Include="Conversation\MolecularReassembly.cs" />
     <Compile Include="Conversation\Jukebox.cs" />
-    <Compile Include="Conversation\PlanetTransport.cs" />
     <Compile Include="Conversation\PublicStarport.cs" />
     <Compile Include="Conversation\ApartmentEntrance.cs" />
     <Compile Include="Conversation\ApartmentRental.cs" />
@@ -2179,7 +2178,7 @@
     <EmbeddedResource Include="Data\Migrations\2019-02-23.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-23.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-26.1.sql" />
-    <EmbeddedResource Include="Data\Migrations\2019-03-31.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-05-29.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-27.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-27.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-02-27.3.sql" />
@@ -2193,7 +2192,7 @@
     <EmbeddedResource Include="Data\Migrations\2019-03-27.3.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-03-28.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-03-29.2.sql" />
-    <EmbeddedResource Include="Data\Migrations\2019-04-01.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-05-29.2.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <EmbeddedResource Include="Data\Migrations\2018-11-07.1.sql" />

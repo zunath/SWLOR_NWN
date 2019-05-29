@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
     {
         public PerkType PerkType => PerkType.Knockdown;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier)
         {
             NWItem weapon = oPC.RightHand;
             if (weapon.CustomItemType != CustomItemType.Baton)
@@ -20,27 +20,27 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             return string.Empty;
         }
         
-        public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)
+        public int FPCost(NWPlayer oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellFeatID)
+        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellTier)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellFeatID)
+        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellTier)
         {
             return baseCooldownTime;
         }
 
-        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellFeatID)
+        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellTier)
         {
             return baseCooldownCategoryID;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
+        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellTier)
         {
             int damage;
             float length;

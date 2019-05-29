@@ -8,22 +8,22 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
     public class ForcePush: IPerkHandler
     {
         public PerkType PerkType => PerkType.ForcePush;
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier)
         {
             int size = _.GetCreatureSize(oTarget);
             int maxSize = _.CREATURE_SIZE_INVALID;
-            switch ((CustomFeatType) spellFeatID)
+            switch (spellTier)
             {
-                case CustomFeatType.ForcePush1:
+                case 1:
                     maxSize = _.CREATURE_SIZE_SMALL;
                     break;
-                case CustomFeatType.ForcePush2:
+                case 2:
                     maxSize = _.CREATURE_SIZE_MEDIUM;
                     break;
-                case CustomFeatType.ForcePush3:
+                case 3:
                     maxSize = _.CREATURE_SIZE_LARGE;
                     break;
-                case CustomFeatType.ForcePush4:
+                case 4:
                     maxSize = _.CREATURE_SIZE_HUGE;
                     break;
             }
@@ -34,50 +34,50 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             return string.Empty;
         }
         
-        public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)
+        public int FPCost(NWPlayer oPC, int baseFPCost, int spellTier)
         {
-            switch ((CustomFeatType) spellFeatID)
+            switch (spellTier)
             {
-                case CustomFeatType.ForcePush1: return 4;
-                case CustomFeatType.ForcePush2: return 6;
-                case CustomFeatType.ForcePush3: return 8;
-                case CustomFeatType.ForcePush4: return 10;
+                case 1: return 4;
+                case 2: return 6;
+                case 3: return 8;
+                case 4: return 10;
             }
 
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellFeatID)
+        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellTier)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellFeatID)
+        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellTier)
         {
             return baseCooldownTime;
         }
 
-        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellFeatID)
+        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellTier)
         {
             return baseCooldownCategoryID;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
+        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellTier)
         {
             float duration = 0.0f;
 
-            switch ((CustomFeatType) spellFeatID)
+            switch (spellTier)
             {
-                case CustomFeatType.ForcePush1:
+                case 1:
                     duration = 6f;
                     break;
-                case CustomFeatType.ForcePush2:
+                case 2:
                     duration = 12f;
                     break;
-                case CustomFeatType.ForcePush3:
+                case 3:
                     duration = 18f;
                     break;
-                case CustomFeatType.ForcePush4:
+                case 4:
                     duration = 24f;
                     break;
             }

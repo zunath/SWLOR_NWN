@@ -755,4 +755,19 @@ FOREIGN KEY(ActiveConcentrationPerkID) REFERENCES Perk(ID)
 
 -- Add the active concentration perk level column to player table
 ALTER TABLE dbo.Player
-ADD ActiveConcentrationPerkLevel INT NOT NULL DEFAULT 0
+ADD ActiveConcentrationTier INT NOT NULL DEFAULT 0
+
+
+-- Remove BaseFPCost from the perk. It's now on the PerkLevel table instead.
+EXEC dbo.ADM_Drop_Column @TableName = N'Perk' , -- nvarchar(200)
+                         @ColumnName = N'BaseFPCost'  -- nvarchar(200)
+
+
+-- Add a unique constraint to ensure we never get more than one feat per perk ID and perk level unlocked
+ALTER TABLE dbo.PerkFeat
+ADD CONSTRAINT UQ_PerkFeat_SurrogateKey UNIQUE(PerkID, PerkLevelUnlocked)
+
+-- Safety constraint to ensure we only ever have one feat ID registered in the PerkFeat table.
+-- A lot of our look-ups are based on the feat only, so we want to be sure there are no dupes.
+ALTER TABLE dbo.PerkFeat
+ADD CONSTRAINT UQ_PerkFeat_FeatID UNIQUE(FeatID)

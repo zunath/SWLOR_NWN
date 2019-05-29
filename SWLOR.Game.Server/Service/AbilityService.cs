@@ -39,6 +39,7 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
             MessageHub.Instance.Subscribe<OnModuleUseFeat>(message => OnModuleUseFeat());
             MessageHub.Instance.Subscribe<OnObjectProcessorRan>(message => ProcessConcentrationEffects());
+            MessageHub.Instance.Subscribe<OnModuleDeath>(message => OnModuleDeath());
         }
 
         private static void OnModuleEnter()
@@ -107,7 +108,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            string canCast = perkAction.CanCastSpell(pc, target, featID);
+            string canCast = perkAction.CanCastSpell(pc, target, perkFeat.PerkLevelUnlocked);
             if (!string.IsNullOrWhiteSpace(canCast))
             {
                 pc.SendMessage(canCast);
@@ -115,7 +116,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             PerkLevel perkLevel = DataService.Single<PerkLevel>(x => x.PerkID == perkFeat.PerkID && x.Level == pcPerkLevel);
-            int fpCost = perkAction.FPCost(pc, perkAction.FPCost(pc, perkLevel.BaseFPCost, featID), featID);
+            int fpCost = perkAction.FPCost(pc, perkAction.FPCost(pc, perkLevel.BaseFPCost, perkFeat.PerkLevelUnlocked), perkFeat.PerkLevelUnlocked);
             if (playerEntity.CurrentFP < fpCost)
             {
                 pc.SendMessage("You do not have enough FP. (Required: " + fpCost + ". You have: " + playerEntity.CurrentFP + ")");
@@ -138,6 +139,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     // It's active. Time to disable it.
                     dbPlayer.ActiveConcentrationPerkID = null;
+                    dbPlayer.ActiveConcentrationTier = 0;
                     // And remove the effect icon.
                     pc.RemoveEffect(_.EFFECT_TYPE_SKILL_INCREASE);
                     pc.SendMessage("Concentration ability '" + perk.Name + "' deactivated.");
@@ -146,7 +148,7 @@ namespace SWLOR.Game.Server.Service
             }
             
             // Check cooldown
-            int? cooldownCategoryID = perkAction.CooldownCategoryID(pc, perk.CooldownCategoryID, featID);
+            int? cooldownCategoryID = perkAction.CooldownCategoryID(pc, perk.CooldownCategoryID, perkFeat.PerkLevelUnlocked);
             PCCooldown pcCooldown = DataService.GetAll<PCCooldown>().SingleOrDefault(x => x.PlayerID == pc.GlobalID &&
                                                                                     x.CooldownCategoryID == cooldownCategoryID);
             if (pcCooldown == null)
@@ -175,13 +177,13 @@ namespace SWLOR.Game.Server.Service
             if (perk.ExecutionTypeID == PerkExecutionType.ForceAbility)
             {
                 target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_FORCE);
-                ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.ForceAbility, featID);
+                ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.ForceAbility, perkFeat.PerkLevelUnlocked);
             }
             // Combat Abilities
             else if (perk.ExecutionTypeID == PerkExecutionType.CombatAbility)
             {
                 target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_PHYSICAL);
-                ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.CombatAbility, featID);
+                ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.CombatAbility, perkFeat.PerkLevelUnlocked);
             }
             // Queued Weapon Skills
             else if (perk.ExecutionTypeID == PerkExecutionType.QueuedWeaponSkill)
@@ -193,13 +195,13 @@ namespace SWLOR.Game.Server.Service
             else if (perk.ExecutionTypeID == PerkExecutionType.Stance)
             {
                 target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_COMBATABILITY);
-                ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.Stance, featID);
+                ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.Stance, perkFeat.PerkLevelUnlocked);
             }
             // Concentration Abilities
             else if (perk.ExecutionTypeID == PerkExecutionType.ConcentrationAbility)
             {
                 target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_FORCE);
-                ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.ConcentrationAbility, featID);
+                ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.ConcentrationAbility, perkFeat.PerkLevelUnlocked);
             }
         }
 
@@ -211,14 +213,61 @@ namespace SWLOR.Game.Server.Service
             {
                 Player dbPlayer = DataService.Get<Player>(player.GlobalID);
                 if (dbPlayer.ActiveConcentrationPerkID == null) continue;
-
+                
+                // Track the current tick.
                 int tick = player.GetLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK") + 1;
-                var handler = PerkService.GetPerkHandler((int)dbPlayer.ActiveConcentrationPerkID);
-                handler.OnConcentrationTick(player, dbPlayer.ActiveConcentrationPerkLevel, tick);
                 player.SetLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK", tick);
+
+                PerkLevel perkLevel = DataService.Single<PerkLevel>(x => x.PerkID == dbPlayer.ActiveConcentrationPerkID && 
+                                                                         x.Level == dbPlayer.ActiveConcentrationTier);
+                var handler = PerkService.GetPerkHandler((int)dbPlayer.ActiveConcentrationPerkID);
+                int fpCost = handler.FPCost(player, perkLevel.BaseFPCost, dbPlayer.ActiveConcentrationTier);
+
+                // Does player have enough FP to maintain this concentration?
+                if (dbPlayer.CurrentFP < fpCost)
+                {
+                    dbPlayer.ActiveConcentrationPerkID = null;
+                    dbPlayer.ActiveConcentrationTier = 0;
+                    player.SendMessage("Concentration effect has ended because you ran out of FP.");
+                    player.DeleteLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK");
+                    player.RemoveEffect(_.EFFECT_TYPE_SKILL_INCREASE); // Remove the effect icon.
+                }
+                // Otherwise deduct the required FP.
+                else
+                {
+                    dbPlayer.CurrentFP -= fpCost;
+                }
+
+                DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+
+                // Send a FP status message if the effect ended or it's been six seconds since the last one.
+                if (dbPlayer.ActiveConcentrationPerkID == null || tick % 6 == 0)
+                {
+                    player.SendMessage(ColorTokenService.Custom("FP: " + dbPlayer.CurrentFP + " / " + dbPlayer.MaxFP, 32, 223, 219));
+                }
+                
+                // Run this individual perk's concentration tick method if it didn't end this tick.
+                if (dbPlayer.ActiveConcentrationPerkID != null)
+                {
+                    handler.OnConcentrationTick(player, dbPlayer.ActiveConcentrationTier, tick);
+                }
             }
         }
 
+        private static void OnModuleDeath()
+        {
+            NWPlayer player = _.GetLastPlayerDied();
+            if (!player.IsPlayer) return;
+
+            Player dbPlayer = DataService.Get<Player>(player.GlobalID);
+            if (dbPlayer.ActiveConcentrationPerkID == null) return; // No concentration effect. Bail out early.
+
+            dbPlayer.ActiveConcentrationPerkID = null;
+            dbPlayer.ActiveConcentrationTier = 0;
+            player.DeleteLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK");
+            player.RemoveEffect(_.EFFECT_TYPE_SKILL_INCREASE); // Remove the effect icon.
+        }
+        
         public static void ApplyEnmity(NWPlayer pc, NWCreature target, Data.Entity.Perk perk)
         {
             switch ((EnmityAdjustmentRuleType)perk.EnmityAdjustmentRuleID)
@@ -245,12 +294,12 @@ namespace SWLOR.Game.Server.Service
                                IPerkHandler perkHandler,
                                int pcPerkLevel,
                                PerkExecutionType executionType,
-                               int spellFeatID)
+                               int spellTier)
         {
             string uuid = Guid.NewGuid().ToString();
             var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(pc);
             int itemBonus = effectiveStats.CastingSpeed;
-            float baseActivationTime = perkHandler.CastingTime(pc, (float)entity.BaseCastingTime, spellFeatID);
+            float baseActivationTime = perkHandler.CastingTime(pc, (float)entity.BaseCastingTime, spellTier);
             float activationTime = baseActivationTime;
             int vfxID = -1;
             int animationID = -1;
@@ -351,15 +400,15 @@ namespace SWLOR.Game.Server.Service
                 perkID,
                 target,
                 pcPerkLevel,
-                spellFeatID,
+                spellTier,
                 armorPenalty);
         }
 
-        public static void ApplyCooldown(NWPlayer pc, CooldownCategory cooldown, IPerkHandler ability, int spellFeatID, float percentAdjustment)
+        public static void ApplyCooldown(NWPlayer pc, CooldownCategory cooldown, IPerkHandler ability, int spellTier, float percentAdjustment)
         {
             if (percentAdjustment <= 0.0f) percentAdjustment = 1.0f;
 
-            float finalCooldown = ability.CooldownTime(pc, (float)cooldown.BaseCooldownTime, spellFeatID) * percentAdjustment;
+            float finalCooldown = ability.CooldownTime(pc, (float)cooldown.BaseCooldownTime, spellTier) * percentAdjustment;
             int cooldownSeconds = (int)finalCooldown;
             int cooldownMillis = (int)((finalCooldown - cooldownSeconds) * 100);
 
@@ -396,7 +445,8 @@ namespace SWLOR.Game.Server.Service
 
         private static void HandleQueueWeaponSkill(NWPlayer pc, Data.Entity.Perk entity, IPerkHandler ability, int spellFeatID)
         {
-            int? cooldownCategoryID = ability.CooldownCategoryID(pc, entity.CooldownCategoryID, spellFeatID);
+            var perkFeat = DataService.Single<PerkFeat>(x => x.FeatID == spellFeatID);
+            int? cooldownCategoryID = ability.CooldownCategoryID(pc, entity.CooldownCategoryID, perkFeat.PerkLevelUnlocked);
             var cooldownCategory = DataService.Get<CooldownCategory>(cooldownCategoryID);
             string queueUUID = Guid.NewGuid().ToString();
             pc.SetLocalInt("ACTIVE_WEAPON_SKILL", entity.ID);
@@ -404,7 +454,7 @@ namespace SWLOR.Game.Server.Service
             pc.SetLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID", spellFeatID);
             pc.SendMessage("Weapon skill '" + entity.Name + "' queued for next attack.");
 
-            ApplyCooldown(pc, cooldownCategory, ability, spellFeatID, 0.0f);
+            ApplyCooldown(pc, cooldownCategory, ability, perkFeat.PerkLevelUnlocked, 0.0f);
 
             // Player must attack within 30 seconds after queueing or else it wears off.
             _.DelayCommand(30f, () =>
@@ -461,12 +511,13 @@ namespace SWLOR.Game.Server.Service
 
             PCPerk entity = DataService.GetAll<PCPerk>().Single(x => x.PlayerID == oPC.GlobalID && x.PerkID == activeWeaponSkillID);
             var perk = DataService.Get<Data.Entity.Perk>(entity.PerkID);
+            var perkFeat = DataService.Single<PerkFeat>(x => x.FeatID == activeWeaponSkillFeatID);
             var handler = PerkService.GetPerkHandler(activeWeaponSkillID);
 
-            string canCast = handler.CanCastSpell(oPC, oTarget, activeWeaponSkillFeatID);
+            string canCast = handler.CanCastSpell(oPC, oTarget, perkFeat.PerkLevelUnlocked);
             if (string.IsNullOrWhiteSpace(canCast))
             {
-                handler.OnImpact(oPC, oTarget, entity.PerkLevel, activeWeaponSkillFeatID);
+                handler.OnImpact(oPC, oTarget, entity.PerkLevel, perkFeat.PerkLevelUnlocked);
 
                 if (oTarget.IsNPC)
                 {

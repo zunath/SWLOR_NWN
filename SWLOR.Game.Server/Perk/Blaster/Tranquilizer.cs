@@ -42,6 +42,13 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellTier)
         {
+            var concentrationEffect = AbilityService.GetActiveConcentrationEffect(target.Object);
+            if (concentrationEffect.Type == PerkType.MindShield)
+            {
+                player.SendMessage("Your target is immune to tranquilization effects.");
+                return;
+            }
+
             int luck = PerkService.GetPCPerkLevel(player, PerkType.Lucky);
             float duration;
 

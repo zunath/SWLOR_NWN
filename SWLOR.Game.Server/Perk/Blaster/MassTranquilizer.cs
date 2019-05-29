@@ -92,17 +92,28 @@ namespace SWLOR.Game.Server.Perk.Blaster
                 player.SendMessage("Lucky shot!");
             }
 
-            // Apply to the target.
-            if (!RemoveExistingEffect(target, duration))
+
+            // Check if Mind Shield is on target.
+            var concentrationEffect = AbilityService.GetActiveConcentrationEffect(target.Object);
+            if (concentrationEffect.Type == PerkType.MindShield)
             {
-                target.SetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN", 1);
-
-                Effect effect = _.EffectDazed();
-                effect = _.EffectLinkEffects(effect, _.EffectVisualEffect(VFX_DUR_IOUNSTONE_BLUE));
-                effect = _.TagEffect(effect, "TRANQUILIZER_EFFECT");
-
-                _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, effect, target, duration);
+                player.SendMessage("Your target is immune to tranquilization effects.");
             }
+            else
+            {
+                // Apply to the target.
+                if (!RemoveExistingEffect(target, duration))
+                {
+                    target.SetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN", 1);
+
+                    Effect effect = _.EffectDazed();
+                    effect = _.EffectLinkEffects(effect, _.EffectVisualEffect(VFX_DUR_IOUNSTONE_BLUE));
+                    effect = _.TagEffect(effect, "TRANQUILIZER_EFFECT");
+
+                    _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, effect, target, duration);
+                }
+            }
+
 
 
             // Iterate over all nearby hostiles. Apply the effect to them if they meet the criteria.
@@ -114,10 +125,13 @@ namespace SWLOR.Game.Server.Perk.Blaster
                 // Check distance. Exit loop if we're too far.
                 if (distance > range) break;
 
+                concentrationEffect = AbilityService.GetActiveConcentrationEffect(nearest);
+
                 // If this creature isn't hostile to the attacking player or if this creature is already tranquilized, move to the next one.
                 if (_.GetIsReactionTypeHostile(nearest, player) == FALSE ||
                     nearest.Object == target.Object ||
-                    RemoveExistingEffect(nearest, duration))
+                    RemoveExistingEffect(nearest, duration) ||
+                    concentrationEffect.Type == PerkType.MindShield)
                 {
                     current++;
                     nearest = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, TRUE, target, current);

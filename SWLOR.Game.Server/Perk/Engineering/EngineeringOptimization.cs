@@ -60,5 +60,10 @@ namespace SWLOR.Game.Server.Perk.Engineering
         {
             return false;
         }
+
+        public void OnConcentrationTick(NWPlayer player, int perkLevel, int spellFeatID)
+        {
+            
+        }
     }
 }

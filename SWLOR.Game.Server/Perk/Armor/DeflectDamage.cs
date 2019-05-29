@@ -105,5 +105,10 @@ namespace SWLOR.Game.Server.Perk.Armor
         {
             return false;
         }
+
+        public void OnConcentrationTick(NWPlayer player, int perkLevel, int spellFeatID)
+        {
+            
+        }
     }
 }

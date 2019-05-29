@@ -741,3 +741,14 @@ VALUES ( 7 , -- ID - int
 UPDATE dbo.Perk
 SET ExecutionTypeID = 7
 WHERE ID IN (4, 13, 19, 76, 126, 173, 176, 178, 179, 180, 181, 182, 185)
+
+
+
+-- Add the active concentration perk ID column to player table
+ALTER TABLE dbo.Player
+ADD ActiveConcentrationPerkID INT NULL
+
+-- Add a FK constraint to this new column
+ALTER TABLE dbo.Player
+ADD CONSTRAINT FK_Player_ActiveConcentrationPerkID
+FOREIGN KEY(ActiveConcentrationPerkID) REFERENCES Perk(ID)

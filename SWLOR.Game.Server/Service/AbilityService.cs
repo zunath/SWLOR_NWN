@@ -163,8 +163,12 @@ namespace SWLOR.Game.Server.Service
                 target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_COMBATABILITY);
                 ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.Stance, featID);
             }
-
-
+            // Concentration Abilities
+            else if (perk.ExecutionTypeID == PerkExecutionType.ConcentrationAbility)
+            {
+                target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_FORCE);
+                ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.ConcentrationAbility, featID);
+            }
         }
 
         public static void ApplyEnmity(NWPlayer pc, NWCreature target, Data.Entity.Perk perk)
@@ -221,7 +225,8 @@ namespace SWLOR.Game.Server.Service
 
             // Force ability armor penalties
             float armorPenalty = 0.0f;
-            if (executionType == PerkExecutionType.ForceAbility)
+            if (executionType == PerkExecutionType.ForceAbility || 
+                executionType == PerkExecutionType.ConcentrationAbility)
             {
                 string penaltyMessage = string.Empty;
                 foreach (var item in pc.EquippedItems)
@@ -239,6 +244,7 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
+                // If there's an armor penalty, send a message to the player.
                 if (armorPenalty > 0.0f)
                 {
                     pc.SendMessage(penaltyMessage);
@@ -246,18 +252,23 @@ namespace SWLOR.Game.Server.Service
 
             }
 
+            // If player is in stealth mode, force them out of stealth mode.
             if (_.GetActionMode(pc.Object, ACTION_MODE_STEALTH) == 1)
                 _.SetActionMode(pc.Object, ACTION_MODE_STEALTH, 0);
 
+            // Make the player face their target.
             _.ClearAllActions();
             BiowarePosition.TurnToFaceObject(target, pc);
 
-            if (executionType == PerkExecutionType.ForceAbility)
+            // Force and Concentration Abilities will display a visual effect during the casting process.
+            if (executionType == PerkExecutionType.ForceAbility || 
+                executionType == PerkExecutionType.ConcentrationAbility)
             {
                 vfxID = VFX_DUR_IOUNSTONE_YELLOW;
                 animationID = ANIMATION_LOOPING_CONJURE1;
             }
 
+            // If a VFX ID has been specified, play that effect instead of the default one.
             if (vfxID > -1)
             {
                 var vfx = _.EffectVisualEffect(vfxID);
@@ -265,20 +276,26 @@ namespace SWLOR.Game.Server.Service
                 _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, vfx, pc.Object, activationTime + 0.2f);
             }
 
+            // If an animation has been specified, make the player play that animation now.
             if (animationID > -1)
             {
                 pc.AssignCommand(() => _.ActionPlayAnimation(animationID, 1.0f, activationTime - 0.1f));
             }
 
+            // Mark player as busy. Busy players can't take other actions (crafting, harvesting, etc.)
             pc.IsBusy = true;
+
+            // Begin the check for spell interruption. If the player moves, the spell will be canceled.
             CheckForSpellInterruption(pc, uuid, pc.Position);
             pc.SetLocalInt(uuid, (int)SpellStatusType.Started);
 
+            // If there's a casting delay, display a timing bar on-screen.
             if (activationTime > 0)
             {
                 NWNXPlayer.StartGuiTimingBar(pc, (int)activationTime, string.Empty);
             }
 
+            // Run the FinishAbilityUse event at the end of the activation time.
             int perkID = entity.ID;
             pc.DelayEvent<FinishAbilityUse>(activationTime + 0.2f,
                 pc,
@@ -329,7 +346,7 @@ namespace SWLOR.Game.Server.Service
             _.DelayCommand(0.5f, () => { CheckForSpellInterruption(pc, spellUUID, position); });
         }
 
-        public static void HandleQueueWeaponSkill(NWPlayer pc, Data.Entity.Perk entity, IPerkHandler ability, int spellFeatID)
+        private static void HandleQueueWeaponSkill(NWPlayer pc, Data.Entity.Perk entity, IPerkHandler ability, int spellFeatID)
         {
             int? cooldownCategoryID = ability.CooldownCategoryID(pc, entity.CooldownCategoryID, spellFeatID);
             var cooldownCategory = DataService.Get<CooldownCategory>(cooldownCategoryID);

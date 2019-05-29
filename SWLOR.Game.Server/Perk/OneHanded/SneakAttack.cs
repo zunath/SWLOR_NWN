@@ -96,5 +96,10 @@ namespace SWLOR.Game.Server.Perk.OneHanded
         {
             return false;
         }
+
+        public void OnConcentrationTick(NWPlayer player, int perkLevel, int spellFeatID)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -335,5 +335,10 @@ namespace SWLOR.Game.Server.Perk.Weapons
         {
             return false;
         }
+
+        public void OnConcentrationTick(NWPlayer player, int perkLevel, int spellFeatID)
+        {
+            
+        }
     }
 }

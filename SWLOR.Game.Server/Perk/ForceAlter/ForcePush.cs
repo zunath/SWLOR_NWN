@@ -133,5 +133,10 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         {
             return false;
         }
+
+        public void OnConcentrationTick(NWPlayer player, int perkLevel, int spellFeatID)
+        {
+            
+        }
     }
 }

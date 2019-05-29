@@ -121,6 +121,8 @@
     <Compile Include="ChatCommand\PlasmaCell.cs" />
     <Compile Include="ChatCommand\Pos.cs" />
     <Compile Include="ChatCommand\Read.cs" />
+    <Compile Include="ChatCommand\ResetCooldown.cs" />
+    <Compile Include="ChatCommand\ResetCooldowns.cs" />
     <Compile Include="ChatCommand\Rest.cs" />
     <Compile Include="ChatCommand\RestartTime.cs" />
     <Compile Include="ChatCommand\Rez.cs" />

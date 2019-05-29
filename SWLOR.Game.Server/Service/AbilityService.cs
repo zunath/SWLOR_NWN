@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Perk;
 using System;
 using System.Linq;
 using SWLOR.Game.Server.Event.Feat;
+using SWLOR.Game.Server.Event.Module;
 using static NWN._;
 using Object = NWN.Object;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
@@ -33,8 +34,20 @@ namespace SWLOR.Game.Server.Service
 
         public static void SubscribeEvents()
         {
+            MessageHub.Instance.Subscribe<OnModuleEnter>(message => OnModuleEnter());
             MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
             MessageHub.Instance.Subscribe<OnModuleUseFeat>(message => OnModuleUseFeat());
+        }
+
+        private static void OnModuleEnter()
+        {
+            NWPlayer pc = _.GetEnteringObject();
+            if (!pc.IsPlayer) return;
+
+            // Reapply the visual effect icon to player if they logged in with an active concentration ability.
+            Player dbPlayer = DataService.Get<Player>(pc.GlobalID);
+            if (dbPlayer.ActiveConcentrationPerkID != null)
+                _.ApplyEffectToObject(_.DURATION_TYPE_PERMANENT, _.EffectSkillIncrease(_.SKILL_USE_MAGIC_DEVICE, 1), pc);
         }
 
         private static void OnModuleUseFeat()
@@ -113,6 +126,23 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // If we're executing a concentration ability, check and see if the player currently has this ability
+            // active. If it's active, then we immediately remove its effect and bail out.
+            // Any other ability (including other concentration abilities) execute as normal.
+            if (perk.ExecutionTypeID == PerkExecutionType.ConcentrationAbility)
+            {
+                Player dbPlayer = DataService.Get<Player>(pc.GlobalID);
+                if (dbPlayer.ActiveConcentrationPerkID == perk.ID)
+                {
+                    // It's active. Time to disable it.
+                    dbPlayer.ActiveConcentrationPerkID = null;
+                    // And remove the effect icon.
+                    pc.RemoveEffect(_.EFFECT_TYPE_SKILL_INCREASE);
+                    pc.SendMessage("Concentration ability '" + perk.Name + "' deactivated.");
+                    return;
+                }
+            }
+            
             // Check cooldown
             int? cooldownCategoryID = perkAction.CooldownCategoryID(pc, perk.CooldownCategoryID, featID);
             PCCooldown pcCooldown = DataService.GetAll<PCCooldown>().SingleOrDefault(x => x.PlayerID == pc.GlobalID &&

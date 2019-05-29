@@ -1364,6 +1364,7 @@
     <Compile Include="ValueObject\AreaSpawn.cs" />
     <Compile Include="ValueObject\AreaStructure.cs" />
     <Compile Include="ValueObject\ColorNames.cs" />
+    <Compile Include="ValueObject\ConcentrationEffect.cs" />
     <Compile Include="ValueObject\DatabaseAction.cs" />
     <Compile Include="ValueObject\DataPackageFile.cs" />
     <Compile Include="ValueObject\DialogNavigation.cs" />

@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
             return false;
         }
 
-        public void OnConcentrationTick(NWPlayer player, int perkLevel, int tick)
+        public void OnConcentrationTick(NWPlayer player, NWObject target, int perkLevel, int tick)
         {
             
         }

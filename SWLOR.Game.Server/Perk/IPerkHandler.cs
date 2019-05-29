@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Perk
         float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellFeatID);
         int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellFeatID);
         void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID);
-        void OnConcentrationTick(NWPlayer player, int perkLevel, int spellFeatID);
+        void OnConcentrationTick(NWPlayer player, int perkLevel, int tick);
         void OnPurchased(NWPlayer oPC, int newLevel);
         void OnRemoved(NWPlayer oPC);
         void OnItemEquipped(NWPlayer oPC, NWItem oItem);

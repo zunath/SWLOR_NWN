@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Perk.Armor
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_IMP_GLOBE_USE), target);
         }
 
-        public void OnConcentrationTick(NWPlayer player, int perkLevel, int spellFeatID)
+        public void OnConcentrationTick(NWPlayer player, int perkLevel, int tick)
         {
         }
 

@@ -12,6 +12,7 @@ using System;
 using System.Linq;
 using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.Event.SWLOR;
 using static NWN._;
 using Object = NWN.Object;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
@@ -37,6 +38,7 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnModuleEnter>(message => OnModuleEnter());
             MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
             MessageHub.Instance.Subscribe<OnModuleUseFeat>(message => OnModuleUseFeat());
+            MessageHub.Instance.Subscribe<OnObjectProcessorRan>(message => ProcessConcentrationEffects());
         }
 
         private static void OnModuleEnter()
@@ -198,6 +200,22 @@ namespace SWLOR.Game.Server.Service
             {
                 target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_FORCE);
                 ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.ConcentrationAbility, featID);
+            }
+        }
+
+        private static void ProcessConcentrationEffects()
+        {
+            // Loop through each player. If they have a concentration ability active,
+            // process it using that perk's OnConcentrationTick() method.
+            foreach (var player in NWModule.Get().Players)
+            {
+                Player dbPlayer = DataService.Get<Player>(player.GlobalID);
+                if (dbPlayer.ActiveConcentrationPerkID == null) continue;
+
+                int tick = player.GetLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK") + 1;
+                var handler = PerkService.GetPerkHandler((int)dbPlayer.ActiveConcentrationPerkID);
+                handler.OnConcentrationTick(player, dbPlayer.ActiveConcentrationPerkLevel, tick);
+                player.SetLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK", tick);
             }
         }
 

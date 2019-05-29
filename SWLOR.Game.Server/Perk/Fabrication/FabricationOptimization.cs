@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Perk.Fabrication
             return false;
         }
 
-        public void OnConcentrationTick(NWPlayer player, int perkLevel, int spellFeatID)
+        public void OnConcentrationTick(NWPlayer player, int perkLevel, int tick)
         {
             
         }

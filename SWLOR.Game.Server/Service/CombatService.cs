@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Service
                 HandleApplySneakAttackDamage();
             }
 
-            HandleShieldProtection();
+            HandleDamageImmunity();
             HandleAbsorptionFieldEffect();
             HandleRecoveryBlast();
             HandleTranquilizerEffect();
@@ -169,15 +169,20 @@ namespace SWLOR.Game.Server.Service
             }
         }
         
-        private static void HandleShieldProtection()
+        private static void HandleDamageImmunity()
         {
             DamageEventData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
 
             NWCreature target = Object.OBJECT_SELF;
-
             NWItem shield = target.LeftHand;
+            var concentrationEffect = AbilityService.GetActiveConcentrationEffect(target);
+            double reduction = 0.0f;
 
+            // Shield damage reduction and absorb energy are calculated here. They don't stack, so the one
+            // with the highest reduction will take precedence.
+
+            // Calculate shield damage reduction.
             if (ItemService.ShieldBaseItemTypes.Contains(shield.BaseItemType))
             {
                 // Apply damage scaling based on shield presence
@@ -185,24 +190,44 @@ namespace SWLOR.Game.Server.Service
                 float perkBonus = 0.02f * perkLevel;
 
                 // DI = 10% + 1% / 3 AC bonuses on the shield + 2% per perk bonus. 
-                double damageMultiplier = 1.0 - ((0.1 + 0.01 * shield.AC / 3) + perkBonus);
-
-                data.Bludgeoning = (int) (data.Bludgeoning * damageMultiplier);
-                data.Pierce = (int)(data.Pierce * damageMultiplier);
-                data.Slash = (int)(data.Slash * damageMultiplier);
-                data.Magical = (int)(data.Magical * damageMultiplier);
-                data.Acid = (int)(data.Acid * damageMultiplier);
-                data.Cold = (int)(data.Cold * damageMultiplier);
-                data.Divine = (int)(data.Divine * damageMultiplier);
-                data.Electrical = (int)(data.Electrical * damageMultiplier);
-                data.Fire = (int)(data.Fire * damageMultiplier);
-                data.Negative = (int)(data.Negative * damageMultiplier);
-                data.Positive = (int)(data.Positive * damageMultiplier);
-                data.Sonic = (int)(data.Sonic * damageMultiplier);
-                data.Base = (int)(data.Base * damageMultiplier);
-
-                NWNXDamage.SetDamageEventData(data);
+                reduction = (0.1 + 0.01 * shield.AC / 3) + perkBonus;
             }
+            // Calculate Absorb Energy concentration effect reduction.
+            if (concentrationEffect.Type == PerkType.AbsorbEnergy)
+            {
+                double perkReduction = concentrationEffect.Tier * 0.1;
+                if (perkReduction > reduction)
+                {
+                    reduction = perkReduction;
+                    // Calculate and award force XP based on total damage reduced.
+                    int xp = (int)(data.Total * reduction);
+                    if (xp < 5) xp = 5;
+
+                    SkillService.GiveSkillXP(target.Object, SkillType.ForceControl, xp);
+                }
+            }
+
+            // No reduction found. Bail out early.
+            if (reduction <= 0.0f) return;
+
+            target.SendMessage("Damage reduced by " + (int)(reduction * 100) + "%");
+            reduction = 1.0f - reduction;
+
+            data.Bludgeoning = (int)(data.Bludgeoning * reduction);
+            data.Pierce = (int)(data.Pierce * reduction);
+            data.Slash = (int)(data.Slash * reduction);
+            data.Magical = (int)(data.Magical * reduction);
+            data.Acid = (int)(data.Acid * reduction);
+            data.Cold = (int)(data.Cold * reduction);
+            data.Divine = (int)(data.Divine * reduction);
+            data.Electrical = (int)(data.Electrical * reduction);
+            data.Fire = (int)(data.Fire * reduction);
+            data.Negative = (int)(data.Negative * reduction);
+            data.Positive = (int)(data.Positive * reduction);
+            data.Sonic = (int)(data.Sonic * reduction);
+            data.Base = (int)(data.Base * reduction);
+
+            NWNXDamage.SetDamageEventData(data);
         }
 
         private static void HandleApplySneakAttackDamage()

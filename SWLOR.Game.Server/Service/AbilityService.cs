@@ -13,6 +13,7 @@ using System.Linq;
 using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
+using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 using Object = NWN.Object;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
@@ -205,6 +206,23 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// Returns the currently active concentration perk for a given creature.
+        /// If no concentration perk is active, PerkType.Unknown will be returned.
+        /// </summary>
+        /// <param name="creature"></param>
+        /// <returns></returns>
+        public static ConcentrationEffect GetActiveConcentrationEffect(NWCreature creature)
+        {
+            // In the future, we'll enable this to work with all creatures and not players. For now, return unknown.
+            if (!creature.IsPlayer) return new ConcentrationEffect(PerkType.Unknown, 0);
+
+            Player dbPlayer = DataService.Get<Player>(creature.GlobalID);
+            if (dbPlayer.ActiveConcentrationPerkID == null) return new ConcentrationEffect(PerkType.Unknown, 0);
+
+            return new ConcentrationEffect((PerkType)dbPlayer.ActiveConcentrationPerkID, dbPlayer.ActiveConcentrationTier);
+        }
+
         private static void ProcessConcentrationEffects()
         {
             // Loop through each player. If they have a concentration ability active,
@@ -222,6 +240,7 @@ namespace SWLOR.Game.Server.Service
                                                                          x.Level == dbPlayer.ActiveConcentrationTier);
                 var handler = PerkService.GetPerkHandler((int)dbPlayer.ActiveConcentrationPerkID);
                 int fpCost = handler.FPCost(player, perkLevel.BaseFPCost, dbPlayer.ActiveConcentrationTier);
+                NWObject target = player.GetLocalObject("CONCENTRATION_TARGET");
 
                 // Does player have enough FP to maintain this concentration?
                 if (dbPlayer.CurrentFP < fpCost)
@@ -230,6 +249,17 @@ namespace SWLOR.Game.Server.Service
                     dbPlayer.ActiveConcentrationTier = 0;
                     player.SendMessage("Concentration effect has ended because you ran out of FP.");
                     player.DeleteLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK");
+                    player.DeleteLocalObject("CONCENTRATION_TARGET");
+                    player.RemoveEffect(_.EFFECT_TYPE_SKILL_INCREASE); // Remove the effect icon.
+                }
+                // Is the target still valid?
+                else if (!target.IsValid)
+                {
+                    dbPlayer.ActiveConcentrationPerkID = null;
+                    dbPlayer.ActiveConcentrationTier = 0;
+                    player.SendMessage("Concentration effect has ended because your target is no longer valid.");
+                    player.DeleteLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK");
+                    player.DeleteLocalObject("CONCENTRATION_TARGET");
                     player.RemoveEffect(_.EFFECT_TYPE_SKILL_INCREASE); // Remove the effect icon.
                 }
                 // Otherwise deduct the required FP.
@@ -247,9 +277,9 @@ namespace SWLOR.Game.Server.Service
                 }
                 
                 // Run this individual perk's concentration tick method if it didn't end this tick.
-                if (dbPlayer.ActiveConcentrationPerkID != null)
+                if (dbPlayer.ActiveConcentrationPerkID != null && target.IsValid)
                 {
-                    handler.OnConcentrationTick(player, dbPlayer.ActiveConcentrationTier, tick);
+                    handler.OnConcentrationTick(player, target, dbPlayer.ActiveConcentrationTier, tick);
                 }
             }
         }
@@ -363,6 +393,11 @@ namespace SWLOR.Game.Server.Service
             {
                 vfxID = VFX_DUR_IOUNSTONE_YELLOW;
                 animationID = ANIMATION_LOOPING_CONJURE1;
+            }
+
+            if (executionType == PerkExecutionType.ConcentrationAbility)
+            {
+                pc.SetLocalObject("CONCENTRATION_TARGET", target);
             }
 
             // If a VFX ID has been specified, play that effect instead of the default one.

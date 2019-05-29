@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.Perk.Throwing
             return false;
         }
 
-        public void OnConcentrationTick(NWPlayer player, int perkLevel, int tick)
+        public void OnConcentrationTick(NWPlayer player, NWObject target, int perkLevel, int tick)
         {
             throw new NotImplementedException();
         }

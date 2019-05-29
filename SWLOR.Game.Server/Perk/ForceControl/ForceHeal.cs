@@ -1,5 +1,7 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
 {
@@ -62,7 +64,30 @@ namespace SWLOR.Game.Server.Perk.ForceControl
 
         public void OnConcentrationTick(NWPlayer player, NWObject target, int perkLevel, int tick)
         {
-            
+            int amount = 0;
+
+            switch (perkLevel)
+            {
+                case 1: amount = 2; break;
+                case 2: amount = 3; break;
+                case 3: amount = 5; break;
+                case 4: amount = 7; break;
+                case 5: amount = 10; break;
+            }
+
+            // If target is at max HP, we do nothing else.
+            int difference = target.MaxHP - target.CurrentHP;
+            if (difference <= 0) return;
+
+            // If we would heal the target for more than their max, reduce the amount healed to that number.
+            if (amount > difference)
+                amount = difference;
+
+            // Apply the heal
+            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectHeal(amount), target);
+
+            // Give Control XP
+            SkillService.GiveSkillXP(player, SkillType.ForceControl, amount);
         }
     }
 }

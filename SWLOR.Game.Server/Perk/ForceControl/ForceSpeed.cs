@@ -163,7 +163,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             NWNXCreature.RemoveFeat(appliedTo.Object, _.FEAT_EPIC_DODGE);
         }
 
-        public void OnConcentrationTick(NWPlayer player, int perkLevel, int spellFeatID)
+        public void OnConcentrationTick(NWPlayer player, int perkLevel, int tick)
         {
             throw new NotImplementedException();
         }

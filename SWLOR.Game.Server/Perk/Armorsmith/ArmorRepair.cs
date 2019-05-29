@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Perk.Armorsmith
             return false;
         }
 
-        public void OnConcentrationTick(NWPlayer player, int perkLevel, int spellFeatID)
+        public void OnConcentrationTick(NWPlayer player, int perkLevel, int tick)
         {
             
         }

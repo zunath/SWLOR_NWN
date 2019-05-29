@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
             return false;
         }
 
-        public void OnConcentrationTick(NWPlayer player, int perkLevel, int spellFeatID)
+        public void OnConcentrationTick(NWPlayer player, int perkLevel, int tick)
         {
             
         }

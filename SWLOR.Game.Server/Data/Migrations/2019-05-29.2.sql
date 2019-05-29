@@ -752,3 +752,7 @@ ADD ActiveConcentrationPerkID INT NULL
 ALTER TABLE dbo.Player
 ADD CONSTRAINT FK_Player_ActiveConcentrationPerkID
 FOREIGN KEY(ActiveConcentrationPerkID) REFERENCES Perk(ID)
+
+-- Add the active concentration perk level column to player table
+ALTER TABLE dbo.Player
+ADD ActiveConcentrationPerkLevel INT NOT NULL DEFAULT 0

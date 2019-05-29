@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Perk.Throwing
             return false;
         }
 
-        public void OnConcentrationTick(NWPlayer player, int perkLevel, int spellFeatID)
+        public void OnConcentrationTick(NWPlayer player, int perkLevel, int tick)
         {
             
         }

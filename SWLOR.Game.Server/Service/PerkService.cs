@@ -271,10 +271,10 @@ namespace SWLOR.Game.Server.Service
                     var perk = GetPerkByID(pcPerk.PerkID);
                     if (perk.ExecutionTypeID == (int)PerkExecutionType.None) continue;
                     var perkFeat = DataService.SingleOrDefault<PerkFeat>(x => x.PerkID == pcPerk.PerkID);
-                    int featID = perkFeat == null ? -1 : perkFeat.FeatID;
+                    int spellTier = perkFeat?.PerkLevelUnlocked ?? 0;
 
                     var handler = GetPerkHandler(pcPerk.PerkID);
-                    handler.OnImpact(oPC, oItem, pcPerk.PerkLevel, featID);
+                    handler.OnImpact(oPC, oItem, pcPerk.PerkLevel, spellTier);
                 }
             }
         }

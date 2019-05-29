@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
     public class ForceBody: IPerkHandler
     {
         public PerkType PerkType => PerkType.ForceBody;
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier)
         {
             if (oPC.CurrentHP <= 1)
                 return "You do not have enough HP to use this ability.";
@@ -24,50 +24,50 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             return string.Empty;
         }
 
-        public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)
+        public int FPCost(NWPlayer oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellFeatID)
+        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellTier)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellFeatID)
+        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellTier)
         {
-            switch ((CustomFeatType)spellFeatID)
+            switch (spellTier)
             {
-                case CustomFeatType.ForceBody1: return 900f; // 15 minutes
-                case CustomFeatType.ForceBody2: return 600f; // 10 minutes
-                case CustomFeatType.ForceBody3: return 420f; // 7 minutes
-                case CustomFeatType.ForceBody4: return 300f; // 5 minutes
+                case 1: return 900f; // 15 minutes
+                case 2: return 600f; // 10 minutes
+                case 3: return 420f; // 7 minutes
+                case 4: return 300f; // 5 minutes
             }
 
             return baseCooldownTime;
         }
 
-        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellFeatID)
+        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellTier)
         {
             return baseCooldownCategoryID;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
+        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellTier)
         {
             float percent = 0.0f;
 
-            switch ((CustomFeatType)spellFeatID)
+            switch (spellTier)
             {
-                case CustomFeatType.ForceBody1:
+                case 1:
                     percent = 0.10f;
                     break;
-                case CustomFeatType.ForceBody2:
+                case 2:
                     percent = 0.20f;
                     break;
-                case CustomFeatType.ForceBody3:
+                case 3:
                     percent = 0.35f;
                     break;
-                case CustomFeatType.ForceBody4:
+                case 4:
                     percent = 0.50f;
                     break;
             }

@@ -43,69 +43,69 @@ namespace SWLOR.Game.Server.Perk.ForceControl
         }
 
         public PerkType PerkType => PerkType.ForceSpeed;
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier)
         {
             return string.Empty;
         }
         
-        public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)
+        public int FPCost(NWPlayer oPC, int baseFPCost, int spellTier)
         {
-            switch ((CustomFeatType)spellFeatID)
+            switch (spellTier)
             {
-                case CustomFeatType.ForceSpeed1: return 2;
-                case CustomFeatType.ForceSpeed2: return 4;
-                case CustomFeatType.ForceSpeed3: return 6;
-                case CustomFeatType.ForceSpeed4: return 8;
-                case CustomFeatType.ForceSpeed5: return 20;
+                case 1: return 2;
+                case 2: return 4;
+                case 3: return 6;
+                case 4: return 8;
+                case 5: return 20;
             }
 
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellFeatID)
+        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellTier)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellFeatID)
+        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellTier)
         {
             return baseCooldownTime;
         }
 
-        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellFeatID)
+        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellTier)
         {
             return baseCooldownCategoryID;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
+        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellTier)
         {
             Effect effect;
             float duration;
-            switch ((CustomFeatType)spellFeatID)
+            switch (spellTier)
             {
-                case CustomFeatType.ForceSpeed1:
+                case 1:
                     effect = _.EffectMovementSpeedIncrease(10);
                     effect = _.EffectLinkEffects(effect, _.EffectAbilityIncrease(_.ABILITY_DEXTERITY, 2));
                     duration = 60f;
                     break;
-                case CustomFeatType.ForceSpeed2:
+                case 2:
                     effect = _.EffectMovementSpeedIncrease(20);
                     effect = _.EffectLinkEffects(effect, _.EffectAbilityIncrease(_.ABILITY_DEXTERITY, 4));
                     duration = 90f;
                     break;
-                case CustomFeatType.ForceSpeed3:
+                case 3:
                     effect = _.EffectMovementSpeedIncrease(30);
                     effect = _.EffectLinkEffects(effect, _.EffectAbilityIncrease(_.ABILITY_DEXTERITY, 6));
                     effect = _.EffectLinkEffects(effect, _.EffectModifyAttacks(1));
                     duration = 120f;
                     break;
-                case CustomFeatType.ForceSpeed4:
+                case 4:
                     effect = _.EffectMovementSpeedIncrease(40);
                     effect = _.EffectLinkEffects(effect, _.EffectAbilityIncrease(_.ABILITY_DEXTERITY, 8));
                     effect = _.EffectLinkEffects(effect, _.EffectModifyAttacks(1));
                     duration = 150f;
                     break;
-                case CustomFeatType.ForceSpeed5:
+                case 5:
                     effect = _.EffectMovementSpeedIncrease(50);
                     effect = _.EffectLinkEffects(effect, _.EffectAbilityIncrease(_.ABILITY_DEXTERITY, 6));
                     effect = _.EffectLinkEffects(effect, _.EffectModifyAttacks(1));

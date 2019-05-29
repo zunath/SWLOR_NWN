@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Perk.Throwing
     {
         public PerkType PerkType => PerkType.PreciseToss;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier)
         {
             if (oPC.RightHand.CustomItemType != CustomItemType.Throwing)
                 return "Must be equipped with a throwing weapon to use that ability.";
@@ -20,27 +20,27 @@ namespace SWLOR.Game.Server.Perk.Throwing
             return string.Empty;
         }
 
-        public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)
+        public int FPCost(NWPlayer oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellFeatID)
+        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellTier)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellFeatID)
+        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellTier)
         {
             return baseCooldownTime;
         }
 
-        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellFeatID)
+        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellTier)
         {
             return baseCooldownCategoryID;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int level, int spellFeatID)
+        public void OnImpact(NWPlayer player, NWObject target, int level, int spellTier)
         {
             int damage;
             int seconds;

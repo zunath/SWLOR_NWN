@@ -6,12 +6,12 @@ namespace SWLOR.Game.Server.Perk
     public interface IPerkHandler
     {
         PerkType PerkType { get; }
-        string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellFeatID);
-        int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID);
-        float CastingTime(NWPlayer oPC, float baseCastingTime, int spellFeatID);
-        float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellFeatID);
-        int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellFeatID);
-        void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID);
+        string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier);
+        int FPCost(NWPlayer oPC, int baseFPCost, int spellTier);
+        float CastingTime(NWPlayer oPC, float baseCastingTime, int spellTier);
+        float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellTier);
+        int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellTier);
+        void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellTier);
         void OnConcentrationTick(NWPlayer player, int perkLevel, int tick);
         void OnPurchased(NWPlayer oPC, int newLevel);
         void OnRemoved(NWPlayer oPC);

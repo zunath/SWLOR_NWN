@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Event.Delayed
                 int perkID = (int) args[2];
                 NWObject target = (NWObject) args[3];
                 int pcPerkLevel = (int) args[4];
-                int featID = (int) args[5];
+                int spellTier = (int) args[5];
                 float armorPenalty = (float) args[6];
 
                 // Get the relevant perk information from the database.
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Event.Delayed
                 IPerkHandler perk = PerkService.GetPerkHandler(perkID);
 
                 // Pull back cooldown information.
-                int? cooldownID = perk.CooldownCategoryID(pc, dbPerk.CooldownCategoryID, featID);
+                int? cooldownID = perk.CooldownCategoryID(pc, dbPerk.CooldownCategoryID, spellTier);
                 CooldownCategory cooldown = cooldownID == null ? null : DataService.SingleOrDefault<CooldownCategory>(x => x.ID == cooldownID);
 
                 // If the player interrupted the spell or died, we can bail out early.
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Event.Delayed
                     executionType == PerkExecutionType.ConcentrationAbility)
                 {
                     // Run the impact script.
-                    perk.OnImpact(pc, target, pcPerkLevel, featID);
+                    perk.OnImpact(pc, target, pcPerkLevel, spellTier);
 
                     // If an animation is specified for this perk, play it now.
                     if (dbPerk.CastAnimationID != null && dbPerk.CastAnimationID > 0)
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Event.Delayed
                 {
                     // Adjust FP only if spell cost > 0
                     PerkLevel perkLevel = DataService.Single<PerkLevel>(x => x.PerkID == perkID && x.Level == pcPerkLevel);
-                    int fpCost = perk.FPCost(pc, perkLevel.BaseFPCost, featID);
+                    int fpCost = perk.FPCost(pc, perkLevel.BaseFPCost, spellTier);
 
                     if (fpCost > 0)
                     {
@@ -95,6 +95,7 @@ namespace SWLOR.Game.Server.Event.Delayed
                 else
                 {
                     pcEntity.ActiveConcentrationPerkID = perkID;
+                    pcEntity.ActiveConcentrationTier = spellTier;
                     submitDataChangeUpdate = true;
                     pc.SendMessage("Concentration ability activated: " + dbPerk.Name);
 
@@ -106,7 +107,7 @@ namespace SWLOR.Game.Server.Event.Delayed
                 // Handle applying cooldowns, if necessary.
                 if (cooldown != null)
                 {
-                    AbilityService.ApplyCooldown(pc, cooldown, perk, featID, armorPenalty);
+                    AbilityService.ApplyCooldown(pc, cooldown, perk, spellTier, armorPenalty);
                 }
                 
                 // Mark the player as no longer busy.

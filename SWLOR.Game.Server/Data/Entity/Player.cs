@@ -63,5 +63,6 @@ namespace SWLOR.Game.Server.Data.Entity
         public int RoleplayPoints { get; set; }
         public int RoleplayXP { get; set; }
         public SpecializationType SpecializationID { get; set; }
+        public int? ActiveConcentrationPerkID { get; set; }
     }
 }

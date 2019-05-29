@@ -312,10 +312,10 @@ INSERT INTO dbo.Perk (ID, PerkCategoryID, CooldownCategoryID, ExecutionTypeID, I
  (179, 46, 28, 3, 1, 'Battle Meditation', 1, 'The caster boosts their nearby allies at the expense of their own abilities.', 10, 2, 0),
  (180, 51, 34, 3, 0, 'Animal Bond', 1, 'The caster convinces a creature to travel and fight with them.', 0, 0, 0),
  (181, 42, 35, 3, 0, 'Drain Life', 1, 'Steals HP from a single target every second.', 0, 0, 2),
- (182, 42, 36, 3, 0, 'Force Lightning', 1, 'The caster convinces a creature to travel and fight with them.', 0, 0, 2),
- (183, 49, 37, 3, 0, 'Force Push', 1, 'The caster convinces a creature to travel and fight with them.', 0, 0, 0),
- (184, 42, 38, 3, 0, 'Force Breach', 1, 'The caster convinces a creature to travel and fight with them.', 0, 0, 0),
- (185, 45, 39, 3, 0, 'Force Heal', 1, 'The caster convinces a creature to travel and fight with them.', 0, 0, 1)
+ (182, 42, 36, 3, 0, 'Force Lightning', 1, 'Deals electrical damage over time to a single target.', 0, 0, 2),
+ (183, 49, 37, 3, 0, 'Force Push', 1, 'Knocks down a single target or, if resisted, slows the target instead.', 0, 0, 0),
+ (184, 42, 38, 3, 0, 'Force Breach', 1, 'Deals direct damage to a single target.', 0, 0, 0),
+ (185, 45, 39, 3, 0, 'Force Heal', 1, 'Restores HP on a single target over time.', 0, 0, 1)
  ;
 
 -- Levels for each perk.

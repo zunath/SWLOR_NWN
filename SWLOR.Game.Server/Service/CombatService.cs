@@ -384,6 +384,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="defender">The creature being targeted by the ability.</param>
         /// <param name="skill">The skill used for this ability.</param>
         /// <param name="balanceType">The force balance type to use for this ability.</param>
+        /// <param name="sendRollMessage">If true, the roll message will be sent. Otherwise it won't be.</param>
         /// <returns>Data regarding the ability resistance roll</returns>
         public static AbilityResistanceResult CalculateAbilityResistance(NWCreature attacker, NWCreature defender, SkillType skill, ForceBalanceType balanceType, bool sendRollMessage = true)
         {

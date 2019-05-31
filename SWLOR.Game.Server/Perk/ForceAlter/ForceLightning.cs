@@ -1,5 +1,8 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using System;
+using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
@@ -60,9 +63,33 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             return false;
         }
 
-        public void OnConcentrationTick(NWPlayer player, NWObject target, int perkLevel, int tick)
+        public void OnConcentrationTick(NWPlayer player, NWObject target, int spellTier, int tick)
         {
-            
+            int amount;
+
+            switch (spellTier)
+            {
+                case 1:
+                    amount = 10;
+                    break;
+                case 2:
+                    amount = 12;
+                    break;
+                case 3:
+                    amount = 14;
+                    break;
+                case 4:
+                    amount = 16;
+                    break;
+                case 5:
+                    amount = 20;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(spellTier));
+            }
+
+            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectDamage(amount, _.DAMAGE_TYPE_ELECTRICAL), target);
+            SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
         }
     }
 }

@@ -116,8 +116,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            PerkLevel perkLevel = DataService.Single<PerkLevel>(x => x.PerkID == perkFeat.PerkID && x.Level == pcPerkLevel);
-            int fpCost = perkAction.FPCost(pc, perkAction.FPCost(pc, perkLevel.BaseFPCost, perkFeat.PerkLevelUnlocked), perkFeat.PerkLevelUnlocked);
+            int fpCost = perkAction.FPCost(pc, perkAction.FPCost(pc, perkFeat.BaseFPCost, perkFeat.PerkLevelUnlocked), perkFeat.PerkLevelUnlocked);
             if (playerEntity.CurrentFP < fpCost)
             {
                 pc.SendMessage("You do not have enough FP. (Required: " + fpCost + ". You have: " + playerEntity.CurrentFP + ")");
@@ -250,11 +249,16 @@ namespace SWLOR.Game.Server.Service
                 // Track the current tick.
                 int tick = player.GetLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK") + 1;
                 player.SetLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK", tick);
+                
+                PerkFeat perkFeat = DataService.Single<PerkFeat>(x => x.PerkID == dbPlayer.ActiveConcentrationPerkID &&
+                                                                      x.PerkLevelUnlocked == dbPlayer.ActiveConcentrationTier);
 
-                PerkLevel perkLevel = DataService.Single<PerkLevel>(x => x.PerkID == dbPlayer.ActiveConcentrationPerkID && 
-                                                                         x.Level == dbPlayer.ActiveConcentrationTier);
+                // Are we ready to continue processing this concentration effect?
+                if (tick % perkFeat.ConcentrationTickInterval != 0) return;
+
+                // Get the perk handler, FP cost, and the target.
                 var handler = PerkService.GetPerkHandler((int)dbPlayer.ActiveConcentrationPerkID);
-                int fpCost = handler.FPCost(player, perkLevel.BaseFPCost, dbPlayer.ActiveConcentrationTier);
+                int fpCost = handler.FPCost(player, perkFeat.ConcentrationFPCost, dbPlayer.ActiveConcentrationTier);
                 NWObject target = player.GetLocalObject("CONCENTRATION_TARGET");
 
                 // Does player have enough FP to maintain this concentration?

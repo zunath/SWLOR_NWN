@@ -1359,3 +1359,17 @@ SET BaseFPCost = 30,
 	ConcentrationTickInterval = 0
 WHERE PerkID = @PerkID 
 	AND PerkLevelUnlocked = 6
+
+
+
+
+-- Some perks are cut until phase 2. Disable them for now.
+UPDATE dbo.Perk
+SET IsActive = 0
+WHERE ID IN (
+	178,
+	177,
+	180,
+	175,
+	76
+)

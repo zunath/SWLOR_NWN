@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
         public void OnConcentrationTick(NWPlayer player, NWObject target, int perkLevel, int tick)
         {
-            
+
         }
     }
 }

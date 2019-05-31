@@ -1,5 +1,8 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using System;
+using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
@@ -33,6 +36,31 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
         public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellTier)
         {
+            int damage;
+
+            switch (spellTier)
+            {
+                case 1:
+                    damage = 100;
+                    break;
+                case 2:
+                    damage = 125;
+                    break;
+                case 3:
+                    damage = 160;
+                    break;
+                case 4:
+                    damage = 200;
+                    break;
+                case 5:
+                    damage = 250;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(spellTier));
+            }
+
+            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectDamage(damage), target);
+            SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
         }
 
         public void OnPurchased(NWPlayer oPC, int newLevel)

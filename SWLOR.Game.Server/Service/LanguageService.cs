@@ -69,6 +69,18 @@ namespace SWLOR.Game.Server.Service
             int rank = SkillService.GetPCSkillRank(listenerAsPlayer, language);
             int maxRank = SkillService.GetSkill(language).MaxRank;
 
+            // Check for the Comprehend Speech concentration ability.
+            Player dbPlayer = DataService.Get<Player>(listenerAsPlayer.GlobalID);
+            if (dbPlayer.ActiveConcentrationPerkID == (int) PerkType.ComprehendSpeech)
+            {
+                int bonus = 5 * dbPlayer.ActiveConcentrationTier;
+                rank += bonus;
+            }
+
+            // Ensure we don't go over the maximum.
+            if (rank > maxRank)
+                rank = maxRank;
+
             if (rank == maxRank || speaker == listener)
             {
                 // Guaranteed success - return original.

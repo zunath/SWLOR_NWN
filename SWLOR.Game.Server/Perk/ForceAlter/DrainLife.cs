@@ -1,5 +1,8 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using System;
+using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
@@ -8,6 +11,12 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         public PerkType PerkType => PerkType.DrainLife;
         public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier)
         {
+            if (!oTarget.IsCreature)
+                return "This ability can only be used on living creatures.";
+            NWCreature targetCreature = oTarget.Object;
+            if (targetCreature.RacialType == (int)CustomRaceType.Robot)
+                return "This ability cannot be used on droids.";
+
             return string.Empty;
         }
         
@@ -60,9 +69,39 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             return false;
         }
 
-        public void OnConcentrationTick(NWPlayer player, NWObject target, int perkLevel, int tick)
+        public void OnConcentrationTick(NWPlayer player, NWObject target, int spellTier, int tick)
         {
-            
+            int amount;
+
+            switch (spellTier)
+            {
+                case 1:
+                    amount = 5;
+                    break;
+                case 2:
+                    amount = 6;
+                    break;
+                case 3:
+                    amount = 7;
+                    break;
+                case 4:
+                    amount = 8;
+                    break;
+                case 5:
+                    amount = 10;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(spellTier));
+            }
+
+            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectDamage(amount, _.DAMAGE_TYPE_NEGATIVE), target);
+
+            // Only apply a heal if caster is not at max HP. Otherwise they'll get unnecessary spam.
+            if (player.CurrentHP < player.MaxHP)
+            {
+                _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectHeal(amount), player);
+            }
+            SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
         }
     }
 }

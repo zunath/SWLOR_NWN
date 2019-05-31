@@ -136,7 +136,12 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             Effect attackEffect = _.EffectModifyAttacks(attacks);
             Effect finalEffect = _.EffectLinkEffects(strEffect, conEffect);
             finalEffect = _.EffectLinkEffects(finalEffect, acEffect);
-            finalEffect = _.EffectLinkEffects(finalEffect, attackEffect);
+
+            // Only apply the attack effect if this spell tier increases it.
+            if (attacks > 0)
+            {
+                finalEffect = _.EffectLinkEffects(finalEffect, attackEffect);
+            }
             finalEffect = _.TagEffect(finalEffect, "FORCE_ABILITY_RAGE");
 
             Effect damageEffect = _.EffectDamage(hpPenalty);

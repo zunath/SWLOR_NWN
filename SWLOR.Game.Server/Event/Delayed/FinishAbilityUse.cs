@@ -81,8 +81,8 @@ namespace SWLOR.Game.Server.Event.Delayed
                 if (executionType != PerkExecutionType.ConcentrationAbility)
                 {
                     // Adjust FP only if spell cost > 0
-                    PerkLevel perkLevel = DataService.Single<PerkLevel>(x => x.PerkID == perkID && x.Level == pcPerkLevel);
-                    int fpCost = perk.FPCost(pc, perkLevel.BaseFPCost, spellTier);
+                    PerkFeat perkFeat = DataService.Single<PerkFeat>(x => x.PerkID == perkID && x.PerkLevelUnlocked == spellTier);
+                    int fpCost = perk.FPCost(pc, perkFeat.BaseFPCost, spellTier);
 
                     if (fpCost > 0)
                     {

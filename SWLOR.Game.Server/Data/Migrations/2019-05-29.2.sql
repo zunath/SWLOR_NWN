@@ -771,3 +771,591 @@ ADD CONSTRAINT UQ_PerkFeat_SurrogateKey UNIQUE(PerkID, PerkLevelUnlocked)
 -- A lot of our look-ups are based on the feat only, so we want to be sure there are no dupes.
 ALTER TABLE dbo.PerkFeat
 ADD CONSTRAINT UQ_PerkFeat_FeatID UNIQUE(FeatID)
+
+
+
+-- Moving FP costs and tick interval to the perk feat instead of perk level
+ALTER TABLE dbo.PerkFeat
+ADD BaseFPCost INT NOT NULL DEFAULT 0
+
+ALTER TABLE dbo.PerkFeat
+ADD ConcentrationFPCost INT NOT NULL DEFAULT 0
+
+ALTER TABLE dbo.PerkFeat
+ADD ConcentrationTickInterval INT NOT NULL DEFAULT 0
+
+
+EXEC dbo.ADM_Drop_Column @TableName = N'PerkLevel' , -- nvarchar(200)
+                         @ColumnName = N'BaseFPCost'  -- nvarchar(200)
+
+
+DECLARE @PerkID INT 
+
+-- 3 = Force Speed
+SET @PerkID = 3
+
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 2,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 4,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 6,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 3
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 8,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 4
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 20,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 5
+
+
+	
+-- 4 = Absorb Energy
+SET @PerkID = 4
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 2,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 4,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 6,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 8,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 4
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 10,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 5
+
+
+
+-- 185 = Force Heal
+SET @PerkID = 185
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 1,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 1,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 1,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 1,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 4
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 1,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 5
+
+
+	
+-- 13 = Mind Shield
+SET @PerkID = 13
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 1,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 2,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 3,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+
+
+-- 19 = Rage
+SET @PerkID = 19
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 2,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 4,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 6,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 8,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 4
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 10,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 5
+
+
+
+-- 76 = Force Persuade
+SET @PerkID = 76
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 8,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 20,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+
+
+	
+-- 78 = Confusion
+SET @PerkID = 78
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 8,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 20,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+
+
+
+-- 126 = Force Stun
+SET @PerkID = 126
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 8,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 12,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 20,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+
+
+	
+-- 183 = Force Push
+SET @PerkID = 183
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 4,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 6,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 8,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 10,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 4
+
+
+	
+-- 182 = Force Lightning
+SET @PerkID = 182
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 2,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 2,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 2,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 2,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 4
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 2,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 5
+
+
+	
+-- 181 = Drain Life
+SET @PerkID = 181
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 4,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 4,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 4,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 4,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 4
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 4,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 5
+
+
+	
+-- 173 = Sith Alchemy
+SET @PerkID = 173
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 25,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 300,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 5,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+
+
+	
+-- 184 = Force Breach
+SET @PerkID = 184
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 8,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 10,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 12,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 14,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 4
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 16,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 5
+
+
+
+
+-- 174 = Throw Saber
+SET @PerkID = 174
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 4,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 5,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 6,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 8,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 4
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 10,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 5
+
+-- 175 = Premonition
+SET @PerkID = 174
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 5,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 5,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 16,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+
+
+
+-- 176 = Comprehend Speech
+SET @PerkID = 176
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 1,
+	ConcentrationTickInterval = 6
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 2,
+	ConcentrationTickInterval = 6
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 3,
+	ConcentrationTickInterval = 6
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 4,
+	ConcentrationTickInterval = 6
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 4
+
+
+	
+-- 177 = Force Detection
+SET @PerkID = 177
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 1,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 2,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 3,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 4,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 4
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 5,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 5
+
+
+
+-- 178 = Farseeing
+SET @PerkID = 178
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 30,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+
+	
+-- 179 = Battle Meditation
+SET @PerkID = 179
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 1,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 2,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 0,
+	ConcentrationFPCost = 3,
+	ConcentrationTickInterval = 1
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+
+	
+-- 180 = Animal Bond
+SET @PerkID = 180
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 4,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID
+	AND PerkLevelUnlocked = 1
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 8,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 2
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 12,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 3
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 16,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 4
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 20,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 5
+UPDATE dbo.PerkFeat
+SET BaseFPCost = 30,
+	ConcentrationFPCost = 0,
+	ConcentrationTickInterval = 0
+WHERE PerkID = @PerkID 
+	AND PerkLevelUnlocked = 6

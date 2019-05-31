@@ -214,13 +214,28 @@ namespace SWLOR.Game.Server.Service
         /// <returns></returns>
         public static ConcentrationEffect GetActiveConcentrationEffect(NWCreature creature)
         {
-            // In the future, we'll enable this to work with all creatures and not players. For now, return unknown.
+            // In the future, we'll enable this to work with all creatures and not just players. For now, return unknown.
             if (!creature.IsPlayer) return new ConcentrationEffect(PerkType.Unknown, 0);
 
             Player dbPlayer = DataService.Get<Player>(creature.GlobalID);
             if (dbPlayer.ActiveConcentrationPerkID == null) return new ConcentrationEffect(PerkType.Unknown, 0);
 
             return new ConcentrationEffect((PerkType)dbPlayer.ActiveConcentrationPerkID, dbPlayer.ActiveConcentrationTier);
+        }
+
+        public static void EndConcentrationEffect(NWCreature creature)
+        {
+            // In the future, we'll enable this to work with all creatures and not just players. For now, bail out early.
+            if (!creature.IsPlayer) return;
+
+            Player dbPlayer = DataService.Get<Player>(creature.GlobalID);
+            if (dbPlayer.ActiveConcentrationPerkID == null) return;
+
+            dbPlayer.ActiveConcentrationPerkID = null;
+            dbPlayer.ActiveConcentrationTier = 0;
+            creature.DeleteLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK");
+            creature.DeleteLocalObject("CONCENTRATION_TARGET");
+            creature.RemoveEffect(_.EFFECT_TYPE_SKILL_INCREASE); // Remove the effect icon.
         }
 
         private static void ProcessConcentrationEffects()
@@ -245,22 +260,14 @@ namespace SWLOR.Game.Server.Service
                 // Does player have enough FP to maintain this concentration?
                 if (dbPlayer.CurrentFP < fpCost)
                 {
-                    dbPlayer.ActiveConcentrationPerkID = null;
-                    dbPlayer.ActiveConcentrationTier = 0;
                     player.SendMessage("Concentration effect has ended because you ran out of FP.");
-                    player.DeleteLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK");
-                    player.DeleteLocalObject("CONCENTRATION_TARGET");
-                    player.RemoveEffect(_.EFFECT_TYPE_SKILL_INCREASE); // Remove the effect icon.
+                    EndConcentrationEffect(player);
                 }
                 // Is the target still valid?
                 else if (!target.IsValid)
                 {
-                    dbPlayer.ActiveConcentrationPerkID = null;
-                    dbPlayer.ActiveConcentrationTier = 0;
                     player.SendMessage("Concentration effect has ended because your target is no longer valid.");
-                    player.DeleteLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK");
-                    player.DeleteLocalObject("CONCENTRATION_TARGET");
-                    player.RemoveEffect(_.EFFECT_TYPE_SKILL_INCREASE); // Remove the effect icon.
+                    EndConcentrationEffect(player);
                 }
                 // Otherwise deduct the required FP.
                 else
@@ -289,13 +296,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = _.GetLastPlayerDied();
             if (!player.IsPlayer) return;
 
-            Player dbPlayer = DataService.Get<Player>(player.GlobalID);
-            if (dbPlayer.ActiveConcentrationPerkID == null) return; // No concentration effect. Bail out early.
-
-            dbPlayer.ActiveConcentrationPerkID = null;
-            dbPlayer.ActiveConcentrationTier = 0;
-            player.DeleteLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK");
-            player.RemoveEffect(_.EFFECT_TYPE_SKILL_INCREASE); // Remove the effect icon.
+            EndConcentrationEffect(player);
         }
         
         public static void ApplyEnmity(NWPlayer pc, NWCreature target, Data.Entity.Perk perk)

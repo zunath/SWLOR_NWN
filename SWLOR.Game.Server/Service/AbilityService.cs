@@ -260,17 +260,17 @@ namespace SWLOR.Game.Server.Service
                 var handler = PerkService.GetPerkHandler((int)dbPlayer.ActiveConcentrationPerkID);
                 int fpCost = handler.FPCost(player, perkFeat.ConcentrationFPCost, dbPlayer.ActiveConcentrationTier);
                 NWObject target = player.GetLocalObject("CONCENTRATION_TARGET");
-
-                // Does player have enough FP to maintain this concentration?
-                if (dbPlayer.CurrentFP < fpCost)
-                {
-                    player.SendMessage("Concentration effect has ended because you ran out of FP.");
-                    EndConcentrationEffect(player);
-                }
+                
                 // Is the target still valid?
-                else if (!target.IsValid)
+                if (!target.IsValid || target.CurrentHP <= 0)
                 {
                     player.SendMessage("Concentration effect has ended because your target is no longer valid.");
+                    EndConcentrationEffect(player);
+                }
+                // Does player have enough FP to maintain this concentration?
+                else if (dbPlayer.CurrentFP < fpCost)
+                {
+                    player.SendMessage("Concentration effect has ended because you ran out of FP.");
                     EndConcentrationEffect(player);
                 }
                 // Otherwise deduct the required FP.

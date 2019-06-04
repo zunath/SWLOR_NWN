@@ -456,12 +456,12 @@ namespace SWLOR.Game.Server.Service
             //Console.WriteLine("defenderTotal = " + defenderTotal);
             //Console.WriteLine("divisor = " + divisor);
 
-            result.DC = (int) (attackerTotal / divisor) * 100;
+            result.DC = (int) (attackerTotal / divisor * 100);
             result.Roll = RandomService.D100(1);
 
             if (sendRollMessage)
             {
-                string resisted = result.IsResisted ? ColorTokenService.Red(" [RESISTED " + result.Delta + "%]") : string.Empty;
+                string resisted = result.IsResisted ? ColorTokenService.Red(" [RESISTED " + Math.Abs(result.Delta) + "%]") : string.Empty;
                 string message = ColorTokenService.SavingThrow("Roll: " + result.Roll + " VS " + result.DC + " DC") + resisted;
                 attacker.SendMessage(message);
                 defender.SendMessage(message);

@@ -59,7 +59,17 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     throw new ArgumentOutOfRangeException(nameof(spellTier));
             }
 
-            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectDamage(damage), target);
+            var result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark);
+
+            // +/- percent change based on resistance
+            float delta = 0.01f * result.Delta;
+            damage = damage + (int)(damage * delta);
+
+            player.AssignCommand(() =>
+            {
+                _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectDamage(damage), target);
+            });
+
             SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
         }
 

@@ -47,7 +47,8 @@ namespace SWLOR.Game.Server.Conversation
         {
             string header = ColorTokenService.Green("Molecular Reassembler") + "\n\n";
             header += "This device can be used to salvage equipment and reassemble them into components.\n\n";
-            header += "Please select the type of item you wish to create. The new item(s) created will have a chance to receive property bonuses from the salvaged item.\n\n";
+            header += "Please select the type of item you wish to create. The new item(s) created will have a chance to receive property bonuses from the salvaged item.\n";
+            header += "A 'Reassembly Power Unit' must be in your inventory in order to reassemble an item. This will be consumed when you start the process.\n\n";
             header += "Start by selecting a component type now.";
             SetPageHeader("MainPage", header);
 
@@ -178,6 +179,15 @@ namespace SWLOR.Game.Server.Conversation
             switch (responseID)
             {
                 case 1: // Reassemble Component(s)
+
+                    NWItem fuel = _.GetItemPossessedBy(player, "ass_power");
+                    // Look for reassembly fuel in the player's inventory.
+                    if (!fuel.IsValid)
+                    {
+                        player.SendMessage(ColorTokenService.Red("You must have a 'Reassembly Fuel Cell' in your inventory in order to start this process."));
+                        return;
+                    }
+
                     if (model.IsConfirmingReassemble)
                     {
                         // Calculate delay, fire off delayed event, and show timing bar.

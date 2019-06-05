@@ -38,6 +38,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     NWItem deserialized = SerializationService.DeserializeItem(item.ItemObject, storage);
                     PlayerMigrationService.ProcessVersion6RemoveACFromItem(deserialized);
+                    PlayerMigrationService.ProcessVersion6LightsaberRename(deserialized);
                     item.ItemObject = SerializationService.Serialize(deserialized);
                     DataService.Connection.Update(item);
                     deserialized.Destroy();
@@ -49,6 +50,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     NWItem deserialized = SerializationService.DeserializeItem(item.ItemObject, storage);
                     PlayerMigrationService.ProcessVersion6RemoveACFromItem(deserialized);
+                    PlayerMigrationService.ProcessVersion6LightsaberRename(deserialized);
                     item.ItemObject = SerializationService.Serialize(deserialized);
                     DataService.Connection.Update(item);
                     deserialized.Destroy();
@@ -60,6 +62,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     NWItem deserialized = SerializationService.DeserializeItem(item.ItemObject, storage);
                     PlayerMigrationService.ProcessVersion6RemoveACFromItem(deserialized);
+                    PlayerMigrationService.ProcessVersion6LightsaberRename(deserialized);
                     item.ItemObject = SerializationService.Serialize(deserialized);
                     DataService.Connection.Update(item);
                     deserialized.Destroy();
@@ -71,6 +74,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     NWItem deserialized = SerializationService.DeserializeItem(item.ItemObject, storage);
                     PlayerMigrationService.ProcessVersion6RemoveACFromItem(deserialized);
+                    PlayerMigrationService.ProcessVersion6LightsaberRename(deserialized);
                     item.ItemObject = SerializationService.Serialize(deserialized);
                     DataService.Connection.Update(item);
                     deserialized.Destroy();
@@ -84,5 +88,6 @@ namespace SWLOR.Game.Server.Service
 
             DataService.SubmitDataChange(config, DatabaseActionType.Update);
         }
+
     }
 }

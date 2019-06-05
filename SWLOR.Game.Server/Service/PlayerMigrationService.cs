@@ -126,30 +126,28 @@ namespace SWLOR.Game.Server.Service
 
         private static void ProcessVersion6RemoveACFromItem(NWItem item)
         {
-            // Check all item properties. If the IP is an Armor Class property, remove it and replace with an increase to durability.
+            // Start by pulling the custom AC off the item and halving it.
             // Durability is +1 for every 2 AC on the item.
+            int amount = item.CustomAC / 2;
+            if (amount > 0)
+            {
+                float newMax = DurabilityService.GetMaxDurability(item) + amount;
+                float newCurrent = DurabilityService.GetDurability(item) + amount;
+                DurabilityService.SetMaxDurability(item, newMax);
+                DurabilityService.SetDurability(item, newCurrent);
+            }
+
+            item.CustomAC = 0;
+
+            // Check all item properties. If the IP is a component Armor Class Bonus, remove it and replace with an increase to durability.
             foreach (var ip in item.ItemProperties)
             {
-                int type = _.GetItemPropertyType(ip);
-                // Regular Armor Class item property
-                if (type == (int) CustomItemPropertyType.ArmorClass)
-                {
-                    int amount = GetItemPropertyCostTableValue(ip) / 2;
-                    float newMax = DurabilityService.GetMaxDurability(item) + amount;
-                    float newCurrent = DurabilityService.GetDurability(item) + amount;
-                    DurabilityService.SetMaxDurability(item, newMax);
-                    DurabilityService.SetDurability(item, newCurrent);
-
-                    _.RemoveItemProperty(item, ip);
-                }
-
-                // Component-specific Armor Class Bonus item property
-                else if (type == (int) CustomItemPropertyType.ComponentBonus)
+                if (_.GetItemPropertyType(ip) == (int) CustomItemPropertyType.ComponentBonus)
                 {
                     // Check the sub-type. If it's AC, then do the replacement.
                     if (GetItemPropertySubType(ip) == (int) ComponentBonusType.ACUp)
                     {
-                        int amount = GetItemPropertyCostTableValue(ip) / 2;
+                        amount = GetItemPropertyCostTableValue(ip) / 2;
                         // Grant the durability up property if amount > 0
                         if (amount > 0)
                         {

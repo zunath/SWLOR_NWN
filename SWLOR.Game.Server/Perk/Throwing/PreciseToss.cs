@@ -12,37 +12,35 @@ namespace SWLOR.Game.Server.Perk.Throwing
     {
         public PerkType PerkType => PerkType.PreciseToss;
 
-        public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier)
         {
-            return oPC.RightHand.CustomItemType == CustomItemType.Throwing;
+            if (oPC.RightHand.CustomItemType != CustomItemType.Throwing)
+                return "Must be equipped with a throwing weapon to use that ability.";
+
+            return string.Empty;
         }
 
-        public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
-        {
-            return "Must be equipped with a throwing weapon to use that ability.";
-        }
-
-        public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)
+        public int FPCost(NWPlayer oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellFeatID)
+        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellTier)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellFeatID)
+        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellTier)
         {
             return baseCooldownTime;
         }
 
-        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellFeatID)
+        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellTier)
         {
             return baseCooldownCategoryID;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int level, int spellFeatID)
+        public void OnImpact(NWPlayer player, NWObject target, int level, int spellTier)
         {
             int damage;
             int seconds;
@@ -127,6 +125,11 @@ namespace SWLOR.Game.Server.Perk.Throwing
         public bool IsHostile()
         {
             return false;
+        }
+
+        public void OnConcentrationTick(NWPlayer player, NWObject target, int perkLevel, int tick)
+        {
+            throw new NotImplementedException();
         }
     }
 }

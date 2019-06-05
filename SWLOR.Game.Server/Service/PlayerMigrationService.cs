@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Module;
@@ -79,32 +80,51 @@ namespace SWLOR.Game.Server.Service
                 dbPlayer.VersionNumber = 4;
             }
 
-            // VERSION 5: Remove AC from all items the player is carrying. If possible,
-            // grant +1 durability and +1 max durability for every 2 AC the item has.
+            // VERSION 5: We're doing another Force rework, so remove any force feats the player may have acquired.
             if (dbPlayer.VersionNumber < 5)
             {
-                ProcessVersion5ACRemoval(player);
+                NWNXCreature.RemoveFeat(player, 1135); // Force Breach
+                NWNXCreature.RemoveFeat(player, 1136); // Force Lightning
+                NWNXCreature.RemoveFeat(player, 1137); // Force Heal I
+                NWNXCreature.RemoveFeat(player, 1140); // Absorption Field
+                NWNXCreature.RemoveFeat(player, 1143); // Force Spread
+                NWNXCreature.RemoveFeat(player, 1145); // Force Push
+                NWNXCreature.RemoveFeat(player, 1125); // Force Aura
+                NWNXCreature.RemoveFeat(player, 1152); // Drain Life
+                NWNXCreature.RemoveFeat(player, 1134); // Chainspell
+                NWNXCreature.RemoveFeat(player, 1162); // Force Heal II
+                NWNXCreature.RemoveFeat(player, 1163); // Force Heal III
+                NWNXCreature.RemoveFeat(player, 1164); // Force Heal IV
+
                 dbPlayer.VersionNumber = 5;
+            }
+
+            // VERSION 6: Remove AC from all items the player is carrying. If possible,
+            // grant +1 durability and +1 max durability for every 2 AC the item has.
+            if (dbPlayer.VersionNumber < 6)
+            {
+                ProcessVersion6ACRemoval(player);
+                dbPlayer.VersionNumber = 6;
             }
 
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
         }
         
-        private static void ProcessVersion5ACRemoval(NWPlayer player)
+        private static void ProcessVersion6ACRemoval(NWPlayer player)
         {
             // Start with equipped items.
             foreach (var item in player.EquippedItems)
             {
-                ProcessVersion5RemoveACFromItem(item);
+                ProcessVersion6RemoveACFromItem(item);
             }
             // Next do all inventory items.
             foreach (var item in player.InventoryItems)
             {
-                ProcessVersion5RemoveACFromItem(item);
+                ProcessVersion6RemoveACFromItem(item);
             }
         }
 
-        private static void ProcessVersion5RemoveACFromItem(NWItem item)
+        private static void ProcessVersion6RemoveACFromItem(NWItem item)
         {
             // Check all item properties. If the IP is an Armor Class property, remove it and replace with an increase to durability.
             // Durability is +1 for every 2 AC on the item.

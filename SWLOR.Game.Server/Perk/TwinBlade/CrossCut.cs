@@ -11,37 +11,35 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
     {
         public PerkType PerkType => PerkType.CrossCut;
 
-        public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier)
         {
-            return oPC.RightHand.CustomItemType == CustomItemType.TwinBlade;
-        }
+            if (oPC.RightHand.CustomItemType != CustomItemType.TwinBlade)
+                return "Must be equipped with a twin blade to use that ability.";
 
-        public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
-        {
-            return "Must be equipped with a twin blade to use that ability.";
+            return string.Empty;
         }
-
-        public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)
+        
+        public int FPCost(NWPlayer oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellFeatID)
+        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellTier)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellFeatID)
+        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellTier)
         {
             return baseCooldownTime;
         }
 
-        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellFeatID)
+        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellTier)
         {
             return baseCooldownCategoryID;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
+        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellTier)
         {
             int damage = 0;
             float duration = 0.0f;
@@ -120,6 +118,11 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
         public bool IsHostile()
         {
             return false;
+        }
+
+        public void OnConcentrationTick(NWPlayer player, NWObject target, int perkLevel, int tick)
+        {
+            
         }
     }
 }

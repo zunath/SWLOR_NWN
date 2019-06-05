@@ -1,9 +1,9 @@
 ﻿using System;
 using NWN;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Processor.Contracts;
 using SWLOR.Game.Server.Service;
@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Processor
 
         public static void SubscribeEvents()
         {
-            MessageHub.Instance.Subscribe<ObjectProcessorMessage>(message => Run());
+            MessageHub.Instance.Subscribe<OnObjectProcessorRan>(message => Run());
         }
 
         static ServerRestartProcessor()   

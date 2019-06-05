@@ -16,20 +16,31 @@ namespace SWLOR.Game.Server.Event.Delayed
         {
             using (new Profiler(nameof(FinishAbilityUse)))
             {
+                bool submitDataChangeUpdate = false;
+
+                // These arguments are sent from the AbilityService's ActivateAbility method.
                 NWPlayer pc = (NWPlayer) args[0];
                 string spellUUID = Convert.ToString(args[1]);
                 int perkID = (int) args[2];
                 NWObject target = (NWObject) args[3];
                 int pcPerkLevel = (int) args[4];
-                int featID = (int) args[5];
+                int spellTier = (int) args[5];
+                float armorPenalty = (float) args[6];
 
-                Data.Entity.Perk entity = DataService.Single<Data.Entity.Perk>(x => x.ID == perkID);
-                PerkExecutionType executionType = (PerkExecutionType) entity.ExecutionTypeID;
+                // Get the relevant perk information from the database.
+                Data.Entity.Perk dbPerk = DataService.Single<Data.Entity.Perk>(x => x.ID == perkID);
+
+                // The execution type determines how the perk behaves and the rules surrounding it.
+                PerkExecutionType executionType = dbPerk.ExecutionTypeID;
+
+                // Get the class which handles this perk's behaviour.
                 IPerkHandler perk = PerkService.GetPerkHandler(perkID);
 
-                int? cooldownID = perk.CooldownCategoryID(pc, entity.CooldownCategoryID, featID);
+                // Pull back cooldown information.
+                int? cooldownID = perk.CooldownCategoryID(pc, dbPerk.CooldownCategoryID, spellTier);
                 CooldownCategory cooldown = cooldownID == null ? null : DataService.SingleOrDefault<CooldownCategory>(x => x.ID == cooldownID);
 
+                // If the player interrupted the spell or died, we can bail out early.
                 if (pc.GetLocalInt(spellUUID) == (int) SpellStatusType.Interrupted || // Moved during casting
                     pc.CurrentHP < 0 || pc.IsDead) // Or is dead/dying
                 {
@@ -37,53 +48,77 @@ namespace SWLOR.Game.Server.Event.Delayed
                     return false;
                 }
 
+                // Remove the temporary UUID which is tracking this spell cast.
                 pc.DeleteLocalInt(spellUUID);
 
+                // Force Abilities, Combat Abilities, Stances, and Concentration Abilities
                 if (executionType == PerkExecutionType.ForceAbility ||
                     executionType == PerkExecutionType.CombatAbility ||
-                    executionType == PerkExecutionType.Stance)
+                    executionType == PerkExecutionType.Stance ||
+                    executionType == PerkExecutionType.ConcentrationAbility)
                 {
-                    perk.OnImpact(pc, target, pcPerkLevel, featID);
+                    // Run the impact script.
+                    perk.OnImpact(pc, target, pcPerkLevel, spellTier);
 
-                    if (entity.CastAnimationID != null && entity.CastAnimationID > 0)
+                    // If an animation is specified for this perk, play it now.
+                    if (dbPerk.CastAnimationID != null && dbPerk.CastAnimationID > 0)
                     {
-                        pc.AssignCommand(() => { _.ActionPlayAnimation((int) entity.CastAnimationID, 1f, 1f); });
+                        pc.AssignCommand(() => { _.ActionPlayAnimation((int) dbPerk.CastAnimationID, 1f, 1f); });
                     }
 
+                    // If the target is an NPC, assign enmity towards this player for that NPC.
                     if (target.IsNPC)
                     {
-                        AbilityService.ApplyEnmity(pc, (target.Object), entity);
+                        AbilityService.ApplyEnmity(pc, (target.Object), dbPerk);
+                    }
+
+                }
+                Data.Entity.Player pcEntity = DataService.Single<Data.Entity.Player>(x => x.ID == pc.GlobalID);
+
+
+                // Adjust player's current FP, if necessary.
+                // Concentration abilities do not require FP to activate.
+                if (executionType != PerkExecutionType.ConcentrationAbility)
+                {
+                    // Adjust FP only if spell cost > 0
+                    PerkFeat perkFeat = DataService.Single<PerkFeat>(x => x.PerkID == perkID && x.PerkLevelUnlocked == spellTier);
+                    int fpCost = perk.FPCost(pc, perkFeat.BaseFPCost, spellTier);
+
+                    if (fpCost > 0)
+                    {
+                        pcEntity.CurrentFP = pcEntity.CurrentFP - fpCost;
+                        submitDataChangeUpdate = true;
+                        pc.SendMessage(ColorTokenService.Custom("FP: " + pcEntity.CurrentFP + " / " + pcEntity.MaxFP, 32, 223, 219));
                     }
                 }
-                else if (executionType == PerkExecutionType.QueuedWeaponSkill)
+                // Notify player of concentration ability change and also update it in the DB.
+                else
                 {
-                    AbilityService.HandleQueueWeaponSkill(pc, entity, perk, featID);
+                    pcEntity.ActiveConcentrationPerkID = perkID;
+                    pcEntity.ActiveConcentrationTier = spellTier;
+                    submitDataChangeUpdate = true;
+                    pc.SendMessage("Concentration ability activated: " + dbPerk.Name);
+
+                    // The Skill Increase effect icon and name has been overwritten. Apply the effect to the player now.
+                    // This doesn't do anything - it simply gives a visual cue that the player has an active concentration effect.
+                    _.ApplyEffectToObject(_.DURATION_TYPE_PERMANENT, _.EffectSkillIncrease(_.SKILL_USE_MAGIC_DEVICE, 1), pc);
                 }
-
-
-                // Adjust FP only if spell cost > 0
-                Data.Entity.Player pcEntity = DataService.Single<Data.Entity.Player>(x => x.ID == pc.GlobalID);
-                int fpCost = perk.FPCost(pc, entity.BaseFPCost, featID);
-
-                if (fpCost > 0)
+                
+                // Handle applying cooldowns, if necessary.
+                if (cooldown != null)
                 {
-                    pcEntity.CurrentFP = pcEntity.CurrentFP - fpCost;
-                    DataService.SubmitDataChange(pcEntity, DatabaseActionType.Update);
-                    pc.SendMessage(ColorTokenService.Custom("FP: " + pcEntity.CurrentFP + " / " + pcEntity.MaxFP, 32, 223, 219));
-
+                    AbilityService.ApplyCooldown(pc, cooldown, perk, spellTier, armorPenalty);
                 }
-
-                bool hasChainspell = CustomEffectService.DoesPCHaveCustomEffect(pc, CustomEffectType.Chainspell) &&
-                                     executionType == PerkExecutionType.ForceAbility;
-
-                if (!hasChainspell && cooldown != null)
-                {
-                    // Mark cooldown on category
-                    AbilityService.ApplyCooldown(pc, cooldown, perk, featID);
-                }
-
+                
+                // Mark the player as no longer busy.
                 pc.IsBusy = false;
+
+                // Mark the spell cast as complete.
                 pc.SetLocalInt(spellUUID, (int) SpellStatusType.Completed);
+
+                // Submit a change to the player DB entry only if something changed (FP or active concentration ability).
+                if(submitDataChangeUpdate)
+                    DataService.SubmitDataChange(pcEntity, DatabaseActionType.Update);
 
                 return true;
             }

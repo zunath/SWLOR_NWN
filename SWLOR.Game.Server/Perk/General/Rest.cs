@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using System;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.CustomEffect;
 using SWLOR.Game.Server.Service;
@@ -9,27 +10,25 @@ namespace SWLOR.Game.Server.Perk.General
     {
         public PerkType PerkType => PerkType.Rest;
 
-        public bool CanCastSpell(NWPlayer oPC, NWObject oTarget)
+        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier)
         {
-            return RestEffect.CanRest(oPC);
+            if (!RestEffect.CanRest(oPC))
+                return "You cannot rest while you or a party member are in combat.";
+
+            return string.Empty;
         }
 
-        public string CannotCastSpellMessage(NWPlayer oPC, NWObject oTarget)
-        {
-            return "You cannot rest while you or a party member are in combat.";
-        }
-
-        public int FPCost(NWPlayer oPC, int baseFPCost, int spellFeatID)
+        public int FPCost(NWPlayer oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellFeatID)
+        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellTier)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellFeatID)
+        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellTier)
         {
             int perkLevel = PerkService.GetPCPerkLevel(oPC, PerkType.Rest);
 
@@ -49,12 +48,12 @@ namespace SWLOR.Game.Server.Perk.General
             }
         }
 
-        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellFeatID)
+        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellTier)
         {
             return baseCooldownCategoryID;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellFeatID)
+        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellTier)
         {
             CustomEffectService.ApplyCustomEffect(player, player, CustomEffectType.Rest, -1, 0, null);
         }
@@ -84,7 +83,9 @@ namespace SWLOR.Game.Server.Perk.General
             return false;
         }
 
-
-
+        public void OnConcentrationTick(NWPlayer player, NWObject target, int perkLevel, int tick)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

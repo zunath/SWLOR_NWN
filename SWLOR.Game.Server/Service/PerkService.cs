@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Perk;
@@ -13,6 +12,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using SWLOR.Game.Server.Event.Feat;
+using SWLOR.Game.Server.Event.SWLOR;
 using static NWN._;
 using Object = NWN.Object;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
@@ -35,11 +35,11 @@ namespace SWLOR.Game.Server.Service
         public static void SubscribeEvents()
         {
             // The player perk level cache gets refreshed on the following events.
-            MessageHub.Instance.Subscribe<SkillDecayedMessage>(message => CachePerkIDsRequiringSkill(message.Player, message.SkillID));
-            MessageHub.Instance.Subscribe<SkillGainedMessage>(message => CachePerkIDsRequiringSkill(message.Player, message.SkillID));
-            MessageHub.Instance.Subscribe<PerkUpgradedMessage>(message => CacheEffectivePerkLevel(message.Player, message.PerkID));
-            MessageHub.Instance.Subscribe<PerkRefundedMessage>(message => CacheEffectivePerkLevel(message.Player, message.PerkID));
-            MessageHub.Instance.Subscribe<QuestCompletedMessage>(message => CachePerkIDsRequiringQuest(message.Player, message.QuestID));
+            MessageHub.Instance.Subscribe<OnSkillDecayed>(message => CachePerkIDsRequiringSkill(message.Player, message.SkillID));
+            MessageHub.Instance.Subscribe<OnSkillGained>(message => CachePerkIDsRequiringSkill(message.Player, message.SkillID));
+            MessageHub.Instance.Subscribe<OnPerkUpgraded>(message => CacheEffectivePerkLevel(message.Player, message.PerkID));
+            MessageHub.Instance.Subscribe<OnPerkRefunded>(message => CacheEffectivePerkLevel(message.Player, message.PerkID));
+            MessageHub.Instance.Subscribe<OnQuestCompleted>(message => CachePerkIDsRequiringQuest(message.Player, message.QuestID));
 
             // Feat Events
             MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
@@ -148,7 +148,7 @@ namespace SWLOR.Game.Server.Service
             {
                 // Filter on equipment-based execution type.
                 var perk = DataService.Get<Data.Entity.Perk>(x.PerkID);
-                bool matchesExecutionType = perk.ExecutionTypeID == (int)executionType;
+                bool matchesExecutionType = perk.ExecutionTypeID == executionType;
                 if (!matchesExecutionType) return false;
 
                 // Filter out any perks the PC doesn't meet the requirements for.
@@ -254,7 +254,7 @@ namespace SWLOR.Game.Server.Service
 
                 // Only pull back perks which have a Shield On Hit execution type.
                 var perk = DataService.Get<Data.Entity.Perk>(x.PerkID);
-                if (perk.ExecutionTypeID != (int)PerkExecutionType.ShieldOnHit)
+                if (perk.ExecutionTypeID != PerkExecutionType.ShieldOnHit)
                     return false;
 
                 // If player's effective level is zero, it's not in effect.
@@ -271,10 +271,10 @@ namespace SWLOR.Game.Server.Service
                     var perk = GetPerkByID(pcPerk.PerkID);
                     if (perk.ExecutionTypeID == (int)PerkExecutionType.None) continue;
                     var perkFeat = DataService.SingleOrDefault<PerkFeat>(x => x.PerkID == pcPerk.PerkID);
-                    int featID = perkFeat == null ? -1 : perkFeat.FeatID;
+                    int spellTier = perkFeat?.PerkLevelUnlocked ?? 0;
 
                     var handler = GetPerkHandler(pcPerk.PerkID);
-                    handler.OnImpact(oPC, oItem, pcPerk.PerkLevel, featID);
+                    handler.OnImpact(oPC, oItem, pcPerk.PerkLevel, spellTier);
                 }
             }
         }
@@ -459,7 +459,7 @@ namespace SWLOR.Game.Server.Service
 
                 var handler = GetPerkHandler(perkID);
                 handler.OnPurchased(oPC, pcPerk.PerkLevel);
-                MessageHub.Instance.Publish(new PerkUpgradedMessage(oPC, perkID));
+                MessageHub.Instance.Publish(new OnPerkUpgraded(oPC, perkID));
             }
             else
             {

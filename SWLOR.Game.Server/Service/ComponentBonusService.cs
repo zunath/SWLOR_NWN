@@ -87,15 +87,6 @@ namespace SWLOR.Game.Server.Service
                     case ComponentBonusType.EnmityDown:
                         product.EnmityRate -= amount;
                         break;
-                    case ComponentBonusType.DarkPotencyUp:
-                        product.DarkPotencyBonus += amount;
-                        break;
-                    case ComponentBonusType.LightPotencyUp:
-                        product.LightPotencyBonus += amount;
-                        break;
-                    case ComponentBonusType.MindPotencyUp:
-                        product.MindPotencyBonus += amount;
-                        break;
                     case ComponentBonusType.LuckUp:
                         product.LuckBonus += amount;
                         break;
@@ -122,12 +113,6 @@ namespace SWLOR.Game.Server.Service
                         break;
                     case ComponentBonusType.DamageUp:
                         product.DamageBonus += amount;
-                        break;
-                    case ComponentBonusType.DarkPotencyDown:
-                        product.DarkPotencyBonus -= amount;
-                        break;
-                    case ComponentBonusType.LightPotencyDown:
-                        product.LightPotencyBonus -= amount;
                         break;
                     case ComponentBonusType.StructureBonusUp:
                         product.StructureBonus += amount;
@@ -161,57 +146,6 @@ namespace SWLOR.Game.Server.Service
                         break;
                     case ComponentBonusType.ScavengingUp:
                         product.ScavengingBonus += amount;
-                        break;
-                    case ComponentBonusType.MindPotencyDown:
-                        product.MindPotencyBonus -= amount;
-                        break;
-                    case ComponentBonusType.ElectricalPotencyUp:
-                        product.ElectricalPotencyBonus += amount;
-                        break;
-                    case ComponentBonusType.ElectricalPotencyDown:
-                        product.ElectricalPotencyBonus -= amount;
-                        break;
-                    case ComponentBonusType.ForcePotencyUp:
-                        product.ForcePotencyBonus += amount;
-                        break;
-                    case ComponentBonusType.ForcePotencyDown:
-                        product.ForcePotencyBonus -= amount;
-                        break;
-                    case ComponentBonusType.ForceAccuracyUp:
-                        product.ForceAccuracyBonus += amount;
-                        break;
-                    case ComponentBonusType.ForceAccuracyDown:
-                        product.ForceAccuracyBonus -= amount;
-                        break;
-                    case ComponentBonusType.ForceDefenseUp:
-                        product.ForceDefenseBonus += amount;
-                        break;
-                    case ComponentBonusType.ForceDefenseDown:
-                        product.ForceDefenseBonus -= amount;
-                        break;
-                    case ComponentBonusType.ElectricalDefenseUp:
-                        product.ElectricalDefenseBonus += amount;
-                        break;
-                    case ComponentBonusType.ElectricalDefenseDown:
-                        product.ElectricalDefenseBonus -= amount;
-                        break;
-                    case ComponentBonusType.MindDefenseUp:
-                        product.MindDefenseBonus += amount;
-                        break;
-                    case ComponentBonusType.MindDefenseDown:
-                        product.MindDefenseBonus -= amount;
-                        break;
-                    case ComponentBonusType.LightDefenseUp:
-                        product.LightDefenseBonus += amount;
-                        break;
-                    case ComponentBonusType.LightDefenseDown:
-                        product.LightDefenseBonus -= amount;
-                        break;
-                    case ComponentBonusType.DarkDefenseUp:
-                        product.DarkDefenseBonus += amount;
-                        break;
-                    case ComponentBonusType.DarkDefenseDown:
-                        product.DarkDefenseBonus -= amount;
                         break;
                     case ComponentBonusType.PilotingUp:
                         product.PilotingBonus += amount;

@@ -2,6 +2,7 @@
 
 using SWLOR.Game.Server.Data.Contracts;
 using System;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
@@ -61,5 +62,8 @@ namespace SWLOR.Game.Server.Data.Entity
         public int GoldTill { get; set; }
         public int RoleplayPoints { get; set; }
         public int RoleplayXP { get; set; }
+        public SpecializationType SpecializationID { get; set; }
+        public int? ActiveConcentrationPerkID { get; set; }
+        public int ActiveConcentrationTier { get; set; }
     }
 }

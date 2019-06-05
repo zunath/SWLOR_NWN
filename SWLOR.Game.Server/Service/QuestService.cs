@@ -4,7 +4,6 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.NWN.Events.Creature;
 using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.QuestRule.Contracts;
@@ -12,6 +11,8 @@ using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.Event.SWLOR;
 using static NWN._;
 using Object = NWN.Object;
 using Quest = SWLOR.Game.Server.Data.Entity.Quest;
@@ -179,7 +180,7 @@ namespace SWLOR.Game.Server.Service
                 rule.Run(player, questOwner, questID, args);
             }
 
-            MessageHub.Instance.Publish(new QuestCompletedMessage(player, questID));
+            MessageHub.Instance.Publish(new OnQuestCompleted(player, questID));
         }
 
         private static void OnModuleItemAcquired()

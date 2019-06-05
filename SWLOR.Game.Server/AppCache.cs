@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server
 
         public static void SubscribeEvents()
         {
-            MessageHub.Instance.Subscribe<ObjectProcessorMessage>(message => Clean());
+            MessageHub.Instance.Subscribe<OnObjectProcessorRan>(message => Clean());
         }
 
         private static void Clean()

@@ -11,6 +11,9 @@ using SWLOR.Game.Server.Perk;
 using System;
 using System.Linq;
 using SWLOR.Game.Server.Event.Feat;
+using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.Event.SWLOR;
+using SWLOR.Game.Server.ValueObject;
 using static NWN._;
 using Object = NWN.Object;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
@@ -33,8 +36,22 @@ namespace SWLOR.Game.Server.Service
 
         public static void SubscribeEvents()
         {
+            MessageHub.Instance.Subscribe<OnModuleEnter>(message => OnModuleEnter());
             MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
             MessageHub.Instance.Subscribe<OnModuleUseFeat>(message => OnModuleUseFeat());
+            MessageHub.Instance.Subscribe<OnObjectProcessorRan>(message => ProcessConcentrationEffects());
+            MessageHub.Instance.Subscribe<OnModuleDeath>(message => OnModuleDeath());
+        }
+
+        private static void OnModuleEnter()
+        {
+            NWPlayer pc = _.GetEnteringObject();
+            if (!pc.IsPlayer) return;
+
+            // Reapply the visual effect icon to player if they logged in with an active concentration ability.
+            Player dbPlayer = DataService.Get<Player>(pc.GlobalID);
+            if (dbPlayer.ActiveConcentrationPerkID != null)
+                _.ApplyEffectToObject(_.DURATION_TYPE_PERMANENT, _.EffectSkillIncrease(_.SKILL_USE_MAGIC_DEVICE, 1), pc);
         }
 
         private static void OnModuleUseFeat()
@@ -60,7 +77,7 @@ namespace SWLOR.Game.Server.Service
             int pcPerkLevel = PerkService.GetPCPerkLevel(pc, perk.ID);
 
             // If player is disabling an existing stance, remove that effect.
-            if (perk.ExecutionTypeID == (int)PerkExecutionType.Stance)
+            if (perk.ExecutionTypeID == PerkExecutionType.Stance)
             {
                 PCCustomEffect stanceEffect = DataService.SingleOrDefault<PCCustomEffect>(x => x.StancePerkID == perk.ID &&
                                                                                                x.PlayerID == pc.GlobalID);
@@ -92,13 +109,14 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            if (!perkAction.CanCastSpell(pc, target))
+            string canCast = perkAction.CanCastSpell(pc, target, perkFeat.PerkLevelUnlocked);
+            if (!string.IsNullOrWhiteSpace(canCast))
             {
-                pc.SendMessage(perkAction.CannotCastSpellMessage(pc, target) ?? "That ability cannot be used at this time.");
+                pc.SendMessage(canCast);
                 return;
             }
 
-            int fpCost = perkAction.FPCost(pc, perkAction.FPCost(pc, perk.BaseFPCost, featID), featID);
+            int fpCost = perkAction.FPCost(pc, perkAction.FPCost(pc, perkFeat.BaseFPCost, perkFeat.PerkLevelUnlocked), perkFeat.PerkLevelUnlocked);
             if (playerEntity.CurrentFP < fpCost)
             {
                 pc.SendMessage("You do not have enough FP. (Required: " + fpCost + ". You have: " + playerEntity.CurrentFP + ")");
@@ -111,8 +129,26 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // If we're executing a concentration ability, check and see if the player currently has this ability
+            // active. If it's active, then we immediately remove its effect and bail out.
+            // Any other ability (including other concentration abilities) execute as normal.
+            if (perk.ExecutionTypeID == PerkExecutionType.ConcentrationAbility)
+            {
+                Player dbPlayer = DataService.Get<Player>(pc.GlobalID);
+                if (dbPlayer.ActiveConcentrationPerkID == perk.ID)
+                {
+                    // It's active. Time to disable it.
+                    dbPlayer.ActiveConcentrationPerkID = null;
+                    dbPlayer.ActiveConcentrationTier = 0;
+                    // And remove the effect icon.
+                    pc.RemoveEffect(_.EFFECT_TYPE_SKILL_INCREASE);
+                    pc.SendMessage("Concentration ability '" + perk.Name + "' deactivated.");
+                    return;
+                }
+            }
+            
             // Check cooldown
-            int? cooldownCategoryID = perkAction.CooldownCategoryID(pc, perk.CooldownCategoryID, featID);
+            int? cooldownCategoryID = perkAction.CooldownCategoryID(pc, perk.CooldownCategoryID, perkFeat.PerkLevelUnlocked);
             PCCooldown pcCooldown = DataService.GetAll<PCCooldown>().SingleOrDefault(x => x.PlayerID == pc.GlobalID &&
                                                                                     x.CooldownCategoryID == cooldownCategoryID);
             if (pcCooldown == null)
@@ -138,33 +174,135 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Force Abilities (aka Spells)
-            if (perk.ExecutionTypeID == (int)PerkExecutionType.ForceAbility)
+            if (perk.ExecutionTypeID == PerkExecutionType.ForceAbility)
             {
                 target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_FORCE);
-                ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.ForceAbility, featID);
+                ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.ForceAbility, perkFeat.PerkLevelUnlocked);
             }
             // Combat Abilities
-            else if (perk.ExecutionTypeID == (int)PerkExecutionType.CombatAbility)
+            else if (perk.ExecutionTypeID == PerkExecutionType.CombatAbility)
             {
                 target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_PHYSICAL);
-                ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.CombatAbility, featID);
+                ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.CombatAbility, perkFeat.PerkLevelUnlocked);
             }
             // Queued Weapon Skills
-            else if (perk.ExecutionTypeID == (int)PerkExecutionType.QueuedWeaponSkill)
+            else if (perk.ExecutionTypeID == PerkExecutionType.QueuedWeaponSkill)
             {
                 target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_PHYSICAL);
                 HandleQueueWeaponSkill(pc, perk, perkAction, featID);
             }
             // Stances
-            else if (perk.ExecutionTypeID == (int)PerkExecutionType.Stance)
+            else if (perk.ExecutionTypeID == PerkExecutionType.Stance)
             {
                 target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_COMBATABILITY);
-                ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.Stance, featID);
+                ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.Stance, perkFeat.PerkLevelUnlocked);
             }
-
-
+            // Concentration Abilities
+            else if (perk.ExecutionTypeID == PerkExecutionType.ConcentrationAbility)
+            {
+                target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_FORCE);
+                ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.ConcentrationAbility, perkFeat.PerkLevelUnlocked);
+            }
         }
 
+        /// <summary>
+        /// Returns the currently active concentration perk for a given creature.
+        /// If no concentration perk is active, PerkType.Unknown will be returned.
+        /// </summary>
+        /// <param name="creature"></param>
+        /// <returns></returns>
+        public static ConcentrationEffect GetActiveConcentrationEffect(NWCreature creature)
+        {
+            // In the future, we'll enable this to work with all creatures and not just players. For now, return unknown.
+            if (!creature.IsPlayer) return new ConcentrationEffect(PerkType.Unknown, 0);
+
+            Player dbPlayer = DataService.Get<Player>(creature.GlobalID);
+            if (dbPlayer.ActiveConcentrationPerkID == null) return new ConcentrationEffect(PerkType.Unknown, 0);
+
+            return new ConcentrationEffect((PerkType)dbPlayer.ActiveConcentrationPerkID, dbPlayer.ActiveConcentrationTier);
+        }
+
+        public static void EndConcentrationEffect(NWCreature creature)
+        {
+            // In the future, we'll enable this to work with all creatures and not just players. For now, bail out early.
+            if (!creature.IsPlayer) return;
+
+            Player dbPlayer = DataService.Get<Player>(creature.GlobalID);
+            if (dbPlayer.ActiveConcentrationPerkID == null) return;
+
+            dbPlayer.ActiveConcentrationPerkID = null;
+            dbPlayer.ActiveConcentrationTier = 0;
+            creature.DeleteLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK");
+            creature.DeleteLocalObject("CONCENTRATION_TARGET");
+            creature.RemoveEffect(_.EFFECT_TYPE_SKILL_INCREASE); // Remove the effect icon.
+        }
+
+        private static void ProcessConcentrationEffects()
+        {
+            // Loop through each player. If they have a concentration ability active,
+            // process it using that perk's OnConcentrationTick() method.
+            foreach (var player in NWModule.Get().Players)
+            {
+                Player dbPlayer = DataService.Get<Player>(player.GlobalID);
+                if (dbPlayer.ActiveConcentrationPerkID == null) continue;
+                
+                // Track the current tick.
+                int tick = player.GetLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK") + 1;
+                player.SetLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK", tick);
+                
+                PerkFeat perkFeat = DataService.Single<PerkFeat>(x => x.PerkID == dbPlayer.ActiveConcentrationPerkID &&
+                                                                      x.PerkLevelUnlocked == dbPlayer.ActiveConcentrationTier);
+
+                // Are we ready to continue processing this concentration effect?
+                if (tick % perkFeat.ConcentrationTickInterval != 0) return;
+
+                // Get the perk handler, FP cost, and the target.
+                var handler = PerkService.GetPerkHandler((int)dbPlayer.ActiveConcentrationPerkID);
+                int fpCost = handler.FPCost(player, perkFeat.ConcentrationFPCost, dbPlayer.ActiveConcentrationTier);
+                NWObject target = player.GetLocalObject("CONCENTRATION_TARGET");
+                
+                // Is the target still valid?
+                if (!target.IsValid || target.CurrentHP <= 0)
+                {
+                    player.SendMessage("Concentration effect has ended because your target is no longer valid.");
+                    EndConcentrationEffect(player);
+                }
+                // Does player have enough FP to maintain this concentration?
+                else if (dbPlayer.CurrentFP < fpCost)
+                {
+                    player.SendMessage("Concentration effect has ended because you ran out of FP.");
+                    EndConcentrationEffect(player);
+                }
+                // Otherwise deduct the required FP.
+                else
+                {
+                    dbPlayer.CurrentFP -= fpCost;
+                }
+
+                DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+
+                // Send a FP status message if the effect ended or it's been six seconds since the last one.
+                if (dbPlayer.ActiveConcentrationPerkID == null || tick % 6 == 0)
+                {
+                    player.SendMessage(ColorTokenService.Custom("FP: " + dbPlayer.CurrentFP + " / " + dbPlayer.MaxFP, 32, 223, 219));
+                }
+                
+                // Run this individual perk's concentration tick method if it didn't end this tick.
+                if (dbPlayer.ActiveConcentrationPerkID != null && target.IsValid)
+                {
+                    handler.OnConcentrationTick(player, target, dbPlayer.ActiveConcentrationTier, tick);
+                }
+            }
+        }
+
+        private static void OnModuleDeath()
+        {
+            NWPlayer player = _.GetLastPlayerDied();
+            if (!player.IsPlayer) return;
+
+            EndConcentrationEffect(player);
+        }
+        
         public static void ApplyEnmity(NWPlayer pc, NWCreature target, Data.Entity.Perk perk)
         {
             switch ((EnmityAdjustmentRuleType)perk.EnmityAdjustmentRuleID)
@@ -191,12 +329,12 @@ namespace SWLOR.Game.Server.Service
                                IPerkHandler perkHandler,
                                int pcPerkLevel,
                                PerkExecutionType executionType,
-                               int spellFeatID)
+                               int spellTier)
         {
             string uuid = Guid.NewGuid().ToString();
             var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(pc);
             int itemBonus = effectiveStats.CastingSpeed;
-            float baseActivationTime = perkHandler.CastingTime(pc, (float)entity.BaseCastingTime, spellFeatID);
+            float baseActivationTime = perkHandler.CastingTime(pc, (float)entity.BaseCastingTime, spellTier);
             float activationTime = baseActivationTime;
             int vfxID = -1;
             int animationID = -1;
@@ -218,45 +356,56 @@ namespace SWLOR.Game.Server.Service
                 activationTime = 1.0f;
 
             // Force ability armor penalties
-            if (executionType == PerkExecutionType.ForceAbility)
+            float armorPenalty = 0.0f;
+            if (executionType == PerkExecutionType.ForceAbility || 
+                executionType == PerkExecutionType.ConcentrationAbility)
             {
-                float armorPenalty = 0.0f;
                 string penaltyMessage = string.Empty;
                 foreach (var item in pc.EquippedItems)
                 {
                     if (item.CustomItemType == CustomItemType.HeavyArmor)
                     {
                         armorPenalty = 2;
-                        penaltyMessage = "Heavy armor slows your force activation speed by 100%.";
+                        penaltyMessage = "Heavy armor slows your force cooldown by 100%.";
                         break;
                     }
                     else if (item.CustomItemType == CustomItemType.LightArmor)
                     {
                         armorPenalty = 1.25f;
-                        penaltyMessage = "Light armor slows your force activation speed by 25%.";
+                        penaltyMessage = "Light armor slows your force cooldown by 25%.";
                     }
                 }
 
+                // If there's an armor penalty, send a message to the player.
                 if (armorPenalty > 0.0f)
                 {
-                    activationTime = baseActivationTime * armorPenalty;
                     pc.SendMessage(penaltyMessage);
                 }
 
             }
 
+            // If player is in stealth mode, force them out of stealth mode.
             if (_.GetActionMode(pc.Object, ACTION_MODE_STEALTH) == 1)
                 _.SetActionMode(pc.Object, ACTION_MODE_STEALTH, 0);
 
+            // Make the player face their target.
             _.ClearAllActions();
             BiowarePosition.TurnToFaceObject(target, pc);
 
-            if (executionType == PerkExecutionType.ForceAbility)
+            // Force and Concentration Abilities will display a visual effect during the casting process.
+            if (executionType == PerkExecutionType.ForceAbility || 
+                executionType == PerkExecutionType.ConcentrationAbility)
             {
                 vfxID = VFX_DUR_IOUNSTONE_YELLOW;
                 animationID = ANIMATION_LOOPING_CONJURE1;
             }
 
+            if (executionType == PerkExecutionType.ConcentrationAbility)
+            {
+                pc.SetLocalObject("CONCENTRATION_TARGET", target);
+            }
+
+            // If a VFX ID has been specified, play that effect instead of the default one.
             if (vfxID > -1)
             {
                 var vfx = _.EffectVisualEffect(vfxID);
@@ -264,17 +413,26 @@ namespace SWLOR.Game.Server.Service
                 _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, vfx, pc.Object, activationTime + 0.2f);
             }
 
+            // If an animation has been specified, make the player play that animation now.
             if (animationID > -1)
             {
                 pc.AssignCommand(() => _.ActionPlayAnimation(animationID, 1.0f, activationTime - 0.1f));
             }
 
+            // Mark player as busy. Busy players can't take other actions (crafting, harvesting, etc.)
             pc.IsBusy = true;
+
+            // Begin the check for spell interruption. If the player moves, the spell will be canceled.
             CheckForSpellInterruption(pc, uuid, pc.Position);
             pc.SetLocalInt(uuid, (int)SpellStatusType.Started);
 
-            NWNXPlayer.StartGuiTimingBar(pc, (int)activationTime, "");
+            // If there's a casting delay, display a timing bar on-screen.
+            if (activationTime > 0)
+            {
+                NWNXPlayer.StartGuiTimingBar(pc, (int)activationTime, string.Empty);
+            }
 
+            // Run the FinishAbilityUse event at the end of the activation time.
             int perkID = entity.ID;
             pc.DelayEvent<FinishAbilityUse>(activationTime + 0.2f,
                 pc,
@@ -282,12 +440,15 @@ namespace SWLOR.Game.Server.Service
                 perkID,
                 target,
                 pcPerkLevel,
-                spellFeatID);
+                spellTier,
+                armorPenalty);
         }
 
-        public static void ApplyCooldown(NWPlayer pc, CooldownCategory cooldown, IPerkHandler ability, int spellFeatID)
+        public static void ApplyCooldown(NWPlayer pc, CooldownCategory cooldown, IPerkHandler ability, int spellTier, float percentAdjustment)
         {
-            float finalCooldown = ability.CooldownTime(pc, (float)cooldown.BaseCooldownTime, spellFeatID);
+            if (percentAdjustment <= 0.0f) percentAdjustment = 1.0f;
+
+            float finalCooldown = ability.CooldownTime(pc, (float)cooldown.BaseCooldownTime, spellTier) * percentAdjustment;
             int cooldownSeconds = (int)finalCooldown;
             int cooldownMillis = (int)((finalCooldown - cooldownSeconds) * 100);
 
@@ -322,9 +483,10 @@ namespace SWLOR.Game.Server.Service
             _.DelayCommand(0.5f, () => { CheckForSpellInterruption(pc, spellUUID, position); });
         }
 
-        public static void HandleQueueWeaponSkill(NWPlayer pc, Data.Entity.Perk entity, IPerkHandler ability, int spellFeatID)
+        private static void HandleQueueWeaponSkill(NWPlayer pc, Data.Entity.Perk entity, IPerkHandler ability, int spellFeatID)
         {
-            int? cooldownCategoryID = ability.CooldownCategoryID(pc, entity.CooldownCategoryID, spellFeatID);
+            var perkFeat = DataService.Single<PerkFeat>(x => x.FeatID == spellFeatID);
+            int? cooldownCategoryID = ability.CooldownCategoryID(pc, entity.CooldownCategoryID, perkFeat.PerkLevelUnlocked);
             var cooldownCategory = DataService.Get<CooldownCategory>(cooldownCategoryID);
             string queueUUID = Guid.NewGuid().ToString();
             pc.SetLocalInt("ACTIVE_WEAPON_SKILL", entity.ID);
@@ -332,7 +494,7 @@ namespace SWLOR.Game.Server.Service
             pc.SetLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID", spellFeatID);
             pc.SendMessage("Weapon skill '" + entity.Name + "' queued for next attack.");
 
-            ApplyCooldown(pc, cooldownCategory, ability, spellFeatID);
+            ApplyCooldown(pc, cooldownCategory, ability, perkFeat.PerkLevelUnlocked, 0.0f);
 
             // Player must attack within 30 seconds after queueing or else it wears off.
             _.DelayCommand(30f, () =>
@@ -389,18 +551,20 @@ namespace SWLOR.Game.Server.Service
 
             PCPerk entity = DataService.GetAll<PCPerk>().Single(x => x.PlayerID == oPC.GlobalID && x.PerkID == activeWeaponSkillID);
             var perk = DataService.Get<Data.Entity.Perk>(entity.PerkID);
+            var perkFeat = DataService.Single<PerkFeat>(x => x.FeatID == activeWeaponSkillFeatID);
             var handler = PerkService.GetPerkHandler(activeWeaponSkillID);
 
-            if (handler.CanCastSpell(oPC, oTarget))
+            string canCast = handler.CanCastSpell(oPC, oTarget, perkFeat.PerkLevelUnlocked);
+            if (string.IsNullOrWhiteSpace(canCast))
             {
-                handler.OnImpact(oPC, oTarget, entity.PerkLevel, activeWeaponSkillFeatID);
+                handler.OnImpact(oPC, oTarget, entity.PerkLevel, perkFeat.PerkLevelUnlocked);
 
                 if (oTarget.IsNPC)
                 {
                     ApplyEnmity(oPC, oTarget.Object, perk);
                 }
             }
-            else oPC.SendMessage(handler.CannotCastSpellMessage(oPC, oTarget) ?? "That ability cannot be used at this time.");
+            else oPC.SendMessage(canCast);
 
             oPC.DeleteLocalString("ACTIVE_WEAPON_SKILL_UUID");
             oPC.DeleteLocalInt("ACTIVE_WEAPON_SKILL");

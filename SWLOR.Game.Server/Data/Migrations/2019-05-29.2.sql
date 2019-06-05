@@ -1373,3 +1373,9 @@ WHERE ID IN (
 	175,
 	76
 )
+
+
+-- Add module version to server configuration table.
+-- This will get bumped to 1 in the ModuleMigrationService
+ALTER TABLE dbo.ServerConfiguration
+ADD ModuleVersion INT NOT NULL DEFAULT 0

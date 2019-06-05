@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Service
         public static string MasterConnectionString { get; }
         public static string SWLORConnectionString { get; private set; }
         public static Dictionary<Type, Dictionary<object, object>> Cache { get; }
-        private static SqlConnection _connection;
+        public static SqlConnection Connection { get; private set; }
 
         static DataService()
         {
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void Initialize(bool initializeCache)
         {
-            _connection = new SqlConnection(SWLORConnectionString);
+            Connection = new SqlConnection(SWLORConnectionString);
 
             if (initializeCache)
                 InitializeCache();
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Service
                 Password = password
             }.ToString();
 
-            _connection = new SqlConnection(SWLORConnectionString);
+            Connection = new SqlConnection(SWLORConnectionString);
 
             if (initializeCache)
                 InitializeCache();
@@ -199,7 +199,7 @@ namespace SWLOR.Game.Server.Service
         {
             const string Sql = "SELECT * FROM dbo.PCMarketListing WHERE DateSold IS NULL AND DateRemoved IS NULL";
 
-            var results = _connection.Query<PCMarketListing>(Sql);
+            var results = Connection.Query<PCMarketListing>(Sql);
             
             foreach (var result in results)
             {
@@ -219,7 +219,7 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine("Starting CachePlayerData for ID = " + player.GlobalID);
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            using (var multi = _connection.QueryMultiple("GetPlayerData", new { PlayerID = player.GlobalID }, commandType: CommandType.StoredProcedure))
+            using (var multi = Connection.QueryMultiple("GetPlayerData", new { PlayerID = player.GlobalID }, commandType: CommandType.StoredProcedure))
             {
                 foreach (var item in multi.Read<PCCooldown>())
                     SetIntoCache<PCCooldown>(item.ID, item);
@@ -464,7 +464,7 @@ namespace SWLOR.Game.Server.Service
             if (cached != null)
                 return cached;
 
-            cached = _connection.Get<T>(id);
+            cached = Connection.Get<T>(id);
             SetIntoCache<T>(id, cached);
             
             return cached;
@@ -501,7 +501,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Can't find anything in the cache so pull back the records from the database.
-            IEnumerable<T> results = _connection.GetAll<T>();
+            IEnumerable<T> results = Connection.GetAll<T>();
             
             // Add the records to the cache.
             foreach (var result in results)
@@ -585,47 +585,47 @@ namespace SWLOR.Game.Server.Service
 
         public static void StoredProcedure(string procedureName, params SqlParameter[] args)
         {
-            _connection.Execute(BuildSQLQuery(procedureName, args), args);
+            Connection.Execute(BuildSQLQuery(procedureName, args), args);
         }
 
         public static IEnumerable<T> StoredProcedure<T>(string procedureName, params SqlParameter[] args)
         {
-            return _connection.Query<T>(procedureName, args, commandType: CommandType.StoredProcedure);
+            return Connection.Query<T>(procedureName, args, commandType: CommandType.StoredProcedure);
         }
 
         public static IEnumerable<TResult> StoredProcedure<T1, T2, TResult>(string procedureName, Func<T1, T2, TResult> map, string splitOn, SqlParameter arg)
         {
-            return _connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
+            return Connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
         }
 
         public static IEnumerable<TResult> StoredProcedure<T1, T2, T3, TResult>(string procedureName, Func<T1, T2, T3, TResult> map, string splitOn, SqlParameter arg)
         {
-            return _connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
+            return Connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
         }
 
         public static IEnumerable<TResult> StoredProcedure<T1, T2, T3, T4, TResult>(string procedureName, Func<T1, T2, T3, T4, TResult> map, string splitOn, SqlParameter arg)
         {
-            return _connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
+            return Connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
         }
 
         public static IEnumerable<TResult> StoredProcedure<T1, T2, T3, T4, T5, TResult>(string procedureName, Func<T1, T2, T3, T4, T5, TResult> map, string splitOn, SqlParameter arg)
         {
-            return _connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
+            return Connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
         }
 
         public static IEnumerable<TResult> StoredProcedure<T1, T2, T3, T4, T5, T6, TResult>(string procedureName, Func<T1, T2, T3, T4, T5, T6, TResult> map, string splitOn, SqlParameter arg)
         {
-            return _connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
+            return Connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
         }
 
         public static IEnumerable<TResult> StoredProcedure<T1, T2, T3, T4, T5, T6, T7, TResult>(string procedureName, Func<T1, T2, T3, T4, T5, T6, T7, TResult> map, string splitOn, SqlParameter arg)
         {
-            return _connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
+            return Connection.Query(procedureName, map, arg, splitOn: splitOn, commandType: CommandType.StoredProcedure);
         }
 
         public static T StoredProcedureSingle<T>(string procedureName, params SqlParameter[] args)
         {
-            return _connection.Query<T>(procedureName, args, commandType: CommandType.StoredProcedure).SingleOrDefault();
+            return Connection.Query<T>(procedureName, args, commandType: CommandType.StoredProcedure).SingleOrDefault();
         }
 
         private static string BuildSQLQuery(string procedureName, params SqlParameter[] args)

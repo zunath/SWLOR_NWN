@@ -1157,6 +1157,7 @@
     <Compile Include="Event\Module\OnModuleUnequipItem.cs" />
     <Compile Include="Event\Module\OnModuleUserDefined.cs" />
     <Compile Include="Event\Player\OnPlayerHeartbeat.cs" />
+    <Compile Include="Service\ModuleMigrationService.cs" />
     <Compile Include="Service\StoreService.cs" />
     <Compile Include="Trigger\ExplorationTrigger.cs" />
     <Compile Include="Extension\EnumerableExtensions.cs" />

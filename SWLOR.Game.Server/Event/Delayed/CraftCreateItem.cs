@@ -135,13 +135,13 @@ namespace SWLOR.Game.Server.Event.Delayed
             }
             
             player.SendMessage("You created " + blueprint.Quantity + "x " + blueprint.ItemName + "!");
-            int baseXP = 250 + successAmount * RandomService.Random(1, 50);
+            int baseXP = 750 + successAmount * RandomService.Random(1, 50);
             float xp = SkillService.CalculateRegisteredSkillLevelAdjustedXP(baseXP, model.AdjustedLevel, pcSkill.Rank);
 
             var pcCraftedBlueprint = DataService.SingleOrDefault<PCCraftedBlueprint>(x => x.PlayerID == player.GlobalID && x.CraftBlueprintID == blueprint.ID);
             if(pcCraftedBlueprint == null)
             {
-                xp = xp * 1.25f;
+                xp = xp * 1.50f;
                 player.SendMessage("You receive an XP bonus for crafting this item for the first time.");
 
                 pcCraftedBlueprint = new PCCraftedBlueprint

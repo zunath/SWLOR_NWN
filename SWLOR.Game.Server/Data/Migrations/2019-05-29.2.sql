@@ -1465,3 +1465,22 @@ VALUES ( 53 ,    -- LootTableID - int
          1 , -- IsActive - bit
          N''    -- SpawnRule - nvarchar(64)
     )
+
+-- Rename lightsaber to light foil
+UPDATE dbo.CraftBlueprint
+SET ItemName = REPLACE(ItemName, 'Lightsaber', 'Light Foil')
+WHERE ID IN (
+211,212,213,214,215,
+612,613,614,615,616,
+622,623,624,625,626,
+632,633,634,635,636)
+
+-- Rename saberstaff to lightfoil staff
+UPDATE dbo.CraftBlueprint
+SET ItemName = REPLACE(ItemName, 'Saberstaff', 'Lightfoil Staff')
+WHERE ID IN (
+216,217,218,219,220,
+617,618,619,620,621,
+627,628,629,630,631,
+637,638,639,640,641
+)

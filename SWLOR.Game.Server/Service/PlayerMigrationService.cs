@@ -103,24 +103,26 @@ namespace SWLOR.Game.Server.Service
             // grant +1 durability and +1 max durability for every 2 AC the item has.
             if (dbPlayer.VersionNumber < 6)
             {
-                ProcessVersion6ACRemoval(player);
+                ProcessVersion6ItemChanges(player);
                 dbPlayer.VersionNumber = 6;
             }
 
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
         }
         
-        private static void ProcessVersion6ACRemoval(NWPlayer player)
+        private static void ProcessVersion6ItemChanges(NWPlayer player)
         {
             // Start with equipped items.
             foreach (var item in player.EquippedItems)
             {
                 ProcessVersion6RemoveACFromItem(item);
+                ProcessVersion6LightsaberRename(item);
             }
             // Next do all inventory items.
             foreach (var item in player.InventoryItems)
             {
                 ProcessVersion6RemoveACFromItem(item);
+                ProcessVersion6LightsaberRename(item);
             }
         }
 
@@ -165,5 +167,55 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        public static void ProcessVersion6LightsaberRename(NWItem item)
+        {
+            string resref = item.Resref;
+            string name = item.Name;
+            // Lightsabers -> Light Foil
+            if (item.CustomItemType == CustomItemType.Lightsaber)
+            {
+                switch (resref)
+                {
+                    case "lightsaber_b":
+                        name = "Basic Light Foil";
+                        break;
+                    case "lightsaber_1":
+                        name = "Light Foil I";
+                        break;
+                    case "lightsaber_2":
+                        name = "Light Foil II";
+                        break;
+                    case "lightsaber_3":
+                        name = "Light Foil III";
+                        break;
+                    case "lightsaber_4":
+                        name = "Light Foil IV";
+                        break;
+                }
+            }
+            else if (item.CustomItemType == CustomItemType.Saberstaff)
+            {
+                switch (resref)
+                {
+                    case "saberstaff_b":
+                        name = "Basic Lightfoil Staff";
+                        break;
+                    case "saberstaff_1":
+                        name = "Lightfoil Staff I";
+                        break;
+                    case "saberstaff_2":
+                        name = "Lightfoil Staff II";
+                        break;
+                    case "saberstaff_3":
+                        name = "Lightfoil Staff III";
+                        break;
+                    case "saberstaff_4":
+                        name = "Lightfoil Staff IV";
+                        break;
+                }
+            }
+
+            item.Name = name;
+        }
     }
 }

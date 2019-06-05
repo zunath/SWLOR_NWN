@@ -1399,3 +1399,69 @@ EXEC dbo.ADM_RefundPlayerPerk @PerkID = 129
 UPDATE dbo.Perk
 SET IsActive = 0
 WHERE ID IN (38 ,113,114,115,116,117,118,119,120,121,122,129)
+
+
+
+-- Make a loot table specifically for dropping reassembly fuel cells.
+INSERT INTO dbo.LootTable ( ID ,
+                            Name )
+VALUES ( 54 , -- ID - int
+         N'Reassembly Fuel Cell' -- Name - nvarchar(64)
+    )
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 54 ,    -- LootTableID - int
+         'ass_power' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         10 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+
+
+-- Add reassembly fuel cells to existing space encounter loot tables
+
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 51 ,    -- LootTableID - int
+         'ass_power' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         1 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 52 ,    -- LootTableID - int
+         'ass_power' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         1 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )
+INSERT INTO dbo.LootTableItem ( LootTableID ,
+                                Resref ,
+                                MaxQuantity ,
+                                Weight ,
+                                IsActive ,
+                                SpawnRule )
+VALUES ( 53 ,    -- LootTableID - int
+         'ass_power' ,   -- Resref - varchar(16)
+         1 ,    -- MaxQuantity - int
+         1 ,    -- Weight - tinyint
+         1 , -- IsActive - bit
+         N''    -- SpawnRule - nvarchar(64)
+    )

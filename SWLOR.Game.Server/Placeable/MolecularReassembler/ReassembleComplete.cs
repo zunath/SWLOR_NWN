@@ -21,7 +21,6 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
         public bool Run(params object[] args)
         {
             _player = (NWPlayer) args[0];
-            _playerItemStats = PlayerStatService.GetPlayerItemEffectiveStats(_player);
             int xp = 100; // Always grant at least this much XP to player.
 
             // Remove the immobilization effect
@@ -33,6 +32,18 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
                 }
             }
 
+            // Check for a fuel cell in the player's inventory again. If it doesn't exist, we exit early with an error message.
+            NWItem fuel = _.GetItemPossessedBy(_player, "ass_power");
+            if (!fuel.IsValid)
+            {
+                _player.SendMessage(ColorTokenService.Red("A 'Reassembly Fuel Cell' was not found in your inventory. Reassembly failed."));
+                return false;
+            }
+
+            // Otherwise the fuel cell was found. Destroy it and continue on with the process.
+            fuel.Destroy();
+
+            _playerItemStats = PlayerStatService.GetPlayerItemEffectiveStats(_player);
             string serializedSalvageItem = (string)args[1];
             NWPlaceable tempStorage = _.GetObjectByTag("TEMP_ITEM_STORAGE");
             NWItem item = SerializationService.DeserializeItem(serializedSalvageItem, tempStorage);

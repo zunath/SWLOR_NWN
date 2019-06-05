@@ -56,7 +56,6 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
             }
 
             // Now check specific custom properties which are stored as local variables on the item.
-            xp += ProcessProperty(item.CustomAC, 3, ComponentBonusType.ACUp);
             xp += ProcessProperty(item.HarvestingBonus, 3, ComponentBonusType.HarvestingUp);
             xp += ProcessProperty(item.PilotingBonus, 3, ComponentBonusType.PilotingUp);
             xp += ProcessProperty(item.ScanningBonus, 3, ComponentBonusType.ScanningUp);

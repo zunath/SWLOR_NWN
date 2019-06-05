@@ -96,7 +96,6 @@ namespace SWLOR.Game.Server.Conversation
             }
 
             // Now check specific custom properties which are stored as local variables on the item.
-            header += ProcessPropertyDetails(item.CustomAC, componentType.Name, "AC", 3);
             header += ProcessPropertyDetails(item.HarvestingBonus, componentType.Name, "Harvesting Bonus", 3);
             header += ProcessPropertyDetails(item.PilotingBonus, componentType.Name, "Piloting Bonus", 3);
             header += ProcessPropertyDetails(item.ScanningBonus, componentType.Name, "Scanning Bonus", 3);

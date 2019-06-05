@@ -41,20 +41,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
             
             // Create an item with no bonuses every time.
             _.CreateItemOnObject(_componentType.ReassembledResref, _player);
-
-            // First check is for attack bonuses
-            foreach (var prop in item.ItemProperties)
-            {
-                int propTypeID = _.GetItemPropertyType(prop);
-                if (propTypeID == _.ITEM_PROPERTY_ATTACK_BONUS)
-                {
-                    // Get the amount of Attack Bonus
-                    int amount = _.GetItemPropertyCostTableValue(prop);
-
-                    xp += ProcessProperty(amount, 3, ComponentBonusType.AttackBonusUp);
-                }
-            }
-
+            
             // Now check specific custom properties which are stored as local variables on the item.
             xp += ProcessProperty(item.HarvestingBonus, 3, ComponentBonusType.HarvestingUp);
             xp += ProcessProperty(item.PilotingBonus, 3, ComponentBonusType.PilotingUp);

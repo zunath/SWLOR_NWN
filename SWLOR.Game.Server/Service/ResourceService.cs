@@ -100,7 +100,6 @@ namespace SWLOR.Game.Server.Service
         {
             string[] commonIP =
             {
-                "compbon_ac1",
                 "compbon_arm1",
                 "compbon_cspd1",
                 "compbon_charges1",
@@ -142,7 +141,6 @@ namespace SWLOR.Game.Server.Service
 
             string[] uncommonIP =
             {
-                "compbon_ac2",
                 "compbon_arm2",
                 "compbon_cspd2",
                 "compbon_charges3",
@@ -194,7 +192,6 @@ namespace SWLOR.Game.Server.Service
 
             string[] rareIP =
             {
-                "compbon_ac3",
                 "compbon_arm3",
                 "compbon_cspd3",
                 "compbon_cooking3",

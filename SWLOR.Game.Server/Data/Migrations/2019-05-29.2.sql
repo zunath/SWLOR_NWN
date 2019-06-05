@@ -1045,31 +1045,31 @@ SET @PerkID = 182
 UPDATE dbo.PerkFeat
 SET BaseFPCost = 0,
 	ConcentrationFPCost = 2,
-	ConcentrationTickInterval = 1
+	ConcentrationTickInterval = 6
 WHERE PerkID = @PerkID
 	AND PerkLevelUnlocked = 1
 UPDATE dbo.PerkFeat
 SET BaseFPCost = 0,
 	ConcentrationFPCost = 2,
-	ConcentrationTickInterval = 1
+	ConcentrationTickInterval = 6
 WHERE PerkID = @PerkID 
 	AND PerkLevelUnlocked = 2
 UPDATE dbo.PerkFeat
 SET BaseFPCost = 0,
 	ConcentrationFPCost = 2,
-	ConcentrationTickInterval = 1
+	ConcentrationTickInterval = 6
 WHERE PerkID = @PerkID 
 	AND PerkLevelUnlocked = 3
 UPDATE dbo.PerkFeat
 SET BaseFPCost = 0,
 	ConcentrationFPCost = 2,
-	ConcentrationTickInterval = 1
+	ConcentrationTickInterval = 6
 WHERE PerkID = @PerkID 
 	AND PerkLevelUnlocked = 4
 UPDATE dbo.PerkFeat
 SET BaseFPCost = 0,
 	ConcentrationFPCost = 2,
-	ConcentrationTickInterval = 1
+	ConcentrationTickInterval = 6
 WHERE PerkID = @PerkID 
 	AND PerkLevelUnlocked = 5
 

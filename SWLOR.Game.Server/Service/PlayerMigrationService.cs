@@ -124,7 +124,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static void ProcessVersion6RemoveACFromItem(NWItem item)
+        public static void ProcessVersion6RemoveACFromItem(NWItem item)
         {
             // Start by pulling the custom AC off the item and halving it.
             // Durability is +1 for every 2 AC on the item.
@@ -136,7 +136,7 @@ namespace SWLOR.Game.Server.Service
                 DurabilityService.SetMaxDurability(item, newMax);
                 DurabilityService.SetDurability(item, newCurrent);
             }
-
+            
             item.CustomAC = 0;
 
             // Check all item properties. If the IP is a component Armor Class Bonus, remove it and replace with an increase to durability.

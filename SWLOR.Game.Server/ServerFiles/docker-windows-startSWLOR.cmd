@@ -32,6 +32,7 @@ docker run --rm -it ^
 -e NWNX_CHAT_SKIP=n ^
 -e NWNX_CREATURE_SKIP=n ^
 -e NWNX_EVENTS_SKIP=n ^
+-e NWNX_EFFECT_SKIP=n ^
 -e NWNX_DATA_SKIP=y ^
 -e NWNX_DAMAGE_SKIP=n ^
 -e NWNX_JVM_SKIP=y ^

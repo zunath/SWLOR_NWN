@@ -8,7 +8,7 @@
         Poison = 3,
         ForceAura = 4,
         ForceBreach = 5,
-        Chainspell = 6,
+        // 6 is open
         ForceShock = 7,
         AbsorptionField = 8,
         ForceSpread = 9,

@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using NWN;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Messaging.Messages;
 using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.Processor;
 using SWLOR.Game.Server.Processor.Contracts;
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Service
             if (delta.Seconds < 1) return;
             _dateLastRun = DateTime.UtcNow;
             
-            MessageHub.Instance.Publish(new ObjectProcessorMessage());
+            MessageHub.Instance.Publish(new OnObjectProcessorRan());
         }
     }
 }

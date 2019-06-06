@@ -1,4 +1,6 @@
-﻿using NWN;
+﻿using System;
+using System.Collections.Generic;
+using NWN;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -14,6 +16,18 @@ namespace SWLOR.Game.Server.Service
 {
     public static class PlayerMigrationService
     {
+        public class SerializedObjectData
+        {
+            public string Data { get; }
+            public List<ItemProperty> ItemPropertiesToAdd { get; }
+
+            public SerializedObjectData(string data, List<ItemProperty> itemProperties)
+            {
+                Data = data;
+                ItemPropertiesToAdd = itemProperties;
+            }
+        }
+
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnModuleEnter>(message => OnModuleEnter());
@@ -112,17 +126,34 @@ namespace SWLOR.Game.Server.Service
         
         private static void ProcessVersion6ItemChanges(NWPlayer player)
         {
+            List<SerializedObjectData> serializedItems = new List<SerializedObjectData>();
+
             // Start with equipped items.
             foreach (var item in player.EquippedItems)
             {
                 ProcessVersion6RemoveACFromItem(item);
-                ProcessVersion6LightsaberRename(item);
+                var data = ProcessVersion6LightsaberItem(item);
+                if(data.Data != null)
+                    serializedItems.Add(data);
             }
             // Next do all inventory items.
             foreach (var item in player.InventoryItems)
             {
                 ProcessVersion6RemoveACFromItem(item);
-                ProcessVersion6LightsaberRename(item);
+                var data = ProcessVersion6LightsaberItem(item);
+                if(data.Data != null)
+                    serializedItems.Add(data);
+            }
+
+            // Deserialize all items onto the player now.
+            foreach (var serialized in serializedItems)
+            {
+                var item = SerializationService.DeserializeItem(serialized.Data, player);
+                BiowareXP2.IPRemoveAllItemProperties(item, DURATION_TYPE_PERMANENT);
+                foreach (var ip in serialized.ItemPropertiesToAdd)
+                {
+                    BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+                }
             }
         }
 
@@ -167,55 +198,42 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static void ProcessVersion6LightsaberRename(NWItem item)
+        private static SerializedObjectData ProcessVersion6LightsaberItem(NWItem item)
         {
-            string resref = item.Resref;
-            string name = item.Name;
-            // Lightsabers -> Light Foil
-            if (item.CustomItemType == CustomItemType.Lightsaber)
+            if (item.CustomItemType != CustomItemType.Lightsaber &&
+                item.CustomItemType != CustomItemType.Saberstaff) return new SerializedObjectData(null, null);
+
+            NWPlaceable storage = _.GetObjectByTag("MIGRATION_STORAGE");
+            NWItem newVersion = _.CreateItemOnObject(item.Resref, storage);
+            List<ItemProperty> ipsToAdd = new List<ItemProperty>();
+            
+            // There's a quirk with NWN in how it handles removing of item properties.
+            // IPs don't get removed immediately - instead, they get removed after the script exits.
+            // Because we're serializing during this process, it causes us to get duplicate item properties
+            // since they haven't actually been removed yet.
+            // To work around this, we return both the serialized item as well as the item properties we need
+            // to add to the item once it's been deserialized.
+            // Nasty workaround, but it does work!
+            foreach (var ip in item.ItemProperties)
             {
-                switch (resref)
-                {
-                    case "lightsaber_b":
-                        name = "Basic Light Foil";
-                        break;
-                    case "lightsaber_1":
-                        name = "Light Foil I";
-                        break;
-                    case "lightsaber_2":
-                        name = "Light Foil II";
-                        break;
-                    case "lightsaber_3":
-                        name = "Light Foil III";
-                        break;
-                    case "lightsaber_4":
-                        name = "Light Foil IV";
-                        break;
-                }
-            }
-            else if (item.CustomItemType == CustomItemType.Saberstaff)
-            {
-                switch (resref)
-                {
-                    case "saberstaff_b":
-                        name = "Basic Lightfoil Staff";
-                        break;
-                    case "saberstaff_1":
-                        name = "Lightfoil Staff I";
-                        break;
-                    case "saberstaff_2":
-                        name = "Lightfoil Staff II";
-                        break;
-                    case "saberstaff_3":
-                        name = "Lightfoil Staff III";
-                        break;
-                    case "saberstaff_4":
-                        name = "Lightfoil Staff IV";
-                        break;
-                }
+                ipsToAdd.Add(ip);
             }
 
-            item.Name = name;
+            // Copy all local variables from old to new version.
+            LocalVariableService.CopyVariables(item, newVersion);
+
+            // Destroy the old item.
+            item.Destroy();
+
+            // We return the serialized value. Be sure we do this before destroying the object.
+            // The reason for this is to ensure we don't hit an infinite loop. The calling method uses a loop iterating
+            // over the player's inventory. Creating an item will cause an infinite loop to happen.
+            string retVal = SerializationService.Serialize(newVersion);
+
+            // Destroy the copy on the container.
+            newVersion.Destroy();
+            
+            return new SerializedObjectData(retVal, ipsToAdd);
         }
     }
 }

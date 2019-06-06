@@ -787,6 +787,7 @@ ADD ConcentrationTickInterval INT NOT NULL DEFAULT 0
 
 EXEC dbo.ADM_Drop_Column @TableName = N'PerkLevel' , -- nvarchar(200)
                          @ColumnName = N'BaseFPCost'  -- nvarchar(200)
+GO
 
 
 DECLARE @PerkID INT 

@@ -133,15 +133,20 @@ namespace SWLOR.Game.Server.Conversation
             {
                 if (currentPerkLevel != null)
                 {
-                    var currentPerkFeat = DataService.Single<PerkFeat>(x => x.PerkID == vm.SelectedPerkID && 
+                    var currentPerkFeat = DataService.SingleOrDefault<PerkFeat>(x => x.PerkID == vm.SelectedPerkID && 
                                                                             x.PerkLevelUnlocked == currentPerkLevel.Level);
                     currentBonus = currentPerkLevel.Description;
-                    currentFPCost = currentPerkFeat.BaseFPCost > 0 ? (ColorTokenService.Green("Current FP: ") + currentPerkFeat.BaseFPCost + "\n"): string.Empty;
 
-                    // If this perk levelhas a concentration cost and interval, display it on the menu.
-                    if (currentPerkFeat.ConcentrationFPCost > 0 && currentPerkFeat.ConcentrationTickInterval > 0)
+                    // Not every perk is going to have a perk feat. Don't display this information if not necessary.
+                    if(currentPerkFeat != null)
                     {
-                        currentConcentrationCost = ColorTokenService.Green("Current Concentration FP: ") + currentPerkFeat.ConcentrationFPCost + " / " + currentPerkFeat.ConcentrationTickInterval + "s\n";
+                        currentFPCost = currentPerkFeat.BaseFPCost > 0 ? (ColorTokenService.Green("Current FP: ") + currentPerkFeat.BaseFPCost + "\n") : string.Empty;
+
+                        // If this perk level has a concentration cost and interval, display it on the menu.
+                        if (currentPerkFeat.ConcentrationFPCost > 0 && currentPerkFeat.ConcentrationTickInterval > 0)
+                        {
+                            currentConcentrationCost = ColorTokenService.Green("Current Concentration FP: ") + currentPerkFeat.ConcentrationFPCost + " / " + currentPerkFeat.ConcentrationTickInterval + "s\n";
+                        }
                     }
 
                 }
@@ -150,16 +155,20 @@ namespace SWLOR.Game.Server.Conversation
             {
                 if (nextPerkLevel != null)
                 {
-                    var nextPerkFeat = DataService.Single<PerkFeat>(x => x.PerkID == vm.SelectedPerkID &&
+                    var nextPerkFeat = DataService.SingleOrDefault<PerkFeat>(x => x.PerkID == vm.SelectedPerkID &&
                                                                          x.PerkLevelUnlocked == rank + 1);
                     nextBonus = nextPerkLevel.Description;
                     price = nextPerkLevel.Price + " SP (Available: " + player.UnallocatedSP + " SP)";
-                    nextFPCost = nextPerkFeat.BaseFPCost > 0 ? (ColorTokenService.Green("Next FP: ") + nextPerkFeat.BaseFPCost + "\n") : string.Empty;
 
-                    // If this perk level has a concentration cost and interval, display it on the menu.
-                    if (nextPerkFeat.ConcentrationFPCost > 0 && nextPerkFeat.ConcentrationTickInterval > 0)
+                    if (nextPerkFeat != null)
                     {
-                        nextConcentrationCost = ColorTokenService.Green("Next Concentration FP: ") + nextPerkFeat.ConcentrationFPCost + " / " + nextPerkFeat.ConcentrationTickInterval + "s\n";
+                        nextFPCost = nextPerkFeat.BaseFPCost > 0 ? (ColorTokenService.Green("Next FP: ") + nextPerkFeat.BaseFPCost + "\n") : string.Empty;
+
+                        // If this perk level has a concentration cost and interval, display it on the menu.
+                        if (nextPerkFeat.ConcentrationFPCost > 0 && nextPerkFeat.ConcentrationTickInterval > 0)
+                        {
+                            nextConcentrationCost = ColorTokenService.Green("Next Concentration FP: ") + nextPerkFeat.ConcentrationFPCost + " / " + nextPerkFeat.ConcentrationTickInterval + "s\n";
+                        }
                     }
                 }
             }

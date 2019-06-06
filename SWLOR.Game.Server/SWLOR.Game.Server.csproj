@@ -97,7 +97,6 @@
     <Compile Include="ChatCommand\EmoteStyle.cs" />
     <Compile Include="ChatCommand\GetDataCache.cs" />
     <Compile Include="ChatCommand\GetFP.cs" />
-    <Compile Include="ChatCommand\GetItemAppearance.cs" />
     <Compile Include="ChatCommand\GetLocalFloat.cs" />
     <Compile Include="ChatCommand\GetLocalInt.cs" />
     <Compile Include="ChatCommand\GetLocalString.cs" />

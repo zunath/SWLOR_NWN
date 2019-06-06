@@ -1,5 +1,0 @@
-﻿
-UPDATE dbo.CraftBlueprint
-SET PerkID = NULL, RequiredPerkLevel = 0
-WHERE ID IN (
-91,92 ,93 ,94 ,95 ,96 ,97 ,98 ,99 ,100,101,102,223,224,225,226,227,228,229,230,316,317,318)

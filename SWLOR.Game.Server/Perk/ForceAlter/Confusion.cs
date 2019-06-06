@@ -1,16 +1,34 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using System;
+using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
-    public class Confusion: IPerkHandler
+    public class Confusion : IPerkHandler
     {
         public PerkType PerkType => PerkType.Confusion;
         public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier)
         {
+            switch (spellTier)
+            {
+                case 1:
+                    if (!oTarget.IsCreature)
+                        return "This ability can only be used on living creatures.";
+                    NWCreature targetCreature = oTarget.Object;
+                    if (targetCreature.RacialType == (int)CustomRaceType.Robot)
+                        return "This ability cannot be used on droids.";
+                    break;
+                case 2:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(spellTier));
+            }
+
             return string.Empty;
         }
-        
+
         public int FPCost(NWPlayer oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
@@ -60,9 +78,57 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             return false;
         }
 
-        public void OnConcentrationTick(NWPlayer player, NWObject target, int perkLevel, int tick)
+        public void OnConcentrationTick(NWPlayer player, NWObject target, int spellTier, int tick)
         {
-            
+            ApplyEffect(player, target, spellTier);
+        }
+
+        private void ApplyEffect(NWPlayer player, NWObject target, int spellTier)
+        {
+            float radiusSize = _.RADIUS_SIZE_SMALL;
+            NWCreature targetCreature;
+
+            Effect confusionEffect = _.EffectConfused();
+
+            // Handle effects for differing spellTier values
+            switch (spellTier)
+            {
+                case 1:
+                    //targetCreature = (NWCreature)target;
+                    targetCreature = target.Object;
+
+                    if ((player.Wisdom > targetCreature.Wisdom || player.Object == targetCreature.Object) && _.GetDistanceBetween(player.Object, targetCreature.Object) <= radiusSize)
+                    {
+                        player.AssignCommand(() =>
+                        {
+                            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, confusionEffect, target, 6.1f);
+                        });
+                    }
+                    break;
+                case 2:
+                    targetCreature = _.GetFirstObjectInShape(_.SHAPE_SPHERE, radiusSize, player.Location, 1, _.OBJECT_TYPE_CREATURE);
+                    while (targetCreature.IsValid)
+                    {
+                        if (targetCreature.RacialType == (int)CustomRaceType.Robot)
+                        {                            
+                            // Do nothing against droids, skip object
+                            continue;
+                        }
+
+                        if (player.Wisdom > targetCreature.Wisdom)
+                        {
+                            player.AssignCommand(() =>
+                            {
+                                _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, confusionEffect, target, 6.1f);
+                            });
+                        }
+
+                        targetCreature = _.GetNextObjectInShape(_.SHAPE_SPHERE, radiusSize, player.Location, 1, _.OBJECT_TYPE_CREATURE);
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(spellTier));
+            }
         }
     }
 }

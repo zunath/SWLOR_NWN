@@ -100,6 +100,11 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             float delta = 0.01f * result.Delta;
             amount = amount + (int)(amount * delta);
 
+            if (target.GetLocalInt("FORCE_DRAIN_IMMUNITY") == 1)
+            {
+                amount = 0;
+            }
+
             player.AssignCommand(() =>
             {
                 _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectDamage(amount, _.DAMAGE_TYPE_NEGATIVE), target);

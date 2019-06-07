@@ -1,5 +1,12 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using System;
+using System.Linq;
+using NWN;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.ValueObject;
+
+using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
 {
@@ -60,9 +67,58 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             return false;
         }
 
-        public void OnConcentrationTick(NWPlayer player, NWObject target, int perkLevel, int tick)
+        public void OnConcentrationTick(NWPlayer player, NWObject target, int spellTier, int tick)
         {
-            
+            ApplyEffect(player, target, spellTier);
+        }
+
+        private void ApplyEffect(NWPlayer player, NWObject target, int spellTier)
+        {
+
+            Effect effectMindShield = new Effect();               
+
+            // Handle effects for differing spellTier values
+            switch (spellTier)
+            {
+                case 1:
+                    effectMindShield =_.EffectImmunity(IMMUNITY_TYPE_DAZED);
+
+                    player.AssignCommand(() =>
+                    {
+                        _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effectMindShield, target, 6.1f);
+                    });
+                    break;
+                case 2:
+                    effectMindShield = _.EffectImmunity(IMMUNITY_TYPE_DAZED);
+                    effectMindShield = _.EffectLinkEffects(effectMindShield, _.EffectImmunity(IMMUNITY_TYPE_CONFUSED));
+                    effectMindShield = _.EffectLinkEffects(effectMindShield, _.EffectImmunity(IMMUNITY_TYPE_DOMINATE)); // Force Pursuade is DOMINATION effect
+
+                    player.AssignCommand(() =>
+                    {
+                        _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effectMindShield, target, 6.1f);
+                    });
+                    break;
+                case 3:
+                    effectMindShield = _.EffectImmunity(IMMUNITY_TYPE_DAZED);
+                    effectMindShield = _.EffectLinkEffects(effectMindShield, _.EffectImmunity(IMMUNITY_TYPE_CONFUSED));
+                    effectMindShield = _.EffectLinkEffects(effectMindShield, _.EffectImmunity(IMMUNITY_TYPE_DOMINATE)); // Force Pursuade is DOMINATION effect
+
+                    if (target.GetLocalInt("FORCE_DRAIN_IMMUNITY") == 1)
+                
+                    player.SetLocalInt("FORCE_DRAIN_IMMUNITY",0);                   
+                    player.DelayAssignCommand(() =>
+                    {
+                        player.DeleteLocalInt("FORCE_DRAIN_IMMUNITY");
+                    },6.1f);
+
+                    player.AssignCommand(() =>
+                    {
+                        _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effectMindShield, target, 6.1f);
+                    });
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(spellTier));
+            }
         }
     }
 }

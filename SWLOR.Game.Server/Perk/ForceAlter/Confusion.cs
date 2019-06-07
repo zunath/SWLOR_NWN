@@ -2,7 +2,6 @@
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
@@ -12,7 +11,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier)
         {
             switch (spellTier)
-            {
+            {                
                 case 1:
                     if (!oTarget.IsCreature)
                         return "This ability can only be used on living creatures.";
@@ -109,9 +108,9 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     targetCreature = _.GetFirstObjectInShape(_.SHAPE_SPHERE, radiusSize, player.Location, 1, _.OBJECT_TYPE_CREATURE);
                     while (targetCreature.IsValid)
                     {
-                        if (targetCreature.RacialType == (int)CustomRaceType.Robot)
+                        if (targetCreature.RacialType == (int)CustomRaceType.Robot || _.GetIsReactionTypeHostile(target, player) == 0)
                         {                            
-                            // Do nothing against droids, skip object
+                            // Do nothing against droids or non-hostile creatures, skip object
                             continue;
                         }
 

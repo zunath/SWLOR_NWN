@@ -104,8 +104,6 @@ namespace SWLOR.Tools.Editor.Startup
                         return Create("ID", "SkillCategoryID", "Name", "MaxRank", "IsActive", "Description", "Primary", "Secondary", "Tertiary", "ContributesToSkillCap", "SkillXPRequirements");
                     case nameof(SkillCategory):
                         return Create("ID", "Name", "IsActive", "Sequence");
-                    case nameof(SkillXPRequirement):
-                        return Create("ID", "SkillID", "Rank", "XP");
                     case nameof(Spawn):
                         return Create("ID", "Name", "SpawnObjectTypeID");
                     case nameof(SpawnObject):

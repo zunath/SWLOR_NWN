@@ -178,7 +178,6 @@ namespace SWLOR.Game.Server.Service
             GetAll<ServerConfiguration>();
             GetAll<Skill>();
             GetAll<SkillCategory>();
-            GetAll<SkillXPRequirement>();
             GetAll<Spawn>();
             GetAll<SpawnObject>();
             GetAll<SpawnObjectType>();

@@ -240,11 +240,10 @@ namespace SWLOR.Game.Server.Service
             {
                 var skill = DataService.Get<Skill>(pcSkill.SkillID);
                 int maxRank = skill.MaxRank;
-                int skillID = skill.ID;
-                var xpRecord = DataService.Single<SkillXPRequirement>(x => x.SkillID == skillID && x.Rank == maxRank);
+                int maxRankXP = SkillService.SkillXPRequirements[maxRank];
 
                 pcSkill.Rank = maxRank;
-                pcSkill.XP = xpRecord.XP - 1;
+                pcSkill.XP = maxRankXP - 1;
 
                 DataService.SubmitDataChange(pcSkill, DatabaseActionType.Update);
             }

@@ -44,6 +44,124 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnModuleLeave>(message => OnModuleLeave());
         }
 
+        private static Dictionary<int, int> _skillXPRequirements;
+
+        public static Dictionary<int, int> SkillXPRequirements
+        {
+            get
+            {
+                if (_skillXPRequirements == null)
+                {
+                    _skillXPRequirements = new Dictionary<int, int>
+                    {
+                        { 0, 550 },
+                        { 1, 825 },
+                        { 2, 1100 },
+                        { 3, 1375 },
+                        { 4, 1650 },
+                        { 5, 1925 },
+                        { 6, 2200 },
+                        { 7, 2420 },
+                        { 8, 2640 },
+                        { 9, 2860 },
+                        { 10, 3080 },
+                        { 11, 4200 },
+                        { 12, 4480 },
+                        { 13, 4760 },
+                        { 14, 5040 },
+                        { 15, 5320 },
+                        { 16, 5600 },
+                        { 17, 5880 },
+                        { 18, 6160 },
+                        { 19, 6440 },
+                        { 20, 6720 },
+                        { 21, 8500 },
+                        { 22, 8670 },
+                        { 23, 8840 },
+                        { 24, 9010 },
+                        { 25, 9180 },
+                        { 26, 9350 },
+                        { 27, 9520 },
+                        { 28, 9690 },
+                        { 29, 9860 },
+                        { 30, 10030 },
+                        { 31, 10200 },
+                        { 32, 10370 },
+                        { 33, 10540 },
+                        { 34, 10710 },
+                        { 35, 10880 },
+                        { 36, 11050 },
+                        { 37, 11220 },
+                        { 38, 11390 },
+                        { 39, 11560 },
+                        { 40, 11730 },
+                        { 41, 14000 },
+                        { 42, 14200 },
+                        { 43, 14400 },
+                        { 44, 14600 },
+                        { 45, 14800 },
+                        { 46, 15000 },
+                        { 47, 15200 },
+                        { 48, 15400 },
+                        { 49, 16000 },
+                        { 50, 18400 },
+                        { 51, 24960 },
+                        { 52, 27840 },
+                        { 53, 30720 },
+                        { 54, 33600 },
+                        { 55, 36480 },
+                        { 56, 39360 },
+                        { 57, 42240 },
+                        { 58, 45120 },
+                        { 59, 48000 },
+                        { 60, 51600 },
+                        { 61, 55200 },
+                        { 62, 58800 },
+                        { 63, 62400 },
+                        { 64, 66000 },
+                        { 65, 69600 },
+                        { 66, 73200 },
+                        { 67, 76800 },
+                        { 68, 81600 },
+                        { 69, 86400 },
+                        { 70, 91200 },
+                        { 71, 108000 },
+                        { 72, 113400 },
+                        { 73, 118800 },
+                        { 74, 120150 },
+                        { 75, 121500 },
+                        { 76, 122850 },
+                        { 77, 124200 },
+                        { 78, 125550 },
+                        { 79, 126900 },
+                        { 80, 128250 },
+                        { 81, 144000 },
+                        { 82, 145500 },
+                        { 83, 147000 },
+                        { 84, 148500 },
+                        { 85, 150000 },
+                        { 86, 151500 },
+                        { 87, 153000 },
+                        { 88, 154500 },
+                        { 89, 156000 },
+                        { 90, 159000 },
+                        { 91, 216000 },
+                        { 92, 220000 },
+                        { 93, 224000 },
+                        { 94, 228000 },
+                        { 95, 232000 },
+                        { 96, 236000 },
+                        { 97, 240000 },
+                        { 98, 260000 },
+                        { 99, 280000 },
+                        { 100, 400000 }
+                    };
+                }
+
+                return _skillXPRequirements;
+            }
+        }
+
         public static void RegisterPCToAllCombatTargetsForSkill(NWPlayer player, SkillType skillType, NWCreature target)
         {
             int skillID = (int)skillType;
@@ -123,7 +241,7 @@ namespace SWLOR.Game.Server.Service
 
 
             PCSkill pcSkill = GetPCSkill(oPC, skillID);
-            SkillXPRequirement req = DataService.Single<SkillXPRequirement>(x => x.SkillID == skillID && x.Rank == pcSkill.Rank);
+            int req = SkillXPRequirements[pcSkill.Rank];
             int maxRank = skill.MaxRank;
             int originalRank = pcSkill.Rank;
             float xpBonusModifier = player.XPBonus * 0.01f;
@@ -160,14 +278,14 @@ namespace SWLOR.Game.Server.Service
 
             // Skill is at cap and player would level up.
             // Reduce XP to required amount minus 1 XP
-            if (pcSkill.Rank >= maxRank && pcSkill.XP > req.XP)
+            if (pcSkill.Rank >= maxRank && pcSkill.XP > req)
             {
-                pcSkill.XP = req.XP - 1;
+                pcSkill.XP = req - 1;
             }
 
-            while (pcSkill.XP >= req.XP)
+            while (pcSkill.XP >= req)
             {
-                pcSkill.XP = pcSkill.XP - req.XP;
+                pcSkill.XP = pcSkill.XP - req;
 
                 if (player.TotalSPAcquired < SkillCap && skill.ContributesToSkillCap)
                 {
@@ -177,7 +295,7 @@ namespace SWLOR.Game.Server.Service
 
                 pcSkill.Rank++;
                 oPC.FloatingText("Your " + skill.Name + " skill level increased to rank " + pcSkill.Rank + "!");
-                req = DataService.Single<SkillXPRequirement>(x => x.SkillID == skillID && x.Rank == pcSkill.Rank);
+                req = SkillXPRequirements[pcSkill.Rank];
 
                 // Reapply skill penalties on a skill level up.
                 for (int slot = 0; slot < NUM_INVENTORY_SLOTS; slot++)
@@ -578,8 +696,8 @@ namespace SWLOR.Game.Server.Service
             var pcSkills = DataService.Where<PCSkill>(x => x.PlayerID == oPC.GlobalID && x.SkillID != levelingSkill.SkillID);
             var totalXPs = pcSkills.Select(s =>
             {
-                var reqXP = DataService.Where<SkillXPRequirement>(x => x.SkillID == s.SkillID && (x.Rank < s.Rank || x.Rank == 0 && s.XP > 0));
-                var totalXP = reqXP.Sum(x => x.XP);
+                var reqXP = SkillXPRequirements.Where(x => (x.Key < s.Rank || x.Key == 0 && s.XP > 0));
+                var totalXP = reqXP.Sum(x => x.Value);
                 return new { s.SkillID, TotalSkillXP = totalXP };
             }).ToList();
 
@@ -636,19 +754,19 @@ namespace SWLOR.Game.Server.Service
                 else
                 {
                     // Get the XP amounts required per level, in ascending order, so we can see how many levels we're now meant to have. 
-                    List<SkillXPRequirement> reqs = DataService.Where<SkillXPRequirement>(x => x.SkillID == decaySkill.SkillID && x.Rank <= decaySkill.Rank).OrderBy(o => o.Rank).ToList();
+                    var reqs = SkillXPRequirements.Where(x => x.Key <= decaySkill.Rank).OrderBy(o => o.Key).ToList();
 
 
                     // The first entry in the database is for rank 0, and if passed, will raise us to 1.  So start our count at 0.
                     int newDecaySkillRank = 0;
-                    foreach (SkillXPRequirement req in reqs)
+                    foreach (var req in reqs)
                     {
-                        if (totalDecaySkillXP >= req.XP)
+                        if (totalDecaySkillXP >= req.Value)
                         {
-                            totalDecaySkillXP = totalDecaySkillXP - req.XP;
+                            totalDecaySkillXP = totalDecaySkillXP - req.Value;
                             newDecaySkillRank++;
                         }
-                        else if (totalDecaySkillXP < req.XP)
+                        else if (totalDecaySkillXP < req.Value)
                         {
                             break;
                         }

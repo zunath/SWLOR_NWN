@@ -1,7 +1,7 @@
 ﻿using System;
 using NWN;
 using SWLOR.Game.Server.GameObject;
-
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static NWN._;
 
@@ -54,7 +54,8 @@ namespace SWLOR.Game.Server.Conversation
                 "Left Shoulder",
                 "Left Bicep",
                 "Left Forearm",
-                "Left Glove");
+                "Left Glove",
+                "Helmet");
 
             DialogPage partPage = new DialogPage(
                 "Please select a new model.");
@@ -202,19 +203,75 @@ namespace SWLOR.Game.Server.Conversation
         {
             var model = GetDialogCustomData<Model>();
             model.ItemTypeID = ITEM_APPR_TYPE_WEAPON_MODEL;
+            int[] parts = { 0 };
 
             switch (responseID)
             {
                 case 1: // Top
                     model.Index = ITEM_APPR_WEAPON_MODEL_TOP;
+                    // WEAPON CRAFTING RESTRICTIONS GO HERE    
+                    if (model.TargetItem.BaseItemType == BASE_ITEM_GREATAXE)
+                        parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                    if (model.TargetItem.BaseItemType == BASE_ITEM_BATTLEAXE)
+                        parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                    if (model.TargetItem.BaseItemType == BASE_ITEM_BASTARDSWORD) // parts 20 (lightfoil blade) and 24 (wind fire wheel?) excluded
+                        parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 25 };
+                    if (model.TargetItem.BaseItemType == BASE_ITEM_DAGGER) // parts 19 (lightfoil blade) excluded
+                        parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22};
+                    if (model.TargetItem.BaseItemType == BASE_ITEM_GREATSWORD) // parts 16 (lightfoil blade) excluded
+                        parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                    if (model.TargetItem.BaseItemType == BASE_ITEM_LONGSWORD) // parts 21 (lightfoil blade) and 24 (cosmic blade) excluded
+                        parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 23, 25};
+                    if (model.TargetItem.BaseItemType == BASE_ITEM_RAPIER) // parts 14 (lightfoil blade) excluded
+                        parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                    if (model.TargetItem.BaseItemType == BASE_ITEM_KATANA) // parts 23 (lightfoil blade) excluded
+                        parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24, 25 };
+                    if (model.TargetItem.BaseItemType == BASE_ITEM_SHORTSWORD) // parts 20 (lightfoil blade) and 24 (cosmic blade) excluded
+                        parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 25 };
+                    if (model.TargetItem.BaseItemType == BASE_ITEM_CLUB)
+                        parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                    if (model.TargetItem.BaseItemType == BASE_ITEM_LIGHTMACE)
+                        parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                    if (model.TargetItem.BaseItemType == BASE_ITEM_MORNINGSTAR)
+                        parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                    if (model.TargetItem.BaseItemType == BASE_ITEM_QUARTERSTAFF)
+                        parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                    if (model.TargetItem.BaseItemType == BASE_ITEM_DOUBLEAXE)
+                        parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                    if (model.TargetItem.BaseItemType == BASE_ITEM_TWOBLADEDSWORD)
+                        parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                    if (model.TargetItem.BaseItemType == BASE_ITEM_KUKRI)
+                        parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                    if (model.TargetItem.BaseItemType == BASE_ITEM_HALBERD) // parts 9 (electric effect) excluded
+                        parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                    if (model.TargetItem.BaseItemType == BASE_ITEM_SHORTSPEAR)
+                        parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                    if (model.TargetItem.BaseItemType == (int)CustomItemType.BlasterPistol)
+                        parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                    if (model.TargetItem.BaseItemType == (int)CustomItemType.BlasterRifle)
+                        parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };                    
                     break;
                 case 2: // Middle
                     model.Index = ITEM_APPR_WEAPON_MODEL_MIDDLE;
+                    // WEAPON CRAFTING RESTRICTIONS GO HERE
+                    if (model.TargetItem.BaseItemType != (int)CustomItemType.Lightsaber && model.TargetItem.BaseItemType != (int)CustomItemType.Saberstaff)
+                        parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
                     break;
                 case 3: // Bottom
                     model.Index = ITEM_APPR_WEAPON_MODEL_BOTTOM;
+                    // WEAPON CRAFTING RESTRICTIONS GO HERE
+                    if (model.TargetItem.BaseItemType != (int)CustomItemType.Lightsaber && model.TargetItem.BaseItemType != (int)CustomItemType.Saberstaff)
+                        parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
                     break;
             }
+
+            ClearPageResponses("PartPage");
+            foreach (var part in parts)
+            {
+                AddResponseToPage("PartPage", "Part #" + part, true, part);
+            }
+
+            ChangePage("PartPage");
         }
 
         private void ArmorPartResponses(int responseID)
@@ -300,6 +357,22 @@ namespace SWLOR.Game.Server.Conversation
                 case 19: // Left Glove
                     model.Index = ITEM_APPR_ARMOR_MODEL_LHAND;
                     parts = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 63, 75, 100, 101, 109, 110, 111, 113, 121, 122, 150, 151, 152, 153, 154, 155, 186, 192, 193, 194, 195, 196, 198, 201, 202, 203, 215, 250, 257, 258, 259, };
+                    break;
+                case 20: // Helmet
+                    if (model.TargetItem.BaseItemType == BASE_ITEM_HELMET)
+                    { 
+                        model.Index = ITEM_APPR_TYPE_SIMPLE_MODEL;
+                        /* parts excluded for helmets:
+                         *  13          = sith mask
+                         *  22          = alien head
+                         *  39 - 44     = creature heads
+                         *  96 - 98     = alien heads
+                         *  143 - 152   = creature or alien head
+                         *  209         = sith mask
+                         *  211         = sith mask
+                         */                         
+                        parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20, 21, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 210, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255 };
+                    }
                     break;
             }
 

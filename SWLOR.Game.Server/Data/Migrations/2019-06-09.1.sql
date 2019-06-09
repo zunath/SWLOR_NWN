@@ -267,3 +267,9 @@ BEGIN
 	 WHERE PlayerID = @PlayerID
 END
 
+ALTER TABLE dbo.PCQuestStatus
+ADD TimesCompleted INT NOT NULL DEFAULT 0
+
+UPDATE dbo.PCQuestStatus
+SET TimesCompleted = 1
+WHERE CompletionDate IS NOT NULL

@@ -141,6 +141,7 @@ namespace SWLOR.Game.Server.Service
 
             pcState.CurrentQuestStateID = finalState.ID;
             pcState.CompletionDate = DateTime.UtcNow;
+            pcState.TimesCompleted++;
 
             if (selectedItem == null)
             {
@@ -273,16 +274,26 @@ namespace SWLOR.Game.Server.Service
         /// <returns>true if player can accept quest. false otherwise.</returns>
         public static bool CanAcceptQuest(NWPlayer oPC, Quest quest, bool sendMessage)
         {
-            PCQuestStatus status = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == oPC.GlobalID && x.QuestID == quest.ID);
+            // Retrieve the player's current quest status for this quest.
+            // If they haven't accepted it yet, this will be null.
+            PCQuestStatus status = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == oPC.GlobalID && 
+                                                                                   x.QuestID == quest.ID);
 
+            // If the status is null, it's assumed that the player hasn't accepted it yet.
             if (status != null)
             {
+                // If the quest isn't repeatable, prevent the player from accepting it after it's already been completed.
                 if (status.CompletionDate != null)
                 {
-                    if (sendMessage)
-                        oPC.SendMessage("You have already completed this quest.");
-                    return false;
+                    // If it's repeatable, then we don't care if they've already completed it.
+                    if (!quest.IsRepeatable)
+                    {
+                        if (sendMessage)
+                            oPC.SendMessage("You have already completed this quest.");
+                        return false;
+                    }
                 }
+                // If the player already accepted the quest, prevent them from accepting it again.
                 else
                 {
                     if (sendMessage)
@@ -291,6 +302,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            // Check whether the player meets all necessary prerequisites.
             if (!DoesPlayerMeetPrerequisites(oPC, quest.ID))
             {
                 if (sendMessage)
@@ -298,7 +310,10 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
+            // Retrieve the first state of the quest.
             var questState = DataService.Where<QuestState>(x => x.QuestID == quest.ID).First();
+
+            // If this quest requires key items, ensure player has acquired them.
             if (!DoesPlayerHaveRequiredKeyItems(oPC, questState.ID))
             {
                 if (sendMessage)
@@ -306,9 +321,11 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
+            // Retrieve the player's fame information. Treat a missing record as having 0 fame for this region.
             PCRegionalFame fame = DataService.SingleOrDefault<PCRegionalFame>(x => x.PlayerID == oPC.GlobalID && x.FameRegionID == quest.FameRegionID);
             int fameAmount = fame == null ? 0 : fame.Amount;
 
+            // Ensure player has necessary fame for accepting this quest.
             if (fameAmount < quest.RequiredFameAmount)
             {
                 if (sendMessage)
@@ -339,15 +356,26 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // By this point, it's assumed the player will accept the quest.
+            // However, if this quest is repeatable we must first update the existing entry.
+            var status = DataService.SingleOrDefault<PCQuestStatus>(x => x.QuestID == questID && 
+                                                                                     x.PlayerID == player.GlobalID);
+            bool foundExisting = status != null;
+
+            // Didn't find an existing state so we'll create a new object.
+            if (status == null)
+            {
+                status = new PCQuestStatus();
+            }
+            else
+            {
+                status.CompletionDate = null;
+            }
+
             // Retrieve the first quest state for this quest.
             var questState = DataService.Single<QuestState>(x => x.QuestID == questID && x.Sequence == 1);
-
-            // Create a new PC quest status entry and set it to the first state of the quest.
-            var status = new PCQuestStatus
-            {
-                CurrentQuestStateID = questState.ID
-            };
-
+            status.CurrentQuestStateID = questState.ID;
+            
             // Give temporary key item at start of quest.
             if (quest.StartKeyItemID != null)
             {
@@ -362,7 +390,9 @@ namespace SWLOR.Game.Server.Service
             
             status.QuestID = quest.ID;
             status.PlayerID = player.GlobalID;
-            DataService.SubmitDataChange(status, DatabaseActionType.Insert);
+
+            // Insert or update player's quest status.
+            DataService.SubmitDataChange(status, foundExisting ? DatabaseActionType.Update : DatabaseActionType.Insert);
 
             // Create extended quest entries, if necessary.
             CreateExtendedQuestDataEntries(status);

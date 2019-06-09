@@ -119,6 +119,7 @@ namespace SWLOR.Game.Server.Service
             GetAll<EnmityAdjustmentRule>();
             GetAll<FameRegion>();
             GetAll<Guild>();
+            GetAll<GuildTask>();
             GetAll<GrowingPlant>();
             GetAll<ItemType>();
             GetAll<JukeboxSong>();

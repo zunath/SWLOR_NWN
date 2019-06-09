@@ -1,3 +1,4 @@
+using System;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
@@ -17,5 +18,6 @@ namespace SWLOR.Game.Server.Data.Entity
         public string MessageOfTheDay { get; set; }
         public int AreaBakeStep { get; set; }
         public int ModuleVersion { get; set; }
+        public DateTime LastGuildTaskUpdate { get; set; }
     }
 }

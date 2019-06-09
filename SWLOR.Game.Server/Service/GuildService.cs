@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -6,6 +7,7 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Module;
 using static NWN._;
 
 namespace SWLOR.Game.Server.Service
@@ -15,6 +17,8 @@ namespace SWLOR.Game.Server.Service
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnModuleEnter>(a => OnModuleEnter());
+            MessageHub.Instance.Subscribe<OnModuleLoad>(a => OnModuleLoad());
+            MessageHub.Instance.Subscribe<OnQuestCompleted>(a => OnQuestCompleted(a.Player, a.QuestID));
         }
 
         /// <summary>
@@ -124,6 +128,71 @@ namespace SWLOR.Game.Server.Service
             {
                 MessageHub.Instance.Publish(new OnPlayerGuildRankUp(player.GlobalID, pcGP.Rank));
             }
+        }
+
+        /// <summary>
+        /// Reward GP to player if the quest awards it.
+        /// </summary>
+        /// <param name="player">The player who completed the quest.</param>
+        /// <param name="questID">The ID of the quest</param>
+        private static void OnQuestCompleted(NWPlayer player, int questID)
+        {
+            var quest = DataService.Get<Quest>(questID);
+            // GP rewards not specified. Bail out early.
+            if (quest.RewardGuildID == null || quest.RewardGuildPoints <= 0) return;
+
+            GiveGuildPoints(player, (GuildType)quest.RewardGuildID, quest.RewardGuildPoints);
+        }
+
+        /// <summary>
+        /// Cycle out the available guild tasks if the previous set has been available for 24 hours.
+        /// </summary>
+        private static void OnModuleLoad()
+        {
+            var config = DataService.Get<ServerConfiguration>(1);
+            var now = DateTime.UtcNow;
+            
+            // 24 hours haven't passed since the last cycle. Bail out now.
+            if (now < config.LastGuildTaskUpdate.AddHours(24)) return;
+            
+            // Start by marking the existing tasks as not currently offered.
+            foreach (var task in DataService.Where<GuildTask>(x => x.IsCurrentlyOffered))
+            {
+                task.IsCurrentlyOffered = false;
+                DataService.SubmitDataChange(task, DatabaseActionType.Update);
+            }
+
+            // Active available tasks are grouped by GuildID and RequiredRank. 
+            // 10 of each are randomly selected and marked as currently offered.
+            // This makes them appear in the dialog menu for players.
+            // If there are 10 or less available tasks, all of them will be enabled and no randomization will occur.
+            foreach (var guild in DataService.GetAll<Guild>())
+            {
+                var potentialTasks = DataService.Where<GuildTask>(x => x.GuildID == guild.ID);
+                IEnumerable<GuildTask> tasks;
+
+                // Need at least 11 tasks to randomize. We have ten or less. Simply enable all of these.
+                if (potentialTasks.Count <= 10)
+                {
+                    tasks = potentialTasks;
+                }
+                // Pick 10 tasks randomly out of the potential list.
+                else
+                {
+                    tasks = potentialTasks.OrderBy(o => RandomService.Random()).Take(10);
+                }
+
+                // We've got our set of tasks. Mark them as currently offered and submit the data change.
+                foreach (var task in tasks)
+                {
+                    task.IsCurrentlyOffered = true;
+                    DataService.SubmitDataChange(task, DatabaseActionType.Update);
+                }
+            }
+
+            // Update the server config and mark the timestamp.
+            config.LastGuildTaskUpdate = now;
+            DataService.SubmitDataChange(config, DatabaseActionType.Update);
         }
     }
 }

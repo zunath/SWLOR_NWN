@@ -15,6 +15,7 @@ using System.Linq;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Legacy;
+using SWLOR.Game.Server.Event.Module;
 using static NWN._;
 using Object = NWN.Object;
 

@@ -273,3 +273,29 @@ ADD TimesCompleted INT NOT NULL DEFAULT 0
 UPDATE dbo.PCQuestStatus
 SET TimesCompleted = 1
 WHERE CompletionDate IS NOT NULL
+
+
+ALTER TABLE dbo.Quest
+ADD RewardGuildID INT NULL
+CONSTRAINT FK_Quest_RewardGuildID FOREIGN KEY REFERENCES dbo.Guild(ID)
+
+ALTER TABLE dbo.Quest
+ADD RewardGuildPoints INT NOT NULL DEFAULT 0
+
+
+ALTER TABLE dbo.ServerConfiguration
+ADD LastGuildTaskUpdate DATETIME2 NOT NULL DEFAULT '1900-01-01'
+
+CREATE TABLE GuildTask(
+	ID UNIQUEIDENTIFIER PRIMARY KEY NOT NULL,
+	GuildID INT NOT NULL,
+	QuestID INT NOT NULL,
+	RequiredRank INT NOT NULL,
+	IsCurrentlyOffered BIT NOT NULL,
+
+	CONSTRAINT FK_GuildTask_GuildID FOREIGN KEY(GuildID)
+		REFERENCES Guild(ID),
+	CONSTRAINT FK_GuildTask_QuestID FOREIGN KEY(QuestID)
+		REFERENCES dbo.Quest(ID)
+)
+

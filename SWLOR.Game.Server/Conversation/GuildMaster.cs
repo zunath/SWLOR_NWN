@@ -24,10 +24,12 @@ namespace SWLOR.Game.Server.Conversation
 
             DialogPage tellMePage = new DialogPage();
             DialogPage rankTooLowPage = new DialogPage("I'm sorry but your rank is too low to grant you access to that. Perform tasks for us and come back when you've increased your rank with our guild.");
+            DialogPage taskPage = new DialogPage("The following tasks are available for you.");
 
             dialog.AddPage("MainPage", mainPage);
             dialog.AddPage("TellMePage", tellMePage);
             dialog.AddPage("RankTooLowPage", rankTooLowPage);
+            dialog.AddPage("TaskPage", taskPage);
             return dialog;
         }
 

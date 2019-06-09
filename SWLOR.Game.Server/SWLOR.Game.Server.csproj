@@ -262,6 +262,7 @@
     <Compile Include="Data\Entity\EnmityAdjustmentRule.cs" />
     <Compile Include="Data\Entity\Error.cs" />
     <Compile Include="Data\Entity\Guild.cs" />
+    <Compile Include="Data\Entity\GuildTask.cs" />
     <Compile Include="Data\Entity\JukeboxSong.cs" />
     <Compile Include="Data\Entity\MarketCategory.cs" />
     <Compile Include="Data\Entity\Message.cs" />

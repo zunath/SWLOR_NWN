@@ -330,14 +330,19 @@ namespace SWLOR.Game.Server.Service
         {
             if (!player.IsPlayer) return;
 
+            // Retrieve quest from the cache.
             Quest quest = DataService.Single<Quest>(x => x.ID == questID);
 
+            // Check whether player can accept the quest. Send a message if they can't.
             if (!CanAcceptQuest(player, quest, true))
             {
                 return;
             }
 
+            // Retrieve the first quest state for this quest.
             var questState = DataService.Single<QuestState>(x => x.QuestID == questID && x.Sequence == 1);
+
+            // Create a new PC quest status entry and set it to the first state of the quest.
             var status = new PCQuestStatus
             {
                 CurrentQuestStateID = questState.ID
@@ -349,20 +354,26 @@ namespace SWLOR.Game.Server.Service
                 KeyItemService.GivePlayerKeyItem(player, (int)quest.StartKeyItemID);
             }
 
+            // Add a map pin if specified by the quest.
             if (!string.IsNullOrWhiteSpace(quest.MapNoteTag))
             {
                 MapPinService.AddWaypointMapPin(player, quest.MapNoteTag, quest.Name, "QST_MAP_NOTE_" + questID);
             }
-
+            
             status.QuestID = quest.ID;
             status.PlayerID = player.GlobalID;
             DataService.SubmitDataChange(status, DatabaseActionType.Insert);
+
+            // Create extended quest entries, if necessary.
             CreateExtendedQuestDataEntries(status);
 
+            // Add the journal entry to the player.
             _.AddJournalQuestEntry(quest.JournalTag, 1, player.Object, FALSE);
+
+            // Notify them that they've accepted a quest.
             player.SendMessage("Quest '" + quest.Name + "' accepted. Refer to your journal for more information on this quest.");
 
-
+            // If this quest runs any custom rules, do those now.
             if (!string.IsNullOrWhiteSpace(quest.OnAcceptRule) && questOwner != null)
             {
                 var rule = GetQuestRule(quest.OnAcceptRule);
@@ -372,6 +383,9 @@ namespace SWLOR.Game.Server.Service
                     args = quest.OnAcceptArgs.Split(',');
                 rule.Run(player, questOwner, questID, args);
             }
+
+            // Notify to subscribers that a quest has just been accepted.
+            MessageHub.Instance.Publish(new OnQuestAccepted(player, questID));
         }
 
         /// <summary>
@@ -385,34 +399,52 @@ namespace SWLOR.Game.Server.Service
         {
             if (!player.IsPlayer) return;
 
+            // Retrieve the player's current quest state.
             PCQuestStatus questStatus = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == player.GlobalID && x.QuestID == questID);
 
+            // Can't find a state? Notify the player they haven't accepted the quest.
             if (questStatus == null)
             {
                 player.SendMessage("You have not accepted this quest yet.");
                 return;
             }
 
+            // If this quest has already been completed, exit early.
+            // This is used in case a module builder incorrectly configures a quest.
+            // We don't want to risk giving duplicate rewards.
             if (questStatus.CompletionDate != null) return;
 
+            // Retrieve the quest, the current state, and the next state of the quest from the cache.
             Quest quest = DataService.Get<Quest>(questStatus.QuestID);
             QuestState currentState = DataService.Get<QuestState>(questStatus.CurrentQuestStateID);
             QuestState nextState = DataService.SingleOrDefault<QuestState>(x => x.QuestID == quest.ID && x.Sequence == currentState.Sequence + 1);
 
-            // Either complete the quest or move to the new state.
-            if (nextState == null) // We assume this is the last state in the quest, so it must be time to complete it.
+            // If there's no state after this one, the assumption is that it's time to complete the quest.
+            if (nextState == null) 
             {
+                // We'll request a reward selection from the player if the quest is configured that way.
+                // Otherwise, this method will simply complete the quest outright.
                 RequestRewardSelectionFromPC(player, questOwner, questID);
             }
+            // We found another state to this quest. Let's advance their progress now.
             else
             {
+                // Update the player's journal
                 _.AddJournalQuestEntry(quest.JournalTag, nextState.JournalStateID, player, FALSE);
+
+                // Progress player's quest status to the next state.
                 questStatus.CurrentQuestStateID = nextState.ID;
+
+                // Notify the player they've progressed.
                 player.SendMessage("Objective for quest '" + quest.Name + "' complete! Check your journal for information on the next objective.");
 
+                // Create any extended data entries for the next state of the quest.
                 CreateExtendedQuestDataEntries(questStatus);
+
+                // Submit all of these changes to the cache/DB.
                 DataService.SubmitDataChange(questStatus, DatabaseActionType.Update);
 
+                // If this quest has a custom rule configured, run that now.
                 if (!string.IsNullOrWhiteSpace(quest.OnAdvanceRule) && questOwner != null)
                 {
                     var rule = GetQuestRule(quest.OnAdvanceRule);
@@ -422,6 +454,9 @@ namespace SWLOR.Game.Server.Service
                         args = quest.OnAdvanceArgs.Split(',');
                     rule.Run(player, questOwner, questID, args);
                 }
+
+                // Notify subscribers we've advanced the player's quest status.
+                MessageHub.Instance.Publish(new OnQuestAdvanced(player, questID, currentState.Sequence + 1));
             }
         }
 
@@ -432,8 +467,11 @@ namespace SWLOR.Game.Server.Service
         /// <param name="status"></param>
         private static void CreateExtendedQuestDataEntries(PCQuestStatus status)
         {
+            // Retrieve the quest and state information from the cache.
             var quest = DataService.Get<Quest>(status.QuestID);
             var state = DataService.Single<QuestState>(x => x.QuestID == quest.ID && x.ID == status.CurrentQuestStateID);
+
+            // Retrieve the kill targets and required items necessary for this quest state.
             var killTargets = DataService.Where<QuestKillTarget>(x => x.QuestStateID == state.ID);
             var requiredItems = DataService.Where<QuestRequiredItem>(x => x.QuestStateID == state.ID);
 
@@ -464,6 +502,7 @@ namespace SWLOR.Game.Server.Service
                 DataService.SubmitDataChange(itemProgress, DatabaseActionType.Insert);
             }
 
+            // Submit changes to the cache/DB.
             DataService.SubmitDataChange(status, DatabaseActionType.Update);
         }
 

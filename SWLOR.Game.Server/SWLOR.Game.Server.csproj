@@ -408,6 +408,8 @@
     <Compile Include="Event\SWLOR\OnChatProcessed.cs" />
     <Compile Include="Event\SWLOR\OnObjectProcessorRan.cs" />
     <Compile Include="Event\SWLOR\OnPlayerGuildRankUp.cs" />
+    <Compile Include="Event\SWLOR\OnQuestAccepted.cs" />
+    <Compile Include="Event\SWLOR\OnQuestAdvanced.cs" />
     <Compile Include="NWNX\AdministrationOption.cs" />
     <Compile Include="NWNX\AreaColorType.cs" />
     <Compile Include="NWNX\AreaDayNightCycle.cs" />

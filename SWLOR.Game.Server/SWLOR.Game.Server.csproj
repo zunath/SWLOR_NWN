@@ -260,9 +260,11 @@
     <Compile Include="Data\Entity\Download.cs" />
     <Compile Include="Data\Entity\EnmityAdjustmentRule.cs" />
     <Compile Include="Data\Entity\Error.cs" />
+    <Compile Include="Data\Entity\Guild.cs" />
     <Compile Include="Data\Entity\JukeboxSong.cs" />
     <Compile Include="Data\Entity\MarketCategory.cs" />
     <Compile Include="Data\Entity\Message.cs" />
+    <Compile Include="Data\Entity\PCGuildPoint.cs" />
     <Compile Include="Data\Entity\PCMarketListing.cs" />
     <Compile Include="Data\Entity\SpaceEncounter.cs" />
     <Compile Include="Data\Entity\SpaceStarport.cs" />
@@ -2109,6 +2111,7 @@
     <EmbeddedResource Include="Data\Migrations\2019-06-06.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-06-06.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-06-07.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-06-09.1.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <Content Include="Data\Migrations\Readme.txt" />

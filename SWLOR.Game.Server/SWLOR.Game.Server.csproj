@@ -192,6 +192,7 @@
     <Compile Include="Conversation\ShipGunControls.cs" />
     <Compile Include="Conversation\Shovel.cs" />
     <Compile Include="Conversation\SliceTerminal.cs" />
+    <Compile Include="Conversation\StarportFlights.cs" />
     <Compile Include="Conversation\StructureStorage.cs" />
     <Compile Include="Conversation\MarketTerminal.cs" />
     <Compile Include="Conversation\ViewBlueprints.cs" />

@@ -41,11 +41,18 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnModuleLoad>(message => OnModuleLoad());
         }
 
+        /// <summary>
+        /// Registers all of the custom quest rules into memory.
+        /// </summary>
         private static void OnModuleLoad()
         {
             RegisterQuestRules();
         }
 
+        /// <summary>
+        /// Reflects over the codebase, looking for implementations of IQuestRule.
+        /// This cache is later used when players complete quests and specific code needs to be run.
+        /// </summary>
         private static void RegisterQuestRules()
         {
             // Use reflection to get all of QuestRule implementations.
@@ -63,6 +70,11 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// Retrieves a specific quest rule from the cache.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public static IQuestRule GetQuestRule(string key)
         {
             if (!_questRules.ContainsKey(key))
@@ -73,11 +85,22 @@ namespace SWLOR.Game.Server.Service
             return _questRules[key];
         }
 
+        /// <summary>
+        /// Retrieves a quest from the cache by its ID.
+        /// </summary>
+        /// <param name="questID">The key of the quest to retrieve.</param>
+        /// <returns>The quest with the provided quest ID.</returns>
         public static Quest GetQuestByID(int questID)
         {
             return DataService.Single<Quest>(x => x.ID == questID);
         }
 
+        /// <summary>
+        /// Creates an item temporarily and then returns its details. 
+        /// </summary>
+        /// <param name="resref">The resref of the item to create.</param>
+        /// <param name="quantity">The number to create.</param>
+        /// <returns></returns>
         public static ItemVO GetTempItemInformation(string resref, int quantity)
         {
             NWPlaceable tempStorage = (_.GetObjectByTag(TempStoragePlaceableTag));
@@ -94,6 +117,13 @@ namespace SWLOR.Game.Server.Service
             return model;
         }
 
+        /// <summary>
+        /// Completes a quest for a player.
+        /// </summary>
+        /// <param name="player">The player we're completing the quest for.</param>
+        /// <param name="questOwner">The quest giver object.</param>
+        /// <param name="questID">The ID number of the quest.</param>
+        /// <param name="selectedItem">The item selected by the player.</param>
         public static void CompleteQuest(NWPlayer player, NWObject questOwner, int questID, ItemVO selectedItem)
         {
             if (!player.IsPlayer) return;
@@ -183,6 +213,9 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Publish(new OnQuestCompleted(player, questID));
         }
 
+        /// <summary>
+        /// When a quest item is picked up, it is marked as undroppable.
+        /// </summary>
         private static void OnModuleItemAcquired()
         {
             NWPlayer oPC = (_.GetModuleItemAcquiredBy());
@@ -196,6 +229,10 @@ namespace SWLOR.Game.Server.Service
             oItem.IsCursed = true;
         }
 
+        /// <summary>
+        /// Rebuilds players' quests on module entry.
+        /// Only incomplete quests will be loaded.
+        /// </summary>
         private static void OnModuleEnter()
         {
             NWPlayer oPC = (_.GetEnteringObject());
@@ -212,12 +249,28 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// Returns true if player can accept a quest with the given ID.
+        /// Returns false if player cannot accept the quest.
+        /// </summary>
+        /// <param name="oPC">The player to check</param>
+        /// <param name="questID">The ID number of the quest.</param>
+        /// <param name="sendMessage">If true, a message will be sent to player about why they can't accept the quest.</param>
+        /// <returns>true if player can accept quest. false otherwise.</returns>
         public static bool CanAcceptQuest(NWPlayer oPC, int questID, bool sendMessage)
         {
             var quest = GetQuestByID(questID);
             return CanAcceptQuest(oPC, quest, sendMessage);
         }
 
+        /// <summary>
+        /// Returns true if player can accept a quest with the given ID.
+        /// Returns false if player cannot accept the quest.
+        /// </summary>
+        /// <param name="oPC">The player to check</param>
+        /// <param name="quest">The quest to check.</param>
+        /// <param name="sendMessage">If true, a message will be sent to player about why they can't accept the quest.</param>
+        /// <returns>true if player can accept quest. false otherwise.</returns>
         public static bool CanAcceptQuest(NWPlayer oPC, Quest quest, bool sendMessage)
         {
             PCQuestStatus status = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == oPC.GlobalID && x.QuestID == quest.ID);
@@ -266,7 +319,13 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
-
+        /// <summary>
+        /// Accepts a quest for a player. This updates their journal entry and marks all necessary flags
+        /// on the player.
+        /// </summary>
+        /// <param name="player">The player who is accepting the quest.</param>
+        /// <param name="questOwner">The quest giver object.</param>
+        /// <param name="questID">The ID number of the quest to accept.</param>
         public static void AcceptQuest(NWPlayer player, NWObject questOwner, int questID)
         {
             if (!player.IsPlayer) return;
@@ -315,6 +374,13 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// Progresses a player to the next state of a quest.
+        /// If they're on the last state of the quest, it will be completed for them.
+        /// </summary>
+        /// <param name="player">The player to advance.</param>
+        /// <param name="questOwner">The quest giver object.</param>
+        /// <param name="questID">The ID number of the quest.</param>
         public static void AdvanceQuestState(NWPlayer player, NWObject questOwner, int questID)
         {
             if (!player.IsPlayer) return;
@@ -359,7 +425,11 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-
+        /// <summary>
+        /// Quests which require items, kill targets, etc. all need to have their entries added for this player's
+        /// quest progress. This method handles that.
+        /// </summary>
+        /// <param name="status"></param>
         private static void CreateExtendedQuestDataEntries(PCQuestStatus status)
         {
             var quest = DataService.Get<Quest>(status.QuestID);
@@ -397,6 +467,13 @@ namespace SWLOR.Game.Server.Service
             DataService.SubmitDataChange(status, DatabaseActionType.Update);
         }
 
+        /// <summary>
+        /// If a quest requires the player to select a reward, a conversation will be opened for the player.
+        /// Otherwise, the quest will be completed as normal.
+        /// </summary>
+        /// <param name="oPC">The player we're requesting a reward from.</param>
+        /// <param name="questOwner">The quest giver object.</param>
+        /// <param name="questID">The ID number of the quest</param>
         private static void RequestRewardSelectionFromPC(NWPlayer oPC, NWObject questOwner, int questID)
         {
             if (!oPC.IsPlayer) return;
@@ -415,6 +492,12 @@ namespace SWLOR.Game.Server.Service
 
         }
 
+        /// <summary>
+        /// Check whether a player meets the necessary prerequisites to accept a quest, based on ID.
+        /// </summary>
+        /// <param name="oPC">The player to check</param>
+        /// <param name="questID">The ID number of the quest</param>
+        /// <returns>true if the player can accept the quest. false otherwise.</returns>
         private static bool DoesPlayerMeetPrerequisites(NWPlayer oPC, int questID)
         {
             var prereqs = DataService.Where<QuestPrerequisite>(x => x.QuestID == questID).ToList();
@@ -434,6 +517,12 @@ namespace SWLOR.Game.Server.Service
             return completedQuestIDs.ContainsAll(prereqIDs);
         }
 
+        /// <summary>
+        /// Checks whether player has required key items to complete the quest.
+        /// </summary>
+        /// <param name="oPC">The player to check</param>
+        /// <param name="questStateID">The ID number of the quest state to check.</param>
+        /// <returns>true if the player has required key items. false otherwise.</returns>
         private static bool DoesPlayerHaveRequiredKeyItems(NWPlayer oPC, int questStateID)
         {
             var requiredKeyItems = DataService.Where<QuestRequiredKeyItem>(x => x.QuestStateID == questStateID).ToList();
@@ -452,7 +541,12 @@ namespace SWLOR.Game.Server.Service
             return keyItemIDs.ContainsAll(requiredKeyItemIDs);
         }
 
-
+        /// <summary>
+        /// Spawns quest items on oChest if the player is on the correct state of the quest and
+        /// the container grants it.
+        /// </summary>
+        /// <param name="oChest">The chest we're spawning items into.</param>
+        /// <param name="oPC">The player object.</param>
         public static void SpawnQuestItems(NWPlaceable oChest, NWPlayer oPC)
         {
             int questID = oChest.GetLocalInt("QUEST_ID");
@@ -474,7 +568,10 @@ namespace SWLOR.Game.Server.Service
 
         }
 
-
+        /// <summary>
+        /// Updates a player's quest status if the creature is part of an ongoing quest.
+        /// Progresses the player to the next state if all requirements are met.
+        /// </summary>
         private static void OnCreatureDeath()
         {
             NWCreature creature = Object.OBJECT_SELF;
@@ -556,6 +653,11 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// Progresses a player to the next state if they meet all requirements to do so.
+        /// </summary>
+        /// <param name="oPC">The player object</param>
+        /// <param name="oObject">The trigger or placeable being used/entered.</param>
         private static void HandleTriggerAndPlaceableQuestLogic(NWPlayer oPC, NWObject oObject)
         {
             if (!oPC.IsPlayer) return;
@@ -605,18 +707,35 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// Handles updating quest state when a placeable is used by the player and
+        /// the player is on a matching quest.
+        /// </summary>
+        /// <param name="oObject"></param>
         public static void OnQuestPlaceableUsed(NWObject oObject)
         {
             NWPlayer oPC = (_.GetLastUsedBy());
             HandleTriggerAndPlaceableQuestLogic(oPC, oObject);
         }
 
+        /// <summary>
+        /// Handles updating quest state when a trigger is entered by a player and
+        /// the player is on a matching quest.
+        /// </summary>
+        /// <param name="oObject"></param>
         public static void OnQuestTriggerEntered(NWObject oObject)
         {
             NWPlayer oPC = (_.GetEnteringObject());
             HandleTriggerAndPlaceableQuestLogic(oPC, oObject);
         }
 
+        /// <summary>
+        /// Spawns a container and forces a player to open it. They are then instructed to insert any
+        /// quest items inside.
+        /// </summary>
+        /// <param name="oPC">The player we're requesting items from.</param>
+        /// <param name="questOwner">The quest giver object</param>
+        /// <param name="questID">The ID number of the quest</param>
         public static void RequestItemsFromPC(NWPlayer oPC, NWObject questOwner, int questID)
         {
             if (!oPC.IsPlayer) return;
@@ -663,6 +782,12 @@ namespace SWLOR.Game.Server.Service
             });
         }
 
+        /// <summary>
+        /// Checks whether player has completed a given quest, by ID.
+        /// </summary>
+        /// <param name="oPC">The player to check</param>
+        /// <param name="questID">The ID number of the quest.</param>
+        /// <returns>true if player has completed quest. false otherwise.</returns>
         public static bool HasPlayerCompletedQuest(NWObject oPC, int questID)
         {
             PCQuestStatus status = DataService.Single<PCQuestStatus>(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID);
@@ -670,6 +795,12 @@ namespace SWLOR.Game.Server.Service
             return status?.CompletionDate != null;
         }
 
+        /// <summary>
+        /// Get the journal state ID number for the current quest state the player is on.
+        /// </summary>
+        /// <param name="oPC">The player object</param>
+        /// <param name="questID">The ID number of the quest</param>
+        /// <returns>The ID number of the journal entry</returns>
         public static int GetPlayerQuestJournalID(NWObject oPC, int questID)
         {
             PCQuestStatus status = DataService.Single<PCQuestStatus>(x => x.PlayerID == oPC.GlobalID && x.QuestID == questID);

@@ -149,6 +149,7 @@
     <Compile Include="ChatCommand\Victory1.cs" />
     <Compile Include="ChatCommand\Victory2.cs" />
     <Compile Include="ChatCommand\Victory3.cs" />
+    <Compile Include="Conversation\GuildMaster.cs" />
     <Compile Include="Conversation\MessageBoard.cs" />
     <Compile Include="Conversation\MolecularReassembly.cs" />
     <Compile Include="Conversation\Jukebox.cs" />
@@ -383,6 +384,7 @@
     <Compile Include="DoorRule\Spaceship1Rule.cs" />
     <Compile Include="DoorRule\SmallRoundBuildingRule.cs" />
     <Compile Include="Enumeration\ForceBalanceType.cs" />
+    <Compile Include="Enumeration\GuildType.cs" />
     <Compile Include="Enumeration\MarketBrowseMode.cs" />
     <Compile Include="Enumeration\Planet.cs" />
     <Compile Include="Enumeration\AddItemPropertyPolicy.cs" />
@@ -405,6 +407,7 @@
     <Compile Include="Event\SWLOR\OnAreaInstanceDestroyed.cs" />
     <Compile Include="Event\SWLOR\OnChatProcessed.cs" />
     <Compile Include="Event\SWLOR\OnObjectProcessorRan.cs" />
+    <Compile Include="Event\SWLOR\OnPlayerGuildRankUp.cs" />
     <Compile Include="NWNX\AdministrationOption.cs" />
     <Compile Include="NWNX\AreaColorType.cs" />
     <Compile Include="NWNX\AreaDayNightCycle.cs" />
@@ -1159,6 +1162,7 @@
     <Compile Include="Event\Module\OnModuleUnequipItem.cs" />
     <Compile Include="Event\Module\OnModuleUserDefined.cs" />
     <Compile Include="Event\Player\OnPlayerHeartbeat.cs" />
+    <Compile Include="Service\GuildService.cs" />
     <Compile Include="Service\ModuleMigrationService.cs" />
     <Compile Include="Service\StoreService.cs" />
     <Compile Include="Trigger\ExplorationTrigger.cs" />

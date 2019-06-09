@@ -328,6 +328,8 @@ namespace SWLOR.Game.Server.Service
                 DeleteFromCache<BankItem>(item.ID);
             foreach(var item in Where<PCSkillPool>(x => x.PlayerID == id).ToList())
                 DeleteFromCache<PCSkillPool>(item.ID);
+            foreach(var item in Where<PCGuildPoint>(x => x.PlayerID == id).ToList())
+                DeleteFromCache<PCGuildPoint>(item.ID);
         }
 
         /// <summary>

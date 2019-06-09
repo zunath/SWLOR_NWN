@@ -243,6 +243,8 @@ namespace SWLOR.Game.Server.Service
             // process it using that perk's OnConcentrationTick() method.
             foreach (var player in NWModule.Get().Players)
             {
+                if (player.IsDM) continue;
+
                 Player dbPlayer = DataService.Get<Player>(player.GlobalID);
                 if (dbPlayer.ActiveConcentrationPerkID == null) continue;
                 

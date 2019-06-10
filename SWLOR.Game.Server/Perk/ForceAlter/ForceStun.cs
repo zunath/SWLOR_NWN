@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                     targetCreature = target.Object;
 
-                    result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark);
+                    result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark, true);
 
                     if (!result.IsResisted)
                     {
@@ -159,7 +159,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                     targetCreature = target.Object;
 
-                    result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark);
+                    result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark, true);
 
                     if (!result.IsResisted)
                     {
@@ -190,7 +190,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                         targetCreature = target.Object;
 
-                        result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark);
+                        result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark, true);
 
                         if (!result.IsResisted)
                         {
@@ -222,7 +222,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                     targetCreature = target.Object;
 
-                    result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark);
+                    result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark, true);
 
                     if (!result.IsResisted)
                     {
@@ -253,7 +253,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                         targetCreature = target.Object;
 
-                        result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark);
+                        result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark, true);
 
                         if (!result.IsResisted)
                         {

@@ -1,4 +1,5 @@
-﻿using NWN;
+﻿using System.Linq;
+using NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -19,7 +20,7 @@ namespace SWLOR.Game.Server.Conversation
             PlayerDialog dialog = new PlayerDialog("MainPage");
             DialogPage mainPage = new DialogPage("<SET LATER>",
                 "Tell me about guilds.",
-                "What tasks do you have for me?",
+                "Show me the task list.",
                 "Show me the guild shop.");
 
             DialogPage tellMePage = new DialogPage();
@@ -64,6 +65,9 @@ namespace SWLOR.Game.Server.Conversation
                 case "MainPage":
                     MainPageResponse(responseID);
                     break;
+                case "TaskPage":
+                    TaskPageResponses(responseID);
+                    break;
             }
         }
 
@@ -91,7 +95,9 @@ namespace SWLOR.Game.Server.Conversation
                     LoadTellMePage();
                     ChangePage("TellMePage");
                     break;
-                case 2: // What tasks do you have for me?
+                case 2: // Show me the task list.
+                    LoadTaskPage();
+                    ChangePage("TaskPage");
                     break;
                 case 3: // Show me the guild shop.
                     HandleGuildShopPage();
@@ -153,7 +159,42 @@ namespace SWLOR.Game.Server.Conversation
             }
 
         }
-        
+
+        private void LoadTaskPage()
+        {
+            var player = GetPC();
+            var model = GetDialogCustomData<Model>();
+            string header = "These are our currently available tasks. Please check back periodically because our needs are always changing.";
+            SetPageHeader("TaskPage", header);
+
+            ClearPageResponses("TaskPage");
+
+            // It's possible for players to have tasks which are no longer offered. 
+            // In this case, we still display them on the menu. Once they complete them, they'll disappear from the list.
+            var questIDs = DataService.Where<PCQuestStatus>(x => x.PlayerID == player.GlobalID && x.CompletionDate == null)
+                .Select(s => s.QuestID);
+            var expiredTasks = DataService.Where<GuildTask>(x => !x.IsCurrentlyOffered && questIDs.Contains(x.QuestID));
+            foreach (var task in expiredTasks)
+            {
+                var quest = DataService.Get<Quest>(task.QuestID);
+                AddResponseToPage("TaskPage", quest.Name + ColorTokenService.Red(" [EXPIRED]"), true, task.ID);
+            }
+
+            // Pull back all currently available tasks. This list rotates after 24 hours and a reboot occurs. 
+            var tasks = DataService.Where<GuildTask>(x => x.GuildID == (int) model.Guild && x.IsCurrentlyOffered);
+            foreach (var task in tasks)
+            {
+                var quest = DataService.Get<Quest>(task.QuestID);
+                AddResponseToPage("TaskPage", quest.Name, true, task.ID);
+            }
+
+        }
+
+        private void TaskPageResponses(int responseID)
+        {
+            var response = GetResponseByID("TaskPage", responseID);
+            int taskID = (int)response.CustomData;
+        }
 
         public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
         {

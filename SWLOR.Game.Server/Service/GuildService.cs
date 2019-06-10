@@ -163,7 +163,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             int maxRank = RankProgression.Keys.Max();
-
+            
             // Active available tasks are grouped by GuildID and RequiredRank. 
             // 10 of each are randomly selected and marked as currently offered.
             // This makes them appear in the dialog menu for players.
@@ -176,7 +176,7 @@ namespace SWLOR.Game.Server.Service
                     var potentialTasks = DataService.Where<GuildTask>(x => x.GuildID == guild.ID && 
                                                                            x.RequiredRank == rank1);
                     IEnumerable<GuildTask> tasks;
-
+                    
                     // Need at least 11 tasks to randomize. We have ten or less. Simply enable all of these.
                     if (potentialTasks.Count <= 10)
                     {
@@ -187,7 +187,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         tasks = potentialTasks.OrderBy(o => RandomService.Random()).Take(10);
                     }
-
+                    
                     // We've got our set of tasks. Mark them as currently offered and submit the data change.
                     foreach (var task in tasks)
                     {

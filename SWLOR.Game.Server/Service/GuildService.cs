@@ -162,31 +162,38 @@ namespace SWLOR.Game.Server.Service
                 DataService.SubmitDataChange(task, DatabaseActionType.Update);
             }
 
+            int maxRank = RankProgression.Keys.Max();
+
             // Active available tasks are grouped by GuildID and RequiredRank. 
             // 10 of each are randomly selected and marked as currently offered.
             // This makes them appear in the dialog menu for players.
             // If there are 10 or less available tasks, all of them will be enabled and no randomization will occur.
             foreach (var guild in DataService.GetAll<Guild>())
             {
-                var potentialTasks = DataService.Where<GuildTask>(x => x.GuildID == guild.ID);
-                IEnumerable<GuildTask> tasks;
+                for (int rank = 0; rank <= maxRank; rank++)
+                {
+                    var rank1 = rank; // VS recommends copying the variable. Unsure why.
+                    var potentialTasks = DataService.Where<GuildTask>(x => x.GuildID == guild.ID && 
+                                                                           x.RequiredRank == rank1);
+                    IEnumerable<GuildTask> tasks;
 
-                // Need at least 11 tasks to randomize. We have ten or less. Simply enable all of these.
-                if (potentialTasks.Count <= 10)
-                {
-                    tasks = potentialTasks;
-                }
-                // Pick 10 tasks randomly out of the potential list.
-                else
-                {
-                    tasks = potentialTasks.OrderBy(o => RandomService.Random()).Take(10);
-                }
+                    // Need at least 11 tasks to randomize. We have ten or less. Simply enable all of these.
+                    if (potentialTasks.Count <= 10)
+                    {
+                        tasks = potentialTasks;
+                    }
+                    // Pick 10 tasks randomly out of the potential list.
+                    else
+                    {
+                        tasks = potentialTasks.OrderBy(o => RandomService.Random()).Take(10);
+                    }
 
-                // We've got our set of tasks. Mark them as currently offered and submit the data change.
-                foreach (var task in tasks)
-                {
-                    task.IsCurrentlyOffered = true;
-                    DataService.SubmitDataChange(task, DatabaseActionType.Update);
+                    // We've got our set of tasks. Mark them as currently offered and submit the data change.
+                    foreach (var task in tasks)
+                    {
+                        task.IsCurrentlyOffered = true;
+                        DataService.SubmitDataChange(task, DatabaseActionType.Update);
+                    }
                 }
             }
 

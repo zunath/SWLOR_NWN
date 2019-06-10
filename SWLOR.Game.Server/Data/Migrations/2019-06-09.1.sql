@@ -359,22 +359,27 @@ SELECT
 	+ ');'
 
 	-- End quest state + required item insert
+
+	-- Begin GuildTask insert
 	, 'INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES ('
 	+ '1, ' -- GuildID
 	+ CAST(100 + (ROW_NUMBER() OVER (ORDER BY RequiredPerkLevel, ItemName)) AS NVARCHAR(1000)) + ', ' -- QuestID
 	+ CASE RequiredPerkLevel
-		WHEN 0 THEN '1'
-		WHEN 1 THEN '2'
-		WHEN 3 THEN '3'
-		WHEN 5 THEN '4'
-		WHEN 7 THEN '5'
-		ELSE '0'
+		WHEN 0 THEN '0'
+		WHEN 1 THEN '1'
+		WHEN 3 THEN '2'
+		WHEN 5 THEN '3'
+		WHEN 7 THEN '4'
+		ELSE '99'
 	  END + ', '  -- RequiredRank
 	+ '0' -- IsCurrentlyOffered
 	+ ');'
+	-- End GuildTask insert
 FROM dbo.CraftBlueprint 
 WHERE CraftDeviceID = 1
 ORDER BY RequiredPerkLevel ASC, ItemName
+
+
 
 
 
@@ -626,125 +631,125 @@ INSERT INTO dbo.QuestState ( QuestID ,Sequence ,QuestTypeID ,JournalStateID ) VA
 INSERT INTO dbo.QuestState ( QuestID ,Sequence ,QuestTypeID ,JournalStateID ) VALUES (220, 1, 4, 1); INSERT INTO dbo.QuestRequiredItem ( QuestID ,Resref ,Quantity ,QuestStateID ,MustBeCraftedByPlayer )VALUES (220, 'small_shield_4', 1, SCOPE_IDENTITY(), 1);
 INSERT INTO dbo.QuestState ( QuestID ,Sequence ,QuestTypeID ,JournalStateID ) VALUES (221, 1, 4, 1); INSERT INTO dbo.QuestRequiredItem ( QuestID ,Resref ,Quantity ,QuestStateID ,MustBeCraftedByPlayer )VALUES (221, 'tower_shield_4', 1, SCOPE_IDENTITY(), 1);
 
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 101, 1, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 102, 1, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 103, 1, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 104, 1, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 105, 1, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 106, 1, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 107, 1, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 108, 1, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 109, 1, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 110, 1, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 111, 1, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 112, 1, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 113, 1, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 114, 1, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 115, 1, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 116, 1, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 117, 1, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 118, 1, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 119, 1, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 120, 1, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 121, 1, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 122, 2, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 123, 2, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 124, 2, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 125, 2, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 126, 2, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 127, 2, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 128, 2, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 129, 2, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 130, 2, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 131, 2, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 132, 2, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 133, 2, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 134, 2, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 135, 2, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 136, 2, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 137, 2, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 138, 2, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 139, 2, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 140, 2, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 141, 2, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 142, 2, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 143, 2, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 144, 2, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 145, 3, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 146, 3, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 147, 3, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 148, 3, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 149, 3, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 150, 3, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 151, 3, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 152, 3, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 153, 3, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 154, 3, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 155, 3, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 156, 3, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 157, 3, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 158, 3, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 159, 3, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 160, 3, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 161, 3, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 162, 3, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 163, 3, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 164, 3, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 165, 3, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 166, 3, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 167, 3, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 168, 3, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 169, 4, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 170, 4, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 171, 4, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 172, 4, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 173, 4, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 174, 4, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 175, 4, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 176, 4, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 177, 4, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 178, 4, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 179, 4, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 180, 4, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 181, 4, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 182, 4, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 183, 4, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 184, 4, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 185, 4, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 186, 4, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 187, 4, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 188, 4, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 189, 4, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 190, 4, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 191, 4, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 192, 4, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 193, 5, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 194, 5, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 195, 5, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 196, 5, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 197, 5, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 198, 5, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 199, 5, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 200, 5, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 201, 5, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 202, 5, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 203, 5, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 204, 5, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 205, 5, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 206, 5, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 207, 5, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 208, 5, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 209, 5, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 210, 5, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 211, 5, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 212, 5, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 213, 5, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 214, 5, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 215, 5, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 216, 5, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 217, 5, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 218, 5, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 219, 5, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 220, 5, 0);
-INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 221, 5, 0);
 
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 101, 0, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 102, 0, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 103, 0, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 104, 0, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 105, 0, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 106, 0, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 107, 0, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 108, 0, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 109, 0, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 110, 0, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 111, 0, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 112, 0, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 113, 0, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 114, 0, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 115, 0, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 116, 0, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 117, 0, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 118, 0, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 119, 0, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 120, 0, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 121, 0, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 122, 1, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 123, 1, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 124, 1, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 125, 1, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 126, 1, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 127, 1, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 128, 1, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 129, 1, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 130, 1, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 131, 1, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 132, 1, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 133, 1, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 134, 1, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 135, 1, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 136, 1, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 137, 1, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 138, 1, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 139, 1, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 140, 1, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 141, 1, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 142, 1, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 143, 1, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 144, 1, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 145, 2, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 146, 2, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 147, 2, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 148, 2, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 149, 2, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 150, 2, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 151, 2, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 152, 2, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 153, 2, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 154, 2, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 155, 2, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 156, 2, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 157, 2, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 158, 2, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 159, 2, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 160, 2, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 161, 2, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 162, 2, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 163, 2, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 164, 2, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 165, 2, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 166, 2, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 167, 2, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 168, 2, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 169, 3, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 170, 3, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 171, 3, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 172, 3, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 173, 3, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 174, 3, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 175, 3, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 176, 3, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 177, 3, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 178, 3, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 179, 3, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 180, 3, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 181, 3, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 182, 3, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 183, 3, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 184, 3, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 185, 3, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 186, 3, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 187, 3, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 188, 3, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 189, 3, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 190, 3, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 191, 3, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 192, 3, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 193, 4, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 194, 4, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 195, 4, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 196, 4, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 197, 4, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 198, 4, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 199, 4, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 200, 4, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 201, 4, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 202, 4, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 203, 4, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 204, 4, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 205, 4, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 206, 4, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 207, 4, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 208, 4, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 209, 4, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 210, 4, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 211, 4, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 212, 4, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 213, 4, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 214, 4, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 215, 4, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 216, 4, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 217, 4, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 218, 4, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 219, 4, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 220, 4, 0);
+INSERT INTO dbo.GuildTask ( GuildID ,QuestID ,RequiredRank ,IsCurrentlyOffered )VALUES (1, 221, 4, 0);

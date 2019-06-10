@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject.Dialog;
+using QuestType = SWLOR.Game.Server.Enumeration.QuestType;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -13,6 +14,7 @@ namespace SWLOR.Game.Server.Conversation
         private class Model
         {
             public GuildType Guild { get; set; }
+            public int TaskID { get; set; }
         }
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -25,12 +27,16 @@ namespace SWLOR.Game.Server.Conversation
 
             DialogPage tellMePage = new DialogPage();
             DialogPage rankTooLowPage = new DialogPage("I'm sorry but your rank is too low to grant you access to that. Perform tasks for us and come back when you've increased your rank with our guild.");
-            DialogPage taskPage = new DialogPage("The following tasks are available for you.");
+            DialogPage taskListPage = new DialogPage("The following tasks are available for you.");
+            DialogPage taskDetailsPage = new DialogPage("<SET LATER>",
+                "Accept Task",
+                "Give Report");
 
             dialog.AddPage("MainPage", mainPage);
             dialog.AddPage("TellMePage", tellMePage);
             dialog.AddPage("RankTooLowPage", rankTooLowPage);
-            dialog.AddPage("TaskPage", taskPage);
+            dialog.AddPage("TaskListPage", taskListPage);
+            dialog.AddPage("TaskDetailsPage", taskDetailsPage);
             return dialog;
         }
 
@@ -65,8 +71,11 @@ namespace SWLOR.Game.Server.Conversation
                 case "MainPage":
                     MainPageResponse(responseID);
                     break;
-                case "TaskPage":
-                    TaskPageResponses(responseID);
+                case "TaskListPage":
+                    TaskListPageResponses(responseID);
+                    break;
+                case "TaskDetailsPage":
+                    TaskDetailsPageResponses(responseID);
                     break;
             }
         }
@@ -96,8 +105,8 @@ namespace SWLOR.Game.Server.Conversation
                     ChangePage("TellMePage");
                     break;
                 case 2: // Show me the task list.
-                    LoadTaskPage();
-                    ChangePage("TaskPage");
+                    LoadTaskListPage();
+                    ChangePage("TaskListPage");
                     break;
                 case 3: // Show me the guild shop.
                     HandleGuildShopPage();
@@ -160,14 +169,14 @@ namespace SWLOR.Game.Server.Conversation
 
         }
 
-        private void LoadTaskPage()
+        private void LoadTaskListPage()
         {
             var player = GetPC();
             var model = GetDialogCustomData<Model>();
             string header = "These are our currently available tasks. Please check back periodically because our needs are always changing.";
-            SetPageHeader("TaskPage", header);
+            SetPageHeader("TaskListPage", header);
 
-            ClearPageResponses("TaskPage");
+            ClearPageResponses("TaskListPage");
 
             var pcGP = DataService.Single<PCGuildPoint>(x => x.PlayerID == player.GlobalID &&
                                                              x.GuildID == (int) model.Guild);
@@ -183,7 +192,8 @@ namespace SWLOR.Game.Server.Conversation
             foreach (var task in expiredTasks)
             {
                 var quest = DataService.Get<Quest>(task.QuestID);
-                AddResponseToPage("TaskPage", quest.Name + " [Rank " + task.RequiredRank + "] " + ColorTokenService.Red(" [EXPIRED]"), true, task.ID);
+                string status = ColorTokenService.Green("{ACCEPTED}");
+                AddResponseToPage("TaskListPage", quest.Name + " [Rank " + (task.RequiredRank+1) + "] " + status + ColorTokenService.Red(" [EXPIRED]"), true, task.ID);
             }
 
             // Pull back all currently available tasks. This list rotates after 24 hours and a reboot occurs. 
@@ -194,15 +204,86 @@ namespace SWLOR.Game.Server.Conversation
             foreach (var task in tasks)
             {
                 var quest = DataService.Get<Quest>(task.QuestID);
-                AddResponseToPage("TaskPage", quest.Name + " [Rank " + task.RequiredRank + "]", true, task.ID);
+                var questStatus = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == player.GlobalID &&
+                                                                                  x.QuestID == task.QuestID);
+                string status = questStatus == null ? ColorTokenService.Yellow("{Available}") : ColorTokenService.Green("{ACCEPTED}");
+                AddResponseToPage("TaskListPage", quest.Name + " [Rank " + (task.RequiredRank+1) + "] " + status, true, task.ID);
             }
 
         }
 
-        private void TaskPageResponses(int responseID)
+        private void TaskListPageResponses(int responseID)
         {
-            var response = GetResponseByID("TaskPage", responseID);
-            int taskID = (int)response.CustomData;
+            var response = GetResponseByID("TaskListPage", responseID);
+            var model = GetDialogCustomData<Model>();
+            model.TaskID = (int) response.CustomData;
+
+            LoadTaskDetailsPage();
+            ChangePage("TaskDetailsPage");
+        }
+
+        private void LoadTaskDetailsPage()
+        {
+            var player = GetPC();
+            var model = GetDialogCustomData<Model>();
+            var task = DataService.Get<GuildTask>(model.TaskID);
+            var quest = DataService.Get<Quest>(task.QuestID);
+            var status = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == player.GlobalID &&
+                                                                         x.QuestID == task.QuestID);
+            bool showQuestAccept = status == null || status.CompletionDate != null; // Never accepted, or has already been completed once.
+            bool showGiveReport = status != null && status.CompletionDate == null; // Accepted, but not completed.
+            
+            string header = ColorTokenService.Green("Task: ") + quest.Name + "\n\n";
+
+            header += "Rewards:\n\n";
+            header += ColorTokenService.Green("Credits: ") + quest.RewardGold + "\n";
+            header += ColorTokenService.Green("Guild Points: ") + quest.RewardGuildPoints;
+            
+            SetPageHeader("TaskDetailsPage", header);
+            
+            SetResponseVisible("TaskDetailsPage", 1, showQuestAccept);
+            SetResponseVisible("TaskDetailsPage", 2, showGiveReport);
+        }
+
+        private void TaskDetailsPageResponses(int responseID)
+        {
+            var player = GetPC();
+            var npc = GetDialogTarget();
+            var model = GetDialogCustomData<Model>();
+            var task = DataService.Get<GuildTask>(model.TaskID);
+            
+            switch (responseID)
+            {
+                case 1: // Accept Task
+                    QuestService.AcceptQuest(player, npc, task.QuestID);
+                    LoadTaskDetailsPage();
+                    LoadTaskListPage();
+                    break;
+                case 2: // Give Report
+                    HandleGiveReport(player, task.QuestID);
+                    break;
+            }
+        }
+
+        private void HandleGiveReport(NWPlayer player, int questID)
+        {
+            var pcStatus = DataService.SingleOrDefault<PCQuestStatus>(x => x.PlayerID == player.GlobalID &&
+                                                                           x.QuestID == questID);
+            if (pcStatus == null) return;
+            var quest = DataService.Get<Quest>(questID);
+            var state = DataService.Get<QuestState>(pcStatus.CurrentQuestStateID);
+            
+            // Quest is calling for collecting items. Run that method.
+            if (state.QuestTypeID == (int) QuestType.CollectItems)
+            {
+                QuestService.RequestItemsFromPC(player, GetDialogTarget(), questID);
+            }
+            // All other quest types
+            else
+            {
+                // todo implement
+            }
+
         }
 
         public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)

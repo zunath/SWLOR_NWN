@@ -141,7 +141,8 @@ namespace SWLOR.Game.Server.Service
             // GP rewards not specified. Bail out early.
             if (quest.RewardGuildID == null || quest.RewardGuildPoints <= 0) return;
 
-            GiveGuildPoints(player, (GuildType)quest.RewardGuildID, quest.RewardGuildPoints);
+            int gp = CalculateGuildPointsReward(player, questID);
+            GiveGuildPoints(player, (GuildType)quest.RewardGuildID, gp);
         }
 
         /// <summary>
@@ -201,5 +202,24 @@ namespace SWLOR.Game.Server.Service
             config.LastGuildTaskUpdate = now;
             DataService.SubmitDataChange(config, DatabaseActionType.Update);
         }
+
+        /// <summary>
+        /// Calculate the amount of GP to give a player for completing a task.
+        /// Amount is adjusted by the player's rank with the guild.
+        /// </summary>
+        /// <param name="player">The player to calculate GP for.</param>
+        /// <param name="questID">The task's quest ID.</param>
+        /// <returns></returns>
+        public static int CalculateGuildPointsReward(NWPlayer player, int questID)
+        {
+            var quest = DataService.Get<Quest>(questID);
+            if (quest.RewardGuildID == null || quest.RewardGuildPoints <= 0) return 0;
+
+            var pcGP = DataService.Single<PCGuildPoint>(x => x.PlayerID == player.GlobalID &&
+                                                             x.GuildID == quest.RewardGuildID);
+            float rankBonus = 0.25f * pcGP.Rank;
+            return quest.RewardGuildPoints + (int)(quest.RewardGuildPoints * rankBonus);
+        }
+
     }
 }

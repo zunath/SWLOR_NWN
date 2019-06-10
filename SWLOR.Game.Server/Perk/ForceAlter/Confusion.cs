@@ -2,6 +2,7 @@
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
@@ -102,6 +103,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                         {
                             _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, confusionEffect, target, 6.1f);
                         });
+                        SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
                     }
                     break;
                 case 2:
@@ -120,6 +122,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                             {
                                 _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, confusionEffect, target, 6.1f);
                             });
+                            SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
                         }
 
                         targetCreature = _.GetNextObjectInShape(_.SHAPE_SPHERE, radiusSize, player.Location, 1, _.OBJECT_TYPE_CREATURE);

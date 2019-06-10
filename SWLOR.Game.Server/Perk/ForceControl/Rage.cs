@@ -66,7 +66,8 @@ namespace SWLOR.Game.Server.Perk.ForceControl
 
         public void OnConcentrationTick(NWPlayer player, NWObject target, int spellTier, int tick)
         {
-            if (tick % 6 != 0) return;
+            // this may be the cause of rage not refreshing
+            //if (tick % 6 != 0) return;
 
             ApplyEffect(player, target, spellTier);
         }

@@ -26,7 +26,8 @@ namespace SWLOR.Game.Server.Conversation
                 "Save/Load Outfits",
                 "Main Weapon",
                 "Off-Hand Weapon",
-                "Armor");
+                "Armor",
+                "Helmet");
 
             DialogPage weaponPartPage = new DialogPage(
                 "Which weapon part would you like to modify?",
@@ -54,7 +55,10 @@ namespace SWLOR.Game.Server.Conversation
                 "Left Shoulder",
                 "Left Bicep",
                 "Left Forearm",
-                "Left Glove",
+                "Left Glove");
+
+            DialogPage helmetPartPage = new DialogPage(
+                "Would you like to modify your helmet?",
                 "Helmet");
 
             DialogPage partPage = new DialogPage(
@@ -63,6 +67,7 @@ namespace SWLOR.Game.Server.Conversation
             dialog.AddPage("MainPage", mainPage);
             dialog.AddPage("WeaponPartPage", weaponPartPage);
             dialog.AddPage("ArmorPartPage", armorPartPage);
+            dialog.AddPage("HelmetPartPage", helmetPartPage);
             dialog.AddPage("PartPage", partPage);
             return dialog;
         }
@@ -80,6 +85,15 @@ namespace SWLOR.Game.Server.Conversation
 
             bool canModifyArmor = armor.IsValid && !armor.IsPlot && !armor.IsCursed;
             return canModifyArmor;
+        }
+
+        private bool IsHelmetValid()
+        {
+            NWPlayer player = GetPC();
+            NWItem helmet = player.Head;
+
+            bool canModifyHelmet = helmet.IsValid && !helmet.IsPlot && !helmet.IsCursed;
+            return canModifyHelmet;
         }
 
         private bool IsMainValid()
@@ -125,6 +139,9 @@ namespace SWLOR.Game.Server.Conversation
                 case "ArmorPartPage":
                     ArmorPartResponses(responseID);
                     break;
+                case "HelmetPartPage":
+                    HelmetPartResponses(responseID);
+                    break;
                 case "PartPage":
                     PartResponses(responseID);
                     break;
@@ -139,6 +156,7 @@ namespace SWLOR.Game.Server.Conversation
             SetResponseVisible("MainPage", 2, IsMainValid());
             SetResponseVisible("MainPage", 3, IsOffHandValid());
             SetResponseVisible("MainPage", 4, IsArmorValid());
+            SetResponseVisible("MainPage", 5, IsHelmetValid());
         }
 
         private void MainResponses(int responseID)
@@ -193,6 +211,20 @@ namespace SWLOR.Game.Server.Conversation
                         model.TargetItem = player.Chest;
                         model.InventorySlotID = INVENTORY_SLOT_CHEST;
                         ChangePage("ArmorPartPage");
+                    }
+
+                    break;
+                case 5: // Helmet
+                    if (!IsHelmetValid())
+                    {
+                        player.FloatingText("Invalid helmet equipped.");
+                        LoadMainPage();
+                    }
+                    else
+                    {
+                        model.TargetItem = player.Head;
+                        model.InventorySlotID = INVENTORY_SLOT_HEAD;
+                        ChangePage("HelmetPartPage");
                     }
 
                     break;
@@ -358,21 +390,37 @@ namespace SWLOR.Game.Server.Conversation
                     model.Index = ITEM_APPR_ARMOR_MODEL_LHAND;
                     parts = new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 14, 63, 75, 100, 101, 109, 110, 111, 113, 121, 122, 150, 151, 152, 153, 154, 155, 186, 192, 193, 194, 195, 196, 198, 201, 202, 203, 215, 250, 257, 258, 259, };
                     break;
-                case 20: // Helmet
-                    if (model.TargetItem.BaseItemType == BASE_ITEM_HELMET)
-                    { 
-                        model.Index = ITEM_APPR_TYPE_SIMPLE_MODEL;
-                        /* parts excluded for helmets:
-                         *  13          = sith mask
-                         *  22          = alien head
-                         *  39 - 44     = creature heads
-                         *  96 - 98     = alien heads
-                         *  143 - 152   = creature or alien head
-                         *  209         = sith mask
-                         *  211         = sith mask
-                         */                         
-                        parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20, 21, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 210, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255 };
-                    }
+            }
+
+
+            ClearPageResponses("PartPage");
+            foreach (var part in parts)
+            {
+                AddResponseToPage("PartPage", "Part #" + part, true, part);
+            }
+
+            ChangePage("PartPage");
+        }
+
+        private void HelmetPartResponses(int responseID)
+        {
+            var model = GetDialogCustomData<Model>();
+            model.ItemTypeID = ITEM_APPR_TYPE_SIMPLE_MODEL;
+            int[] parts = { 0 };
+
+            switch (responseID)
+            {
+                case 1: // Helmet
+                    /* parts excluded for helmets:
+                        *  13          = sith mask
+                        *  22          = alien head
+                        *  39 - 44     = creature heads
+                        *  96 - 98     = alien heads
+                        *  143 - 152   = creature or alien head
+                        *  209         = sith mask
+                        *  211         = sith mask
+                        */
+                    parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20, 21, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 210, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255 };
                     break;
             }
 

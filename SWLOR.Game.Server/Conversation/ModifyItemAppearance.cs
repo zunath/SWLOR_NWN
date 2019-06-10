@@ -136,8 +136,8 @@ namespace SWLOR.Game.Server.Conversation
         {
             // Currently disabling weapons as we need to do some work to identify valid models.
             // Only armor will be working for now.
-            SetResponseVisible("MainPage", 2, false);
-            SetResponseVisible("MainPage", 3, false);
+            SetResponseVisible("MainPage", 2, IsMainValid());
+            SetResponseVisible("MainPage", 3, IsOffHandValid());
             SetResponseVisible("MainPage", 4, IsArmorValid());
         }
 

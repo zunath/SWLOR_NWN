@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                     targetCreature = target.Object;
 
-                    result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark);
+                    result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark, true);
 
                     if (!result.IsResisted)
                     {
@@ -136,6 +136,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                         {
                             _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effectTranq, target, 6.1f);
                         });
+                        SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
                     }
                     else
                     {
@@ -143,6 +144,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                         {
                             _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effectAbilityDecrease, target, 6.1f);
                         });
+                        SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
                     }
 
                     break;
@@ -157,7 +159,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                     targetCreature = target.Object;
 
-                    result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark);
+                    result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark, true);
 
                     if (!result.IsResisted)
                     {
@@ -165,6 +167,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                         {
                             _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effectTranq, target, 6.1f);
                         });
+                        SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
                     }
                     else
                     {
@@ -172,6 +175,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                         {
                             _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effectAbilityDecrease, target, 6.1f);
                         });
+                        SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
                     }
 
                     targetCreature = _.GetFirstObjectInShape(_.SHAPE_SPHERE, radiusSize, player.Location, 1, _.OBJECT_TYPE_CREATURE);                    
@@ -186,7 +190,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                         targetCreature = target.Object;
 
-                        result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark);
+                        result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark, true);
 
                         if (!result.IsResisted)
                         {
@@ -194,6 +198,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                             {
                                 _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effectTranq, target, 6.1f);
                             });
+                            SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
                         }
                         else
                         {
@@ -201,6 +206,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                             {
                                 _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effectAbilityDecrease, target, 6.1f);
                             });
+                            SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
                         }
                         effectCount += 1;
                     }
@@ -216,7 +222,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                     targetCreature = target.Object;
 
-                    result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark);
+                    result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark, true);
 
                     if (!result.IsResisted)
                     {
@@ -224,6 +230,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                         {
                             _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effectTranq, target, 6.1f);
                         });
+                        SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
                     }
                     else
                     {
@@ -231,6 +238,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                         {
                             _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effectAbilityDecrease, target, 6.1f);
                         });
+                        SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
                     }
 
                     targetCreature = _.GetFirstObjectInShape(_.SHAPE_SPHERE, radiusSize, player.Location, 1, _.OBJECT_TYPE_CREATURE);
@@ -245,7 +253,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                         targetCreature = target.Object;
 
-                        result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark);
+                        result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark, true);
 
                         if (!result.IsResisted)
                         {
@@ -253,6 +261,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                             {
                                 _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effectTranq, target, 6.1f);
                             });
+                            SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
                         }
                         else
                         {
@@ -260,6 +269,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                             {
                                 _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effectAbilityDecrease, target, 6.1f);
                             });
+                            SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
                         }
                         effectCount += 1;
                     }

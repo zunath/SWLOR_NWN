@@ -2119,9 +2119,9 @@
     <EmbeddedResource Include="Data\Migrations\2019-06-06.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-06-07.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-06-09.1.sql" />
+    <Content Include="Data\Scripts\WipeUserData.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
-    <Content Include="Data\Scripts\WipeUserData.sql" />
     <Content Include="ServerFiles\Reference\ClothAndLeatherColors.jpg" />
     <Content Include="ServerFiles\Reference\HairColors.jpg" />
     <Content Include="ServerFiles\Reference\MetalColors.jpg" />

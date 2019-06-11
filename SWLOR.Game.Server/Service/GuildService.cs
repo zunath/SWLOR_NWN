@@ -105,6 +105,9 @@ namespace SWLOR.Game.Server.Service
             if (pcGP.Points >= maxGP)
                 pcGP.Points = maxGP-1;
 
+            // Notify player how much GP they earned.
+            player.SendMessage("You earned " + amount + " " + dbGuild.Name + " guild points.");
+
             // Are we able to rank up?
             bool didRankUp = false;
             if (pcGP.Rank < maxRank)

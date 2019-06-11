@@ -187,7 +187,8 @@ namespace SWLOR.Game.Server.Conversation
                                                                  x.CompletionDate == null)
                 .Select(s => s.QuestID);
             var expiredTasks = DataService.Where<GuildTask>(x => !x.IsCurrentlyOffered && 
-                                                                 questIDs.Contains(x.QuestID))
+                                                                 questIDs.Contains(x.QuestID) &&
+                                                                 x.GuildID == (int)model.Guild)
                 .OrderByDescending(o => o.RequiredRank);
             foreach (var task in expiredTasks)
             {

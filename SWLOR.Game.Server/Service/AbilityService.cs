@@ -275,6 +275,13 @@ namespace SWLOR.Game.Server.Service
                     player.SendMessage("Concentration effect has ended because you ran out of FP.");
                     EndConcentrationEffect(player);
                 }
+                // Is the target still within range and in the same area?
+                else if (player.Area.Object != target.Area.Object ||
+                         _.GetDistanceBetween(player, target) > 50.0f)
+                {
+                    player.SendMessage("Concentration effect has ended because your target has gone out of range.");
+                    EndConcentrationEffect(player);
+                }
                 // Otherwise deduct the required FP.
                 else
                 {

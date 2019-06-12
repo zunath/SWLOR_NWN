@@ -169,6 +169,12 @@ namespace SWLOR.Game.Server.Service
 
                 DataService.SubmitDataChange(pcEntity, DatabaseActionType.Update);
             }
+
+            // Attempt a refresh of the character sheet UI in a second.
+            _.DelayCommand(1.0f, () =>
+            {
+                NWNXPlayer.UpdateCharacterSheet(player);
+            });
         }
 
 
@@ -221,6 +227,28 @@ namespace SWLOR.Game.Server.Service
         private static int EffectiveArmorClass(EffectiveItemStats stats, NWPlayer player)
         {
             int baseAC = stats.AC / 3 + CustomEffectService.CalculateEffectAC(player);
+
+            // Calculate AC bonus granted by skill ranks.
+            // Only chest armor is checked for this bonus.
+            CustomItemType armorType = player.Chest.CustomItemType;
+            int skillRank = 0;
+            switch (armorType)
+            {
+                case CustomItemType.LightArmor:
+                    skillRank = SkillService.GetPCSkillRank(player, SkillType.LightArmor);
+                    break;
+                case CustomItemType.HeavyArmor:
+                    skillRank = SkillService.GetPCSkillRank(player, SkillType.HeavyArmor);
+                    break;
+                case CustomItemType.ForceArmor:
+                    skillRank = SkillService.GetPCSkillRank(player, SkillType.ForceArmor);
+                    break;
+            }
+
+            // +1 AC per 20 skill ranks, while wearing the appropriate armor.
+            int skillACBonus = skillRank / 20;
+            baseAC += skillACBonus;
+
             int totalAC = _.GetAC(player) - baseAC;
             
             // Shield Oath and Precision Targeting affect a percentage of the TOTAL armor class on a creature.
@@ -228,12 +256,12 @@ namespace SWLOR.Game.Server.Service
             if (stance == CustomEffectType.ShieldOath)
             {
                 int bonus = (int) (totalAC * 0.2f);
-                baseAC = baseAC + bonus;
+                baseAC += bonus;
             }
             else if (stance == CustomEffectType.PrecisionTargeting)
             {
                 int penalty = (int)(totalAC * 0.3f);
-                baseAC = baseAC - penalty;
+                baseAC -= penalty;
             }
 
             if (baseAC < 0) baseAC = 0;

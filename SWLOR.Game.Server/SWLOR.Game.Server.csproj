@@ -1364,8 +1364,7 @@
     <Compile Include="ValueObject\ForceDamageResult.cs" />
     <Compile Include="ValueObject\ForceResistanceResult.cs" />
     <Compile Include="ValueObject\ForceSpreadDetails.cs" />
-    <Compile Include="ValueObject\ImmunityDetails.cs" />
-    <Compile Include="ValueObject\ImmunitySet.cs" />
+    <Compile Include="ValueObject\StoredItemPropertyDetail.cs" />
     <Compile Include="ValueObject\ObjectSpawn.cs" />
     <Compile Include="ValueObject\PCMarketData.cs" />
     <Compile Include="ValueObject\PCTempBaseData.cs" />

@@ -1022,8 +1022,6 @@ namespace SWLOR.Game.Server.Service
             int str = 0, dex = 0, con = 0, wis = 0, @int = 0, cha = 0;
             // Attack Bonus / Enhancement Bonus
             int ab = 0, eb = 0;
-            // Damage Reduction
-            int drPlus = 0, drAmount = 0;
             var immunities = BuildImmunityItemPropertiesContainer();
             var resistances = BuildDamageResistanceItemPropertiesContainer();
 
@@ -1112,6 +1110,25 @@ namespace SWLOR.Game.Server.Service
                     item.SetLocalInt(resistance.VariableName, resistance.Amount);
 
                     // Remove the item property.
+                    RemoveItemProperty(item, ip);
+                }
+                else if (type == ITEM_PROPERTY_DAMAGE_REDUCTION)
+                {
+                    item.SetLocalInt("PENALTY_ORIGINAL_DR_PLUS_ID", subType);
+                    item.SetLocalInt("PENALTY_ORIGINAL_DR_AMOUNT_ID", value);
+
+                    // +1's ID is 0 so we don't need to offset by 1 here.
+                    int newPlus = subType - (delta / 3);
+                    if (newPlus < 0) newPlus = 0;
+
+                    // Reduce soak amount.
+                    int newDR = value - (delta / 5);
+                    if (newDR < 1) newDR = 1;
+
+                    // Add the modified item property to the list for later application.
+                    ItemProperty newIP = _.ItemPropertyDamageReduction(newPlus, newDR);
+                    ipsToApply.Add(newIP);
+
                     RemoveItemProperty(item, ip);
                 }
             }
@@ -1234,6 +1251,16 @@ namespace SWLOR.Game.Server.Service
                     unpacked.CostTableValue = costTableID;
                     var packed = NWNXItemProperty.PackIP(unpacked);
                     ipsToApply.Add(packed);
+
+                    _.RemoveItemProperty(item, ip);
+                }
+                else if (type == ITEM_PROPERTY_DAMAGE_REDUCTION)
+                {
+                    int plusID = item.GetLocalInt("PENALTY_ORIGINAL_DR_PLUS_ID");
+                    int amountID = item.GetLocalInt("PENALTY_ORIGINAL_DR_AMOUNT_ID");
+
+                    ItemProperty newIP = ItemPropertyDamageReduction(plusID, amountID);
+                    ipsToApply.Add(newIP);
 
                     _.RemoveItemProperty(item, ip);
                 }

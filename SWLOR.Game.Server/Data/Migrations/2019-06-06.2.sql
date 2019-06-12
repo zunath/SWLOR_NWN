@@ -1485,3 +1485,135 @@ WHERE ID IN (
 627,628,629,630,631,
 637,638,639,640,641
 )
+
+
+
+-- Add Shield Proficiency perk
+INSERT INTO dbo.Perk ( ID ,
+                       Name ,
+                       IsActive ,
+                       BaseCastingTime ,
+                       Description ,
+                       PerkCategoryID ,
+                       CooldownCategoryID ,
+                       ExecutionTypeID ,
+                       IsTargetSelfOnly ,
+                       Enmity ,
+                       EnmityAdjustmentRuleID ,
+                       CastAnimationID ,
+                       SpecializationID ,
+                       ForceBalanceTypeID )
+VALUES ( 172 ,    -- ID - int
+         'Shield Proficiency' ,   -- Name - varchar(64)
+         1 , -- IsActive - bit
+         0.0 ,  -- BaseCastingTime - float
+         N'Increases your damage reduction by 2% while equipped with a shield.' ,  -- Description - nvarchar(256)
+         6 ,    -- PerkCategoryID - int
+         NULL ,    -- CooldownCategoryID - int
+         0 ,    -- ExecutionTypeID - int
+         0 , -- IsTargetSelfOnly - bit
+         0 ,    -- Enmity - int
+         0 ,    -- EnmityAdjustmentRuleID - int
+         NULL ,    -- CastAnimationID - int
+         0 ,    -- SpecializationID - int
+         0      -- ForceBalanceTypeID - int
+    )
+	
+INSERT INTO dbo.PerkLevel ( PerkID ,
+                            Level ,
+                            Price ,
+                            Description ,
+                            SpecializationID )
+VALUES ( 172 ,   -- PerkID - int
+         1 ,   -- Level - int
+         3 ,   -- Price - int
+         N'2% damage reduction' , -- Description - nvarchar(512)
+         0     -- SpecializationID - int
+    )
+
+INSERT INTO dbo.PerkLevelSkillRequirement ( PerkLevelID ,
+                                            SkillID ,
+                                            RequiredRank )
+VALUES ( SCOPE_IDENTITY() , -- PerkLevelID - int
+         9 , -- SkillID - int
+         10   -- RequiredRank - int
+    )
+INSERT INTO dbo.PerkLevel ( PerkID ,
+                            Level ,
+                            Price ,
+                            Description ,
+                            SpecializationID )
+VALUES ( 172 ,   -- PerkID - int
+         2 ,   -- Level - int
+         3 ,   -- Price - int
+         N'4% damage reduction' , -- Description - nvarchar(512)
+         0     -- SpecializationID - int
+    )
+
+INSERT INTO dbo.PerkLevelSkillRequirement ( PerkLevelID ,
+                                            SkillID ,
+                                            RequiredRank )
+VALUES ( SCOPE_IDENTITY() , -- PerkLevelID - int
+         9 , -- SkillID - int
+         20   -- RequiredRank - int
+    )
+	
+INSERT INTO dbo.PerkLevel ( PerkID ,
+                            Level ,
+                            Price ,
+                            Description ,
+                            SpecializationID )
+VALUES ( 172 ,   -- PerkID - int
+         3 ,   -- Level - int
+         3 ,   -- Price - int
+         N'6% damage reduction' , -- Description - nvarchar(512)
+         0     -- SpecializationID - int
+    )
+
+INSERT INTO dbo.PerkLevelSkillRequirement ( PerkLevelID ,
+                                            SkillID ,
+                                            RequiredRank )
+VALUES ( SCOPE_IDENTITY() , -- PerkLevelID - int
+         9 , -- SkillID - int
+         30   -- RequiredRank - int
+    )
+	
+INSERT INTO dbo.PerkLevel ( PerkID ,
+                            Level ,
+                            Price ,
+                            Description ,
+                            SpecializationID )
+VALUES ( 172 ,   -- PerkID - int
+         4 ,   -- Level - int
+         3 ,   -- Price - int
+         N'8% damage reduction' , -- Description - nvarchar(512)
+         0     -- SpecializationID - int
+    )
+
+INSERT INTO dbo.PerkLevelSkillRequirement ( PerkLevelID ,
+                                            SkillID ,
+                                            RequiredRank )
+VALUES ( SCOPE_IDENTITY() , -- PerkLevelID - int
+         9 , -- SkillID - int
+         40   -- RequiredRank - int
+    )
+	
+INSERT INTO dbo.PerkLevel ( PerkID ,
+                            Level ,
+                            Price ,
+                            Description ,
+                            SpecializationID )
+VALUES ( 172 ,   -- PerkID - int
+         5 ,   -- Level - int
+         3 ,   -- Price - int
+         N'10% damage reduction' , -- Description - nvarchar(512)
+         0     -- SpecializationID - int
+    )
+
+INSERT INTO dbo.PerkLevelSkillRequirement ( PerkLevelID ,
+                                            SkillID ,
+                                            RequiredRank )
+VALUES ( SCOPE_IDENTITY() , -- PerkLevelID - int
+         9 , -- SkillID - int
+         50   -- RequiredRank - int
+    )

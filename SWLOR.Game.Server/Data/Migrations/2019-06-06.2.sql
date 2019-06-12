@@ -315,7 +315,7 @@ INSERT INTO dbo.Perk (ID, PerkCategoryID, CooldownCategoryID, ExecutionTypeID, I
  (182, 42, 36, 3, 0, 'Force Lightning', 1, 'Deals electrical damage over time to a single target.', 0, 0, 2),
  (183, 49, 37, 3, 0, 'Force Push', 1, 'Knocks down a single target or, if resisted, slows the target instead.', 0, 0, 0),
  (184, 42, 38, 3, 0, 'Force Breach', 1, 'Deals direct damage to a single target.', 0, 0, 0),
- (185, 45, 39, 3, 0, 'Force Heal', 1, 'Restores HP on a single target over time.', 0, 0, 1)
+ (185, 45, NULL, 3, 0, 'Force Heal', 1, 'Restores HP on a single target over time.', 0, 0, 1)
  ;
 
 -- Levels for each perk.
@@ -448,11 +448,11 @@ SET @PerkLevelID = SCOPE_IDENTITY();
   (@PerkLevelID-65,19,90),
 
   -- Force Heal
-  (@PerkLevelID-64,19,0),
-  (@PerkLevelID-63,19,10),
-  (@PerkLevelID-62,19,20),
-  (@PerkLevelID-61,19,30),
-  (@PerkLevelID-60,19,40),
+  (@PerkLevelID-64,20,0),
+  (@PerkLevelID-63,20,10),
+  (@PerkLevelID-62,20,20),
+  (@PerkLevelID-61,20,30),
+  (@PerkLevelID-60,20,40),
 
   -- Force Speed
   (@PerkLevelID-59,20,0),

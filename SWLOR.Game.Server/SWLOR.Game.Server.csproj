@@ -380,6 +380,7 @@
     <Compile Include="DoorRule\Spaceship2Rule.cs" />
     <Compile Include="DoorRule\Spaceship1Rule.cs" />
     <Compile Include="DoorRule\SmallRoundBuildingRule.cs" />
+    <Compile Include="Enumeration\CustomAnimation.cs" />
     <Compile Include="Enumeration\ForceBalanceType.cs" />
     <Compile Include="Enumeration\MarketBrowseMode.cs" />
     <Compile Include="Enumeration\Planet.cs" />

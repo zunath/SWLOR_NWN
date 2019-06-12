@@ -1,4 +1,5 @@
 ﻿
+-- Consolidate perk categories for force.
 UPDATE dbo.PerkCategory
 SET Name = 'Force Alter'
 WHERE ID = 40
@@ -25,3 +26,9 @@ WHERE PerkCategoryID IN (47, 48, 51)
 
 DELETE FROM dbo.PerkCategory
 WHERE ID IN (41, 42, 49, 44, 45, 50, 47, 48, 51)
+
+
+-- Fix Rage's interval to 6 seconds.
+UPDATE dbo.PerkFeat
+SET ConcentrationTickInterval = 6
+WHERE PerkID = 19

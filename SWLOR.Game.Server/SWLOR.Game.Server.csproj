@@ -78,6 +78,8 @@
     <Compile Include="ChatCommand\Bored.cs" />
     <Compile Include="ChatCommand\Bow.cs" />
     <Compile Include="ChatCommand\Bug.cs" />
+    <Compile Include="ChatCommand\Conc.cs" />
+    <Compile Include="ChatCommand\Concentration.cs" />
     <Compile Include="ChatCommand\CopyItem.cs" />
     <Compile Include="ChatCommand\Customise.cs" />
     <Compile Include="ChatCommand\Exit.cs" />

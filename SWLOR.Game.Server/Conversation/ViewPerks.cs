@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Conversation
             string currentConcentrationCost = string.Empty;
             string nextBonus = "N/A";
             string nextFPCost = "N/A";
-            string nextConcentrationCost = "N/A";
+            string nextConcentrationCost = string.Empty;
             string price = "N/A";
             PerkLevel currentPerkLevel = PerkService.FindPerkLevel(perkLevels, rank);
             PerkLevel nextPerkLevel = PerkService.FindPerkLevel(perkLevels, rank + 1);

@@ -32,3 +32,10 @@ WHERE ID IN (41, 42, 49, 44, 45, 50, 47, 48, 51)
 UPDATE dbo.PerkFeat
 SET ConcentrationTickInterval = 6
 WHERE PerkID = 19
+
+
+-- Fix description of Force Speed.
+UPDATE dbo.PerkLevel
+SET Description = 'Increases movement speed by 50%, Dexterity by 10 and grants an extra attack.'
+WHERE PerkID = 3
+	AND Level = 5

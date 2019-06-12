@@ -488,81 +488,32 @@ namespace SWLOR.Game.Server.Service
             int backgroundBAB = 0;
             BackgroundType background = (BackgroundType)oPC.Class1;
             bool receivesBackgroundBonus = false;
-
-            // Apply increased BAB if player is using a weapon for which they have a proficiency.
-            PerkType proficiencyPerk = PerkType.Unknown;
-            SkillType proficiencySkill = SkillType.Unknown;
+            
             switch (weapon.CustomItemType)
             {
-                case CustomItemType.Vibroblade:
-                    proficiencyPerk = PerkType.VibrobladeProficiency;
-                    proficiencySkill = SkillType.OneHanded;
-                    break;
                 case CustomItemType.FinesseVibroblade:
-                    proficiencyPerk = PerkType.FinesseVibrobladeProficiency;
-                    proficiencySkill = SkillType.OneHanded;
                     receivesBackgroundBonus = background == BackgroundType.Duelist;
                     break;
                 case CustomItemType.Baton:
-                    proficiencyPerk = PerkType.BatonProficiency;
-                    proficiencySkill = SkillType.OneHanded;
                     receivesBackgroundBonus = background == BackgroundType.SecurityOfficer;
                     break;
                 case CustomItemType.HeavyVibroblade:
-                    proficiencyPerk = PerkType.HeavyVibrobladeProficiency;
-                    proficiencySkill = SkillType.TwoHanded;
                     receivesBackgroundBonus = background == BackgroundType.Soldier;
                     break;
-                case CustomItemType.Saberstaff:
-                    proficiencyPerk = PerkType.SaberstaffProficiency;
-                    proficiencySkill = SkillType.Lightsaber;
-                    break;
-                case CustomItemType.Polearm:
-                    proficiencyPerk = PerkType.PolearmProficiency;
-                    proficiencySkill = SkillType.TwoHanded;
-                    break;
                 case CustomItemType.TwinBlade:
-                    proficiencyPerk = PerkType.TwinVibrobladeProficiency;
-                    proficiencySkill = SkillType.TwinBlades;
                     receivesBackgroundBonus = background == BackgroundType.Berserker;
                     break;
                 case CustomItemType.MartialArtWeapon:
-                    proficiencyPerk = PerkType.MartialArtsProficiency;
-                    proficiencySkill = SkillType.MartialArts;
                     receivesBackgroundBonus = background == BackgroundType.TerasKasi;
                     break;
                 case CustomItemType.BlasterPistol:
-                    proficiencyPerk = PerkType.BlasterPistolProficiency;
-                    proficiencySkill = SkillType.Firearms;
                     receivesBackgroundBonus = background == BackgroundType.Smuggler;
                     break;
                 case CustomItemType.BlasterRifle:
-                    proficiencyPerk = PerkType.BlasterRifleProficiency;
-                    proficiencySkill = SkillType.Firearms;
                     receivesBackgroundBonus = background == BackgroundType.Sharpshooter || background == BackgroundType.Mandalorian;
                     break;
-                case CustomItemType.Throwing:
-                    proficiencyPerk = PerkType.ThrowingProficiency;
-                    proficiencySkill = SkillType.Throwing;
-                    break;
-                case CustomItemType.Lightsaber:
-                    proficiencyPerk = PerkType.LightsaberProficiency;
-                    proficiencySkill = SkillType.Lightsaber;
-                    break;
             }
-
-            if (weapon.GetLocalInt("LIGHTSABER") == TRUE)
-            {
-                proficiencyPerk = PerkType.LightsaberProficiency;
-                proficiencySkill = SkillType.Lightsaber;
-            }
-
-            if (proficiencyPerk != PerkType.Unknown &&
-                proficiencySkill != SkillType.Unknown)
-            {
-                perkBAB += PerkService.GetPCPerkLevel(oPC, proficiencyPerk);
-            }
-
+            
             if (receivesBackgroundBonus)
             {
                 backgroundBAB = background == BackgroundType.Mandalorian ? 1 : 2;

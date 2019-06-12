@@ -71,10 +71,12 @@ namespace SWLOR.Game.Server.Service
 
             // Check for the Comprehend Speech concentration ability.
             Player dbPlayer = DataService.Get<Player>(listenerAsPlayer.GlobalID);
+            bool grantSenseXP = false;
             if (dbPlayer.ActiveConcentrationPerkID == (int) PerkType.ComprehendSpeech)
             {
                 int bonus = 5 * dbPlayer.ActiveConcentrationTier;
                 rank += bonus;
+                grantSenseXP = true;
             }
 
             // Ensure we don't go over the maximum.
@@ -126,8 +128,14 @@ namespace SWLOR.Game.Server.Service
 
             if (differenceInSeconds / 60 >= 5)
             {
+                int amount = Math.Max(10, Math.Min(150, snippet.Length) / 3);
                 // Reward exp towards the language - we scale this with character count, maxing at 50 exp for 150 characters.
-                SkillService.GiveSkillXP(listenerAsPlayer, language, Math.Max(10, Math.Min(150, snippet.Length) / 3));
+                SkillService.GiveSkillXP(listenerAsPlayer, language, amount);
+
+                // Grant Sense XP if player is concentrating Comprehend Speech.
+                if(grantSenseXP)
+                    SkillService.GiveSkillXP(listenerAsPlayer, SkillType.ForceSense, amount * 10);
+
                 listenerAsPlayer.SetLocalInt("LAST_LANGUAGE_SKILL_INCREASE_LOW", (int)(now & 0xFFFFFFFF));
                 listenerAsPlayer.SetLocalInt("LAST_LANGUAGE_SKILL_INCREASE_HIGH", (int)((now >> 32) & 0xFFFFFFFF));
             }

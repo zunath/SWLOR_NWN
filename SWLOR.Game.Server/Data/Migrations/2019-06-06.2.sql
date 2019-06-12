@@ -295,8 +295,8 @@ INSERT INTO dbo.CooldownCategory ( ID ,Name ,BaseCooldownTime ) VALUES
 
 -- Definitions for each perk
 INSERT INTO dbo.Perk (ID, PerkCategoryID, CooldownCategoryID, ExecutionTypeID, IsTargetSelfOnly, Name, IsActive, Description, Enmity, EnmityAdjustmentRuleID, ForceBalanceTypeID) VALUES
- (3, 45, 2, 3, 1, 'Force Speed', 1, 'Increases movement speed and dexterity.  At higher ranks grants additional attacks.', 0, 0, 0),
- (4, 46, 4, 3, 1, 'Absorb Energy', 1, 'Absorbs a percentage of damage that the caster would take, from all sources.', 20, 2, 0),
+ (3, 44, 2, 3, 1, 'Force Speed', 1, 'Increases movement speed and dexterity.  At higher ranks grants additional attacks.', 0, 0, 0),
+ (4, 45, 4, 3, 1, 'Absorb Energy', 1, 'Absorbs a percentage of damage that the caster would take, from all sources.', 20, 2, 0),
  (5, 43, 5, 3, 1, 'Force Body', 1, 'Converts a percentage of the casters current HP into FP.', 0, 0, 0),
  (13, 45, 6, 3, 0, 'Mind Shield', 1, 'Protects the target from mind affecting powers and abilities.', 20, 2, 1),
  (19, 45, 7, 3, 1, 'Rage', 1, 'Increases STR and CON at the cost of AC and HP damage each round.  At higher ranks grants additional attacks, that do not stack with Force Speed.', 10, 2, 2),

@@ -288,9 +288,8 @@ INSERT INTO dbo.CooldownCategory ( ID ,Name ,BaseCooldownTime ) VALUES
 ( 34 , N'Animal Bond' , 600.0),
 ( 35 , N'Drain Life' , 600.0),
 ( 36 , N'Force Lightning' , 600.0),
-( 37 , N'Force Push' , 600.0),
-( 38 , N'Force Breach' , 600.0),
-( 39 , N'Force Heal' , 600.0)
+( 37 , N'Force Push' , 10.0),
+( 38 , N'Force Breach' , 600.0)
 
 
 -- Definitions for each perk

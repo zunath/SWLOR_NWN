@@ -2,19 +2,19 @@
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.Area;
+using SWLOR.Game.Server.Event.Feat;
+using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Events.Creature;
+using SWLOR.Game.Server.NWN.Events.Module;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Skill;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Event.Area;
-using SWLOR.Game.Server.Event.Feat;
-using SWLOR.Game.Server.Event.SWLOR;
-using SWLOR.Game.Server.NWN.Events.Creature;
-using SWLOR.Game.Server.NWN.Events.Module;
-using SWLOR.Game.Server.NWNX;
 using static NWN._;
 using Object = NWN.Object;
 
@@ -25,9 +25,9 @@ namespace SWLOR.Game.Server.Service
     {
         private const string IPWeaponPenaltyTag = "SKILL_PENALTY_WEAPON_ITEM_PROPERTY";
         private const string IPEquipmentPenaltyTag = "SKILL_PENALTY_EQUIPMENT_ITEM_PROPERTY";
-        
+
         public static int SkillCap => 500;
-        
+
         public static void SubscribeEvents()
         {
             // Area Events
@@ -192,7 +192,7 @@ namespace SWLOR.Game.Server.Service
                 creature = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, 1, player.Object, nth, CREATURE_TYPE_PLAYER_CHAR, 0);
             }
         }
-        
+
         /// <summary>
         /// Gives XP towards a specific player's skill. XP bonuses granted by residency and DM bonuses can be enabled or disabled.
         /// Penalties can also be enabled or disabled.
@@ -260,11 +260,11 @@ namespace SWLOR.Game.Server.Service
 
             // Characters can receive permanent XP bonuses from DMs. If this skill XP distribution
             // shouldn't grant that bonus, it can be disabled with the enableDMBonus flag.
-            if(enableDMBonus)
+            if (enableDMBonus)
             {
                 xp = xp + (int)(xp * xpBonusModifier);
             }
-            
+
             // Run the skill decay rules.
             // If the method returns false, that means all skills are locked.
             // So we can't give the player any XP.
@@ -577,14 +577,14 @@ namespace SWLOR.Game.Server.Service
             PlayerStatService.ApplyStatChanges(oPC, null);
             ApplyWeaponPenalties(oPC, oItem);
             ApplyEquipmentPenalties(oPC, oItem);
-        
+
         }
 
         private static void OnModuleUnequipItem()
-        {    
+        {
             NWPlayer oPC = _.GetPCItemLastUnequippedBy();
             if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return; // Don't run heavy code when customizing equipment.
-            
+
             NWItem oItem = _.GetPCItemLastUnequipped();
             HandleGlovesUnequipEvent();
             PlayerStatService.ApplyStatChanges(oPC, oItem);
@@ -951,6 +951,52 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        private static Dictionary<int, StoredItemPropertyDetail> BuildImmunityItemPropertiesContainer()
+        {
+            return new Dictionary<int, StoredItemPropertyDetail>
+            {
+                {IP_CONST_DAMAGETYPE_ACID, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_ACID")},
+                {(int) CustomItemPropertyDamageType.Ballistic, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_BALLISTIC")},
+                {IP_CONST_DAMAGETYPE_BLUDGEONING, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_BLUDGEONING")},
+                {(int) CustomItemPropertyDamageType.Bullet, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_BULLET")},
+                {IP_CONST_DAMAGETYPE_COLD, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_COLD")},
+                {IP_CONST_DAMAGETYPE_DIVINE, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_DIVINE")},
+                {IP_CONST_DAMAGETYPE_ELECTRICAL, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_ELECTRICAL")},
+                {(int) CustomItemPropertyDamageType.Energy, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_ENERGY")},
+                {IP_CONST_DAMAGETYPE_FIRE, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_FIRE")},
+                {IP_CONST_DAMAGETYPE_MAGICAL, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_MAGICAL")},
+                {IP_CONST_DAMAGETYPE_NEGATIVE, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_NEGATIVE")},
+                {IP_CONST_DAMAGETYPE_PIERCING, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_PIERCING")},
+                {IP_CONST_DAMAGETYPE_POSITIVE, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_POSITIVE")},
+                {IP_CONST_DAMAGETYPE_SLASHING, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_SLASHING")},
+                {IP_CONST_DAMAGETYPE_SONIC, new StoredItemPropertyDetail("PENALTY_ORIGINAL_IMMUNITY_SONIC")},
+            };
+        }
+
+        private static Dictionary<int, StoredItemPropertyDetail> BuildDamageResistanceItemPropertiesContainer()
+        {
+            return new Dictionary<int, StoredItemPropertyDetail>
+            {
+                { IP_CONST_DAMAGETYPE_ACID, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_ACID")},
+                { (int)CustomItemPropertyDamageType.Ballistic, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_BALLISTIC")},
+                { IP_CONST_DAMAGETYPE_BLUDGEONING, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_BLUDGEONING")},
+                { (int)CustomItemPropertyDamageType.Bullet, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_BULLET")},
+                { IP_CONST_DAMAGETYPE_COLD, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_COLD")},
+                { IP_CONST_DAMAGETYPE_DIVINE, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_DIVINE")},
+                { IP_CONST_DAMAGETYPE_ELECTRICAL, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_ELECTRICAL")},
+                { (int)CustomItemPropertyDamageType.Energy, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_ENERGY")},
+                { IP_CONST_DAMAGETYPE_FIRE, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_FIRE")},
+                { IP_CONST_DAMAGETYPE_MAGICAL, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_MAGICAL")},
+                { IP_CONST_DAMAGETYPE_NEGATIVE, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_NEGATIVE")},
+                { IP_CONST_DAMAGETYPE_PIERCING, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_PIERCING")},
+                { IP_CONST_DAMAGETYPE_POSITIVE, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_POSITIVE")},
+                { IP_CONST_DAMAGETYPE_SLASHING, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_SLASHING")},
+                { IP_CONST_DAMAGETYPE_SONIC, new StoredItemPropertyDetail("PENALTY_ORIGINAL_RESISTANCE_SONIC")},
+            };
+
+        }
+
+
         /// <summary>
         /// Adjusts stats on an item if the player's skill rank is lower than the recommended level on the item.
         /// These penalties should be removed with the RemoveEquipmentPenalties method.
@@ -976,10 +1022,10 @@ namespace SWLOR.Game.Server.Service
             int str = 0, dex = 0, con = 0, wis = 0, @int = 0, cha = 0;
             // Attack Bonus / Enhancement Bonus
             int ab = 0, eb = 0;
-            // Damage Immunities
-            var immunities = new ImmunitySet();
             // Damage Reduction
             int drPlus = 0, drAmount = 0;
+            var immunities = BuildImmunityItemPropertiesContainer();
+            var resistances = BuildDamageResistanceItemPropertiesContainer();
 
             foreach (var ip in item.ItemProperties)
             {
@@ -1053,6 +1099,19 @@ namespace SWLOR.Game.Server.Service
                     ipsToApply.Add(packed);
 
                     // Remove this version of the item property.
+                    RemoveItemProperty(item, ip);
+                }
+                else if (type == ITEM_PROPERTY_DAMAGE_RESISTANCE)
+                {
+                    // Damage Resistance is an all-or-nothing property.
+                    // If player's skill doesn't meet minimum, we strip it entirely.
+                    var resistance = resistances[subType];
+                    resistance.Amount += value;
+
+                    // Mark the original value as a local variable on the item.
+                    item.SetLocalInt(resistance.VariableName, resistance.Amount);
+
+                    // Remove the item property.
                     RemoveItemProperty(item, ip);
                 }
             }
@@ -1147,8 +1206,9 @@ namespace SWLOR.Game.Server.Service
         /// <param name="item">The item to remove penalties from.</param>
         private static void RemoveEquipmentPenalties(NWItem item)
         {
-            var immunities = new ImmunitySet();
             var ipsToApply = new List<ItemProperty>();
+            var immunities = BuildImmunityItemPropertiesContainer();
+            var resistances = BuildDamageResistanceItemPropertiesContainer();
 
             foreach (var ip in item.ItemProperties)
             {
@@ -1178,8 +1238,22 @@ namespace SWLOR.Game.Server.Service
                     _.RemoveItemProperty(item, ip);
                 }
             }
-            
-            // Reapply the item property with the original values now.
+
+            // Re-add resistance item properties to the item.
+            foreach (var resistance in resistances)
+            {
+                string varName = resistance.Value.VariableName;
+                int costTableID = item.GetLocalInt(varName);
+                if (costTableID > 0)
+                {
+                    ItemProperty ip = ItemPropertyDamageResistance(resistance.Key, costTableID);
+                    ipsToApply.Add(ip);
+                }
+
+                item.DeleteLocalInt(varName);
+            }
+
+            // Reapply the item properties with the original values now.
             foreach (var ip in ipsToApply)
             {
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);

@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
         {
             float radiusSize = _.RADIUS_SIZE_SMALL;
 
-            NWCreature targetCreature = targetCreature = _.GetFirstObjectInShape(_.SHAPE_SPHERE, radiusSize, player.Location, 1, _.OBJECT_TYPE_CREATURE);
+            NWCreature targetCreature = _.GetFirstObjectInShape(_.SHAPE_SPHERE, radiusSize, player.Location, 1, _.OBJECT_TYPE_CREATURE);
             while (targetCreature.IsValid)
             {
                 int amount = 0;
@@ -110,9 +110,10 @@ namespace SWLOR.Game.Server.Perk.ForceSense
                     effect = _.EffectLinkEffects(effect, _.EffectAttackIncrease(amount));
                 }
 
+                var creature = targetCreature; // VS recommends copying to another var due to modified closure.
                 player.AssignCommand(() =>
                 {
-                    _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, targetCreature, 6.1f);
+                    _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, creature, 6.1f);
                 });
 
                 targetCreature = _.GetNextObjectInShape(_.SHAPE_SPHERE, radiusSize, player.Location, 1, _.OBJECT_TYPE_CREATURE);

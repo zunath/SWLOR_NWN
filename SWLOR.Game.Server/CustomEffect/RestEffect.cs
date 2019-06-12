@@ -32,6 +32,8 @@ namespace SWLOR.Game.Server.CustomEffect
 
         public void Tick(NWCreature oCaster, NWObject oTarget, int currentTick, int effectiveLevel, string data)
         {
+            AbilityService.EndConcentrationEffect(oCaster);
+
             NWPlayer player = oTarget.Object;
             int restTick = oTarget.GetLocalInt("REST_TICK") + 1;
 

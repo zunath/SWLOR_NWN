@@ -39,3 +39,9 @@ UPDATE dbo.PerkLevel
 SET Description = 'Increases movement speed by 50%, Dexterity by 10 and grants an extra attack.'
 WHERE PerkID = 3
 	AND Level = 5
+
+
+-- Reduce tick interval for force lightning to 3 per spreadsheet changes.
+UPDATE dbo.PerkFeat
+SET ConcentrationTickInterval = 3
+WHERE PerkID = 182

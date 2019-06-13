@@ -45,3 +45,11 @@ WHERE PerkID = 3
 UPDATE dbo.PerkFeat
 SET ConcentrationTickInterval = 3
 WHERE PerkID = 182
+
+
+-- Move FP costs to concentration and bump interval to 6 for Force Stun.
+UPDATE dbo.PerkFeat
+SET ConcentrationFPCost = BaseFPCost,
+	BaseFPCost = 0,
+	ConcentrationTickInterval = 6
+WHERE PerkID = 126

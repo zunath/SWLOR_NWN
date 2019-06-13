@@ -2110,7 +2110,7 @@
     <EmbeddedResource Include="Data\Migrations\2019-06-06.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-06-06.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-06-07.1.sql" />
-    <Content Include="Data\Migrations\2019-06-10.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-06-10.1.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <Content Include="Data\Migrations\Readme.txt" />

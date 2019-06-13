@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier)
         {
             if (_.GetDistanceBetween(oPC, oTarget) > 15)
-                return "You must be within 10 meters of your target.";
+                return "You must be within 15 meters of your target.";
             
                 return string.Empty;
         }

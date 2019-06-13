@@ -134,6 +134,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             }
 
             SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
+            EnmityService.AdjustEnmity(target.Object, player, 1);
         }
 
         private void ApplyEffect(NWPlayer player, NWObject target, int spellTier)

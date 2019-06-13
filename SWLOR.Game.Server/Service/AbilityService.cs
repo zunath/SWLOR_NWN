@@ -253,8 +253,8 @@ namespace SWLOR.Game.Server.Service
                 player.SetLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK", tick);
                 
                 PerkFeat perkFeat = DataService.Single<PerkFeat>(x => x.PerkID == dbPlayer.ActiveConcentrationPerkID &&
-                                                                      x.PerkLevelUnlocked == dbPlayer.ActiveConcentrationTier);
-
+                                                                      x.PerkLevelUnlocked == dbPlayer.ActiveConcentrationTier);                
+                
                 // Are we ready to continue processing this concentration effect?
                 if (tick % perkFeat.ConcentrationTickInterval != 0) return;
 
@@ -416,7 +416,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             // If an animation has been specified, make the player play that animation now.
-            if (animationID > -1)
+            // bypassing if perk is throw saber due to couldn't get the animation to work via db table edit
+            if (animationID > -1 && entity.ID != (int) PerkType.ThrowSaber)                
             {
                 pc.AssignCommand(() => _.ActionPlayAnimation(animationID, 1.0f, activationTime - 0.1f));
             }

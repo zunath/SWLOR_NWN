@@ -85,8 +85,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
         private void ApplyEffect(NWPlayer player, NWObject target, int spellTier)
         {
-            float radiusSize = _.RADIUS_SIZE_SMALL;
-            NWCreature targetCreature;
+            float radiusSize = _.RADIUS_SIZE_SMALL;            
 
             Effect confusionEffect = _.EffectConfused();
 
@@ -94,10 +93,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             switch (spellTier)
             {
                 case 1:
-                    //targetCreature = (NWCreature)target;
-                    targetCreature = target.Object;
-
-                    if ((player.Wisdom > targetCreature.Wisdom || player.Object == targetCreature.Object) && _.GetDistanceBetween(player.Object, targetCreature.Object) <= radiusSize)
+                    if ((player.Wisdom > _.GetAbilityModifier(_.ABILITY_WISDOM, target) || player == target) && _.GetDistanceBetween(player.Object, target) <= radiusSize)
                     {
                         player.AssignCommand(() =>
                         {
@@ -107,10 +103,10 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     }
                     break;
                 case 2:
-                    targetCreature = _.GetFirstObjectInShape(_.SHAPE_SPHERE, radiusSize, player.Location, 1, _.OBJECT_TYPE_CREATURE);
+                    NWCreature targetCreature = _.GetFirstObjectInShape(_.SHAPE_SPHERE, radiusSize, player.Location, 1, _.OBJECT_TYPE_CREATURE);
                     while (targetCreature.IsValid)
                     {
-                        if (targetCreature.RacialType == (int)CustomRaceType.Robot || _.GetIsReactionTypeHostile(target, player) == 0)
+                        if (targetCreature.RacialType == (int)CustomRaceType.Robot || _.GetIsReactionTypeHostile(targetCreature, player) == 0)
                         {                            
                             // Do nothing against droids or non-hostile creatures, skip object
                             continue;
@@ -118,11 +114,12 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                         if (player.Wisdom > targetCreature.Wisdom)
                         {
+                            var creature = targetCreature;
                             player.AssignCommand(() =>
                             {
-                                _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, confusionEffect, target, 6.1f);
+                                _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, confusionEffect, creature, 6.1f);
                             });
-                            SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
+                            SkillService.RegisterPCToNPCForSkill(player, targetCreature, SkillType.ForceAlter);
                         }
 
                         targetCreature = _.GetNextObjectInShape(_.SHAPE_SPHERE, radiusSize, player.Location, 1, _.OBJECT_TYPE_CREATURE);

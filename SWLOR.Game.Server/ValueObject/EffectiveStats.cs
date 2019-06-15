@@ -2,7 +2,7 @@
 {
     public class EffectiveItemStats
     {
-        public int CastingSpeed { get; set; }
+        public int CooldownRecovery { get; set; }
         public float EnmityRate { get; set; }
         
         public int Luck { get; set; }

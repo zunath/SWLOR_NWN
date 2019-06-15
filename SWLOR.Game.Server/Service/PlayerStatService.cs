@@ -307,12 +307,12 @@ namespace SWLOR.Game.Server.Service
 
                         using (new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::ItemLoop::StatAdjustments"))
                         {
-                            // Only scale casting speed if it's a bonus. Penalties remain regardless of skill level difference.
-                            if (item.CastingSpeed > 0)
+                            // Only scale cooldown recovery if it's a bonus. Penalties remain regardless of skill level difference.
+                            if (item.CooldownRecovery > 0)
                             {
-                                stats.CastingSpeed += CalculateAdjustedValue(item.CastingSpeed, item.RecommendedLevel, rank, 1);
+                                stats.CooldownRecovery += CalculateAdjustedValue(item.CooldownRecovery, item.RecommendedLevel, rank, 1);
                             }
-                            else stats.CastingSpeed += item.CastingSpeed;
+                            else stats.CooldownRecovery += item.CooldownRecovery;
 
                             stats.EnmityRate += CalculateAdjustedValue(0.01f * item.EnmityRate, item.RecommendedLevel, rank, 0.00f);
                             
@@ -394,10 +394,10 @@ namespace SWLOR.Game.Server.Service
                 using (new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::FinalAdjustments"))
                 {
                     // Final casting speed adjustments
-                    if (stats.CastingSpeed < -99)
-                        stats.CastingSpeed = -99;
-                    else if (stats.CastingSpeed > 99)
-                        stats.CastingSpeed = 99;
+                    if (stats.CooldownRecovery < -99)
+                        stats.CooldownRecovery = -99;
+                    else if (stats.CooldownRecovery > 99)
+                        stats.CooldownRecovery = 99;
 
                     // Final enmity adjustments
                     if (stats.EnmityRate < 0.5f) stats.EnmityRate = 0.5f;

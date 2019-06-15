@@ -11,8 +11,8 @@ namespace SWLOR.Game.Server.Mod
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            if (target.CastingSpeed >= MaxValue)
-                return "You cannot improve that item's casting speed any further.";
+            if (target.CooldownRecovery >= MaxValue)
+                return "You cannot improve that item's cooldown recovery any further.";
 
             return null;
         }
@@ -20,15 +20,15 @@ namespace SWLOR.Game.Server.Mod
         public void Apply(NWPlayer player, NWItem target, params string[] args)
         {
             int value = Convert.ToInt32(args[0]);
-            int newValue = target.CastingSpeed + value;
+            int newValue = target.CooldownRecovery + value;
             if (newValue > MaxValue) newValue = MaxValue;
-            target.CastingSpeed = newValue;
+            target.CooldownRecovery = newValue;
         }
 
         public string Description(NWPlayer player, NWItem target, params string[] args)
         {
             int value = Convert.ToInt32(args[0]);
-            return "Casting Speed +" + value + "%";
+            return "Cooldown Recovery +" + value + "%";
         }
     }
 }

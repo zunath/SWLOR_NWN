@@ -261,13 +261,13 @@ namespace SWLOR.Game.Server.Service
             {
                 description += ColorTokenService.Orange("Charisma Bonus: ") + examinedItem.CharismaBonus + " (/3)\n";
             }
-            if (examinedItem.CastingSpeed > 0)
+            if (examinedItem.CooldownRecovery > 0)
             {
-                description += ColorTokenService.Orange("Activation Speed: +") + examinedItem.CastingSpeed + "%\n";
+                description += ColorTokenService.Orange("Cooldown Recovery: +") + examinedItem.CooldownRecovery + "%\n";
             }
-            else if (examinedItem.CastingSpeed < 0)
+            else if (examinedItem.CooldownRecovery < 0)
             {
-                description += ColorTokenService.Orange("Activation Penalty: -") + examinedItem.CastingSpeed + "%\n";
+                description += ColorTokenService.Orange("Cooldown Recovery: -") + examinedItem.CooldownRecovery + "%\n";
             }
             if (examinedItem.HarvestingBonus > 0)
             {

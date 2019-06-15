@@ -60,8 +60,8 @@ namespace SWLOR.Game.Server.Service
                     case ComponentBonusType.HarvestingUp:
                         product.HarvestingBonus += amount;
                         break;
-                    case ComponentBonusType.CastingSpeedUp:
-                        product.CastingSpeed += amount;
+                    case ComponentBonusType.CooldownRecoveryUp:
+                        product.CooldownRecovery += amount;
                         break;
                     case ComponentBonusType.ArmorsmithUp:
                         product.CraftBonusArmorsmith += amount;

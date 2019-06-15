@@ -13,7 +13,7 @@
         ACUp = 8,
         RestUp = 9,
         HarvestingUp = 10,
-        CastingSpeedUp = 11,
+        CooldownRecoveryUp = 11,
         ArmorsmithUp = 12,
         WeaponsmithUp = 13,
         CookingUp = 14,

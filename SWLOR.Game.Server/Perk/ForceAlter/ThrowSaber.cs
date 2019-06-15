@@ -13,10 +13,46 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         public PerkType PerkType => PerkType.ThrowSaber;
         public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier)
         {
-            if (_.GetDistanceBetween(oPC, oTarget) > 15)
+            NWItem weapon = oPC.RightHand;
+            int weaponSize = StringToInt(Get2DAString("baseitems", "WeaponSize", weapon.BaseItemType));
+            int strengthMod = oPC.StrengthModifier;
+            float distance = _.GetDistanceBetween(oPC, oTarget);
+
+            if (distance > 15)
                 return "You must be within 15 meters of your target.";
-            
+            if (!weapon.IsValid)
+                return "You attempt to throw your fist. Nothing of consequence happens.";
+
+            if (weapon.CustomItemType == CustomItemType.Lightsaber ||
+                weapon.CustomItemType == CustomItemType.Saberstaff)
+            {
+                
                 return string.Empty;
+            }
+            else if 
+                 (
+                    (weaponSize == 1 && strengthMod < 1) || // weapon size tiny
+                    (weaponSize == 2 && strengthMod < 2) || // weapon size small
+                    (weaponSize == 3 && strengthMod < 5) || // weapon size medium
+                    (weaponSize == 4 && strengthMod < 10) || // weapon size large
+                    (weaponSize > 4 && strengthMod < 20) || // weapon size huge
+                    (weapon.IsRanged)
+                 )
+            {
+                NWObject droppedWeapon = _.CopyObject(weapon, oPC.Location);
+                DestroyObject(weapon);
+                oPC.ClearAllActions();
+                oPC.AssignCommand(() =>
+                {
+                    _.ActionPickUpItem(droppedWeapon);
+                });
+                return "You attempt to throw your the item in your hand. Due to your lack of strength, it falls to the ground in front of you and you try to pick it up quickly.";
+            }
+            else
+            { 
+                return "You cannot throw this type of item.";
+            }
+                
         }
         
         public int FPCost(NWPlayer oPC, int baseFPCost, int spellTier)
@@ -41,11 +77,22 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
         public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellTier)
         {
-            int iDamage = 20; // player.RightHand.DamageBonus + player.IntelligenceModifier;
+            NWItem weapon = player.RightHand;
+            int iDamage;
             int iRange = 15;
             int iCount = 1;
             float fDelay = 0;
-            
+
+            if (weapon.CustomItemType == CustomItemType.Lightsaber ||
+                weapon.CustomItemType == CustomItemType.Saberstaff)
+            {
+                iDamage = player.RightHand.DamageBonus + RandomService.D6(2) + player.IntelligenceModifier + player.StrengthModifier;
+            }
+            else
+            {
+                iDamage = (int)weapon.Weight + player.StrengthModifier;
+            }
+
             NWObject oObject;
 
             // If player is in stealth mode, force them out of stealth mode.

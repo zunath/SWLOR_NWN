@@ -51,28 +51,28 @@ namespace SWLOR.Game.Server.NWNX
         /// Starts displaying a timing bar.
         /// Will run a script at the end of the timing bar, if specified.
         /// </summary>
-        /// <param name="player"></param>
-        /// <param name="seconds"></param>
-        /// <param name="script"></param>
-        public static void StartGuiTimingBar(NWPlayer player, float seconds, string script)
+        /// <param name="creature">The creature who will see the timing bar.</param>
+        /// <param name="seconds">How long the timing bar should come on screen.</param>
+        /// <param name="script">The script to run at the end of the timing bar.</param>
+        public static void StartGuiTimingBar(NWCreature creature, float seconds, string script)
         {
             // only one timing bar at a time!
-            if (_.GetLocalInt(player.Object, "NWNX_PLAYER_GUI_TIMING_ACTIVE") == 1)
+            if (_.GetLocalInt(creature.Object, "NWNX_PLAYER_GUI_TIMING_ACTIVE") == 1)
                 return;
 
             string sFunc = "StartGuiTimingBar";
             NWNX_PushArgumentFloat(NWNX_Player, sFunc, seconds);
-            NWNX_PushArgumentObject(NWNX_Player, sFunc, player.Object);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, creature.Object);
 
             NWNX_CallFunction(NWNX_Player, sFunc);
 
-            int id = _.GetLocalInt(player.Object, "NWNX_PLAYER_GUI_TIMING_ID") + 1;
-            _.SetLocalInt(player.Object, "NWNX_PLAYER_GUI_TIMING_ACTIVE", id);
-            _.SetLocalInt(player.Object, "NWNX_PLAYER_GUI_TIMING_ID", id);
+            int id = _.GetLocalInt(creature.Object, "NWNX_PLAYER_GUI_TIMING_ID") + 1;
+            _.SetLocalInt(creature.Object, "NWNX_PLAYER_GUI_TIMING_ACTIVE", id);
+            _.SetLocalInt(creature.Object, "NWNX_PLAYER_GUI_TIMING_ID", id);
 
             _.DelayCommand(seconds, () =>
             {
-                StopGuiTimingBar(player, script, -1);
+                StopGuiTimingBar(creature, script, -1);
             });
         }
 
@@ -80,12 +80,12 @@ namespace SWLOR.Game.Server.NWNX
         /// Stops displaying a timing bar.
         /// Runs a script if specified.
         /// </summary>
-        /// <param name="player"></param>
-        /// <param name="script"></param>
-        /// <param name="id"></param>
-        public static void StopGuiTimingBar(NWPlayer player, string script, int id)
+        /// <param name="creature">The creature's timing bar to stop.</param>
+        /// <param name="script">The script to run once ended.</param>
+        /// <param name="id">ID number of this timing bar.</param>
+        public static void StopGuiTimingBar(NWCreature creature, string script, int id)
         {
-            int activeId = _.GetLocalInt(player.Object, "NWNX_PLAYER_GUI_TIMING_ACTIVE");
+            int activeId = _.GetLocalInt(creature.Object, "NWNX_PLAYER_GUI_TIMING_ACTIVE");
             // Either the timing event was never started, or it already finished.
             if (activeId == 0)
                 return;
@@ -94,15 +94,15 @@ namespace SWLOR.Game.Server.NWNX
             if (id != -1 && id != activeId)
                 return;
 
-            _.DeleteLocalInt(player.Object, "NWNX_PLAYER_GUI_TIMING_ACTIVE");
+            _.DeleteLocalInt(creature.Object, "NWNX_PLAYER_GUI_TIMING_ACTIVE");
 
             string sFunc = "StopGuiTimingBar";
-            NWNX_PushArgumentObject(NWNX_Player, sFunc, player.Object);
+            NWNX_PushArgumentObject(NWNX_Player, sFunc, creature.Object);
             NWNX_CallFunction(NWNX_Player, sFunc);
 
             if (!string.IsNullOrWhiteSpace(script))
             {
-                _.ExecuteScript(script, player.Object);
+                _.ExecuteScript(script, creature.Object);
             }
         }
 

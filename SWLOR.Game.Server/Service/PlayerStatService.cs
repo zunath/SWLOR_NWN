@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Service
             int hp = 25 + player.ConstitutionModifier * 5;
             float effectPercentBonus = CustomEffectService.CalculateEffectHPBonusPercent(player);
             
-            hp += PerkService.GetPCPerkLevel(player, PerkType.Health) * 5;
+            hp += PerkService.GetCreaturePerkLevel(player, PerkType.Health) * 5;
             hp += stats.HP;
             hp = hp + (int)(hp * effectPercentBonus);
 
@@ -216,7 +216,7 @@ namespace SWLOR.Game.Server.Service
         {
             int fp = 20;
             fp += (player.IntelligenceModifier + player.WisdomModifier + player.CharismaModifier) * 5;
-            fp += PerkService.GetPCPerkLevel(player, PerkType.FP) * 5;
+            fp += PerkService.GetCreaturePerkLevel(player, PerkType.FP) * 5;
             fp += stats.FP;
 
             if (fp < 0) fp = 0;

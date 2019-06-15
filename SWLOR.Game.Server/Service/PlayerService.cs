@@ -511,7 +511,7 @@ namespace SWLOR.Game.Server.Service
 
                     if (oPC.Chest.CustomItemType == CustomItemType.HeavyArmor)
                     {
-                        int sturdinessLevel = PerkService.GetPCPerkLevel(oPC, PerkType.Sturdiness);
+                        int sturdinessLevel = PerkService.GetCreaturePerkLevel(oPC, PerkType.Sturdiness);
                         if (sturdinessLevel > 0)
                         {
                             amount += sturdinessLevel + 1;
@@ -545,14 +545,14 @@ namespace SWLOR.Game.Server.Service
 
                     if (oPC.Chest.CustomItemType == CustomItemType.ForceArmor)
                     {
-                        int clarityLevel = PerkService.GetPCPerkLevel(oPC, PerkType.Clarity);
+                        int clarityLevel = PerkService.GetCreaturePerkLevel(oPC, PerkType.Clarity);
                         if (clarityLevel > 0)
                         {
                             amount += clarityLevel + 1;
                         }
                     }
 
-                    entity = AbilityService.RestoreFP(oPC, amount, entity);
+                    entity = AbilityService.RestorePlayerFP(oPC, amount, entity);
                 }
 
                 entity.CurrentFPTick = rate;

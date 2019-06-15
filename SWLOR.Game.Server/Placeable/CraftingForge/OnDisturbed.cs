@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
                 return false;
             }
 
-            int pcPerkLevel = PerkService.GetPCPerkLevel(pc, PerkType.Refining);
+            int pcPerkLevel = PerkService.GetCreaturePerkLevel(pc, PerkType.Refining);
             int orePerkLevel = CraftService.GetIngotPerkLevel(item.Resref);
 
             if (pcPerkLevel < orePerkLevel)
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             }
 
             // Ready to smelt
-            float baseCraftDelay = 18.0f - (18.0f * PerkService.GetPCPerkLevel(pc, PerkType.SpeedyRefining) * 0.1f);
+            float baseCraftDelay = 18.0f - (18.0f * PerkService.GetCreaturePerkLevel(pc, PerkType.SpeedyRefining) * 0.1f);
 
             pc.IsBusy = true;
             NWNXPlayer.StartGuiTimingBar(pc, baseCraftDelay, string.Empty);
@@ -158,7 +158,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
 
         private int CalculatePerkCoalBonusCharges(NWPlayer pc)
         {
-            int perkLevel = PerkService.GetPCPerkLevel(pc, PerkType.RefineryManagement);
+            int perkLevel = PerkService.GetCreaturePerkLevel(pc, PerkType.RefineryManagement);
 
             switch (perkLevel)
             {

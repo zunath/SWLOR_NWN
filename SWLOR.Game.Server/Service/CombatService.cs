@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Service
                 !target.RightHand.IsValid && !target.LeftHand.IsValid))
             {
                 // Martial Arts (weapon or unarmed) uses the Evade Blaster Fire perk which is primarily DEX based.
-                perkLevel = PerkService.GetPCPerkLevel(target.Object, PerkType.EvadeBlasterFire);
+                perkLevel = PerkService.GetCreaturePerkLevel(target.Object, PerkType.EvadeBlasterFire);
                 modifier = target.DexterityModifier;
                 action = "evade";
             }
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Service
                       targetWeapon.GetLocalInt("LIGHTSABER") == TRUE))
             {
                 // Lightsabers (lightsaber or saberstaff) uses the Deflect Blaster Fire perk which is primarily CHA based.
-                perkLevel = PerkService.GetPCPerkLevel(target.Object, PerkType.DeflectBlasterFire);
+                perkLevel = PerkService.GetCreaturePerkLevel(target.Object, PerkType.DeflectBlasterFire);
                 modifier = target.CharismaModifier;
                 action = "deflect";
             }
@@ -186,7 +186,7 @@ namespace SWLOR.Game.Server.Service
             if (ItemService.ShieldBaseItemTypes.Contains(shield.BaseItemType))
             {
                 // Apply damage scaling based on shield presence
-                int perkLevel = PerkService.GetPCPerkLevel(target.Object, PerkType.ShieldProficiency);
+                int perkLevel = PerkService.GetCreaturePerkLevel(target.Object, PerkType.ShieldProficiency);
                 float perkBonus = 0.02f * perkLevel;
 
                 // DI = 10% + 1% / 3 AC bonuses on the shield + 2% per perk bonus. 
@@ -294,7 +294,7 @@ namespace SWLOR.Game.Server.Service
 
             if (absorbed < 1) absorbed = 1;
 
-            AbilityService.RestoreFP(player, absorbed);
+            AbilityService.RestorePlayerFP(player, absorbed);
         }
 
         private static void HandleRecoveryBlast()

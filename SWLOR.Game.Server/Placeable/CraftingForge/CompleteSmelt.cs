@@ -30,12 +30,12 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
             if (delta > 2) count = delta;
             if (count > 4) count = 4;
 
-            if (RandomService.Random(100) + 1 <= PerkService.GetPCPerkLevel(player, PerkType.Lucky))
+            if (RandomService.Random(100) + 1 <= PerkService.GetCreaturePerkLevel(player, PerkType.Lucky))
             {
                 count++;
             }
 
-            if (RandomService.Random(100) + 1 <= PerkService.GetPCPerkLevel(player, PerkType.ProcessingEfficiency) * 10)
+            if (RandomService.Random(100) + 1 <= PerkService.GetCreaturePerkLevel(player, PerkType.ProcessingEfficiency) * 10)
             {
                 count++;
             }
@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Placeable.CraftingForge
 
             var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
             int harvestingSkill = SkillService.GetPCSkillRank(player, SkillType.Harvesting);
-            int perkBonus = PerkService.GetPCPerkLevel(player, PerkType.StronidiumRefining) + 1;
+            int perkBonus = PerkService.GetCreaturePerkLevel(player, PerkType.StronidiumRefining) + 1;
             int stronidiumAmount = 10 + effectiveStats.Harvesting + harvestingSkill + RandomService.Random(1, 5);
             stronidiumAmount *= perkBonus;
             _.CreateItemOnObject("stronidium", player.Object, stronidiumAmount);

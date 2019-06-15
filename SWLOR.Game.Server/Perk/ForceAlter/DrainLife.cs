@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
     public class DrainLife: IPerkHandler
     {
         public PerkType PerkType => PerkType.DrainLife;
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier)
+        public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             if (!oTarget.IsCreature)
                 return "This ability can only be used on living creatures.";
@@ -20,47 +20,47 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             return string.Empty;
         }
         
-        public int FPCost(NWPlayer oPC, int baseFPCost, int spellTier)
+        public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellTier)
+        public float CastingTime(NWCreature oPC, float baseCastingTime, int spellTier)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellTier)
+        public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)
         {
             return baseCooldownTime;
         }
 
-        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellTier)
+        public int? CooldownCategoryID(NWCreature creature, int? baseCooldownCategoryID, int spellTier)
         {
             return baseCooldownCategoryID;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellTier)
+        public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
         }
 
-        public void OnPurchased(NWPlayer oPC, int newLevel)
+        public void OnPurchased(NWCreature creature, int newLevel)
         {
         }
 
-        public void OnRemoved(NWPlayer oPC)
+        public void OnRemoved(NWCreature creature)
         {
         }
 
-        public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemEquipped(NWCreature creature, NWItem oItem)
         {
         }
 
-        public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemUnequipped(NWCreature creature, NWItem oItem)
         {
         }
 
-        public void OnCustomEnmityRule(NWPlayer oPC, int amount)
+        public void OnCustomEnmityRule(NWCreature creature, int amount)
         {
         }
 
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             return false;
         }
 
-        public void OnConcentrationTick(NWPlayer player, NWObject target, int spellTier, int tick)
+        public void OnConcentrationTick(NWCreature creature, NWObject target, int spellTier, int tick)
         {
             int amount;
 
@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     throw new ArgumentOutOfRangeException(nameof(spellTier));
             }
 
-            var result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark);
+            var result = CombatService.CalculateAbilityResistance(creature, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark);
 
             // +/- percent change based on resistance
             float delta = 0.01f * result.Delta;
@@ -105,17 +105,21 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                 amount = 0;
             }
 
-            player.AssignCommand(() =>
+            creature.AssignCommand(() =>
             {
                 _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectDamage(amount, _.DAMAGE_TYPE_NEGATIVE), target);
             });
 
             // Only apply a heal if caster is not at max HP. Otherwise they'll get unnecessary spam.
-            if (player.CurrentHP < player.MaxHP)
+            if (creature.CurrentHP < creature.MaxHP)
             {
-                _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectHeal(amount), player);
+                _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectHeal(amount), creature);
             }
-            SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
+
+            if(creature.IsPlayer)
+            {
+                SkillService.RegisterPCToNPCForSkill(creature.Object, target, SkillType.ForceAlter);
+            }
         }
     }
 }

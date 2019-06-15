@@ -9,12 +9,12 @@ namespace SWLOR.Game.Server.Perk.ForceControl
     public class ForceSpeed: IPerkHandler
     {
         public PerkType PerkType => PerkType.ForceSpeed;
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier)
+        public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             return string.Empty;
         }
         
-        public int FPCost(NWPlayer oPC, int baseFPCost, int spellTier)
+        public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             switch (spellTier)
             {
@@ -28,22 +28,22 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellTier)
+        public float CastingTime(NWCreature oPC, float baseCastingTime, int spellTier)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellTier)
+        public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)
         {
             return baseCooldownTime;
         }
 
-        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellTier)
+        public int? CooldownCategoryID(NWCreature creature, int? baseCooldownCategoryID, int spellTier)
         {
             return baseCooldownCategoryID;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellTier)
+        public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
             Effect effect;
             float duration;
@@ -82,38 +82,42 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             }
             
             // Check lucky chance.
-            int luck = PerkService.GetPCPerkLevel(player, PerkType.Lucky);
+            int luck = PerkService.GetCreaturePerkLevel(creature, PerkType.Lucky);
             if (RandomService.D100(1) <= luck)
             {
                 duration *= 2;
-                player.SendMessage("Lucky Force Speed!");
+                creature.SendMessage("Lucky Force Speed!");
             }
 
             _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, target, duration);
             _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(_.VFX_IMP_AC_BONUS), target);
-            
-            int skillLevel = SkillService.GetPCSkillRank(player, SkillType.ForceControl);
-            int xp = skillLevel * 10 + 10;
-            SkillService.GiveSkillXP(player, SkillType.ForceControl, xp);
+
+            if (creature.IsPlayer)
+            {
+                NWPlayer player = creature.Object;
+                int skillLevel = SkillService.GetPCSkillRank(player, SkillType.ForceControl);
+                int xp = skillLevel * 10 + 10;
+                SkillService.GiveSkillXP(player, SkillType.ForceControl, xp);
+            }
         }
 
-        public void OnPurchased(NWPlayer oPC, int newLevel)
+        public void OnPurchased(NWCreature creature, int newLevel)
         {
         }
 
-        public void OnRemoved(NWPlayer oPC)
+        public void OnRemoved(NWCreature creature)
         {
         }
 
-        public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemEquipped(NWCreature creature, NWItem oItem)
         {
         }
 
-        public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemUnequipped(NWCreature creature, NWItem oItem)
         {
         }
 
-        public void OnCustomEnmityRule(NWPlayer oPC, int amount)
+        public void OnCustomEnmityRule(NWCreature creature, int amount)
         {
         }
 
@@ -122,7 +126,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             return false;
         }
 
-        public void OnConcentrationTick(NWPlayer player, NWObject target, int perkLevel, int tick)
+        public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
         }
     }

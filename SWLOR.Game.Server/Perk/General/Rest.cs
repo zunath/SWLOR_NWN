@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Perk.General
     {
         public PerkType PerkType => PerkType.Rest;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier)
+        public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             if (!RestEffect.CanRest(oPC))
                 return "You cannot rest while you or a party member are in combat.";
@@ -18,19 +18,19 @@ namespace SWLOR.Game.Server.Perk.General
             return string.Empty;
         }
 
-        public int FPCost(NWPlayer oPC, int baseFPCost, int spellTier)
+        public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellTier)
+        public float CastingTime(NWCreature oPC, float baseCastingTime, int spellTier)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellTier)
+        public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)
         {
-            int perkLevel = PerkService.GetPCPerkLevel(oPC, PerkType.Rest);
+            int perkLevel = PerkService.GetCreaturePerkLevel(oPC, PerkType.Rest);
 
             switch (perkLevel)
             {
@@ -48,33 +48,33 @@ namespace SWLOR.Game.Server.Perk.General
             }
         }
 
-        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellTier)
+        public int? CooldownCategoryID(NWCreature creature, int? baseCooldownCategoryID, int spellTier)
         {
             return baseCooldownCategoryID;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellTier)
+        public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
-            CustomEffectService.ApplyCustomEffect(player, player, CustomEffectType.Rest, -1, 0, null);
+            CustomEffectService.ApplyCustomEffect(creature, creature, CustomEffectType.Rest, -1, 0, null);
         }
 
-        public void OnPurchased(NWPlayer oPC, int newLevel)
-        {
-        }
-
-        public void OnRemoved(NWPlayer oPC)
+        public void OnPurchased(NWCreature creature, int newLevel)
         {
         }
 
-        public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
+        public void OnRemoved(NWCreature creature)
         {
         }
 
-        public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemEquipped(NWCreature creature, NWItem oItem)
         {
         }
 
-        public void OnCustomEnmityRule(NWPlayer oPC, int amount)
+        public void OnItemUnequipped(NWCreature creature, NWItem oItem)
+        {
+        }
+
+        public void OnCustomEnmityRule(NWCreature creature, int amount)
         {
         }
 
@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Perk.General
             return false;
         }
 
-        public void OnConcentrationTick(NWPlayer player, NWObject target, int perkLevel, int tick)
+        public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
             throw new NotImplementedException();
         }

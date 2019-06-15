@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
     public class Confusion : IPerkHandler
     {
         public PerkType PerkType => PerkType.Confusion;
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier)
+        public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             switch (spellTier)
             {                
@@ -29,47 +29,47 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             return string.Empty;
         }
 
-        public int FPCost(NWPlayer oPC, int baseFPCost, int spellTier)
+        public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellTier)
+        public float CastingTime(NWCreature oPC, float baseCastingTime, int spellTier)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellTier)
+        public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)
         {
             return baseCooldownTime;
         }
 
-        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellTier)
+        public int? CooldownCategoryID(NWCreature creature, int? baseCooldownCategoryID, int spellTier)
         {
             return baseCooldownCategoryID;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellTier)
+        public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
         }
 
-        public void OnPurchased(NWPlayer oPC, int newLevel)
+        public void OnPurchased(NWCreature creature, int newLevel)
         {
         }
 
-        public void OnRemoved(NWPlayer oPC)
+        public void OnRemoved(NWCreature creature)
         {
         }
 
-        public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemEquipped(NWCreature creature, NWItem oItem)
         {
         }
 
-        public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemUnequipped(NWCreature creature, NWItem oItem)
         {
         }
 
-        public void OnCustomEnmityRule(NWPlayer oPC, int amount)
+        public void OnCustomEnmityRule(NWCreature creature, int amount)
         {
         }
 
@@ -78,12 +78,12 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             return false;
         }
 
-        public void OnConcentrationTick(NWPlayer player, NWObject target, int spellTier, int tick)
+        public void OnConcentrationTick(NWCreature creature, NWObject target, int spellTier, int tick)
         {
-            ApplyEffect(player, target, spellTier);
+            ApplyEffect(creature, target, spellTier);
         }
 
-        private void ApplyEffect(NWPlayer player, NWObject target, int spellTier)
+        private void ApplyEffect(NWCreature creature, NWObject target, int spellTier)
         {
             float radiusSize = _.RADIUS_SIZE_SMALL;            
 
@@ -93,36 +93,43 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             switch (spellTier)
             {
                 case 1:
-                    if ((player.Wisdom > _.GetAbilityModifier(_.ABILITY_WISDOM, target) || player == target) && _.GetDistanceBetween(player.Object, target) <= radiusSize)
+                    if ((creature.Wisdom > _.GetAbilityModifier(_.ABILITY_WISDOM, target) || creature == target) && _.GetDistanceBetween(creature.Object, target) <= radiusSize)
                     {
-                        player.AssignCommand(() =>
+                        creature.AssignCommand(() =>
                         {
                             _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, confusionEffect, target, 6.1f);
                         });
-                        SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
+                        if (creature.IsPlayer)
+                        {
+                            SkillService.RegisterPCToNPCForSkill(creature.Object, target, SkillType.ForceAlter);
+                        }
                     }
                     break;
                 case 2:
-                    NWCreature targetCreature = _.GetFirstObjectInShape(_.SHAPE_SPHERE, radiusSize, player.Location, 1, _.OBJECT_TYPE_CREATURE);
+                    NWCreature targetCreature = _.GetFirstObjectInShape(_.SHAPE_SPHERE, radiusSize, creature.Location, 1, _.OBJECT_TYPE_CREATURE);
                     while (targetCreature.IsValid)
                     {
-                        if (targetCreature.RacialType == (int)CustomRaceType.Robot || _.GetIsReactionTypeHostile(targetCreature, player) == 0)
+                        if (targetCreature.RacialType == (int)CustomRaceType.Robot || _.GetIsReactionTypeHostile(targetCreature, creature) == 0)
                         {                            
                             // Do nothing against droids or non-hostile creatures, skip object
                             continue;
                         }
 
-                        if (player.Wisdom > targetCreature.Wisdom)
+                        if (creature.Wisdom > targetCreature.Wisdom)
                         {
-                            var creature = targetCreature;
-                            player.AssignCommand(() =>
+                            var targetCreatureCopy = targetCreature; // Closure can modify the iteration variable so we copy it first.
+                            creature.AssignCommand(() =>
                             {
-                                _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, confusionEffect, creature, 6.1f);
+                                _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, confusionEffect, targetCreatureCopy, 6.1f);
                             });
-                            SkillService.RegisterPCToNPCForSkill(player, targetCreature, SkillType.ForceAlter);
+
+                            if (creature.IsPlayer)
+                            {
+                                SkillService.RegisterPCToNPCForSkill(creature.Object, targetCreature, SkillType.ForceAlter);
+                            }
                         }
 
-                        targetCreature = _.GetNextObjectInShape(_.SHAPE_SPHERE, radiusSize, player.Location, 1, _.OBJECT_TYPE_CREATURE);
+                        targetCreature = _.GetNextObjectInShape(_.SHAPE_SPHERE, radiusSize, creature.Location, 1, _.OBJECT_TYPE_CREATURE);
                     }
                     break;
                 default:

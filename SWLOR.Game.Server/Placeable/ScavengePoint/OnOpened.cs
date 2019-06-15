@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
             if (dc <= 4) dc = 4;
             int searchAttempts = 1 + CalculateSearchAttempts(oPC);
 
-            int luck = PerkService.GetPCPerkLevel(oPC, PerkType.Lucky) + effectiveStats.Luck;
+            int luck = PerkService.GetCreaturePerkLevel(oPC, PerkType.Lucky) + effectiveStats.Luck;
             if (RandomService.Random(100) + 1 <= luck / 2)
             {
                 dc--;
@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
                         if (componentIP != null)
                         {
                             // Add properties to the item based on Scavenging skill.  Similar logic to the resource harvester.
-                            var chance = RandomService.Random(1, 100) + PerkService.GetPCPerkLevel(oPC, PerkType.Lucky) + effectiveStats.Luck;
+                            var chance = RandomService.Random(1, 100) + PerkService.GetCreaturePerkLevel(oPC, PerkType.Lucky) + effectiveStats.Luck;
                             ResourceQuality quality;
 
                             if (chance < 50) quality = ResourceQuality.Low;
@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
             }
             
             // Chance to destroy the scavenge point.
-            int chanceToFullyHarvest = baseChanceToFullyHarvest - (PerkService.GetPCPerkLevel(oPC, PerkType.CarefulScavenger) * 5);
+            int chanceToFullyHarvest = baseChanceToFullyHarvest - (PerkService.GetCreaturePerkLevel(oPC, PerkType.CarefulScavenger) * 5);
             string growingPlantID = point.GetLocalString("GROWING_PLANT_ID");
             if (!string.IsNullOrWhiteSpace(growingPlantID))
             {
@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.Placeable.ScavengePoint
 
         private int CalculateSearchAttempts(NWPlayer oPC)
         {
-            int perkLevel = PerkService.GetPCPerkLevel(oPC, PerkType.ScavengingExpert);
+            int perkLevel = PerkService.GetCreaturePerkLevel(oPC, PerkType.ScavengingExpert);
 
             int numberOfSearches = 0;
             int attempt1Chance = 0;

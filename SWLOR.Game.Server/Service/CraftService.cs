@@ -243,7 +243,7 @@ namespace SWLOR.Game.Server.Service
             else if (skillType == SkillType.Harvesting) perkType = PerkType.SpeedyReassembly;
             else return BaseCraftDelay;
 
-            int perkLevel = PerkService.GetPCPerkLevel(oPC, perkType);
+            int perkLevel = PerkService.GetCreaturePerkLevel(oPC, perkType);
 
             // Each perk level reduces crafting speed by 10%.
             switch (perkLevel)
@@ -705,7 +705,7 @@ namespace SWLOR.Game.Server.Service
             const int BaseChance = 70;
             int harvesting = SkillService.GetPCSkillRank(player, SkillType.Harvesting);
             var itemBonuses = PlayerStatService.GetPlayerItemEffectiveStats(player);
-            int perkLevel = PerkService.GetPCPerkLevel(player, PerkType.MolecularReassemblyProficiency);
+            int perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.MolecularReassemblyProficiency);
 
             // Calculate the base chance after factoring in skills, perks, and items.
             int categoryChance = (int) (BaseChance + (harvesting / 2.5f) + perkLevel * 10 + itemBonuses.Harvesting / 3f);

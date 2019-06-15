@@ -150,6 +150,23 @@ namespace SWLOR.Game.Server.GameObject
             }
         }
 
+        public virtual IEnumerable<NWCreature> PartyMembers
+        {
+            get
+            {
+                for (NWPlayer member = _.GetFirstFactionMember(Object, FALSE); member.IsValid; member = _.GetNextFactionMember(Object, FALSE))
+                {
+                    yield return member;
+                }
+            }
+        }
+
+        public virtual bool IsBusy
+        {
+            get => GetLocalInt("IS_BUSY") == 1;
+            set => SetLocalInt("IS_BUSY", value ? 1 : 0);
+        }
+
         //
         // -- BELOW THIS POINT IS JUNK TO MAKE THE API FRIENDLIER!
         //

@@ -407,6 +407,7 @@
     <Compile Include="Event\SWLOR\OnAreaInstanceDestroyed.cs" />
     <Compile Include="Event\SWLOR\OnChatProcessed.cs" />
     <Compile Include="Event\SWLOR\OnObjectProcessorRan.cs" />
+    <Compile Include="Language\TranslatorUgnaught.cs" />
     <Compile Include="NWNX\AdministrationOption.cs" />
     <Compile Include="NWNX\AreaColorType.cs" />
     <Compile Include="NWNX\AreaDayNightCycle.cs" />
@@ -1403,6 +1404,7 @@
     <EmbeddedResource Include="Data\Migrations\2019-06-07.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-06-10.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2019-06-12.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2019-06-15.1.sql" />
     <Content Include="ServerFiles\Star Wars LOR.mod" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
     <Content Include="Data\Migrations\Readme.txt" />

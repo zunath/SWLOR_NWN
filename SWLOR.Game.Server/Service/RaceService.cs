@@ -245,6 +245,45 @@ namespace SWLOR.Game.Server.Service
                     femaleLeftShin = 204;
                     femaleLeftFoot = 204;
                     break;
+                case CustomRaceType.Ugnaught:
+
+                    appearance = APPEARANCE_TYPE_DWARF;
+                    skinColor = 0;
+                    hairColor = 0;
+                    maleHead = 100;
+                    femaleHead = 100;
+                    maleNeck = 1;
+                    maleTorso = 1;
+                    malePelvis = 7;
+                    maleRightBicep = 1;
+                    maleRightForearm = 1;
+                    maleRightHand = 1;
+                    maleRightThigh = 1;
+                    maleRightShin = 1;
+                    maleRightFoot = 1;
+                    maleLeftBicep = 1;
+                    maleLeftForearm = 1;
+                    maleLeftHand = 1;
+                    maleLeftThigh = 1;
+                    maleLeftShin = 1;
+                    maleLeftFoot = 1;
+
+                    femaleNeck = 1;
+                    femaleTorso = 54;
+                    femalePelvis = 70;
+                    femaleRightBicep = 1;
+                    femaleRightForearm = 1;
+                    femaleRightHand = 1;
+                    femaleRightThigh = 1;
+                    femaleRightShin = 1;
+                    femaleRightFoot = 1;
+                    femaleLeftBicep = 1;
+                    femaleLeftForearm = 1;
+                    femaleLeftHand = 1;
+                    femaleLeftThigh = 1;
+                    femaleLeftShin = 1;
+                    femaleLeftFoot = 1;
+                    break;
                 default:
                     {
                         _.BootPC(player, "You have selected an invalid race. This could be due to files in your override folder. Ensure these are removed from the folder and then try creating a new character. If you have any problems, visit our website at http://starwarsnwn.com");

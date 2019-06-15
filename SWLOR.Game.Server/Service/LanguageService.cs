@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using SWLOR.Game.Server.Data.Entity;
+﻿using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Language;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 
 namespace SWLOR.Game.Server.Service
@@ -27,7 +27,8 @@ namespace SWLOR.Game.Server.Service
                 { SkillType.Twileki, typeof(TranslatorTwileki) },
                 { SkillType.Zabraki, typeof(TranslatorZabraki) },
                 { SkillType.Mirialan, typeof(TranslatorMirialan) },
-                {SkillType.MonCalamarian, typeof(TranslatorMonCalamarian) }
+                { SkillType.MonCalamarian, typeof(TranslatorMonCalamarian) },
+                { SkillType.Ugnaught, typeof(TranslatorUgnaught) }
             };
 
             Type type = typeof(TranslatorGeneric);
@@ -72,7 +73,7 @@ namespace SWLOR.Game.Server.Service
             // Check for the Comprehend Speech concentration ability.
             Player dbPlayer = DataService.Get<Player>(listenerAsPlayer.GlobalID);
             bool grantSenseXP = false;
-            if (dbPlayer.ActiveConcentrationPerkID == (int) PerkType.ComprehendSpeech)
+            if (dbPlayer.ActiveConcentrationPerkID == (int)PerkType.ComprehendSpeech)
             {
                 int bonus = 5 * dbPlayer.ActiveConcentrationTier;
                 rank += bonus;
@@ -133,7 +134,7 @@ namespace SWLOR.Game.Server.Service
                 SkillService.GiveSkillXP(listenerAsPlayer, language, amount);
 
                 // Grant Sense XP if player is concentrating Comprehend Speech.
-                if(grantSenseXP)
+                if (grantSenseXP)
                     SkillService.GiveSkillXP(listenerAsPlayer, SkillType.ForceSense, amount * 10);
 
                 listenerAsPlayer.SetLocalInt("LAST_LANGUAGE_SKILL_INCREASE_LOW", (int)(now & 0xFFFFFFFF));
@@ -163,6 +164,7 @@ namespace SWLOR.Game.Server.Service
                 case SkillType.Zabraki: r = 255; g = 102; b = 102; break;
                 case SkillType.Mirialan: r = 77; g = 230; b = 215; break;
                 case SkillType.MonCalamarian: r = 128; g = 128; b = 192; break;
+                case SkillType.Ugnaught: r = 255; g = 193; b = 233; break;
             }
 
             return r << 24 | g << 16 | b << 8;
@@ -184,6 +186,7 @@ namespace SWLOR.Game.Server.Service
                 case SkillType.Zabraki: return "Zabraki";
                 case SkillType.Mirialan: return "Mirialan";
                 case SkillType.MonCalamarian: return "Mon Calamarian";
+                case SkillType.Ugnaught: return "Ugnaught";
             }
 
             return "Basic";
@@ -227,6 +230,9 @@ namespace SWLOR.Game.Server.Service
                 case CustomRaceType.MonCalamari:
                     languages.Add(SkillType.MonCalamarian);
                     break;
+                case CustomRaceType.Ugnaught:
+                    languages.Add(SkillType.Ugnaught);
+                    break;
             }
 
             switch (background)
@@ -243,7 +249,7 @@ namespace SWLOR.Game.Server.Service
                 (x => x.PlayerID == player.GlobalID &&
                             languages.Contains((SkillType)x.SkillID))
                 .ToList();
-            
+
             foreach (var pcSkill in pcSkills)
             {
                 var skill = DataService.Get<Skill>(pcSkill.SkillID);
@@ -255,7 +261,7 @@ namespace SWLOR.Game.Server.Service
 
                 DataService.SubmitDataChange(pcSkill, DatabaseActionType.Update);
             }
-            
+
         }
 
         public static SkillType GetActiveLanguage(NWObject obj)
@@ -299,7 +305,8 @@ namespace SWLOR.Game.Server.Service
                 SkillType.Twileki,
                 SkillType.Zabraki,
                 SkillType.Mirialan,
-                SkillType.MonCalamarian
+                SkillType.MonCalamarian,
+                SkillType.Ugnaught
             };
         }
     }

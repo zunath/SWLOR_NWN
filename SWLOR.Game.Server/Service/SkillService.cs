@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.Service
             if (!player.IsPlayer) return;
             if (skillID <= 0) return;
 
-            List<NWPlayer> members = player.PartyMembers.ToList();
+            List<NWCreature> members = player.PartyMembers.ToList();
 
             int nth = 1;
             NWCreature creature = _.GetNearestCreature(CREATURE_TYPE_IS_ALIVE, 1, player.Object, nth, CREATURE_TYPE_PLAYER_CHAR, 0);

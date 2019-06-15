@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.CustomEffect
             {
                 int amount = CalculateAmount(player);
 
-                AbilityService.RestoreFP(player, amount);
+                AbilityService.RestorePlayerFP(player, amount);
                 Effect vfx = _.EffectVisualEffect(VFX_IMP_HEAD_MIND);
                 _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, player);
                 meditateTick = 0;
@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.CustomEffect
         private int CalculateAmount(NWPlayer player)
         {
             var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
-            int perkLevel = PerkService.GetPCPerkLevel(player, PerkType.Meditate);
+            int perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.Meditate);
             int amount;
             switch (perkLevel)
             {
@@ -111,14 +111,14 @@ namespace SWLOR.Game.Server.CustomEffect
             return amount;
         }
 
-        public static bool CanMeditate(NWPlayer oPC)
+        public static bool CanMeditate(NWCreature meditator)
         {
-            bool canMeditate = !oPC.IsInCombat;
+            bool canMeditate = !meditator.IsInCombat;
 
-            NWArea pcArea = oPC.Area;
-            foreach (NWPlayer member in oPC.PartyMembers)
+            NWArea area = meditator.Area;
+            foreach (NWCreature member in meditator.PartyMembers)
             {
-                if (!member.Area.Equals(pcArea)) continue;
+                if (!member.Area.Equals(area)) continue;
 
                 if (member.IsInCombat)
                 {

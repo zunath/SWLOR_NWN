@@ -11,92 +11,92 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
     {
         public PerkType PerkType => PerkType.LightsaberDualWielding;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier)
+        public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             return string.Empty;
         }
         
-        public int FPCost(NWPlayer oPC, int baseFPCost, int spellTier)
+        public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellTier)
+        public float CastingTime(NWCreature oPC, float baseCastingTime, int spellTier)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellTier)
+        public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)
         {
             return baseCooldownTime;
         }
 
-        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellTier)
+        public int? CooldownCategoryID(NWCreature creature, int? baseCooldownCategoryID, int spellTier)
         {
             return baseCooldownCategoryID;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellTier)
+        public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
         }
 
-        public void OnPurchased(NWPlayer oPC, int newLevel)
+        public void OnPurchased(NWCreature creature, int newLevel)
         {
-            ApplyFeatChanges(oPC, null);
+            ApplyFeatChanges(creature, null);
         }
 
-        public void OnRemoved(NWPlayer oPC)
+        public void OnRemoved(NWCreature creature)
         {
-            RemoveFeats(oPC);
+            RemoveFeats(creature);
         }
 
-        public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemEquipped(NWCreature creature, NWItem oItem)
         {
             if (oItem.CustomItemType != CustomItemType.Lightsaber &&
                 oItem.GetLocalInt("LIGHTSABER") == FALSE) 
                 return;
 
-            ApplyFeatChanges(oPC, null);
+            ApplyFeatChanges(creature, null);
         }
 
-        public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemUnequipped(NWCreature creature, NWItem oItem)
         {
             if (oItem.CustomItemType != CustomItemType.Lightsaber &&
                 oItem.GetLocalInt("LIGHTSABER") == FALSE)
                 return;
 
-            ApplyFeatChanges(oPC, oItem);
+            ApplyFeatChanges(creature, oItem);
         }
 
-        public void OnCustomEnmityRule(NWPlayer oPC, int amount)
+        public void OnCustomEnmityRule(NWCreature creature, int amount)
         {
         }
 
 
-        private void RemoveFeats(NWPlayer oPC)
+        private void RemoveFeats(NWCreature creature)
         {
-            NWNXCreature.RemoveFeat(oPC, FEAT_TWO_WEAPON_FIGHTING);
-            NWNXCreature.RemoveFeat(oPC, FEAT_AMBIDEXTERITY);
-            NWNXCreature.RemoveFeat(oPC, FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
+            NWNXCreature.RemoveFeat(creature, FEAT_TWO_WEAPON_FIGHTING);
+            NWNXCreature.RemoveFeat(creature, FEAT_AMBIDEXTERITY);
+            NWNXCreature.RemoveFeat(creature, FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
         }
 
 
-        private void ApplyFeatChanges(NWPlayer oPC, NWItem oItem)
+        private void ApplyFeatChanges(NWCreature creature, NWItem oItem)
         {
-            NWItem mainEquipped = oItem ?? oPC.RightHand;
-            NWItem offEquipped = oItem ?? oPC.LeftHand;
+            NWItem mainEquipped = oItem ?? creature.RightHand;
+            NWItem offEquipped = oItem ?? creature.LeftHand;
 
             // oItem was unequipped.
             if (Equals(mainEquipped, oItem) || Equals(offEquipped, oItem))
             {
-                RemoveFeats(oPC);
+                RemoveFeats(creature);
                 return;
             }
 
             // Main or offhand was invalid (i.e not equipped)
             if (!mainEquipped.IsValid || !offEquipped.IsValid)
             {
-                RemoveFeats(oPC);
+                RemoveFeats(creature);
                 return;
             }
 
@@ -106,21 +106,21 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
                 (offEquipped.CustomItemType != CustomItemType.Lightsaber &&
                  offEquipped.GetLocalInt("LIGHTSABER") == FALSE))
             {
-                RemoveFeats(oPC);
+                RemoveFeats(creature);
                 return;
             }
 
 
-            int perkLevel = PerkService.GetPCPerkLevel(oPC, PerkType.LightsaberDualWielding);
-            NWNXCreature.AddFeat(oPC, FEAT_TWO_WEAPON_FIGHTING);
+            int perkLevel = PerkService.GetCreaturePerkLevel(creature, PerkType.LightsaberDualWielding);
+            NWNXCreature.AddFeat(creature, FEAT_TWO_WEAPON_FIGHTING);
 
             if (perkLevel >= 2)
             {
-                NWNXCreature.AddFeat(oPC, FEAT_AMBIDEXTERITY);
+                NWNXCreature.AddFeat(creature, FEAT_AMBIDEXTERITY);
             }
             if (perkLevel >= 3)
             {
-                NWNXCreature.AddFeat(oPC, FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
+                NWNXCreature.AddFeat(creature, FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
             }
         }
 
@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
             return false;
         }
 
-        public void OnConcentrationTick(NWPlayer player, NWObject target, int perkLevel, int tick)
+        public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
             
         }

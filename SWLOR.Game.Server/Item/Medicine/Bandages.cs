@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            if (RandomService.Random(100) + 1 <= PerkService.GetPCPerkLevel(user.Object, PerkType.SpeedyFirstAid) * 10)
+            if (RandomService.Random(100) + 1 <= PerkService.GetCreaturePerkLevel(user.Object, PerkType.SpeedyFirstAid) * 10)
             {
                 return 0.1f;
             }
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            return 3.5f + PerkService.GetPCPerkLevel(user.Object, PerkType.RangedHealing);
+            return 3.5f + PerkService.GetCreaturePerkLevel(user.Object, PerkType.RangedHealing);
         }
 
         public bool ReducesItemCharge(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)

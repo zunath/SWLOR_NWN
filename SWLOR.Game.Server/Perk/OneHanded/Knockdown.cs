@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
     {
         public PerkType PerkType => PerkType.Knockdown;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier)
+        public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             NWItem weapon = oPC.RightHand;
             if (weapon.CustomItemType != CustomItemType.Baton)
@@ -20,27 +20,27 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             return string.Empty;
         }
         
-        public int FPCost(NWPlayer oPC, int baseFPCost, int spellTier)
+        public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellTier)
+        public float CastingTime(NWCreature oPC, float baseCastingTime, int spellTier)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellTier)
+        public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)
         {
             return baseCooldownTime;
         }
 
-        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellTier)
+        public int? CooldownCategoryID(NWCreature creature, int? baseCooldownCategoryID, int spellTier)
         {
             return baseCooldownCategoryID;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellTier)
+        public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
             int damage;
             float length;
@@ -78,23 +78,23 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_BLUDGEONING), target);
         }
 
-        public void OnPurchased(NWPlayer oPC, int newLevel)
+        public void OnPurchased(NWCreature creature, int newLevel)
         {
         }
 
-        public void OnRemoved(NWPlayer oPC)
+        public void OnRemoved(NWCreature creature)
         {
         }
 
-        public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemEquipped(NWCreature creature, NWItem oItem)
         {
         }
 
-        public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemUnequipped(NWCreature creature, NWItem oItem)
         {
         }
 
-        public void OnCustomEnmityRule(NWPlayer oPC, int amount)
+        public void OnCustomEnmityRule(NWCreature creature, int amount)
         {
         }
 
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             return false;
         }
 
-        public void OnConcentrationTick(NWPlayer player, NWObject target, int perkLevel, int tick)
+        public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
             
         }

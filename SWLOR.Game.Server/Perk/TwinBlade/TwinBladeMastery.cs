@@ -12,88 +12,88 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
     {
         public PerkType PerkType => PerkType.TwinBladeMastery;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier)
+        public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             return string.Empty;
         }
         
-        public int FPCost(NWPlayer oPC, int baseFPCost, int spellTier)
+        public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellTier)
+        public float CastingTime(NWCreature oPC, float baseCastingTime, int spellTier)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellTier)
+        public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)
         {
             return baseCooldownTime;
         }
 
-        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellTier)
+        public int? CooldownCategoryID(NWCreature creature, int? baseCooldownCategoryID, int spellTier)
         {
             return baseCooldownCategoryID;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellTier)
+        public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
         }
 
-        public void OnPurchased(NWPlayer oPC, int newLevel)
+        public void OnPurchased(NWCreature creature, int newLevel)
         {
-            ApplyFeatChanges(oPC, null);
+            ApplyFeatChanges(creature, null);
         }
 
-        public void OnRemoved(NWPlayer oPC)
+        public void OnRemoved(NWCreature creature)
         {
-            RemoveFeats(oPC);
+            RemoveFeats(creature);
         }
 
-        public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemEquipped(NWCreature creature, NWItem oItem)
         {
             if (oItem.CustomItemType != CustomItemType.TwinBlade) return;
-            ApplyFeatChanges(oPC, null);
+            ApplyFeatChanges(creature, null);
         }
 
-        public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemUnequipped(NWCreature creature, NWItem oItem)
         {
             if (oItem.CustomItemType != CustomItemType.TwinBlade) return;
-            ApplyFeatChanges(oPC, oItem);
+            ApplyFeatChanges(creature, oItem);
         }
 
-        public void OnCustomEnmityRule(NWPlayer oPC, int amount)
+        public void OnCustomEnmityRule(NWCreature creature, int amount)
         {
         }
 
-        private void RemoveFeats(NWPlayer oPC)
+        private void RemoveFeats(NWCreature creature)
         {
-            NWNXCreature.RemoveFeat(oPC, _.FEAT_TWO_WEAPON_FIGHTING);
-            NWNXCreature.RemoveFeat(oPC, _.FEAT_AMBIDEXTERITY);
-            NWNXCreature.RemoveFeat(oPC, _.FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
+            NWNXCreature.RemoveFeat(creature, _.FEAT_TWO_WEAPON_FIGHTING);
+            NWNXCreature.RemoveFeat(creature, _.FEAT_AMBIDEXTERITY);
+            NWNXCreature.RemoveFeat(creature, _.FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
         }
 
-        private void ApplyFeatChanges(NWPlayer oPC, NWItem unequippedItem)
+        private void ApplyFeatChanges(NWCreature creature, NWItem unequippedItem)
         {
-            NWItem equipped = unequippedItem ?? oPC.RightHand;
+            NWItem equipped = unequippedItem ?? creature.RightHand;
 
             if (Equals(equipped, unequippedItem) || equipped.CustomItemType != CustomItemType.TwinBlade)
             {
-                RemoveFeats(oPC);
+                RemoveFeats(creature);
                 return;
             }
 
-            int perkLevel = PerkService.GetPCPerkLevel(oPC, PerkType.TwinBladeMastery);
-            NWNXCreature.AddFeat(oPC, _.FEAT_TWO_WEAPON_FIGHTING);
+            int perkLevel = PerkService.GetCreaturePerkLevel(creature, PerkType.TwinBladeMastery);
+            NWNXCreature.AddFeat(creature, _.FEAT_TWO_WEAPON_FIGHTING);
 
             if (perkLevel >= 2)
             {
-                NWNXCreature.AddFeat(oPC, _.FEAT_AMBIDEXTERITY);
+                NWNXCreature.AddFeat(creature, _.FEAT_AMBIDEXTERITY);
             }
             if (perkLevel >= 3)
             {
-                NWNXCreature.AddFeat(oPC, _.FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
+                NWNXCreature.AddFeat(creature, _.FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
             }
         }
 
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
             return false;
         }
 
-        public void OnConcentrationTick(NWPlayer player, NWObject target, int perkLevel, int tick)
+        public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
             
         }

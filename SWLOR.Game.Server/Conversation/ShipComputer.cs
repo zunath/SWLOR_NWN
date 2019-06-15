@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Conversation
             DialogPage page = dialog.GetPageByName(pageName);
             DialogResponse response = page.Responses[responseID - 1];
 
-            bool carefulPilot = PerkService.GetPCPerkLevel(player, PerkType.CarefulPilot) > 0;
+            bool carefulPilot = PerkService.GetCreaturePerkLevel(player, PerkType.CarefulPilot) > 0;
                 
             if (pageName == "MainPage")
             {

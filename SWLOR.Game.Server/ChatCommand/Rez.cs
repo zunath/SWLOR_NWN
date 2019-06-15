@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.ChatCommand
             }
 
             _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectHeal(999), user.Object);
-            AbilityService.RestoreFP(user, 9999);
+            AbilityService.RestorePlayerFP(user, 9999);
         }
 
         public string ValidateArguments(NWPlayer user, params string[] args)

@@ -8,52 +8,52 @@ namespace SWLOR.Game.Server.Perk.ForceSense
     public class BattleMeditation: IPerkHandler
     {
         public PerkType PerkType => PerkType.BattleMeditation;
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier)
+        public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             return string.Empty;
         }
         
-        public int FPCost(NWPlayer oPC, int baseFPCost, int spellTier)
+        public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellTier)
+        public float CastingTime(NWCreature oPC, float baseCastingTime, int spellTier)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellTier)
+        public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)
         {
             return baseCooldownTime;
         }
 
-        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellTier)
+        public int? CooldownCategoryID(NWCreature creature, int? baseCooldownCategoryID, int spellTier)
         {
             return baseCooldownCategoryID;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellTier)
+        public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
         }
 
-        public void OnPurchased(NWPlayer oPC, int newLevel)
+        public void OnPurchased(NWCreature creature, int newLevel)
         {
         }
 
-        public void OnRemoved(NWPlayer oPC)
+        public void OnRemoved(NWCreature creature)
         {
         }
 
-        public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemEquipped(NWCreature creature, NWItem oItem)
         {
         }
 
-        public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemUnequipped(NWCreature creature, NWItem oItem)
         {
         }
 
-        public void OnCustomEnmityRule(NWPlayer oPC, int amount)
+        public void OnCustomEnmityRule(NWCreature creature, int amount)
         {
         }
 
@@ -62,11 +62,11 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             return false;
         }
 
-        public void OnConcentrationTick(NWPlayer player, NWObject target, int perkLevel, int tick)
+        public void OnConcentrationTick(NWCreature creature1, NWObject target, int perkLevel, int tick)
         {
             float radiusSize = _.RADIUS_SIZE_SMALL;
 
-            NWCreature targetCreature = _.GetFirstObjectInShape(_.SHAPE_SPHERE, radiusSize, player.Location, 1, _.OBJECT_TYPE_CREATURE);
+            NWCreature targetCreature = _.GetFirstObjectInShape(_.SHAPE_SPHERE, radiusSize, creature1.Location, 1, _.OBJECT_TYPE_CREATURE);
             while (targetCreature.IsValid)
             {
                 int amount = 0;
@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
                     case 1:
                         amount = 5;
 
-                        if (_.GetIsReactionTypeHostile(targetCreature, player) == 1)
+                        if (_.GetIsReactionTypeHostile(targetCreature, creature1) == 1)
                         {
                             continue;        
                         }                            
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
                     case 2:
                         amount = 10;
 
-                        if (_.GetIsReactionTypeHostile(targetCreature, player) == 1)
+                        if (_.GetIsReactionTypeHostile(targetCreature, creature1) == 1)
                         {
                             continue;
                         }
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
 
                 Effect effect = new Effect();
 
-                if (_.GetIsReactionTypeHostile(targetCreature, player) == 1)
+                if (_.GetIsReactionTypeHostile(targetCreature, creature1) == 1)
                 {
                     effect = _.EffectACDecrease(amount);
                     effect = _.EffectLinkEffects(effect, _.EffectAttackDecrease(amount));
@@ -111,12 +111,12 @@ namespace SWLOR.Game.Server.Perk.ForceSense
                 }
 
                 var creature = targetCreature; // VS recommends copying to another var due to modified closure.
-                player.AssignCommand(() =>
+                creature1.AssignCommand(() =>
                 {
                     _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, creature, 6.1f);
                 });
 
-                targetCreature = _.GetNextObjectInShape(_.SHAPE_SPHERE, radiusSize, player.Location, 1, _.OBJECT_TYPE_CREATURE);
+                targetCreature = _.GetNextObjectInShape(_.SHAPE_SPHERE, radiusSize, creature1.Location, 1, _.OBJECT_TYPE_CREATURE);
             }
             
         }

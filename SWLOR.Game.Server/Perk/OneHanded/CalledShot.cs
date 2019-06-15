@@ -10,74 +10,74 @@ namespace SWLOR.Game.Server.Perk.OneHanded
     {
         public PerkType PerkType => PerkType.CalledShot;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier)
+        public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             return string.Empty;
         }
         
-        public int FPCost(NWPlayer oPC, int baseFPCost, int spellTier)
+        public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellTier)
+        public float CastingTime(NWCreature oPC, float baseCastingTime, int spellTier)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellTier)
+        public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)
         {
             return baseCooldownTime;
         }
 
-        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellTier)
+        public int? CooldownCategoryID(NWCreature creature, int? baseCooldownCategoryID, int spellTier)
         {
             return baseCooldownCategoryID;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellTier)
+        public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
         }
 
-        public void OnPurchased(NWPlayer oPC, int newLevel)
+        public void OnPurchased(NWCreature creature, int newLevel)
         {
-            ApplyFeatChanges(oPC, null);
+            ApplyFeatChanges(creature, null);
         }
 
-        public void OnRemoved(NWPlayer oPC)
+        public void OnRemoved(NWCreature creature)
         {
-            NWNXCreature.RemoveFeat(oPC, FEAT_CALLED_SHOT);
+            NWNXCreature.RemoveFeat(creature, FEAT_CALLED_SHOT);
         }
 
-        public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemEquipped(NWCreature creature, NWItem oItem)
         {
             if (oItem.CustomItemType != CustomItemType.FinesseVibroblade) return;
-            ApplyFeatChanges(oPC, null);
+            ApplyFeatChanges(creature, null);
         }
 
-        public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemUnequipped(NWCreature creature, NWItem oItem)
         {
             if (oItem.CustomItemType != CustomItemType.FinesseVibroblade) return;
-            if (oItem == oPC.LeftHand) return;
+            if (oItem == creature.LeftHand) return;
 
-            ApplyFeatChanges(oPC, oItem);
+            ApplyFeatChanges(creature, oItem);
         }
 
-        public void OnCustomEnmityRule(NWPlayer oPC, int amount)
+        public void OnCustomEnmityRule(NWCreature creature, int amount)
         {
         }
 
-        private void ApplyFeatChanges(NWPlayer oPC, NWItem oItem)
+        private void ApplyFeatChanges(NWCreature creature, NWItem oItem)
         {
-            NWItem equipped = oItem ?? oPC.RightHand;
+            NWItem equipped = oItem ?? creature.RightHand;
             
             if (Equals(equipped, oItem) || equipped.CustomItemType != CustomItemType.FinesseVibroblade)
             {
-                NWNXCreature.RemoveFeat(oPC, FEAT_CALLED_SHOT);
+                NWNXCreature.RemoveFeat(creature, FEAT_CALLED_SHOT);
                 return;
             }
 
-            NWNXCreature.AddFeat(oPC, FEAT_CALLED_SHOT);
+            NWNXCreature.AddFeat(creature, FEAT_CALLED_SHOT);
         }
 
         public bool IsHostile()
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             return false;
         }
 
-        public void OnConcentrationTick(NWPlayer player, NWObject target, int perkLevel, int tick)
+        public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
             
         }

@@ -39,6 +39,7 @@
         Mandoa = 34,
         Huttese = 35,
         Piloting = 36,
-        MonCalamarian = 37
+        MonCalamarian = 37,
+        Ugnaught = 38
     }
 }

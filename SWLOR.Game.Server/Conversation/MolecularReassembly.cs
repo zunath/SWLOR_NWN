@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Conversation
             header += ProcessPropertyDetails(item.PilotingBonus, componentType.Name, "Piloting Bonus", 3);
             header += ProcessPropertyDetails(item.ScanningBonus, componentType.Name, "Scanning Bonus", 3);
             header += ProcessPropertyDetails(item.ScavengingBonus, componentType.Name, "Scavenging Bonus", 3);
-            header += ProcessPropertyDetails(item.CastingSpeed, componentType.Name, "Activation Speed", 3);
+            header += ProcessPropertyDetails(item.CooldownRecovery, componentType.Name, "Cooldown Recovery", 3);
             header += ProcessPropertyDetails(item.CraftBonusArmorsmith, componentType.Name, "Armorsmith", 3);
             header += ProcessPropertyDetails(item.CraftBonusWeaponsmith, componentType.Name, "Weaponsmith", 3);
             header += ProcessPropertyDetails(item.CraftBonusCooking, componentType.Name, "Cooking", 3);

@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
             xp += ProcessProperty(item.PilotingBonus, 3, ComponentBonusType.PilotingUp);
             xp += ProcessProperty(item.ScanningBonus, 3, ComponentBonusType.ScanningUp);
             xp += ProcessProperty(item.ScavengingBonus, 3, ComponentBonusType.ScavengingUp);
-            xp += ProcessProperty(item.CastingSpeed, 3, ComponentBonusType.CastingSpeedUp);
+            xp += ProcessProperty(item.CooldownRecovery, 3, ComponentBonusType.CooldownRecoveryUp);
             xp += ProcessProperty(item.CraftBonusArmorsmith, 3, ComponentBonusType.ArmorsmithUp);
             xp += ProcessProperty(item.CraftBonusWeaponsmith, 3, ComponentBonusType.WeaponsmithUp);
             xp += ProcessProperty(item.CraftBonusCooking, 3, ComponentBonusType.CookingUp);

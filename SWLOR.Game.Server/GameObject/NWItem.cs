@@ -320,17 +320,18 @@ namespace SWLOR.Game.Server.GameObject
             set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_SCAVENGING_BONUS", CustomItemPropertyType.ScavengingBonus, value);
         }
 
-        public virtual int CastingSpeed
+        public virtual int CooldownRecovery
         {
             get
             {
-                int castingSpeed = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.CastingSpeed);
-                if (castingSpeed <= 0) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CASTING_SPEED");
+                int cooldownRecovery = GetItemPropertyValueAndRemove((int)CustomItemPropertyType.CastingSpeed);
+                // Variable name is kept as-is for backwards compatibility.
+                if (cooldownRecovery <= 0) return _.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CASTING_SPEED");
 
-                if (castingSpeed <= 99) castingSpeed = -castingSpeed;
-                else castingSpeed = castingSpeed - 99;
-                CastingSpeed = castingSpeed;
-                return castingSpeed;
+                if (cooldownRecovery <= 99) cooldownRecovery = -cooldownRecovery;
+                else cooldownRecovery = cooldownRecovery - 99;
+                CooldownRecovery = cooldownRecovery;
+                return cooldownRecovery;
             }
             set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_CASTING_SPEED", CustomItemPropertyType.CastingSpeed, value);
         }

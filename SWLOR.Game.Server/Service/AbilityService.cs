@@ -341,26 +341,11 @@ namespace SWLOR.Game.Server.Service
                                int spellTier)
         {
             string uuid = Guid.NewGuid().ToString();
-            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(pc);
-            int itemBonus = effectiveStats.CastingSpeed;
             float baseActivationTime = perkHandler.CastingTime(pc, (float)entity.BaseCastingTime, spellTier);
             float activationTime = baseActivationTime;
             int vfxID = -1;
             int animationID = -1;
-
-            // Activation Bonus % - Shorten activation time.
-            if (itemBonus > 0)
-            {
-                float activationBonus = Math.Abs(itemBonus) * 0.01f;
-                activationTime = activationTime - activationTime * activationBonus;
-            }
-            // Activation Penalty % - Increase activation time.
-            else if (itemBonus < 0)
-            {
-                float activationPenalty = Math.Abs(itemBonus) * 0.01f;
-                activationTime = activationTime + activationTime * activationPenalty;
-            }
-
+            
             if (baseActivationTime > 0f && activationTime < 1.0f)
                 activationTime = 1.0f;
 
@@ -454,11 +439,22 @@ namespace SWLOR.Game.Server.Service
                 armorPenalty);
         }
 
-        public static void ApplyCooldown(NWPlayer pc, CooldownCategory cooldown, IPerkHandler ability, int spellTier, float percentAdjustment)
+        public static void ApplyCooldown(NWPlayer pc, CooldownCategory cooldown, IPerkHandler ability, int spellTier, float armorPenalty)
         {
-            if (percentAdjustment <= 0.0f) percentAdjustment = 1.0f;
+            if (armorPenalty <= 0.0f) armorPenalty = 1.0f;
+            
+            // If player hasa a cooldown recovery bonus on their equipment, apply that change now.
+            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(pc);
+            if (effectiveStats.CooldownRecovery > 0)
+            {
+                armorPenalty -= effectiveStats.CooldownRecovery;
+            }
 
-            float finalCooldown = ability.CooldownTime(pc, (float)cooldown.BaseCooldownTime, spellTier) * percentAdjustment;
+            // There's a cap of 50% cooldown reduction from equipment.
+            if (armorPenalty < 0.5f)
+                armorPenalty = 0.5f;
+
+            float finalCooldown = ability.CooldownTime(pc, (float)cooldown.BaseCooldownTime, spellTier) * armorPenalty;
             int cooldownSeconds = (int)finalCooldown;
             int cooldownMillis = (int)((finalCooldown - cooldownSeconds) * 100);
 

@@ -150,10 +150,6 @@ VALUES ( 2 , -- ID - int
     )
 
 ALTER TABLE dbo.Perk
-ADD SpecializationID INT NOT NULL DEFAULT 0
-CONSTRAINT FK_Perk_SpecializationID FOREIGN KEY REFERENCES dbo.Specialization(ID)
-
-ALTER TABLE dbo.Perk
 ADD ForceBalanceTypeID INT NOT NULL DEFAULT 0
 CONSTRAINT FK_Perk_ForceBalanceTypeID FOREIGN KEY REFERENCES dbo.ForceBalanceType(ID)
 
@@ -1500,7 +1496,6 @@ INSERT INTO dbo.Perk ( ID ,
                        Enmity ,
                        EnmityAdjustmentRuleID ,
                        CastAnimationID ,
-                       SpecializationID ,
                        ForceBalanceTypeID )
 VALUES ( 172 ,    -- ID - int
          'Shield Proficiency' ,   -- Name - varchar(64)
@@ -1514,7 +1509,6 @@ VALUES ( 172 ,    -- ID - int
          0 ,    -- Enmity - int
          0 ,    -- EnmityAdjustmentRuleID - int
          NULL ,    -- CastAnimationID - int
-         0 ,    -- SpecializationID - int
          0      -- ForceBalanceTypeID - int
     )
 	

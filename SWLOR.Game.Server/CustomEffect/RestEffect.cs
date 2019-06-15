@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.CustomEffect
         private int CalculateAmount(NWPlayer player)
         {
             var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
-            int perkLevel = PerkService.GetPCPerkLevel(player, PerkType.Rest);
+            int perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.Rest);
             int amount;
             switch (perkLevel)
             {
@@ -111,12 +111,12 @@ namespace SWLOR.Game.Server.CustomEffect
             return amount;
         }
         
-        public static bool CanRest(NWPlayer oPC)
+        public static bool CanRest(NWCreature creature)
         {
-            bool canRest = !oPC.IsInCombat;
+            bool canRest = !creature.IsInCombat;
 
-            NWArea pcArea = oPC.Area;
-            foreach (NWPlayer member in oPC.PartyMembers)
+            NWArea pcArea = creature.Area;
+            foreach (NWCreature member in creature.PartyMembers)
             {
                 if (!member.Area.Equals(pcArea)) continue;
 

@@ -54,8 +54,8 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
 
             string areaTag = container.Area.Tag;
             Location plantLocation = container.Location;
-            int perkBonus = PerkService.GetPCPerkLevel(oPC, PerkType.FarmingEfficiency) * 2;
-            int ticks = (int)(plant.BaseTicks - ((PerkService.GetPCPerkLevel(oPC, PerkType.ExpertFarmer) * 0.05f)) * plant.BaseTicks);
+            int perkBonus = PerkService.GetCreaturePerkLevel(oPC, PerkType.FarmingEfficiency) * 2;
+            int ticks = (int)(plant.BaseTicks - ((PerkService.GetCreaturePerkLevel(oPC, PerkType.ExpertFarmer) * 0.05f)) * plant.BaseTicks);
             Data.Entity.GrowingPlant growingPlant = new Data.Entity.GrowingPlant
             {
                 PlantID = plant.ID,
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Placeable.PlantSeed
 
             int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(200, plant.Level, rank);
 
-            if (RandomService.Random(100) + 1 <= PerkService.GetPCPerkLevel(oPC, PerkType.Lucky) + effectiveStats.Luck)
+            if (RandomService.Random(100) + 1 <= PerkService.GetCreaturePerkLevel(oPC, PerkType.Lucky) + effectiveStats.Luck)
             {
                 xp *= 2;
             }

@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
     {
         public PerkType PerkType => PerkType.SneakAttack;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier)
+        public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             NWItem weapon = oPC.RightHand;
             NWItem armor = oPC.Chest;
@@ -22,19 +22,19 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             return string.Empty;
         }
 
-        public int FPCost(NWPlayer oPC, int baseFPCost, int spellTier)
+        public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellTier)
+        public float CastingTime(NWCreature oPC, float baseCastingTime, int spellTier)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellTier)
+        public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)
         {
-            int perkRank = PerkService.GetPCPerkLevel(oPC, PerkType.SneakAttack);
+            int perkRank = PerkService.GetCreaturePerkLevel(oPC, PerkType.SneakAttack);
             float cooldown = baseCooldownTime;
 
             if (perkRank == 2)
@@ -49,46 +49,46 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             return cooldown;
         }
 
-        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellTier)
+        public int? CooldownCategoryID(NWCreature creature, int? baseCooldownCategoryID, int spellTier)
         {
             return baseCooldownCategoryID;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellTier)
+        public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
-            float minimum = player.Facing - 20;
-            float maximum = player.Facing + 20;
+            float minimum = creature.Facing - 20;
+            float maximum = creature.Facing + 20;
 
             if (target.Facing >= minimum &&
                 target.Facing <= maximum)
             {
                 // Mark the player as committing a sneak attack.
                 // This is later picked up in the OnApplyDamage event.
-                player.SetLocalInt("SNEAK_ATTACK_ACTIVE", 1);
+                creature.SetLocalInt("SNEAK_ATTACK_ACTIVE", 1);
             }
             else
             {
-                player.SetLocalInt("SNEAK_ATTACK_ACTIVE", 2);
+                creature.SetLocalInt("SNEAK_ATTACK_ACTIVE", 2);
             }
         }
 
-        public void OnPurchased(NWPlayer oPC, int newLevel)
+        public void OnPurchased(NWCreature creature, int newLevel)
         {
         }
 
-        public void OnRemoved(NWPlayer oPC)
+        public void OnRemoved(NWCreature creature)
         {
         }
 
-        public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemEquipped(NWCreature creature, NWItem oItem)
         {
         }
 
-        public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemUnequipped(NWCreature creature, NWItem oItem)
         {
         }
 
-        public void OnCustomEnmityRule(NWPlayer oPC, int amount)
+        public void OnCustomEnmityRule(NWCreature creature, int amount)
         {
         }
 
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             return false;
         }
 
-        public void OnConcentrationTick(NWPlayer player, NWObject target, int perkLevel, int tick)
+        public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
             throw new NotImplementedException();
         }

@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Placeable.MolecularReassembler
         {
             string resref = _componentType.ReassembledResref;
             int penalty = 0;
-            int luck = PerkService.GetPCPerkLevel(_player, PerkType.Lucky) + (_playerItemStats.Luck / 3);
+            int luck = PerkService.GetCreaturePerkLevel(_player, PerkType.Lucky) + (_playerItemStats.Luck / 3);
             int xp = 0;
 
             ItemPropertyUnpacked bonusIP = new ItemPropertyUnpacked

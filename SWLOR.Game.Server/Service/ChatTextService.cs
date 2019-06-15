@@ -218,9 +218,9 @@ namespace SWLOR.Game.Server.Service
 
                         int count = 0;
                         NWPlayer player = sender.Object;
-                        List<NWPlayer> partyMembers = player.PartyMembers.ToList();
+                        List<NWCreature> partyMembers = player.PartyMembers.ToList();
 
-                        foreach (NWPlayer otherPlayer in partyMembers)
+                        foreach (NWCreature otherPlayer in partyMembers)
                         {
                             string name = otherPlayer.Name;
                             finalMessage.Append(name.Substring(0, Math.Min(name.Length, 10)));

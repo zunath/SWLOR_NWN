@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using NWN;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Enumeration;
@@ -8,15 +8,15 @@ using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
 {
-    public class ThrowSaber: IPerkHandler
+    public class ThrowSaber : IPerkHandler
     {
         public PerkType PerkType => PerkType.ThrowSaber;
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier)
+        public string CanCastSpell(NWCreature creature, NWObject oTarget, int spellTier)
         {
-            NWItem weapon = oPC.RightHand;
+            NWItem weapon = creature.RightHand;
             int weaponSize = StringToInt(Get2DAString("baseitems", "WeaponSize", weapon.BaseItemType));
-            int strengthMod = oPC.StrengthModifier;
-            float distance = _.GetDistanceBetween(oPC, oTarget);
+            int strengthMod = creature.StrengthModifier;
+            float distance = _.GetDistanceBetween(creature, oTarget);
 
             if (distance > 15)
                 return "You must be within 15 meters of your target.";
@@ -26,10 +26,10 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             if (weapon.CustomItemType == CustomItemType.Lightsaber ||
                 weapon.CustomItemType == CustomItemType.Saberstaff)
             {
-                
+
                 return string.Empty;
             }
-            else if 
+            else if
                  (
                     (weaponSize == 1 && strengthMod < 1) || // weapon size tiny
                     (weaponSize == 2 && strengthMod < 2) || // weapon size small
@@ -39,43 +39,43 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     (weapon.IsRanged)
                  )
             {
-                NWObject droppedWeapon = _.CopyObject(weapon, oPC.Location);
+                NWObject droppedWeapon = _.CopyObject(weapon, creature.Location);
                 DestroyObject(weapon);
-                oPC.ClearAllActions();
-                oPC.AssignCommand(() =>
+                creature.ClearAllActions();
+                creature.AssignCommand(() =>
                 {
                     _.ActionPickUpItem(droppedWeapon);
                 });
                 return "You attempt to throw your the item in your hand. Due to your lack of strength, it falls to the ground in front of you and you try to pick it up quickly.";
             }
             else
-            { 
+            {
                 return "You cannot throw this type of item.";
             }
-                
+
         }
-        
-        public int FPCost(NWPlayer oPC, int baseFPCost, int spellTier)
+
+        public int FPCost(NWCreature creature, int baseFPCost, int spellTier)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellTier)
+        public float CastingTime(NWCreature creature, float baseCastingTime, int spellTier)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellTier)
+        public float CooldownTime(NWCreature creature, float baseCooldownTime, int spellTier)
         {
             return baseCooldownTime;
         }
 
-        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellTier)
+        public int? CooldownCategoryID(NWCreature creature, int? baseCooldownCategoryID, int spellTier)
         {
             return baseCooldownCategoryID;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellTier)
+        public void OnImpact(NWCreature player, NWObject target, int perkLevel, int spellTier)
         {
             NWItem weapon = player.RightHand;
             int iDamage;
@@ -119,7 +119,11 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     {
                         _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectLinkEffects(_.EffectVisualEffect(VFX_IMP_SONIC), _.EffectDamage(iDamage, _.DAMAGE_TYPE_BASE_WEAPON)), target);
                     }, fDelay);
-                    SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
+
+                    if (player.IsPlayer)
+                    {
+                        SkillService.RegisterPCToNPCForSkill(player.Object, target, SkillType.ForceAlter);
+                    }
 
                     break;
                 case 2:
@@ -131,7 +135,11 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     {
                         _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectLinkEffects(_.EffectVisualEffect(VFX_IMP_SONIC), _.EffectDamage(iDamage, _.DAMAGE_TYPE_BASE_WEAPON)), target);
                     }, fDelay);
-                    SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
+
+                    if (player.IsPlayer)
+                    {
+                        SkillService.RegisterPCToNPCForSkill(player.Object, target, SkillType.ForceAlter);
+                    }
 
                     break;
                 case 3:
@@ -143,7 +151,11 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     {
                         _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectLinkEffects(_.EffectVisualEffect(VFX_IMP_SONIC), _.EffectDamage(iDamage, _.DAMAGE_TYPE_BASE_WEAPON)), target);
                     }, fDelay);
-                    SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
+
+                    if (player.IsPlayer)
+                    {
+                        SkillService.RegisterPCToNPCForSkill(player.Object, target, SkillType.ForceAlter);
+                    }
 
                     break;
                 case 4:
@@ -156,7 +168,12 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     {
                         _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectLinkEffects(_.EffectVisualEffect(VFX_IMP_SONIC), _.EffectDamage(iDamage, _.DAMAGE_TYPE_BASE_WEAPON)), target);
                     }, fDelay);
-                    SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
+
+                    if (player.IsPlayer)
+                    {
+                        SkillService.RegisterPCToNPCForSkill(player.Object, target, SkillType.ForceAlter);
+                    }
+
                     iCount += 1;
 
                     // apply to next nearest creature in the spellcylinder
@@ -171,7 +188,11 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                             {
                                 _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectLinkEffects(_.EffectVisualEffect(VFX_IMP_SONIC), _.EffectDamage(iDamage, _.DAMAGE_TYPE_BASE_WEAPON)), creature);
                             }, fDelay);
-                            SkillService.RegisterPCToNPCForSkill(player, oObject, SkillType.ForceAlter);
+
+                            if (player.IsPlayer)
+                            {
+                                SkillService.RegisterPCToNPCForSkill(player.Object, oObject, SkillType.ForceAlter);
+                            }
                             iCount += 1;
                         }
                         oObject = _.GetNextObjectInShape(_.SHAPE_SPELLCONE, iRange, target.Location, 1, _.OBJECT_TYPE_CREATURE, _.GetPosition(player));
@@ -187,12 +208,16 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     {
                         _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectLinkEffects(_.EffectVisualEffect(VFX_IMP_SONIC), _.EffectDamage(iDamage, _.DAMAGE_TYPE_BASE_WEAPON)), target);
                     }, fDelay);
-                    SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
+
+                    if (player.IsPlayer)
+                    {
+                        SkillService.RegisterPCToNPCForSkill(player.Object, target, SkillType.ForceAlter);
+                    }
                     iCount += 1;
 
                     // apply to next nearest creature in the spellcylinder
                     oObject = _.GetFirstObjectInShape(_.SHAPE_SPELLCYLINDER, iRange, target.Location, 1, _.OBJECT_TYPE_CREATURE, _.GetPosition(player));
-                    while (oObject.IsValid  && iCount < 4)
+                    while (oObject.IsValid && iCount < 4)
                     {
                         if (oObject != target && oObject != player)
                         {
@@ -202,7 +227,11 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                             {
                                 _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectLinkEffects(_.EffectVisualEffect(VFX_IMP_SONIC), _.EffectDamage(iDamage, _.DAMAGE_TYPE_BASE_WEAPON)), creature);
                             }, fDelay);
-                            SkillService.RegisterPCToNPCForSkill(player, oObject, SkillType.ForceAlter);
+
+                            if (player.IsPlayer)
+                            {
+                                SkillService.RegisterPCToNPCForSkill(player.Object, oObject, SkillType.ForceAlter);
+                            }
                             iCount += 1;
                         }
                         oObject = _.GetNextObjectInShape(_.SHAPE_SPELLCYLINDER, iRange, target.Location, 1, _.OBJECT_TYPE_CREATURE, _.GetPosition(player));
@@ -213,23 +242,23 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             }
         }
 
-        public void OnPurchased(NWPlayer oPC, int newLevel)
+        public void OnPurchased(NWCreature creature, int newLevel)
         {
         }
 
-        public void OnRemoved(NWPlayer oPC)
+        public void OnRemoved(NWCreature creature)
         {
         }
 
-        public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemEquipped(NWCreature creature, NWItem oItem)
         {
         }
 
-        public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemUnequipped(NWCreature creature, NWItem oItem)
         {
         }
 
-        public void OnCustomEnmityRule(NWPlayer oPC, int amount)
+        public void OnCustomEnmityRule(NWCreature creature, int amount)
         {
         }
 
@@ -238,9 +267,9 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             return false;
         }
 
-        public void OnConcentrationTick(NWPlayer player, NWObject target, int perkLevel, int tick)
+        public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            
+
         }
     }
 }

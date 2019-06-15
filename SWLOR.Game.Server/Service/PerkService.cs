@@ -231,15 +231,22 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static int GetPCPerkLevel(NWPlayer player, PerkType perkType)
+        public static int GetCreaturePerkLevel(NWCreature creature, PerkType perkType)
         {
-            return GetPCPerkLevel(player, (int)perkType);
+            return GetCreaturePerkLevel(creature, (int)perkType);
         }
 
-        public static int GetPCPerkLevel(NWPlayer player, int perkTypeID)
+        public static int GetCreaturePerkLevel(NWCreature creature, int perkTypeID)
         {
-            if (!player.IsPlayer) return -1;
-            return GetPCEffectivePerkLevel(player, perkTypeID);
+            if (creature.IsPlayer)
+            {
+                NWPlayer player = creature.Object;
+                return GetPCEffectivePerkLevel(player, perkTypeID);
+            }
+            else
+            {
+                return creature.GetLocalInt("PERK_LEVEL_" + perkTypeID);
+            }
         }
 
         private static void OnHitCastSpell()

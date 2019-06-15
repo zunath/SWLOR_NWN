@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
     {
         public PerkType PerkType => PerkType.Tranquilizer;
 
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier)
+        public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             if (oPC.RightHand.CustomItemType != CustomItemType.BlasterRifle)
                 return "Must be equipped with a blaster rifle to use that ability.";
@@ -20,36 +20,36 @@ namespace SWLOR.Game.Server.Perk.Blaster
             return string.Empty;
         }
         
-        public int FPCost(NWPlayer oPC, int baseFPCost, int spellTier)
+        public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellTier)
+        public float CastingTime(NWCreature oPC, float baseCastingTime, int spellTier)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellTier)
+        public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)
         {
             return baseCooldownTime;
         }
 
-        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellTier)
+        public int? CooldownCategoryID(NWCreature creature, int? baseCooldownCategoryID, int spellTier)
         {
             return baseCooldownCategoryID;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellTier)
+        public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
             var concentrationEffect = AbilityService.GetActiveConcentrationEffect(target.Object);
             if (concentrationEffect.Type == PerkType.MindShield)
             {
-                player.SendMessage("Your target is immune to tranquilization effects.");
+                creature.SendMessage("Your target is immune to tranquilization effects.");
                 return;
             }
 
-            int luck = PerkService.GetPCPerkLevel(player, PerkType.Lucky);
+            int luck = PerkService.GetCreaturePerkLevel(creature, PerkType.Lucky);
             float duration;
 
             switch (perkLevel)
@@ -90,12 +90,12 @@ namespace SWLOR.Game.Server.Perk.Blaster
             if (RandomService.D100(1) <= luck)
             {
                 duration *= 2;
-                player.SendMessage("Lucky shot!");
+                creature.SendMessage("Lucky shot!");
             }
 
             if (RemoveExistingEffect(target, duration))
             {
-                player.SendMessage("A more powerful effect already exists on your target.");
+                creature.SendMessage("A more powerful effect already exists on your target.");
                 return;
             }
 
@@ -118,23 +118,23 @@ namespace SWLOR.Game.Server.Perk.Blaster
             return false;
         }
 
-        public void OnPurchased(NWPlayer oPC, int newLevel)
+        public void OnPurchased(NWCreature creature, int newLevel)
         {
         }
 
-        public void OnRemoved(NWPlayer oPC)
+        public void OnRemoved(NWCreature creature)
         {
         }
 
-        public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemEquipped(NWCreature creature, NWItem oItem)
         {
         }
 
-        public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemUnequipped(NWCreature creature, NWItem oItem)
         {
         }
 
-        public void OnCustomEnmityRule(NWPlayer oPC, int amount)
+        public void OnCustomEnmityRule(NWCreature creature, int amount)
         {
         }
 
@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
             return false;
         }
 
-        public void OnConcentrationTick(NWPlayer player, NWObject target, int perkLevel, int tick)
+        public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
             
         }

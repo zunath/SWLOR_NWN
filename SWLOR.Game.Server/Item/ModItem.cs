@@ -114,15 +114,15 @@ namespace SWLOR.Game.Server.Item
 
             if (ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
             {
-                perkBonus = PerkService.GetPCPerkLevel(userPlayer, PerkType.SpeedyArmorsmith) * 0.1f;
+                perkBonus = PerkService.GetCreaturePerkLevel(userPlayer, PerkType.SpeedyArmorsmith) * 0.1f;
             }
             else if (WeaponsmithBaseItemTypes.Contains(targetItem.BaseItemType))
             {
-                perkBonus = PerkService.GetPCPerkLevel(userPlayer, PerkType.SpeedyWeaponsmith) * 0.1f;
+                perkBonus = PerkService.GetCreaturePerkLevel(userPlayer, PerkType.SpeedyWeaponsmith) * 0.1f;
             }
             else if (EngineeringBaseItemTypes.Contains(targetItem.BaseItemType))
             {
-                perkBonus = PerkService.GetPCPerkLevel(userPlayer, PerkType.SpeedyEngineering) * 0.1f;
+                perkBonus = PerkService.GetCreaturePerkLevel(userPlayer, PerkType.SpeedyEngineering) * 0.1f;
             }
 
 
@@ -185,16 +185,16 @@ namespace SWLOR.Game.Server.Item
                 switch (modType)
                 {
                     case CustomItemPropertyType.RedMod:
-                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.CombatModInstallationWeapons);
+                        perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.CombatModInstallationWeapons);
                         break;
                     case CustomItemPropertyType.BlueMod:
-                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.ForceModInstallationWeapons);
+                        perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.ForceModInstallationWeapons);
                         break;
                     case CustomItemPropertyType.GreenMod:
-                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.CraftingModInstallationWeapons);
+                        perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.CraftingModInstallationWeapons);
                         break;
                     case CustomItemPropertyType.YellowMod:
-                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.SpecialModInstallationWeapons);
+                        perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.SpecialModInstallationWeapons);
                         break;
                     default:
                         perkLevel = 0;
@@ -206,16 +206,16 @@ namespace SWLOR.Game.Server.Item
                 switch (modType)
                 {
                     case CustomItemPropertyType.RedMod:
-                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.CombatModInstallationArmors);
+                        perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.CombatModInstallationArmors);
                         break;
                     case CustomItemPropertyType.BlueMod:
-                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.ForceModInstallationArmors);
+                        perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.ForceModInstallationArmors);
                         break;
                     case CustomItemPropertyType.GreenMod:
-                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.CraftingModInstallationArmors);
+                        perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.CraftingModInstallationArmors);
                         break;
                     case CustomItemPropertyType.YellowMod:
-                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.SpecialModInstallationArmors);
+                        perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.SpecialModInstallationArmors);
                         break;
                     default:
                         perkLevel = 0;
@@ -227,16 +227,16 @@ namespace SWLOR.Game.Server.Item
                 switch (modType)
                 {
                     case CustomItemPropertyType.RedMod:
-                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.CombatModInstallationEngineering);
+                        perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.CombatModInstallationEngineering);
                         break;
                     case CustomItemPropertyType.BlueMod:
-                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.ForceModInstallationEngineering);
+                        perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.ForceModInstallationEngineering);
                         break;
                     case CustomItemPropertyType.GreenMod:
-                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.CraftingModInstallationEngineering);
+                        perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.CraftingModInstallationEngineering);
                         break;
                     case CustomItemPropertyType.YellowMod:
-                        perkLevel = PerkService.GetPCPerkLevel(player, PerkType.SpecialModInstallationEngineering);
+                        perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.SpecialModInstallationEngineering);
                         break;
                     default:
                         perkLevel = 0;

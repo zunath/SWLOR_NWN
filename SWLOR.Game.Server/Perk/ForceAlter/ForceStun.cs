@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
     public class ForceStun: IPerkHandler
     {
         public PerkType PerkType => PerkType.ForceStun;
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier)
+        public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             NWCreature targetCreature = oTarget.Object;
             var concentrationEffect = AbilityService.GetActiveConcentrationEffect(targetCreature);
@@ -43,47 +43,47 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             return string.Empty;
         }
         
-        public int FPCost(NWPlayer oPC, int baseFPCost, int spellTier)
+        public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellTier)
+        public float CastingTime(NWCreature oPC, float baseCastingTime, int spellTier)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellTier)
+        public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)
         {
             return baseCooldownTime;
         }
 
-        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellTier)
+        public int? CooldownCategoryID(NWCreature creature, int? baseCooldownCategoryID, int spellTier)
         {
             return baseCooldownCategoryID;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellTier)
+        public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
         }
 
-        public void OnPurchased(NWPlayer oPC, int newLevel)
+        public void OnPurchased(NWCreature creature, int newLevel)
         {
         }
 
-        public void OnRemoved(NWPlayer oPC)
+        public void OnRemoved(NWCreature creature)
         {
         }
 
-        public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemEquipped(NWCreature creature, NWItem oItem)
         {
         }
 
-        public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemUnequipped(NWCreature creature, NWItem oItem)
         {
         }
 
-        public void OnCustomEnmityRule(NWPlayer oPC, int amount)
+        public void OnCustomEnmityRule(NWCreature creature, int amount)
         {
         }
 
@@ -92,22 +92,22 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             return false;
         }
 
-        public void OnConcentrationTick(NWPlayer player, NWObject target, int perkLevel, int tick)
+        public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            ApplyEffect(player, target, perkLevel);
+            ApplyEffect(creature, target, perkLevel);
         }
 
-        private void RunEffect(NWPlayer player, NWObject target)
+        private void RunEffect(NWCreature creature, NWObject target)
         {
             var concentrationEffect = AbilityService.GetActiveConcentrationEffect(target.Object);
 
             if (concentrationEffect.Type == PerkType.MindShield)
             {
-                player.SendMessage("Your target is immune to tranquilization effects.");
+                creature.SendMessage("Your target is immune to tranquilization effects.");
                 return;
             }
 
-            AbilityResistanceResult result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark);
+            AbilityResistanceResult result = CombatService.CalculateAbilityResistance(creature, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark);
             
             // Tranquilization effect - Daze target(s). Occurs on succeeding the DC check.
             Effect successEffect = EffectDazed();
@@ -120,24 +120,28 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
             if (!result.IsResisted)
             {
-                player.AssignCommand(() =>
+                creature.AssignCommand(() =>
                 {
                     ApplyEffectToObject(DURATION_TYPE_TEMPORARY, successEffect, target, 6.1f);
                 });
             }
             else
             {
-                player.AssignCommand(() =>
+                creature.AssignCommand(() =>
                 {
                     ApplyEffectToObject(DURATION_TYPE_TEMPORARY, failureEffect, target, 6.1f);
                 });
             }
 
-            SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
-            EnmityService.AdjustEnmity(target.Object, player, 1);
+            if (creature.IsPlayer)
+            {
+                SkillService.RegisterPCToNPCForSkill(creature.Object, target, SkillType.ForceAlter);
+            }
+
+            EnmityService.AdjustEnmity(target.Object, creature, 1);
         }
 
-        private void ApplyEffect(NWPlayer player, NWObject target, int spellTier)
+        private void ApplyEffect(NWCreature creature, NWObject target, int spellTier)
         {
             const float radiusSize = 10.0f;
             NWCreature targetCreature;
@@ -146,35 +150,35 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             {
                 // Tier 1 - Single target is Tranquilized or, if resisted, receives -5 to AB and AC
                 case 1:
-                    RunEffect(player, target);
+                    RunEffect(creature, target);
                     break;
                 // Tier 2 - Target and nearest other enemy within 10m are tranquilized using tier 1 rules.
                 case 2:
-                    RunEffect(player, target);
+                    RunEffect(creature, target);
                     
                     // Target the next nearest creature and do the same thing.
-                    targetCreature = GetFirstObjectInShape(SHAPE_SPHERE, radiusSize, player.Location, TRUE);
+                    targetCreature = GetFirstObjectInShape(SHAPE_SPHERE, radiusSize, creature.Location, TRUE);
                     while (targetCreature.IsValid)
                     {
                         if (targetCreature != target)
                         {
                             // Apply to nearest other creature, then exit loop.
-                            RunEffect(player, target);
+                            RunEffect(creature, target);
                             break;
                         }
 
-                        targetCreature = GetNextObjectInShape(SHAPE_SPHERE, radiusSize, player.Location, TRUE);
+                        targetCreature = GetNextObjectInShape(SHAPE_SPHERE, radiusSize, creature.Location, TRUE);
                     }
                     break;
                 // Tier 3 - All creatures within 10m are tranquilized using tier 1 rules.
                 case 3:
-                    RunEffect(player, target);
+                    RunEffect(creature, target);
                     
-                    targetCreature = GetFirstObjectInShape(SHAPE_SPHERE, radiusSize, player.Location, TRUE);
+                    targetCreature = GetFirstObjectInShape(SHAPE_SPHERE, radiusSize, creature.Location, TRUE);
                     while (targetCreature.IsValid)
                     {
-                        RunEffect(player, target);
-                        targetCreature = GetNextObjectInShape(SHAPE_SPHERE, radiusSize, player.Location, TRUE);
+                        RunEffect(creature, target);
+                        targetCreature = GetNextObjectInShape(SHAPE_SPHERE, radiusSize, creature.Location, TRUE);
                     }
                     break;
                 default:

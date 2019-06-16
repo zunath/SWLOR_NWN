@@ -1150,6 +1150,7 @@
     <Compile Include="Event\Module\OnModuleUnequipItem.cs" />
     <Compile Include="Event\Module\OnModuleUserDefined.cs" />
     <Compile Include="Event\Player\OnPlayerHeartbeat.cs" />
+    <Compile Include="Placeable\Test.cs" />
     <Compile Include="Service\Cached2DAService.cs" />
     <Compile Include="Service\ModuleMigrationService.cs" />
     <Compile Include="Service\StoreService.cs" />

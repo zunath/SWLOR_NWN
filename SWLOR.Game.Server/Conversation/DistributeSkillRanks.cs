@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Conversation
     public class DistributeSkillRanks: ConversationBase
     {
         // This determines the maximum level a player can reach via this distribution of skill ranks.
-        private const int MaxRankForDistribution = 40;
+        private const int MaxRankForDistribution = 100;
 
         private class Model
         {

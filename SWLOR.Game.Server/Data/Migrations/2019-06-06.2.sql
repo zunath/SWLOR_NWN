@@ -150,10 +150,6 @@ VALUES ( 2 , -- ID - int
     )
 
 ALTER TABLE dbo.Perk
-ADD SpecializationID INT NOT NULL DEFAULT 0
-CONSTRAINT FK_Perk_SpecializationID FOREIGN KEY REFERENCES dbo.Specialization(ID)
-
-ALTER TABLE dbo.Perk
 ADD ForceBalanceTypeID INT NOT NULL DEFAULT 0
 CONSTRAINT FK_Perk_ForceBalanceTypeID FOREIGN KEY REFERENCES dbo.ForceBalanceType(ID)
 
@@ -288,15 +284,14 @@ INSERT INTO dbo.CooldownCategory ( ID ,Name ,BaseCooldownTime ) VALUES
 ( 34 , N'Animal Bond' , 600.0),
 ( 35 , N'Drain Life' , 600.0),
 ( 36 , N'Force Lightning' , 600.0),
-( 37 , N'Force Push' , 600.0),
-( 38 , N'Force Breach' , 600.0),
-( 39 , N'Force Heal' , 600.0)
+( 37 , N'Force Push' , 10.0),
+( 38 , N'Force Breach' , 600.0)
 
 
 -- Definitions for each perk
 INSERT INTO dbo.Perk (ID, PerkCategoryID, CooldownCategoryID, ExecutionTypeID, IsTargetSelfOnly, Name, IsActive, Description, Enmity, EnmityAdjustmentRuleID, ForceBalanceTypeID) VALUES
- (3, 45, 2, 3, 1, 'Force Speed', 1, 'Increases movement speed and dexterity.  At higher ranks grants additional attacks.', 0, 0, 0),
- (4, 46, 4, 3, 1, 'Absorb Energy', 1, 'Absorbs a percentage of damage that the caster would take, from all sources.', 20, 2, 0),
+ (3, 44, 2, 3, 1, 'Force Speed', 1, 'Increases movement speed and dexterity.  At higher ranks grants additional attacks.', 0, 0, 0),
+ (4, 45, 4, 3, 1, 'Absorb Energy', 1, 'Absorbs a percentage of damage that the caster would take, from all sources.', 20, 2, 0),
  (5, 43, 5, 3, 1, 'Force Body', 1, 'Converts a percentage of the casters current HP into FP.', 0, 0, 0),
  (13, 45, 6, 3, 0, 'Mind Shield', 1, 'Protects the target from mind affecting powers and abilities.', 20, 2, 1),
  (19, 45, 7, 3, 1, 'Rage', 1, 'Increases STR and CON at the cost of AC and HP damage each round.  At higher ranks grants additional attacks, that do not stack with Force Speed.', 10, 2, 2),
@@ -315,7 +310,7 @@ INSERT INTO dbo.Perk (ID, PerkCategoryID, CooldownCategoryID, ExecutionTypeID, I
  (182, 42, 36, 3, 0, 'Force Lightning', 1, 'Deals electrical damage over time to a single target.', 0, 0, 2),
  (183, 49, 37, 3, 0, 'Force Push', 1, 'Knocks down a single target or, if resisted, slows the target instead.', 0, 0, 0),
  (184, 42, 38, 3, 0, 'Force Breach', 1, 'Deals direct damage to a single target.', 0, 0, 0),
- (185, 45, 39, 3, 0, 'Force Heal', 1, 'Restores HP on a single target over time.', 0, 0, 1)
+ (185, 45, NULL, 3, 0, 'Force Heal', 1, 'Restores HP on a single target over time.', 0, 0, 1)
  ;
 
 -- Levels for each perk.
@@ -349,10 +344,10 @@ DECLARE @PerkLevelID INT;
  (184,4,7, 'Deals 200 damage to a single target.', 2, 14),
  (184,5,8, 'Deals 250 damage to a single target.', 2, 16),
  (185,1,2, 'Heals a single target for 2 HP every second.', 0, 1),
- (185,2,2, 'Heals a single target for 3 HP every second.', 0, 1),
- (185,3,3, 'Heals a single target for 5 HP every second.', 0, 1),
- (185,4,3, 'Heals a single target for 7 HP every second.', 2, 1),
- (185,5,4, 'Heals a single target for 10 HP every second.', 2, 1),
+ (185,2,2, 'Heals a single target for 3 HP every second.', 0, 2),
+ (185,3,3, 'Heals a single target for 5 HP every second.', 0, 3),
+ (185,4,3, 'Heals a single target for 7 HP every second.', 2, 4),
+ (185,5,4, 'Heals a single target for 10 HP every second.', 2, 5),
  (3,1,2,'Increases movement speed by 10% and Dexterity by 2.', 0, 2),
  (3,2,2,'Increases movement speed by 20% and Dexterity by 4.', 0, 4),
  (3,3,3,'Increases movement speed by 30%, Dexterity by 6 and grants an extra attack.', 0, 6),
@@ -448,11 +443,11 @@ SET @PerkLevelID = SCOPE_IDENTITY();
   (@PerkLevelID-65,19,90),
 
   -- Force Heal
-  (@PerkLevelID-64,19,0),
-  (@PerkLevelID-63,19,10),
-  (@PerkLevelID-62,19,20),
-  (@PerkLevelID-61,19,30),
-  (@PerkLevelID-60,19,40),
+  (@PerkLevelID-64,20,0),
+  (@PerkLevelID-63,20,10),
+  (@PerkLevelID-62,20,20),
+  (@PerkLevelID-61,20,30),
+  (@PerkLevelID-60,20,40),
 
   -- Force Speed
   (@PerkLevelID-59,20,0),
@@ -1485,3 +1480,133 @@ WHERE ID IN (
 627,628,629,630,631,
 637,638,639,640,641
 )
+
+
+
+-- Add Shield Proficiency perk
+INSERT INTO dbo.Perk ( ID ,
+                       Name ,
+                       IsActive ,
+                       BaseCastingTime ,
+                       Description ,
+                       PerkCategoryID ,
+                       CooldownCategoryID ,
+                       ExecutionTypeID ,
+                       IsTargetSelfOnly ,
+                       Enmity ,
+                       EnmityAdjustmentRuleID ,
+                       CastAnimationID ,
+                       ForceBalanceTypeID )
+VALUES ( 172 ,    -- ID - int
+         'Shield Proficiency' ,   -- Name - varchar(64)
+         1 , -- IsActive - bit
+         0.0 ,  -- BaseCastingTime - float
+         N'Increases your damage reduction by 2% while equipped with a shield.' ,  -- Description - nvarchar(256)
+         6 ,    -- PerkCategoryID - int
+         NULL ,    -- CooldownCategoryID - int
+         0 ,    -- ExecutionTypeID - int
+         0 , -- IsTargetSelfOnly - bit
+         0 ,    -- Enmity - int
+         0 ,    -- EnmityAdjustmentRuleID - int
+         NULL ,    -- CastAnimationID - int
+         0      -- ForceBalanceTypeID - int
+    )
+	
+INSERT INTO dbo.PerkLevel ( PerkID ,
+                            Level ,
+                            Price ,
+                            Description ,
+                            SpecializationID )
+VALUES ( 172 ,   -- PerkID - int
+         1 ,   -- Level - int
+         3 ,   -- Price - int
+         N'2% damage reduction' , -- Description - nvarchar(512)
+         0     -- SpecializationID - int
+    )
+
+INSERT INTO dbo.PerkLevelSkillRequirement ( PerkLevelID ,
+                                            SkillID ,
+                                            RequiredRank )
+VALUES ( SCOPE_IDENTITY() , -- PerkLevelID - int
+         9 , -- SkillID - int
+         10   -- RequiredRank - int
+    )
+INSERT INTO dbo.PerkLevel ( PerkID ,
+                            Level ,
+                            Price ,
+                            Description ,
+                            SpecializationID )
+VALUES ( 172 ,   -- PerkID - int
+         2 ,   -- Level - int
+         3 ,   -- Price - int
+         N'4% damage reduction' , -- Description - nvarchar(512)
+         0     -- SpecializationID - int
+    )
+
+INSERT INTO dbo.PerkLevelSkillRequirement ( PerkLevelID ,
+                                            SkillID ,
+                                            RequiredRank )
+VALUES ( SCOPE_IDENTITY() , -- PerkLevelID - int
+         9 , -- SkillID - int
+         20   -- RequiredRank - int
+    )
+	
+INSERT INTO dbo.PerkLevel ( PerkID ,
+                            Level ,
+                            Price ,
+                            Description ,
+                            SpecializationID )
+VALUES ( 172 ,   -- PerkID - int
+         3 ,   -- Level - int
+         3 ,   -- Price - int
+         N'6% damage reduction' , -- Description - nvarchar(512)
+         0     -- SpecializationID - int
+    )
+
+INSERT INTO dbo.PerkLevelSkillRequirement ( PerkLevelID ,
+                                            SkillID ,
+                                            RequiredRank )
+VALUES ( SCOPE_IDENTITY() , -- PerkLevelID - int
+         9 , -- SkillID - int
+         30   -- RequiredRank - int
+    )
+	
+INSERT INTO dbo.PerkLevel ( PerkID ,
+                            Level ,
+                            Price ,
+                            Description ,
+                            SpecializationID )
+VALUES ( 172 ,   -- PerkID - int
+         4 ,   -- Level - int
+         3 ,   -- Price - int
+         N'8% damage reduction' , -- Description - nvarchar(512)
+         0     -- SpecializationID - int
+    )
+
+INSERT INTO dbo.PerkLevelSkillRequirement ( PerkLevelID ,
+                                            SkillID ,
+                                            RequiredRank )
+VALUES ( SCOPE_IDENTITY() , -- PerkLevelID - int
+         9 , -- SkillID - int
+         40   -- RequiredRank - int
+    )
+	
+INSERT INTO dbo.PerkLevel ( PerkID ,
+                            Level ,
+                            Price ,
+                            Description ,
+                            SpecializationID )
+VALUES ( 172 ,   -- PerkID - int
+         5 ,   -- Level - int
+         3 ,   -- Price - int
+         N'10% damage reduction' , -- Description - nvarchar(512)
+         0     -- SpecializationID - int
+    )
+
+INSERT INTO dbo.PerkLevelSkillRequirement ( PerkLevelID ,
+                                            SkillID ,
+                                            RequiredRank )
+VALUES ( SCOPE_IDENTITY() , -- PerkLevelID - int
+         9 , -- SkillID - int
+         50   -- RequiredRank - int
+    )

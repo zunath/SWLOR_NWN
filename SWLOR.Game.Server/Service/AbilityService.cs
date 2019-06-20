@@ -9,6 +9,8 @@ using SWLOR.Game.Server.NWN.Events.Module;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Perk;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Module;
@@ -34,6 +36,8 @@ namespace SWLOR.Game.Server.Service
         public static int ATTACK_COMBATABILITY = 3; // Combat tricks like Provoke
         public static int ATTACK_DOT = 4; // Subsequent damage effects
 
+        private static readonly List<NWCreature> ConcentratingCreatures = new List<NWCreature>();
+
         public static void SubscribeEvents()
         {
             MessageHub.Instance.Subscribe<OnModuleEnter>(message => OnModuleEnter());
@@ -43,6 +47,9 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnModuleDeath>(message => OnModuleDeath());
         }
 
+        /// <summary>
+        /// Reapplies the concentration effect icon if player logs in with an active effect.
+        /// </summary>
         private static void OnModuleEnter()
         {
             NWPlayer pc = _.GetEnteringObject();
@@ -51,248 +58,360 @@ namespace SWLOR.Game.Server.Service
             // Reapply the visual effect icon to player if they logged in with an active concentration ability.
             Player dbPlayer = DataService.Get<Player>(pc.GlobalID);
             if (dbPlayer.ActiveConcentrationPerkID != null)
+            {
                 _.ApplyEffectToObject(_.DURATION_TYPE_PERMANENT, _.EffectSkillIncrease(_.SKILL_USE_MAGIC_DEVICE, 1), pc);
+                ConcentratingCreatures.Add(pc);
+            }
         }
 
+        /// <summary>
+        /// Processes all feats which are linked to perks.
+        /// </summary>
         private static void OnModuleUseFeat()
         {
-            NWPlayer pc = Object.OBJECT_SELF;
+            // Activator is the creature who used the feat.
+            // Target is who the activator selected to use this feat on.
+            NWPlayer activator = Object.OBJECT_SELF;
             NWCreature target = NWNXEvents.OnFeatUsed_GetTarget().Object;
+
+            // Retrieve the perk's feat information from the DB.
             int featID = NWNXEvents.OnFeatUsed_GetFeatID();
             var perkFeat = DataService.SingleOrDefault<PerkFeat>(x => x.FeatID == featID);
-            if (perkFeat == null) return;
-            Data.Entity.Perk perk = DataService.GetAll<Data.Entity.Perk>().SingleOrDefault(x => x.ID == perkFeat.PerkID);
-            if (perk == null) return;
 
+            // There's no matching feat in the DB for this ability. Exit early.
+            if (perkFeat == null) return;
+            
+            // Retrieve the perk information.
+            Data.Entity.Perk perk = DataService.GetAll<Data.Entity.Perk>().SingleOrDefault(x => x.ID == perkFeat.PerkID);
+
+            // No perk could be found. Exit early.
+            if (perk == null) return;
+            
             // Check to see if we are a spaceship.  Spaceships can't use abilities...
-            if (pc.GetLocalInt("IS_SHIP") > 0 || pc.GetLocalInt("IS_GUNNER") > 0)
+            if (activator.GetLocalInt("IS_SHIP") > 0 || activator.GetLocalInt("IS_GUNNER") > 0)
             {
-                pc.SendMessage("You cannot use that ability while piloting a ship.");
+                activator.SendMessage("You cannot use that ability while piloting a ship.");
                 return;
             }
-
-            var perkAction = PerkService.GetPerkHandler(perkFeat.PerkID);
             
-            Player playerEntity = DataService.Get<Player>(pc.GlobalID);
-            int pcPerkLevel = PerkService.GetPCPerkLevel(pc, perk.ID);
-
+            // Retrieve the perk-specific handler logic.
+            var handler = PerkService.GetPerkHandler(perkFeat.PerkID);
+            
+            // Get the creature's perk level.
+            int creaturePerkLevel = PerkService.GetCreaturePerkLevel(activator, perk.ID);
+            
             // If player is disabling an existing stance, remove that effect.
             if (perk.ExecutionTypeID == PerkExecutionType.Stance)
             {
+                // Can't process NPC stances at the moment. Need to do some more refactoring before this is possible.
+                // todo: handle NPC stances.
+                if (!activator.IsPlayer) return;
+
                 PCCustomEffect stanceEffect = DataService.SingleOrDefault<PCCustomEffect>(x => x.StancePerkID == perk.ID &&
-                                                                                               x.PlayerID == pc.GlobalID);
+                                                                                               x.PlayerID == activator.GlobalID);
 
                 if (stanceEffect != null)
                 {
-                    if (CustomEffectService.RemoveStance(pc))
+                    if (CustomEffectService.RemoveStance(activator))
                     {
                         return;
                     }
                 }
             }
 
-            if (pcPerkLevel <= 0)
+            // Check for a valid perk level.
+            if (creaturePerkLevel <= 0)
             {
-                pc.SendMessage("You do not meet the prerequisites to use this ability.");
+                activator.SendMessage("You do not meet the prerequisites to use this ability.");
                 return;
             }
 
-            if (perkAction.IsHostile() && target.IsPlayer)
+            // Verify that this hostile action meets PVP sanctuary restriction rules. 
+            if (handler.IsHostile() && target.IsPlayer)
             {
-                if (!PVPSanctuaryService.IsPVPAttackAllowed(pc, target.Object)) return;
+                if (!PVPSanctuaryService.IsPVPAttackAllowed(activator, target.Object)) return;
             }
 
-            if (pc.Area.Resref != target.Area.Resref ||
-                    _.LineOfSightObject(pc.Object, target.Object) == 0)
+            // Activator and target must be in the same area and within line of sight.
+            if (activator.Area.Resref != target.Area.Resref ||
+                    _.LineOfSightObject(activator.Object, target.Object) == FALSE)
             {
-                pc.SendMessage("You cannot see your target.");
+                activator.SendMessage("You cannot see your target.");
                 return;
             }
 
-            string canCast = perkAction.CanCastSpell(pc, target, perkFeat.PerkLevelUnlocked);
+            // Run this perk's specific checks on whether the activator may use this perk on the target.
+            string canCast = handler.CanCastSpell(activator, target, perkFeat.PerkLevelUnlocked);
             if (!string.IsNullOrWhiteSpace(canCast))
             {
-                pc.SendMessage(canCast);
+                activator.SendMessage(canCast);
                 return;
             }
 
-            int fpCost = perkAction.FPCost(pc, perkAction.FPCost(pc, perkFeat.BaseFPCost, perkFeat.PerkLevelUnlocked), perkFeat.PerkLevelUnlocked);
-            if (playerEntity.CurrentFP < fpCost)
+            // Calculate the FP cost to use this ability. Verify activator has sufficient FP.
+            int fpCost = handler.FPCost(activator, handler.FPCost(activator, perkFeat.BaseFPCost, perkFeat.PerkLevelUnlocked), perkFeat.PerkLevelUnlocked);
+            int currentFP = GetCurrentFP(activator);
+            if (currentFP < fpCost)
             {
-                pc.SendMessage("You do not have enough FP. (Required: " + fpCost + ". You have: " + playerEntity.CurrentFP + ")");
+                activator.SendMessage("You do not have enough FP. (Required: " + fpCost + ". You have: " + currentFP + ")");
                 return;
             }
 
-            if (pc.IsBusy || pc.CurrentHP <= 0)
+            // Verify activator isn't busy or dead.
+            if (activator.IsBusy || activator.CurrentHP <= 0)
             {
-                pc.SendMessage("You are too busy to activate that ability.");
+                activator.SendMessage("You are too busy to activate that ability.");
                 return;
             }
 
-            // If we're executing a concentration ability, check and see if the player currently has this ability
+            // If we're executing a concentration ability, check and see if the activator currently has this ability
             // active. If it's active, then we immediately remove its effect and bail out.
             // Any other ability (including other concentration abilities) execute as normal.
             if (perk.ExecutionTypeID == PerkExecutionType.ConcentrationAbility)
             {
-                Player dbPlayer = DataService.Get<Player>(pc.GlobalID);
-                if (dbPlayer.ActiveConcentrationPerkID == perk.ID)
+                // Retrieve the concentration effect for this creature.
+                var concentrationEffect = GetActiveConcentrationEffect(activator);
+                if ((int)concentrationEffect.Type == perk.ID)
                 {
                     // It's active. Time to disable it.
-                    dbPlayer.ActiveConcentrationPerkID = null;
-                    dbPlayer.ActiveConcentrationTier = 0;
-                    // And remove the effect icon.
-                    pc.RemoveEffect(_.EFFECT_TYPE_SKILL_INCREASE);
-                    pc.SendMessage("Concentration ability '" + perk.Name + "' deactivated.");
+                    EndConcentrationEffect(activator);
+                    activator.SendMessage("Concentration ability '" + perk.Name + "' deactivated.");
                     return;
                 }
             }
-            
-            // Check cooldown
-            int? cooldownCategoryID = perkAction.CooldownCategoryID(pc, perk.CooldownCategoryID, perkFeat.PerkLevelUnlocked);
-            PCCooldown pcCooldown = DataService.GetAll<PCCooldown>().SingleOrDefault(x => x.PlayerID == pc.GlobalID &&
-                                                                                    x.CooldownCategoryID == cooldownCategoryID);
-            if (pcCooldown == null)
-            {
-                pcCooldown = new PCCooldown
-                {
-                    CooldownCategoryID = Convert.ToInt32(cooldownCategoryID),
-                    DateUnlocked = DateTime.UtcNow.AddSeconds(-1),
-                    PlayerID = pc.GlobalID
-                };
 
-                DataService.SubmitDataChange(pcCooldown, DatabaseActionType.Insert);
-            }
-
-            DateTime unlockDateTime = pcCooldown.DateUnlocked;
+            // Retrieve the cooldown information and determine the unlock time.
+            int? cooldownCategoryID = handler.CooldownCategoryID(activator, perk.CooldownCategoryID, perkFeat.PerkLevelUnlocked);
             DateTime now = DateTime.UtcNow;
+            DateTime unlockDateTime = cooldownCategoryID == null ? now : GetAbilityCooldownUnlocked(activator, (int)cooldownCategoryID);
 
+            // Check if we've passed the unlock date. Exit early if we have not.
             if (unlockDateTime > now)
             {
                 string timeToWait = TimeService.GetTimeToWaitLongIntervals(now, unlockDateTime, false);
-                pc.SendMessage("That ability can be used in " + timeToWait + ".");
+                activator.SendMessage("That ability can be used in " + timeToWait + ".");
                 return;
             }
 
             // Force Abilities (aka Spells)
             if (perk.ExecutionTypeID == PerkExecutionType.ForceAbility)
             {
-                target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_FORCE);
-                ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.ForceAbility, perkFeat.PerkLevelUnlocked);
+                target.SetLocalInt(LAST_ATTACK + activator.GlobalID, ATTACK_FORCE);
+                ActivateAbility(activator, target, perk, handler, creaturePerkLevel, PerkExecutionType.ForceAbility, perkFeat.PerkLevelUnlocked);
             }
             // Combat Abilities
             else if (perk.ExecutionTypeID == PerkExecutionType.CombatAbility)
             {
-                target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_PHYSICAL);
-                ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.CombatAbility, perkFeat.PerkLevelUnlocked);
+                target.SetLocalInt(LAST_ATTACK + activator.GlobalID, ATTACK_PHYSICAL);
+                ActivateAbility(activator, target, perk, handler, creaturePerkLevel, PerkExecutionType.CombatAbility, perkFeat.PerkLevelUnlocked);
             }
             // Queued Weapon Skills
             else if (perk.ExecutionTypeID == PerkExecutionType.QueuedWeaponSkill)
             {
-                target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_PHYSICAL);
-                HandleQueueWeaponSkill(pc, perk, perkAction, featID);
+                target.SetLocalInt(LAST_ATTACK + activator.GlobalID, ATTACK_PHYSICAL);
+                HandleQueueWeaponSkill(activator, perk, handler, featID);
             }
             // Stances
             else if (perk.ExecutionTypeID == PerkExecutionType.Stance)
             {
-                target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_COMBATABILITY);
-                ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.Stance, perkFeat.PerkLevelUnlocked);
+                target.SetLocalInt(LAST_ATTACK + activator.GlobalID, ATTACK_COMBATABILITY);
+                ActivateAbility(activator, target, perk, handler, creaturePerkLevel, PerkExecutionType.Stance, perkFeat.PerkLevelUnlocked);
             }
             // Concentration Abilities
             else if (perk.ExecutionTypeID == PerkExecutionType.ConcentrationAbility)
             {
-                target.SetLocalInt(LAST_ATTACK + pc.GlobalID, ATTACK_FORCE);
-                ActivateAbility(pc, target, perk, perkAction, pcPerkLevel, PerkExecutionType.ConcentrationAbility, perkFeat.PerkLevelUnlocked);
+                target.SetLocalInt(LAST_ATTACK + activator.GlobalID, ATTACK_FORCE);
+                ActivateAbility(activator, target, perk, handler, creaturePerkLevel, PerkExecutionType.ConcentrationAbility, perkFeat.PerkLevelUnlocked);
             }
         }
 
+        /// <summary>
+        /// Retrieves the DateTime in which the specified cooldownCategoryID will be available for usel
+        /// </summary>
+        /// <param name="activator">The creature whose cooldown we're checking.</param>
+        /// <param name="cooldownCategoryID">The cooldown category we're checking for.</param>
+        /// <returns></returns>
+        private static DateTime GetAbilityCooldownUnlocked(NWCreature activator, int cooldownCategoryID)
+        {
+            // Players: Retrieve info from cache/DB, if it doesn't exist create a new record and insert it. Return unlock date.
+            if (activator.IsPlayer)
+            {
+                PCCooldown pcCooldown = DataService.GetAll<PCCooldown>().SingleOrDefault(x => x.PlayerID == activator.GlobalID &&
+                                                                                              x.CooldownCategoryID == cooldownCategoryID);
+                if (pcCooldown == null)
+                {
+                    pcCooldown = new PCCooldown
+                    {
+                        CooldownCategoryID = Convert.ToInt32(cooldownCategoryID),
+                        DateUnlocked = DateTime.UtcNow.AddSeconds(-1),
+                        PlayerID = activator.GlobalID
+                    };
+
+                    DataService.SubmitDataChange(pcCooldown, DatabaseActionType.Insert);
+                }
+
+                return pcCooldown.DateUnlocked;
+            }
+            // Creatures: Retrieve info from local variable, convert to DateTime if possible. Return parsed unlock date.
+            else
+            {
+                string unlockDate = activator.GetLocalString("ABILITY_COOLDOWN_ID_" + cooldownCategoryID);
+                if (string.IsNullOrWhiteSpace(unlockDate))
+                {
+                    return DateTime.UtcNow.AddSeconds(-1);
+                }
+                else
+                {
+                    return DateTime.ParseExact(unlockDate, "yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture);
+                }
+            }
+        }
+        
         /// <summary>
         /// Returns the currently active concentration perk for a given creature.
         /// If no concentration perk is active, PerkType.Unknown will be returned.
         /// </summary>
         /// <param name="creature"></param>
-        /// <returns></returns>
+        /// <returns>A ConcentrationEffect containing data about the active concentration effect.</returns>
         public static ConcentrationEffect GetActiveConcentrationEffect(NWCreature creature)
         {
-            // In the future, we'll enable this to work with all creatures and not just players. For now, return unknown.
-            if (!creature.IsPlayer) return new ConcentrationEffect(PerkType.Unknown, 0);
+            if (creature.IsPlayer)
+            {
+                Player dbPlayer = DataService.Get<Player>(creature.GlobalID);
+                if (dbPlayer.ActiveConcentrationPerkID == null) return new ConcentrationEffect(PerkType.Unknown, 0);
 
-            Player dbPlayer = DataService.Get<Player>(creature.GlobalID);
-            if (dbPlayer.ActiveConcentrationPerkID == null) return new ConcentrationEffect(PerkType.Unknown, 0);
+                return new ConcentrationEffect((PerkType)dbPlayer.ActiveConcentrationPerkID, dbPlayer.ActiveConcentrationTier);
+            }
+            else
+            {
+                // Creatures are assumed to always use the highest perk level available.
+                int perkID = creature.GetLocalInt("ACTIVE_CONCENTRATION_PERK_ID");
+                int tier = creature.GetLocalInt("PERK_LEVEL_" + perkID);
+                return new ConcentrationEffect((PerkType) perkID, tier);
+            }
 
-            return new ConcentrationEffect((PerkType)dbPlayer.ActiveConcentrationPerkID, dbPlayer.ActiveConcentrationTier);
         }
 
+        public static void StartConcentrationEffect(NWCreature creature, int perkID, int spellTier)
+        {
+            if (creature.IsPlayer)
+            {
+                var player = DataService.Get<Player>(creature.GlobalID);
+                player.ActiveConcentrationPerkID = perkID;
+                player.ActiveConcentrationTier = spellTier;
+                DataService.SubmitDataChange(player, DatabaseActionType.Update);
+            }
+            else
+            {
+                creature.SetLocalInt("ACTIVE_CONCENTRATION_PERK_ID", perkID);
+            }
+            ConcentratingCreatures.Add(creature);
+        }
+
+        /// <summary>
+        /// Ends a creature's concentration effect immediately.
+        /// No message is sent by this method, so be sure to send one if you need to inform a player.
+        /// </summary>
+        /// <param name="creature">The creatures whose concentration we're ending.</param>
         public static void EndConcentrationEffect(NWCreature creature)
         {
-            // In the future, we'll enable this to work with all creatures and not just players. For now, bail out early.
-            if (!creature.IsPlayer) return;
+            if (creature.IsPlayer)
+            {
+                Player player = DataService.Get<Player>(creature.GlobalID);
+                if (player.ActiveConcentrationPerkID == null) return;
 
-            Player dbPlayer = DataService.Get<Player>(creature.GlobalID);
-            if (dbPlayer.ActiveConcentrationPerkID == null) return;
+                player.ActiveConcentrationPerkID = null;
+                player.ActiveConcentrationTier = 0;
+                DataService.SubmitDataChange(player, DatabaseActionType.Update);
+            }
+            else
+            {
+                creature.DeleteLocalInt("ACTIVE_CONCENTRATION_PERK_ID");
+            }
 
-            dbPlayer.ActiveConcentrationPerkID = null;
-            dbPlayer.ActiveConcentrationTier = 0;
             creature.DeleteLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK");
             creature.DeleteLocalObject("CONCENTRATION_TARGET");
             creature.RemoveEffect(_.EFFECT_TYPE_SKILL_INCREASE); // Remove the effect icon.
+
+            ConcentratingCreatures.Remove(creature);
         }
 
         private static void ProcessConcentrationEffects()
         {
             // Loop through each player. If they have a concentration ability active,
             // process it using that perk's OnConcentrationTick() method.
-            foreach (var player in NWModule.Get().Players)
+            for(int index = ConcentratingCreatures.Count-1; index >= 0; index--)
             {
-                if (player.IsDM) continue;
+                var creature = ConcentratingCreatures[index];
+                var activeAbility = GetActiveConcentrationEffect(creature);
+                int perkID = (int)activeAbility.Type;
+                int tier = activeAbility.Tier;
+                bool ended = false;
 
-                Player dbPlayer = DataService.Get<Player>(player.GlobalID);
-                if (dbPlayer.ActiveConcentrationPerkID == null) continue;
+                // If we have an invalid creature for any reason, remove it and move to the next one.
+                if (!creature.IsValid || creature.CurrentHP <= 0 || activeAbility.Type == PerkType.Unknown)
+                {
+                    ConcentratingCreatures.RemoveAt(index);
+                    continue;
+                }
                 
                 // Track the current tick.
-                int tick = player.GetLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK") + 1;
-                player.SetLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK", tick);
+                int tick = creature.GetLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK") + 1;
+                creature.SetLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK", tick);
                 
-                PerkFeat perkFeat = DataService.Single<PerkFeat>(x => x.PerkID == dbPlayer.ActiveConcentrationPerkID &&
-                                                                      x.PerkLevelUnlocked == dbPlayer.ActiveConcentrationTier);
-
+                PerkFeat perkFeat = DataService.Single<PerkFeat>(x => x.PerkID == perkID &&
+                                                                      x.PerkLevelUnlocked == tier);                
+                
                 // Are we ready to continue processing this concentration effect?
                 if (tick % perkFeat.ConcentrationTickInterval != 0) return;
 
                 // Get the perk handler, FP cost, and the target.
-                var handler = PerkService.GetPerkHandler((int)dbPlayer.ActiveConcentrationPerkID);
-                int fpCost = handler.FPCost(player, perkFeat.ConcentrationFPCost, dbPlayer.ActiveConcentrationTier);
-                NWObject target = player.GetLocalObject("CONCENTRATION_TARGET");
-                
+                var handler = PerkService.GetPerkHandler(perkID);
+                int fpCost = handler.FPCost(creature, perkFeat.ConcentrationFPCost, tier);
+                NWObject target = creature.GetLocalObject("CONCENTRATION_TARGET");
+                int currentFP = GetCurrentFP(creature);
+                int maxFP = GetMaxFP(creature);
+
                 // Is the target still valid?
                 if (!target.IsValid || target.CurrentHP <= 0)
                 {
-                    player.SendMessage("Concentration effect has ended because your target is no longer valid.");
-                    EndConcentrationEffect(player);
+                    creature.SendMessage("Concentration effect has ended because your target is no longer valid.");
+                    EndConcentrationEffect(creature);
+                    ended = true;
                 }
                 // Does player have enough FP to maintain this concentration?
-                else if (dbPlayer.CurrentFP < fpCost)
+                else if (currentFP < fpCost)
                 {
-                    player.SendMessage("Concentration effect has ended because you ran out of FP.");
-                    EndConcentrationEffect(player);
+                    creature.SendMessage("Concentration effect has ended because you ran out of FP.");
+                    EndConcentrationEffect(creature);
+                    ended = true;
+                }
+                // Is the target still within range and in the same area?
+                else if (creature.Area.Object != target.Area.Object ||
+                         _.GetDistanceBetween(creature, target) > 50.0f)
+                {
+                    creature.SendMessage("Concentration effect has ended because your target has gone out of range.");
+                    EndConcentrationEffect(creature);
+                    ended = true;
                 }
                 // Otherwise deduct the required FP.
                 else
                 {
-                    dbPlayer.CurrentFP -= fpCost;
+                    currentFP -= fpCost;
                 }
 
-                DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+                SetCurrentFP(creature, currentFP);
 
                 // Send a FP status message if the effect ended or it's been six seconds since the last one.
-                if (dbPlayer.ActiveConcentrationPerkID == null || tick % 6 == 0)
+                if (ended || tick % 6 == 0)
                 {
-                    player.SendMessage(ColorTokenService.Custom("FP: " + dbPlayer.CurrentFP + " / " + dbPlayer.MaxFP, 32, 223, 219));
+                    creature.SendMessage(ColorTokenService.Custom("FP: " + currentFP + " / " + maxFP, 32, 223, 219));
                 }
                 
                 // Run this individual perk's concentration tick method if it didn't end this tick.
-                if (dbPlayer.ActiveConcentrationPerkID != null && target.IsValid)
+                if (!ended && target.IsValid)
                 {
-                    handler.OnConcentrationTick(player, target, dbPlayer.ActiveConcentrationTier, tick);
+                    handler.OnConcentrationTick(creature, target, tier, tick);
                 }
             }
         }
@@ -305,55 +424,41 @@ namespace SWLOR.Game.Server.Service
             EndConcentrationEffect(player);
         }
         
-        public static void ApplyEnmity(NWPlayer pc, NWCreature target, Data.Entity.Perk perk)
+        public static void ApplyEnmity(NWCreature attacker, NWCreature target, Data.Entity.Perk perk)
         {
             switch ((EnmityAdjustmentRuleType)perk.EnmityAdjustmentRuleID)
             {
                 case EnmityAdjustmentRuleType.AllTaggedTargets:
-                    EnmityService.AdjustEnmityOnAllTaggedCreatures(pc, perk.Enmity);
+                    EnmityService.AdjustEnmityOnAllTaggedCreatures(attacker, perk.Enmity);
                     break;
                 case EnmityAdjustmentRuleType.TargetOnly:
                     if (target.IsValid)
                     {
-                        EnmityService.AdjustEnmity(target, pc, perk.Enmity);
+                        EnmityService.AdjustEnmity(target, attacker, perk.Enmity);
                     }
                     break;
                 case EnmityAdjustmentRuleType.Custom:
                     var handler = PerkService.GetPerkHandler(perk.ID);
-                    handler.OnCustomEnmityRule(pc, perk.Enmity);
+                    handler.OnCustomEnmityRule(attacker, perk.Enmity);
                     break;
             }
         }
 
-        private static void ActivateAbility(NWPlayer pc,
-                               NWObject target,
-                               Data.Entity.Perk entity,
-                               IPerkHandler perkHandler,
-                               int pcPerkLevel,
-                               PerkExecutionType executionType,
-                               int spellTier)
+        private static void ActivateAbility(
+            NWCreature activator,
+            NWObject target,
+            Data.Entity.Perk entity,
+            IPerkHandler perkHandler,
+            int pcPerkLevel,
+            PerkExecutionType executionType,
+            int spellTier)
         {
             string uuid = Guid.NewGuid().ToString();
-            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(pc);
-            int itemBonus = effectiveStats.CastingSpeed;
-            float baseActivationTime = perkHandler.CastingTime(pc, (float)entity.BaseCastingTime, spellTier);
+            float baseActivationTime = perkHandler.CastingTime(activator, (float)entity.BaseCastingTime, spellTier);
             float activationTime = baseActivationTime;
             int vfxID = -1;
             int animationID = -1;
-
-            // Activation Bonus % - Shorten activation time.
-            if (itemBonus > 0)
-            {
-                float activationBonus = Math.Abs(itemBonus) * 0.01f;
-                activationTime = activationTime - activationTime * activationBonus;
-            }
-            // Activation Penalty % - Increase activation time.
-            else if (itemBonus < 0)
-            {
-                float activationPenalty = Math.Abs(itemBonus) * 0.01f;
-                activationTime = activationTime + activationTime * activationPenalty;
-            }
-
+            
             if (baseActivationTime > 0f && activationTime < 1.0f)
                 activationTime = 1.0f;
 
@@ -363,7 +468,7 @@ namespace SWLOR.Game.Server.Service
                 executionType == PerkExecutionType.ConcentrationAbility)
             {
                 string penaltyMessage = string.Empty;
-                foreach (var item in pc.EquippedItems)
+                foreach (var item in activator.EquippedItems)
                 {
                     if (item.CustomItemType == CustomItemType.HeavyArmor)
                     {
@@ -381,18 +486,18 @@ namespace SWLOR.Game.Server.Service
                 // If there's an armor penalty, send a message to the player.
                 if (armorPenalty > 0.0f)
                 {
-                    pc.SendMessage(penaltyMessage);
+                    activator.SendMessage(penaltyMessage);
                 }
 
             }
 
             // If player is in stealth mode, force them out of stealth mode.
-            if (_.GetActionMode(pc.Object, ACTION_MODE_STEALTH) == 1)
-                _.SetActionMode(pc.Object, ACTION_MODE_STEALTH, 0);
+            if (_.GetActionMode(activator.Object, ACTION_MODE_STEALTH) == 1)
+                _.SetActionMode(activator.Object, ACTION_MODE_STEALTH, 0);
 
             // Make the player face their target.
             _.ClearAllActions();
-            BiowarePosition.TurnToFaceObject(target, pc);
+            BiowarePosition.TurnToFaceObject(target, activator);
 
             // Force and Concentration Abilities will display a visual effect during the casting process.
             if (executionType == PerkExecutionType.ForceAbility || 
@@ -404,7 +509,7 @@ namespace SWLOR.Game.Server.Service
 
             if (executionType == PerkExecutionType.ConcentrationAbility)
             {
-                pc.SetLocalObject("CONCENTRATION_TARGET", target);
+                activator.SetLocalObject("CONCENTRATION_TARGET", target);
             }
 
             // If a VFX ID has been specified, play that effect instead of the default one.
@@ -412,32 +517,33 @@ namespace SWLOR.Game.Server.Service
             {
                 var vfx = _.EffectVisualEffect(vfxID);
                 vfx = _.TagEffect(vfx, "ACTIVATION_VFX");
-                _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, vfx, pc.Object, activationTime + 0.2f);
+                _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, vfx, activator.Object, activationTime + 0.2f);
             }
 
             // If an animation has been specified, make the player play that animation now.
-            if (animationID > -1)
+            // bypassing if perk is throw saber due to couldn't get the animation to work via db table edit
+            if (animationID > -1 && entity.ID != (int) PerkType.ThrowSaber)                
             {
-                pc.AssignCommand(() => _.ActionPlayAnimation(animationID, 1.0f, activationTime - 0.1f));
+                activator.AssignCommand(() => _.ActionPlayAnimation(animationID, 1.0f, activationTime - 0.1f));
             }
 
             // Mark player as busy. Busy players can't take other actions (crafting, harvesting, etc.)
-            pc.IsBusy = true;
+            activator.IsBusy = true;
 
             // Begin the check for spell interruption. If the player moves, the spell will be canceled.
-            CheckForSpellInterruption(pc, uuid, pc.Position);
-            pc.SetLocalInt(uuid, (int)SpellStatusType.Started);
+            CheckForSpellInterruption(activator, uuid, activator.Position);
+            activator.SetLocalInt(uuid, (int)SpellStatusType.Started);
 
             // If there's a casting delay, display a timing bar on-screen.
             if (activationTime > 0)
             {
-                NWNXPlayer.StartGuiTimingBar(pc, (int)activationTime, string.Empty);
+                NWNXPlayer.StartGuiTimingBar(activator, (int)activationTime, string.Empty);
             }
 
             // Run the FinishAbilityUse event at the end of the activation time.
             int perkID = entity.ID;
-            pc.DelayEvent<FinishAbilityUse>(activationTime + 0.2f,
-                pc,
+            activator.DelayEvent<FinishAbilityUse>(activationTime + 0.2f,
+                activator,
                 uuid,
                 perkID,
                 target,
@@ -446,43 +552,67 @@ namespace SWLOR.Game.Server.Service
                 armorPenalty);
         }
 
-        public static void ApplyCooldown(NWPlayer pc, CooldownCategory cooldown, IPerkHandler ability, int spellTier, float percentAdjustment)
+        public static void ApplyCooldown(NWCreature creature, CooldownCategory cooldown, IPerkHandler handler, int spellTier, float armorPenalty)
         {
-            if (percentAdjustment <= 0.0f) percentAdjustment = 1.0f;
+            if (armorPenalty <= 0.0f) armorPenalty = 1.0f;
+            
+            // If player has a a cooldown recovery bonus on their equipment, apply that change now.
 
-            float finalCooldown = ability.CooldownTime(pc, (float)cooldown.BaseCooldownTime, spellTier) * percentAdjustment;
+            if (creature.IsPlayer)
+            {
+                var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(creature.Object);
+                if (effectiveStats.CooldownRecovery > 0)
+                {
+                    armorPenalty -= effectiveStats.CooldownRecovery;
+                }
+            }
+
+            // There's a cap of 50% cooldown reduction from equipment.
+            if (armorPenalty < 0.5f)
+                armorPenalty = 0.5f;
+
+            float finalCooldown = handler.CooldownTime(creature, (float)cooldown.BaseCooldownTime, spellTier) * armorPenalty;
             int cooldownSeconds = (int)finalCooldown;
             int cooldownMillis = (int)((finalCooldown - cooldownSeconds) * 100);
+            DateTime unlockDate = DateTime.UtcNow.AddSeconds(cooldownSeconds).AddMilliseconds(cooldownMillis);
 
-            PCCooldown pcCooldown = DataService.GetAll<PCCooldown>().Single(x => x.PlayerID == pc.GlobalID && x.CooldownCategoryID == cooldown.ID);
-            pcCooldown.DateUnlocked = DateTime.UtcNow.AddSeconds(cooldownSeconds).AddMilliseconds(cooldownMillis);
-            DataService.SubmitDataChange(pcCooldown, DatabaseActionType.Update);
+            if (creature.IsPlayer)
+            {
+                PCCooldown pcCooldown = DataService.Single<PCCooldown>(x => x.PlayerID == creature.GlobalID && x.CooldownCategoryID == cooldown.ID);
+                pcCooldown.DateUnlocked = unlockDate;
+                DataService.SubmitDataChange(pcCooldown, DatabaseActionType.Update);
+            }
+            else
+            {
+                string unlockDateString = unlockDate.ToString("yyyy-MM-dd hh:mm:ss");
+                creature.SetLocalString("ABILITY_COOLDOWN_ID_" + (int)handler.PerkType, unlockDateString);
+            }
         }
 
-        private static void CheckForSpellInterruption(NWPlayer pc, string spellUUID, Vector position)
+        private static void CheckForSpellInterruption(NWCreature activator, string spellUUID, Vector position)
         {
-            if (pc.GetLocalInt(spellUUID) == (int)SpellStatusType.Completed) return;
+            if (activator.GetLocalInt(spellUUID) == (int)SpellStatusType.Completed) return;
 
-            Vector currentPosition = pc.Position;
+            Vector currentPosition = activator.Position;
 
             if (currentPosition.m_X != position.m_X ||
                 currentPosition.m_Y != position.m_Y ||
                 currentPosition.m_Z != position.m_Z)
             {
-                var effect = pc.Effects.SingleOrDefault(x => _.GetEffectTag(x) == "ACTIVATION_VFX");
+                var effect = activator.Effects.SingleOrDefault(x => _.GetEffectTag(x) == "ACTIVATION_VFX");
                 if (effect != null)
                 {
-                    _.RemoveEffect(pc, effect);
+                    _.RemoveEffect(activator, effect);
                 }
 
-                NWNXPlayer.StopGuiTimingBar(pc, "", -1);
-                pc.IsBusy = false;
-                pc.SetLocalInt(spellUUID, (int)SpellStatusType.Interrupted);
-                pc.SendMessage("Your ability has been interrupted.");
+                NWNXPlayer.StopGuiTimingBar(activator, "", -1);
+                activator.IsBusy = false;
+                activator.SetLocalInt(spellUUID, (int)SpellStatusType.Interrupted);
+                activator.SendMessage("Your ability has been interrupted.");
                 return;
             }
 
-            _.DelayCommand(0.5f, () => { CheckForSpellInterruption(pc, spellUUID, position); });
+            _.DelayCommand(0.5f, () => { CheckForSpellInterruption(activator, spellUUID, position); });
         }
 
         private static void HandleQueueWeaponSkill(NWPlayer pc, Data.Entity.Perk entity, IPerkHandler ability, int spellFeatID)
@@ -511,7 +641,94 @@ namespace SWLOR.Game.Server.Service
             });
         }
 
-        public static Player RestoreFP(NWPlayer oPC, int amount, Player entity)
+        /// <summary>
+        /// Returns the current FP amount of a creature.
+        /// </summary>
+        /// <param name="creature">The creature whose FP we're getting.</param>
+        /// <returns>The amount of FP the creature currently has.</returns>
+        public static int GetCurrentFP(NWCreature creature)
+        {
+            if (creature.IsPlayer)
+            {
+                var player = DataService.Get<Player>(creature.GlobalID);
+                return player.CurrentFP;
+            }
+            else
+            {
+                return creature.GetLocalInt("CURRENT_FP");
+            }
+        }
+
+        /// <summary>
+        /// Sets the current FP amount of a creature to a specific value.
+        /// This value must be between 0 and the creature's maximum FP.
+        /// </summary>
+        /// <param name="creature">The creature whose FP we're setting.</param>
+        /// <param name="amount">The amount of FP to set it to.</param>
+        public static void SetCurrentFP(NWCreature creature, int amount)
+        {
+            if (amount < 0) amount = 0;
+
+            if (creature.IsPlayer)
+            {
+                var player = DataService.Get<Player>(creature.GlobalID);
+                if (amount > player.MaxFP) amount = player.MaxFP;
+
+                player.CurrentFP = amount;
+                DataService.SubmitDataChange(player, DatabaseActionType.Update);
+            }
+            else
+            {
+                int maxFP = creature.GetLocalInt("MAX_FP");
+                if (amount > maxFP) amount = maxFP;
+                creature.SetLocalInt("CURRENT_FP", amount);
+            }
+        }
+
+        /// <summary>
+        /// Retrieves the maximum FP a creature has.
+        /// </summary>
+        /// <param name="creature">The creature whose max FP we're getting.</param>
+        /// <returns>The max FP a creature has.</returns>
+        public static int GetMaxFP(NWCreature creature)
+        {
+            if (creature.IsPlayer)
+            {
+                var player = DataService.Get<Player>(creature.GlobalID);
+                return player.MaxFP;
+            }
+            else
+            {
+                return creature.GetLocalInt("MAX_FP");
+            }
+        }
+
+        /// <summary>
+        /// Sets the max FP for a creature to a specific amount.
+        /// </summary>
+        /// <param name="creature">The creature whose max FP we're setting.</param>
+        /// <param name="amount">The amount of max FP to assign to the creature.</param>
+        public static void SetMaxFP(NWCreature creature, int amount)
+        {
+            if (amount < 0) amount = 0;
+
+            if (creature.IsPlayer)
+            {
+                var player = DataService.Get<Player>(creature.GlobalID);
+                player.MaxFP = amount;
+                if (player.CurrentFP > player.MaxFP)
+                    player.CurrentFP = player.MaxFP;
+                DataService.SubmitDataChange(player, DatabaseActionType.Update);
+            }
+            else
+            {
+                if(creature.GetLocalInt("CURRENT_FP") > amount)
+                    creature.SetLocalInt("CURRENT_FP", amount);
+                creature.SetLocalInt("MAX_FP", amount);
+            }
+        }
+
+        public static Player RestorePlayerFP(NWPlayer oPC, int amount, Player entity)
         {
             entity.CurrentFP = entity.CurrentFP + amount;
             if (entity.CurrentFP > entity.MaxFP)
@@ -522,10 +739,10 @@ namespace SWLOR.Game.Server.Service
             return entity;
         }
 
-        public static void RestoreFP(NWPlayer oPC, int amount)
+        public static void RestorePlayerFP(NWPlayer oPC, int amount)
         {
             Player entity = DataService.Get<Player>(oPC.GlobalID);
-            RestoreFP(oPC, amount, entity);
+            RestorePlayerFP(oPC, amount, entity);
             DataService.SubmitDataChange(entity, DatabaseActionType.Update);
         }
 
@@ -584,7 +801,7 @@ namespace SWLOR.Game.Server.Service
             if (player.GetLocalInt("PLASMA_CELL_TOGGLE_OFF") == _.TRUE) return;  // Check if Plasma Cell toggle is on or off
             if (target.GetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN") == _.TRUE) return;
 
-            int perkLevel = PerkService.GetPCPerkLevel(player, PerkType.PlasmaCell);
+            int perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.PlasmaCell);
             int chance;
             CustomEffectType[] damageTypes;
             switch (perkLevel)
@@ -648,7 +865,7 @@ namespace SWLOR.Game.Server.Service
             NWItem weapon = _.GetSpellCastItem();
             if (weapon.BaseItemType != BASE_ITEM_GRENADE) return;
 
-            int perkLevel = PerkService.GetPCPerkLevel(oPC, PerkType.GrenadeProficiency);
+            int perkLevel = PerkService.GetCreaturePerkLevel(oPC, PerkType.GrenadeProficiency);
             int chance = 10 * perkLevel;
             float duration;
 

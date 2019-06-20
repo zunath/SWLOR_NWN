@@ -69,9 +69,9 @@ WHERE PerkID = 103 AND Level = 7
 
 
 -- Update craft blueprint names for mods
-UPDATE dbo.CraftBlueprint SET ItemName = 'Activation Speed +1' WHERE ID=121
-UPDATE dbo.CraftBlueprint SET ItemName = 'Activation Speed +2' WHERE ID=152
-UPDATE dbo.CraftBlueprint SET ItemName = 'Activation Speed +3' WHERE ID=184
+UPDATE dbo.CraftBlueprint SET ItemName = 'Cooldown Reduction +1' WHERE ID=121
+UPDATE dbo.CraftBlueprint SET ItemName = 'Cooldown Reduction +2' WHERE ID=152
+UPDATE dbo.CraftBlueprint SET ItemName = 'Cooldown Reduction +3' WHERE ID=184
 UPDATE dbo.CraftBlueprint SET ItemName = 'Armor Class +1' WHERE ID=127
 UPDATE dbo.CraftBlueprint SET ItemName = 'Armor Class +2' WHERE ID=160
 UPDATE dbo.CraftBlueprint SET ItemName = 'Armor Class +3' WHERE ID=190

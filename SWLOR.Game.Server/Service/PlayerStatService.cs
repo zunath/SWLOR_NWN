@@ -169,6 +169,12 @@ namespace SWLOR.Game.Server.Service
 
                 DataService.SubmitDataChange(pcEntity, DatabaseActionType.Update);
             }
+
+            // Attempt a refresh of the character sheet UI in a second.
+            _.DelayCommand(1.0f, () =>
+            {
+                NWNXPlayer.UpdateCharacterSheet(player);
+            });
         }
 
 
@@ -196,7 +202,7 @@ namespace SWLOR.Game.Server.Service
             int hp = 25 + player.ConstitutionModifier * 5;
             float effectPercentBonus = CustomEffectService.CalculateEffectHPBonusPercent(player);
             
-            hp += PerkService.GetPCPerkLevel(player, PerkType.Health) * 5;
+            hp += PerkService.GetCreaturePerkLevel(player, PerkType.Health) * 5;
             hp += stats.HP;
             hp = hp + (int)(hp * effectPercentBonus);
 
@@ -210,7 +216,7 @@ namespace SWLOR.Game.Server.Service
         {
             int fp = 20;
             fp += (player.IntelligenceModifier + player.WisdomModifier + player.CharismaModifier) * 5;
-            fp += PerkService.GetPCPerkLevel(player, PerkType.FP) * 5;
+            fp += PerkService.GetCreaturePerkLevel(player, PerkType.FP) * 5;
             fp += stats.FP;
 
             if (fp < 0) fp = 0;
@@ -221,6 +227,28 @@ namespace SWLOR.Game.Server.Service
         private static int EffectiveArmorClass(EffectiveItemStats stats, NWPlayer player)
         {
             int baseAC = stats.AC / 3 + CustomEffectService.CalculateEffectAC(player);
+
+            // Calculate AC bonus granted by skill ranks.
+            // Only chest armor is checked for this bonus.
+            CustomItemType armorType = player.Chest.CustomItemType;
+            int skillRank = 0;
+            switch (armorType)
+            {
+                case CustomItemType.LightArmor:
+                    skillRank = SkillService.GetPCSkillRank(player, SkillType.LightArmor);
+                    break;
+                case CustomItemType.HeavyArmor:
+                    skillRank = SkillService.GetPCSkillRank(player, SkillType.HeavyArmor);
+                    break;
+                case CustomItemType.ForceArmor:
+                    skillRank = SkillService.GetPCSkillRank(player, SkillType.ForceArmor);
+                    break;
+            }
+
+            // +1 AC per 20 skill ranks, while wearing the appropriate armor.
+            int skillACBonus = skillRank / 20;
+            baseAC += skillACBonus;
+
             int totalAC = _.GetAC(player) - baseAC;
             
             // Shield Oath and Precision Targeting affect a percentage of the TOTAL armor class on a creature.
@@ -228,12 +256,12 @@ namespace SWLOR.Game.Server.Service
             if (stance == CustomEffectType.ShieldOath)
             {
                 int bonus = (int) (totalAC * 0.2f);
-                baseAC = baseAC + bonus;
+                baseAC += bonus;
             }
             else if (stance == CustomEffectType.PrecisionTargeting)
             {
                 int penalty = (int)(totalAC * 0.3f);
-                baseAC = baseAC - penalty;
+                baseAC -= penalty;
             }
 
             if (baseAC < 0) baseAC = 0;
@@ -279,12 +307,12 @@ namespace SWLOR.Game.Server.Service
 
                         using (new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::ItemLoop::StatAdjustments"))
                         {
-                            // Only scale casting speed if it's a bonus. Penalties remain regardless of skill level difference.
-                            if (item.CastingSpeed > 0)
+                            // Only scale cooldown recovery if it's a bonus. Penalties remain regardless of skill level difference.
+                            if (item.CooldownRecovery > 0)
                             {
-                                stats.CastingSpeed += CalculateAdjustedValue(item.CastingSpeed, item.RecommendedLevel, rank, 1);
+                                stats.CooldownRecovery += CalculateAdjustedValue(item.CooldownRecovery, item.RecommendedLevel, rank, 1);
                             }
-                            else stats.CastingSpeed += item.CastingSpeed;
+                            else stats.CooldownRecovery += item.CooldownRecovery;
 
                             stats.EnmityRate += CalculateAdjustedValue(0.01f * item.EnmityRate, item.RecommendedLevel, rank, 0.00f);
                             
@@ -366,10 +394,10 @@ namespace SWLOR.Game.Server.Service
                 using (new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::FinalAdjustments"))
                 {
                     // Final casting speed adjustments
-                    if (stats.CastingSpeed < -99)
-                        stats.CastingSpeed = -99;
-                    else if (stats.CastingSpeed > 99)
-                        stats.CastingSpeed = 99;
+                    if (stats.CooldownRecovery < -99)
+                        stats.CooldownRecovery = -99;
+                    else if (stats.CooldownRecovery > 99)
+                        stats.CooldownRecovery = 99;
 
                     // Final enmity adjustments
                     if (stats.EnmityRate < 0.5f) stats.EnmityRate = 0.5f;
@@ -488,81 +516,32 @@ namespace SWLOR.Game.Server.Service
             int backgroundBAB = 0;
             BackgroundType background = (BackgroundType)oPC.Class1;
             bool receivesBackgroundBonus = false;
-
-            // Apply increased BAB if player is using a weapon for which they have a proficiency.
-            PerkType proficiencyPerk = PerkType.Unknown;
-            SkillType proficiencySkill = SkillType.Unknown;
+            
             switch (weapon.CustomItemType)
             {
-                case CustomItemType.Vibroblade:
-                    proficiencyPerk = PerkType.VibrobladeProficiency;
-                    proficiencySkill = SkillType.OneHanded;
-                    break;
                 case CustomItemType.FinesseVibroblade:
-                    proficiencyPerk = PerkType.FinesseVibrobladeProficiency;
-                    proficiencySkill = SkillType.OneHanded;
                     receivesBackgroundBonus = background == BackgroundType.Duelist;
                     break;
                 case CustomItemType.Baton:
-                    proficiencyPerk = PerkType.BatonProficiency;
-                    proficiencySkill = SkillType.OneHanded;
                     receivesBackgroundBonus = background == BackgroundType.SecurityOfficer;
                     break;
                 case CustomItemType.HeavyVibroblade:
-                    proficiencyPerk = PerkType.HeavyVibrobladeProficiency;
-                    proficiencySkill = SkillType.TwoHanded;
                     receivesBackgroundBonus = background == BackgroundType.Soldier;
                     break;
-                case CustomItemType.Saberstaff:
-                    proficiencyPerk = PerkType.SaberstaffProficiency;
-                    proficiencySkill = SkillType.Lightsaber;
-                    break;
-                case CustomItemType.Polearm:
-                    proficiencyPerk = PerkType.PolearmProficiency;
-                    proficiencySkill = SkillType.TwoHanded;
-                    break;
                 case CustomItemType.TwinBlade:
-                    proficiencyPerk = PerkType.TwinVibrobladeProficiency;
-                    proficiencySkill = SkillType.TwinBlades;
                     receivesBackgroundBonus = background == BackgroundType.Berserker;
                     break;
                 case CustomItemType.MartialArtWeapon:
-                    proficiencyPerk = PerkType.MartialArtsProficiency;
-                    proficiencySkill = SkillType.MartialArts;
                     receivesBackgroundBonus = background == BackgroundType.TerasKasi;
                     break;
                 case CustomItemType.BlasterPistol:
-                    proficiencyPerk = PerkType.BlasterPistolProficiency;
-                    proficiencySkill = SkillType.Firearms;
                     receivesBackgroundBonus = background == BackgroundType.Smuggler;
                     break;
                 case CustomItemType.BlasterRifle:
-                    proficiencyPerk = PerkType.BlasterRifleProficiency;
-                    proficiencySkill = SkillType.Firearms;
                     receivesBackgroundBonus = background == BackgroundType.Sharpshooter || background == BackgroundType.Mandalorian;
                     break;
-                case CustomItemType.Throwing:
-                    proficiencyPerk = PerkType.ThrowingProficiency;
-                    proficiencySkill = SkillType.Throwing;
-                    break;
-                case CustomItemType.Lightsaber:
-                    proficiencyPerk = PerkType.LightsaberProficiency;
-                    proficiencySkill = SkillType.Lightsaber;
-                    break;
             }
-
-            if (weapon.GetLocalInt("LIGHTSABER") == TRUE)
-            {
-                proficiencyPerk = PerkType.LightsaberProficiency;
-                proficiencySkill = SkillType.Lightsaber;
-            }
-
-            if (proficiencyPerk != PerkType.Unknown &&
-                proficiencySkill != SkillType.Unknown)
-            {
-                perkBAB += PerkService.GetPCPerkLevel(oPC, proficiencyPerk);
-            }
-
+            
             if (receivesBackgroundBonus)
             {
                 backgroundBAB = background == BackgroundType.Mandalorian ? 1 : 2;

@@ -13,52 +13,52 @@ namespace SWLOR.Game.Server.Perk.ForceControl
     public class MindShield: IPerkHandler
     {
         public PerkType PerkType => PerkType.MindShield;
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier)
+        public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             return string.Empty;
         }
         
-        public int FPCost(NWPlayer oPC, int baseFPCost, int spellTier)
+        public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellTier)
+        public float CastingTime(NWCreature oPC, float baseCastingTime, int spellTier)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellTier)
+        public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)
         {
             return baseCooldownTime;
         }
 
-        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellTier)
+        public int? CooldownCategoryID(NWCreature creature, int? baseCooldownCategoryID, int spellTier)
         {
             return baseCooldownCategoryID;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellTier)
+        public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
         }
 
-        public void OnPurchased(NWPlayer oPC, int newLevel)
+        public void OnPurchased(NWCreature creature, int newLevel)
         {
         }
 
-        public void OnRemoved(NWPlayer oPC)
+        public void OnRemoved(NWCreature creature)
         {
         }
 
-        public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemEquipped(NWCreature creature, NWItem oItem)
         {
         }
 
-        public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemUnequipped(NWCreature creature, NWItem oItem)
         {
         }
 
-        public void OnCustomEnmityRule(NWPlayer oPC, int amount)
+        public void OnCustomEnmityRule(NWCreature creature, int amount)
         {
         }
 
@@ -67,15 +67,14 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             return false;
         }
 
-        public void OnConcentrationTick(NWPlayer player, NWObject target, int spellTier, int tick)
+        public void OnConcentrationTick(NWCreature creature, NWObject target, int spellTier, int tick)
         {
-            ApplyEffect(player, target, spellTier);
+            ApplyEffect(creature, target, spellTier);
         }
 
-        private void ApplyEffect(NWPlayer player, NWObject target, int spellTier)
+        private void ApplyEffect(NWCreature creature, NWObject target, int spellTier)
         {
-
-            Effect effectMindShield = new Effect();               
+            Effect effectMindShield;
 
             // Handle effects for differing spellTier values
             switch (spellTier)
@@ -83,7 +82,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
                 case 1:
                     effectMindShield =_.EffectImmunity(IMMUNITY_TYPE_DAZED);
 
-                    player.AssignCommand(() =>
+                    creature.AssignCommand(() =>
                     {
                         _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effectMindShield, target, 6.1f);
                     });
@@ -93,7 +92,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
                     effectMindShield = _.EffectLinkEffects(effectMindShield, _.EffectImmunity(IMMUNITY_TYPE_CONFUSED));
                     effectMindShield = _.EffectLinkEffects(effectMindShield, _.EffectImmunity(IMMUNITY_TYPE_DOMINATE)); // Force Pursuade is DOMINATION effect
 
-                    player.AssignCommand(() =>
+                    creature.AssignCommand(() =>
                     {
                         _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effectMindShield, target, 6.1f);
                     });
@@ -105,13 +104,13 @@ namespace SWLOR.Game.Server.Perk.ForceControl
 
                     if (target.GetLocalInt("FORCE_DRAIN_IMMUNITY") == 1)
                 
-                    player.SetLocalInt("FORCE_DRAIN_IMMUNITY",0);                   
-                    player.DelayAssignCommand(() =>
+                    creature.SetLocalInt("FORCE_DRAIN_IMMUNITY",0);                   
+                    creature.DelayAssignCommand(() =>
                     {
-                        player.DeleteLocalInt("FORCE_DRAIN_IMMUNITY");
+                        creature.DeleteLocalInt("FORCE_DRAIN_IMMUNITY");
                     },6.1f);
 
-                    player.AssignCommand(() =>
+                    creature.AssignCommand(() =>
                     {
                         _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effectMindShield, target, 6.1f);
                     });

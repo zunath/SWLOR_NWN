@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Event.Delayed
                 return;
             }
 
-            int luckyBonus = PerkService.GetPCPerkLevel(player, PerkType.Lucky);
+            int luckyBonus = PerkService.GetCreaturePerkLevel(player, PerkType.Lucky);
             var craftedItems = new List<NWItem>();
             NWItem craftedItem = (_.CreateItemOnObject(blueprint.ItemResref, player.Object, blueprint.Quantity));
             craftedItem.IsIdentified = true;

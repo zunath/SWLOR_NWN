@@ -11,14 +11,7 @@ namespace SWLOR.Game.Server.GameObject
         {
         }
 
-        public virtual bool IsBusy
-        {
-            get => GetLocalInt("IS_BUSY") == 1;
-            set => SetLocalInt("IS_BUSY", value ? 1 : 0);
-        }
-
-
-        public virtual IEnumerable<NWPlayer> PartyMembers
+        public override IEnumerable<NWCreature> PartyMembers
         {
             get
             {

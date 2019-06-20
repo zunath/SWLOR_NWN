@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Linq;
 using NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
-
 using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
@@ -13,7 +11,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
     public class ForceStun: IPerkHandler
     {
         public PerkType PerkType => PerkType.ForceStun;
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier)
+        public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             NWCreature targetCreature = oTarget.Object;
             var concentrationEffect = AbilityService.GetActiveConcentrationEffect(targetCreature);
@@ -45,47 +43,47 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             return string.Empty;
         }
         
-        public int FPCost(NWPlayer oPC, int baseFPCost, int spellTier)
+        public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellTier)
+        public float CastingTime(NWCreature oPC, float baseCastingTime, int spellTier)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellTier)
+        public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)
         {
             return baseCooldownTime;
         }
 
-        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellTier)
+        public int? CooldownCategoryID(NWCreature creature, int? baseCooldownCategoryID, int spellTier)
         {
             return baseCooldownCategoryID;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellTier)
+        public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
         }
 
-        public void OnPurchased(NWPlayer oPC, int newLevel)
+        public void OnPurchased(NWCreature creature, int newLevel)
         {
         }
 
-        public void OnRemoved(NWPlayer oPC)
+        public void OnRemoved(NWCreature creature)
         {
         }
 
-        public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemEquipped(NWCreature creature, NWItem oItem)
         {
         }
 
-        public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemUnequipped(NWCreature creature, NWItem oItem)
         {
         }
 
-        public void OnCustomEnmityRule(NWPlayer oPC, int amount)
+        public void OnCustomEnmityRule(NWCreature creature, int amount)
         {
         }
 
@@ -94,184 +92,93 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             return false;
         }
 
-        public void OnConcentrationTick(NWPlayer player, NWObject target, int perkLevel, int tick)
+        public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            ApplyEffect(player, target, perkLevel);
+            ApplyEffect(creature, target, perkLevel);
         }
 
-        private void ApplyEffect(NWPlayer player, NWObject target, int spellTier)
+        private void RunEffect(NWCreature creature, NWObject target)
         {
             var concentrationEffect = AbilityService.GetActiveConcentrationEffect(target.Object);
-            AbilityResistanceResult result = new AbilityResistanceResult();
-            float radiusSize = 10;
+
+            if (concentrationEffect.Type == PerkType.MindShield)
+            {
+                creature.SendMessage("Your target is immune to tranquilization effects.");
+                return;
+            }
+
+            AbilityResistanceResult result = CombatService.CalculateAbilityResistance(creature, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark);
+            
+            // Tranquilization effect - Daze target(s). Occurs on succeeding the DC check.
+            Effect successEffect = EffectDazed();
+            successEffect = EffectLinkEffects(successEffect, EffectVisualEffect(VFX_DUR_IOUNSTONE_BLUE));
+            successEffect = TagEffect(successEffect, "TRANQUILIZER_EFFECT");
+
+            // AC & AB decrease effect - Occurs on failing the DC check.
+            Effect failureEffect = EffectLinkEffects(EffectAttackDecrease(5), EffectACDecrease(5));
+
+
+            if (!result.IsResisted)
+            {
+                creature.AssignCommand(() =>
+                {
+                    ApplyEffectToObject(DURATION_TYPE_TEMPORARY, successEffect, target, 6.1f);
+                });
+            }
+            else
+            {
+                creature.AssignCommand(() =>
+                {
+                    ApplyEffectToObject(DURATION_TYPE_TEMPORARY, failureEffect, target, 6.1f);
+                });
+            }
+
+            if (creature.IsPlayer)
+            {
+                SkillService.RegisterPCToNPCForSkill(creature.Object, target, SkillType.ForceAlter);
+            }
+
+            EnmityService.AdjustEnmity(target.Object, creature, 1);
+        }
+
+        private void ApplyEffect(NWCreature creature, NWObject target, int spellTier)
+        {
+            const float radiusSize = 10.0f;
             NWCreature targetCreature;
-
-            int effectCount = 0;
-            Effect effectTranq = _.EffectDazed();
-            effectTranq = _.EffectLinkEffects(effectTranq, _.EffectVisualEffect(VFX_DUR_IOUNSTONE_BLUE));
-            effectTranq = _.TagEffect(effectTranq, "TRANQUILIZER_EFFECT");
-
-            Effect effectAbilityDecrease = _.EffectACDecrease(5);
-            effectAbilityDecrease = _.EffectLinkEffects(effectTranq, _.EffectAttackDecrease(5));
-            effectAbilityDecrease = _.TagEffect(effectTranq, "TRANQUILIZER_EFFECT");
-
-            // Handle effects for differing spellTier values
+            
             switch (spellTier)
             {
+                // Tier 1 - Single target is Tranquilized or, if resisted, receives -5 to AB and AC
                 case 1:
-                    concentrationEffect = AbilityService.GetActiveConcentrationEffect(target.Object);
-                    if (concentrationEffect.Type == PerkType.MindShield)
-                    {
-                        player.SendMessage("Your target is immune to tranquilization effects.");
-                        return;
-                    }
-
-                    targetCreature = target.Object;
-
-                    result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark, true);
-
-                    if (!result.IsResisted)
-                    {
-                        player.AssignCommand(() =>
-                        {
-                            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effectTranq, target, 6.1f);
-                        });
-                        SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
-                    }
-                    else
-                    {
-                        player.AssignCommand(() =>
-                        {
-                            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effectAbilityDecrease, target, 6.1f);
-                        });
-                        SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
-                    }
-
+                    RunEffect(creature, target);
                     break;
+                // Tier 2 - Target and nearest other enemy within 10m are tranquilized using tier 1 rules.
                 case 2:
-                    // handle target
-                    concentrationEffect = AbilityService.GetActiveConcentrationEffect(target.Object);
-                    if (concentrationEffect.Type == PerkType.MindShield)
-                    {
-                        player.SendMessage("Your target is immune to tranquilization effects.");
-                        return;
-                    }
-
-                    targetCreature = target.Object;
-
-                    result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark, true);
-
-                    if (!result.IsResisted)
-                    {
-                        player.AssignCommand(() =>
-                        {
-                            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effectTranq, target, 6.1f);
-                        });
-                        SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
-                    }
-                    else
-                    {
-                        player.AssignCommand(() =>
-                        {
-                            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effectAbilityDecrease, target, 6.1f);
-                        });
-                        SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
-                    }
-
-                    targetCreature = _.GetFirstObjectInShape(_.SHAPE_SPHERE, radiusSize, player.Location, 1, _.OBJECT_TYPE_CREATURE);                    
-                    while (targetCreature.IsValid && effectCount < 1)
-                    {
-                        // handle target
-                        concentrationEffect = AbilityService.GetActiveConcentrationEffect(target.Object);
-                        if (concentrationEffect.Type == PerkType.MindShield)
-                        {
-                            continue;
-                        }
-
-                        targetCreature = target.Object;
-
-                        result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark, true);
-
-                        if (!result.IsResisted)
-                        {
-                            player.AssignCommand(() =>
-                            {
-                                _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effectTranq, target, 6.1f);
-                            });
-                            SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
-                        }
-                        else
-                        {
-                            player.AssignCommand(() =>
-                            {
-                                _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effectAbilityDecrease, target, 6.1f);
-                            });
-                            SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
-                        }
-                        effectCount += 1;
-                    }
-                    break;
-                case 3:
-                    // handle target
-                    concentrationEffect = AbilityService.GetActiveConcentrationEffect(target.Object);
-                    if (concentrationEffect.Type == PerkType.MindShield)
-                    {
-                        player.SendMessage("Your target is immune to tranquilization effects.");
-                        return;
-                    }
-
-                    targetCreature = target.Object;
-
-                    result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark, true);
-
-                    if (!result.IsResisted)
-                    {
-                        player.AssignCommand(() =>
-                        {
-                            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effectTranq, target, 6.1f);
-                        });
-                        SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
-                    }
-                    else
-                    {
-                        player.AssignCommand(() =>
-                        {
-                            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effectAbilityDecrease, target, 6.1f);
-                        });
-                        SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
-                    }
-
-                    targetCreature = _.GetFirstObjectInShape(_.SHAPE_SPHERE, radiusSize, player.Location, 1, _.OBJECT_TYPE_CREATURE);
+                    RunEffect(creature, target);
+                    
+                    // Target the next nearest creature and do the same thing.
+                    targetCreature = GetFirstObjectInShape(SHAPE_SPHERE, radiusSize, creature.Location, TRUE);
                     while (targetCreature.IsValid)
                     {
-                        // handle target
-                        concentrationEffect = AbilityService.GetActiveConcentrationEffect(target.Object);
-                        if (concentrationEffect.Type == PerkType.MindShield)
+                        if (targetCreature != target)
                         {
-                            continue;
+                            // Apply to nearest other creature, then exit loop.
+                            RunEffect(creature, target);
+                            break;
                         }
 
-                        targetCreature = target.Object;
-
-                        result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark, true);
-
-                        if (!result.IsResisted)
-                        {
-                            player.AssignCommand(() =>
-                            {
-                                _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effectTranq, target, 6.1f);
-                            });
-                            SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
-                        }
-                        else
-                        {
-                            player.AssignCommand(() =>
-                            {
-                                _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effectAbilityDecrease, target, 6.1f);
-                            });
-                            SkillService.RegisterPCToNPCForSkill(player, target, SkillType.ForceAlter);
-                        }
-                        effectCount += 1;
+                        targetCreature = GetNextObjectInShape(SHAPE_SPHERE, radiusSize, creature.Location, TRUE);
+                    }
+                    break;
+                // Tier 3 - All creatures within 10m are tranquilized using tier 1 rules.
+                case 3:
+                    RunEffect(creature, target);
+                    
+                    targetCreature = GetFirstObjectInShape(SHAPE_SPHERE, radiusSize, creature.Location, TRUE);
+                    while (targetCreature.IsValid)
+                    {
+                        RunEffect(creature, target);
+                        targetCreature = GetNextObjectInShape(SHAPE_SPHERE, radiusSize, creature.Location, TRUE);
                     }
                     break;
                 default:

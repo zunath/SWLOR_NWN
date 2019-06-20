@@ -9,53 +9,53 @@ namespace SWLOR.Game.Server.Perk.ForceControl
     public class Rage: IPerkHandler
     {
         public PerkType PerkType => PerkType.Rage;
-        public string CanCastSpell(NWPlayer oPC, NWObject oTarget, int spellTier)
+        public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             return string.Empty;
         }
         
-        public int FPCost(NWPlayer oPC, int baseFPCost, int spellTier)
+        public int FPCost(NWCreature oPC, int baseFPCost, int spellTier)
         {
             return baseFPCost;
         }
 
-        public float CastingTime(NWPlayer oPC, float baseCastingTime, int spellTier)
+        public float CastingTime(NWCreature oPC, float baseCastingTime, int spellTier)
         {
             return baseCastingTime;
         }
 
-        public float CooldownTime(NWPlayer oPC, float baseCooldownTime, int spellTier)
+        public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)
         {
             return baseCooldownTime;
         }
 
-        public int? CooldownCategoryID(NWPlayer oPC, int? baseCooldownCategoryID, int spellTier)
+        public int? CooldownCategoryID(NWCreature creature, int? baseCooldownCategoryID, int spellTier)
         {
             return baseCooldownCategoryID;
         }
 
-        public void OnImpact(NWPlayer player, NWObject target, int perkLevel, int spellTier)
+        public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
-            ApplyEffect(player, target, spellTier);
+            ApplyEffect(creature, target, spellTier);
         }
 
-        public void OnPurchased(NWPlayer oPC, int newLevel)
-        {
-        }
-
-        public void OnRemoved(NWPlayer oPC)
+        public void OnPurchased(NWCreature creature, int newLevel)
         {
         }
 
-        public void OnItemEquipped(NWPlayer oPC, NWItem oItem)
+        public void OnRemoved(NWCreature creature)
         {
         }
 
-        public void OnItemUnequipped(NWPlayer oPC, NWItem oItem)
+        public void OnItemEquipped(NWCreature creature, NWItem oItem)
         {
         }
 
-        public void OnCustomEnmityRule(NWPlayer oPC, int amount)
+        public void OnItemUnequipped(NWCreature creature, NWItem oItem)
+        {
+        }
+
+        public void OnCustomEnmityRule(NWCreature creature, int amount)
         {
         }
 
@@ -64,15 +64,12 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             return false;
         }
 
-        public void OnConcentrationTick(NWPlayer player, NWObject target, int spellTier, int tick)
+        public void OnConcentrationTick(NWCreature creature, NWObject target, int spellTier, int tick)
         {
-            // this may be the cause of rage not refreshing
-            //if (tick % 6 != 0) return;
-
-            ApplyEffect(player, target, spellTier);
+            ApplyEffect(creature, target, spellTier);
         }
 
-        private void ApplyEffect(NWPlayer player, NWObject target, int spellTier)
+        private void ApplyEffect(NWCreature creature, NWObject target, int spellTier)
         {
             int strBonus;
             int conBonus;
@@ -122,11 +119,11 @@ namespace SWLOR.Game.Server.Perk.ForceControl
                     throw new ArgumentOutOfRangeException(nameof(spellTier));
             }
 
-            // If player can't afford the HP hit for this tick, bail out early.
+            // If creature can't afford the HP hit for this tick, bail out early.
             if (target.CurrentHP < hpPenalty)
             {
-                AbilityService.EndConcentrationEffect(player);
-                player.SendMessage("Concentration effect has ended because you do not have enough HP to maintain it.");
+                AbilityService.EndConcentrationEffect(creature);
+                creature.SendMessage("Concentration effect has ended because you do not have enough HP to maintain it.");
                 return;
             }
 

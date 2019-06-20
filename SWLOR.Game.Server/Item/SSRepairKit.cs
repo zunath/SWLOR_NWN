@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Item
 
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            if (PerkService.GetPCPerkLevel(new NWPlayer(user), PerkType.CombatRepair) >= 2)
+            if (PerkService.GetCreaturePerkLevel(new NWPlayer(user), PerkType.CombatRepair) >= 2)
             {
                 return 6.0f;
             }
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Item
                 return "This starship is already fully repaired.";
             }
 
-            bool canRepair = (PerkService.GetPCPerkLevel(new NWPlayer(user), PerkType.CombatRepair) >= 1);
+            bool canRepair = (PerkService.GetCreaturePerkLevel(new NWPlayer(user), PerkType.CombatRepair) >= 1);
             PCBase pcBase = DataService.Get<PCBase>(pcbs.PCBaseID);
 
             if (!canRepair && SpaceService.IsLocationSpace(pcBase.ShipLocation))

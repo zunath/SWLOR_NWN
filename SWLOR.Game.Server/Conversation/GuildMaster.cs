@@ -31,12 +31,19 @@ namespace SWLOR.Game.Server.Conversation
             DialogPage taskDetailsPage = new DialogPage("<SET LATER>",
                 "Accept Task",
                 "Give Report");
+            DialogPage guildStorePage = new DialogPage("Which store would you like to view?",
+                "Rank 1",
+                "Rank 2",
+                "Rank 3",
+                "Rank 4",
+                "Rank 5");
 
             dialog.AddPage("MainPage", mainPage);
             dialog.AddPage("TellMePage", tellMePage);
             dialog.AddPage("RankTooLowPage", rankTooLowPage);
             dialog.AddPage("TaskListPage", taskListPage);
             dialog.AddPage("TaskDetailsPage", taskDetailsPage);
+            dialog.AddPage("GuildStorePage", guildStorePage);
             return dialog;
         }
 
@@ -77,6 +84,9 @@ namespace SWLOR.Game.Server.Conversation
                 case "TaskDetailsPage":
                     TaskDetailsPageResponses(responseID);
                     break;
+                case "GuildStorePage":
+                    GuildStoreResponses(responseID);
+                    break;
             }
         }
 
@@ -109,7 +119,7 @@ namespace SWLOR.Game.Server.Conversation
                     ChangePage("TaskListPage");
                     break;
                 case 3: // Show me the guild shop.
-                    HandleGuildShopPage();
+                    LoadGuildStorePage();
                     break;
             }
         }
@@ -131,7 +141,7 @@ namespace SWLOR.Game.Server.Conversation
             SetPageHeader("TellMePage", header);
         }
 
-        private void HandleGuildShopPage()
+        private void LoadGuildStorePage()
         {
             var player = GetPC();
             var model = GetDialogCustomData<Model>();
@@ -142,11 +152,34 @@ namespace SWLOR.Game.Server.Conversation
             {
                 ChangePage("RankTooLowPage");
             }
+            // Otherwise, show/hide options depending on player's rank at this guild.
+            else
+            {
+                SetResponseVisible("GuildStorePage", 1, pcGP.Rank >= 1);
+                SetResponseVisible("GuildStorePage", 2, pcGP.Rank >= 2);
+                SetResponseVisible("GuildStorePage", 3, pcGP.Rank >= 3);
+                SetResponseVisible("GuildStorePage", 4, pcGP.Rank >= 4);
+                SetResponseVisible("GuildStorePage", 5, pcGP.Rank >= 5);
+                ChangePage("GuildStorePage");
+            }
+        }
+
+        private void GuildStoreResponses(int responseID)
+        {
+            var player = GetPC();
+            var model = GetDialogCustomData<Model>();
+            var pcGP = DataService.Single<PCGuildPoint>(x => x.GuildID == (int)model.Guild && x.PlayerID == player.GlobalID);
+
+            // Check the player's rank and ensure they can access this store.
+            if (pcGP.Rank <= responseID)
+            {
+                ChangePage("RankTooLowPage");
+            }
             // Otherwise open up the shop the player has access to.
             else
             {
                 var speaker = GetDialogTarget();
-                string storeTag = speaker.GetLocalString("STORE_TAG_RANK_" + pcGP.Rank);
+                string storeTag = speaker.GetLocalString("STORE_TAG_RANK_" + responseID);
 
                 // Invalid local variable set.
                 if (string.IsNullOrWhiteSpace(storeTag))

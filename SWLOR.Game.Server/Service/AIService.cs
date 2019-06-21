@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using NWN;
 using SWLOR.Game.Server.AI.Contracts;
+using SWLOR.Game.Server.Event.Creature;
+using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;

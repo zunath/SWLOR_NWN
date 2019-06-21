@@ -118,6 +118,8 @@ namespace SWLOR.Game.Server.Service
             GetAll<DMRole>();
             GetAll<EnmityAdjustmentRule>();
             GetAll<FameRegion>();
+            GetAll<Guild>();
+            GetAll<GuildTask>();
             GetAll<GrowingPlant>();
             GetAll<ItemType>();
             GetAll<JukeboxSong>();
@@ -142,6 +144,7 @@ namespace SWLOR.Game.Server.Service
             RegisterEmptyCacheSet<PCCraftedBlueprint>();
             RegisterEmptyCacheSet<PCCustomEffect>();
             RegisterEmptyCacheSet<PCImpoundedItem>();
+            RegisterEmptyCacheSet<PCGuildPoint>();
             RegisterEmptyCacheSet<PCKeyItem>();
             RegisterEmptyCacheSet<PCMapPin>();
             RegisterEmptyCacheSet<PCMapProgression>();
@@ -265,6 +268,8 @@ namespace SWLOR.Game.Server.Service
                     SetIntoCache<BankItem>(item.ID, item);
                 foreach (var item in multi.Read<PCSkillPool>())
                     SetIntoCache<PCSkillPool>(item.ID, item);
+                foreach(var item in multi.Read<PCGuildPoint>())
+                    SetIntoCache<PCGuildPoint>(item.ID, item);
             }
             sw.Stop();
             Console.WriteLine("CachePlayerData took " + sw.ElapsedMilliseconds + " ms to run. Player ID = " + player.GlobalID);
@@ -324,6 +329,8 @@ namespace SWLOR.Game.Server.Service
                 DeleteFromCache<BankItem>(item.ID);
             foreach(var item in Where<PCSkillPool>(x => x.PlayerID == id).ToList())
                 DeleteFromCache<PCSkillPool>(item.ID);
+            foreach(var item in Where<PCGuildPoint>(x => x.PlayerID == id).ToList())
+                DeleteFromCache<PCGuildPoint>(item.ID);
         }
 
         /// <summary>
